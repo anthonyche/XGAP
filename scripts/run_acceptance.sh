@@ -33,3 +33,7 @@ fi
 if [ -f examples/lowering_demo.py ]; then
   "$PYTHON" examples/lowering_demo.py
 fi
+
+if [ -f examples/pattern_lowering_audit_demo.py ]; then
+  "$PYTHON" examples/pattern_lowering_audit_demo.py
+fi

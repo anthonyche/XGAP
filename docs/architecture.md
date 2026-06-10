@@ -171,9 +171,11 @@ Selectors lower to the audited extended algebra:
 
 M5 does not implement assignment semantics, `BindingRelation`, query-level joins, conjunctive graph query semantics, `Maybe`, group variables, bag semantics, null semantics, full GPC label expressions, parsers, backend compilation, backend execution, optimizer rules, LLM logic, disambiguation, cost estimation, or KGQA evaluation.
 
+M5.5 audits this layer without adding new functionality. The audited contract is that GPC-Lite is a structured path-pattern layer above the logical algebra, lowering is deterministic and type-checked before plan construction, and the emitted plan remains inside the path-algebra operator vocabulary. Natural-language planning remains future work.
+
 ## Current Execution Boundary
 
-M0-M5 are executable:
+M0-M5 are executable and M5.5 audits that execution boundary:
 
 - `Nodes(G)`
 - `Edges(G)`

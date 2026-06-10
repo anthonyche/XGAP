@@ -100,6 +100,24 @@ Acceptance criteria:
 Current status:
 DONE
 
+## M5.5 Pattern-Lowering Audit
+
+Goal:
+Audit the full M5 GPC-Lite pattern layer and deterministic lowering pipeline.
+
+Files involved:
+`tests/test_pattern_lowering_audit.py`, `examples/pattern_lowering_audit_demo.py`, `docs/pattern_lowering_audit.md`, `docs/architecture.md`, `docs/roadmap.md`, `docs/status.md`, `docs/decisions.md`, `scripts/run_acceptance.sh`.
+
+Acceptance criteria:
+- GPC-Lite AST validity, type checking, regex lowering, descriptor lowering, selector mapping, determinism, validation, and reference evaluation are audited.
+- Unsupported full-GPC and future milestone features fail clearly.
+- No M6 or later functionality is implemented.
+- `python -m pytest` passes.
+- `./scripts/run_acceptance.sh` passes.
+
+Current status:
+DONE
+
 
 ## M6 Backend Capability Profiles
 

@@ -84,3 +84,35 @@ M5 lowering must not call an LLM. Reason: LLMs may propose candidate interpretat
 M5 implements Python data structures for path-pattern queries and deterministic lowering rules. It does not parse GQL, Cypher, SPARQL, or natural language text. Reason: Parsing concrete languages and natural language planning are separate milestones. M5 should only connect structured path-pattern intent to the logical algebra. 
 ## D17 Regex lowering targets existing logical operators 
 Regular-expression AST nodes lower only to existing logical operators. Examples: - `Rel(label)` lowers to `Selection(label(edge(1)) = label, Edges(G))`. - `Seq(a, b)` lowers to `Join(lower(a), lower(b))`. - `Alt(a, b)` lowers to `Union(lower(a), lower(b))`. - `Plus(a)` lowers to `Recursive(mode, lower(a))`. - `Star(a)` lowers to `Union(Nodes(G), Recursive(mode, lower(a)))`. Reason: M5 must not introduce new logical operators.
+
+## D18 GPC-Lite is intentionally path-centric
+
+M5 implements GPC-Lite as a structured path-pattern layer, not full GPC.
+
+Reason:
+
+The MVP scope is path-centric graph queries and regular path queries. Assignment semantics, `BindingRelation`, query-level joins, conjunctive graph query semantics, `Maybe`, and group variable runtime semantics are future work unless a later milestone explicitly adds them.
+
+## D19 Type checking precedes lowering
+
+`PathPatternQuery` objects must pass `type_check_path_pattern()` before deterministic lowering constructs a logical plan.
+
+Reason:
+
+Variable-kind conflicts, selector limit mistakes, repeated edge variables in recursive expressions, and unsafe `WALK` recursion should fail before a logical plan is emitted.
+
+## D20 Unsupported GPC-Lite placeholders fail clearly
+
+`OptionalExpr`, `Bounded`, reverse direction, and undirected direction remain AST-level placeholders in M5 and M5.5. They must raise explicit lowering errors instead of being approximated with existing operators.
+
+Reason:
+
+Approximating these features would silently change semantics and would amount to implementing future functionality during an audit milestone.
+
+## D21 Pattern lowering remains runtime-independent
+
+Pattern lowering must not call the reference evaluator, backend compilers, backend execution, or LLM code.
+
+Reason:
+
+Lowering is a deterministic structural transformation. Validation and reference evaluation are downstream checks, not dependencies used to decide the lowered plan.

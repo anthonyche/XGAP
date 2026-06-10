@@ -2,7 +2,7 @@
 
 ## Current Milestone
 
-M5 completed.
+M5.5 completed.
 
 Next milestone:
 M6 Backend Capability Profiles.
@@ -17,6 +17,7 @@ M6 Backend Capability Profiles.
 - M4 SolutionSpace Algebra
 - M4.5 Semantic Audit
 - M5 GPC-Lite Pattern AST And Lowering
+- M5.5 Pattern-Lowering Audit
 
 ## In Progress
 
@@ -61,7 +62,7 @@ PathPatternQuery
 
 # Latest Known Acceptance Status
 
-M0-M5 acceptance passed.
+M0-M5.5 acceptance passed.
 
 Expected checks include:
 
@@ -73,4 +74,6 @@ Expected checks include:
 - examples/solution_space_demo.py
 - examples/semantic_audit_demo.py
 - examples/lowering_demo.py
+- examples/pattern_lowering_audit_demo.py
 - lowering tests
+- pattern-lowering audit tests
