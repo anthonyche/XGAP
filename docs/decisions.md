@@ -76,26 +76,11 @@ Reason:
 
 This separation matches the algebraic structure of path queries and keeps the implementation modular.
 
-## D14 M5 uses GPC-Lite, not full GPC
-
-XGAP M5 introduces a path-centric structured pattern layer inspired by GPC, called GPC-Lite.
-
-Reason:
-
-XGAP needs deterministic structured path-query intent before natural-language planning and backend compilation. Full GPC features such as assignment relations, multiple conjunctive clauses, `Maybe`, group variable semantics, bag/null semantics, full label expressions, and parser/compiler behavior are deliberately future work.
-
-## D15 Pattern lowering emits only audited logical operators
-
-GPC-Lite lowering maps to the existing audited XGAP logical algebra: `Nodes`, `Edges`, `Selection`, `Union`, `Join`, `Recursive`, `GroupBy`, `OrderBy`, and `Projection`.
-
-Reason:
-
-The pattern layer must not invent a second graph algebra. It connects structured intent to the already audited logical layer.
-
-## D16 Direction support is staged
-
-The M5 AST can represent `OUT`, `IN`, and `UNDIRECTED` edge directions, but M5 lowering supports only `OUT`.
-
-Reason:
-
-Reverse and undirected traversal require additional algebraic or graph-normalization decisions. M5 rejects those during lowering instead of silently faking unsupported behavior.
+## D14 Pattern AST is above logical algebra 
+`PathPatternQuery` is a structured query-intent object that sits above the logical algebra. Reason: The logical algebra should remain limited to path-algebra operators. Query-level concepts such as selectors, restrictors, regex syntax, and endpoint constraints should be represented in the pattern layer and lowered deterministically. 
+## D15 M5 lowering is deterministic and LLM-free 
+M5 lowering must not call an LLM. Reason: LLMs may propose candidate interpretations in later milestones, but algebraic correctness must be guaranteed by deterministic lowering and validation. 
+## D16 M5 does not implement a text parser 
+M5 implements Python data structures for path-pattern queries and deterministic lowering rules. It does not parse GQL, Cypher, SPARQL, or natural language text. Reason: Parsing concrete languages and natural language planning are separate milestones. M5 should only connect structured path-pattern intent to the logical algebra. 
+## D17 Regex lowering targets existing logical operators 
+Regular-expression AST nodes lower only to existing logical operators. Examples: - `Rel(label)` lowers to `Selection(label(edge(1)) = label, Edges(G))`. - `Seq(a, b)` lowers to `Join(lower(a), lower(b))`. - `Alt(a, b)` lowers to `Union(lower(a), lower(b))`. - `Plus(a)` lowers to `Recursive(mode, lower(a))`. - `Star(a)` lowers to `Union(Nodes(G), Recursive(mode, lower(a)))`. Reason: M5 must not introduce new logical operators.
