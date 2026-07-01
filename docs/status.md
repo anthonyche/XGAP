@@ -97,6 +97,9 @@ creating a fixed `/xgap-lab` directory. Operators can still override
 When a user cannot access the Docker daemon socket directly, the server
 scripts automatically fall back to `sudo docker`.
 
+Backend healthcheck uses Neo4j `cypher-shell` readiness over Bolt
+instead of requiring the Neo4j HTTP browser endpoint to respond first.
+
 This is runtime environment setup only. It is not a backend capability
 profile, compiler, backend adapter, protocol implementation, planner,
 semantic-deviation layer, ontology-reasoning feature, LLM feature, or

@@ -80,7 +80,9 @@ sudo usermod -aG docker "$USER"
 Expected healthcheck success:
 
 - Docker Compose lists `xgap-neo4j` and `xgap-fuseki`.
-- `http://127.0.0.1:7474/` responds for Neo4j.
+- Neo4j accepts `cypher-shell` queries over Bolt.
+- Neo4j HTTP on `http://127.0.0.1:7474/` is reported when reachable,
+  but it is not used as the blocking readiness signal.
 - `http://127.0.0.1:3030/$/ping` responds for Fuseki.
 
 If a container keeps restarting, inspect logs:
