@@ -14,24 +14,36 @@ FUSEKI_PORT="${FUSEKI_PORT:-3030}"
 wait_for_url() {
   local name="$1"
   local url="$2"
-  local attempts="${3:-90}"
-  local delay="${4:-2}"
+  local service="${3:-}"
+  local attempts="${4:-90}"
+  local delay="${5:-2}"
 
   for attempt in $(seq 1 "$attempts"); do
     if curl -fsS -o /dev/null "$url"; then
       echo "$name is reachable: $url"
       return 0
     fi
+
+    if [ -n "$service" ] && compose ps | grep -E "xgap-$service|$service" | grep -q "Restarting"; then
+      echo "$name container is restarting. Recent $service logs:" >&2
+      compose logs --tail=120 "$service" >&2 || true
+      return 1
+    fi
+
     echo "Waiting for $name ($attempt/$attempts): $url"
     sleep "$delay"
   done
 
   echo "$name did not become reachable: $url" >&2
+  if [ -n "$service" ]; then
+    echo "Recent $service logs:" >&2
+    compose logs --tail=120 "$service" >&2 || true
+  fi
   return 1
 }
 
 compose ps
-wait_for_url "Neo4j HTTP" "http://127.0.0.1:$NEO4J_HTTP_PORT/"
-wait_for_url "Fuseki ping" "http://127.0.0.1:$FUSEKI_PORT/\$/ping"
+wait_for_url "Neo4j HTTP" "http://127.0.0.1:$NEO4J_HTTP_PORT/" "neo4j"
+wait_for_url "Fuseki ping" "http://127.0.0.1:$FUSEKI_PORT/\$/ping" "fuseki"
 
 echo "Backend healthcheck passed."

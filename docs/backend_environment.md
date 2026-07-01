@@ -83,6 +83,13 @@ Expected healthcheck success:
 - `http://127.0.0.1:7474/` responds for Neo4j.
 - `http://127.0.0.1:3030/$/ping` responds for Fuseki.
 
+If a container keeps restarting, inspect logs:
+
+```bash
+bash scripts/server/log_backends.sh neo4j
+bash scripts/server/log_backends.sh fuseki
+```
+
 ## Load Toy Financial-Risk Data
 
 The toy dataset is in `examples/financial_risk/`.
