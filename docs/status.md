@@ -94,6 +94,9 @@ The server scripts default to the current repository checkout instead of
 creating a fixed `/xgap-lab` directory. Operators can still override
 `XGAP_REPO_ROOT` explicitly when needed.
 
+When a user cannot access the Docker daemon socket directly, the server
+scripts automatically fall back to `sudo docker`.
+
 This is runtime environment setup only. It is not a backend capability
 profile, compiler, backend adapter, protocol implementation, planner,
 semantic-deviation layer, ontology-reasoning feature, LLM feature, or

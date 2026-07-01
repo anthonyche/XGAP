@@ -68,6 +68,15 @@ bash scripts/server/start_backends.sh
 bash scripts/server/healthcheck_backends.sh
 ```
 
+If the current user cannot access `/var/run/docker.sock`, the server
+scripts automatically fall back to `sudo docker` and may ask for your
+sudo password. To avoid sudo prompts permanently, add the user to the
+Docker group on the server and log in again:
+
+```bash
+sudo usermod -aG docker "$USER"
+```
+
 Expected healthcheck success:
 
 - Docker Compose lists `xgap-neo4j` and `xgap-fuseki`.

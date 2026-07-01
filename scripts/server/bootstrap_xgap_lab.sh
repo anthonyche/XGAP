@@ -2,8 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-REPO_ROOT="${XGAP_REPO_ROOT:-$DEFAULT_REPO_ROOT}"
+COMMON_SH="$SCRIPT_DIR/common.sh"
+# shellcheck source=scripts/server/common.sh
+. "$COMMON_SH"
 LAB_ROOT="${XGAP_LAB_ROOT:-$REPO_ROOT}"
 
 if [ ! -f "$REPO_ROOT/services/docker-compose.yml" ]; then
@@ -11,19 +12,14 @@ if [ ! -f "$REPO_ROOT/services/docker-compose.yml" ]; then
   exit 1
 fi
 
-if [ ! -f "$REPO_ROOT/services/.env" ]; then
-  cp "$REPO_ROOT/services/.env.example" "$REPO_ROOT/services/.env"
-  echo "Created $REPO_ROOT/services/.env from .env.example"
-else
+if [ -f "$REPO_ROOT/services/.env" ]; then
   echo "Using existing $REPO_ROOT/services/.env"
+else
+  ensure_env_file
 fi
 
-if ! command -v docker >/dev/null 2>&1; then
-  echo "Docker is required but was not found in PATH." >&2
-  exit 1
-fi
-
-if docker compose version >/dev/null 2>&1; then
+ensure_docker_cmd
+if "${DOCKER_CMD[@]}" compose version >/dev/null 2>&1; then
   echo "Docker Compose plugin is available."
 elif command -v docker-compose >/dev/null 2>&1; then
   echo "docker-compose is available."

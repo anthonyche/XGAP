@@ -2,17 +2,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-REPO_ROOT="${XGAP_REPO_ROOT:-$DEFAULT_REPO_ROOT}"
-ENV_FILE="$REPO_ROOT/services/.env"
+COMMON_SH="$SCRIPT_DIR/common.sh"
+# shellcheck source=scripts/server/common.sh
+. "$COMMON_SH"
 DATA_FILE="$REPO_ROOT/examples/financial_risk/load_fuseki.ttl"
 
-if [ -f "$ENV_FILE" ]; then
-  set -a
-  # shellcheck disable=SC1090
-  . "$ENV_FILE"
-  set +a
-fi
+load_env_file
 
 FUSEKI_ADMIN_USER="${FUSEKI_ADMIN_USER:-admin}"
 FUSEKI_ADMIN_PASSWORD="${FUSEKI_ADMIN_PASSWORD:-xgap-lab-password}"
