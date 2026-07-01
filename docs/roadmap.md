@@ -118,8 +118,99 @@ Acceptance criteria:
 Current status:
 DONE
 
+## M6 Bounded Focused Quantified Pattern Semantics
 
-## M6 Backend Capability Profiles
+Goal:
+Add a bounded QGP-inspired fragment for focus-oriented, rooted tree
+patterns.
+
+Files involved:
+`src/xgap/pattern/quantified_ast.py`,
+`src/xgap/pattern/quantified_typecheck.py`,
+`src/xgap/pattern/quantified_lowering.py`,
+`src/xgap/algebra/bindings.py`, focused binding operators in
+`src/xgap/algebra/ops.py`, evaluator, validation, pretty printing,
+tests, and `examples/quantified_pattern_demo.py`.
+
+M6 extends the structured pattern layer with a bounded, QGP-inspired
+fragment for focus-oriented rooted tree patterns.
+
+The deterministic flow is:
+
+FocusedQuantifiedPatternQuery
+-> type_check_focused_quantified_pattern
+-> validate_quantifier_bounds
+-> lower_focused_quantified_pattern
+-> LogicalPlan
+-> validate_plan
+-> reference evaluation
+
+M6 supports quantifiers attached to atomic directed pattern edges:
+
+existential: at least one distinct child match
+numeric count: = k and >= k
+ratio: = r and >= r
+universal: ratio = 100%
+negation: no child satisfies the complete branch pattern
+
+Counting uses distinct child-node bindings. It does not count paths,
+parallel edge instances, or complete binding multiplicities.
+
+Ratio denominators contain distinct child nodes reachable through the
+edge descriptor before applying the child-node descriptor and the child
+subtree. Positive ratio conditions use non-vacuous semantics: an empty
+denominator does not satisfy a ratio or universal condition.
+
+Pattern-level negation is lowered through anti-semi-join semantics. It is
+different from scalar boolean negation inside a local property condition.
+
+M6 applies static structural bounds. On every root-to-leaf pattern path:
+
+at most two quantifiers may be non-existential;
+at most one edge may be negated.
+
+Sibling quantified or negated branches are allowed because sibling
+branches represent conjunction rather than nested quantification.
+
+M6 introduces a minimal set-valued BindingRelation and a focused
+binding-operator layer. This is an implementation substrate for bounded
+focused patterns; it is not a full GPC assignment implementation.
+
+M6 does not support:
+
+full QGP
+arbitrary conjunctive or cyclic graph patterns
+quantifiers over Plus, Star, or other regular-path expressions
+path counting
+edge-instance counting
+bag or null semantics
+multiple query-focus outputs
+unbounded quantifier nesting
+backend compilation or execution
+optimizer, LLM, disambiguation, or KGQA functionality
+
+Current status:
+DONE
+
+## M6.5 Quantified-Pattern Semantic Audit
+
+Goal:
+Audit the M6 quantified-pattern semantics and lowering pipeline.
+
+Files involved:
+semantic audit document, audit tests, audit demo, current-state docs, and
+acceptance wiring.
+
+Acceptance criteria:
+Confirms counting, ratio, negation, bounds, determinism, validation,
+reference evaluation, and execution boundaries.
+
+Current status:
+TODO
+
+
+
+## M7 Backend Capability Profiles
 
 Goal:
 Represent backend capabilities separately from compiler logic.
@@ -133,7 +224,7 @@ XGAP can represent which backend supports which operators, recursive modes, filt
 Current status:
 TODO
 
-## M7 Compilers
+## M8 Compilers
 
 Goal: Compile optimized logical plans to GQL, Cypher, and SPARQL.
 
@@ -143,7 +234,7 @@ Acceptance criteria: Compilers preserve logical semantics and report unsupported
 
 Current status: TODO
 
-## M8 Logical Optimization and Cost Estimation
+## M9 Logical Optimization and Cost Estimation
 
 Goal:
 Add logical rewrite rules and a first cost-estimation interface.
@@ -157,7 +248,7 @@ Rewrites preserve semantics; unsupported rewrites are rejected; cost features ca
 Current status:
 TODO
 
-## M9 LLM Planner and Grounding
+## M10 LLM Planner and Grounding
 
 Goal: Add the ambiguity-aware natural-language planner that proposes candidate path-pattern queries.
 
@@ -167,7 +258,7 @@ Acceptance criteria: Planner output is schema-validated and deterministic loweri
 
 Current status: TODO
 
-## M10 Disambiguation and Top-K Ranking
+## M11 Disambiguation and Top-K Ranking
 
 Goal:
 Rank candidate interpretations under ambiguity.
@@ -181,7 +272,7 @@ XGAP can score candidate interpretations, preserve top-K alternatives, and separ
 Current status:
 TODO
 
-## M11 KGQA Evaluation
+## M12 KGQA Evaluation
 
 Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.
 

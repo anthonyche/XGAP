@@ -2,7 +2,20 @@
 
 ## D1 Logical algebra alignment
 
-XGAP aligns its logical operator vocabulary with the path algebra from "Path-based Algebraic Foundations of Graph Query Languages".
+XGAP's path-algebra vocabulary aligns with the path algebra from
+"Path-based Algebraic Foundations of Graph Query Languages".
+
+M6 adds a separate minimal focused binding layer for quantified-pattern
+semantics. `BindNode`, `BindEdge`, `BindingJoin`, `BindingProject`,
+`QuantifiedCheck`, `AntiSemiJoin`, and `FocusProjection` are not claimed
+to be operators from the path-algebra paper.
+
+Reason:
+
+The existing path algebra should remain theoretically identifiable.
+QGP-inspired counting requires correlated bindings and anti-existence,
+which cannot be represented faithfully by `PathSet` and
+`SolutionSpace` alone.
 
 ## D2 Path-centric MVP
 
@@ -89,9 +102,18 @@ Regular-expression AST nodes lower only to existing logical operators. Examples:
 
 M5 implements GPC-Lite as a structured path-pattern layer, not full GPC.
 
+M6 introduces a separate bounded focused quantified-pattern fragment
+and a minimal `BindingRelation` substrate. This does not retroactively
+change M5 and does not constitute full GPC assignment or general
+BindingRelation semantics.
+
 Reason:
 
-The MVP scope is path-centric graph queries and regular path queries. Assignment semantics, `BindingRelation`, query-level joins, conjunctive graph query semantics, `Maybe`, and group variable runtime semantics are future work unless a later milestone explicitly adds them.
+The M5 scope remains path-centric graph queries and regular path
+queries. M6 adds only the minimum binding functionality required for
+rooted tree-shaped quantified branches. Arbitrary conjunctive patterns,
+query-level joins, `Maybe`, group-variable runtime semantics, bag
+semantics, and null semantics remain future work.
 
 ## D19 Type checking precedes lowering
 
@@ -116,3 +138,159 @@ Pattern lowering must not call the reference evaluator, backend compilers, backe
 Reason:
 
 Lowering is a deterministic structural transformation. Validation and reference evaluation are downstream checks, not dependencies used to decide the lowered plan.
+
+
+## D22 M6 is additive to M5
+
+`FocusedQuantifiedPatternQuery` is a sibling query-intent representation
+rather than an extension that changes `PathPatternQuery`.
+
+Reason:
+
+M5 and M5.5 have already established and audited deterministic
+path-pattern semantics. Quantified tree patterns require different data
+objects and lowering rules and must not silently change the audited M5
+contract.
+
+## D23 M6 patterns are focused rooted trees
+
+An M6 query has one focus node, a connected rooted tree of atomic
+pattern edges, and one structural parent for every non-focus node.
+Sibling branches are conjunctive. Query output is the distinct set of
+focus-node bindings.
+
+Reason:
+
+This captures common star-like and bounded nested quantified queries
+without claiming arbitrary conjunctive graph-pattern support.
+
+## D24 Quantifiers attach only to atomic directed edges
+
+M6 quantifiers may be attached only to atomic `OUT` edge patterns.
+They may not quantify `Seq`, `Alt`, `Plus`, `Star`, or another regular
+path expression.
+
+Reason:
+
+The referenced QGP semantics count child matches of graph-pattern
+edges. Counting paths or regular-path witnesses requires separate
+decisions about path identity, duplicate paths, repeated nodes, and
+unbounded walks.
+
+## D25 Quantifiers count distinct child nodes
+
+For a quantified edge from `u` to `v`, M6 counts distinct bindings of
+the child variable `v`.
+
+Parallel edges, multiple witness rows, and multiple paths that reach the
+same child node do not increase the count.
+
+Reason:
+
+This follows the child-set interpretation of QGP counting and avoids
+making results depend on incidental witness multiplicity.
+
+## D26 Ratio domains are edge-local and non-vacuous
+
+For a ratio quantifier, the denominator contains distinct target nodes
+reachable from the parent through the edge descriptor. Child-node
+descriptors and child-subtree predicates are applied only to the
+numerator.
+
+An empty denominator does not satisfy a positive ratio or universal
+condition.
+
+Reason:
+
+The denominator represents the relevant edge-neighbor domain.
+Non-vacuous semantics prevents nodes with no relevant neighbors from
+satisfying universal conditions automatically.
+
+## D27 Pattern negation uses anti-semi-join
+
+A `NONE` quantified branch is implemented by removing candidate
+bindings for which at least one complete branch witness exists.
+
+Reason:
+
+Pattern-level negation is a `NOT EXISTS` condition. Boolean negation of
+a scalar property predicate cannot represent the absence of a complete
+matching branch.
+
+## D28 Quantifier bounds are structural and path-wise
+
+For every root-to-leaf structural path, M6 allows at most two
+non-existential quantifiers and at most one negated edge.
+
+Sibling quantified and negated branches are allowed.
+
+Reason:
+
+The bound limits nested quantification and double negation while
+retaining common star-shaped query structures. The value two is an
+initial XGAP system bound, not a general empirical or complexity claim.
+
+## D29 M6 BindingRelation uses set semantics
+
+M6 `BindingRelation` values are immutable, deduplicated, and
+deterministically ordered for formatting and reference evaluation.
+
+Reason:
+
+QGP-style counting is defined over distinct child bindings. Bag and null
+semantics would introduce additional choices that are outside M6.
+
+## D30 Selector GroupBy is not an aggregation operator
+
+The existing `GroupBy`, `OrderBy`, and `Projection` operators remain
+exclusive to selector-style `SolutionSpace` semantics.
+
+`QuantifiedCheck` performs quantified child counting.
+
+Reason:
+
+Reusing selector `GroupBy` for `COUNT(DISTINCT child)` would conflate
+path ranking with correlated graph-pattern aggregation.
+
+## D31 Scalar predicates and counting quantifiers are separate
+
+Local node and edge comparisons such as `amount >= 1000` are scalar
+property predicates and lower to `Selection`.
+
+Conditions such as “at least three matching neighbors” are counting
+quantifiers and lower through the focused binding layer.
+
+Pattern-level `NONE` is anti-existence and lowers through
+`AntiSemiJoin`.
+
+Reason:
+
+These three conditions operate over different semantic domains and
+must not share an ambiguous lowering rule.
+
+## D32 M6 lowering is canonical and runtime-independent
+
+M6 lowering must use stable branch ordering, run type checking and bound
+validation before plan construction, and call `validate_plan()` after
+construction.
+
+It must not call the reference evaluator, backend code, optimizer, LLM,
+or cost estimator to decide plan shape.
+
+Reason:
+
+The same structured quantified query must always produce the same
+logical-plan structure.
+
+## D33 M6 is not full QGP
+
+M6 may be described as a bounded QGP-inspired focused quantified
+fragment. It must not be described as full QGP support, and complexity
+results for general QGP matching must not be attributed to M6 without a
+separate proof.
+
+Reason:
+
+M6 uses rooted tree topology, a single focus, set-valued bindings,
+atomic directed edges, and XGAP-specific deterministic lowering. These
+restrictions differ from the complete QGP model.

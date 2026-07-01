@@ -2,10 +2,7 @@
 
 ## Current Milestone
 
-M5.5 completed.
-
-Next milestone:
-M6 Backend Capability Profiles.
+M6 Bounded Focused Quantified Pattern Semantics is completed.
 
 ## Completed
 
@@ -18,10 +15,14 @@ M6 Backend Capability Profiles.
 - M4.5 Semantic Audit
 - M5 GPC-Lite Pattern AST And Lowering
 - M5.5 Pattern-Lowering Audit
+- M6 Bounded Focused Quantified Pattern Semantics
 
 ## In Progress
 
-None
+None.
+
+## Next Planned Milestone:
+M6.5 Quantified-Pattern Semantic Audit.
 
 ## Implemented Logical Operators
 
@@ -48,6 +49,32 @@ PathPatternQuery
   -> deterministic lowering
   -> LogicalPlan
 
+FocusedQuantifiedPatternQuery
+  -> type_check_focused_quantified_pattern
+  -> validate_quantifier_bounds
+  -> deterministic lowering
+  -> LogicalPlan
+
+## Implemented M6 Binding Layer
+
+- `BindingRelation`
+- `BindNode`
+- `BindEdge`
+- `BindingJoin`
+- `BindingProject`
+- `QuantifiedCheck`
+- `AntiSemiJoin`
+- `FocusProjection`
+
+M6 supports bounded, focused, rooted-tree quantified patterns with
+non-injective set-valued bindings, distinct child-node counting, exact
+ratio thresholds, non-vacuous ratio and universal semantics, anti-semi-
+join `NONE`, focus-only queries, deterministic lowering, static schema
+inference, plan validation, pretty printing, and reference evaluation.
+
+M6 remains QGP-inspired only. It is not full QGP, not full GPC, and not
+backend support.
+
 ## Not Implemented Yet
 - Backend capability profiles
 - GQL / Cypher / SPARQL compilers
@@ -62,7 +89,14 @@ PathPatternQuery
 
 # Latest Known Acceptance Status
 
-M0-M5.5 acceptance passed.
+M0-M6 acceptance passed.
+
+Latest recorded command results:
+
+- `python -m pytest`: 234 passed.
+- `python examples/quantified_pattern_demo.py`: passed.
+- `./scripts/run_acceptance.sh`: passed, including harness check,
+  pytest, all existing examples, and `examples/quantified_pattern_demo.py`.
 
 Expected checks include:
 
@@ -75,5 +109,7 @@ Expected checks include:
 - examples/semantic_audit_demo.py
 - examples/lowering_demo.py
 - examples/pattern_lowering_audit_demo.py
+- examples/quantified_pattern_demo.py
 - lowering tests
 - pattern-lowering audit tests
+- quantified-pattern tests

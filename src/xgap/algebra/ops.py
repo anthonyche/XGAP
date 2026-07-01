@@ -11,6 +11,7 @@ from xgap.algebra.conditions import Condition
 class OutputKind(Enum):
     PATH_SET = "PATH_SET"
     SOLUTION_SPACE = "SOLUTION_SPACE"
+    BINDING_RELATION = "BINDING_RELATION"
 
 
 @dataclass(frozen=True)
@@ -211,3 +212,117 @@ class ProjectionOp(AlgebraOp):
 
     def operator_name(self) -> str:
         return "Projection"
+
+
+@dataclass(frozen=True)
+class BindNodeOp(AlgebraOp):
+    var: str
+    child: AlgebraOp
+
+    def output_kind(self) -> OutputKind:
+        return OutputKind.BINDING_RELATION
+
+    def children(self) -> tuple[AlgebraOp, ...]:
+        return (self.child,)
+
+    def operator_name(self) -> str:
+        return "BindNode"
+
+
+@dataclass(frozen=True)
+class BindEdgeOp(AlgebraOp):
+    source_var: str
+    edge_var: str | None
+    target_var: str
+    child: AlgebraOp
+
+    def output_kind(self) -> OutputKind:
+        return OutputKind.BINDING_RELATION
+
+    def children(self) -> tuple[AlgebraOp, ...]:
+        return (self.child,)
+
+    def operator_name(self) -> str:
+        return "BindEdge"
+
+
+@dataclass(frozen=True)
+class BindingJoinOp(AlgebraOp):
+    left: AlgebraOp
+    right: AlgebraOp
+
+    def output_kind(self) -> OutputKind:
+        return OutputKind.BINDING_RELATION
+
+    def children(self) -> tuple[AlgebraOp, ...]:
+        return (self.left, self.right)
+
+    def operator_name(self) -> str:
+        return "BindingJoin"
+
+
+@dataclass(frozen=True)
+class BindingProjectOp(AlgebraOp):
+    vars: tuple[str, ...]
+    child: AlgebraOp
+
+    def output_kind(self) -> OutputKind:
+        return OutputKind.BINDING_RELATION
+
+    def children(self) -> tuple[AlgebraOp, ...]:
+        return (self.child,)
+
+    def operator_name(self) -> str:
+        return "BindingProject"
+
+
+@dataclass(frozen=True)
+class QuantifiedCheckOp(AlgebraOp):
+    candidates: AlgebraOp
+    witnesses: AlgebraOp
+    quantifier: object
+    correlation_vars: tuple[str, ...]
+    child_var: str
+    domain: AlgebraOp | None = None
+
+    def output_kind(self) -> OutputKind:
+        return OutputKind.BINDING_RELATION
+
+    def children(self) -> tuple[AlgebraOp, ...]:
+        if self.domain is None:
+            return (self.candidates, self.witnesses)
+        return (self.candidates, self.witnesses, self.domain)
+
+    def operator_name(self) -> str:
+        return "QuantifiedCheck"
+
+
+@dataclass(frozen=True)
+class AntiSemiJoinOp(AlgebraOp):
+    left: AlgebraOp
+    right: AlgebraOp
+    on: tuple[str, ...]
+
+    def output_kind(self) -> OutputKind:
+        return OutputKind.BINDING_RELATION
+
+    def children(self) -> tuple[AlgebraOp, ...]:
+        return (self.left, self.right)
+
+    def operator_name(self) -> str:
+        return "AntiSemiJoin"
+
+
+@dataclass(frozen=True)
+class FocusProjectionOp(AlgebraOp):
+    focus_var: str
+    child: AlgebraOp
+
+    def output_kind(self) -> OutputKind:
+        return OutputKind.PATH_SET
+
+    def children(self) -> tuple[AlgebraOp, ...]:
+        return (self.child,)
+
+    def operator_name(self) -> str:
+        return "FocusProjection"

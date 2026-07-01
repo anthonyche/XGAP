@@ -37,3 +37,7 @@ fi
 if [ -f examples/pattern_lowering_audit_demo.py ]; then
   "$PYTHON" examples/pattern_lowering_audit_demo.py
 fi
+
+if [ -f examples/quantified_pattern_demo.py ]; then
+  "$PYTHON" examples/quantified_pattern_demo.py
+fi

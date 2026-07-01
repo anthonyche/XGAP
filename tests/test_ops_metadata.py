@@ -1,6 +1,12 @@
 from xgap.algebra.conditions import EdgeRef, LabelEquals
 from xgap.algebra.ops import (
+    AntiSemiJoinOp,
+    BindEdgeOp,
+    BindNodeOp,
+    BindingJoinOp,
+    BindingProjectOp,
     EdgesOp,
+    FocusProjectionOp,
     GroupKey,
     GroupByOp,
     JoinOp,
@@ -9,11 +15,18 @@ from xgap.algebra.ops import (
     OrderByOp,
     OutputKind,
     ProjectionOp,
+    QuantifiedCheckOp,
     RecursiveMode,
     RecursiveOp,
     SelectionOp,
     UnionOp,
 )
+
+
+class FakeQuantifier:
+    kind = "EXISTS"
+    comparator = None
+    threshold = None
 
 
 def test_nodes_metadata() -> None:
@@ -97,3 +110,31 @@ def test_projection_metadata() -> None:
     assert op.output_kind() is OutputKind.PATH_SET
     assert op.children() == (child,)
     assert op.operator_name() == "Projection"
+
+
+def test_focused_binding_operator_metadata() -> None:
+    edges = EdgesOp()
+    nodes = NodesOp()
+    bind_node = BindNodeOp("x", nodes)
+    bind_edge = BindEdgeOp("x", "e", "y", edges)
+    joined = BindingJoinOp(bind_node, bind_edge)
+    projected = BindingProjectOp(("x",), joined)
+    checked = QuantifiedCheckOp(projected, joined, FakeQuantifier(), ("x",), "y")
+    anti = AntiSemiJoinOp(projected, joined, ("x",))
+    focused = FocusProjectionOp("x", projected)
+
+    assert bind_node.output_kind() is OutputKind.BINDING_RELATION
+    assert bind_node.children() == (nodes,)
+    assert bind_node.operator_name() == "BindNode"
+    assert bind_edge.output_kind() is OutputKind.BINDING_RELATION
+    assert bind_edge.children() == (edges,)
+    assert bind_edge.operator_name() == "BindEdge"
+    assert joined.output_kind() is OutputKind.BINDING_RELATION
+    assert joined.children() == (bind_node, bind_edge)
+    assert joined.operator_name() == "BindingJoin"
+    assert checked.output_kind() is OutputKind.BINDING_RELATION
+    assert checked.children() == (projected, joined)
+    assert anti.output_kind() is OutputKind.BINDING_RELATION
+    assert anti.children() == (projected, joined)
+    assert focused.output_kind() is OutputKind.PATH_SET
+    assert focused.children() == (projected,)

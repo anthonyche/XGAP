@@ -1,4 +1,6 @@
 # M5.5 Pattern-Lowering Audit
+> Historical scope note: this document records the M5.5 audit boundary.
+> Later milestones do not retroactively change the audited M5 contract.
 
 ## Scope
 

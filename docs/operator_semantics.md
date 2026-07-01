@@ -1,12 +1,22 @@
 # Operator Semantics
 
+XGAP contains two deterministic logical support layers:
+
+1. the path algebra, whose primary objects are `PathSet` and
+   `SolutionSpace`;
+2. the M6 focused binding layer, whose object is `BindingRelation`.
+<!-- 
+The focused binding layer consumes path-algebra results but does not
+change the semantics of the existing path operators.
+
 XGAP's logical operator vocabulary is path-based. The primary data object is PathSet. The secondary data object is SolutionSpace, used only by selector-style extended algebra operators.
 
 The logical algebra is organized into:
 
 Core path algebra
 Recursive path algebra
-Extended path algebra
+Extended path algebra -->
+
 ## Data Objects
 ## Path
 
@@ -56,17 +66,40 @@ Returns a `PathSet` containing one one-length `Path` for every edge in graph `G`
 
 ## Selection
 
-Implemented.
+Evaluates a child operator and keeps only paths that satisfy a scalar
+condition.
 
-Evaluates a child operator and keeps only paths that satisfy a condition. Current conditions support equality over
- node labels, 
- edge labels, 
- node properties, 
- edge properties, 
- `first`, 
- `last`, 
- path length, 
- and boolean `AND`, `OR`, `NOT`.
+Supported references include:
+
+- node labels
+- edge labels
+- node properties
+- edge properties
+- `first`
+- `last`
+- indexed nodes and edges
+- path length
+
+Supported scalar comparisons are:
+
+- `=`
+- `!=`
+- `<`
+- `<=`
+- `>`
+- `>=`
+
+Ordering comparisons are defined only for numeric values and exclude
+boolean values. A missing or non-numeric property does not satisfy a
+numeric ordering comparison.
+
+Conditions may be composed with boolean `AND`, `OR`, and `NOT`.
+
+These scalar comparisons are different from M6 counting quantifiers.
+For example, `edge.amount >= 1000` is evaluated by `Selection`, while
+“at least three matching edges” is evaluated through
+`QuantifiedCheck`.
+
 
 ## Union
 
@@ -276,6 +309,142 @@ Projection(None, 1, None, child)
 corresponds to:
 
 π(*, 1, *)
+
+## Focused Quantified Binding Algebra
+
+The following operators are introduced by M6. They are not part of the
+path-algebra vocabulary.
+
+# BindNode
+
+Implemented in M6.
+
+
+BindNode(var, child): PathSet -> BindingRelation
+
+The child must contain zero-length paths.
+
+For each zero-length path containing node v, BindNode emits one row:
+
+{var -> v}
+
+Duplicate rows are removed.
+
+# BindEdge
+
+Implemented in M6.
+
+BindEdge(source_var, edge_var?, target_var, child)
+  : PathSet -> BindingRelation
+
+The child must contain one-length paths.
+
+For each path:
+
+source, edge, target
+
+the operator emits bindings for source_var, target_var, and
+edge_var when an edge variable is present.
+
+Duplicate rows are removed.
+
+# BindingJoin
+
+Implemented in M6.
+
+BindingJoin(left, right)
+  : BindingRelation x BindingRelation -> BindingRelation
+
+BindingJoin performs a natural join over shared variables.
+
+Two rows are compatible if every shared variable has the same bound
+value. The output schema is the stable union of the two input schemas.
+Duplicate output rows are removed.
+
+# BindingProject
+
+Implemented in M6.
+
+BindingProject(vars, child)
+  : BindingRelation -> BindingRelation
+
+Keeps only the requested variables and removes duplicate projected rows.
+
+# QuantifiedCheck
+
+Implemented in M6.
+
+QuantifiedCheck(
+    candidates,
+    witnesses,
+    domain?,
+    correlation_vars,
+    child_var,
+    quantifier
+) -> BindingRelation
+
+For every candidate row c, the operator finds witness rows that agree
+with c on correlation_vars and computes the set of distinct values
+bound to child_var.
+
+Let:
+
+N(c) = distinct child values in witnesses correlated with c
+
+For a ratio quantifier, let:
+
+D(c) = distinct child values in domain correlated with c
+
+The operator keeps c when:
+
+EXISTS       |N(c)| >= 1
+COUNT >= k   |N(c)| >= k
+COUNT = k    |N(c)| = k
+RATIO >= r   |N(c)| / |D(c)| >= r
+RATIO = r    |N(c)| / |D(c)| = r
+ALL          |N(c)| / |D(c)| = 1
+
+ALL is a canonical alias of RATIO = 1.
+
+Ratio comparison uses exact rational arithmetic or equivalent
+cross-multiplication. It must not depend on binary floating-point
+rounding.
+
+If D(c) is empty, every positive ratio condition, including ALL,
+is false.
+
+QuantifiedCheck returns qualifying candidate rows unchanged. It does
+not emit aggregate values.
+
+# AntiSemiJoin
+
+Implemented in M6.
+
+AntiSemiJoin(left, right, on)
+  : BindingRelation x BindingRelation -> BindingRelation
+
+Keeps a left row only when no right row agrees with it on every variable
+in on.
+
+M6 uses this operator to implement a NONE quantified branch:
+
+candidate rows
+  minus
+candidate rows with at least one complete branch witness
+
+
+# FocusProjection
+
+Implemented in M6.
+
+FocusProjection(focus_var, child)
+  : BindingRelation -> PathSet
+
+Extracts the distinct nodes bound to focus_var and converts each one
+to a zero-length Path.
+The output is the focus-node answer set for an M6 quantified query.
+
+
 ## Selector-style examples
 # ANY
 Projection [*, *, 1]
@@ -311,3 +480,26 @@ Projection [*, k, *]
     GroupBy [SOURCE_TARGET_LENGTH]
       Recursive [...]
         ...
+
+
+## BindingRelation
+
+Implemented in M6.
+
+A `BindingRelation` is a set-valued relation with:
+
+- an ordered binding schema;
+- immutable binding rows;
+- no duplicate rows;
+- stable deterministic formatting order.
+
+Each schema entry associates a variable with a binding kind. M6 supports
+node and edge bindings.
+
+`BindingRelation` does not support:
+
+- bag multiplicity
+- null bindings
+- arbitrary path bindings
+- general GPC assignments
+- cross-query correlation

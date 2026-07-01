@@ -1,5 +1,6 @@
 """Path-algebra data structures and logical operators."""
 
+from xgap.algebra.bindings import BindingField, BindingKind, BindingRelation, BindingRow, BindingSchema
 from xgap.algebra.conditions import (
     And,
     EdgeRef,
@@ -9,16 +10,28 @@ from xgap.algebra.conditions import (
     Not,
     Or,
     PropertyEquals,
+    PropertyGreaterThan,
+    PropertyGreaterThanOrEqual,
+    PropertyLessThan,
+    PropertyLessThanOrEqual,
+    PropertyNotEquals,
 )
 from xgap.algebra.evaluator import evaluate
 from xgap.algebra.graph import PropertyGraph
 from xgap.algebra.ops import (
+    AntiSemiJoinOp,
+    BindEdgeOp,
+    BindNodeOp,
+    BindingJoinOp,
+    BindingProjectOp,
     EdgesOp,
+    FocusProjectionOp,
     GroupByOp,
     JoinOp,
     NodesOp,
     OrderByOp,
     ProjectionOp,
+    QuantifiedCheckOp,
     RecursiveMode,
     RecursiveOp,
     SelectionOp,
@@ -28,8 +41,19 @@ from xgap.algebra.types import Path, PathSet, SolutionSpace
 
 __all__ = [
     "And",
+    "AntiSemiJoinOp",
+    "BindEdgeOp",
+    "BindNodeOp",
+    "BindingField",
+    "BindingKind",
+    "BindingJoinOp",
+    "BindingProjectOp",
+    "BindingRelation",
+    "BindingRow",
+    "BindingSchema",
     "EdgeRef",
     "EdgesOp",
+    "FocusProjectionOp",
     "GroupByOp",
     "JoinOp",
     "LabelEquals",
@@ -43,6 +67,12 @@ __all__ = [
     "PathSet",
     "ProjectionOp",
     "PropertyEquals",
+    "PropertyGreaterThan",
+    "PropertyGreaterThanOrEqual",
+    "PropertyLessThan",
+    "PropertyLessThanOrEqual",
+    "PropertyNotEquals",
+    "QuantifiedCheckOp",
     "PropertyGraph",
     "RecursiveMode",
     "RecursiveOp",

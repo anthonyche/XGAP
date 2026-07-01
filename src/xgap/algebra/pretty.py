@@ -14,9 +14,25 @@ from xgap.algebra.conditions import (
     Not,
     Or,
     PropertyEquals,
+    PropertyGreaterThan,
+    PropertyGreaterThanOrEqual,
+    PropertyLessThan,
+    PropertyLessThanOrEqual,
+    PropertyNotEquals,
 )
 from xgap.algebra.ops import AlgebraOp, RecursiveOp, SelectionOp
-from xgap.algebra.ops import GroupByOp, OrderByOp, ProjectionOp
+from xgap.algebra.ops import (
+    AntiSemiJoinOp,
+    BindEdgeOp,
+    BindNodeOp,
+    BindingJoinOp,
+    BindingProjectOp,
+    FocusProjectionOp,
+    GroupByOp,
+    OrderByOp,
+    ProjectionOp,
+    QuantifiedCheckOp,
+)
 
 
 def format_plan(plan: AlgebraOp) -> str:
@@ -36,6 +52,19 @@ def _format_lines(plan: AlgebraOp, indent: int) -> list[str]:
         line = f"{line} [{plan.order_key().value}]"
     if isinstance(plan, ProjectionOp):
         line = f"{line} [{_format_projection(plan)}]"
+    if isinstance(plan, BindNodeOp):
+        line = f"{line} [{plan.var}]"
+    if isinstance(plan, BindEdgeOp):
+        edge_var = plan.edge_var if plan.edge_var is not None else "*"
+        line = f"{line} [{plan.source_var}, {edge_var}, {plan.target_var}]"
+    if isinstance(plan, BindingProjectOp):
+        line = f"{line} [{', '.join(plan.vars)}]"
+    if isinstance(plan, QuantifiedCheckOp):
+        line = f"{line} [{_format_quantified_check(plan)}]"
+    if isinstance(plan, AntiSemiJoinOp):
+        line = f"{line} [on={', '.join(plan.on)}]"
+    if isinstance(plan, FocusProjectionOp):
+        line = f"{line} [{plan.focus_var}]"
 
     lines = [line]
     for child in plan.children():
@@ -50,6 +79,31 @@ def _format_condition(condition: object) -> str:
         return (
             f"{_format_ref(condition.ref)}.{condition.property_name} "
             f"= {_format_value(condition.value)}"
+        )
+    if isinstance(condition, PropertyNotEquals):
+        return (
+            f"{_format_ref(condition.ref)}.{condition.property_name} "
+            f"!= {_format_value(condition.value)}"
+        )
+    if isinstance(condition, PropertyLessThan):
+        return (
+            f"{_format_ref(condition.ref)}.{condition.property_name} "
+            f"< {_format_value(condition.value)}"
+        )
+    if isinstance(condition, PropertyLessThanOrEqual):
+        return (
+            f"{_format_ref(condition.ref)}.{condition.property_name} "
+            f"<= {_format_value(condition.value)}"
+        )
+    if isinstance(condition, PropertyGreaterThan):
+        return (
+            f"{_format_ref(condition.ref)}.{condition.property_name} "
+            f"> {_format_value(condition.value)}"
+        )
+    if isinstance(condition, PropertyGreaterThanOrEqual):
+        return (
+            f"{_format_ref(condition.ref)}.{condition.property_name} "
+            f">= {_format_value(condition.value)}"
         )
     if isinstance(condition, LengthEquals):
         return f"len() = {condition.value}"
@@ -82,6 +136,38 @@ def _format_projection_limit(limit: int | None) -> str:
     if limit is None:
         return "*"
     return str(limit)
+
+
+def _format_quantified_check(plan: QuantifiedCheckOp) -> str:
+    quantifier = _format_quantifier(plan.quantifier)
+    domain = "yes" if plan.domain is not None else "no"
+    return (
+        f"{quantifier}; corr={','.join(plan.correlation_vars)}; "
+        f"child={plan.child_var}; domain={domain}"
+    )
+
+
+def _format_quantifier(quantifier: object) -> str:
+    kind = _format_attr_value(getattr(quantifier, "kind", None))
+    comparator = _format_attr_value(getattr(quantifier, "comparator", None))
+    threshold = getattr(quantifier, "threshold", None)
+    parts = [kind]
+    if comparator is not None:
+        parts.append(comparator)
+    if threshold is not None:
+        parts.append(str(threshold))
+    return " ".join(parts)
+
+
+def _format_attr_value(value: object) -> str | None:
+    if value is None:
+        return None
+    enum_value = getattr(value, "value", value)
+    if enum_value == ">=":
+        return "GE"
+    if enum_value == "=":
+        return "EQ"
+    return str(enum_value)
 
 
 def _format_ref(ref: NodeRef | EdgeRef) -> str:

@@ -2,9 +2,23 @@
 
 from __future__ import annotations
 
+from fractions import Fraction
+
+from xgap.algebra.bindings import (
+    BindingKind,
+    BindingRelation,
+    BindingRow,
+    BindingSchema,
+)
 from xgap.algebra.graph import PropertyGraph
 from xgap.algebra.ops import (
+    AntiSemiJoinOp,
+    BindEdgeOp,
+    BindNodeOp,
+    BindingJoinOp,
+    BindingProjectOp,
     EdgesOp,
+    FocusProjectionOp,
     GroupKey,
     GroupByOp,
     JoinOp,
@@ -12,6 +26,7 @@ from xgap.algebra.ops import (
     OrderKey,
     OrderByOp,
     ProjectionOp,
+    QuantifiedCheckOp,
     RecursiveMode,
     RecursiveOp,
     SelectionOp,
@@ -20,7 +35,7 @@ from xgap.algebra.ops import (
 from xgap.algebra.types import GroupId, PartitionId, Path, PathSet, SolutionSpace
 
 
-EvaluationResult = PathSet | SolutionSpace
+EvaluationResult = PathSet | SolutionSpace | BindingRelation
 
 
 def evaluate(op: object, graph: PropertyGraph) -> EvaluationResult:
@@ -45,6 +60,20 @@ def evaluate(op: object, graph: PropertyGraph) -> EvaluationResult:
         return _evaluate_order_by(op, graph)
     if isinstance(op, ProjectionOp):
         return _evaluate_projection(op, graph)
+    if isinstance(op, BindNodeOp):
+        return _evaluate_bind_node(op, graph)
+    if isinstance(op, BindEdgeOp):
+        return _evaluate_bind_edge(op, graph)
+    if isinstance(op, BindingJoinOp):
+        return _evaluate_binding_join(op, graph)
+    if isinstance(op, BindingProjectOp):
+        return _evaluate_binding_project(op, graph)
+    if isinstance(op, QuantifiedCheckOp):
+        return _evaluate_quantified_check(op, graph)
+    if isinstance(op, AntiSemiJoinOp):
+        return _evaluate_anti_semi_join(op, graph)
+    if isinstance(op, FocusProjectionOp):
+        return _evaluate_focus_projection(op, graph)
     raise NotImplementedError(f"Evaluation is not implemented for {type(op).__name__}.")
 
 
@@ -60,6 +89,15 @@ def evaluate_solution_space(op: object, graph: PropertyGraph) -> SolutionSpace:
     if not isinstance(result, SolutionSpace):
         raise TypeError(
             f"Expected SolutionSpace from {type(op).__name__}, got {type(result).__name__}."
+        )
+    return result
+
+
+def evaluate_binding_relation(op: object, graph: PropertyGraph) -> BindingRelation:
+    result = evaluate(op, graph)
+    if not isinstance(result, BindingRelation):
+        raise TypeError(
+            f"Expected BindingRelation from {type(op).__name__}, got {type(result).__name__}."
         )
     return result
 
@@ -220,6 +258,165 @@ def _evaluate_projection(op: ProjectionOp, graph: PropertyGraph) -> PathSet:
                 result.add(path)
 
     return result
+
+
+def _evaluate_bind_node(op: BindNodeOp, graph: PropertyGraph) -> BindingRelation:
+    schema = BindingSchema.from_pairs(((op.var, BindingKind.NODE),))
+    rows: list[BindingRow] = []
+    for path in evaluate_pathset(op.child, graph):
+        if len(path) != 0:
+            raise ValueError("BindNode child paths must have length zero.")
+        rows.append(BindingRow(schema, (path.first(),)))
+    return BindingRelation(schema, rows)
+
+
+def _evaluate_bind_edge(op: BindEdgeOp, graph: PropertyGraph) -> BindingRelation:
+    pairs: list[tuple[str, BindingKind]] = [(op.source_var, BindingKind.NODE)]
+    if op.edge_var is not None:
+        pairs.append((op.edge_var, BindingKind.EDGE))
+    pairs.append((op.target_var, BindingKind.NODE))
+    schema = BindingSchema.from_pairs(tuple(pairs))
+
+    rows: list[BindingRow] = []
+    for path in evaluate_pathset(op.child, graph):
+        if len(path) != 1:
+            raise ValueError("BindEdge child paths must have length one.")
+        values = {op.source_var: path.first(), op.target_var: path.last()}
+        if op.edge_var is not None:
+            values[op.edge_var] = path.edge(1)
+        rows.append(BindingRow.from_mapping(schema, values))
+    return BindingRelation(schema, rows)
+
+
+def _evaluate_binding_join(op: BindingJoinOp, graph: PropertyGraph) -> BindingRelation:
+    left = evaluate_binding_relation(op.left, graph)
+    right = evaluate_binding_relation(op.right, graph)
+    schema = left.schema.merge(right.schema)
+    rows: list[BindingRow] = []
+    for left_row in left:
+        for right_row in right:
+            if left_row.compatible_with(right_row):
+                rows.append(left_row.merge(right_row))
+    return BindingRelation(schema, rows)
+
+
+def _evaluate_binding_project(op: BindingProjectOp, graph: PropertyGraph) -> BindingRelation:
+    relation = evaluate_binding_relation(op.child, graph)
+    schema = relation.schema.project(op.vars)
+    return BindingRelation(schema, [row.project(op.vars) for row in relation])
+
+
+def _evaluate_quantified_check(op: QuantifiedCheckOp, graph: PropertyGraph) -> BindingRelation:
+    candidates = evaluate_binding_relation(op.candidates, graph)
+    witnesses = evaluate_binding_relation(op.witnesses, graph)
+    domain = evaluate_binding_relation(op.domain, graph) if op.domain is not None else None
+    kind = _quantifier_kind(op.quantifier)
+    comparator = _quantifier_comparator(op.quantifier)
+    threshold = _quantifier_threshold(op.quantifier)
+
+    kept: list[BindingRow] = []
+    for candidate in candidates:
+        witness_values = _correlated_child_values(
+            candidate,
+            witnesses,
+            op.correlation_vars,
+            op.child_var,
+        )
+        if kind == "EXISTS":
+            ok = len(witness_values) >= 1
+        elif kind == "COUNT":
+            count = len(witness_values)
+            if comparator == "EQ":
+                ok = count == threshold
+            elif comparator == "GE":
+                ok = count >= threshold
+            else:
+                raise ValueError(f"Unsupported count comparator {comparator!r}.")
+        elif kind == "RATIO":
+            if domain is None:
+                raise ValueError("Ratio quantifier requires a domain relation.")
+            domain_values = _correlated_child_values(
+                candidate,
+                domain,
+                op.correlation_vars,
+                op.child_var,
+            )
+            if not witness_values.issubset(domain_values):
+                raise ValueError("Ratio witnesses must be a subset of the ratio domain.")
+            ratio = Fraction(len(witness_values), len(domain_values)) if domain_values else None
+            if ratio is None:
+                ok = False
+            elif comparator == "EQ":
+                ok = ratio == threshold
+            elif comparator == "GE":
+                ok = ratio >= threshold
+            else:
+                raise ValueError(f"Unsupported ratio comparator {comparator!r}.")
+        elif kind == "NONE":
+            raise ValueError("NONE quantifiers must be evaluated through AntiSemiJoin.")
+        else:
+            raise ValueError(f"Unsupported quantifier kind {kind!r}.")
+        if ok:
+            kept.append(candidate)
+    return BindingRelation(candidates.schema, kept)
+
+
+def _evaluate_anti_semi_join(op: AntiSemiJoinOp, graph: PropertyGraph) -> BindingRelation:
+    left = evaluate_binding_relation(op.left, graph)
+    right = evaluate_binding_relation(op.right, graph)
+    kept: list[BindingRow] = []
+    for left_row in left:
+        has_match = any(_rows_agree_on(left_row, right_row, op.on) for right_row in right)
+        if not has_match:
+            kept.append(left_row)
+    return BindingRelation(left.schema, kept)
+
+
+def _evaluate_focus_projection(op: FocusProjectionOp, graph: PropertyGraph) -> PathSet:
+    relation = evaluate_binding_relation(op.child, graph)
+    result = PathSet()
+    for row in relation:
+        result.add(Path.zero_length(row.value(op.focus_var)))
+    return result
+
+
+def _correlated_child_values(
+    candidate: BindingRow,
+    relation: BindingRelation,
+    correlation_vars: tuple[str, ...],
+    child_var: str,
+) -> set[str]:
+    result: set[str] = set()
+    for row in relation:
+        if _rows_agree_on(candidate, row, correlation_vars):
+            result.add(row.value(child_var))
+    return result
+
+
+def _rows_agree_on(left: BindingRow, right: BindingRow, names: tuple[str, ...]) -> bool:
+    return all(left.value(name) == right.value(name) for name in names)
+
+
+def _quantifier_kind(quantifier: object) -> str:
+    kind = getattr(quantifier, "kind", None)
+    value = getattr(kind, "value", kind)
+    if not isinstance(value, str):
+        raise ValueError("Quantifier must expose a string kind.")
+    return value
+
+
+def _quantifier_comparator(quantifier: object) -> str | None:
+    comparator = getattr(quantifier, "comparator", None)
+    value = getattr(comparator, "value", comparator)
+    if value in (None, "EQ", "="):
+        return "EQ" if value is not None else None
+    if value in ("GE", ">="):
+        return "GE"
+    raise ValueError(f"Unsupported quantifier comparator {value!r}.")
+
+
+def _quantifier_threshold(quantifier: object) -> int | Fraction | None:
+    return getattr(quantifier, "threshold", None)
 
 
 def _validate_projection_limit(limit: int | None, name: str) -> None:

@@ -11,8 +11,26 @@ from xgap.algebra.conditions import (
     PropertyEquals,
 )
 from xgap.algebra.ops import EdgesOp, JoinOp, NodesOp, RecursiveMode, RecursiveOp, SelectionOp, UnionOp
-from xgap.algebra.ops import GroupKey, GroupByOp, OrderKey, OrderByOp, ProjectionOp
+from xgap.algebra.ops import (
+    AntiSemiJoinOp,
+    BindEdgeOp,
+    BindNodeOp,
+    BindingJoinOp,
+    BindingProjectOp,
+    GroupKey,
+    GroupByOp,
+    OrderKey,
+    OrderByOp,
+    ProjectionOp,
+    QuantifiedCheckOp,
+)
 from xgap.algebra.pretty import format_plan
+
+
+class FakeQuantifier:
+    kind = "COUNT"
+    comparator = "GE"
+    threshold = 2
 
 
 def test_format_plan_stable_tree() -> None:
@@ -118,3 +136,52 @@ def test_format_plan_rejects_unknown_condition() -> None:
 
     with pytest.raises(NotImplementedError):
         format_plan(SelectionOp(UnknownCondition(), EdgesOp()))  # type: ignore[arg-type]
+
+
+def test_format_focused_binding_plan() -> None:
+    candidates = BindNodeOp("x", NodesOp())
+    witnesses = BindingProjectOp(
+        ("x", "y"),
+        BindingJoinOp(
+            candidates,
+            BindEdgeOp("x", "e", "y", EdgesOp()),
+        ),
+    )
+    plan = QuantifiedCheckOp(
+        candidates,
+        witnesses,
+        FakeQuantifier(),
+        correlation_vars=("x",),
+        child_var="y",
+    )
+
+    assert format_plan(plan) == "\n".join(
+        [
+            "QuantifiedCheck [COUNT GE 2; corr=x; child=y; domain=no]",
+            "  BindNode [x]",
+            "    Nodes",
+            "  BindingProject [x, y]",
+            "    BindingJoin",
+            "      BindNode [x]",
+            "        Nodes",
+            "      BindEdge [x, e, y]",
+            "        Edges",
+        ]
+    )
+
+
+def test_format_anti_semi_join_plan() -> None:
+    left = BindNodeOp("x", NodesOp())
+    right = BindingProjectOp(("x",), BindEdgeOp("x", None, "y", EdgesOp()))
+    plan = AntiSemiJoinOp(left, right, on=("x",))
+
+    assert format_plan(plan) == "\n".join(
+        [
+            "AntiSemiJoin [on=x]",
+            "  BindNode [x]",
+            "    Nodes",
+            "  BindingProject [x]",
+            "    BindEdge [x, *, y]",
+            "      Edges",
+        ]
+    )

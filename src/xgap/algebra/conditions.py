@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import math
+from numbers import Real
 from typing import Any, Literal
 
 from xgap.algebra.graph import PropertyGraph
@@ -89,6 +91,72 @@ class PropertyEquals(Condition):
 
 
 @dataclass(frozen=True)
+class PropertyNotEquals(Condition):
+    ref: NodeRef | EdgeRef
+    property_name: str
+    value: Any
+
+    def evaluate(self, path: Path, graph: PropertyGraph) -> bool:
+        try:
+            actual = _property_value(self.ref, self.property_name, path, graph)
+        except (IndexError, KeyError):
+            return False
+        return actual != self.value
+
+
+@dataclass(frozen=True)
+class PropertyLessThan(Condition):
+    ref: NodeRef | EdgeRef
+    property_name: str
+    value: Any
+
+    def evaluate(self, path: Path, graph: PropertyGraph) -> bool:
+        actual = _numeric_property_value(self.ref, self.property_name, path, graph)
+        if actual is None or not _is_finite_number(self.value):
+            return False
+        return actual < self.value
+
+
+@dataclass(frozen=True)
+class PropertyLessThanOrEqual(Condition):
+    ref: NodeRef | EdgeRef
+    property_name: str
+    value: Any
+
+    def evaluate(self, path: Path, graph: PropertyGraph) -> bool:
+        actual = _numeric_property_value(self.ref, self.property_name, path, graph)
+        if actual is None or not _is_finite_number(self.value):
+            return False
+        return actual <= self.value
+
+
+@dataclass(frozen=True)
+class PropertyGreaterThan(Condition):
+    ref: NodeRef | EdgeRef
+    property_name: str
+    value: Any
+
+    def evaluate(self, path: Path, graph: PropertyGraph) -> bool:
+        actual = _numeric_property_value(self.ref, self.property_name, path, graph)
+        if actual is None or not _is_finite_number(self.value):
+            return False
+        return actual > self.value
+
+
+@dataclass(frozen=True)
+class PropertyGreaterThanOrEqual(Condition):
+    ref: NodeRef | EdgeRef
+    property_name: str
+    value: Any
+
+    def evaluate(self, path: Path, graph: PropertyGraph) -> bool:
+        actual = _numeric_property_value(self.ref, self.property_name, path, graph)
+        if actual is None or not _is_finite_number(self.value):
+            return False
+        return actual >= self.value
+
+
+@dataclass(frozen=True)
 class LengthEquals(Condition):
     value: int
 
@@ -132,3 +200,37 @@ class Not(Condition):
 
     def evaluate(self, path: Path, graph: PropertyGraph) -> bool:
         return not self.condition.evaluate(path, graph)
+
+
+def _property_value(
+    ref: NodeRef | EdgeRef,
+    property_name: str,
+    path: Path,
+    graph: PropertyGraph,
+) -> Any:
+    if isinstance(ref, NodeRef):
+        return graph.node_property(ref.resolve(path), property_name)
+    return graph.edge_property(ref.resolve(path), property_name)
+
+
+def _numeric_property_value(
+    ref: NodeRef | EdgeRef,
+    property_name: str,
+    path: Path,
+    graph: PropertyGraph,
+) -> Real | None:
+    try:
+        value = _property_value(ref, property_name, path, graph)
+    except (IndexError, KeyError):
+        return None
+    if not _is_finite_number(value):
+        return None
+    return value
+
+
+def _is_finite_number(value: object) -> bool:
+    if isinstance(value, bool):
+        return False
+    if not isinstance(value, Real):
+        return False
+    return math.isfinite(value)
