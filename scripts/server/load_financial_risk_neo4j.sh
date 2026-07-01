@@ -27,4 +27,16 @@ wait_for_cypher() {
 
 wait_for_cypher
 compose exec -T neo4j cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" < "$IMPORT_FILE"
+
+VERIFY_RESULT="$(
+  printf 'MATCH (:Person {name: "Alice"})-[:OWNS]->(:Account)-[:TRANSFER]->(:Account)<-[:OWNS]-(:Company {risk_level: "HIGH"}) RETURN count(*) AS matches;\n' \
+    | compose exec -T neo4j cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" --format plain
+)"
+printf '%s\n' "$VERIFY_RESULT"
+
+if ! printf '%s\n' "$VERIFY_RESULT" | grep -Eq '[1-9][0-9]*'; then
+  echo "Neo4j load verification found no Alice-to-high-risk-company transfer paths." >&2
+  exit 1
+fi
+
 echo "Loaded financial-risk toy data into Neo4j."

@@ -19,5 +19,8 @@ if printf '%s\n' "$RESULT" | grep -Eq 'Redstone Analytics|BlackPeak Trading'; th
   echo "Neo4j smoke query returned high-risk companies."
 else
   echo "Neo4j smoke query returned no expected high-risk company rows." >&2
+  echo "Neo4j diagnostic counts:" >&2
+  printf 'MATCH (n) RETURN labels(n) AS labels, count(*) AS count ORDER BY labels;\nMATCH ()-[r]->() RETURN type(r) AS relationship, count(*) AS count ORDER BY relationship;\nMATCH (:Person {name: "Alice"})-[:OWNS]->(:Account)-[:TRANSFER]->(:Account)<-[:OWNS]-(:Company {risk_level: "HIGH"}) RETURN count(*) AS high_risk_paths;\n' \
+    | compose exec -T neo4j cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" --format plain >&2 || true
   exit 1
 fi
