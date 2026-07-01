@@ -32,26 +32,45 @@ MERGE (redstoneAccount:Account {id: "acct-redstone"});
 MERGE (blackpeakAccount:Account {id: "acct-blackpeak"});
 MERGE (blueharborAccount:Account {id: "acct-blueharbor"});
 
+MATCH (alice:Person {id: "person-alice"})
+MATCH (aliceAccount:Account {id: "acct-alice"})
 MERGE (alice)-[:OWNS]->(aliceAccount);
+
+MATCH (redstone:Company {id: "company-redstone"})
+MATCH (redstoneAccount:Account {id: "acct-redstone"})
 MERGE (redstone)-[:OWNS]->(redstoneAccount);
+
+MATCH (blackpeak:Company {id: "company-blackpeak"})
+MATCH (blackpeakAccount:Account {id: "acct-blackpeak"})
 MERGE (blackpeak)-[:OWNS]->(blackpeakAccount);
+
+MATCH (blueharbor:Company {id: "company-blueharbor"})
+MATCH (blueharborAccount:Account {id: "acct-blueharbor"})
 MERGE (blueharbor)-[:OWNS]->(blueharborAccount);
 
+MATCH (aliceAccount:Account {id: "acct-alice"})
+MATCH (redstoneAccount:Account {id: "acct-redstone"})
 MERGE (aliceAccount)-[t1:TRANSFER {id: "transfer-001"}]->(redstoneAccount)
 SET t1.amount = 125000,
     t1.currency = "USD",
     t1.occurred_on = date("2026-03-12");
 
+MATCH (aliceAccount:Account {id: "acct-alice"})
+MATCH (blackpeakAccount:Account {id: "acct-blackpeak"})
 MERGE (aliceAccount)-[t2:TRANSFER {id: "transfer-002"}]->(blackpeakAccount)
 SET t2.amount = 87000,
     t2.currency = "USD",
     t2.occurred_on = date("2026-04-02");
 
+MATCH (aliceAccount:Account {id: "acct-alice"})
+MATCH (blueharborAccount:Account {id: "acct-blueharbor"})
 MERGE (aliceAccount)-[t3:TRANSFER {id: "transfer-003"}]->(blueharborAccount)
 SET t3.amount = 43000,
     t3.currency = "USD",
     t3.occurred_on = date("2026-04-15");
 
+MATCH (aliceAccount:Account {id: "acct-alice"})
+MATCH (redstoneAccount:Account {id: "acct-redstone"})
 MERGE (aliceAccount)-[t4:TRANSFER {id: "transfer-004"}]->(redstoneAccount)
 SET t4.amount = 12000,
     t4.currency = "USD",
