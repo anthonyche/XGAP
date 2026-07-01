@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMMON_SH="$SCRIPT_DIR/common.sh"
 # shellcheck source=scripts/server/common.sh
 . "$COMMON_SH"
-IMPORT_FILE="/var/lib/neo4j/import/financial_risk/load_neo4j.cypher"
+IMPORT_FILE="$REPO_ROOT/examples/financial_risk/load_neo4j.cypher"
 
 load_env_file
 
@@ -26,5 +26,5 @@ wait_for_cypher() {
 }
 
 wait_for_cypher
-compose exec -T neo4j cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" -f "$IMPORT_FILE"
+compose exec -T neo4j cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" < "$IMPORT_FILE"
 echo "Loaded financial-risk toy data into Neo4j."

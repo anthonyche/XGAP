@@ -5,14 +5,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMMON_SH="$SCRIPT_DIR/common.sh"
 # shellcheck source=scripts/server/common.sh
 . "$COMMON_SH"
-QUERY_FILE="/var/lib/neo4j/import/financial_risk/smoke_neo4j.cypher"
+QUERY_FILE="$REPO_ROOT/examples/financial_risk/smoke_neo4j.cypher"
 
 load_env_file
 
 NEO4J_USER="${NEO4J_USER:-neo4j}"
 NEO4J_PASSWORD="${NEO4J_PASSWORD:-xgap-lab-password}"
 
-RESULT="$(compose exec -T neo4j cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" --format plain -f "$QUERY_FILE")"
+RESULT="$(compose exec -T neo4j cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" --format plain < "$QUERY_FILE")"
 printf '%s\n' "$RESULT"
 
 if printf '%s\n' "$RESULT" | grep -Eq 'Redstone Analytics|BlackPeak Trading'; then

@@ -90,6 +90,11 @@ bash scripts/server/log_backends.sh neo4j
 bash scripts/server/log_backends.sh fuseki
 ```
 
+Neo4j load and smoke scripts stream local `.cypher` files into
+`cypher-shell`; the repository dataset directory is not mounted into the
+Neo4j import directory. This avoids Neo4j startup ownership changes on
+read-only host files.
+
 ## Load Toy Financial-Risk Data
 
 The toy dataset is in `examples/financial_risk/`.
