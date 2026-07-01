@@ -1,0 +1,65 @@
+@prefix xgap: <http://xgap.example.org/financial-risk/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+xgap:alice
+    a xgap:Person ;
+    xgap:name "Alice" ;
+    xgap:owns xgap:acct-alice .
+
+xgap:acct-alice
+    a xgap:Account ;
+    xgap:openedOn "2024-01-10"^^xsd:date .
+
+xgap:redstone
+    a xgap:Company ;
+    xgap:name "Redstone Analytics" ;
+    xgap:riskLevel "HIGH" ;
+    xgap:owns xgap:acct-redstone .
+
+xgap:blackpeak
+    a xgap:Company ;
+    xgap:name "BlackPeak Trading" ;
+    xgap:riskLevel "HIGH" ;
+    xgap:owns xgap:acct-blackpeak .
+
+xgap:blueharbor
+    a xgap:Company ;
+    xgap:name "Blue Harbor Logistics" ;
+    xgap:riskLevel "LOW" ;
+    xgap:owns xgap:acct-blueharbor .
+
+xgap:acct-redstone a xgap:Account .
+xgap:acct-blackpeak a xgap:Account .
+xgap:acct-blueharbor a xgap:Account .
+
+xgap:transfer-001
+    a xgap:Transfer ;
+    xgap:fromAccount xgap:acct-alice ;
+    xgap:toAccount xgap:acct-redstone ;
+    xgap:amount "125000"^^xsd:decimal ;
+    xgap:currency "USD" ;
+    xgap:occurredOn "2026-03-12"^^xsd:date .
+
+xgap:transfer-002
+    a xgap:Transfer ;
+    xgap:fromAccount xgap:acct-alice ;
+    xgap:toAccount xgap:acct-blackpeak ;
+    xgap:amount "87000"^^xsd:decimal ;
+    xgap:currency "USD" ;
+    xgap:occurredOn "2026-04-02"^^xsd:date .
+
+xgap:transfer-003
+    a xgap:Transfer ;
+    xgap:fromAccount xgap:acct-alice ;
+    xgap:toAccount xgap:acct-blueharbor ;
+    xgap:amount "43000"^^xsd:decimal ;
+    xgap:currency "USD" ;
+    xgap:occurredOn "2026-04-15"^^xsd:date .
+
+xgap:transfer-004
+    a xgap:Transfer ;
+    xgap:fromAccount xgap:acct-alice ;
+    xgap:toAccount xgap:acct-redstone ;
+    xgap:amount "12000"^^xsd:decimal ;
+    xgap:currency "USD" ;
+    xgap:occurredOn "2024-05-20"^^xsd:date .

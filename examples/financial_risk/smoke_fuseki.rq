@@ -1,0 +1,19 @@
+PREFIX xgap: <http://xgap.example.org/financial-risk/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?company ?amount ?currency ?occurredOn
+WHERE {
+  xgap:alice xgap:owns ?aliceAccount .
+  ?transfer a xgap:Transfer ;
+      xgap:fromAccount ?aliceAccount ;
+      xgap:toAccount ?companyAccount ;
+      xgap:amount ?amount ;
+      xgap:currency ?currency ;
+      xgap:occurredOn ?occurredOn .
+  ?companyNode a xgap:Company ;
+      xgap:name ?company ;
+      xgap:riskLevel "HIGH" ;
+      xgap:owns ?companyAccount .
+  FILTER (?occurredOn >= "2026-01-01"^^xsd:date)
+}
+ORDER BY ?company

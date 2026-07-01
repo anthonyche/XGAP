@@ -84,6 +84,25 @@ backend support.
 - Disambiguation
 - KGQA evaluation
 
+## Backend Environment Scaffold
+
+Server-side Docker Compose scaffolding exists for starting local Neo4j
+and Apache Jena Fuseki services on a lab machine, plus a minimal
+financial-risk toy dataset and smoke-query scripts.
+
+This is runtime environment setup only. It is not a backend capability
+profile, compiler, backend adapter, protocol implementation, planner,
+semantic-deviation layer, ontology-reasoning feature, LLM feature, or
+KGQA evaluation harness.
+
+Latest backend-environment scaffold verification:
+
+- `bash -n scripts/server/*.sh`: passed.
+- `python -m pytest`: 234 passed.
+- `docker compose --env-file services/.env.example -f services/docker-compose.yml config`:
+  not available in the local development environment because the Docker
+  CLI is not installed here.
+
 ## Required Acceptance Command
 ./scripts/run_acceptance.sh
 
