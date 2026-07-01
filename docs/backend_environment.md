@@ -13,18 +13,19 @@ planning, or KGQA evaluation.
 
 ## Server Layout
 
-The server scripts assume:
+The server scripts default to the repository checkout that contains the
+script you run. If the repo is cloned at `/home/chl/XGAP`, that path is
+used automatically.
 
 ```text
-/xgap-lab
-  /repo/XGAP
+/home/chl/XGAP
 ```
 
-The defaults can be overridden with:
+You normally do not need environment variables. If you intentionally
+keep the repo elsewhere, override `XGAP_REPO_ROOT`:
 
 ```bash
-export XGAP_LAB_ROOT=/xgap-lab
-export XGAP_REPO_ROOT=/xgap-lab/repo/XGAP
+export XGAP_REPO_ROOT=/home/chl/XGAP
 ```
 
 ## Clone The Repo
@@ -32,9 +33,7 @@ export XGAP_REPO_ROOT=/xgap-lab/repo/XGAP
 On the server:
 
 ```bash
-sudo mkdir -p /xgap-lab/repo
-sudo chown -R "$USER":"$USER" /xgap-lab
-cd /xgap-lab/repo
+cd ~
 git clone <repo-url> XGAP
 cd XGAP
 ```
@@ -47,6 +46,10 @@ missing:
 ```bash
 bash scripts/server/bootstrap_xgap_lab.sh
 ```
+
+The bootstrap script no longer creates `/xgap-lab`. It uses the current
+repo path by default, so running it from `/home/chl/XGAP` keeps all
+repository-relative paths under `/home/chl/XGAP`.
 
 Review `services/.env` before exposing the services beyond a trusted
 lab network. The default credentials are intentionally simple:

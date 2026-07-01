@@ -90,6 +90,10 @@ Server-side Docker Compose scaffolding exists for starting local Neo4j
 and Apache Jena Fuseki services on a lab machine, plus a minimal
 financial-risk toy dataset and smoke-query scripts.
 
+The server scripts default to the current repository checkout instead of
+creating a fixed `/xgap-lab` directory. Operators can still override
+`XGAP_REPO_ROOT` explicitly when needed.
+
 This is runtime environment setup only. It is not a backend capability
 profile, compiler, backend adapter, protocol implementation, planner,
 semantic-deviation layer, ontology-reasoning feature, LLM feature, or
