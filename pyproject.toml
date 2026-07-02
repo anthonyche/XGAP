@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "xgap"
 version = "0.1.0"
@@ -10,3 +14,6 @@ test = ["pytest"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

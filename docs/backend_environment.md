@@ -131,6 +131,15 @@ After the shell smoke queries pass, the Python experiment harness can
 record normalized run outputs. The harness reads `services/.env` if it
 exists and uses exported environment variables as overrides.
 
+Install test dependencies before running pytest on a fresh server clone:
+
+```bash
+python -m pip install --user -e ".[test]"
+```
+
+The two direct harness commands below do not require pytest; they only
+need the repository source on `PYTHONPATH`.
+
 ```bash
 XGAP_RUN_BACKENDS=1 python -m pytest tests/test_backend_live.py
 PYTHONPATH=src python -m xgap.experiments.backend_smoke --backend neo4j
