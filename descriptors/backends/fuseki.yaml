@@ -1,0 +1,30 @@
+id: fuseki
+engine: fuseki
+language: sparql
+data_model: rdf_graph
+deployment:
+  kind: docker_compose_service
+  compose_file: services/docker-compose.yml
+  service: fuseki
+  http_port: 3030
+capabilities:
+  graph_model:
+    kind: rdf_graph
+    triples: true
+    iri_terms: true
+    literal_terms: true
+  path_gpc_fragment:
+    native_path_query_language: sparql
+    native_smoke_queries: true
+    xgap_logical_plan_compilation: false
+    quantified_pattern_compilation: false
+  result_model:
+    row_bindings: true
+    normalized_smoke_fields: [company, amount, currency, occurred_on]
+runtime:
+  client_module: xgap.backends.fuseki_client
+  base_url_env: FUSEKI_URL
+  default_base_url: http://127.0.0.1:3030
+  dataset_env: FUSEKI_DATASET_NAME
+  default_dataset: xgap
+  timeout_seconds: 30

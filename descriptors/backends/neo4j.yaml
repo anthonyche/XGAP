@@ -1,0 +1,35 @@
+id: neo4j
+engine: neo4j
+language: cypher
+data_model: labeled_property_graph
+deployment:
+  kind: docker_compose_service
+  compose_file: services/docker-compose.yml
+  service: neo4j
+  http_port: 7474
+  bolt_port: 7687
+capabilities:
+  graph_model:
+    kind: labeled_property_graph
+    directed_relationships: true
+    labels: true
+    properties: true
+  path_gpc_fragment:
+    native_path_query_language: cypher
+    native_smoke_queries: true
+    xgap_logical_plan_compilation: false
+    quantified_pattern_compilation: false
+  result_model:
+    row_bindings: true
+    normalized_smoke_fields: [company, amount, currency, occurred_on]
+runtime:
+  client_module: xgap.backends.neo4j_client
+  http_url_env: NEO4J_HTTP_URL
+  default_http_url: http://127.0.0.1:7474
+  database_env: NEO4J_DATABASE
+  default_database: neo4j
+  user_env: NEO4J_USER
+  default_user: neo4j
+  password_env: NEO4J_PASSWORD
+  default_password: xgap-lab-password
+  timeout_seconds: 30

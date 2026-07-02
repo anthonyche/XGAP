@@ -9,4 +9,6 @@ class QueryCompiler:
     target_name = "unknown"
 
     def compile(self, plan: AlgebraOp) -> str:
-        raise NotImplementedError("Query compilation is planned for M6 and is not implemented yet.")
+        raise NotImplementedError(
+            "Query compilation is planned for a future compiler milestone and is not implemented yet."
+        )

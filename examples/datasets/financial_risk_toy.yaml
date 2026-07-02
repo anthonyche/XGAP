@@ -1,0 +1,16 @@
+id: financial_risk_toy
+name: Financial Risk Toy
+description: "Native backend smoke dataset for recent high-risk transfers connected to Alice."
+expected_fields: [company, amount, currency, occurred_on]
+expected_non_empty: true
+backends:
+  neo4j:
+    language: cypher
+    load_files:
+      - examples/financial_risk/load_neo4j.cypher
+    smoke_query_file: examples/financial_risk/smoke_neo4j.cypher
+  fuseki:
+    language: sparql
+    load_files:
+      - examples/financial_risk/load_fuseki.ttl
+    smoke_query_file: examples/financial_risk/smoke_fuseki.rq

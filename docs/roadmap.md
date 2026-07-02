@@ -208,12 +208,53 @@ reference evaluation, and execution boundaries.
 Current status:
 TODO
 
+## Backend Environment Scaffold
+
+Goal:
+Prepare Docker Compose services and server scripts for local Neo4j and
+Apache Jena Fuseki backend experiments.
+
+Files involved:
+`services/docker-compose.yml`, `services/.env.example`,
+`scripts/server/**`, `examples/financial_risk/**`,
+`docs/backend_environment.md`.
+
+Acceptance criteria:
+Neo4j and Fuseki can be started on a server, the financial-risk toy data
+can be loaded into both backends, and native Cypher/SPARQL smoke queries
+return non-empty high-risk company rows.
+
+Current status:
+DONE
+
+## Backend Infrastructure Protocol And Experiment Harness
+
+Goal:
+Represent backend descriptors and runtime records, define a minimal
+native-query backend client protocol, add Neo4j/Fuseki native smoke
+clients, and write run logs plus normalized smoke results.
+
+Files involved:
+`descriptors/backends/**`, `examples/datasets/financial_risk_toy.yaml`,
+`src/xgap/infrastructure/**`, `src/xgap/backends/**`,
+`src/xgap/experiments/**`, and backend infrastructure tests.
+
+Acceptance criteria:
+Descriptor YAML files load; runtime records serialize to JSON; the
+registry can list and filter backends; default pytest does not require
+live services; optional live smoke tests run when `XGAP_RUN_BACKENDS=1`;
+each harness run writes `query_logs.jsonl` and normalized result JSON.
+
+Current status:
+DONE
+
 
 
 ## M7 Backend Capability Profiles
 
 Goal:
-Represent backend capabilities separately from compiler logic.
+Represent full backend capability profiles separately from compiler
+logic.
 
 Files involved:
 Backend configuration files or schemas, capability profile tests.

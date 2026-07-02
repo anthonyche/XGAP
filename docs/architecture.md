@@ -213,8 +213,30 @@ reference evaluation remain deterministic.
   deterministic lowering interfaces.
 - `xgap.compilers`: target compiler interfaces for GQL, Cypher, and
   SPARQL.
+- `xgap.infrastructure`: JSON-serializable backend descriptors,
+  runtime records, dataset specs, query artifacts, execution reports,
+  and run records.
+- `xgap.backends`: descriptor registry, native-query client protocol,
+  and minimal Neo4j/Fuseki clients for already-authored Cypher/SPARQL
+  smoke artifacts.
+- `xgap.experiments`: backend smoke harnesses and result normalization.
 - `xgap.llm`: planner-facing schemas and LLM planner placeholder.
 - `xgap.datasets`: KGQA dataset loader and evaluation placeholder.
+
+## Backend Infrastructure Layer
+
+The backend infrastructure layer is outside the logical algebra. It
+records backend descriptors, connection settings, native-query runtime
+status, native smoke query artifacts, execution reports, and run logs.
+
+The Neo4j and Fuseki clients execute native Cypher and SPARQL query
+artifacts only. They do not compile `LogicalPlan` objects, do not alter
+path/GPC semantics, and do not participate in deterministic lowering.
+
+Backend capability fields are descriptive feature metadata for graph
+model, path/GPC fragment, and result model support. They are not a full
+compiler capability checker and do not introduce new logical operator
+vocabulary.
 
 ## GPC-Lite Pattern Layer
 
@@ -303,7 +325,8 @@ semantics, or multiple focus outputs.
 
 ## Current Execution Boundary
 
-M0-M6 are executable.
+M0-M6 are executable, and the backend infrastructure harness can run
+already-authored native smoke queries against configured backends.
 
 The executable path-pattern boundary includes:
 
@@ -335,6 +358,6 @@ The executable bounded quantified-pattern boundary additionally includes:
 
 M6 does not constitute full QGP or full GPC support.
 
-The M6.5 semantic audit, backend capability profiles, compilers,
+The M6.5 semantic audit, full backend capability profiles, compilers,
 logical optimization, learned cost estimation, LLM planning,
 disambiguation, and KGQA evaluation remain future milestones.

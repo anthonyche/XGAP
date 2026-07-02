@@ -7,9 +7,8 @@ two graph backends used for XGAP backend experiments:
 - Apache Jena Fuseki, exposed on port `3030`.
 
 This setup is environment scaffolding only. It does not implement an
-XGAP backend adapter, capability profile, protocol layer, descriptor
-manager, planner, semantic-deviation layer, ontology reasoning, LLM
-planning, or KGQA evaluation.
+XGAP compiler, planner, semantic-deviation layer, ontology reasoning,
+LLM planning, or KGQA evaluation.
 
 ## Server Layout
 
@@ -126,6 +125,30 @@ company. The expected toy-data results include:
 - `Redstone Analytics`
 - `BlackPeak Trading`
 
+## Run Python Smoke Harness
+
+After the shell smoke queries pass, the Python experiment harness can
+record normalized run outputs. The harness reads `services/.env` if it
+exists and uses exported environment variables as overrides.
+
+```bash
+XGAP_RUN_BACKENDS=1 python -m pytest tests/test_backend_live.py
+PYTHONPATH=src python -m xgap.experiments.backend_smoke --backend neo4j
+PYTHONPATH=src python -m xgap.experiments.backend_smoke --backend fuseki
+```
+
+Success means each harness command writes:
+
+- `runs/<run_id>/query_logs.jsonl`
+- `runs/<run_id>/results/<backend>_financial_risk_toy_smoke_results.json`
+
+The normalized result rows contain:
+
+- `company`
+- `amount`
+- `currency`
+- `occurred_on`
+
 ## Stop Or Reset
 
 Stop containers without deleting data:
@@ -150,5 +173,5 @@ bash scripts/server/reset_backends.sh --yes
 ## Default Tests
 
 Live Neo4j and Fuseki services are not required by default pytest. The
-backend environment is checked through shell syntax validation and by
-running the scripts on the target server.
+backend environment and infrastructure records are checked by unit
+tests. Live backend smoke tests run only when `XGAP_RUN_BACKENDS=1`.

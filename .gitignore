@@ -5,6 +5,7 @@ __pycache__/
 .venv/
 venv/
 .env
+runs/
 *.pem
 id_rsa
 id_rsa.pub

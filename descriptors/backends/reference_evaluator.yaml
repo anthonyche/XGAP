@@ -1,0 +1,25 @@
+id: reference_evaluator
+engine: reference_evaluator
+language: xgap_logical
+data_model: in_memory_property_graph
+deployment:
+  kind: in_process
+  service: reference_evaluator
+capabilities:
+  graph_model:
+    kind: directed_labeled_property_graph
+    labels: true
+    properties: true
+  path_gpc_fragment:
+    path_algebra_reference: true
+    path_pattern_query: true
+    focused_quantified_pattern_query: true
+    native_query_execution: false
+  result_model:
+    path_set: true
+    solution_space: true
+    binding_relation: true
+runtime:
+  client_module: none
+  live_service_required: false
+  note: "Reference evaluator execution is in-memory and is not a native backend client."

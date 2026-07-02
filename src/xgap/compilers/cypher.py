@@ -6,4 +6,6 @@ from xgap.algebra.ops import AlgebraOp
 
 
 def compile_cypher(plan: AlgebraOp) -> str:
-    raise NotImplementedError("Cypher compilation is planned for M6 and is not implemented yet.")
+    raise NotImplementedError(
+        "Cypher compilation is planned for a future compiler milestone and is not implemented yet."
+    )

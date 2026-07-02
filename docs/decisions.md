@@ -294,3 +294,17 @@ Reason:
 M6 uses rooted tree topology, a single focus, set-valued bindings,
 atomic directed edges, and XGAP-specific deterministic lowering. These
 restrictions differ from the complete QGP model.
+
+## D34 Native backend smoke execution is not compilation
+
+The backend infrastructure layer may execute already-authored native
+Cypher and SPARQL smoke artifacts against Neo4j and Fuseki.
+
+It must not compile `LogicalPlan` objects, invoke deterministic lowering,
+add planner logic, or reinterpret XGAP path/GPC semantics.
+
+Reason:
+
+Native smoke execution verifies server connectivity, dataset loading,
+runtime records, and result normalization before full backend capability
+profiles and compilers exist.
