@@ -2,7 +2,7 @@
 
 ## Current Milestone
 
-M9 Minimal Compilers For Backend MVP is completed.
+M10 LLM Planner Boundary + Structured Candidate Interface is completed.
 
 ## Completed
 
@@ -19,13 +19,14 @@ M9 Minimal Compilers For Backend MVP is completed.
 - M7 Backend Infrastructure
 - M8 Backend Capability Profile + Compiler Boundary Preflight
 - M9 Minimal Compilers For Backend MVP
+- M10 LLM Planner Boundary + Structured Candidate Interface
 
 ## In Progress
 
 None.
 
 ## Next Planned Milestone:
-M10 Logical Optimization and Cost Estimation.
+M11 Logical Optimization and Cost Estimation.
 
 ## Implemented Logical Operators
 
@@ -84,7 +85,7 @@ backend support.
 - Recursive, selector, and M6 quantified-pattern backend compilation
 - Logical optimization
 - Learned cost estimator
-- LLM planner
+- Live LLM provider integrations
 - Disambiguation
 - KGQA evaluation
 
@@ -283,22 +284,78 @@ Latest M9 verification:
 
 See `docs/m9_minimal_compilers.md`.
 
+## M10 LLM Planner Boundary + Structured Candidate Interface
+
+M10 is completed.
+
+XGAP now has a structured LLM boundary without connecting any live model
+provider.
+
+Implemented M10 objects and helpers:
+
+- `PlannerRequest`
+- `PlannerCandidate`
+- `PlannerResponse`
+- `CandidateValidationReport`
+- `StructuredCandidateProvider`
+- `MockStructuredCandidateProvider`
+- `PlannerSchemaError`
+- `parse_path_pattern_query(...)`
+- `parse_planner_response(...)`
+- `path_pattern_query_to_dict(...)`
+- `plan_from_question(...)`
+- `plan_response_from_question(...)`
+- `validate_candidate(...)`
+
+M10 accepts only controlled JSON that parses into existing
+`PathPatternQuery` objects. It rejects native query fields such as
+`cypher`, `sparql`, `gql`, `native_query`, and `query_text`.
+
+`plan_from_question()` has no default live provider in M10. Callers must
+pass an explicit provider, and the included mock provider is for tests
+and local demos only.
+
+Candidate validation is deterministic:
+
+PathPatternQuery
+  -> type_check_path_pattern
+  -> lower_path_pattern
+  -> validate_plan
+
+M10 does not implement Qwen/OpenAI/DashScope/vLLM clients, LoRA,
+prompt optimization, semantic-deviation scoring, ontology reasoning,
+logical optimization, bounded planning, dominance pruning, top-K
+selection, KGQA evaluation, native query generation by an LLM, or live
+model tests.
+
+Latest M10 verification:
+
+- `python -m pytest tests/test_llm_boundary.py`: 7 passed.
+- `python examples/llm_boundary_demo.py`: passed.
+- `python -m pytest`: 272 passed, 2 skipped.
+- `./scripts/run_acceptance.sh`: passed, including harness check,
+  pytest, all existing examples, `examples/quantified_pattern_demo.py`,
+  `examples/compiler_mvp_demo.py`, and `examples/llm_boundary_demo.py`.
+
+See `docs/m10_llm_planner_boundary.md`.
+
 ## Required Acceptance Command
 ./scripts/run_acceptance.sh
 
 # Latest Known Acceptance Status
 
-M0-M9 acceptance passed locally and M7 live backend smoke tests passed
+M0-M10 acceptance passed locally and M7 live backend smoke tests passed
 on the server.
 
 Latest recorded command results:
 
-- `python -m pytest`: 265 passed, 2 skipped.
+- `python -m pytest`: 272 passed, 2 skipped.
 - `python examples/quantified_pattern_demo.py`: passed.
 - `python examples/compiler_mvp_demo.py`: passed.
+- `python examples/llm_boundary_demo.py`: passed.
 - `./scripts/run_acceptance.sh`: passed, including harness check,
   pytest, all existing examples, `examples/quantified_pattern_demo.py`,
-  and `examples/compiler_mvp_demo.py`.
+  `examples/compiler_mvp_demo.py`, and `examples/llm_boundary_demo.py`.
 
 Expected checks include:
 
@@ -316,3 +373,4 @@ Expected checks include:
 - pattern-lowering audit tests
 - quantified-pattern tests
 - M9 compiler tests
+- M10 LLM-boundary tests

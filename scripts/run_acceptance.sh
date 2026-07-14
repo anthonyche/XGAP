@@ -45,3 +45,7 @@ fi
 if [ -f examples/compiler_mvp_demo.py ]; then
   "$PYTHON" examples/compiler_mvp_demo.py
 fi
+
+if [ -f examples/llm_boundary_demo.py ]; then
+  "$PYTHON" examples/llm_boundary_demo.py
+fi

@@ -297,7 +297,31 @@ live backend services; acceptance passes.
 
 Current status: DONE
 
-## M10 Logical Optimization and Cost Estimation
+## M10 LLM Planner Boundary + Structured Candidate Interface
+
+Goal:
+Define the boundary between future LLM-based natural-language planning
+and XGAP's deterministic path/GPC stack.
+
+Files involved:
+`src/xgap/llm/schemas.py`, `src/xgap/llm/parser.py`,
+`src/xgap/llm/protocol.py`, `src/xgap/llm/mock.py`,
+`src/xgap/llm/validation.py`, `src/xgap/llm/planner.py`,
+LLM-boundary tests, `examples/llm_boundary_demo.py`, and
+`docs/m10_llm_planner_boundary.md`.
+
+Acceptance criteria:
+Structured candidate JSON parses deterministically into
+`PathPatternQuery`; invalid JSON fails explicitly; native query fields
+are rejected; `plan_from_question()` requires an explicit provider;
+mock provider tests run without a live model; candidate validation can
+run type checking, lowering, and plan validation; default pytest does
+not require live LLM services.
+
+Current status:
+DONE
+
+## M11 Logical Optimization and Cost Estimation
 
 Goal:
 Add logical rewrite rules and a first cost-estimation interface.
@@ -306,22 +330,29 @@ Files involved:
 src/xgap/algebra/optimizer.py, cost model modules, optimizer tests.
 
 Acceptance criteria:
-Rewrites preserve semantics; unsupported rewrites are rejected; cost features can be extracted from plans.
+Rewrites preserve semantics; unsupported rewrites are rejected; cost
+features can be extracted from plans.
 
 Current status:
 TODO
 
-## M11 LLM Planner and Grounding
+## M12 LLM Provider Integration And Grounding
 
-Goal: Add the ambiguity-aware natural-language planner that proposes candidate path-pattern queries.
+Goal:
+Add optional concrete LLM provider integrations and grounding context
+around the M10 structured candidate interface.
 
-Files involved: `src/xgap/llm/schemas.py`, `src/xgap/llm/planner.py`.
+Files involved:
+provider-specific LLM modules, environment configuration, live tests
+gated by an opt-in environment variable, and grounding interfaces.
 
-Acceptance criteria: Planner output is schema-validated and deterministic lowering/validation remain LLM-free.
+Acceptance criteria:
+Provider output is schema-validated; deterministic lowering/validation
+remain LLM-free; default pytest does not require live model services.
 
 Current status: TODO
 
-## M12 Disambiguation and Top-K Ranking
+## M13 Disambiguation and Top-K Ranking
 
 Goal:
 Rank candidate interpretations under ambiguity.
@@ -335,7 +366,7 @@ XGAP can score candidate interpretations, preserve top-K alternatives, and separ
 Current status:
 TODO
 
-## M13 KGQA Evaluation
+## M14 KGQA Evaluation
 
 Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.
 

@@ -318,6 +318,14 @@ Profiles must use XGAP path/GPC vocabulary and report whether a
 construct is supported, conditionally supported, or unsupported. They
 must also give explicit unsupported reasons.
 
+Reason:
+
+XGAP should know whether Neo4j or Fuseki can preserve the semantics of a
+validated M0-M6 logical fragment before a compiler emits Cypher or
+SPARQL. This separates support checking from native query generation and
+prevents accidental semantic claims based only on successful smoke
+queries.
+
 ## D36 M9 compilers are bounded native artifact emitters
 
 M9 compilers emit native Cypher and SPARQL `QueryArtifact` values only
@@ -335,10 +343,18 @@ with optimization, planning, selector semantics, M6 quantified binding
 semantics, semantic-deviation scoring, ontology reasoning, LLM
 generation, or KGQA evaluation.
 
+## D37 LLMs propose structured candidates only
+
+M10 places LLM behavior behind a structured candidate boundary.
+
+A future model may propose controlled JSON that parses into an existing
+`PathPatternQuery`. It may not directly emit native Cypher, SPARQL, GQL,
+logical operators, optimized plans, backend execution instructions, or
+semantic-deviation scores.
+
 Reason:
 
-XGAP should know whether Neo4j or Fuseki can preserve the semantics of a
-validated M0-M6 logical fragment before a compiler emits Cypher or
-SPARQL. This separates support checking from native query generation and
-prevents accidental semantic claims based only on successful smoke
-queries.
+XGAP's correctness depends on deterministic type checking, lowering,
+plan validation, capability checks, and compiler boundaries. Keeping
+the LLM outside those deterministic stages lets XGAP use model
+suggestions without letting model output redefine algebra semantics.

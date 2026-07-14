@@ -223,7 +223,9 @@ reference evaluation remain deterministic.
   smoke artifacts, M8 capability profiles, and static compatibility
   checks.
 - `xgap.experiments`: backend smoke harnesses and result normalization.
-- `xgap.llm`: planner-facing schemas and LLM planner placeholder.
+- `xgap.llm`: M10 planner-facing schemas, controlled candidate JSON
+  parsing, provider protocol, mock provider, and deterministic candidate
+  validation helpers. It does not connect a live LLM by default.
 - `xgap.datasets`: KGQA dataset loader and evaluation placeholder.
 
 ## Backend Infrastructure Layer
@@ -281,6 +283,31 @@ claim full native `PathSet` preservation, selector semantics,
 recursive path restrictors, M6 quantified-pattern compilation,
 optimization, planning, LLM use, ontology reasoning, or KGQA
 evaluation.
+
+## M10 LLM Planner Boundary
+
+M10 defines the interface for future natural-language planning without
+connecting a concrete model.
+
+The LLM boundary may return only controlled structured JSON that parses
+into `PathPatternQuery`. It must not emit native Cypher, SPARQL, GQL, or
+logical operators. It must not participate in deterministic type
+checking, lowering, validation, compilation, backend execution,
+optimization, semantic-deviation scoring, ontology reasoning, or KGQA
+evaluation.
+
+The deterministic flow after parsing is:
+
+```text
+PathPatternQuery
+  -> type_check_path_pattern
+  -> lower_path_pattern
+  -> validate_plan
+  -> M9 compiler
+```
+
+`xgap.llm` includes a provider protocol and a mock provider for tests.
+There is no default live LLM provider in M10.
 
 ## GPC-Lite Pattern Layer
 
