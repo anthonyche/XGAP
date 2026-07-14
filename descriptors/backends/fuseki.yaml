@@ -21,6 +21,128 @@ capabilities:
   result_model:
     row_bindings: true
     normalized_smoke_fields: [company, amount, currency, occurred_on]
+  capability_profile:
+    version: 1
+    feature_namespace: xgap.path_gpc
+    metadata:
+      profile_role: native_backend
+      compiler_boundary: future_m9
+    features:
+      graph_model.rdf_graph:
+        level: supported
+        reason: "Fuseki stores RDF triples and exposes SPARQL query endpoints."
+      graph_model.directed_edges:
+        level: supported
+        reason: "RDF predicates are directed from subject to object."
+      graph_model.node_labels:
+        level: conditional
+        reason: "Node labels require an RDF encoding such as rdf:type."
+        conditions:
+          - "Requires dataset mapping from XGAP labels to RDF terms."
+      graph_model.edge_labels:
+        level: supported
+        reason: "RDF predicate IRIs can represent edge-label predicates."
+      graph_model.scalar_property_predicates:
+        level: conditional
+        reason: "SPARQL supports literal filters when values are represented with comparable datatypes."
+        conditions:
+          - "Requires RDF datatype mapping for property values."
+      result_model.row_bindings:
+        level: supported
+        reason: "SPARQL SELECT returns row bindings."
+      result_model.path_set:
+        level: unsupported
+        reason: "SPARQL property paths do not expose XGAP PathSet path identity in M8."
+      result_model.solution_space:
+        level: unsupported
+        reason: "Exact XGAP SolutionSpace ranks and selector semantics are not a native M8 Fuseki result."
+      result_model.binding_relation:
+        level: unsupported
+        reason: "M6 BindingRelation is an internal XGAP semantic object, not a native Fuseki result model."
+      native.sparql:
+        level: supported
+        reason: "M7 Fuseki client executes already-authored native SPARQL artifacts."
+      m7.native_smoke_queries:
+        level: supported
+        reason: "Financial-risk SPARQL smoke query is executed by the M7 harness."
+      path_algebra.Nodes:
+        level: conditional
+        reason: "SPARQL can bind RDF terms that act as nodes, but XGAP zero-length path semantics need a future compiler contract."
+      path_algebra.Edges:
+        level: conditional
+        reason: "SPARQL triple patterns can bind predicate edges for encoded graph fragments."
+        conditions:
+          - "Requires RDF mapping for XGAP edge identity."
+      path_algebra.Selection:
+        level: conditional
+        reason: "SPARQL FILTER and triple patterns can express selected scalar predicates for encoded RDF data."
+        conditions:
+          - "Requires datatype-compatible literals."
+      path_algebra.Union:
+        level: conditional
+        reason: "SPARQL UNION can combine compatible row bindings, but XGAP PathSet deduplication requires a future compiler proof."
+      path_algebra.Join:
+        level: conditional
+        reason: "SPARQL joins shared variables naturally for encoded path fragments."
+        conditions:
+          - "Path object construction is not supported."
+      path_algebra.Recursive.WALK:
+        level: unsupported
+        reason: "SPARQL property paths do not expose XGAP WALK path identity in M8."
+      path_algebra.Recursive.TRAIL:
+        level: unsupported
+        reason: "Exact XGAP TRAIL path restrictor support is not claimed in M8."
+      path_algebra.Recursive.ACYCLIC:
+        level: unsupported
+        reason: "Exact XGAP ACYCLIC path restrictor support is not claimed in M8."
+      path_algebra.Recursive.SIMPLE:
+        level: unsupported
+        reason: "Exact XGAP SIMPLE path restrictor support is not claimed in M8."
+      path_algebra.Recursive.SHORTEST:
+        level: unsupported
+        reason: "SPARQL does not natively expose XGAP SHORTEST PathSet semantics in M8."
+      extended_path.GroupBy:
+        level: unsupported
+        reason: "Selector-style SolutionSpace grouping is not a native M8 Fuseki capability."
+      extended_path.OrderBy:
+        level: unsupported
+        reason: "XGAP rank semantics for SolutionSpace are not a native M8 Fuseki capability."
+      extended_path.Projection:
+        level: unsupported
+        reason: "XGAP selector Projection over SolutionSpace is not a native M8 Fuseki capability."
+      pattern.PathPatternQuery:
+        level: conditional
+        reason: "Future compiler may support a row-binding path-pattern fragment over RDF predicates and literals."
+        conditions:
+          - "PathSet path identity is unsupported."
+          - "Requires RDF mapping for labels and properties."
+      m6.FocusedQuantifiedPatternQuery:
+        level: unsupported
+        reason: "M6 focused quantified semantics require a separate compiler proof and are not claimed for Fuseki in M8."
+      m6.BindingRelation:
+        level: unsupported
+        reason: "BindingRelation is an internal XGAP object, not a native Fuseki capability."
+      m6.BindNode:
+        level: unsupported
+        reason: "M6 focused binding operators are not compiled in M8."
+      m6.BindEdge:
+        level: unsupported
+        reason: "M6 focused binding operators are not compiled in M8."
+      m6.BindingJoin:
+        level: unsupported
+        reason: "M6 focused binding operators are not compiled in M8."
+      m6.BindingProject:
+        level: unsupported
+        reason: "M6 focused binding operators are not compiled in M8."
+      m6.QuantifiedCheck:
+        level: unsupported
+        reason: "M6 quantified counting and ratio semantics are not compiled in M8."
+      m6.AntiSemiJoin:
+        level: unsupported
+        reason: "M6 NONE anti-existence lowering is not compiled in M8."
+      m6.FocusProjection:
+        level: unsupported
+        reason: "M6 focus projection is not compiled in M8."
 runtime:
   client_module: xgap.backends.fuseki_client
   base_url_env: FUSEKI_URL

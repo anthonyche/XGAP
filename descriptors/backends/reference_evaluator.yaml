@@ -19,6 +19,115 @@ capabilities:
     path_set: true
     solution_space: true
     binding_relation: true
+  capability_profile:
+    version: 1
+    feature_namespace: xgap.path_gpc
+    metadata:
+      profile_role: reference_semantics
+      compiler_boundary: not_native_compiler_target
+    features:
+      graph_model.directed_labeled_property_graph:
+        level: supported
+        reason: "The reference evaluator runs over XGAP's in-memory directed labeled property graph."
+      graph_model.directed_edges:
+        level: supported
+        reason: "The in-memory graph stores directed edges."
+      graph_model.node_labels:
+        level: supported
+        reason: "Reference conditions support node labels."
+      graph_model.edge_labels:
+        level: supported
+        reason: "Reference conditions support edge labels."
+      graph_model.scalar_property_predicates:
+        level: supported
+        reason: "Reference conditions support implemented scalar property predicates."
+      result_model.path_set:
+        level: supported
+        reason: "PathSet is the primary reference evaluator result model."
+      result_model.solution_space:
+        level: supported
+        reason: "SolutionSpace is implemented for selector-style extended algebra."
+      result_model.binding_relation:
+        level: supported
+        reason: "BindingRelation is implemented for the M6 focused binding layer."
+      result_model.row_bindings:
+        level: unsupported
+        reason: "The reference evaluator is not a native row-binding backend."
+      native.cypher:
+        level: unsupported
+        reason: "The reference evaluator does not execute Cypher."
+      native.sparql:
+        level: unsupported
+        reason: "The reference evaluator does not execute SPARQL."
+      path_algebra.Nodes:
+        level: supported
+        reason: "Nodes(G) is implemented by the reference evaluator."
+      path_algebra.Edges:
+        level: supported
+        reason: "Edges(G) is implemented by the reference evaluator."
+      path_algebra.Selection:
+        level: supported
+        reason: "Selection is implemented by the reference evaluator."
+      path_algebra.Union:
+        level: supported
+        reason: "Union is implemented by the reference evaluator."
+      path_algebra.Join:
+        level: supported
+        reason: "Join is implemented by the reference evaluator."
+      path_algebra.Recursive.WALK:
+        level: supported
+        reason: "Recursive WALK with required positive max_depth is implemented."
+      path_algebra.Recursive.TRAIL:
+        level: supported
+        reason: "Recursive TRAIL is implemented."
+      path_algebra.Recursive.ACYCLIC:
+        level: supported
+        reason: "Recursive ACYCLIC is implemented."
+      path_algebra.Recursive.SIMPLE:
+        level: supported
+        reason: "Recursive SIMPLE is implemented."
+      path_algebra.Recursive.SHORTEST:
+        level: supported
+        reason: "Recursive SHORTEST is implemented."
+      extended_path.GroupBy:
+        level: supported
+        reason: "GroupBy over PathSet to SolutionSpace is implemented."
+      extended_path.OrderBy:
+        level: supported
+        reason: "OrderBy rank updates over SolutionSpace are implemented."
+      extended_path.Projection:
+        level: supported
+        reason: "Projection from SolutionSpace to PathSet is implemented."
+      pattern.PathPatternQuery:
+        level: supported
+        reason: "M5 PathPatternQuery type checking, lowering, validation, and reference evaluation are implemented."
+      m6.FocusedQuantifiedPatternQuery:
+        level: supported
+        reason: "M6 FocusedQuantifiedPatternQuery semantics are implemented in the reference evaluator."
+      m6.BindingRelation:
+        level: supported
+        reason: "BindingRelation is implemented for M6 reference semantics."
+      m6.BindNode:
+        level: supported
+        reason: "BindNode is implemented by the reference evaluator."
+      m6.BindEdge:
+        level: supported
+        reason: "BindEdge is implemented by the reference evaluator."
+      m6.BindingJoin:
+        level: supported
+        reason: "BindingJoin is implemented by the reference evaluator."
+      m6.BindingProject:
+        level: supported
+        reason: "BindingProject is implemented by the reference evaluator."
+      m6.QuantifiedCheck:
+        level: supported
+        reason: "QuantifiedCheck is implemented by the reference evaluator."
+      m6.AntiSemiJoin:
+        level: supported
+        reason: "AntiSemiJoin is implemented by the reference evaluator."
+      m6.FocusProjection:
+        level: supported
+        reason: "FocusProjection is implemented by the reference evaluator."
 runtime:
   client_module: none
   live_service_required: false

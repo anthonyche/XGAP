@@ -2,7 +2,7 @@
 
 ## Current Milestone
 
-Backend Infrastructure Protocol And Experiment Harness is completed.
+M8 Backend Capability Profile + Compiler Boundary Preflight is completed.
 
 ## Completed
 
@@ -16,16 +16,16 @@ Backend Infrastructure Protocol And Experiment Harness is completed.
 - M5 GPC-Lite Pattern AST And Lowering
 - M5.5 Pattern-Lowering Audit
 - M6 Bounded Focused Quantified Pattern Semantics
-- Backend Environment Scaffold
-- Backend Infrastructure Protocol And Experiment Harness
+- M7 Backend Infrastructure
+- M8 Backend Capability Profile + Compiler Boundary Preflight
 
 ## In Progress
 
 None.
 
 ## Next Planned Milestone:
-Backend capability-profile and compiler-boundary preflight, unless the
-M6.5 semantic audit is resumed first.
+M9 Compilers: compile a small supported XGAP path/GPC logical fragment
+to native query artifacts after M8 compatibility checks succeed.
 
 ## Implemented Logical Operators
 
@@ -79,7 +79,6 @@ M6 remains QGP-inspired only. It is not full QGP, not full GPC, and not
 backend support.
 
 ## Not Implemented Yet
-- Full backend capability profiles
 - GQL / Cypher / SPARQL compilers
 - Logical optimization
 - Learned cost estimator
@@ -87,7 +86,9 @@ backend support.
 - Disambiguation
 - KGQA evaluation
 
-## Backend Environment Scaffold
+## M7 Backend Infrastructure
+
+M7 Backend Infrastructure is completed.
 
 Server-side Docker Compose scaffolding exists for starting local Neo4j
 and Apache Jena Fuseki services on a lab machine, plus a minimal
@@ -107,15 +108,17 @@ This is runtime environment setup only. It is not a compiler, planner,
 semantic-deviation layer, ontology-reasoning feature, LLM feature, or
 KGQA evaluation harness.
 
-Latest backend-environment scaffold verification:
+Earlier backend-environment scaffold verification, before the full M7
+infrastructure layer:
 
 - `bash -n scripts/server/*.sh`: passed.
-- `python -m pytest`: 234 passed.
 - `docker compose --env-file services/.env.example -f services/docker-compose.yml config`:
   not available in the local development environment because the Docker
   CLI is not installed here.
 
-## Backend Infrastructure Protocol And Experiment Harness
+Full M7 verification is recorded below.
+
+## M7 Backend Infrastructure Protocol And Experiment Harness
 
 XGAP now has JSON-serializable backend infrastructure records and a
 minimal native-query execution harness:
@@ -151,17 +154,78 @@ Latest backend-infrastructure verification:
 - `python -m pytest`: 241 passed, 2 skipped.
 - `./scripts/run_acceptance.sh`: passed, including harness check,
   pytest, all existing examples, and `examples/quantified_pattern_demo.py`.
+- Server live backend test:
+  `PYTHONPATH=src XGAP_RUN_BACKENDS=1 python -m pytest tests/test_backend_live.py`:
+  2 passed.
+
+## M8 Backend Capability Profile + Compiler Boundary Preflight
+
+M8 is completed.
+
+M8 is not a database bootstrapping milestone. It assumes the M7 backend
+services and native smoke harness are available.
+
+M8 answers five questions:
+
+1. Which XGAP path/GPC fragments does Neo4j support?
+2. Which XGAP path/GPC fragments does Fuseki support?
+3. Which M0-M6 logical constructs can be safely compiled?
+4. Which constructs must explicitly return unsupported?
+5. What is the format of compiler input, output, and failure reports?
+
+Descriptor `capabilities` now include program-checkable capability
+profiles for `reference_evaluator`, `neo4j`, and `fuseki`.
+
+Implemented M8 objects:
+
+- `SupportLevel`
+- `SupportReason`
+- `FeatureSupport`
+- `BackendCapabilityProfile`
+- `CompatibilityReport`
+- `UnsupportedFeature`
+- `CompilerInputSpec`
+- `CompilerOutputSpec`
+- `CompilerFailureSpec`
+
+Implemented M8 compatibility helpers:
+
+- `check_backend_support(profile, feature_request)`
+- `check_backend_features(profile, feature_requests)`
+
+The compatibility checker is static. It does not compile logical plans,
+call backend clients, call the reference evaluator, run optimizer code,
+or invoke planner, LLM, ontology, cost, or evaluation code.
+
+M8 remains a preflight and boundary-definition milestone. It must not
+implement optimizer algorithms, semantic-deviation scoring, ontology
+reasoning, bounded planning, dominance pruning, top-K selection, LLM
+candidate generation, KGQA evaluation, or logical-plan-to-native-query
+compilation.
+
+Latest M8 verification:
+
+- `python -m pytest tests/test_backend_capabilities.py tests/test_backend_compatibility.py`:
+  13 passed.
+- `python -m pytest tests/test_backend_infrastructure.py tests/test_backend_live.py`:
+  7 passed, 2 skipped.
+- `python -m pytest`: 254 passed, 2 skipped.
+- `./scripts/run_acceptance.sh`: passed, including harness check,
+  pytest, all existing examples, and `examples/quantified_pattern_demo.py`.
+
+See `docs/m8_backend_capability_preflight.md`.
 
 ## Required Acceptance Command
 ./scripts/run_acceptance.sh
 
 # Latest Known Acceptance Status
 
-M0-M6 plus backend infrastructure acceptance passed locally.
+M0-M8 acceptance passed locally and M7 live backend smoke tests passed
+on the server.
 
 Latest recorded command results:
 
-- `python -m pytest`: 241 passed, 2 skipped.
+- `python -m pytest`: 254 passed, 2 skipped.
 - `python examples/quantified_pattern_demo.py`: passed.
 - `./scripts/run_acceptance.sh`: passed, including harness check,
   pytest, all existing examples, and `examples/quantified_pattern_demo.py`.

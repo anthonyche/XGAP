@@ -308,3 +308,20 @@ Reason:
 Native smoke execution verifies server connectivity, dataset loading,
 runtime records, and result normalization before full backend capability
 profiles and compilers exist.
+
+## D35 Capability profiles precede compilers
+
+M8 must make backend capability profiles program-checkable before XGAP
+implements logical-plan-to-native-query compilers.
+
+Profiles must use XGAP path/GPC vocabulary and report whether a
+construct is supported, conditionally supported, or unsupported. They
+must also give explicit unsupported reasons.
+
+Reason:
+
+XGAP should know whether Neo4j or Fuseki can preserve the semantics of a
+validated M0-M6 logical fragment before a compiler emits Cypher or
+SPARQL. This separates support checking from native query generation and
+prevents accidental semantic claims based only on successful smoke
+queries.

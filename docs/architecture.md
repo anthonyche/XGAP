@@ -217,8 +217,9 @@ reference evaluation remain deterministic.
   runtime records, dataset specs, query artifacts, execution reports,
   and run records.
 - `xgap.backends`: descriptor registry, native-query client protocol,
-  and minimal Neo4j/Fuseki clients for already-authored Cypher/SPARQL
-  smoke artifacts.
+  minimal Neo4j/Fuseki clients for already-authored Cypher/SPARQL
+  smoke artifacts, M8 capability profiles, and static compatibility
+  checks.
 - `xgap.experiments`: backend smoke harnesses and result normalization.
 - `xgap.llm`: planner-facing schemas and LLM planner placeholder.
 - `xgap.datasets`: KGQA dataset loader and evaluation placeholder.
@@ -233,10 +234,23 @@ The Neo4j and Fuseki clients execute native Cypher and SPARQL query
 artifacts only. They do not compile `LogicalPlan` objects, do not alter
 path/GPC semantics, and do not participate in deterministic lowering.
 
-Backend capability fields are descriptive feature metadata for graph
-model, path/GPC fragment, and result model support. They are not a full
-compiler capability checker and do not introduce new logical operator
-vocabulary.
+In M7, backend capability fields are descriptive feature metadata for
+graph model, path/GPC fragment, and result model support. They are not
+yet a full compiler capability checker and do not introduce new logical
+operator vocabulary.
+
+M8 upgrades those fields into program-checkable capability profiles.
+The profile layer must answer whether Neo4j or Fuseki can theoretically
+support a particular XGAP path/GPC logical fragment, before any future
+compiler tries to emit native Cypher or SPARQL.
+
+M8 also defines the compiler boundary: validated XGAP logical input,
+native query artifact output, and explicit unsupported-feature reports.
+It does not implement logical-plan-to-native-query compilation.
+
+The compatibility checker is a static profile lookup. It does not
+compile plans, execute native queries, call the reference evaluator, or
+invoke optimizer, planner, LLM, ontology, cost, or evaluation code.
 
 ## GPC-Lite Pattern Layer
 
@@ -325,7 +339,7 @@ semantics, or multiple focus outputs.
 
 ## Current Execution Boundary
 
-M0-M6 are executable, and the backend infrastructure harness can run
+M0-M6 are executable, and the M7 backend infrastructure harness can run
 already-authored native smoke queries against configured backends.
 
 The executable path-pattern boundary includes:
@@ -358,6 +372,7 @@ The executable bounded quantified-pattern boundary additionally includes:
 
 M6 does not constitute full QGP or full GPC support.
 
-The M6.5 semantic audit, full backend capability profiles, compilers,
-logical optimization, learned cost estimation, LLM planning,
-disambiguation, and KGQA evaluation remain future milestones.
+M8 capability-profile and compiler-boundary preflight is completed.
+Full compilers, logical optimization, learned cost estimation, LLM
+planning, disambiguation, semantic-deviation scoring, ontology
+reasoning, and KGQA evaluation remain future milestones.

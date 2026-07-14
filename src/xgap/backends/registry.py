@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from xgap.backends.capabilities import BackendCapabilityProfile
 from xgap.infrastructure.descriptors import BackendDescriptor
 
 
@@ -51,3 +52,9 @@ def find_by_language(language: str) -> list[BackendDescriptor]:
         for descriptor in list_backends()
         if descriptor.language.lower() == language.lower()
     ]
+
+
+def get_capability_profile(backend_id: str) -> BackendCapabilityProfile:
+    """Return a program-checkable capability profile for a loaded backend."""
+
+    return BackendCapabilityProfile.from_descriptor(get(backend_id))

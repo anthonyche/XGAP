@@ -22,6 +22,131 @@ capabilities:
   result_model:
     row_bindings: true
     normalized_smoke_fields: [company, amount, currency, occurred_on]
+  capability_profile:
+    version: 1
+    feature_namespace: xgap.path_gpc
+    metadata:
+      profile_role: native_backend
+      compiler_boundary: future_m9
+    features:
+      graph_model.labeled_property_graph:
+        level: supported
+        reason: "Neo4j stores labeled property graphs with directed relationships."
+      graph_model.directed_edges:
+        level: supported
+        reason: "Neo4j relationships are directed and can be traversed by direction."
+      graph_model.node_labels:
+        level: supported
+        reason: "Neo4j node labels can represent XGAP node-label predicates."
+      graph_model.edge_labels:
+        level: supported
+        reason: "Neo4j relationship types can represent XGAP edge-label predicates."
+      graph_model.scalar_property_predicates:
+        level: supported
+        reason: "Cypher supports scalar property equality and numeric comparison predicates."
+      result_model.row_bindings:
+        level: supported
+        reason: "Cypher returns row bindings for projected expressions."
+      result_model.path_set:
+        level: conditional
+        reason: "A future compiler must encode XGAP PathSet values from Cypher paths deterministically."
+        conditions:
+          - "Requires future M9 compiler result-shape contract."
+      result_model.solution_space:
+        level: unsupported
+        reason: "Exact XGAP SolutionSpace ranks and selector semantics are not a native M8 backend result."
+      result_model.binding_relation:
+        level: unsupported
+        reason: "M6 BindingRelation is an internal XGAP semantic object, not a native Neo4j result model."
+      native.cypher:
+        level: supported
+        reason: "M7 Neo4j client executes already-authored native Cypher artifacts."
+      m7.native_smoke_queries:
+        level: supported
+        reason: "Financial-risk Cypher smoke query is executed by the M7 harness."
+      path_algebra.Nodes:
+        level: conditional
+        reason: "Neo4j can enumerate nodes, but a future compiler must preserve XGAP PathSet zero-length path semantics."
+        conditions:
+          - "Future compiler must encode each node as a zero-length path."
+      path_algebra.Edges:
+        level: conditional
+        reason: "Neo4j can enumerate relationships, but a future compiler must preserve XGAP one-edge Path values."
+        conditions:
+          - "Future compiler must encode source, relationship, and target identity."
+      path_algebra.Selection:
+        level: conditional
+        reason: "Cypher supports labels, relationship types, and scalar predicates used by XGAP Selection."
+        conditions:
+          - "Only implemented XGAP scalar predicates are in scope."
+      path_algebra.Union:
+        level: conditional
+        reason: "Cypher can combine compatible result rows, but XGAP PathSet deduplication must be preserved by a future compiler."
+      path_algebra.Join:
+        level: conditional
+        reason: "Cypher path patterns can express path concatenation over shared endpoints for bounded fragments."
+        conditions:
+          - "Future compiler must preserve XGAP path concatenation and deduplication."
+      path_algebra.Recursive.WALK:
+        level: conditional
+        reason: "Bounded walk-like traversals can be expressed, but unbounded WALK is outside XGAP validation."
+        conditions:
+          - "Requires positive max_depth."
+      path_algebra.Recursive.TRAIL:
+        level: unsupported
+        reason: "Exact XGAP TRAIL path restrictor support is not claimed in M8."
+      path_algebra.Recursive.ACYCLIC:
+        level: unsupported
+        reason: "Exact XGAP ACYCLIC path restrictor support is not claimed in M8."
+      path_algebra.Recursive.SIMPLE:
+        level: unsupported
+        reason: "Exact XGAP SIMPLE path restrictor support is not claimed in M8."
+      path_algebra.Recursive.SHORTEST:
+        level: conditional
+        reason: "Cypher has shortest-path constructs, but future compiler work must prove alignment with XGAP SHORTEST semantics."
+      extended_path.GroupBy:
+        level: unsupported
+        reason: "Selector-style SolutionSpace grouping is not a native M8 Neo4j capability."
+      extended_path.OrderBy:
+        level: unsupported
+        reason: "XGAP rank semantics for SolutionSpace are not a native M8 Neo4j capability."
+      extended_path.Projection:
+        level: unsupported
+        reason: "XGAP selector Projection over SolutionSpace is not a native M8 Neo4j capability."
+      pattern.PathPatternQuery:
+        level: conditional
+        reason: "Future compiler may support a bounded OUT path-pattern fragment over labels and scalar predicates."
+        conditions:
+          - "No reverse or undirected edge lowering."
+          - "No unsupported regex placeholders."
+          - "No unproven selector semantics."
+      m6.FocusedQuantifiedPatternQuery:
+        level: unsupported
+        reason: "M6 focused quantified semantics require a separate compiler proof and are not claimed for Neo4j in M8."
+      m6.BindingRelation:
+        level: unsupported
+        reason: "BindingRelation is an internal XGAP object, not a native Neo4j capability."
+      m6.BindNode:
+        level: unsupported
+        reason: "M6 focused binding operators are not compiled in M8."
+      m6.BindEdge:
+        level: unsupported
+        reason: "M6 focused binding operators are not compiled in M8."
+      m6.BindingJoin:
+        level: unsupported
+        reason: "M6 focused binding operators are not compiled in M8."
+      m6.BindingProject:
+        level: unsupported
+        reason: "M6 focused binding operators are not compiled in M8."
+      m6.QuantifiedCheck:
+        level: unsupported
+        reason: "M6 quantified counting and ratio semantics are not compiled in M8."
+      m6.AntiSemiJoin:
+        level: unsupported
+        reason: "M6 NONE anti-existence lowering is not compiled in M8."
+      m6.FocusProjection:
+        level: unsupported
+        reason: "M6 focus projection is not compiled in M8."
 runtime:
   client_module: xgap.backends.neo4j_client
   http_url_env: NEO4J_HTTP_URL

@@ -208,64 +208,72 @@ reference evaluation, and execution boundaries.
 Current status:
 TODO
 
-## Backend Environment Scaffold
+## M7 Backend Infrastructure
 
 Goal:
-Prepare Docker Compose services and server scripts for local Neo4j and
-Apache Jena Fuseki backend experiments.
+Move beyond local database bootstrapping by giving XGAP a backend
+infrastructure layer for descriptors, runtime records, native smoke
+clients, and experiment logs.
 
 Files involved:
 `services/docker-compose.yml`, `services/.env.example`,
 `scripts/server/**`, `examples/financial_risk/**`,
-`docs/backend_environment.md`.
+`examples/datasets/financial_risk_toy.yaml`,
+`descriptors/backends/**`, `src/xgap/infrastructure/**`,
+`src/xgap/backends/**`, `src/xgap/experiments/**`,
+`tests/test_backend_infrastructure.py`,
+`tests/test_backend_live.py`, and backend documentation.
 
 Acceptance criteria:
-Neo4j and Fuseki can be started on a server, the financial-risk toy data
-can be loaded into both backends, and native Cypher/SPARQL smoke queries
-return non-empty high-risk company rows.
+Neo4j and Fuseki can be started on a server; the financial-risk toy data
+can be loaded into both backends; native Cypher/SPARQL smoke queries
+return non-empty high-risk company rows; descriptor YAML files load;
+runtime records serialize to JSON; the registry can list and filter
+backends; default pytest does not require live services; optional live
+smoke tests run when `XGAP_RUN_BACKENDS=1`; each harness run writes
+`query_logs.jsonl` and normalized result JSON.
 
 Current status:
 DONE
 
-## Backend Infrastructure Protocol And Experiment Harness
+## M8 Backend Capability Profile + Compiler Boundary Preflight
 
 Goal:
-Represent backend descriptors and runtime records, define a minimal
-native-query backend client protocol, add Neo4j/Fuseki native smoke
-clients, and write run logs plus normalized smoke results.
+Upgrade backend capabilities from descriptive metadata into
+program-checkable capability profiles, and define the exact boundary
+between XGAP logical plans, backend support checks, compiler inputs,
+compiler outputs, and unsupported-feature reports.
 
-Files involved:
-`descriptors/backends/**`, `examples/datasets/financial_risk_toy.yaml`,
-`src/xgap/infrastructure/**`, `src/xgap/backends/**`,
-`src/xgap/experiments/**`, and backend infrastructure tests.
+M8 answers five questions:
+
+1. Which XGAP path/GPC fragments does Neo4j support?
+2. Which XGAP path/GPC fragments does Fuseki support?
+3. Which M0-M6 logical constructs can be safely compiled?
+4. Which constructs must explicitly return unsupported?
+5. What is the format of compiler input, output, and failure reports?
+
+Expected result:
+Descriptor `capabilities` stop being purely descriptive metadata and
+become capability profiles that can be checked by program logic.
+
+Files expected:
+`docs/m8_backend_capability_preflight.md`, backend descriptor schemas or
+capability-profile modules, compatibility-check tests, and current-state
+documentation. Existing M0-M7 APIs remain stable.
 
 Acceptance criteria:
-Descriptor YAML files load; runtime records serialize to JSON; the
-registry can list and filter backends; default pytest does not require
-live services; optional live smoke tests run when `XGAP_RUN_BACKENDS=1`;
-each harness run writes `query_logs.jsonl` and normalized result JSON.
+Neo4j and Fuseki profiles state support and unsupported reasons using
+XGAP path/GPC vocabulary; M0-M6 constructs are mapped to supported,
+conditionally supported, or unsupported categories; compiler artifact
+boundaries are documented; unsupported constructs fail explicitly in
+profile checks; no optimizer, semantic-deviation scoring, planner, LLM,
+ontology reasoning, dominance pruning, top-K selection, KGQA evaluation,
+or logical-plan-to-native-query compiler implementation is added.
 
 Current status:
 DONE
 
-
-
-## M7 Backend Capability Profiles
-
-Goal:
-Represent full backend capability profiles separately from compiler
-logic.
-
-Files involved:
-Backend configuration files or schemas, capability profile tests.
-
-Acceptance criteria:
-XGAP can represent which backend supports which operators, recursive modes, filters, path return behavior, and fallback strategies.
-
-Current status:
-TODO
-
-## M8 Compilers
+## M9 Compilers
 
 Goal: Compile optimized logical plans to GQL, Cypher, and SPARQL.
 
@@ -275,7 +283,7 @@ Acceptance criteria: Compilers preserve logical semantics and report unsupported
 
 Current status: TODO
 
-## M9 Logical Optimization and Cost Estimation
+## M10 Logical Optimization and Cost Estimation
 
 Goal:
 Add logical rewrite rules and a first cost-estimation interface.
@@ -289,7 +297,7 @@ Rewrites preserve semantics; unsupported rewrites are rejected; cost features ca
 Current status:
 TODO
 
-## M10 LLM Planner and Grounding
+## M11 LLM Planner and Grounding
 
 Goal: Add the ambiguity-aware natural-language planner that proposes candidate path-pattern queries.
 
@@ -299,7 +307,7 @@ Acceptance criteria: Planner output is schema-validated and deterministic loweri
 
 Current status: TODO
 
-## M11 Disambiguation and Top-K Ranking
+## M12 Disambiguation and Top-K Ranking
 
 Goal:
 Rank candidate interpretations under ambiguity.
@@ -313,7 +321,7 @@ XGAP can score candidate interpretations, preserve top-K alternatives, and separ
 Current status:
 TODO
 
-## M12 KGQA Evaluation
+## M13 KGQA Evaluation
 
 Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.
 
