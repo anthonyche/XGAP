@@ -273,15 +273,29 @@ or logical-plan-to-native-query compiler implementation is added.
 Current status:
 DONE
 
-## M9 Compilers
+## M9 Minimal Compilers For Backend MVP
 
-Goal: Compile optimized logical plans to GQL, Cypher, and SPARQL.
+Goal:
+Implement the first deterministic native-query compiler slice after M8:
+validated ALL-selector path patterns or bounded path-algebra fragments
+are checked against backend capability profiles and emitted as native
+row-oriented `QueryArtifact` values.
 
-Files involved: `src/xgap/compilers/base.py`, `src/xgap/compilers/gql.py`, `src/xgap/compilers/cypher.py`, `src/xgap/compilers/sparql.py`, compiler tests.
+Files involved:
+`src/xgap/compilers/base.py`, `src/xgap/compilers/gql.py`,
+`src/xgap/compilers/cypher.py`, `src/xgap/compilers/sparql.py`,
+`src/xgap/compilers/artifacts.py`, `src/xgap/compilers/errors.py`,
+`src/xgap/compilers/features.py`, compiler tests,
+`examples/compiler_mvp_demo.py`, and `docs/m9_minimal_compilers.md`.
 
-Acceptance criteria: Compilers preserve logical semantics and report unsupported features clearly.
+Acceptance criteria:
+Cypher and SPARQL compilers support the agreed minimal path/GPC
+fragment; GQL fails explicitly; M8 capability checks happen before
+native artifact emission; unsupported features raise structured
+failures; native output is deterministic; default pytest requires no
+live backend services; acceptance passes.
 
-Current status: TODO
+Current status: DONE
 
 ## M10 Logical Optimization and Cost Estimation
 

@@ -2,7 +2,7 @@
 
 ## Current Milestone
 
-M8 Backend Capability Profile + Compiler Boundary Preflight is completed.
+M9 Minimal Compilers For Backend MVP is completed.
 
 ## Completed
 
@@ -18,14 +18,14 @@ M8 Backend Capability Profile + Compiler Boundary Preflight is completed.
 - M6 Bounded Focused Quantified Pattern Semantics
 - M7 Backend Infrastructure
 - M8 Backend Capability Profile + Compiler Boundary Preflight
+- M9 Minimal Compilers For Backend MVP
 
 ## In Progress
 
 None.
 
 ## Next Planned Milestone:
-M9 Compilers: compile a small supported XGAP path/GPC logical fragment
-to native query artifacts after M8 compatibility checks succeed.
+M10 Logical Optimization and Cost Estimation.
 
 ## Implemented Logical Operators
 
@@ -79,7 +79,9 @@ M6 remains QGP-inspired only. It is not full QGP, not full GPC, and not
 backend support.
 
 ## Not Implemented Yet
-- GQL / Cypher / SPARQL compilers
+- Full GQL / Cypher / SPARQL compiler coverage
+- GQL compiler support
+- Recursive, selector, and M6 quantified-pattern backend compilation
 - Logical optimization
 - Learned cost estimator
 - LLM planner
@@ -215,20 +217,88 @@ Latest M8 verification:
 
 See `docs/m8_backend_capability_preflight.md`.
 
+## M9 Minimal Compilers For Backend MVP
+
+M9 is completed.
+
+XGAP now has the first deterministic native-query compiler slice after
+M8 capability preflight.
+
+Implemented M9 compiler boundary:
+
+- `compile_cypher(...)` returns a compiled Cypher `QueryArtifact` for
+  Neo4j.
+- `compile_sparql(...)` returns a compiled SPARQL `QueryArtifact` for
+  Fuseki.
+- `compile_gql(...)` remains an explicit unsupported boundary and
+  raises `UnsupportedCompilationError`.
+- Compiler failures carry `CompilerFailureSpec` records with backend,
+  language, unsupported feature, support level, reason, and metadata.
+
+Supported M9 fragment:
+
+- `Nodes(G)`;
+- `Edges(G)`;
+- `Selection`;
+- path-chain `Join`;
+- fixed-length `OUT` path fragments;
+- node-label and edge-label predicates;
+- scalar property equality and numeric comparisons already represented
+  by XGAP conditions;
+- `PathPatternQuery` only for selector `ALL`.
+
+M9 compiler outputs are row-oriented native artifacts. They do not claim
+native XGAP `PathSet` object preservation.
+
+M9 explicitly rejects:
+
+- `Union`;
+- `Recursive`;
+- `GroupBy`;
+- `OrderBy`;
+- selector-style `Projection`;
+- M6 focused binding operators;
+- `FocusedQuantifiedPatternQuery`;
+- `PathPatternQuery` selectors other than `ALL`;
+- reverse or undirected edge lowering;
+- unsupported regex placeholders;
+- boolean `OR` and `NOT` conditions;
+- path-length conditions;
+- GQL compilation.
+
+M9 does not implement optimizer rules, cost estimation, semantic-
+deviation scoring, ontology reasoning, bounded planning, dominance
+pruning, top-K selection, LLM candidate generation, natural-language
+planning, or KGQA evaluation.
+
+Latest M9 verification:
+
+- `python -m pytest tests/test_compiler_boundaries.py tests/test_cypher_compiler.py tests/test_sparql_compiler.py`:
+  11 passed.
+- `python examples/compiler_mvp_demo.py`: passed.
+- `python -m pytest`: 265 passed, 2 skipped.
+- `./scripts/run_acceptance.sh`: passed, including harness check,
+  pytest, all existing examples, `examples/quantified_pattern_demo.py`,
+  and `examples/compiler_mvp_demo.py`.
+
+See `docs/m9_minimal_compilers.md`.
+
 ## Required Acceptance Command
 ./scripts/run_acceptance.sh
 
 # Latest Known Acceptance Status
 
-M0-M8 acceptance passed locally and M7 live backend smoke tests passed
+M0-M9 acceptance passed locally and M7 live backend smoke tests passed
 on the server.
 
 Latest recorded command results:
 
-- `python -m pytest`: 254 passed, 2 skipped.
+- `python -m pytest`: 265 passed, 2 skipped.
 - `python examples/quantified_pattern_demo.py`: passed.
+- `python examples/compiler_mvp_demo.py`: passed.
 - `./scripts/run_acceptance.sh`: passed, including harness check,
-  pytest, all existing examples, and `examples/quantified_pattern_demo.py`.
+  pytest, all existing examples, `examples/quantified_pattern_demo.py`,
+  and `examples/compiler_mvp_demo.py`.
 
 Expected checks include:
 
@@ -245,3 +315,4 @@ Expected checks include:
 - lowering tests
 - pattern-lowering audit tests
 - quantified-pattern tests
+- M9 compiler tests

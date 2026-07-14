@@ -318,6 +318,23 @@ Profiles must use XGAP path/GPC vocabulary and report whether a
 construct is supported, conditionally supported, or unsupported. They
 must also give explicit unsupported reasons.
 
+## D36 M9 compilers are bounded native artifact emitters
+
+M9 compilers emit native Cypher and SPARQL `QueryArtifact` values only
+for a small row-oriented path/GPC fragment after M8 capability checks.
+
+The fragment is limited to `Nodes(G)`, `Edges(G)`, `Selection`,
+path-chain `Join`, and ALL-selector fixed-OUT `PathPatternQuery`
+fragments. Native output uses row bindings and does not claim full
+XGAP `PathSet` object preservation.
+
+Reason:
+
+This closes the first backend MVP loop without conflating compilation
+with optimization, planning, selector semantics, M6 quantified binding
+semantics, semantic-deviation scoring, ontology reasoning, LLM
+generation, or KGQA evaluation.
+
 Reason:
 
 XGAP should know whether Neo4j or Fuseki can preserve the semantics of a

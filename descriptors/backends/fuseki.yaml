@@ -16,7 +16,8 @@ capabilities:
   path_gpc_fragment:
     native_path_query_language: sparql
     native_smoke_queries: true
-    xgap_logical_plan_compilation: false
+    xgap_logical_plan_compilation: m9_minimal_path_fragment
+    m9_minimal_compilation: true
     quantified_pattern_compilation: false
   result_model:
     row_bindings: true
@@ -26,7 +27,7 @@ capabilities:
     feature_namespace: xgap.path_gpc
     metadata:
       profile_role: native_backend
-      compiler_boundary: future_m9
+      compiler_boundary: m9_minimal_compiler
     features:
       graph_model.rdf_graph:
         level: supported
@@ -67,15 +68,15 @@ capabilities:
         reason: "Financial-risk SPARQL smoke query is executed by the M7 harness."
       path_algebra.Nodes:
         level: conditional
-        reason: "SPARQL can bind RDF terms that act as nodes, but XGAP zero-length path semantics need a future compiler contract."
+        reason: "The M9 SPARQL compiler can emit row bindings for zero-length path fragments under documented RDF mapping assumptions."
       path_algebra.Edges:
         level: conditional
-        reason: "SPARQL triple patterns can bind predicate edges for encoded graph fragments."
+        reason: "The M9 SPARQL compiler can emit row bindings for one-edge OUT path fragments using RDF predicates as edge labels."
         conditions:
           - "Requires RDF mapping for XGAP edge identity."
       path_algebra.Selection:
         level: conditional
-        reason: "SPARQL FILTER and triple patterns can express selected scalar predicates for encoded RDF data."
+        reason: "The M9 SPARQL compiler supports node labels, edge labels, and node scalar property predicates under documented RDF mapping assumptions."
         conditions:
           - "Requires datatype-compatible literals."
       path_algebra.Union:
@@ -83,7 +84,7 @@ capabilities:
         reason: "SPARQL UNION can combine compatible row bindings, but XGAP PathSet deduplication requires a future compiler proof."
       path_algebra.Join:
         level: conditional
-        reason: "SPARQL joins shared variables naturally for encoded path fragments."
+        reason: "The M9 SPARQL compiler supports fixed-length OUT path concatenation through shared RDF terms."
         conditions:
           - "Path object construction is not supported."
       path_algebra.Recursive.WALK:
@@ -112,10 +113,11 @@ capabilities:
         reason: "XGAP selector Projection over SolutionSpace is not a native M8 Fuseki capability."
       pattern.PathPatternQuery:
         level: conditional
-        reason: "Future compiler may support a row-binding path-pattern fragment over RDF predicates and literals."
+        reason: "The M9 SPARQL compiler supports an ALL-selector row-binding path-pattern fragment over RDF predicates and literals."
         conditions:
           - "PathSet path identity is unsupported."
           - "Requires RDF mapping for labels and properties."
+          - "No selector semantics beyond ALL."
       m6.FocusedQuantifiedPatternQuery:
         level: unsupported
         reason: "M6 focused quantified semantics require a separate compiler proof and are not claimed for Fuseki in M8."

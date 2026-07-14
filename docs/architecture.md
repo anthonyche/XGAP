@@ -212,7 +212,9 @@ reference evaluation remain deterministic.
   quantified-pattern AST, together with their separate type checkers and
   deterministic lowering interfaces.
 - `xgap.compilers`: target compiler interfaces for GQL, Cypher, and
-  SPARQL.
+  SPARQL. M9 implements a minimal Cypher and SPARQL compiler for a
+  bounded row-oriented path/GPC fragment after M8 capability checks.
+  GQL remains an explicit unsupported compiler boundary.
 - `xgap.infrastructure`: JSON-serializable backend descriptors,
   runtime records, dataset specs, query artifacts, execution reports,
   and run records.
@@ -251,6 +253,34 @@ It does not implement logical-plan-to-native-query compilation.
 The compatibility checker is a static profile lookup. It does not
 compile plans, execute native queries, call the reference evaluator, or
 invoke optimizer, planner, LLM, ontology, cost, or evaluation code.
+
+## M9 Minimal Compiler Layer
+
+M9 adds the first native-query compiler slice. It is outside the logical
+algebra and does not introduce new logical operator names.
+
+The supported M9 fragment is limited to row-oriented compilation of:
+
+- `Nodes(G)`;
+- `Edges(G)`;
+- `Selection`;
+- path-chain `Join`;
+- ALL-selector `PathPatternQuery` fragments over fixed `OUT` paths.
+
+Before emitting native text, the compiler checks the target M8
+capability profile. Conditional backend support is accepted only for
+the documented M9 fragment. Unsupported features raise a
+`CompilerFailureSpec` through `UnsupportedCompilationError`.
+
+The M9 Cypher compiler targets Neo4j labeled-property-graph mappings.
+The M9 SPARQL compiler targets Fuseki RDF mappings through documented
+`xgap:` predicate and RDF type assumptions.
+
+M9 native output is a `QueryArtifact` with row bindings. It does not
+claim full native `PathSet` preservation, selector semantics,
+recursive path restrictors, M6 quantified-pattern compilation,
+optimization, planning, LLM use, ontology reasoning, or KGQA
+evaluation.
 
 ## GPC-Lite Pattern Layer
 

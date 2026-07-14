@@ -17,7 +17,8 @@ capabilities:
   path_gpc_fragment:
     native_path_query_language: cypher
     native_smoke_queries: true
-    xgap_logical_plan_compilation: false
+    xgap_logical_plan_compilation: m9_minimal_path_fragment
+    m9_minimal_compilation: true
     quantified_pattern_compilation: false
   result_model:
     row_bindings: true
@@ -27,7 +28,7 @@ capabilities:
     feature_namespace: xgap.path_gpc
     metadata:
       profile_role: native_backend
-      compiler_boundary: future_m9
+      compiler_boundary: m9_minimal_compiler
     features:
       graph_model.labeled_property_graph:
         level: supported
@@ -51,7 +52,7 @@ capabilities:
         level: conditional
         reason: "A future compiler must encode XGAP PathSet values from Cypher paths deterministically."
         conditions:
-          - "Requires future M9 compiler result-shape contract."
+          - "M9 emits row bindings; exact native PathSet object preservation requires later compiler work."
       result_model.solution_space:
         level: unsupported
         reason: "Exact XGAP SolutionSpace ranks and selector semantics are not a native M8 backend result."
@@ -66,17 +67,17 @@ capabilities:
         reason: "Financial-risk Cypher smoke query is executed by the M7 harness."
       path_algebra.Nodes:
         level: conditional
-        reason: "Neo4j can enumerate nodes, but a future compiler must preserve XGAP PathSet zero-length path semantics."
+        reason: "The M9 Cypher compiler can emit row bindings for zero-length path fragments; exact native PathSet object preservation remains conditional."
         conditions:
-          - "Future compiler must encode each node as a zero-length path."
+          - "M9 emits row bindings with source, target, nodes, and edges columns."
       path_algebra.Edges:
         level: conditional
-        reason: "Neo4j can enumerate relationships, but a future compiler must preserve XGAP one-edge Path values."
+        reason: "The M9 Cypher compiler can emit row bindings for one-edge OUT path fragments."
         conditions:
-          - "Future compiler must encode source, relationship, and target identity."
+          - "M9 emits row bindings with source, target, nodes, and edges columns."
       path_algebra.Selection:
         level: conditional
-        reason: "Cypher supports labels, relationship types, and scalar predicates used by XGAP Selection."
+        reason: "The M9 Cypher compiler supports labels, relationship types, and scalar property predicates for the bounded path fragment."
         conditions:
           - "Only implemented XGAP scalar predicates are in scope."
       path_algebra.Union:
@@ -84,9 +85,9 @@ capabilities:
         reason: "Cypher can combine compatible result rows, but XGAP PathSet deduplication must be preserved by a future compiler."
       path_algebra.Join:
         level: conditional
-        reason: "Cypher path patterns can express path concatenation over shared endpoints for bounded fragments."
+        reason: "The M9 Cypher compiler supports fixed-length OUT path concatenation over shared endpoints."
         conditions:
-          - "Future compiler must preserve XGAP path concatenation and deduplication."
+          - "Only path-chain joins in the M9 fragment are compiled."
       path_algebra.Recursive.WALK:
         level: conditional
         reason: "Bounded walk-like traversals can be expressed, but unbounded WALK is outside XGAP validation."
@@ -115,11 +116,11 @@ capabilities:
         reason: "XGAP selector Projection over SolutionSpace is not a native M8 Neo4j capability."
       pattern.PathPatternQuery:
         level: conditional
-        reason: "Future compiler may support a bounded OUT path-pattern fragment over labels and scalar predicates."
+        reason: "The M9 Cypher compiler supports an ALL-selector bounded OUT PathPatternQuery fragment over labels and scalar predicates."
         conditions:
           - "No reverse or undirected edge lowering."
           - "No unsupported regex placeholders."
-          - "No unproven selector semantics."
+          - "No selector semantics beyond ALL."
       m6.FocusedQuantifiedPatternQuery:
         level: unsupported
         reason: "M6 focused quantified semantics require a separate compiler proof and are not claimed for Neo4j in M8."
