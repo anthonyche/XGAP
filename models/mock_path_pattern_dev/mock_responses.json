@@ -1,0 +1,68 @@
+{
+  "schema_version": "m12-mock-responses-v1",
+  "responses": {
+    "fr-q001": {
+      "provider_id": "m10-mock-development-bundle",
+      "model": "m10-static-response-fixture-v1",
+      "candidates": [
+        {
+          "candidate_id": "fr-q001-exact",
+          "confidence": 0.95,
+          "rationale": "Controlled exact interpretation.",
+          "pattern_query": {
+            "path_var": "p",
+            "source": {"var": "person", "label": "Person", "properties": {"name": "Alice"}},
+            "expr": {
+              "kind": "seq",
+              "left": {"kind": "rel", "edge": {"var": "owns_source", "label": "OWNS", "direction": "OUT"}},
+              "right": {"kind": "rel", "edge": {"var": "transfer", "label": "TRANSFER", "direction": "OUT"}}
+            },
+            "target": {"var": "recipient_account", "label": "Account", "properties": {}},
+            "selector": {"kind": "ALL"},
+            "restrictor": "TRAIL"
+          }
+        }
+      ]
+    },
+    "fr-q013": {
+      "provider_id": "m10-mock-development-bundle",
+      "model": "m10-static-response-fixture-v1",
+      "candidates": [
+        {
+          "candidate_id": "fr-q013-exact",
+          "confidence": 0.90,
+          "rationale": "Controlled exact high-risk interpretation.",
+          "pattern_query": {
+            "path_var": "p_exact",
+            "source": {"var": "person_exact", "label": "Person", "properties": {"name": "Alice"}},
+            "expr": {
+              "kind": "seq",
+              "left": {"kind": "rel", "edge": {"var": "owns_source_exact", "label": "OWNS", "direction": "OUT"}},
+              "right": {"kind": "rel", "edge": {"var": "transfer_exact", "label": "TRANSFER", "direction": "OUT"}}
+            },
+            "target": {"var": "account_exact", "label": "Account", "properties": {}},
+            "selector": {"kind": "ALL"},
+            "restrictor": "TRAIL"
+          }
+        },
+        {
+          "candidate_id": "fr-q013-generalized",
+          "confidence": 0.72,
+          "rationale": "Controlled generalized company interpretation.",
+          "pattern_query": {
+            "path_var": "p_generalized",
+            "source": {"var": "person_generalized", "label": "Person", "properties": {"name": "Alice"}},
+            "expr": {
+              "kind": "seq",
+              "left": {"kind": "rel", "edge": {"var": "owns_source_generalized", "label": "OWNS", "direction": "OUT"}},
+              "right": {"kind": "rel", "edge": {"var": "transfer_generalized", "label": "TRANSFER", "direction": "OUT"}}
+            },
+            "target": {"var": "entity_generalized", "label": null, "properties": {}},
+            "selector": {"kind": "ALL"},
+            "restrictor": "TRAIL"
+          }
+        }
+      ]
+    }
+  }
+}

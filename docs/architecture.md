@@ -4,12 +4,14 @@ XGAP is an ambiguity-aware natural-language-to-graph-query planner. Its pipeline
 
 ```text
 Natural language question
-  -> candidate structured query intent
+  -> bounded ontology/schema context
+  -> structured candidate provider
   -> PathPatternQuery | FocusedQuantifiedPatternQuery
   -> deterministic type checking and lowering
   -> LogicalPlan
-  -> OptimizedPlan
-  -> GQL / Cypher / SPARQL
+  -> ontology/alignment admissibility boundary
+  -> bounded physical placement and exchange planning
+  -> existing GQL / Cypher / SPARQL compiler boundary
   -> optional backend execution and evaluation
 ```
 
@@ -222,10 +224,22 @@ reference evaluation remain deterministic.
   minimal Neo4j/Fuseki clients for already-authored Cypher/SPARQL
   smoke artifacts, M8 capability profiles, and static compatibility
   checks.
-- `xgap.experiments`: backend smoke harnesses and result normalization.
+- `xgap.planning`: M11 immutable physical-state contracts, versioned
+  ontology/alignment boundary, deterministic logical-plan indexing, bounded
+  physical search, feature extraction, Gaussian-process cost snapshots,
+  current compiler adapter, Nash selection, and test-only exhaustive oracle.
+- `xgap.experiments`: backend smoke harnesses, result normalization, the M11
+  controlled physical-planning runner, and M12 versioned dataset/model/spec,
+  semantic-deviation, metric, execution, manifest, and run-layout contracts.
+  The same M12 runner selects the M12-A controlled path or the M12-B bounded
+  live/runtime path by configuration. M12-B adds lexical/alias ontology
+  retrieval, prompt-schema views, runtime query slots, grounding artifacts,
+  and a file-backed alignment provider. It does not implement real server
+  calibration or benchmark-scale execution.
 - `xgap.llm`: M10 planner-facing schemas, controlled candidate JSON
-  parsing, provider protocol, mock provider, and deterministic candidate
-  validation helpers. It does not connect a live LLM by default.
+  parsing, provider protocol, mock provider, deterministic candidate
+  validation helpers, and the M12-B generic OpenAI-compatible structured
+  provider. Live network use remains configuration- and credential-gated.
 - `xgap.datasets`: KGQA dataset loader and evaluation placeholder.
 
 ## Backend Infrastructure Layer
@@ -251,6 +265,40 @@ compiler tries to emit native Cypher or SPARQL.
 M8 also defines the compiler boundary: validated XGAP logical input,
 native query artifact output, and explicit unsupported-feature reports.
 It does not implement logical-plan-to-native-query compilation.
+
+## Experiment Artifact Layer
+
+M12 places a versioned experiment layer around the deterministic pipeline:
+
+```text
+DatasetBundle + ModelBundle + ExperimentSpec
+  -> mock candidate + controlled evidence
+     OR bounded context + live structured candidate + runtime alignment
+  -> deterministic M10 validation + frozen M12 semantic deviation
+  -> M11 physical planner
+  -> frozen runs/<run_id>/ artifact tree
+```
+
+Dataset-specific schema, aliases, entities, mappings, optional gold labels,
+and backend-load files stay in `DatasetBundle` artifacts. They do not add
+dataset-specific branches to logical lowering or physical planning.
+
+M12-B splits inference artifacts from evaluation-only gold. Runtime retrieval
+receives ontology, aliases, entities, mappings, and schema snapshots but no
+gold answers, logical forms, alignments, or evaluation labels. It emits a
+bounded, content-hashed prompt view. Query-side anchors and candidate-side
+ontology realizations remain separate inputs to the frozen `c_sem` scorer.
+
+The OpenAI-compatible provider performs one candidate-generation call and at
+most one syntax/schema repair. It returns only controlled grounded
+`PathPatternQuery` JSON. Type checking, lowering, logical validation,
+mapping checks, semantic deviation, physical search, and compilation remain
+deterministic and outside the model.
+
+M12-A includes an offline controlled development path only. Backend results,
+real D0 observations, GPU/CUDA metadata, and metrics requiring exhaustive or
+execution ground truth remain explicitly `not_available` until collected by
+later milestones.
 
 The compatibility checker is a static profile lookup. It does not
 compile plans, execute native queries, call the reference evaluator, or
@@ -308,6 +356,59 @@ PathPatternQuery
 
 `xgap.llm` includes a provider protocol and a mock provider for tests.
 There is no default live LLM provider in M10.
+
+## M11 Ontology-Bounded Physical Planning
+
+M11 keeps one interpretation's logical plan fixed. Its deterministic main
+flow is:
+
+```text
+M10 PlannerCandidate
+  -> OntologyAlignmentProvider
+  -> mapping-sufficiency check
+  -> SemanticDeviationScorer
+  -> existing deterministic PathPatternQuery lowering
+  -> stable logical-plan index
+  -> bounded BnB over backend placement and configured exchanges
+  -> one discovered representative per interpretation
+  -> strict positive-utility Nash ranking
+  -> top K
+  -> existing M9 compiler or explicit unsupported boundary
+```
+
+The search state is `(L_I, Pi, Delta)`. `L_I` never changes inside the
+search tree. `Pi` records backend placement decisions for stable logical
+operator occurrences, and `Delta` records configured exchange decisions for
+cross-backend dependencies. No new logical operator is introduced.
+
+Ontology/schema identity, source mappings, aliases, sufficiency evidence,
+and semantic-deviation inputs enter through a versioned external provider.
+The controlled artifact implementation reads supplied values and performs no
+ontology reasoning. Missing, unsupported, unknown, or insufficient evidence
+cannot enter physical search.
+
+`OPEN` is ordered by a conservative lower estimate and stable state ID. One
+budget unit is charged per processed `ExtractMin`. The incumbent is the
+discovered complete plan with the smallest conservative upper estimate. A
+finite budget does not imply global true-cost optimality.
+
+The log-cost GP uses deterministic state features, positive observations from
+complete plans only, and one immutable posterior snapshot per task. The
+standard-library implementation is intentionally scoped to small M11
+planning datasets because the repository has no scientific-computing
+dependency. Optional backend/cardinality statistics remain external and are
+represented as missing unless supplied.
+
+A complete physical description and current executability are separate.
+Single-backend fragments inside M9 compile through the existing compiler.
+Unsupported M9 constructs and multi-backend runtime orchestration return
+structured boundaries. M11 adds neither selector/recursive/M6 compiler
+coverage nor distributed execution.
+
+The main planner returns a plan only when `C_bar < T_max` and both semantic
+and execution utilities are strictly positive. It retains at most one plan
+per interpretation, ranks by the Nash product, applies deterministic ties,
+and does not add threshold relaxation or a Pareto stage.
 
 ## GPC-Lite Pattern Layer
 
@@ -396,8 +497,9 @@ semantics, or multiple focus outputs.
 
 ## Current Execution Boundary
 
-M0-M6 are executable, and the M7 backend infrastructure harness can run
-already-authored native smoke queries against configured backends.
+M0-M6 reference semantics are executable, the M7 backend infrastructure
+harness can run already-authored native smoke queries, and the M11 controlled
+planner can produce physical-planning artifacts without live services.
 
 The executable path-pattern boundary includes:
 
@@ -429,7 +531,9 @@ The executable bounded quantified-pattern boundary additionally includes:
 
 M6 does not constitute full QGP or full GPC support.
 
-M8 capability-profile and compiler-boundary preflight is completed.
-Full compilers, logical optimization, learned cost estimation, LLM
-planning, disambiguation, semantic-deviation scoring, ontology
-reasoning, and KGQA evaluation remain future milestones.
+M8 capability profiles, the M9 minimal compiler slice, the M10 structured
+candidate boundary, M11 ontology-bounded physical planning, and the M12-B
+generic live structured-provider/runtime-alignment path are implemented. Full
+compiler coverage, logical rewrite optimization, automated ontology
+reasoning, production cost-model training, distributed cross-backend
+execution, and KGQA evaluation remain outside the current execution boundary.

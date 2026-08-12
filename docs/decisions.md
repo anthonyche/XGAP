@@ -358,3 +358,111 @@ XGAP's correctness depends on deterministic type checking, lowering,
 plan validation, capability checks, and compiler boundaries. Keeping
 the LLM outside those deterministic stages lets XGAP use model
 suggestions without letting model output redefine algebra semantics.
+
+## D38 M11 searches physical realizations, not logical rewrites
+
+For one interpretation, deterministic lowering fixes `L_I`. M11 search may
+choose only backend placements and explicitly configured exchange
+realizations.
+
+Reason:
+
+This matches the paper's current planning algorithm and preserves the audited
+M5/M6 logical semantics. Different logical rewrite orders must not become an
+untracked interpretation variable.
+
+## D39 Ontology and alignment are fixed external planning inputs
+
+Ontology/schema artifacts, source mappings, aliases, mapping sufficiency, and
+semantic-deviation inputs are resolved through versioned providers before one
+physical search tree begins. Missing or insufficient mapping evidence never
+defaults to success.
+
+Reason:
+
+The ontology is part of planning feasibility, but ontology reasoning and
+interpretation enumeration are different concerns from backend placement.
+Keeping this boundary external allows a future production alignment provider
+to replace the controlled artifact adapter without changing BnB.
+
+## D40 M11 execution threshold and Nash domain are strict
+
+A returnable plan must satisfy `C_bar < T_max`. Semantic deviation equal to
+`epsilon` is semantically admissible but has zero semantic utility and is not
+eligible for Nash-ranked output. M11 does not relax the execution threshold
+and does not add a Pareto filtering phase.
+
+Reason:
+
+This follows the reconciled Chapter 5 procedure and keeps semantic
+admissibility distinct from the strictly positive Nash-output domain.
+
+## D41 M11 BnB incumbents minimize discovered conservative upper cost
+
+One budget unit is charged per processed `ExtractMin`. The first feasible
+complete state initializes the incumbent, and replacement requires a strictly
+smaller conservative upper estimate. Lower-bound pruning uses the current
+incumbent upper estimate.
+
+Reason:
+
+The search is finite and anytime, but a bounded run does not prove global
+minimum true execution cost. This rule states exactly what the returned
+per-interpretation representative guarantees.
+
+## D42 Cost snapshots learn only from complete-plan observations
+
+M11 records finite positive raw costs and log costs only for complete physical
+plans. One immutable Gaussian-process snapshot is used throughout a planning
+task; new execution observations affect later snapshots only. The exhaustive
+oracle is restricted to tests and controlled experiments.
+
+Reason:
+
+Partial-state optimal-completion costs are latent rather than observed.
+Separating the experiment oracle from production planning prevents evaluation
+knowledge from influencing search decisions.
+
+## D43 M12 experiment semantics are versioned artifacts
+
+Directional ontology-hop penalties, uniform slot aggregation, epsilon values,
+the GP calibration/update protocol, baseline IDs, ablation switches, metric
+availability, and execution protocol are serialized and content-hashed above
+the deterministic planner core.
+
+Reason:
+
+Experimental choices must be traceable and replaceable without introducing
+dataset-specific logic into M10 validation, logical lowering, or M11 search.
+
+## D44 Missing experimental evidence remains unavailable
+
+Missing gold forms, alignments, backend measurements, calibration
+observations, oracle truth, GPU/CUDA metadata, and backend versions are
+represented by explicit unavailable states. They are never replaced by empty
+labels, fabricated values, or silent success.
+
+Reason:
+
+Coverage and supported-subset results are meaningful only when unavailable
+evidence can be distinguished from negative observations and true zeros.
+
+## D45 Live model inputs are bounded and gold-free
+
+M12-B live inference receives one content-hashed bounded ontology/schema view
+and may make one generation call plus at most one syntax/schema repair call.
+It may return only controlled grounded `PathPatternQuery` candidates. Query
+anchors and candidate slot realizations are represented separately and are
+validated against prompt-visible ontology/entity IDs before the frozen M12-A
+semantic-deviation scorer and unchanged M11 planner run.
+
+Gold answers, gold logical forms, gold alignments, and evaluation labels are
+not available to retrieval, prompting, candidate validation, semantic
+deviation, or planning.
+
+Reason:
+
+The live model is an interpretation proposer, not an algebra, planner,
+compiler, or evaluation oracle. Bounding calls/context and enforcing the
+anti-leakage boundary makes runtime behavior reproducible enough for
+experimentation while preserving XGAP's deterministic correctness core.

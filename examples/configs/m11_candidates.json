@@ -1,0 +1,71 @@
+{
+  "provider_id": "controlled-m10-artifact",
+  "model": "no-live-model",
+  "candidates": [
+    {
+      "candidate_id": "alice-recent-transfer",
+      "confidence": 0.88,
+      "rationale": "Controlled structured candidate for the M11 experiment.",
+      "pattern_query": {
+        "path_var": "p",
+        "source": {
+          "var": "person",
+          "label": "Person",
+          "properties": {
+            "name": "Alice"
+          }
+        },
+        "expr": {
+          "kind": "rel",
+          "edge": {
+            "var": "transfer",
+            "label": "TRANSFER",
+            "direction": "OUT"
+          }
+        },
+        "target": {
+          "var": "company",
+          "label": "Company",
+          "properties": {
+            "risk": "high"
+          }
+        },
+        "selector": {
+          "kind": "ALL"
+        },
+        "restrictor": "TRAIL"
+      }
+    },
+    {
+      "candidate_id": "alice-transfer-alternative",
+      "confidence": 0.71,
+      "rationale": "A controlled lower-semantic-utility alternative.",
+      "pattern_query": {
+        "path_var": "p2",
+        "source": {
+          "var": "person2",
+          "label": "Person",
+          "properties": {
+            "name": "Alice"
+          }
+        },
+        "expr": {
+          "kind": "rel",
+          "edge": {
+            "var": "transfer2",
+            "label": "TRANSFER",
+            "direction": "OUT"
+          }
+        },
+        "target": {
+          "var": "company2",
+          "label": "Company"
+        },
+        "selector": {
+          "kind": "ALL"
+        },
+        "restrictor": "TRAIL"
+      }
+    }
+  ]
+}

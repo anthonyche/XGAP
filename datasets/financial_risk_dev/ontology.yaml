@@ -1,0 +1,30 @@
+schema_version: m12-ontology-v1
+ontology_id: xgap-financial-risk-dev-ontology
+version: controlled-v1
+classes: [FinancialEntity, Person, Organization, Company, HighRiskCompany, LowRiskCompany, Account, PersonalAccount, CorporateAccount, Currency]
+relations: [FinancialRelation, Transfer, RecentTransfer, Ownership]
+properties: [RiskProperty, NameProperty, AmountProperty, DateProperty]
+subsumption:
+  Person: [FinancialEntity]
+  Organization: [FinancialEntity]
+  Company: [Organization]
+  HighRiskCompany: [Company]
+  LowRiskCompany: [Company]
+  Account: [FinancialEntity]
+  PersonalAccount: [Account]
+  CorporateAccount: [Account]
+  Transfer: [FinancialRelation]
+  RecentTransfer: [Transfer]
+  Ownership: [FinancialRelation]
+domain_range:
+  Transfer:
+    domain: Account
+    range: Account
+  Ownership:
+    domain: FinancialEntity
+    range: Account
+max_relaxation_hops: 4
+sibling_admissibility:
+  explicit_pairs: [HighRiskCompany|LowRiskCompany, PersonalAccount|CorporateAccount]
+  rule_reference: controlled-financial-risk-explicit-siblings-v1
+

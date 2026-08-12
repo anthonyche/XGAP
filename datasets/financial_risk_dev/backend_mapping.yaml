@@ -1,0 +1,148 @@
+schema_version: m12-backend-mapping-v1
+mapping_id: financial-risk-dev-source-map
+version: controlled-v1
+backends:
+  reference_evaluator:
+    graph: financial-risk-toy
+    class_property: labels
+    relation_property: edge_labels
+  neo4j:
+    class_property: labels
+    high_risk_representation: Company.risk_level=HIGH
+    transfer_representation: TRANSFER
+    ownership_representation: OWNS
+  fuseki:
+    namespace: http://xgap.example.org/financial-risk/
+    high_risk_representation: Company+riskLevel=HIGH
+    transfer_representation: Transfer
+    ownership_representation: owns
+term_mappings:
+  reference_evaluator:
+    FinancialEntity:
+      kind: class
+      representation: label:FinancialEntity
+    Person:
+      kind: class
+      representation: label:Person
+    Organization:
+      kind: class
+      representation: label:Organization
+    Company:
+      kind: class
+      representation: label:Company
+    HighRiskCompany:
+      kind: class
+      representation: label:HighRiskCompany
+    LowRiskCompany:
+      kind: class
+      representation: label:LowRiskCompany
+    Account:
+      kind: class
+      representation: label:Account
+    PersonalAccount:
+      kind: class
+      representation: label:PersonalAccount
+    CorporateAccount:
+      kind: class
+      representation: label:CorporateAccount
+    Currency:
+      kind: class
+      representation: label:Currency
+    FinancialRelation:
+      kind: relation
+      representation: edge:FinancialRelation
+    Transfer:
+      kind: relation
+      representation: edge:TRANSFER
+    RecentTransfer:
+      kind: relation
+      representation: edge:TRANSFER+occurred_on
+    Ownership:
+      kind: relation
+      representation: edge:OWNS
+    RiskProperty:
+      kind: property
+      representation: property:risk_level
+    NameProperty:
+      kind: property
+      representation: property:name
+    AmountProperty:
+      kind: property
+      representation: property:amount
+    DateProperty:
+      kind: property
+      representation: property:occurred_on
+  neo4j:
+    Person:
+      kind: class
+      representation: label:Person
+    Company:
+      kind: class
+      representation: label:Company
+    HighRiskCompany:
+      kind: class
+      representation: Company.risk_level=HIGH
+    LowRiskCompany:
+      kind: class
+      representation: Company.risk_level=LOW
+    Account:
+      kind: class
+      representation: label:Account
+    Transfer:
+      kind: relation
+      representation: relationship:TRANSFER
+    RecentTransfer:
+      kind: relation
+      representation: TRANSFER.occurred_on
+    Ownership:
+      kind: relation
+      representation: relationship:OWNS
+    RiskProperty:
+      kind: property
+      representation: risk_level
+    NameProperty:
+      kind: property
+      representation: name
+    AmountProperty:
+      kind: property
+      representation: amount
+    DateProperty:
+      kind: property
+      representation: occurred_on
+  fuseki:
+    Person:
+      kind: class
+      representation: xgap:Person
+    Company:
+      kind: class
+      representation: xgap:Company
+    HighRiskCompany:
+      kind: class
+      representation: xgap:riskLevel=HIGH
+    LowRiskCompany:
+      kind: class
+      representation: xgap:riskLevel=LOW
+    Account:
+      kind: class
+      representation: xgap:Account
+    Transfer:
+      kind: relation
+      representation: xgap:Transfer
+    RecentTransfer:
+      kind: relation
+      representation: xgap:occurredOn
+    Ownership:
+      kind: relation
+      representation: xgap:owns
+    RiskProperty:
+      kind: property
+      representation: xgap:riskLevel
+    NameProperty:
+      kind: property
+      representation: xgap:name
+    AmountProperty:
+      kind: property
+      representation: xgap:amount
+    DateProperty:
+      kind: property
+      representation: xgap:occurredOn

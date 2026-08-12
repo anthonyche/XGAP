@@ -1,0 +1,128 @@
+{
+  "schema_version": "m12-experiment-spec-v1",
+  "experiment_id": "financial-risk-xgap-development",
+  "run_id": "m12-financial-risk-xgap-dev",
+  "dataset_bundle": "datasets/financial_risk_dev",
+  "model_bundle": "models/mock_path_pattern_dev",
+  "question_ids": ["fr-q001", "fr-q013"],
+  "backend_ids": ["reference_evaluator"],
+  "descriptor_dir": "descriptors/backends",
+  "semantic_deviation": {
+    "schema_version": "m12-semantic-deviation-v1",
+    "method": "directional_ontology_hop",
+    "ontology_distance": {
+      "type": "normalized_shortest_hop",
+      "max_relaxation_hops": 4
+    },
+    "direction_penalty": {
+      "exact": 0.0,
+      "specialization": 0.3333333333333333,
+      "generalization": 0.6666666666666666,
+      "sibling": 1.0
+    },
+    "slot_weights": {"type": "uniform"},
+    "incomplete_slot_policy": "infinity",
+    "missing_mapping_policy": "infinity",
+    "unrelated_policy": "infinity",
+    "epsilon_values": [0.0, 0.1, 0.25, 0.5, 0.75, 1.0]
+  },
+  "planning": {
+    "epsilon": 0.75,
+    "t_max": 30.0,
+    "top_k": 2,
+    "candidate_cap": 3,
+    "global_delta": 0.05
+  },
+  "budget": {
+    "type": "fixed",
+    "value": 128
+  },
+  "cost_estimator": {
+    "type": "gaussian_process",
+    "config": {
+      "estimator_id": "m12-development-prior-gp",
+      "model_version": "uncalibrated-development-prior-v1",
+      "length_scale": 3.0,
+      "signal_variance": 0.0025,
+      "noise_variance": 0.01,
+      "jitter": 1e-9,
+      "prior_log_cost": 1.6094379124341003
+    }
+  },
+  "gp_protocol": {
+    "schema_version": "m12-gp-protocol-v1",
+    "target": "log_execution_cost",
+    "kernel": "rbf",
+    "complete_plans_only": true,
+    "calibration": {
+      "split_id": "calibration",
+      "sampling_policy_id": "complete-plan-uniform-v1",
+      "plan_count": 32,
+      "random_seed": 17,
+      "backend_scope": ["reference_evaluator"],
+      "observation_artifact": {
+        "status": "not_available",
+        "path": null,
+        "reason": "Real D_0 collection belongs to M12-C."
+      },
+      "repeated_measurement_policy_ref": "m12-development-median-v1",
+      "fit_hyperparameters": true
+    },
+    "evaluation": {
+      "freeze_hyperparameters": true,
+      "update_posterior_between_tasks": true,
+      "update_within_task": false
+    }
+  },
+  "feature_schema": {
+    "extractor_id": "deterministic-m11-state-features",
+    "version": "m11-state-features-v1",
+    "schema_hash": "d913911515fd97bac4c5",
+    "unavailable_statistics": ["estimated_cardinality"]
+  },
+  "baseline": {
+    "id": "full_xgap",
+    "backend_id": null,
+    "controlled_scope": true,
+    "model_bundle_ref": "models/mock_path_pattern_dev"
+  },
+  "ablations": {
+    "no_uncertainty": false,
+    "no_pruning": false,
+    "no_online_learning": false,
+    "no_semantic_bound": false,
+    "cost_only": false,
+    "no_nash": false
+  },
+  "random_seed": 23,
+  "execution_protocol": {
+    "schema_version": "m12-execution-protocol-v1",
+    "warmup_runs": 1,
+    "measured_repetitions": 5,
+    "aggregation_statistic": "median",
+    "timeout_seconds": 60.0,
+    "cache_policy": "record_without_forced_flush",
+    "backend_reset_policy": "none_between_repetitions",
+    "mode": "isolated",
+    "machine_metadata_policy": "record_available",
+    "record_docker_backend_versions": true
+  },
+  "metric_ids": [
+    "interpretation",
+    "physical_planning",
+    "end_to_end"
+  ],
+  "output_root": "runs",
+  "future_artifacts": {
+    "production_ontology_alignment": {
+      "status": "not_available",
+      "path": null,
+      "reason": "Production alignment belongs to M12-B."
+    },
+    "calibrated_observations": {
+      "status": "not_available",
+      "path": null,
+      "reason": "Server calibration belongs to M12-C."
+    }
+  }
+}

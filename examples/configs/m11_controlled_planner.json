@@ -1,0 +1,52 @@
+{
+  "run_id": "m11-controlled-planner",
+  "runs_dir": "runs",
+  "query": {
+    "query_id": "financial-risk-q1",
+    "task_id": "controlled-task-1",
+    "question": "Find high-risk companies connected to Alice by recent transfers."
+  },
+  "candidate_artifact": "examples/configs/m11_candidates.json",
+  "alignment_artifact": "examples/configs/m11_alignment.json",
+  "descriptor_dir": "descriptors/backends",
+  "backend_ids": [
+    "reference_evaluator",
+    "neo4j",
+    "fuseki"
+  ],
+  "exchange_catalog": {
+    "catalog_id": "controlled-no-cross-backend-runtime",
+    "version": "1",
+    "strategies": []
+  },
+  "features": {
+    "optional_stat_names": [
+      "estimated_cardinality"
+    ],
+    "optional_statistics": {}
+  },
+  "cost_model": {
+    "type": "gaussian_process",
+    "config": {
+      "estimator_id": "m11-controlled-gp",
+      "model_version": "fixture-prior-v1",
+      "length_scale": 3.0,
+      "signal_variance": 0.0025,
+      "noise_variance": 0.01,
+      "jitter": 1e-09,
+      "prior_log_cost": 1.6094379124341003
+    }
+  },
+  "planning": {
+    "epsilon": 0.5,
+    "t_max": 30.0,
+    "top_k": 2,
+    "global_delta": 0.05,
+    "task_index": 1,
+    "deterministic_seed": 0
+  },
+  "budget": {
+    "type": "fixed",
+    "value": 128
+  }
+}

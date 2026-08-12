@@ -1,0 +1,12 @@
+{
+  "schema_version": "m12-prompt-v1",
+  "system_prompt": "Return controlled PathPatternQuery candidates as JSON. Do not return native Cypher or SPARQL.",
+  "few_shot_examples": [],
+  "schema_context_policy": "use_dataset_schema_snapshot",
+  "ontology_context_policy": "use_dataset_ontology_terms",
+  "structured_output_schema": {
+    "contract": "m10-planner-response",
+    "candidate_payload": "PathPatternQuery"
+  }
+}
+

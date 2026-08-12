@@ -49,3 +49,15 @@ fi
 if [ -f examples/llm_boundary_demo.py ]; then
   "$PYTHON" examples/llm_boundary_demo.py
 fi
+
+if [ -f examples/m11_physical_planner_demo.py ]; then
+  "$PYTHON" examples/m11_physical_planner_demo.py
+fi
+
+if [ -f examples/m11_exhaustive_oracle_demo.py ]; then
+  "$PYTHON" examples/m11_exhaustive_oracle_demo.py
+fi
+
+if [ -f examples/m12_experiment_contract_demo.py ]; then
+  "$PYTHON" examples/m12_experiment_contract_demo.py
+fi

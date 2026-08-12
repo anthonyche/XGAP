@@ -2,7 +2,7 @@
 
 ## Current Milestone
 
-M10 LLM Planner Boundary + Structured Candidate Interface is completed.
+M12-B Live LLM + Ontology/Alignment Artifacts is completed.
 
 ## Completed
 
@@ -20,13 +20,35 @@ M10 LLM Planner Boundary + Structured Candidate Interface is completed.
 - M8 Backend Capability Profile + Compiler Boundary Preflight
 - M9 Minimal Compilers For Backend MVP
 - M10 LLM Planner Boundary + Structured Candidate Interface
+- M11 Ontology-Bounded Physical Planning
+- M12-A Experiment Artifact Contract + Dataset Bundle
+- M12-B Live LLM + Ontology/Alignment Artifacts
 
 ## In Progress
 
-None.
+- None
 
 ## Next Planned Milestone:
-M11 Logical Optimization and Cost Estimation.
+M12-C Cost Calibration + Online GP Protocol. It must collect real complete-plan
+observations and calibrate the frozen M11 GP protocol without changing M11
+search semantics.
+
+## M12 Experimentalization
+
+Current phase status:
+
+- M12-A Experiment Artifact Contract + Dataset Bundle: Completed
+- M12-B Live LLM + Ontology/Alignment Artifacts: Completed
+- M12-C Cost Calibration + Online GP Protocol: Not Started
+- M12-D Baselines/Ablations + Server Experiment Runner: Not Started
+
+M12-A freezes experiment-facing semantics and artifact contracts. It does not
+claim live model access, production ontology reasoning/alignment, KGQA
+execution, measured server calibration, online posterior updates, baseline or
+ablation execution, large-scale orchestration, a final financial-risk
+benchmark, or final SIGMOD experimental results.
+
+See `docs/m12_experimentalization.md`.
 
 ## Implemented Logical Operators
 
@@ -83,9 +105,11 @@ backend support.
 - Full GQL / Cypher / SPARQL compiler coverage
 - GQL compiler support
 - Recursive, selector, and M6 quantified-pattern backend compilation
-- Logical optimization
-- Learned cost estimator
-- Live LLM provider integrations
+- Logical rewrite optimization
+- Production-trained cost calibration and automated observation collection
+- Production ontology/schema, stronger retrieval, and automated reasoning
+- Distributed cross-backend execution
+- Provider-specific production hardening beyond the generic OpenAI-compatible boundary
 - Disambiguation
 - KGQA evaluation
 
@@ -339,23 +363,283 @@ Latest M10 verification:
 
 See `docs/m10_llm_planner_boundary.md`.
 
+## M11 Ontology-Bounded Physical Planning
+
+M11 is completed in four sequential phases:
+
+- M11-A Planning Objective and Physical-State Contract
+- M11-B Bounded Branch-and-Bound Physical Search
+- M11-C Bayesian Cost Model and Search Trace
+- M11-D XGAP Main Planner and Exhaustive Oracle Evaluation
+
+The logical plan for an interpretation remains the deterministic output of
+the existing M5/M10 pipeline. M11 does not enumerate logical rewrites. Its
+search variables are backend placement and explicit cross-backend exchange
+decisions for that fixed logical plan.
+
+Ontology/schema definitions, source-to-ontology mappings, aliases, alignment
+evidence, and semantic-deviation inputs are external, versioned,
+replaceable planning artifacts. Missing, unknown, unsupported, or
+insufficient mapping evidence is not treated as success. Bounded physical
+search neither invents nor enumerates ontology mappings.
+
+The M11 planning contract uses a strict execution threshold: a plan is
+returnable only when its conservative upper estimate satisfies
+`C_bar < T_max`. No threshold relaxation or fallback outside that bound is
+allowed. Each interpretation contributes at most one discovered physical
+representative, chosen by minimum conservative upper estimate within the
+search budget. Final deterministic top-K ranking uses the Nash score only
+when semantic and execution utilities are both strictly positive.
+
+M11 explicitly excludes live LLM providers, KGQA dataset integration,
+LoRA/model training, automatic ontology induction, a built-in OWL/DL
+reasoner, full GQL, new M9 compiler coverage, logical rewrite search, new
+backend engines, and distributed cross-backend execution.
+
+Implemented M11-A contracts and interfaces:
+
+- deterministic frozen physical-state, placement, exchange, realization,
+  plan, objective, cost, feature, observation, trace, and configuration
+  records;
+- stable logical-operator and dependency identifiers derived from existing
+  plan structure;
+- `OntologyAlignmentProvider`, `SemanticDeviationScorer`, `CostEstimator`,
+  `StateFeatureExtractor`, `BudgetPolicy`, and `PhysicalCompiler` protocols;
+- controlled `ArtifactOntologyAlignmentProvider` and
+  `ProvidedSemanticDeviationScorer` boundaries.
+
+Implemented M11-B physical search:
+
+- deterministic child-before-parent placement order;
+- configured exchange strategies with automatic single-strategy resolution,
+  branching only for explicitly supplied alternatives, and explicit
+  infeasibility when none exists;
+- lower-bound priority queue, one budget unit per processed `ExtractMin`,
+  strict incumbent replacement by lower conservative upper cost, successor
+  pruning, early bound termination, and anytime-prefix records.
+
+Implemented M11-C cost and trace layer:
+
+- positive complete-plan log-cost observations in a versioned append-only
+  JSONL store;
+- deterministic features with explicit missing-value flags;
+- an immutable RBF Gaussian-process snapshot in log-cost space;
+- finite combinatorial state-space bounds, per-interpretation and across-task
+  confidence utilities, positive raw-cost bounds, and deterministic JSONL
+  traces.
+
+The repository has no NumPy, SciPy, or scikit-learn dependency. The M11 GP is
+therefore a deliberately small standard-library implementation using a
+jittered Cholesky factorization, isolated from the algebra core and tested on
+controlled small planning datasets.
+
+Implemented M11-D composition and experiments:
+
+- M10 structured candidates through versioned alignment, supplied semantic
+  deviation, deterministic lowering, bounded physical search, strict
+  `C_bar < T_max`, one representative per interpretation, positive-utility
+  Nash ranking, and deterministic top K;
+- an adapter to existing M9 compilers or structured unsupported boundaries;
+- `python -m xgap.experiments.physical_planner --config <path>` and complete
+  `runs/<run_id>/` planner artifacts;
+- a test/experiment-only tiny exhaustive oracle with true-cost regret,
+  reachable/processed/generated/pruned metrics, pruning and reduction
+  measures, budget-quality curves, and the `eta_search + eta_select`
+  decomposition.
+
+Controlled M11 inputs are:
+
+- `examples/configs/m11_candidates.json`;
+- `examples/configs/m11_alignment.json`;
+- `examples/configs/m11_controlled_planner.json`.
+
+These are deterministic fixtures, not a production ontology, automated
+alignment system, ontology reasoner, live model, or benchmark dataset.
+
+The current deterministic `PathPatternQuery` lowering preserves selector
+`GroupBy`/`Projection` operators. Neo4j and Fuseki profiles correctly reject
+those complete logical plans under current M8/M9 coverage, so the controlled
+end-to-end M11 demo selects the reference evaluator. M11 does not bypass the
+logical plan by compiling the original pattern directly and does not expand
+M9 selector coverage. Direct logical fragments already within M9 remain
+compilable through the adapter.
+
+Latest M11 verification:
+
+- `python -m pytest tests/test_m11_contracts.py tests/test_m11_search.py tests/test_m11_cost.py tests/test_m11_planner.py tests/test_m11_oracle.py tests/test_m11_runner.py tests/test_m11_compiler_adapter.py -q`:
+  26 passed.
+- `python examples/m11_physical_planner_demo.py`: passed; 2 selected plans,
+  both with conservative upper estimate `6.289246`.
+- `python examples/m11_exhaustive_oracle_demo.py`: passed; 3 reachable states,
+  3 processed states, oracle and BnB true cost `2.0`, log-cost regret `0.0`.
+- `python -m pytest`: 298 passed, 2 skipped.
+- `./scripts/run_acceptance.sh`: passed, including harness check, full pytest,
+  all M0-M10 examples, and both M11 demos.
+
+See `docs/m11_ontology_bounded_physical_planning.md`.
+
+## M12-A Experiment Artifact Contract + Dataset Bundle
+
+M12-A is completed. It freezes and implements the experiment-facing
+contracts around the existing M10/M11 deterministic pipeline without
+changing M11 planning behavior.
+
+Implemented M12-A artifacts and APIs:
+
+- stable SHA-256 canonical hashing that excludes resolved local bundle roots;
+- `DatasetBundle`, normalized question/entity/alignment/schema records, and
+  the four-way fragment-support taxonomy;
+- validated ontology graphs with positive `H`, directed shortest-hop
+  subsumption distance, and explicit admissible sibling pairs;
+- directional semantic deviation with fixed multipliers `0`, `1/3`, `2/3`,
+  and `1`, uniform slot aggregation, and symbolic `infinity` for missing,
+  incomplete, unrelated, or inadmissible evidence;
+- the default epsilon sweep `{0, 0.1, 0.25, 0.5, 0.75, 1.0}` with config
+  override support;
+- `ModelBundle` and prompt contracts plus an offline M10 mock response
+  bundle, with no live model endpoint;
+- `ExperimentSpec`, GP/calibration and M11 feature-schema references,
+  execution protocol, explicit artifact availability, baseline IDs,
+  ablation switches, and grouped nullable metric records;
+- frozen run layout and traceable manifest with explicit unavailable
+  CUDA/GPU/Docker/backend-version fields;
+- `python -m xgap.experiments.run --config <path>` for the controlled
+  `full_xgap` development path only.
+
+The frozen GP experiment protocol retains the M11 RBF GP and
+`log_execution_cost` target. Future calibration samples complete physical
+plans into `D_0`, fits hyperparameters once on `D_0`, freezes those
+hyperparameters during evaluation, and permits posterior updates only
+between tasks. M12-A serializes and validates this protocol; it does not
+collect real observations or perform server calibration.
+
+The controlled development bundle at `datasets/financial_risk_dev/` contains
+20 explicitly synthetic cases spanning exact, specialization,
+generalization, explicit sibling, inadmissible/missing/incomplete mapping,
+fixed path, filter, compiler/representation gaps, multiple interpretations,
+and placement alternatives. It reuses the existing native financial-risk
+load artifacts. It is not the final paper benchmark.
+
+The formal development run used two currently representable OUT-path cases
+and three controlled candidates. It produced 27 files under
+`runs/m12-financial-risk-xgap-dev/`, including logical and physical plans,
+search traces, reference logical query artifacts, manifests, and explicit
+`not_available` backend-result records. Both questions completed
+successfully. No backend execution is claimed.
+
+Frozen baseline IDs:
+
+`full_xgap`, `random_feasible`, `mean_only`, `no_pruning`,
+`no_online_update`, `single_backend`, `exhaustive_oracle`, and
+`direct_text2graphquery`.
+
+Frozen ablation switches:
+
+`no_uncertainty`, `no_pruning`, `no_online_learning`, `no_semantic_bound`,
+`cost_only`, and `no_nash`.
+
+M12-A executes only the controlled `full_xgap` development path. Baseline
+and ablation execution remains M12-D scope.
+
+Latest M12-A verification:
+
+- `PYTHONPATH=src python -m pytest tests/test_m12_semantic.py tests/test_m12_contracts.py tests/test_m12_runner.py -q`: 15 passed.
+- `python examples/m12_experiment_contract_demo.py`: passed; 2/2 questions
+  succeeded and 27 artifact files were produced in the temporary run.
+- `PYTHONPATH=src python -m xgap.experiments.run --config experiments/configs/financial_risk_xgap_dev.json`: passed; 2/2 questions succeeded and
+  the frozen run tree was produced.
+- `python -m pytest`: 313 passed, 2 skipped.
+- `./scripts/run_acceptance.sh`: passed, including the harness, full pytest,
+  all previous examples, both M11 demos, and the M12-A demo.
+
+M12-B subsequently replaces the controlled inference inputs with the bounded
+live/runtime path described below. M12-C real D0 calibration and online
+posterior updates, and M12-D executable baselines/ablations/server
+orchestration remain not started.
+
+See `docs/m12_experimentalization.md`.
+
+## M12-B Live LLM + Ontology/Alignment Artifacts
+
+M12-B is completed. The same configuration-driven M12 runner now selects
+either the existing M12-A mock path or a live structured provider path from
+`ExperimentSpec` and `ModelBundle`; the M11 physical planner is unchanged.
+
+Implemented M12-B boundaries:
+
+- a generic `OpenAICompatibleStructuredCandidateProvider` implementing the
+  existing M10 `StructuredCandidateProvider` protocol;
+- one generation call and at most one schema/syntax repair call, with exact
+  generation/repair counts and safe request metadata in run artifacts;
+- a fixed DashScope ModelBundle for `qwen3-max-2026-01-23` and a portable
+  configuration-only vLLM OpenAI-compatible template;
+- deterministic bounded lexical/alias retrieval over the versioned ontology,
+  entity catalog, source schema snapshot, and backend mappings;
+- per-question `PromptSchemaView`, explicit query anchors, separate candidate
+  slot realizations, prompt-visible ID validation, full slot-coverage checks,
+  and explicit missing-mapping failures;
+- `FileBackedRuntimeAlignmentProvider`, which creates real runtime inputs for
+  the frozen M12-A directional ontology-hop `c_sem` implementation without
+  using benchmark gold artifacts;
+- live invocation, usage, prompt-view, query-slot, grounding, alignment,
+  diagnostics, and optional live-generation metrics artifacts;
+- stable failure categories for provider, parsing, repair, grounding,
+  mapping, semantic, representation, and compiler boundaries.
+
+The anti-leakage boundary excludes gold answers, gold logical forms, gold
+alignments, and evaluation labels from runtime retrieval, prompts, model
+requests, candidate validation, semantic deviation, and M11 planning. The
+runtime artifact loader has no gold-bearing DatasetBundle reference after
+construction. Gold remains available only to a future explicit evaluation
+path.
+
+The financial-risk ontology remains a controlled development artifact. The
+retriever is deterministic lexical/alias retrieval, not a full OWL/DL
+reasoner. The live provider emits grounded `PathPatternQuery` JSON only;
+native Cypher, SPARQL, or GQL remains deterministic compiler output.
+
+M12-B does not implement model training, LoRA, model deployment, real D0
+collection, GP calibration, online posterior updates, executable baselines,
+ablation matrices, KGQA evaluation, or server-scale orchestration. Those
+boundaries remain M12-C, M12-D, or later work.
+
+Latest M12-B verification:
+
+- `python -m pytest tests/test_m12b_provider.py tests/test_m12b_runtime_alignment.py tests/test_m12b_runner.py tests/test_m12b_live.py -q`:
+  18 passed, 1 skipped;
+- `python -m pytest -q`: 331 passed, 3 skipped;
+- the skipped M12-B test is the real DashScope smoke test, gated by both
+  `XGAP_RUN_LIVE_LLM=1` and `DASHSCOPE_API_KEY`;
+- the fake-HTTP integration exercised the real OpenAI-compatible provider,
+  runtime grounding, frozen `c_sem`, unchanged M11 planner, and live artifact
+  layout without network access;
+- the M12-A mock runner regression planned 2/2 questions successfully;
+- `./scripts/run_acceptance.sh`: passed with 331 tests passed, 3 gated live
+  tests skipped, and all existing examples successful.
+
 ## Required Acceptance Command
 ./scripts/run_acceptance.sh
 
 # Latest Known Acceptance Status
 
-M0-M10 acceptance passed locally and M7 live backend smoke tests passed
-on the server.
+M0-M12-B acceptance passed locally and M7 live backend smoke tests passed
+on the server. The real DashScope M12-B smoke test was not run because live
+credentials were not present in the local environment.
 
 Latest recorded command results:
 
-- `python -m pytest`: 272 passed, 2 skipped.
+- `python -m pytest`: 331 passed, 3 skipped.
 - `python examples/quantified_pattern_demo.py`: passed.
 - `python examples/compiler_mvp_demo.py`: passed.
 - `python examples/llm_boundary_demo.py`: passed.
+- `python examples/m11_physical_planner_demo.py`: passed.
+- `python examples/m11_exhaustive_oracle_demo.py`: passed.
+- `python examples/m12_experiment_contract_demo.py`: passed; 2/2 controlled
+  questions and 27 artifact files.
 - `./scripts/run_acceptance.sh`: passed, including harness check,
   pytest, all existing examples, `examples/quantified_pattern_demo.py`,
-  `examples/compiler_mvp_demo.py`, and `examples/llm_boundary_demo.py`.
+  `examples/compiler_mvp_demo.py`, `examples/llm_boundary_demo.py`, both M11
+  demos, and the M12-A demo. The M12-B fake-HTTP path is exercised by pytest.
 
 Expected checks include:
 
@@ -374,3 +658,8 @@ Expected checks include:
 - quantified-pattern tests
 - M9 compiler tests
 - M10 LLM-boundary tests
+- M11 contracts, search, cost, main-planner, oracle, and runner tests
+- examples/m11_physical_planner_demo.py
+- examples/m11_exhaustive_oracle_demo.py
+- M12-A semantic, bundle/contract, and runner tests
+- examples/m12_experiment_contract_demo.py

@@ -1,0 +1,4 @@
+{
+  "$ref": "../qwen3_max_dashscope_live/structured_schema.json",
+  "template_note": "Use the same M12-B grounded PathPatternQuery schema when materializing a local bundle."
+}

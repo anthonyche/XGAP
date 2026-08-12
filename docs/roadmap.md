@@ -321,47 +321,142 @@ not require live LLM services.
 Current status:
 DONE
 
-## M11 Logical Optimization and Cost Estimation
+## M11 Ontology-Bounded Physical Planning
 
 Goal:
-Add logical rewrite rules and a first cost-estimation interface.
+Keep logical compilation deterministic for each interpretation and search
+only physical realizations: backend placement and explicit cross-backend
+exchange decisions. Ontology, schema, source mappings, and semantic
+alignment are external, versioned planning inputs rather than search
+dimensions.
+
+M11 is decomposed into:
+
+- M11-A Planning Objective and Physical-State Contract
+- M11-B Bounded Branch-and-Bound Physical Search
+- M11-C Bayesian Cost Model and Search Trace
+- M11-D XGAP Main Planner and Exhaustive Oracle Evaluation
 
 Files involved:
-src/xgap/algebra/optimizer.py, cost model modules, optimizer tests.
+`src/xgap/planning/**`, `src/xgap/experiments/**`, M11 tests and controlled
+artifacts, M11 demos, `docs/m11_ontology_bounded_physical_planning.md`,
+and current-state documentation. Existing logical operators, deterministic
+lowering, backend capability profiles, compiler contracts, and M10
+candidate objects are reused rather than duplicated.
 
 Acceptance criteria:
-Rewrites preserve semantics; unsupported rewrites are rejected; cost
-features can be extracted from plans.
+
+- physical states have deterministic identities and contain a fixed logical
+  plan, backend placements, and exchange decisions;
+- mapping sufficiency and semantic deviation are resolved through pluggable,
+  versioned ontology/alignment providers before physical search;
+- bounded best-first branch-and-bound search charges one budget unit per
+  processed `ExtractMin`, preserves anytime prefixes, and retains the
+  discovered complete plan with minimum conservative upper estimate;
+- cost observations contain positive raw costs for complete plans and a
+  frozen Gaussian-process snapshot predicts log-cost confidence bounds;
+- returnable plans satisfy the strict hard bound `C_bar < T_max` and the
+  strictly positive Nash-output domain;
+- at most one representative is retained per interpretation and deterministic
+  top-K ranking uses the planning-time Nash score;
+- a tiny exhaustive oracle measures planning regret and search reduction in
+  tests and experiments without being used by the production planner;
+- compiler and runtime gaps are represented explicitly rather than expanded
+  or approximated;
+- unit tests, controlled demos, full pytest, and acceptance pass.
+
+M11 does not implement live LLM providers, KGQA loading/evaluation, LoRA or
+model training, automatic ontology induction, a built-in general-purpose
+OWL/DL reasoner, full GQL, new compiler coverage for recursive/selectors/M6,
+logical rewrite enumeration, new execution engines, or distributed
+cross-backend runtime orchestration.
 
 Current status:
-TODO
+DONE
 
-## M12 LLM Provider Integration And Grounding
+## M12 Experimentalization
 
 Goal:
-Add optional concrete LLM provider integrations and grounding context
-around the M10 structured candidate interface.
+Turn the M10/M11 controlled pipeline into a reproducible experiment surface
+without changing the deterministic planner core.
+
+M12 is decomposed into:
+
+- M12-A Experiment Artifact Contract + Dataset Bundle
+- M12-B Live LLM + Ontology/Alignment Artifacts
+- M12-C Cost Calibration + Online GP Protocol
+- M12-D Baselines/Ablations + Server Experiment Runner
+
+M12-A freezes experimental semantics and introduces versioned contracts for
+dataset bundles, model bundles, experiment specifications, semantic
+deviation, GP protocols, metrics, execution protocols, manifests, hashing,
+and run artifacts. It also adds a controlled financial-risk development
+bundle and offline development runner over existing M10/M11 interfaces.
+
+M12-B adds a generic OpenAI-compatible structured provider, a fixed DashScope
+Qwen ModelBundle, a portable vLLM configuration boundary, bounded runtime
+ontology/schema retrieval, query anchors, candidate slot realizations, and a
+gold-free file-backed runtime alignment provider. It supplies real runtime
+semantic/model inputs to the unchanged M11 planner while reusing M12-A's
+frozen semantic deviation exactly.
 
 Files involved:
-provider-specific LLM modules, environment configuration, live tests
-gated by an opt-in environment variable, and grounding interfaces.
+`src/xgap/experiments/**`, `datasets/**`, `models/**`, `experiments/**`, M12-A
+tests and demo, `docs/m12_experimentalization.md`, the M12-A sprint prompt,
+and current-state documentation. M11 planner contracts are reused unchanged.
 
-Acceptance criteria:
-Provider output is schema-validated; deterministic lowering/validation
-remain LLM-free; default pytest does not require live model services.
+M12-A acceptance criteria:
 
-Current status: TODO
+- the frozen directional ontology-hop semantics and uniform slot aggregation
+  are typed, serializable, and tested;
+- DatasetBundle, ModelBundle, and ExperimentSpec load deterministically with
+  stable versions and content hashes;
+- fragment-support, baseline, ablation, metric, execution, GP, and run-layout
+  contracts reject invalid combinations explicitly;
+- missing optional benchmark gold data remains explicitly unavailable;
+- a controlled financial-risk development bundle exercises the contract;
+- one offline runner materializes the complete M12 artifact tree through the
+  existing M10 mock boundary and M11 planner;
+- targeted tests, full pytest, the development run, and acceptance pass.
 
-## M13 Disambiguation and Top-K Ranking
+M12-B acceptance criteria:
+
+- changing only ExperimentSpec/ModelBundle selects the mock or live structured
+  candidate provider;
+- one generation call and at most one repair call produce no more than M
+  grounded `PathPatternQuery` candidates;
+- prompt context is bounded, deterministic, content-hashed, and contains no
+  gold answers, gold logical forms, gold alignments, or evaluation labels;
+- query-side anchors and candidate slot realizations remain separate and feed
+  the frozen M12-A `c_sem` implementation;
+- ontology/entity IDs, slot coverage, and backend mappings are validated
+  explicitly before the unchanged M11 planner runs;
+- DashScope uses the fixed `qwen3-max-2026-01-23` snapshot and the same generic
+  provider remains configurable for a future/local vLLM endpoint;
+- default pytest remains offline, fake-HTTP tests exercise the full provider
+  path, and the real Qwen smoke test is explicitly gated.
+
+M12-B does not implement LoRA, model deployment, full ontology reasoning,
+real D0 collection, GP calibration, executable baselines/ablations, final
+KGQA evaluation, or server experiment orchestration.
+
+Current status:
+M12-A DONE; M12-B DONE; M12-C/D NOT STARTED
+
+## M13 Automated Semantic Disambiguation
 
 Goal:
-Rank candidate interpretations under ambiguity.
+Replace controlled semantic-deviation inputs with a separately specified,
+evidence-backed disambiguation stage. Reuse M11 one-representative Nash top-K
+rather than introducing a second physical ranking algorithm.
 
 Files involved:
 Disambiguation modules, ranking modules, tests.
 
 Acceptance criteria:
-XGAP can score candidate interpretations, preserve top-K alternatives, and separate interpretation quality from execution cost.
+XGAP can derive reproducible semantic-deviation evidence for candidate
+interpretations and supply it through the M11 scorer boundary while keeping
+semantic quality separate from conservative execution cost.
 
 Current status:
 TODO

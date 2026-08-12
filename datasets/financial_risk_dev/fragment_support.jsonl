@@ -1,0 +1,21 @@
+{"question_id":"fr-q001","fragment_support":"xgap_supported","reason":"bounded fixed path and scalar constraints"}
+{"question_id":"fr-q002","fragment_support":"xgap_supported","reason":"path pattern with controlled semantic specialization"}
+{"question_id":"fr-q003","fragment_support":"xgap_supported","reason":"path pattern with controlled semantic generalization"}
+{"question_id":"fr-q004","fragment_support":"xgap_supported","reason":"path pattern with explicit admissible sibling evidence"}
+{"question_id":"fr-q005","fragment_support":"xgap_supported","reason":"representable candidate is rejected by semantic deviation"}
+{"question_id":"fr-q006","fragment_support":"dataset_mapping_failure","reason":"required ontology-to-source mapping is absent"}
+{"question_id":"fr-q007","fragment_support":"xgap_supported","reason":"representable candidate is rejected for incomplete slot coverage"}
+{"question_id":"fr-q008","fragment_support":"xgap_supported","reason":"fixed-length path fragment"}
+{"question_id":"fr-q009","fragment_support":"xgap_supported","reason":"path predicate with scalar amount comparison"}
+{"question_id":"fr-q010","fragment_support":"compiler_unsupported","reason":"current backend compilers reject recursive selector fragment"}
+{"question_id":"fr-q011","fragment_support":"representation_unsupported","reason":"arbitrary cyclic conjunctive motif is outside PathPatternQuery"}
+{"question_id":"fr-q012","fragment_support":"dataset_mapping_failure","reason":"source predicate mapping is absent"}
+{"question_id":"fr-q013","fragment_support":"xgap_supported","reason":"multiple controlled PathPatternQuery candidates"}
+{"question_id":"fr-q014","fragment_support":"xgap_supported","reason":"logical fragment supports backend placement alternatives"}
+{"question_id":"fr-q015","fragment_support":"xgap_supported","reason":"fixed ownership path"}
+{"question_id":"fr-q016","fragment_support":"xgap_supported","reason":"controlled two-hop specialization"}
+{"question_id":"fr-q017","fragment_support":"xgap_supported","reason":"controlled two-hop generalization"}
+{"question_id":"fr-q018","fragment_support":"xgap_supported","reason":"explicit admissible sibling"}
+{"question_id":"fr-q019","fragment_support":"xgap_supported","reason":"fixed transfer path with optional gold form unavailable"}
+{"question_id":"fr-q020","fragment_support":"compiler_unsupported","reason":"M6 quantified pattern is not in current backend compiler coverage"}
+

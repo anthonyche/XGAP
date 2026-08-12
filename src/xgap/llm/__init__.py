@@ -1,6 +1,13 @@
 """LLM-facing planner boundary interfaces."""
 
 from xgap.llm.mock import MockStructuredCandidateProvider
+from xgap.llm.openai_compatible import (
+    LiveFailureCategory,
+    LiveInvocationArtifact,
+    LiveProviderError,
+    OpenAICompatibleProviderConfig,
+    OpenAICompatibleStructuredCandidateProvider,
+)
 from xgap.llm.parser import (
     PlannerSchemaError,
     parse_path_pattern_query,
@@ -20,6 +27,11 @@ from xgap.llm.validation import validate_candidate
 __all__ = [
     "CandidateValidationReport",
     "MockStructuredCandidateProvider",
+    "LiveFailureCategory",
+    "LiveInvocationArtifact",
+    "LiveProviderError",
+    "OpenAICompatibleProviderConfig",
+    "OpenAICompatibleStructuredCandidateProvider",
     "PlannerCandidate",
     "PlannerRequest",
     "PlannerResponse",

@@ -1,0 +1,8 @@
+{"entity_id":"person-alice","canonical_label":"Alice","aliases":["alice"],"types":["Person"],"metadata":{"controlled":true}}
+{"entity_id":"company-redstone","canonical_label":"Redstone Analytics","aliases":["redstone"],"types":["HighRiskCompany"],"metadata":{"controlled":true}}
+{"entity_id":"company-blackpeak","canonical_label":"BlackPeak Trading","aliases":["blackpeak"],"types":["HighRiskCompany"],"metadata":{"controlled":true}}
+{"entity_id":"company-blueharbor","canonical_label":"Blue Harbor Logistics","aliases":["blue harbor"],"types":["LowRiskCompany"],"metadata":{"controlled":true}}
+{"entity_id":"acct-alice","canonical_label":"Alice Account","aliases":[],"types":["PersonalAccount"],"metadata":{"controlled":true}}
+{"entity_id":"acct-redstone","canonical_label":"Redstone Account","aliases":[],"types":["CorporateAccount"],"metadata":{"controlled":true}}
+{"entity_id":"acct-blackpeak","canonical_label":"BlackPeak Account","aliases":[],"types":["CorporateAccount"],"metadata":{"controlled":true}}
+{"entity_id":"acct-blueharbor","canonical_label":"Blue Harbor Account","aliases":[],"types":["CorporateAccount"],"metadata":{"controlled":true}}

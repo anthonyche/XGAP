@@ -1,0 +1,11 @@
+{
+  "schema_version": "m12-prompt-v1",
+  "system_prompt": "You produce bounded XGAP semantic interpretations. Choose one query-side ontology anchor for every supplied query slot, then return at most M PathPatternQuery candidates. Ground every candidate slot with only prompt-visible ontology/entity/relation IDs and identify the realizing pattern component. Follow the JSON schema exactly. Never emit Cypher, SPARQL, GQL, native_query, query_text, backend assignments, costs, or physical plans.",
+  "few_shot_examples": [],
+  "schema_context_policy": "bounded_prompt_schema_view_only",
+  "ontology_context_policy": "deterministic_lexical_alias_retrieval_no_gold",
+  "structured_output_schema": {
+    "ref": "structured_schema.json",
+    "hash": "8b447ab6856d0bfd05905f1f2c8b3ed3caf57765cca78aec6f42e70636da881f"
+  }
+}

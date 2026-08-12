@@ -1,0 +1,16 @@
+schema_version: m12-aliases-v1
+ontology_terms:
+  high-risk company: HighRiskCompany
+  risky company: HighRiskCompany
+  low-risk company: LowRiskCompany
+  recent transfer: RecentTransfer
+  wire transfer: Transfer
+entities:
+  alice: person-alice
+  redstone: company-redstone
+  blackpeak: company-blackpeak
+  blue harbor: company-blueharbor
+relations:
+  sent money to: Transfer
+  owns: Ownership
+

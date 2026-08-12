@@ -1,0 +1,22 @@
+{
+  "schema_version": "m12-schema-snapshot-v1",
+  "source": "xgap-financial-risk-toy",
+  "version": "controlled-v1",
+  "timestamp": null,
+  "content": {
+    "nodes": {
+      "labels": ["Account", "Company", "Person"],
+      "properties": ["id", "name", "risk_level", "opened_on"]
+    },
+    "edges": {
+      "labels": ["OWNS", "TRANSFER"],
+      "properties": ["id", "amount", "currency", "occurred_on"]
+    },
+    "rdf": {
+      "classes": ["Account", "Company", "Person", "Transfer"],
+      "predicates": ["amount", "currency", "fromAccount", "name", "occurredOn", "owns", "riskLevel", "toAccount"]
+    }
+  },
+  "content_hash": "a61db35edc9148bba6354af70188ebd20d8e71ba4bb1a5637d61dd57bb24de9d"
+}
+

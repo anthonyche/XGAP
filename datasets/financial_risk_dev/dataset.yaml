@@ -1,0 +1,26 @@
+schema_version: m12-dataset-bundle-v1
+dataset_id: financial_risk_dev
+version: controlled-v1
+name: XGAP Financial Risk Controlled Development Bundle
+description: Controlled development cases over the repository financial-risk toy graph.
+provenance: XGAP-authored synthetic development fixture; not an external benchmark.
+controlled: true
+required_artifacts: [questions, ontology, aliases, entity_catalog, backend_mapping, schema_snapshot, fragment_support]
+optional_artifacts: [gold_alignments]
+artifacts:
+  questions: questions.jsonl
+  ontology: ontology.yaml
+  aliases: aliases.yaml
+  entity_catalog: entity_catalog.jsonl
+  backend_mapping: backend_mapping.yaml
+  schema_snapshot: schema_snapshot.json
+  gold_alignments: gold_alignments.jsonl
+  fragment_support: fragment_support.jsonl
+backend_load:
+  neo4j: ../../examples/financial_risk/load_neo4j.cypher
+  fuseki: ../../examples/financial_risk/load_fuseki.ttl
+metadata:
+  benchmark_status: controlled_development
+  final_paper_benchmark: false
+  case_count: 20
+

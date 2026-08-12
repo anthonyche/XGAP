@@ -1,0 +1,26 @@
+{
+  "schema_version": "m12-model-config-v1",
+  "model_id": "mock_path_pattern_dev",
+  "version": "controlled-v1",
+  "provider": "mock",
+  "exact_model_snapshot": "m10-static-response-fixture-v1",
+  "endpoint_type": "offline_artifact",
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "candidate_count": 3,
+  "structured_output_mode": "m10_planner_response_json",
+  "prompt_ref": "prompt.json",
+  "prompt_hash": "d4f09ecdedb862904e97d38dece0601a9458bbe5872998e6ab62a81d568487d3",
+  "token_limits": {
+    "input": 4096,
+    "output": 2048
+  },
+  "seed": 0,
+  "seed_supported": true,
+  "mock_responses_ref": "mock_responses.json",
+  "metadata": {
+    "live_model": false,
+    "controlled": true
+  }
+}
+

@@ -1,0 +1,75 @@
+{
+  "artifact_version": 1,
+  "ontology": {
+    "id": "controlled-financial-risk-ontology",
+    "version": "fixture-1"
+  },
+  "mapping": {
+    "id": "controlled-financial-risk-source-map",
+    "version": "fixture-1"
+  },
+  "interpretations": {
+    "alice-recent-transfer": {
+      "alignment_id": "alignment-alice-recent-transfer-v1",
+      "mapping_status": "sufficient",
+      "required_terms": [
+        "Person",
+        "Transfer",
+        "Company",
+        "HighRisk"
+      ],
+      "mapped_terms": [
+        "Person",
+        "TRANSFER",
+        "Company",
+        "Company.risk=high"
+      ],
+      "evidence": [
+        "controlled:Person->Person",
+        "controlled:Transfer->TRANSFER",
+        "controlled:HighRisk->Company.risk=high"
+      ],
+      "aliases": {
+        "Alice": "Person.name=Alice"
+      },
+      "semantic_inputs": {
+        "semantic_deviation": 0.08,
+        "components": {
+          "controlled_alignment": 0.08
+        }
+      },
+      "metadata": {
+        "fixture_only": true,
+        "reasoning_performed": false
+      }
+    },
+    "alice-transfer-alternative": {
+      "alignment_id": "alignment-alice-transfer-alternative-v1",
+      "mapping_status": "sufficient",
+      "required_terms": [
+        "Person",
+        "Transfer",
+        "Company"
+      ],
+      "mapped_terms": [
+        "Person",
+        "TRANSFER",
+        "Company"
+      ],
+      "evidence": [
+        "controlled:Person->Person",
+        "controlled:Transfer->TRANSFER"
+      ],
+      "semantic_inputs": {
+        "semantic_deviation": 0.22,
+        "components": {
+          "controlled_alignment": 0.22
+        }
+      },
+      "metadata": {
+        "fixture_only": true,
+        "reasoning_performed": false
+      }
+    }
+  }
+}

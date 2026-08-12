@@ -1,0 +1,33 @@
+{
+  "schema_version": "m12-model-config-v1",
+  "model_id": "qwen3_max_dashscope_live",
+  "version": "m12b-live-v1",
+  "provider": "dashscope_openai_compatible",
+  "exact_model_snapshot": "qwen3-max-2026-01-23",
+  "endpoint_type": "openai_compatible",
+  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "api_key_env": "DASHSCOPE_API_KEY",
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "candidate_count": 3,
+  "structured_output_mode": "json_object",
+  "prompt_ref": "prompt.json",
+  "prompt_hash": "c0d37e20ee1e82523f2d5260f954a66c20fbf8037d5ad48d5219989816b569eb",
+  "structured_schema_ref": "structured_schema.json",
+  "structured_schema_hash": "8b447ab6856d0bfd05905f1f2c8b3ed3caf57765cca78aec6f42e70636da881f",
+  "token_limits": {
+    "input": 12000,
+    "output": 4096
+  },
+  "timeout_seconds": 120.0,
+  "seed": null,
+  "seed_supported": false,
+  "max_repair_calls": 1,
+  "extra_parameters": {},
+  "metadata": {
+    "live_model": true,
+    "region": "china_beijing_default_endpoint",
+    "fixed_snapshot": true,
+    "native_query_generation": false
+  }
+}
