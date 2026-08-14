@@ -40,6 +40,7 @@ from xgap.planning.cost import (
     across_task_delta,
     confidence_beta,
     conservative_state_space_bound,
+    gaussian_process_negative_log_marginal_likelihood,
     make_execution_observation,
 )
 from xgap.planning.budget import FixedBudgetPolicy, PolynomialBudgetPolicy
@@ -124,6 +125,7 @@ __all__ = [
     "compare_search_with_oracle",
     "enumerate_successors",
     "exhaustive_physical_oracle",
+    "gaussian_process_negative_log_marginal_likelihood",
     "index_logical_plan",
     "make_execution_observation",
     "objective_score",

@@ -55,13 +55,13 @@ class FusekiClient:
         )
 
     def execute(self, artifact: QueryArtifact) -> ExecutionReport:
-        if artifact.kind != "native" or artifact.language.lower() != "sparql":
+        if artifact.kind not in {"native", "compiled"} or artifact.language.lower() != "sparql":
             return ExecutionReport(
                 backend_id=self.backend_id,
                 artifact_id=artifact.artifact_id,
                 language=artifact.language,
                 success=False,
-                error="FusekiClient executes native SPARQL artifacts only",
+                error="FusekiClient executes native or compiled SPARQL artifacts only",
             )
 
         started_at = _now()

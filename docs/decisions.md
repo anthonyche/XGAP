@@ -466,3 +466,35 @@ The live model is an interpretation proposer, not an algebra, planner,
 compiler, or evaluation oracle. Bounding calls/context and enforcing the
 anti-leakage boundary makes runtime behavior reproducible enough for
 experimentation while preserving XGAP's deterministic correctness core.
+
+## D46 M12-C calibrates independent backend-local RBF GPs
+
+The default M12-C protocol builds separate `D0_neo4j` and `D0_fuseki`
+datasets and fits one existing-family RBF GP per backend. Both models use the
+same deterministic M11 feature-schema contract and millisecond/log-millisecond
+cost convention, but observations never cross backend boundaries. There is no
+default joint backend-aware GP.
+
+Reason:
+
+Current infrastructure can measure backend-local native query execution but
+cannot attribute arbitrary distributed movement cost. Independent models keep
+measurement provenance explicit without changing the paper-level physical
+state model or M11 `CostEstimator` boundary. A joint model remains a possible
+future ablation, not an M12-C default.
+
+## D47 M12-C freezes hyperparameters and updates posterior between tasks
+
+GP hyperparameters, feature ordering, missing-value representation, and
+normalization are fitted or frozen from D0 before evaluation. Task q receives
+one immutable posterior based on `D_(q-1)`. Only successful, positive-cost,
+complete-plan executions from task q are appended, as one atomic batch, after
+the task finishes. No partial-state label, within-task update, future-task
+observation, or cross-backend movement observation is admitted.
+
+Reason:
+
+This enforces the Chapter 5 temporal boundary, prevents evaluation leakage,
+and lets every search decision in one task use the same confidence model.
+Append-only observations and posterior hashes make `D_(q-1) -> D_q`
+replayable without changing BnB, confidence schedules, or Nash selection.

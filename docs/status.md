@@ -2,7 +2,7 @@
 
 ## Current Milestone
 
-M12-B Live LLM + Ontology/Alignment Artifacts is completed.
+M12-C Cost Calibration + Online GP Protocol is completed.
 
 ## Completed
 
@@ -23,15 +23,14 @@ M12-B Live LLM + Ontology/Alignment Artifacts is completed.
 - M11 Ontology-Bounded Physical Planning
 - M12-A Experiment Artifact Contract + Dataset Bundle
 - M12-B Live LLM + Ontology/Alignment Artifacts
+- M12-C Cost Calibration + Online GP Protocol
 
 ## In Progress
 
 - None
 
 ## Next Planned Milestone:
-M12-C Cost Calibration + Online GP Protocol. It must collect real complete-plan
-observations and calibrate the frozen M11 GP protocol without changing M11
-search semantics.
+M12-D Baselines/Ablations + Server Experiment Runner remains not started.
 
 ## M12 Experimentalization
 
@@ -39,7 +38,7 @@ Current phase status:
 
 - M12-A Experiment Artifact Contract + Dataset Bundle: Completed
 - M12-B Live LLM + Ontology/Alignment Artifacts: Completed
-- M12-C Cost Calibration + Online GP Protocol: Not Started
+- M12-C Cost Calibration + Online GP Protocol: Completed
 - M12-D Baselines/Ablations + Server Experiment Runner: Not Started
 
 M12-A freezes experiment-facing semantics and artifact contracts. It does not
@@ -106,7 +105,7 @@ backend support.
 - GQL compiler support
 - Recursive, selector, and M6 quantified-pattern backend compilation
 - Logical rewrite optimization
-- Production-trained cost calibration and automated observation collection
+- Paper-scale calibrated observations beyond the controlled development workload
 - Production ontology/schema, stronger retrieval, and automated reasoning
 - Distributed cross-backend execution
 - Provider-specific production hardening beyond the generic OpenAI-compatible boundary
@@ -553,9 +552,9 @@ Latest M12-A verification:
   all previous examples, both M11 demos, and the M12-A demo.
 
 M12-B subsequently replaces the controlled inference inputs with the bounded
-live/runtime path described below. M12-C real D0 calibration and online
-posterior updates, and M12-D executable baselines/ablations/server
-orchestration remain not started.
+live/runtime path described below. M12-C subsequently implements real-backend
+D0 collection capability and the online posterior lifecycle. M12-D executable
+baselines, ablations, and server orchestration remain not started.
 
 See `docs/m12_experimentalization.md`.
 
@@ -611,8 +610,9 @@ semantics, or downstream planning.
 
 M12-B does not implement model training, LoRA, model deployment, real D0
 collection, GP calibration, online posterior updates, executable baselines,
-ablation matrices, KGQA evaluation, or server-scale orchestration. Those
-boundaries remain M12-C, M12-D, or later work.
+ablation matrices, KGQA evaluation, or server-scale orchestration. M12-C now
+implements the cost-calibration and posterior-lifecycle boundary; the other
+boundaries remain M12-D or later work.
 
 Latest M12-B verification:
 
@@ -636,22 +636,93 @@ Latest M12-B verification:
 - `./scripts/run_acceptance.sh`: passed with 336 tests passed, 3 gated live
   tests skipped, and all existing examples successful.
 
+## M12-C Cost Calibration + Online GP Protocol
+
+M12-C is completed. It adds a separate, server-friendly calibration path and
+does not modify `PathPatternQuery`, logical lowering, M11 BnB, `c_sem`, the
+Nash objective, or the frozen M12-B model/alignment boundary.
+
+Implemented M12-C boundaries:
+
+- typed calibration config, case, workload, plan, measurement, D0, calibrated
+  model, posterior snapshot, and posterior-update artifacts;
+- deterministic stratified selection of complete plans from a dedicated
+  calibration split;
+- M9 compilation followed by repeated execution through the existing Neo4j
+  and Fuseki clients, including support for M9 `compiled` native artifacts;
+- raw millisecond and `log(execution_ms)` persistence with all warmup and
+  measured repetitions retained;
+- separate `D0_neo4j` and `D0_fuseki` datasets with no cross-backend
+  observation mixing;
+- deterministic negative-log-marginal-likelihood calibration of the existing
+  RBF GP family, with repeated-run noise evidence and a positive noise floor;
+- persisted config, protocol, descriptor, feature-schema, D0, model, and
+  hyperparameter hashes;
+- immutable `BackendCostModelRegistry` snapshots that expose calibrated
+  estimators through the existing M11 `CostEstimator` interface;
+- `OnlinePosteriorLifecycle`, which gives task q one fixed `D_(q-1)` snapshot
+  and atomically appends only successful executed complete-plan observations
+  after the whole task batch finishes;
+- backend-isolated updates, batch IDs and K_q records, temporal anti-leakage
+  checks, persisted execution evidence, and unchanged hyperparameter hashes;
+- explicit unavailable handling for unsupported distributed cross-backend
+  movement measurement;
+- a two-plan financial-risk development workload, a dual-backend calibration
+  config, an offline deterministic demo, and an optional gated live smoke.
+
+The local offline development run created two D0 records per backend and two
+independently calibrated model artifacts. It demonstrated that the calibrated
+posterior differs from the development prior for at least one state. These are
+explicit fake development latencies and are not claimed as real Neo4j/Fuseki
+calibration results.
+
+Real server command:
+
+```bash
+XGAP_RUN_BACKENDS=1 PYTHONPATH=src \
+python -m xgap.experiments.calibrate \
+  --config experiments/configs/financial_risk_gp_calibration_dev.json
+```
+
+Optional live pytest additionally requires `XGAP_RUN_CALIBRATION=1`. Default
+pytest remains fully offline.
+
+M12-C does not add a joint backend-aware GP, cross-backend movement-cost
+learning, distributed runtime orchestration, new compiler coverage, baseline
+or ablation execution, matrix scheduling, new benchmarks, semantic-deviation
+changes, ontology reasoning, or new LLM behavior. Those remain M12-D or later.
+
+Latest M12-C verification:
+
+- `PYTHONPATH=src python -m pytest tests/test_m12c_calibration.py tests/test_m12c_live.py -q`:
+  9 passed, 1 live calibration test skipped;
+- the M11/M12-A/M12-B focused regression suite: 57 passed, 1 gated live LLM
+  test skipped;
+- `PYTHONPATH=src python examples/m12c_calibration_demo.py`: passed, with 2
+  explicit fake D0 records and one calibrated model per backend;
+- `python -m pytest`: 345 passed, 4 gated live tests skipped;
+- `./scripts/run_acceptance.sh`: passed, including the harness, full pytest,
+  all historical examples, and the M12-C offline calibration demo.
+
+The real M12-C backend calibration smoke was not run on this local machine.
+No real Neo4j/Fuseki D0 values are claimed by this completion record.
+
 ## Required Acceptance Command
 ./scripts/run_acceptance.sh
 
 # Latest Known Acceptance Status
 
-M0-M12-B acceptance passed locally and M7 live backend smoke tests passed
+M0-M12-C acceptance passed locally and M7 live backend smoke tests passed
 on the server. A real DashScope M12-B development run completed one question
 with one generation call, no repair, and three candidates. The later audit
 identified and fixed exact-request persistence and typed component-grounding
 gaps. The credentialed post-fix live rerun passed and verified the revised
 prompt, typed grounding, and exact-request artifact. M12-B is ready to freeze,
-and M12-C may proceed.
+and M12-C subsequently completed without changing the frozen M12-B boundary.
 
 Latest recorded command results:
 
-- `python -m pytest`: 336 passed, 3 skipped.
+- `python -m pytest`: 345 passed, 4 skipped.
 - `python examples/quantified_pattern_demo.py`: passed.
 - `python examples/compiler_mvp_demo.py`: passed.
 - `python examples/llm_boundary_demo.py`: passed.
@@ -659,10 +730,13 @@ Latest recorded command results:
 - `python examples/m11_exhaustive_oracle_demo.py`: passed.
 - `python examples/m12_experiment_contract_demo.py`: passed; 2/2 controlled
   questions and 27 artifact files.
+- `python examples/m12c_calibration_demo.py`: passed; the explicit offline
+  fake path produced 2 D0 records and one calibrated GP per backend.
 - `./scripts/run_acceptance.sh`: passed, including harness check,
   pytest, all existing examples, `examples/quantified_pattern_demo.py`,
   `examples/compiler_mvp_demo.py`, `examples/llm_boundary_demo.py`, both M11
-  demos, and the M12-A demo. The M12-B fake-HTTP path is exercised by pytest.
+  demos, the M12-A demo, and the M12-C calibration demo. The M12-B fake-HTTP
+  path is exercised by pytest.
 
 Expected checks include:
 
@@ -686,3 +760,5 @@ Expected checks include:
 - examples/m11_exhaustive_oracle_demo.py
 - M12-A semantic, bundle/contract, and runner tests
 - examples/m12_experiment_contract_demo.py
+- M12-C calibration, model, measurement, and online-posterior tests
+- examples/m12c_calibration_demo.py

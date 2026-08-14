@@ -61,3 +61,7 @@ fi
 if [ -f examples/m12_experiment_contract_demo.py ]; then
   "$PYTHON" examples/m12_experiment_contract_demo.py
 fi
+
+if [ -f examples/m12c_calibration_demo.py ]; then
+  "$PYTHON" examples/m12c_calibration_demo.py
+fi

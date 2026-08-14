@@ -440,8 +440,40 @@ M12-B does not implement LoRA, model deployment, full ontology reasoning,
 real D0 collection, GP calibration, executable baselines/ablations, final
 KGQA evaluation, or server experiment orchestration.
 
+M12-C implements real-cost calibration and the online GP lifecycle while
+preserving M11 planning semantics. It provides deterministic complete-plan
+calibration workloads, repeated Neo4j/Fuseki execution through the existing
+M7 clients and M9 compiler boundary, backend-specific D0 artifacts, fitting
+of the existing RBF GP family, immutable calibrated-model registration, and
+atomic between-task posterior updates.
+
+M12-C acceptance criteria:
+
+- Neo4j and Fuseki use independent backend-local `D0` datasets and RBF GPs;
+- raw execution cost is persisted in milliseconds and the GP target is its
+  natural logarithm;
+- only complete, backend-local, actually executed plans become observations;
+- calibration and evaluation splits are distinct and evaluation gold is not
+  admitted to calibration cases or features;
+- repeated measurements, failures, feature schema, protocol, D0, model, and
+  hyperparameter identities are persisted and hashed;
+- hyperparameters remain frozen during evaluation, and all plans in task q
+  use the same posterior derived from `D_(q-1)`;
+- a task batch is appended only after execution and updates only the model for
+  the observed backend;
+- unsupported distributed movement remains explicitly unavailable;
+- offline tests and demos do not require live services, while live calibration
+  is explicitly gated;
+- M11 search, M12-B inference semantics, and all previous acceptance tests
+  remain unchanged.
+
+M12-C does not implement a joint backend-aware GP, transfer-cost learning,
+new compiler coverage, distributed runtime orchestration, executable
+baselines/ablations, experiment-matrix scheduling, new benchmarks, or new
+LLM/ontology behavior.
+
 Current status:
-M12-A DONE; M12-B DONE; M12-C/D NOT STARTED
+M12-A DONE; M12-B DONE; M12-C DONE; M12-D NOT STARTED
 
 ## M13 Automated Semantic Disambiguation
 

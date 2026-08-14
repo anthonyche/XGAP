@@ -1,0 +1,54 @@
+{
+  "schema_version": "m12c-calibration-config-v1",
+  "calibration_id": "financial-risk-gp-calibration-dev-v1",
+  "run_id": "m12c-financial-risk-gp-calibration-dev",
+  "dataset": {
+    "id": "financial_risk_dev",
+    "version": "controlled-v1",
+    "bundle": "datasets/financial_risk_dev"
+  },
+  "cases_artifact": "experiments/calibration/financial_risk_complete_plans.jsonl",
+  "descriptor_dir": "descriptors/backends",
+  "backend_ids": ["neo4j", "fuseki"],
+  "splits": {
+    "calibration": "calibration",
+    "evaluation": "dev"
+  },
+  "sampling": {
+    "policy_id": "deterministic-stratified-v1",
+    "sample_count_per_backend": 2,
+    "seed": 17
+  },
+  "execution_protocol": {
+    "schema_version": "m12-execution-protocol-v1",
+    "warmup_runs": 2,
+    "measured_repetitions": 5,
+    "aggregation_statistic": "median",
+    "timeout_seconds": 60.0,
+    "cache_policy": "record_without_forced_flush",
+    "backend_reset_policy": "none_between_repetitions",
+    "mode": "isolated",
+    "machine_metadata_policy": "record_available",
+    "record_docker_backend_versions": true
+  },
+  "feature_schema": {
+    "extractor_id": "deterministic-m11-state-features",
+    "version": "m11-state-features-v1",
+    "schema_hash": "6d9162c42985c5797ba7",
+    "unavailable_statistics": ["estimated_cardinality"]
+  },
+  "cost_model": {
+    "type": "rbf_gaussian_process",
+    "backend_policy": "independent_backend_local",
+    "initial_config": {
+      "estimator_id": "m12c-development-prior-gp",
+      "model_version": "m12c-uncalibrated-development-prior-v1",
+      "length_scale": 3.0,
+      "signal_variance": 0.25,
+      "noise_variance": 0.01,
+      "jitter": 1e-09,
+      "prior_log_cost": 1.6094379124341003
+    }
+  },
+  "output_root": "runs"
+}

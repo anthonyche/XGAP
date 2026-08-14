@@ -75,13 +75,13 @@ class Neo4jClient:
         )
 
     def execute(self, artifact: QueryArtifact) -> ExecutionReport:
-        if artifact.kind != "native" or artifact.language.lower() != "cypher":
+        if artifact.kind not in {"native", "compiled"} or artifact.language.lower() != "cypher":
             return ExecutionReport(
                 backend_id=self.backend_id,
                 artifact_id=artifact.artifact_id,
                 language=artifact.language,
                 success=False,
-                error="Neo4jClient executes native Cypher artifacts only",
+                error="Neo4jClient executes native or compiled Cypher artifacts only",
             )
 
         started_at = _now()

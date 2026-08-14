@@ -1,7 +1,6 @@
 # M12 Experimentalization
 
-Implementation status: M12-A and M12-B completed; M12-C and M12-D
-not started.
+Implementation status: M12-A, M12-B, and M12-C completed; M12-D not started.
 
 ## Scope
 
@@ -190,8 +189,8 @@ states receive no artificial observation labels. Calibration configuration
 records split ID, sampling policy, plan count, seed, backend scope,
 observation artifact reference, and repeated-measurement policy. Evaluation
 uses the existing M11 feature-schema reference and explicitly missing
-statistics. Actual D0 collection/calibration and online updates belong to
-M12-C.
+statistics. M12-C now implements D0 collection/calibration and the online
+update lifecycle described below.
 
 ## Baselines And Ablations
 
@@ -249,8 +248,9 @@ The versioned execution protocol explicitly records warmups, measured
 repetitions, aggregation statistic, timeout, cache policy, backend reset
 policy, isolated/concurrent mode, machine metadata policy, and Docker/backend
 version recording. Development defaults use warmups and repeated measures;
-one execution is not silently treated as a reliable latency estimate. M12-A
-does not run full server experiments.
+one execution is not silently treated as a reliable latency estimate. M12-C
+uses this contract for calibration; M12-D still owns full experiment-matrix
+execution.
 
 ## Run Artifacts
 
@@ -282,6 +282,20 @@ runs/<run_id>/
   query_slots.jsonl              # live path
   grounding.jsonl                # live path
   live_diagnostics.json          # live path
+
+  calibration_manifest.json     # M12-C calibration path
+  calibration/<backend>/
+    calibration_manifest.json
+    calibration_plans.jsonl
+    execution_measurements.jsonl
+    D0.jsonl
+    feature_schema.json
+    cost_diagnostics.json
+    queries/
+  cost_models/<backend>/model.json
+  cost_model_registry.json
+  posterior_updates.jsonl
+  online_observations.jsonl
 ```
 
 The artifact-layout contract labels each path required-now,
@@ -337,11 +351,11 @@ natural-language interpretation correctness.
 
 M12-A implements contracts, validation, deterministic hashing, a controlled
 financial-risk development bundle, a mock ModelBundle, and an offline runner.
-M12-B implements the bounded live provider and runtime alignment path. Neither
-phase implements model downloads/LoRA, a full ontology reasoner, real D0
-server calibration or online GP updates (M12-C), or executable baselines,
-ablations, matrix scheduling, final datasets, plots, and tables (M12-D and
-later dataset work).
+M12-B implements the bounded live provider and runtime alignment path. M12-C
+implements backend-local cost calibration and the online posterior lifecycle.
+These phases do not implement model downloads/LoRA, a full ontology reasoner,
+executable baselines, ablations, matrix scheduling, final datasets, plots, or
+tables; those remain M12-D and later dataset work.
 
 ## M12-A Development Artifacts
 
@@ -430,3 +444,82 @@ matching invocation hash, validated kind-compatible component grounding, and
 produced one selected physical plan. M12-B can now be frozen at this boundary;
 this single-question smoke does not establish general NL interpretation
 accuracy.
+
+## M12-C Cost Calibration And Online GP Protocol
+
+M12-C freezes independent backend-local calibration as the default policy:
+
+```text
+complete Neo4j plans -> repeated Cypher execution -> D0_neo4j -> Neo4j RBF GP
+complete Fuseki plans -> repeated SPARQL execution -> D0_fuseki -> Fuseki RBF GP
+```
+
+The canonical raw cost is positive execution latency in milliseconds and the
+GP target is `log(execution_ms)`. Calibration cases are controlled complete
+plans from a dedicated calibration split; they contain no evaluation answers,
+gold logical forms, gold alignments, future observations, or hidden cost
+features. M11 feature names, ordering, explicit missing flags, schema version,
+and schema hash are reused without redesign.
+
+Each selected plan is compiled through the existing M9 boundary and executed
+through the existing M7 backend client. The runner persists every warmup and
+measured repetition plus its aggregate. Timeout, backend failure,
+non-positive latency, insufficient repetitions, unsupported compilation,
+feature failure, fit failure, serialization failure, online-update failure,
+and unavailable cross-backend measurement have explicit status identifiers.
+Only a successful full repetition batch creates an `ExecutionObservation`.
+
+The existing RBF family is calibrated with a deterministic bounded grid over
+positive length scale, signal variance, and observation-noise variance using
+exact negative log marginal likelihood. The prior log cost is initialized
+from D0. Repeated log-latency variance informs a positive execution-noise
+floor. This execution noise remains distinct from posterior predictive
+variance. Feature normalization is `none` and is frozen explicitly.
+
+Evaluation uses `BackendCostModelRegistry`, an immutable mapping from backend
+ID to calibrated estimator snapshot. `OnlinePosteriorLifecycle.begin_task`
+returns the exact `D_(q-1)` snapshot. No update method is available during the
+task. `complete_task` validates successful persisted execution evidence and
+atomically appends the whole K_q batch after execution. Neo4j observations
+update only the Neo4j model and Fuseki observations only the Fuseki model.
+Hyperparameter hashes must remain unchanged. Append-only observation and
+posterior-update records are sufficient to replay D0, D1, and later snapshots.
+
+The development workload and config are:
+
+- `experiments/calibration/financial_risk_complete_plans.jsonl`;
+- `experiments/configs/financial_risk_gp_calibration_dev.json`.
+
+Offline pipeline check, using explicitly fake deterministic measurements:
+
+```bash
+PYTHONPATH=src python -m xgap.experiments.calibrate \
+  --config experiments/configs/financial_risk_gp_calibration_dev.json \
+  --offline
+```
+
+Real server calibration, after loading the financial-risk data and checking
+both services, is:
+
+```bash
+XGAP_RUN_BACKENDS=1 PYTHONPATH=src \
+python -m xgap.experiments.calibrate \
+  --config experiments/configs/financial_risk_gp_calibration_dev.json
+```
+
+The optional live pytest additionally requires `XGAP_RUN_CALIBRATION=1`.
+Ordinary pytest never contacts either backend. Local M12-C completion used the
+offline deterministic path and therefore does not claim that real Neo4j or
+Fuseki calibration values were collected on this machine.
+
+M12-C does not implement a joint backend-aware GP, cross-backend movement-cost
+learning, distributed execution, new compiler coverage, baselines, ablations,
+experiment-matrix scheduling, new KGQA datasets, semantic-deviation changes,
+or new LLM/ontology behavior. Those boundaries remain M12-D or later work.
+
+Local completion verification reported 9 passed and 1 gated live calibration
+test in the focused M12-C suite, 345 passed and 4 gated live tests in full
+pytest, and a passing `scripts/run_acceptance.sh`. The offline demo produced
+two fake D0 observations and one calibrated artifact per backend. Real server
+calibration remains an explicit operator command and was not claimed from the
+local completion run.

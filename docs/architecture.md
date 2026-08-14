@@ -234,8 +234,10 @@ reference evaluation remain deterministic.
   The same M12 runner selects the M12-A controlled path or the M12-B bounded
   live/runtime path by configuration. M12-B adds lexical/alias ontology
   retrieval, prompt-schema views, runtime query slots, grounding artifacts,
-  and a file-backed alignment provider. It does not implement real server
-  calibration or benchmark-scale execution.
+  and a file-backed alignment provider. M12-C adds a separate calibration
+  runner, repeated native-query measurements, backend-local D0 artifacts,
+  calibrated RBF GP snapshots, and an across-task posterior lifecycle. It
+  does not implement benchmark-scale experiment orchestration.
 - `xgap.llm`: M10 planner-facing schemas, controlled candidate JSON
   parsing, provider protocol, mock provider, deterministic candidate
   validation helpers, and the M12-B generic OpenAI-compatible structured
@@ -299,6 +301,17 @@ M12-A includes an offline controlled development path only. Backend results,
 real D0 observations, GPU/CUDA metadata, and metrics requiring exhaustive or
 execution ground truth remain explicitly `not_available` until collected by
 later milestones.
+
+M12-C implements the later cost-calibration boundary without changing M11
+search. Deterministic controlled complete plans in the M9 compiler fragment
+are compiled and repeatedly executed through the existing Neo4j and Fuseki
+clients. Raw milliseconds and `log(execution_ms)` are persisted in separate
+`D0_neo4j` and `D0_fuseki` artifacts. One existing-family RBF GP is calibrated
+per backend and exposed through an immutable registry. Hyperparameters and
+feature normalization are frozen during evaluation; a task receives one
+posterior snapshot and successful execution observations are appended only as
+one atomic post-task batch. Cross-backend movement cost remains explicitly
+unavailable because there is no distributed measurement runtime.
 
 The compatibility checker is a static profile lookup. It does not
 compile plans, execute native queries, call the reference evaluator, or

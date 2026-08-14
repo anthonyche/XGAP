@@ -408,6 +408,49 @@ class GaussianProcessCostEstimator:
         }
 
 
+def gaussian_process_negative_log_marginal_likelihood(
+    config: GaussianProcessConfig,
+    observations: Iterable[ExecutionObservation],
+) -> float:
+    """Return the exact RBF GP negative log marginal likelihood.
+
+    M12-C uses this small-data objective to calibrate the existing M11 GP
+    family. It does not alter prediction, confidence, or search semantics.
+    """
+
+    observed = tuple(observations)
+    if not observed:
+        raise ValueError("GP calibration requires at least one observation.")
+    schema_hashes = {item.feature_vector.schema_hash for item in observed}
+    if len(schema_hashes) != 1:
+        raise ValueError("GP calibration observations must use one feature schema.")
+    vectors = tuple(item.feature_vector.values for item in observed)
+
+    def kernel(left: Sequence[float], right: Sequence[float]) -> float:
+        if len(left) != len(right):
+            raise ValueError("GP feature vectors must have equal dimensions.")
+        squared_distance = sum(
+            ((left_value - right_value) / config.length_scale) ** 2
+            for left_value, right_value in zip(left, right, strict=True)
+        )
+        return config.signal_variance * math.exp(-0.5 * squared_distance)
+
+    matrix = [[kernel(left, right) for right in vectors] for left in vectors]
+    diagonal = config.noise_variance + config.jitter
+    for index in range(len(matrix)):
+        matrix[index][index] += diagonal
+    cholesky = _cholesky(matrix)
+    centered = [item.log_cost - config.prior_log_cost for item in observed]
+    alpha = _solve_cholesky(cholesky, centered)
+    data_fit = 0.5 * sum(
+        value * coefficient
+        for value, coefficient in zip(centered, alpha, strict=True)
+    )
+    complexity = sum(math.log(cholesky[index][index]) for index in range(len(cholesky)))
+    normalizer = 0.5 * len(observed) * math.log(2.0 * math.pi)
+    return data_fit + complexity + normalizer
+
+
 def _cholesky(matrix: Sequence[Sequence[float]]) -> list[list[float]]:
     size = len(matrix)
     if any(len(row) != size for row in matrix):
