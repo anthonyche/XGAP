@@ -30,7 +30,6 @@ class ExistingCompilerAdapter:
         *,
         pattern_query: PathPatternQuery | None = None,
     ) -> PhysicalCompilationResult:
-        del pattern_query
         if not state.is_complete:
             return PhysicalCompilationResult(
                 feasible=False,
@@ -76,15 +75,16 @@ class ExistingCompilerAdapter:
             )
 
         try:
+            compiler_input = pattern_query if pattern_query is not None else logical_plan
             if profile.language.lower() == "cypher":
                 artifact = compile_cypher(
-                    logical_plan,
+                    compiler_input,
                     profile=profile,
                     artifact_id=artifact_id,
                 )
             elif profile.language.lower() == "sparql":
                 artifact = compile_sparql(
-                    logical_plan,
+                    compiler_input,
                     profile=profile,
                     artifact_id=artifact_id,
                 )

@@ -500,6 +500,7 @@ class ExperimentSpec:
     candidate_provider_id: str = "model_bundle"
     alignment_provider_id: str = "controlled_artifact"
     runtime_grounding: Mapping[str, Any] = field(default_factory=dict)
+    orchestration: Mapping[str, Any] = field(default_factory=dict)
     future_artifacts: Mapping[str, ArtifactReference] = field(default_factory=dict)
     schema_version: str = "m12-experiment-spec-v1"
 
@@ -560,6 +561,7 @@ class ExperimentSpec:
         object.__setattr__(self, "cost_estimator", dict(self.cost_estimator))
         object.__setattr__(self, "metric_ids", tuple(self.metric_ids))
         object.__setattr__(self, "runtime_grounding", dict(self.runtime_grounding))
+        object.__setattr__(self, "orchestration", dict(self.orchestration))
         object.__setattr__(self, "future_artifacts", dict(self.future_artifacts))
 
     @classmethod
@@ -600,6 +602,7 @@ class ExperimentSpec:
             candidate_provider_id=str(data.get("candidate_provider", "model_bundle")),
             alignment_provider_id=str(data.get("alignment_provider", "controlled_artifact")),
             runtime_grounding=_mapping(data.get("runtime_grounding", {}), "runtime_grounding"),
+            orchestration=_mapping(data.get("orchestration", {}), "orchestration"),
             future_artifacts={
                 str(name): ArtifactReference.from_dict(_mapping(value, str(name)))
                 for name, value in artifacts.items()
@@ -616,7 +619,7 @@ class ExperimentSpec:
         return cls.from_dict(raw)
 
     def to_hash_dict(self) -> dict[str, Any]:
-        return {
+        result = {
             "schema_version": self.schema_version,
             "experiment_id": self.experiment_id,
             "run_id": self.run_id,
@@ -650,6 +653,9 @@ class ExperimentSpec:
                 key: value.to_dict() for key, value in sorted(self.future_artifacts.items())
             },
         }
+        if self.orchestration:
+            result["orchestration"] = dict(self.orchestration)
+        return result
 
     @property
     def spec_hash(self) -> str:

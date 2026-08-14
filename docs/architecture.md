@@ -236,8 +236,10 @@ reference evaluation remain deterministic.
   retrieval, prompt-schema views, runtime query slots, grounding artifacts,
   and a file-backed alignment provider. M12-C adds a separate calibration
   runner, repeated native-query measurements, backend-local D0 artifacts,
-  calibrated RBF GP snapshots, and an across-task posterior lifecycle. It
-  does not implement benchmark-scale experiment orchestration.
+  calibrated RBF GP snapshots, and an across-task posterior lifecycle. M12-D
+  adds explicit method/ablation policies, frozen candidate replay, the online
+  task runner, deterministic experiment matrices, checkpoint/resume,
+  aggregation, and environment readiness/freeze manifests.
 - `xgap.llm`: M10 planner-facing schemas, controlled candidate JSON
   parsing, provider protocol, mock provider, deterministic candidate
   validation helpers, and the M12-B generic OpenAI-compatible structured
@@ -312,6 +314,35 @@ feature normalization are frozen during evaluation; a task receives one
 posterior snapshot and successful execution observations are appended only as
 one atomic post-task batch. Cross-backend movement cost remains explicitly
 unavailable because there is no distributed measurement runtime.
+
+M12-D orchestrates these unchanged components. For task q it freezes a
+backend-local registry snapshot derived from `D_(q-1)`, generates or replays
+candidate artifacts, performs deterministic validation/alignment/planning,
+executes selected complete native artifacts, and atomically commits the whole
+successful observation batch to produce D_q. No task can update its own
+planning posterior. A `no_online_update` run records execution evidence but
+restarts every task from D0.
+
+Physical-planning methods share immutable question/model/candidate,
+ontology/alignment, backend, D0, feature, execution-protocol, budget, and seed
+inputs unless the named ablation changes one of those dimensions. The direct
+text-to-graph-query baseline is intentionally separate: it emits exactly one
+native query for one backend and bypasses `PathPatternQuery`, `c_sem`, M11,
+the GP, and Nash ranking.
+
+Execution success is cardinality-aware: nonempty success, empty success, and
+execution error are distinct statuses. An empty result is neither a backend
+failure nor evidence of answer correctness. This matters for the current
+Fuseki development data, whose financial-risk namespace can differ from the
+namespace emitted by the bounded M9 SPARQL compiler; M12-D diagnoses but does
+not silently rewrite that semantics.
+
+Experiment matrices expand into immutable concrete specs and deterministic
+run IDs. Per-task atomic records are the recovery source for checkpoints and
+resume. Development, pilot, and paper modes share the same runner, but paper
+mode requires Python 3.11+, clean/hashable artifacts, and pinned backend
+images. These controls establish a paper-artifact freeze boundary; they do
+not imply that final benchmark artifacts or results already exist.
 
 The compatibility checker is a static profile lookup. It does not
 compile plans, execute native queries, call the reference evaluator, or
@@ -546,7 +577,9 @@ M6 does not constitute full QGP or full GPC support.
 
 M8 capability profiles, the M9 minimal compiler slice, the M10 structured
 candidate boundary, M11 ontology-bounded physical planning, and the M12-B
-generic live structured-provider/runtime-alignment path are implemented. Full
-compiler coverage, logical rewrite optimization, automated ontology
-reasoning, production cost-model training, distributed cross-backend
-execution, and KGQA evaluation remain outside the current execution boundary.
+generic live structured-provider/runtime-alignment path are implemented.
+M12-C calibration and M12-D experiment orchestration are also implemented.
+Full compiler coverage, logical rewrite optimization, automated ontology
+reasoning, distributed cross-backend execution/movement measurement, final
+benchmark integration, and KGQA evaluation remain outside the current
+execution boundary.

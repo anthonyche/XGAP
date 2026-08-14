@@ -1,0 +1,106 @@
+{
+  "schema_version": "m12-experiment-spec-v1",
+  "experiment_id": "financial-risk-direct-qwen-development",
+  "run_id": "m12d-financial-risk-direct-qwen-neo4j-dev",
+  "dataset_bundle": "datasets/financial_risk_dev",
+  "model_bundle": "models/qwen3_max_dashscope_live",
+  "question_ids": ["fr-q001"],
+  "backend_ids": ["neo4j"],
+  "descriptor_dir": "descriptors/backends",
+  "semantic_deviation": {
+    "schema_version": "m12-semantic-deviation-v1",
+    "method": "directional_ontology_hop",
+    "ontology_distance": {"type": "normalized_shortest_hop", "max_relaxation_hops": 4},
+    "direction_penalty": {
+      "exact": 0.0,
+      "specialization": 0.3333333333333333,
+      "generalization": 0.6666666666666666,
+      "sibling": 1.0
+    },
+    "slot_weights": {"type": "uniform"},
+    "incomplete_slot_policy": "infinity",
+    "missing_mapping_policy": "infinity",
+    "unrelated_policy": "infinity",
+    "epsilon_values": [0.0, 0.1, 0.25, 0.5, 0.75, 1.0]
+  },
+  "planning": {
+    "epsilon": 0.75,
+    "t_max": 1000.0,
+    "top_k": 1,
+    "candidate_cap": 1,
+    "global_delta": 0.05
+  },
+  "budget": {"type": "fixed", "value": 1},
+  "cost_estimator": {
+    "type": "gaussian_process",
+    "config": {
+      "estimator_id": "not_used_by_direct_baseline",
+      "model_version": "not_used",
+      "length_scale": 3.0,
+      "signal_variance": 0.25,
+      "noise_variance": 0.01,
+      "jitter": 1e-09,
+      "prior_log_cost": 1.6094379124341003
+    }
+  },
+  "gp_protocol": {
+    "schema_version": "m12-gp-protocol-v1",
+    "target": "log_execution_cost",
+    "kernel": "rbf",
+    "complete_plans_only": true,
+    "calibration": {
+      "split_id": "calibration",
+      "sampling_policy_id": "not_used_by_direct_baseline",
+      "plan_count": 1,
+      "random_seed": 17,
+      "backend_scope": ["neo4j"],
+      "observation_artifact": {
+        "status": "not_available",
+        "path": null,
+        "reason": "The direct system baseline does not use the XGAP cost model."
+      },
+      "repeated_measurement_policy_ref": "m12-execution-protocol-v1",
+      "fit_hyperparameters": true
+    },
+    "evaluation": {
+      "freeze_hyperparameters": true,
+      "update_posterior_between_tasks": false,
+      "update_within_task": false
+    }
+  },
+  "feature_schema": {
+    "extractor_id": "deterministic-m11-state-features",
+    "version": "m11-state-features-v1",
+    "schema_hash": "aab44647f0d55245ee80",
+    "unavailable_statistics": ["estimated_cardinality"]
+  },
+  "baseline": {
+    "id": "direct_text2graphquery",
+    "backend_id": "neo4j",
+    "controlled_scope": false,
+    "model_bundle_ref": "models/qwen3_max_dashscope_live"
+  },
+  "ablations": {},
+  "random_seed": 23,
+  "execution_protocol": {
+    "schema_version": "m12-execution-protocol-v1",
+    "warmup_runs": 1,
+    "measured_repetitions": 5,
+    "aggregation_statistic": "median",
+    "timeout_seconds": 60.0,
+    "cache_policy": "uncontrolled",
+    "backend_reset_policy": "none_between_repetitions",
+    "mode": "isolated",
+    "machine_metadata_policy": "record_available",
+    "record_docker_backend_versions": true
+  },
+  "metric_ids": ["end_to_end"],
+  "output_root": "runs",
+  "orchestration": {
+    "experiment_mode": "development",
+    "direct_prompt": "experiments/prompts/direct_text2graphquery_prompt.json",
+    "direct_schema": "experiments/prompts/direct_text2graphquery_schema.json",
+    "llm_seed_status": "unsupported"
+  },
+  "future_artifacts": {}
+}

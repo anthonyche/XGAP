@@ -2,7 +2,7 @@
 
 ## Current Milestone
 
-M12-C Cost Calibration + Online GP Protocol is completed.
+M12-D Baselines/Ablations + Server Experiment Runner is completed.
 
 ## Completed
 
@@ -24,13 +24,16 @@ M12-C Cost Calibration + Online GP Protocol is completed.
 - M12-A Experiment Artifact Contract + Dataset Bundle
 - M12-B Live LLM + Ontology/Alignment Artifacts
 - M12-C Cost Calibration + Online GP Protocol
+- M12-D Baselines/Ablations + Server Experiment Runner
 
 ## In Progress
 
 - None
 
-## Next Planned Milestone:
-M12-D Baselines/Ablations + Server Experiment Runner remains not started.
+## Next Planned Milestone
+
+M12 experimentalization is complete. The next research/data milestone is not
+started; the roadmap currently names M13 automated semantic disambiguation.
 
 ## M12 Experimentalization
 
@@ -39,13 +42,13 @@ Current phase status:
 - M12-A Experiment Artifact Contract + Dataset Bundle: Completed
 - M12-B Live LLM + Ontology/Alignment Artifacts: Completed
 - M12-C Cost Calibration + Online GP Protocol: Completed
-- M12-D Baselines/Ablations + Server Experiment Runner: Not Started
+- M12-D Baselines/Ablations + Server Experiment Runner: Completed
 
 M12-A freezes experiment-facing semantics and artifact contracts. It does not
-claim live model access, production ontology reasoning/alignment, KGQA
-execution, measured server calibration, online posterior updates, baseline or
-ablation execution, large-scale orchestration, a final financial-risk
-benchmark, or final SIGMOD experimental results.
+claim, by itself, live model access, production ontology reasoning/alignment,
+KGQA execution, a final financial-risk benchmark, or final SIGMOD
+experimental results. M12-B through M12-D add bounded live inputs, real-cost
+calibration, and reproducible orchestration while preserving that separation.
 
 See `docs/m12_experimentalization.md`.
 
@@ -537,8 +540,9 @@ Frozen ablation switches:
 `no_uncertainty`, `no_pruning`, `no_online_learning`, `no_semantic_bound`,
 `cost_only`, and `no_nash`.
 
-M12-A executes only the controlled `full_xgap` development path. Baseline
-and ablation execution remains M12-D scope.
+M12-A executes only the controlled `full_xgap` development path. M12-D
+subsequently adds executable baseline and ablation policies around the frozen
+pipeline.
 
 Latest M12-A verification:
 
@@ -553,8 +557,8 @@ Latest M12-A verification:
 
 M12-B subsequently replaces the controlled inference inputs with the bounded
 live/runtime path described below. M12-C subsequently implements real-backend
-D0 collection capability and the online posterior lifecycle. M12-D executable
-baselines, ablations, and server orchestration remain not started.
+D0 collection capability and the online posterior lifecycle. M12-D now
+provides executable baselines, ablations, and server orchestration.
 
 See `docs/m12_experimentalization.md`.
 
@@ -608,11 +612,11 @@ required fixes and a credentialed post-fix smoke. The fixes persist
 interpretation diversity. They do not change M11, `c_sem`, PathPatternQuery
 semantics, or downstream planning.
 
-M12-B does not implement model training, LoRA, model deployment, real D0
-collection, GP calibration, online posterior updates, executable baselines,
-ablation matrices, KGQA evaluation, or server-scale orchestration. M12-C now
-implements the cost-calibration and posterior-lifecycle boundary; the other
-boundaries remain M12-D or later work.
+M12-B itself does not implement model training, LoRA, model deployment, real
+D0 collection, GP calibration, online posterior updates, executable
+baselines, ablation matrices, KGQA evaluation, or server-scale orchestration.
+M12-C and M12-D subsequently add calibration/lifecycle and experiment
+orchestration; model training, deployment, and KGQA remain later work.
 
 Latest M12-B verification:
 
@@ -690,7 +694,9 @@ pytest remains fully offline.
 M12-C does not add a joint backend-aware GP, cross-backend movement-cost
 learning, distributed runtime orchestration, new compiler coverage, baseline
 or ablation execution, matrix scheduling, new benchmarks, semantic-deviation
-changes, ontology reasoning, or new LLM behavior. Those remain M12-D or later.
+changes, ontology reasoning, or new LLM behavior. M12-D subsequently adds
+baseline/ablation execution and matrix scheduling without adding the other
+features.
 
 Latest M12-C verification:
 
@@ -704,25 +710,78 @@ Latest M12-C verification:
 - `./scripts/run_acceptance.sh`: passed, including the harness, full pytest,
   all historical examples, and the M12-C offline calibration demo.
 
-The real M12-C backend calibration smoke was not run on this local machine.
-No real Neo4j/Fuseki D0 values are claimed by this completion record.
+The real M12-C backend calibration was run separately on the server after both
+native smoke queries returned nonempty results. The two backend live tests and
+the live calibration test reported `3 passed in 2.11s`; calibration reported
+`measurement_source=real_backend` and D0 observation count 2 for each of
+Neo4j and Fuseki. These are development acceptance observations, not final
+paper calibration data.
+
+## M12-D Baselines/Ablations + Server Experiment Runner
+
+M12-D is completed. It composes the frozen M10-M12-C boundaries into a
+declarative, resumable experiment system without changing logical semantics,
+`c_sem`, M11's default BnB/Nash behavior, or GP formulas.
+
+Implemented M12-D boundaries:
+
+- explicit policies for `full_xgap`, seeded `random_feasible`, `mean_only`,
+  `no_pruning`, `no_online_update`, configured `single_backend`, controlled
+  bounded `exhaustive_oracle`, and separate `direct_text2graphquery`;
+- real behavior for `no_uncertainty`, `no_pruning`, `no_online_learning`,
+  `no_semantic_bound`, `cost_only`, and configured `no_nash` ablations, with
+  contradictory combinations rejected;
+- immutable candidate/grounding artifacts shared across comparable planning
+  methods, with prompt/model/grounding/artifact hashes and exact live request
+  evidence where available;
+- an online task runner that snapshots `D_(q-1)`, fixes it for all planning
+  decisions in task q, executes selected complete plans, then atomically
+  commits K_q observations to produce D_q;
+- deterministic matrix expansion and run IDs, completed-run skipping,
+  explicit resume/retry, per-task recovery records, collision checks, and a
+  bounded 12-run financial-risk development matrix;
+- normalized execution cardinality and separate
+  `execution_success_nonempty`, `execution_success_empty`, and
+  `execution_error` statuses;
+- calibration-query cardinality diagnostics, including an explicit warning
+  boundary for the current Fuseki namespace caveat;
+- method-aware search traces, cost prediction/confidence observations,
+  separated latency/result/failure metrics, and JSON/CSV aggregation;
+- development/pilot/paper modes, environment capture, readiness checks, and a
+  paper freeze manifest. Paper mode requires Python 3.11+ and pinned backend
+  images; the current server's Python 3.10.12 and floating images are
+  development-only until corrected.
+
+Offline completion verifies the runner lifecycle and D0 -> D1 -> D2
+transition using deterministic fake backend timings. The real M12-D online
+D0 -> D1 -> D2 pilot remains a separately gated server command and is not
+claimed by local completion.
+
+M12 completion means experiment infrastructure is ready for paper-grade
+dataset/model artifact preparation and large-scale runs. It does not mean
+final datasets or paper numbers exist, MetaQA/QALD are integrated,
+cross-backend distributed execution or transfer-cost learning exists, or new
+compiler fragments are supported.
 
 ## Required Acceptance Command
+
+```bash
 ./scripts/run_acceptance.sh
+```
 
 # Latest Known Acceptance Status
 
-M0-M12-C acceptance passed locally and M7 live backend smoke tests passed
-on the server. A real DashScope M12-B development run completed one question
-with one generation call, no repair, and three candidates. The later audit
-identified and fixed exact-request persistence and typed component-grounding
-gaps. The credentialed post-fix live rerun passed and verified the revised
-prompt, typed grounding, and exact-request artifact. M12-B is ready to freeze,
-and M12-C subsequently completed without changing the frozen M12-B boundary.
+M0-M12-D acceptance passed locally. M7 backend smoke and M12-C real
+calibration acceptance passed on the server. A real DashScope M12-B
+development run completed one question with one generation call, no repair,
+and three candidates; its credentialed post-fix rerun verified the revised
+prompt, typed grounding, and exact-request artifact. M12-D live online and
+direct-baseline tests remain explicitly gated and have not been claimed from
+the local completion run.
 
 Latest recorded command results:
 
-- `python -m pytest`: 345 passed, 4 skipped.
+- `python -m pytest -q`: 363 passed, 7 skipped.
 - `python examples/quantified_pattern_demo.py`: passed.
 - `python examples/compiler_mvp_demo.py`: passed.
 - `python examples/llm_boundary_demo.py`: passed.
@@ -732,11 +791,13 @@ Latest recorded command results:
   questions and 27 artifact files.
 - `python examples/m12c_calibration_demo.py`: passed; the explicit offline
   fake path produced 2 D0 records and one calibrated GP per backend.
+- `python examples/m12d_experiment_matrix_demo.py`: passed; 12 runs and 12
+  aggregate groups completed with frozen candidate reuse.
 - `./scripts/run_acceptance.sh`: passed, including harness check,
   pytest, all existing examples, `examples/quantified_pattern_demo.py`,
   `examples/compiler_mvp_demo.py`, `examples/llm_boundary_demo.py`, both M11
-  demos, the M12-A demo, and the M12-C calibration demo. The M12-B fake-HTTP
-  path is exercised by pytest.
+  demos, the M12-A demo, the M12-C calibration demo, and the M12-D matrix
+  demo. The M12-B fake-HTTP and M12-D offline paths are exercised by pytest.
 
 Expected checks include:
 
@@ -762,3 +823,6 @@ Expected checks include:
 - examples/m12_experiment_contract_demo.py
 - M12-C calibration, model, measurement, and online-posterior tests
 - examples/m12c_calibration_demo.py
+- M12-D methods, ablations, candidate freeze, direct baseline, online
+  lifecycle, matrix, resume, aggregation, and readiness tests
+- examples/m12d_experiment_matrix_demo.py

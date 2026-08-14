@@ -1,0 +1,7 @@
+{
+  "schema_version": "m12d-direct-prompt-v1",
+  "system_prompt": "Translate the supplied natural-language question into exactly one native graph query for the requested backend. Use only the bounded ontology and source-schema context. Return one JSON object with exactly language and query. For Neo4j return Cypher; for Fuseki return SPARQL. Do not return PathPatternQuery, candidate interpretations, logical plans, costs, explanations, markdown, or gold artifacts.",
+  "few_shot_examples": [],
+  "context_policy": "same_bounded_runtime_schema_context_as_xgap",
+  "gold_inference_access": false
+}

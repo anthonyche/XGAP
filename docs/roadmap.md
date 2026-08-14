@@ -472,8 +472,43 @@ new compiler coverage, distributed runtime orchestration, executable
 baselines/ablations, experiment-matrix scheduling, new benchmarks, or new
 LLM/ontology behavior.
 
+M12-D composes the frozen M10-M12-C boundaries into a configuration-driven,
+resumable experiment system. It implements explicit policies for
+`full_xgap`, `random_feasible`, `mean_only`, `no_pruning`,
+`no_online_update`, `single_backend`, controlled `exhaustive_oracle`, and the
+separate `direct_text2graphquery` system baseline. Frozen candidate artifacts
+support fair planner comparisons, while matrix expansion varies dataset,
+model, method, epsilon, budget, and seed without planner-code changes.
+
+M12-D acceptance criteria:
+
+- task q plans against one immutable `D_(q-1)` snapshot and commits its
+  successful execution observations atomically only after task execution;
+- all frozen method and ablation identifiers have explicit behavior or an
+  explicit controlled-only boundary;
+- candidate generation can be frozen and replayed across comparable physical
+  planning methods;
+- deterministic matrix run IDs, collision checks, checkpoints, resume, and
+  completed-run skipping make sequential server runs reproducible;
+- execution records distinguish nonempty success, empty success, and error,
+  and retain normalized `row_count`;
+- planning, prediction, confidence, latency, failure, and aggregate-ready
+  metrics remain separate and unavailable gold/oracle values remain null;
+- readiness distinguishes development, pilot, and paper modes, with Python
+  3.11+, immutable hashes, and pinned backend images required for paper mode;
+- aggregation emits analysis-ready JSON and CSV without claiming publication
+  results;
+- default pytest remains offline and live backend/model tests are explicitly
+  gated.
+
+M12 completion means the experiment infrastructure is ready for paper-grade
+dataset/model artifact preparation and large-scale runs. It does not mean
+that final datasets or numbers exist, MetaQA/QALD are integrated,
+cross-backend distributed execution or movement-cost learning exists, or new
+compiler fragments are supported.
+
 Current status:
-M12-A DONE; M12-B DONE; M12-C DONE; M12-D NOT STARTED
+M12-A DONE; M12-B DONE; M12-C DONE; M12-D DONE
 
 ## M13 Automated Semantic Disambiguation
 

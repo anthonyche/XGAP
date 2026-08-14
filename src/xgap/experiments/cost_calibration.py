@@ -35,6 +35,8 @@ class MeasurementBatch:
     status: CalibrationStatus
     aggregated_cost_ms: float | None
     successful_latencies_ms: tuple[float, ...]
+    representative_rows: tuple[Mapping[str, object], ...] = ()
+    row_counts: tuple[int, ...] = ()
 
 
 def deterministic_stratified_sample(
@@ -151,10 +153,12 @@ def measure_complete_plan(
     feature = feature_extractor.features(plan.state)
     records: list[ExecutionMeasurement] = []
     successful: list[float] = []
+    row_counts: list[int] = []
+    representative_rows: tuple[Mapping[str, object], ...] = ()
     order = start_order
 
     def execute_phase(phase: str, repetition_index: int) -> None:
-        nonlocal order
+        nonlocal order, representative_rows
         report = client.execute(artifact)
         status = _report_status(report)
         if report.backend_id != backend_id:
@@ -172,6 +176,8 @@ def measure_complete_plan(
         )
         if phase == "measured" and raw_latency is not None:
             successful.append(raw_latency)
+            row_counts.append(report.row_count)
+            representative_rows = tuple(dict(item) for item in report.rows)
         records.append(
             ExecutionMeasurement(
                 calibration_id=calibration_id,
@@ -193,6 +199,8 @@ def measure_complete_plan(
                 feature_ref=feature.feature_ref,
                 feature_schema_hash=feature.schema_hash,
                 measurement_protocol_hash=measurement_protocol_hash,
+                row_count=report.row_count,
+                result_status=report.result_status,
                 started_at=report.started_at,
                 ended_at=report.ended_at,
                 error=error,
@@ -239,13 +247,36 @@ def measure_complete_plan(
             feature_ref=feature.feature_ref,
             feature_schema_hash=feature.schema_hash,
             measurement_protocol_hash=measurement_protocol_hash,
+            row_count=(
+                records[-1].row_count
+                if records and len({item.row_count for item in records if item.phase == "measured"}) <= 1
+                else None
+            ),
+            result_status=(
+                "execution_success_nonempty"
+                if records and any(item.row_count for item in records if item.phase == "measured")
+                else "execution_success_empty"
+                if records and all(
+                    item.result_status == "execution_success_empty"
+                    for item in records
+                    if item.phase == "measured"
+                )
+                else "execution_error"
+            ),
             ended_at=next((item.ended_at for item in reversed(records) if item.ended_at), None),
             error=reason,
             backend_metadata=backend_metadata,
             machine_metadata=machine_metadata,
         )
     )
-    return MeasurementBatch(tuple(records), batch_status, aggregate, tuple(successful))
+    return MeasurementBatch(
+        tuple(records),
+        batch_status,
+        aggregate,
+        tuple(successful),
+        representative_rows,
+        tuple(row_counts),
+    )
 
 
 def backend_unavailable_batch(
@@ -319,6 +350,8 @@ def _unavailable_batch(
         feature_ref=feature.feature_ref,
         feature_schema_hash=feature.schema_hash,
         measurement_protocol_hash=measurement_protocol_hash,
+        row_count=None,
+        result_status="execution_error",
         error=reason,
         backend_metadata=backend_metadata,
         machine_metadata=machine_metadata,

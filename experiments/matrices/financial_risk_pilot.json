@@ -1,0 +1,27 @@
+{
+  "schema_version": "m12d-matrix-spec-v1",
+  "matrix_id": "financial-risk-m12d-pilot",
+  "base_experiment_spec": "experiments/configs/financial_risk_m12d_dev.json",
+  "calibration_config": "experiments/configs/financial_risk_gp_calibration_dev.json",
+  "calibration_run": "runs/m12c-financial-risk-gp-calibration-dev",
+  "output_root": "runs/matrices",
+  "feature_backend_ids": ["neo4j", "fuseki"],
+  "max_expanded_runs": 32,
+  "orchestration": {
+    "experiment_mode": "development",
+    "method_options": {}
+  },
+  "dimensions": {
+    "method": [
+      "full_xgap",
+      "random_feasible",
+      "mean_only",
+      "no_pruning",
+      "no_online_update",
+      {"id": "single_backend", "backend_id": "neo4j"}
+    ],
+    "epsilon": [0.5, 0.75],
+    "budget": [32],
+    "seed": [0]
+  }
+}

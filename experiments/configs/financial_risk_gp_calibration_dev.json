@@ -50,5 +50,11 @@
       "prior_log_cost": 1.6094379124341003
     }
   },
+  "diagnostics": {
+    "expected_nonempty_case_ids": [
+      "fr-cal-ownership",
+      "fr-cal-alice-transfer"
+    ]
+  },
   "output_root": "runs"
 }

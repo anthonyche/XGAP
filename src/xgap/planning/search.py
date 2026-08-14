@@ -271,6 +271,7 @@ def bnb_search(
     physical_compiler: PhysicalCompiler,
     run_context: SearchRunContext,
     pattern_query: PathPatternQuery | None = None,
+    confidence_pruning: bool = True,
 ) -> BnBSearchResult:
     """Search one fixed logical plan; ontology and semantics are already fixed."""
 
@@ -308,7 +309,11 @@ def bnb_search(
         incumbent_before = incumbent.cost.upper if incumbent else None
         transition = transition_by_state.get(state.state_id)
 
-        if incumbent is not None and prediction.lower >= incumbent.cost.upper:
+        if (
+            confidence_pruning
+            and incumbent is not None
+            and prediction.lower >= incumbent.cost.upper
+        ):
             termination_reason = "bound_terminated"
             trace.append(
                 _trace_event(
@@ -408,7 +413,11 @@ def bnb_search(
             successor_prediction = cost_estimator.predict(item.state, confidence_context)
             predictions[item.state.state_id] = successor_prediction
             transition_by_state[item.state.state_id] = item
-            if incumbent is not None and successor_prediction.lower >= incumbent.cost.upper:
+            if (
+                confidence_pruning
+                and incumbent is not None
+                and successor_prediction.lower >= incumbent.cost.upper
+            ):
                 pruned += 1
                 trace.append(
                     _trace_event(

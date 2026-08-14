@@ -141,12 +141,24 @@ class ExecutionReport:
     ended_at: str | None = None
     metadata: JsonMap = field(default_factory=dict)
 
+    @property
+    def row_count(self) -> int:
+        return len(self.rows)
+
+    @property
+    def result_status(self) -> str:
+        if not self.success:
+            return "execution_error"
+        if self.row_count:
+            return "execution_success_nonempty"
+        return "execution_success_empty"
+
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> "ExecutionReport":
         rows = data.get("rows", [])
         if not isinstance(rows, list):
             raise ValueError("ExecutionReport rows must be a list")
-        return cls(
+        report = cls(
             backend_id=str(data["backend_id"]),
             artifact_id=str(data["artifact_id"]),
             language=str(data["language"]),
@@ -158,6 +170,11 @@ class ExecutionReport:
             ended_at=data.get("ended_at"),
             metadata=_dict(data.get("metadata") if isinstance(data.get("metadata"), dict) else {}),
         )
+        if data.get("row_count") not in {None, report.row_count}:
+            raise ValueError("ExecutionReport row_count does not match its rows")
+        if data.get("result_status") not in {None, report.result_status}:
+            raise ValueError("ExecutionReport result_status does not match its outcome")
+        return report
 
     def to_dict(self) -> JsonMap:
         return {
@@ -166,6 +183,8 @@ class ExecutionReport:
             "language": self.language,
             "success": self.success,
             "rows": [dict(row) for row in self.rows],
+            "row_count": self.row_count,
+            "result_status": self.result_status,
             "elapsed_ms": self.elapsed_ms,
             "error": self.error,
             "started_at": self.started_at,

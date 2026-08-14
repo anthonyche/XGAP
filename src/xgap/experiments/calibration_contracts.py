@@ -400,6 +400,8 @@ class ExecutionMeasurement:
     feature_ref: str
     feature_schema_hash: str
     measurement_protocol_hash: str
+    row_count: int | None = None
+    result_status: str | None = None
     started_at: str | None = None
     ended_at: str | None = None
     error: str | None = None
@@ -421,6 +423,15 @@ class ExecutionMeasurement:
                 or self.aggregated_execution_cost_ms <= 0
             ):
                 raise ValueError("Aggregated execution cost must be finite and positive.")
+        if self.row_count is not None and self.row_count < 0:
+            raise ValueError("Execution row_count must be nonnegative when available.")
+        if self.result_status not in {
+            None,
+            "execution_success_nonempty",
+            "execution_success_empty",
+            "execution_error",
+        }:
+            raise ValueError("Unknown execution result status.")
         object.__setattr__(self, "backend_metadata", dict(self.backend_metadata))
         object.__setattr__(self, "machine_metadata", dict(self.machine_metadata))
 
@@ -463,6 +474,8 @@ class ExecutionMeasurement:
             "feature_ref": self.feature_ref,
             "feature_schema_hash": self.feature_schema_hash,
             "measurement_protocol_hash": self.measurement_protocol_hash,
+            "row_count": self.row_count,
+            "result_status": self.result_status,
             "started_at": self.started_at,
             "ended_at": self.ended_at,
             "error": self.error,
@@ -550,6 +563,28 @@ class D0Record:
             "feature_schema_hash": self.observation.feature_vector.schema_hash,
             "d0_provenance": dict(self.provenance),
         }
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> "D0Record":
+        record = cls(
+            schema_version=str(data.get("schema_version", "m12c-d0-record-v1")),
+            calibration_id=str(data["calibration_id"]),
+            backend_id=str(data["backend_id"]),
+            split=str(data["split"]),
+            raw_execution_cost_ms=float(data["raw_execution_cost_ms"]),
+            log_execution_cost=float(data["log_execution_cost"]),
+            repetition_latencies_ms=tuple(
+                float(item) for item in data.get("repetition_latencies_ms", ())
+            ),
+            aggregation_statistic=str(data["aggregation_statistic"]),
+            measurement_protocol_hash=str(data["measurement_protocol_hash"]),
+            measurement_ids=tuple(str(item) for item in data.get("measurement_ids", ())),
+            observation=ExecutionObservation.from_dict(data),
+            provenance=_mapping(data.get("d0_provenance", {}), "d0_provenance"),
+        )
+        if data.get("d0_record_id") not in {None, record.d0_record_id}:
+            raise ValueError("D0 record hash does not match its content.")
+        return record
 
 
 @dataclass(frozen=True)

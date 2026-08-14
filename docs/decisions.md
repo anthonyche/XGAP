@@ -498,3 +498,59 @@ This enforces the Chapter 5 temporal boundary, prevents evaluation leakage,
 and lets every search decision in one task use the same confidence model.
 Append-only observations and posterior hashes make `D_(q-1) -> D_q`
 replayable without changing BnB, confidence schedules, or Nash selection.
+
+## D48 M12-D methods are explicit policies over frozen components
+
+Every frozen baseline or ablation identifier selects documented behavior;
+none silently aliases `full_xgap`. Comparable physical-planning methods reuse
+the same immutable candidate, grounding, ontology, backend, D0, feature,
+execution-protocol, budget, and seed inputs. The direct text-to-graph-query
+baseline uses a separate native-query prompt and bypasses the XGAP
+interpretation and physical-planning path.
+
+Reason:
+
+Planner comparisons must isolate the named mechanism. Candidate freezing
+prevents model sampling from becoming an uncontrolled physical-planning
+variable, while preserving a scientifically distinct direct-system baseline.
+
+## D49 M12-D commits online observations only at task boundaries
+
+Task q uses one immutable backend-local posterior derived from `D_(q-1)` for
+all candidate and plan decisions. Successful complete-plan observations are
+committed as one atomic K_q batch only after all selected executions finish.
+Checkpoint recovery uses committed per-task artifacts and never reruns a
+completed task implicitly. `no_online_update` persists measurements but plans
+every task from D0.
+
+Reason:
+
+This preserves M12-C temporal anti-leakage during continuous workloads and
+makes interruption/resume behavior replayable from disk.
+
+## D50 Execution success and answer correctness are separate
+
+Runtime reports record normalized `row_count` and distinguish nonempty
+success, empty success, and execution error. Empty success is neither backend
+failure nor answer correctness. Calibration diagnostics may flag an expected
+nonempty query, including a Fuseki namespace mismatch, but may not silently
+rewrite its native semantics.
+
+Reason:
+
+Transport/runtime success, result cardinality, and benchmark correctness are
+different experimental observations and must remain separately auditable.
+
+## D51 Paper mode requires an explicit frozen environment
+
+Development, pilot, and paper modes share the same runner. Paper mode requires
+Python 3.11+, immutable artifact hashes, an appropriate clean/fixed repository
+state, and pinned backend images/versions. Floating images or Python 3.10 may
+be used only by explicitly non-paper development runs. Readiness diagnoses
+state without mutating the host.
+
+Reason:
+
+Reproducible paper measurements require environment identity beyond a
+successful smoke query. The freeze manifest defines this identity without
+claiming that final benchmark artifacts or results already exist.

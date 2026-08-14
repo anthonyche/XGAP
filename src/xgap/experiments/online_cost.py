@@ -172,6 +172,19 @@ class OnlinePosteriorLifecycle:
         self._next_task_index = 1
         self._active: TaskPosteriorSnapshot | None = None
 
+    @classmethod
+    def restore(
+        cls,
+        registry: BackendCostModelRegistry,
+        *,
+        next_task_index: int,
+    ) -> "OnlinePosteriorLifecycle":
+        if next_task_index <= 0:
+            raise ValueError("Restored next_task_index must be positive.")
+        lifecycle = cls(registry)
+        lifecycle._next_task_index = next_task_index
+        return lifecycle
+
     @property
     def current_registry(self) -> BackendCostModelRegistry:
         return self._registry

@@ -1,6 +1,6 @@
 # M12 Experimentalization
 
-Implementation status: M12-A, M12-B, and M12-C completed; M12-D not started.
+Implementation status: M12-A, M12-B, M12-C, and M12-D completed.
 
 ## Scope
 
@@ -220,8 +220,9 @@ Frozen ablation switches:
 - `cost_only`;
 - `no_nash`.
 
-M12-A validates and serializes these identifiers. Their full execution is
-M12-D scope.
+M12-A validates and serializes these identifiers. M12-D gives each identifier
+an explicit executable policy or controlled-only boundary, as documented
+below.
 
 ## Metrics
 
@@ -240,7 +241,10 @@ an optional M12-B live-generation group:
   anchors, hallucinated IDs, mapping failures, and semantic inadmissibility.
 
 Unavailable metrics use an explicit status and null value. No metric is
-derived from fabricated gold data. Metric computation is later M12 work.
+derived from fabricated gold data. M12-D computes execution-supported,
+planning, cost-prediction, confidence, latency, failure, and cardinality
+metrics; gold and oracle metrics remain unavailable unless their evidence is
+actually present.
 
 ## Execution Protocol
 
@@ -249,8 +253,8 @@ repetitions, aggregation statistic, timeout, cache policy, backend reset
 policy, isolated/concurrent mode, machine metadata policy, and Docker/backend
 version recording. Development defaults use warmups and repeated measures;
 one execution is not silently treated as a reliable latency estimate. M12-C
-uses this contract for calibration; M12-D still owns full experiment-matrix
-execution.
+uses this contract for calibration and M12-D reuses it for online and direct
+baseline execution.
 
 ## Run Artifacts
 
@@ -296,6 +300,13 @@ runs/<run_id>/
   cost_model_registry.json
   posterior_updates.jsonl
   online_observations.jsonl
+  method_config.json             # M12-D selected method policy
+  ablation_config.json           # M12-D composable switches
+  task_progress.jsonl            # committed task/checkpoint history
+  execution_results.jsonl        # result status and row_count
+  execution_measurements.jsonl   # prediction/latency evidence
+  paper_freeze_manifest.json     # hashes and readiness-relevant references
+  environment.json               # captured runtime environment
 ```
 
 The artifact-layout contract labels each path required-now,
@@ -353,9 +364,10 @@ M12-A implements contracts, validation, deterministic hashing, a controlled
 financial-risk development bundle, a mock ModelBundle, and an offline runner.
 M12-B implements the bounded live provider and runtime alignment path. M12-C
 implements backend-local cost calibration and the online posterior lifecycle.
-These phases do not implement model downloads/LoRA, a full ontology reasoner,
-executable baselines, ablations, matrix scheduling, final datasets, plots, or
-tables; those remain M12-D and later dataset work.
+M12-D implements executable policies, matrix scheduling, online orchestration,
+and aggregation. M12 as a whole does not implement model downloads/LoRA, a
+full ontology reasoner, final datasets, publication plots, or final tables;
+those remain later model/data/evaluation work.
 
 ## M12-A Development Artifacts
 
@@ -368,8 +380,8 @@ fields remain null with explicit availability metadata.
 The offline model bundle is `models/mock_path_pattern_dev/`, and the single
 development configuration is
 `experiments/configs/financial_risk_xgap_dev.json`. M12-A intentionally does
-not add a random baseline config because random baseline execution belongs to
-M12-D.
+not add a random baseline config; M12-D subsequently supplies that policy and
+the shared development matrix.
 
 The controlled invocation is:
 
@@ -509,17 +521,156 @@ python -m xgap.experiments.calibrate \
 
 The optional live pytest additionally requires `XGAP_RUN_CALIBRATION=1`.
 Ordinary pytest never contacts either backend. Local M12-C completion used the
-offline deterministic path and therefore does not claim that real Neo4j or
-Fuseki calibration values were collected on this machine.
+offline deterministic path. A subsequent server acceptance run used
+`measurement_source=real_backend`, passed the two backend smoke tests and the
+M12-C live calibration test (`3 passed in 2.11s`), and produced two real D0
+observations for each of Neo4j and Fuseki. Those development observations are
+not final paper calibration data.
 
-M12-C does not implement a joint backend-aware GP, cross-backend movement-cost
-learning, distributed execution, new compiler coverage, baselines, ablations,
-experiment-matrix scheduling, new KGQA datasets, semantic-deviation changes,
-or new LLM/ontology behavior. Those boundaries remain M12-D or later work.
+M12-C itself does not implement a joint backend-aware GP, cross-backend
+movement-cost learning, distributed execution, new compiler coverage,
+baselines, ablations, experiment-matrix scheduling, new KGQA datasets,
+semantic-deviation changes, or new LLM/ontology behavior. M12-D subsequently
+adds orchestration, baselines, and matrices without changing the other
+boundaries.
 
 Local completion verification reported 9 passed and 1 gated live calibration
 test in the focused M12-C suite, 345 passed and 4 gated live tests in full
 pytest, and a passing `scripts/run_acceptance.sh`. The offline demo produced
-two fake D0 observations and one calibrated artifact per backend. Real server
-calibration remains an explicit operator command and was not claimed from the
-local completion run.
+two fake D0 observations and one calibrated artifact per backend. The later
+real server acceptance described above established the live development
+calibration path separately.
+
+## M12-D Baselines, Ablations, And Experiment Runner
+
+M12-D is an orchestration layer over the frozen deterministic core. It does
+not modify `PathPatternQuery`, M5/M6 type checking or lowering, the logical
+algebra, `c_sem`, ontology distance, M11 physical states, the default BnB
+semantics, strict `T_max`, Nash scoring, or GP formulas.
+
+The explicit method policies are:
+
+| Method | Frozen behavior |
+| --- | --- |
+| `full_xgap` | Backend-local GP mean and uncertainty, confidence BnB pruning, semantic bound, Nash ranking, and between-task updates. |
+| `random_feasible` | Seeded feasible physical choices with no GP ordering or confidence pruning; measured execution is retained, and placeholder estimates are marked as not cost estimates. |
+| `mean_only` | Existing GP posterior mean with zero uncertainty influence; confidence-safe pruning claims are disabled. |
+| `no_pruning` | Full estimators and ordering with confidence pruning/early termination disabled; hard capability infeasibility remains. |
+| `no_online_update` | Every task plans from calibrated D0; execution observations are still persisted for evaluation. |
+| `single_backend` | All placements are restricted to the configured Neo4j or Fuseki backend; unsupported plans do not fall back. |
+| `exhaustive_oracle` | Existing M11 true-cost oracle, only for explicitly controlled spaces below a configured state bound; otherwise `oracle_not_available`. |
+| `direct_text2graphquery` | Separate prompt/schema and exactly one native query for one backend; bypasses path-pattern candidates, `c_sem`, M11, GP, and Nash. |
+
+Composable switches implement `no_uncertainty`, `no_pruning`,
+`no_online_learning`, `no_semantic_bound`, `cost_only`, and `no_nash`.
+Contradictory combinations fail validation. `no_nash` requires the explicit
+configured alternative `semantic_then_cost`; no replacement objective is
+invented implicitly.
+
+### Fairness And Candidate Freeze
+
+Comparable physical-planning methods hold fixed the question, dataset/model
+bundles, generated candidate set, prompt/grounding hashes,
+ontology/alignment inputs, backend descriptors, calibrated D0, feature
+schema, execution protocol, budget, and seed policy. Candidate generation is
+frozen once per question/model/seed and replayed by artifact hash. Exact LLM
+requests and responses are retained when generation is live. The direct
+baseline does not reuse these candidates because its inference boundary is
+different.
+
+### Online Lifecycle And Recovery
+
+For task q the runner snapshots `D_(q-1)` before any candidate is planned.
+All selected plans are finalized against that snapshot, then compiled and
+executed. Only after task execution finishes is the successful K_q batch
+atomically committed to produce D_q. Per-task JSON files are the recovery
+source; JSONL views and the checkpoint are rebuilt from contiguous committed
+tasks. A completed run is never overwritten, an incomplete run requires
+explicit resume, and a config-hash collision fails.
+
+The `no_online_update` policy performs the same execution logging but restores
+D0 before every task. Hyperparameter hashes remain frozen for all methods.
+The optional live validation must separately establish real D0 -> D1 -> D2;
+offline deterministic tests establish lifecycle and atomicity only.
+
+### Matrices, Metrics, And Cardinality
+
+`python -m xgap.experiments.matrix` expands declarative dataset, model,
+method, epsilon, budget, and seed dimensions into immutable concrete specs
+with deterministic run IDs. It supports listing/dry run, sequential execute,
+filters, explicit resume/retry, fail-fast, and completed-run skipping. The
+development matrix contains 12 bounded financial-risk runs and shares one
+frozen candidate artifact across the comparable methods.
+
+`python -m xgap.experiments.aggregate` groups compatible runs into
+analysis-ready JSON and CSV. It retains separate interpretation, search,
+prediction/confidence, backend, LLM, planning, and end-to-end fields. Missing
+gold or oracle evidence remains unavailable.
+
+Every execution records `row_count` and one of
+`execution_success_nonempty`, `execution_success_empty`, or
+`execution_error`. Empty success is not a backend failure and is not answer
+correctness. `python -m xgap.experiments.calibration_sanity` flags configured
+expected-nonempty cases that repeatedly return no rows. In particular, a
+Fuseki financial-risk namespace versus M9 graph-namespace mismatch is
+reported, never silently rewritten.
+
+### Modes And Freeze Boundary
+
+`python -m xgap.experiments.readiness` checks Python, repository state,
+artifact hashes, credential names, backend/compiler compatibility,
+calibration availability, output writability, backend health when requested,
+and image/version metadata without mutating the server. Development may use
+toy data, Python mismatch, or floating images only with explicit warnings.
+Pilot uses the intended environment. Paper mode requires Python 3.11+,
+immutable artifact hashes, a clean/fixed repository state, fixed splits,
+prompt/model/calibration policies, and pinned backend versions/images.
+
+Each run writes a paper freeze manifest covering dataset, ontology/schema,
+mapping, model, prompt/schema, semantic config, feature schema, D0/model,
+method/ablations, epsilon, budget, K/M, execution protocol, seeds, and backend
+versions. This defines how final artifacts can be frozen; it does not claim
+that final datasets, models, or experiment numbers exist.
+
+### Server Pilot Order
+
+After pulling the completed M12-D code and retaining the accepted M12-C
+calibration run, execute the development pilot in this order:
+
+```bash
+PYTHONPATH=src python -m xgap.experiments.readiness \
+  --config experiments/matrices/financial_risk_pilot.json \
+  --check-backends
+
+XGAP_RUN_BACKENDS=1 XGAP_RUN_CALIBRATION=1 XGAP_RUN_M12D=1 \
+PYTHONPATH=src python -m pytest \
+  tests/test_m12d_live.py::test_real_online_d0_d1_d2_and_row_count -v
+
+XGAP_RUN_BACKENDS=1 XGAP_RUN_CALIBRATION=1 XGAP_RUN_M12D=1 \
+PYTHONPATH=src python -m pytest \
+  tests/test_m12d_live.py::test_real_matrix_tiny_subset -v
+
+XGAP_RUN_BACKENDS=1 XGAP_RUN_CALIBRATION=1 XGAP_RUN_M12D=1 \
+XGAP_RUN_LIVE_LLM=1 DASHSCOPE_API_KEY="$DASHSCOPE_API_KEY" \
+PYTHONPATH=src python -m pytest \
+  tests/test_m12d_live.py::test_real_direct_text2graphquery_smoke -v
+```
+
+The first command is diagnostic and non-mutating. On the currently reported
+server it must show Python 3.10.12 and floating Neo4j/Fuseki images as
+development warnings. Do not label the run paper-grade until Python is 3.11+
+and image versions/digests are pinned. The first two live tests do not require
+an LLM credential because they replay the controlled frozen candidates; the
+direct baseline test does.
+
+Local M12-D completion verification reported 18 focused tests passed and 3
+live tests skipped behind explicit gates; full pytest reported 363 passed and
+7 skipped. The offline development demo completed all 12 matrix runs and 12
+aggregate groups with frozen candidate replay. `scripts/run_acceptance.sh`
+passed with all historical examples plus the M12-D demo. No M12-D live-server
+result is claimed by these local commands.
+
+M12-D does not add MetaQA/QALD integration, final KGQA evaluation,
+cross-backend distributed execution, movement-cost learning, joint/transfer
+GPs, new compiler fragments, new semantic-deviation definitions, ontology
+reasoning, model training, or a new planner algorithm.
