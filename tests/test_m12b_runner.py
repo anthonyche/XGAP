@@ -105,6 +105,7 @@ def test_runner_switches_to_full_live_provider_path_with_fake_http(
     tmp_path: Path, monkeypatch
 ) -> None:
     monkeypatch.setenv("DASHSCOPE_API_KEY", "fake-test-secret")
+    monkeypatch.setenv("DASHSCOPE_BASE_URL", "https://regional-provider.invalid/v1")
     transport = GroundedFakeHTTPTransport()
 
     result = run_experiment(
@@ -117,8 +118,12 @@ def test_runner_switches_to_full_live_provider_path_with_fake_http(
     assert result.attempted_question_count == 1
     assert result.successful_question_count == 1
     assert len(transport.calls) == 1
+    assert transport.calls[0]["url"] == (
+        "https://regional-provider.invalid/v1/chat/completions"
+    )
     expected = {
         "prompt_schema_view.jsonl",
+        "llm_requests.jsonl",
         "raw_model_responses.jsonl",
         "grounding.jsonl",
         "query_slots.jsonl",
@@ -132,6 +137,7 @@ def test_runner_switches_to_full_live_provider_path_with_fake_http(
         for name in (
             "questions.jsonl",
             "prompt_schema_view.jsonl",
+            "llm_requests.jsonl",
             "raw_model_responses.jsonl",
             "grounding.jsonl",
             "query_slots.jsonl",
@@ -147,6 +153,11 @@ def test_runner_switches_to_full_live_provider_path_with_fake_http(
         .read_text(encoding="utf-8")
         .splitlines()[0]
     )
+    assembled_request = json.loads(
+        (result.run_root / "llm_requests.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()[0]
+    )
     metrics = json.loads((result.run_root / "metrics.json").read_text(encoding="utf-8"))
     manifest = json.loads(
         (result.run_root / "experiment_manifest.json").read_text(encoding="utf-8")
@@ -154,9 +165,15 @@ def test_runner_switches_to_full_live_provider_path_with_fake_http(
     assert invocation["generation_calls"] == 1
     assert invocation["repair_calls"] == 0
     assert invocation["usage"]["total_tokens"] == 860
+    assert assembled_request["call_kind"] == "generation"
+    assert assembled_request["payload"] == transport.calls[0]["payload"]
+    assert assembled_request["payload_hash"] == invocation["assembled_request_hashes"][0]
     assert metrics["live_generation"]["generation_success_rate"]["value"] == 1
     assert metrics["live_generation"]["ontology_grounding_success_rate"]["value"] == 1
     assert manifest["model"]["exact_snapshot"] == "qwen3-max-2026-01-23"
+    assert manifest["live_provider"]["base_url"] == (
+        "https://regional-provider.invalid/v1"
+    )
     assert manifest["runtime_ontology_alignment"]["gold_artifacts_exposed"] is False
     assert manifest["estimator"]["calibration_status"] == "not_available"
     assert manifest["estimator"]["development_prior"] is True

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -24,6 +25,17 @@ def test_dashscope_qwen_live_one_question_smoke(tmp_path: Path) -> None:
     )
 
     assert result.attempted_question_count == 1
-    assert result.successful_question_count == 1
+    if result.successful_question_count != 1:
+        validation_path = result.run_root / "validation.jsonl"
+        failures = [
+            json.loads(line)
+            for line in validation_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        pytest.fail(
+            "DashScope live smoke did not produce a successful plan. "
+            f"Provider diagnostics: {json.dumps(failures, ensure_ascii=True)}"
+        )
     assert (result.run_root / "raw_model_responses.jsonl").stat().st_size > 0
+    assert (result.run_root / "llm_requests.jsonl").stat().st_size > 0
     assert (result.run_root / "grounding.jsonl").stat().st_size > 0

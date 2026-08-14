@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import io
 import json
+import urllib.error
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
@@ -8,12 +10,14 @@ from typing import Any, Mapping
 import pytest
 
 from xgap.experiments.bundles import ModelBundle
+from xgap.experiments.hashing import content_hash
 from xgap.llm.openai_compatible import (
     LiveFailureCategory,
     LiveProviderError,
     OpenAICompatibleProviderConfig,
     OpenAICompatibleStructuredCandidateProvider,
     ProviderTransportError,
+    UrllibOpenAICompatibleTransport,
     redact_secrets,
 )
 from xgap.llm.schemas import PlannerRequest
@@ -134,9 +138,11 @@ def test_live_model_bundles_load_with_fixed_snapshots_and_portable_vllm() -> Non
 
     assert dashscope.config.exact_model_snapshot == "qwen3-max-2026-01-23"
     assert dashscope.config.provider == "dashscope_openai_compatible"
+    assert dashscope.config.base_url_env == "DASHSCOPE_BASE_URL"
     assert dashscope.structured_schema is not None
     assert vllm.config.provider == "vllm_openai_compatible"
     assert vllm.config.base_url == "http://127.0.0.1:8000/v1"
+    assert vllm.config.base_url_env == "XGAP_VLLM_BASE_URL"
     assert not Path(vllm.config.base_url).is_absolute()
 
 
@@ -164,6 +170,29 @@ def test_structured_request_is_bounded_and_contains_no_credentials(monkeypatch) 
     assert artifact.output_tokens == 57
     assert artifact.total_tokens == 158
     assert artifact.provider_request_ids == ("request-1",)
+    request_records = artifact.request_records()
+    assert len(request_records) == 1
+    assert request_records[0]["call_kind"] == "generation"
+    assert request_records[0]["payload"] == payload
+    assert request_records[0]["payload_hash"] == content_hash(payload)
+    assert "secret-value" not in json.dumps(request_records)
+
+
+def test_empty_prompt_schema_view_fails_before_network() -> None:
+    transport = FakeTransport([])
+    provider = OpenAICompatibleStructuredCandidateProvider(
+        _config(), "Return controlled JSON only.", transport
+    )
+    request = PlannerRequest(
+        "Find accounts reached by transfer.",
+        max_candidates=2,
+        metadata={"task_id": "task-1", "prompt_schema_view": {}},
+    )
+
+    with pytest.raises(ValueError, match="ontology context"):
+        provider.generate_candidates(request)
+
+    assert transport.calls == []
 
 
 def test_missing_api_key_fails_without_network(monkeypatch) -> None:
@@ -201,6 +230,10 @@ def test_protocol_allows_exactly_one_repair_call(monkeypatch) -> None:
     assert artifact is not None
     assert artifact.generation_calls == 1
     assert artifact.repair_calls == 1
+    assert [item["call_kind"] for item in artifact.request_records()] == [
+        "generation",
+        "repair",
+    ]
 
 
 def test_second_invalid_response_fails_as_repair_failed(monkeypatch) -> None:
@@ -268,6 +301,33 @@ def test_transport_error_and_nested_credentials_are_redacted(monkeypatch) -> Non
     assert redact_secrets({"headers": {"Authorization": "secret-value"}}) == {
         "headers": "[REDACTED]"
     }
+
+
+def test_http_401_explains_dashscope_endpoint_key_compatibility(monkeypatch) -> None:
+    def reject(*args: Any, **kwargs: Any):
+        del args, kwargs
+        raise urllib.error.HTTPError(
+            "https://provider.invalid/v1/chat/completions",
+            401,
+            "Unauthorized",
+            {},
+            io.BytesIO(b'{"error":{"code":"invalid_api_key"}}'),
+        )
+
+    monkeypatch.setattr("urllib.request.urlopen", reject)
+    transport = UrllibOpenAICompatibleTransport()
+
+    with pytest.raises(ProviderTransportError) as caught:
+        transport.post_json(
+            url="https://provider.invalid/v1/chat/completions",
+            api_key="secret-value",
+            payload={"model": "fixed-test-model", "messages": []},
+            timeout_seconds=1.0,
+        )
+
+    assert caught.value.category is LiveFailureCategory.PROVIDER_ERROR
+    assert "same DashScope region, workspace, and billing plan" in str(caught.value)
+    assert "secret-value" not in str(caught.value)
 
 
 def test_failure_taxonomy_is_stable_and_complete() -> None:

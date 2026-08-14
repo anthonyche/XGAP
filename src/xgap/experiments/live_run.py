@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -138,9 +139,16 @@ def _provider(
     config = model.config
     if model.structured_schema is None:
         raise ValueError("Live ModelBundle has no structured output schema.")
+    base_url = str(config.base_url)
+    if config.base_url_env is not None and config.base_url_env in os.environ:
+        base_url = os.environ[config.base_url_env].strip()
+        if not base_url:
+            raise ValueError(
+                f"Configured base URL environment variable '{config.base_url_env}' is blank."
+            )
     provider_config = OpenAICompatibleProviderConfig(
         provider_id=config.provider,
-        base_url=str(config.base_url),
+        base_url=base_url,
         api_key_env=str(config.api_key_env),
         model=config.exact_model_snapshot,
         temperature=config.temperature,
@@ -215,6 +223,7 @@ def run_live_experiment(
     candidate_rows: list[dict[str, Any]] = []
     validation_rows: list[dict[str, Any]] = []
     prompt_view_rows: list[dict[str, Any]] = []
+    llm_request_rows: list[dict[str, Any]] = []
     raw_model_rows: list[dict[str, Any]] = []
     query_slot_rows: list[dict[str, Any]] = []
     grounding_rows: list[dict[str, Any]] = []
@@ -281,6 +290,10 @@ def run_live_experiment(
             raw_response = provider.generate_candidates(request)
         except LiveProviderError as error:
             counters.add_invocation(error.artifact)
+            llm_request_rows.extend(
+                {"question_id": question.question_id, **record}
+                for record in error.artifact.request_records()
+            )
             raw_model_rows.append(
                 {"question_id": question.question_id, **error.artifact.to_dict()}
             )
@@ -297,6 +310,10 @@ def run_live_experiment(
             continue
         assert provider.last_invocation is not None
         counters.add_invocation(provider.last_invocation)
+        llm_request_rows.extend(
+            {"question_id": question.question_id, **record}
+            for record in provider.last_invocation.request_records()
+        )
         raw_model_rows.append(
             {"question_id": question.question_id, **provider.last_invocation.to_dict()}
         )
@@ -503,6 +520,7 @@ def run_live_experiment(
     layout.write_jsonl("candidates.jsonl", candidate_rows)
     layout.write_jsonl("validation.jsonl", validation_rows)
     layout.write_jsonl("prompt_schema_view.jsonl", prompt_view_rows)
+    layout.write_jsonl("llm_requests.jsonl", llm_request_rows)
     layout.write_jsonl("raw_model_responses.jsonl", raw_model_rows)
     layout.write_jsonl("query_slots.jsonl", query_slot_rows)
     layout.write_jsonl("grounding.jsonl", grounding_rows)
@@ -565,6 +583,7 @@ def run_live_experiment(
     layout.write_json("experiment_manifest.json", manifest_data)
     required_live_files = (
         "prompt_schema_view.jsonl",
+        "llm_requests.jsonl",
         "raw_model_responses.jsonl",
         "query_slots.jsonl",
         "grounding.jsonl",

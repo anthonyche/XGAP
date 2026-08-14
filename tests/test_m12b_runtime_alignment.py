@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from pathlib import Path
+import shutil
 from typing import Any
 
 import pytest
@@ -22,6 +23,7 @@ from xgap.experiments.semantic import DirectionalOntologySemanticDeviationScorer
 from xgap.llm.openai_compatible import LiveFailureCategory
 from xgap.llm.parser import parse_planner_response
 from xgap.llm.schemas import PlannerRequest
+from xgap.llm.validation import validate_candidate
 from xgap.planning import MappingSufficiencyStatus, QueryPlanningContext
 
 
@@ -80,7 +82,7 @@ def _grounded_raw(view, *, realization_overrides: dict[str, str] | None = None):
             {
                 "slot_id": slot.slot_id,
                 "ontology_term_id": overrides.get(slot.slot_id, slot.candidate_anchor_ids[0]),
-                "component_ref": f"pattern.{slot.slot_id}",
+                "component_ref": _component_ref(slot),
             }
             for slot in view.query_slots
         ],
@@ -95,6 +97,18 @@ def _grounded_raw(view, *, realization_overrides: dict[str, str] | None = None):
         ],
         "candidates": [candidate],
     }
+
+
+def _component_ref(slot) -> str:
+    if slot.kind == "class":
+        return "source" if slot.candidate_anchor_ids[0] == "Person" else "target"
+    if slot.kind == "relation":
+        return (
+            "expr.left.edge"
+            if slot.candidate_anchor_ids[0] == "Ownership"
+            else "expr.right.edge"
+        )
+    return "condition"
 
 
 def _parse(view, raw):
@@ -165,6 +179,44 @@ def test_hallucinated_id_and_incomplete_slot_coverage_fail_explicitly() -> None:
     with pytest.raises(RuntimeAlignmentError) as caught:
         parse_grounded_planner_response(incomplete, response, view)
     assert caught.value.category is LiveFailureCategory.INCOMPLETE_SLOT_COVERAGE
+
+
+def test_slot_realization_must_reference_a_matching_pattern_component() -> None:
+    _, _, view = _view()
+    raw = _grounded_raw(view)
+    account_slot = next(slot for slot in view.query_slots if slot.kind == "class" and slot.candidate_anchor_ids[0] == "Account")
+    realization = next(
+        item
+        for item in raw["candidates"][0]["grounding"]["slot_realizations"]
+        if item["slot_id"] == account_slot.slot_id
+    )
+    realization["component_ref"] = "expr.left.edge"
+    response = parse_planner_response(raw, PlannerRequest("question"))
+
+    with pytest.raises(RuntimeAlignmentError) as caught:
+        parse_grounded_planner_response(raw, response, view)
+
+    assert caught.value.category is LiveFailureCategory.INVALID_CANDIDATE
+    assert "not ontology kind 'class'" in str(caught.value)
+
+
+def test_structurally_valid_nl_inconsistent_relation_is_not_deterministically_rejected() -> None:
+    _, _, view = _view()
+    raw = _grounded_raw(view)
+    raw["candidates"][0]["pattern_query"]["expr"]["left"]["edge"]["label"] = "TRANSFER"
+    response, grounded = _parse(view, raw)
+
+    assert validate_candidate(response.candidates[0]).ok
+    assert grounded.grounded_candidates[0].candidate.candidate_id == "runtime-candidate"
+
+
+def test_missing_ontology_artifact_has_no_hidden_fallback(tmp_path: Path) -> None:
+    bundle_root = tmp_path / "financial_risk_dev"
+    shutil.copytree(ROOT / "datasets/financial_risk_dev", bundle_root)
+    (bundle_root / "ontology.yaml").unlink()
+
+    with pytest.raises(FileNotFoundError):
+        DatasetBundle.load(bundle_root)
 
 
 def test_missing_backend_mapping_is_reported_by_file_backed_provider() -> None:

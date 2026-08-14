@@ -457,6 +457,7 @@ class ModelConfig:
     seed_supported: bool
     mock_responses_ref: str | None = None
     base_url: str | None = None
+    base_url_env: str | None = None
     api_key_env: str | None = None
     timeout_seconds: float = 60.0
     structured_schema_ref: str | None = None
@@ -493,6 +494,11 @@ class ModelConfig:
                 else None
             ),
             base_url=str(data["base_url"]) if data.get("base_url") is not None else None,
+            base_url_env=(
+                str(data["base_url_env"])
+                if data.get("base_url_env") is not None
+                else None
+            ),
             api_key_env=(
                 str(data["api_key_env"]) if data.get("api_key_env") is not None else None
             ),
@@ -534,6 +540,8 @@ class ModelConfig:
                 raise ValueError("M12-B live ModelBundles must use an OpenAI-compatible endpoint.")
             if not self.base_url or not self.api_key_env:
                 raise ValueError("Live ModelBundles require base_url and api_key_env.")
+            if self.base_url_env is not None and not self.base_url_env.strip():
+                raise ValueError("Live ModelBundle base_url_env cannot be blank.")
             if not self.structured_schema_ref or not self.structured_schema_hash:
                 raise ValueError("Live ModelBundles require a hashed structured schema.")
 
@@ -556,6 +564,7 @@ class ModelConfig:
             "seed_supported": self.seed_supported,
             "mock_responses_ref": self.mock_responses_ref,
             "base_url": self.base_url,
+            "base_url_env": self.base_url_env,
             "api_key_env": self.api_key_env,
             "timeout_seconds": self.timeout_seconds,
             "structured_schema_ref": self.structured_schema_ref,

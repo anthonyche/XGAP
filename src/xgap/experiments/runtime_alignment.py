@@ -16,6 +16,7 @@ from xgap.experiments.hashing import content_hash
 from xgap.llm.openai_compatible import LiveFailureCategory
 from xgap.llm.parser import path_pattern_query_to_dict
 from xgap.llm.schemas import PlannerCandidate, PlannerResponse
+from xgap.pattern.ast import Alt, Bounded, OptionalExpr, Plus, RegexExpr, Rel, Seq, Star
 from xgap.planning.contracts import (
     MappingSufficiencyResult,
     MappingSufficiencyStatus,
@@ -615,6 +616,7 @@ def parse_grounded_planner_response(
             "Structured response query_slots must be a list.",
         )
     expected_slots = {item.slot_id: item for item in prompt_view.query_slots}
+    visible_terms_by_id = {item.term_id: item for item in prompt_view.terms}
     selections: list[QueryAnchorSelection] = []
     for item in raw_slots:
         if not isinstance(item, Mapping):
@@ -667,6 +669,7 @@ def parse_grounded_planner_response(
                 f"Candidate '{candidate.candidate_id}' has no slot realizations.",
             )
         realizations: list[CandidateSlotRealization] = []
+        component_kinds = _path_pattern_component_kinds(candidate)
         for item in raw_realizations:
             if not isinstance(item, Mapping):
                 raise RuntimeAlignmentError(
@@ -692,6 +695,27 @@ def parse_grounded_planner_response(
                 raise RuntimeAlignmentError(
                     LiveFailureCategory.INCOMPLETE_SLOT_COVERAGE,
                     "Candidate slot realization requires component_ref.",
+                )
+            slot_kind = expected_slots[realization.slot_id].kind
+            term_kind = visible_terms_by_id[realization.ontology_term_id].kind
+            component_kind = component_kinds.get(realization.component_ref)
+            if term_kind != slot_kind:
+                raise RuntimeAlignmentError(
+                    LiveFailureCategory.INVALID_CANDIDATE,
+                    f"Candidate slot '{realization.slot_id}' has ontology kind "
+                    f"'{term_kind}', expected '{slot_kind}'.",
+                )
+            if component_kind is None:
+                raise RuntimeAlignmentError(
+                    LiveFailureCategory.INVALID_CANDIDATE,
+                    f"Candidate component_ref '{realization.component_ref}' does not identify "
+                    "a PathPatternQuery component.",
+                )
+            if component_kind != term_kind:
+                raise RuntimeAlignmentError(
+                    LiveFailureCategory.INVALID_CANDIDATE,
+                    f"Candidate component_ref '{realization.component_ref}' has kind "
+                    f"'{component_kind}', not ontology kind '{term_kind}'.",
                 )
             realizations.append(realization)
         if {item.slot_id for item in realizations} != set(expected_slots) or len(realizations) != len(expected_slots):
@@ -722,6 +746,35 @@ def parse_grounded_planner_response(
         query_anchors=tuple(sorted(selections, key=lambda item: item.slot_id)),
         grounded_candidates=tuple(grounded),
     )
+
+
+def _path_pattern_component_kinds(candidate: PlannerCandidate) -> dict[str, str]:
+    query = candidate.pattern_query
+    components = {"source": "class", "target": "class"}
+    components.update(_regex_component_kinds(query.expr, "expr"))
+    for name in query.source.properties:
+        components[f"source.properties.{name}"] = "property"
+    for name in query.target.properties:
+        components[f"target.properties.{name}"] = "property"
+    if query.condition is not None:
+        components["condition"] = "property"
+    return components
+
+
+def _regex_component_kinds(expr: RegexExpr, path: str) -> dict[str, str]:
+    if isinstance(expr, Rel):
+        components = {f"{path}.edge": "relation"}
+        for name in expr.edge.properties:
+            components[f"{path}.edge.properties.{name}"] = "property"
+        return components
+    if isinstance(expr, Seq | Alt):
+        return {
+            **_regex_component_kinds(expr.left, f"{path}.left"),
+            **_regex_component_kinds(expr.right, f"{path}.right"),
+        }
+    if isinstance(expr, Plus | Star | OptionalExpr | Bounded):
+        return _regex_component_kinds(expr.child, f"{path}.child")
+    raise TypeError(f"Unsupported PathPatternQuery expression {type(expr).__name__}.")
 
 
 @dataclass(frozen=True)

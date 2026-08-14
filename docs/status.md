@@ -570,19 +570,22 @@ Implemented M12-B boundaries:
 - a generic `OpenAICompatibleStructuredCandidateProvider` implementing the
   existing M10 `StructuredCandidateProvider` protocol;
 - one generation call and at most one schema/syntax repair call, with exact
-  generation/repair counts and safe request metadata in run artifacts;
+  generation/repair counts and exact sanitized assembled requests in run
+  artifacts;
 - a fixed DashScope ModelBundle for `qwen3-max-2026-01-23` and a portable
   configuration-only vLLM OpenAI-compatible template;
 - deterministic bounded lexical/alias retrieval over the versioned ontology,
   entity catalog, source schema snapshot, and backend mappings;
 - per-question `PromptSchemaView`, explicit query anchors, separate candidate
   slot realizations, prompt-visible ID validation, full slot-coverage checks,
-  and explicit missing-mapping failures;
+  real kind-compatible pattern-component validation, and explicit
+  missing-mapping failures;
 - `FileBackedRuntimeAlignmentProvider`, which creates real runtime inputs for
   the frozen M12-A directional ontology-hop `c_sem` implementation without
   using benchmark gold artifacts;
-- live invocation, usage, prompt-view, query-slot, grounding, alignment,
-  diagnostics, and optional live-generation metrics artifacts;
+- live invocation, exact sanitized assembled requests, usage, prompt-view,
+  query-slot, grounding, alignment, diagnostics, and optional live-generation
+  metrics artifacts;
 - stable failure categories for provider, parsing, repair, grounding,
   mapping, semantic, representation, and compiler boundaries.
 
@@ -598,6 +601,14 @@ retriever is deterministic lexical/alias retrieval, not a full OWL/DL
 reasoner. The live provider emits grounded `PathPatternQuery` JSON only;
 native Cypher, SPARQL, or GQL remains deterministic compiler output.
 
+The M12-B end-to-end audit is recorded in
+`docs/report/m12b_llm_boundary_audit.md`. Its final verdict is PASS after the
+required fixes and a credentialed post-fix smoke. The fixes persist
+`llm_requests.jsonl`, reject empty semantic context, validate typed
+`component_ref` attachments, and clarify the zero-shot semantic contract and
+interpretation diversity. They do not change M11, `c_sem`, PathPatternQuery
+semantics, or downstream planning.
+
 M12-B does not implement model training, LoRA, model deployment, real D0
 collection, GP calibration, online posterior updates, executable baselines,
 ablation matrices, KGQA evaluation, or server-scale orchestration. Those
@@ -606,15 +617,23 @@ boundaries remain M12-C, M12-D, or later work.
 Latest M12-B verification:
 
 - `python -m pytest tests/test_m12b_provider.py tests/test_m12b_runtime_alignment.py tests/test_m12b_runner.py tests/test_m12b_live.py -q`:
-  18 passed, 1 skipped;
-- `python -m pytest -q`: 331 passed, 3 skipped;
+  23 passed, 1 skipped;
+- `python -m pytest tests/test_llm_boundary.py tests/test_m12_contracts.py tests/test_m12_runner.py tests/test_m12_semantic.py tests/test_m12b_provider.py tests/test_m12b_runtime_alignment.py tests/test_m12b_runner.py tests/test_m12b_live.py -q`:
+  45 passed, 1 skipped;
+- `python -m pytest -q`: 336 passed, 3 skipped;
 - the skipped M12-B test is the real DashScope smoke test, gated by both
   `XGAP_RUN_LIVE_LLM=1` and `DASHSCOPE_API_KEY`;
+- credentialed post-fix command
+  `XGAP_RUN_LIVE_LLM=1 PYTHONPATH=src python -m pytest tests/test_m12b_live.py -v`:
+  1 passed in 33.64 seconds;
+- the post-fix run made one generation call and no repair call, persisted an
+  exact `llm_requests.jsonl` payload whose hash matches the invocation, and
+  produced one fully validated logical/physical candidate;
 - the fake-HTTP integration exercised the real OpenAI-compatible provider,
   runtime grounding, frozen `c_sem`, unchanged M11 planner, and live artifact
   layout without network access;
 - the M12-A mock runner regression planned 2/2 questions successfully;
-- `./scripts/run_acceptance.sh`: passed with 331 tests passed, 3 gated live
+- `./scripts/run_acceptance.sh`: passed with 336 tests passed, 3 gated live
   tests skipped, and all existing examples successful.
 
 ## Required Acceptance Command
@@ -623,12 +642,16 @@ Latest M12-B verification:
 # Latest Known Acceptance Status
 
 M0-M12-B acceptance passed locally and M7 live backend smoke tests passed
-on the server. The real DashScope M12-B smoke test was not run because live
-credentials were not present in the local environment.
+on the server. A real DashScope M12-B development run completed one question
+with one generation call, no repair, and three candidates. The later audit
+identified and fixed exact-request persistence and typed component-grounding
+gaps. The credentialed post-fix live rerun passed and verified the revised
+prompt, typed grounding, and exact-request artifact. M12-B is ready to freeze,
+and M12-C may proceed.
 
 Latest recorded command results:
 
-- `python -m pytest`: 331 passed, 3 skipped.
+- `python -m pytest`: 336 passed, 3 skipped.
 - `python examples/quantified_pattern_demo.py`: passed.
 - `python examples/compiler_mvp_demo.py`: passed.
 - `python examples/llm_boundary_demo.py`: passed.

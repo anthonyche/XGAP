@@ -277,6 +277,7 @@ runs/<run_id>/
   observation_snapshot.json
   baseline_config.json
   prompt_schema_view.jsonl       # live path
+  llm_requests.jsonl             # live path, exact sanitized outbound payloads
   raw_model_responses.jsonl      # live path
   query_slots.jsonl              # live path
   grounding.jsonl                # live path
@@ -306,7 +307,8 @@ into the prompt.
 The structured response chooses one query-side ontology anchor for every
 visible slot and supplies separate ontology-term realizations for every
 candidate. IDs must be prompt-visible, slot coverage must be exact, and
-required backend mappings must exist. These records are converted by
+every realization must reference a real, kind-compatible `PathPatternQuery`
+component. Required backend mappings must exist. These records are converted by
 `FileBackedRuntimeAlignmentProvider` into the existing M11
 `OntologyAlignmentContext`; the frozen M12-A directional ontology-hop scorer
 then computes `c_sem`.
@@ -319,10 +321,17 @@ artifacts.
 
 `OpenAICompatibleStructuredCandidateProvider` performs one generation call,
 allows at most one syntax/schema repair, and persists safe invocation,
-latency, usage, and request-ID metadata. It accepts only controlled grounded
-`PathPatternQuery` JSON. It never generates native query text and is not used
-by deterministic lowering, physical planning, capability checks, compilation,
-or cost estimation.
+latency, usage, request-ID metadata, and every exact sanitized outbound payload
+in `llm_requests.jsonl`. Empty ontology/schema context fails before network
+I/O. It accepts only controlled grounded `PathPatternQuery` JSON. It never
+generates native query text and is not used by deterministic lowering,
+physical planning, capability checks, compilation, or cost estimation.
+
+The zero-shot prompt defines the semantic roles of source/target, path
+composition, edge direction, labels/properties, selectors/restrictors, depth,
+and typed component references. It asks for semantically distinct candidates;
+few-shot examples remain empty. Deterministic validation still does not claim
+natural-language interpretation correctness.
 
 ## Phase Boundary
 
@@ -377,16 +386,47 @@ The live invocation is:
 
 ```bash
 export DASHSCOPE_API_KEY=<secret>
+export DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 PYTHONPATH=src python -m xgap.experiments.run \
   --config experiments/configs/financial_risk_qwen_live_dev.json
 ```
+
+`DASHSCOPE_BASE_URL` is optional and defaults to the China (Beijing)
+OpenAI-compatible endpoint recorded by the ModelBundle. DashScope API keys are
+region- and billing-plan-specific. Use the endpoint matching the key:
+
+```bash
+# China (Beijing)
+export DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+
+# International (Singapore)
+export DASHSCOPE_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+
+# US (Virginia)
+export DASHSCOPE_BASE_URL=https://dashscope-us.aliyuncs.com/compatible-mode/v1
+```
+
+A workspace-specific endpoint may be supplied instead. Coding Plan keys are
+for supported interactive coding tools and must not be used as an XGAP
+experiment-backend credential. The resolved endpoint is recorded in the safe
+live-provider manifest; the key is never persisted.
 
 Default tests do not perform this network call. The optional smoke test also
 requires `XGAP_RUN_LIVE_LLM=1`. Offline fake-HTTP integration exercises the
 same provider, grounding, semantic, M11 planning, and artifact path.
 
-Final M12-B verification: 18 focused tests passed and 1 gated live test was
-skipped; full pytest reported 331 passed and 3 skipped; the M12-A mock runner
-planned 2/2 questions; the fake-HTTP integration passed; and
-`scripts/run_acceptance.sh` passed. The real DashScope smoke test was not run
-because live credentials were unavailable locally.
+Latest M12-B audit verification: 23 focused tests passed and 1 gated live test
+was skipped; the combined M10/M12-A/M12-B suite reported 45 passed and 1
+skipped; full pytest reported 336 passed and 3 skipped; the M12-A
+mock runner planned 2/2 questions; the fake-HTTP integration passed; and
+`scripts/run_acceptance.sh` passed. A real DashScope run subsequently completed
+one question with one generation call, no repair call, and three candidates.
+The end-to-end audit in `docs/report/m12b_llm_boundary_audit.md` found that the
+historical run did not persist its assembled request and accepted one invalid
+class-to-edge component reference. The current fixes address both issues; a
+credentialed post-fix smoke then passed in 33.64 seconds. It made one
+generation call, no repair call, persisted the exact sanitized request with a
+matching invocation hash, validated kind-compatible component grounding, and
+produced one selected physical plan. M12-B can now be frozen at this boundary;
+this single-question smoke does not establish general NL interpretation
+accuracy.

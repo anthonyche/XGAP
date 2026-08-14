@@ -145,9 +145,16 @@ class UrllibOpenAICompatibleTransport:
                 data = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as error:
             safe_body = error.read().decode("utf-8", errors="replace")[:1000]
+            guidance = ""
+            if error.code == 401:
+                guidance = (
+                    " Verify that the API key belongs to the same DashScope region, "
+                    "workspace, and billing plan as the configured base URL."
+                )
             raise ProviderTransportError(
                 LiveFailureCategory.PROVIDER_ERROR,
-                f"OpenAI-compatible endpoint returned HTTP {error.code}: {safe_body}",
+                f"OpenAI-compatible endpoint returned HTTP {error.code}: "
+                f"{safe_body}.{guidance}",
             ) from error
         except (TimeoutError, socket.timeout) as error:
             raise ProviderTransportError(LiveFailureCategory.TIMEOUT, "Provider request timed out.") from error
@@ -196,7 +203,10 @@ class LiveInvocationArtifact:
     output_tokens: int | None
     total_tokens: int | None
     provider_request_ids: tuple[str, ...]
-    schema_version: str = "m12-live-invocation-v1"
+    request_url: str
+    request_timeout_seconds: float
+    assembled_requests: tuple[Mapping[str, Any], ...]
+    schema_version: str = "m12-live-invocation-v2"
 
     def to_dict(self) -> dict[str, Any]:
         return redact_secrets(
@@ -229,7 +239,29 @@ class LiveInvocationArtifact:
                     "total_tokens": self.total_tokens,
                 },
                 "provider_request_ids": list(self.provider_request_ids),
+                "assembled_request_hashes": [
+                    content_hash(item) for item in self.assembled_requests
+                ],
             }
+        )
+
+    def request_records(self) -> tuple[dict[str, Any], ...]:
+        return tuple(
+            redact_secrets(
+                {
+                    "schema_version": "m12-llm-request-v1",
+                    "provider": self.provider,
+                    "model": self.model,
+                    "task_id": self.task_id,
+                    "call_index": index,
+                    "call_kind": "generation" if index == 1 else "repair",
+                    "url": self.request_url,
+                    "timeout_seconds": self.request_timeout_seconds,
+                    "payload_hash": content_hash(payload),
+                    "payload": dict(payload),
+                }
+            )
+            for index, payload in enumerate(self.assembled_requests, start=1)
         )
 
 
@@ -260,6 +292,7 @@ class OpenAICompatibleStructuredCandidateProvider:
         schema_view = request.metadata.get("prompt_schema_view")
         if not isinstance(schema_view, Mapping):
             raise ValueError("Live provider requires a bounded prompt_schema_view.")
+        _validate_prompt_schema_view(schema_view)
         user_payload = {
             "task_id": str(request.metadata.get("task_id", "")),
             "question": request.question,
@@ -293,6 +326,7 @@ class OpenAICompatibleStructuredCandidateProvider:
         return payload
 
     def generate_candidates(self, request: PlannerRequest) -> Mapping[str, Any]:
+        payload = self.build_request_payload(request)
         api_key = os.environ.get(self.config.api_key_env)
         if not api_key:
             artifact = self._artifact(
@@ -306,6 +340,7 @@ class OpenAICompatibleStructuredCandidateProvider:
                 latency=0.0,
                 generation_calls=0,
                 repair_calls=0,
+                assembled_requests=(),
             )
             self.last_invocation = artifact
             raise LiveProviderError(
@@ -313,9 +348,8 @@ class OpenAICompatibleStructuredCandidateProvider:
                 artifact.error_message or "Missing API key.",
                 artifact,
             )
-
-        payload = self.build_request_payload(request)
         raw_responses: list[Mapping[str, Any]] = []
+        assembled_requests: list[Mapping[str, Any]] = []
         request_ids: list[str] = []
         usages: list[dict[str, int | None]] = []
         started = time.perf_counter()
@@ -326,6 +360,7 @@ class OpenAICompatibleStructuredCandidateProvider:
         while True:
             if repair_calls == 0:
                 generation_calls = 1
+            assembled_requests.append(redact_secrets(current_payload))
             try:
                 raw_response = self.transport.post_json(
                     url=self.config.chat_completions_url,
@@ -348,6 +383,7 @@ class OpenAICompatibleStructuredCandidateProvider:
                     repair_calls=repair_calls,
                     provider_request_ids=tuple(request_ids),
                     usages=usages,
+                    assembled_requests=tuple(assembled_requests),
                 )
                 self.last_invocation = artifact
                 raise LiveProviderError(error.category, safe_error, artifact) from error
@@ -384,6 +420,7 @@ class OpenAICompatibleStructuredCandidateProvider:
                         repair_calls=repair_calls,
                         provider_request_ids=tuple(request_ids),
                         usages=usages,
+                        assembled_requests=tuple(assembled_requests),
                     )
                     self.last_invocation = artifact
                     raise LiveProviderError(category, last_error, artifact) from error
@@ -404,6 +441,7 @@ class OpenAICompatibleStructuredCandidateProvider:
                 repair_calls=repair_calls,
                 provider_request_ids=tuple(request_ids),
                 usages=usages,
+                assembled_requests=tuple(assembled_requests),
             )
             self.last_invocation = artifact
             return structured
@@ -462,6 +500,7 @@ class OpenAICompatibleStructuredCandidateProvider:
         repair_calls: int,
         provider_request_ids: tuple[str, ...] = (),
         usages: list[dict[str, int | None]] | None = None,
+        assembled_requests: tuple[Mapping[str, Any], ...] = (),
     ) -> LiveInvocationArtifact:
         schema_view = request.metadata.get("prompt_schema_view", {})
         usage_values = usages or []
@@ -485,6 +524,9 @@ class OpenAICompatibleStructuredCandidateProvider:
             output_tokens=_sum_usage(usage_values, "output_tokens"),
             total_tokens=_sum_usage(usage_values, "total_tokens"),
             provider_request_ids=provider_request_ids,
+            request_url=self.config.chat_completions_url,
+            request_timeout_seconds=self.config.timeout_seconds,
+            assembled_requests=assembled_requests,
         )
 
 
@@ -535,6 +577,41 @@ def _validate_grounded_shape(data: Mapping[str, Any]) -> None:
             raise ValueError(f"candidates[{index}] requires grounding.slot_realizations.")
     if len(set(candidate_ids)) != len(candidate_ids):
         raise ValueError("Grounded response candidate_id values must be unique.")
+
+
+def _validate_prompt_schema_view(schema_view: Mapping[str, Any]) -> None:
+    terms = schema_view.get("terms")
+    slots = schema_view.get("query_slots")
+    ontology = schema_view.get("ontology")
+    if not isinstance(ontology, Mapping) or not all(
+        str(ontology.get(field, "")).strip() for field in ("id", "version", "hash")
+    ):
+        raise ValueError("Live provider requires identified ontology context.")
+    if not isinstance(terms, list) or not terms:
+        raise ValueError("Live provider requires non-empty prompt-visible ontology terms.")
+    visible_term_ids = {
+        str(item.get("term_id", ""))
+        for item in terms
+        if isinstance(item, Mapping) and str(item.get("term_id", ""))
+    }
+    if len(visible_term_ids) != len(terms):
+        raise ValueError("Prompt-visible ontology terms require unique non-empty term_id values.")
+    if not isinstance(slots, list) or not slots:
+        raise ValueError("Live provider requires non-empty prompt query slots.")
+    for index, slot in enumerate(slots):
+        if not isinstance(slot, Mapping):
+            raise ValueError(f"prompt_schema_view.query_slots[{index}] must be an object.")
+        slot_id = str(slot.get("slot_id", ""))
+        candidates = slot.get("candidate_anchor_ids")
+        if not slot_id or not isinstance(candidates, list) or not candidates:
+            raise ValueError(
+                f"prompt_schema_view.query_slots[{index}] requires an ID and anchor candidates."
+            )
+        unknown = {str(item) for item in candidates} - visible_term_ids
+        if unknown:
+            raise ValueError(
+                f"Prompt query slot '{slot_id}' references hidden ontology IDs: {sorted(unknown)}."
+            )
 
 
 def _usage(value: object) -> dict[str, int | None]:
