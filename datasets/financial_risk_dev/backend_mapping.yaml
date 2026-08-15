@@ -14,8 +14,23 @@ backends:
   fuseki:
     namespace: http://xgap.example.org/financial-risk/
     high_risk_representation: Company+riskLevel=HIGH
-    transfer_representation: Transfer
+    transfer_representation: transfersTo
     ownership_representation: owns
+    compiler_tokens:
+      node_labels:
+        Person: Person
+        Company: Company
+        Account: Account
+      edge_labels:
+        OWNS: Ownership
+        TRANSFER: Transfer
+      properties:
+        name: NameProperty
+        risk: RiskProperty
+        riskScore: RiskProperty
+        risk_level: RiskProperty
+        amount: AmountProperty
+        occurred_on: DateProperty
 term_mappings:
   reference_evaluator:
     FinancialEntity:
@@ -127,10 +142,10 @@ term_mappings:
       representation: xgap:Account
     Transfer:
       kind: relation
-      representation: xgap:Transfer
+      representation: xgap:transfersTo
     RecentTransfer:
       kind: relation
-      representation: xgap:occurredOn
+      representation: xgap:transfersTo
     Ownership:
       kind: relation
       representation: xgap:owns

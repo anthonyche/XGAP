@@ -117,7 +117,15 @@ def test_calibration_sanity_records_query_hash_latency_and_empty_flag(
     )
     assert report["records"]
     assert all(record["query_hash"] for record in report["records"])
+    assert all(record["native_query_hash"] for record in report["records"])
+    assert all(record["query_id"] for record in report["records"])
+    assert all(record["logical_plan_id"] for record in report["records"])
     assert all(record["latencies_ms"] for record in report["records"])
+    assert all(
+        record["relevant_mapped_iris"]
+        for record in report["records"]
+        if record["backend_id"] == "fuseki"
+    )
     assert report["suspicious_empty_calibration_queries"]
 
 

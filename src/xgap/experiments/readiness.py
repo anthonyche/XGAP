@@ -17,6 +17,7 @@ from typing import Any, Mapping, Sequence
 from xgap.backends import registry
 from xgap.backends.compatibility import check_backend_support
 from xgap.experiments.bundles import DatasetBundle, ModelBundle
+from xgap.experiments.backend_mapping_audit import audit_dataset_backend_mapping
 from xgap.experiments.contracts import ExperimentSpec
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.matrix import expand_matrix
@@ -39,6 +40,28 @@ class ReadinessCheck:
             "status": self.status,
             "message": self.message,
             "details": dict(self.details),
+        }
+
+
+@dataclass(frozen=True)
+class BackendImageIdentity:
+    service: str
+    configured_reference: str
+    repository: str
+    tag: str | None
+    digest: str | None
+    pinned: bool
+    immutable: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "service": self.service,
+            "configured_reference": self.configured_reference,
+            "repository": self.repository,
+            "tag": self.tag,
+            "digest": self.digest,
+            "pinned": self.pinned,
+            "immutable": self.immutable,
         }
 
 
@@ -84,13 +107,13 @@ def check_readiness(
         calibration_ref = specs[0].orchestration.get("calibration_run")
     checks: list[ReadinessCheck] = []
     version = python_version_override or tuple(sys.version_info[:3])
-    python_ok = version >= (3, 11, 0)
+    python_ok = version >= (3, 10, 0)
     checks.append(
         _check(
             "python_version",
             python_ok or mode == "development",
             "pass" if python_ok else "warning" if mode == "development" else "fail",
-            f"Python {'.'.join(map(str, version))}; project requires 3.11+.",
+            f"Python {'.'.join(map(str, version))}; project requires 3.10+.",
             {"version": list(version), "non_paper_environment": not python_ok},
         )
     )
@@ -110,6 +133,8 @@ def check_readiness(
     environment_variables: set[str] = set()
     backend_ids: set[str] = set()
     descriptor_dirs: set[str] = set()
+    mapping_audits: dict[str, dict[str, Any]] = {}
+    dataset_mapping_hashes: set[str] = set()
     for spec in specs:
         dataset = DatasetBundle.load(_resolve(spec.dataset_bundle_ref, repo_root))
         model = ModelBundle.load(_resolve(spec.model_bundle_ref, repo_root))
@@ -126,12 +151,31 @@ def check_readiness(
             environment_variables.add(model.config.api_key_env)
         backend_ids.update(spec.backend_ids)
         descriptor_dirs.add(spec.descriptor_dir)
+        if dataset.bundle_hash not in mapping_audits:
+            mapping_audits[dataset.bundle_hash] = audit_dataset_backend_mapping(dataset)
+        dataset_mapping_hashes.add(content_hash(dataset.backend_mapping))
     checks.append(
         ReadinessCheck(
             "artifact_hashes",
             "pass",
             "Dataset, model, and prompt artifacts loaded and hashed.",
             {"bundles": [bundle_records[key] for key in sorted(bundle_records)]},
+        )
+    )
+    mapping_failures = [
+        report
+        for report in mapping_audits.values()
+        if report.get("status") != "pass"
+    ]
+    checks.append(
+        ReadinessCheck(
+            "backend_mapping_compiler_contract",
+            "pass" if not mapping_failures else "fail",
+            "Dataset RDF IRIs, backend mappings, and M9 SPARQL IRIs audited.",
+            {
+                "audits": [mapping_audits[key] for key in sorted(mapping_audits)],
+                "unresolved_count": len(mapping_failures),
+            },
         )
     )
     missing_env = sorted(name for name in environment_variables if not os.environ.get(name))
@@ -181,6 +225,29 @@ def check_readiness(
             {"root": str(calibration_path) if calibration_path else None, "files": calibration_files},
         )
     )
+    calibration_mapping = _calibration_mapping_identity(
+        calibration_path,
+        expected_mapping_hashes=dataset_mapping_hashes,
+        require_fuseki="fuseki" in backend_ids,
+    )
+    calibration_mapping_ok = calibration_mapping["status"] in {
+        "pass",
+        "not_applicable",
+    }
+    checks.append(
+        ReadinessCheck(
+            "calibration_mapping_identity",
+            (
+                "pass"
+                if calibration_mapping_ok
+                else "warning"
+                if mode == "development"
+                else "fail"
+            ),
+            "Calibration query artifacts checked against the active backend mapping hash.",
+            calibration_mapping,
+        )
+    )
 
     output_roots = {_resolve(spec.output_root, repo_root) for spec in specs}
     unwritable = [str(path) for path in output_roots if not _writable_without_mutation(path)]
@@ -197,8 +264,14 @@ def check_readiness(
         image_overrides
         or configured_backend_images(repo_root / "services" / "docker-compose.yml")
     )
+    image_identities = {
+        name: parse_backend_image_identity(name, image)
+        for name, image in sorted(images.items())
+    }
     floating = {
-        name: image for name, image in images.items() if not _image_is_pinned(image)
+        name: identity.configured_reference
+        for name, identity in image_identities.items()
+        if not identity.pinned
     }
     image_status = "pass" if not floating else "warning" if mode != "paper" else "fail"
     checks.append(
@@ -206,7 +279,15 @@ def check_readiness(
             "backend_image_pinning",
             image_status,
             "Backend image tags/digests checked for reproducibility.",
-            {"images": images, "floating": floating},
+            {
+                "images": {
+                    name: identity.to_dict()
+                    for name, identity in image_identities.items()
+                },
+                "floating": floating,
+                "paper_policy": "exact_version_tag_or_sha256_digest",
+                "preferred_policy": "sha256_digest",
+            },
         )
     )
 
@@ -248,7 +329,11 @@ def check_readiness(
             },
         )
     )
-    environment = capture_environment_manifest(repo_root, images=images)
+    environment = capture_environment_manifest(
+        repo_root,
+        images=images,
+        backend_health=backend_health,
+    )
     return ReadinessReport(mode, tuple(checks), environment)
 
 
@@ -256,13 +341,18 @@ def capture_environment_manifest(
     repo_root: str | Path,
     *,
     images: Mapping[str, str] | None = None,
+    backend_health: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     root = Path(repo_root)
     memory_bytes = _memory_bytes()
+    identities = {
+        name: parse_backend_image_identity(name, reference)
+        for name, reference in sorted((images or {}).items())
+    }
     return {
-        "schema_version": "m12d-server-environment-v1",
+        "schema_version": "m12d-server-environment-v2",
         "python_version": platform.python_version(),
-        "python_requirement": ">=3.11",
+        "python_requirement": ">=3.10",
         "os": platform.platform(),
         "machine": platform.machine(),
         "cpu": platform.processor() or None,
@@ -271,6 +361,16 @@ def capture_environment_manifest(
         "gpu_cuda": _command_record(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
         "docker": _command_record(["docker", "version", "--format", "{{json .}}"]),
         "backend_images": dict(images or {}),
+        "backend_image_identities": {
+            name: {
+                **identity.to_dict(),
+                "local_image": _local_docker_image_metadata(identity.configured_reference),
+                "backend_reported_software_version": _backend_reported_version(
+                    name, backend_health or {}
+                ),
+            }
+            for name, identity in identities.items()
+        },
         "git": _git_metadata(root),
     }
 
@@ -315,15 +415,89 @@ def configured_backend_images(path: str | Path) -> dict[str, str]:
     return images
 
 
+def parse_backend_image_identity(service: str, image: str) -> BackendImageIdentity:
+    reference = image.strip()
+    name, separator, digest_value = reference.partition("@")
+    digest = digest_value if separator else None
+    last_slash = name.rfind("/")
+    last_colon = name.rfind(":")
+    tag = name[last_colon + 1 :] if last_colon > last_slash else None
+    repository = name[:last_colon] if tag is not None else name
+    digest_pinned = bool(digest and re.fullmatch(r"sha256:[0-9a-fA-F]{64}", digest))
+    version_pinned = bool(
+        tag
+        and tag.lower() != "latest"
+        and re.search(r"(?:^|[^0-9])\d+\.\d+(?:\.\d+)?(?:[^0-9]|$)", tag)
+    )
+    return BackendImageIdentity(
+        service=service,
+        configured_reference=reference,
+        repository=repository,
+        tag=tag,
+        digest=digest,
+        pinned=digest_pinned or version_pinned,
+        immutable=digest_pinned,
+    )
+
+
 def _image_is_pinned(image: str) -> bool:
-    if "@sha256:" in image:
-        return True
-    if ":" not in image:
-        return False
-    tag = image.rsplit(":", 1)[1]
-    if tag == "latest" or re.fullmatch(r"\d+(?:-[A-Za-z0-9_.-]+)?", tag):
-        return False
-    return bool(re.search(r"\d+\.\d+", tag))
+    return parse_backend_image_identity("backend", image).pinned
+
+
+def _local_docker_image_metadata(reference: str) -> dict[str, Any]:
+    if shutil.which("docker") is None:
+        return {
+            "status": "not_available",
+            "image_id": None,
+            "repo_digests": [],
+        }
+    raw = _run(
+        [
+            "docker",
+            "image",
+            "inspect",
+            reference,
+            "--format",
+            "{{json .}}",
+        ]
+    )
+    if raw is None:
+        return {
+            "status": "not_available",
+            "image_id": None,
+            "repo_digests": [],
+        }
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return {
+            "status": "unparseable",
+            "image_id": None,
+            "repo_digests": [],
+        }
+    repo_digests = data.get("RepoDigests", []) if isinstance(data, Mapping) else []
+    return {
+        "status": "available",
+        "image_id": data.get("Id") if isinstance(data, Mapping) else None,
+        "repo_digests": list(repo_digests) if isinstance(repo_digests, list) else [],
+    }
+
+
+def _backend_reported_version(
+    backend_id: str,
+    backend_health: Mapping[str, Any],
+) -> Any:
+    env_name = f"{backend_id.upper()}_SOFTWARE_VERSION"
+    if os.environ.get(env_name):
+        return {"source": env_name, "value": os.environ[env_name]}
+    status = backend_health.get(backend_id)
+    if isinstance(status, Mapping):
+        details = status.get("details")
+        if isinstance(details, Mapping):
+            value = details.get("software_version") or details.get("server_header")
+            if value:
+                return {"source": "backend_healthcheck", "value": value}
+    return {"source": "not_available", "value": None}
 
 
 def _writable_without_mutation(path: Path) -> bool:
@@ -331,6 +505,66 @@ def _writable_without_mutation(path: Path) -> bool:
     while not current.exists() and current != current.parent:
         current = current.parent
     return current.exists() and os.access(current, os.W_OK)
+
+
+def _calibration_mapping_identity(
+    calibration_root: Path | None,
+    *,
+    expected_mapping_hashes: set[str],
+    require_fuseki: bool,
+) -> dict[str, Any]:
+    if not require_fuseki:
+        return {"status": "not_applicable", "records": []}
+    plans_path = (
+        calibration_root / "calibration" / "fuseki" / "calibration_plans.jsonl"
+        if calibration_root is not None
+        else None
+    )
+    if plans_path is None or not plans_path.is_file():
+        return {
+            "status": "missing",
+            "plans_path": str(plans_path) if plans_path else None,
+            "expected_mapping_hashes": sorted(expected_mapping_hashes),
+            "records": [],
+        }
+    records: list[dict[str, Any]] = []
+    for line_number, line in enumerate(
+        plans_path.read_text(encoding="utf-8").splitlines(), 1
+    ):
+        if not line.strip():
+            continue
+        plan = json.loads(line)
+        if not isinstance(plan, Mapping) or plan.get("status") != "success":
+            continue
+        artifact = plan.get("query_artifact")
+        artifact = artifact if isinstance(artifact, Mapping) else {}
+        parameters = artifact.get("parameters")
+        parameters = parameters if isinstance(parameters, Mapping) else {}
+        mapping = parameters.get("backend_mapping")
+        mapping = mapping if isinstance(mapping, Mapping) else {}
+        mapping_hash = mapping.get("mapping_hash")
+        matches = mapping_hash in expected_mapping_hashes
+        records.append(
+            {
+                "line_number": line_number,
+                "case_id": plan.get("case_id"),
+                "query_id": plan.get("query_id"),
+                "mapping_id": mapping.get("mapping_id"),
+                "mapping_version": mapping.get("version"),
+                "mapping_hash": mapping_hash,
+                "matches_active_dataset_mapping": matches,
+            }
+        )
+    return {
+        "status": (
+            "pass"
+            if records and all(item["matches_active_dataset_mapping"] for item in records)
+            else "mismatch"
+        ),
+        "plans_path": str(plans_path),
+        "expected_mapping_hashes": sorted(expected_mapping_hashes),
+        "records": records,
+    }
 
 
 def _memory_bytes() -> int | None:

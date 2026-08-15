@@ -71,7 +71,7 @@ Do not claim or implement arbitrary conjunctive graph pattern matching in the co
 
 ## Implementation rules
 
-- Python 3.11+
+- Python 3.10+
 - Use dataclasses and type hints.
 - Keep modules small and testable.
 - Use pytest.

@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import json
 import math
-import re
 from numbers import Real
-from typing import Iterable
+from typing import Any, Iterable, Mapping
 
 from xgap.algebra.conditions import (
     And,
@@ -22,6 +21,11 @@ from xgap.algebra.conditions import (
 )
 from xgap.algebra.ops import AlgebraOp
 from xgap.backends.capabilities import BackendCapabilityProfile
+from xgap.backends.mapping import (
+    BackendMappingError,
+    MappedNativeTerm,
+    RdfBackendMapping,
+)
 from xgap.compilers.artifacts import make_query_artifact
 from xgap.compilers.errors import unsupported_compilation
 from xgap.compilers.features import (
@@ -36,12 +40,9 @@ from xgap.infrastructure.runtime import QueryArtifact
 from xgap.pattern.ast import PathPatternQuery
 
 
-_LOCAL_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-_XGAP_PREFIX = "http://xgap.example.org/graph/"
-
 _SPARQL_ASSUMPTIONS = (
     "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
-    "RDF predicates under the xgap: prefix represent XGAP edge labels and properties.",
+    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
     "RDF type triples represent XGAP node-label predicates.",
     "Edge property predicates are unsupported because M9 does not define RDF edge reification.",
 )
@@ -52,6 +53,7 @@ def compile_sparql(
     *,
     profile: BackendCapabilityProfile | None = None,
     artifact_id: str = "m9-sparql-query",
+    backend_mapping: Mapping[str, Any] | RdfBackendMapping | None = None,
 ) -> QueryArtifact:
     """Compile the bounded M9 path fragment to a SPARQL query artifact."""
 
@@ -63,6 +65,28 @@ def compile_sparql(
             feature_id="native.sparql",
             message=f"Backend '{profile.backend_id}' does not use SPARQL.",
         )
+    if backend_mapping is None:
+        raise unsupported_compilation(
+            backend_id=profile.backend_id,
+            language="sparql",
+            feature_id="rdf_mapping.missing",
+            message="M9 SPARQL compilation requires a DatasetBundle backend mapping.",
+        )
+    try:
+        rdf_mapping = (
+            backend_mapping
+            if isinstance(backend_mapping, RdfBackendMapping)
+            else RdfBackendMapping.from_artifact(
+                backend_mapping, backend_id=profile.backend_id
+            )
+        )
+    except BackendMappingError as error:
+        raise unsupported_compilation(
+            backend_id=profile.backend_id,
+            language="sparql",
+            feature_id="rdf_mapping.invalid",
+            message=str(error),
+        ) from error
 
     logical_plan, plan_kind, input_features = plan_from_compiler_input(
         plan,
@@ -88,7 +112,7 @@ def compile_sparql(
         backend_id=profile.backend_id,
         language="sparql",
     )
-    text = _emit_sparql(shape, profile.backend_id)
+    text, mapped_terms = _emit_sparql(shape, profile.backend_id, rdf_mapping)
     return make_query_artifact(
         artifact_id=artifact_id,
         language="sparql",
@@ -96,13 +120,28 @@ def compile_sparql(
         profile=profile,
         required_features=required_features,
         semantic_assumptions=_SPARQL_ASSUMPTIONS,
+        extra_parameters={
+            "backend_mapping": {
+                "mapping_id": rdf_mapping.mapping_id,
+                "version": rdf_mapping.version,
+                "mapping_hash": rdf_mapping.mapping_hash,
+                "relevant_mapped_iris": [
+                    item.to_dict() for item in mapped_terms
+                ],
+            }
+        },
     )
 
 
-def _emit_sparql(shape, backend_id: str) -> str:
+def _emit_sparql(
+    shape,
+    backend_id: str,
+    mapping: RdfBackendMapping,
+) -> tuple[str, tuple[MappedNativeTerm, ...]]:
     atoms = _iter_atomic_bound_conditions(shape.conditions)
     edge_labels = _edge_label_terms(atoms, backend_id)
     body: list[str] = []
+    used_terms: dict[tuple[str, str], MappedNativeTerm] = {}
 
     if shape.edge_count == 0:
         body.extend(_zero_length_node_body())
@@ -112,7 +151,9 @@ def _emit_sparql(shape, backend_id: str) -> str:
             if predicate is None:
                 body.append(f"?n{edge_index} ?e{edge_index + 1} ?n{edge_index + 1} .")
             else:
-                term = _xgap_term(predicate, backend_id)
+                term = _mapped_iri(
+                    predicate, "edge_labels", mapping, used_terms, backend_id
+                )
                 body.append(f"?n{edge_index} {term} ?n{edge_index + 1} .")
                 body.append(f"BIND({term} AS ?e{edge_index + 1})")
 
@@ -121,7 +162,13 @@ def _emit_sparql(shape, backend_id: str) -> str:
         condition = bound.condition
         if isinstance(condition, LabelEquals) and isinstance(condition.ref, EdgeRef):
             continue
-        clauses, value_counter = _condition_to_sparql(bound, value_counter, backend_id)
+        clauses, value_counter = _condition_to_sparql(
+            bound,
+            value_counter,
+            backend_id,
+            mapping,
+            used_terms,
+        )
         body.extend(clauses)
 
     body.append("BIND(?n0 AS ?source)")
@@ -131,14 +178,12 @@ def _emit_sparql(shape, backend_id: str) -> str:
     select_terms.extend(f"?n{index}" for index in range(shape.node_count))
     select_terms.extend(f"?e{index + 1}" for index in range(shape.edge_count))
 
-    lines = [
-        f"PREFIX xgap: <{_XGAP_PREFIX}>",
-        "",
-        f"SELECT DISTINCT {' '.join(select_terms)} WHERE {{",
-    ]
+    lines = [f"SELECT DISTINCT {' '.join(select_terms)} WHERE {{"]
     lines.extend(f"  {clause}" for clause in body)
     lines.append("}")
-    return "\n".join(lines)
+    return "\n".join(lines), tuple(
+        used_terms[key] for key in sorted(used_terms)
+    )
 
 
 def _zero_length_node_body() -> list[str]:
@@ -202,6 +247,8 @@ def _condition_to_sparql(
     bound: BoundCondition,
     value_counter: int,
     backend_id: str,
+    mapping: RdfBackendMapping,
+    used_terms: dict[tuple[str, str], MappedNativeTerm],
 ) -> tuple[list[str], int]:
     condition = bound.condition
     if isinstance(condition, LabelEquals):
@@ -213,25 +260,88 @@ def _condition_to_sparql(
                 message="M9 SPARQL compilation does not support null node-label predicates.",
             )
         if isinstance(condition.ref, NodeRef):
-            return [f"{_node_var(bound, condition.ref)} a {_xgap_term(condition.value, backend_id)} ."], value_counter
+            term = _mapped_iri(
+                condition.value, "node_labels", mapping, used_terms, backend_id
+            )
+            return [f"{_node_var(bound, condition.ref)} a {term} ."], value_counter
         return [], value_counter
 
     if isinstance(condition, PropertyEquals):
-        return _property_condition(bound, condition.ref, condition.property_name, "=", condition.value, value_counter, backend_id)
+        return _property_condition(
+            bound,
+            condition.ref,
+            condition.property_name,
+            "=",
+            condition.value,
+            value_counter,
+            backend_id,
+            mapping,
+            used_terms,
+        )
     if isinstance(condition, PropertyNotEquals):
-        return _property_condition(bound, condition.ref, condition.property_name, "!=", condition.value, value_counter, backend_id)
+        return _property_condition(
+            bound,
+            condition.ref,
+            condition.property_name,
+            "!=",
+            condition.value,
+            value_counter,
+            backend_id,
+            mapping,
+            used_terms,
+        )
     if isinstance(condition, PropertyLessThan):
         _require_numeric(condition.value, backend_id, "sparql")
-        return _property_condition(bound, condition.ref, condition.property_name, "<", condition.value, value_counter, backend_id)
+        return _property_condition(
+            bound,
+            condition.ref,
+            condition.property_name,
+            "<",
+            condition.value,
+            value_counter,
+            backend_id,
+            mapping,
+            used_terms,
+        )
     if isinstance(condition, PropertyLessThanOrEqual):
         _require_numeric(condition.value, backend_id, "sparql")
-        return _property_condition(bound, condition.ref, condition.property_name, "<=", condition.value, value_counter, backend_id)
+        return _property_condition(
+            bound,
+            condition.ref,
+            condition.property_name,
+            "<=",
+            condition.value,
+            value_counter,
+            backend_id,
+            mapping,
+            used_terms,
+        )
     if isinstance(condition, PropertyGreaterThan):
         _require_numeric(condition.value, backend_id, "sparql")
-        return _property_condition(bound, condition.ref, condition.property_name, ">", condition.value, value_counter, backend_id)
+        return _property_condition(
+            bound,
+            condition.ref,
+            condition.property_name,
+            ">",
+            condition.value,
+            value_counter,
+            backend_id,
+            mapping,
+            used_terms,
+        )
     if isinstance(condition, PropertyGreaterThanOrEqual):
         _require_numeric(condition.value, backend_id, "sparql")
-        return _property_condition(bound, condition.ref, condition.property_name, ">=", condition.value, value_counter, backend_id)
+        return _property_condition(
+            bound,
+            condition.ref,
+            condition.property_name,
+            ">=",
+            condition.value,
+            value_counter,
+            backend_id,
+            mapping,
+            used_terms,
+        )
 
     raise unsupported_compilation(
         backend_id=backend_id,
@@ -249,6 +359,8 @@ def _property_condition(
     value: object,
     value_counter: int,
     backend_id: str,
+    mapping: RdfBackendMapping,
+    used_terms: dict[tuple[str, str], MappedNativeTerm],
 ) -> tuple[list[str], int]:
     if isinstance(ref, EdgeRef):
         raise unsupported_compilation(
@@ -265,8 +377,11 @@ def _property_condition(
             message="M9 SPARQL compilation does not support null property literals.",
         )
     value_var = f"?v{value_counter}"
+    property_term = _mapped_iri(
+        property_name, "properties", mapping, used_terms, backend_id
+    )
     clauses = [
-        f"{_node_var(bound, ref)} {_xgap_term(property_name, backend_id)} {value_var} .",
+        f"{_node_var(bound, ref)} {property_term} {value_var} .",
         f"FILTER({value_var} {operator} {_sparql_literal(value, backend_id)})",
     ]
     return clauses, value_counter + 1
@@ -276,15 +391,24 @@ def _node_var(bound: BoundCondition, ref: NodeRef) -> str:
     return f"?n{bound.node_index(ref)}"
 
 
-def _xgap_term(value: str, backend_id: str) -> str:
-    if not _LOCAL_NAME_RE.match(value):
+def _mapped_iri(
+    value: str,
+    token_kind: str,
+    mapping: RdfBackendMapping,
+    used_terms: dict[tuple[str, str], MappedNativeTerm],
+    backend_id: str,
+) -> str:
+    try:
+        term = mapping.resolve(value, token_kind)
+    except BackendMappingError as error:
         raise unsupported_compilation(
             backend_id=backend_id,
             language="sparql",
-            feature_id="rdf_mapping.unsupported_local_name",
-            message=f"M9 SPARQL xgap: mapping requires a simple local name, got {value!r}.",
-        )
-    return f"xgap:{value}"
+            feature_id="rdf_mapping.unresolved_term",
+            message=str(error),
+        ) from error
+    used_terms[(token_kind, value)] = term
+    return f"<{term.iri}>"
 
 
 def _sparql_literal(value: object, backend_id: str) -> str:

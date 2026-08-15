@@ -104,12 +104,14 @@ def test_tiny_matrix_reuses_frozen_candidates_and_aggregates(tmp_path: Path) -> 
 def test_readiness_python_and_image_gates_distinguish_modes(tmp_path: Path) -> None:
     development = check_readiness(
         "experiments/matrices/financial_risk_pilot.json",
-        python_version_override=(3, 10, 12),
+        python_version_override=(3, 9, 18),
         image_overrides={"neo4j": "neo4j:5-community", "fuseki": "fuseki:latest"},
     )
     statuses = {item.check_id: item.status for item in development.checks}
     assert statuses["python_version"] == "warning"
     assert statuses["backend_image_pinning"] == "warning"
+    assert statuses["backend_mapping_compiler_contract"] == "pass"
+    assert statuses["calibration_mapping_identity"] == "warning"
 
     raw = json.loads(Path("experiments/configs/financial_risk_m12d_dev.json").read_text())
     raw["run_id"] = "paper-gate-test"
@@ -118,10 +120,31 @@ def test_readiness_python_and_image_gates_distinguish_modes(tmp_path: Path) -> N
     config.write_text(json.dumps(raw))
     paper = check_readiness(
         config,
-        python_version_override=(3, 10, 12),
+        python_version_override=(3, 9, 18),
         image_overrides={"neo4j": "neo4j:5-community", "fuseki": "fuseki:latest"},
     )
     paper_statuses = {item.check_id: item.status for item in paper.checks}
     assert paper_statuses["python_version"] == "fail"
     assert paper_statuses["backend_image_pinning"] == "fail"
     assert not paper.ready
+
+
+def test_readiness_accepts_python_310_for_paper_mode(tmp_path: Path) -> None:
+    raw = json.loads(Path("experiments/configs/financial_risk_m12d_dev.json").read_text())
+    raw["run_id"] = "paper-python-310-test"
+    raw["orchestration"]["experiment_mode"] = "paper"
+    config = tmp_path / "paper-python-310.json"
+    config.write_text(json.dumps(raw))
+
+    report = check_readiness(
+        config,
+        python_version_override=(3, 10, 12),
+        image_overrides={
+            "neo4j": "neo4j@sha256:" + "1" * 64,
+            "fuseki": "stain/jena-fuseki@sha256:" + "2" * 64,
+        },
+    )
+
+    python_check = next(item for item in report.checks if item.check_id == "python_version")
+    assert python_check.status == "pass"
+    assert python_check.details["version"] == [3, 10, 12]

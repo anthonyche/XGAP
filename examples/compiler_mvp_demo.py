@@ -19,6 +19,7 @@ if str(SRC) not in sys.path:
 from xgap.algebra.conditions import And, EdgeRef, LabelEquals, NodeRef, PropertyEquals
 from xgap.algebra.ops import EdgesOp, JoinOp, RecursiveMode, SelectionOp
 from xgap.compilers import compile_cypher, compile_sparql
+from xgap.infrastructure.descriptors import load_yaml_mapping
 from xgap.pattern import (
     EdgePattern,
     NodePattern,
@@ -56,7 +57,8 @@ def sparql_plan_demo() -> None:
             EdgesOp(),
         ),
     )
-    artifact = compile_sparql(plan)
+    mapping = load_yaml_mapping(ROOT / "datasets/financial_risk_dev/backend_mapping.yaml")
+    artifact = compile_sparql(plan, backend_mapping=mapping)
     print("\nSPARQL artifact:")
     print(artifact.text)
 

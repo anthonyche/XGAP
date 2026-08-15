@@ -332,16 +332,18 @@ the GP, and Nash ranking.
 
 Execution success is cardinality-aware: nonempty success, empty success, and
 execution error are distinct statuses. An empty result is neither a backend
-failure nor evidence of answer correctness. This matters for the current
-Fuseki development data, whose financial-risk namespace can differ from the
-namespace emitted by the bounded M9 SPARQL compiler; M12-D diagnoses but does
-not silently rewrite that semantics.
+failure nor evidence of answer correctness. Configured controlled queries may
+be marked expected-nonempty and audited separately from general execution.
+The DatasetBundle backend mapping is authoritative for RDF native identifiers;
+M9 resolves compiler tokens through that mapping and never owns a
+dataset-specific namespace.
 
 Experiment matrices expand into immutable concrete specs and deterministic
 run IDs. Per-task atomic records are the recovery source for checkpoints and
 resume. Development, pilot, and paper modes share the same runner, but paper
-mode requires Python 3.11+, clean/hashable artifacts, and pinned backend
-images. These controls establish a paper-artifact freeze boundary; they do
+mode requires Python 3.10+, clean/hashable artifacts, and identified pinned
+backend versions/images. Digest references are the preferred immutable image
+identity. These controls establish a paper-artifact freeze boundary; they do
 not imply that final benchmark artifacts or results already exist.
 
 The compatibility checker is a static profile lookup. It does not
@@ -367,8 +369,10 @@ the documented M9 fragment. Unsupported features raise a
 `CompilerFailureSpec` through `UnsupportedCompilationError`.
 
 The M9 Cypher compiler targets Neo4j labeled-property-graph mappings.
-The M9 SPARQL compiler targets Fuseki RDF mappings through documented
-`xgap:` predicate and RDF type assumptions.
+The M9 SPARQL compiler targets Fuseki RDF mappings supplied by the active
+DatasetBundle. Canonical/compiler tokens resolve to mapped RDF class,
+predicate, and property IRIs; a missing or ill-typed mapping is explicitly
+unsupported. M9 contains no dataset-specific namespace constant.
 
 M9 native output is a `QueryArtifact` with row bindings. It does not
 claim full native `PathSet` preservation, selector semantics,

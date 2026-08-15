@@ -495,7 +495,8 @@ M12-D acceptance criteria:
 - planning, prediction, confidence, latency, failure, and aggregate-ready
   metrics remain separate and unavailable gold/oracle values remain null;
 - readiness distinguishes development, pilot, and paper modes, with Python
-  3.11+, immutable hashes, and pinned backend images required for paper mode;
+  3.10+, immutable hashes, pinned backend versions/images, and a consistent
+  DatasetBundle mapping/data/M9 native-IRI contract required for paper mode;
 - aggregation emits analysis-ready JSON and CSV without claiming publication
   results;
 - default pytest remains offline and live backend/model tests are explicitly

@@ -483,7 +483,7 @@ def run_calibration(
         feature_extractor=extractor,
         observations=(),
     )
-    compiler = ExistingCompilerAdapter()
+    compiler = ExistingCompilerAdapter(backend_mapping=dataset.backend_mapping)
     output_root = (
         Path(output_root_override)
         if output_root_override is not None

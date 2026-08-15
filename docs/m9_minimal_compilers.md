@@ -74,8 +74,10 @@ The Fuseki compiler emits SPARQL `QueryArtifact` objects.
 
 Mapping assumptions:
 
-- RDF predicates under the `xgap:` prefix represent edge labels and
-  node properties;
+- the active DatasetBundle backend mapping is the sole source of RDF class,
+  predicate, and property IRIs;
+- compiler tokens resolve through typed canonical term mappings; missing or
+  ill-typed mappings fail explicitly;
 - RDF type triples represent node-label predicates;
 - output is row bindings with `source`, `target`, node variables, and
   edge-predicate variables;
@@ -83,6 +85,10 @@ Mapping assumptions:
   RDF edge reification;
 - SPARQL output is not claimed to preserve native XGAP `PathSet` path
   identity.
+
+M9 does not own a generic or dataset-specific RDF namespace. A different
+dataset changes native IRIs through its mapping artifact, without a compiler
+source change.
 
 ## Unsupported In M9
 

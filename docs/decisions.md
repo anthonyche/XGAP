@@ -532,9 +532,9 @@ makes interruption/resume behavior replayable from disk.
 
 Runtime reports record normalized `row_count` and distinguish nonempty
 success, empty success, and execution error. Empty success is neither backend
-failure nor answer correctness. Calibration diagnostics may flag an expected
-nonempty query, including a Fuseki namespace mismatch, but may not silently
-rewrite its native semantics.
+failure nor answer correctness. Calibration diagnostics may flag an explicitly
+configured expected-nonempty query, but may not reinterpret arbitrary empty
+results as failures.
 
 Reason:
 
@@ -544,13 +544,29 @@ different experimental observations and must remain separately auditable.
 ## D51 Paper mode requires an explicit frozen environment
 
 Development, pilot, and paper modes share the same runner. Paper mode requires
-Python 3.11+, immutable artifact hashes, an appropriate clean/fixed repository
-state, and pinned backend images/versions. Floating images or Python 3.10 may
-be used only by explicitly non-paper development runs. Readiness diagnoses
-state without mutating the host.
+Python 3.10+, immutable artifact hashes, an appropriate clean/fixed repository
+state, and identified pinned backend images/versions. Floating images remain
+development-only. The exact runtime version, such as Python 3.10.12, is still
+recorded in every environment manifest. Readiness diagnoses state without
+mutating the host.
 
 Reason:
 
 Reproducible paper measurements require environment identity beyond a
 successful smoke query. The freeze manifest defines this identity without
 claiming that final benchmark artifacts or results already exist.
+
+## D52 DatasetBundle backend mapping owns native identifier semantics
+
+Canonical XGAP terms and bounded compiler tokens resolve through the active
+DatasetBundle backend mapping before native query emission. The M9 SPARQL
+compiler must not construct a dataset-specific RDF namespace. For controlled
+RDF bundles, readiness audits the loaded data term, mapped IRI, and M9-emitted
+IRI and requires equality. A missing mapping fails explicitly.
+
+Reason:
+
+Backend transport success can hide a semantically empty query when the native
+identifier contract drifts. Keeping the mapping authoritative lets a future
+dataset change native IRIs by replacing its artifact rather than editing the
+compiler.

@@ -611,9 +611,10 @@ Every execution records `row_count` and one of
 `execution_success_nonempty`, `execution_success_empty`, or
 `execution_error`. Empty success is not a backend failure and is not answer
 correctness. `python -m xgap.experiments.calibration_sanity` flags configured
-expected-nonempty cases that repeatedly return no rows. In particular, a
-Fuseki financial-risk namespace versus M9 graph-namespace mismatch is
-reported, never silently rewritten.
+expected-nonempty cases that repeatedly return no rows and records query/plan
+IDs, native-query hash, relevant mapped IRIs, status, and cardinality. The
+post-M12-D mapping audit verifies that Fuseki data IRIs, DatasetBundle mapping
+IRIs, and M9-emitted IRIs agree before paper execution.
 
 ### Modes And Freeze Boundary
 
@@ -621,10 +622,15 @@ reported, never silently rewritten.
 artifact hashes, credential names, backend/compiler compatibility,
 calibration availability, output writability, backend health when requested,
 and image/version metadata without mutating the server. Development may use
-toy data, Python mismatch, or floating images only with explicit warnings.
-Pilot uses the intended environment. Paper mode requires Python 3.11+,
+toy data or floating images only with explicit warnings. Pilot uses the
+intended environment. Paper mode requires Python 3.10+,
 immutable artifact hashes, a clean/fixed repository state, fixed splits,
-prompt/model/calibration policies, and pinned backend versions/images.
+prompt/model/calibration policies, pinned backend versions/images, and a
+passing backend mapping/data/M9 IRI contract. The manifest records the exact
+runtime version even though the supported lower bound is 3.10. Fuseki
+calibration query artifacts must also carry the active DatasetBundle mapping
+hash; a pre-hardening D0 is not paper-compatible merely because its files
+exist.
 
 Each run writes a paper freeze manifest covering dataset, ontology/schema,
 mapping, model, prompt/schema, semantic config, feature schema, D0/model,
@@ -656,10 +662,11 @@ PYTHONPATH=src python -m pytest \
   tests/test_m12d_live.py::test_real_direct_text2graphquery_smoke -v
 ```
 
-The first command is diagnostic and non-mutating. On the currently reported
-server it must show Python 3.10.12 and floating Neo4j/Fuseki images as
-development warnings. Do not label the run paper-grade until Python is 3.11+
-and image versions/digests are pinned. The first two live tests do not require
+The first command is diagnostic and non-mutating. Python 3.10.12 satisfies the
+supported paper runtime contract and is recorded exactly. The previously
+validated floating Neo4j/Fuseki references remain development warnings until
+their current image IDs are frozen to exact versions or, preferably, digests.
+The first two live tests do not require
 an LLM credential because they replay the controlled frozen candidates; the
 direct baseline test does.
 
@@ -669,6 +676,11 @@ live tests skipped behind explicit gates; full pytest reported 363 passed and
 aggregate groups with frozen candidate replay. `scripts/run_acceptance.sh`
 passed with all historical examples plus the M12-D demo. No M12-D live-server
 result is claimed by these local commands.
+
+The subsequent post-M12-D hardening run reported 370 passed and 7 live-gated
+skips, a 109-passed focused M9-M12-D regression, a passing three-way RDF IRI
+audit, and a passing acceptance script. Live expected-nonempty Fuseki
+cardinality remains a server-gated check and is not claimed by the local run.
 
 M12-D does not add MetaQA/QALD integration, final KGQA evaluation,
 cross-backend distributed execution, movement-cost learning, joint/transfer

@@ -39,9 +39,11 @@ class FusekiClient:
     def healthcheck(self) -> BackendStatus:
         checked_at = _now()
         url = f"{self.base_url}/$/ping"
+        server_header = None
         try:
             with urllib.request.urlopen(url, timeout=self.timeout_seconds) as response:
                 ok = 200 <= response.status < 300
+                server_header = response.headers.get("Server")
             message = "Fuseki ping endpoint is ready" if ok else f"Fuseki ping returned {response.status}"
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             ok = False
@@ -51,7 +53,11 @@ class FusekiClient:
             ok=ok,
             message=message,
             checked_at=checked_at,
-            details={"base_url": self.base_url, "dataset": self.dataset},
+            details={
+                "base_url": self.base_url,
+                "dataset": self.dataset,
+                "server_header": server_header,
+            },
         )
 
     def execute(self, artifact: QueryArtifact) -> ExecutionReport:

@@ -3,6 +3,8 @@
 ## Current Milestone
 
 M12-D Baselines/Ablations + Server Experiment Runner is completed.
+Post-M12-D paper-environment hardening is completed without opening a new
+algorithm milestone.
 
 ## Completed
 
@@ -743,14 +745,14 @@ Implemented M12-D boundaries:
 - normalized execution cardinality and separate
   `execution_success_nonempty`, `execution_success_empty`, and
   `execution_error` statuses;
-- calibration-query cardinality diagnostics, including an explicit warning
-  boundary for the current Fuseki namespace caveat;
+- calibration-query cardinality diagnostics with explicit expected-nonempty
+  cases, relevant mapped IRIs, and separate empty-success handling;
 - method-aware search traces, cost prediction/confidence observations,
   separated latency/result/failure metrics, and JSON/CSV aggregation;
 - development/pilot/paper modes, environment capture, readiness checks, and a
-  paper freeze manifest. Paper mode requires Python 3.11+ and pinned backend
-  images; the current server's Python 3.10.12 and floating images are
-  development-only until corrected.
+  paper freeze manifest. Paper mode supports Python 3.10+ and requires pinned,
+  identified backend versions/images plus a passing RDF mapping/data/compiler
+  contract. Exact runtime and image identity remain recorded per run.
 
 Offline completion verifies the runner lifecycle and D0 -> D1 -> D2
 transition using deterministic fake backend timings. The real M12-D online
@@ -762,6 +764,34 @@ dataset/model artifact preparation and large-scale runs. It does not mean
 final datasets or paper numbers exist, MetaQA/QALD are integrated,
 cross-backend distributed execution or transfer-cost learning exists, or new
 compiler fragments are supported.
+
+## Post-M12-D Paper-Environment Hardening
+
+This completed hardening pass did not change `PathPatternQuery`, logical
+algebra, `c_sem`, M11 search/ranking, GP formulas, prompt/schema contracts,
+baselines, or M12-D experiment semantics.
+
+- package metadata, paper readiness, and the online paper gate now support
+  Python 3.10+; the dependency and 3.10 syntax/API audit found no blocker;
+- paper backend startup uses `services/.env.paper` and requires current
+  validated `repository@sha256:<digest>` image references, while development
+  floating tags remain warning-only;
+- environment manifests record repository, tag, digest, local image ID and
+  RepoDigests when visible, plus backend-reported software version where
+  available;
+- the DatasetBundle backend mapping is now the sole source for M9 SPARQL RDF
+  IRIs; missing or invalid mappings fail explicitly;
+- the financial-risk RDF bundle retains reified Transfer records and adds the
+  mapped direct `transfersTo` predicate needed by the existing bounded M9 path
+  fragment;
+- `python -m xgap.experiments.backend_mapping_audit` verifies
+  `URI_data == URI_mapping == URI_m9`, and readiness fails on any unresolved
+  mismatch;
+- readiness also rejects paper use of Fuseki calibration artifacts whose
+  query mapping hash is absent or differs from the active DatasetBundle, so
+  pre-hardening D0 must be regenerated after the updated data is loaded;
+- configured expected-nonempty live calibration cases assert positive Fuseki
+  row counts; arbitrary empty results remain valid successful executions.
 
 ## Required Acceptance Command
 
@@ -781,7 +811,11 @@ the local completion run.
 
 Latest recorded command results:
 
-- `python -m pytest -q`: 363 passed, 7 skipped.
+- `python -m pytest -q`: 370 passed, 7 skipped.
+- `python -m pytest` over the focused M9-M12-D and hardening regression set:
+  109 passed, 5 live-gated tests skipped.
+- `python -m xgap.experiments.backend_mapping_audit --dataset
+  datasets/financial_risk_dev`: passed with no three-way IRI mismatches.
 - `python examples/quantified_pattern_demo.py`: passed.
 - `python examples/compiler_mvp_demo.py`: passed.
 - `python examples/llm_boundary_demo.py`: passed.

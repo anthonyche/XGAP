@@ -471,7 +471,9 @@ def run_live_experiment(
             exchange_catalog=ExchangeCatalog(strategies=()),
             budget_policy=_budget_policy(spec.budget),
             cost_estimator=estimator,
-            physical_compiler=ExistingCompilerAdapter(),
+            physical_compiler=ExistingCompilerAdapter(
+                backend_mapping=dataset.backend_mapping
+            ),
         )
         result = planner.plan(
             query_context=query_context,

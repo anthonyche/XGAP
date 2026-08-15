@@ -40,6 +40,12 @@ def inspect_calibration(
                 continue
             artifact = plan.get("query_artifact")
             artifact = artifact if isinstance(artifact, Mapping) else {}
+            parameters = artifact.get("parameters")
+            parameters = parameters if isinstance(parameters, Mapping) else {}
+            backend_mapping = parameters.get("backend_mapping")
+            backend_mapping = (
+                backend_mapping if isinstance(backend_mapping, Mapping) else {}
+            )
             measured = [item for item in plan_measurements if item.get("phase") == "measured"]
             row_counts = [
                 int(item["row_count"])
@@ -57,16 +63,36 @@ def inspect_calibration(
             records.append(
                 {
                     "case_id": case_id,
+                    "query_id": plan.get("query_id"),
                     "backend_id": backend_root.name,
+                    "logical_plan_id": plan.get("logical_plan_id"),
                     "physical_plan_id": plan_id,
                     "query_text": artifact.get("text"),
+                    "native_query_hash": content_hash({"text": artifact.get("text")}),
                     "query_hash": content_hash({"text": artifact.get("text")}),
+                    "relevant_mapped_iris": backend_mapping.get(
+                        "relevant_mapped_iris", []
+                    ),
                     "execution_success": bool(successful),
+                    "execution_statuses": [
+                        (
+                            "execution_success_nonempty"
+                            if int(item.get("row_count") or 0) > 0
+                            else "execution_success_empty"
+                        )
+                        if item.get("status") == "success"
+                        else "execution_error"
+                        for item in measured
+                    ],
                     "row_counts": row_counts,
                     "latencies_ms": [
                         item.get("raw_latency_ms") for item in successful
                     ],
                     "suspicious_empty_calibration_query": suspicious,
+                    "expected_nonempty": case_id in expected,
+                    "expected_nonempty_satisfied": (
+                        any(row_counts) if case_id in expected and successful else None
+                    ),
                     "cardinality_status": (
                         "available" if len(row_counts) == len(successful) else "not_available"
                     ),
@@ -82,9 +108,8 @@ def inspect_calibration(
         "suspicious_empty_calibration_queries": suspicious_records,
         "namespace_rewrite_performed": False,
         "fuseki_namespace_caveat": (
-            "The toy data uses the financial-risk namespace while current M9 SPARQL "
-            "mapping assumptions may use the graph namespace. Empty success is recorded, "
-            "not rewritten or treated as backend failure."
+            "M9 SPARQL now consumes the DatasetBundle backend mapping. Any expected-"
+            "nonempty empty success remains a cardinality warning, not a backend failure."
         ),
     }
 

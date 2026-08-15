@@ -64,6 +64,24 @@ class Neo4jClient:
             text="RETURN 1 AS ok",
         )
         report = self.execute(artifact)
+        details: dict[str, Any] = {
+            "http_url": self.http_url,
+            "database": self.database,
+        }
+        if report.success:
+            version_report = self.execute(
+                QueryArtifact(
+                    artifact_id="neo4j-version",
+                    language="cypher",
+                    text=(
+                        "CALL dbms.components() YIELD name, versions, edition "
+                        "RETURN name, versions[0] AS version, edition"
+                    ),
+                )
+            )
+            if version_report.success and version_report.rows:
+                details["software_version"] = version_report.rows[0].get("version")
+                details["software_edition"] = version_report.rows[0].get("edition")
         return BackendStatus(
             backend_id=self.backend_id,
             ok=report.success,
@@ -71,7 +89,7 @@ class Neo4jClient:
             if report.success
             else report.error or "Neo4j healthcheck failed",
             checked_at=report.ended_at,
-            details={"http_url": self.http_url, "database": self.database},
+            details=details,
         )
 
     def execute(self, artifact: QueryArtifact) -> ExecutionReport:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any, Mapping
 
 from xgap.backends.capabilities import (
     BackendCapabilityProfile,
@@ -48,19 +49,22 @@ def make_query_artifact(
     profile: BackendCapabilityProfile,
     required_features: tuple[str, ...],
     semantic_assumptions: tuple[str, ...],
+    extra_parameters: Mapping[str, Any] | None = None,
 ) -> QueryArtifact:
+    parameters = {
+        "compiler": "m9_minimal_compiler",
+        "target_backend_id": profile.backend_id,
+        "result_model": M9_RESULT_MODEL,
+        "required_features": list(sorted(required_features)),
+        "semantic_assumptions": list(semantic_assumptions),
+    }
+    parameters.update(dict(extra_parameters or {}))
     return QueryArtifact(
         artifact_id=artifact_id,
         language=language,
         text=text,
         kind="compiled",
-        parameters={
-            "compiler": "m9_minimal_compiler",
-            "target_backend_id": profile.backend_id,
-            "result_model": M9_RESULT_MODEL,
-            "required_features": list(sorted(required_features)),
-            "semantic_assumptions": list(semantic_assumptions),
-        },
+        parameters=parameters,
     )
 
 

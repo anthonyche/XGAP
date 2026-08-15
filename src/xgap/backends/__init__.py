@@ -13,16 +13,20 @@ from xgap.backends.capabilities import (
     SupportReason,
     UnsupportedFeature,
 )
+from xgap.backends.mapping import BackendMappingError, MappedNativeTerm, RdfBackendMapping
 from xgap.backends.protocol import BackendClient
 
 __all__ = [
     "BackendCapabilityProfile",
     "BackendClient",
+    "BackendMappingError",
     "CompatibilityReport",
     "CompilerFailureSpec",
     "CompilerInputSpec",
     "CompilerOutputSpec",
     "FeatureSupport",
+    "MappedNativeTerm",
+    "RdfBackendMapping",
     "SupportLevel",
     "SupportReason",
     "UnsupportedFeature",

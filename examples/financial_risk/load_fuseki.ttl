@@ -32,6 +32,12 @@ xgap:acct-redstone a xgap:Account .
 xgap:acct-blackpeak a xgap:Account .
 xgap:acct-blueharbor a xgap:Account .
 
+# Direct path predicate used by the bounded M9 RDF path fragment. The
+# reified Transfer resources below remain the source of transfer attributes.
+xgap:acct-alice xgap:transfersTo xgap:acct-redstone .
+xgap:acct-alice xgap:transfersTo xgap:acct-blackpeak .
+xgap:acct-alice xgap:transfersTo xgap:acct-blueharbor .
+
 xgap:transfer-001
     a xgap:Transfer ;
     xgap:fromAccount xgap:acct-alice ;

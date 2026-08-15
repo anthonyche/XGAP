@@ -140,8 +140,8 @@ def run_online_experiment(
     if mode not in {"development", "pilot", "paper"}:
         raise ValueError("Experiment mode must be development, pilot, or paper.")
     running_python = tuple(int(item) for item in platform.python_version_tuple())
-    if mode == "paper" and running_python < (3, 11, 0):
-        raise RuntimeError("Paper experiments require Python 3.11+.")
+    if mode == "paper" and running_python < (3, 10, 0):
+        raise RuntimeError("Paper experiments require Python 3.10+.")
     policy = resolve_method_policy(
         spec.baseline,
         spec.ablations,
@@ -339,7 +339,9 @@ def run_online_experiment(
                 planning_registry,
                 use_uncertainty=policy.use_gp_uncertainty,
             ),
-            physical_compiler=ExistingCompilerAdapter(),
+            physical_compiler=ExistingCompilerAdapter(
+                backend_mapping=dataset.backend_mapping
+            ),
         )
         planning_latency = time.perf_counter() - planning_started
         outcomes, observations, measurement_rows = _execute_selected_plans(

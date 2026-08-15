@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Mapping
+from typing import Any, Mapping
 
 from xgap.algebra.ops import AlgebraOp
 from xgap.algebra.pretty import format_plan
@@ -21,6 +21,7 @@ class ExistingCompilerAdapter:
     """Use M9 as-is and make unsupported execution boundaries explicit."""
 
     compiler_id: str = "m11-existing-m9-compiler-adapter"
+    backend_mapping: Mapping[str, Any] | None = None
 
     def compile(
         self,
@@ -87,6 +88,7 @@ class ExistingCompilerAdapter:
                     compiler_input,
                     profile=profile,
                     artifact_id=artifact_id,
+                    backend_mapping=self.backend_mapping,
                 )
             else:
                 return PhysicalCompilationResult(
