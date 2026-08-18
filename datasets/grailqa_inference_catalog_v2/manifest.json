@@ -1,0 +1,20 @@
+{
+  "schema_version": "m13e1-grailqa-inference-catalog-v2",
+  "catalog_id": "grailqa_inference_catalog_v2",
+  "status": "blocked",
+  "catalog_hash": null,
+  "ontology_hash": null,
+  "counts": {
+    "entities": null,
+    "entity_aliases": null,
+    "entity_types": null,
+    "types": null,
+    "relations": null,
+    "relation_aliases": null
+  },
+  "sources": {
+    "manifest": "experiments/artifacts/grailqa_m13e1_sources.json"
+  },
+  "file_hashes": {},
+  "blocked_reason": "Official Freebase RDF dump has not been downloaded and hashed in this environment. Run scripts/server/build_grailqa_catalog_v2.sh on the experiment server; no GrailQA gold fallback is permitted."
+}

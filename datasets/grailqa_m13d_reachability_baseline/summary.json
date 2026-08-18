@@ -1,0 +1,1331 @@
+{
+  "audit_hash": "8d36ac149ce6fe0e403b0e0d34ee59bca4c430ce994a4dff2529e24bc8cead1f",
+  "by_path_length": {
+    "1": {
+      "catalog": {
+        "entity": {
+          "count": 6,
+          "ratio": 0.07228915662650602
+        },
+        "joint": {
+          "count": 6,
+          "ratio": 0.07228915662650602
+        },
+        "relation": {
+          "count": 83,
+          "ratio": 1.0
+        },
+        "type": {
+          "count": 83,
+          "ratio": 1.0
+        }
+      },
+      "count": 83,
+      "deployed_prompt": {
+        "entity": {
+          "count": 5,
+          "ratio": 0.060240963855421686
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 19,
+          "ratio": 0.2289156626506024
+        },
+        "type": {
+          "count": 23,
+          "ratio": 0.27710843373493976
+        }
+      },
+      "prompt": {
+        "1": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.04819277108433735
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 10,
+            "ratio": 0.12048192771084337
+          },
+          "type": {
+            "count": 4,
+            "ratio": 0.04819277108433735
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 19,
+            "ratio": 0.2289156626506024
+          },
+          "type": {
+            "count": 23,
+            "ratio": 0.27710843373493976
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 19,
+            "ratio": 0.2289156626506024
+          },
+          "type": {
+            "count": 23,
+            "ratio": 0.27710843373493976
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 19,
+            "ratio": 0.2289156626506024
+          },
+          "type": {
+            "count": 23,
+            "ratio": 0.27710843373493976
+          }
+        }
+      },
+      "retrieval": {
+        "1": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.04819277108433735
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 10,
+            "ratio": 0.12048192771084337
+          },
+          "type": {
+            "count": 4,
+            "ratio": 0.04819277108433735
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 30,
+            "ratio": 0.3614457831325301
+          },
+          "type": {
+            "count": 35,
+            "ratio": 0.42168674698795183
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 40,
+            "ratio": 0.4819277108433735
+          },
+          "type": {
+            "count": 38,
+            "ratio": 0.4578313253012048
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 21,
+            "ratio": 0.25301204819277107
+          },
+          "type": {
+            "count": 25,
+            "ratio": 0.30120481927710846
+          }
+        }
+      }
+    },
+    "2": {
+      "catalog": {
+        "entity": {
+          "count": 6,
+          "ratio": 0.10714285714285714
+        },
+        "joint": {
+          "count": 6,
+          "ratio": 0.10714285714285714
+        },
+        "relation": {
+          "count": 56,
+          "ratio": 1.0
+        },
+        "type": {
+          "count": 56,
+          "ratio": 1.0
+        }
+      },
+      "count": 56,
+      "deployed_prompt": {
+        "entity": {
+          "count": 4,
+          "ratio": 0.07142857142857142
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 3,
+          "ratio": 0.05357142857142857
+        },
+        "type": {
+          "count": 13,
+          "ratio": 0.23214285714285715
+        }
+      },
+      "prompt": {
+        "1": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 7,
+            "ratio": 0.125
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 3,
+            "ratio": 0.05357142857142857
+          },
+          "type": {
+            "count": 13,
+            "ratio": 0.23214285714285715
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 3,
+            "ratio": 0.05357142857142857
+          },
+          "type": {
+            "count": 13,
+            "ratio": 0.23214285714285715
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 3,
+            "ratio": 0.05357142857142857
+          },
+          "type": {
+            "count": 13,
+            "ratio": 0.23214285714285715
+          }
+        }
+      },
+      "retrieval": {
+        "1": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 7,
+            "ratio": 0.125
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.08928571428571429
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 5,
+            "ratio": 0.08928571428571429
+          },
+          "type": {
+            "count": 20,
+            "ratio": 0.35714285714285715
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.08928571428571429
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 7,
+            "ratio": 0.125
+          },
+          "type": {
+            "count": 24,
+            "ratio": 0.42857142857142855
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 3,
+            "ratio": 0.05357142857142857
+          },
+          "type": {
+            "count": 14,
+            "ratio": 0.25
+          }
+        }
+      }
+    },
+    "3": {
+      "catalog": {
+        "entity": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 11,
+          "ratio": 1.0
+        },
+        "type": {
+          "count": 11,
+          "ratio": 1.0
+        }
+      },
+      "count": 11,
+      "deployed_prompt": {
+        "entity": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "type": {
+          "count": 2,
+          "ratio": 0.18181818181818182
+        }
+      },
+      "prompt": {
+        "1": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 0,
+            "ratio": 0.0
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 2,
+            "ratio": 0.18181818181818182
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 2,
+            "ratio": 0.18181818181818182
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 2,
+            "ratio": 0.18181818181818182
+          }
+        }
+      },
+      "retrieval": {
+        "1": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 0,
+            "ratio": 0.0
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 5,
+            "ratio": 0.45454545454545453
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 5,
+            "ratio": 0.45454545454545453
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 2,
+            "ratio": 0.18181818181818182
+          }
+        }
+      }
+    }
+  },
+  "by_q": {
+    "13": {
+      "catalog": {
+        "entity": {
+          "count": 6,
+          "ratio": 0.07228915662650602
+        },
+        "joint": {
+          "count": 6,
+          "ratio": 0.07228915662650602
+        },
+        "relation": {
+          "count": 83,
+          "ratio": 1.0
+        },
+        "type": {
+          "count": 83,
+          "ratio": 1.0
+        }
+      },
+      "count": 83,
+      "deployed_prompt": {
+        "entity": {
+          "count": 5,
+          "ratio": 0.060240963855421686
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 19,
+          "ratio": 0.2289156626506024
+        },
+        "type": {
+          "count": 23,
+          "ratio": 0.27710843373493976
+        }
+      },
+      "prompt": {
+        "1": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.04819277108433735
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 10,
+            "ratio": 0.12048192771084337
+          },
+          "type": {
+            "count": 4,
+            "ratio": 0.04819277108433735
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 19,
+            "ratio": 0.2289156626506024
+          },
+          "type": {
+            "count": 23,
+            "ratio": 0.27710843373493976
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 19,
+            "ratio": 0.2289156626506024
+          },
+          "type": {
+            "count": 23,
+            "ratio": 0.27710843373493976
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 19,
+            "ratio": 0.2289156626506024
+          },
+          "type": {
+            "count": 23,
+            "ratio": 0.27710843373493976
+          }
+        }
+      },
+      "retrieval": {
+        "1": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.04819277108433735
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 10,
+            "ratio": 0.12048192771084337
+          },
+          "type": {
+            "count": 4,
+            "ratio": 0.04819277108433735
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 30,
+            "ratio": 0.3614457831325301
+          },
+          "type": {
+            "count": 35,
+            "ratio": 0.42168674698795183
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 40,
+            "ratio": 0.4819277108433735
+          },
+          "type": {
+            "count": 38,
+            "ratio": 0.4578313253012048
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.060240963855421686
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 21,
+            "ratio": 0.25301204819277107
+          },
+          "type": {
+            "count": 25,
+            "ratio": 0.30120481927710846
+          }
+        }
+      }
+    },
+    "19": {
+      "catalog": {
+        "entity": {
+          "count": 6,
+          "ratio": 0.10714285714285714
+        },
+        "joint": {
+          "count": 6,
+          "ratio": 0.10714285714285714
+        },
+        "relation": {
+          "count": 56,
+          "ratio": 1.0
+        },
+        "type": {
+          "count": 56,
+          "ratio": 1.0
+        }
+      },
+      "count": 56,
+      "deployed_prompt": {
+        "entity": {
+          "count": 4,
+          "ratio": 0.07142857142857142
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 3,
+          "ratio": 0.05357142857142857
+        },
+        "type": {
+          "count": 13,
+          "ratio": 0.23214285714285715
+        }
+      },
+      "prompt": {
+        "1": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 7,
+            "ratio": 0.125
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 3,
+            "ratio": 0.05357142857142857
+          },
+          "type": {
+            "count": 13,
+            "ratio": 0.23214285714285715
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 3,
+            "ratio": 0.05357142857142857
+          },
+          "type": {
+            "count": 13,
+            "ratio": 0.23214285714285715
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 3,
+            "ratio": 0.05357142857142857
+          },
+          "type": {
+            "count": 13,
+            "ratio": 0.23214285714285715
+          }
+        }
+      },
+      "retrieval": {
+        "1": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 7,
+            "ratio": 0.125
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.08928571428571429
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 5,
+            "ratio": 0.08928571428571429
+          },
+          "type": {
+            "count": 20,
+            "ratio": 0.35714285714285715
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 5,
+            "ratio": 0.08928571428571429
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 7,
+            "ratio": 0.125
+          },
+          "type": {
+            "count": 24,
+            "ratio": 0.42857142857142855
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 4,
+            "ratio": 0.07142857142857142
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 3,
+            "ratio": 0.05357142857142857
+          },
+          "type": {
+            "count": 14,
+            "ratio": 0.25
+          }
+        }
+      }
+    },
+    "25": {
+      "catalog": {
+        "entity": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 11,
+          "ratio": 1.0
+        },
+        "type": {
+          "count": 11,
+          "ratio": 1.0
+        }
+      },
+      "count": 11,
+      "deployed_prompt": {
+        "entity": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "type": {
+          "count": 2,
+          "ratio": 0.18181818181818182
+        }
+      },
+      "prompt": {
+        "1": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 0,
+            "ratio": 0.0
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 2,
+            "ratio": 0.18181818181818182
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 2,
+            "ratio": 0.18181818181818182
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 2,
+            "ratio": 0.18181818181818182
+          }
+        }
+      },
+      "retrieval": {
+        "1": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 0,
+            "ratio": 0.0
+          }
+        },
+        "10": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 5,
+            "ratio": 0.45454545454545453
+          }
+        },
+        "20": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 5,
+            "ratio": 0.45454545454545453
+          }
+        },
+        "5": {
+          "entity": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "joint": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "relation": {
+            "count": 0,
+            "ratio": 0.0
+          },
+          "type": {
+            "count": 2,
+            "ratio": 0.18181818181818182
+          }
+        }
+      }
+    }
+  },
+  "catalog_hash": "b547bf391a2dadf6c5affd205689da325bd4bce31b179b3d0a1f3c6bc4c4d416",
+  "catalog_id": "grailqa_inference_catalog_v1",
+  "inputs": {
+    "catalog_hash": "b547bf391a2dadf6c5affd205689da325bd4bce31b179b3d0a1f3c6bc4c4d416",
+    "pilot_questions_sha256": "34f9c667c975796f11c2fd9688b39cd2ebdbb1fd2dc4f6011d5fc6ba7e6b16a2",
+    "pilot_reference_sha256": "908b8acb2fdfa43d334527cf3bb949daabee430db25678fee013105abaa3b3e9"
+  },
+  "k_values": [
+    1,
+    5,
+    10,
+    20
+  ],
+  "prompt_limit": 4,
+  "question_count": 150,
+  "schema_version": "m13e1-grailqa-reachability-v2",
+  "summary": {
+    "catalog": {
+      "entity": {
+        "count": 12,
+        "ratio": 0.08
+      },
+      "joint": {
+        "count": 12,
+        "ratio": 0.08
+      },
+      "relation": {
+        "count": 150,
+        "ratio": 1.0
+      },
+      "type": {
+        "count": 150,
+        "ratio": 1.0
+      }
+    },
+    "deployed_prompt": {
+      "entity": {
+        "count": 9,
+        "ratio": 0.06
+      },
+      "joint": {
+        "count": 0,
+        "ratio": 0.0
+      },
+      "relation": {
+        "count": 22,
+        "ratio": 0.14666666666666667
+      },
+      "type": {
+        "count": 38,
+        "ratio": 0.25333333333333335
+      }
+    },
+    "prompt": {
+      "1": {
+        "entity": {
+          "count": 8,
+          "ratio": 0.05333333333333334
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 10,
+          "ratio": 0.06666666666666667
+        },
+        "type": {
+          "count": 11,
+          "ratio": 0.07333333333333333
+        }
+      },
+      "10": {
+        "entity": {
+          "count": 9,
+          "ratio": 0.06
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 22,
+          "ratio": 0.14666666666666667
+        },
+        "type": {
+          "count": 38,
+          "ratio": 0.25333333333333335
+        }
+      },
+      "20": {
+        "entity": {
+          "count": 9,
+          "ratio": 0.06
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 22,
+          "ratio": 0.14666666666666667
+        },
+        "type": {
+          "count": 38,
+          "ratio": 0.25333333333333335
+        }
+      },
+      "5": {
+        "entity": {
+          "count": 9,
+          "ratio": 0.06
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 22,
+          "ratio": 0.14666666666666667
+        },
+        "type": {
+          "count": 38,
+          "ratio": 0.25333333333333335
+        }
+      }
+    },
+    "retrieval": {
+      "1": {
+        "entity": {
+          "count": 8,
+          "ratio": 0.05333333333333334
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 10,
+          "ratio": 0.06666666666666667
+        },
+        "type": {
+          "count": 11,
+          "ratio": 0.07333333333333333
+        }
+      },
+      "10": {
+        "entity": {
+          "count": 10,
+          "ratio": 0.06666666666666667
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 35,
+          "ratio": 0.23333333333333334
+        },
+        "type": {
+          "count": 60,
+          "ratio": 0.4
+        }
+      },
+      "20": {
+        "entity": {
+          "count": 10,
+          "ratio": 0.06666666666666667
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 47,
+          "ratio": 0.31333333333333335
+        },
+        "type": {
+          "count": 67,
+          "ratio": 0.44666666666666666
+        }
+      },
+      "5": {
+        "entity": {
+          "count": 9,
+          "ratio": 0.06
+        },
+        "joint": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "relation": {
+          "count": 24,
+          "ratio": 0.16
+        },
+        "type": {
+          "count": 41,
+          "ratio": 0.2733333333333333
+        }
+      }
+    }
+  }
+}

@@ -483,6 +483,22 @@ compilers implement the same identity predicate. GrailQA conversion, ontology
 normalization, mappings, and ambiguity artifacts remain in the experiment
 layer; there is no dataset-specific core branch or new logical operator.
 
+M13-E1 adds an experiment-layer canonical interpretation profile without
+changing `PathPatternQuery` or lowering. For the bounded fixed-path profile,
+an omitted selector/restrictor normalizes to `ALL`/`SIMPLE`; once SIMPLE and a
+fixed `Rel`/`Seq` topology are known, pairwise `NodeNotEquals` constraints are
+generated deterministically. Variable spelling and commutative condition
+child order are representation details. Entity IDs, type constraints,
+relation sequence, direction, topology, explicit comparison predicates, and
+source/target focus remain semantic and must still match after normalization.
+
+The M13-E1 live boundary consumes a query-independent public Freebase catalog,
+bounded entity/type and per-hop relation pools, and optional hop-2/hop-3 prompt
+slots. Optional slots permit one-, two-, and three-hop candidates to share one
+bounded view without importing gold path length. Gold reference reachability
+is computed only by the offline readiness/evaluation layer and can prevent a
+paid provider call; it is never serialized into the model request.
+
 Supported regex nodes are `Rel`, `Seq`, `Alt`, `Plus`, and `Star`. Future regex nodes such as `OptionalExpr` and `Bounded` are declared but lower with explicit `LoweringError`.
 
 Selectors lower to the audited extended algebra:
@@ -590,7 +606,9 @@ M6 does not constitute full QGP or full GPC support.
 M8 capability profiles, the M9 minimal compiler slice, the M10 structured
 candidate boundary, M11 ontology-bounded physical planning, and the M12-B
 generic live structured-provider/runtime-alignment path are implemented.
-M12-C calibration and M12-D experiment orchestration are also implemented.
+M12-C calibration, M12-D experiment orchestration, and the M13-E1 offline
+reachability/contract boundary are implemented. The comprehensive Freebase
+catalog-v2 build and guarded live v2 preflight are not yet measured.
 Full compiler coverage, logical rewrite optimization, automated ontology
 reasoning, distributed cross-backend execution/movement measurement, final
 benchmark integration, and KGQA evaluation remain outside the current

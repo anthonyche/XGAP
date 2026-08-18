@@ -24,6 +24,16 @@ datasets/kqapro_audit/*.jsonl
 datasets/grailqa_inference_catalog_v1/*
 !datasets/grailqa_inference_catalog_v1/manifest.json
 
+datasets/grailqa_inference_catalog_v2/*
+!datasets/grailqa_inference_catalog_v2/manifest.json
+
+datasets/grailqa_reachability_v2/*
+!datasets/grailqa_reachability_v2/manifest.json
+
+datasets/grailqa_m13d_reachability_baseline/*
+!datasets/grailqa_m13d_reachability_baseline/manifest.json
+!datasets/grailqa_m13d_reachability_baseline/summary.json
+
 datasets/grailqa_pilot_v1/*
 !datasets/grailqa_pilot_v1/artifact_manifest.json
 !datasets/grailqa_pilot_v1/inference_manifest.json

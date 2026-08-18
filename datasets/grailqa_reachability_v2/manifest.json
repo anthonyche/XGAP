@@ -1,0 +1,10 @@
+{
+  "schema_version": "m13e1-reachability-artifact-manifest-v1",
+  "dataset_id": "grailqa_reachability_v2",
+  "status": "blocked",
+  "catalog_hash": null,
+  "gold_usage": "evaluation_only",
+  "inference_gold_usage": false,
+  "files": {},
+  "blocked_reason": "Catalog v2 is not built, so the 150-query v2 retrieval and prompt-reachability audit cannot be reported honestly."
+}

@@ -585,3 +585,33 @@ GrailQA simple-path reference forms explicitly distinguish query nodes. The
 existing path-position references make this a small generic condition gap;
 adding a dataset-specific operator or changing `Join` semantics would be
 broader and incorrect.
+
+## D54 Interpretation equality follows a named canonical profile
+
+For the bounded fixed-path experiment profile, omitted path selection defaults
+to `ALL`, omitted repetition semantics defaults to `SIMPLE`, and SIMPLE's
+pairwise node-identity inequalities are derived after fixed topology is known.
+Variable spelling and commutative condition ordering are normalized. Different
+entities, types, relations, directions, topologies, explicit predicates,
+focus, or explicit non-default path semantics remain unequal.
+
+Reason:
+
+An LLM should propose ambiguous question semantics, not reproduce deterministic
+serialization conventions. A named profile keeps this rule general and
+auditable without a GrailQA branch in the parser, pattern AST, or algebra.
+
+## D55 Paid semantic runs require offline reference reachability
+
+A GrailQA live run may start only after a query-independent public catalog is
+hashed, the frozen evaluation sample has separate catalog/retrieval/prompt
+coverage artifacts, and the predeclared joint prompt-reachability safeguard
+passes. Gold is permitted only in this offline diagnosis and is never exposed
+to retrieval, prompting, generation, grounding, or planning.
+
+Reason:
+
+Candidate Recall is not an interpretable model metric when the controlled
+output contract forbids the reference IDs. Failing closed avoids paying for a
+non-diagnostic run while preserving difficult/unreachable questions and the
+original evaluation criterion.

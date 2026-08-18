@@ -86,6 +86,7 @@ class PromptQuerySlot:
     kind: str
     candidate_anchor_ids: tuple[str, ...]
     retrieval_provenance: tuple[str, ...]
+    required_for_candidate: bool = True
 
     def __post_init__(self) -> None:
         if not self.slot_id or not self.mention or not self.candidate_anchor_ids:
@@ -93,13 +94,16 @@ class PromptQuerySlot:
         object.__setattr__(self, "candidate_anchor_ids", tuple(self.candidate_anchor_ids))
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        result = {
             "slot_id": self.slot_id,
             "mention": self.mention,
             "kind": self.kind,
             "candidate_anchor_ids": list(self.candidate_anchor_ids),
             "retrieval_provenance": list(self.retrieval_provenance),
         }
+        if not self.required_for_candidate:
+            result["required_for_candidate"] = False
+        return result
 
 
 @dataclass(frozen=True)
@@ -718,11 +722,40 @@ def parse_grounded_planner_response(
                     f"'{component_kind}', not ontology kind '{term_kind}'.",
                 )
             realizations.append(realization)
-        if {item.slot_id for item in realizations} != set(expected_slots) or len(realizations) != len(expected_slots):
+        realized_slot_ids = [item.slot_id for item in realizations]
+        required_slot_ids = {
+            item.slot_id for item in expected_slots.values() if item.required_for_candidate
+        }
+        if (
+            not required_slot_ids.issubset(realized_slot_ids)
+            or len(realized_slot_ids) != len(set(realized_slot_ids))
+        ):
             raise RuntimeAlignmentError(
                 LiveFailureCategory.INCOMPLETE_SLOT_COVERAGE,
-                f"Candidate '{candidate.candidate_id}' must cover every query slot exactly once.",
+                f"Candidate '{candidate.candidate_id}' must cover every required query slot "
+                "exactly once and may cover optional slots at most once.",
             )
+        hop_slots = {
+            item.slot_id: item.component_ref
+            for item in realizations
+            if item.slot_id.startswith("relation-hop-")
+        }
+        if any(slot_id.startswith("relation-hop-") for slot_id in expected_slots):
+            relation_components = tuple(
+                component_ref
+                for component_ref, kind in component_kinds.items()
+                if kind == "relation"
+            )
+            expected_hops = {
+                f"relation-hop-{index}": component_ref
+                for index, component_ref in enumerate(relation_components, start=1)
+            }
+            if hop_slots != expected_hops:
+                raise RuntimeAlignmentError(
+                    LiveFailureCategory.INCOMPLETE_SLOT_COVERAGE,
+                    f"Candidate '{candidate.candidate_id}' must ground each ordered relation "
+                    "component through its corresponding relation-hop slot.",
+                )
         entity_ids = tuple(str(item) for item in grounding.get("entity_ids", ()))
         unknown_entities = set(entity_ids) - visible_entities
         if unknown_entities:

@@ -1,0 +1,35 @@
+{
+  "schema_version": "m13e1-grailqa-public-source-manifest-v2",
+  "artifact_set_id": "grailqa-m13e1-public-sources-v2",
+  "status": "source_resolved_build_pending",
+  "freebase_rdf": {
+    "source": "Google Freebase RDF dump (final public dump)",
+    "url": "https://storage.googleapis.com/freebase-public/rdf/freebase-rdf-latest.gz",
+    "documentation_url": "https://developers.google.com/freebase",
+    "revision_date": "2015-08-09",
+    "published_size": "approximately 22 GB gzip / 250 GB uncompressed",
+    "sha256": null,
+    "sha256_status": "computed_and_frozen_by_builder_after_server_download",
+    "license": "CC-BY-2.5; official Freebase data-dump terms apply",
+    "required_predicates": [
+      "type.object.name",
+      "common.topic.alias",
+      "type.object.type"
+    ]
+  },
+  "grailqa_ontology": {
+    "source": "dki-lab/GrailQA official processed Freebase ontology",
+    "repository": "https://github.com/dki-lab/GrailQA",
+    "revision": "bc15df916ca4101f773722151c90ba3f9eff9df5",
+    "gold_question_annotations_used": false
+  },
+  "construction": {
+    "script": "scripts/server/build_grailqa_catalog_v2.sh",
+    "module": "xgap.experiments.grailqa_catalog_v2",
+    "query_dependent_inputs": false,
+    "per_question_gold_inputs": false,
+    "streaming": true,
+    "runtime_index": "SQLite FTS5"
+  },
+  "blocked_reason": "The comprehensive Freebase dump is not present in the local repository; counts and coverage remain unset until the server build hashes and processes it."
+}

@@ -2,10 +2,12 @@
 
 ## Current Milestone
 
-M13-D Local Preparation for Server-Executed GrailQA Semantic Pilot is
-**SERVER-READY**. The frozen 150-query live Qwen pilot has not yet run; the
-repository now contains the inference-safe catalog, immutable experiment spec,
-resumable runner, metrics, and human-only server commands needed to run it.
+M13-E1 GrailQA Inference Reachability and Interpretation-Contract Repair has
+completed its local offline implementation. The immutable M13-D 150-query
+server run completed, but its Candidate Recall 0 is not scientifically
+interpretable because joint prompt-visible reference coverage was 0/150.
+Catalog v2 and the v2 live preflight remain **BLOCKED** until the official
+Freebase RDF dump is downloaded, hashed, built, and passes the offline gate.
 
 ## Completed
 
@@ -32,17 +34,50 @@ resumable runner, metrics, and human-only server commands needed to run it.
 - M13-B KQA Pro Paper Artifact Feasibility Audit
 - M13-C GrailQA Paper Vertical Slice + Minimal Fragment Expressiveness Upgrade
 - M13-D Local Preparation for Server-Executed GrailQA Semantic Pilot
+- M13-D Frozen 150-Query Server Pilot Execution
 
 ## In Progress
 
-- Server execution of the frozen M13-D GrailQA semantic pilot by the human user
+- Server construction and measurement of query-independent Freebase catalog v2
+- Full 150-query offline v2 reachability audit and preflight gate
 
 ## Next Planned Milestone
 
-Run the readiness check and fixed three-query credentialed smoke on the server,
-then execute or resume the frozen 150-query semantic pilot. Analyze returned
-artifacts without changing the method. A query-independent full Freebase
-execution artifact, RQ2/RQ3, full M13 disambiguation, and M14 remain future work.
+Run `scripts/server/build_grailqa_catalog_v2.sh --download` on large server
+storage, inspect the all-supported and frozen-150 coverage results, and run the
+18-query credentialed preflight only if the offline 0.20 joint prompt-
+reachability safeguard passes. Another paid 150-query run, Freebase backend
+execution, RQ2/RQ3, full M13 disambiguation, and M14 remain future work.
+
+## M13-E1 Reachability And Contract Repair
+
+M13-E1 preserves M13-D as an immutable diagnostic baseline. Its reusable
+offline audit reproduced catalog entity availability 12/150, retrieval Top-20
+entity/relation/type coverage 10/47/67, deployed prompt Top-4 coverage 9/22/38,
+and joint prompt reachability 0/150. This explains why the frozen Candidate
+Recall 0 cannot be attributed to Qwen capability.
+
+The implementation adds a streaming, query-independent catalog-v2 builder for
+the final official Freebase RDF dump, deterministic alias/FTS5 entity
+retrieval, public-metadata relation retrieval, three bounded relation-hop
+pools, domain/range type expansion, catalog/retrieval/prompt decomposition,
+and a fail-closed live gate. No question, answer, logical form, alignment, or
+reference interpretation is accepted by catalog construction or inference.
+
+The v2 interpretation boundary defaults canonical fixed-path fields through a
+named general profile, derives SIMPLE node inequalities deterministically,
+defines a complete typed recursive condition schema, compares normalized
+interpretations component by component, and attributes failures by stage.
+The M13-D parser/spec/model bundle remains unchanged. `c_sem`, M11, GP,
+compilers, logical operators, and backends are unchanged.
+
+The comprehensive approximately 22 GB compressed Freebase source is not
+present locally. Consequently committed catalog-v2 and reachability-v2
+manifests are explicitly `blocked`; no v2 counts or improved Recall@k are
+claimed. The frozen 18-query preflight spec hash is
+`b02e67acd1f7b8f79d2cb7f3d48df7e5b2beb6c9e6624d1b1f5740921e3f2f35`.
+Readiness refuses all provider calls until built artifact hashes match and the
+offline gate passes. See the five M13-E1 reports under `docs/report/`.
 
 ## M13-D GrailQA Semantic Pilot Preparation
 
@@ -90,8 +125,12 @@ requests, produced 450 validated/grounded candidates, used no repairs, and
 wrote every output. That run is orchestration-only and makes no accuracy claim.
 
 Server commands are documented in
-`docs/report/grailqa_semantic_pilot_server_runbook.md`. M13-D is
-**SERVER-READY**, not "GrailQA semantic pilot completed".
+`docs/report/grailqa_semantic_pilot_server_runbook.md`. The frozen M13-D server
+run subsequently completed all 150 questions: 132 provider successes, 18
+malformed failures, 40 repairs, Candidate Recall 0, Top-1 0 for every epsilon,
+and Feasible Coverage 0.48 for every epsilon. These remain immutable baseline
+results; M13-E1 diagnoses their zero joint prompt reachability rather than
+rewriting them.
 
 Large generated benchmark bodies are intentionally excluded from Git. The
 server now runs `scripts/server/fetch_grailqa_m13d_artifacts.sh` after `git
@@ -158,8 +197,8 @@ The controlled three-case vertical slice covers `Q=13/19/25` and traverses
 the real `PathPatternQuery` lowering, M11 planning, and M9 Cypher/SPARQL
 compilers. The controlled semantic metrics are pipeline-integrity checks, not
 paper results. M13-C did not run live Qwen because it had no inference-safe
-public entity catalog; M13-D now supplies a separate public catalog and frozen
-server runner, while the live 150-query run remains pending. Freebase execution
+public entity catalog; M13-D later supplied a separate public catalog and
+completed the frozen live 150-query diagnostic run. Freebase execution
 feasibility is outcome C: semantic evaluation only is currently practical. No
 financial-risk D0 was reused and no GrailQA D0 was created.
 
@@ -988,7 +1027,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M13-D tests passed locally. M7 backend smoke and M12-C real
+M0-M13-E1 local tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -998,9 +1037,14 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 419 passed, 7 skipped, including 20
-  focused M13-D catalog, leakage, retrieval, request, equivalence, metrics,
-  resume, readiness, and 150-query fake-orchestration tests.
+- `PYTHONPATH=src python -m pytest`: 436 passed, 7 skipped, including the
+  focused M13-E1 catalog-v2 fixture, reachability decomposition,
+  canonicalization, schema, equivalence, taxonomy, `c_sem`, selection, and
+  fail-closed readiness tests.
+- M13-D offline reachability reproduction: catalog entity 12/150; retrieval
+  Top-20 entity/relation/type 10/47/67; deployed prompt 9/22/38; joint 0/150.
+- M13-E1 local readiness: refused the live path because catalog v2 and
+  reachability v2 are explicitly incomplete; no provider call was made.
 - full official GrailQA audit command: completed 64,331 classifications with
   23,156 supported and 41,175 unsupported records.
 - full GrailQA v2 audit command: completed 64,331 classifications with 35,439
@@ -1031,7 +1075,7 @@ Latest recorded command results:
   fake path produced 2 D0 records and one calibrated GP per backend.
 - `python examples/m12d_experiment_matrix_demo.py`: passed; 12 runs and 12
   aggregate groups completed with frozen candidate reuse.
-- `./scripts/run_acceptance.sh`: passed with 419 passed and 7 live-gated
+- `./scripts/run_acceptance.sh`: passed with 436 passed and 7 live-gated
   skips, including harness check, pytest, all existing examples,
   `examples/quantified_pattern_demo.py`,
   `examples/compiler_mvp_demo.py`, `examples/llm_boundary_demo.py`, both M11

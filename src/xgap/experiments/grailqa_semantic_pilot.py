@@ -14,7 +14,7 @@ import platform
 import subprocess
 import sys
 import time
-from typing import Any, Iterable, Mapping, Protocol, Sequence
+from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence
 
 from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.grailqa_catalog import (
@@ -637,6 +637,7 @@ def _infer_one(
     semantic: DirectionalOntologyDeviation,
     retrieval_k: int,
     candidate_cap: int,
+    response_parser: Callable[[Mapping[str, Any], PlannerRequest], Any] = parse_planner_response,
 ) -> dict[str, Any]:
     strict_inference_leakage_audit(question)
     started = time.perf_counter()
@@ -681,7 +682,7 @@ def _infer_one(
     )
     deterministic_started = time.perf_counter()
     try:
-        parsed = parse_planner_response(generation.structured_response, request)
+        parsed = response_parser(generation.structured_response, request)
     except Exception as error:  # noqa: BLE001
         return _generation_failed_state(
             question, retrieval_row, generation, "malformed_output", str(error)

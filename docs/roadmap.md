@@ -569,10 +569,36 @@ remain frozen, candidate generation is reused across epsilon, and normal tests
 never call live Qwen.
 
 Current status:
-**SERVER-READY**. Local fake-provider orchestration is complete. The real
-150-query Qwen pilot is not complete until the human server run returns its
-manifest, metrics, summary, and failures. M13-D does not add backend execution,
-RQ2/RQ3, KQA Pro, prompt tuning, new algebra, or changed M11/GP/Nash behavior.
+DONE. Local fake-provider orchestration and the real frozen 150-query server
+run completed. The result is retained as a diagnostic baseline: zero joint
+prompt reachability makes its zero Candidate Recall unsuitable as an isolated
+model-capability result. M13-D does not add backend execution, RQ2/RQ3, KQA
+Pro, prompt tuning, new algebra, or changed M11/GP/Nash behavior.
+
+## M13-E1 GrailQA Reachability And Interpretation Contract Repair
+
+Goal:
+Repair the scientific inference/evaluation boundary before another paid run:
+replace the incomplete entity-source path with a reproducible query-independent
+Freebase catalog build, measure catalog/retrieval/prompt reachability, separate
+semantic choices from canonical representation, and guard a small live
+preflight with an offline gate.
+
+Acceptance criteria:
+M13-D reachability is reproducible; catalog v2 construction accepts no gold
+input and records public provenance/hashes; deterministic retrieval persists
+alias, relation-slot, reverse, and domain/range evidence; typed conditions and
+canonical normalized equivalence agree; failures and `c_sem` are observable;
+the 18-query live runner cannot call the provider when reachability fails; no
+full live run, tuning, algebra extension, `c_sem` change, M11/GP change, or
+backend execution is added.
+
+Current status:
+LOCAL OFFLINE IMPLEMENTATION DONE; SERVER DATA GATE BLOCKED. The v1 audit
+reproduces joint prompt reachability 0/150. The comprehensive official Freebase
+dump is not local, so catalog-v2 counts, all-35,439 catalog coverage, repaired
+retrieval metrics, and the credentialed v2 preflight remain unclaimed until
+the server builder and offline gate pass.
 
 ## M14 KGQA Evaluation
 
