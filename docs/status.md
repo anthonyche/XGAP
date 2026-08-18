@@ -93,6 +93,21 @@ Server commands are documented in
 `docs/report/grailqa_semantic_pilot_server_runbook.md`. M13-D is
 **SERVER-READY**, not "GrailQA semantic pilot completed".
 
+Large generated benchmark bodies are intentionally excluded from Git. The
+server now runs `scripts/server/fetch_grailqa_m13d_artifacts.sh` after `git
+pull`. The script downloads pinned public GrailQA, official ontology, and
+FB15k-237 sources, verifies their SHA-256 values, reproducibly rebuilds the
+temporary v2 audit plus the required pilot/catalog, validates both against the
+frozen experiment spec, and installs them atomically. On the experiment server,
+it prepares `/home/<user>/xgap-data` as a symlink to
+`/data/<user>/xgap-artifacts`, so large downloads and temporary builds do not
+consume the home filesystem. A forced local fresh
+rebuild reproduced all 64,331 audit classifications, the 35,439 supported
+records, all 150 pilot IDs, catalog hash
+`b547bf391a2dadf6c5affd205689da325bd4bce31b179b3d0a1f3c6bc4c4d416`,
+and pilot bundle hash
+`dd27f7fecdb226bef89beb50339932793bd5ffe1b987e1ce4144f6391caacd72`.
+
 ## M13-C GrailQA Paper Vertical Slice
 
 M13-C selected GrailQA as the current primary ontology-bounded semantic
@@ -975,7 +990,7 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 412 passed, 7 skipped, including 17
+- `PYTHONPATH=src python -m pytest`: 415 passed, 7 skipped, including 20
   focused M13-D catalog, leakage, retrieval, request, equivalence, metrics,
   resume, readiness, and 150-query fake-orchestration tests.
 - full official GrailQA audit command: completed 64,331 classifications with
@@ -984,7 +999,7 @@ Latest recorded command results:
   supported and 28,892 unsupported records; the gold-available support ratio
   is 69.352%.
 - GrailQA pilot command: built and validated 150 questions with bundle hash
-  `87ae8633712a54e30dd96154201248bbf3abe1fde5bdf104f09a92c5a472bac4`;
+  `dd27f7fecdb226bef89beb50339932793bd5ffe1b987e1ce4144f6391caacd72`;
   its controlled `Q=13/19/25` vertical slice completed.
 - M13-D deterministic fake-provider run: accounted for all 150 frozen IDs,
   completed 150 fixture requests, produced 450 validated and grounded
@@ -1008,7 +1023,7 @@ Latest recorded command results:
   fake path produced 2 D0 records and one calibrated GP per backend.
 - `python examples/m12d_experiment_matrix_demo.py`: passed; 12 runs and 12
   aggregate groups completed with frozen candidate reuse.
-- `./scripts/run_acceptance.sh`: passed with 412 passed and 7 live-gated
+- `./scripts/run_acceptance.sh`: passed with 415 passed and 7 live-gated
   skips, including harness check, pytest, all existing examples,
   `examples/quantified_pattern_demo.py`,
   `examples/compiler_mvp_demo.py`, `examples/llm_boundary_demo.py`, both M11

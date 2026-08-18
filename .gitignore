@@ -28,3 +28,4 @@ datasets/grailqa_pilot_v1/*
 !datasets/grailqa_pilot_v1/artifact_manifest.json
 !datasets/grailqa_pilot_v1/inference_manifest.json
 !datasets/grailqa_pilot_v1/pilot_ids.json
+datasets/*.pre-m13d-*

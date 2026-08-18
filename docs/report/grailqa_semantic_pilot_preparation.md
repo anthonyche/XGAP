@@ -92,6 +92,18 @@ metrics, progress, and a human-readable result summary. Per-query state is
 written atomically. Resume skips successful provider calls and deterministic
 terminal misses, and retries provider failures only.
 
+Because generated dataset bodies are excluded from Git, the server bootstrap
+is `scripts/server/fetch_grailqa_m13d_artifacts.sh`. On experiment servers it
+automatically uses `/home/<user>/xgap-data` as a stable symlink to
+`/data/<user>/xgap-artifacts`, keeping the large cache, unpacked benchmark, and
+temporary build products off the home filesystem. It downloads the official
+GrailQA v1.0 archive, the five ontology files at the frozen official revision,
+and the FB15k-237 MID-name file at its frozen revision. Every source file is
+SHA-256 checked. The script rebuilds the v2 audit prerequisite, pilot, and
+catalog in a temporary cache, checks the built artifact hashes against the
+immutable spec, then installs them atomically. It is idempotent and supports
+`--verify-only` and an explicit `--force` rebuild.
+
 ## Local Orchestration Validation
 
 The deterministic fake provider processed all 150 frozen IDs. It completed

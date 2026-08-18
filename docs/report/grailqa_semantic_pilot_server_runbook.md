@@ -35,7 +35,44 @@ python --version
 
 The runner uses `PYTHONPATH=src` and does not require an editable install.
 
-## 4. Export The Credential
+## 4. Download And Verify The Frozen Artifacts
+
+The dataset bodies are intentionally excluded from Git. Download the fixed
+public sources, rebuild the deterministic v2 audit prerequisite, pilot bundle,
+and inference catalog, and verify them against the frozen spec:
+
+```bash
+bash scripts/server/fetch_grailqa_m13d_artifacts.sh
+```
+
+On a server with `/data`, the command first prepares this layout automatically:
+
+```text
+/home/chl/xgap-data -> /data/chl/xgap-artifacts
+/home/chl/xgap-data/grailqa-m13d-v1
+```
+
+The repository remains at `/home/chl/XGAP`. Only the large download cache,
+unpacked public dataset, and temporary build products use `/data`. If ordinary
+user permission cannot create `/data/chl/xgap-artifacts`, the script tries the
+narrow directory-creation step with `sudo` and may request the server password.
+If sudo is unavailable or fails, it prints the equivalent manual command.
+
+The first run may take several minutes. Later runs reuse verified downloads
+and exit immediately when the installed artifacts already match. No DashScope
+credential is used here. To prepare or inspect the storage link separately:
+
+```bash
+bash scripts/server/prepare_xgap_data_storage.sh
+```
+
+To check without downloading or rebuilding:
+
+```bash
+bash scripts/server/fetch_grailqa_m13d_artifacts.sh --verify-only
+```
+
+## 5. Export The Credential
 
 The secret value is server-specific and must be supplied by the human:
 
@@ -47,7 +84,7 @@ export DASHSCOPE_BASE_URL='https://dashscope.aliyuncs.com/compatible-mode/v1'
 Use the endpoint matching the key's DashScope region. Neither value is written
 to run artifacts.
 
-## 5. Check Readiness
+## 6. Check Readiness
 
 ```bash
 bash scripts/check_grailqa_semantic_pilot_ready.sh
@@ -56,7 +93,7 @@ bash scripts/check_grailqa_semantic_pilot_ready.sh
 Continue only when the final line is `READY=true`. The credential-gated smoke
 is the provider reachability check.
 
-## 6. Run The Three-Query Smoke
+## 7. Run The Three-Query Smoke
 
 ```bash
 bash scripts/run_grailqa_semantic_pilot_smoke.sh
@@ -67,7 +104,7 @@ the Markdown result summary and reports three accounted queries. This smoke
 uses the exact frozen prompt, model, catalog, method, and first three pilot IDs;
 it does not write to the paper-pilot directory.
 
-## 7. Run The Full Frozen Pilot
+## 8. Run The Full Frozen Pilot
 
 ```bash
 bash scripts/run_grailqa_semantic_pilot.sh
@@ -77,7 +114,7 @@ The command prints the git commit, spec hashes, pilot-bundle hash, catalog hash,
 model, query count, and output directory before the first request. It runs the
 150 existing IDs and does not accept parameter overrides.
 
-## 8. Resume After An Interruption
+## 9. Resume After An Interruption
 
 Use the same credential and run:
 
@@ -89,7 +126,7 @@ Resume preserves the original run identity, does not repeat successful API
 calls, skips deterministic terminal retrieval misses, and retries provider
 failures/unprocessed questions.
 
-## 9. Verify Completion
+## 10. Verify Completion
 
 ```bash
 cd ~/XGAP
@@ -112,7 +149,7 @@ Success means `status=complete`, `query_count=150`, `accounted=150`, and all
 files listed in `result_summary.md` exist. Non-empty `failures.jsonl` is valid
 experiment output, not an instruction to alter the frozen method.
 
-## 10. Return Results
+## 11. Return Results
 
 After the server run, send back:
 

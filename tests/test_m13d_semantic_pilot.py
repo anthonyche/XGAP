@@ -129,6 +129,94 @@ def test_frozen_spec_and_artifact_hashes(spec: GrailQASemanticPilotSpec) -> None
     validate_frozen_artifacts(spec, REPO_ROOT)
 
 
+def test_public_source_manifest_matches_frozen_spec(
+    spec: GrailQASemanticPilotSpec,
+) -> None:
+    source_path = REPO_ROOT / "experiments/artifacts/grailqa_m13d_sources.json"
+    source = json.loads(source_path.read_text())
+    assert source["schema_version"] == "m13d-grailqa-public-source-manifest-v1"
+    assert source["spec"]["sha256"] == spec.file_sha256
+    assert source["spec"]["freeze_hash"] == spec.freeze_hash
+    assert source["catalog"]["expected_hash"] == spec.data["catalog_hash"]
+    assert source["pilot"]["expected_bundle_hash"] == spec.data["pilot_bundle_hash"]
+    assert source["pilot"]["question_count"] == len(spec.question_ids)
+    assert source["pilot"]["seed"] == spec.data["selection_seed"]
+    for section, field in (
+        ("dataset", "archive_url"),
+        ("entity_names", "url"),
+        ("ontology", "base_url"),
+    ):
+        assert source[section][field].startswith("https://")
+    hashes = [
+        source["dataset"]["archive_sha256"],
+        source["entity_names"]["sha256"],
+        *source["dataset"]["files"].values(),
+        *source["ontology"]["files"].values(),
+    ]
+    assert all(len(value) == 64 and set(value) <= set("0123456789abcdef") for value in hashes)
+
+
+def test_server_artifact_fetch_script_verifies_installed_bundle() -> None:
+    script = REPO_ROOT / "scripts/server/fetch_grailqa_m13d_artifacts.sh"
+    syntax = subprocess.run(
+        ("bash", "-n", str(script)),
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert syntax.returncode == 0, syntax.stderr
+    verify = subprocess.run(
+        ("bash", str(script), "--verify-only"),
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert verify.returncode == 0, verify.stdout + verify.stderr
+    assert "already installed and match" in verify.stdout
+
+
+def test_server_storage_script_creates_idempotent_data_symlink(tmp_path: Path) -> None:
+    script = REPO_ROOT / "scripts/server/prepare_xgap_data_storage.sh"
+    home = tmp_path / "home" / "tester"
+    data_root = tmp_path / "data" / "tester" / "xgap-artifacts"
+    link = home / "xgap-data"
+    home.mkdir(parents=True)
+    environment = {
+        **os.environ,
+        "HOME": str(home),
+        "USER": "tester",
+        "XGAP_SERVER_DATA_ROOT": str(data_root),
+        "XGAP_DATA_LINK": str(link),
+    }
+
+    syntax = subprocess.run(
+        ("bash", "-n", str(script)),
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert syntax.returncode == 0, syntax.stderr
+
+    for _ in range(2):
+        result = subprocess.run(
+            ("bash", str(script)),
+            cwd=REPO_ROOT,
+            env=environment,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    assert link.is_symlink()
+    assert os.readlink(link) == str(data_root)
+    assert (link / "grailqa-m13d-v1").is_dir()
+    assert f"physical_root={data_root}" in result.stdout
+
+
 def test_reference_equivalence_is_structural_and_variable_insensitive() -> None:
     pattern = {
         "path_var": "p",

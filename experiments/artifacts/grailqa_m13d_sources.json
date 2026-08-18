@@ -1,0 +1,47 @@
+{
+  "artifact_set_id": "grailqa-m13d-public-sources-v1",
+  "catalog": {
+    "expected_hash": "b547bf391a2dadf6c5affd205689da325bd4bce31b179b3d0a1f3c6bc4c4d416"
+  },
+  "dataset": {
+    "archive_sha256": "7717dbae47ba4f6aa8b9df0810db8211460116647c0c06bb26a6b198d0aaa992",
+    "archive_url": "https://dl.orangedox.com/WyaCpL/?dl=1",
+    "files": {
+      "grailqa_v1.0_dev.json": "55f3c2f937fee12bde3242247f5a06c6d595a898aa291b62fd3c2abf502f748c",
+      "grailqa_v1.0_test_public.json": "0aeff2748117e8100b33eaa9619b433026df917b3e17eb80c23fc4ef5c7db528",
+      "grailqa_v1.0_train.json": "ee4a439b76d9146ed7841d0afada187e1a9f344153f519521dc73957b47e6fb1"
+    },
+    "license": "CC BY-SA 4.0",
+    "source": "GrailQA v1.0 official distribution"
+  },
+  "entity_names": {
+    "revision": "c7368ccc03358758270dbf9e475222444d19926b",
+    "sha256": "4da94b8059a83bc7e08c832f573d34221d38e85030576e332a0d0e9726d13d73",
+    "source": "KGraph/FB15k-237 data/FB15k_mid2name.txt",
+    "url": "https://huggingface.co/datasets/KGraph/FB15k-237/resolve/c7368ccc03358758270dbf9e475222444d19926b/data/FB15k_mid2name.txt?download=true"
+  },
+  "ontology": {
+    "base_url": "https://raw.githubusercontent.com/dki-lab/GrailQA/bc15df916ca4101f773722151c90ba3f9eff9df5/ontology",
+    "files": {
+      "domain_dict": "ee03db94a225c373f9ef3c543fea65721627698919e8969e4fe9458bea3eefba",
+      "domain_info": "84eb7e1f963344297356431a8634cf659cf7d97b283d801e01ef911b67f4ad1a",
+      "fb_roles": "a418ab62ce2746ed91b72ec3e06563c32aa7bd4ea14364c4e47160d2af7f22f3",
+      "fb_types": "d7ccacde076ddb2f71de450c5670e279ea0ad4e73d274d08af9e237c765fa8ea",
+      "reverse_properties": "8c120e0f7ee074fa528f4732ede588597a9c3df767a59b7c8e02114ed39b35ac"
+    },
+    "license": "Apache-2.0 repository resources",
+    "revision": "bc15df916ca4101f773722151c90ba3f9eff9df5",
+    "source": "dki-lab/GrailQA official processed Freebase ontology"
+  },
+  "pilot": {
+    "expected_bundle_hash": "dd27f7fecdb226bef89beb50339932793bd5ffe1b987e1ce4144f6391caacd72",
+    "question_count": 150,
+    "seed": 1303
+  },
+  "schema_version": "m13d-grailqa-public-source-manifest-v1",
+  "spec": {
+    "freeze_hash": "5aeb1813813ca0c0835e30fa9c92644cf51a25b14480b6aa8b3d7e6938304e28",
+    "path": "experiments/specs/grailqa_semantic_pilot_v1.json",
+    "sha256": "736237ec3293a1b3a86e94e7f2592b36179a6edf97635e07c306ba4c91a9ca48"
+  }
+}
