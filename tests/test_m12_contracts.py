@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+import xgap.experiments.bundles as bundle_module
 from xgap.experiments.artifacts import RunArtifactLayout, RUN_FILES
 from xgap.experiments.bundles import (
     DatasetBundle,
@@ -38,6 +39,41 @@ def test_financial_risk_dataset_bundle_loads_and_hashes_stably() -> None:
     assert first.to_dict()["root"] not in first.to_hash_dict()
     assert set(first.fragment_support.values()) == set(FragmentSupport)
     assert len(first.gold_alignments or ()) == 3
+
+
+def test_dataset_bundle_normalizes_yaml_null_optional_mappings(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original_loader = bundle_module.load_yaml_mapping
+
+    def load_with_yaml_null(path: str | Path) -> dict[str, object]:
+        loaded = original_loader(path)
+        if Path(path).name == "dataset.yaml":
+            loaded["backend_load"] = None
+        return loaded
+
+    monkeypatch.setattr(bundle_module, "load_yaml_mapping", load_with_yaml_null)
+
+    bundle = DatasetBundle.load("datasets/financial_risk_dev")
+
+    assert bundle.backend_load == {}
+
+
+def test_dataset_bundle_rejects_non_mapping_backend_load(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original_loader = bundle_module.load_yaml_mapping
+
+    def load_with_invalid_backend_load(path: str | Path) -> dict[str, object]:
+        loaded = original_loader(path)
+        if Path(path).name == "dataset.yaml":
+            loaded["backend_load"] = []
+        return loaded
+
+    monkeypatch.setattr(bundle_module, "load_yaml_mapping", load_with_invalid_backend_load)
+
+    with pytest.raises(ValueError, match="dataset.backend_load must be a mapping"):
+        DatasetBundle.load("datasets/financial_risk_dev")
 
 
 def test_question_record_marks_missing_optional_gold_explicitly() -> None:

@@ -318,8 +318,10 @@ class DatasetBundle:
             fragment_support=fragment_support,
             artifact_refs=refs,
             unavailable_artifacts=tuple(sorted(set(unavailable))),
-            backend_load=dict(metadata.get("backend_load", {})),
-            metadata=dict(metadata.get("metadata", {})),
+            backend_load=_optional_mapping(
+                metadata.get("backend_load"), "dataset.backend_load"
+            ),
+            metadata=_optional_mapping(metadata.get("metadata"), "dataset.metadata"),
         )
         bundle.validate()
         return bundle
@@ -669,6 +671,12 @@ def _mapping(value: object, field_name: str) -> dict[str, Any]:
     if not isinstance(value, Mapping):
         raise ValueError(f"{field_name} must be a mapping.")
     return dict(value)
+
+
+def _optional_mapping(value: object, field_name: str) -> dict[str, Any]:
+    if value is None:
+        return {}
+    return _mapping(value, field_name)
 
 
 def _required_path(root: Path, refs: Mapping[str, str | None], name: str) -> Path:

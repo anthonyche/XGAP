@@ -107,6 +107,9 @@ records, all 150 pilot IDs, catalog hash
 `b547bf391a2dadf6c5affd205689da325bd4bce31b179b3d0a1f3c6bc4c4d416`,
 and pilot bundle hash
 `dd27f7fecdb226bef89beb50339932793bd5ffe1b987e1ce4144f6391caacd72`.
+The dataset-bundle loader also normalizes an empty optional YAML mapping parsed
+as `null` by PyYAML, preserving the frozen artifact bytes while making the
+server build independent of whether PyYAML or XGAP's fallback parser is active.
 
 ## M13-C GrailQA Paper Vertical Slice
 
@@ -990,7 +993,7 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 415 passed, 7 skipped, including 20
+- `PYTHONPATH=src python -m pytest`: 417 passed, 7 skipped, including 20
   focused M13-D catalog, leakage, retrieval, request, equivalence, metrics,
   resume, readiness, and 150-query fake-orchestration tests.
 - full official GrailQA audit command: completed 64,331 classifications with
@@ -1023,7 +1026,7 @@ Latest recorded command results:
   fake path produced 2 D0 records and one calibrated GP per backend.
 - `python examples/m12d_experiment_matrix_demo.py`: passed; 12 runs and 12
   aggregate groups completed with frozen candidate reuse.
-- `./scripts/run_acceptance.sh`: passed with 415 passed and 7 live-gated
+- `./scripts/run_acceptance.sh`: passed with 417 passed and 7 live-gated
   skips, including harness check, pytest, all existing examples,
   `examples/quantified_pattern_demo.py`,
   `examples/compiler_mvp_demo.py`, `examples/llm_boundary_demo.py`, both M11
