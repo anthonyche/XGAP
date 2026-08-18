@@ -39,6 +39,9 @@ capabilities:
       graph_model.node_labels:
         level: supported
         reason: "Neo4j node labels can represent XGAP node-label predicates."
+      graph_model.node_identity_predicates:
+        level: supported
+        reason: "Cypher supports identity inequality between bound node variables."
       graph_model.edge_labels:
         level: supported
         reason: "Neo4j relationship types can represent XGAP edge-label predicates."

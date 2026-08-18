@@ -40,6 +40,9 @@ capabilities:
         reason: "Node labels require an RDF encoding such as rdf:type."
         conditions:
           - "Requires dataset mapping from XGAP labels to RDF terms."
+      graph_model.node_identity_predicates:
+        level: supported
+        reason: "SPARQL supports term inequality between bound node variables."
       graph_model.edge_labels:
         level: supported
         reason: "RDF predicate IRIs can represent edge-label predicates."

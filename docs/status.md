@@ -2,9 +2,10 @@
 
 ## Current Milestone
 
-M12-D Baselines/Ablations + Server Experiment Runner is completed.
-Post-M12-D paper-environment hardening is completed without opening a new
-algorithm milestone.
+M13-D Local Preparation for Server-Executed GrailQA Semantic Pilot is
+**SERVER-READY**. The frozen 150-query live Qwen pilot has not yet run; the
+repository now contains the inference-safe catalog, immutable experiment spec,
+resumable runner, metrics, and human-only server commands needed to run it.
 
 ## Completed
 
@@ -27,15 +28,178 @@ algorithm milestone.
 - M12-B Live LLM + Ontology/Alignment Artifacts
 - M12-C Cost Calibration + Online GP Protocol
 - M12-D Baselines/Ablations + Server Experiment Runner
+- M13-A GrailQA Paper Artifact Feasibility Audit
+- M13-B KQA Pro Paper Artifact Feasibility Audit
+- M13-C GrailQA Paper Vertical Slice + Minimal Fragment Expressiveness Upgrade
+- M13-D Local Preparation for Server-Executed GrailQA Semantic Pilot
 
 ## In Progress
 
-- None
+- Server execution of the frozen M13-D GrailQA semantic pilot by the human user
 
 ## Next Planned Milestone
 
-M12 experimentalization is complete. The next research/data milestone is not
-started; the roadmap currently names M13 automated semantic disambiguation.
+Run the readiness check and fixed three-query credentialed smoke on the server,
+then execute or resume the frozen 150-query semantic pilot. Analyze returned
+artifacts without changing the method. A query-independent full Freebase
+execution artifact, RQ2/RQ3, full M13 disambiguation, and M14 remain future work.
+
+## M13-D GrailQA Semantic Pilot Preparation
+
+M13-D freezes the first real GrailQA RQ1 semantic pilot while preserving all
+M13-C interpretation and algebra boundaries. It adds no PathPatternQuery form,
+logical operator, `c_sem` rule, M11/Nash behavior, GP behavior, backend
+execution, KQA Pro path, RQ2, or RQ3 functionality.
+
+The query-independent public inference catalog contains 14,951 entities,
+10,656 types, 13,747 relations, 5,531 scalar properties, and 9,908 directed
+reverse-property entries. Its catalog hash is
+`b547bf391a2dadf6c5affd205689da325bd4bce31b179b3d0a1f3c6bc4c4d416`;
+the normalized ontology hash remains
+`8bd4f19503d3a61a89831da1d040afea93fae1f64446e0ffb206b510bb69c10b`.
+The entity source is the public FB15k-237 MID-name subset, so it is explicitly
+incomplete and retrieval recall is measured after inference.
+
+Inference now reads a gold-free question projection. A strict pre-provider
+audit rejects gold forms, annotations, answers, references, canonical plans,
+`Q(u)`, and `A(u)`. Evaluation-only references and workload statistics are
+opened only after all selected questions have inference state. Deterministic
+lexical retrieval persists IDs, labels, scores, ranks, question/catalog hashes,
+and configuration; entity/relation/type Recall@1/5/10/20 is joined afterward.
+
+The existing M12-B prompt and provider remain unchanged:
+`qwen3-max-2026-01-23`, temperature 0, top-p 1, candidate cap 3, no supported
+seed, and at most one repair. The frozen M grid is `{1,3}` because that M12
+candidate cap supersedes requested values 5 and 10. Epsilon is
+`{0,0.1,0.25,0.5,0.75,1}` and one generated candidate set is reused throughout.
+Reference support is conservative variable-insensitive structural equality;
+it is not a claim of general graph-query equivalence.
+
+The ambiguity sanity audit selects recommendation C: exclude `A(u)` from this
+pilot because it measures bounded ontology-neighborhood density rather than a
+validated question-conditioned ambiguity quantity. `Q(u)` remains a complexity
+stratum.
+
+The immutable spec is
+`experiments/specs/grailqa_semantic_pilot_v1.json`, with file SHA-256
+`736237ec3293a1b3a86e94e7f2592b36179a6edf97635e07c306ba4c91a9ca48`
+and canonical freeze hash
+`5aeb1813813ca0c0835e30fa9c92644cf51a25b14480b6aa8b3d7e6938304e28`.
+The local fake provider processed all 150 IDs, made 150 deterministic fixture
+requests, produced 450 validated/grounded candidates, used no repairs, and
+wrote every output. That run is orchestration-only and makes no accuracy claim.
+
+Server commands are documented in
+`docs/report/grailqa_semantic_pilot_server_runbook.md`. M13-D is
+**SERVER-READY**, not "GrailQA semantic pilot completed".
+
+## M13-C GrailQA Paper Vertical Slice
+
+M13-C selected GrailQA as the current primary ontology-bounded semantic
+interpretation benchmark and made one minimal generic semantic extension:
+`NodeNotEquals` compares identity at fixed path-node positions and lowers
+through the existing `Selection` operator. No logical operator, `c_sem`
+definition, Nash objective, BnB rule, or GP confidence formula changed.
+
+The full v2 audit classified all 64,331 public questions:
+
+- 35,439 train/dev questions are supported, up 12,283 from M13-A;
+- support is 69.352% of the 51,100 gold-available questions and 55.089% of all
+  public questions;
+- supported paths have lengths 1/2/3 with counts 26,002/8,952/485;
+- `Q(u)` now has values 13/19/25, mean 14.680, median 13, p90 19, maximum 25;
+- the operator totals are `Edges` 45,361, `Join` 9,922, `Selection` 151,678,
+  `GroupBy` 35,439, and `Projection` 35,439;
+- fixed numeric path-property comparisons contribute 466 supported questions;
+  count, superlative, focus-only, branching, and multi-anchor forms remain
+  explicitly unsupported.
+
+The ontology is normalized by deterministic SCC condensation. Ten cyclic
+components containing 18 terms become a 10,648-component DAG with 18,142
+hierarchy edges. The normalized hash is
+`8bd4f19503d3a61a89831da1d040afea93fae1f64446e0ffb206b510bb69c10b`;
+no ontology edge is invented.
+
+Reference `A(u)` is evaluation-only and is derived from the unchanged frozen
+`c_sem`, exact interpretations, and bounded direct hierarchy neighbors. The
+predefined epsilon analysis recommends 0.10 for pilot stratification but does
+not freeze a final paper value.
+
+`datasets/grailqa_pilot_v1/` contains 150 deterministic public train/dev cases
+(seed 1303; 120 train and 30 dev). Its content hash is
+`87ae8633712a54e30dd96154201248bbf3abe1fde5bdf104f09a92c5a472bac4`.
+Gold answers, forms, alignments, slots, and reference interpretations are
+evaluation-only; runtime aliases/entity catalog remain empty.
+
+The controlled three-case vertical slice covers `Q=13/19/25` and traverses
+the real `PathPatternQuery` lowering, M11 planning, and M9 Cypher/SPARQL
+compilers. The controlled semantic metrics are pipeline-integrity checks, not
+paper results. M13-C did not run live Qwen because it had no inference-safe
+public entity catalog; M13-D now supplies a separate public catalog and frozen
+server runner, while the live 150-query run remains pending. Freebase execution
+feasibility is outcome C: semantic evaluation only is currently practical. No
+financial-risk D0 was reused and no GrailQA D0 was created.
+
+All 150 pilot interpretations currently expose one M11 all-local complete
+realization; the fraction with more than one is zero. Two native compiler
+targets do not constitute a rich physical search space. The current
+recommendation is therefore **GrailQA for semantic-only paper evaluation**.
+See `docs/report/grailqa_fragment_extension_analysis.md`,
+`docs/report/grailqa_artifact_audit_v2.md`, and
+`docs/report/grailqa_vertical_slice.md`.
+
+## M13-B KQA Pro Artifact Feasibility Audit
+
+M13-B classified all 117,970 public KQA Pro questions from verified official-
+format artifacts using an isolated paired KoPL/SPARQL converter and unchanged
+production XGAP boundaries.
+
+- train has 94,376 questions, validation has 11,797, and public test has
+  11,797; test masks KoPL, SPARQL, and answers;
+- 1,690 train/validation questions lower through the strict linear fixed-path
+  fragment and pass native Cypher/SPARQL compiler probes;
+- 116,280 questions are explicitly unsupported or lack public gold;
+- support is 1.592% of 106,173 gold-available questions and 1.433% of all
+  public questions;
+- supported M11 planning plans comprise 1,561 one-hop plans with `Q(u)=7` and
+  129 two-hop plans with `Q(u)=15`;
+- all 1,690 fit the controlled 4,096-state oracle bound, but no oracle or live
+  backend measurement was run;
+- the KB exposes 794 concepts, 16,960 entities, 363 observed relations, 629
+  attributes, 275 qualifier keys, and an acyclic 365-edge concept hierarchy;
+- the official download link was unavailable during the audit, so a complete
+  public mirror revision and all four file hashes are frozen in the artifacts;
+- native compilation feasibility uses an ephemeral term probe only. Current
+  KQA Pro end-to-end execution coverage remains zero because final mappings,
+  loaders, answer normalization, and a loaded backend snapshot do not exist.
+
+The result is **unsuitable** as the primary current XGAP end-to-end and
+physical-planning paper benchmark. It may be retained as a future restricted
+diagnostic after a separate integration milestone. See
+`docs/report/kqapro_artifact_audit.md` and `datasets/kqapro_audit/`.
+
+## M13-A GrailQA Artifact Feasibility Audit
+
+M13-A classified all 64,331 public GrailQA questions using an isolated audit
+converter and the unchanged production `PathPatternQuery` lowering pipeline.
+
+- 23,156 questions are structurally supported under the explicit one-hop
+  entity-anchor and Freebase mapping contract;
+- 41,175 questions are explicitly unsupported or lack public gold annotations;
+- support is 45.315% of the 51,100 gold-available train/dev questions and
+  35.995% of all public questions;
+- 51,085 gold-available questions expose complete ontology-slot anchors from
+  the parsed public resources;
+- official ontology resources are substantial but require documented
+  normalization, cycle handling, a type-to-label policy, and validation before
+  they can become an M12 `OntologyGraph` artifact;
+- a complete public alias lexicon, full entity catalog, Freebase backend
+  mapping, executable graph snapshot, and public test gold are unavailable.
+
+The result is **suitable with restrictions** for a future frozen train/dev
+semantic-interpretation subset. It is not a completed DatasetBundle, backend
+integration, ambiguity benchmark, or paper result. See
+`docs/report/grailqa_artifact_audit.md` and `datasets/grailqa_audit/`.
 
 ## M12 Experimentalization
 
@@ -801,7 +965,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M12-D acceptance passed locally. M7 backend smoke and M12-C real
+M0-M13-D tests passed locally. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -811,7 +975,24 @@ the local completion run.
 
 Latest recorded command results:
 
-- `python -m pytest -q`: 370 passed, 7 skipped.
+- `PYTHONPATH=src python -m pytest`: 412 passed, 7 skipped, including 17
+  focused M13-D catalog, leakage, retrieval, request, equivalence, metrics,
+  resume, readiness, and 150-query fake-orchestration tests.
+- full official GrailQA audit command: completed 64,331 classifications with
+  23,156 supported and 41,175 unsupported records.
+- full GrailQA v2 audit command: completed 64,331 classifications with 35,439
+  supported and 28,892 unsupported records; the gold-available support ratio
+  is 69.352%.
+- GrailQA pilot command: built and validated 150 questions with bundle hash
+  `87ae8633712a54e30dd96154201248bbf3abe1fde5bdf104f09a92c5a472bac4`;
+  its controlled `Q=13/19/25` vertical slice completed.
+- M13-D deterministic fake-provider run: accounted for all 150 frozen IDs,
+  completed 150 fixture requests, produced 450 validated and grounded
+  candidates, used no repairs, and wrote every required output. It is marked
+  orchestration-only and makes no accuracy claim.
+- full KQA Pro audit command: completed 117,970 classifications with 1,690
+  structurally/planning-supported and 116,280 unsupported records; current
+  integrated KQA Pro execution coverage remains zero.
 - `python -m pytest` over the focused M9-M12-D and hardening regression set:
   109 passed, 5 live-gated tests skipped.
 - `python -m xgap.experiments.backend_mapping_audit --dataset
@@ -827,11 +1008,13 @@ Latest recorded command results:
   fake path produced 2 D0 records and one calibrated GP per backend.
 - `python examples/m12d_experiment_matrix_demo.py`: passed; 12 runs and 12
   aggregate groups completed with frozen candidate reuse.
-- `./scripts/run_acceptance.sh`: passed, including harness check,
-  pytest, all existing examples, `examples/quantified_pattern_demo.py`,
+- `./scripts/run_acceptance.sh`: passed with 412 passed and 7 live-gated
+  skips, including harness check, pytest, all existing examples,
+  `examples/quantified_pattern_demo.py`,
   `examples/compiler_mvp_demo.py`, `examples/llm_boundary_demo.py`, both M11
   demos, the M12-A demo, the M12-C calibration demo, and the M12-D matrix
   demo. The M12-B fake-HTTP and M12-D offline paths are exercised by pytest.
+- `git diff --check`: passed.
 
 Expected checks include:
 

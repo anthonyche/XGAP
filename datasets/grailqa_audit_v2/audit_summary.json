@@ -1,0 +1,172 @@
+{
+  "benchmark_integration_complete": false,
+  "by_query_type": {
+    "<": {
+      "supported": 139,
+      "supported_ratio": 0.24558303886925795,
+      "total": 566,
+      "unsupported": 427
+    },
+    "<=": {
+      "supported": 126,
+      "supported_ratio": 0.17796610169491525,
+      "total": 708,
+      "unsupported": 582
+    },
+    ">": {
+      "supported": 35,
+      "supported_ratio": 0.10324483775811209,
+      "total": 339,
+      "unsupported": 304
+    },
+    ">=": {
+      "supported": 166,
+      "supported_ratio": 0.2133676092544987,
+      "total": 778,
+      "unsupported": 612
+    },
+    "argmax": {
+      "supported": 0,
+      "supported_ratio": 0.0,
+      "total": 1652,
+      "unsupported": 1652
+    },
+    "argmin": {
+      "supported": 0,
+      "supported_ratio": 0.0,
+      "total": 1494,
+      "unsupported": 1494
+    },
+    "count": {
+      "supported": 0,
+      "supported_ratio": 0.0,
+      "total": 2744,
+      "unsupported": 2744
+    },
+    "none": {
+      "supported": 34973,
+      "supported_ratio": 0.8167635862584367,
+      "total": 42819,
+      "unsupported": 7846
+    },
+    "not_available": {
+      "supported": 0,
+      "supported_ratio": 0.0,
+      "total": 13231,
+      "unsupported": 13231
+    }
+  },
+  "by_split": {
+    "dev": {
+      "supported": 4674,
+      "supported_ratio": 0.6911134112080438,
+      "total": 6763,
+      "unsupported": 2089
+    },
+    "test_public": {
+      "supported": 0,
+      "supported_ratio": 0.0,
+      "total": 13231,
+      "unsupported": 13231
+    },
+    "train": {
+      "supported": 30765,
+      "supported_ratio": 0.6938899790242912,
+      "total": 44337,
+      "unsupported": 13572
+    }
+  },
+  "complexity": {
+    "count": 35439,
+    "distinct": 3,
+    "histogram": {
+      "13": 26002,
+      "19": 8952,
+      "25": 485
+    },
+    "max": 25,
+    "mean": 14.679844239397275,
+    "median": 13,
+    "p90": 19
+  },
+  "m13a_baseline": {
+    "Q_histogram": {
+      "13": 23156
+    },
+    "supported_questions": 23156,
+    "supported_ratio_gold_available": 0.45315068493150684,
+    "supported_ratio_public": 0.35995087904742656
+  },
+  "mapping": {
+    "canonical_class_terms": 10656,
+    "canonical_property_terms": 5531,
+    "canonical_relation_terms": 13747,
+    "mapping_id": "grailqa-freebase-canonical-v1",
+    "mapping_version": "grailqa-v1.0-public-processed-ontology",
+    "missing_or_unrealizable_relation_questions": 222,
+    "per_question_gold_ids_exposed_to_inference": false
+  },
+  "milestone": "M13-C GrailQA Paper Vertical Slice",
+  "operator_distribution": {
+    "Edges": 45361,
+    "GroupBy": 35439,
+    "Join": 9922,
+    "Projection": 35439,
+    "Selection": 151678
+  },
+  "path_length_distribution": {
+    "1": 26002,
+    "2": 8952,
+    "3": 485
+  },
+  "schema_version": "m13c-grailqa-audit-v2",
+  "source": {
+    "dataset_files": {
+      "dev": {
+        "file": "grailqa_v1.0_dev.json",
+        "gold_annotations": true,
+        "question_count": 6763,
+        "sha256": "55f3c2f937fee12bde3242247f5a06c6d595a898aa291b62fd3c2abf502f748c"
+      },
+      "test_public": {
+        "file": "grailqa_v1.0_test_public.json",
+        "gold_annotations": false,
+        "question_count": 13231,
+        "sha256": "0aeff2748117e8100b33eaa9619b433026df917b3e17eb80c23fc4ef5c7db528"
+      },
+      "train": {
+        "file": "grailqa_v1.0_train.json",
+        "gold_annotations": true,
+        "question_count": 44337,
+        "sha256": "ee4a439b76d9146ed7841d0afada187e1a9f344153f519521dc73957b47e6fb1"
+      }
+    },
+    "ontology_revision": "bc15df916ca4101f773722151c90ba3f9eff9df5",
+    "ontology_source_hashes": {
+      "domain_dict": "ee03db94a225c373f9ef3c543fea65721627698919e8969e4fe9458bea3eefba",
+      "domain_info": "84eb7e1f963344297356431a8634cf659cf7d97b283d801e01ef911b67f4ad1a",
+      "fb_roles": "a418ab62ce2746ed91b72ec3e06563c32aa7bd4ea14364c4e47160d2af7f22f3",
+      "fb_types": "d7ccacde076ddb2f71de450c5670e279ea0ad4e73d274d08af9e237c765fa8ea",
+      "reverse_properties": "8c120e0f7ee074fa528f4732ede588597a9c3df767a59b7c8e02114ed39b35ac"
+    }
+  },
+  "totals": {
+    "gold_available_questions": 51100,
+    "gold_available_unsupported_questions": 15661,
+    "public_questions": 64331,
+    "supported_questions": 35439,
+    "supported_ratio_gold_available": 0.6935225048923679,
+    "supported_ratio_public": 0.5508852652686885,
+    "unsupported_questions": 28892
+  },
+  "unsupported_reasons": {
+    "missing_entity_mapping": 3089,
+    "missing_gold_logical_form": 13231,
+    "missing_ontology_term": 14,
+    "missing_relation_mapping": 222,
+    "unsupported_aggregation": 2744,
+    "unsupported_comparison": 1633,
+    "unsupported_ordering": 3146,
+    "unsupported_path_semantics": 4813
+  }
+}

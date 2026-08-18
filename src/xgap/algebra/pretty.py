@@ -10,6 +10,7 @@ from xgap.algebra.conditions import (
     EdgeRef,
     LabelEquals,
     LengthEquals,
+    NodeNotEquals,
     NodeRef,
     Not,
     Or,
@@ -85,6 +86,8 @@ def _format_condition(condition: object) -> str:
             f"{_format_ref(condition.ref)}.{condition.property_name} "
             f"!= {_format_value(condition.value)}"
         )
+    if isinstance(condition, NodeNotEquals):
+        return f"{_format_ref(condition.left)} != {_format_ref(condition.right)}"
     if isinstance(condition, PropertyLessThan):
         return (
             f"{_format_ref(condition.ref)}.{condition.property_name} "

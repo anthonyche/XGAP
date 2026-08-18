@@ -80,6 +80,13 @@ Supported references include:
 - indexed nodes and edges
 - path length
 
+`NodeNotEquals(left, right)` compares graph-node identity at two fixed path
+positions. Invalid positions evaluate false in the reference evaluator, while
+`PathPatternQuery` type checking rejects out-of-range positions before
+lowering. Numeric positions require a fixed-length path expression. It lowers
+through `Selection`; it is not property-value inequality and does not add an
+all-different rule for unrelated variables.
+
 Supported scalar comparisons are:
 
 - `=`

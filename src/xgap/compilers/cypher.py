@@ -13,6 +13,7 @@ from xgap.algebra.conditions import (
     Condition,
     EdgeRef,
     LabelEquals,
+    NodeNotEquals,
     NodeRef,
     PropertyEquals,
     PropertyGreaterThan,
@@ -172,6 +173,8 @@ def _condition_to_cypher(bound: BoundCondition, backend_id: str) -> str:
         return _property_comparison(bound, condition.ref, condition.property_name, "=", condition.value, backend_id)
     if isinstance(condition, PropertyNotEquals):
         return _property_comparison(bound, condition.ref, condition.property_name, "<>", condition.value, backend_id)
+    if isinstance(condition, NodeNotEquals):
+        return f"{_node_var(bound, condition.left)} <> {_node_var(bound, condition.right)}"
     if isinstance(condition, PropertyLessThan):
         _require_numeric(condition.value, backend_id, "cypher")
         return _property_comparison(bound, condition.ref, condition.property_name, "<", condition.value, backend_id)

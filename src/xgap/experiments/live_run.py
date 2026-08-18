@@ -173,6 +173,15 @@ def _provider(
     return OpenAICompatibleStructuredCandidateProvider(**kwargs)
 
 
+def build_openai_compatible_provider(
+    model: ModelBundle,
+    transport_override: OpenAICompatibleTransport | None = None,
+) -> OpenAICompatibleStructuredCandidateProvider:
+    """Build the existing frozen M12-B provider for another experiment runner."""
+
+    return _provider(model, transport_override)
+
+
 def run_live_experiment(
     *,
     spec: ExperimentSpec,

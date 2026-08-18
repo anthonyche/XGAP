@@ -1,0 +1,54 @@
+{
+  "catalog_hash": "b547bf391a2dadf6c5affd205689da325bd4bce31b179b3d0a1f3c6bc4c4d416",
+  "catalog_id": "grailqa_inference_catalog_v1",
+  "construction": {
+    "command": "PYTHONPATH=src python -m xgap.experiments.grailqa_catalog build --entity-names <FB15k_mid2name.txt> --ontology-root <GrailQA/ontology> --normalized-ontology datasets/grailqa_pilot_v1/ontology.yaml --output datasets/grailqa_inference_catalog_v1",
+    "gold_inputs": false,
+    "normalization": "NFKC casefold; punctuation/dot/underscore token boundaries",
+    "query_dependent_inputs": false
+  },
+  "counts": {
+    "entities": 14951,
+    "properties": 5531,
+    "relations": 13747,
+    "reverse_property_entries": 9908,
+    "types": 10656
+  },
+  "file_hashes": {
+    "entities.jsonl": "fe1b056bc5126317f0b3dea729d3ff2282f3437a6ae6752c297d9df871e41062",
+    "ontology.yaml": "80d1b42a221327b8704b029b20589dad265cdabe4fa831d9f465dc132523f5d4",
+    "properties.jsonl": "7249befc8c673384edf1e0855d18e0f9f380a0f36c37535bd5b5a1fd002b6027",
+    "relations.jsonl": "d4aa65a786278f412b8e13370fb8da9cfcf5284810658ded9702e81ed8c7a485",
+    "reverse_properties.json": "a64352ca18a15d7ea2a99bb104956d8bfb36962c86c4d4c598120d449c7db932",
+    "types.jsonl": "058a7da948dfc90b73c662f96fa655e2373518d621d33c3a1e7a03e3dc26f6f0"
+  },
+  "ontology_hash": "8bd4f19503d3a61a89831da1d040afea93fae1f64446e0ffb206b510bb69c10b",
+  "provenance_notes": [
+    "Entity coverage is intentionally limited to the public FB15k-237 MID-name subset.",
+    "No GrailQA question, logical form, answer, or per-question annotation was used."
+  ],
+  "schema_version": "m13d-grailqa-inference-catalog-v1",
+  "sources": {
+    "entities": {
+      "license": "CC-BY-4.0",
+      "revision": "c7368ccc03358758270dbf9e475222444d19926b",
+      "scope_note": "Public FB15k-237 entity-name subset; not complete Freebase.",
+      "sha256": "4da94b8059a83bc7e08c832f573d34221d38e85030576e332a0d0e9726d13d73",
+      "source": "KGraph/FB15k-237:FB15k_mid2name.txt",
+      "url": "https://huggingface.co/datasets/KGraph/FB15k-237"
+    },
+    "ontology": {
+      "license_note": "GrailQA repository/data terms apply; provenance retained.",
+      "revision": "bc15dfec5595427614359745d47bc28661e37115",
+      "source": "dki-lab/GrailQA official processed Freebase ontology",
+      "source_hashes": {
+        "domain_dict": "ee03db94a225c373f9ef3c543fea65721627698919e8969e4fe9458bea3eefba",
+        "domain_info": "84eb7e1f963344297356431a8634cf659cf7d97b283d801e01ef911b67f4ad1a",
+        "fb_roles": "a418ab62ce2746ed91b72ec3e06563c32aa7bd4ea14364c4e47160d2af7f22f3",
+        "fb_types": "d7ccacde076ddb2f71de450c5670e279ea0ad4e73d274d08af9e237c765fa8ea",
+        "reverse_properties": "8c120e0f7ee074fa528f4732ede588597a9c3df767a59b7c8e02114ed39b35ac"
+      },
+      "url": "https://github.com/dki-lab/GrailQA"
+    }
+  }
+}

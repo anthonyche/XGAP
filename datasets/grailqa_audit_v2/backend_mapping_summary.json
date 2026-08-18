@@ -1,0 +1,18 @@
+{
+  "backends": [
+    "reference_evaluator",
+    "neo4j",
+    "fuseki"
+  ],
+  "compiler_mapping_is_single_source_of_truth": true,
+  "mapping_hash": "b44ba296d73722b28d0d26cbf345ae36f47f5f0d886e309844df117d60f65659",
+  "mapping_id": "grailqa-freebase-canonical-v1",
+  "namespace_hard_coded_in_compiler": false,
+  "schema_version": "m13c-grailqa-backend-mapping-summary-v1",
+  "term_counts": {
+    "classes": 10656,
+    "properties": 5531,
+    "relations": 13747
+  },
+  "version": "grailqa-v1.0-public-processed-ontology"
+}

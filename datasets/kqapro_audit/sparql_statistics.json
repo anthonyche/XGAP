@@ -1,0 +1,41 @@
+{
+  "feature_question_counts": {
+    "aggregation": 12264,
+    "comparison": 13830,
+    "filters": 13830,
+    "joins": 106173,
+    "ordering": 19687,
+    "qualifier_fact_reification": 25244,
+    "subqueries": 3,
+    "union": 19165
+  },
+  "limitations": [
+    "Triple-pattern counts use statement terminators and treat bracketed fact reification as one statement.",
+    "The audit is not a general SPARQL parser."
+  ],
+  "method": "deterministic lexical audit of the official generated SPARQL surface",
+  "query_count": 106173,
+  "schema_version": "m13b-kqapro-audit-v1",
+  "scope": "train and val gold SPARQL",
+  "triple_patterns": {
+    "count": 106173,
+    "histogram": {
+      "10": 2208,
+      "11": 416,
+      "12": 137,
+      "13": 23,
+      "2": 3190,
+      "3": 10096,
+      "4": 21151,
+      "5": 14938,
+      "6": 21917,
+      "7": 15500,
+      "8": 11962,
+      "9": 4635
+    },
+    "max": 13,
+    "mean": 5.669746545731965,
+    "median": 6,
+    "p90": 8
+  }
+}

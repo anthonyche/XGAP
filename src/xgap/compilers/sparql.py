@@ -11,6 +11,7 @@ from xgap.algebra.conditions import (
     And,
     EdgeRef,
     LabelEquals,
+    NodeNotEquals,
     NodeRef,
     PropertyEquals,
     PropertyGreaterThan,
@@ -290,6 +291,10 @@ def _condition_to_sparql(
             mapping,
             used_terms,
         )
+    if isinstance(condition, NodeNotEquals):
+        return [
+            f"FILTER({_node_var(bound, condition.left)} != {_node_var(bound, condition.right)})"
+        ], value_counter
     if isinstance(condition, PropertyLessThan):
         _require_numeric(condition.value, backend_id, "sparql")
         return _property_condition(

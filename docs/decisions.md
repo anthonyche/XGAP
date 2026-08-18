@@ -570,3 +570,18 @@ Backend transport success can hide a semantically empty query when the native
 identifier contract drifts. Keeping the mapping authoritative lets a future
 dataset change native IRIs by replacing its artifact rather than editing the
 compiler.
+
+## D53 Fixed-path node identity is a scalar condition
+
+`NodeNotEquals(left, right)` compares graph-node identity at two fixed
+`NodeRef` positions. It lowers to the existing `Selection` operator and
+compiles to native identity inequality. Numeric references are valid only for
+fixed-length path expressions and must be in range. The condition does not
+impose implicit all-different semantics and is not property inequality.
+
+Reason:
+
+GrailQA simple-path reference forms explicitly distinguish query nodes. The
+existing path-position references make this a small generic condition gap;
+adding a dataset-specific operator or changing `Join` semantics would be
+broader and incorrect.

@@ -1,0 +1,165 @@
+{
+  "definition": "Q(u)=|Omega_u^gold|+|D_u^gold|",
+  "gold_kopl_programs": {
+    "note": "KoPL syntax proxy only; unsupported programs are not XGAP LogicalPlans.",
+    "operator_plus_dependency_proxy": {
+      "count": 106173,
+      "histogram": {
+        "11": 16636,
+        "13": 5008,
+        "15": 8246,
+        "17": 2909,
+        "19": 74,
+        "21": 1064,
+        "23": 128,
+        "25": 2,
+        "27": 55,
+        "29": 3,
+        "3": 5751,
+        "5": 23232,
+        "7": 30154,
+        "9": 12911
+      },
+      "max": 29,
+      "mean": 8.573262505533421,
+      "median": 7,
+      "p90": 15
+    },
+    "program_steps": {
+      "count": 106173,
+      "histogram": {
+        "10": 74,
+        "11": 1064,
+        "12": 128,
+        "13": 2,
+        "14": 55,
+        "15": 3,
+        "2": 5751,
+        "3": 23232,
+        "4": 30154,
+        "5": 12911,
+        "6": 16636,
+        "7": 5008,
+        "8": 8246,
+        "9": 2909
+      },
+      "max": 15,
+      "mean": 4.7866312527667105,
+      "median": 4,
+      "p90": 8
+    }
+  },
+  "m11_planning_logical_plans": {
+    "dependency_count": {
+      "count": 1690,
+      "histogram": {
+        "3": 1561,
+        "7": 129
+      },
+      "max": 7,
+      "mean": 3.305325443786982,
+      "median": 3.0,
+      "p90": 3
+    },
+    "operator_count": {
+      "count": 1690,
+      "histogram": {
+        "4": 1561,
+        "8": 129
+      },
+      "max": 8,
+      "mean": 4.305325443786982,
+      "median": 4.0,
+      "p90": 4
+    },
+    "path_edge_count": {
+      "count": 1690,
+      "histogram": {
+        "1": 1561,
+        "2": 129
+      },
+      "max": 2,
+      "mean": 1.0763313609467455,
+      "median": 1.0,
+      "p90": 1
+    },
+    "q": {
+      "count": 1690,
+      "histogram": {
+        "15": 129,
+        "7": 1561
+      },
+      "max": 15,
+      "mean": 7.610650887573964,
+      "median": 7.0,
+      "p90": 7
+    }
+  },
+  "physical_feasibility": {
+    "backend_ids": [
+      "fuseki",
+      "neo4j"
+    ],
+    "backend_local_complete_realizations_per_query": 2,
+    "conservative_state_space_bound": {
+      "count": 1690,
+      "histogram": {
+        "31": 1561,
+        "511": 129
+      },
+      "max": 511,
+      "mean": 67.63905325443787,
+      "median": 31.0,
+      "p90": 31
+    },
+    "cross_backend_complete_realizations_per_query": 0,
+    "exchange_catalog": "empty",
+    "unconstrained_placement_product": {
+      "count": 1690,
+      "histogram": {
+        "16": 1561,
+        "256": 129
+      },
+      "max": 256,
+      "mean": 34.319526627218934,
+      "median": 16.0,
+      "p90": 16
+    }
+  },
+  "reference_logical_plans": {
+    "dependency_count": {
+      "count": 1690,
+      "histogram": {
+        "5": 1561,
+        "9": 129
+      },
+      "max": 9,
+      "mean": 5.305325443786982,
+      "median": 5.0,
+      "p90": 5
+    },
+    "operator_count": {
+      "count": 1690,
+      "histogram": {
+        "10": 129,
+        "6": 1561
+      },
+      "max": 10,
+      "mean": 6.305325443786982,
+      "median": 6.0,
+      "p90": 6
+    },
+    "q": {
+      "count": 1690,
+      "histogram": {
+        "11": 1561,
+        "19": 129
+      },
+      "max": 19,
+      "mean": 11.610650887573964,
+      "median": 11.0,
+      "p90": 11
+    }
+  },
+  "schema_version": "m13b-kqapro-audit-v1"
+}

@@ -529,6 +529,51 @@ semantic quality separate from conservative execution cost.
 Current status:
 TODO
 
+## M13-C GrailQA Paper Vertical Slice
+
+Goal:
+Extend the current fixed-path fragment only where justified by the GrailQA
+audit, normalize the public ontology reproducibly, construct evaluation-only
+ambiguity evidence and a versioned pilot DatasetBundle, and run an actual
+semantic-to-native-compilation vertical slice.
+
+Acceptance criteria:
+The historical M13-A output remains unchanged; the v2 audit reports measured
+coverage and structural diversity; ontology SCC normalization and backend
+mapping are frozen; gold artifacts remain isolated from inference; the pilot
+traverses deterministic lowering, M11 planning, and M9 compilation; unavailable
+Freebase execution is reported rather than fabricated; all tests and
+acceptance checks pass.
+
+Current status:
+DONE. GrailQA is currently recommended for semantic-only paper evaluation.
+Real Freebase execution and a rich physical-plan space remain unavailable.
+
+## M13-D Server-Executed GrailQA Semantic Pilot Preparation
+
+Goal:
+Freeze and package the first real GrailQA RQ1 semantic pilot so a human can run
+it on the experiment server without Codex, source edits, or parameter choices.
+The path is NL question to query-independent public metadata retrieval, bounded
+M12-B Qwen candidates, existing deterministic validation/grounding, unchanged
+`c_sem`, epsilon filtering, deterministic semantic ranking, conservative
+reference support, and automatic metrics.
+
+Acceptance criteria:
+The repository contains a versioned public inference catalog, file-level
+gold-isolation boundary, deterministic retrieval and post-inference Recall@k,
+immutable 150-ID spec, safe resumable runner, exact readiness/smoke/full
+commands, first-failure accounting, all required raw/summary outputs, and a
+150-query fake-provider orchestration run. Existing M12-B prompt/model bounds
+remain frozen, candidate generation is reused across epsilon, and normal tests
+never call live Qwen.
+
+Current status:
+**SERVER-READY**. Local fake-provider orchestration is complete. The real
+150-query Qwen pilot is not complete until the human server run returns its
+manifest, metrics, summary, and failures. M13-D does not add backend execution,
+RQ2/RQ3, KQA Pro, prompt tuning, new algebra, or changed M11/GP/Nash behavior.
+
 ## M14 KGQA Evaluation
 
 Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.

@@ -1,0 +1,237 @@
+{
+  "operator_count": 27,
+  "operators": {
+    "And": {
+      "occurrences": 28539,
+      "questions": 26208,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "KoPL entity-set intersection is not a PathPatternQuery join"
+    },
+    "Count": {
+      "occurrences": 12264,
+      "questions": 12264,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "entity-set cardinality"
+    },
+    "FilterConcept": {
+      "occurrences": 67604,
+      "questions": 53058,
+      "status": "partial",
+      "supported_question_ratio": 0.031851935617626,
+      "supported_questions": 1690,
+      "xgap_mapping": "LabelEquals on the current path node"
+    },
+    "FilterDate": {
+      "occurrences": 4069,
+      "questions": 4034,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "typed temporal property condition"
+    },
+    "FilterNum": {
+      "occurrences": 10520,
+      "questions": 10119,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "numeric property condition lacks KQA quantity/unit encoding"
+    },
+    "FilterStr": {
+      "occurrences": 28569,
+      "questions": 27563,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "PropertyEquals after a dataset representation policy"
+    },
+    "FilterYear": {
+      "occurrences": 4660,
+      "questions": 4414,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "typed temporal property condition"
+    },
+    "Find": {
+      "occurrences": 144515,
+      "questions": 79544,
+      "status": "partial",
+      "supported_question_ratio": 0.021246102785879514,
+      "supported_questions": 1690,
+      "xgap_mapping": "node name predicate on a path endpoint"
+    },
+    "FindAll": {
+      "occurrences": 34132,
+      "questions": 31756,
+      "status": "partial",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "Nodes(G); no edge-bearing PathPatternQuery seed"
+    },
+    "Or": {
+      "occurrences": 4308,
+      "questions": 4308,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "KoPL entity-set union is not the audited path fragment"
+    },
+    "QFilterDate": {
+      "occurrences": 584,
+      "questions": 584,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "fact qualifier filter"
+    },
+    "QFilterNum": {
+      "occurrences": 647,
+      "questions": 647,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "fact qualifier filter"
+    },
+    "QFilterStr": {
+      "occurrences": 2702,
+      "questions": 2702,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "fact qualifier filter"
+    },
+    "QFilterYear": {
+      "occurrences": 1458,
+      "questions": 1458,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "fact qualifier filter"
+    },
+    "QueryAttr": {
+      "occurrences": 25022,
+      "questions": 25022,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "scalar attribute projection"
+    },
+    "QueryAttrQualifier": {
+      "occurrences": 10875,
+      "questions": 10875,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "attribute qualifier projection"
+    },
+    "QueryAttrUnderCondition": {
+      "occurrences": 917,
+      "questions": 917,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "qualified scalar attribute projection"
+    },
+    "QueryRelation": {
+      "occurrences": 15662,
+      "questions": 15662,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "edge-label projection between bound entities"
+    },
+    "QueryRelationQualifier": {
+      "occurrences": 9114,
+      "questions": 9114,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "relation qualifier projection"
+    },
+    "Relate": {
+      "occurrences": 56631,
+      "questions": 46378,
+      "status": "partial",
+      "supported_question_ratio": 0.03643969123291216,
+      "supported_questions": 1690,
+      "xgap_mapping": "Rel(EdgePattern), composed with Seq for a uniform direction"
+    },
+    "SelectAmong": {
+      "occurrences": 4836,
+      "questions": 4836,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "attribute ordering and entity selection"
+    },
+    "SelectBetween": {
+      "occurrences": 14851,
+      "questions": 14851,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "attribute comparison and entity selection"
+    },
+    "VerifyDate": {
+      "occurrences": 194,
+      "questions": 194,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "Boolean scalar verification"
+    },
+    "VerifyNum": {
+      "occurrences": 2250,
+      "questions": 2250,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "Boolean scalar verification"
+    },
+    "VerifyStr": {
+      "occurrences": 6345,
+      "questions": 6345,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "Boolean scalar verification"
+    },
+    "VerifyYear": {
+      "occurrences": 4311,
+      "questions": 4311,
+      "status": "unsupported",
+      "supported_question_ratio": 0.0,
+      "supported_questions": 0,
+      "xgap_mapping": "Boolean scalar verification"
+    },
+    "What": {
+      "occurrences": 12632,
+      "questions": 12632,
+      "status": "partial",
+      "supported_question_ratio": 0.1337872070930969,
+      "supported_questions": 1690,
+      "xgap_mapping": "answer endpoint name extraction after path execution"
+    }
+  },
+  "schema_version": "m13b-kqapro-audit-v1",
+  "scope": "train and val gold programs",
+  "terminal_operator_questions": {
+    "Count": 12264,
+    "QueryAttr": 12839,
+    "QueryAttrQualifier": 10875,
+    "QueryRelation": 15662,
+    "QueryRelationQualifier": 9114,
+    "SelectAmong": 4836,
+    "SelectBetween": 14851,
+    "VerifyDate": 194,
+    "VerifyNum": 2250,
+    "VerifyStr": 6345,
+    "VerifyYear": 4311,
+    "What": 12632
+  }
+}

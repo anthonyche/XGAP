@@ -1,0 +1,23 @@
+{
+  "evaluation_only": [
+    "questions.jsonl:gold_answers",
+    "questions.jsonl:gold_logical_form",
+    "gold_answers.jsonl",
+    "gold_logical_forms.jsonl",
+    "gold_alignments.jsonl",
+    "reference_interpretations.jsonl",
+    "query_slots.jsonl",
+    "evaluation_entity_catalog.jsonl"
+  ],
+  "gold_exposed_to_inference": false,
+  "runtime_entity_catalog_empty": true,
+  "runtime_visible": [
+    "inference_questions.jsonl",
+    "ontology.yaml",
+    "aliases.yaml",
+    "entity_catalog.jsonl",
+    "backend_mapping.yaml",
+    "schema_snapshot.json"
+  ],
+  "schema_version": "m13d-grailqa-inference-isolation-v2"
+}

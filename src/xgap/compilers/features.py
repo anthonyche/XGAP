@@ -12,6 +12,7 @@ from xgap.algebra.conditions import (
     EdgeRef,
     LabelEquals,
     LengthEquals,
+    NodeNotEquals,
     NodeRef,
     Not,
     Or,
@@ -71,6 +72,7 @@ M9_CORE_FEATURES = (
 M9_ALLOWED_CONDITIONALS = frozenset(
     {
         "graph_model.node_labels",
+        "graph_model.node_identity_predicates",
         "graph_model.scalar_property_predicates",
         "path_algebra.Nodes",
         "path_algebra.Edges",
@@ -412,6 +414,8 @@ def _features_for_condition(condition: Condition) -> tuple[str, ...]:
         ),
     ):
         return ("graph_model.scalar_property_predicates",)
+    if isinstance(condition, NodeNotEquals):
+        return ("graph_model.node_identity_predicates",)
     if isinstance(condition, LengthEquals):
         return ("condition.path_length",)
     if isinstance(condition, And):
@@ -437,6 +441,7 @@ def _ensure_m9_condition(condition: Condition, *, backend_id: str, language: str
             PropertyLessThanOrEqual,
             PropertyGreaterThan,
             PropertyGreaterThanOrEqual,
+            NodeNotEquals,
         ),
     ):
         return

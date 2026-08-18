@@ -1,0 +1,110 @@
+{
+  "artifacts": {
+    "aliases.yaml": {
+      "bytes": 214,
+      "sha256": "48e951bc46d7b5c75ddb33b3df7e92e6627471b30c576d1d776c9549c84cf227"
+    },
+    "answer_normalization.json": {
+      "bytes": 498,
+      "sha256": "82f4a602e9c092ff8594717e207310dd8d9d29805664320702926cc16649b087"
+    },
+    "backend_mapping.yaml": {
+      "bytes": 176201,
+      "sha256": "b80b6119d6b8ca14fa559c34632602e8544e19920a89e4ce36b265d0d4ea60b4"
+    },
+    "canonical_logical_plans.jsonl": {
+      "bytes": 107411,
+      "sha256": "60b6962fc250578141e442fcb3808ed737a5185785fb37a5d8283054e04742b1"
+    },
+    "dataset.yaml": {
+      "bytes": 1907,
+      "sha256": "bda3d9fd06384557e71f24c55f0373ff7dbea24a88d52cd429d8e432aad6a393"
+    },
+    "entity_catalog.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evaluation_entity_catalog.jsonl": {
+      "bytes": 23668,
+      "sha256": "0f1d484283aa571c2c32a337ac3b140c778a77e6fbf379367e5cf96ccaa131b1"
+    },
+    "fragment_support.jsonl": {
+      "bytes": 10650,
+      "sha256": "8c1b6230b33d21bca48bbb4a716be2c3050508f9294b04abfbdefe6b86f4aef4"
+    },
+    "freebase_execution_feasibility.json": {
+      "bytes": 1316,
+      "sha256": "e1437cc10bc5d08a08e81ff606eae6f39178e9e0efea4da3bd3d6004e4ed4233"
+    },
+    "gold_alignments.jsonl": {
+      "bytes": 183638,
+      "sha256": "244272131297d02a2137094fb3ff6e28a6a60cf06d76718b25ae01056093c4f4"
+    },
+    "gold_answers.jsonl": {
+      "bytes": 288012,
+      "sha256": "9bb55509cdc4a2603db9a31ff8587298941f8d2bf8c4ef13f86c75c76dd55c6c"
+    },
+    "gold_logical_forms.jsonl": {
+      "bytes": 100023,
+      "sha256": "6ffcc7d13f992024ee8e33875b60f67c310170330e6a78793d5cedde0ec1365e"
+    },
+    "inference_manifest.json": {
+      "bytes": 619,
+      "sha256": "ff40b48ae5a4564509480616b3e02054cf4e2e56b85dfb1b8340f9f2dfe7668e"
+    },
+    "inference_questions.jsonl": {
+      "bytes": 35971,
+      "sha256": "34f9c667c975796f11c2fd9688b39cd2ebdbb1fd2dc4f6011d5fc6ba7e6b16a2"
+    },
+    "ontology.yaml": {
+      "bytes": 3790206,
+      "sha256": "80d1b42a221327b8704b029b20589dad265cdabe4fa831d9f465dc132523f5d4"
+    },
+    "ontology_normalization.json": {
+      "bytes": 2192847,
+      "sha256": "0758a7223ef23206dcdea986eb625a1766b4edbf53a87a69ce806fdef6a6d617"
+    },
+    "pilot_ids.json": {
+      "bytes": 3902,
+      "sha256": "60ef62d9aad5c81eec177c498860f12d9b18f4cfd5ac2f8ad97fb65ad0c0ee81"
+    },
+    "query_slots.jsonl": {
+      "bytes": 107870,
+      "sha256": "8f7fabd6d05843a1b0c7579d34bd5923bbef745490bca71683acde9a8a41c289"
+    },
+    "questions.jsonl": {
+      "bytes": 383478,
+      "sha256": "8c59a8b14fdd202ccb218b4c8cac7644584081c6c0077be3bb7b50a6acba20e1"
+    },
+    "reference_interpretations.jsonl": {
+      "bytes": 154236,
+      "sha256": "908b8acb2fdfa43d334527cf3bb949daabee430db25678fee013105abaa3b3e9"
+    },
+    "schema_snapshot.json": {
+      "bytes": 21169,
+      "sha256": "e7174de5cc2909ce61db8ffc6ab42bf6e5a8fa69f39a3db4299d5f989fd9109e"
+    },
+    "vertical_slice_results.json": {
+      "bytes": 14976,
+      "sha256": "522e40d3c687357c5b9a42beb98051b4595c04f8f09a4a3e9fede0fbfaf5ffe3"
+    },
+    "workload_stats.jsonl": {
+      "bytes": 35372,
+      "sha256": "0ee021ed6778e7f1a2f80ef8371d11f3d3bcfb6a8b7970a229ddd47de58e9166"
+    }
+  },
+  "dataset_id": "grailqa_pilot_v1",
+  "ontology_source_hashes": {
+    "domain_dict": "ee03db94a225c373f9ef3c543fea65721627698919e8969e4fe9458bea3eefba",
+    "domain_info": "84eb7e1f963344297356431a8634cf659cf7d97b283d801e01ef911b67f4ad1a",
+    "fb_roles": "a418ab62ce2746ed91b72ec3e06563c32aa7bd4ea14364c4e47160d2af7f22f3",
+    "fb_types": "d7ccacde076ddb2f71de450c5670e279ea0ad4e73d274d08af9e237c765fa8ea",
+    "reverse_properties": "8c120e0f7ee074fa528f4732ede588597a9c3df767a59b7c8e02114ed39b35ac"
+  },
+  "schema_version": "m13c-grailqa-artifact-manifest-v1",
+  "source_hashes": {
+    "dev": "55f3c2f937fee12bde3242247f5a06c6d595a898aa291b62fd3c2abf502f748c",
+    "test_public": "0aeff2748117e8100b33eaa9619b433026df917b3e17eb80c23fc4ef5c7db528",
+    "train": "ee4a439b76d9146ed7841d0afada187e1a9f344153f519521dc73957b47e6fb1"
+  }
+}

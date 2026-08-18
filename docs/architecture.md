@@ -475,6 +475,14 @@ PathPatternQuery
 
 GPC-Lite supports node descriptors, edge descriptors, variables, directions, regular path expressions, selectors, and restrictors. The AST can represent `OUT`, `IN`, and `UNDIRECTED` edge directions, but M5 lowering supports only `OUT`.
 
+M13-C adds one generic scalar condition, `NodeNotEquals`, for identity
+inequality between two fixed path-node positions. Type checking requires a
+fixed-length expression and in-range positions. Deterministic lowering uses
+the existing `Selection` operator, and the reference evaluator and M9
+compilers implement the same identity predicate. GrailQA conversion, ontology
+normalization, mappings, and ambiguity artifacts remain in the experiment
+layer; there is no dataset-specific core branch or new logical operator.
+
 Supported regex nodes are `Rel`, `Seq`, `Alt`, `Plus`, and `Star`. Future regex nodes such as `OptionalExpr` and `Bounded` are declared but lower with explicit `LoweringError`.
 
 Selectors lower to the audited extended algebra:

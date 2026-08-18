@@ -10,6 +10,7 @@ from xgap.algebra.conditions import (
     EdgeRef,
     LabelEquals,
     LengthEquals,
+    NodeNotEquals,
     NodeRef,
     Not,
     Or,
@@ -216,6 +217,12 @@ def _parse_condition(data: Mapping[str, Any]) -> Condition:
             _required_string(data.get("property"), "property"),
             data.get("value"),
         )
+    if kind == "node_not_equals":
+        left = _parse_ref(_mapping(data.get("left"), "left"))
+        right = _parse_ref(_mapping(data.get("right"), "right"))
+        if not isinstance(left, NodeRef) or not isinstance(right, NodeRef):
+            raise PlannerSchemaError("node_not_equals requires two node references.")
+        return NodeNotEquals(left, right)
     if kind == "property_lt":
         return PropertyLessThan(_parse_ref(_mapping(data.get("ref"), "ref")), _required_string(data.get("property"), "property"), data.get("value"))
     if kind == "property_lte":
@@ -302,6 +309,12 @@ def _condition_to_dict(condition: Condition | None) -> dict[str, Any] | None:
         return {"kind": "property_equals", "ref": _ref_to_dict(condition.ref), "property": condition.property_name, "value": condition.value}
     if isinstance(condition, PropertyNotEquals):
         return {"kind": "property_not_equals", "ref": _ref_to_dict(condition.ref), "property": condition.property_name, "value": condition.value}
+    if isinstance(condition, NodeNotEquals):
+        return {
+            "kind": "node_not_equals",
+            "left": _ref_to_dict(condition.left),
+            "right": _ref_to_dict(condition.right),
+        }
     if isinstance(condition, PropertyLessThan):
         return {"kind": "property_lt", "ref": _ref_to_dict(condition.ref), "property": condition.property_name, "value": condition.value}
     if isinstance(condition, PropertyLessThanOrEqual):

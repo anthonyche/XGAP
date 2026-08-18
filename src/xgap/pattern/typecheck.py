@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from xgap.algebra.conditions import And, NodeNotEquals, Not, Or
 from xgap.algebra.ops import RecursiveMode
 from xgap.pattern.ast import (
     Alt,
@@ -37,6 +38,7 @@ def infer_schema(query: PathPatternQuery) -> dict[str, PatternVarType]:
 def type_check_path_pattern(query: PathPatternQuery) -> dict[str, PatternVarType]:
     schema = infer_schema(query)
     _check_selector(query)
+    _check_condition_refs(query)
     if not isinstance(query.restrictor, RecursiveMode):
         raise PatternTypeError("PathPatternQuery restrictor must be a PathMode value.")
     if query.max_depth is not None and query.max_depth <= 0:
@@ -45,6 +47,53 @@ def type_check_path_pattern(query: PathPatternQuery) -> dict[str, PatternVarType
         if query.max_depth is None or query.max_depth <= 0:
             raise PatternTypeError("WALK recursive path expressions require positive max_depth.")
     return schema
+
+
+def _check_condition_refs(query: PathPatternQuery) -> None:
+    if query.condition is None:
+        return
+    edge_count = _fixed_edge_count(query.expr)
+
+    def visit(condition: object) -> None:
+        if isinstance(condition, NodeNotEquals):
+            if edge_count is None and any(
+                isinstance(ref.position, int) for ref in (condition.left, condition.right)
+            ):
+                raise PatternTypeError(
+                    "Numeric NodeNotEquals references require a fixed-length path expression."
+                )
+            if edge_count is not None:
+                for ref in (condition.left, condition.right):
+                    if isinstance(ref.position, int) and not 1 <= ref.position <= edge_count + 1:
+                        raise PatternTypeError(
+                            f"NodeNotEquals reference {ref.position} is outside fixed path "
+                            f"node range 1..{edge_count + 1}."
+                        )
+            return
+        if isinstance(condition, (And, Or)):
+            for child in condition.conditions:
+                visit(child)
+            return
+        if isinstance(condition, Not):
+            visit(condition.condition)
+
+    visit(query.condition)
+
+
+def _fixed_edge_count(regex: RegexExpr) -> int | None:
+    if isinstance(regex, Rel):
+        return 1
+    if isinstance(regex, Seq):
+        left = _fixed_edge_count(regex.left)
+        right = _fixed_edge_count(regex.right)
+        if left is None or right is None:
+            return None
+        return left + right
+    if isinstance(regex, Alt):
+        left = _fixed_edge_count(regex.left)
+        right = _fixed_edge_count(regex.right)
+        return left if left is not None and left == right else None
+    return None
 
 
 def _infer_node_pattern(node: NodePattern) -> dict[str, PatternVarType]:

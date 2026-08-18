@@ -35,6 +35,9 @@ capabilities:
       graph_model.node_labels:
         level: supported
         reason: "Reference conditions support node labels."
+      graph_model.node_identity_predicates:
+        level: supported
+        reason: "Reference conditions compare graph-node identity at fixed path positions."
       graph_model.edge_labels:
         level: supported
         reason: "Reference conditions support edge labels."

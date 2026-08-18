@@ -12,3 +12,19 @@ id_rsa
 id_rsa.pub
 id_ed25519
 id_ed25519.pub
+
+# Reproducible benchmark data products. Keep compact manifests/summaries in
+# Git; fetch or rebuild query-level artifacts on the experiment server.
+datasets/grailqa_audit/*.jsonl
+datasets/grailqa_audit_v2/*.jsonl
+datasets/grailqa_audit_v2/normalized_ontology.yaml
+datasets/grailqa_audit_v2/ontology_normalization.json
+datasets/kqapro_audit/*.jsonl
+
+datasets/grailqa_inference_catalog_v1/*
+!datasets/grailqa_inference_catalog_v1/manifest.json
+
+datasets/grailqa_pilot_v1/*
+!datasets/grailqa_pilot_v1/artifact_manifest.json
+!datasets/grailqa_pilot_v1/inference_manifest.json
+!datasets/grailqa_pilot_v1/pilot_ids.json

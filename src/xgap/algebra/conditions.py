@@ -105,6 +105,21 @@ class PropertyNotEquals(Condition):
 
 
 @dataclass(frozen=True)
+class NodeNotEquals(Condition):
+    """Require two path positions to denote different graph nodes."""
+
+    left: NodeRef
+    right: NodeRef
+
+    def evaluate(self, path: Path, graph: PropertyGraph) -> bool:
+        del graph
+        try:
+            return self.left.resolve(path) != self.right.resolve(path)
+        except IndexError:
+            return False
+
+
+@dataclass(frozen=True)
 class PropertyLessThan(Condition):
     ref: NodeRef | EdgeRef
     property_name: str
