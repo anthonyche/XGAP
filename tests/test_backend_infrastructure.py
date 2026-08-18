@@ -1,10 +1,12 @@
 import json
 from pathlib import Path
+import sys
+from types import ModuleType
 
 from xgap.backends import registry
 from xgap.experiments.backend_smoke import run_backend_smoke
 from xgap.experiments.results import normalize_smoke_rows
-from xgap.infrastructure.descriptors import BackendDescriptor
+from xgap.infrastructure.descriptors import BackendDescriptor, load_yaml_mapping
 from xgap.infrastructure.runtime import (
     BackendStatus,
     DatasetSpec,
@@ -15,6 +17,27 @@ from xgap.infrastructure.runtime import (
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_yaml_loader_is_independent_of_optional_system_parser(
+    tmp_path: Path, monkeypatch
+) -> None:
+    yaml_module = ModuleType("yaml")
+
+    def unexpected_safe_load(_: str) -> object:
+        raise AssertionError("XGAP YAML must not depend on an optional parser")
+
+    yaml_module.safe_load = unexpected_safe_load  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "yaml", yaml_module)
+    artifact = tmp_path / "ontology.yaml"
+    artifact.write_text(
+        'domain_range:\n  null:\n    domain: "type.null"\n',
+        encoding="utf-8",
+    )
+
+    assert load_yaml_mapping(artifact) == {
+        "domain_range": {"null": {"domain": "type.null"}}
+    }
 
 
 def test_descriptor_yaml_files_load() -> None:

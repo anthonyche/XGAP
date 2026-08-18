@@ -108,10 +108,13 @@ records, all 150 pilot IDs, catalog hash
 and pilot bundle hash
 `dd27f7fecdb226bef89beb50339932793bd5ffe1b987e1ce4144f6391caacd72`.
 The dataset-bundle and RDF-mapping loaders normalize schema-declared empty YAML
-mappings parsed as `null` by PyYAML, including dataset metadata, alias groups,
-and compiler-token groups. This preserves frozen artifact bytes and canonical
-hashes while making the server build independent of whether PyYAML or XGAP's
-fallback parser is active; malformed non-mapping values remain rejected.
+mappings, including dataset metadata, alias groups, and compiler-token groups;
+malformed non-mapping values remain rejected. Server bootstrap also exposed an
+environment-dependent ontology mismatch: PyYAML coerced the valid unquoted
+Freebase relation key `null` to a null object while XGAP's bundled parser kept
+the required string identifier. Repository YAML now always uses the bundled
+deterministic subset parser, preserving frozen artifact bytes and canonical
+hashes whether or not PyYAML is installed.
 
 ## M13-C GrailQA Paper Vertical Slice
 

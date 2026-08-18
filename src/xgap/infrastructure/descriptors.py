@@ -161,24 +161,18 @@ def _parse_yaml_mapping(
 
 
 def load_yaml_mapping(path: str | Path) -> JsonMap:
-    """Load a small YAML mapping without adding a runtime dependency.
+    """Load the repository's deterministic YAML subset.
 
-    PyYAML is used if available. Otherwise XGAP parses the simple YAML
-    subset used by repository descriptors and dataset specs.
+    Always use the bundled parser so artifact meaning and hashes do not
+    depend on whether an optional system YAML package is installed.
     """
 
     yaml_path = Path(path)
     text = yaml_path.read_text(encoding="utf-8")
-    try:
-        import yaml  # type: ignore[import-not-found]
-    except ModuleNotFoundError:
-        lines = _preprocess_yaml(text)
-        parsed, index = _parse_yaml_block(lines, 0, 0)
-        if index != len(lines):
-            raise DescriptorError(f"Could not parse all of {yaml_path}")
-    else:
-        loaded = yaml.safe_load(text)
-        parsed = {} if loaded is None else loaded
+    lines = _preprocess_yaml(text)
+    parsed, index = _parse_yaml_block(lines, 0, 0)
+    if index != len(lines):
+        raise DescriptorError(f"Could not parse all of {yaml_path}")
     if not isinstance(parsed, dict):
         raise DescriptorError(f"{yaml_path} must contain a YAML mapping")
     return dict(parsed)
