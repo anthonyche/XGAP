@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -57,6 +58,9 @@ class RdfBackendMapping:
         *,
         backend_id: str = "fuseki",
     ) -> "RdfBackendMapping":
+        artifact = normalize_backend_mapping_artifact(
+            artifact, backend_id=backend_id
+        )
         mapping_id = str(artifact.get("mapping_id", ""))
         version = str(artifact.get("version", ""))
         if not mapping_id or not version:
@@ -71,7 +75,7 @@ class RdfBackendMapping:
         raw_prefixes = backend.get("prefixes", {"xgap": namespace})
         prefixes = {
             str(name): str(value)
-            for name, value in _mapping(
+            for name, value in _optional_mapping(
                 raw_prefixes, f"backends.{backend_id}.prefixes"
             ).items()
         }
@@ -86,15 +90,16 @@ class RdfBackendMapping:
                 all_term_mappings.get(backend_id), f"term_mappings.{backend_id}"
             ).items()
         }
-        raw_tokens = backend.get("compiler_tokens", {})
+        raw_tokens = _optional_mapping(
+            backend.get("compiler_tokens"),
+            f"backends.{backend_id}.compiler_tokens",
+        )
         compiler_tokens: dict[str, dict[str, str]] = {}
         for token_kind in _EXPECTED_KINDS:
             compiler_tokens[token_kind] = {
                 str(token): str(term_id)
-                for token, term_id in _mapping(
-                    _mapping(raw_tokens, f"backends.{backend_id}.compiler_tokens").get(
-                        token_kind, {}
-                    ),
+                for token, term_id in _optional_mapping(
+                    raw_tokens.get(token_kind),
                     f"backends.{backend_id}.compiler_tokens.{token_kind}",
                 ).items()
             }
@@ -191,3 +196,46 @@ def _mapping(value: object, name: str) -> dict[str, Any]:
     if not isinstance(value, Mapping):
         raise BackendMappingError(f"Backend mapping field '{name}' must be an object.")
     return dict(value)
+
+
+def _optional_mapping(value: object, name: str) -> dict[str, Any]:
+    if value is None:
+        return {}
+    return _mapping(value, name)
+
+
+def normalize_backend_mapping_artifact(
+    artifact: Mapping[str, Any],
+    *,
+    backend_id: str = "fuseki",
+) -> dict[str, Any]:
+    """Canonicalize YAML nulls that denote explicit empty mapping fields."""
+
+    normalized = deepcopy(dict(artifact))
+    backends = normalized.get("backends")
+    if isinstance(backends, Mapping):
+        backends = dict(backends)
+        normalized["backends"] = backends
+        backend = backends.get(backend_id)
+        if isinstance(backend, Mapping):
+            backend = dict(backend)
+            backends[backend_id] = backend
+            if backend.get("prefixes") is None and "prefixes" in backend:
+                backend["prefixes"] = {}
+            tokens = backend.get("compiler_tokens")
+            if tokens is None and "compiler_tokens" in backend:
+                backend["compiler_tokens"] = {}
+            elif isinstance(tokens, Mapping):
+                tokens = dict(tokens)
+                backend["compiler_tokens"] = tokens
+                for token_kind in _EXPECTED_KINDS:
+                    if tokens.get(token_kind) is None and token_kind in tokens:
+                        tokens[token_kind] = {}
+
+    term_mappings = normalized.get("term_mappings")
+    if isinstance(term_mappings, Mapping):
+        term_mappings = dict(term_mappings)
+        normalized["term_mappings"] = term_mappings
+        if term_mappings.get(backend_id) is None and backend_id in term_mappings:
+            term_mappings[backend_id] = {}
+    return normalized

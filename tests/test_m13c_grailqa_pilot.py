@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 from pathlib import Path
 
+import pytest
+
+import xgap.experiments.bundles as bundle_module
 from xgap.backends import registry
-from xgap.backends.mapping import RdfBackendMapping
+from xgap.backends.mapping import BackendMappingError, RdfBackendMapping
 from xgap.compilers import compile_cypher, compile_sparql
 from xgap.experiments.bundles import DatasetBundle
 from xgap.experiments.grailqa_pilot import select_pilot_records
@@ -73,6 +77,53 @@ def test_checked_pilot_bundle_loads_and_preserves_gold_isolation() -> None:
             "schema_snapshot": bundle.schema_snapshot.to_dict(),
         }
     )
+
+
+def test_pyyaml_empty_mappings_normalize_without_changing_hashes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    baseline = DatasetBundle.load(BUNDLE_ROOT)
+    baseline_mapping = RdfBackendMapping.from_artifact(baseline.backend_mapping)
+    original_loader = bundle_module.load_yaml_mapping
+
+    def load_with_pyyaml_nulls(path: str | Path) -> dict[str, object]:
+        loaded = original_loader(path)
+        name = Path(path).name
+        if name == "dataset.yaml":
+            loaded["backend_load"] = None
+        elif name == "aliases.yaml":
+            for field_name in ("ontology_terms", "relations", "entities"):
+                loaded[field_name] = None
+        elif name == "backend_mapping.yaml":
+            tokens = loaded["backends"]["fuseki"]["compiler_tokens"]
+            for token_kind in ("node_labels", "edge_labels", "properties"):
+                tokens[token_kind] = None
+        return loaded
+
+    monkeypatch.setattr(bundle_module, "load_yaml_mapping", load_with_pyyaml_nulls)
+
+    normalized = DatasetBundle.load(BUNDLE_ROOT)
+    normalized_mapping = RdfBackendMapping.from_artifact(normalized.backend_mapping)
+
+    assert normalized.bundle_hash == baseline.bundle_hash
+    assert normalized_mapping.mapping_hash == baseline_mapping.mapping_hash
+    assert normalized.aliases["ontology_terms"] == {}
+    assert normalized.aliases["relations"] == {}
+    assert normalized.aliases["entities"] == {}
+    assert normalized_mapping.compiler_tokens == {
+        "node_labels": {},
+        "edge_labels": {},
+        "properties": {},
+    }
+
+
+def test_rdf_mapping_still_rejects_non_mapping_compiler_tokens() -> None:
+    bundle = DatasetBundle.load(BUNDLE_ROOT)
+    malformed = deepcopy(bundle.backend_mapping)
+    malformed["backends"]["fuseki"]["compiler_tokens"]["node_labels"] = []
+
+    with pytest.raises(BackendMappingError, match="node_labels.*must be an object"):
+        RdfBackendMapping.from_artifact(malformed)
 
 
 def test_pilot_mapping_is_single_source_for_native_compilation() -> None:

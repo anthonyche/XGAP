@@ -8,6 +8,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Mapping
 
+from xgap.backends.mapping import normalize_backend_mapping_artifact
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.semantic import OntologyGraph
 from xgap.infrastructure.descriptors import load_yaml_mapping
@@ -263,13 +264,15 @@ class DatasetBundle:
         ontology = OntologyGraph.from_dict(
             load_yaml_mapping(_required_path(bundle_root, refs, "ontology"))
         )
-        aliases = load_yaml_mapping(_required_path(bundle_root, refs, "aliases"))
+        aliases = _normalize_aliases(
+            load_yaml_mapping(_required_path(bundle_root, refs, "aliases"))
+        )
         entities = tuple(
             EntityCatalogRecord.from_dict(item)
             for item in _read_jsonl(_required_path(bundle_root, refs, "entity_catalog"))
         )
-        backend_mapping = load_yaml_mapping(
-            _required_path(bundle_root, refs, "backend_mapping")
+        backend_mapping = normalize_backend_mapping_artifact(
+            load_yaml_mapping(_required_path(bundle_root, refs, "backend_mapping"))
         )
         schema_data = json.loads(
             _required_path(bundle_root, refs, "schema_snapshot").read_text(encoding="utf-8")
@@ -677,6 +680,15 @@ def _optional_mapping(value: object, field_name: str) -> dict[str, Any]:
     if value is None:
         return {}
     return _mapping(value, field_name)
+
+
+def _normalize_aliases(value: Mapping[str, Any]) -> dict[str, Any]:
+    normalized = dict(value)
+    for field_name in ("ontology_terms", "relations", "entities"):
+        normalized[field_name] = _optional_mapping(
+            normalized.get(field_name), f"dataset.aliases.{field_name}"
+        )
+    return normalized
 
 
 def _required_path(root: Path, refs: Mapping[str, str | None], name: str) -> Path:
