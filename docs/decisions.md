@@ -633,3 +633,20 @@ model/deployment condition, not a semantic-planner change. Keeping it outside
 the deterministic core preserves the M13-E1 gate and makes results auditable
 without introducing a parallel LLM framework or depending on a named compute
 node.
+
+## D57 Freebase source transport is explicit and immutable
+
+Catalog-v2 accepts only the named `google_rdf_gzip` and
+`hf_archival_parquet` source modes and never falls back between them. The CWRU
+paper artifact freezes `CleverThis/freebase` revision
+`dbb1931c2698295653effe9b980a02ab29f004e0`, its exact 964-shard inventory,
+LFS SHA-256 values, sizes, schema, and immutable URLs. Parquet rows are streamed
+into the existing triple extraction contract; Catalog-v2 schema, normalization,
+retrieval, and evaluation semantics do not depend on source format.
+
+Reason:
+
+All tested Google dump objects returned HTTP 403 from CWRU on 2026-08-19, while
+the frozen archival representation is reachable. Treating transport as a
+verified adapter preserves Freebase/GrailQA provenance and source-format
+parity without silently substituting a different knowledge graph or ontology.

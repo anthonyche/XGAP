@@ -9,6 +9,10 @@ set -euo pipefail
 
 REPO_ROOT="${XGAP_REPO_ROOT:-$HOME/XGAP}"
 export XGAP_FREEBASE_RAW_DIR="${XGAP_FREEBASE_RAW_DIR:-$HOME/xgap-data/freebase/raw}"
+export XGAP_FREEBASE_SOURCE_MODE="${XGAP_FREEBASE_SOURCE_MODE:-hf_archival_parquet}"
+export XGAP_FREEBASE_PARQUET_ROOT="${XGAP_FREEBASE_PARQUET_ROOT:-$XGAP_FREEBASE_RAW_DIR/hf-archival-parquet}"
+export XGAP_FREEBASE_SOURCE_MANIFEST="${XGAP_FREEBASE_SOURCE_MANIFEST:-$XGAP_FREEBASE_RAW_DIR/source_manifest.json}"
+export XGAP_FREEBASE_PARQUET_SPEC="${XGAP_FREEBASE_PARQUET_SPEC:-$REPO_ROOT/experiments/artifacts/freebase_hf_archival_parquet_v1.json}"
 export XGAP_FREEBASE_CATALOG_DIR="${XGAP_FREEBASE_CATALOG_DIR:-$HOME/xgap-data/freebase/catalog-v2}"
 export XGAP_GRAILQA_REACHABILITY_V2="${XGAP_GRAILQA_REACHABILITY_V2:-$HOME/xgap-data/freebase/grailqa-reachability-v2}"
 
@@ -16,11 +20,29 @@ cd "$REPO_ROOT"
 echo "git_commit=$(git rev-parse HEAD)"
 echo "hostname=$(hostname)"
 echo "cpus=${SLURM_CPUS_PER_TASK:-unknown}"
+echo "source_mode=$XGAP_FREEBASE_SOURCE_MODE"
 echo "raw_dir=$XGAP_FREEBASE_RAW_DIR"
+echo "source_manifest=$XGAP_FREEBASE_SOURCE_MANIFEST"
+if [[ "$XGAP_FREEBASE_SOURCE_MODE" == "hf_archival_parquet" ]]; then
+  echo "repo_id=CleverThis/freebase"
+  echo "revision=dbb1931c2698295653effe9b980a02ab29f004e0"
+  echo "shard_spec=$XGAP_FREEBASE_PARQUET_SPEC"
+fi
 echo "catalog_dir=$XGAP_FREEBASE_CATALOG_DIR"
 echo "reachability_dir=$XGAP_GRAILQA_REACHABILITY_V2"
 
-bash scripts/server/verify_freebase_rdf.sh
+case "$XGAP_FREEBASE_SOURCE_MODE" in
+  google_rdf_gzip)
+    bash scripts/server/verify_freebase_rdf.sh
+    ;;
+  hf_archival_parquet)
+    bash scripts/server/verify_freebase_archival_parquet.sh
+    ;;
+  *)
+    echo "Unsupported XGAP_FREEBASE_SOURCE_MODE: $XGAP_FREEBASE_SOURCE_MODE" >&2
+    exit 2
+    ;;
+esac
 bash scripts/server/build_freebase_catalog_v2.sh
 
 set +e

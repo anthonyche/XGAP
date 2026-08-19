@@ -34,7 +34,14 @@ PYTHONPATH=src "$PYTHON" -m xgap.experiments.grailqa_reachability m13e3-audit \
 STATUS=$?
 set -e
 
+PYTHONPATH=src "$PYTHON" -m xgap.experiments.grailqa_catalog_compatibility \
+  --supported-questions "$SUPPORTED_QUESTIONS" \
+  --pilot-references "$PILOT_ROOT/reference_interpretations.jsonl" \
+  --catalog-root "$CATALOG_DIR" \
+  --output "$REACHABILITY_DIR/archival_source_compatibility.json"
+
 echo "Reachability report: $REACHABILITY_DIR/audit_summary.json"
+echo "Archival compatibility: $REACHABILITY_DIR/archival_source_compatibility.json"
 if [[ "$STATUS" -eq 2 ]]; then
   echo "Offline audit completed with live_preflight_allowed=false. No LLM was called."
 fi

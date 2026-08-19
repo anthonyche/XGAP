@@ -508,6 +508,15 @@ structured serving smoke, environment capture, experiment invocation, and
 process cleanup. Slurm/GPU objects do not enter `PathPatternQuery`, logical
 plans, `c_sem`, M11, or the GP feature model.
 
+M13-E3A keeps the Catalog-v2 and inference boundaries unchanged while adding
+an experiment-layer Freebase source adapter. Source selection is explicit:
+`google_rdf_gzip` parses the existing N-Triples contract, while
+`hf_archival_parquet` streams immutable shards and row groups from the frozen
+archival transport into the same internal triple tuples. Exact source
+manifests, not downstream query logic, own repository revision, shard identity,
+size, checksum, and schema validation. The archival transport remains
+Freebase; it is not an ontology or knowledge-graph substitution.
+
 Supported regex nodes are `Rel`, `Seq`, `Alt`, `Plus`, and `Star`. Future regex nodes such as `OptionalExpr` and `Bounded` are declared but lower with explicit `LoweringError`.
 
 Selectors lower to the audited extended algebra:
@@ -617,7 +626,8 @@ candidate boundary, M11 ontology-bounded physical planning, and the M12-B
 generic live structured-provider/runtime-alignment path are implemented.
 M12-C calibration, M12-D experiment orchestration, the M13-E1 offline
 reachability/contract boundary, and the M13-E2 CWRU/vLLM deployment boundary
-are implemented. The comprehensive Freebase catalog-v2 build and guarded live
+are implemented. The M13-E3A archival source adapter is implemented. The
+comprehensive Freebase catalog-v2 build and guarded live
 v2 preflight are not yet measured.
 Full compiler coverage, logical rewrite optimization, automated ontology
 reasoning, distributed cross-backend execution/movement measurement, final

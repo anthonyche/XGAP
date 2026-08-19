@@ -624,8 +624,8 @@ No live H100 inference was run by local acceptance.
 ## M13-E3 Freebase Catalog-v2 Construction And Reachability Audit
 
 Goal:
-Instantiate the existing M13-E1 query-independent catalog design over Google's
-final public Freebase RDF dump and determine, entirely offline, whether all
+Instantiate the existing M13-E1 query-independent catalog design over a frozen
+representation of the final public Freebase data and determine, entirely offline, whether all
 reference-required GrailQA entities, relations, and types are jointly visible
 to the bounded inference prompt.
 
@@ -642,9 +642,13 @@ GPU, backend, or download.
 
 Current status:
 **IMPLEMENTATION READY; REAL CWRU BUILD AND AUDIT PENDING.** The CPU Slurm job,
-runbook, manifests, fixture tests, and report templates are ready. No catalog
-statistics or improved retrieval claims are made before the official dump is
-processed and its compact results are returned.
+runbook, manifests, fixture tests, and report templates are ready. M13-E3A
+freezes the reachable `CleverThis/freebase` archival Parquet tree at immutable
+revision `dbb1931c2698295653effe9b980a02ab29f004e0` after direct Google object
+retrieval returned HTTP 403 from CWRU. Source selection is explicit and has no
+fallback; both source modes feed unchanged Catalog-v2 extraction semantics.
+No catalog statistics or improved retrieval claims are made before all 964
+shards are processed and the compact audit results are returned.
 
 ## M14 KGQA Evaluation
 

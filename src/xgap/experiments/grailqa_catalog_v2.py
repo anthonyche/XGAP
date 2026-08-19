@@ -22,6 +22,13 @@ import subprocess
 from typing import Any, Iterable, Iterator, Mapping, Sequence, TextIO
 
 from xgap.experiments.grailqa_catalog import normalized_label, sha256_file
+from xgap.experiments.freebase_sources import (
+    GOOGLE_RDF_GZIP,
+    HF_ARCHIVAL_PARQUET,
+    iter_parquet_triples,
+    normalize_source_mode,
+    verify_parquet_source_manifest,
+)
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.runtime_alignment import (
     PromptQuerySlot,
@@ -439,7 +446,9 @@ class GrailQAInferenceCatalogV2:
 
 def build_catalog_v2(
     *,
-    freebase_rdf_path: str | Path,
+    freebase_rdf_path: str | Path | None = None,
+    freebase_parquet_root: str | Path | None = None,
+    source_mode: str = GOOGLE_RDF_GZIP,
     normalized_ontology_path: str | Path,
     reverse_properties_path: str | Path,
     output_root: str | Path,
@@ -447,30 +456,53 @@ def build_catalog_v2(
     source_manifest_path: str | Path | None = None,
     force: bool = False,
 ) -> dict[str, Any]:
-    """Build a query-independent v2 catalog from the official Freebase dump."""
+    """Build a query-independent v2 catalog from one explicit Freebase source."""
 
-    source = Path(freebase_rdf_path)
+    mode = normalize_source_mode(source_mode)
+    if mode == GOOGLE_RDF_GZIP:
+        if freebase_rdf_path is None:
+            raise ValueError("google_rdf_gzip requires freebase_rdf_path.")
+        if freebase_parquet_root is not None:
+            raise ValueError("google_rdf_gzip does not accept freebase_parquet_root.")
+        source = Path(freebase_rdf_path)
+        if not source.is_file():
+            raise FileNotFoundError(f"Freebase RDF dump is required: {source}")
+        source_hash = sha256_file(source)
+        source_metadata = _load_source_metadata(
+            source=source,
+            source_hash=source_hash,
+            source_url=source_url,
+            source_manifest_path=source_manifest_path,
+        )
+        source_key = "freebase_rdf"
+    else:
+        if freebase_parquet_root is None:
+            raise ValueError("hf_archival_parquet requires freebase_parquet_root.")
+        if freebase_rdf_path is not None:
+            raise ValueError("hf_archival_parquet does not accept freebase_rdf_path.")
+        if source_manifest_path is None:
+            raise ValueError("hf_archival_parquet requires source_manifest_path.")
+        source = Path(freebase_parquet_root)
+        source_metadata = _load_parquet_source_metadata(
+            parquet_root=source,
+            source_manifest_path=source_manifest_path,
+        )
+        source_hash = str(source_metadata["sha256"])
+        source_key = "freebase_archival_parquet"
     ontology_path = Path(normalized_ontology_path)
     reverse_path = Path(reverse_properties_path)
     output = Path(output_root).resolve()
-    if not source.is_file() or not ontology_path.is_file() or not reverse_path.is_file():
+    if not ontology_path.is_file() or not reverse_path.is_file():
         raise FileNotFoundError(
-            "Freebase RDF dump, normalized ontology, and reverse-property map are required."
+            "Normalized ontology and reverse-property map are required."
         )
-    source_hash = sha256_file(source)
-    source_metadata = _load_source_metadata(
-        source=source,
-        source_hash=source_hash,
-        source_url=source_url,
-        source_manifest_path=source_manifest_path,
-    )
     ontology_source_hash = sha256_file(ontology_path)
     reverse_source_hash = sha256_file(reverse_path)
     existing = _complete_manifest(output)
     if existing is not None and not force:
         existing_source = _mapping(
-            _mapping(existing.get("sources"), "sources").get("freebase_rdf"),
-            "freebase_rdf",
+            _mapping(existing.get("sources"), "sources").get(source_key),
+            source_key,
         )
         existing_ontology = _mapping(
             _mapping(existing.get("sources"), "sources").get("ontology"),
@@ -506,7 +538,19 @@ def build_catalog_v2(
         try:
             _create_database(connection)
             _seed_terms(connection, ontology, reverse_properties)
-            ingestion = _ingest_freebase(connection, source)
+            if mode == GOOGLE_RDF_GZIP:
+                ingestion = _ingest_freebase(connection, source)
+            else:
+                ingestion_statistics = _new_ingestion_statistics()
+                ingestion = _ingest_freebase_triples(
+                    connection,
+                    iter_parquet_triples(
+                        parquet_root=source,
+                        source_manifest_path=str(source_manifest_path),
+                        statistics=ingestion_statistics,
+                    ),
+                    ingestion_statistics,
+                )
             _finalize_database(connection)
             counts = _write_catalog_files(connection, staging, ontology)
             integrity = _database_integrity(connection, ontology)
@@ -546,9 +590,13 @@ def build_catalog_v2(
         "catalog_hash": catalog_hash,
         "ontology_hash": ontology.ontology_hash,
         "sources": {
-            "freebase_rdf": {
+            source_key: {
                 **source_metadata,
-                "identity": "Google Freebase RDF dump (final public dump)",
+                "identity": (
+                    "Google Freebase RDF dump (final public dump)"
+                    if mode == GOOGLE_RDF_GZIP
+                    else "Freebase via frozen CleverThis archival Parquet transport"
+                ),
                 "revision_date": "2015-08-09",
                 "license": "CC-BY-2.5; see official Freebase data-dump terms",
                 "compressed_format": source_metadata["compressed_format"],
@@ -569,13 +617,7 @@ def build_catalog_v2(
             "relations_with_domain_range": len(ontology.domain_range),
         },
         "construction": {
-            "command": (
-                "PYTHONPATH=src python -m xgap.experiments.grailqa_catalog_v2 build "
-                "--freebase-rdf <freebase-rdf-latest.gz> "
-                "--normalized-ontology datasets/grailqa_pilot_v1/ontology.yaml "
-                "--reverse-properties datasets/grailqa_inference_catalog_v1/reverse_properties.json "
-                "--output datasets/grailqa_inference_catalog_v2"
-            ),
+            "command": _construction_command(mode),
             "query_dependent_inputs": False,
             "gold_inputs": False,
             "normalization": "NFKC casefold; Unicode-aware alphanumeric tokenization",
@@ -588,6 +630,7 @@ def build_catalog_v2(
         "provenance_notes": [
             "No GrailQA question, answer, logical form, alignment, or reference plan is read.",
             "Only English type.object.name and common.topic.alias literals are indexed.",
+            "Source transport changes do not alter Catalog-v2 extraction semantics.",
         ],
     }
     manifest_path = staging / "manifest.json"
@@ -616,6 +659,9 @@ def write_source_manifest(
     manifest = {
         "schema_version": SOURCE_MANIFEST_SCHEMA_VERSION,
         "status": "downloaded",
+        "source_mode": GOOGLE_RDF_GZIP,
+        "underlying_knowledge_source": "Freebase",
+        "artifact_transport": "Google-hosted RDF gzip",
         "source_url": source_url,
         "retrieved_at": _utc_now(),
         "filename": source.name,
@@ -645,6 +691,8 @@ def verify_source_manifest(
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("schema_version") != SOURCE_MANIFEST_SCHEMA_VERSION:
         raise ValueError("Unsupported Freebase source-manifest schema.")
+    if normalize_source_mode(str(manifest.get("source_mode", ""))) != GOOGLE_RDF_GZIP:
+        raise ValueError("Freebase RDF source manifest has the wrong source mode.")
     actual = sha256_file(source)
     expected = str(manifest.get("sha256", ""))
     if not expected or actual != expected:
@@ -741,47 +789,69 @@ def _seed_terms(
     connection.commit()
 
 
-def _ingest_freebase(connection: sqlite3.Connection, source: Path) -> dict[str, int]:
-    pending_labels: list[tuple[str, str, str, str]] = []
-    pending_types: list[tuple[str, str]] = []
-    pending_term_labels: list[tuple[str, str, str, str]] = []
-    known_terms = {str(row[0]) for row in connection.execute("SELECT id FROM terms")}
-    statistics = {
+def _new_ingestion_statistics() -> dict[str, int]:
+    return {
+        "input_records": 0,
         "input_lines": 0,
+        "input_rows": 0,
+        "parquet_shards": 0,
+        "parquet_row_groups": 0,
+        "predicate_filtered_rows": 0,
         "parsed_triples": 0,
         "unparsed_or_irrelevant_lines": 0,
         "rejected_non_english_literals": 0,
         "rejected_invalid_entity_ids": 0,
     }
-    with _open_text(source) as handle:
-        for line in handle:
-            statistics["input_lines"] += 1
-            triple = parse_freebase_triple(line)
-            if triple is None:
-                statistics["unparsed_or_irrelevant_lines"] += 1
-                continue
-            subject, predicate, value, language, is_resource = triple
-            statistics["parsed_triples"] += 1
-            if predicate in (NAME_PREDICATE, ALIAS_PREDICATE) and not is_resource:
-                if language != "en":
-                    statistics["rejected_non_english_literals"] += 1
+
+
+def _ingest_freebase(connection: sqlite3.Connection, source: Path) -> dict[str, int]:
+    statistics = _new_ingestion_statistics()
+
+    def triples() -> Iterator[tuple[str, str, str, str | None, bool]]:
+        with _open_text(source) as handle:
+            for line in handle:
+                statistics["input_records"] += 1
+                statistics["input_lines"] += 1
+                triple = parse_freebase_triple(line)
+                if triple is None:
+                    statistics["unparsed_or_irrelevant_lines"] += 1
                     continue
-                alias_kind = "canonical" if predicate == NAME_PREDICATE else "alias"
-                if subject in known_terms:
-                    pending_term_labels.append(
-                        (subject, value, normalized_label(value), alias_kind)
-                    )
-                elif _MID.fullmatch(subject):
-                    pending_labels.append((subject, value, normalized_label(value), alias_kind))
-                elif subject.startswith(("m.", "g.")):
-                    statistics["rejected_invalid_entity_ids"] += 1
-            elif predicate == TYPE_PREDICATE and is_resource:
-                if _MID.fullmatch(subject):
-                    pending_types.append((subject, value))
-                elif subject.startswith(("m.", "g.")):
-                    statistics["rejected_invalid_entity_ids"] += 1
-            if len(pending_labels) + len(pending_types) + len(pending_term_labels) >= 50_000:
-                _flush_ingest(connection, pending_labels, pending_types, pending_term_labels)
+                yield triple
+
+    return _ingest_freebase_triples(connection, triples(), statistics)
+
+
+def _ingest_freebase_triples(
+    connection: sqlite3.Connection,
+    triples: Iterable[tuple[str, str, str, str | None, bool]],
+    statistics: dict[str, int],
+) -> dict[str, int]:
+    pending_labels: list[tuple[str, str, str, str]] = []
+    pending_types: list[tuple[str, str]] = []
+    pending_term_labels: list[tuple[str, str, str, str]] = []
+    known_terms = {str(row[0]) for row in connection.execute("SELECT id FROM terms")}
+    for subject, predicate, value, language, is_resource in triples:
+        statistics["parsed_triples"] += 1
+        if predicate in (NAME_PREDICATE, ALIAS_PREDICATE) and not is_resource:
+            if language != "en":
+                statistics["rejected_non_english_literals"] += 1
+                continue
+            alias_kind = "canonical" if predicate == NAME_PREDICATE else "alias"
+            if subject in known_terms:
+                pending_term_labels.append(
+                    (subject, value, normalized_label(value), alias_kind)
+                )
+            elif _MID.fullmatch(subject):
+                pending_labels.append((subject, value, normalized_label(value), alias_kind))
+            elif subject.startswith(("m.", "g.")):
+                statistics["rejected_invalid_entity_ids"] += 1
+        elif predicate == TYPE_PREDICATE and is_resource:
+            if _MID.fullmatch(subject):
+                pending_types.append((subject, value))
+            elif subject.startswith(("m.", "g.")):
+                statistics["rejected_invalid_entity_ids"] += 1
+        if len(pending_labels) + len(pending_types) + len(pending_term_labels) >= 50_000:
+            _flush_ingest(connection, pending_labels, pending_types, pending_term_labels)
     _flush_ingest(connection, pending_labels, pending_types, pending_term_labels)
     return statistics
 
@@ -1269,6 +1339,9 @@ def _load_source_metadata(
             "retrieved_at": None,
             "http": {},
             "compressed_format": "gzip" if source.suffix == ".gz" else "plain_ntriples",
+            "source_mode": GOOGLE_RDF_GZIP,
+            "underlying_knowledge_source": "Freebase",
+            "artifact_transport": "Google-hosted RDF gzip",
         }
     verified = verify_source_manifest(
         freebase_rdf_path=source,
@@ -1286,7 +1359,68 @@ def _load_source_metadata(
         "http": manifest.get("http", {}),
         "source_manifest_sha256": sha256_file(Path(source_manifest_path)),
         "compressed_format": manifest.get("compressed_format"),
+        "source_mode": GOOGLE_RDF_GZIP,
+        "underlying_knowledge_source": "Freebase",
+        "artifact_transport": "Google-hosted RDF gzip",
     }
+
+
+def _load_parquet_source_metadata(
+    *, parquet_root: Path, source_manifest_path: str | Path
+) -> dict[str, Any]:
+    verified = verify_parquet_source_manifest(
+        parquet_root=parquet_root,
+        source_manifest_path=source_manifest_path,
+    )
+    manifest_path = Path(source_manifest_path)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    inventory_identity = {
+        "repo_id": manifest["repo_id"],
+        "revision": manifest["revision"],
+        "resolved_parquet_revision": manifest["resolved_parquet_revision"],
+        "schema_fingerprint": manifest["schema_fingerprint"],
+        "shards": [
+            {
+                "path": item["path"],
+                "size_bytes": item["size_bytes"],
+                "sha256": item["sha256"],
+            }
+            for item in manifest["shards"]
+        ],
+    }
+    return {
+        "url": manifest["dataset_source_url"],
+        "sha256": content_hash(inventory_identity),
+        "size_bytes": verified["total_bytes"],
+        "published_size": verified["total_bytes"],
+        "retrieved_at": manifest.get("retrieved_at"),
+        "http": {},
+        "source_manifest_sha256": verified["source_manifest_sha256"],
+        "compressed_format": "parquet",
+        "source_mode": HF_ARCHIVAL_PARQUET,
+        "repo_id": verified["repo_id"],
+        "revision": verified["revision"],
+        "resolved_parquet_revision": manifest["resolved_parquet_revision"],
+        "shard_count": verified["shard_count"],
+        "schema_fingerprint": verified["schema_fingerprint"],
+        "artifact_transport": "frozen archival Parquet representation",
+        "underlying_knowledge_source": "Freebase",
+    }
+
+
+def _construction_command(source_mode: str) -> str:
+    source_arguments = (
+        "--source-mode google_rdf_gzip --freebase-rdf <freebase-rdf-latest.gz>"
+        if source_mode == GOOGLE_RDF_GZIP
+        else "--source-mode hf_archival_parquet --freebase-parquet-root <parquet-root>"
+    )
+    return (
+        "PYTHONPATH=src python -m xgap.experiments.grailqa_catalog_v2 build "
+        f"{source_arguments} --source-manifest <source_manifest.json> "
+        "--normalized-ontology datasets/grailqa_pilot_v1/ontology.yaml "
+        "--reverse-properties datasets/grailqa_inference_catalog_v1/reverse_properties.json "
+        "--output datasets/grailqa_inference_catalog_v2"
+    )
 
 
 def _http_metadata(path: Path) -> dict[str, Any]:
@@ -1343,7 +1477,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     build = subparsers.add_parser("build")
-    build.add_argument("--freebase-rdf", required=True)
+    build.add_argument("--source-mode", choices=(GOOGLE_RDF_GZIP, HF_ARCHIVAL_PARQUET), required=True)
+    build.add_argument("--freebase-rdf")
+    build.add_argument("--freebase-parquet-root")
     build.add_argument("--normalized-ontology", required=True)
     build.add_argument("--reverse-properties", required=True)
     build.add_argument("--output", required=True)
@@ -1365,6 +1501,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "build":
         manifest = build_catalog_v2(
             freebase_rdf_path=args.freebase_rdf,
+            freebase_parquet_root=args.freebase_parquet_root,
+            source_mode=args.source_mode,
             normalized_ontology_path=args.normalized_ontology,
             reverse_properties_path=args.reverse_properties,
             output_root=args.output,

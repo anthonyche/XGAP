@@ -12,13 +12,19 @@ Use large server storage; the default follows `$HOME/xgap-data`:
 
 ```bash
 cd /home/chl/XGAP
+export XGAP_FREEBASE_SOURCE_MODE=hf_archival_parquet
+bash scripts/server/smoke_freebase_archival_parquet.sh
 bash scripts/server/build_grailqa_catalog_v2.sh --download
 ```
 
-To reuse a pre-downloaded dump:
+To reuse a pre-downloaded frozen archival shard tree:
 
 ```bash
-export XGAP_FREEBASE_RDF=/data/chl/xgap-artifacts/freebase-m13e1-v2/freebase-rdf-latest.gz
+export XGAP_FREEBASE_SOURCE_MODE=hf_archival_parquet
+export XGAP_FREEBASE_RAW_DIR=/data/chl/xgap-artifacts/freebase-m13e3a/raw
+export XGAP_FREEBASE_PARQUET_ROOT="$XGAP_FREEBASE_RAW_DIR/hf-archival-parquet"
+export XGAP_FREEBASE_SOURCE_MANIFEST="$XGAP_FREEBASE_RAW_DIR/source_manifest.json"
+bash scripts/server/verify_freebase_archival_parquet.sh
 bash scripts/server/build_grailqa_catalog_v2.sh
 ```
 
@@ -59,4 +65,3 @@ structured-valid rates, Candidate Recall, component accuracy, full normalized
 interpretation accuracy, `c_sem` distribution, Feasible Coverage, and the
 stage-aware failure taxonomy. No backend execution is performed. A future
 150-query run remains disallowed until these diagnostics are interpretable.
-

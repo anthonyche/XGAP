@@ -3,12 +3,14 @@
 ## Current Milestone
 
 M13-E3 Freebase Catalog-v2 Construction and GrailQA Retrieval Reachability
-Audit is **IMPLEMENTATION READY**. The repository now separates download,
-checksum verification, safe catalog construction, integrity validation, and
-offline auditing; a CPU-only CWRU Slurm job can execute the complete workflow.
-The real approximately 22 GB compressed Freebase dump has not been processed
-locally, so catalog statistics, all-35,439 coverage, frozen-150 retrieval and
-prompt reachability, and the GO/NO-GO decision remain pending CWRU execution.
+Audit remains **IMPLEMENTATION READY**. M13-E3A adds an explicit frozen
+archival Parquet source path after the four Google-hosted dump objects returned
+HTTP 403 from CWRU. The repository now separates immutable shard acquisition,
+exact manifest verification, row-group streaming, safe catalog construction,
+integrity validation, and offline auditing; a CPU-only CWRU Slurm job can run
+the complete workflow. The 32,476,432,840-byte archival source has not been
+processed in full, so real catalog statistics, all-35,439 coverage, frozen-150
+retrieval/prompt reachability, and the GO/NO-GO decision remain pending CWRU.
 
 ## Completed
 
@@ -43,24 +45,37 @@ prompt reachability, and the GO/NO-GO decision remain pending CWRU execution.
 
 - M13-E3 real CWRU construction of query-independent Freebase catalog v2
 - M13-E3 all-35,439 coverage and frozen-150 offline reachability audit
+- M13-E3A download and empirical validation of the frozen archival source
 
 ## Next Planned Milestone
 
-Run `scripts/server/download_freebase_rdf.sh` and
-`scripts/server/verify_freebase_rdf.sh` on persistent CWRU storage, then submit
-`scripts/slurm/build_freebase_catalog_v2.sbatch`. Import the compact audit
-outputs and run the 18-query CWRU Qwen3-32B preflight only if
+Run the one-row-group archival smoke, then
+`scripts/server/download_freebase_archival_parquet.sh` and
+`scripts/server/verify_freebase_archival_parquet.sh` on persistent CWRU
+storage before submitting `scripts/slurm/build_freebase_catalog_v2.sbatch`.
+Import the compact audit and compatibility outputs and run the 18-query CWRU
+Qwen3-32B preflight only if
 `live_preflight_allowed=true`. Another 150-query run, Freebase backend
 execution, RQ2/RQ3, full M13 disambiguation, and M14 remain future work.
 
 ## M13-E3 Freebase Catalog-v2 And Reachability Audit
 
-M13-E3 reuses the M13-E1 streaming RDF parser, SQLite/FTS5 catalog, deterministic
-entity/relation/type retriever, three bounded relation-hop pools, prompt
-construction, and fail-closed 0.20 gate. It adds source retrieval/checksum
-manifests, atomic staging and publication, matching-input restart reuse,
-catalog/index/schema integrity checks, and explicit counts for rejected
-non-English literals and unmatched instance type memberships.
+M13-E3 reuses the M13-E1 extraction semantics, SQLite/FTS5 catalog,
+deterministic entity/relation/type retriever, three bounded relation-hop pools,
+prompt construction, and fail-closed 0.20 gate. M13-E3A adds explicit
+`google_rdf_gzip` and `hf_archival_parquet` source modes with no fallback. The
+current CWRU artifact freezes `CleverThis/freebase` revision
+`dbb1931c2698295653effe9b980a02ab29f004e0`: 964 Parquet shards, 32,476,432,840
+bytes, 3,130,753,066 rows, and six nullable string columns. The adapter streams
+shard by shard, row group by row group, into the unchanged triple extraction
+logic; it never reconstructs the full N-Triples dump.
+
+The archival inventory records immutable URLs, LFS SHA-256 values, Git blob
+IDs, sizes, the verified conversion revision, and schema fingerprint. Local
+verification rejects missing, extra, truncated, or altered shards. A real
+first-row-group smoke of frozen shard `0000` found MIDs, English canonical
+names, aliases, type memberships, and English literals. N-Triples/Parquet
+fixtures produce identical catalog rows and retrieval candidates.
 
 The offline audit now reports entity/relation/type/joint catalog coverage over
 all 35,439 supported GrailQA train/dev questions and the frozen 150 separately.
@@ -75,6 +90,12 @@ does not alter `c_sem`, Nash ranking, PathPatternQuery/algebra semantics, M11,
 GP, compilers, backend execution, or the M13-E2 provider boundary. See
 `docs/report/freebase_catalog_v2_cwru_runbook.md` and
 `docs/report/grailqa_freebase_catalog_v2_reachability.md`.
+
+Direct CWRU requests to the documented Google Freebase objects returned HTTP
+403 on 2026-08-19. The archival transport is Freebase data, not a new ontology
+or replacement knowledge graph. After the unchanged audit, the separate
+evaluation-only compatibility artifact reports missing pilot/supported MIDs,
+missing ontology relations/types, and JointCatalogCoverage.
 
 ## M13-E2 CWRU H100 + vLLM Experiment Backend
 
@@ -1075,7 +1096,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M13-E3 local implementation tests passed. M7 backend smoke and M12-C real
+M0-M13-E3A local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1085,12 +1106,19 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 451 passed, 7 skipped, including the
-  focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, and M13-E3
-  source checksum, safe restart, integrity/index, metric decomposition,
-  compact-output, and CPU workflow tests.
-- `./scripts/run_acceptance.sh`: passed with the same 451 passed and 7
-  live-gated skips; all required examples passed.
+- `PYTHONPATH=src python -m pytest`: 456 passed, 10 skipped, including the
+  focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
+  checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,
+  mode-selection, compatibility-report, and CPU workflow tests. Three M13-E3A
+  file-level Parquet tests are skipped only when optional PyArrow is absent.
+- `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m pytest
+  tests/test_m13e3a_freebase_parquet.py tests/test_m13e3_freebase_catalog.py
+  -q`: 14 passed, including N-Triples/Parquet catalog and retrieval parity.
+- `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m
+  xgap.experiments.freebase_sources smoke ... --max-row-groups 1`: passed on
+  the real frozen `0000` shard; 649,794 rows contained every required construct.
+- `./scripts/run_acceptance.sh`: passed with the same 456 passed and 10 skips;
+  all required examples passed.
 - M13-D offline reachability reproduction: catalog entity 12/150; retrieval
   Top-20 entity/relation/type 10/47/67; deployed prompt 9/22/38; joint 0/150.
 - M13-E1 local readiness: refused the live path because catalog v2 and
