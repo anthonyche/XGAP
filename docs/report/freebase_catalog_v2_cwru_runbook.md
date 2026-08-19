@@ -70,6 +70,13 @@ derived SQLite and JSONL catalog needs additional persistent capacity. Export
 the same variables in later login sessions or store them in a private shell
 environment file. No Hugging Face token, root privilege, or GPU is required.
 
+Use the system-provided `curl`; do not install or upgrade curl, request sudo,
+or add a Conda downloader for this workflow. The download helper inspects
+`curl --help all` and always uses the portable `--retry 5 --retry-delay 2`
+options. It adds `--retry-all-errors` only when that exact option is advertised
+by the installed curl. Redirect following, HTTP-error failure, resume, atomic
+publication, and size/SHA-256 validation are identical on both paths.
+
 Install the optional Parquet reader into the active Python environment once:
 
 ```bash

@@ -77,6 +77,12 @@ first-row-group smoke of frozen shard `0000` found MIDs, English canonical
 names, aliases, type memberships, and English literals. N-Triples/Parquet
 fixtures produce identical catalog rows and retrieval candidates.
 
+M13-E3A.1 makes archival downloads compatible with CWRU's older system curl.
+The shared shell helper always uses `--retry` and `--retry-delay`, discovers
+`--retry-all-errors` through `curl --help all`, and passes it only when the
+installed binary advertises support. No curl upgrade, sudo, alternate
+downloader, or weaker integrity policy is required.
+
 The offline audit now reports entity/relation/type/joint catalog coverage over
 all 35,439 supported GrailQA train/dev questions and the frozen 150 separately.
 For the pilot it reports Recall@1/5/10/20, per-slot relation recall, at-least-one
@@ -1096,7 +1102,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M13-E3A local implementation tests passed. M7 backend smoke and M12-C real
+M0-M13-E3A.1 local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1106,18 +1112,19 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 456 passed, 10 skipped, including the
+- `PYTHONPATH=src python -m pytest`: 459 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,
   mode-selection, compatibility-report, and CPU workflow tests. Three M13-E3A
-  file-level Parquet tests are skipped only when optional PyArrow is absent.
+  file-level Parquet tests are skipped only when optional PyArrow is absent;
+  M13-E3A.1 covers both old and new curl capability paths.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m pytest
   tests/test_m13e3a_freebase_parquet.py tests/test_m13e3_freebase_catalog.py
   -q`: 14 passed, including N-Triples/Parquet catalog and retrieval parity.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m
   xgap.experiments.freebase_sources smoke ... --max-row-groups 1`: passed on
   the real frozen `0000` shard; 649,794 rows contained every required construct.
-- `./scripts/run_acceptance.sh`: passed with the same 456 passed and 10 skips;
+- `./scripts/run_acceptance.sh`: passed with the same 459 passed and 10 skips;
   all required examples passed.
 - M13-D offline reachability reproduction: catalog entity 12/150; retrieval
   Top-20 entity/relation/type 10/47/67; deployed prompt 9/22/38; joint 0/150.

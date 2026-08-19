@@ -11,6 +11,9 @@ SOURCE_MODE="${XGAP_FREEBASE_SOURCE_MODE:-hf_archival_parquet}"
 PYTHON="${PYTHON:-python}"
 SMOKE_ONLY=false
 
+# shellcheck source=scripts/server/curl_compat.sh
+source "$SCRIPT_DIR/curl_compat.sh"
+
 if [[ "${1:-}" == "--smoke-only" ]]; then
   SMOKE_ONLY=true
 elif [[ -n "${1:-}" ]]; then
@@ -21,7 +24,7 @@ if [[ "$SOURCE_MODE" != "hf_archival_parquet" ]]; then
   echo "This script requires XGAP_FREEBASE_SOURCE_MODE=hf_archival_parquet." >&2
   exit 2
 fi
-command -v curl >/dev/null || { echo "curl is required." >&2; exit 1; }
+xgap_configure_curl_retry_options
 command -v sha256sum >/dev/null || { echo "sha256sum is required." >&2; exit 1; }
 
 mkdir -p "$PARQUET_ROOT"
@@ -52,16 +55,14 @@ download_shard() {
   fi
 
   echo "Downloading immutable shard: $relative_path"
-  curl --fail --location --continue-at - \
-    --retry 5 --retry-delay 2 --retry-all-errors \
+  xgap_curl_with_retries --fail --location --continue-at - \
     --output "$partial" "$url"
   actual_size="$(wc -c < "$partial" | tr -d ' ')"
   actual_sha="$(sha256sum "$partial" | awk '{print $1}')"
   if [[ "$actual_size" != "$expected_size" || "$actual_sha" != "$expected_sha" ]]; then
     echo "Resumed shard failed integrity; retrying it once from byte zero: $relative_path" >&2
     rm -f "$partial"
-    curl --fail --location \
-      --retry 5 --retry-delay 2 --retry-all-errors \
+    xgap_curl_with_retries --fail --location \
       --output "$partial" "$url"
     actual_size="$(wc -c < "$partial" | tr -d ' ')"
     actual_sha="$(sha256sum "$partial" | awk '{print $1}')"
