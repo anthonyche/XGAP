@@ -24,12 +24,16 @@
     "gold_question_annotations_used": false
   },
   "construction": {
-    "script": "scripts/server/build_grailqa_catalog_v2.sh",
+    "download_script": "scripts/server/download_freebase_rdf.sh",
+    "verification_script": "scripts/server/verify_freebase_rdf.sh",
+    "build_script": "scripts/server/build_freebase_catalog_v2.sh",
+    "audit_script": "scripts/server/audit_grailqa_reachability_v2.sh",
+    "slurm_script": "scripts/slurm/build_freebase_catalog_v2.sbatch",
     "module": "xgap.experiments.grailqa_catalog_v2",
     "query_dependent_inputs": false,
     "per_question_gold_inputs": false,
     "streaming": true,
     "runtime_index": "SQLite FTS5"
   },
-  "blocked_reason": "The comprehensive Freebase dump is not present in the local repository; counts and coverage remain unset until the server build hashes and processes it."
+  "blocked_reason": "The comprehensive Freebase dump is not present locally; M13-E3 is implementation-ready, while counts and coverage remain unset until the CWRU build hashes and processes the official source."
 }

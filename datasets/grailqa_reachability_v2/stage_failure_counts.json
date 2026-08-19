@@ -1,0 +1,7 @@
+{
+  "schema_version": "m13e3-grailqa-stage-failure-counts-v1",
+  "status": "awaiting_cwru_measurement",
+  "question_count": 150,
+  "counts": null,
+  "ratios": null
+}

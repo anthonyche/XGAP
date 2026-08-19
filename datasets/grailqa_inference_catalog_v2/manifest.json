@@ -6,15 +6,17 @@
   "ontology_hash": null,
   "counts": {
     "entities": null,
+    "canonical_names": null,
     "entity_aliases": null,
     "entity_types": null,
     "types": null,
     "relations": null,
     "relation_aliases": null
   },
+  "database_size_bytes": null,
   "sources": {
     "manifest": "experiments/artifacts/grailqa_m13e1_sources.json"
   },
   "file_hashes": {},
-  "blocked_reason": "Official Freebase RDF dump has not been downloaded and hashed in this environment. Run scripts/server/build_grailqa_catalog_v2.sh on the experiment server; no GrailQA gold fallback is permitted."
+  "blocked_reason": "M13-E3 construction is implementation-ready, but the official Freebase RDF dump has not been processed on CWRU. Run the separate download, verify, build, and audit scripts; no GrailQA gold fallback is permitted."
 }

@@ -463,6 +463,7 @@ class ModelConfig:
     mock_responses_ref: str | None = None
     base_url: str | None = None
     base_url_env: str | None = None
+    model_env: str | None = None
     api_key_env: str | None = None
     timeout_seconds: float = 60.0
     structured_schema_ref: str | None = None
@@ -502,6 +503,11 @@ class ModelConfig:
             base_url_env=(
                 str(data["base_url_env"])
                 if data.get("base_url_env") is not None
+                else None
+            ),
+            model_env=(
+                str(data["model_env"])
+                if data.get("model_env") is not None
                 else None
             ),
             api_key_env=(
@@ -547,11 +553,13 @@ class ModelConfig:
                 raise ValueError("Live ModelBundles require base_url and api_key_env.")
             if self.base_url_env is not None and not self.base_url_env.strip():
                 raise ValueError("Live ModelBundle base_url_env cannot be blank.")
+            if self.model_env is not None and not self.model_env.strip():
+                raise ValueError("Live ModelBundle model_env cannot be blank.")
             if not self.structured_schema_ref or not self.structured_schema_hash:
                 raise ValueError("Live ModelBundles require a hashed structured schema.")
 
     def to_hash_dict(self) -> dict[str, Any]:
-        return {
+        value = {
             "schema_version": self.schema_version,
             "model_id": self.model_id,
             "version": self.version,
@@ -578,6 +586,10 @@ class ModelConfig:
             "extra_parameters": dict(sorted(self.extra_parameters.items())),
             "metadata": dict(self.metadata),
         }
+        # Keep hashes of pre-M13-E2 frozen bundles byte-for-byte stable.
+        if self.model_env is not None:
+            value["model_env"] = self.model_env
+        return value
 
     @property
     def config_hash(self) -> str:

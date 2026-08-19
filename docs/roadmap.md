@@ -600,6 +600,52 @@ dump is not local, so catalog-v2 counts, all-35,439 catalog coverage, repaired
 retrieval metrics, and the credentialed v2 preflight remain unclaimed until
 the server builder and offline gate pass.
 
+## M13-E2 CWRU H100 + vLLM Experiment Backend
+
+Goal:
+Make the existing OpenAI-compatible structured-candidate interface runnable
+as a self-contained Slurm job on CWRU Pioneer using one scheduler-selected
+H100 NVL and the frozen dense `Qwen/Qwen3-32B` vLLM condition.
+
+Acceptance criteria:
+Configuration externalizes endpoint, credential environment, and served model;
+non-thinking JSON Schema requests are preserved in exact request artifacts;
+the shared environment/cache and resolved revision are verified and logged;
+readiness and a tiny structured smoke precede inference; generic and 18-query
+preflight Slurm wrappers capture reproducibility artifacts and always clean up;
+normal tests require no GPU; M13-E1's gate remains authoritative; no semantic,
+planning, GP, backend, training, or 150-query behavior changes.
+
+Current status:
+LOCAL IMPLEMENTATION DONE; CWRU SUBMISSION PENDING THE M13-E1 CATALOG GATE.
+The manually validated CWRU runtime is frozen in a machine-readable contract.
+No live H100 inference was run by local acceptance.
+
+## M13-E3 Freebase Catalog-v2 Construction And Reachability Audit
+
+Goal:
+Instantiate the existing M13-E1 query-independent catalog design over Google's
+final public Freebase RDF dump and determine, entirely offline, whether all
+reference-required GrailQA entities, relations, and types are jointly visible
+to the bounded inference prompt.
+
+Acceptance criteria:
+Raw download, checksum verification, streaming build, integrity validation,
+and reachability audit are independent and restart-safe; external persistent
+storage is configurable; the catalog records MID/name/English-alias/type
+metadata while retaining the frozen GrailQA ontology as schema authority; all
+35,439 supported questions receive catalog coverage; the frozen 150 receive
+Recall@1/5/10/20, relation-slot/all-required metrics, prompt truncation, Q/path
+strata, and first-loss attribution; compact hashed outputs expose an explicit
+`live_preflight_allowed` decision; normal tests use only fixtures and no LLM,
+GPU, backend, or download.
+
+Current status:
+**IMPLEMENTATION READY; REAL CWRU BUILD AND AUDIT PENDING.** The CPU Slurm job,
+runbook, manifests, fixture tests, and report templates are ready. No catalog
+statistics or improved retrieval claims are made before the official dump is
+processed and its compact results are returned.
+
 ## M14 KGQA Evaluation
 
 Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.

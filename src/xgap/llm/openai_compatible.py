@@ -146,7 +146,7 @@ class UrllibOpenAICompatibleTransport:
         except urllib.error.HTTPError as error:
             safe_body = error.read().decode("utf-8", errors="replace")[:1000]
             guidance = ""
-            if error.code == 401:
+            if error.code == 401 and "dashscope" in url.lower():
                 guidance = (
                     " Verify that the API key belongs to the same DashScope region, "
                     "workspace, and billing plan as the configured base URL."

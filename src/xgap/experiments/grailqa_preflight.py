@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from xgap.experiments.bundles import ModelBundle
+from xgap.experiments.cwru_vllm import load_run_environment
 from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
 from xgap.experiments.grailqa_reachability import prompt_reachability_gate
 from xgap.experiments.grailqa_semantic_pilot import (
@@ -273,17 +274,19 @@ def run_preflight(
         for question in questions
     ]
     evaluated = _evaluate_preflight(states, spec, repo, readiness)
-    manifest = {
-        "schema_version": "m13e1-preflight-run-manifest-v2",
-        "run_id": output.name,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "spec_freeze_hash": spec.data["freeze_hash"],
-        "catalog_hash": catalog.catalog_hash,
-        "model": model.config.exact_model_snapshot,
-        "question_count": len(questions),
-        "backend_execution": False,
-        "secrets_persisted": False,
-    }
+    execution_environment = None
+    environment_path = os.environ.get("XGAP_RUN_ENVIRONMENT_FILE")
+    if environment_path:
+        execution_environment = load_run_environment(environment_path)
+    manifest = build_preflight_run_manifest(
+        output=output,
+        spec=spec,
+        catalog_hash=catalog.catalog_hash,
+        model=model,
+        effective_model=provider.model_name,
+        question_count=len(questions),
+        execution_environment=execution_environment,
+    )
     _write_json(output / "run_manifest.json", manifest)
     _write_jsonl(output / "retrieval.jsonl", (state["retrieval"] for state in states))
     _write_jsonl(
@@ -300,6 +303,38 @@ def run_preflight(
     _write_jsonl(output / "failures.jsonl", evaluated["failures"])
     _write_json(output / "metrics.json", evaluated["metrics"])
     return {"output_root": str(output), "metrics": evaluated["metrics"]}
+
+
+def build_preflight_run_manifest(
+    *,
+    output: Path,
+    spec: GrailQAPreflightSpec,
+    catalog_hash: str,
+    model: ModelBundle,
+    effective_model: str,
+    question_count: int,
+    execution_environment: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Build the live manifest, optionally including a CWRU environment record."""
+
+    manifest = {
+        "schema_version": "m13e1-preflight-run-manifest-v2",
+        "run_id": output.name,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "spec_sha256": hashlib.sha256(spec.path.read_bytes()).hexdigest(),
+        "spec_freeze_hash": spec.data["freeze_hash"],
+        "catalog_hash": catalog_hash,
+        "provider": model.config.provider,
+        "model": effective_model,
+        "model_bundle_hash": model.bundle_hash,
+        "prompt_hash": model.prompt.prompt_hash,
+        "question_count": question_count,
+        "backend_execution": False,
+        "secrets_persisted": False,
+    }
+    if execution_environment is not None:
+        manifest["execution_environment"] = dict(execution_environment)
+    return manifest
 
 
 def _evaluate_preflight(

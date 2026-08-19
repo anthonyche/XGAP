@@ -1,0 +1,43 @@
+{
+  "schema_version": "m12-model-config-v1",
+  "model_id": "qwen3_32b_vllm_cwru_m13e2",
+  "version": "m13e2-cwru-v1",
+  "provider": "vllm_openai_compatible",
+  "exact_model_snapshot": "Qwen/Qwen3-32B",
+  "model_env": "XGAP_LLM_MODEL",
+  "endpoint_type": "openai_compatible",
+  "base_url": "http://127.0.0.1:8000/v1",
+  "base_url_env": "XGAP_LLM_BASE_URL",
+  "api_key_env": "XGAP_LLM_API_KEY",
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "candidate_count": 3,
+  "structured_output_mode": "json_schema",
+  "prompt_ref": "prompt.json",
+  "prompt_hash": "5cc2e809bcf69b8a6e242ff0b16a6778fabdbc4e1781b9fbc1a482050e37c17f",
+  "structured_schema_ref": "structured_schema.json",
+  "structured_schema_hash": "c90daa05699021fb91c863b470b605e529b34a151da3492cac6ac81ec806b0ab",
+  "token_limits": {
+    "input": 8192,
+    "output": 4096
+  },
+  "timeout_seconds": 300.0,
+  "seed": 0,
+  "seed_supported": true,
+  "max_repair_calls": 1,
+  "extra_parameters": {
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "metadata": {
+    "live_model": true,
+    "deployment": "cwru_pioneer_slurm_vllm",
+    "environment_contract": "experiments/environments/cwru_pioneer_qwen3_32b_vllm.json",
+    "environment_contract_hash": "1411b12a7f1276d9eaa46edad1a2d136e82828174cdfe37465ab669768274c7f",
+    "model_revision_policy": "resolved_shared_cache_snapshot_required",
+    "fixed_model_family": true,
+    "native_query_generation": false,
+    "fine_tuned": false
+  }
+}

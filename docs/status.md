@@ -2,12 +2,13 @@
 
 ## Current Milestone
 
-M13-E1 GrailQA Inference Reachability and Interpretation-Contract Repair has
-completed its local offline implementation. The immutable M13-D 150-query
-server run completed, but its Candidate Recall 0 is not scientifically
-interpretable because joint prompt-visible reference coverage was 0/150.
-Catalog v2 and the v2 live preflight remain **BLOCKED** until the official
-Freebase RDF dump is downloaded, hashed, built, and passes the offline gate.
+M13-E3 Freebase Catalog-v2 Construction and GrailQA Retrieval Reachability
+Audit is **IMPLEMENTATION READY**. The repository now separates download,
+checksum verification, safe catalog construction, integrity validation, and
+offline auditing; a CPU-only CWRU Slurm job can execute the complete workflow.
+The real approximately 22 GB compressed Freebase dump has not been processed
+locally, so catalog statistics, all-35,439 coverage, frozen-150 retrieval and
+prompt reachability, and the GO/NO-GO decision remain pending CWRU execution.
 
 ## Completed
 
@@ -35,19 +36,66 @@ Freebase RDF dump is downloaded, hashed, built, and passes the offline gate.
 - M13-C GrailQA Paper Vertical Slice + Minimal Fragment Expressiveness Upgrade
 - M13-D Local Preparation for Server-Executed GrailQA Semantic Pilot
 - M13-D Frozen 150-Query Server Pilot Execution
+- M13-E1 Local Offline Reachability And Interpretation-Contract Repair
+- M13-E2 CWRU H100 + vLLM Experiment Backend (local implementation)
 
 ## In Progress
 
-- Server construction and measurement of query-independent Freebase catalog v2
-- Full 150-query offline v2 reachability audit and preflight gate
+- M13-E3 real CWRU construction of query-independent Freebase catalog v2
+- M13-E3 all-35,439 coverage and frozen-150 offline reachability audit
 
 ## Next Planned Milestone
 
-Run `scripts/server/build_grailqa_catalog_v2.sh --download` on large server
-storage, inspect the all-supported and frozen-150 coverage results, and run the
-18-query credentialed preflight only if the offline 0.20 joint prompt-
-reachability safeguard passes. Another paid 150-query run, Freebase backend
+Run `scripts/server/download_freebase_rdf.sh` and
+`scripts/server/verify_freebase_rdf.sh` on persistent CWRU storage, then submit
+`scripts/slurm/build_freebase_catalog_v2.sbatch`. Import the compact audit
+outputs and run the 18-query CWRU Qwen3-32B preflight only if
+`live_preflight_allowed=true`. Another 150-query run, Freebase backend
 execution, RQ2/RQ3, full M13 disambiguation, and M14 remain future work.
+
+## M13-E3 Freebase Catalog-v2 And Reachability Audit
+
+M13-E3 reuses the M13-E1 streaming RDF parser, SQLite/FTS5 catalog, deterministic
+entity/relation/type retriever, three bounded relation-hop pools, prompt
+construction, and fail-closed 0.20 gate. It adds source retrieval/checksum
+manifests, atomic staging and publication, matching-input restart reuse,
+catalog/index/schema integrity checks, and explicit counts for rejected
+non-English literals and unmatched instance type memberships.
+
+The offline audit now reports entity/relation/type/joint catalog coverage over
+all 35,439 supported GrailQA train/dev questions and the frozen 150 separately.
+For the pilot it reports Recall@1/5/10/20, per-slot relation recall, at-least-one
+versus all-required relation recall, prompt truncation loss, deployed joint
+prompt reachability, Q/path-length strata, and first-stage loss counts. Six
+compact JSON reports reference the hashed external query-level artifacts.
+
+The local fixture workflow is complete, but real catalog counts and metrics are
+deliberately unset. M13-E3 calls no LLM, does not tune the M13-E1 retriever, and
+does not alter `c_sem`, Nash ranking, PathPatternQuery/algebra semantics, M11,
+GP, compilers, backend execution, or the M13-E2 provider boundary. See
+`docs/report/freebase_catalog_v2_cwru_runbook.md` and
+`docs/report/grailqa_freebase_catalog_v2_reachability.md`.
+
+## M13-E2 CWRU H100 + vLLM Experiment Backend
+
+M13-E2 adds a frozen CWRU Pioneer environment contract, a Qwen3-32B vLLM
+ModelBundle, a model-specific copy of the unchanged 18-question M13-E1
+preflight contract, generic OpenAI-compatible model/endpoint environment
+selection, and configuration-owned non-thinking requests. Existing model
+bundles retain their hashes.
+
+The Slurm infrastructure requests one scheduler-selected `gpu2h100` GPU, eight
+CPUs, and 64G memory. It resolves an existing shared-cache model revision,
+binds vLLM only to `127.0.0.1`, polls `/v1/models`, runs a tiny strict JSON
+Schema smoke, captures credential-free environment metadata, executes an
+explicit command/spec, inventories artifacts, and terminates vLLM through a
+trap. The GrailQA wrapper checks the M13-E1 offline gate before model startup.
+
+Normal tests do not require Slurm, H100, vLLM, or model weights. M13-E2 does
+not change `c_sem`, pattern semantics, algebra, M11, GP, GrailQA references,
+the M13-D result, model weights, or any 150-query run. See
+`docs/report/cwru_vllm_experiment_backend.md` and
+`docs/report/cwru_vllm_runbook.md`.
 
 ## M13-E1 Reachability And Contract Repair
 
@@ -1027,7 +1075,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M13-E1 local tests passed. M7 backend smoke and M12-C real
+M0-M13-E3 local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1037,10 +1085,12 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 436 passed, 7 skipped, including the
-  focused M13-E1 catalog-v2 fixture, reachability decomposition,
-  canonicalization, schema, equivalence, taxonomy, `c_sem`, selection, and
-  fail-closed readiness tests.
+- `PYTHONPATH=src python -m pytest`: 451 passed, 7 skipped, including the
+  focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, and M13-E3
+  source checksum, safe restart, integrity/index, metric decomposition,
+  compact-output, and CPU workflow tests.
+- `./scripts/run_acceptance.sh`: passed with the same 451 passed and 7
+  live-gated skips; all required examples passed.
 - M13-D offline reachability reproduction: catalog entity 12/150; retrieval
   Top-20 entity/relation/type 10/47/67; deployed prompt 9/22/38; joint 0/150.
 - M13-E1 local readiness: refused the live path because catalog v2 and

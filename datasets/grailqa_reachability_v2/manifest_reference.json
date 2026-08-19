@@ -1,0 +1,11 @@
+{
+  "schema_version": "m13e3-grailqa-reachability-manifest-reference-v1",
+  "status": "awaiting_cwru_measurement",
+  "catalog_hash": null,
+  "large_artifacts_external": [
+    "retrieval.jsonl",
+    "reachability.jsonl"
+  ],
+  "files": {},
+  "note": "The CWRU audit replaces this placeholder with hashes of real compact and external outputs."
+}

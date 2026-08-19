@@ -319,7 +319,7 @@ def test_http_401_explains_dashscope_endpoint_key_compatibility(monkeypatch) -> 
 
     with pytest.raises(ProviderTransportError) as caught:
         transport.post_json(
-            url="https://provider.invalid/v1/chat/completions",
+            url="https://dashscope.invalid/v1/chat/completions",
             api_key="secret-value",
             payload={"model": "fixed-test-model", "messages": []},
             timeout_seconds=1.0,

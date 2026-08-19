@@ -203,6 +203,10 @@ class LiveSemanticPilotProvider:
     def provider_id(self) -> str:
         return self._provider.provider_id
 
+    @property
+    def model_name(self) -> str:
+        return self._provider.config.model
+
     def generate(self, request: PlannerRequest, prompt_view: PromptSchemaView) -> GenerationResult:
         del prompt_view
         try:

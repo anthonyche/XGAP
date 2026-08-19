@@ -615,3 +615,21 @@ Candidate Recall is not an interpretable model metric when the controlled
 output contract forbids the reference IDs. Failing closed avoids paying for a
 non-diagnostic run while preserving difficult/unreachable questions and the
 original evaluation criterion.
+
+## D56 Local vLLM is a frozen deployment condition
+
+CWRU Qwen3-32B uses the existing OpenAI-compatible structured-candidate
+protocol. Endpoint and served model are selected through declared ModelBundle
+environment names; `enable_thinking=false` is a model-specific request
+parameter, not a global provider rule. The Slurm job resolves and logs one
+existing Hugging Face cache snapshot, binds only to loopback, verifies strict
+JSON Schema serving, records the runtime without credential values, and owns
+the vLLM process lifetime.
+
+Reason:
+
+Changing from remote Qwen3-Max to local dense Qwen3-32B is an experimental
+model/deployment condition, not a semantic-planner change. Keeping it outside
+the deterministic core preserves the M13-E1 gate and makes results auditable
+without introducing a parallel LLM framework or depending on a named compute
+node.

@@ -499,6 +499,15 @@ bounded view without importing gold path length. Gold reference reachability
 is computed only by the offline readiness/evaluation layer and can prevent a
 paid provider call; it is never serialized into the model request.
 
+M13-E2 keeps that inference boundary unchanged and adds a deployment layer for
+CWRU Pioneer. A ModelBundle may name optional environment variables for the
+OpenAI-compatible base URL and served model. Provider-owned extra parameters
+carry Qwen3's request-local non-thinking setting and are persisted in the exact
+request artifact. A Slurm wrapper owns vLLM startup, loopback readiness,
+structured serving smoke, environment capture, experiment invocation, and
+process cleanup. Slurm/GPU objects do not enter `PathPatternQuery`, logical
+plans, `c_sem`, M11, or the GP feature model.
+
 Supported regex nodes are `Rel`, `Seq`, `Alt`, `Plus`, and `Star`. Future regex nodes such as `OptionalExpr` and `Bounded` are declared but lower with explicit `LoweringError`.
 
 Selectors lower to the audited extended algebra:
@@ -606,9 +615,10 @@ M6 does not constitute full QGP or full GPC support.
 M8 capability profiles, the M9 minimal compiler slice, the M10 structured
 candidate boundary, M11 ontology-bounded physical planning, and the M12-B
 generic live structured-provider/runtime-alignment path are implemented.
-M12-C calibration, M12-D experiment orchestration, and the M13-E1 offline
-reachability/contract boundary are implemented. The comprehensive Freebase
-catalog-v2 build and guarded live v2 preflight are not yet measured.
+M12-C calibration, M12-D experiment orchestration, the M13-E1 offline
+reachability/contract boundary, and the M13-E2 CWRU/vLLM deployment boundary
+are implemented. The comprehensive Freebase catalog-v2 build and guarded live
+v2 preflight are not yet measured.
 Full compiler coverage, logical rewrite optimization, automated ontology
 reasoning, distributed cross-backend execution/movement measurement, final
 benchmark integration, and KGQA evaluation remain outside the current

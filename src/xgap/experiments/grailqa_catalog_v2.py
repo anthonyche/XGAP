@@ -9,13 +9,16 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from datetime import datetime, timezone
 import gzip
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
 import sqlite3
+import subprocess
 from typing import Any, Iterable, Iterator, Mapping, Sequence, TextIO
 
 from xgap.experiments.grailqa_catalog import normalized_label, sha256_file
@@ -45,6 +48,9 @@ _TRIPLE = re.compile(
     r'(?:<(?P<object>[^>]*)>)) \.\s*$'
 )
 _ESCAPE = re.compile(r"\\(?:[tbnrf\"\\]|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})")
+_MID = re.compile(r"^[mg]\.[A-Za-z0-9_-]+$")
+SOURCE_MANIFEST_SCHEMA_VERSION = "m13e3-freebase-source-manifest-v1"
+INTEGRITY_SCHEMA_VERSION = "m13e3-freebase-catalog-integrity-v1"
 
 
 @dataclass(frozen=True)
@@ -438,24 +444,56 @@ def build_catalog_v2(
     reverse_properties_path: str | Path,
     output_root: str | Path,
     source_url: str = OFFICIAL_FREEBASE_DUMP_URL,
+    source_manifest_path: str | Path | None = None,
+    force: bool = False,
 ) -> dict[str, Any]:
     """Build a query-independent v2 catalog from the official Freebase dump."""
 
     source = Path(freebase_rdf_path)
     ontology_path = Path(normalized_ontology_path)
     reverse_path = Path(reverse_properties_path)
-    output = Path(output_root)
+    output = Path(output_root).resolve()
     if not source.is_file() or not ontology_path.is_file() or not reverse_path.is_file():
         raise FileNotFoundError(
             "Freebase RDF dump, normalized ontology, and reverse-property map are required."
         )
-    output.mkdir(parents=True, exist_ok=True)
-    manifest_path = output / "manifest.json"
-    if manifest_path.exists():
-        manifest_path.unlink()
-    database = output / "catalog.sqlite3"
-    if database.exists():
-        database.unlink()
+    source_hash = sha256_file(source)
+    source_metadata = _load_source_metadata(
+        source=source,
+        source_hash=source_hash,
+        source_url=source_url,
+        source_manifest_path=source_manifest_path,
+    )
+    ontology_source_hash = sha256_file(ontology_path)
+    reverse_source_hash = sha256_file(reverse_path)
+    existing = _complete_manifest(output)
+    if existing is not None and not force:
+        existing_source = _mapping(
+            _mapping(existing.get("sources"), "sources").get("freebase_rdf"),
+            "freebase_rdf",
+        )
+        existing_ontology = _mapping(
+            _mapping(existing.get("sources"), "sources").get("ontology"),
+            "ontology",
+        )
+        if (
+            existing_source.get("sha256") == source_hash
+            and existing_ontology.get("sha256") == ontology_source_hash
+            and existing_ontology.get("reverse_properties_sha256") == reverse_source_hash
+        ):
+            validate_catalog_v2(output)
+            return dict(existing)
+        raise FileExistsError(
+            f"Complete catalog already exists at {output} for different inputs; "
+            "pass force=True or --force to replace it."
+        )
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    staging = output.with_name(f".{output.name}.building")
+    if staging.exists():
+        shutil.rmtree(staging)
+    staging.mkdir(parents=True)
+    database = staging / "catalog.sqlite3"
     ontology = OntologyGraph.from_dict(load_yaml_mapping(ontology_path))
     reverse_properties = {
         str(key): str(value)
@@ -463,16 +501,21 @@ def build_catalog_v2(
             json.loads(reverse_path.read_text(encoding="utf-8")), "reverse properties"
         ).items()
     }
-    connection = sqlite3.connect(database)
     try:
-        _create_database(connection)
-        _seed_terms(connection, ontology, reverse_properties)
-        triple_counts = _ingest_freebase(connection, source)
-        _finalize_database(connection)
-        counts = _write_catalog_files(connection, output, ontology)
-    finally:
-        connection.close()
-    shutil.copyfile(ontology_path, output / "ontology.yaml")
+        connection = sqlite3.connect(database)
+        try:
+            _create_database(connection)
+            _seed_terms(connection, ontology, reverse_properties)
+            ingestion = _ingest_freebase(connection, source)
+            _finalize_database(connection)
+            counts = _write_catalog_files(connection, staging, ontology)
+            integrity = _database_integrity(connection, ontology)
+        finally:
+            connection.close()
+        shutil.copyfile(ontology_path, staging / "ontology.yaml")
+    except Exception:
+        # Leave the staging directory for diagnosis. A retry safely replaces it.
+        raise
     files = (
         "catalog.sqlite3",
         "entities.jsonl",
@@ -485,8 +528,7 @@ def build_catalog_v2(
         "reverse_properties.json",
         "ontology.yaml",
     )
-    file_hashes = {name: sha256_file(output / name) for name in files}
-    source_hash = sha256_file(source)
+    file_hashes = {name: sha256_file(staging / name) for name in files}
     catalog_hash = content_hash(
         {
             "schema_version": CATALOG_V2_SCHEMA_VERSION,
@@ -505,19 +547,22 @@ def build_catalog_v2(
         "ontology_hash": ontology.ontology_hash,
         "sources": {
             "freebase_rdf": {
-                "url": source_url,
+                **source_metadata,
                 "identity": "Google Freebase RDF dump (final public dump)",
                 "revision_date": "2015-08-09",
-                "sha256": source_hash,
                 "license": "CC-BY-2.5; see official Freebase data-dump terms",
+                "compressed_format": source_metadata["compressed_format"],
             },
             "ontology": {
                 "identity": "Frozen normalized GrailQA official ontology",
-                "sha256": sha256_file(ontology_path),
-                "reverse_properties_sha256": sha256_file(reverse_path),
+                "sha256": ontology_source_hash,
+                "reverse_properties_sha256": reverse_source_hash,
             },
         },
-        "counts": {**counts, "parsed_triples": triple_counts},
+        "counts": {**counts, "parsed_triples": ingestion["parsed_triples"]},
+        "ingestion_statistics": ingestion,
+        "integrity": integrity,
+        "database_size_bytes": database.stat().st_size,
         "hierarchy_statistics": {
             "classes": len(ontology.classes),
             "subsumption_edges": sum(len(values) for values in ontology.parents.values()),
@@ -534,6 +579,10 @@ def build_catalog_v2(
             "query_dependent_inputs": False,
             "gold_inputs": False,
             "normalization": "NFKC casefold; Unicode-aware alphanumeric tokenization",
+            "language_policy": "English @en names and aliases only; MID identity is language independent",
+            "builder_git_commit": _git_commit(),
+            "constructed_at": _utc_now(),
+            "safe_restart": "complete matching catalogs are verified and reused; new builds publish atomically",
         },
         "file_hashes": file_hashes,
         "provenance_notes": [
@@ -541,11 +590,97 @@ def build_catalog_v2(
             "Only English type.object.name and common.topic.alias literals are indexed.",
         ],
     }
+    manifest_path = staging / "manifest.json"
     manifest_path.write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    GrailQAInferenceCatalogV2.load(output)
+    validate_catalog_v2(staging)
+    _publish_catalog(staging, output)
+    validate_catalog_v2(output)
     return manifest
+
+
+def write_source_manifest(
+    *,
+    freebase_rdf_path: str | Path,
+    output_path: str | Path,
+    source_url: str = OFFICIAL_FREEBASE_DUMP_URL,
+    http_headers_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Record the locally retrieved official dump without trusting its filename."""
+
+    source = Path(freebase_rdf_path)
+    if not source.is_file() or source.stat().st_size == 0:
+        raise FileNotFoundError(f"Freebase RDF dump is missing or empty: {source}")
+    headers = _http_metadata(Path(http_headers_path)) if http_headers_path else {}
+    manifest = {
+        "schema_version": SOURCE_MANIFEST_SCHEMA_VERSION,
+        "status": "downloaded",
+        "source_url": source_url,
+        "retrieved_at": _utc_now(),
+        "filename": source.name,
+        "compressed_format": "gzip" if source.suffix == ".gz" else "plain_ntriples",
+        "size_bytes": source.stat().st_size,
+        "published_size": "approximately 22 GB gzip / 250 GB uncompressed",
+        "sha256": sha256_file(source),
+        "http": headers,
+        "provenance": "Google Freebase final public RDF dump",
+        "license": "CC-BY-2.5; official Freebase data-dump terms apply",
+    }
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return manifest
+
+
+def verify_source_manifest(
+    *, freebase_rdf_path: str | Path, source_manifest_path: str | Path
+) -> dict[str, Any]:
+    """Verify a raw dump against the checksum frozen immediately after retrieval."""
+
+    source = Path(freebase_rdf_path)
+    manifest_path = Path(source_manifest_path)
+    if not source.is_file() or not manifest_path.is_file():
+        raise FileNotFoundError("Freebase RDF dump and source manifest are required.")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("schema_version") != SOURCE_MANIFEST_SCHEMA_VERSION:
+        raise ValueError("Unsupported Freebase source-manifest schema.")
+    actual = sha256_file(source)
+    expected = str(manifest.get("sha256", ""))
+    if not expected or actual != expected:
+        raise ValueError(
+            f"Freebase source checksum mismatch: expected {expected or '<missing>'}, got {actual}."
+        )
+    expected_size = int(manifest.get("size_bytes", -1))
+    if source.stat().st_size != expected_size:
+        raise ValueError("Freebase source size does not match its source manifest.")
+    return {
+        "schema_version": "m13e3-freebase-source-verification-v1",
+        "status": "ok",
+        "sha256": actual,
+        "size_bytes": expected_size,
+        "source_url": manifest.get("source_url"),
+    }
+
+
+def validate_catalog_v2(root: str | Path) -> dict[str, Any]:
+    """Validate hashes, SQLite structure, indexes, and schema membership."""
+
+    catalog = GrailQAInferenceCatalogV2.load(root)
+    database = catalog.root / "catalog.sqlite3"
+    connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
+    try:
+        report = _database_integrity(connection, catalog.ontology)
+    finally:
+        connection.close()
+    if report["errors"]:
+        raise ValueError("Catalog v2 integrity failed: " + "; ".join(report["errors"]))
+    return {
+        "schema_version": INTEGRITY_SCHEMA_VERSION,
+        "status": "ok",
+        "catalog_hash": catalog.catalog_hash,
+        **report,
+    }
 
 
 def _create_database(connection: sqlite3.Connection) -> None:
@@ -606,35 +741,49 @@ def _seed_terms(
     connection.commit()
 
 
-def _ingest_freebase(connection: sqlite3.Connection, source: Path) -> int:
+def _ingest_freebase(connection: sqlite3.Connection, source: Path) -> dict[str, int]:
     pending_labels: list[tuple[str, str, str, str]] = []
     pending_types: list[tuple[str, str]] = []
     pending_term_labels: list[tuple[str, str, str, str]] = []
     known_terms = {str(row[0]) for row in connection.execute("SELECT id FROM terms")}
-    parsed = 0
+    statistics = {
+        "input_lines": 0,
+        "parsed_triples": 0,
+        "unparsed_or_irrelevant_lines": 0,
+        "rejected_non_english_literals": 0,
+        "rejected_invalid_entity_ids": 0,
+    }
     with _open_text(source) as handle:
         for line in handle:
+            statistics["input_lines"] += 1
             triple = parse_freebase_triple(line)
             if triple is None:
+                statistics["unparsed_or_irrelevant_lines"] += 1
                 continue
             subject, predicate, value, language, is_resource = triple
-            parsed += 1
+            statistics["parsed_triples"] += 1
             if predicate in (NAME_PREDICATE, ALIAS_PREDICATE) and not is_resource:
                 if language != "en":
+                    statistics["rejected_non_english_literals"] += 1
                     continue
                 alias_kind = "canonical" if predicate == NAME_PREDICATE else "alias"
                 if subject in known_terms:
                     pending_term_labels.append(
                         (subject, value, normalized_label(value), alias_kind)
                     )
-                elif subject.startswith(("m.", "g.")):
+                elif _MID.fullmatch(subject):
                     pending_labels.append((subject, value, normalized_label(value), alias_kind))
-            elif predicate == TYPE_PREDICATE and is_resource and subject.startswith(("m.", "g.")):
-                pending_types.append((subject, value))
+                elif subject.startswith(("m.", "g.")):
+                    statistics["rejected_invalid_entity_ids"] += 1
+            elif predicate == TYPE_PREDICATE and is_resource:
+                if _MID.fullmatch(subject):
+                    pending_types.append((subject, value))
+                elif subject.startswith(("m.", "g.")):
+                    statistics["rejected_invalid_entity_ids"] += 1
             if len(pending_labels) + len(pending_types) + len(pending_term_labels) >= 50_000:
                 _flush_ingest(connection, pending_labels, pending_types, pending_term_labels)
     _flush_ingest(connection, pending_labels, pending_types, pending_term_labels)
-    return parsed
+    return statistics
 
 
 def _flush_ingest(
@@ -693,8 +842,11 @@ def _finalize_database(connection: sqlite3.Connection) -> None:
     connection.executescript(
         """
         CREATE INDEX entity_alias_normalized_idx ON entity_aliases(normalized_alias, entity_id);
+        CREATE INDEX entity_canonical_name_idx ON entities(canonical_name, id);
         CREATE INDEX entity_types_entity_idx ON entity_types(entity_id, type_id);
+        CREATE INDEX entity_types_type_idx ON entity_types(type_id, entity_id);
         CREATE INDEX term_alias_term_idx ON term_aliases(term_id, normalized_alias);
+        CREATE INDEX term_alias_normalized_idx ON term_aliases(normalized_alias, term_id);
         ANALYZE;
         """
     )
@@ -771,6 +923,11 @@ def _write_catalog_files(
     )
     return {
         "entities": _count(connection, "entities"),
+        "canonical_names": int(
+            connection.execute(
+                "SELECT count(*) FROM entity_aliases WHERE alias_kind='canonical'"
+            ).fetchone()[0]
+        ),
         "entity_aliases": _count(connection, "entity_aliases"),
         "entity_types": _count(connection, "entity_types"),
         "types": len(ontology.classes),
@@ -936,6 +1093,238 @@ def _aliases_by_id(path: Path) -> dict[str, tuple[str, ...]]:
     return {key: tuple(values) for key, values in result.items()}
 
 
+def _database_integrity(
+    connection: sqlite3.Connection, ontology: OntologyGraph
+) -> dict[str, Any]:
+    quick_check = tuple(str(row[0]) for row in connection.execute("PRAGMA quick_check"))
+    tables = frozenset(
+        str(row[0])
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type IN ('table','view')"
+        )
+    )
+    indexes = frozenset(
+        str(row[0])
+        for row in connection.execute("SELECT name FROM sqlite_master WHERE type='index'")
+    )
+    required_tables = {
+        "entities",
+        "entity_aliases",
+        "entity_types",
+        "terms",
+        "term_aliases",
+        "entity_search",
+    }
+    required_indexes = {
+        "entity_canonical_name_idx",
+        "entity_alias_normalized_idx",
+        "entity_types_entity_idx",
+        "entity_types_type_idx",
+        "term_alias_term_idx",
+        "term_alias_normalized_idx",
+    }
+    relation_ids = frozenset(
+        str(row[0])
+        for row in connection.execute("SELECT id FROM terms WHERE kind='relation'")
+    )
+    type_ids = frozenset(
+        str(row[0])
+        for row in connection.execute("SELECT id FROM terms WHERE kind='type'")
+    )
+    unmatched_type_rows = tuple(
+        str(row[0])
+        for row in connection.execute(
+            "SELECT DISTINCT et.type_id FROM entity_types et LEFT JOIN terms t "
+            "ON t.id=et.type_id AND t.kind='type' WHERE t.id IS NULL "
+            "ORDER BY et.type_id LIMIT 20"
+        )
+    )
+    checks = {
+        "sqlite_quick_check": list(quick_check),
+        "missing_tables": sorted(required_tables - tables),
+        "missing_indexes": sorted(required_indexes - indexes),
+        "invalid_mid_count": int(
+            connection.execute(
+                "SELECT count(*) FROM entities WHERE "
+                "(substr(id,1,2) NOT IN ('m.','g.') OR length(id) < 3 "
+                "OR substr(id,3) GLOB '*[^A-Za-z0-9_-]*')"
+            ).fetchone()[0]
+        ),
+        "duplicate_entity_count": int(
+            connection.execute(
+                "SELECT count(*) FROM (SELECT id FROM entities GROUP BY id HAVING count(*) > 1)"
+            ).fetchone()[0]
+        ),
+        "duplicate_alias_count": int(
+            connection.execute(
+                "SELECT count(*) FROM (SELECT entity_id, alias FROM entity_aliases "
+                "GROUP BY entity_id, alias HAVING count(*) > 1)"
+            ).fetchone()[0]
+        ),
+        "missing_canonical_name_count": int(
+            connection.execute(
+                "SELECT count(*) FROM entities WHERE trim(canonical_name) = ''"
+            ).fetchone()[0]
+        ),
+        "orphan_alias_count": int(
+            connection.execute(
+                "SELECT count(*) FROM entity_aliases a LEFT JOIN entities e ON e.id=a.entity_id "
+                "WHERE e.id IS NULL"
+            ).fetchone()[0]
+        ),
+        "orphan_type_membership_count": int(
+            connection.execute(
+                "SELECT count(*) FROM entity_types et LEFT JOIN entities e ON e.id=et.entity_id "
+                "WHERE e.id IS NULL"
+            ).fetchone()[0]
+        ),
+        "unmatched_entity_type_membership_count": int(
+            connection.execute(
+                "SELECT count(*) FROM entity_types et LEFT JOIN terms t "
+                "ON t.id=et.type_id AND t.kind='type' WHERE t.id IS NULL"
+            ).fetchone()[0]
+        ),
+        "unmatched_entity_type_ids_sample": list(unmatched_type_rows),
+        "fts_row_count": _count(connection, "entity_search"),
+        "alias_row_count": _count(connection, "entity_aliases"),
+        "relation_term_count": len(relation_ids),
+        "type_term_count": len(type_ids),
+        "relations_not_in_ontology": sorted(relation_ids - set(ontology.relations)),
+        "relations_missing_from_catalog": sorted(set(ontology.relations) - relation_ids),
+        "types_not_in_ontology": sorted(type_ids - set(ontology.classes)),
+        "types_missing_from_catalog": sorted(set(ontology.classes) - type_ids),
+        "invalid_language_rows": 0,
+        "language_policy": "only @en name and alias literals are persisted",
+    }
+    errors: list[str] = []
+    if quick_check != ("ok",):
+        errors.append("SQLite quick_check did not return ok")
+    for field in (
+        "missing_tables",
+        "missing_indexes",
+        "invalid_mid_count",
+        "duplicate_entity_count",
+        "duplicate_alias_count",
+        "missing_canonical_name_count",
+        "orphan_alias_count",
+        "orphan_type_membership_count",
+        "relations_not_in_ontology",
+        "relations_missing_from_catalog",
+        "types_not_in_ontology",
+        "types_missing_from_catalog",
+    ):
+        if checks[field]:
+            errors.append(f"{field}={checks[field]}")
+    if checks["fts_row_count"] != checks["alias_row_count"]:
+        errors.append("FTS row count differs from entity alias row count")
+    if checks["relation_term_count"] != len(ontology.relations):
+        errors.append("relation terms differ from the frozen GrailQA ontology")
+    if checks["type_term_count"] != len(ontology.classes):
+        errors.append("type terms differ from the frozen GrailQA ontology")
+    warnings = []
+    if checks["unmatched_entity_type_membership_count"]:
+        warnings.append(
+            "Instance type memberships absent from the frozen GrailQA ontology are retained and reported."
+        )
+    return {"checks": checks, "errors": errors, "warnings": warnings}
+
+
+def _complete_manifest(root: Path) -> Mapping[str, Any] | None:
+    manifest_path = root / "manifest.json"
+    if not manifest_path.is_file():
+        return None
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    return manifest if manifest.get("status") == "complete" else None
+
+
+def _publish_catalog(staging: Path, output: Path) -> None:
+    backup = output.with_name(f".{output.name}.previous")
+    if backup.exists():
+        shutil.rmtree(backup)
+    if output.exists():
+        output.replace(backup)
+    try:
+        staging.replace(output)
+    except Exception:
+        if backup.exists() and not output.exists():
+            backup.replace(output)
+        raise
+    if backup.exists():
+        shutil.rmtree(backup)
+
+
+def _load_source_metadata(
+    *,
+    source: Path,
+    source_hash: str,
+    source_url: str,
+    source_manifest_path: str | Path | None,
+) -> dict[str, Any]:
+    if source_manifest_path is None:
+        return {
+            "url": source_url,
+            "sha256": source_hash,
+            "size_bytes": source.stat().st_size,
+            "published_size": "approximately 22 GB gzip / 250 GB uncompressed",
+            "retrieved_at": None,
+            "http": {},
+            "compressed_format": "gzip" if source.suffix == ".gz" else "plain_ntriples",
+        }
+    verified = verify_source_manifest(
+        freebase_rdf_path=source,
+        source_manifest_path=source_manifest_path,
+    )
+    manifest = json.loads(Path(source_manifest_path).read_text(encoding="utf-8"))
+    if str(manifest.get("source_url")) != source_url:
+        raise ValueError("Freebase source URL differs from the build's canonical source URL.")
+    return {
+        "url": source_url,
+        "sha256": verified["sha256"],
+        "size_bytes": verified["size_bytes"],
+        "published_size": manifest.get("published_size"),
+        "retrieved_at": manifest.get("retrieved_at"),
+        "http": manifest.get("http", {}),
+        "source_manifest_sha256": sha256_file(Path(source_manifest_path)),
+        "compressed_format": manifest.get("compressed_format"),
+    }
+
+
+def _http_metadata(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {}
+    values: dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        normalized = key.strip().casefold()
+        if normalized in {"etag", "last-modified", "content-length", "content-type"}:
+            values[normalized.replace("-", "_")] = value.strip()
+    values["headers_sha256"] = sha256_file(path)
+    return values
+
+
+def _git_commit() -> str | None:
+    configured = os.environ.get("XGAP_GIT_COMMIT")
+    if configured:
+        return configured
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=Path(__file__).resolve().parents[3],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return result.stdout.strip() or None
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
 def _count(connection: sqlite3.Connection, table: str) -> int:
     return int(connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0])
 
@@ -959,8 +1348,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     build.add_argument("--reverse-properties", required=True)
     build.add_argument("--output", required=True)
     build.add_argument("--source-url", default=OFFICIAL_FREEBASE_DUMP_URL)
+    build.add_argument("--source-manifest")
+    build.add_argument("--force", action="store_true")
     verify = subparsers.add_parser("verify")
     verify.add_argument("--catalog", required=True)
+    verify.add_argument("--output")
+    source_manifest = subparsers.add_parser("source-manifest")
+    source_manifest.add_argument("--freebase-rdf", required=True)
+    source_manifest.add_argument("--output", required=True)
+    source_manifest.add_argument("--source-url", default=OFFICIAL_FREEBASE_DUMP_URL)
+    source_manifest.add_argument("--http-headers")
+    verify_source = subparsers.add_parser("verify-source")
+    verify_source.add_argument("--freebase-rdf", required=True)
+    verify_source.add_argument("--source-manifest", required=True)
     args = parser.parse_args(argv)
     if args.command == "build":
         manifest = build_catalog_v2(
@@ -969,12 +1369,34 @@ def main(argv: Sequence[str] | None = None) -> int:
             reverse_properties_path=args.reverse_properties,
             output_root=args.output,
             source_url=args.source_url,
+            source_manifest_path=args.source_manifest,
+            force=args.force,
         )
         print(json.dumps(manifest["counts"], sort_keys=True))
         print(f"catalog_hash={manifest['catalog_hash']}")
         return 0
-    catalog = GrailQAInferenceCatalogV2.load(args.catalog)
-    print(f"catalog_hash={catalog.catalog_hash}")
+    if args.command == "source-manifest":
+        result = write_source_manifest(
+            freebase_rdf_path=args.freebase_rdf,
+            output_path=args.output,
+            source_url=args.source_url,
+            http_headers_path=args.http_headers,
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "verify-source":
+        result = verify_source_manifest(
+            freebase_rdf_path=args.freebase_rdf,
+            source_manifest_path=args.source_manifest,
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    result = validate_catalog_v2(args.catalog)
+    if args.output:
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"catalog_hash={result['catalog_hash']}")
     return 0
 
 

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+XGAP_CWRU_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+XGAP_REPO_ROOT="${XGAP_REPO_ROOT:-$(cd "$XGAP_CWRU_SCRIPT_DIR/../.." && pwd)}"
+XGAP_CWRU_CONTRACT="${XGAP_CWRU_CONTRACT:-$XGAP_REPO_ROOT/experiments/environments/cwru_pioneer_qwen3_32b_vllm.json}"
+
+VLLM_ENV="${VLLM_ENV:-/home/hxc859/venvs/xgap-vllm}"
+HF_HOME="${HF_HOME:-/home/hxc859/.cache/huggingface}"
+HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}"
+export VLLM_ENV HF_HOME HF_HUB_OFFLINE
+
+XGAP_LLM_BASE_URL="${XGAP_LLM_BASE_URL:-http://127.0.0.1:8000/v1}"
+XGAP_LLM_API_KEY="${XGAP_LLM_API_KEY:-local}"
+XGAP_LLM_MODEL="${XGAP_LLM_MODEL:-Qwen/Qwen3-32B}"
+export XGAP_LLM_BASE_URL XGAP_LLM_API_KEY XGAP_LLM_MODEL
+
+XGAP_CWRU_RUN_ROOT="${XGAP_CWRU_RUN_ROOT:-$XGAP_REPO_ROOT/runs/cwru-vllm-${SLURM_JOB_ID:-manual}}"
+XGAP_VLLM_LOG="${XGAP_VLLM_LOG:-$XGAP_CWRU_RUN_ROOT/vllm.log}"
+XGAP_VLLM_PID_FILE="${XGAP_VLLM_PID_FILE:-$XGAP_CWRU_RUN_ROOT/vllm.pid}"
+export XGAP_CWRU_RUN_ROOT XGAP_VLLM_LOG XGAP_VLLM_PID_FILE

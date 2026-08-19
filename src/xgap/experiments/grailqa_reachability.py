@@ -66,7 +66,9 @@ def reference_requirements(record: Mapping[str, Any]) -> ReferenceRequirements:
     )
 
 
-def load_catalog_universe(root: str | Path) -> CatalogUniverse:
+def load_catalog_universe(
+    root: str | Path, *, required_entity_ids: Iterable[str] | None = None
+) -> CatalogUniverse:
     catalog_root = Path(root)
     manifest = json.loads((catalog_root / "manifest.json").read_text(encoding="utf-8"))
     schema = str(manifest.get("schema_version", ""))
@@ -85,7 +87,23 @@ def load_catalog_universe(root: str | Path) -> CatalogUniverse:
 
     connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
     try:
-        entities = frozenset(str(row[0]) for row in connection.execute("SELECT id FROM entities"))
+        required = tuple(sorted(set(required_entity_ids or ())))
+        if required_entity_ids is None:
+            entities = frozenset(
+                str(row[0]) for row in connection.execute("SELECT id FROM entities")
+            )
+        else:
+            found: set[str] = set()
+            for offset in range(0, len(required), 900):
+                chunk = required[offset : offset + 900]
+                placeholders = ",".join("?" for _ in chunk)
+                found.update(
+                    str(row[0])
+                    for row in connection.execute(
+                        f"SELECT id FROM entities WHERE id IN ({placeholders})", chunk
+                    )
+                )
+            entities = frozenset(found)
     finally:
         connection.close()
     return CatalogUniverse(
@@ -236,12 +254,7 @@ def run_v2_pilot_audit(
     catalog_path = Path(catalog_root)
     output = Path(output_root)
     output.mkdir(parents=True, exist_ok=True)
-    references = _read_jsonl(pilot / "reference_interpretations.jsonl")
     questions = _read_jsonl(pilot / "inference_questions.jsonl")
-    workload = {
-        str(item["question_id"]): item
-        for item in _read_jsonl(pilot / "workload_stats.jsonl")
-    }
     catalog = GrailQAInferenceCatalogV2.load(catalog_path)
     retrieval_rows = [
         catalog.retrieve(
@@ -253,18 +266,37 @@ def run_v2_pilot_audit(
         ).to_dict()
         for item in questions
     ]
+    _write_jsonl(output / "retrieval.jsonl", retrieval_rows)
+
+    # Evaluation-only artifacts are opened only after gold-free retrieval is persisted.
+    references = _read_jsonl(pilot / "reference_interpretations.jsonl")
+    workload = {
+        str(item["question_id"]): item
+        for item in _read_jsonl(pilot / "workload_stats.jsonl")
+    }
+    required_entities = {
+        entity
+        for reference in references
+        for entity in reference_requirements(reference).entities
+    }
     result = audit_reachability(
         references=references,
         retrieval_rows=retrieval_rows,
-        catalog=load_catalog_universe(catalog_path),
+        catalog=load_catalog_universe(
+            catalog_path, required_entity_ids=required_entities
+        ),
         workload_by_id=workload,
         prompt_limit=4,
     )
     rows = result.pop("rows")
     gate = prompt_reachability_gate(result, minimum_joint_ratio=0.20)
     result["gate"] = gate
+    result["live_preflight_allowed"] = gate["passed"]
+    result["stage_failure_counts"] = _stage_failure_counts(rows)
+    result["prompt_truncation_loss"] = _prompt_truncation_loss(
+        rows, tuple(int(value) for value in result["k_values"])
+    )
     result["audit_hash"] = content_hash(result)
-    _write_jsonl(output / "retrieval.jsonl", retrieval_rows)
     _write_jsonl(output / "reachability.jsonl", rows)
     (output / "summary.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -301,10 +333,13 @@ def audit_catalog_coverage(
         }
         for item in records
     ]
-    catalog = load_catalog_universe(catalog_root)
+    requirements = [reference_requirements(record) for record in references]
+    catalog = load_catalog_universe(
+        catalog_root,
+        required_entity_ids={entity for item in requirements for entity in item.entities},
+    )
     rows = []
-    for record in references:
-        requirement = reference_requirements(record)
+    for requirement in requirements:
         coverage = {
             "entity": _coverage(requirement.entities, catalog.entities),
             "relation": _coverage(requirement.relations, catalog.relations),
@@ -330,6 +365,122 @@ def audit_catalog_coverage(
             for kind in ("entity", "relation", "type", "joint")
         },
     }
+
+
+def run_m13e3_audit(
+    *,
+    supported_questions_path: str | Path,
+    pilot_root: str | Path,
+    catalog_root: str | Path,
+    output_root: str | Path,
+    expected_supported_questions: int = 35_439,
+    expected_pilot_questions: int = 150,
+) -> dict[str, Any]:
+    """Run the frozen catalog-v2 coverage and retrieval audit without an LLM."""
+
+    output = Path(output_root)
+    output.mkdir(parents=True, exist_ok=True)
+    all_supported = audit_catalog_coverage(
+        supported_questions_path=supported_questions_path,
+        catalog_root=catalog_root,
+    )
+    if all_supported["question_count"] != expected_supported_questions:
+        raise ValueError(
+            "Supported GrailQA workload count differs from the frozen M13-E3 contract: "
+            f"expected {expected_supported_questions}, got {all_supported['question_count']}."
+        )
+    pilot = run_v2_pilot_audit(
+        pilot_root=pilot_root,
+        catalog_root=catalog_root,
+        output_root=output,
+    )
+    if pilot["question_count"] != expected_pilot_questions:
+        raise ValueError(
+            "Frozen GrailQA pilot count differs from the M13-E3 contract: "
+            f"expected {expected_pilot_questions}, got {pilot['question_count']}."
+        )
+    catalog_coverage = {
+        "schema_version": "m13e3-grailqa-catalog-coverage-v1",
+        "all_supported": all_supported,
+        "frozen_pilot": pilot["summary"]["catalog"],
+    }
+    retrieval_metrics = {
+        "schema_version": "m13e3-grailqa-retrieval-metrics-v1",
+        "question_count": pilot["question_count"],
+        "k_values": pilot["k_values"],
+        "metrics": pilot["summary"]["retrieval"],
+        "by_q": {key: value["retrieval"] for key, value in pilot["by_q"].items()},
+        "by_path_length": {
+            key: value["retrieval"] for key, value in pilot["by_path_length"].items()
+        },
+    }
+    prompt_reachability = {
+        "schema_version": "m13e3-grailqa-prompt-reachability-v1",
+        "question_count": pilot["question_count"],
+        "k_values": pilot["k_values"],
+        "frozen_prompt_bound": pilot["prompt_limit"],
+        "at_k": pilot["summary"]["prompt"],
+        "deployed_prompt": pilot["summary"]["deployed_prompt"],
+        "truncation_loss": pilot["prompt_truncation_loss"],
+        "by_q": {key: value["prompt"] for key, value in pilot["by_q"].items()},
+        "by_path_length": {
+            key: value["prompt"] for key, value in pilot["by_path_length"].items()
+        },
+    }
+    stage_failures = {
+        "schema_version": "m13e3-grailqa-stage-failure-counts-v1",
+        **pilot["stage_failure_counts"],
+    }
+    audit_summary = {
+        "schema_version": "m13e3-grailqa-reachability-audit-summary-v1",
+        "status": "complete",
+        "catalog_id": pilot["catalog_id"],
+        "catalog_hash": pilot["catalog_hash"],
+        "all_supported_question_count": all_supported["question_count"],
+        "pilot_question_count": pilot["question_count"],
+        "joint_catalog_coverage": {
+            "all_supported": all_supported["coverage"]["joint"],
+            "frozen_pilot": pilot["summary"]["catalog"]["joint"],
+        },
+        "joint_prompt_reachability": pilot["summary"]["prompt"],
+        "deployed_joint_prompt_reachability": pilot["summary"]["deployed_prompt"][
+            "joint"
+        ],
+        "live_preflight_allowed": pilot["live_preflight_allowed"],
+        "gate": pilot["gate"],
+        "gold_usage": "evaluation_only",
+        "inference_gold_usage": False,
+    }
+    compact = {
+        "audit_summary.json": audit_summary,
+        "catalog_coverage.json": catalog_coverage,
+        "retrieval_metrics.json": retrieval_metrics,
+        "prompt_reachability.json": prompt_reachability,
+        "stage_failure_counts.json": stage_failures,
+    }
+    for name, value in compact.items():
+        (output / name).write_text(
+            json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+    file_names = (
+        *compact,
+        "retrieval.jsonl",
+        "reachability.jsonl",
+        "summary.json",
+        "manifest.json",
+    )
+    manifest_reference = {
+        "schema_version": "m13e3-grailqa-reachability-manifest-reference-v1",
+        "status": "complete",
+        "catalog_hash": pilot["catalog_hash"],
+        "large_artifacts_external": ["retrieval.jsonl", "reachability.jsonl"],
+        "files": {name: sha256_file(output / name) for name in file_names},
+    }
+    (output / "manifest_reference.json").write_text(
+        json.dumps(manifest_reference, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return audit_summary
 
 
 def _audit_one(
@@ -420,25 +571,44 @@ def _relation_coverage(
     k: int,
 ) -> dict[str, Any]:
     if slots:
-        matched = [
-            relation in slots[index][:k]
+        pooled_at_k = {
+            candidate for slot in slots for candidate in slot[:k]
+        }
+        per_slot = [
+            {
+                "slot": index + 1,
+                "relation": relation,
+                "reachable": index < len(slots) and relation in slots[index][:k],
+            }
             for index, relation in enumerate(required)
-            if index < len(slots)
         ]
         missing = [
             relation
             for index, relation in enumerate(required)
             if index >= len(slots) or relation not in slots[index][:k]
         ]
+        matched_count = sum(bool(item["reachable"]) for item in per_slot)
         return {
             "reachable": len(missing) == 0,
+            "all_required_reachable": len(missing) == 0,
+            "any_reachable": not required or any(
+                relation in pooled_at_k for relation in required
+            ),
             "required_count": len(required),
-            "matched_count": sum(matched),
+            "matched_count": matched_count,
             "missing": missing,
             "slot_aware": True,
+            "per_slot": per_slot,
         }
     result = _coverage(required, pooled[:k])
-    result["slot_aware"] = False
+    result.update(
+        {
+            "all_required_reachable": result["reachable"],
+            "any_reachable": not required or bool(result["matched_count"]),
+            "slot_aware": False,
+            "per_slot": [],
+        }
+    )
     return result
 
 
@@ -484,6 +654,93 @@ def _aggregate_stage(
             for row in rows
         )
         result[kind] = {"count": count, "ratio": count / len(rows) if rows else None}
+    relation_values = [
+        _mapping(
+            (_mapping(row[stage], stage)[k] if k is not None else row[stage])["relation"],
+            "relation",
+        )
+        for row in rows
+    ]
+    any_count = sum(
+        bool(
+            value.get(
+                "any_reachable",
+                not value.get("required_count") or bool(value.get("matched_count")),
+            )
+        )
+        for value in relation_values
+    )
+    result["relation_any"] = {
+        "count": any_count,
+        "ratio": any_count / len(rows) if rows else None,
+    }
+    result["all_required_relations"] = dict(result["relation"])
+    max_slots = max((len(value.get("per_slot", ())) for value in relation_values), default=0)
+    result["relation_per_slot"] = {
+        str(slot + 1): _slot_metric(relation_values, slot, len(rows))
+        for slot in range(max_slots)
+    }
+    return result
+
+
+def _slot_metric(
+    relation_values: Sequence[Mapping[str, Any]], slot: int, question_count: int
+) -> dict[str, Any]:
+    applicable = [
+        value["per_slot"][slot]
+        for value in relation_values
+        if slot < len(value.get("per_slot", ()))
+    ]
+    count = sum(bool(item["reachable"]) for item in applicable)
+    return {
+        "count": count,
+        "applicable_questions": len(applicable),
+        "ratio": count / len(applicable) if applicable else None,
+        "workload_ratio": count / question_count if question_count else None,
+    }
+
+
+def _stage_failure_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    stages = (
+        "reference_not_in_catalog",
+        "reference_not_retrieved",
+        "reference_not_prompt_visible",
+        "reachable",
+    )
+    counts = {stage: 0 for stage in stages}
+    for row in rows:
+        stage = row.get("first_unreachable_stage") or "reachable"
+        if stage not in counts:
+            raise ValueError(f"Unknown reachability stage {stage!r}.")
+        counts[str(stage)] += 1
+    total = len(rows)
+    return {
+        "question_count": total,
+        "counts": counts,
+        "ratios": {
+            stage: count / total if total else None for stage, count in counts.items()
+        },
+    }
+
+
+def _prompt_truncation_loss(
+    rows: Sequence[Mapping[str, Any]], k_values: tuple[int, ...]
+) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for k in k_values:
+        key = str(k)
+        metrics: dict[str, Any] = {}
+        for kind in ("entity", "relation", "type", "joint"):
+            count = sum(
+                bool(row["retrieval"][key][kind]["reachable"])
+                and not bool(row["prompt"][key][kind]["reachable"])
+                for row in rows
+            )
+            metrics[kind] = {
+                "count": count,
+                "ratio": count / len(rows) if rows else None,
+            }
+        result[key] = metrics
     return result
 
 
@@ -547,6 +804,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     coverage.add_argument("--supported-questions", required=True)
     coverage.add_argument("--catalog-root", required=True)
     coverage.add_argument("--output", required=True)
+    m13e3 = subparsers.add_parser("m13e3-audit")
+    m13e3.add_argument(
+        "--supported-questions", default="datasets/grailqa_audit_v2/supported_questions.jsonl"
+    )
+    m13e3.add_argument("--pilot-root", default="datasets/grailqa_pilot_v1")
+    m13e3.add_argument("--catalog-root", required=True)
+    m13e3.add_argument("--output", required=True)
     gate = subparsers.add_parser("gate")
     gate.add_argument("--summary", required=True)
     gate.add_argument("--minimum", type=float, required=True)
@@ -572,11 +836,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             supported_questions_path=args.supported_questions,
             catalog_root=args.catalog_root,
         )
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
         Path(args.output).write_text(
             json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
         print(json.dumps(result["coverage"], indent=2, sort_keys=True))
         return 0
+    if args.command == "m13e3-audit":
+        result = run_m13e3_audit(
+            supported_questions_path=args.supported_questions,
+            pilot_root=args.pilot_root,
+            catalog_root=args.catalog_root,
+            output_root=args.output,
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0 if result["live_preflight_allowed"] else 2
     audit = json.loads(Path(args.summary).read_text(encoding="utf-8"))
     result = prompt_reachability_gate(audit, minimum_joint_ratio=args.minimum)
     print(json.dumps(result, indent=2, sort_keys=True))

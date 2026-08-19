@@ -1,0 +1,44 @@
+{
+  "schema_version": "m13e2-cwru-vllm-environment-v1",
+  "cluster": "CWRU Pioneer",
+  "scheduler": "Slurm",
+  "shared_paths": {
+    "vllm_env": "/home/hxc859/venvs/xgap-vllm",
+    "hf_home": "/home/hxc859/.cache/huggingface"
+  },
+  "runtime": {
+    "python": "3.11.5",
+    "torch": "2.9.0+cu128",
+    "cuda_runtime": "12.8",
+    "vllm": "0.11.1"
+  },
+  "serving": {
+    "model": "Qwen/Qwen3-32B",
+    "revision_env": "XGAP_MODEL_REVISION",
+    "revision_policy": "resolve_and_pin_existing_shared_cache_snapshot",
+    "host": "127.0.0.1",
+    "port": 8000,
+    "dtype": "bfloat16",
+    "max_model_len": 8192,
+    "gpu_memory_utilization": 0.9,
+    "generation_config": "vllm",
+    "thinking_enabled": false,
+    "structured_output_mode": "json_schema"
+  },
+  "slurm": {
+    "partition": "gpu",
+    "feature": "gpu2h100",
+    "gres": "gpu:1",
+    "cpus_per_task": 8,
+    "memory": "64G",
+    "default_time_limit": "04:00:00",
+    "compute_node_policy": "scheduler_selected"
+  },
+  "security": {
+    "bind_scope": "loopback_only",
+    "docker_required": false,
+    "root_required": false,
+    "credentials_persisted": false
+  },
+  "contract_hash": "1411b12a7f1276d9eaa46edad1a2d136e82828174cdfe37465ab669768274c7f"
+}

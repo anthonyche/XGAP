@@ -7,6 +7,10 @@ venv/
 .env
 .env.paper
 runs/
+slurm-*.out
+data_external/freebase/
+*.sqlite-shm
+*.sqlite-wal
 *.pem
 id_rsa
 id_rsa.pub
@@ -26,9 +30,18 @@ datasets/grailqa_inference_catalog_v1/*
 
 datasets/grailqa_inference_catalog_v2/*
 !datasets/grailqa_inference_catalog_v2/manifest.json
+datasets/grailqa_inference_catalog_v2/*.sqlite
+datasets/grailqa_inference_catalog_v2/*.sqlite3
+datasets/grailqa_inference_catalog_v2/*.db
 
 datasets/grailqa_reachability_v2/*
 !datasets/grailqa_reachability_v2/manifest.json
+!datasets/grailqa_reachability_v2/audit_summary.json
+!datasets/grailqa_reachability_v2/catalog_coverage.json
+!datasets/grailqa_reachability_v2/retrieval_metrics.json
+!datasets/grailqa_reachability_v2/prompt_reachability.json
+!datasets/grailqa_reachability_v2/stage_failure_counts.json
+!datasets/grailqa_reachability_v2/manifest_reference.json
 
 datasets/grailqa_m13d_reachability_baseline/*
 !datasets/grailqa_m13d_reachability_baseline/manifest.json

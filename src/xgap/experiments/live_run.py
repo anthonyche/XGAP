@@ -146,11 +146,18 @@ def _provider(
             raise ValueError(
                 f"Configured base URL environment variable '{config.base_url_env}' is blank."
             )
+    model_name = config.exact_model_snapshot
+    if config.model_env is not None and config.model_env in os.environ:
+        model_name = os.environ[config.model_env].strip()
+        if not model_name:
+            raise ValueError(
+                f"Configured model environment variable '{config.model_env}' is blank."
+            )
     provider_config = OpenAICompatibleProviderConfig(
         provider_id=config.provider,
         base_url=base_url,
         api_key_env=str(config.api_key_env),
-        model=config.exact_model_snapshot,
+        model=model_name,
         temperature=config.temperature,
         top_p=config.top_p,
         max_tokens=int(config.token_limits.get("output", 0)),

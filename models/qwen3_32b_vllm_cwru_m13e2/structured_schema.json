@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["provider_id", "model", "query_slots", "candidates"],
+  "properties": {
+    "provider_id": {"type": "string"},
+    "model": {"type": "string"},
+    "query_slots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["slot_id", "query_anchor_id"],
+        "properties": {
+          "slot_id": {"type": "string"},
+          "query_anchor_id": {"type": "string"}
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/candidate"}
+    }
+  },
+  "$defs": {
+    "scalar": {
+      "type": ["string", "number", "integer", "boolean", "null"]
+    },
+    "ref": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "position"],
+          "properties": {
+            "kind": {"const": "node"},
+            "position": {
+              "oneOf": [
+                {"enum": ["first", "last"]},
+                {"type": "integer", "minimum": 1}
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "index"],
+          "properties": {
+            "kind": {"const": "edge"},
+            "index": {"type": "integer", "minimum": 1}
+          }
+        }
+      ]
+    },
+    "condition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "ref", "value"],
+          "properties": {
+            "kind": {"const": "label_equals"},
+            "ref": {"$ref": "#/$defs/ref"},
+            "value": {"type": ["string", "null"]}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "ref", "property", "value"],
+          "properties": {
+            "kind": {
+              "enum": [
+                "property_equals",
+                "property_not_equals",
+                "property_lt",
+                "property_lte",
+                "property_gt",
+                "property_gte"
+              ]
+            },
+            "ref": {"$ref": "#/$defs/ref"},
+            "property": {"type": "string", "minLength": 1},
+            "value": {"$ref": "#/$defs/scalar"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {"const": "length_equals"},
+            "value": {"type": "integer", "minimum": 0}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "conditions"],
+          "properties": {
+            "kind": {"enum": ["and", "or"]},
+            "conditions": {
+              "type": "array",
+              "minItems": 2,
+              "items": {"$ref": "#/$defs/condition"}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "condition"],
+          "properties": {
+            "kind": {"const": "not"},
+            "condition": {"$ref": "#/$defs/condition"}
+          }
+        }
+      ]
+    },
+    "node_pattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["var", "label", "properties"],
+      "properties": {
+        "var": {"type": ["string", "null"]},
+        "label": {"type": ["string", "null"]},
+        "properties": {"type": "object", "additionalProperties": true}
+      }
+    },
+    "edge_pattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["var", "label", "direction", "properties"],
+      "properties": {
+        "var": {"type": ["string", "null"]},
+        "label": {"type": ["string", "null"]},
+        "direction": {"enum": ["OUT", "IN", "UNDIRECTED"]},
+        "properties": {"type": "object", "additionalProperties": true}
+      }
+    },
+    "regex": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "edge"],
+          "properties": {
+            "kind": {"const": "rel"},
+            "edge": {"$ref": "#/$defs/edge_pattern"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "left", "right"],
+          "properties": {
+            "kind": {"enum": ["seq", "alt"]},
+            "left": {"$ref": "#/$defs/regex"},
+            "right": {"$ref": "#/$defs/regex"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "child"],
+          "properties": {
+            "kind": {"enum": ["plus", "star", "optional"]},
+            "child": {"$ref": "#/$defs/regex"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "child", "min_repeats", "max_repeats"],
+          "properties": {
+            "kind": {"const": "bounded"},
+            "child": {"$ref": "#/$defs/regex"},
+            "min_repeats": {"type": "integer", "minimum": 0},
+            "max_repeats": {"type": ["integer", "null"], "minimum": 1}
+          }
+        }
+      ]
+    },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "k"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "ALL",
+            "ANY",
+            "ANY_K",
+            "ANY_SHORTEST",
+            "ALL_SHORTEST",
+            "SHORTEST_K",
+            "SHORTEST_K_GROUP"
+          ]
+        },
+        "k": {"type": ["integer", "null"], "minimum": 1}
+      }
+    },
+    "slot_realization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slot_id", "ontology_term_id", "component_ref"],
+      "properties": {
+        "slot_id": {"type": "string"},
+        "ontology_term_id": {"type": "string"},
+        "component_ref": {"type": "string"}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "confidence", "rationale", "pattern_query", "grounding"],
+      "properties": {
+        "candidate_id": {"type": "string"},
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "rationale": {"type": ["string", "null"]},
+        "pattern_query": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "expr", "target"],
+          "properties": {
+            "path_var": {"type": ["string", "null"]},
+            "source": {"$ref": "#/$defs/node_pattern"},
+            "expr": {"$ref": "#/$defs/regex"},
+            "target": {"$ref": "#/$defs/node_pattern"},
+            "selector": {"$ref": "#/$defs/selector"},
+            "restrictor": {"enum": ["WALK", "TRAIL", "ACYCLIC", "SIMPLE", "SHORTEST"]},
+            "condition": {
+              "oneOf": [
+                {"type": "null"},
+                {"$ref": "#/$defs/condition"}
+              ]
+            },
+            "max_depth": {"type": ["integer", "null"], "minimum": 1}
+          }
+        },
+        "grounding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["slot_realizations", "entity_ids"],
+          "properties": {
+            "slot_realizations": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/slot_realization"}
+            },
+            "entity_ids": {"type": "array", "items": {"type": "string"}}
+          }
+        }
+      }
+    }
+  }
+}

@@ -156,6 +156,14 @@ endpoint template. API keys are read from configured environment-variable
 names and are never written to artifacts. M12-B does not download, deploy, or
 fine-tune models.
 
+M13-E2 materializes that boundary for CWRU as
+`models/qwen3_32b_vllm_cwru_m13e2/`. The bundle uses the unchanged M13-E1
+prompt/schema contract, `json_schema` response mode, and a configuration-owned
+`chat_template_kwargs.enable_thinking=false` parameter. Optional `model_env`
+selection is included only in new bundle hashes, preserving all pre-M13-E2
+frozen ModelBundle hashes. Slurm deployment and model revision capture remain
+experiment infrastructure rather than planner behavior.
+
 ## ExperimentSpec Contract
 
 `ExperimentSpec` is the single declarative input. Required-now fields identify

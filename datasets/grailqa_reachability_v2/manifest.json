@@ -6,5 +6,5 @@
   "gold_usage": "evaluation_only",
   "inference_gold_usage": false,
   "files": {},
-  "blocked_reason": "Catalog v2 is not built, so the 150-query v2 retrieval and prompt-reachability audit cannot be reported honestly."
+  "blocked_reason": "M13-E3 audit code is implementation-ready, but catalog v2 is not built on CWRU, so all-35,439 and frozen-150 measurements remain unreported."
 }
