@@ -151,6 +151,8 @@ relation_ranking_audit.jsonl
 type_ranking_audit.jsonl
 relation_diagnostics_v2.jsonl
 type_diagnostics_v2.jsonl
+endpoint_grounding_before_after.json
+relation_endpoint_diagnostics.jsonl
 audit_summary.json
 retrieval.jsonl
 reachability.jsonl
@@ -237,11 +239,36 @@ old/new score decomposition, required pre-truncation ranks, Top-20/Top-4
 membership, beating candidates, provenance, stage counts, and a generic
 failure taxonomy.
 
-The real post-repair relation Recall@1/5/10/20, relation prompt coverage@4,
-type Recall@1/5/10/20, type prompt coverage@4, JointPromptReachability, and
-`live_preflight_allowed` remain pending the CWRU audit-only run. The result is
-accepted whether the unchanged gate passes or fails; no Qwen job is started
-automatically and no fixture value is reported as a real result.
+The real CWRU post-repair audit measured Relation Recall@1/5/10/20 of
+5/11/12/13 over 18 and relation prompt coverage@4 of 10/18. Type
+Recall@1/5/10/20 was 1/4/8/13 and explicit Type prompt coverage@4 remained
+4/18. Relation stages became 0 ontology-universe misses, 5 retrieval misses, 3
+prompt truncations, and 10 reachable; Type stages became 0, 5, 9, and 4.
+JointPromptReachability remained 1/18, so the unchanged gate stayed closed.
+
+## M13-E3B.4 Relation Endpoint Grounding Contract
+
+The E3B.3 diagnostics showed a narrower contract mismatch: some selected
+Top-4 relations already carried exact required endpoint types in their public
+domain/range metadata, but the explicit Type Top-4 list remained the only class
+visibility source used by runtime grounding and the offline gate.
+
+E3B.4 adds no ranking signal and no prompt term. A shared deterministic helper
+derives endpoint evidence only from the candidate's selected prompt-visible
+relation realization. OUT maps domain to source and range to target; IN
+reverses those roles; UNDIRECTED accepts either exact endpoint type for either
+role. A fixed multi-hop path uses only the first hop for the outer source and
+the last hop for the outer target. Alternation, optionality, and repetition do
+not receive derived evidence. The candidate relation label, component ref,
+hop slot, direction, endpoint role, and type ID remain auditable.
+
+Offline reachability preserves `type` as the explicit Type-candidate metric and
+adds `relation_endpoint_type` plus role-aware `effective_type`. `joint` and the
+unchanged 0.20 gate use `effective_type`, matching runtime admissibility. The
+first CWRU E3B.4 audit-only rerun will write
+`endpoint_grounding_before_after.json` and
+`relation_endpoint_diagnostics.jsonl`; no real improvement is claimed until
+those artifacts are returned.
 
 ## Full-vs-Local Comparison
 
@@ -256,10 +283,12 @@ every Full value is explicitly `null` with status `pending_global_build`.
 | unique entities | pending | 865 |
 | EntityCatalogCoverage | pending | 10/18 |
 | Entity Recall@20 | pending | 8/18 (44.4%) |
-| JointPromptReachability | pending | 1/18 (5.56%), pre-E3B.3 |
+| JointPromptReachability | pending | 1/18 (5.56%), post-E3B.3 |
 
 The first run revealed the generic local/global ordering defect repaired by
 E3B.2. It did not authorize score tuning. Embeddings, NER, query-specific
 aliases, gold-derived candidates, backend snapshots, relation/type retrieval
 changes, and Qwen execution remain outside M13-E3B.2. E3B.3 adds only the
-generic, gold-blind schema-ranking repair described above.
+generic, gold-blind schema-ranking repair described above. E3B.4 adds only the
+shared role-aware endpoint visibility contract; its real metric remains
+pending the audit-only rerun.

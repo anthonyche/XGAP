@@ -13,10 +13,26 @@ from xgap.experiments.bundles import (
 )
 from xgap.experiments.semantic import OntologyGraph
 from xgap.experiments.hashing import content_hash
+from xgap.experiments.relation_endpoints import (
+    EndpointRole,
+    RelationEndpointSelection,
+    RelationEndpointTypeEvidence,
+    derive_relation_endpoint_types,
+)
 from xgap.llm.openai_compatible import LiveFailureCategory
 from xgap.llm.parser import path_pattern_query_to_dict
 from xgap.llm.schemas import PlannerCandidate, PlannerResponse
-from xgap.pattern.ast import Alt, Bounded, OptionalExpr, Plus, RegexExpr, Rel, Seq, Star
+from xgap.pattern.ast import (
+    Alt,
+    Bounded,
+    Direction,
+    OptionalExpr,
+    Plus,
+    RegexExpr,
+    Rel,
+    Seq,
+    Star,
+)
 from xgap.planning.contracts import (
     MappingSufficiencyResult,
     MappingSufficiencyStatus,
@@ -214,6 +230,7 @@ class CandidateSlotRealization:
 class GroundedCandidate:
     candidate: PlannerCandidate
     slot_realizations: tuple[CandidateSlotRealization, ...]
+    endpoint_type_evidence: tuple[RelationEndpointTypeEvidence, ...] = ()
     entity_ids: tuple[str, ...] = ()
     provenance: Mapping[str, Any] = field(default_factory=dict)
 
@@ -224,6 +241,9 @@ class GroundedCandidate:
             "query_slots": [item.slot_id for item in self.slot_realizations],
             "slot_realizations": [item.to_dict() for item in self.slot_realizations],
             "ontology_term_ids": [item.ontology_term_id for item in self.slot_realizations],
+            "endpoint_type_evidence": [
+                item.to_dict() for item in self.endpoint_type_evidence
+            ],
             "entity_ids": list(self.entity_ids),
             "model_confidence": self.candidate.confidence,
             "rationale": self.candidate.rationale,
@@ -756,6 +776,11 @@ def parse_grounded_planner_response(
                     f"Candidate '{candidate.candidate_id}' must ground each ordered relation "
                     "component through its corresponding relation-hop slot.",
                 )
+        endpoint_type_evidence = _validate_relation_endpoint_types(
+            candidate,
+            realizations,
+            visible_terms_by_id,
+        )
         entity_ids = tuple(str(item) for item in grounding.get("entity_ids", ()))
         unknown_entities = set(entity_ids) - visible_entities
         if unknown_entities:
@@ -767,6 +792,7 @@ def parse_grounded_planner_response(
             GroundedCandidate(
                 candidate=candidate,
                 slot_realizations=tuple(realizations),
+                endpoint_type_evidence=endpoint_type_evidence,
                 entity_ids=entity_ids,
                 provenance={
                     "source": "live_structured_response",
@@ -808,6 +834,83 @@ def _regex_component_kinds(expr: RegexExpr, path: str) -> dict[str, str]:
     if isinstance(expr, Plus | Star | OptionalExpr | Bounded):
         return _regex_component_kinds(expr.child, f"{path}.child")
     raise TypeError(f"Unsupported PathPatternQuery expression {type(expr).__name__}.")
+
+
+def _validate_relation_endpoint_types(
+    candidate: PlannerCandidate,
+    realizations: Sequence[CandidateSlotRealization],
+    visible_terms_by_id: Mapping[str, RetrievedOntologyTerm],
+) -> tuple[RelationEndpointTypeEvidence, ...]:
+    if not any(item.slot_id.startswith("relation-hop-") for item in realizations):
+        return ()
+    explicit_class_ids = {
+        term_id
+        for term_id, term in visible_terms_by_id.items()
+        if term.kind == "class"
+    }
+    linear_components = _linear_relation_components(candidate.pattern_query.expr, "expr")
+    derived: tuple[RelationEndpointTypeEvidence, ...] = ()
+    if linear_components is not None:
+        by_component = {
+            item.component_ref: item
+            for item in realizations
+            if item.component_ref in {component[0] for component in linear_components}
+        }
+        selections: list[RelationEndpointSelection] = []
+        for component_ref, relation_label, direction in linear_components:
+            realization = by_component.get(component_ref)
+            if realization is None or realization.ontology_term_id != relation_label:
+                selections = []
+                break
+            term = visible_terms_by_id[realization.ontology_term_id]
+            selections.append(
+                RelationEndpointSelection(
+                    slot_id=realization.slot_id,
+                    component_ref=component_ref,
+                    relation_id=realization.ontology_term_id,
+                    direction=direction,
+                    domain=term.domain,
+                    range=term.range,
+                )
+            )
+        if selections:
+            derived = derive_relation_endpoint_types(selections)
+
+    evidence_by_role = {
+        role: {item.type_id for item in derived if item.role is role}
+        for role in EndpointRole
+    }
+    accepted_evidence: list[RelationEndpointTypeEvidence] = []
+    for role, label in (
+        (EndpointRole.SOURCE, candidate.pattern_query.source.label),
+        (EndpointRole.TARGET, candidate.pattern_query.target.label),
+    ):
+        if label is None or label in explicit_class_ids:
+            continue
+        if label not in evidence_by_role[role]:
+            raise RuntimeAlignmentError(
+                LiveFailureCategory.HALLUCINATED_ONTOLOGY_ID,
+                f"Candidate {role.value} type '{label}' is neither explicitly prompt-visible "
+                "nor an exact endpoint type of its selected relation path.",
+            )
+        accepted_evidence.extend(
+            item for item in derived if item.role is role and item.type_id == label
+        )
+    return tuple(accepted_evidence)
+
+
+def _linear_relation_components(
+    expr: RegexExpr, path: str
+) -> tuple[tuple[str, str | None, Direction], ...] | None:
+    if isinstance(expr, Rel):
+        return ((f"{path}.edge", expr.edge.label, expr.edge.direction),)
+    if isinstance(expr, Seq):
+        left = _linear_relation_components(expr.left, f"{path}.left")
+        right = _linear_relation_components(expr.right, f"{path}.right")
+        if left is None or right is None:
+            return None
+        return (*left, *right)
+    return None
 
 
 @dataclass(frozen=True)

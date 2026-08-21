@@ -372,6 +372,27 @@ def test_local_reachability_separates_local_catalog_miss(
         "m13e3b3-ontology-aware-schema-ranking-v1"
     )
     assert schema_comparison["ranking_contract"]["gold_inputs"] is False
+    endpoint_comparison = json.loads(
+        (
+            fixture["catalog"] / "endpoint_grounding_before_after.json"  # type: ignore[operator]
+        ).read_text()
+    )
+    assert endpoint_comparison["contract_version"] == (
+        "m13e3b4-relation-endpoint-grounding-v1"
+    )
+    assert endpoint_comparison["after"]["explicit_type_prompt_coverage"] == (
+        schema_comparison["after"]["type_prompt_coverage"]
+    )
+    endpoint_rows = [
+        json.loads(line)
+        for line in (
+            fixture["catalog"] / "relation_endpoint_diagnostics.jsonl"  # type: ignore[operator]
+        ).read_text().splitlines()
+    ]
+    assert len(endpoint_rows) == 2
+    assert endpoint_rows[0]["contract_version"] == (
+        "m13e3b4-relation-endpoint-grounding-v1"
+    )
     relation_ranking = [
         json.loads(line)
         for line in (
@@ -405,6 +426,8 @@ def test_local_reachability_separates_local_catalog_miss(
         "type_ranking_audit.jsonl",
         "relation_diagnostics_v2.jsonl",
         "type_diagnostics_v2.jsonl",
+        "endpoint_grounding_before_after.json",
+        "relation_endpoint_diagnostics.jsonl",
         "audit_summary.json",
     ):
         assert (fixture["catalog"] / name).is_file()

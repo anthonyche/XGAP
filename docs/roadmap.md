@@ -672,7 +672,7 @@ local-catalog misses; preserves the 0.20 gate; and leaves the independent
 global E3/E3A job unchanged.
 
 Current status:
-**M13-E3B.2 COMPLETE; M13-E3B.3 IMPLEMENTATION READY, REAL CWRU AUDIT-ONLY
+**M13-E3B.3 COMPLETE; M13-E3B.4 LOCALLY IMPLEMENTED, REAL CWRU AUDIT-ONLY
 RERUN PENDING.** The real
 preflight18 build completed with 865 unique entities and 900 assignments. Its
 first audit exposed a generic local/global ranking-contract mismatch: local
@@ -687,9 +687,21 @@ E3B.3 freezes deterministic phrase-aware relation/type ranking, ontology-only
 IDF tie-breaking, bounded relation-slot domain/range coherence, and
 pre-truncation type provenance. Its audit preserves prior artifact hashes and
 writes relation/type ranking decompositions, v2 failure stages, and exact
-before/after metrics. Acceptance requires fixture tests and a real audit-only
-rerun over the existing preflight18 SQLite artifact; it does not require or
-permit a Freebase rescan, Qwen, pilot150, prompt-limit changes, or gate tuning.
+before/after metrics. The real rerun improved Relation Recall@1/5/10/20 to
+5/11/12/13 of 18 and relation prompt coverage to 10/18. Type Recall@1/5/10/20
+became 1/4/8/13, explicit Type prompt coverage remained 4/18, and joint prompt
+reachability remained 1/18.
+
+E3B.4 freezes a shared role-aware relation-endpoint visibility contract. Exact
+domain/range types may ground only the source/target endpoint adjacent to the
+candidate's selected prompt-visible relation, respecting OUT, IN, and
+UNDIRECTED direction. Fixed linear paths use the first and last relation hop;
+ambiguous regular expressions receive no derived evidence. Offline audit keeps
+explicit Type metrics unchanged, reports `effective_type` separately, and uses
+that same runtime contract for joint reachability and the existing gate. Its
+real acceptance is an audit-only rerun over the existing preflight18 SQLite
+artifact; it does not require or permit a Freebase rescan, ranking change,
+Qwen, pilot150, prompt-limit changes, or gate tuning.
 
 ## M14 KGQA Evaluation
 

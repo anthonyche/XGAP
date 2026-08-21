@@ -11,9 +11,17 @@ from typing import Any, Iterable, Mapping, Sequence
 from xgap.experiments.grailqa_catalog import GrailQAInferenceCatalog, sha256_file
 from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
 from xgap.experiments.hashing import content_hash
+from xgap.experiments.relation_endpoints import (
+    EndpointRole,
+    RELATION_ENDPOINT_CONTRACT_VERSION,
+    RelationEndpointSelection,
+    RelationEndpointTypeEvidence,
+    derive_relation_endpoint_types,
+)
+from xgap.pattern.ast import Direction
 
 
-REACHABILITY_SCHEMA_VERSION = "m13e1-grailqa-reachability-v2"
+REACHABILITY_SCHEMA_VERSION = "m13e3b4-grailqa-reachability-v3"
 DEFAULT_K_VALUES = (1, 5, 10, 20)
 
 
@@ -23,6 +31,10 @@ class ReferenceRequirements:
     entities: tuple[str, ...]
     relations: tuple[str, ...]
     types: tuple[str, ...]
+    source_type: str | None = None
+    target_type: str | None = None
+    relation_directions: tuple[str, ...] = ()
+    linear_path: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -30,6 +42,10 @@ class ReferenceRequirements:
             "entities": list(self.entities),
             "relations": list(self.relations),
             "types": list(self.types),
+            "source_type": self.source_type,
+            "target_type": self.target_type,
+            "relation_directions": list(self.relation_directions),
+            "linear_path": self.linear_path,
         }
 
 
@@ -57,12 +73,19 @@ def reference_requirements(record: Mapping[str, Any]) -> ReferenceRequirements:
         for node in (source, target)
         if node.get("label") is not None
     }
-    relations = tuple(_relation_labels(_mapping(pattern.get("expr"), "expr")))
+    relation_steps, linear_path = _relation_steps(
+        _mapping(pattern.get("expr"), "expr")
+    )
+    relations = tuple(item[0] for item in relation_steps if item[0] is not None)
     return ReferenceRequirements(
         question_id=str(record["question_id"]),
         entities=tuple(sorted(entities)),
         relations=relations,
         types=tuple(sorted(types)),
+        source_type=(str(source["label"]) if source.get("label") is not None else None),
+        target_type=(str(target["label"]) if target.get("label") is not None else None),
+        relation_directions=tuple(item[1] for item in relation_steps),
+        linear_path=linear_path and len(relations) == len(relation_steps),
     )
 
 
@@ -508,9 +531,13 @@ def _audit_one(
     retrieved_types = tuple(str(item["id"]) for item in retrieval.get("type_candidates", ()))
     raw_slots = retrieval.get("relation_slots")
     if isinstance(raw_slots, list):
-        relation_slots = tuple(
-            tuple(str(item["id"]) for item in slot.get("candidates", ()))
+        relation_candidate_slots = tuple(
+            tuple(_mapping(item, "relation candidate") for item in slot.get("candidates", ()))
             for slot in raw_slots
+        )
+        relation_slots = tuple(
+            tuple(str(item["id"]) for item in candidates)
+            for candidates in relation_candidate_slots
         )
         retrieved_relations = tuple(dict.fromkeys(item for slot in relation_slots for item in slot))
     else:
@@ -518,6 +545,8 @@ def _audit_one(
             str(item["id"]) for item in retrieval.get("relation_candidates", ())
         )
         relation_slots = ()
+        relation_candidate_slots = ()
+    catalog_type = _coverage(requirement.types, catalog.types)
     row: dict[str, Any] = {
         "question_id": requirement.question_id,
         "requirements": requirement.to_dict(),
@@ -528,39 +557,79 @@ def _audit_one(
         "catalog": {
             "entity": _coverage(requirement.entities, catalog.entities),
             "relation": _coverage(requirement.relations, catalog.relations),
-            "type": _coverage(requirement.types, catalog.types),
+            "type": catalog_type,
+            "effective_type": dict(catalog_type),
         },
         "retrieval": {},
         "prompt": {},
     }
     row["catalog"]["joint"] = _joint(row["catalog"])
     for k in k_values:
+        retrieval_types = _type_visibility(
+            requirement,
+            retrieved_types[:k],
+            relation_candidate_slots,
+            k,
+        )
         retrieval_coverage = {
             "entity": _coverage(requirement.entities, retrieved_entities[:k]),
             "relation": _relation_coverage(requirement.relations, retrieved_relations, relation_slots, k),
-            "type": _coverage(requirement.types, retrieved_types[:k]),
+            **retrieval_types,
         }
         retrieval_coverage["joint"] = _joint(retrieval_coverage)
         prompt_k = min(k, prompt_limit)
+        prompt_types = _type_visibility(
+            requirement,
+            retrieved_types[:prompt_k],
+            relation_candidate_slots,
+            prompt_k,
+        )
         prompt_coverage = {
             "entity": _coverage(requirement.entities, retrieved_entities[:prompt_k]),
             "relation": _relation_coverage(
                 requirement.relations, retrieved_relations, relation_slots, prompt_k
             ),
-            "type": _coverage(requirement.types, retrieved_types[:prompt_k]),
+            **prompt_types,
         }
         prompt_coverage["joint"] = _joint(prompt_coverage)
         row["retrieval"][str(k)] = retrieval_coverage
         row["prompt"][str(k)] = prompt_coverage
+    deployed_types = _type_visibility(
+        requirement,
+        retrieved_types[:prompt_limit],
+        relation_candidate_slots,
+        prompt_limit,
+    )
     deployed = {
         "entity": _coverage(requirement.entities, retrieved_entities[:prompt_limit]),
         "relation": _relation_coverage(
             requirement.relations, retrieved_relations, relation_slots, prompt_limit
         ),
-        "type": _coverage(requirement.types, retrieved_types[:prompt_limit]),
+        **deployed_types,
     }
     deployed["joint"] = _joint(deployed)
     row["deployed_prompt"] = deployed
+    row["relation_endpoint_grounding"] = {
+        "contract_version": RELATION_ENDPOINT_CONTRACT_VERSION,
+        "evidence": [
+            item.to_dict()
+            for item in _relation_endpoint_evidence(
+                requirement, relation_candidate_slots, prompt_limit
+            )
+        ],
+        "explicit_type_ids": list(retrieved_types[:prompt_limit]),
+        "effective_type_ids": sorted(
+            {
+                *retrieved_types[:prompt_limit],
+                *(
+                    item.type_id
+                    for item in _relation_endpoint_evidence(
+                        requirement, relation_candidate_slots, prompt_limit
+                    )
+                ),
+            }
+        ),
+    }
     row["first_unreachable_stage"] = _first_unreachable_stage(row)
     return row
 
@@ -626,7 +695,11 @@ def _relation_coverage(
 
 
 def _joint(coverage: Mapping[str, Any]) -> dict[str, Any]:
-    reachable = all(bool(_mapping(coverage[kind], kind)["reachable"]) for kind in ("entity", "relation", "type"))
+    type_kind = "effective_type" if "effective_type" in coverage else "type"
+    reachable = all(
+        bool(_mapping(coverage[kind], kind)["reachable"])
+        for kind in ("entity", "relation", type_kind)
+    )
     return {"reachable": reachable}
 
 
@@ -656,7 +729,15 @@ def _aggregate_stage(
     rows: Sequence[Mapping[str, Any]], stage: str, k: str | None
 ) -> dict[str, Any]:
     result: dict[str, Any] = {}
-    for kind in ("entity", "relation", "type", "joint"):
+    base = _mapping(rows[0][stage], stage) if rows and k is None else None
+    if rows and k is not None:
+        base = _mapping(_mapping(rows[0][stage], stage)[k], k)
+    kinds = ["entity", "relation", "type"]
+    for optional_kind in ("relation_endpoint_type", "effective_type"):
+        if base is not None and optional_kind in base:
+            kinds.append(optional_kind)
+    kinds.append("joint")
+    for kind in kinds:
         count = sum(
             bool(
                 _mapping(
@@ -783,6 +864,148 @@ def _relation_labels(expr: Mapping[str, Any]) -> Iterable[str]:
         return
     if kind in ("plus", "star", "optional", "bounded"):
         yield from _relation_labels(_mapping(expr.get("child"), "child"))
+
+
+def _type_visibility(
+    requirement: ReferenceRequirements,
+    explicit_type_ids: Sequence[str],
+    relation_slots: tuple[tuple[Mapping[str, Any], ...], ...],
+    k: int,
+) -> dict[str, Any]:
+    evidence = _relation_endpoint_evidence(requirement, relation_slots, k)
+    return {
+        "type": _coverage(requirement.types, explicit_type_ids),
+        "relation_endpoint_type": _role_aware_type_coverage(
+            requirement, (), evidence
+        ),
+        "effective_type": _role_aware_type_coverage(
+            requirement, explicit_type_ids, evidence
+        ),
+    }
+
+
+def _role_aware_type_coverage(
+    requirement: ReferenceRequirements,
+    explicit_type_ids: Sequence[str],
+    evidence: Sequence[RelationEndpointTypeEvidence],
+) -> dict[str, Any]:
+    explicit = set(explicit_type_ids)
+    required_roles = (
+        (EndpointRole.SOURCE, requirement.source_type),
+        (EndpointRole.TARGET, requirement.target_type),
+    )
+    per_role = []
+    for role, type_id in required_roles:
+        if type_id is None:
+            continue
+        source = (
+            "explicit_type"
+            if type_id in explicit
+            else (
+                RELATION_ENDPOINT_CONTRACT_VERSION
+                if any(item.role is role and item.type_id == type_id for item in evidence)
+                else None
+            )
+        )
+        per_role.append(
+            {
+                "role": role.value,
+                "type_id": type_id,
+                "reachable": source is not None,
+                "visibility_source": source,
+            }
+        )
+    missing = sorted(
+        {str(item["type_id"]) for item in per_role if not item["reachable"]}
+    )
+    return {
+        "reachable": not missing,
+        "required_count": len(per_role),
+        "matched_count": sum(bool(item["reachable"]) for item in per_role),
+        "missing": missing,
+        "role_aware": True,
+        "per_role": per_role,
+    }
+
+
+def _relation_endpoint_evidence(
+    requirement: ReferenceRequirements,
+    relation_slots: tuple[tuple[Mapping[str, Any], ...], ...],
+    k: int,
+) -> tuple[RelationEndpointTypeEvidence, ...]:
+    if (
+        not requirement.linear_path
+        or not requirement.relations
+        or len(requirement.relations) != len(requirement.relation_directions)
+    ):
+        return ()
+    selections: list[RelationEndpointSelection] = []
+    for index, (relation_id, direction_name) in enumerate(
+        zip(requirement.relations, requirement.relation_directions, strict=True),
+        start=1,
+    ):
+        if index > len(relation_slots):
+            return ()
+        candidate = next(
+            (
+                item
+                for item in relation_slots[index - 1][:k]
+                if str(item.get("id")) == relation_id
+            ),
+            None,
+        )
+        if candidate is None:
+            return ()
+        try:
+            direction = Direction[direction_name]
+        except KeyError as error:
+            raise ValueError(f"Unknown reference relation direction {direction_name!r}.") from error
+        selections.append(
+            RelationEndpointSelection(
+                slot_id=f"relation-hop-{index}",
+                component_ref=f"relation-hop-{index}",
+                relation_id=relation_id,
+                direction=direction,
+                domain=(
+                    str(candidate["domain"])
+                    if candidate.get("domain") is not None
+                    else None
+                ),
+                range=(
+                    str(candidate["range"])
+                    if candidate.get("range") is not None
+                    else None
+                ),
+            )
+        )
+    return derive_relation_endpoint_types(selections)
+
+
+def _relation_steps(
+    expr: Mapping[str, Any],
+) -> tuple[tuple[tuple[str | None, str], ...], bool]:
+    kind = str(expr.get("kind", "")).casefold()
+    if kind == "rel":
+        edge = _mapping(expr.get("edge"), "edge")
+        return (
+            ((
+                str(edge["label"]) if edge.get("label") is not None else None,
+                str(edge.get("direction", "OUT")).upper(),
+            ),),
+            True,
+        )
+    if kind == "seq":
+        left, left_linear = _relation_steps(_mapping(expr.get("left"), "left"))
+        right, right_linear = _relation_steps(_mapping(expr.get("right"), "right"))
+        return (*left, *right), left_linear and right_linear
+    if kind == "alt":
+        left, _ = _relation_steps(_mapping(expr.get("left"), "left"))
+        right, _ = _relation_steps(_mapping(expr.get("right"), "right"))
+        return (*left, *right), False
+    if kind in ("plus", "star", "optional", "bounded"):
+        child, _ = _relation_steps(_mapping(expr.get("child"), "child"))
+        return child, False
+    return (), False
 
 
 def _mapping(value: object, name: str) -> Mapping[str, Any]:

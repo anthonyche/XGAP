@@ -713,3 +713,30 @@ losses dominated by lexical retrieval and prompt truncation. A term-level,
 explainable contract repairs generic short-token and post-truncation provenance
 defects without fitted weights, gold-derived aliases, embeddings, another
 model, larger prompt bounds, or changes to the live gate.
+
+## D61 Relation endpoint types are role-aware grounding evidence
+
+For a fixed linear path candidate, an exact domain/range type carried by a
+selected prompt-visible relation may make the adjacent endpoint type visible.
+OUT maps domain to source and range to target; IN reverses those roles;
+UNDIRECTED admits either exact endpoint type for either role. Multi-hop paths
+use the first selected relation for the outer source and the last selected
+relation for the outer target. Alternation and repeated/optional expressions
+do not receive derived endpoint evidence.
+
+This is a versioned deterministic grounding contract shared by runtime
+validation and offline reachability. It does not add the endpoint type to the
+explicit Type Top-4 list, expand the ontology hierarchy, apply lexical
+fallback, increase prompt bounds, or use evaluation gold during inference.
+Offline artifacts therefore retain the explicit `type` metric, report
+`effective_type` separately, and compute joint reachability from the effective
+runtime-visible set.
+
+Reason:
+
+The real E3B.3 audit exposed questions where the exact required relation was
+already prompt-visible with the required source or target type in its public
+domain/range metadata, while the runtime grounding boundary and offline gate
+still treated that type as invisible. A shared role-aware rule makes the
+metadata already supplied to the model operational without changing retrieval,
+ranking, prompt size, the gate threshold, or model behavior.

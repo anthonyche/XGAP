@@ -21,6 +21,12 @@ RELATION_RANKING_AUDIT_SCHEMA_VERSION = "m13e3b3-relation-ranking-audit-v1"
 TYPE_RANKING_AUDIT_SCHEMA_VERSION = "m13e3b3-type-ranking-audit-v1"
 RELATION_DIAGNOSTIC_V2_SCHEMA_VERSION = "m13e3b3-relation-diagnostic-v2"
 TYPE_DIAGNOSTIC_V2_SCHEMA_VERSION = "m13e3b3-type-diagnostic-v2"
+ENDPOINT_GROUNDING_COMPARISON_SCHEMA_VERSION = (
+    "m13e3b4-relation-endpoint-grounding-comparison-v1"
+)
+ENDPOINT_GROUNDING_DIAGNOSTIC_SCHEMA_VERSION = (
+    "m13e3b4-relation-endpoint-grounding-diagnostic-v1"
+)
 
 
 def relation_type_diagnostics(
@@ -174,6 +180,56 @@ def schema_ranking_metrics(audit: Mapping[str, Any]) -> dict[str, Any]:
         "type_prompt_coverage": _optional_metric(deployed, "type"),
         "joint_prompt_reachability": _optional_metric(deployed, "joint"),
     }
+
+
+def previous_endpoint_grounding_metrics(output: Path) -> dict[str, Any] | None:
+    comparison_path = output / "endpoint_grounding_before_after.json"
+    if comparison_path.is_file():
+        before = _read_json(comparison_path).get("before")
+        if isinstance(before, dict):
+            return before
+    summary_path = output / "audit_summary.json"
+    if not summary_path.is_file():
+        return None
+    return endpoint_grounding_metrics(_read_json(summary_path))
+
+
+def endpoint_grounding_metrics(audit: Mapping[str, Any]) -> dict[str, Any]:
+    summary = _mapping(audit.get("summary"), "summary")
+    deployed = _mapping(summary.get("deployed_prompt", {}), "deployed_prompt")
+    explicit = _optional_metric(deployed, "type")
+    effective = _optional_metric(deployed, "effective_type") or explicit
+    return {
+        "explicit_type_prompt_coverage": explicit,
+        "effective_type_prompt_coverage": effective,
+        "joint_prompt_reachability": _optional_metric(deployed, "joint"),
+    }
+
+
+def endpoint_grounding_diagnostics(
+    rows: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    result = []
+    for row in rows:
+        deployed = _mapping(row.get("deployed_prompt"), "deployed_prompt")
+        grounding = _mapping(
+            row.get("relation_endpoint_grounding"), "relation_endpoint_grounding"
+        )
+        result.append(
+            {
+                "schema_version": ENDPOINT_GROUNDING_DIAGNOSTIC_SCHEMA_VERSION,
+                "question_id": str(row["question_id"]),
+                "requirements": dict(_mapping(row.get("requirements"), "requirements")),
+                "contract_version": grounding.get("contract_version"),
+                "evidence": list(grounding.get("evidence", ())),
+                "explicit_type": dict(_mapping(deployed.get("type"), "type")),
+                "effective_type": dict(
+                    _mapping(deployed.get("effective_type"), "effective_type")
+                ),
+                "joint": dict(_mapping(deployed.get("joint"), "joint")),
+            }
+        )
+    return result
 
 
 def schema_ranking_audits(

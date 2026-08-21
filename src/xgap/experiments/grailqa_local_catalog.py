@@ -43,12 +43,16 @@ from xgap.experiments.grailqa_catalog_v2 import (
     validate_catalog_v2,
 )
 from xgap.experiments.grailqa_local_diagnostics import (
+    ENDPOINT_GROUNDING_COMPARISON_SCHEMA_VERSION,
     LOCAL_CONTRACT_COMPARISON_SCHEMA_VERSION,
     SCHEMA_RANKING_COMPARISON_SCHEMA_VERSION,
     diagnostic_stage_counts,
     diagnostic_rows_v2,
+    endpoint_grounding_diagnostics,
+    endpoint_grounding_metrics,
     entity_contract_metrics,
     previous_entity_contract_metrics,
+    previous_endpoint_grounding_metrics,
     previous_schema_ranking_metrics,
     relation_type_diagnostics,
     schema_ranking_audits,
@@ -60,13 +64,14 @@ from xgap.experiments.grailqa_reachability import (
     prompt_reachability_gate,
 )
 from xgap.experiments.hashing import content_hash
+from xgap.experiments.relation_endpoints import RELATION_ENDPOINT_CONTRACT_VERSION
 from xgap.experiments.schema_ranking import ranking_contract
 from xgap.experiments.semantic import OntologyGraph
 from xgap.infrastructure.descriptors import load_yaml_mapping
 
 
 LOCAL_CATALOG_SCHEMA_VERSION = "m13e3b-grailqa-local-catalog-v1"
-LOCAL_AUDIT_SCHEMA_VERSION = "m13e3b-grailqa-local-reachability-v1"
+LOCAL_AUDIT_SCHEMA_VERSION = "m13e3b4-grailqa-local-reachability-v2"
 ANCHOR_EXTRACTION_VERSION = "m13e3b-contiguous-normalized-spans-v1"
 NORMALIZATION_VERSION = "catalog-v2-normalized-label-v1"
 DEFAULT_CONFIG = "experiments/specs/grailqa_local_catalog_v1.json"
@@ -636,6 +641,7 @@ def run_local_reachability_audit(
     output.mkdir(parents=True, exist_ok=True)
     previous_metrics = previous_entity_contract_metrics(output)
     previous_schema_metrics = previous_schema_ranking_metrics(output)
+    previous_endpoint_metrics = previous_endpoint_grounding_metrics(output)
     prior_artifact_hashes = {
         name: sha256_file(output / name)
         for name in (
@@ -728,6 +734,7 @@ def run_local_reachability_audit(
         prompt_limit=prompt_limit,
     )
     rows = audit.pop("rows")
+    endpoint_diagnostics = endpoint_grounding_diagnostics(rows)
     for row in rows:
         if row.get("first_unreachable_stage") == "reference_not_in_catalog":
             row["first_unreachable_stage"] = "reference_not_in_local_catalog"
@@ -745,6 +752,7 @@ def run_local_reachability_audit(
         }
     )
     _write_jsonl(output / "reachability.jsonl", rows)
+    _write_jsonl(output / "relation_endpoint_diagnostics.jsonl", endpoint_diagnostics)
     catalog_coverage = {
         "schema_version": LOCAL_AUDIT_SCHEMA_VERSION,
         "question_count": audit["question_count"],
@@ -806,6 +814,27 @@ def run_local_reachability_audit(
         "before_metrics_available": previous_schema_metrics is not None,
         "previous_artifacts_preserved_by_hash": prior_artifact_hashes,
     }
+    endpoint_comparison = {
+        "schema_version": ENDPOINT_GROUNDING_COMPARISON_SCHEMA_VERSION,
+        "question_count": audit["question_count"],
+        "prompt_limit": prompt_limit,
+        "before": previous_endpoint_metrics,
+        "after": endpoint_grounding_metrics(audit),
+        "contract_version": RELATION_ENDPOINT_CONTRACT_VERSION,
+        "gold_usage": "metrics_and_diagnostic_selection_only_after_retrieval",
+        "interpretation": (
+            "Explicit Type Top-4 metrics remain separate. Effective type and joint "
+            "reachability add only exact, role-aware endpoint evidence from selected "
+            "prompt-visible relations."
+        ),
+    }
+    _write_json(output / "endpoint_grounding_before_after.json", endpoint_comparison)
+    audit["relation_endpoint_grounding"] = {
+        "contract_version": RELATION_ENDPOINT_CONTRACT_VERSION,
+        "before_metrics_available": previous_endpoint_metrics is not None,
+        "comparison_artifact": "endpoint_grounding_before_after.json",
+        "diagnostic_artifact": "relation_endpoint_diagnostics.jsonl",
+    }
     audit["artifact_hashes"] = {
         name: sha256_file(output / name)
         for name in (
@@ -823,6 +852,8 @@ def run_local_reachability_audit(
             "type_ranking_audit.jsonl",
             "relation_diagnostics_v2.jsonl",
             "type_diagnostics_v2.jsonl",
+            "endpoint_grounding_before_after.json",
+            "relation_endpoint_diagnostics.jsonl",
         )
     }
     audit["audit_hash"] = content_hash(audit)
