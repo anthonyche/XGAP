@@ -25,6 +25,7 @@ from xgap.experiments.grailqa_catalog import (
 )
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.live_run import build_openai_compatible_provider
+from xgap.experiments.relation_endpoints import relation_endpoint_prompt_contract
 from xgap.experiments.runtime_alignment import (
     GroundedPlannerResponse,
     PromptSchemaView,
@@ -375,6 +376,7 @@ def build_inference_request(
         "prompt_schema_view": prompt_view.to_dict(),
         "retrieval_hash": content_hash(retrieval.to_dict()),
         "inference_only": True,
+        "grounding_contracts": [relation_endpoint_prompt_contract()],
     }
     request = PlannerRequest(
         question=str(question_record["text"]),
@@ -641,6 +643,7 @@ def _infer_one(
     semantic: DirectionalOntologyDeviation,
     retrieval_k: int,
     candidate_cap: int,
+    prompt_candidates_per_slot: int = 4,
     response_parser: Callable[[Mapping[str, Any], PlannerRequest], Any] = parse_planner_response,
 ) -> dict[str, Any]:
     strict_inference_leakage_audit(question)
@@ -658,7 +661,11 @@ def _infer_one(
             "No bounded type or relation context was available.",
             terminal=True,
         )
-    view = catalog.prompt_view(retrieval)
+    view = catalog.prompt_view(
+        retrieval,
+        candidates_per_slot=prompt_candidates_per_slot,
+        max_entities=prompt_candidates_per_slot,
+    )
     request = build_inference_request(question, retrieval, view, candidate_cap)
     strict_inference_leakage_audit(request.to_dict())
     generation = provider.generate(request, view)

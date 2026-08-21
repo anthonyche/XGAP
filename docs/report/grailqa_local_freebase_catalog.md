@@ -265,10 +265,30 @@ hop slot, direction, endpoint role, and type ID remain auditable.
 Offline reachability preserves `type` as the explicit Type-candidate metric and
 adds `relation_endpoint_type` plus role-aware `effective_type`. `joint` and the
 unchanged 0.20 gate use `effective_type`, matching runtime admissibility. The
-first CWRU E3B.4 audit-only rerun will write
+real CWRU E3B.4 audit-only rerun wrote
 `endpoint_grounding_before_after.json` and
-`relation_endpoint_diagnostics.jsonl`; no real improvement is claimed until
-those artifacts are returned.
+`relation_endpoint_diagnostics.jsonl`. Explicit Type Top-4 coverage remained
+4/18, effective Type coverage rose from 4/18 to 12/18, and joint prompt
+reachability rose from 1/18 to 5/18 (27.78%). The unchanged 0.20 engineering
+gate therefore passed. This is the fixed-context reachability ceiling, not a
+Qwen accuracy measurement.
+
+## M13-E3B.5 Live Preflight Wiring
+
+The live CWRU wrapper selects the completed artifact through the explicit
+`query_local_e3b4` profile. It consumes `audit_summary.json` directly and
+fails before model startup if the exact 18 question IDs/order, Catalog-v2
+hash, audit hash, reachability-row hash, prompt limit 4, gold-blind catalog
+declaration, or endpoint contract differs. Structured Qwen requests include
+the same direction/role-aware endpoint rule used by runtime validation and the
+offline audit.
+
+The live report retains overall metrics over all 18 questions. It additionally
+reports provider success, structured validity, and Candidate Recall on the
+five-question jointly reachable subset. This conditional diagnostic isolates
+model behavior when the fixed prompt contains all required grounding evidence;
+it does not hide the 13 grounding-unreachable questions or redefine the main
+result.
 
 ## Full-vs-Local Comparison
 
@@ -283,12 +303,13 @@ every Full value is explicitly `null` with status `pending_global_build`.
 | unique entities | pending | 865 |
 | EntityCatalogCoverage | pending | 10/18 |
 | Entity Recall@20 | pending | 8/18 (44.4%) |
-| JointPromptReachability | pending | 1/18 (5.56%), post-E3B.3 |
+| JointPromptReachability | pending | 5/18 (27.78%), post-E3B.4 |
 
 The first run revealed the generic local/global ordering defect repaired by
 E3B.2. It did not authorize score tuning. Embeddings, NER, query-specific
 aliases, gold-derived candidates, backend snapshots, relation/type retrieval
 changes, and Qwen execution remain outside M13-E3B.2. E3B.3 adds only the
 generic, gold-blind schema-ranking repair described above. E3B.4 adds only the
-shared role-aware endpoint visibility contract; its real metric remains
-pending the audit-only rerun.
+shared role-aware endpoint visibility contract, whose real audit passed the
+unchanged gate. E3B.5 adds only fail-closed artifact-to-live-preflight wiring
+and conditional reporting; it does not change retrieval or prompt bounds.

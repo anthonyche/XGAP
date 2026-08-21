@@ -2,19 +2,21 @@
 
 ## Current Milestone
 
-M13-E3 remains **IMPLEMENTATION READY**. M13-E3B.3 is complete after the real
-CWRU audit-only rerun. Relation Recall@1/5/10/20 improved from 0/3/5/8 to
-5/11/12/13 of 18 and relation prompt coverage from 2/18 to 10/18. Type
-Recall@1/5/10/20 changed from 1/5/5/6 to 1/4/8/13 and explicit Type prompt
-coverage remained 4/18. Joint prompt reachability therefore remained 1/18 and
-the unchanged 0.20 gate correctly stayed closed.
+M13-E3 remains **IMPLEMENTATION READY**. M13-E3B.4 is complete after the real
+CWRU audit-only rerun. With entity and schema ranking unchanged, exact
+role-aware relation endpoint evidence raised effective Type prompt coverage
+from 4/18 to 12/18 and joint prompt reachability from 1/18 to 5/18 (27.78%).
+The unchanged 0.20 engineering gate passed with
+`live_preflight_allowed=true`; explicit Type Top-4 coverage remained 4/18.
 
-M13-E3B.4 is **LOCALLY IMPLEMENTED; REAL CWRU AUDIT-ONLY RERUN PENDING**. It
-repairs the remaining contract mismatch: exact domain/range endpoint types of
-the candidate's selected, prompt-visible relation path are now role-aware
-grounding evidence at runtime and in offline reachability. Explicit Type Top-4
-metrics remain separate. The entity contract, schema ranking, Top-50, prompt
-limit 4, gate 0.20, ontology, model path, and pilot150 are unchanged.
+M13-E3B.5 is **LOCALLY IMPLEMENTED; CWRU 18-QUERY LIVE PREFLIGHT PENDING**. It
+wires the passing query-local `preflight18` catalog and `audit_summary.json`
+into the existing Qwen3-32B preflight through an explicit artifact profile.
+Readiness now validates the exact frozen IDs, catalog and audit hashes, row
+hash, prompt bound 4, and relation-endpoint contract before a provider call.
+Structured requests carry that endpoint contract, and metrics report both all
+18 questions and the 5-question jointly reachable subset. Top-50, Top-4, gate
+0.20, ranking, ontology, model parameters, and pilot150 remain unchanged.
 
 ## Completed
 
@@ -46,26 +48,24 @@ limit 4, gate 0.20, ontology, model path, and pilot150 are unchanged.
 - M13-E2 CWRU H100 + vLLM Experiment Backend (local implementation)
 - M13-E3B.2 Query-Local Entity Retrieval Contract Repair
 - M13-E3B.3 Ontology-Aware Schema Ranking Repair
+- M13-E3B.4 Relation-Endpoint Grounding Contract
 
 ## In Progress
 
 - M13-E3 real CWRU construction of query-independent Freebase catalog v2
 - M13-E3 all-35,439 coverage and frozen-150 offline reachability audit
 - M13-E3A download and empirical validation of the frozen archival source
-- M13-E3B.4 CWRU relation-endpoint grounding audit-only rerun
+- M13-E3B.5 query-local artifact wiring and CWRU 18-query live preflight
 - M13-E3B real CWRU query-local pilot150 build, after reviewing preflight18
 
 ## Next Planned Milestone
 
-Leave the running global M13-E3/E3A job untouched. Pull M13-E3B.4 on CWRU and
-rerun only the existing `preflight18` offline audit with
-`XGAP_LOCAL_CATALOG_AUDIT_ONLY=1`; do not rescan Parquet. Review
-`endpoint_grounding_before_after.json`, the per-question endpoint evidence,
-explicit/effective Type coverage, and joint reachability.
-If and only if the unchanged gate naturally reports
-`live_preflight_allowed=true`, a Qwen3-32B preflight becomes a separate human
-action. Freebase rescanning, prompt-bound changes, embeddings, pilot150, RQ2/RQ3,
-full M13 disambiguation, and M14 remain outside this step.
+Leave the running global M13-E3/E3A job untouched. Pull M13-E3B.5 on CWRU,
+run `scripts/server/check_cwru_grailqa_preflight_ready.sh`, and submit exactly
+the frozen 18-query Qwen3-32B Slurm preflight. Review overall Candidate Recall
+and the separately reported jointly reachable 5-question subset before any
+larger experiment. Freebase rescanning, prompt-bound changes, embeddings,
+pilot150, RQ2/RQ3, full M13 disambiguation, and M14 remain outside this step.
 
 ## M13-E3 Freebase Catalog-v2 And Reachability Audit
 
@@ -194,6 +194,20 @@ Runtime grounding and offline reachability call the same versioned helper.
 and `joint` include valid endpoint evidence. The audit adds
 `endpoint_grounding_before_after.json` and
 `relation_endpoint_diagnostics.jsonl` without rewriting E3B.2/E3B.3 history.
+The real CWRU audit-only rerun retained explicit Type prompt coverage at 4/18,
+raised effective Type coverage from 4/18 to 12/18, and raised joint prompt
+reachability from 1/18 to 5/18. The unchanged 0.20 gate therefore passed at
+0.2778. This is an inference-context ceiling, not Qwen accuracy.
+
+M13-E3B.5 connects that exact passing artifact to the existing CWRU live
+preflight. `query_local_e3b4` is an explicit runtime profile; it reads
+`audit_summary.json` directly and rejects profile, question-ID/order,
+catalog-hash, audit-hash, reachability-row-hash, prompt-bound, or endpoint
+contract drift. The Qwen request receives the versioned role/direction rule
+already used by runtime validation and the audit. Overall 18-query metrics are
+preserved, while a separate jointly reachable subset reports provider success,
+structured validity, and Candidate Recall among the five questions for which
+all required grounding context is prompt-visible.
 
 ## M13-E2 CWRU H100 + vLLM Experiment Backend
 
@@ -1194,7 +1208,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M13-E3B.4 local implementation tests passed. M7 backend smoke and M12-C real
+M0-M13-E3B.5 local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1204,7 +1218,7 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 484 passed, 10 skipped, including the
+- `PYTHONPATH=src python -m pytest`: 490 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,
   mode-selection, compatibility-report, and CPU workflow tests. Three M13-E3A
@@ -1219,14 +1233,17 @@ Latest recorded command results:
   type-provenance, and no-gold contract regressions. E3B.4 adds exact
   direction/role mapping, runtime accept/reject, explicit-versus-effective
   Type reachability, prompt truncation, and endpoint audit-artifact regressions.
+  E3B.5 adds explicit query-local profile success, contract/ID/hash fail-closed
+  cases, structured endpoint-contract request propagation, conditional metric
+  separation, and CWRU wrapper syntax/path checks.
+- `./scripts/run_acceptance.sh`: passed with the same 490 passed and 10 skipped,
+  followed by all required deterministic examples and acceptance checks.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m pytest
   tests/test_m13e3a_freebase_parquet.py tests/test_m13e3_freebase_catalog.py
   -q`: 14 passed, including N-Triples/Parquet catalog and retrieval parity.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m
   xgap.experiments.freebase_sources smoke ... --max-row-groups 1`: passed on
   the real frozen `0000` shard; 649,794 rows contained every required construct.
-- `./scripts/run_acceptance.sh`: passed with the same 484 passed and 10 skips;
-  all required examples passed.
 - `PYTHONPATH=src python -m pytest tests/test_m13e3b3_schema_ranking.py
   tests/test_m13e1_reachability_contract.py tests/test_m13e3a_freebase_parquet.py
   tests/test_m13e3b_local_catalog.py -q`: 40 passed, 3 skipped.

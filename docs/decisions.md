@@ -740,3 +740,44 @@ domain/range metadata, while the runtime grounding boundary and offline gate
 still treated that type as invisible. A shared role-aware rule makes the
 metadata already supplied to the model operational without changing retrieval,
 ranking, prompt size, the gate threshold, or model behavior.
+
+## D62 Prompt Top-4 is a frozen experimental bound, not a semantic constant
+
+The M13-E1/E3B preflight exposes at most four entity candidates, four explicit
+type candidates, and four relation candidates per bounded relation slot to the
+model. The value comes from the frozen preflight spec field
+`prompt_candidates_per_slot=4` and the Catalog-v2 prompt-view bound. It is not
+part of PathPatternQuery, the path algebra, GrailQA semantics, or a theoretical
+success-rate claim.
+
+Increasing the bound cannot remove a reference term that is already visible
+under a fixed ranking, so offline prompt recall is non-decreasing. It also
+increases prompt tokens, serving latency, and the number of plausible but
+incorrect grounding choices; model accuracy is therefore not guaranteed to be
+monotonic. Any comparison of bounds such as 1/2/4/8/16 is a separately declared
+ablation. The current live preflight keeps 4 fixed rather than selecting a
+value after observing the gate.
+
+Reason:
+
+Prompt reachability and model correctness are different experimental layers.
+A frozen bounded context makes cost and ambiguity reproducible, while a later
+bound-sensitivity study can measure the recall-versus-confusion tradeoff without
+silently changing the primary condition.
+
+## D63 Live preflight artifact profiles are explicit and fail closed
+
+The CWRU M13-E3B.5 preflight selects the query-local artifact with the explicit
+`query_local_e3b4` profile. Readiness consumes its native
+`audit_summary.json` and `reachability.jsonl` paths and validates the exact 18
+question IDs/order, Catalog-v2 content hash, audit content hash, reachability
+row hash, prompt bound 4, gold-blind catalog declaration, and relation-endpoint
+contract version. The older query-independent `summary.json` layout remains a
+separate profile and cannot silently accept a query-local catalog.
+
+Reason:
+
+The passing 5/18 reachability result belongs to one precise query-local
+artifact and endpoint contract. Explicit profile selection prevents the live
+job from accidentally reading the stale global artifact layout or mixing
+coverage evidence from a different question set.

@@ -57,6 +57,39 @@ class RelationEndpointTypeEvidence:
         }
 
 
+def relation_endpoint_prompt_contract() -> dict[str, Any]:
+    """Return the bounded endpoint rule supplied to structured planners."""
+
+    return {
+        "contract_version": RELATION_ENDPOINT_CONTRACT_VERSION,
+        "scope": "selected_prompt_visible_fixed_linear_relation_path",
+        "direction_rules": {
+            "OUT": {"source_type": "domain", "target_type": "range"},
+            "IN": {"source_type": "range", "target_type": "domain"},
+            "UNDIRECTED": {
+                "source_type": ["domain", "range"],
+                "target_type": ["domain", "range"],
+            },
+        },
+        "multi_hop_rule": {
+            "source": "first_selected_relation",
+            "target": "last_selected_relation",
+        },
+        "evidence_requirements": {
+            "relation_must_be_prompt_visible": True,
+            "endpoint_type_match_must_be_exact": True,
+            "role_must_match": True,
+        },
+        "unsupported": [
+            "hierarchy_expansion",
+            "lexical_fallback",
+            "alternation_endpoint_inference",
+            "repetition_endpoint_inference",
+            "optional_endpoint_inference",
+        ],
+    }
+
+
 def derive_relation_endpoint_types(
     selections: Sequence[RelationEndpointSelection],
 ) -> tuple[RelationEndpointTypeEvidence, ...]:

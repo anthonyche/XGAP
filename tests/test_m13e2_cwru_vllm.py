@@ -311,6 +311,7 @@ def test_cwru_scripts_are_scheduler_selected_syntax_valid_and_cleanup_bounded() 
         ROOT / "scripts/cwru/smoke_vllm_structured_output.sh",
         ROOT / "scripts/slurm/cwru_xgap_vllm.sbatch",
         ROOT / "scripts/slurm/run_grailqa_semantic_preflight_v2.sbatch",
+        ROOT / "scripts/server/check_cwru_grailqa_preflight_ready.sh",
     ]
     for script in scripts:
         result = subprocess.run(
@@ -335,6 +336,12 @@ def test_cwru_scripts_are_scheduler_selected_syntax_valid_and_cleanup_bounded() 
     assert "gput073" not in combined
     assert "docker" not in combined.lower()
     assert "sudo" not in combined.lower()
+    preflight = (
+        ROOT / "scripts/slurm/run_grailqa_semantic_preflight_v2.sbatch"
+    ).read_text()
+    assert "query_local_e3b4" in preflight
+    assert "audit_summary.json" in preflight
+    assert "reachability.jsonl" in preflight
 
 
 def test_finalize_run_hashes_artifacts_and_records_failure(tmp_path: Path) -> None:

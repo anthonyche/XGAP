@@ -15,6 +15,7 @@ from typing import Any, Mapping, Sequence
 from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.cwru_vllm import load_run_environment
 from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
+from xgap.experiments.grailqa_local_catalog import validate_local_catalog
 from xgap.experiments.grailqa_reachability import prompt_reachability_gate
 from xgap.experiments.grailqa_semantic_pilot import (
     LiveSemanticPilotProvider,
@@ -28,10 +29,18 @@ from xgap.experiments.interpretation_contract import (
     parse_normalized_planner_response,
     semantic_deviation_distribution,
 )
+from xgap.experiments.relation_endpoints import RELATION_ENDPOINT_CONTRACT_VERSION
 from xgap.experiments.semantic import DirectionalOntologyDeviation, SemanticDeviationConfig
 
 
 PREFLIGHT_SCHEMA_VERSION = "m13e1-grailqa-semantic-preflight-v2"
+QUERY_INDEPENDENT_ARTIFACT_PROFILE = "query_independent_catalog_v2"
+QUERY_LOCAL_ARTIFACT_PROFILE = "query_local_e3b4"
+QUERY_LOCAL_CATALOG_SCHEMA_VERSION = "m13e3b-grailqa-local-catalog-v1"
+QUERY_LOCAL_REACHABILITY_SCHEMA_VERSION = "m13e3b4-grailqa-local-reachability-v2"
+_ARTIFACT_PROFILES = frozenset(
+    {QUERY_INDEPENDENT_ARTIFACT_PROFILE, QUERY_LOCAL_ARTIFACT_PROFILE}
+)
 
 
 def select_preflight_ids(
@@ -121,6 +130,132 @@ class GrailQAPreflightSpec:
         return tuple(str(item) for item in self.data["question_ids"])
 
 
+def _artifact_paths(
+    spec: GrailQAPreflightSpec, repo: Path
+) -> tuple[str, Path, Path, Path, Path]:
+    profile = os.environ.get(
+        "XGAP_GRAILQA_PREFLIGHT_ARTIFACT_PROFILE",
+        QUERY_INDEPENDENT_ARTIFACT_PROFILE,
+    )
+    catalog_root = _environment_path(
+        "XGAP_GRAILQA_CATALOG_V2", repo / str(spec.data["catalog_root"]), repo
+    )
+    reachability_root = _environment_path(
+        "XGAP_GRAILQA_REACHABILITY_V2",
+        repo / str(spec.data["reachability_root"]),
+        repo,
+    )
+    default_summary = reachability_root / (
+        "audit_summary.json"
+        if profile == QUERY_LOCAL_ARTIFACT_PROFILE
+        else "summary.json"
+    )
+    summary_path = _environment_path(
+        "XGAP_GRAILQA_REACHABILITY_SUMMARY", default_summary, repo
+    )
+    rows_path = _environment_path(
+        "XGAP_GRAILQA_REACHABILITY_ROWS",
+        reachability_root / "reachability.jsonl",
+        repo,
+    )
+    return profile, catalog_root, reachability_root, summary_path, rows_path
+
+
+def _environment_path(name: str, default: Path, repo: Path) -> Path:
+    raw = os.environ.get(name)
+    path = default if raw is None else Path(raw).expanduser()
+    if not path.is_absolute():
+        path = repo / path
+    return path.resolve()
+
+
+def _validated_artifact_profile_name(profile: str) -> str:
+    if profile not in _ARTIFACT_PROFILES:
+        raise ValueError(f"Unsupported preflight artifact profile: {profile}.")
+    return profile
+
+
+def _validate_artifact_profile(
+    *,
+    profile: str,
+    catalog: GrailQAInferenceCatalogV2,
+    summary: Mapping[str, Any],
+    reachability_rows: Sequence[Mapping[str, Any]],
+    reachability_rows_sha256: str,
+    spec: GrailQAPreflightSpec,
+) -> dict[str, Any]:
+    if profile not in _ARTIFACT_PROFILES:
+        raise ValueError(f"Unsupported preflight artifact profile: {profile}.")
+    row_ids = tuple(str(item.get("question_id", "")) for item in reachability_rows)
+    if not all(row_ids) or len(row_ids) != len(set(row_ids)):
+        raise ValueError("Reachability rows require unique nonempty question IDs.")
+    missing = sorted(set(spec.question_ids) - set(row_ids))
+    if missing:
+        raise ValueError(f"Reachability rows are missing frozen preflight IDs: {missing}.")
+
+    manifest = catalog.manifest
+    if profile == QUERY_INDEPENDENT_ARTIFACT_PROFILE:
+        if manifest.get("requires_query_entity_filter") is True:
+            raise ValueError(
+                "A query-local catalog requires the explicit query_local_e3b4 profile."
+            )
+        return {
+            "profile": profile,
+            "question_count": len(row_ids),
+            "question_contract": "frozen_preflight_ids_are_a_subset",
+        }
+
+    if manifest.get("local_catalog_schema_version") != QUERY_LOCAL_CATALOG_SCHEMA_VERSION:
+        raise ValueError("Query-local catalog schema does not match M13-E3B.")
+    if manifest.get("requires_query_entity_filter") is not True:
+        raise ValueError("Query-local catalog must enforce per-question entity filtering.")
+    if manifest.get("gold_used_for_construction") is not False:
+        raise ValueError("Query-local catalog must attest gold_used_for_construction=false.")
+    local_validation = validate_local_catalog(catalog.root)
+    if tuple(str(item) for item in manifest.get("question_ids", ())) != spec.question_ids:
+        raise ValueError("Query-local catalog question IDs do not match the frozen preflight.")
+    if tuple(row_ids) != spec.question_ids:
+        raise ValueError("Query-local reachability rows do not match the frozen preflight order.")
+    if summary.get("schema_version") != QUERY_LOCAL_REACHABILITY_SCHEMA_VERSION:
+        raise ValueError("Query-local reachability schema does not match M13-E3B.4.")
+    if int(summary.get("question_count", -1)) != len(spec.question_ids):
+        raise ValueError("Query-local reachability question count must be exactly 18.")
+    prompt_limit = int(summary.get("prompt_limit", -1))
+    if prompt_limit != int(spec.data["prompt_candidates_per_slot"]):
+        raise ValueError("Query-local prompt bound does not match the frozen preflight spec.")
+    endpoint = _mapping(
+        summary.get("relation_endpoint_grounding"),
+        "relation_endpoint_grounding",
+    )
+    if endpoint.get("contract_version") != RELATION_ENDPOINT_CONTRACT_VERSION:
+        raise ValueError("Query-local endpoint-grounding contract version does not match.")
+    for row in reachability_rows:
+        row_endpoint = _mapping(
+            row.get("relation_endpoint_grounding"),
+            "reachability relation_endpoint_grounding",
+        )
+        if row_endpoint.get("contract_version") != RELATION_ENDPOINT_CONTRACT_VERSION:
+            raise ValueError(
+                "Every query-local reachability row must use the frozen endpoint contract."
+            )
+    expected_audit_hash = str(summary.get("audit_hash", ""))
+    audit_payload = {key: value for key, value in summary.items() if key != "audit_hash"}
+    if not expected_audit_hash or content_hash(audit_payload) != expected_audit_hash:
+        raise ValueError("Query-local reachability audit hash does not match its content.")
+    artifact_hashes = _mapping(summary.get("artifact_hashes"), "artifact_hashes")
+    if artifact_hashes.get("reachability.jsonl") != reachability_rows_sha256:
+        raise ValueError("Query-local reachability rows hash does not match the audit.")
+    return {
+        "profile": profile,
+        "question_count": len(row_ids),
+        "question_contract": "exact_frozen_preflight_ids_and_order",
+        "prompt_candidates_per_slot": prompt_limit,
+        "relation_endpoint_contract_version": RELATION_ENDPOINT_CONTRACT_VERSION,
+        "audit_hash": expected_audit_hash,
+        "local_catalog_validation": local_validation,
+    }
+
+
 def preflight_readiness(
     spec: GrailQAPreflightSpec,
     repo_root: str | Path,
@@ -139,18 +274,13 @@ def preflight_readiness(
             checks.append({"name": name, "status": "fail", "detail": str(error)})
             return None
 
-    catalog_root = Path(
-        os.environ.get(
-            "XGAP_GRAILQA_CATALOG_V2",
-            str(repo / str(spec.data["catalog_root"])),
-        )
-    ).resolve()
-    reachability_root = Path(
-        os.environ.get(
-            "XGAP_GRAILQA_REACHABILITY_V2",
-            str(repo / str(spec.data["reachability_root"])),
-        )
-    ).resolve()
+    profile, catalog_root, reachability_root, summary_path, rows_path = _artifact_paths(
+        spec, repo
+    )
+    check(
+        "artifact_profile",
+        lambda: _validated_artifact_profile_name(profile),
+    )
     catalog: GrailQAInferenceCatalogV2 | None = None
     try:
         catalog = GrailQAInferenceCatalogV2.load(catalog_root)
@@ -161,9 +291,7 @@ def preflight_readiness(
         checks.append({"name": "catalog_v2", "status": "fail", "detail": str(error)})
     summary: Mapping[str, Any] | None = None
     try:
-        loaded_summary = json.loads(
-            (reachability_root / "summary.json").read_text(encoding="utf-8")
-        )
+        loaded_summary = json.loads(summary_path.read_text(encoding="utf-8"))
         if not isinstance(loaded_summary, Mapping):
             raise ValueError("Reachability summary must be an object.")
         summary = loaded_summary
@@ -177,6 +305,43 @@ def preflight_readiness(
     except Exception as error:  # noqa: BLE001
         checks.append(
             {"name": "reachability_artifact", "status": "fail", "detail": str(error)}
+        )
+    reachability_rows: list[dict[str, Any]] | None = None
+    try:
+        reachability_rows = _read_jsonl(rows_path)
+        if not reachability_rows:
+            raise ValueError("Reachability rows must not be empty.")
+        checks.append(
+            {
+                "name": "reachability_rows",
+                "status": "pass",
+                "detail": f"{len(reachability_rows)} rows",
+            }
+        )
+    except Exception as error:  # noqa: BLE001
+        checks.append(
+            {"name": "reachability_rows", "status": "fail", "detail": str(error)}
+        )
+    profile_contract = None
+    if catalog is not None and summary is not None and reachability_rows is not None:
+        profile_contract = check(
+            "artifact_profile_contract",
+            lambda: _validate_artifact_profile(
+                profile=profile,
+                catalog=catalog,
+                summary=summary,
+                reachability_rows=reachability_rows or (),
+                reachability_rows_sha256=_sha256_file(rows_path),
+                spec=spec,
+            ),
+        )
+    else:
+        checks.append(
+            {
+                "name": "artifact_profile_contract",
+                "status": "fail",
+                "detail": "Catalog, summary, and reachability rows must pass first.",
+            }
         )
     gate = None
     if catalog is not None and summary is not None:
@@ -223,10 +388,25 @@ def preflight_readiness(
     ready = all(item["status"] == "pass" for item in checks)
     coverage = summary.get("summary", {}) if isinstance(summary, Mapping) else {}
     return {
-        "schema_version": "m13e1-preflight-readiness-v2",
+        "schema_version": "m13e3b5-preflight-readiness-v3",
         "ready": ready,
+        "artifact_profile": profile,
+        "artifact_profile_contract": profile_contract,
         "catalog_root": str(catalog_root),
         "reachability_root": str(reachability_root),
+        "reachability_summary_path": str(summary_path),
+        "reachability_rows_path": str(rows_path),
+        "reachability_audit_hash": (
+            str(summary.get("audit_hash"))
+            if isinstance(summary, Mapping) and summary.get("audit_hash")
+            else None
+        ),
+        "relation_endpoint_contract_version": (
+            RELATION_ENDPOINT_CONTRACT_VERSION
+            if profile == QUERY_LOCAL_ARTIFACT_PROFILE
+            else None
+        ),
+        "prompt_candidates_per_slot": int(spec.data["prompt_candidates_per_slot"]),
         "catalog_coverage": coverage.get("catalog"),
         "retrieval_coverage": coverage.get("retrieval"),
         "prompt_reachability": coverage.get("deployed_prompt"),
@@ -269,6 +449,7 @@ def run_preflight(
             semantic=semantic,
             retrieval_k=int(spec.data["retrieval_k"]),
             candidate_cap=int(spec.data["candidate_cap"]),
+            prompt_candidates_per_slot=int(spec.data["prompt_candidates_per_slot"]),
             response_parser=parse_normalized_planner_response,
         )
         for question in questions
@@ -286,6 +467,7 @@ def run_preflight(
         effective_model=provider.model_name,
         question_count=len(questions),
         execution_environment=execution_environment,
+        readiness=readiness,
     )
     _write_json(output / "run_manifest.json", manifest)
     _write_jsonl(output / "retrieval.jsonl", (state["retrieval"] for state in states))
@@ -314,11 +496,12 @@ def build_preflight_run_manifest(
     effective_model: str,
     question_count: int,
     execution_environment: Mapping[str, Any] | None,
+    readiness: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the live manifest, optionally including a CWRU environment record."""
 
     manifest = {
-        "schema_version": "m13e1-preflight-run-manifest-v2",
+        "schema_version": "m13e3b5-preflight-run-manifest-v3",
         "run_id": output.name,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "spec_sha256": hashlib.sha256(spec.path.read_bytes()).hexdigest(),
@@ -332,6 +515,23 @@ def build_preflight_run_manifest(
         "backend_execution": False,
         "secrets_persisted": False,
     }
+    if readiness is not None:
+        manifest["inference_artifacts"] = {
+            "profile": readiness.get("artifact_profile"),
+            "catalog_root": readiness.get("catalog_root"),
+            "reachability_root": readiness.get("reachability_root"),
+            "reachability_summary_path": readiness.get(
+                "reachability_summary_path"
+            ),
+            "reachability_rows_path": readiness.get("reachability_rows_path"),
+            "reachability_audit_hash": readiness.get("reachability_audit_hash"),
+            "prompt_candidates_per_slot": readiness.get(
+                "prompt_candidates_per_slot"
+            ),
+            "relation_endpoint_contract_version": readiness.get(
+                "relation_endpoint_contract_version"
+            ),
+        }
     if execution_environment is not None:
         manifest["execution_environment"] = dict(execution_environment)
     return manifest
@@ -348,10 +548,9 @@ def _evaluate_preflight(
         str(item["question_id"]): item
         for item in _read_jsonl(pilot / "reference_interpretations.jsonl")
     }
-    reachability_root = Path(str(readiness["reachability_root"]))
     reachability = {
         str(item["question_id"]): item
-        for item in _read_jsonl(reachability_root / "reachability.jsonl")
+        for item in _read_jsonl(Path(str(readiness["reachability_rows_path"])))
     }
     candidate_rows: list[dict[str, Any]] = []
     component_rows: list[dict[str, Any]] = []
@@ -426,6 +625,9 @@ def _evaluate_preflight(
         "candidate_recall": (
             sum(by_question_match.values()) / len(states) if states else None
         ),
+        "jointly_reachable_subset": _jointly_reachable_subset_metrics(
+            states, by_question_match, reachability
+        ),
         "component_accuracy": component_accuracy,
         "full_normalized_interpretation_accuracy": component_accuracy.get(
             "full_normalized_interpretation"
@@ -461,8 +663,67 @@ def _evaluate_preflight(
     }
 
 
+def _jointly_reachable_subset_metrics(
+    states: Sequence[Mapping[str, Any]],
+    by_question_match: Mapping[str, bool],
+    reachability: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    jointly_reachable_ids = {
+        question_id
+        for question_id, row in reachability.items()
+        if bool(
+            _mapping(
+                _mapping(row.get("deployed_prompt"), "deployed_prompt").get("joint"),
+                "joint",
+            ).get("reachable")
+        )
+    }
+    subset = [
+        state
+        for state in states
+        if str(_mapping(state.get("question"), "question").get("question_id"))
+        in jointly_reachable_ids
+    ]
+    count = len(subset)
+    total = len(states)
+    matched = sum(
+        bool(
+            by_question_match.get(
+                str(_mapping(state.get("question"), "question").get("question_id"))
+            )
+        )
+        for state in subset
+    )
+    return {
+        "schema_version": "m13e3b5-jointly-reachable-subset-v1",
+        "question_count": count,
+        "unreachable_question_count": total - count,
+        "prompt_reachability_ceiling": count / total if total else None,
+        "provider_success_rate": (
+            sum(bool(state.get("api_call_completed")) for state in subset) / count
+            if count
+            else None
+        ),
+        "structured_valid_rate": (
+            sum(bool(state.get("candidates")) for state in subset) / count
+            if count
+            else None
+        ),
+        "candidate_recall": matched / count if count else None,
+        "matched_question_count": matched,
+    }
+
+
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _mapping(value: object, name: str) -> Mapping[str, Any]:

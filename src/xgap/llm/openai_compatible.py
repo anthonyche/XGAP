@@ -10,7 +10,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Mapping, Protocol
+from typing import Any, Callable, Mapping, Protocol, Sequence
 
 from xgap.experiments.hashing import content_hash
 from xgap.llm.parser import PlannerSchemaError, parse_planner_response
@@ -293,6 +293,16 @@ class OpenAICompatibleStructuredCandidateProvider:
         if not isinstance(schema_view, Mapping):
             raise ValueError("Live provider requires a bounded prompt_schema_view.")
         _validate_prompt_schema_view(schema_view)
+        grounding_contracts = request.metadata.get("grounding_contracts", ())
+        if not isinstance(grounding_contracts, Sequence) or isinstance(
+            grounding_contracts, (str, bytes)
+        ):
+            raise ValueError("grounding_contracts must be a sequence of objects.")
+        normalized_contracts = []
+        for contract in grounding_contracts:
+            if not isinstance(contract, Mapping):
+                raise ValueError("Every grounding contract must be an object.")
+            normalized_contracts.append(dict(contract))
         user_payload = {
             "task_id": str(request.metadata.get("task_id", "")),
             "question": request.question,
@@ -304,8 +314,11 @@ class OpenAICompatibleStructuredCandidateProvider:
                 "choose_query_anchors_from_visible_candidate_ids": True,
                 "ground_every_candidate_slot": True,
                 "native_query_text_forbidden": True,
+                "apply_supplied_grounding_contracts": bool(normalized_contracts),
             },
         }
+        if normalized_contracts:
+            user_payload["grounding_contracts"] = normalized_contracts
         payload: dict[str, Any] = {
             "model": self.config.model,
             "messages": [

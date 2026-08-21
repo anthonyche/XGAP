@@ -49,6 +49,20 @@ local artifact root. This command uses no GPU, Qwen, or provider credential.
 
 ## 2. Check Readiness
 
+For CWRU with the completed query-local E3B.4 artifact:
+
+```bash
+cd "$HOME/XGAP"
+bash scripts/server/check_cwru_grailqa_preflight_ready.sh
+```
+
+This selects `query_local_e3b4`, consumes the artifact's native
+`audit_summary.json`, and validates the exact 18-query/hash/prompt-bound/
+endpoint-contract tuple. It does not require vLLM to be running.
+
+The following legacy command applies only to the separate query-independent
+Catalog-v2 profile:
+
 ```bash
 export DASHSCOPE_API_KEY='<server DashScope key>'
 export XGAP_GRAILQA_CATALOG_V2="$HOME/xgap-data/grailqa-inference-catalog-v2"
@@ -62,7 +76,15 @@ is an engineering guard fixed before v2 model results, not a paper metric.
 
 ## 3. Run Exactly 18 Queries
 
-Only after readiness passes:
+On CWRU, only after the query-local readiness command passes:
+
+```bash
+JOB_ID=$(sbatch --parsable --export=ALL \
+  scripts/slurm/run_grailqa_semantic_preflight_v2.sbatch)
+echo "$JOB_ID"
+```
+
+For the separate remote-provider profile, the existing wrapper remains:
 
 ```bash
 bash scripts/run_grailqa_semantic_preflight_v2.sh
@@ -77,5 +99,7 @@ component-reachability levels. It was not selected by model performance.
 The output records catalog availability, PromptReachability, provider and
 structured-valid rates, Candidate Recall, component accuracy, full normalized
 interpretation accuracy, `c_sem` distribution, Feasible Coverage, and the
-stage-aware failure taxonomy. No backend execution is performed. A future
+stage-aware failure taxonomy. The query-local CWRU condition also records a
+`jointly_reachable_subset` for the five prompt-reachable questions while
+preserving all-18 metrics. No backend execution is performed. A future
 150-query run remains disallowed until these diagnostics are interpretable.

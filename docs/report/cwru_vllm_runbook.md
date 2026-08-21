@@ -29,18 +29,29 @@ git status --short
 The final command must be empty. The batch wrapper rejects dirty experiment
 checkouts by default.
 
-## 2. Confirm Offline Artifacts
+## 2. Confirm Query-Local Offline Artifacts
 
-Set the external M13-E1 artifact locations when they are outside the checkout:
+The CWRU wrapper defaults to the completed M13-E3B.4 `preflight18` artifact:
 
 ```bash
-export XGAP_GRAILQA_CATALOG_V2="$HOME/xgap-data/grailqa-inference-catalog-v2"
-export XGAP_GRAILQA_REACHABILITY_V2="$HOME/xgap-data/grailqa-reachability-v2"
+cd "$HOME/XGAP"
+bash scripts/server/check_cwru_grailqa_preflight_ready.sh
 ```
 
-The preflight wrapper checks the frozen 0.20 joint prompt-reachability gate
-before loading the model. Until catalog-v2 passes, submission exits without
-performing inference.
+The command requires no GPU and does not contact vLLM. It selects the explicit
+`query_local_e3b4` profile under
+`$HOME/xgap-data/freebase/grailqa-local-catalog-v1/preflight18`, reads
+`audit_summary.json` without copying or renaming it, and verifies the catalog,
+audit, reachability-row hashes, exact frozen 18 IDs/order, prompt bound 4, and
+endpoint-contract version. It must report `ready=true`, observed joint ratio
+`0.2777777777777778`, and a passing frozen 0.20 engineering gate.
+
+To override only the physical artifact root:
+
+```bash
+export XGAP_GRAILQA_LOCAL_PREFLIGHT_ROOT=/absolute/path/to/preflight18
+bash scripts/server/check_cwru_grailqa_preflight_ready.sh
+```
 
 ## 3. Submit The 18-Query Preflight
 
@@ -107,6 +118,10 @@ Success means:
 - the structured serving smoke reports `schema_valid=true`;
 - the result directory contains all 18-query preflight artifacts;
 - the preflight manifest contains the CWRU environment record;
+- the preflight manifest identifies artifact profile `query_local_e3b4` and
+  relation-endpoint contract `m13e3b4-relation-endpoint-grounding-v1`;
+- `metrics.json` retains all-18 results and reports the five-question
+  `jointly_reachable_subset` separately;
 - cleanup has stopped the recorded vLLM PID.
 
 ## 7. Failure And Re-run Policy

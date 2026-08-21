@@ -672,9 +672,9 @@ local-catalog misses; preserves the 0.20 gate; and leaves the independent
 global E3/E3A job unchanged.
 
 Current status:
-**M13-E3B.3 COMPLETE; M13-E3B.4 LOCALLY IMPLEMENTED, REAL CWRU AUDIT-ONLY
-RERUN PENDING.** The real
-preflight18 build completed with 865 unique entities and 900 assignments. Its
+**M13-E3B.4 COMPLETE; M13-E3B.5 LOCALLY IMPLEMENTED, CWRU LIVE PREFLIGHT
+PENDING.** The real preflight18 build completed with 865 unique entities and
+900 assignments. Its
 first audit exposed a generic local/global ranking-contract mismatch: local
 entity coverage was 10/18 but entity Recall@20 and joint prompt reachability
 were both 0/18. E3B.2 makes persisted per-question rank authoritative only for
@@ -699,9 +699,20 @@ UNDIRECTED direction. Fixed linear paths use the first and last relation hop;
 ambiguous regular expressions receive no derived evidence. Offline audit keeps
 explicit Type metrics unchanged, reports `effective_type` separately, and uses
 that same runtime contract for joint reachability and the existing gate. Its
-real acceptance is an audit-only rerun over the existing preflight18 SQLite
-artifact; it does not require or permit a Freebase rescan, ranking change,
-Qwen, pilot150, prompt-limit changes, or gate tuning.
+real acceptance was an audit-only rerun over the existing preflight18 SQLite
+artifact. Effective Type prompt coverage rose from 4/18 to 12/18 and joint
+prompt reachability from 1/18 to 5/18, so the unchanged 0.20 gate passed at
+0.2778 while explicit Type Top-4 remained 4/18.
+
+E3B.5 connects that passing query-local artifact to the frozen 18-query CWRU
+Qwen3-32B preflight. An explicit artifact profile validates the exact question
+set/order, catalog hash, audit hash, reachability-row hash, prompt bound, and
+endpoint contract before model startup. The structured request exposes the
+same endpoint rule used by deterministic runtime validation, and evaluation
+reports both overall metrics and metrics conditioned on the jointly reachable
+five-question subset. It does not rescan Freebase, alter Top-50 or Top-4,
+change the gate, run pilot150, or modify ranking, Qwen parameters, planner,
+compiler, or backend behavior.
 
 ## M14 KGQA Evaluation
 
