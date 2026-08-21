@@ -665,17 +665,21 @@ reference, answer, and logical-form fields; uses the immutable E3A Parquet
 source without redownload; performs bounded name/alias selection and retained
 MID type enrichment; produces two isolated Catalog-v2-compatible artifacts;
 enforces per-question candidates by ID and text hash; publishes from node-local
-staging atomically; runs the unchanged M13-E1 retrieval and reachability
-metrics only after construction; distinguishes local-catalog misses; preserves
-the 0.20 gate; and leaves the independent global E3/E3A job unchanged.
+staging atomically; preserves persisted query-local entity ranking at
+downstream retrieval while leaving global Catalog-v2 FTS unchanged; runs
+M13-E1 reachability metrics only after construction; distinguishes
+local-catalog misses; preserves the 0.20 gate; and leaves the independent
+global E3/E3A job unchanged.
 
 Current status:
-**IMPLEMENTATION READY; REAL CWRU LOCAL BUILDS AND AUDITS PENDING.** The frozen
-preflight18 and pilot150 definitions, deterministic anchor policy, two-pass
-extractor, local SQLite/FTS artifact, evaluation reports, pending-full
-comparison, server wrapper, CPU Slurm job, documentation, and fixture tests are
-implemented. No real local-catalog count or reachability result is claimed,
-and no Qwen job is submitted automatically.
+**IMPLEMENTATION READY; E3B.2 CWRU AUDIT-ONLY RERUN PENDING.** The real
+preflight18 build completed with 865 unique entities and 900 assignments. Its
+first audit exposed a generic local/global ranking-contract mismatch: local
+entity coverage was 10/18 but entity Recall@20 and joint prompt reachability
+were both 0/18. E3B.2 makes persisted per-question rank authoritative only for
+explicit query-local catalogs, adds before/after and relation/type diagnostics,
+and leaves global FTS, candidate construction, prompt bounds, and the 0.20 gate
+unchanged. No Qwen job is submitted automatically.
 
 ## M14 KGQA Evaluation
 

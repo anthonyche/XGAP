@@ -15,6 +15,8 @@ from xgap.experiments.freebase_sources import (
     ParquetTripleRecord,
 )
 from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
+from xgap.experiments.grailqa_local_diagnostics import relation_type_diagnostics
+from xgap.experiments.grailqa_reachability import CatalogUniverse
 from xgap.experiments import grailqa_local_catalog as local
 
 
@@ -129,6 +131,87 @@ def test_local_build_is_gold_blind_filtered_typed_and_catalog_v2_compatible(
         )
 
 
+def test_query_local_retrieval_preserves_persisted_rank_and_question_isolation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    catalog = _ranked_local_catalog_fixture(tmp_path)
+
+    def reject_global_fts(*args: object, **kwargs: object) -> object:
+        raise AssertionError("Query-local retrieval called the global FTS ranker.")
+
+    monkeypatch.setattr(
+        GrailQAInferenceCatalogV2, "_retrieve_entities", reject_global_fts
+    )
+    question = "white-faced whistling duck is an exhibit at what zoo?"
+    complete = catalog.retrieve("q-white", question, top_k=20)
+    expected = ["m.duck", "m.white1", "m.white2", "m.white3", "m.white4"]
+
+    assert [item.candidate_id for item in complete.entities] == expected
+    assert complete.entities[0].label == "White-faced Whistling-Duck"
+    assert complete.entities[0].score == 2.44
+    assert complete.entities[0].rank == 1
+    assert complete.to_dict()["config"]["entity_retrieval_mode"] == (
+        "query_local_persisted_rank"
+    )
+    assert "m.other" not in expected
+
+    for top_k in (1, 5, 10, 20):
+        result = catalog.retrieve("q-white", question, top_k=top_k)
+        assert [item.candidate_id for item in result.entities] == expected[:top_k]
+
+    other = catalog.retrieve("q-other", "what is the other white thing?", top_k=20)
+    repeated = catalog.retrieve("q-white", question, top_k=20)
+    assert [item.candidate_id for item in other.entities] == ["m.other"]
+    assert repeated.to_dict() == complete.to_dict()
+
+
+def test_global_catalog_still_delegates_to_unchanged_fts_entity_retrieval(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    local_catalog = _ranked_local_catalog_fixture(tmp_path)
+    global_catalog = GrailQAInferenceCatalogV2(
+        root=local_catalog.root,
+        manifest={"catalog_hash": "global-fixture"},
+        ontology=local_catalog.ontology,
+        terms=local_catalog.terms,
+    )
+    calls: list[tuple[str, int, object]] = []
+    expected = local_catalog._retrieve_entities(
+        "white-faced whistling duck is an exhibit at what zoo?", 3, None
+    )
+    original = GrailQAInferenceCatalogV2._retrieve_entities
+
+    def recording_global_fts(
+        self: GrailQAInferenceCatalogV2,
+        question: str,
+        top_k: int,
+        allowed_entity_ids: object = None,
+    ) -> object:
+        calls.append((question, top_k, allowed_entity_ids))
+        return original(self, question, top_k, allowed_entity_ids)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(
+        GrailQAInferenceCatalogV2, "_retrieve_entities", recording_global_fts
+    )
+    result = global_catalog.retrieve(
+        "arbitrary-global-id",
+        "white-faced whistling duck is an exhibit at what zoo?",
+        top_k=3,
+    )
+
+    assert result.entities == expected
+    assert calls == [
+        ("white-faced whistling duck is an exhibit at what zoo?", 3, None)
+    ]
+    assert result.to_dict()["config"] == {
+        "entity_channels": ["exact_alias", "normalized_alias", "bm25"],
+        "tie_break": "score_descending_then_id",
+        "relation_channels": ["lexical_bm25", "public_metadata"],
+        "relation_slots": 3,
+        "gold_inputs": False,
+    }
+
+
 def test_materialization_normalizes_posixpath_source_shard_only(
     tmp_path: Path,
 ) -> None:
@@ -205,6 +288,21 @@ def test_local_reachability_separates_local_catalog_miss(
         + "\n",
         encoding="utf-8",
     )
+    before_summary = {
+        "summary": {
+            "retrieval": {
+                key: {"entity": {"count": 0, "ratio": 0.0}}
+                for key in ("1", "5", "10", "20")
+            },
+            "deployed_prompt": {
+                "entity": {"count": 0, "ratio": 0.0},
+                "joint": {"count": 0, "ratio": 0.0},
+            },
+        }
+    }
+    (fixture["catalog"] / "audit_summary.json").write_text(  # type: ignore[operator]
+        json.dumps(before_summary), encoding="utf-8"
+    )
 
     audit = local.run_local_reachability_audit(
         catalog_root=fixture["catalog"],
@@ -220,11 +318,47 @@ def test_local_reachability_separates_local_catalog_miss(
         "reference_not_in_local_catalog"
     ] == 1
     assert audit["gate"]["minimum_joint_ratio"] == 0.20
+    comparison = json.loads(
+        (fixture["catalog"] / "entity_retrieval_before_after.json").read_text()  # type: ignore[operator]
+    )
+    assert comparison["before"]["entity_recall"]["20"]["ratio"] == 0.0
+    assert comparison["after"]["entity_recall"]["20"]["ratio"] == 0.5
+    assert comparison["after"]["entity_prompt_coverage"]["ratio"] == 0.5
+    relation_diagnostics = [
+        json.loads(line)
+        for line in (
+            fixture["catalog"] / "relation_diagnostics.jsonl"  # type: ignore[operator]
+        ).read_text().splitlines()
+    ]
+    type_diagnostics = [
+        json.loads(line)
+        for line in (
+            fixture["catalog"] / "type_diagnostics.jsonl"  # type: ignore[operator]
+        ).read_text().splitlines()
+    ]
+    assert len(relation_diagnostics) == 2
+    assert relation_diagnostics[0]["required_reference_relation_sequence"] == [
+        "people.person.place_of_birth"
+    ]
+    assert {"rank", "score"} <= set(
+        relation_diagnostics[0]["retrieved_relation_slots"][0]["candidates"][0]
+    )
+    assert len(type_diagnostics) == 2
+    assert type_diagnostics[0]["required_reference_types"] == [
+        "location.location",
+        "people.person",
+    ]
+    assert audit["relation_type_diagnostic_stage_counts"]["relation"][
+        "question_count"
+    ] == 2
     for name in (
         "catalog_coverage.json",
         "retrieval_metrics.json",
         "prompt_reachability.json",
         "stage_failure_counts.json",
+        "entity_retrieval_before_after.json",
+        "relation_diagnostics.jsonl",
+        "type_diagnostics.jsonl",
         "audit_summary.json",
     ):
         assert (fixture["catalog"] / name).is_file()
@@ -256,6 +390,86 @@ def test_comparison_keeps_unavailable_full_catalog_pending(
     assert result["metrics"]["joint_prompt_reachability"]["local"] == 0.2
 
 
+def test_relation_type_diagnostics_separate_universe_retrieval_and_prompt_loss() -> None:
+    references = (
+        _diagnostic_reference("q-universe", "r.missing", "t.missing"),
+        _diagnostic_reference("q-retrieval", "r.gold", "t.gold"),
+        _diagnostic_reference("q-prompt", "r.gold", "t.gold"),
+    )
+    decoys = [
+        {
+            "id": f"r.decoy{index}",
+            "label": f"decoy {index}",
+            "matched_label": f"decoy {index}",
+            "rank": index,
+            "score": 10.0 - index,
+        }
+        for index in range(1, 5)
+    ]
+    type_decoys = [
+        {
+            "id": f"t.decoy{index}",
+            "label": f"type decoy {index}",
+            "matched_label": f"type decoy {index}",
+            "rank": index,
+            "score": 10.0 - index,
+        }
+        for index in range(1, 5)
+    ]
+    retrieval_rows = (
+        _diagnostic_retrieval("q-universe", [], []),
+        _diagnostic_retrieval("q-retrieval", decoys, type_decoys),
+        _diagnostic_retrieval(
+            "q-prompt",
+            [
+                *decoys,
+                {
+                    "id": "r.gold",
+                    "label": "gold",
+                    "matched_label": "gold",
+                    "rank": 5,
+                    "score": 1.0,
+                },
+            ],
+            [
+                *type_decoys,
+                {
+                    "id": "t.gold",
+                    "label": "gold type",
+                    "matched_label": "gold type",
+                    "rank": 5,
+                    "score": 1.0,
+                },
+            ],
+        ),
+    )
+    relations, types = relation_type_diagnostics(
+        references=references,
+        retrieval_rows=retrieval_rows,
+        catalog=CatalogUniverse(
+            "fixture",
+            "hash",
+            frozenset(),
+            frozenset({"r.gold"}),
+            frozenset({"t.gold"}),
+        ),
+        prompt_limit=4,
+    )
+
+    assert [item["failure_stage"] for item in relations] == [
+        "ontology_universe",
+        "retrieval",
+        "prompt_truncation",
+    ]
+    assert [item["failure_stage"] for item in types] == [
+        "ontology_universe",
+        "retrieval",
+        "prompt_truncation",
+    ]
+    assert relations[2]["required_relation_diagnostics"][0]["retrieval_rank"] == 5
+    assert not relations[2]["required_relation_diagnostics"][0]["prompt_visible"]
+
+
 def test_local_slurm_job_is_cpu_only_separate_and_has_no_qwen() -> None:
     server = (ROOT / "scripts/server/build_grailqa_local_catalog.sh").read_text()
     slurm = (ROOT / "scripts/slurm/build_grailqa_local_catalog.sbatch").read_text()
@@ -263,9 +477,11 @@ def test_local_slurm_job_is_cpu_only_separate_and_has_no_qwen() -> None:
     assert "XGAP_GRAILQA_LOCAL_CATALOG_ROOT" in server
     assert "XGAP_LOCAL_CATALOG_STAGING_ROOT" in server
     assert "preflight18|pilot150" in server
+    assert "--audit-only" in server
     assert "#SBATCH --cpus-per-task=8" in slurm
     assert "#SBATCH --mem=48G" in slurm
     assert "module load Miniconda3" in slurm
+    assert "XGAP_LOCAL_CATALOG_AUDIT_ONLY" in slurm
     assert "python --version" in slurm
     assert "#SBATCH --gres" not in slurm
     assert "DASHSCOPE" not in slurm
@@ -363,6 +579,82 @@ def _build_fixture(
     }
 
 
+def _ranked_local_catalog_fixture(root: Path) -> GrailQAInferenceCatalogV2:
+    ontology, reverse = _schema(root)
+    output = root / "ranked-local-catalog"
+    output.mkdir()
+    questions = (
+        local.InferenceQuestion(
+            "q-white", "white-faced whistling duck is an exhibit at what zoo?"
+        ),
+        local.InferenceQuestion("q-other", "what is the other white thing?"),
+    )
+    candidate_specs = (
+        ("m.duck", "White-faced Whistling-Duck", 2.44, 1),
+        ("m.white1", "WHITE", 1.2, 2),
+        ("m.white2", "White", 1.1, 3),
+        ("m.white3", "WHITE", 1.0, 4),
+        ("m.white4", "White", 0.9, 5),
+    )
+    candidates = {
+        "q-white": tuple(
+            local.LocalCandidateMatch(
+                question_id="q-white",
+                entity_id=entity_id,
+                matched_label=label,
+                normalized_label=local.normalized_label(label),
+                match_type="exact_normalized_name",
+                score=score,
+                source_shard="default/data/0000.parquet",
+                rank=rank,
+            )
+            for entity_id, label, score, rank in candidate_specs
+        ),
+        "q-other": (
+            local.LocalCandidateMatch(
+                question_id="q-other",
+                entity_id="m.other",
+                matched_label="Other White Thing",
+                normalized_label="other white thing",
+                match_type="exact_normalized_name",
+                score=2.33,
+                source_shard="default/data/0001.parquet",
+                rank=1,
+            ),
+        ),
+    }
+    labels = {
+        entity_id: ((label, "canonical"),)
+        for entity_id, label, _, _ in candidate_specs
+    }
+    labels["m.other"] = (("Other White Thing", "canonical"),)
+    metadata = local._CandidateMetadata(
+        canonical_names={key: values[0][0] for key, values in labels.items()},
+        aliases=labels,
+        types={key: () for key in labels},
+    )
+    local._materialize_subset(
+        output=output,
+        questions=questions,
+        candidates=candidates,
+        metadata=metadata,
+        ontology_path=ontology,
+        reverse_path=reverse,
+    )
+    ontology_graph = local.OntologyGraph.from_dict(
+        local.load_yaml_mapping(ontology)
+    )
+    return GrailQAInferenceCatalogV2(
+        root=output,
+        manifest={
+            "catalog_hash": "query-local-fixture",
+            "requires_query_entity_filter": True,
+        },
+        ontology=ontology_graph,
+        terms=(),
+    )
+
+
 def _records() -> tuple[ParquetTripleRecord, ...]:
     shard = "default/data/0000.parquet"
     return (
@@ -447,4 +739,33 @@ def _reference(question_id: str, entity_id: str) -> dict[str, object]:
             "condition": None,
             "max_depth": None,
         },
+    }
+
+
+def _diagnostic_reference(
+    question_id: str, relation_id: str, type_id: str
+) -> dict[str, object]:
+    return {
+        "question_id": question_id,
+        "pattern_query": {
+            "source": {"var": "answer", "label": type_id, "properties": {}},
+            "expr": {
+                "kind": "rel",
+                "edge": {"label": relation_id},
+            },
+            "target": {"var": "anchor", "label": None, "properties": {}},
+        },
+    }
+
+
+def _diagnostic_retrieval(
+    question_id: str,
+    relation_candidates: list[dict[str, object]],
+    type_candidates: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "question_id": question_id,
+        "entity_candidates": [],
+        "relation_slots": [{"slot_id": "relation-hop-1", "candidates": relation_candidates}],
+        "type_candidates": type_candidates,
     }

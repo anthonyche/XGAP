@@ -31,7 +31,12 @@ echo "repo_id=CleverThis/freebase"
 echo "revision=dbb1931c2698295653effe9b980a02ab29f004e0"
 echo "No GPU or Qwen process is used by this job."
 
-bash scripts/server/build_grailqa_local_catalog.sh
+SCRIPT_ARGS=()
+if [[ "${XGAP_LOCAL_CATALOG_AUDIT_ONLY:-0}" == "1" ]]; then
+  SCRIPT_ARGS=(--audit-only)
+  echo "audit_only=true"
+fi
+bash scripts/server/build_grailqa_local_catalog.sh "${SCRIPT_ARGS[@]}"
 
 OUTPUT="$XGAP_GRAILQA_LOCAL_CATALOG_ROOT/$XGAP_LOCAL_CATALOG_WORKLOAD"
 python - "$OUTPUT/audit_summary.json" <<'PY'

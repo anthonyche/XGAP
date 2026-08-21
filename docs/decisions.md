@@ -669,3 +669,20 @@ without changing the scientific inference boundary. Per-query isolation and a
 separate evaluation phase make batching an I/O optimization rather than
 cross-query benchmark leakage, while explicit local-catalog misses preserve the
 cost of localization in reported reachability.
+
+## D59 Query-local candidate rank is an inference contract
+
+M13-E3B local candidate construction already performs the gold-blind entity
+selection and freezes its rank. For a manifest with
+`requires_query_entity_filter=true`, that persisted rank is authoritative at
+the downstream bounded entity interface. Retrieval orders by `rank` and then
+`entity_id`, preserves the local lexical score, and does not apply the global
+FTS entity scorer again. Global Catalog-v2 retrieval retains its original
+score-descending FTS behavior.
+
+Reason:
+
+The real CWRU preflight contained reference entities at local ranks 1-3 that
+were absent from downstream Top-20 after FTS reranking. Preserving the frozen
+local ordering repairs a generic contract defect without tuning lexical
+scores, changing candidate generation, or using evaluation references.

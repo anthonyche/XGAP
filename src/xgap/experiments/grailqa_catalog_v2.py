@@ -42,6 +42,8 @@ from xgap.infrastructure.descriptors import load_yaml_mapping
 
 CATALOG_V2_SCHEMA_VERSION = "m13e1-grailqa-inference-catalog-v2"
 RETRIEVAL_V2_SCHEMA_VERSION = "m13e1-grailqa-retrieval-v2"
+GLOBAL_ENTITY_RETRIEVAL_MODE = "global_fts"
+QUERY_LOCAL_ENTITY_RETRIEVAL_MODE = "query_local_persisted_rank"
 OFFICIAL_FREEBASE_DUMP_URL = (
     "https://storage.googleapis.com/freebase-public/rdf/freebase-rdf-latest.gz"
 )
@@ -97,6 +99,7 @@ class CatalogV2Retrieval:
     relations_by_slot: tuple[tuple[CatalogV2Candidate, ...], ...]
     types: tuple[CatalogV2Candidate, ...]
     expanded_types: tuple[str, ...]
+    entity_retrieval_mode: str = GLOBAL_ENTITY_RETRIEVAL_MODE
 
     @property
     def relations(self) -> tuple[CatalogV2Candidate, ...]:
@@ -107,17 +110,29 @@ class CatalogV2Retrieval:
         return self.types
 
     def to_dict(self) -> dict[str, Any]:
+        entity_config: dict[str, Any]
+        if self.entity_retrieval_mode == QUERY_LOCAL_ENTITY_RETRIEVAL_MODE:
+            entity_config = {
+                "entity_channels": [QUERY_LOCAL_ENTITY_RETRIEVAL_MODE],
+                "entity_retrieval_mode": QUERY_LOCAL_ENTITY_RETRIEVAL_MODE,
+                "entity_score": "persisted_local_lexical_score",
+                "tie_break": "persisted_rank_ascending_then_id",
+            }
+        else:
+            entity_config = {
+                "entity_channels": ["exact_alias", "normalized_alias", "bm25"],
+                "tie_break": "score_descending_then_id",
+            }
         return {
             "schema_version": RETRIEVAL_V2_SCHEMA_VERSION,
             "question_id": self.question_id,
             "question_hash": hashlib.sha256(self.question.encode("utf-8")).hexdigest(),
             "catalog_hash": self.catalog_hash,
             "config": {
-                "entity_channels": ["exact_alias", "normalized_alias", "bm25"],
+                **entity_config,
                 "relation_channels": ["lexical_bm25", "public_metadata"],
                 "relation_slots": len(self.relations_by_slot),
                 "gold_inputs": False,
-                "tie_break": "score_descending_then_id",
             },
             "entity_candidates": [item.to_dict() for item in self.entities],
             "relation_slots": [
@@ -204,14 +219,20 @@ class GrailQAInferenceCatalogV2:
             raise ValueError("relation_slots must be within the supported bound [1, 3].")
         if expansion_hops not in (0, 1, 2):
             raise ValueError("expansion_hops must be within the supported bound [0, 2].")
+        entity_retrieval_mode = GLOBAL_ENTITY_RETRIEVAL_MODE
         if self.manifest.get("requires_query_entity_filter") is True:
-            expected = self._query_conditioned_entity_ids(question_id, question)
-            if allowed_entity_ids is not None and set(allowed_entity_ids) != set(expected):
+            local_entities = self._query_conditioned_entities(question_id, question)
+            expected_ids = tuple(item.candidate_id for item in local_entities)
+            if allowed_entity_ids is not None and set(allowed_entity_ids) != set(
+                expected_ids
+            ):
                 raise ValueError(
                     "The supplied entity filter differs from the frozen query-local universe."
                 )
-            allowed_entity_ids = expected
-        entities = self._retrieve_entities(question, top_k, allowed_entity_ids)
+            entities = local_entities[:top_k]
+            entity_retrieval_mode = QUERY_LOCAL_ENTITY_RETRIEVAL_MODE
+        else:
+            entities = self._retrieve_entities(question, top_k, allowed_entity_ids)
         relations = self._retrieve_relation_slots(question, top_k, relation_slots)
         ranked_types = _rank_terms(
             question, (term for term in self.terms if term.kind == "type"), top_k
@@ -226,13 +247,15 @@ class GrailQAInferenceCatalogV2:
             relations_by_slot=relations,
             types=types,
             expanded_types=expanded,
+            entity_retrieval_mode=entity_retrieval_mode,
         )
 
-    def _query_conditioned_entity_ids(
+    def _query_conditioned_entities(
         self, question_id: str, question: str
-    ) -> tuple[str, ...]:
+    ) -> tuple[CatalogV2Candidate, ...]:
         database = self.root / "catalog.sqlite3"
         connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
+        connection.row_factory = sqlite3.Row
         try:
             row = connection.execute(
                 "SELECT question_hash FROM local_queries WHERE question_id=?",
@@ -245,13 +268,36 @@ class GrailQAInferenceCatalogV2:
                 raise ValueError(
                     "Question text differs from the text used to construct the local catalog."
                 )
-            return tuple(
-                str(item[0])
-                for item in connection.execute(
-                    "SELECT entity_id FROM query_entity_candidates "
-                    "WHERE question_id=? ORDER BY rank, entity_id",
+            rows = tuple(
+                connection.execute(
+                    "SELECT q.entity_id,q.rank,q.lexical_score,q.matched_label,"
+                    "q.match_type,e.canonical_name "
+                    "FROM query_entity_candidates q "
+                    "JOIN entities e ON e.id=q.entity_id "
+                    "WHERE q.question_id=? ORDER BY q.rank,q.entity_id",
                     (str(question_id),),
                 )
+            )
+            if len(rows) > 900:
+                raise ValueError("Per-query entity filters are bounded to at most 900 MIDs.")
+            return tuple(
+                CatalogV2Candidate(
+                    candidate_id=str(item["entity_id"]),
+                    label=str(item["canonical_name"]),
+                    kind="entity",
+                    score=round(float(item["lexical_score"]), 12),
+                    rank=int(item["rank"]),
+                    matched_label=str(item["matched_label"]),
+                    evidence=tuple(
+                        sorted(
+                            (
+                                QUERY_LOCAL_ENTITY_RETRIEVAL_MODE,
+                                f"local_match:{item['match_type']}",
+                            )
+                        )
+                    ),
+                )
+                for item in rows
             )
         finally:
             connection.close()

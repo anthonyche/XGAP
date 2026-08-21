@@ -60,6 +60,14 @@ The manifest records source/question hashes, frozen anchor policy, counts,
 nominal source bytes scanned, wall time, peak RSS, SQLite size, Git commit, and
 `gold_used_for_construction=false`.
 
+For a manifest with `requires_query_entity_filter=true`, the persisted local
+rank is also the downstream entity-retrieval contract. Retrieval verifies the
+question ID and text hash, reads only that question's assignments, orders by
+persisted rank and MID, preserves the persisted lexical score, and returns the
+requested prefix. It does not pass those candidates through the global FTS
+ranker. Catalogs without the query-local marker retain the original global FTS
+behavior.
+
 Intermediate SQLite writes occur under `$TMPDIR` or
 `XGAP_LOCAL_CATALOG_STAGING_ROOT`. A validated copy is made beside the
 persistent destination and atomically renamed into place. The global
@@ -102,6 +110,24 @@ XGAP_LOCAL_CATALOG_WORKLOAD=preflight18 \
   bash scripts/server/build_grailqa_local_catalog.sh
 ```
 
+After installing E3B.2, rerun only the offline audit over an existing artifact:
+
+```bash
+XGAP_LOCAL_CATALOG_WORKLOAD=preflight18 \
+  bash scripts/server/build_grailqa_local_catalog.sh --audit-only
+```
+
+The Slurm equivalent is:
+
+```bash
+XGAP_LOCAL_CATALOG_WORKLOAD=preflight18 \
+XGAP_LOCAL_CATALOG_AUDIT_ONLY=1 \
+  sbatch --export=ALL scripts/slurm/build_grailqa_local_catalog.sbatch
+```
+
+Both audit-only paths reuse `catalog.sqlite3`; they do not verify, rebuild, or
+rescan the Parquet source.
+
 The Slurm job requests 8 CPUs, 48 GB memory, no GPU, and uses the job's
 `$TMPDIR`. `sbatch` resource flags may override the committed defaults. It does
 not start Qwen or vLLM.
@@ -117,6 +143,9 @@ catalog_coverage.json
 retrieval_metrics.json
 prompt_reachability.json
 stage_failure_counts.json
+entity_retrieval_before_after.json
+relation_diagnostics.jsonl
+type_diagnostics.jsonl
 audit_summary.json
 retrieval.jsonl
 reachability.jsonl
@@ -134,9 +163,25 @@ The unchanged engineering gate is Joint Prompt Reachability >= 0.20. The
 result is recorded as `live_preflight_allowed`; no LLM job is submitted
 automatically.
 
-Real local entity counts, artifact sizes, build times, coverage, recall, prompt
-reachability, and GO/NO-GO status are pending the CWRU runs. No local fixture
-number is a paper result.
+The real CWRU preflight18 build completed with 865 unique entities, 900
+query-candidate assignments, approximately 45 minutes wall time, and an
+approximately 14.4 MB SQLite database. Its first, pre-E3B.2 audit measured:
+
+| Metric | Pre-E3B.2 |
+|---|---:|
+| EntityCatalogCoverage | 10/18 (55.6%) |
+| Entity Recall@20 | 0/18 |
+| Relation Recall@20 | 8/18 |
+| Type Recall@20 | 6/18 |
+| JointPromptReachability | 0/18 |
+
+`entity_retrieval_before_after.json` preserves this prior metric snapshot and
+records the post-fix Recall@1/5/10/20, prompt entity coverage at limit 4, and
+joint prompt reachability. The two diagnostic JSONL files report every
+required relation/type, retrieved rank and score, prompt-visible prefix, and
+the failure stage `ontology_universe`, `retrieval`, `prompt_truncation`, or
+`reachable`. The real post-fix values remain pending the CWRU audit-only rerun.
+No local fixture number is a paper result.
 
 ## Full-vs-Local Comparison
 
@@ -146,14 +191,14 @@ every Full value is explicitly `null` with status `pending_global_build`.
 
 | Metric | Full | Local |
 |---|---:|---:|
-| artifact size | pending | pending CWRU |
-| construction wall time | pending | pending CWRU |
-| unique entities | pending | pending CWRU |
-| EntityCatalogCoverage | pending | pending CWRU |
-| Entity Recall@20 | pending | pending CWRU |
-| JointPromptReachability | pending | pending CWRU |
+| artifact size | pending | approximately 14.4 MB |
+| construction wall time | pending | approximately 45 minutes |
+| unique entities | pending | 865 |
+| EntityCatalogCoverage | pending | 10/18 |
+| Entity Recall@20 | pending | post-E3B.2 rerun pending |
+| JointPromptReachability | pending | post-E3B.2 rerun pending |
 
-No retrieval policy should be changed after inspecting the first results unless
-the run reveals a generic correctness defect. Embeddings, NER, query-specific
-aliases, gold-derived candidates, backend snapshots, and Qwen execution are
-outside M13-E3B.
+The first run revealed the generic local/global ordering defect repaired by
+E3B.2. It did not authorize score tuning. Embeddings, NER, query-specific
+aliases, gold-derived candidates, backend snapshots, relation/type retrieval
+changes, and Qwen execution remain outside M13-E3B.2.

@@ -123,6 +123,13 @@ def test_catalog_v2_is_query_independent_and_retrieval_is_deterministic(
     second = catalog_v2.retrieve("q1", "Where was Alice born?", top_k=2)
 
     assert first.to_dict() == second.to_dict()
+    assert first.to_dict()["config"] == {
+        "entity_channels": ["exact_alias", "normalized_alias", "bm25"],
+        "tie_break": "score_descending_then_id",
+        "relation_channels": ["lexical_bm25", "public_metadata"],
+        "relation_slots": 3,
+        "gold_inputs": False,
+    }
     assert first.entities[0].candidate_id == "m.alice"
     assert "normalized_alias" in first.entities[0].evidence
     assert first.relations_by_slot[0][0].candidate_id == "people.person.place_of_birth"

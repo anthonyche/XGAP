@@ -7,12 +7,14 @@ Catalog-v2 job may continue unchanged, while E3B can build query-conditioned
 local Catalog-v2 artifacts for the frozen 18-query preflight and 150-query
 pilot. E3B uses only question text, public English Freebase names/aliases/type
 metadata, and the frozen ontology during construction; references are opened
-only by the later offline audit. The first real CWRU preflight18 job completed
-source processing and reached SQLite materialization, then failed before
-publication because shard provenance was a `PosixPath`. M13-E3B.1 normalizes
-paths at the SQLite/JSON serialization boundary and makes the Slurm job load
-Miniconda3 itself. No local metrics were produced; preflight18 must be
-resubmitted before any GO/NO-GO claim.
+only by the later offline audit. The real CWRU preflight18 build is complete:
+865 unique entities, 900 query assignments, about 45 minutes wall time, and an
+approximately 14.4 MB SQLite artifact. Its first audit measured entity catalog
+coverage 10/18 but entity Recall@20 0/18 and joint prompt reachability 0/18.
+Query-level evidence showed that generic global FTS reranking discarded highly
+ranked persisted local candidates. M13-E3B.2 repairs only that query-local
+retrieval contract; a CWRU audit-only rerun is pending before post-fix metrics
+or a new GO/NO-GO decision are claimed.
 
 ## Completed
 
@@ -49,15 +51,17 @@ resubmitted before any GO/NO-GO claim.
 - M13-E3 all-35,439 coverage and frozen-150 offline reachability audit
 - M13-E3A download and empirical validation of the frozen archival source
 - M13-E3B real CWRU query-local preflight18 build and reachability audit
+- M13-E3B.2 CWRU post-fix audit-only retrieval/reachability measurement
 - M13-E3B real CWRU query-local pilot150 build, after reviewing preflight18
 
 ## Next Planned Milestone
 
-Leave the running global M13-E3/E3A job untouched. Submit the independent
-`scripts/slurm/build_grailqa_local_catalog.sbatch` job with
-`XGAP_LOCAL_CATALOG_WORKLOAD=preflight18`, inspect its offline coverage and
-0.20 gate, and only then decide whether to build `pilot150`. A Qwen3-32B
-preflight remains a separate human action permitted only when
+Leave the running global M13-E3/E3A job untouched. Pull M13-E3B.2 on CWRU and
+rerun only the existing `preflight18` offline audit with
+`XGAP_LOCAL_CATALOG_AUDIT_ONLY=1`; do not rescan Parquet. Review the persisted
+entity before/after metrics and relation/type query-level diagnostics before
+deciding whether to build `pilot150`. A Qwen3-32B preflight remains a separate
+human action permitted only when the unchanged 0.20 gate naturally reports
 `live_preflight_allowed=true`. Freebase backend execution, retrieval tuning,
 embeddings, RQ2/RQ3, full M13 disambiguation, and M14 remain future work.
 
@@ -130,10 +134,13 @@ phase that first persists retrieval, then opens references and reports local
 catalog loss separately as `reference_not_in_local_catalog`.
 
 The implementation, fixture tests, CPU Slurm job, 18/150 frozen configuration,
-comparison utility, and report are ready. Real local entity counts, artifact
-size, wall time, coverage, recall, prompt reachability, and GO/NO-GO remain
-unset until CWRU runs complete. The global E3/E3A job and its staging/output
-remain independent and unchanged. See
+comparison utility, and report are ready. The real CWRU `preflight18` build
+retains 865 unique entities and 900 assignments in an approximately 14.4 MB
+SQLite artifact after about 45 minutes. Its first audit reports entity catalog
+coverage 10/18, entity Recall@20 0/18, relation Recall@20 8/18, type Recall@20
+6/18, and joint prompt reachability 0/18. These are diagnostic engineering
+results, not paper metrics. The global E3/E3A job and its staging/output remain
+independent and unchanged. See
 `docs/report/grailqa_local_freebase_catalog.md`.
 
 M13-E3B.1 fixes the first real CWRU preflight failure without changing the
@@ -143,8 +150,18 @@ catalog policy. Parameter 8 of the `query_entity_candidates` INSERT is
 only `pathlib.PurePath` values to path strings, preserves supported SQLite
 primitives unchanged, and rejects unknown parameter types. The same provenance
 is string-normalized for JSONL output. The local-catalog sbatch script now runs
-`module load Miniconda3` before invoking Python. M13-E3B remains
-**IMPLEMENTATION READY; REAL CWRU PREFLIGHT18 RESUBMISSION PENDING**.
+`module load Miniconda3` before invoking Python.
+
+M13-E3B.2 fixes the contract defect exposed by that completed build. Catalogs
+whose manifest declares `requires_query_entity_filter=true` now return only
+the current question's persisted candidates ordered by local rank and MID,
+with the persisted lexical score. They no longer pass that universe through
+the global FTS scorer. Global Catalog-v2 retrieval is unchanged. Offline audit
+now writes `entity_retrieval_before_after.json`, `relation_diagnostics.jsonl`,
+and `type_diagnostics.jsonl`; relation/type retrieval itself is unchanged.
+The 0.20 gate, prompt limit 4, top-50 construction, ontology, and model path
+are unchanged. M13-E3B remains **IMPLEMENTATION READY; REAL CWRU E3B.2
+AUDIT-ONLY RERUN PENDING**.
 
 ## M13-E2 CWRU H100 + vLLM Experiment Backend
 
@@ -1145,7 +1162,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M13-E3B local implementation tests passed. M7 backend smoke and M12-C real
+M0-M13-E3B.2 local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1155,7 +1172,7 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 468 passed, 10 skipped, including the
+- `PYTHONPATH=src python -m pytest`: 471 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,
   mode-selection, compatibility-report, and CPU workflow tests. Three M13-E3A
@@ -1163,15 +1180,22 @@ Latest recorded command results:
   M13-E3A.1 covers both old and new curl capability paths. M13-E3B covers
   question-only construction, query isolation, local type enrichment,
   Catalog-v2 compatibility, local loss attribution, pending-full reports, and
-  E3B.1 `PosixPath` materialization normalization.
+  E3B.1 `PosixPath` materialization normalization. E3B.2 adds persisted-rank
+  entity retrieval, global-FTS non-regression, Top-k prefix/isolation, and
+  relation/type diagnostic-stage regressions.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m pytest
   tests/test_m13e3a_freebase_parquet.py tests/test_m13e3_freebase_catalog.py
   -q`: 14 passed, including N-Triples/Parquet catalog and retrieval parity.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m
   xgap.experiments.freebase_sources smoke ... --max-row-groups 1`: passed on
   the real frozen `0000` shard; 649,794 rows contained every required construct.
-- `./scripts/run_acceptance.sh`: passed with the same 468 passed and 10 skips;
+- `./scripts/run_acceptance.sh`: passed with the same 471 passed and 10 skips;
   all required examples passed.
+- `PYTHONPATH=src python -m pytest tests/test_m13e1_reachability_contract.py
+  tests/test_m13e3b_local_catalog.py -q`: 28 passed.
+- `bash -n scripts/server/build_grailqa_local_catalog.sh`, `bash -n
+  scripts/slurm/build_grailqa_local_catalog.sbatch`, and `git diff --check`:
+  passed.
 - M13-D offline reachability reproduction: catalog entity 12/150; retrieval
   Top-20 entity/relation/type 10/47/67; deployed prompt 9/22/38; joint 0/150.
 - M13-E1 local readiness: refused the live path because catalog v2 and

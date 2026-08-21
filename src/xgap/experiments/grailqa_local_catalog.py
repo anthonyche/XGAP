@@ -42,6 +42,13 @@ from xgap.experiments.grailqa_catalog_v2 import (
     _write_catalog_files,
     validate_catalog_v2,
 )
+from xgap.experiments.grailqa_local_diagnostics import (
+    LOCAL_CONTRACT_COMPARISON_SCHEMA_VERSION,
+    diagnostic_stage_counts,
+    entity_contract_metrics,
+    previous_entity_contract_metrics,
+    relation_type_diagnostics,
+)
 from xgap.experiments.grailqa_reachability import (
     audit_reachability,
     load_catalog_universe,
@@ -621,6 +628,7 @@ def run_local_reachability_audit(
     catalog_path = Path(catalog_root)
     output = Path(output_root)
     output.mkdir(parents=True, exist_ok=True)
+    previous_metrics = previous_entity_contract_metrics(output)
     questions = load_inference_questions(
         inference_questions_path, question_ids=question_ids
     )
@@ -654,10 +662,23 @@ def run_local_reachability_audit(
     if {str(item.get("question_id")) for item in references} != requested:
         raise ValueError("Evaluation references do not cover the frozen local workload.")
     entities_by_question = _query_entity_ids(catalog_path)
+    catalog_universe = load_catalog_universe(catalog_path)
+    relation_diagnostics, type_diagnostics = relation_type_diagnostics(
+        references=references,
+        retrieval_rows=retrieval_rows,
+        catalog=catalog_universe,
+        prompt_limit=prompt_limit,
+    )
+    _write_jsonl(output / "relation_diagnostics.jsonl", relation_diagnostics)
+    _write_jsonl(output / "type_diagnostics.jsonl", type_diagnostics)
+    diagnostic_counts = {
+        "relation": diagnostic_stage_counts(relation_diagnostics),
+        "type": diagnostic_stage_counts(type_diagnostics),
+    }
     audit = audit_reachability(
         references=references,
         retrieval_rows=retrieval_rows,
-        catalog=load_catalog_universe(catalog_path),
+        catalog=catalog_universe,
         workload_by_id=workload,
         catalog_entities_by_question=entities_by_question,
         k_values=DEFAULT_K_VALUES,
@@ -677,6 +698,7 @@ def run_local_reachability_audit(
             "gold_usage": "evaluation_only_after_retrieval_persisted",
             "gold_used_for_construction": False,
             "stage_failure_counts": stage_counts,
+            "relation_type_diagnostic_stage_counts": diagnostic_counts,
         }
     )
     _write_jsonl(output / "reachability.jsonl", rows)
@@ -702,6 +724,20 @@ def run_local_reachability_audit(
     _write_json(output / "retrieval_metrics.json", retrieval_metrics)
     _write_json(output / "prompt_reachability.json", prompt_reachability)
     _write_json(output / "stage_failure_counts.json", stage_counts)
+    contract_comparison = {
+        "schema_version": LOCAL_CONTRACT_COMPARISON_SCHEMA_VERSION,
+        "question_count": audit["question_count"],
+        "prompt_limit": prompt_limit,
+        "before": previous_metrics,
+        "after": entity_contract_metrics(audit),
+        "interpretation": (
+            "The comparison is diagnostic only; candidate generation, prompt bounds, "
+            "and the live gate are unchanged."
+        ),
+    }
+    _write_json(
+        output / "entity_retrieval_before_after.json", contract_comparison
+    )
     audit["artifact_hashes"] = {
         name: sha256_file(output / name)
         for name in (
@@ -711,6 +747,9 @@ def run_local_reachability_audit(
             "retrieval_metrics.json",
             "prompt_reachability.json",
             "stage_failure_counts.json",
+            "entity_retrieval_before_after.json",
+            "relation_diagnostics.jsonl",
+            "type_diagnostics.jsonl",
         )
     }
     audit["audit_hash"] = content_hash(audit)

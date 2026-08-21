@@ -20,11 +20,14 @@ case "$WORKLOAD" in
     ;;
 esac
 
+COMMAND="run"
 FORCE=()
-if [[ "${1:-}" == "--force" ]]; then
+if [[ "${1:-}" == "--audit-only" ]]; then
+  COMMAND="audit"
+elif [[ "${1:-}" == "--force" ]]; then
   FORCE=(--force)
 elif [[ -n "${1:-}" ]]; then
-  echo "Usage: $0 [--force]" >&2
+  echo "Usage: $0 [--force|--audit-only]" >&2
   exit 2
 fi
 
@@ -33,9 +36,13 @@ export XGAP_GIT_COMMIT="$(git rev-parse HEAD)"
 export XGAP_FREEBASE_PARQUET_ROOT="$PARQUET_ROOT"
 export XGAP_FREEBASE_SOURCE_MANIFEST="$SOURCE_MANIFEST"
 
-echo "Building and auditing query-local workload: $WORKLOAD"
-echo "The builder first validates the complete frozen M13-E3A source exactly once."
-PYTHONPATH=src "$PYTHON" -m xgap.experiments.grailqa_local_catalog run \
+if [[ "$COMMAND" == "audit" ]]; then
+  echo "Auditing the existing query-local workload without reading the Parquet source: $WORKLOAD"
+else
+  echo "Building and auditing query-local workload: $WORKLOAD"
+  echo "The builder first validates the complete frozen M13-E3A source exactly once."
+fi
+PYTHONPATH=src "$PYTHON" -m xgap.experiments.grailqa_local_catalog "$COMMAND" \
   --config "$CONFIG" \
   --workload "$WORKLOAD" \
   --parquet-root "$PARQUET_ROOT" \
@@ -47,3 +54,6 @@ PYTHONPATH=src "$PYTHON" -m xgap.experiments.grailqa_local_catalog run \
 OUTPUT="$LOCAL_ROOT/$WORKLOAD"
 echo "M13-E3B local catalog and offline audit are ready: $OUTPUT"
 echo "GO/NO-GO: $OUTPUT/prompt_reachability.json"
+echo "Entity before/after: $OUTPUT/entity_retrieval_before_after.json"
+echo "Relation diagnostics: $OUTPUT/relation_diagnostics.jsonl"
+echo "Type diagnostics: $OUTPUT/type_diagnostics.jsonl"

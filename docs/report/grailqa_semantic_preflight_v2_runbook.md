@@ -33,6 +33,20 @@ The command builds and hashes catalog v2, audits catalog coverage over all
 retrieval/reachability bundle. Exit 2 means the scientific gate failed; do not
 run Qwen.
 
+For the completed M13-E3B query-local `preflight18` artifact, E3B.2 requires
+only a post-hoc audit. It must not rescan Freebase:
+
+```bash
+cd "$HOME/XGAP"
+XGAP_LOCAL_CATALOG_WORKLOAD=preflight18 \
+XGAP_LOCAL_CATALOG_AUDIT_ONLY=1 \
+  sbatch --export=ALL scripts/slurm/build_grailqa_local_catalog.sbatch
+```
+
+Inspect `entity_retrieval_before_after.json`, `relation_diagnostics.jsonl`,
+`type_diagnostics.jsonl`, and `prompt_reachability.json` under the existing
+local artifact root. This command uses no GPU, Qwen, or provider credential.
+
 ## 2. Check Readiness
 
 ```bash
