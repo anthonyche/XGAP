@@ -7,9 +7,12 @@ Catalog-v2 job may continue unchanged, while E3B can build query-conditioned
 local Catalog-v2 artifacts for the frozen 18-query preflight and 150-query
 pilot. E3B uses only question text, public English Freebase names/aliases/type
 metadata, and the frozen ontology during construction; references are opened
-only by the later offline audit. Neither the full nor local 32,476,432,840-byte
-source scan has produced imported metrics, so catalog counts, reachability, and
-GO/NO-GO outcomes remain pending CWRU.
+only by the later offline audit. The first real CWRU preflight18 job completed
+source processing and reached SQLite materialization, then failed before
+publication because shard provenance was a `PosixPath`. M13-E3B.1 normalizes
+paths at the SQLite/JSON serialization boundary and makes the Slurm job load
+Miniconda3 itself. No local metrics were produced; preflight18 must be
+resubmitted before any GO/NO-GO claim.
 
 ## Completed
 
@@ -132,6 +135,16 @@ size, wall time, coverage, recall, prompt reachability, and GO/NO-GO remain
 unset until CWRU runs complete. The global E3/E3A job and its staging/output
 remain independent and unchanged. See
 `docs/report/grailqa_local_freebase_catalog.md`.
+
+M13-E3B.1 fixes the first real CWRU preflight failure without changing the
+catalog policy. Parameter 8 of the `query_entity_candidates` INSERT is
+`source_shard`; the Parquet adapter supplies its safe relative path as a
+`PosixPath`, which SQLite cannot bind. The materialization boundary now maps
+only `pathlib.PurePath` values to path strings, preserves supported SQLite
+primitives unchanged, and rejects unknown parameter types. The same provenance
+is string-normalized for JSONL output. The local-catalog sbatch script now runs
+`module load Miniconda3` before invoking Python. M13-E3B remains
+**IMPLEMENTATION READY; REAL CWRU PREFLIGHT18 RESUBMISSION PENDING**.
 
 ## M13-E2 CWRU H100 + vLLM Experiment Backend
 
@@ -1142,21 +1155,22 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 467 passed, 10 skipped, including the
+- `PYTHONPATH=src python -m pytest`: 468 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,
   mode-selection, compatibility-report, and CPU workflow tests. Three M13-E3A
   file-level Parquet tests are skipped only when optional PyArrow is absent;
   M13-E3A.1 covers both old and new curl capability paths. M13-E3B covers
   question-only construction, query isolation, local type enrichment,
-  Catalog-v2 compatibility, local loss attribution, and pending-full reports.
+  Catalog-v2 compatibility, local loss attribution, pending-full reports, and
+  E3B.1 `PosixPath` materialization normalization.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m pytest
   tests/test_m13e3a_freebase_parquet.py tests/test_m13e3_freebase_catalog.py
   -q`: 14 passed, including N-Triples/Parquet catalog and retrieval parity.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m
   xgap.experiments.freebase_sources smoke ... --max-row-groups 1`: passed on
   the real frozen `0000` shard; 649,794 rows contained every required construct.
-- `./scripts/run_acceptance.sh`: passed with the same 467 passed and 10 skips;
+- `./scripts/run_acceptance.sh`: passed with the same 468 passed and 10 skips;
   all required examples passed.
 - M13-D offline reachability reproduction: catalog entity 12/150; retrieval
   Top-20 entity/relation/type 10/47/67; deployed prompt 9/22/38; joint 0/150.

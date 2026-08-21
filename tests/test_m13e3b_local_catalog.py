@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import json
 from pathlib import Path
+import sqlite3
 
 import pytest
 
@@ -128,6 +129,60 @@ def test_local_build_is_gold_blind_filtered_typed_and_catalog_v2_compatible(
         )
 
 
+def test_materialization_normalizes_posixpath_source_shard_only(
+    tmp_path: Path,
+) -> None:
+    ontology, reverse = _schema(tmp_path)
+    output = tmp_path / "materialized"
+    output.mkdir()
+    question = local.InferenceQuestion("q-path", "Where was Alice born?")
+    candidate = local.LocalCandidateMatch(
+        question_id=question.question_id,
+        entity_id="m.alice",
+        matched_label="Alice",
+        normalized_label="alice",
+        match_type="exact_normalized_alias",
+        score=2.25,
+        source_shard=Path("default/data/0000.parquet"),  # type: ignore[arg-type]
+        rank=1,
+    )
+    metadata = local._CandidateMetadata(
+        canonical_names={"m.alice": "Alice Example"},
+        aliases={"m.alice": (("Alice Example", "canonical"), ("Alice", "alias"))},
+        types={"m.alice": ("people.person",)},
+    )
+
+    local._materialize_subset(
+        output=output,
+        questions=(question,),
+        candidates={question.question_id: (candidate,)},
+        metadata=metadata,
+        ontology_path=ontology,
+        reverse_path=reverse,
+    )
+
+    connection = sqlite3.connect(output / "catalog.sqlite3")
+    try:
+        row = connection.execute(
+            "SELECT question_id,entity_id,rank,lexical_score,matched_label,"
+            "normalized_label,match_type,source_shard FROM query_entity_candidates"
+        ).fetchone()
+    finally:
+        connection.close()
+    assert row == (
+        "q-path",
+        "m.alice",
+        1,
+        2.25,
+        "Alice",
+        "alice",
+        "exact_normalized_alias",
+        "default/data/0000.parquet",
+    )
+    assert candidate.to_dict()["source_shard"] == "default/data/0000.parquet"
+    assert local._sqlite_row((7, 2.5, b"raw", None)) == (7, 2.5, b"raw", None)
+
+
 def test_local_reachability_separates_local_catalog_miss(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -210,6 +265,8 @@ def test_local_slurm_job_is_cpu_only_separate_and_has_no_qwen() -> None:
     assert "preflight18|pilot150" in server
     assert "#SBATCH --cpus-per-task=8" in slurm
     assert "#SBATCH --mem=48G" in slurm
+    assert "module load Miniconda3" in slurm
+    assert "python --version" in slurm
     assert "#SBATCH --gres" not in slurm
     assert "DASHSCOPE" not in slurm
     assert "vllm" not in slurm.casefold()

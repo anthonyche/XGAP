@@ -7,6 +7,8 @@
 
 set -euo pipefail
 
+module load Miniconda3
+
 REPO_ROOT="${XGAP_REPO_ROOT:-$HOME/XGAP}"
 export XGAP_LOCAL_CATALOG_WORKLOAD="${XGAP_LOCAL_CATALOG_WORKLOAD:-preflight18}"
 export XGAP_FREEBASE_RAW_DIR="${XGAP_FREEBASE_RAW_DIR:-$HOME/xgap-data/freebase/raw}"
@@ -17,6 +19,8 @@ export XGAP_LOCAL_CATALOG_STAGING_ROOT="${XGAP_LOCAL_CATALOG_STAGING_ROOT:-${TMP
 
 cd "$REPO_ROOT"
 echo "git_commit=$(git rev-parse HEAD)"
+echo "python=$(command -v python)"
+python --version
 echo "hostname=$(hostname)"
 echo "cpus=${SLURM_CPUS_PER_TASK:-unknown}"
 echo "workload=$XGAP_LOCAL_CATALOG_WORKLOAD"

@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePath
 import re
 import resource
 import shutil
@@ -145,7 +145,7 @@ class LocalCandidateMatch:
             "normalized_label": self.normalized_label,
             "match_type": self.match_type,
             "lexical_score": self.score,
-            "source_shard": self.source_shard,
+            "source_shard": str(self.source_shard),
             "rank": self.rank,
         }
 
@@ -862,22 +862,27 @@ def _materialize_subset(
         )
         connection.executemany(
             "INSERT INTO local_queries(question_id, question_hash, question_text) VALUES(?,?,?)",
-            ((item.question_id, item.question_hash, item.text) for item in questions),
+            (
+                _sqlite_row((item.question_id, item.question_hash, item.text))
+                for item in questions
+            ),
         )
         connection.executemany(
             "INSERT INTO query_entity_candidates("
             "question_id,entity_id,rank,lexical_score,matched_label,normalized_label,"
             "match_type,source_shard) VALUES(?,?,?,?,?,?,?,?)",
             (
-                (
-                    item.question_id,
-                    item.entity_id,
-                    item.rank,
-                    item.score,
-                    item.matched_label,
-                    item.normalized_label,
-                    item.match_type,
-                    item.source_shard,
+                _sqlite_row(
+                    (
+                        item.question_id,
+                        item.entity_id,
+                        item.rank,
+                        item.score,
+                        item.matched_label,
+                        item.normalized_label,
+                        item.match_type,
+                        item.source_shard,
+                    )
                 )
                 for values in candidates.values()
                 for item in values
@@ -910,6 +915,23 @@ def _materialize_subset(
         ),
     )
     return counts, integrity
+
+
+SQLiteValue = str | int | float | bytes | None
+
+
+def _sqlite_value(value: object) -> SQLiteValue:
+    """Normalize one SQLite parameter without changing semantic primitives."""
+
+    if isinstance(value, PurePath):
+        return str(value)
+    if value is None or isinstance(value, (str, int, float, bytes)):
+        return value
+    raise TypeError(f"Unsupported SQLite parameter type: {type(value).__name__}")
+
+
+def _sqlite_row(values: Iterable[object]) -> tuple[SQLiteValue, ...]:
+    return tuple(_sqlite_value(value) for value in values)
 
 
 def _existing_lexical_score(question: str, alias_normalized: str) -> float:
