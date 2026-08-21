@@ -121,6 +121,7 @@ def audit_reachability(
     retrieval_rows: Sequence[Mapping[str, Any]],
     catalog: CatalogUniverse,
     workload_by_id: Mapping[str, Mapping[str, Any]] | None = None,
+    catalog_entities_by_question: Mapping[str, Iterable[str]] | None = None,
     k_values: Sequence[int] = DEFAULT_K_VALUES,
     prompt_limit: int = 4,
 ) -> dict[str, Any]:
@@ -139,7 +140,19 @@ def audit_reachability(
         _audit_one(
             item,
             retrieval_by_id[item.question_id],
-            catalog,
+            (
+                catalog
+                if catalog_entities_by_question is None
+                else CatalogUniverse(
+                    catalog_id=catalog.catalog_id,
+                    catalog_hash=catalog.catalog_hash,
+                    entities=frozenset(
+                        catalog_entities_by_question.get(item.question_id, ())
+                    ),
+                    relations=catalog.relations,
+                    types=catalog.types,
+                )
+            ),
             tuple(int(value) for value in k_values),
             prompt_limit,
             (workload_by_id or {}).get(item.question_id, {}),

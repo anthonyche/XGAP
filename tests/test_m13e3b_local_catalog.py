@@ -1,0 +1,393 @@
+from __future__ import annotations
+
+import inspect
+import json
+from pathlib import Path
+
+import pytest
+
+from xgap.experiments.freebase_sources import (
+    ALIAS_PREDICATE,
+    HF_FREEBASE_REVISION,
+    NAME_PREDICATE,
+    TYPE_PREDICATE,
+    ParquetTripleRecord,
+)
+from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
+from xgap.experiments import grailqa_local_catalog as local
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_anchor_extraction_is_deterministic_and_normalized() -> None:
+    first = local.extract_query_anchors("Where was Alice-Example born?")
+    second = local.extract_query_anchors("Where was Alice-Example born?")
+
+    assert first == second
+    assert "alice example" in first
+    assert "where" not in first
+    assert "alice example born" in first
+
+
+def test_batched_selection_equals_independent_selection_and_is_query_isolated() -> None:
+    questions = (
+        local.InferenceQuestion("q1", "Where was Alice born?"),
+        local.InferenceQuestion("q2", "What is Paris?"),
+    )
+    records = _records()
+    batched = local.select_query_candidates(questions, records)
+    independent = {
+        question.question_id: local.select_query_candidates((question,), records)[
+            question.question_id
+        ]
+        for question in questions
+    }
+
+    assert batched == independent
+    assert [item.entity_id for item in batched["q1"]] == ["m.alice"]
+    assert [item.entity_id for item in batched["q2"]] == ["m.paris"]
+    assert batched["q1"][0].source_shard == "default/data/0000.parquet"
+
+
+def test_selection_filters_predicates_language_and_invalid_mids() -> None:
+    question = (local.InferenceQuestion("q1", "Who is Alicia Alice?"),)
+    candidates = local.select_query_candidates(question, _records())["q1"]
+
+    assert [item.entity_id for item in candidates] == ["m.alice"]
+    assert candidates[0].matched_label == "Alice"
+    assert all(item.match_type.startswith("exact_normalized_") for item in candidates)
+
+
+def test_question_loader_rejects_gold_fields(tmp_path: Path) -> None:
+    questions = tmp_path / "questions.jsonl"
+    questions.write_text(
+        json.dumps({"question_id": "q1", "text": "Alice", "answer": "m.alice"})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="non-inference fields"):
+        local.load_inference_questions(questions, question_ids=("q1",))
+    assert set(inspect.signature(local.build_local_catalog).parameters).isdisjoint(
+        {"gold", "answer", "logical_form", "reference", "reference_interpretations_path"}
+    )
+
+
+def test_local_build_is_gold_blind_filtered_typed_and_catalog_v2_compatible(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = _build_fixture(tmp_path, monkeypatch)
+    catalog_root = fixture["catalog"]
+    manifest = json.loads((catalog_root / "manifest.json").read_text(encoding="utf-8"))
+
+    assert manifest["gold_used_for_construction"] is False
+    assert manifest["sources"]["freebase_archival_parquet"]["revision"] == HF_FREEBASE_REVISION
+    assert manifest["counts"]["questions"] == 2
+    assert manifest["counts"]["unique_candidate_mids"] == 2
+    assert manifest["counts"]["query_candidate_assignments"] == 2
+    assert manifest["counts"]["entity_types"] == 2
+    assert manifest["scan"]["passes"] == 2
+    assert fixture["calls"][0]["predicates"] == (NAME_PREDICATE, ALIAS_PREDICATE)
+    assert fixture["calls"][1]["predicates"] == (
+        NAME_PREDICATE,
+        ALIAS_PREDICATE,
+        TYPE_PREDICATE,
+    )
+    assert fixture["calls"][1]["subject_ids"] == ("m.alice", "m.paris")
+    assert not (tmp_path / "reference_interpretations.jsonl").exists()
+    assert fixture["inference_inputs_read"] == [fixture["questions"]]
+
+    reused = local.build_local_catalog(
+        inference_questions_path=fixture["questions"],
+        question_ids=("q1", "q2"),
+        workload_name="fixture",
+        artifact_id="grailqa-local-catalog-fixture-v1",
+        freebase_parquet_root=fixture["parquet_root"],
+        source_manifest_path=fixture["source_manifest"],
+        normalized_ontology_path=fixture["ontology"],
+        reverse_properties_path=fixture["reverse"],
+        output_root=catalog_root,
+        staging_root=tmp_path / "node-local",
+    )
+    assert reused["catalog_hash"] == manifest["catalog_hash"]
+    assert len(fixture["calls"]) == 2
+
+    catalog = GrailQAInferenceCatalogV2.load(catalog_root)
+    alice = catalog.retrieve("q1", "Where was Alice born?", top_k=20)
+    paris = catalog.retrieve("q2", "What is Paris?", top_k=20)
+    assert [item.candidate_id for item in alice.entities] == ["m.alice"]
+    assert [item.candidate_id for item in paris.entities] == ["m.paris"]
+    with pytest.raises(ValueError, match="differs from the text"):
+        catalog.retrieve("q1", "What is Paris?", top_k=20)
+    with pytest.raises(ValueError, match="differs from the frozen"):
+        catalog.retrieve(
+            "q1",
+            "Where was Alice born?",
+            allowed_entity_ids=("m.paris",),
+        )
+
+
+def test_local_reachability_separates_local_catalog_miss(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = _build_fixture(tmp_path, monkeypatch)
+    references = tmp_path / "references.jsonl"
+    references.write_text(
+        "".join(
+            json.dumps(_reference("q1", "m.alice")) + "\n"
+            for _ in range(1)
+        )
+        + json.dumps(_reference("q2", "m.missing"))
+        + "\n",
+        encoding="utf-8",
+    )
+    workload = tmp_path / "workload.jsonl"
+    workload.write_text(
+        json.dumps({"question_id": "q1", "Q": 13, "path_length": 1})
+        + "\n"
+        + json.dumps({"question_id": "q2", "Q": 13, "path_length": 1})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    audit = local.run_local_reachability_audit(
+        catalog_root=fixture["catalog"],
+        inference_questions_path=fixture["questions"],
+        question_ids=("q1", "q2"),
+        reference_interpretations_path=references,
+        workload_stats_path=workload,
+        output_root=fixture["catalog"],
+    )
+
+    assert audit["gold_usage"] == "evaluation_only_after_retrieval_persisted"
+    assert audit["stage_failure_counts"]["counts"][
+        "reference_not_in_local_catalog"
+    ] == 1
+    assert audit["gate"]["minimum_joint_ratio"] == 0.20
+    for name in (
+        "catalog_coverage.json",
+        "retrieval_metrics.json",
+        "prompt_reachability.json",
+        "stage_failure_counts.json",
+        "audit_summary.json",
+    ):
+        assert (fixture["catalog"] / name).is_file()
+
+
+def test_comparison_keeps_unavailable_full_catalog_pending(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = _build_fixture(tmp_path, monkeypatch)
+    audit = {
+        "summary": {
+            "catalog": {"entity": {"ratio": 0.5}},
+            "retrieval": {"20": {"entity": {"ratio": 0.25}}},
+            "deployed_prompt": {"joint": {"ratio": 0.2}},
+        }
+    }
+    audit_path = tmp_path / "audit.json"
+    audit_path.write_text(json.dumps(audit), encoding="utf-8")
+    output = tmp_path / "comparison.json"
+
+    result = local.compare_full_and_local(
+        local_catalog_root=fixture["catalog"],
+        local_audit_path=audit_path,
+        output_path=output,
+    )
+
+    assert result["full_status"] == "pending_global_build"
+    assert all(item["full"] is None for item in result["metrics"].values())
+    assert result["metrics"]["joint_prompt_reachability"]["local"] == 0.2
+
+
+def test_local_slurm_job_is_cpu_only_separate_and_has_no_qwen() -> None:
+    server = (ROOT / "scripts/server/build_grailqa_local_catalog.sh").read_text()
+    slurm = (ROOT / "scripts/slurm/build_grailqa_local_catalog.sbatch").read_text()
+
+    assert "XGAP_GRAILQA_LOCAL_CATALOG_ROOT" in server
+    assert "XGAP_LOCAL_CATALOG_STAGING_ROOT" in server
+    assert "preflight18|pilot150" in server
+    assert "#SBATCH --cpus-per-task=8" in slurm
+    assert "#SBATCH --mem=48G" in slurm
+    assert "#SBATCH --gres" not in slurm
+    assert "DASHSCOPE" not in slurm
+    assert "vllm" not in slurm.casefold()
+    assert ".catalog-v2.building" not in slurm
+
+
+def _build_fixture(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> dict[str, object]:
+    questions = root / "questions.jsonl"
+    questions.write_text(
+        json.dumps({"question_id": "q1", "text": "Where was Alice born?"})
+        + "\n"
+        + json.dumps({"question_id": "q2", "text": "What is Paris?"})
+        + "\n",
+        encoding="utf-8",
+    )
+    ontology, reverse = _schema(root)
+    parquet_root = root / "parquet"
+    parquet_root.mkdir()
+    source_manifest = root / "source_manifest.json"
+    source_manifest.write_text("{}\n", encoding="utf-8")
+    calls: list[dict[str, object]] = []
+    inference_inputs_read: list[Path] = []
+    original_read_jsonl = local._read_jsonl
+
+    def guarded_read_jsonl(path: Path):
+        resolved = Path(path)
+        if any(token in resolved.name.casefold() for token in ("reference", "gold", "answer")):
+            raise AssertionError(f"Construction attempted to read evaluation input: {resolved}")
+        inference_inputs_read.append(resolved)
+        return original_read_jsonl(resolved)
+
+    monkeypatch.setattr(local, "_read_jsonl", guarded_read_jsonl)
+
+    monkeypatch.setattr(
+        local,
+        "verify_parquet_source_manifest",
+        lambda **_: {
+            "status": "ok",
+            "shard_count": 964,
+            "total_bytes": 32_476_432_840,
+        },
+    )
+    monkeypatch.setattr(
+        local,
+        "load_parquet_source_manifest",
+        lambda _: {"resolved_parquet_revision": HF_FREEBASE_REVISION},
+    )
+
+    def fake_records(**kwargs: object):
+        predicates = tuple(kwargs["predicates"])
+        subject_ids = (
+            None
+            if kwargs.get("subject_ids") is None
+            else tuple(kwargs["subject_ids"])
+        )
+        calls.append({"predicates": predicates, "subject_ids": subject_ids})
+        statistics = kwargs["statistics"]
+        assert isinstance(statistics, dict)
+        statistics.update({"parquet_shards": 1, "input_rows": len(_records())})
+        for record in _records():
+            subject, predicate, *_ = record.triple
+            if predicate not in predicates:
+                continue
+            if subject_ids is not None and subject not in subject_ids:
+                continue
+            yield record
+
+    monkeypatch.setattr(local, "iter_parquet_triple_records", fake_records)
+    catalog = root / "catalog"
+    local.build_local_catalog(
+        inference_questions_path=questions,
+        question_ids=("q1", "q2"),
+        workload_name="fixture",
+        artifact_id="grailqa-local-catalog-fixture-v1",
+        freebase_parquet_root=parquet_root,
+        source_manifest_path=source_manifest,
+        normalized_ontology_path=ontology,
+        reverse_properties_path=reverse,
+        output_root=catalog,
+        staging_root=root / "node-local",
+    )
+    monkeypatch.setattr(local, "_read_jsonl", original_read_jsonl)
+    return {
+        "catalog": catalog,
+        "questions": questions,
+        "calls": calls,
+        "inference_inputs_read": inference_inputs_read,
+        "parquet_root": parquet_root,
+        "source_manifest": source_manifest,
+        "ontology": ontology,
+        "reverse": reverse,
+    }
+
+
+def _records() -> tuple[ParquetTripleRecord, ...]:
+    shard = "default/data/0000.parquet"
+    return (
+        _record("m.alice", NAME_PREDICATE, "Alice Example", "en", False, shard),
+        _record("m.alice", ALIAS_PREDICATE, "Alice", "en", False, shard),
+        _record("m.alice", ALIAS_PREDICATE, "Alicia", "es", False, shard),
+        _record("m.alice", TYPE_PREDICATE, "people.person", None, True, shard),
+        _record("m.paris", NAME_PREDICATE, "Paris", "en", False, shard),
+        _record("m.paris", TYPE_PREDICATE, "location.location", None, True, shard),
+        _record("x.invalid", ALIAS_PREDICATE, "Alice", "en", False, shard),
+        _record("m.alice", "people.person.parents", "m.parent", None, True, shard),
+    )
+
+
+def _record(
+    subject: str,
+    predicate: str,
+    value: str,
+    language: str | None,
+    is_resource: bool,
+    shard: str,
+) -> ParquetTripleRecord:
+    return ParquetTripleRecord(
+        triple=(subject, predicate, value, language, is_resource),
+        source_shard=shard,
+    )
+
+
+def _schema(root: Path) -> tuple[Path, Path]:
+    ontology = root / "ontology.yaml"
+    ontology.write_text(
+        """schema_version: "m12-ontology-v1"
+ontology_id: "fixture-freebase"
+version: "fixture-v1"
+classes: ["location.location", "people.person"]
+relations: ["people.person.place_of_birth", "people.person.parents"]
+properties: []
+subsumption:
+  location.location: []
+  people.person: []
+max_relaxation_hops: 3
+sibling_admissibility:
+  explicit_pairs: []
+  rule_reference: null
+domain_range:
+  people.person.parents:
+    domain: "people.person"
+    range: "people.person"
+  people.person.place_of_birth:
+    domain: "people.person"
+    range: "location.location"
+""",
+        encoding="utf-8",
+    )
+    reverse = root / "reverse.json"
+    reverse.write_text("{}\n", encoding="utf-8")
+    return ontology, reverse
+
+
+def _reference(question_id: str, entity_id: str) -> dict[str, object]:
+    return {
+        "question_id": question_id,
+        "pattern_query": {
+            "path_var": "p",
+            "source": {"var": "answer", "label": "people.person", "properties": {}},
+            "expr": {
+                "kind": "rel",
+                "edge": {
+                    "var": "e",
+                    "label": "people.person.place_of_birth",
+                    "direction": "OUT",
+                    "properties": {},
+                },
+            },
+            "target": {
+                "var": "anchor",
+                "label": "location.location",
+                "properties": {"type.object.id": entity_id},
+            },
+            "selector": {"kind": "ALL", "k": None},
+            "restrictor": "SIMPLE",
+            "condition": None,
+            "max_depth": None,
+        },
+    }

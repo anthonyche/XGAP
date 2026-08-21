@@ -1,0 +1,57 @@
+{
+  "schema_version": "m13e3b-grailqa-local-catalog-config-v1",
+  "source": {
+    "source_mode": "hf_archival_parquet",
+    "repo_id": "CleverThis/freebase",
+    "revision": "dbb1931c2698295653effe9b980a02ab29f004e0",
+    "expected_shards": 964,
+    "expected_bytes": 32476432840
+  },
+  "normalized_ontology": "datasets/grailqa_pilot_v1/ontology.yaml",
+  "reverse_properties": "datasets/grailqa_inference_catalog_v1/reverse_properties.json",
+  "anchor_extraction": {
+    "version": "m13e3b-contiguous-normalized-spans-v1",
+    "normalization_version": "catalog-v2-normalized-label-v1",
+    "min_tokens": 1,
+    "max_tokens": 8,
+    "omit_stopword_only": true,
+    "max_candidates_per_query": 50,
+    "matching": [
+      "exact_normalized_name",
+      "exact_normalized_alias"
+    ]
+  },
+  "workloads": {
+    "preflight18": {
+      "artifact_id": "grailqa-local-catalog-preflight18-v1",
+      "output_subdirectory": "preflight18",
+      "inference_questions": "datasets/grailqa_pilot_v1/inference_questions.jsonl",
+      "question_ids": [
+        "2100226013000",
+        "2102933007000",
+        "2100270004000",
+        "2103421006000",
+        "3206065001000",
+        "2100855004000",
+        "2100164007000",
+        "2101116003000",
+        "2100840007000",
+        "2101661019000",
+        "3200799010000",
+        "3205285001000",
+        "3205274004000",
+        "3203168013000",
+        "3203374006000",
+        "3201275011000",
+        "3203284000000",
+        "4301690002000"
+      ]
+    },
+    "pilot150": {
+      "artifact_id": "grailqa-local-catalog-pilot150-v1",
+      "output_subdirectory": "pilot150",
+      "inference_questions": "datasets/grailqa_pilot_v1/inference_questions.jsonl",
+      "question_ids": "all"
+    }
+  }
+}

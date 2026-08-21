@@ -8,6 +8,7 @@ triple tuple consumed by the existing Catalog-v2 builder.
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -42,6 +43,14 @@ EXPECTED_PARQUET_COLUMNS = (
 )
 
 FreebaseTriple = tuple[str, str, str, str | None, bool]
+
+
+@dataclass(frozen=True)
+class ParquetTripleRecord:
+    """One filtered Freebase triple with immutable shard provenance."""
+
+    triple: FreebaseTriple
+    source_shard: str
 
 
 def normalize_source_mode(value: str) -> str:
@@ -87,8 +96,36 @@ def iter_parquet_triples(
     max_shards: int | None = None,
     max_row_groups_per_shard: int | None = None,
     batch_size: int = 65_536,
+    predicates: Sequence[str] | None = None,
+    subject_ids: Sequence[str] | None = None,
 ) -> Iterator[FreebaseTriple]:
     """Stream verified shards, row groups, and record batches in frozen order."""
+
+    for record in iter_parquet_triple_records(
+        parquet_root=parquet_root,
+        source_manifest_path=source_manifest_path,
+        statistics=statistics,
+        max_shards=max_shards,
+        max_row_groups_per_shard=max_row_groups_per_shard,
+        batch_size=batch_size,
+        predicates=predicates,
+        subject_ids=subject_ids,
+    ):
+        yield record.triple
+
+
+def iter_parquet_triple_records(
+    *,
+    parquet_root: str | Path,
+    source_manifest_path: str | Path,
+    statistics: MutableMapping[str, int] | None = None,
+    max_shards: int | None = None,
+    max_row_groups_per_shard: int | None = None,
+    batch_size: int = 65_536,
+    predicates: Sequence[str] | None = None,
+    subject_ids: Sequence[str] | None = None,
+) -> Iterator[ParquetTripleRecord]:
+    """Stream selected triples with shard provenance and optional pushdown."""
 
     if max_shards is not None and max_shards < 1:
         raise ValueError("max_shards must be positive when supplied.")
@@ -96,6 +133,17 @@ def iter_parquet_triples(
         raise ValueError("max_row_groups_per_shard must be positive when supplied.")
     if batch_size < 1:
         raise ValueError("batch_size must be positive.")
+    selected_predicates = tuple(
+        predicates or (NAME_PREDICATE, ALIAS_PREDICATE, TYPE_PREDICATE)
+    )
+    unsupported = sorted(
+        set(selected_predicates) - {NAME_PREDICATE, ALIAS_PREDICATE, TYPE_PREDICATE}
+    )
+    if unsupported:
+        raise ValueError(f"Unsupported Freebase predicates: {unsupported}.")
+    selected_subjects = None if subject_ids is None else tuple(sorted(set(subject_ids)))
+    if selected_subjects == ():
+        return
     arrow, compute, parquet = _require_pyarrow()
     root = Path(parquet_root)
     manifest = load_parquet_source_manifest(source_manifest_path)
@@ -108,14 +156,26 @@ def iter_parquet_triples(
     stats.setdefault("parquet_shards", 0)
     stats.setdefault("parquet_row_groups", 0)
     stats.setdefault("predicate_filtered_rows", 0)
+    stats.setdefault("subject_filtered_rows", 0)
     stats.setdefault("unparsed_or_irrelevant_lines", 0)
     relevant_predicates = arrow.array(
-        [
-            FREEBASE_NAMESPACE + NAME_PREDICATE,
-            FREEBASE_NAMESPACE + ALIAS_PREDICATE,
-            FREEBASE_NAMESPACE + TYPE_PREDICATE,
-        ],
+        [FREEBASE_NAMESPACE + predicate for predicate in selected_predicates],
         type=arrow.string(),
+    )
+    relevant_subjects = (
+        arrow.array(
+            [FREEBASE_NAMESPACE + subject for subject in selected_subjects],
+            type=arrow.string(),
+        )
+        if selected_subjects is not None
+        else None
+    )
+    projected_columns = (
+        "subject",
+        "predicate",
+        "object",
+        "object_type",
+        "object_language",
     )
     for shard in shards:
         relative_path = _safe_relative_path(str(shard["path"]))
@@ -140,27 +200,34 @@ def iter_parquet_triples(
             for batch in parquet_file.iter_batches(
                 batch_size=batch_size,
                 row_groups=[row_group],
-                columns=list(EXPECTED_PARQUET_COLUMNS),
+                columns=list(projected_columns),
             ):
                 stats["input_records"] += batch.num_rows
                 stats["input_rows"] += batch.num_rows
                 mask = compute.is_in(batch.column(1), value_set=relevant_predicates)
+                predicate_count = int(compute.sum(mask).as_py() or 0)
+                stats["predicate_filtered_rows"] += batch.num_rows - predicate_count
+                if relevant_subjects is not None:
+                    subject_mask = compute.is_in(batch.column(0), value_set=relevant_subjects)
+                    mask = compute.and_(mask, subject_mask)
                 relevant = compute.filter(batch, mask)
-                filtered_count = batch.num_rows - relevant.num_rows
-                stats["predicate_filtered_rows"] += filtered_count
-                stats["unparsed_or_irrelevant_lines"] += filtered_count
+                stats["subject_filtered_rows"] += predicate_count - relevant.num_rows
+                stats["unparsed_or_irrelevant_lines"] += batch.num_rows - relevant.num_rows
                 columns = {
                     name: relevant.column(index).to_pylist()
-                    for index, name in enumerate(EXPECTED_PARQUET_COLUMNS)
+                    for index, name in enumerate(projected_columns)
                 }
                 for index in range(relevant.num_rows):
                     triple = parquet_row_to_triple(
-                        {name: values[index] for name, values in columns.items()}
+                        {
+                            **{name: values[index] for name, values in columns.items()},
+                            "object_datatype": None,
+                        }
                     )
                     if triple is None:
                         stats["unparsed_or_irrelevant_lines"] += 1
                         continue
-                    yield triple
+                    yield ParquetTripleRecord(triple=triple, source_shard=relative_path)
 
 
 def load_frozen_parquet_spec(path: str | Path) -> dict[str, Any]:

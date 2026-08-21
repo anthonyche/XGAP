@@ -196,6 +196,7 @@ class GrailQAInferenceCatalogV2:
         top_k: int = 20,
         relation_slots: int = 3,
         expansion_hops: int = 1,
+        allowed_entity_ids: Iterable[str] | None = None,
     ) -> CatalogV2Retrieval:
         if top_k <= 0:
             raise ValueError("top_k must be positive.")
@@ -203,7 +204,14 @@ class GrailQAInferenceCatalogV2:
             raise ValueError("relation_slots must be within the supported bound [1, 3].")
         if expansion_hops not in (0, 1, 2):
             raise ValueError("expansion_hops must be within the supported bound [0, 2].")
-        entities = self._retrieve_entities(question, top_k)
+        if self.manifest.get("requires_query_entity_filter") is True:
+            expected = self._query_conditioned_entity_ids(question_id, question)
+            if allowed_entity_ids is not None and set(allowed_entity_ids) != set(expected):
+                raise ValueError(
+                    "The supplied entity filter differs from the frozen query-local universe."
+                )
+            allowed_entity_ids = expected
+        entities = self._retrieve_entities(question, top_k, allowed_entity_ids)
         relations = self._retrieve_relation_slots(question, top_k, relation_slots)
         ranked_types = _rank_terms(
             question, (term for term in self.terms if term.kind == "type"), top_k
@@ -219,6 +227,34 @@ class GrailQAInferenceCatalogV2:
             types=types,
             expanded_types=expanded,
         )
+
+    def _query_conditioned_entity_ids(
+        self, question_id: str, question: str
+    ) -> tuple[str, ...]:
+        database = self.root / "catalog.sqlite3"
+        connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
+        try:
+            row = connection.execute(
+                "SELECT question_hash FROM local_queries WHERE question_id=?",
+                (str(question_id),),
+            ).fetchone()
+            if row is None:
+                raise ValueError(f"Question {question_id!r} is not in this local catalog.")
+            actual_hash = hashlib.sha256(question.encode("utf-8")).hexdigest()
+            if str(row[0]) != actual_hash:
+                raise ValueError(
+                    "Question text differs from the text used to construct the local catalog."
+                )
+            return tuple(
+                str(item[0])
+                for item in connection.execute(
+                    "SELECT entity_id FROM query_entity_candidates "
+                    "WHERE question_id=? ORDER BY rank, entity_id",
+                    (str(question_id),),
+                )
+            )
+        finally:
+            connection.close()
 
     def prompt_view(
         self,
@@ -303,11 +339,30 @@ class GrailQAInferenceCatalogV2:
             retrieval_method=RETRIEVAL_V2_SCHEMA_VERSION,
         )
 
-    def _retrieve_entities(self, question: str, top_k: int) -> tuple[CatalogV2Candidate, ...]:
+    def _retrieve_entities(
+        self,
+        question: str,
+        top_k: int,
+        allowed_entity_ids: Iterable[str] | None = None,
+    ) -> tuple[CatalogV2Candidate, ...]:
         normalized = normalized_label(question)
         tokens = tuple(dict.fromkeys(normalized.split()))
         if not tokens:
             return ()
+        allowed = (
+            None
+            if allowed_entity_ids is None
+            else tuple(sorted(set(str(item) for item in allowed_entity_ids)))
+        )
+        if allowed == ():
+            return ()
+        if allowed is not None and len(allowed) > 900:
+            raise ValueError("Per-query entity filters are bounded to at most 900 MIDs.")
+        placeholders = ",".join("?" for _ in (allowed or ()))
+        exact_filter = f" AND e.id IN ({placeholders})" if allowed is not None else ""
+        search_filter = (
+            f" AND entity_id IN ({placeholders})" if allowed is not None else ""
+        )
         database = self.root / "catalog.sqlite3"
         connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
         connection.row_factory = sqlite3.Row
@@ -318,9 +373,10 @@ class GrailQAInferenceCatalogV2:
                 SELECT e.id, e.canonical_name, a.alias, a.normalized_alias
                 FROM entity_aliases a JOIN entities e ON e.id = a.entity_id
                 WHERE a.normalized_alias = ?
+                """ + exact_filter + """
                 ORDER BY e.id, a.alias
                 """,
-                (normalized,),
+                (normalized, *(allowed or ())),
             )
             for row in exact_rows:
                 scores[str(row["id"])] = (
@@ -334,16 +390,22 @@ class GrailQAInferenceCatalogV2:
                 """
                 SELECT entity_id, alias, normalized_alias, bm25(entity_search) AS distance
                 FROM entity_search WHERE entity_search MATCH ?
+                """ + search_filter + """
                 ORDER BY distance, entity_id, alias LIMIT ?
                 """,
-                (match_query, max(top_k * 20, 100)),
+                (match_query, *(allowed or ()), max(top_k * 20, 100)),
+            )
+            names_filter = (
+                f" AND entity_id IN ({placeholders})" if allowed is not None else ""
             )
             names = {
                 str(row["id"]): str(row["canonical_name"])
                 for row in connection.execute(
                     "SELECT id, canonical_name FROM entities WHERE id IN "
-                    "(SELECT entity_id FROM entity_search WHERE entity_search MATCH ? LIMIT ?)",
-                    (match_query, max(top_k * 20, 100)),
+                    "(SELECT entity_id FROM entity_search WHERE entity_search MATCH ?"
+                    + names_filter
+                    + " LIMIT ?)",
+                    (match_query, *(allowed or ()), max(top_k * 20, 100)),
                 )
             }
             for row in rows:

@@ -650,6 +650,33 @@ fallback; both source modes feed unchanged Catalog-v2 extraction semantics.
 No catalog statistics or improved retrieval claims are made before all 964
 shards are processed and the compact audit results are returned.
 
+## M13-E3B Gold-Blind Query-Conditioned Local Freebase Catalog
+
+Goal:
+Determine whether bounded inference-time grounding can replace a global
+Freebase entity index for the frozen 18-query preflight and 150-query pilot.
+For each question, derive a local candidate universe solely from its text,
+public Freebase English names/aliases/type metadata, and the frozen GrailQA
+ontology, while allowing one physical scan to batch independent questions.
+
+Acceptance criteria:
+Construction accepts only inference question IDs/text; rejects gold,
+reference, answer, and logical-form fields; uses the immutable E3A Parquet
+source without redownload; performs bounded name/alias selection and retained
+MID type enrichment; produces two isolated Catalog-v2-compatible artifacts;
+enforces per-question candidates by ID and text hash; publishes from node-local
+staging atomically; runs the unchanged M13-E1 retrieval and reachability
+metrics only after construction; distinguishes local-catalog misses; preserves
+the 0.20 gate; and leaves the independent global E3/E3A job unchanged.
+
+Current status:
+**IMPLEMENTATION READY; REAL CWRU LOCAL BUILDS AND AUDITS PENDING.** The frozen
+preflight18 and pilot150 definitions, deterministic anchor policy, two-pass
+extractor, local SQLite/FTS artifact, evaluation reports, pending-full
+comparison, server wrapper, CPU Slurm job, documentation, and fixture tests are
+implemented. No real local-catalog count or reachability result is claimed,
+and no Qwen job is submitted automatically.
+
 ## M14 KGQA Evaluation
 
 Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.

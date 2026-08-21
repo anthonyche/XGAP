@@ -650,3 +650,22 @@ All tested Google dump objects returned HTTP 403 from CWRU on 2026-08-19, while
 the frozen archival representation is reachable. Treating transport as a
 verified adapter preserves Freebase/GrailQA provenance and source-format
 parity without silently substituting a different knowledge graph or ontology.
+
+## D58 Query-local catalogs are inference artifacts, not benchmark slices
+
+For a question `u`, the M13-E3B entity universe is a deterministic function of
+only `text(u)`, public English Freebase names/aliases/type metadata, and the
+frozen GrailQA ontology. Exact normalized contiguous text spans select at most
+50 MIDs per question. Batched source scans maintain independent candidate maps,
+and Catalog-v2 retrieval enforces the persisted `question_id` and question-text
+hash before applying that question's MID allowlist. Construction APIs accept no
+reference, logical-form, answer, or gold input; evaluation opens references
+only after retrieval has been persisted.
+
+Reason:
+
+A bounded local grounding artifact can reduce global SQLite/FTS materialization
+without changing the scientific inference boundary. Per-query isolation and a
+separate evaluation phase make batching an I/O optimization rather than
+cross-query benchmark leakage, while explicit local-catalog misses preserve the
+cost of localization in reported reachability.
