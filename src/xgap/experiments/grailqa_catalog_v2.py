@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from functools import cached_property
 import gzip
 import hashlib
 import json
@@ -37,6 +38,17 @@ from xgap.experiments.runtime_alignment import (
     RetrievedOntologyTerm,
 )
 from xgap.experiments.semantic import OntologyGraph
+from xgap.experiments.schema_ranking import (
+    SCHEMA_CONTEXT_BOUND,
+    LegacyRankedSchemaTerm,
+    RankedSchemaTerm,
+    SchemaTerm,
+    SchemaVocabularyStatistics,
+    ontology_compatible,
+    rank_schema_terms,
+    rank_schema_terms_legacy,
+    ranking_contract,
+)
 from xgap.infrastructure.descriptors import load_yaml_mapping
 
 
@@ -100,6 +112,7 @@ class CatalogV2Retrieval:
     types: tuple[CatalogV2Candidate, ...]
     expanded_types: tuple[str, ...]
     entity_retrieval_mode: str = GLOBAL_ENTITY_RETRIEVAL_MODE
+    schema_ranking_contract: Mapping[str, Any] | None = None
 
     @property
     def relations(self) -> tuple[CatalogV2Candidate, ...]:
@@ -130,8 +143,19 @@ class CatalogV2Retrieval:
             "catalog_hash": self.catalog_hash,
             "config": {
                 **entity_config,
-                "relation_channels": ["lexical_bm25", "public_metadata"],
+                "relation_channels": [
+                    "phrase_lexical",
+                    "public_metadata",
+                    "ontology_coherence",
+                ],
+                "type_channels": [
+                    "lexical_ontology",
+                    "entity_attached_type",
+                    "relation_domain_range",
+                    "ontology_expansion",
+                ],
                 "relation_slots": len(self.relations_by_slot),
+                "schema_ranking": dict(self.schema_ranking_contract or {}),
                 "gold_inputs": False,
             },
             "entity_candidates": [item.to_dict() for item in self.entities],
@@ -147,15 +171,7 @@ class CatalogV2Retrieval:
         }
 
 
-@dataclass(frozen=True)
-class _Term:
-    term_id: str
-    label: str
-    kind: str
-    aliases: tuple[str, ...]
-    domain: str | None
-    range: str | None
-    reverse_id: str | None
+_Term = SchemaTerm
 
 
 @dataclass(frozen=True)
@@ -164,6 +180,10 @@ class GrailQAInferenceCatalogV2:
     manifest: Mapping[str, Any]
     ontology: OntologyGraph
     terms: tuple[_Term, ...]
+
+    @cached_property
+    def schema_statistics(self) -> SchemaVocabularyStatistics:
+        return SchemaVocabularyStatistics.from_terms(self.terms)
 
     @classmethod
     def load(cls, root: str | Path) -> "GrailQAInferenceCatalogV2":
@@ -233,12 +253,32 @@ class GrailQAInferenceCatalogV2:
             entity_retrieval_mode = QUERY_LOCAL_ENTITY_RETRIEVAL_MODE
         else:
             entities = self._retrieve_entities(question, top_k, allowed_entity_ids)
-        relations = self._retrieve_relation_slots(question, top_k, relation_slots)
-        ranked_types = _rank_terms(
-            question, (term for term in self.terms if term.kind == "type"), top_k
+        anchor_types = (
+            self._entity_types_for_candidates(entities[:SCHEMA_CONTEXT_BOUND])
+            if entity_retrieval_mode == QUERY_LOCAL_ENTITY_RETRIEVAL_MODE
+            else ()
+        )
+        relations, _, _ = self._rank_relation_slots(
+            question,
+            top_k=top_k,
+            slot_count=relation_slots,
+            anchor_types=anchor_types,
         )
         expanded = self._expand_types(relations, expansion_hops)
-        types = _merge_expanded_types(ranked_types, expanded, self.terms, top_k)
+        type_provenance = self._type_provenance(
+            anchor_types=anchor_types,
+            relation_slots=relations,
+            expansion_hops=expansion_hops,
+        )
+        ranked_types = rank_schema_terms(
+            question,
+            (term for term in self.terms if term.kind == "type"),
+            statistics=self.schema_statistics,
+            ontology_parents=self.ontology.parents,
+            type_provenance=type_provenance,
+            top_k=top_k,
+        )
+        types = tuple(self._schema_candidate(item) for item in ranked_types)
         return CatalogV2Retrieval(
             question_id=str(question_id),
             question=question,
@@ -248,6 +288,7 @@ class GrailQAInferenceCatalogV2:
             types=types,
             expanded_types=expanded,
             entity_retrieval_mode=entity_retrieval_mode,
+            schema_ranking_contract=ranking_contract(self.schema_statistics),
         )
 
     def _query_conditioned_entities(
@@ -490,42 +531,309 @@ class GrailQAInferenceCatalogV2:
         finally:
             connection.close()
 
-    def _retrieve_relation_slots(
-        self, question: str, top_k: int, slot_count: int
-    ) -> tuple[tuple[CatalogV2Candidate, ...], ...]:
-        base = _rank_terms(
-            question,
-            (term for term in self.terms if term.kind == "relation"),
-            max(top_k * 4, 40),
+    def _rank_relation_slots(
+        self,
+        question: str,
+        *,
+        top_k: int,
+        slot_count: int,
+        anchor_types: Iterable[str],
+        full_trace: bool = False,
+    ) -> tuple[
+        tuple[tuple[CatalogV2Candidate, ...], ...],
+        tuple[tuple[RankedSchemaTerm, ...], ...],
+        tuple[tuple[str, ...], ...],
+    ]:
+        relation_terms = tuple(term for term in self.terms if term.kind == "relation")
+        expected_types = tuple(sorted(set(anchor_types)))
+        candidate_slots: list[tuple[CatalogV2Candidate, ...]] = []
+        ranked_slots: list[tuple[RankedSchemaTerm, ...]] = []
+        slot_contexts: list[tuple[str, ...]] = []
+        for _ in range(slot_count):
+            slot_contexts.append(expected_types)
+            ranked = rank_schema_terms(
+                question,
+                relation_terms,
+                statistics=self.schema_statistics,
+                expected_types=expected_types,
+                ontology_parents=self.ontology.parents,
+                top_k=None if full_trace else top_k,
+            )
+            selected = ranked[:top_k]
+            ranked_slots.append(ranked)
+            candidates = tuple(self._schema_candidate(item) for item in selected)
+            candidate_slots.append(candidates)
+            expected_types = self._next_relation_types(
+                candidates[:SCHEMA_CONTEXT_BOUND], expected_types
+            )
+        return tuple(candidate_slots), tuple(ranked_slots), tuple(slot_contexts)
+
+    def _entity_types_for_candidates(
+        self, candidates: Iterable[CatalogV2Candidate]
+    ) -> tuple[str, ...]:
+        entity_ids = tuple(dict.fromkeys(item.candidate_id for item in candidates))
+        if not entity_ids:
+            return ()
+        database = self.root / "catalog.sqlite3"
+        connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
+        try:
+            placeholders = ",".join("?" for _ in entity_ids)
+            rows = connection.execute(
+                f"SELECT DISTINCT type_id FROM entity_types "
+                f"WHERE entity_id IN ({placeholders}) ORDER BY type_id",
+                entity_ids,
+            )
+            return tuple(str(row[0]) for row in rows)
+        finally:
+            connection.close()
+
+    def _next_relation_types(
+        self,
+        candidates: Iterable[CatalogV2Candidate],
+        current_types: Iterable[str],
+    ) -> tuple[str, ...]:
+        current = tuple(current_types)
+        next_types: set[str] = set()
+        for candidate in candidates:
+            domain_match = ontology_compatible(
+                candidate.domain, current, self.ontology.parents
+            )
+            range_match = ontology_compatible(
+                candidate.range, current, self.ontology.parents
+            )
+            if domain_match and candidate.range is not None:
+                next_types.add(candidate.range)
+            if range_match and candidate.domain is not None:
+                next_types.add(candidate.domain)
+            if not current or not (domain_match or range_match):
+                next_types.update(
+                    value
+                    for value in (candidate.domain, candidate.range)
+                    if value is not None
+                )
+        return tuple(sorted(next_types))
+
+    def _type_provenance(
+        self,
+        *,
+        anchor_types: Iterable[str],
+        relation_slots: tuple[tuple[CatalogV2Candidate, ...], ...],
+        expansion_hops: int,
+    ) -> dict[str, tuple[str, ...]]:
+        provenance: dict[str, set[str]] = {}
+        for type_id in anchor_types:
+            provenance.setdefault(type_id, set()).add("entity_attached_type")
+        direct = {
+            type_id
+            for slot in relation_slots
+            for candidate in slot[:SCHEMA_CONTEXT_BOUND]
+            for type_id in (candidate.domain, candidate.range)
+            if type_id is not None
+        }
+        for type_id in direct:
+            provenance.setdefault(type_id, set()).add("relation_domain_range")
+        values = set(direct)
+        frontier = set(direct)
+        for _ in range(expansion_hops):
+            parents = {
+                parent
+                for child in frontier
+                for parent in self.ontology.parents.get(child, ())
+            }
+            parents -= values
+            for type_id in parents:
+                provenance.setdefault(type_id, set()).add("ontology_expansion")
+            values.update(parents)
+            frontier = parents
+        return {key: tuple(sorted(value)) for key, value in provenance.items()}
+
+    @staticmethod
+    def _schema_candidate(item: RankedSchemaTerm) -> CatalogV2Candidate:
+        evidence = {
+            "public_metadata",
+            f"lexical_tier:{item.lexical.tier_name}",
+            *item.lexical.descriptor.provenances,
+            *item.coherence_evidence,
+            *item.type_provenance,
+        }
+        return CatalogV2Candidate(
+            candidate_id=item.term.term_id,
+            label=item.term.label,
+            kind=item.term.kind,
+            score=item.score,
+            rank=item.rank,
+            matched_label=item.lexical.descriptor.text,
+            evidence=tuple(sorted(evidence)),
+            domain=item.term.domain,
+            range=item.term.range,
+            reverse_id=item.term.reverse_id,
         )
-        slots: list[tuple[CatalogV2Candidate, ...]] = []
-        prior_ranges: set[str] = set()
-        for slot_index in range(slot_count):
-            reranked: list[CatalogV2Candidate] = []
-            for candidate in base:
-                coherence = 0.0
-                evidence = set(candidate.evidence)
-                if slot_index and candidate.domain in prior_ranges:
-                    coherence = 0.25
-                    evidence.add("domain_range_chain")
-                reranked.append(
-                    CatalogV2Candidate(
-                        **{
-                            **candidate.__dict__,
-                            "score": round(candidate.score + coherence, 12),
-                            "rank": 0,
-                            "evidence": tuple(sorted(evidence)),
-                        }
+
+    def schema_ranking_trace(
+        self,
+        question_id: str,
+        question: str,
+        *,
+        top_k: int = 20,
+        relation_slots: int = 3,
+        expansion_hops: int = 1,
+    ) -> dict[str, Any]:
+        """Return a gold-free legacy/new ranking trace for post-hoc audit."""
+
+        if self.manifest.get("requires_query_entity_filter") is True:
+            entities = self._query_conditioned_entities(question_id, question)[:top_k]
+            anchor_types = self._entity_types_for_candidates(
+                entities[:SCHEMA_CONTEXT_BOUND]
+            )
+        else:
+            entities = self._retrieve_entities(question, top_k, None)
+            anchor_types = ()
+        relations, new_relation_slots, slot_contexts = self._rank_relation_slots(
+            question,
+            top_k=top_k,
+            slot_count=relation_slots,
+            anchor_types=anchor_types,
+            full_trace=True,
+        )
+        expanded = self._expand_types(relations, expansion_hops)
+        provenance = self._type_provenance(
+            anchor_types=anchor_types,
+            relation_slots=relations,
+            expansion_hops=expansion_hops,
+        )
+        new_types = rank_schema_terms(
+            question,
+            (term for term in self.terms if term.kind == "type"),
+            statistics=self.schema_statistics,
+            ontology_parents=self.ontology.parents,
+            type_provenance=provenance,
+        )
+        return {
+            "question_id": str(question_id),
+            "question_normalized": normalized_label(question),
+            "query_tokens": normalized_label(question).split(),
+            "contract": ranking_contract(self.schema_statistics),
+            "relation_slots": tuple(
+                {
+                    "slot": index + 1,
+                    "expected_types": list(slot_contexts[index]),
+                    "legacy": legacy,
+                    "repaired": new_relation_slots[index],
+                }
+                for index, legacy in enumerate(
+                    self._legacy_relation_slots(
+                        question, top_k=top_k, slot_count=relation_slots
                     )
                 )
-            reranked.sort(key=lambda item: (-item.score, item.candidate_id))
-            selected = tuple(
-                CatalogV2Candidate(**{**item.__dict__, "rank": rank})
-                for rank, item in enumerate(reranked[:top_k], start=1)
-            )
-            slots.append(selected)
-            prior_ranges = {item.range for item in selected if item.range is not None}
+            ),
+            "types": {
+                "provenance": provenance,
+                "legacy": self._legacy_type_ranking(
+                    question, expanded=expanded, top_k=top_k
+                ),
+                "repaired": new_types,
+            },
+        }
+
+    def _legacy_relation_slots(
+        self, question: str, *, top_k: int, slot_count: int
+    ) -> tuple[tuple[dict[str, Any], ...], ...]:
+        full = rank_schema_terms_legacy(
+            question, (term for term in self.terms if term.kind == "relation")
+        )
+        bounded_ids = {
+            item.term.term_id for item in full[: max(top_k * 4, 40)]
+        }
+        slots: list[tuple[dict[str, Any], ...]] = []
+        prior_ranges: set[str] = set()
+        for slot_index in range(slot_count):
+            values: list[tuple[float, LegacyRankedSchemaTerm, float]] = []
+            for item in full:
+                bonus = (
+                    0.25
+                    if slot_index and item.term.domain in prior_ranges
+                    else 0.0
+                )
+                values.append((item.score + bonus, item, bonus))
+            pool = [item for item in values if item[1].term.term_id in bounded_ids]
+            pool.sort(key=lambda item: (-item[0], item[1].term.term_id))
+            actual_ranks = {
+                item.term.term_id: rank
+                for rank, (_, item, _) in enumerate(pool, start=1)
+            }
+            by_id = {item.term.term_id: (score, bonus) for score, item, bonus in values}
+            rows = []
+            for item in full:
+                score, bonus = by_id[item.term.term_id]
+                row = item.to_audit_dict()
+                row.update(
+                    {
+                        "lexical_pretruncation_rank": item.rank,
+                        "base_pool_member": item.term.term_id in bounded_ids,
+                        "domain_range_chain_bonus": bonus,
+                        "slot_score": round(score, 12),
+                        "slot_rank": actual_ranks.get(item.term.term_id),
+                        "top_20_member": (
+                            actual_ranks.get(item.term.term_id, top_k + 1) <= top_k
+                        ),
+                        "top_4_prompt_member": (
+                            actual_ranks.get(item.term.term_id, SCHEMA_CONTEXT_BOUND + 1)
+                            <= SCHEMA_CONTEXT_BOUND
+                        ),
+                    }
+                )
+                rows.append(row)
+            slots.append(tuple(rows))
+            selected = pool[:top_k]
+            prior_ranges = {
+                item.term.range
+                for _, item, _ in selected
+                if item.term.range is not None
+            }
         return tuple(slots)
+
+    def _legacy_type_ranking(
+        self, question: str, *, expanded: tuple[str, ...], top_k: int
+    ) -> tuple[dict[str, Any], ...]:
+        lexical = rank_schema_terms_legacy(
+            question, (term for term in self.terms if term.kind == "type")
+        )
+        expanded_set = set(expanded)
+        initial_ids = {item.term.term_id for item in lexical[:top_k]}
+        merged_ids = initial_ids | expanded_set
+        values = list(
+            (
+                item.score + (0.5 if item.term.term_id in expanded_set else 0.0),
+                item,
+            )
+            for item in lexical
+            if item.term.term_id in merged_ids
+        )
+        values.sort(key=lambda item: (-item[0], item[1].term.term_id))
+        actual_ranks = {
+            item.term.term_id: rank
+            for rank, (_, item) in enumerate(values[:top_k], start=1)
+        }
+        rows = []
+        for item in lexical:
+            row = item.to_audit_dict()
+            row.update(
+                {
+                    "lexical_pretruncation_rank": item.rank,
+                    "lexical_top_20_member": item.term.term_id in initial_ids,
+                    "relation_expansion_bonus": (
+                        0.5 if item.term.term_id in expanded_set else 0.0
+                    ),
+                    "post_merge_rank": actual_ranks.get(item.term.term_id),
+                    "top_20_member": item.term.term_id in actual_ranks,
+                    "top_4_prompt_member": (
+                        actual_ranks.get(item.term.term_id, SCHEMA_CONTEXT_BOUND + 1)
+                        <= SCHEMA_CONTEXT_BOUND
+                    ),
+                }
+            )
+            rows.append(row)
+        return tuple(rows)
 
     def _expand_types(
         self,
@@ -1137,95 +1445,6 @@ def parse_freebase_triple(
         _decode_ntriples_literal(str(match.group("literal"))),
         str(match.group("lang")).casefold(),
         False,
-    )
-
-
-def _rank_terms(
-    question: str, terms: Iterable[_Term], top_k: int
-) -> tuple[CatalogV2Candidate, ...]:
-    question_norm = normalized_label(question)
-    question_tokens = set(question_norm.split())
-    scored: list[tuple[float, str, str, _Term, tuple[str, ...]]] = []
-    for term in terms:
-        best = -1.0
-        matched = term.label
-        evidence: set[str] = {"public_metadata"}
-        descriptors = tuple(
-            dict.fromkeys(
-                (
-                    term.label,
-                    *term.aliases,
-                    normalized_label(term.term_id),
-                    normalized_label(term.domain or ""),
-                    normalized_label(term.range or ""),
-                    normalized_label(term.reverse_id or ""),
-                )
-            )
-        )
-        for descriptor in descriptors:
-            value = normalized_label(descriptor)
-            tokens = set(value.split())
-            if not tokens:
-                continue
-            overlap = len(question_tokens & tokens)
-            score = overlap / max(1, len(tokens))
-            if value and f" {value} " in f" {question_norm} ":
-                score += 2.0
-                evidence.add("normalized_alias")
-            if score > best:
-                best = score
-                matched = descriptor
-        scored.append((best, term.term_id, matched, term, tuple(sorted(evidence))))
-    scored.sort(key=lambda item: (-item[0], item[1]))
-    return tuple(
-        CatalogV2Candidate(
-            candidate_id=term.term_id,
-            label=term.label,
-            kind=term.kind,
-            score=round(score, 12),
-            rank=rank,
-            matched_label=matched,
-            evidence=evidence,
-            domain=term.domain,
-            range=term.range,
-            reverse_id=term.reverse_id,
-        )
-        for rank, (score, _, matched, term, evidence) in enumerate(scored[:top_k], start=1)
-    )
-
-
-def _merge_expanded_types(
-    ranked: tuple[CatalogV2Candidate, ...],
-    expanded: tuple[str, ...],
-    terms: tuple[_Term, ...],
-    top_k: int,
-) -> tuple[CatalogV2Candidate, ...]:
-    by_id = {term.term_id: term for term in terms if term.kind == "type"}
-    merged: dict[str, CatalogV2Candidate] = {item.candidate_id: item for item in ranked}
-    for term_id in expanded:
-        term = by_id.get(term_id)
-        if term is None:
-            continue
-        existing = merged.get(term_id)
-        score = (existing.score if existing is not None else 0.0) + 0.5
-        evidence = set(existing.evidence if existing is not None else ())
-        evidence.add("relation_domain_range_expansion")
-        merged[term_id] = CatalogV2Candidate(
-            candidate_id=term_id,
-            label=term.label,
-            kind="type",
-            score=round(score, 12),
-            rank=0,
-            matched_label=existing.matched_label if existing is not None else term.label,
-            evidence=tuple(sorted(evidence)),
-            domain=term.domain,
-            range=term.range,
-            reverse_id=term.reverse_id,
-        )
-    values = sorted(merged.values(), key=lambda item: (-item.score, item.candidate_id))[:top_k]
-    return tuple(
-        CatalogV2Candidate(**{**item.__dict__, "rank": rank})
-        for rank, item in enumerate(values, start=1)
     )
 
 

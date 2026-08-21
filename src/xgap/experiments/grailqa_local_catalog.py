@@ -44,10 +44,15 @@ from xgap.experiments.grailqa_catalog_v2 import (
 )
 from xgap.experiments.grailqa_local_diagnostics import (
     LOCAL_CONTRACT_COMPARISON_SCHEMA_VERSION,
+    SCHEMA_RANKING_COMPARISON_SCHEMA_VERSION,
     diagnostic_stage_counts,
+    diagnostic_rows_v2,
     entity_contract_metrics,
     previous_entity_contract_metrics,
+    previous_schema_ranking_metrics,
     relation_type_diagnostics,
+    schema_ranking_audits,
+    schema_ranking_metrics,
 )
 from xgap.experiments.grailqa_reachability import (
     audit_reachability,
@@ -55,6 +60,7 @@ from xgap.experiments.grailqa_reachability import (
     prompt_reachability_gate,
 )
 from xgap.experiments.hashing import content_hash
+from xgap.experiments.schema_ranking import ranking_contract
 from xgap.experiments.semantic import OntologyGraph
 from xgap.infrastructure.descriptors import load_yaml_mapping
 
@@ -629,9 +635,21 @@ def run_local_reachability_audit(
     output = Path(output_root)
     output.mkdir(parents=True, exist_ok=True)
     previous_metrics = previous_entity_contract_metrics(output)
+    previous_schema_metrics = previous_schema_ranking_metrics(output)
+    prior_artifact_hashes = {
+        name: sha256_file(output / name)
+        for name in (
+            "audit_summary.json",
+            "retrieval.jsonl",
+            "relation_diagnostics.jsonl",
+            "type_diagnostics.jsonl",
+        )
+        if (output / name).is_file()
+    }
     questions = load_inference_questions(
         inference_questions_path, question_ids=question_ids
     )
+    question_text_by_id = {item.question_id: item.text for item in questions}
     catalog = GrailQAInferenceCatalogV2.load(catalog_path)
     if catalog.manifest.get("local_catalog_schema_version") != LOCAL_CATALOG_SCHEMA_VERSION:
         raise ValueError("The local reachability audit requires an M13-E3B catalog.")
@@ -669,8 +687,33 @@ def run_local_reachability_audit(
         catalog=catalog_universe,
         prompt_limit=prompt_limit,
     )
-    _write_jsonl(output / "relation_diagnostics.jsonl", relation_diagnostics)
-    _write_jsonl(output / "type_diagnostics.jsonl", type_diagnostics)
+    relation_ranking_audit, type_ranking_audit, taxonomy_counts = (
+        schema_ranking_audits(
+            references=references,
+            trace_provider=lambda question_id: catalog.schema_ranking_trace(
+                question_id,
+                question_text_by_id[question_id],
+                top_k=top_k,
+                relation_slots=3,
+                expansion_hops=1,
+            ),
+            prompt_limit=prompt_limit,
+        )
+    )
+    relation_diagnostics_v2 = diagnostic_rows_v2(
+        relation_diagnostics, relation_ranking_audit, kind="relation"
+    )
+    type_diagnostics_v2 = diagnostic_rows_v2(
+        type_diagnostics, type_ranking_audit, kind="type"
+    )
+    if not (output / "relation_diagnostics.jsonl").is_file():
+        _write_jsonl(output / "relation_diagnostics.jsonl", relation_diagnostics)
+    if not (output / "type_diagnostics.jsonl").is_file():
+        _write_jsonl(output / "type_diagnostics.jsonl", type_diagnostics)
+    _write_jsonl(output / "relation_ranking_audit.jsonl", relation_ranking_audit)
+    _write_jsonl(output / "type_ranking_audit.jsonl", type_ranking_audit)
+    _write_jsonl(output / "relation_diagnostics_v2.jsonl", relation_diagnostics_v2)
+    _write_jsonl(output / "type_diagnostics_v2.jsonl", type_diagnostics_v2)
     diagnostic_counts = {
         "relation": diagnostic_stage_counts(relation_diagnostics),
         "type": diagnostic_stage_counts(type_diagnostics),
@@ -738,6 +781,31 @@ def run_local_reachability_audit(
     _write_json(
         output / "entity_retrieval_before_after.json", contract_comparison
     )
+    schema_comparison = {
+        "schema_version": SCHEMA_RANKING_COMPARISON_SCHEMA_VERSION,
+        "question_count": audit["question_count"],
+        "prompt_limit": prompt_limit,
+        "before": previous_schema_metrics,
+        "after": schema_ranking_metrics(audit),
+        "failure_taxonomy_counts_before": taxonomy_counts,
+        "ranking_contract": (
+            ranking_contract(catalog.schema_statistics) if questions else None
+        ),
+        "preserved_before_artifact_hashes": prior_artifact_hashes,
+        "gold_usage": "metrics_and_diagnostic_selection_only_after_ranking",
+        "interpretation": (
+            "The entity contract, Top-50 local universe, prompt limit, and live "
+            "gate are unchanged. Missing before values mean no prior real audit "
+            "artifact was available."
+        ),
+    }
+    _write_json(output / "schema_ranking_before_after.json", schema_comparison)
+    audit["schema_ranking"] = {
+        "contract": schema_comparison["ranking_contract"],
+        "failure_taxonomy_counts_before": taxonomy_counts,
+        "before_metrics_available": previous_schema_metrics is not None,
+        "previous_artifacts_preserved_by_hash": prior_artifact_hashes,
+    }
     audit["artifact_hashes"] = {
         name: sha256_file(output / name)
         for name in (
@@ -750,6 +818,11 @@ def run_local_reachability_audit(
             "entity_retrieval_before_after.json",
             "relation_diagnostics.jsonl",
             "type_diagnostics.jsonl",
+            "schema_ranking_before_after.json",
+            "relation_ranking_audit.jsonl",
+            "type_ranking_audit.jsonl",
+            "relation_diagnostics_v2.jsonl",
+            "type_diagnostics_v2.jsonl",
         )
     }
     audit["audit_hash"] = content_hash(audit)

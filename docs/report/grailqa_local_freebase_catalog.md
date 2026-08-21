@@ -146,6 +146,11 @@ stage_failure_counts.json
 entity_retrieval_before_after.json
 relation_diagnostics.jsonl
 type_diagnostics.jsonl
+schema_ranking_before_after.json
+relation_ranking_audit.jsonl
+type_ranking_audit.jsonl
+relation_diagnostics_v2.jsonl
+type_diagnostics_v2.jsonl
 audit_summary.json
 retrieval.jsonl
 reachability.jsonl
@@ -175,13 +180,68 @@ approximately 14.4 MB SQLite database. Its first, pre-E3B.2 audit measured:
 | Type Recall@20 | 6/18 |
 | JointPromptReachability | 0/18 |
 
-`entity_retrieval_before_after.json` preserves this prior metric snapshot and
-records the post-fix Recall@1/5/10/20, prompt entity coverage at limit 4, and
-joint prompt reachability. The two diagnostic JSONL files report every
-required relation/type, retrieved rank and score, prompt-visible prefix, and
-the failure stage `ontology_universe`, `retrieval`, `prompt_truncation`, or
-`reachable`. The real post-fix values remain pending the CWRU audit-only rerun.
-No local fixture number is a paper result.
+`entity_retrieval_before_after.json` preserves this prior metric snapshot. The
+real E3B.2 rerun measured Entity Recall@1/5/10/20 of 3/7/8/8 over 18, entity
+prompt coverage 7/18, and JointPromptReachability 1/18. Relation diagnostics
+classified 0 ontology-universe misses, 10 retrieval misses, 6 prompt
+truncations, and 2 reachable questions. Type diagnostics classified 0, 12, 2,
+and 4 respectively. These engineering diagnostics establish schema ranking as
+the next bottleneck; they are not paper accuracy results.
+
+## M13-E3B.3 Schema Retrieval Diagnosis
+
+The E3B.2 audit confirms that every required relation and type is in the frozen
+ontology. Entity ranking was repaired and validated separately. E3B.3 therefore
+changes only deterministic relation/type ranking and leaves the local entity
+universe, persisted entity order, Top-50, prompt limit 4, gate 0.20, ontology,
+and model path unchanged.
+
+The pre-repair relation ranker already aggregated descriptors by term before
+Top-k, so no relation alias-row truncation defect was found. Its ranking signal
+was nevertheless a continuous token-overlap fraction plus substring bonus;
+domain/range/reverse descriptors shared that score, and later slots had only a
+fixed chain bonus. The first slot did not use the retained query-local entity
+types. The pre-repair type path selected lexical Top-20 first and only then
+merged relation-induced types, so provenance could not compete at the proper
+pre-truncation boundary.
+
+The frozen `m13e3b3-ontology-aware-schema-ranking-v1` contract is:
+
+1. Aggregate canonical labels, public aliases, schema IDs, and public metadata
+   descriptors by schema term, deduplicate, then rank terms and truncate.
+2. Rank lexical evidence lexicographically as exact normalized multi-token
+   phrase, complete informative-token coverage, contiguous partial phrase,
+   informative partial overlap, generic single-token overlap, then zero overlap.
+3. Use smoothed IDF derived only from the frozen relation/type descriptor
+   vocabulary as a secondary tie-break. Persist its statistics hash.
+4. Use the first four query-local entity candidates' public types as first-slot
+   coherence. Propagate endpoint types through each prior slot's first four
+   relations. Domain/range compatibility breaks lexical ties; when no slot
+   direction exists it is evaluated bidirectionally and no direction is
+   invented.
+5. Aggregate type provenance from lexical ontology retrieval, entity-attached
+   types, relation domain/range, and bounded ontology expansion before Top-k.
+   Direct ontology provenance sits below exact phrase evidence and above
+   weaker lexical evidence.
+6. Resolve all remaining ties by ascending canonical schema ID. Ranking APIs
+   accept no gold, reference, answer, LLM, or learned-model input.
+
+The audit persists deployed retrieval before opening reference files. For each
+question it then computes the complete trace through a provider that accepts
+only the inference question ID/text; only after that trace exists does it read
+the corresponding semantic requirements to select diagnostic terms and compute
+Recall. Traces are processed one question at a time to bound memory. Existing
+`relation_diagnostics.jsonl` and `type_diagnostics.jsonl` are retained when
+present and their hashes are recorded. The five E3B.3 files contain complete
+old/new score decomposition, required pre-truncation ranks, Top-20/Top-4
+membership, beating candidates, provenance, stage counts, and a generic
+failure taxonomy.
+
+The real post-repair relation Recall@1/5/10/20, relation prompt coverage@4,
+type Recall@1/5/10/20, type prompt coverage@4, JointPromptReachability, and
+`live_preflight_allowed` remain pending the CWRU audit-only run. The result is
+accepted whether the unchanged gate passes or fails; no Qwen job is started
+automatically and no fixture value is reported as a real result.
 
 ## Full-vs-Local Comparison
 
@@ -195,10 +255,11 @@ every Full value is explicitly `null` with status `pending_global_build`.
 | construction wall time | pending | approximately 45 minutes |
 | unique entities | pending | 865 |
 | EntityCatalogCoverage | pending | 10/18 |
-| Entity Recall@20 | pending | post-E3B.2 rerun pending |
-| JointPromptReachability | pending | post-E3B.2 rerun pending |
+| Entity Recall@20 | pending | 8/18 (44.4%) |
+| JointPromptReachability | pending | 1/18 (5.56%), pre-E3B.3 |
 
 The first run revealed the generic local/global ordering defect repaired by
 E3B.2. It did not authorize score tuning. Embeddings, NER, query-specific
 aliases, gold-derived candidates, backend snapshots, relation/type retrieval
-changes, and Qwen execution remain outside M13-E3B.2.
+changes, and Qwen execution remain outside M13-E3B.2. E3B.3 adds only the
+generic, gold-blind schema-ranking repair described above.

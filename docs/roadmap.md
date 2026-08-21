@@ -672,14 +672,24 @@ local-catalog misses; preserves the 0.20 gate; and leaves the independent
 global E3/E3A job unchanged.
 
 Current status:
-**IMPLEMENTATION READY; E3B.2 CWRU AUDIT-ONLY RERUN PENDING.** The real
+**M13-E3B.2 COMPLETE; M13-E3B.3 IMPLEMENTATION READY, REAL CWRU AUDIT-ONLY
+RERUN PENDING.** The real
 preflight18 build completed with 865 unique entities and 900 assignments. Its
 first audit exposed a generic local/global ranking-contract mismatch: local
 entity coverage was 10/18 but entity Recall@20 and joint prompt reachability
 were both 0/18. E3B.2 makes persisted per-question rank authoritative only for
 explicit query-local catalogs, adds before/after and relation/type diagnostics,
 and leaves global FTS, candidate construction, prompt bounds, and the 0.20 gate
-unchanged. No Qwen job is submitted automatically.
+unchanged. The real E3B.2 rerun validated Entity Recall@1/5/10/20 of 3/7/8/8
+over 18 and exposed relation/type ranking as the remaining bottleneck.
+
+E3B.3 freezes deterministic phrase-aware relation/type ranking, ontology-only
+IDF tie-breaking, bounded relation-slot domain/range coherence, and
+pre-truncation type provenance. Its audit preserves prior artifact hashes and
+writes relation/type ranking decompositions, v2 failure stages, and exact
+before/after metrics. Acceptance requires fixture tests and a real audit-only
+rerun over the existing preflight18 SQLite artifact; it does not require or
+permit a Freebase rescan, Qwen, pilot150, prompt-limit changes, or gate tuning.
 
 ## M14 KGQA Evaluation
 

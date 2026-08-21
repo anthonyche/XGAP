@@ -203,13 +203,27 @@ def test_global_catalog_still_delegates_to_unchanged_fts_entity_retrieval(
     assert calls == [
         ("white-faced whistling duck is an exhibit at what zoo?", 3, None)
     ]
-    assert result.to_dict()["config"] == {
+    config = result.to_dict()["config"]
+    assert {key: value for key, value in config.items() if key != "schema_ranking"} == {
         "entity_channels": ["exact_alias", "normalized_alias", "bm25"],
         "tie_break": "score_descending_then_id",
-        "relation_channels": ["lexical_bm25", "public_metadata"],
+        "relation_channels": [
+            "phrase_lexical",
+            "public_metadata",
+            "ontology_coherence",
+        ],
+        "type_channels": [
+            "lexical_ontology",
+            "entity_attached_type",
+            "relation_domain_range",
+            "ontology_expansion",
+        ],
         "relation_slots": 3,
         "gold_inputs": False,
     }
+    assert config["schema_ranking"]["schema_ranking_version"] == (
+        "m13e3b3-ontology-aware-schema-ranking-v1"
+    )
 
 
 def test_materialization_normalizes_posixpath_source_shard_only(
@@ -351,6 +365,33 @@ def test_local_reachability_separates_local_catalog_miss(
     assert audit["relation_type_diagnostic_stage_counts"]["relation"][
         "question_count"
     ] == 2
+    schema_comparison = json.loads(
+        (fixture["catalog"] / "schema_ranking_before_after.json").read_text()  # type: ignore[operator]
+    )
+    assert schema_comparison["ranking_contract"]["schema_ranking_version"] == (
+        "m13e3b3-ontology-aware-schema-ranking-v1"
+    )
+    assert schema_comparison["ranking_contract"]["gold_inputs"] is False
+    relation_ranking = [
+        json.loads(line)
+        for line in (
+            fixture["catalog"] / "relation_ranking_audit.jsonl"  # type: ignore[operator]
+        ).read_text().splitlines()
+    ]
+    type_ranking = [
+        json.loads(line)
+        for line in (
+            fixture["catalog"] / "type_ranking_audit.jsonl"  # type: ignore[operator]
+        ).read_text().splitlines()
+    ]
+    assert relation_ranking[0]["gold_usage"] == (
+        "post_ranking_diagnostic_selection_only"
+    )
+    assert relation_ranking[0]["required_relation_rankings"][0]["legacy"]
+    assert relation_ranking[0]["required_relation_rankings"][0]["repaired"]
+    assert type_ranking[0]["required_type_rankings"][0]["repaired"][
+        "type_provenance"
+    ]
     for name in (
         "catalog_coverage.json",
         "retrieval_metrics.json",
@@ -359,9 +400,38 @@ def test_local_reachability_separates_local_catalog_miss(
         "entity_retrieval_before_after.json",
         "relation_diagnostics.jsonl",
         "type_diagnostics.jsonl",
+        "schema_ranking_before_after.json",
+        "relation_ranking_audit.jsonl",
+        "type_ranking_audit.jsonl",
+        "relation_diagnostics_v2.jsonl",
+        "type_diagnostics_v2.jsonl",
         "audit_summary.json",
     ):
         assert (fixture["catalog"] / name).is_file()
+
+    historical_relation_diagnostics = (
+        fixture["catalog"] / "relation_diagnostics.jsonl"  # type: ignore[operator]
+    ).read_text()
+    historical_hash = local.sha256_file(
+        fixture["catalog"] / "relation_diagnostics.jsonl"  # type: ignore[operator]
+    )
+    local.run_local_reachability_audit(
+        catalog_root=fixture["catalog"],
+        inference_questions_path=fixture["questions"],
+        question_ids=("q1", "q2"),
+        reference_interpretations_path=references,
+        workload_stats_path=workload,
+        output_root=fixture["catalog"],
+    )
+    assert (
+        fixture["catalog"] / "relation_diagnostics.jsonl"  # type: ignore[operator]
+    ).read_text() == historical_relation_diagnostics
+    rerun_comparison = json.loads(
+        (fixture["catalog"] / "schema_ranking_before_after.json").read_text()  # type: ignore[operator]
+    )
+    assert rerun_comparison["preserved_before_artifact_hashes"][
+        "relation_diagnostics.jsonl"
+    ] == historical_hash
 
 
 def test_comparison_keeps_unavailable_full_catalog_pending(

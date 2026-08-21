@@ -686,3 +686,30 @@ The real CWRU preflight contained reference entities at local ranks 1-3 that
 were absent from downstream Top-20 after FTS reranking. Preserving the frozen
 local ordering repairs a generic contract defect without tuning lexical
 scores, changing candidate generation, or using evaluation references.
+
+## D60 Schema ranking is phrase-first, term-level, and ontology-aware
+
+Relation and type descriptors are normalized and aggregated by canonical
+schema term before ranking or Top-k truncation. Lexical evidence is a frozen
+lexicographic hierarchy: exact normalized multi-token phrase, complete
+informative-token coverage, contiguous partial phrase, informative partial
+overlap, generic single-token overlap, and zero overlap. IDF computed only from
+the frozen ontology descriptor vocabulary is a secondary tie-break; GrailQA
+question or reference frequencies are never used.
+
+Query-local entity types provide the first relation slot's coherence context.
+Later bounded slots propagate public domain/range endpoint types from the
+visible relation prefix. Compatibility is bidirectional when no deterministic
+slot direction exists; reverse metadata is recorded but does not invent a
+direction. Type candidates aggregate lexical, entity-attached,
+relation-domain/range, and bounded ontology-expansion provenance before
+truncation. Exact phrase evidence remains stronger than provenance, and all
+ties end with ascending schema ID.
+
+Reason:
+
+The real E3B.2 audit showed a complete ontology universe but relation/type
+losses dominated by lexical retrieval and prompt truncation. A term-level,
+explainable contract repairs generic short-token and post-truncation provenance
+defects without fitted weights, gold-derived aliases, embeddings, another
+model, larger prompt bounds, or changes to the live gate.

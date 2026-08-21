@@ -2,19 +2,20 @@
 
 ## Current Milestone
 
-M13-E3 and M13-E3B remain **IMPLEMENTATION READY**. The independent global
-Catalog-v2 job may continue unchanged, while E3B can build query-conditioned
-local Catalog-v2 artifacts for the frozen 18-query preflight and 150-query
-pilot. E3B uses only question text, public English Freebase names/aliases/type
-metadata, and the frozen ontology during construction; references are opened
-only by the later offline audit. The real CWRU preflight18 build is complete:
-865 unique entities, 900 query assignments, about 45 minutes wall time, and an
-approximately 14.4 MB SQLite artifact. Its first audit measured entity catalog
-coverage 10/18 but entity Recall@20 0/18 and joint prompt reachability 0/18.
-Query-level evidence showed that generic global FTS reranking discarded highly
-ranked persisted local candidates. M13-E3B.2 repairs only that query-local
-retrieval contract; a CWRU audit-only rerun is pending before post-fix metrics
-or a new GO/NO-GO decision are claimed.
+M13-E3 remains **IMPLEMENTATION READY**. M13-E3B.2 is complete after the real
+CWRU audit-only rerun validated the query-local entity contract: Entity
+Recall@1/5/10/20 is 3/7/8/8 of 18, entity prompt coverage is 7/18, and joint
+prompt reachability is 1/18. Its post-fix diagnostics locate the remaining
+bottleneck in schema retrieval: relation stages are 0 ontology-universe misses,
+10 retrieval misses, 6 prompt truncations, and 2 reachable; type stages are
+0, 12, 2, and 4 respectively.
+
+M13-E3B.3 is now **IMPLEMENTATION READY; REAL CWRU POST-REPAIR AUDIT PENDING**.
+It freezes a gold-blind phrase-first schema ranking contract, ontology-only IDF
+tie-breaking, query-local anchor-type and bounded relation-slot coherence, and
+pre-truncation type-provenance aggregation. The entity contract, Top-50,
+prompt limit 4, gate 0.20, ontology, and model path are unchanged. No Qwen or
+pilot150 run is authorized until the existing preflight18 artifact is audited.
 
 ## Completed
 
@@ -44,26 +45,26 @@ or a new GO/NO-GO decision are claimed.
 - M13-D Frozen 150-Query Server Pilot Execution
 - M13-E1 Local Offline Reachability And Interpretation-Contract Repair
 - M13-E2 CWRU H100 + vLLM Experiment Backend (local implementation)
+- M13-E3B.2 Query-Local Entity Retrieval Contract Repair
 
 ## In Progress
 
 - M13-E3 real CWRU construction of query-independent Freebase catalog v2
 - M13-E3 all-35,439 coverage and frozen-150 offline reachability audit
 - M13-E3A download and empirical validation of the frozen archival source
-- M13-E3B real CWRU query-local preflight18 build and reachability audit
-- M13-E3B.2 CWRU post-fix audit-only retrieval/reachability measurement
+- M13-E3B.3 CWRU post-repair schema retrieval/reachability audit
 - M13-E3B real CWRU query-local pilot150 build, after reviewing preflight18
 
 ## Next Planned Milestone
 
-Leave the running global M13-E3/E3A job untouched. Pull M13-E3B.2 on CWRU and
+Leave the running global M13-E3/E3A job untouched. Pull M13-E3B.3 on CWRU and
 rerun only the existing `preflight18` offline audit with
 `XGAP_LOCAL_CATALOG_AUDIT_ONLY=1`; do not rescan Parquet. Review the persisted
-entity before/after metrics and relation/type query-level diagnostics before
-deciding whether to build `pilot150`. A Qwen3-32B preflight remains a separate
-human action permitted only when the unchanged 0.20 gate naturally reports
-`live_preflight_allowed=true`. Freebase backend execution, retrieval tuning,
-embeddings, RQ2/RQ3, full M13 disambiguation, and M14 remain future work.
+relation/type before/after metrics, ranking decomposition, and failure taxonomy.
+If and only if the unchanged gate naturally reports
+`live_preflight_allowed=true`, a Qwen3-32B preflight becomes a separate human
+action. Freebase rescanning, prompt-bound changes, embeddings, pilot150, RQ2/RQ3,
+full M13 disambiguation, and M14 remain outside this step.
 
 ## M13-E3 Freebase Catalog-v2 And Reachability Audit
 
@@ -159,9 +160,23 @@ with the persisted lexical score. They no longer pass that universe through
 the global FTS scorer. Global Catalog-v2 retrieval is unchanged. Offline audit
 now writes `entity_retrieval_before_after.json`, `relation_diagnostics.jsonl`,
 and `type_diagnostics.jsonl`; relation/type retrieval itself is unchanged.
-The 0.20 gate, prompt limit 4, top-50 construction, ontology, and model path
-are unchanged. M13-E3B remains **IMPLEMENTATION READY; REAL CWRU E3B.2
-AUDIT-ONLY RERUN PENDING**.
+The real post-fix CWRU audit measured entity Recall@1/5/10/20 of 3/7/8/8 over
+18, entity prompt coverage 7/18, and joint prompt reachability 1/18. This closes
+E3B.2 while preserving the 0.20 gate, prompt limit 4, top-50 construction,
+ontology, and model path.
+
+M13-E3B.3 repairs the remaining generic relation/type ranking boundary. It
+aggregates all bounded descriptors by schema term before any Top-k, ranks with
+the frozen lexicographic hierarchy exact multi-token phrase, complete
+informative tokens, contiguous partial phrase, informative partial overlap,
+generic single token, and zero overlap, and uses ontology-descriptor IDF only
+as a deterministic secondary tie-break. Relation slots use query-local entity
+types and bounded bidirectional domain/range propagation; no direction is
+invented when the existing slot has none. Type ranking combines lexical,
+entity-attached, relation-induced, and bounded ontology-expansion provenance
+before truncation. Audit-only writes the versioned before/after and ranking
+diagnostic artifacts without replacing historical E3B.2 diagnostics. The code
+is **IMPLEMENTATION READY; REAL CWRU E3B.3 AUDIT-ONLY RERUN PENDING**.
 
 ## M13-E2 CWRU H100 + vLLM Experiment Backend
 
@@ -1162,7 +1177,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M13-E3B.2 local implementation tests passed. M7 backend smoke and M12-C real
+M0-M13-E3B.3 local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1172,7 +1187,7 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 471 passed, 10 skipped, including the
+- `PYTHONPATH=src python -m pytest`: 478 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,
   mode-selection, compatibility-report, and CPU workflow tests. Three M13-E3A
@@ -1182,17 +1197,20 @@ Latest recorded command results:
   Catalog-v2 compatibility, local loss attribution, pending-full reports, and
   E3B.1 `PosixPath` materialization normalization. E3B.2 adds persisted-rank
   entity retrieval, global-FTS non-regression, Top-k prefix/isolation, and
-  relation/type diagnostic-stage regressions.
+  relation/type diagnostic-stage regressions. E3B.3 adds phrase-tier,
+  term-aggregation, stable-tie, slot-isolation, domain/range-coherence,
+  type-provenance, and no-gold contract regressions.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m pytest
   tests/test_m13e3a_freebase_parquet.py tests/test_m13e3_freebase_catalog.py
   -q`: 14 passed, including N-Triples/Parquet catalog and retrieval parity.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m
   xgap.experiments.freebase_sources smoke ... --max-row-groups 1`: passed on
   the real frozen `0000` shard; 649,794 rows contained every required construct.
-- `./scripts/run_acceptance.sh`: passed with the same 471 passed and 10 skips;
+- `./scripts/run_acceptance.sh`: passed with the same 478 passed and 10 skips;
   all required examples passed.
-- `PYTHONPATH=src python -m pytest tests/test_m13e1_reachability_contract.py
-  tests/test_m13e3b_local_catalog.py -q`: 28 passed.
+- `PYTHONPATH=src python -m pytest tests/test_m13e3b3_schema_ranking.py
+  tests/test_m13e1_reachability_contract.py tests/test_m13e3a_freebase_parquet.py
+  tests/test_m13e3b_local_catalog.py -q`: 40 passed, 3 skipped.
 - `bash -n scripts/server/build_grailqa_local_catalog.sh`, `bash -n
   scripts/slurm/build_grailqa_local_catalog.sbatch`, and `git diff --check`:
   passed.
