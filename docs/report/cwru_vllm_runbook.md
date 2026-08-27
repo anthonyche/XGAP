@@ -46,6 +46,11 @@ audit, reachability-row hashes, exact unique frozen 18-ID set, prompt bound 4, a
 endpoint-contract version. It must report `ready=true`, observed joint ratio
 `0.2777777777777778`, and a passing frozen 0.20 engineering gate.
 
+The batch job additionally verifies the frozen token budget before loading
+Qwen3-32B. The ModelBundle permits up to 8192 input tokens and 4096 output
+tokens, and the vLLM deployment therefore serves `max_model_len=12288`. No
+system package or vLLM configuration needs to be changed manually on CWRU.
+
 To override only the physical artifact root:
 
 ```bash

@@ -32,7 +32,21 @@ H100 NVL, and passed the strict JSON-schema serving smoke. Evaluation stopped
 before metrics because the shared first-failure classifier did not yet accept
 the documented query-local stage `reference_not_in_local_catalog`.
 M13-E3B.5.2 adds only that missing taxonomy member, retaining fail-closed
-behavior for every unknown stage. Another CWRU resubmission is pending.
+behavior for every unknown stage. The third submission, Slurm job `3763119`,
+completed and wrote all 17 expected run artifacts, but all 18 provider calls
+were rejected before generation with HTTP 400. The frozen bundle requested
+4096 output tokens for prompts of 4146-4590 tokens while vLLM served only an
+8192-token context window. Consequently provider and structured-valid rates
+were both zero, no candidate reached parsing or lowering, and the reported
+zero Candidate Recall is not a model-quality result.
+
+M13-E3B.5.3 repairs only that deployment-budget contradiction. The unchanged
+bundle budgets of 8192 input plus 4096 output now run against a 12288-token
+vLLM context window. A fail-fast check verifies the bundle, spec, deployment
+hashes, and exact token arithmetic before loading Qwen3-32B. Prompt contents,
+Top-50, Top-4, candidate cap 3, model generation parameters, retrieval,
+grounding, `c_sem`, and downstream planning remain unchanged. One final CWRU
+18-query resubmission is pending.
 
 ## Completed
 
@@ -76,8 +90,8 @@ behavior for every unknown stage. Another CWRU resubmission is pending.
 
 ## Next Planned Milestone
 
-Leave the running global M13-E3/E3A job untouched. Pull the M13-E3B.5
-classifier compatibility repair on CWRU,
+Leave the running global M13-E3/E3A job untouched. Pull the M13-E3B.5 token
+budget repair on CWRU,
 run `scripts/server/check_cwru_grailqa_preflight_ready.sh`, and submit exactly
 the frozen 18-query Qwen3-32B Slurm preflight. Review overall Candidate Recall
 and the separately reported jointly reachable 5-question subset before any

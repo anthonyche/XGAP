@@ -786,3 +786,20 @@ Physical JSONL row order is not part of artifact identity. Runtime lookup is by
 `question_id`, and experiment execution follows the frozen spec order. The
 validator therefore requires exact unique set equality and rejects missing,
 extra, or duplicate IDs without imposing an unrelated serialization order.
+
+## D64 CWRU serving context covers the complete frozen request budget
+
+The CWRU Qwen3-32B deployment must satisfy
+`max_model_len >= input_budget + output_budget` before model startup. For the
+M13-E3B.5 preflight, the unchanged ModelBundle budgets are 8192 input tokens
+and 4096 output tokens, so vLLM serves a 12288-token context. The environment
+contract, experiment spec, and launch argument record the same value, and a
+fail-fast runtime check rejects hash drift or insufficient context.
+
+Reason:
+
+Job `3763119` showed that independent input and output limits are not valid
+when their sum exceeds the served context: all 18 requests received HTTP 400
+before generation. Expanding the deployment window preserves prompt and
+candidate-generation semantics, whereas silently truncating output would
+change the frozen experiment condition.

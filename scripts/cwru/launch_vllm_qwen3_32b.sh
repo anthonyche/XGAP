@@ -53,7 +53,7 @@ echo "Starting $XGAP_LLM_MODEL revision $XGAP_RESOLVED_MODEL_REVISION on 127.0.0
   --port 8000 \
   --dtype bfloat16 \
   --gpu-memory-utilization 0.90 \
-  --max-model-len 8192 \
+  --max-model-len 12288 \
   --generation-config vllm \
   >"$XGAP_VLLM_LOG" 2>&1 &
 XGAP_VLLM_PID=$!

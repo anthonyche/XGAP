@@ -722,7 +722,12 @@ submission passed readiness, loaded Qwen3-32B on H100, and passed strict
 structured-output serving. It then exposed one additive diagnostic-contract
 gap: the shared classifier rejected the already documented local-catalog stage
 `reference_not_in_local_catalog`. E3B.5.2 admits that stage without weakening
-unknown-stage rejection. The rerun remains the next experiment action.
+unknown-stage rejection. The next submission completed cleanly but every live
+request received HTTP 400 before generation: the 8192-token serving context
+could not hold the observed 4146-4590 input tokens plus the frozen 4096 output
+budget. E3B.5.3 preserves both bundle budgets and expands only the deployment
+context to their exact sum, 12288. It also checks that arithmetic before model
+startup. The rerun remains the next experiment action.
 
 ## M14 KGQA Evaluation
 

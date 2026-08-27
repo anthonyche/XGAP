@@ -16,12 +16,14 @@ from xgap.experiments.cwru_vllm import (
     finalize_run,
     resolve_cached_model_revision,
     run_structured_output_smoke,
+    verify_preflight_token_budget,
     wait_for_vllm_model,
 )
 from xgap.experiments.grailqa_preflight import (
     GrailQAPreflightSpec,
     build_preflight_run_manifest,
 )
+from xgap.experiments.hashing import content_hash
 from xgap.experiments.live_run import build_openai_compatible_provider
 from xgap.llm.schemas import PlannerRequest
 
@@ -303,6 +305,44 @@ def test_cwru_preflight_preserves_frozen_questions_and_forbids_full_run() -> Non
     assert local.data["deployment_contract_hash"] == contract.contract_hash
 
 
+def test_cwru_request_budget_exactly_fits_served_context(tmp_path: Path) -> None:
+    result = verify_preflight_token_budget(
+        repo_root=ROOT,
+        spec_path=SPEC_PATH,
+        contract_path=CONTRACT_PATH,
+    )
+    assert result == {
+        "schema_version": "m13e3b5-cwru-token-budget-v1",
+        "status": "pass",
+        "input_tokens": 8192,
+        "output_tokens": 4096,
+        "required_tokens": 12288,
+        "context_tokens": 12288,
+    }
+
+    contract_data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+    contract_data["serving"]["max_model_len"] = 8192
+    contract_data["contract_hash"] = content_hash(
+        {key: value for key, value in contract_data.items() if key != "contract_hash"}
+    )
+    bad_contract = tmp_path / "bad-contract.json"
+    bad_contract.write_text(json.dumps(contract_data), encoding="utf-8")
+    spec_data = json.loads(SPEC_PATH.read_text(encoding="utf-8"))
+    spec_data["deployment_contract_hash"] = contract_data["contract_hash"]
+    spec_data["freeze_hash"] = content_hash(
+        {key: value for key, value in spec_data.items() if key != "freeze_hash"}
+    )
+    bad_spec = tmp_path / "bad-spec.json"
+    bad_spec.write_text(json.dumps(spec_data), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="exceeds the served context window"):
+        verify_preflight_token_budget(
+            repo_root=ROOT,
+            spec_path=bad_spec,
+            contract_path=bad_contract,
+        )
+
+
 def test_cwru_scripts_are_scheduler_selected_syntax_valid_and_cleanup_bounded() -> None:
     scripts = [
         ROOT / "scripts/cwru/common.sh",
@@ -336,6 +376,11 @@ def test_cwru_scripts_are_scheduler_selected_syntax_valid_and_cleanup_bounded() 
     assert "gput073" not in combined
     assert "docker" not in combined.lower()
     assert "sudo" not in combined.lower()
+    contract = CWRUVLLMContract.load(CONTRACT_PATH)
+    assert (
+        f"--max-model-len {contract.data['serving']['max_model_len']}"
+        in (ROOT / "scripts/cwru/launch_vllm_qwen3_32b.sh").read_text()
+    )
     preflight = (
         ROOT / "scripts/slurm/run_grailqa_semantic_preflight_v2.sbatch"
     ).read_text()

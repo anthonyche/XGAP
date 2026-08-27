@@ -77,6 +77,12 @@ else
   echo "Git working tree status: clean"
 fi
 
+echo "Checking frozen request token budget against the served context window."
+PYTHONPATH=src python -m xgap.experiments.cwru_vllm verify-token-budget \
+  --repo-root "$XGAP_REPO_ROOT" \
+  --spec "$EXPERIMENT_SPEC" \
+  --contract "$XGAP_CWRU_CONTRACT"
+
 # shellcheck source=../cwru/launch_vllm_qwen3_32b.sh
 source "$XGAP_REPO_ROOT/scripts/cwru/launch_vllm_qwen3_32b.sh"
 bash "$XGAP_REPO_ROOT/scripts/cwru/check_vllm_ready.sh"

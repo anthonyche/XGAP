@@ -240,6 +240,53 @@ def verify_runtime_environment(contract: CWRUVLLMContract) -> dict[str, Any]:
     }
 
 
+def verify_preflight_token_budget(
+    *, repo_root: str | Path, spec_path: str | Path, contract_path: str | Path
+) -> dict[str, Any]:
+    """Verify that the frozen request budget fits the served context window."""
+
+    repo = Path(repo_root).resolve()
+    spec_file = (
+        (repo / spec_path).resolve()
+        if not Path(spec_path).is_absolute()
+        else Path(spec_path).resolve()
+    )
+    spec = json.loads(spec_file.read_text(encoding="utf-8"))
+    if not isinstance(spec, Mapping):
+        raise ValueError("Experiment spec root must be an object.")
+    contract = CWRUVLLMContract.load(contract_path)
+    if spec.get("deployment_contract_hash") != contract.contract_hash:
+        raise ValueError("Experiment spec deployment contract hash does not match CWRU.")
+    model_root = spec.get("model_bundle_root")
+    if not isinstance(model_root, str) or not model_root:
+        raise ValueError("Experiment spec must identify a model bundle.")
+    model = ModelBundle.load(repo / model_root)
+    if model.bundle_hash != spec.get("model_bundle_hash"):
+        raise ValueError("Experiment spec model bundle hash does not match the bundle.")
+    input_tokens = int(model.config.token_limits.get("input", 0))
+    output_tokens = int(model.config.token_limits.get("output", 0))
+    context_tokens = int(
+        _mapping(contract.data["serving"], "serving").get("max_model_len", 0)
+    )
+    if min(input_tokens, output_tokens, context_tokens) <= 0:
+        raise ValueError("Input, output, and context token budgets must be positive.")
+    required_tokens = input_tokens + output_tokens
+    if required_tokens > context_tokens:
+        raise ValueError(
+            "Frozen request token budget exceeds the served context window: "
+            f"input={input_tokens}, output={output_tokens}, "
+            f"required={required_tokens}, context={context_tokens}."
+        )
+    return {
+        "schema_version": "m13e3b5-cwru-token-budget-v1",
+        "status": "pass",
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "required_tokens": required_tokens,
+        "context_tokens": context_tokens,
+    }
+
+
 def collect_run_environment(
     *,
     repo_root: str | Path,
@@ -528,6 +575,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     verify = subparsers.add_parser("verify-environment")
     verify.add_argument("--contract", required=True)
 
+    token_budget = subparsers.add_parser("verify-token-budget")
+    token_budget.add_argument("--repo-root", required=True)
+    token_budget.add_argument("--spec", required=True)
+    token_budget.add_argument("--contract", required=True)
+
     capture = subparsers.add_parser("capture-environment")
     capture.add_argument("--repo-root", required=True)
     capture.add_argument("--spec", required=True)
@@ -566,6 +618,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     elif args.command == "verify-environment":
         result = verify_runtime_environment(CWRUVLLMContract.load(args.contract))
+    elif args.command == "verify-token-budget":
+        result = verify_preflight_token_budget(
+            repo_root=args.repo_root,
+            spec_path=args.spec,
+            contract_path=args.contract,
+        )
     elif args.command == "capture-environment":
         result = collect_run_environment(
             repo_root=args.repo_root,
