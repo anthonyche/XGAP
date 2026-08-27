@@ -17,6 +17,7 @@ from xgap.llm.schemas import PlannerRequest, PlannerResponse
 
 STAGE_AWARE_FAILURE_TAXONOMY = (
     "reference_not_in_catalog",
+    "reference_not_in_local_catalog",
     "reference_not_retrieved",
     "reference_not_prompt_visible",
     "malformed_output",

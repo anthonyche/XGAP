@@ -717,8 +717,12 @@ compiler, or backend behavior.
 The first real CWRU E3B.5 submission passed the 5/18 gate but stopped before
 model loading because readiness compared JSONL row order with spec order.
 E3B.5.1 treats physical row order as irrelevant while still requiring one
-unique record for every frozen preflight ID and no extras. The rerun remains
-the next experiment action.
+unique record for every frozen preflight ID and no extras. The second
+submission passed readiness, loaded Qwen3-32B on H100, and passed strict
+structured-output serving. It then exposed one additive diagnostic-contract
+gap: the shared classifier rejected the already documented local-catalog stage
+`reference_not_in_local_catalog`. E3B.5.2 admits that stage without weakening
+unknown-stage rejection. The rerun remains the next experiment action.
 
 ## M14 KGQA Evaluation
 

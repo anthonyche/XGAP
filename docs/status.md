@@ -9,7 +9,8 @@ from 4/18 to 12/18 and joint prompt reachability from 1/18 to 5/18 (27.78%).
 The unchanged 0.20 engineering gate passed with
 `live_preflight_allowed=true`; explicit Type Top-4 coverage remained 4/18.
 
-M13-E3B.5 is **LOCALLY IMPLEMENTED; CWRU 18-QUERY LIVE PREFLIGHT PENDING**. It
+M13-E3B.5 is **LOCALLY IMPLEMENTED; CWRU 18-QUERY LIVE PREFLIGHT RERUN
+PENDING**. It
 wires the passing query-local `preflight18` catalog and `audit_summary.json`
 into the existing Qwen3-32B preflight through an explicit artifact profile.
 Readiness now validates the exact frozen IDs, catalog and audit hashes, row
@@ -25,7 +26,13 @@ required the physical `reachability.jsonl` row order to equal the spec order.
 M13-E3B.5.1 removes only that invalid ordering requirement: query-local
 artifacts must contain the exact unique frozen 18-ID set, while row order is
 irrelevant. Missing, extra, duplicate, hash-mismatched, or contract-mismatched
-records still fail closed. A CWRU resubmission is pending.
+records still fail closed. The second CWRU submission, Slurm job `3763061`,
+then passed readiness, verified the frozen runtime, started Qwen3-32B on an
+H100 NVL, and passed the strict JSON-schema serving smoke. Evaluation stopped
+before metrics because the shared first-failure classifier did not yet accept
+the documented query-local stage `reference_not_in_local_catalog`.
+M13-E3B.5.2 adds only that missing taxonomy member, retaining fail-closed
+behavior for every unknown stage. Another CWRU resubmission is pending.
 
 ## Completed
 
@@ -69,7 +76,8 @@ records still fail closed. A CWRU resubmission is pending.
 
 ## Next Planned Milestone
 
-Leave the running global M13-E3/E3A job untouched. Pull M13-E3B.5 on CWRU,
+Leave the running global M13-E3/E3A job untouched. Pull the M13-E3B.5
+classifier compatibility repair on CWRU,
 run `scripts/server/check_cwru_grailqa_preflight_ready.sh`, and submit exactly
 the frozen 18-query Qwen3-32B Slurm preflight. Review overall Candidate Recall
 and the separately reported jointly reachable 5-question subset before any

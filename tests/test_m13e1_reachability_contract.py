@@ -348,6 +348,18 @@ def test_stage_taxonomy_and_c_sem_audit_are_observable() -> None:
         )
         == "reference_not_retrieved"
     )
+    assert (
+        classify_first_failure(
+            reachability_row={
+                "first_unreachable_stage": "reference_not_in_local_catalog"
+            }
+        )
+        == "reference_not_in_local_catalog"
+    )
+    with pytest.raises(ValueError, match="Unknown reachability failure stage"):
+        classify_first_failure(
+            reachability_row={"first_unreachable_stage": "unknown_stage"}
+        )
     distribution = semantic_deviation_distribution(
         [
             {"question_id": "q1", "semantic_deviation": 0.0},
