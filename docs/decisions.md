@@ -770,7 +770,7 @@ silently changing the primary condition.
 The CWRU M13-E3B.5 preflight selects the query-local artifact with the explicit
 `query_local_e3b4` profile. Readiness consumes its native
 `audit_summary.json` and `reachability.jsonl` paths and validates the exact 18
-question IDs/order, Catalog-v2 content hash, audit content hash, reachability
+question-ID set, Catalog-v2 content hash, audit content hash, reachability
 row hash, prompt bound 4, gold-blind catalog declaration, and relation-endpoint
 contract version. The older query-independent `summary.json` layout remains a
 separate profile and cannot silently accept a query-local catalog.
@@ -781,3 +781,8 @@ The passing 5/18 reachability result belongs to one precise query-local
 artifact and endpoint contract. Explicit profile selection prevents the live
 job from accidentally reading the stale global artifact layout or mixing
 coverage evidence from a different question set.
+
+Physical JSONL row order is not part of artifact identity. Runtime lookup is by
+`question_id`, and experiment execution follows the frozen spec order. The
+validator therefore requires exact unique set equality and rejects missing,
+extra, or duplicate IDs without imposing an unrelated serialization order.

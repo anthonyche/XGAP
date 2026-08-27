@@ -277,7 +277,7 @@ Qwen accuracy measurement.
 
 The live CWRU wrapper selects the completed artifact through the explicit
 `query_local_e3b4` profile. It consumes `audit_summary.json` directly and
-fails before model startup if the exact 18 question IDs/order, Catalog-v2
+fails before model startup if the exact unique 18-question ID set, Catalog-v2
 hash, audit hash, reachability-row hash, prompt limit 4, gold-blind catalog
 declaration, or endpoint contract differs. Structured Qwen requests include
 the same direction/role-aware endpoint rule used by runtime validation and the

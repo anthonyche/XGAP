@@ -18,6 +18,15 @@ Structured requests carry that endpoint contract, and metrics report both all
 18 questions and the 5-question jointly reachable subset. Top-50, Top-4, gate
 0.20, ranking, ontology, model parameters, and pilot150 remain unchanged.
 
+The first CWRU E3B.5 submission, Slurm job `3741724`, verified the catalog,
+audit, row hash, endpoint contract, model bundle, and credential and passed the
+unchanged gate at 5/18. Qwen was not loaded because readiness additionally
+required the physical `reachability.jsonl` row order to equal the spec order.
+M13-E3B.5.1 removes only that invalid ordering requirement: query-local
+artifacts must contain the exact unique frozen 18-ID set, while row order is
+irrelevant. Missing, extra, duplicate, hash-mismatched, or contract-mismatched
+records still fail closed. A CWRU resubmission is pending.
+
 ## Completed
 
 - M0 Project Skeleton
@@ -201,7 +210,7 @@ reachability from 1/18 to 5/18. The unchanged 0.20 gate therefore passed at
 
 M13-E3B.5 connects that exact passing artifact to the existing CWRU live
 preflight. `query_local_e3b4` is an explicit runtime profile; it reads
-`audit_summary.json` directly and rejects profile, question-ID/order,
+`audit_summary.json` directly and rejects profile, question-ID-set,
 catalog-hash, audit-hash, reachability-row-hash, prompt-bound, or endpoint
 contract drift. The Qwen request receives the versioned role/direction rule
 already used by runtime validation and the audit. Overall 18-query metrics are
@@ -1218,7 +1227,7 @@ the local completion run.
 
 Latest recorded command results:
 
-- `PYTHONPATH=src python -m pytest`: 490 passed, 10 skipped, including the
+- `PYTHONPATH=src python -m pytest`: 492 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,
   mode-selection, compatibility-report, and CPU workflow tests. Three M13-E3A
@@ -1235,8 +1244,9 @@ Latest recorded command results:
   Type reachability, prompt truncation, and endpoint audit-artifact regressions.
   E3B.5 adds explicit query-local profile success, contract/ID/hash fail-closed
   cases, structured endpoint-contract request propagation, conditional metric
-  separation, and CWRU wrapper syntax/path checks.
-- `./scripts/run_acceptance.sh`: passed with the same 490 passed and 10 skipped,
+  separation, order-independent exact-ID-set validation, and CWRU wrapper
+  syntax/path checks.
+- `./scripts/run_acceptance.sh`: passed with the same 492 passed and 10 skipped,
   followed by all required deterministic examples and acceptance checks.
 - `PYTHONPATH=/private/tmp/xgap-m13e3a-pyarrow:src python -m pytest
   tests/test_m13e3a_freebase_parquet.py tests/test_m13e3_freebase_catalog.py

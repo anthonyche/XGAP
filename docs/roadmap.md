@@ -706,13 +706,19 @@ prompt reachability from 1/18 to 5/18, so the unchanged 0.20 gate passed at
 
 E3B.5 connects that passing query-local artifact to the frozen 18-query CWRU
 Qwen3-32B preflight. An explicit artifact profile validates the exact question
-set/order, catalog hash, audit hash, reachability-row hash, prompt bound, and
+set, catalog hash, audit hash, reachability-row hash, prompt bound, and
 endpoint contract before model startup. The structured request exposes the
 same endpoint rule used by deterministic runtime validation, and evaluation
 reports both overall metrics and metrics conditioned on the jointly reachable
 five-question subset. It does not rescan Freebase, alter Top-50 or Top-4,
 change the gate, run pilot150, or modify ranking, Qwen parameters, planner,
 compiler, or backend behavior.
+
+The first real CWRU E3B.5 submission passed the 5/18 gate but stopped before
+model loading because readiness compared JSONL row order with spec order.
+E3B.5.1 treats physical row order as irrelevant while still requiring one
+unique record for every frozen preflight ID and no extras. The rerun remains
+the next experiment action.
 
 ## M14 KGQA Evaluation
 

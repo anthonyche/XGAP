@@ -79,6 +79,8 @@ def _configure_local_profile(
     monkeypatch: pytest.MonkeyPatch,
     root: Path,
     spec: GrailQAPreflightSpec,
+    *,
+    manifest_question_ids: tuple[str, ...] | None = None,
 ) -> None:
     fake_catalog = SimpleNamespace(
         root=root,
@@ -87,7 +89,7 @@ def _configure_local_profile(
             "local_catalog_schema_version": "m13e3b-grailqa-local-catalog-v1",
             "requires_query_entity_filter": True,
             "gold_used_for_construction": False,
-            "question_ids": list(spec.question_ids),
+            "question_ids": list(manifest_question_ids or spec.question_ids),
         },
     )
     monkeypatch.setattr(
@@ -129,7 +131,33 @@ def test_query_local_preflight_artifact_passes_exact_fail_closed_contract(
     assert report["gate"]["observed_joint_ratio"] == pytest.approx(5 / 18)
 
 
-@pytest.mark.parametrize("mutation", ["endpoint_contract", "question_ids"])
+def test_query_local_preflight_accepts_reordered_reachability_rows(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    spec = GrailQAPreflightSpec.load(SPEC_PATH)
+    _write_local_artifacts(
+        tmp_path,
+        spec,
+        question_ids=tuple(reversed(spec.question_ids)),
+    )
+    _configure_local_profile(
+        monkeypatch,
+        tmp_path,
+        spec,
+        manifest_question_ids=tuple(reversed(spec.question_ids)),
+    )
+
+    report = preflight_readiness(spec, ROOT, require_credentials=True)
+
+    assert report["ready"] is True
+    assert report["artifact_profile_contract"]["question_contract"] == (
+        "exact_frozen_preflight_id_set_order_independent"
+    )
+
+
+@pytest.mark.parametrize(
+    "mutation", ["endpoint_contract", "question_ids", "duplicate_question_id"]
+)
 def test_query_local_preflight_rejects_contract_or_question_drift(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -138,11 +166,17 @@ def test_query_local_preflight_rejects_contract_or_question_drift(
     spec = GrailQAPreflightSpec.load(SPEC_PATH)
     if mutation == "endpoint_contract":
         _write_local_artifacts(tmp_path, spec, endpoint_contract="wrong-contract")
-    else:
+    elif mutation == "question_ids":
         _write_local_artifacts(
             tmp_path,
             spec,
             question_ids=(*spec.question_ids[:-1], "wrong-question"),
+        )
+    else:
+        _write_local_artifacts(
+            tmp_path,
+            spec,
+            question_ids=(*spec.question_ids[:-1], spec.question_ids[0]),
         )
     _configure_local_profile(monkeypatch, tmp_path, spec)
 

@@ -42,7 +42,7 @@ The command requires no GPU and does not contact vLLM. It selects the explicit
 `query_local_e3b4` profile under
 `$HOME/xgap-data/freebase/grailqa-local-catalog-v1/preflight18`, reads
 `audit_summary.json` without copying or renaming it, and verifies the catalog,
-audit, reachability-row hashes, exact frozen 18 IDs/order, prompt bound 4, and
+audit, reachability-row hashes, exact unique frozen 18-ID set, prompt bound 4, and
 endpoint-contract version. It must report `ready=true`, observed joint ratio
 `0.2777777777777778`, and a passing frozen 0.20 engineering gate.
 

@@ -175,6 +175,24 @@ def _validated_artifact_profile_name(profile: str) -> str:
     return profile
 
 
+def _validate_exact_question_set(
+    values: Sequence[object], expected: Sequence[str], *, name: str
+) -> tuple[str, ...]:
+    ids = tuple(str(item) for item in values)
+    if not all(ids):
+        raise ValueError(f"{name} requires nonempty question IDs.")
+    if len(ids) != len(set(ids)):
+        raise ValueError(f"{name} contains duplicate question IDs.")
+    missing = sorted(set(expected) - set(ids))
+    unexpected = sorted(set(ids) - set(expected))
+    if missing or unexpected:
+        raise ValueError(
+            f"{name} does not match the frozen preflight question set: "
+            f"missing={missing}, unexpected={unexpected}."
+        )
+    return ids
+
+
 def _validate_artifact_profile(
     *,
     profile: str,
@@ -189,12 +207,14 @@ def _validate_artifact_profile(
     row_ids = tuple(str(item.get("question_id", "")) for item in reachability_rows)
     if not all(row_ids) or len(row_ids) != len(set(row_ids)):
         raise ValueError("Reachability rows require unique nonempty question IDs.")
-    missing = sorted(set(spec.question_ids) - set(row_ids))
-    if missing:
-        raise ValueError(f"Reachability rows are missing frozen preflight IDs: {missing}.")
 
     manifest = catalog.manifest
     if profile == QUERY_INDEPENDENT_ARTIFACT_PROFILE:
+        missing = sorted(set(spec.question_ids) - set(row_ids))
+        if missing:
+            raise ValueError(
+                f"Reachability rows are missing frozen preflight IDs: {missing}."
+            )
         if manifest.get("requires_query_entity_filter") is True:
             raise ValueError(
                 "A query-local catalog requires the explicit query_local_e3b4 profile."
@@ -212,10 +232,16 @@ def _validate_artifact_profile(
     if manifest.get("gold_used_for_construction") is not False:
         raise ValueError("Query-local catalog must attest gold_used_for_construction=false.")
     local_validation = validate_local_catalog(catalog.root)
-    if tuple(str(item) for item in manifest.get("question_ids", ())) != spec.question_ids:
-        raise ValueError("Query-local catalog question IDs do not match the frozen preflight.")
-    if tuple(row_ids) != spec.question_ids:
-        raise ValueError("Query-local reachability rows do not match the frozen preflight order.")
+    _validate_exact_question_set(
+        tuple(manifest.get("question_ids", ())),
+        spec.question_ids,
+        name="Query-local catalog",
+    )
+    _validate_exact_question_set(
+        row_ids,
+        spec.question_ids,
+        name="Query-local reachability rows",
+    )
     if summary.get("schema_version") != QUERY_LOCAL_REACHABILITY_SCHEMA_VERSION:
         raise ValueError("Query-local reachability schema does not match M13-E3B.4.")
     if int(summary.get("question_count", -1)) != len(spec.question_ids):
@@ -248,7 +274,7 @@ def _validate_artifact_profile(
     return {
         "profile": profile,
         "question_count": len(row_ids),
-        "question_contract": "exact_frozen_preflight_ids_and_order",
+        "question_contract": "exact_frozen_preflight_id_set_order_independent",
         "prompt_candidates_per_slot": prompt_limit,
         "relation_endpoint_contract_version": RELATION_ENDPOINT_CONTRACT_VERSION,
         "audit_hash": expected_audit_hash,
