@@ -45,8 +45,23 @@ bundle budgets of 8192 input plus 4096 output now run against a 12288-token
 vLLM context window. A fail-fast check verifies the bundle, spec, deployment
 hashes, and exact token arithmetic before loading Qwen3-32B. Prompt contents,
 Top-50, Top-4, candidate cap 3, model generation parameters, retrieval,
-grounding, `c_sem`, and downstream planning remain unchanged. One final CWRU
-18-query resubmission is pending.
+grounding, `c_sem`, and downstream planning remain unchanged.
+
+The fourth submission, Slurm job `3763174`, validated that repair: vLLM served
+12288 tokens, 17/18 provider calls succeeded, all five jointly reachable calls
+succeeded, and malformed output fell to zero. However, every successful call
+returned the shortest schema-valid value `candidates=[]`. The frozen vLLM JSON
+Schema had no `minItems` on the candidate array, so strict guided decoding was
+allowed to terminate without attempting an interpretation. No candidate
+reached type checking, lowering, or `c_sem`; zero Candidate Recall is still not
+a model-quality result.
+
+M13-E3B.5.4 repairs that candidate-generator contract without adding examples
+or gold information. The CWRU schema and prompt now require between one and
+the frozen cap of three candidates. Generated candidates remain subject to all
+existing parser, type, grounding, semantic-admissibility, and equivalence
+checks, so this does not make any candidate valid by construction. One final
+CWRU 18-query resubmission is pending.
 
 ## Completed
 
@@ -90,8 +105,8 @@ grounding, `c_sem`, and downstream planning remain unchanged. One final CWRU
 
 ## Next Planned Milestone
 
-Leave the running global M13-E3/E3A job untouched. Pull the M13-E3B.5 token
-budget repair on CWRU,
+Leave the running global M13-E3/E3A job untouched. Pull the M13-E3B.5
+nonempty-candidate contract repair on CWRU,
 run `scripts/server/check_cwru_grailqa_preflight_ready.sh`, and submit exactly
 the frozen 18-query Qwen3-32B Slurm preflight. Review overall Candidate Recall
 and the separately reported jointly reachable 5-question subset before any

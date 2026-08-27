@@ -727,7 +727,13 @@ request received HTTP 400 before generation: the 8192-token serving context
 could not hold the observed 4146-4590 input tokens plus the frozen 4096 output
 budget. E3B.5.3 preserves both bundle budgets and expands only the deployment
 context to their exact sum, 12288. It also checks that arithmetic before model
-startup. The rerun remains the next experiment action.
+startup. The next run reached 17/18 provider success and 5/5 provider success
+on the jointly reachable subset, with zero malformed responses, but strict
+guided decoding returned `candidates=[]` for every successful call because the
+schema permitted an empty array. E3B.5.4 requires one to three generated
+candidates in the CWRU schema and prompt while preserving all downstream
+validation and rejection boundaries. The rerun remains the next experiment
+action.
 
 ## M14 KGQA Evaluation
 

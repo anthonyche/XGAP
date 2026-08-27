@@ -51,6 +51,11 @@ Qwen3-32B. The ModelBundle permits up to 8192 input tokens and 4096 output
 tokens, and the vLLM deployment therefore serves `max_model_len=12288`. No
 system package or vLLM configuration needs to be changed manually on CWRU.
 
+The local vLLM bundle also enforces a nonempty bounded candidate array:
+`minItems=1` and `maxItems=3`. This prevents strict guided decoding from
+returning the shortest empty array while leaving parser, grounding, semantic,
+and equivalence rejection unchanged.
+
 To override only the physical artifact root:
 
 ```bash

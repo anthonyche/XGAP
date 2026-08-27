@@ -803,3 +803,20 @@ when their sum exceeds the served context: all 18 requests received HTTP 400
 before generation. Expanding the deployment window preserves prompt and
 candidate-generation semantics, whereas silently truncating output would
 change the frozen experiment condition.
+
+## D65 The CWRU structured candidate generator returns a nonempty bounded set
+
+The CWRU Qwen3-32B JSON Schema requires `1 <= len(candidates) <= 3`, and its
+system prompt states the same request-relative rule. This requirement applies
+only at candidate generation. Every emitted candidate must still pass the
+controlled parser, type checking, grounding, semantic bound, ranking, and
+equivalence checks; the schema does not assert candidate correctness.
+
+Reason:
+
+Job `3763174` reached 17/18 provider success and zero malformed responses, but
+all successful responses used the shortest legal array `candidates=[]` because
+the strict schema omitted `minItems`. That behavior measured an under-specified
+guided-decoding contract rather than interpretation quality. Adding a nonempty
+bound fixes the generator interface without using gold, examples, or observed
+answer terms.

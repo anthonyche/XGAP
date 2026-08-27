@@ -121,12 +121,16 @@ def test_cwru_bundle_externalizes_runtime_and_preserves_legacy_hashes(
     bundle = ModelBundle.load(MODEL_ROOT)
     legacy = ModelBundle.load(ROOT / "models/qwen3_max_dashscope_live_m13e1")
     assert legacy.bundle_hash == "07f0a41807cd010e8801db37d933cd620b4a2a1693b0cb8a1b88d33332e45061"
-    assert bundle.bundle_hash == "88eec9ff8f7006a4eff91092eceab40c768a54e04c9a355ec6e2cd6a16d610dc"
+    assert bundle.bundle_hash == "ed9fa4db9f0981e7307ef7323415159fdeb5117c8ab308218d1c8d282360bd6e"
     assert bundle.config.provider == "vllm_openai_compatible"
     assert bundle.config.structured_output_mode == "json_schema"
     assert bundle.config.extra_parameters == {
         "chat_template_kwargs": {"enable_thinking": False}
     }
+    candidate_schema = bundle.structured_schema["properties"]["candidates"]
+    assert candidate_schema["minItems"] == 1
+    assert candidate_schema["maxItems"] == 3
+    assert "at least one and at most max_candidates" in bundle.prompt.system_prompt
 
     monkeypatch.setenv("XGAP_LLM_BASE_URL", "http://localhost:9000/v1")
     monkeypatch.setenv("XGAP_LLM_MODEL", "local-frozen-name")
