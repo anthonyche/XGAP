@@ -60,8 +60,20 @@ M13-E3B.5.4 repairs that candidate-generator contract without adding examples
 or gold information. The CWRU schema and prompt now require between one and
 the frozen cap of three candidates. Generated candidates remain subject to all
 existing parser, type, grounding, semantic-admissibility, and equivalence
-checks, so this does not make any candidate valid by construction. One final
-CWRU 18-query resubmission is pending.
+checks, so this does not make any candidate valid by construction.
+
+The fifth submission, Slurm job `3763298`, loaded the corrected bundle and
+again reached 17/18 provider success with zero malformed responses, but vLLM
+0.11.1 still emitted `candidates=[]` for every successful call. This proves its
+guided decoder did not enforce the declared array `minItems/maxItems`; XGAP's
+provider boundary had also trusted those constraints without checking them.
+
+M13-E3B.5.5 adds deterministic candidate-array cardinality validation at that
+provider boundary. It reads `minItems/maxItems` from the active bundle schema,
+rejects violations, and invokes the already frozen single repair call. Bundles
+without those declared constraints retain their prior behavior. Parser,
+retrieval, grounding, semantics, lowering, model parameters, and experiment
+bounds remain unchanged. One final CWRU 18-query resubmission is pending.
 
 ## Completed
 
@@ -106,7 +118,7 @@ CWRU 18-query resubmission is pending.
 ## Next Planned Milestone
 
 Leave the running global M13-E3/E3A job untouched. Pull the M13-E3B.5
-nonempty-candidate contract repair on CWRU,
+deterministic candidate-cardinality repair on CWRU,
 run `scripts/server/check_cwru_grailqa_preflight_ready.sh`, and submit exactly
 the frozen 18-query Qwen3-32B Slurm preflight. Review overall Candidate Recall
 and the separately reported jointly reachable 5-question subset before any

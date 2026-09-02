@@ -102,7 +102,11 @@ def _request(max_candidates: int = 2) -> PlannerRequest:
     )
 
 
-def _config(*, max_repair_calls: int = 1) -> OpenAICompatibleProviderConfig:
+def _config(
+    *,
+    max_repair_calls: int = 1,
+    structured_schema: Mapping[str, Any] | None = None,
+) -> OpenAICompatibleProviderConfig:
     return OpenAICompatibleProviderConfig(
         provider_id="test-openai-compatible",
         base_url="https://provider.invalid/v1",
@@ -114,7 +118,7 @@ def _config(*, max_repair_calls: int = 1) -> OpenAICompatibleProviderConfig:
         candidate_cap=2,
         timeout_seconds=5.0,
         structured_output_mode="json_schema",
-        structured_schema={"type": "object"},
+        structured_schema=dict(structured_schema or {"type": "object"}),
         prompt_hash="prompt-hash",
         seed=7,
         seed_supported=True,
@@ -234,6 +238,93 @@ def test_protocol_allows_exactly_one_repair_call(monkeypatch) -> None:
         "generation",
         "repair",
     ]
+
+
+def test_schema_candidate_bounds_trigger_bounded_repair(monkeypatch) -> None:
+    monkeypatch.setenv("XGAP_TEST_API_KEY", "secret-value")
+    schema = {
+        "type": "object",
+        "properties": {
+            "candidates": {"type": "array", "minItems": 1, "maxItems": 2}
+        },
+    }
+    transport = FakeTransport(
+        [
+            _envelope(json.dumps(_structured()), request_id="request-empty"),
+            _envelope(
+                json.dumps(_structured(_candidate())),
+                request_id="request-repaired",
+            ),
+        ]
+    )
+    provider = OpenAICompatibleStructuredCandidateProvider(
+        _config(structured_schema=schema), "Return controlled JSON only.", transport
+    )
+
+    response = provider.generate_candidates(_request())
+
+    assert len(response["candidates"]) == 1
+    assert len(transport.calls) == 2
+    assert "below schema minItems 1" in transport.calls[1]["payload"]["messages"][-1][
+        "content"
+    ]
+    artifact = provider.last_invocation
+    assert artifact is not None
+    assert artifact.repair_calls == 1
+
+
+def test_schema_candidate_maximum_triggers_bounded_repair(monkeypatch) -> None:
+    monkeypatch.setenv("XGAP_TEST_API_KEY", "secret-value")
+    schema = {
+        "type": "object",
+        "properties": {
+            "candidates": {"type": "array", "minItems": 1, "maxItems": 2}
+        },
+    }
+    transport = FakeTransport(
+        [
+            _envelope(
+                json.dumps(
+                    _structured(
+                        _candidate("candidate-1"),
+                        _candidate("candidate-2"),
+                        _candidate("candidate-3"),
+                    )
+                ),
+                request_id="request-over-cap",
+            ),
+            _envelope(
+                json.dumps(_structured(_candidate())),
+                request_id="request-repaired",
+            ),
+        ]
+    )
+    provider = OpenAICompatibleStructuredCandidateProvider(
+        _config(structured_schema=schema), "Return controlled JSON only.", transport
+    )
+
+    response = provider.generate_candidates(_request())
+
+    assert len(response["candidates"]) == 1
+    assert len(transport.calls) == 2
+    assert "above schema maxItems 2" in transport.calls[1]["payload"]["messages"][-1][
+        "content"
+    ]
+
+
+def test_schema_without_candidate_bounds_preserves_empty_candidate_behavior(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("XGAP_TEST_API_KEY", "secret-value")
+    transport = FakeTransport([_envelope(json.dumps(_structured()))])
+    provider = OpenAICompatibleStructuredCandidateProvider(
+        _config(), "Return controlled JSON only.", transport
+    )
+
+    response = provider.generate_candidates(_request())
+
+    assert response["candidates"] == []
+    assert len(transport.calls) == 1
 
 
 def test_second_invalid_response_fails_as_repair_failed(monkeypatch) -> None:

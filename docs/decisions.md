@@ -820,3 +820,20 @@ the strict schema omitted `minItems`. That behavior measured an under-specified
 guided-decoding contract rather than interpretation quality. Adding a nonempty
 bound fixes the generator interface without using gold, examples, or observed
 answer terms.
+
+## D66 XGAP revalidates declared candidate cardinality after guided decoding
+
+The OpenAI-compatible provider reads `properties.candidates.minItems` and
+`maxItems` from its active structured schema and checks the decoded response
+before the controlled parser. A violation is a structured-output error and may
+use the existing maximum of one repair call. Bundles that omit either keyword
+do not acquire an implicit bound.
+
+Reason:
+
+Job `3763298` used the corrected CWRU schema and prompt but vLLM 0.11.1 still
+returned an empty candidate array for every successful call. Guided-decoder
+support for JSON Schema keywords is therefore not a sufficient correctness
+boundary. Revalidating only explicitly declared bounds is deterministic,
+portable across providers, and does not invent constraints for historical
+bundles.

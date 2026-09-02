@@ -732,8 +732,11 @@ on the jointly reachable subset, with zero malformed responses, but strict
 guided decoding returned `candidates=[]` for every successful call because the
 schema permitted an empty array. E3B.5.4 requires one to three generated
 candidates in the CWRU schema and prompt while preserving all downstream
-validation and rejection boundaries. The rerun remains the next experiment
-action.
+validation and rejection boundaries. The next run proved that vLLM 0.11.1 did
+not enforce those array cardinality keywords and again returned only empty
+arrays. E3B.5.5 deterministically checks the active bundle's candidate
+`minItems/maxItems` at the provider boundary and routes violations through the
+existing single repair call. The rerun remains the next experiment action.
 
 ## M14 KGQA Evaluation
 

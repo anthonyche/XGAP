@@ -56,6 +56,10 @@ The local vLLM bundle also enforces a nonempty bounded candidate array:
 returning the shortest empty array while leaving parser, grounding, semantic,
 and equivalence rejection unchanged.
 
+Because vLLM 0.11.1 does not reliably enforce these array keywords, XGAP
+repeats the cardinality check after decoding and uses the existing single
+repair call when the response is empty or above the cap.
+
 To override only the physical artifact root:
 
 ```bash

@@ -408,6 +408,9 @@ class OpenAICompatibleStructuredCandidateProvider:
             usages.append(_usage(raw_response.get("usage")))
             try:
                 structured = _structured_content(raw_response)
+                _validate_candidate_array_bounds(
+                    structured, self.config.structured_schema
+                )
                 parse_planner_response(structured, request)
                 _validate_grounded_shape(structured)
                 if self.response_validator is not None:
@@ -590,6 +593,36 @@ def _validate_grounded_shape(data: Mapping[str, Any]) -> None:
             raise ValueError(f"candidates[{index}] requires grounding.slot_realizations.")
     if len(set(candidate_ids)) != len(candidate_ids):
         raise ValueError("Grounded response candidate_id values must be unique.")
+
+
+def _validate_candidate_array_bounds(
+    data: Mapping[str, Any], schema: Mapping[str, Any]
+) -> None:
+    """Enforce candidate array bounds that guided decoders may ignore."""
+
+    properties = schema.get("properties")
+    if not isinstance(properties, Mapping):
+        return
+    candidate_schema = properties.get("candidates")
+    if not isinstance(candidate_schema, Mapping):
+        return
+    candidates = data.get("candidates")
+    if not isinstance(candidates, list):
+        return
+    for field, relation in (("minItems", "below"), ("maxItems", "above")):
+        bound = candidate_schema.get(field)
+        if not isinstance(bound, int) or isinstance(bound, bool) or bound < 0:
+            continue
+        violates = (
+            len(candidates) < bound
+            if field == "minItems"
+            else len(candidates) > bound
+        )
+        if violates:
+            raise ValueError(
+                f"Structured response candidates count {len(candidates)} is "
+                f"{relation} schema {field} {bound}."
+            )
 
 
 def _validate_prompt_schema_view(schema_view: Mapping[str, Any]) -> None:
