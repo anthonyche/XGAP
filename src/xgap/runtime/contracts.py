@@ -21,6 +21,7 @@ class RuntimeNodeKind(str, Enum):
     EXCHANGE = "exchange"
     COORDINATOR_JOIN = "coordinator_join"
     MERGE = "merge"
+    PROJECT = "project"
 
 
 class RuntimeNodeStatus(str, Enum):
@@ -35,6 +36,7 @@ _ARITY: dict[RuntimeNodeKind, tuple[int, int | None]] = {
     RuntimeNodeKind.EXCHANGE: (1, 1),
     RuntimeNodeKind.COORDINATOR_JOIN: (2, 2),
     RuntimeNodeKind.MERGE: (1, None),
+    RuntimeNodeKind.PROJECT: (1, 1),
 }
 
 

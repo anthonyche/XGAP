@@ -61,6 +61,17 @@ if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   exit 2
 fi
 
+detect_runtime() {
+  local candidate
+  for candidate in podman docker apptainer singularity; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+      printf '%s' "$candidate"
+      return 0
+    fi
+  done
+  printf 'none'
+}
+
 {
   printf 'probe_version=m15-b1-v1\n'
   printf 'timestamp_utc=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -69,6 +80,7 @@ fi
   printf 'git_commit=%s\n' "$(git rev-parse HEAD)"
   printf 'python_module=%s\n' "${PYTHON_MODULE:-none}"
   printf 'python_version=%s\n' "$($PYTHON_BIN --version 2>&1)"
+  printf 'backend_runtime=%s\n' "$(detect_runtime)"
 } > "$RUN_ROOT/environment.txt"
 
 "$PYTHON_BIN" scripts/check_harness.py
@@ -78,6 +90,7 @@ fi
   tests/test_m15_goal_loop.py \
   tests/test_m15_fragment_compiler.py \
   tests/test_m15_federated_runtime.py \
+  tests/test_m15_live_federated.py \
   tests/test_m15_remote_executor.py \
   tests/test_m15_remote_control.py \
   | tee "$RUN_ROOT/pytest.txt"

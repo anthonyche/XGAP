@@ -1,0 +1,11 @@
+PREFIX m15: <http://xgap.example.org/m15-split/>
+
+SELECT ?company_id ?company ?risk
+WHERE {
+  ?company_node a m15:Company ;
+      m15:companyId ?company_id ;
+      m15:name ?company ;
+      m15:riskLevel ?risk .
+  FILTER (?risk = "HIGH")
+}
+ORDER BY ?company_id

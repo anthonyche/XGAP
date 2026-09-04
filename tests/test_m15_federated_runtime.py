@@ -238,3 +238,27 @@ def test_runtime_plan_rejects_cycles() -> None:
     right = RuntimeNode("right", RuntimeNodeKind.EXCHANGE, inputs=("left",))
     with pytest.raises(RuntimePlanError, match="acyclic"):
         FederatedExecutionPlan("cycle", (left, right), ("right",))
+
+
+def test_coordinator_project_removes_internal_join_fields() -> None:
+    base = _plan()
+    project = RuntimeNode(
+        "project",
+        RuntimeNodeKind.PROJECT,
+        inputs=("join",),
+        parameters={"fields": ["person_id", "amount", "risk"]},
+    )
+    plan = FederatedExecutionPlan(
+        plan_id="projected-split-risk-query",
+        nodes=base.nodes + (project,),
+        roots=("project",),
+        max_remote_calls=base.max_remote_calls,
+        max_parallelism=base.max_parallelism,
+    )
+
+    result = _runtime_tool().scheduler.execute(plan)
+
+    assert result.success
+    assert result.final_rows == (
+        {"person_id": "alice:1", "amount": 1200, "risk": "high"},
+    )

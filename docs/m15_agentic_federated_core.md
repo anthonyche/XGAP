@@ -30,7 +30,7 @@ search, LLM policy decisions, live services, or a UI.
 
 ## M15-B — Executable two-engine vertical slice
 
-Status: **LOCAL COORDINATOR IMPLEMENTED; LIVE BACKEND GATE PENDING**
+Status: **LOCAL LIVE CONTRACT IMPLEMENTED; REAL BACKEND GATE PENDING**
 
 Goal: execute one hand-authored semantic program across Neo4j and Fuseki and
 join the normalized results at the coordinator.
@@ -48,8 +48,8 @@ Implemented locally:
 
 - per-backend `SemanticFragment` compilation through the existing M9 Cypher
   and SPARQL compilers;
-- typed `RemoteQuery`, `Align`, `Exchange`, `CoordinatorJoin`, and `Merge`
-  runtime nodes;
+- typed `RemoteQuery`, `Align`, `Exchange`, `CoordinatorJoin`, `Merge`, and
+  coordinator `Project` runtime nodes;
 - validated finite execution DAGs with remote-call and parallelism budgets;
 - parallel execution of independent remote nodes;
 - deterministic coordinator alignment, exchange accounting, hash join, merge,
@@ -62,10 +62,16 @@ Implemented locally:
 - a non-secret environment-configured CLI for the same remote-executor
   contract;
 - an offline split-fact fixture where the complete answer requires both
-  backend plugins.
+  backend plugins;
+- a deterministic vertically partitioned Neo4j/Fuseki dataset, native query
+  artifacts, and exact expected result;
+- a fail-closed live runner that invokes the existing real Neo4j and Fuseki
+  clients through backend plugins and persists semantic, plan, health, result,
+  validation, status, source-hash, and manifest evidence without retrying.
 
-Local verification: 34 focused M15 tests passed; full acceptance passed with
-506 tests passed and 34 live/external-artifact tests skipped.
+Local M15 verification: 40 tests passed and the one real-service test skipped.
+Full acceptance passed with 512 tests passed and 35 live/external-artifact
+tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
 gates before live services are started. See
@@ -73,11 +79,13 @@ gates before live services are started. See
 gates distinguish the previously exercised legacy M13 CWRU/vLLM path from the
 still-unverified M15 server path.
 
-The first two B0 artifacts established a clean exact checkout, working Slurm,
-visible `gpu2h100`, an existing vLLM environment, and Podman. Loading the CWRU
-`Miniconda3` module supplies Python 3.11.5, but neither its base interpreter nor
-the existing vLLM environment contains pytest. B1 remains blocked only on a
-separate user-owned `xgap-core` environment; no job has yet been submitted.
+B0 artifacts established an exact checkout, working Slurm, visible
+`gpu2h100`, and an existing vLLM environment. Loading the CWRU `Miniconda3`
+module supplies Python 3.11.5. The separate user-owned `xgap-core` environment
+now contains pytest and the server checkout is clean; B0 must be rerun at the
+next exact commit before B1 submission. Podman was visible on `hpc5` but no
+container runtime was visible on `hpc7`, so the B1 compute-node artifact—not a
+login-node assumption—will determine the B2 packaging path.
 
 Acceptance gate:
 

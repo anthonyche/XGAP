@@ -14,18 +14,23 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-Focused M15 verification: 34 tests passed. The offline goal-loop and
-cross-platform vertical-slice demonstrations completed successfully. Full
-local acceptance passed with 506 tests passed and 34 explicitly gated or
-external-artifact tests skipped.
+Focused M15 verification: 40 tests passed and one real-service test skipped.
+The offline goal-loop and cross-platform vertical-slice demonstrations
+completed successfully. Full local acceptance passed with 512 tests passed and
+35 explicitly gated or external-artifact tests skipped.
 
-M15-B is now **locally executable; live backend gate pending**. The local
+M15-B is now **locally executable with a real-plugin contract; live backend
+gate pending**. The local
 runtime compiles independent fragments through the existing M9 compilers,
 runs independent remote nodes in parallel, performs explicit ID alignment and
 exchange, joins or merges rows at the coordinator, propagates failures, skips
 invalid descendants, and returns end-to-end latency, row, remote-call, and
-transfer-byte metrics through the goal loop. Its split-fact fixture produces
-one answer that no individual backend plugin contains.
+transfer-byte metrics through the goal loop. Its deterministic vertically
+partitioned fixture gives Neo4j only identity/transfer facts and Fuseki only
+company risk/name facts, so neither source can contain the final answer. A
+fail-closed live runner uses the real Neo4j and Fuseki plugin path and persists
+the semantic program, execution DAG, source hashes, health, result, validation,
+status, and manifest without automatic retry.
 
 The remaining M15-B gate is execution of the same contract against real Neo4j
 and Fuseki with a deliberately partitioned dataset, streaming/batched result
@@ -33,13 +38,16 @@ handling, and live cancellation. No ontology or LLM feature enters before this
 gate.
 
 M15-B0/B1 now provide a read-only CWRU environment probe and a 15-minute CPU
-Slurm smoke job. B0 has observed a clean exact checkout, Slurm, `gpu2h100`, an
-existing vLLM environment, Podman, and Python 3.11.5 after loading the CWRU
-`Miniconda3` module. Neither the Miniconda base interpreter nor the vLLM
-environment contains pytest, so B1 has not been submitted while a separate
-user-owned `xgap-core` environment is prepared. The batch wrapper now loads
-Miniconda explicitly. Until B1 artifacts exist, the M15 path is not described
-as server-verified. See
+Slurm smoke job. B0 has observed an exact checkout, Slurm, `gpu2h100`, an
+existing vLLM environment, and Python 3.11.5 after loading the CWRU
+`Miniconda3` module. The separate user-owned `xgap-core` environment now has
+the editable package and pytest, and its generated untracked metadata was
+removed so the server checkout is clean. Podman was visible on `hpc5`, while
+no supported container runtime was visible on `hpc7`; this is node-dependent
+evidence, not a selected B2 architecture. The batch wrapper now loads
+Miniconda explicitly and records the runtime inside its allocated compute
+node. Until B1 artifacts exist, the M15 path is not described as
+server-verified. See
 `docs/m15_remote_execution_loop.md`.
 
 The `remote.executor` tool and environment-configured CLI are implemented and

@@ -178,6 +178,9 @@ class FederatedScheduler:
             elif node.kind is RuntimeNodeKind.MERGE:
                 rows = _deduplicate(row for group in inputs for row in group)
                 bytes_moved = 0
+            elif node.kind is RuntimeNodeKind.PROJECT:
+                rows = self._project(node, inputs[0])
+                bytes_moved = 0
             else:
                 raise ValueError(f"unsupported local runtime node '{node.kind.value}'")
         except (KeyError, TypeError, ValueError) as exc:
@@ -259,6 +262,25 @@ class FederatedScheduler:
                         merged[f"{right_prefix}{name}"] = value
                 joined.append(merged)
         return _deduplicate(joined)
+
+    @staticmethod
+    def _project(node: RuntimeNode, rows: tuple[JsonRow, ...]) -> tuple[JsonRow, ...]:
+        fields = node.parameters.get("fields")
+        if (
+            not isinstance(fields, (list, tuple))
+            or not fields
+            or any(not isinstance(field, str) or not field for field in fields)
+        ):
+            raise ValueError("project requires a nonempty list of field names")
+        if len(set(fields)) != len(fields):
+            raise ValueError("project field names must be unique")
+        projected: list[JsonRow] = []
+        for row in rows:
+            missing = [field for field in fields if field not in row]
+            if missing:
+                raise ValueError(f"project fields are missing: {', '.join(missing)}")
+            projected.append({field: row[field] for field in fields})
+        return _deduplicate(projected)
 
     @staticmethod
     def _error(

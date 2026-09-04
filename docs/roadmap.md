@@ -28,19 +28,23 @@ Acceptance criteria: fragment compilation, remote execution, exchange,
 alignment, coordinator join/merge, correctness, latency, bytes, cardinality,
 and remote-call artifacts; no LLM or ontology required.
 
-Current status: **LOCAL COORDINATOR IMPLEMENTED; LIVE BACKEND GATE PENDING**
+Current status: **LOCAL LIVE CONTRACT IMPLEMENTED; REAL BACKEND GATE PENDING**
 
 Execution order:
 
 1. **M15-B0 CWRU environment gate** — observed: clean Git checkout, Slurm,
-   H100 feature, vLLM environment, Podman, and Miniconda Python are present;
-   a separate pytest-capable interpreter is being prepared.
+   H100 feature, vLLM environment, Miniconda Python, and a dedicated
+   pytest-capable `xgap-core` environment are present; rerun at the next exact
+   commit is pending.
 2. **M15-B1 CWRU CPU smoke** — locally implemented with explicit Miniconda
-   loading; submit after the Python environment gate passes.
-3. **M15-B2 live backend packaging** — Podman selected from B0 evidence;
-   exact rootless service capabilities and lifecycle remain to be probed.
-4. **M15-B3 live federated vertical slice** — execute the same split-fact
-   correctness contract through real Neo4j and Fuseki plugins.
+   loading and allocated-node runtime capture; submit after B0 passes.
+3. **M15-B2 live backend packaging** — runtime not selected: Podman was
+   visible on `hpc5` but no supported runtime was visible on `hpc7`; probe the
+   actual compute allocation before choosing rootless containers or a native
+   service path.
+4. **M15-B3 live federated vertical slice** — the typed program, real-plugin
+   runner, vertically split fixture, exact oracle, immutable evidence, and
+   gated live test are implemented locally; real service execution is pending.
 
 The typed remote-executor plugin and its CLI are implemented locally. They
 stage exact commits, allowlist batch entry points, observe jobs, and retrieve

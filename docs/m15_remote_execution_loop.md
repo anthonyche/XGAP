@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: LOCALLY VERIFIED; CWRU B0 PARTIALLY PASSED
-- Version Label: m15_remote_loop_v2
+- Verification Status: LOCALLY VERIFIED; CWRU B1 PENDING
+- Version Label: m15_remote_loop_v3
 
 ## Current claim boundary
 
@@ -15,13 +15,20 @@ federated core has passed local acceptance but has not yet run on Pioneer, and
 its Neo4j-plus-Fuseki path has not yet passed a live two-engine gate. Therefore
 XGAP is not yet ready to claim CWRU execution of the new system.
 
-Two B0 probes on 2026-09-04 established a clean checkout at commit
+B0 observations on 2026-09-04 established an exact checkout at commit
 `465e2e2454b74aaf7a1c055797740bde8ca5ace0`, working Slurm commands,
-`gpu2h100`, `/home/hxc859/venvs/xgap-vllm`, and Podman. The login environment
-has no default `python`; `module load Miniconda3` exposes Python 3.11.5, but
-neither that base interpreter nor the vLLM interpreter contains pytest. The
-next gate is a separate user-owned `xgap-core` environment; the model-serving
-environment remains unchanged.
+`gpu2h100`, and `/home/hxc859/venvs/xgap-vllm`. The login environment has no
+default `python`; `module load Miniconda3` exposes Python 3.11.5. A separate
+user-owned `/home/hxc859/venvs/xgap-core` environment now contains the editable
+XGAP package and pytest, while the model-serving environment remains unchanged.
+The generated untracked `src/xgap.egg-info/` metadata was removed and the
+server checkout is clean again.
+
+Container availability is node-dependent in the current evidence: Podman was
+visible on `hpc5`, while none of Podman, Docker, Apptainer, or Singularity was
+visible on `hpc7`. B2 therefore has no selected runtime yet. B1 records the
+runtime visible inside its allocated compute node before any packaging choice
+is made.
 
 ## Codex-owned development loop
 
@@ -62,8 +69,9 @@ jobs are not silently retried, and old run directories are never overwritten.
 - Decision output: choose Docker, Apptainer/Singularity, Podman, native Java,
   or externally hosted backends from observed capabilities; do not assume
   Docker is available on Pioneer.
-- Observed decision: use Podman for B2 packaging; B1 must explicitly load
-  `Miniconda3` and select the dedicated pytest-capable interpreter.
+- Observed decision: B1 must explicitly load `Miniconda3` and select the
+  dedicated pytest-capable interpreter. Defer the B2 runtime choice until the
+  allocated compute-node observation is available.
 
 ### M15-B1 — CWRU CPU smoke
 
@@ -77,9 +85,11 @@ jobs are not silently retried, and old run directories are never overwritten.
 - Timeout: 15 minutes.
 - Expected outputs: `run_status.json`, `environment.txt`, `pytest.txt`,
   `vertical_slice.json`, and `job.log` below the job-owned run directory.
-- Success threshold: the status is `success`, all 34 M15 tests pass, the
-  vertical slice returns exactly one row, uses two remote calls, and records
-  positive transferred bytes.
+- Success threshold: the status is `success`, all 40 offline M15 tests pass
+  and the one explicitly gated live test skips, the vertical slice returns
+  exactly one row, uses two remote calls, and records positive transferred
+  bytes. `environment.txt` must also record the runtime actually visible on
+  the allocated node.
 
 ## Typed remote-control entry
 
@@ -103,7 +113,9 @@ VPN reachability and a working user-owned SSH alias.
 - Objective: run isolated Neo4j and Fuseki services inside one scheduled
   allocation, or bind to approved persistent services, using the runtime
   selected by B0.
-- Inputs: observed B0 runtime, pinned service versions, split-data fixture.
+- Inputs: B1 compute-node runtime observation, pinned service versions, and
+  the split-data fixture. A login-node-only runtime observation is
+  insufficient.
 - Gate: both health checks, both native smoke queries, clean shutdown, and
   immutable service/version artifacts pass without exposing a public port.
 
@@ -111,9 +123,16 @@ VPN reachability and a working user-owned SSH alias.
 
 - Objective: replace fixture clients with live backend plugins and execute one
   semantic program whose answer requires facts from both systems.
+- Local contract: `xgap.experiments.m15_live_federated` builds the typed
+  semantic program and execution DAG, invokes the existing Neo4j and Fuseki
+  clients through real backend plugins, and writes an immutable run directory.
+  The fixture is vertically partitioned: Neo4j has identity/transfer facts but
+  no company risk/name, while Fuseki has risk/name but no person/transfer facts.
 - Gate: neither backend alone produces the answer; the coordinator produces
   the hand-verified row; result equivalence, latency, rows, bytes, remote calls,
-  and failure behavior are persisted.
+  source hashes, health, status, and failure behavior are persisted. The live
+  path is fail-closed behind `XGAP_RUN_M15_LIVE=1` and never retries
+  automatically.
 
 ### M15-C/D — Alternative plans, observations, memory, and replanning
 
@@ -141,7 +160,8 @@ VPN reachability and a working user-owned SSH alias.
 
 ## First user handoff
 
-Open a CWRU OnDemand Terminal, synchronize the feature branch, run B0, and
-return only `environment_probe.txt`. If `core_smoke_ready=true`, submit B1 and
-return its `run_status.json`, `environment.txt`, `pytest.txt`, and
-`vertical_slice.json`. No GPU job or live backend is started in this handoff.
+After Codex publishes the next exact commit, synchronize the clean CWRU
+checkout, rerun B0 with `/home/hxc859/venvs/xgap-core/bin/python`, and return
+`environment_probe.txt`. If `core_smoke_ready=true`, submit B1 and return its
+`run_status.json`, `environment.txt`, `pytest.txt`, and `vertical_slice.json`.
+No GPU job or live backend is started in this handoff.
