@@ -1,23 +1,32 @@
 # XGAP Architecture
 
-XGAP is an ambiguity-aware natural-language-to-graph-query planner. Its pipeline is:
+XGAP is a cost-aware agentic federated graph-query system over heterogeneous
+black-box engines. Its mainline architecture is specified in
+[`docs/agentic_architecture.md`](agentic_architecture.md).
+
+The agentic pipeline is:
 
 ```text
-Natural language question
-  -> bounded ontology/schema context
-  -> structured candidate provider
-  -> PathPatternQuery | FocusedQuantifiedPatternQuery
-  -> deterministic type checking and lowering
-  -> LogicalPlan
-  -> ontology/alignment admissibility boundary
-  -> bounded physical placement and exchange planning
-  -> existing GQL / Cypher / SPARQL compiler boundary
-  -> optional backend execution and evaluation
+User goal + session
+  -> partially bound Semantic Graph Program
+  -> bounded observation / decision / tool-action loop
+  -> semantic resolution and source binding when required
+  -> backend fragment compilation
+  -> federated execution plan
+  -> remote backend calls + coordinator exchange/join/merge
+  -> observation, memory update, and optional replanning
+  -> answer, clarification, explicit failure, or budget exhaustion
 ```
 
-The path-query core is aligned with the path algebra from
+The existing M0-M13 pipeline remains a compatibility and experiment substrate.
+Its deterministic path-query core is aligned with the path algebra from
 "Path-based Algebraic Foundations of Graph Query Languages". XGAP does
 not rename or replace the path-algebra operators.
+
+Semantic query/dataflow operators, agent/control actions, and federated runtime
+operators live above this algebra in separate typed namespaces. For example,
+`ResolveEntity` is an agent action and semantic `Traverse` may carry a
+`PathPatternQuery`; neither is a new path-algebra operator.
 
 The path-algebra vocabulary remains limited to:
 
@@ -207,6 +216,15 @@ reference evaluation remain deterministic.
 
 ## Module Layout
 
+- `xgap.semantic`: typed backend-independent Semantic Graph Programs,
+  operator/value kinds, hard or relaxable constraints, and unresolved holes.
+- `xgap.tools`: typed tool effects/results, deterministic registries, and
+  pluggable black-box backend operations.
+- `xgap.agent`: explicit goals, observations, traces, memory, policies, and the
+  bounded observation-decision-action loop.
+- `xgap.runtime`: per-backend fragment compilation, federated execution DAGs,
+  parallel remote calls, alignment, exchange accounting, coordinator joins,
+  merge, and normalized runtime results.
 - `xgap.algebra`: path data model, graph representation, condition AST,
   path-algebra operators, minimal M6 binding data objects and operators,
   evaluator, validation, optimizer placeholder, and pretty printing.

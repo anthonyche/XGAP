@@ -1,108 +1,113 @@
-cat > AGENTS.md <<'EOF'
 # XGAP Agent Harness
 
 ## Project identity
 
-You are working on XGAP, an ambiguity-aware natural-language-to-graph-query planner.
+XGAP is a cost-aware agentic federated graph-query system over heterogeneous
+black-box graph engines. It jointly plans information-acquisition actions and
+federated execution actions for partially bound semantic graph programs.
 
-XGAP's logical planning layer must align with the path algebra from the paper "Path-based Algebraic Foundations of Graph Query Languages".
-
-The full pipeline is:
-
-Natural language question
-  -> candidate path-pattern query
-  -> deterministic lowering to path-algebra logical plan
-  -> logical optimization
-  -> compilation to target query languages: GQL, Cypher, SPARQL
-  -> optional backend execution and evaluation
+Cross-platform execution is the environment. Ontologies, catalogs, LLMs, and
+user clarification are optional tools rather than prerequisites for the
+deterministic execution core.
 
 ## Required reading before every task
 
-Before changing code, read these files:
+Before changing code, read:
 
-1. docs/architecture.md
-2. docs/roadmap.md
-3. docs/status.md
-4. docs/operator_semantics.md
-5. docs/decisions.md, if it exists
-6. The sprint prompt under prompts/sprints/, if provided
+1. `docs/agentic_architecture.md`
+2. `docs/m15_agentic_federated_core.md`
+3. `docs/architecture.md`
+4. `docs/roadmap.md`
+5. `docs/status.md`
+6. `docs/operator_semantics.md`
+7. `docs/decisions.md`
+8. the sprint prompt under `prompts/sprints/`, if one is provided
 
-After reading them, briefly state:
-- current milestone
-- allowed files to modify
-- forbidden changes
-- acceptance criteria
+Then state the current milestone, allowed files, forbidden changes, and
+acceptance criteria.
 
-## Core algebra invariants
+## Layer invariants
 
-The logical algebra must only use:
+Keep these layers distinct:
 
-- Nodes(G)
-- Edges(G)
-- Selection
-- Union
-- Join
-- Recursive with modes WALK, TRAIL, ACYCLIC, SIMPLE, SHORTEST
-- GroupBy
-- OrderBy
-- Projection
+- `xgap.semantic`: backend-independent semantic query/dataflow DAGs and holes;
+- `xgap.agent`: goals, observations, policies, memory, and bounded control;
+- `xgap.tools`: typed effects and pluggable external/backend interfaces;
+- `xgap.runtime`: federated fragments, scheduling, exchange, coordinator work;
+- `xgap.algebra`: the existing audited path and focused-binding semantics.
 
-Do not introduce other logical operator names such as:
+The semantic and control vocabularies do not rename or redefine the path
+algebra. Existing algebra operators remain:
 
-- NodeScan
-- EntityLookup
-- EdgeExpand
-- PathExpand
-- Filter
-- Aggregate
-- Rank
-- Project
+- `Nodes(G)`
+- `Edges(G)`
+- `Selection`
+- `Union`
+- `Join`
+- `Recursive` with `WALK`, `TRAIL`, `ACYCLIC`, `SIMPLE`, and `SHORTEST`
+- `GroupBy`
+- `OrderBy`
+- `Projection`
 
-Entity grounding belongs outside the logical algebra.
+The existing focused-binding operators also retain their audited semantics.
+Do not add a lower-level algebra operator without a separate semantic design
+decision, reference-evaluator behavior, validation, and tests.
 
-The primary data object is PathSet.
-The secondary data object is SolutionSpace, used only for selector-style operations.
+`PathPatternQuery` is a reusable path sub-IR, commonly carried by semantic
+`Traverse`; it is not the entire interpretation or agent plan.
 
-## Scope
+## Agent invariants
 
-The MVP supports path-centric graph queries and regular path queries.
+- Every run starts from an explicit goal and success criteria.
+- Every tool is registered, typed, and allowlisted for the goal.
+- Step, tool-call, time, and resource budgets must be finite where applicable.
+- Tool errors and unavailable capabilities are observations, not silent success.
+- Never automatically retry a failed external action.
+- Never relax a hard semantic constraint.
+- Identity ambiguity may require user clarification.
+- LLM calls are optional, bounded, observable, and charged to end-to-end cost.
+- Remote credentials, private keys, VPN state, and Duo responses stay outside
+  repository configuration and artifacts.
 
-Do not claim or implement arbitrary conjunctive graph pattern matching in the core algebra unless a future milestone explicitly adds it.
+## Backend invariants
+
+- Neo4j, Fuseki, and future engines are black boxes behind plugins.
+- XGAP may invoke native compile, inspect, explain, profile, sample, and execute
+  interfaces when the plugin declares them.
+- XGAP does not claim or control backend-internal scans, indexes, joins, or
+  physical optimization.
+- Unsupported operations return an explicit unavailable result.
+- Read-only graph queries are the default system boundary.
 
 ## Implementation rules
 
 - Python 3.10+
-- Use dataclasses and type hints.
+- Use dataclasses, enums, protocols, and type hints for contracts.
 - Keep modules small and testable.
-- Use pytest.
-- Do not introduce heavy dependencies in the algebra core.
-- Do not rely on an LLM for deterministic lowering, validation, or evaluation.
-- Unimplemented future features must raise NotImplementedError.
-- Never silently return empty results for unimplemented behavior.
-- Do not implement future milestones unless explicitly asked.
+- Use pytest and keep default tests independent of live services and GPUs.
+- Do not introduce heavy dependencies into algebra, semantic, agent, or tool
+  contracts.
+- Deterministic validation and lowering must never depend on an LLM.
+- Unimplemented features fail explicitly; never return fabricated empty data.
+- Preserve existing M0-M13 experiment artifacts as a legacy baseline unless a
+  milestone explicitly migrates them.
 
-## Work protocol
+## Milestone protocol
 
-For every sprint:
+For every milestone:
 
-1. Read the required project docs.
-2. Inspect the relevant source and tests.
-3. Produce a short implementation plan.
-4. Implement only the current milestone.
-5. Add or update tests.
-6. Run pytest.
-7. Run examples if the sprint requires them.
-8. Update docs/status.md.
-9. Report changed files, tests, commands run, results, and limitations.
+1. Freeze the goal, hypotheses, scope, and acceptance gates.
+2. Inspect the relevant code and existing observations.
+3. Implement only the current milestone.
+4. Add offline unit/integration tests.
+5. Add a live-gated test only when real services are required.
+6. Run focused tests, then the broad offline suite and examples.
+7. Update `docs/status.md`, `docs/roadmap.md`, and design decisions.
+8. Report changed files, commands, results, limitations, and the next gate.
 
 ## Definition of done
 
-A milestone is DONE only if:
-
-- implemented behavior matches docs/operator_semantics.md
-- pytest passes
-- required examples run
-- docs/status.md is updated
-- no future feature is faked
-- no unrelated refactor is introduced
-EOF
+A milestone is done only when its acceptance behavior exists, tests pass,
+required examples run, status documentation is current, and unavailable
+external evidence remains explicitly unavailable. Documentation or an API
+placeholder alone does not satisfy an executable milestone.

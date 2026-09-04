@@ -837,3 +837,100 @@ support for JSON Schema keywords is therefore not a sufficient correctness
 boundary. Revalidating only explicitly declared bounds is deterministic,
 portable across providers, and does not invent constraints for historical
 bundles.
+
+## D67 The mainline is goal-driven agentic federation
+
+XGAP jointly plans information-acquisition actions and federated execution
+actions for partially bound semantic graph programs over heterogeneous
+black-box graph engines. Cross-platform execution is the environment;
+ontology, catalogs, LLMs, and clarification are optional tools.
+
+Reason:
+
+This creates one system mechanism rather than an additive collection of
+ambiguity, ontology, LLM, and federation features. It also makes end-to-end
+tool and execution cost observable under one objective.
+
+## D68 Semantic, control, and runtime operators are typed separately
+
+The Semantic Graph Program contains backend-independent query/dataflow nodes.
+Agent decisions represent information acquisition, binding, clarification,
+and replanning. Federated runtime nodes represent remote calls, exchange,
+coordinator joins, materialization, and merge.
+
+`ResolveAmbiguity` may be a user-facing composite label, but executable actions
+use typed primitives such as `ResolveEntity`, `ResolvePredicate`, `Clarify`,
+and `Relax`. None of these redefine the audited path algebra.
+
+Reason:
+
+A single untyped workflow graph would obscure value types, semantic
+equivalence, effects, cost attribution, and failure behavior.
+
+## D69 PathPatternQuery is a reusable Traverse sub-IR
+
+`PathPatternQuery` and its deterministic lowering remain supported, but the
+object is no longer the complete system-level interpretation. A semantic
+`Traverse` may carry it as a path-expression payload.
+
+Reason:
+
+The existing path representation has precise and tested semantics, while a
+complete agentic federated plan must also express bindings, source choices,
+cross-source joins, tool observations, clarification, and replanning.
+
+## D70 Every agent execution is an explicit finite goal loop
+
+A goal declares objective, success criteria, allowed tools, step budget, and
+tool-call budget. Tools return success, error, or unavailable observations.
+Failures are not automatically retried, and terminal states are explicit.
+
+Reason:
+
+An agent must be experimentally reproducible and unable to hide unbounded LLM,
+network, or backend work behind an informal reasoning loop.
+
+## D71 Backends are observable plugins, not internal physical engines
+
+Backend plugins may expose healthcheck, schema inspection, explain, profile,
+sample, and execute operations. The first adapter exposes the existing
+healthcheck and native execution clients; unsupported operations return
+`unavailable`.
+
+Reason:
+
+XGAP cannot and should not modify Neo4j or Fuseki internals. Its physical
+decisions are fragment placement, remote invocation, scheduling, transfer,
+coordinator execution, and adaptation.
+
+## D72 UI is optional and remote execution is batch-first
+
+The paper experiment path remains a CLI plus immutable artifacts. A future
+thin UI consumes the same goal and trace contracts. CWRU execution should use
+an SSH/Slurm remote-executor plugin for submission, polling, and artifact
+retrieval; an SSH tunnel is optional for interactive demonstrations only.
+
+Reason:
+
+Batch execution survives VPN or laptop disconnection and preserves exact
+experiment artifacts. A UI is valuable for clarification and visualization
+but should not delay the cross-engine execution evidence.
+
+## D73 Federated runtime plans have explicit coordinator semantics
+
+M15-B runtime plans are finite DAGs containing `RemoteQuery`, `Align`,
+`Exchange`, `CoordinatorJoin`, and `Merge`. Independent remote nodes may run in
+parallel. Descendants of a failed node are skipped, remote-call and parallelism
+budgets are checked before execution, and transfer bytes are charged only at
+explicit exchange nodes.
+
+Per-backend semantic fragments compile independently through the existing M9
+compiler boundary. The coordinator consumes normalized rows; it does not
+reinterpret backend-internal physical plans.
+
+Reason:
+
+The original M11 state could describe multi-backend placement but could not
+execute it. Explicit runtime and failure semantics provide the smallest
+measurable cross-platform loop while retaining the existing compiler and
+backend-client investments.

@@ -69,3 +69,11 @@ fi
 if [ -f examples/m12d_experiment_matrix_demo.py ]; then
   "$PYTHON" examples/m12d_experiment_matrix_demo.py
 fi
+
+if [ -f examples/m15_goal_loop_demo.py ]; then
+  "$PYTHON" examples/m15_goal_loop_demo.py
+fi
+
+if [ -f examples/m15_federated_vertical_slice_demo.py ]; then
+  "$PYTHON" examples/m15_federated_vertical_slice_demo.py
+fi

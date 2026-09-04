@@ -27,6 +27,14 @@ from xgap.experiments.grailqa_semantic_pilot import (
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SPEC_PATH = REPO_ROOT / "experiments/specs/grailqa_semantic_pilot_v1.json"
 
+pytestmark = pytest.mark.skipif(
+    not (
+        (REPO_ROOT / "datasets/grailqa_pilot_v1/dataset.yaml").is_file()
+        and (REPO_ROOT / "datasets/grailqa_inference_catalog_v1/entities.jsonl").is_file()
+    ),
+    reason="external GrailQA pilot and inference-catalog artifacts are not installed",
+)
+
 
 @pytest.fixture(scope="session")
 def spec() -> GrailQASemanticPilotSpec:

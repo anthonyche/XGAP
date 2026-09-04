@@ -1,5 +1,12 @@
 # Operator Semantics
 
+The M15 Semantic Graph Program and federated runtime operators are typed
+planning/execution contracts above the logical algebra. `Match`, `Traverse`,
+semantic `Join`, `ResolveEntity`, `RemoteQuery`, and `CoordinatorJoin` do not
+rename or redefine the audited operators documented below. Their contracts are
+specified in `docs/agentic_architecture.md` and
+`docs/m15_agentic_federated_core.md`.
+
 XGAP contains two deterministic logical support layers:
 
 1. the path algebra, whose primary objects are `PathSet` and

@@ -1,0 +1,170 @@
+# XGAP Agentic Federated Architecture
+
+## System objective
+
+XGAP is a cost-aware agentic federated graph-query system over heterogeneous
+black-box engines. Given a user goal and a partially bound semantic graph
+program, XGAP jointly chooses:
+
+1. information-acquisition actions, such as schema inspection, entity or
+   predicate resolution, user clarification, cache lookup, LLM invocation,
+   sampling, and profiling; and
+2. execution actions, such as backend-fragment compilation, remote execution,
+   exchange, coordinator joins, materialization, and replanning.
+
+The primary optimization objective is end-to-end cost, including planning,
+LLM, remote execution, network transfer, and coordinator work, subject to
+semantic validity, answer-quality, hard-constraint, resource-budget, and
+termination requirements.
+
+Cross-platform execution is the operating environment. Ontologies, catalogs,
+LLMs, and clarification are optional tools. Removing any one of them must not
+make the deterministic federated execution core undefined.
+
+## Agent contract
+
+### Environment
+
+An XGAP environment contains:
+
+- a user/session and an optional clarification channel;
+- heterogeneous graph engines exposed only through declared tools;
+- a coordinator with finite CPU, memory, network, and time budgets;
+- optional schema, catalog, ontology, and identity-alignment services;
+- optional local or remote LLM endpoints;
+- changing backend availability, latency, load, cardinality, and schema
+  versions.
+
+XGAP treats Neo4j, Fuseki, and future systems as black boxes. It does not
+modify their internal optimizers. Native `EXPLAIN` or `PROFILE` output is an
+observation, not an XGAP-owned storage-level physical plan.
+
+### Observations
+
+The agent may observe:
+
+- the natural-language request, session state, and declared hard constraints;
+- available tool specifications and backend capabilities;
+- schema, catalog, ontology, and memory results;
+- compiler failures and unsupported-feature reports;
+- estimated or observed cardinality, latency, bytes, rows, and resource use;
+- backend errors and availability changes;
+- user clarification answers.
+
+### Tools
+
+The initial tool vocabulary is grouped by effect:
+
+- semantic: `inspect_schema`, `resolve_entity`, `resolve_predicate`,
+  `ontology_lookup`, and `ask_user`;
+- backend: `healthcheck`, `inspect_schema`, `explain`, `profile`, `sample`, and
+  `execute` through a backend plugin;
+- coordinator: `align_ids`, `hash_join`, `bind_join`, `semi_join`, `union`,
+  `materialize`, and `merge`;
+- model: a bounded structured-candidate call through the existing
+  OpenAI-compatible provider.
+
+Only registered and goal-allowlisted tools can run. Every call returns a typed
+success, error, or unavailable observation. Tool errors are never silently
+retried.
+
+### Memory
+
+Memory is typed and provenance-bearing:
+
+- session memory: confirmed entity/predicate bindings and user decisions;
+- schema memory: versioned backend schemas and capabilities;
+- execution memory: observed latency, cardinality, bytes, and failures;
+- cache memory: reusable semantic fragments, plans, and results.
+
+Records carry a source, version, confidence, and optional expiry. Conversation
+text alone is not authoritative system memory.
+
+### Actions and termination
+
+The agent may construct or fill a semantic program, inspect the environment,
+bind or partition fragments, invoke tools, schedule work, observe results,
+update memory, replan, ask the user, return an answer, or fail explicitly.
+
+Every goal declares success criteria, a tool allowlist, a step budget, and a
+tool-call budget. The loop terminates as `succeeded`, `blocked`, `failed`, or
+`budget_exhausted`; it cannot continue indefinitely.
+
+## Typed plan layers
+
+XGAP uses separate namespaces and contracts rather than one untyped workflow
+graph.
+
+### Semantic Graph Program
+
+The v0 backend-independent query/dataflow operators are:
+
+- `Match`
+- `Traverse`
+- `Filter`
+- `Join`
+- `Union`
+- `Aggregate`
+- `OrderLimit`
+- `Project`
+- `Align`
+
+Each node declares typed inputs and output, constraints, parameters, required
+capabilities, and stable identity. Programs are DAGs and may contain typed
+entity, predicate, type, or source holes.
+
+`PathPatternQuery` remains a rigorous path-expression sub-IR and may be carried
+by `Traverse`. It is not the complete interpretation or the top-level agent
+plan.
+
+### Agent/control actions
+
+Control actions include `Inspect`, `ResolveEntity`, `ResolvePredicate`,
+`Clarify`, `Relax`, `Probe`, `Profile`, `Bind`, and `Replan`. A UI may display
+the umbrella label `ResolveAmbiguity`, but the executable plan uses typed
+primitive actions so their semantics and cost remain observable.
+
+Hard constraints can never be relaxed. Entity-identity uncertainty may require
+clarification even when an ontology exists.
+
+### Federated Execution Plan
+
+The coordinator-level runtime vocabulary will include:
+
+- `RemoteQuery`
+- `Exchange`
+- `CoordinatorJoin`
+- `Materialize`
+- `Merge`
+
+This is called a federated execution plan rather than a database-internal
+physical plan. Each `RemoteQuery` invokes a backend interface; the selected
+backend remains responsible for its internal physical optimization.
+
+## Compatibility with the existing system
+
+The audited `xgap.algebra` path and focused-binding semantics remain unchanged.
+Existing `PathPatternQuery` lowering, capability profiles, bounded compilers,
+backend clients, cost observations, LLM provider, and reproducible experiment
+artifacts are reusable substrates.
+
+The new mainline adds `xgap.semantic`, `xgap.tools`, `xgap.agent`, and later
+`xgap.runtime`. Legacy M11 placement search and M13 semantic experiments remain
+available as baselines until the new executable federated path supersedes them.
+
+## End-to-end target loop
+
+```text
+User goal + session
+  -> partially bound Semantic Graph Program
+  -> observe environment, tools, and memory
+  -> choose information or execution action
+  -> invoke typed tool
+  -> record observation and cost
+  -> bind / fragment / execute / replan
+  -> repeat within budget
+  -> answer, clarification request, explicit failure, or budget exhaustion
+```
+
+LLM invocation is one optional action inside this loop. The easy-query fast
+path must be able to complete with zero LLM calls.

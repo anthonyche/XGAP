@@ -1,5 +1,67 @@
 # XGAP Roadmap
 
+## Current Mainline: M15 Agentic Federated Core
+
+The M0-M14 milestones below record the original ambiguity-aware planning and
+semantic-experiment track. They remain reproducible legacy baselines. The new
+mainline is specified in
+[`docs/m15_agentic_federated_core.md`](m15_agentic_federated_core.md).
+
+### M15-A Contracts, Tools, Memory, and Bounded Goal Loop
+
+Goal: define the agent environment and implement the first executable control
+substrate without changing the audited path algebra.
+
+Acceptance criteria: typed semantic DAGs and holes; typed tool outcomes;
+pluggable backend adapters; provenance-bearing memory; explicit goals and
+success criteria; tool allowlists; finite step/tool budgets; no automatic
+retry; offline tests and example.
+
+Current status: **DONE LOCALLY**
+
+### M15-B Executable Two-Engine Vertical Slice
+
+Goal: execute one hand-verified semantic program whose answer requires both
+Neo4j and Fuseki, then join normalized results at the coordinator.
+
+Acceptance criteria: fragment compilation, remote execution, exchange,
+alignment, coordinator join/merge, correctness, latency, bytes, cardinality,
+and remote-call artifacts; no LLM or ontology required.
+
+Current status: **LOCAL COORDINATOR IMPLEMENTED; LIVE BACKEND GATE PENDING**
+
+### M15-C Nontrivial Plan Space and Observation Tools
+
+Goal: add schema/explain/profile/sample tools and alternative correct plans for
+pushdown, join strategy/order, parallel scheduling, and fragment fusion.
+
+Current status: **PLANNED**
+
+### M15-D Memory-Guided Adaptation and Replanning
+
+Goal: use versioned observations across tasks and explicitly replan within a
+query when runtime evidence invalidates the current estimate.
+
+Current status: **PLANNED**
+
+### M15-E Selective Semantic Resolution
+
+Goal: integrate deterministic interpretation, clarification, optional
+catalog/ontology lookup, and bounded LLM fallback without making any one of
+them a prerequisite for federated execution.
+
+Current status: **PLANNED**
+
+### M15-F Paper Experiment Surface and Optional UI
+
+Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
+only after the CLI, goal trace, coordinator, and remote-executor contracts are
+stable.
+
+Current status: **PLANNED**
+
+## Historical Milestones
+
 ## M0 Project Skeleton
 
 Goal: Create the Python package, documentation, examples, and tests.

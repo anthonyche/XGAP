@@ -24,6 +24,11 @@ from xgap.infrastructure.descriptors import load_yaml_mapping
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLE_ROOT = ROOT / "datasets" / "grailqa_pilot_v1"
 
+pytestmark = pytest.mark.skipif(
+    not (BUNDLE_ROOT / "dataset.yaml").is_file(),
+    reason="external GrailQA pilot artifacts are not installed in this checkout",
+)
+
 
 def test_pilot_selection_is_seeded_and_outcome_independent() -> None:
     records = [

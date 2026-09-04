@@ -1,6 +1,41 @@
 # XGAP Status
 
-## Current Milestone
+## Current Mainline Milestone
+
+M15-A **Contracts, Tools, Memory, and Bounded Goal Loop** is implemented
+locally. XGAP now has a typed semantic DAG with unresolved entity, predicate,
+type, and source holes; explicit hard/relaxable constraints; typed and
+allowlisted tools; a pluggable black-box backend registry; adapters for the
+existing healthcheck/execute clients; provenance-bearing memory; and a bounded
+goal loop with success, blocked, failed, and budget-exhausted outcomes.
+
+The deterministic sequential policy is the first baseline. It does not use an
+LLM, does not automatically retry tool failures, and records every tool result
+as both an observation and execution-memory record. M15-A adds no cross-source
+movement, coordinator join, plan search, or live service claim.
+
+Focused M15 verification: 20 tests passed. The offline goal-loop and
+cross-platform vertical-slice demonstrations completed successfully. Full
+local acceptance passed with 492 tests passed and 34 explicitly gated or
+external-artifact tests skipped.
+
+M15-B is now **locally executable; live backend gate pending**. The local
+runtime compiles independent fragments through the existing M9 compilers,
+runs independent remote nodes in parallel, performs explicit ID alignment and
+exchange, joins or merges rows at the coordinator, propagates failures, skips
+invalid descendants, and returns end-to-end latency, row, remote-call, and
+transfer-byte metrics through the goal loop. Its split-fact fixture produces
+one answer that no individual backend plugin contains.
+
+The remaining M15-B gate is execution of the same contract against real Neo4j
+and Fuseki with a deliberately partitioned dataset, streaming/batched result
+handling, and live cancellation. No ontology or LLM feature enters before this
+gate.
+
+See `docs/agentic_architecture.md`, `docs/m15_agentic_federated_core.md`, and
+`docs/ui_remote_execution.md`.
+
+## Legacy M13 Experiment Track
 
 M13-E3 remains **IMPLEMENTATION READY**. M13-E3B.4 is complete after the real
 CWRU audit-only rerun. With entity and schema ranking unchanged, exact
@@ -77,6 +112,7 @@ bounds remain unchanged. One final CWRU 18-query resubmission is pending.
 
 ## Completed
 
+- M15-A Agentic Contracts, Tools, Memory, and Bounded Goal Loop
 - M0 Project Skeleton
 - M1 Data Model
 - M2 Core Algebra
@@ -109,13 +145,14 @@ bounds remain unchanged. One final CWRU 18-query resubmission is pending.
 
 ## In Progress
 
+- M15-B Executable Two-Engine Vertical Slice
 - M13-E3 real CWRU construction of query-independent Freebase catalog v2
 - M13-E3 all-35,439 coverage and frozen-150 offline reachability audit
 - M13-E3A download and empirical validation of the frozen archival source
 - M13-E3B.5 query-local artifact wiring and CWRU 18-query live preflight
 - M13-E3B real CWRU query-local pilot150 build, after reviewing preflight18
 
-## Next Planned Milestone
+## Next Planned Legacy Milestone
 
 Leave the running global M13-E3/E3A job untouched. Pull the M13-E3B.5
 deterministic candidate-cardinality repair on CWRU,
