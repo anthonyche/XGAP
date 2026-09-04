@@ -27,7 +27,10 @@ from xgap.tools import (
 
 
 DEFAULT_EXECUTOR_ID = "cwru-pioneer"
-DEFAULT_ALLOWED_SBATCH_SCRIPTS = ("scripts/slurm/run_m15_core_smoke.sbatch",)
+DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
+    "scripts/slurm/run_m15_core_smoke.sbatch",
+    "scripts/slurm/probe_m15_native_services.sbatch",
+)
 
 
 @dataclass(frozen=True)

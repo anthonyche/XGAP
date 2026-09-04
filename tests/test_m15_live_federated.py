@@ -133,6 +133,8 @@ def test_m15_live_runner_persists_exact_cross_source_evidence(tmp_path: Path) ->
     assert manifest["no_ontology"] is True
     assert manifest["automatic_retries"] == 0
     assert "run_manifest.json" in manifest["artifacts"]
+    assert manifest["validation"]["checks"]["exact_neo4j_source_rows"]
+    assert manifest["validation"]["checks"]["exact_fuseki_source_rows"]
     assert manifest["validation"]["checks"]["neo4j_has_no_risk_or_company_name"]
     assert manifest["validation"]["checks"]["fuseki_has_no_person_or_transfer_fact"]
     assert {

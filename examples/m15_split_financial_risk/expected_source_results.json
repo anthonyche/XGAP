@@ -1,0 +1,32 @@
+{
+  "fuseki": [
+    {
+      "company": "Redstone Analytics",
+      "company_id": "rdf:C1",
+      "risk": "HIGH"
+    },
+    {
+      "company": "Old Peak Holdings",
+      "company_id": "rdf:C3",
+      "risk": "HIGH"
+    }
+  ],
+  "neo4j": [
+    {
+      "amount": 120000,
+      "company_id": "neo:C1",
+      "currency": "USD",
+      "occurred_on": "2026-08-20",
+      "person": "Alice Smith",
+      "person_id": "person-alice-smith"
+    },
+    {
+      "amount": 90000,
+      "company_id": "neo:C2",
+      "currency": "USD",
+      "occurred_on": "2026-08-25",
+      "person": "Alice Smith",
+      "person_id": "person-alice-smith"
+    }
+  ]
+}

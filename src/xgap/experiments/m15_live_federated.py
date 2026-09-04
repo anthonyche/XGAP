@@ -36,6 +36,9 @@ from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPl
 RUN_SCHEMA_VERSION = "m15-b3-live-federated-run-v1"
 DATASET_PATH = Path("examples/datasets/m15_split_financial_risk.yaml")
 EXPECTED_PATH = Path("examples/m15_split_financial_risk/expected_result.json")
+EXPECTED_SOURCE_PATH = Path(
+    "examples/m15_split_financial_risk/expected_source_results.json"
+)
 _SAFE_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
 
@@ -354,6 +357,7 @@ def _default_clients(repo_root: Path) -> dict[str, BackendClient]:
 def _validate_result(
     result: FederatedRunResult,
     expected_rows: list[dict[str, Any]],
+    expected_source_rows: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     node_results = {item.node_id: item for item in result.node_results}
     left = node_results["recent-transfers"].rows
@@ -361,6 +365,10 @@ def _validate_result(
     checks = {
         "runtime_success": result.success,
         "exact_expected_answer": [dict(row) for row in result.final_rows] == expected_rows,
+        "exact_neo4j_source_rows": [dict(row) for row in left]
+        == expected_source_rows.get("neo4j"),
+        "exact_fuseki_source_rows": [dict(row) for row in right]
+        == expected_source_rows.get("fuseki"),
         "neo4j_has_no_risk_or_company_name": all(
             "risk" not in row and "company" not in row for row in left
         ),
@@ -402,6 +410,7 @@ def run_m15_live_federated(
         Path("examples/m15_split_financial_risk/load_fuseki.ttl"),
         Path("examples/m15_split_financial_risk/query_recent_transfers.cypher"),
         Path("examples/m15_split_financial_risk/query_high_risk.rq"),
+        EXPECTED_SOURCE_PATH,
         EXPECTED_PATH,
     )
     source_hashes = {
@@ -440,7 +449,18 @@ def run_m15_live_federated(
         expected = json.loads(_repo_path(root, EXPECTED_PATH).read_text(encoding="utf-8"))
         if not isinstance(expected, list) or any(not isinstance(row, dict) for row in expected):
             raise ValueError("expected result must be a JSON list of objects")
-        validation = _validate_result(result, [dict(row) for row in expected])
+        expected_sources = json.loads(
+            _repo_path(root, EXPECTED_SOURCE_PATH).read_text(encoding="utf-8")
+        )
+        if not isinstance(expected_sources, dict):
+            raise ValueError("expected source results must be a JSON object")
+        source_rows: dict[str, list[dict[str, Any]]] = {}
+        for backend_id in ("neo4j", "fuseki"):
+            rows = expected_sources.get(backend_id)
+            if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+                raise ValueError(f"expected source rows for {backend_id} must be objects")
+            source_rows[backend_id] = [dict(row) for row in rows]
+        validation = _validate_result(result, [dict(row) for row in expected], source_rows)
         _write_json(run_root / "validation.json", validation)
         if not validation["passed"]:
             raise RuntimeError("live federated acceptance checks failed")

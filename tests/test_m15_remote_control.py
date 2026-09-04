@@ -72,6 +72,23 @@ def test_config_uses_vllm_python_and_scoped_defaults(tmp_path: Path) -> None:
     assert config.allow_cancel is False
 
 
+def test_default_allowlist_includes_only_m15_cpu_and_read_only_probe() -> None:
+    assert DEFAULT_ALLOWED_SBATCH_SCRIPTS == (
+        "scripts/slurm/run_m15_core_smoke.sbatch",
+        "scripts/slurm/probe_m15_native_services.sbatch",
+    )
+    probe = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "probe_m15_native_services.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "native_service_prerequisites_ready" in probe
+    assert "outbound_download_tested=false" in probe
+    assert "podman run" not in probe
+    assert "docker run" not in probe
+
+
 def test_config_enables_cancel_only_with_exact_opt_in(tmp_path: Path) -> None:
     base = {
         "XGAP_REMOTE_HOST_ALIAS": "cwru-pioneer",

@@ -13,5 +13,20 @@ entity `person-alice-smith` on or after 2026-08-05 to companies classified as
 companies `C1` and `C3`; only the coordinator alignment and join can produce
 the expected answer for `C1`.
 
+`expected_source_results.json` freezes each native query's rows independently,
+while `expected_result.json` freezes the projected coordinator answer. This
+prevents a nonempty-but-wrong source load from satisfying the live gate.
+
 This is a deterministic integration fixture, not a realistic financial-risk
 benchmark and not evidence for ontology or ambiguity-resolution quality.
+
+The deployment-neutral loader is gated to avoid accidental writes:
+
+```bash
+XGAP_LOAD_M15_FIXTURE=1 \
+python -m xgap.experiments.m15_fixture_loader --run-id <unique-run-id>
+```
+
+It appends only namespaced, idempotent facts, verifies each backend against the
+frozen source rows, persists a new run directory, and never retries. Run it
+only after both endpoint variables refer to dedicated M15 services.

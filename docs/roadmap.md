@@ -28,20 +28,20 @@ Acceptance criteria: fragment compilation, remote execution, exchange,
 alignment, coordinator join/merge, correctness, latency, bytes, cardinality,
 and remote-call artifacts; no LLM or ontology required.
 
-Current status: **LOCAL LIVE CONTRACT IMPLEMENTED; REAL BACKEND GATE PENDING**
+Current status: **CWRU CPU CORE VERIFIED; REAL BACKEND GATE PENDING**
 
 Execution order:
 
-1. **M15-B0 CWRU environment gate** — observed: clean Git checkout, Slurm,
+1. **M15-B0 CWRU environment gate** — verified: clean Git checkout, Slurm,
    H100 feature, vLLM environment, Miniconda Python, and a dedicated
-   pytest-capable `xgap-core` environment are present; rerun at the next exact
-   commit is pending.
-2. **M15-B1 CWRU CPU smoke** — locally implemented with explicit Miniconda
-   loading and allocated-node runtime capture; submit after B0 passes.
-3. **M15-B2 live backend packaging** — runtime not selected: Podman was
-   visible on `hpc5` but no supported runtime was visible on `hpc7`; probe the
-   actual compute allocation before choosing rootless containers or a native
-   service path.
+   pytest-capable `xgap-core` environment are present.
+2. **M15-B1 CWRU CPU smoke** — verified by job `3784974` at commit `4c45931`
+   on `compt365`: exit `0:0`, 40 passed/1 live skip, exact one-row result, two
+   calls, and 206 transferred bytes.
+3. **M15-B2 live backend packaging** — the authoritative compute node has no
+   supported container runtime, so login-node Podman is rejected for Slurm
+   service execution. The runtime-neutral loader and exact per-source oracle
+   are implemented; the next job probes a user-space Java service path.
 4. **M15-B3 live federated vertical slice** — the typed program, real-plugin
    runner, vertically split fixture, exact oracle, immutable evidence, and
    gated live test are implemented locally; real service execution is pending.

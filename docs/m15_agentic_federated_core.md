@@ -30,7 +30,7 @@ search, LLM policy decisions, live services, or a UI.
 
 ## M15-B — Executable two-engine vertical slice
 
-Status: **LOCAL LIVE CONTRACT IMPLEMENTED; REAL BACKEND GATE PENDING**
+Status: **CWRU CPU CORE VERIFIED; REAL BACKEND GATE PENDING**
 
 Goal: execute one hand-authored semantic program across Neo4j and Fuseki and
 join the normalized results at the coordinator.
@@ -65,27 +65,33 @@ Implemented locally:
   backend plugins;
 - a deterministic vertically partitioned Neo4j/Fuseki dataset, native query
   artifacts, and exact expected result;
+- a deployment-neutral, explicitly gated fixture loader that uses only the
+  backend/Graph Store HTTP boundaries, performs namespaced idempotent appends,
+  verifies both source results exactly, stores no credentials, and persists
+  partial failures without retry. It is experiment bootstrap infrastructure,
+  not an agent-visible query tool;
 - a fail-closed live runner that invokes the existing real Neo4j and Fuseki
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Local M15 verification: 40 tests passed and the one real-service test skipped.
-Full acceptance passed with 512 tests passed and 35 live/external-artifact
-tests skipped.
+Local B2A verification passed 50 M15 tests with two real-service tests skipped.
+Full acceptance passed with 522 tests and 36 live/external-artifact tests
+skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
-gates before live services are started. See
+gates before live services are started. Both gates are now verified. See
 [`docs/m15_remote_execution_loop.md`](m15_remote_execution_loop.md). These
 gates distinguish the previously exercised legacy M13 CWRU/vLLM path from the
 still-unverified M15 server path.
 
 B0 artifacts established an exact checkout, working Slurm, visible
-`gpu2h100`, and an existing vLLM environment. Loading the CWRU `Miniconda3`
-module supplies Python 3.11.5. The separate user-owned `xgap-core` environment
-now contains pytest and the server checkout is clean; B0 must be rerun at the
-next exact commit before B1 submission. Podman was visible on `hpc5` but no
-container runtime was visible on `hpc7`, so the B1 compute-node artifact—not a
-login-node assumption—will determine the B2 packaging path.
+`gpu2h100`, an existing vLLM environment, Miniconda Python 3.11.5, and the
+dedicated pytest-capable `xgap-core` environment. B1 job `3784974` then passed
+the M15 CPU smoke at exact commit `4c45931` on `compt365`: 40 tests passed, one
+live gate skipped, and the deterministic two-source coordinator result used
+two calls and 206 transferred bytes. The compute node exposed no supported
+container runtime, so login-node Podman is not the B2 strategy. The next gate
+probes user-space Java service prerequisites inside Slurm.
 
 Acceptance gate:
 
