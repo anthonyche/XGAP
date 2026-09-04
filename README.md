@@ -20,6 +20,8 @@ The repository contains:
 - typed Semantic Graph Programs with unresolved holes;
 - a bounded goal/observation/tool loop and provenance-bearing memory;
 - pluggable black-box backend tools;
+- a typed SSH/Slurm experiment-control tool with exact-commit staging,
+  allowlisted submission, observation, and artifact retrieval;
 - a coordinator runtime for remote calls, ID alignment, explicit exchange,
   hash join, merge, failure propagation, and runtime metrics;
 - per-backend fragment compilation through the existing M9 compilers.
@@ -69,8 +71,8 @@ tests skip until those versioned resources are installed.
 ## CWRU execution
 
 Existing Slurm and loopback-only vLLM infrastructure is under `scripts/cwru/`
-and `scripts/slurm/`. The planned UI/remote control path uses an SSH/Slurm tool
-plugin and immutable artifacts. It never stores VPN, Duo, SSH-key, or model
+and `scripts/slurm/`. The remote-control path uses an implemented SSH/Slurm
+tool and immutable artifacts. It never stores VPN, Duo, SSH-key, or model
 credentials in the repository.
 
 For the current M15 server gate and exact user handoff, see

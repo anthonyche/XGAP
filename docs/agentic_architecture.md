@@ -61,12 +61,20 @@ The initial tool vocabulary is grouped by effect:
   `execute` through a backend plugin;
 - coordinator: `align_ids`, `hash_join`, `bind_join`, `semi_join`, `union`,
   `materialize`, and `merge`;
+- experiment control: `remote.executor` with typed stage, submit, status,
+  bounded-log, artifact-fetch, and separately enabled cancellation actions;
 - model: a bounded structured-candidate call through the existing
   OpenAI-compatible provider.
 
 Only registered and goal-allowlisted tools can run. Every call returns a typed
 success, error, or unavailable observation. Tool errors are never silently
 retried.
+
+The remote executor keeps credentials in the user's SSH configuration, stages
+only an exact 40-hex commit from an explicit branch, submits only allowlisted
+Slurm scripts, confines logs and artifacts to configured roots, and disables
+cancellation unless separately opted in. It treats scheduling as an external
+agent action, not as a graph backend's internal physical operator.
 
 ### Memory
 

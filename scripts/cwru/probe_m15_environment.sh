@@ -19,7 +19,7 @@ command_available() {
   command -v "$1" >/dev/null 2>&1
 }
 
-record probe_version "m15-b0-v1"
+record probe_version "m15-b0-v2"
 record timestamp_utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 record hostname "$(hostname)"
 record repo_root "$REPO_ROOT"
@@ -40,6 +40,7 @@ else
 fi
 
 PYTHON_BIN="${XGAP_PYTHON:-python}"
+record python_module_hint "${XGAP_PYTHON_MODULE:-Miniconda3}"
 record python_command "$PYTHON_BIN"
 if command_available "$PYTHON_BIN"; then
   record python_version "$($PYTHON_BIN --version 2>&1)"
@@ -61,7 +62,7 @@ else
 fi
 
 slurm_ready=true
-for slurm_command in sbatch squeue scontrol sinfo; do
+for slurm_command in sbatch squeue sacct scontrol sinfo; do
   if command_available "$slurm_command"; then
     record "${slurm_command}_available" true
   else

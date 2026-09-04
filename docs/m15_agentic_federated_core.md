@@ -56,17 +56,28 @@ Implemented locally:
   failure propagation, and skipped descendants;
 - a `runtime.execute_plan` agent tool that returns rows and measured runtime,
   remote-call, and transfer metrics;
+- a typed `remote.executor` boundary for exact-commit staging, allowlisted
+  Slurm submission, status, bounded logs, artifact retrieval, and guarded
+  cancellation;
+- a non-secret environment-configured CLI for the same remote-executor
+  contract;
 - an offline split-fact fixture where the complete answer requires both
   backend plugins.
 
-Local verification: 20 focused M15 tests passed; full acceptance passed with
-492 tests passed and 34 live/external-artifact tests skipped.
+Local verification: 34 focused M15 tests passed; full acceptance passed with
+506 tests passed and 34 live/external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
 gates before live services are started. See
 [`docs/m15_remote_execution_loop.md`](m15_remote_execution_loop.md). These
 gates distinguish the previously exercised legacy M13 CWRU/vLLM path from the
 still-unverified M15 server path.
+
+The first two B0 artifacts established a clean exact checkout, working Slurm,
+visible `gpu2h100`, an existing vLLM environment, and Podman. Loading the CWRU
+`Miniconda3` module supplies Python 3.11.5, but neither its base interpreter nor
+the existing vLLM environment contains pytest. B1 remains blocked only on a
+separate user-owned `xgap-core` environment; no job has yet been submitted.
 
 Acceptance gate:
 

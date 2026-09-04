@@ -32,14 +32,19 @@ Current status: **LOCAL COORDINATOR IMPLEMENTED; LIVE BACKEND GATE PENDING**
 
 Execution order:
 
-1. **M15-B0 CWRU environment gate** — locally implemented; user-run Pioneer
-   probe pending.
-2. **M15-B1 CWRU CPU smoke** — locally implemented; submit only after B0 says
-   `core_smoke_ready=true`.
-3. **M15-B2 live backend packaging** — select the deployment mechanism from
-   B0 evidence rather than assuming Docker is available.
+1. **M15-B0 CWRU environment gate** — observed: clean Git checkout, Slurm,
+   H100 feature, vLLM environment, Podman, and Miniconda Python are present;
+   a separate pytest-capable interpreter is being prepared.
+2. **M15-B1 CWRU CPU smoke** — locally implemented with explicit Miniconda
+   loading; submit after the Python environment gate passes.
+3. **M15-B2 live backend packaging** — Podman selected from B0 evidence;
+   exact rootless service capabilities and lifecycle remain to be probed.
 4. **M15-B3 live federated vertical slice** — execute the same split-fact
    correctness contract through real Neo4j and Fuseki plugins.
+
+The typed remote-executor plugin and its CLI are implemented locally. They
+stage exact commits, allowlist batch entry points, observe jobs, and retrieve
+scoped artifacts without storing credentials or silently retrying.
 
 The command and artifact contract is frozen in
 [`docs/m15_remote_execution_loop.md`](m15_remote_execution_loop.md).

@@ -18,6 +18,18 @@ from xgap.tools.contracts import (
     ToolStatus,
 )
 from xgap.tools.registry import ToolRegistry, ToolRegistryError
+from xgap.tools.remote import (
+    REMOTE_EXECUTOR_TOOL,
+    RemoteCommandResult,
+    RemoteExecutorOperation,
+    RemoteExecutorPlugin,
+    RemoteExecutorRegistry,
+    RemoteExecutorTool,
+    RemoteJobState,
+    RemoteTransport,
+    SlurmRemoteExecutor,
+    SshTransport,
+)
 
 __all__ = [
     "AgentTool",
@@ -28,6 +40,16 @@ __all__ = [
     "BackendPluginRegistry",
     "FunctionTool",
     "NativeBackendPlugin",
+    "REMOTE_EXECUTOR_TOOL",
+    "RemoteCommandResult",
+    "RemoteExecutorOperation",
+    "RemoteExecutorPlugin",
+    "RemoteExecutorRegistry",
+    "RemoteExecutorTool",
+    "RemoteJobState",
+    "RemoteTransport",
+    "SlurmRemoteExecutor",
+    "SshTransport",
     "ToolContext",
     "ToolEffect",
     "ToolRegistry",

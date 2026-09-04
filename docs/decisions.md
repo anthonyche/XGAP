@@ -951,3 +951,22 @@ Slurm or an H100 does not imply availability of Docker or a safe service
 lifecycle. Separating B0, B1, and live-service gates gives every claim a
 specific artifact and prevents environment assumptions from being reported as
 experimental evidence.
+
+## D75 Remote experiment control is typed, scoped, and non-retrying
+
+The `remote.executor` tool represents stage, submit, status, bounded-log,
+artifact-fetch, and cancel as typed operations. Staging verifies a clean
+checkout and the exact full commit fetched from an explicit branch. Slurm
+scripts are allowlisted, remote and local paths remain below configured roots,
+and SSH credentials stay in the user's SSH configuration. Cancellation is
+unavailable unless separately enabled and the job ID is repeated as a
+confirmation. A failed operation returns one recorded error and is never
+silently retried.
+
+Reason:
+
+Scheduling and experiment transport are agent actions with measurable latency
+and failure behavior, but they are not database-internal physical operators.
+A narrow tool contract lets the same coordinator drive OnDemand/Slurm today
+and a thin UI later without granting an LLM a general remote shell or hiding
+failed experimental attempts.

@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: LOCALLY VERIFIED; CWRU EXECUTION UNVERIFIED
-- Version Label: m15_remote_loop_v1
+- Verification Status: LOCALLY VERIFIED; CWRU B0 PARTIALLY PASSED
+- Version Label: m15_remote_loop_v2
 
 ## Current claim boundary
 
@@ -14,6 +14,14 @@ The legacy M13 Qwen/vLLM path has run on CWRU Pioneer. The M15 agentic
 federated core has passed local acceptance but has not yet run on Pioneer, and
 its Neo4j-plus-Fuseki path has not yet passed a live two-engine gate. Therefore
 XGAP is not yet ready to claim CWRU execution of the new system.
+
+Two B0 probes on 2026-09-04 established a clean checkout at commit
+`465e2e2454b74aaf7a1c055797740bde8ca5ace0`, working Slurm commands,
+`gpu2h100`, `/home/hxc859/venvs/xgap-vllm`, and Podman. The login environment
+has no default `python`; `module load Miniconda3` exposes Python 3.11.5, but
+neither that base interpreter nor the vLLM interpreter contains pytest. The
+next gate is a separate user-owned `xgap-core` environment; the model-serving
+environment remains unchanged.
 
 ## Codex-owned development loop
 
@@ -54,6 +62,8 @@ jobs are not silently retried, and old run directories are never overwritten.
 - Decision output: choose Docker, Apptainer/Singularity, Podman, native Java,
   or externally hosted backends from observed capabilities; do not assume
   Docker is available on Pioneer.
+- Observed decision: use Podman for B2 packaging; B1 must explicitly load
+  `Miniconda3` and select the dedicated pytest-capable interpreter.
 
 ### M15-B1 — CWRU CPU smoke
 
@@ -61,12 +71,32 @@ jobs are not silently retried, and old run directories are never overwritten.
   fixture on a Pioneer compute node without a GPU or live graph service.
 - Entry command:
   `sbatch --parsable scripts/slurm/run_m15_core_smoke.sbatch`.
+- Environment: the job loads `${XGAP_PYTHON_MODULE:-Miniconda3}` and uses
+  `${XGAP_PYTHON:-python}`. A dedicated user-owned environment may be selected
+  without changing the script.
 - Timeout: 15 minutes.
 - Expected outputs: `run_status.json`, `environment.txt`, `pytest.txt`,
   `vertical_slice.json`, and `job.log` below the job-owned run directory.
-- Success threshold: the status is `success`, all 20 M15 tests pass, the
+- Success threshold: the status is `success`, all 34 M15 tests pass, the
   vertical slice returns exactly one row, uses two remote calls, and records
   positive transferred bytes.
+
+## Typed remote-control entry
+
+`python -m xgap.experiments.remote_control` exposes the same batch lifecycle
+as an agent tool. It reads only non-secret configuration:
+
+- `XGAP_REMOTE_HOST_ALIAS` and `XGAP_REMOTE_REPO_ROOT` are required;
+- `XGAP_REMOTE_PYTHON` may point to the selected remote interpreter;
+- `XGAP_REMOTE_JOB_PYTHON` and `XGAP_REMOTE_JOB_MODULE` are the only
+  submission-environment values the executor may export;
+- artifact roots, timeout, executor ID, and sbatch allowlist are optional;
+- `XGAP_REMOTE_ALLOW_CANCEL=1` is the only value that enables cancellation.
+
+SSH keys, Duo, VPN state, and passwords are never read from repository files.
+Each invocation performs one requested operation with no implicit retry. The
+server-side OnDemand handoff remains authoritative until the local machine has
+VPN reachability and a working user-owned SSH alias.
 
 ### M15-B2 — Live backend packaging
 
@@ -115,4 +145,3 @@ Open a CWRU OnDemand Terminal, synchronize the feature branch, run B0, and
 return only `environment_probe.txt`. If `core_smoke_ready=true`, submit B1 and
 return its `run_status.json`, `environment.txt`, `pytest.txt`, and
 `vertical_slice.json`. No GPU job or live backend is started in this handoff.
-

@@ -14,9 +14,9 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-Focused M15 verification: 20 tests passed. The offline goal-loop and
+Focused M15 verification: 34 tests passed. The offline goal-loop and
 cross-platform vertical-slice demonstrations completed successfully. Full
-local acceptance passed with 492 tests passed and 34 explicitly gated or
+local acceptance passed with 506 tests passed and 34 explicitly gated or
 external-artifact tests skipped.
 
 M15-B is now **locally executable; live backend gate pending**. The local
@@ -33,10 +33,20 @@ handling, and live cancellation. No ontology or LLM feature enters before this
 gate.
 
 M15-B0/B1 now provide a read-only CWRU environment probe and a 15-minute CPU
-Slurm smoke job. Both wrappers are locally implemented and syntax-checked, but
-their Pioneer outputs are pending. Until those artifacts exist, the M15 path
-is not described as server-verified. See
+Slurm smoke job. B0 has observed a clean exact checkout, Slurm, `gpu2h100`, an
+existing vLLM environment, Podman, and Python 3.11.5 after loading the CWRU
+`Miniconda3` module. Neither the Miniconda base interpreter nor the vLLM
+environment contains pytest, so B1 has not been submitted while a separate
+user-owned `xgap-core` environment is prepared. The batch wrapper now loads
+Miniconda explicitly. Until B1 artifacts exist, the M15 path is not described
+as server-verified. See
 `docs/m15_remote_execution_loop.md`.
+
+The `remote.executor` tool and environment-configured CLI are implemented and
+locally tested. Exact-commit staging, allowlisted submission, normalized
+status, bounded log reads, scoped artifact retrieval, and default-disabled
+cancellation are covered by fake-transport tests. No CWRU credential is
+stored and no remote mutation has been invoked by this implementation.
 
 See `docs/agentic_architecture.md`, `docs/m15_agentic_federated_core.md`, and
 `docs/ui_remote_execution.md`.

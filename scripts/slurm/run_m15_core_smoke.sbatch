@@ -9,6 +9,7 @@
 set -euo pipefail
 
 REPO_ROOT="${XGAP_REPO_ROOT:-${SLURM_SUBMIT_DIR:-$PWD}}"
+PYTHON_MODULE="${XGAP_PYTHON_MODULE:-Miniconda3}"
 PYTHON_BIN="${XGAP_PYTHON:-python}"
 RUN_ROOT="${XGAP_CWRU_RUN_ROOT:-$REPO_ROOT/runs/cwru-m15-core-smoke-${SLURM_JOB_ID:-manual}}"
 STATUS_FILE="$RUN_ROOT/run_status.json"
@@ -42,6 +43,14 @@ echo "Slurm job ID: ${SLURM_JOB_ID:-unavailable}"
 echo "Hostname: $(hostname)"
 echo "Git commit: $(git rev-parse HEAD)"
 
+if [[ -n "$PYTHON_MODULE" ]]; then
+  if ! type module >/dev/null 2>&1; then
+    echo "Environment Modules is unavailable; cannot load $PYTHON_MODULE." >&2
+    exit 2
+  fi
+  module load "$PYTHON_MODULE"
+fi
+
 if [[ -n "$(git status --porcelain)" && "${XGAP_ALLOW_DIRTY:-0}" != 1 ]]; then
   echo "Refusing a dirty experiment checkout." >&2
   exit 2
@@ -58,6 +67,7 @@ fi
   printf 'hostname=%s\n' "$(hostname)"
   printf 'slurm_job_id=%s\n' "${SLURM_JOB_ID:-unavailable}"
   printf 'git_commit=%s\n' "$(git rev-parse HEAD)"
+  printf 'python_module=%s\n' "${PYTHON_MODULE:-none}"
   printf 'python_version=%s\n' "$($PYTHON_BIN --version 2>&1)"
 } > "$RUN_ROOT/environment.txt"
 
@@ -68,6 +78,8 @@ fi
   tests/test_m15_goal_loop.py \
   tests/test_m15_fragment_compiler.py \
   tests/test_m15_federated_runtime.py \
+  tests/test_m15_remote_executor.py \
+  tests/test_m15_remote_control.py \
   | tee "$RUN_ROOT/pytest.txt"
 
 "$PYTHON_BIN" examples/m15_federated_vertical_slice_demo.py \
