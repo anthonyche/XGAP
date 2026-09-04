@@ -32,6 +32,12 @@ and Fuseki with a deliberately partitioned dataset, streaming/batched result
 handling, and live cancellation. No ontology or LLM feature enters before this
 gate.
 
+M15-B0/B1 now provide a read-only CWRU environment probe and a 15-minute CPU
+Slurm smoke job. Both wrappers are locally implemented and syntax-checked, but
+their Pioneer outputs are pending. Until those artifacts exist, the M15 path
+is not described as server-verified. See
+`docs/m15_remote_execution_loop.md`.
+
 See `docs/agentic_architecture.md`, `docs/m15_agentic_federated_core.md`, and
 `docs/ui_remote_execution.md`.
 

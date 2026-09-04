@@ -72,3 +72,6 @@ Existing Slurm and loopback-only vLLM infrastructure is under `scripts/cwru/`
 and `scripts/slurm/`. The planned UI/remote control path uses an SSH/Slurm tool
 plugin and immutable artifacts. It never stores VPN, Duo, SSH-key, or model
 credentials in the repository.
+
+For the current M15 server gate and exact user handoff, see
+[`docs/m15_remote_execution_loop.md`](docs/m15_remote_execution_loop.md).

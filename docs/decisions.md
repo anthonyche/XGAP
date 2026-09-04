@@ -934,3 +934,20 @@ The original M11 state could describe multi-backend placement but could not
 execute it. Explicit runtime and failure semantics provide the smallest
 measurable cross-platform loop while retaining the existing compiler and
 backend-client investments.
+
+## D74 Remote readiness is evidence-gated before backend packaging
+
+The M15 CWRU path first records a read-only login-environment probe and then
+runs the deterministic coordinator smoke in a CPU Slurm allocation. Live
+Neo4j/Fuseki packaging is selected only after the probe identifies an available
+container runtime or establishes that native Java or approved persistent
+services are required. A historical M13 H100 run does not count as M15 remote
+verification.
+
+Reason:
+
+Pioneer login nodes must not carry experiment workloads, and availability of
+Slurm or an H100 does not imply availability of Docker or a safe service
+lifecycle. Separating B0, B1, and live-service gates gives every claim a
+specific artifact and prevents environment assumptions from being reported as
+experimental evidence.

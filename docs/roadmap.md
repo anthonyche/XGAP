@@ -30,6 +30,20 @@ and remote-call artifacts; no LLM or ontology required.
 
 Current status: **LOCAL COORDINATOR IMPLEMENTED; LIVE BACKEND GATE PENDING**
 
+Execution order:
+
+1. **M15-B0 CWRU environment gate** — locally implemented; user-run Pioneer
+   probe pending.
+2. **M15-B1 CWRU CPU smoke** — locally implemented; submit only after B0 says
+   `core_smoke_ready=true`.
+3. **M15-B2 live backend packaging** — select the deployment mechanism from
+   B0 evidence rather than assuming Docker is available.
+4. **M15-B3 live federated vertical slice** — execute the same split-fact
+   correctness contract through real Neo4j and Fuseki plugins.
+
+The command and artifact contract is frozen in
+[`docs/m15_remote_execution_loop.md`](m15_remote_execution_loop.md).
+
 ### M15-C Nontrivial Plan Space and Observation Tools
 
 Goal: add schema/explain/profile/sample tools and alternative correct plans for

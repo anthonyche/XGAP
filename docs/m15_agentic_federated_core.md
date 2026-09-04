@@ -62,6 +62,12 @@ Implemented locally:
 Local verification: 20 focused M15 tests passed; full acceptance passed with
 492 tests passed and 34 live/external-artifact tests skipped.
 
+Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
+gates before live services are started. See
+[`docs/m15_remote_execution_loop.md`](m15_remote_execution_loop.md). These
+gates distinguish the previously exercised legacy M13 CWRU/vLLM path from the
+still-unverified M15 server path.
+
 Acceptance gate:
 
 1. neither backend alone can answer the complete question;
