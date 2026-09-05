@@ -52,7 +52,11 @@ Execution order:
    allocation-only trust boundary: verified archives are inspected for safe
    members and staged atomically into a new empty runtime directory. Real
    service launch remains gated on both cached archives and an explicit
-   allocation-local filesystem check.
+   allocation-local filesystem check. B2D now implements the allocation-scoped
+   launcher, exact Java 17 check, dynamic loopback ports, local Neo4j/Fuseki
+   state, bounded health waits, one fixture/load run, reverse shutdown, and
+   guarded cleanup. Its lifecycle is locally verified; the artifact-preparation
+   job and then the combined service job remain CWRU evidence gates.
 4. **M15-B3 live federated vertical slice** — the typed program, real-plugin
    runner, vertically split fixture, exact oracle, immutable evidence, and
    gated live test are implemented locally; real service execution is pending.

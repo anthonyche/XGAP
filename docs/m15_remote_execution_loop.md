@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: B2C LOCALLY VERIFIED; CWRU B1 AND B2 PREREQUISITE PROBE VERIFIED
-- Version Label: m15_remote_loop_v7
+- Verification Status: B2D LOCALLY VERIFIED; CWRU B1 AND B2 PREREQUISITE PROBE VERIFIED
+- Version Label: m15_remote_loop_v8
 
 ## Current claim boundary
 
@@ -121,9 +121,9 @@ Status: **VERIFIED** by job `3784974` on `compt365`.
 - Verified threshold at commit `4c45931`: status `success`, 40 offline M15
   tests passed, one explicitly gated live test skipped, the vertical slice
   returned exactly one row with two remote calls and 206 transferred bytes.
-  The current wrapper includes the B2A loader, B2B artifact-supply, and B2C
-  allocation-staging suites and therefore expects 77 passes and two gated
-  skips.
+  The current wrapper includes the B2A loader, B2B artifact-supply, B2C
+  allocation-staging, and B2D service-lifecycle suites and therefore expects
+  89 passes and two gated skips.
 
 ## Typed remote-control entry
 
@@ -188,6 +188,14 @@ VPN reachability and a working user-owned SSH alias.
   the first failure with zero retries. Staging does not start either service;
   the launcher must still verify the actual filesystem type, Java 17, loopback
   ports, health, and cleanup.
+- Allocation lifecycle: `xgap.experiments.m15_native_services` and the
+  allowlisted `run_m15_native_services.sbatch` require exact Java 17, stage on
+  an allowlisted `SLURM_TMPDIR` or `/tmp` filesystem, use three dynamically
+  reserved `127.0.0.1` ports, and keep all mutable backend state local to the
+  allocation. The runner waits on the same processes without restart, loads
+  the fixture once, executes the federated slice once, stops process groups in
+  reverse order, archives logs and lifecycle evidence, and removes only the
+  validated job-owned runtime path.
 - Gate: both health checks, both native smoke queries, clean shutdown, and
   immutable service/version artifacts pass without exposing a public port.
 
@@ -233,8 +241,9 @@ VPN reachability and a working user-owned SSH alias.
 ## Next user handoff
 
 B0, B1, and the B2 prerequisite probe are complete. B2B archive supply and the
-B2C safe staging layer are implemented locally, but the published Git branch
-must contain their exact commits before any server action. After that check,
+B2C safe staging and B2D service lifecycle are implemented locally, but the
+published Git branch must contain their exact commits before any server
+action. After that check,
 synchronize the clean CWRU checkout and submit exactly one
 `prepare_m15_native_artifacts.sbatch` job with the dedicated core Python. The
 job will make at most two external requests and cache approximately 203 MiB of

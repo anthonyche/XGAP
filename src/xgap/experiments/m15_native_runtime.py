@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
@@ -100,6 +101,14 @@ def _write_json(path: Path, value: object) -> None:
         encoding="utf-8",
     )
     temporary.replace(path)
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def _safe_member_path(name: str, expected_root: str) -> PurePosixPath:
@@ -302,6 +311,7 @@ def stage_m15_native_runtime(
         "runtime_root": str(runtime),
         "runtime_storage_required": "allocation_local_non_network_filesystem",
         "lock_path": str(lock_file),
+        "lock_sha256": _sha256_file(lock_file),
         "java_minimum_major": lock.java_minimum_major if lock is not None else None,
         "java_preferred_module": (
             lock.java_preferred_module if lock is not None else None

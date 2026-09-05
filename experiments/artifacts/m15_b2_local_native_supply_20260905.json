@@ -64,6 +64,31 @@
     "archive_links_allowed": false,
     "status": "success"
   },
+  "service_command_plan_audit": {
+    "fuseki_arguments": [
+      "--localhost",
+      "--ping",
+      "--port",
+      "<dynamic-loopback-port>",
+      "--update",
+      "--mem",
+      "/xgap"
+    ],
+    "fuseki_help_inspected_from_exact_archive": true,
+    "neo4j_command": [
+      "bin/neo4j",
+      "console"
+    ],
+    "neo4j_configuration_files_copied": [
+      "neo4j-admin.conf",
+      "neo4j.conf",
+      "server-logs.xml",
+      "user-logs.xml"
+    ],
+    "ports_exposed_publicly": false,
+    "real_archive_plan_build": "success",
+    "service_processes_started": false
+  },
   "interpretation": "The initial Fuseki response ended cleanly but was 282323 bytes short and was rejected before publication. The explicitly numbered second diagnostic made one additional Fuseki request, reused Neo4j without network access, and matched the frozen Fuseki length and digest. Both exact archives then passed the allocation-staging inspector. No service was started.",
   "services_started": false
 }

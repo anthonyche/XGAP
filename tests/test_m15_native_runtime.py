@@ -179,6 +179,7 @@ def test_runtime_staging_persists_exact_two_product_manifest(tmp_path: Path) -> 
     assert payload["archive_links_allowed"] is False
     assert payload["archives_mutated"] is False
     assert payload["automatic_retries"] == 0
+    assert payload["lock_sha256"]
     assert {path.name for path in runtime.iterdir()} == {"neo4j-test", "fuseki-test"}
 
 

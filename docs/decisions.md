@@ -1023,3 +1023,32 @@ make archive extraction or database placement safe. Keeping verification,
 staging, service lifecycle, and query execution as distinct evidence gates
 prevents a malformed archive, shared-filesystem path, or partial extraction
 from silently becoming experimental state.
+
+## D78 The two native backends share one allocation-scoped lifecycle
+
+M15-B2D starts Neo4j and Fuseki as black-box operating-system processes inside
+one Slurm CPU allocation. The wrapper loads the exact Java 17 module, chooses
+only `SLURM_TMPDIR` or `/tmp`, records the mounted filesystem, and accepts only
+an explicit local-filesystem allowlist. Three ephemeral loopback ports are held
+until immediately before their owning service starts. Neo4j receives a copied
+job-local configuration with all data, transaction, log, run, import, and
+plugin paths below the ephemeral root. Fuseki uses a job-local `FUSEKI_BASE`
+and the archive-verified command contract `--localhost --ping --update --mem
+/xgap`. Neither backend exposes a public port or requires a persisted secret.
+
+Readiness probes may poll the same live process within a fixed deadline, but a
+failed service is never restarted. After one fixture load and one federated
+run, processes are stopped in reverse order by their job-owned process groups;
+SIGKILL is permitted only after a bounded SIGTERM wait and is recorded. Logs,
+configuration, health, shutdown, fixture, and query evidence are copied to the
+durable run directory before the shell removes only the validated job-owned
+runtime path.
+
+Reason:
+
+The backend boundary is the public Neo4j and Fuseki interface, not an internal
+engine hook. A single allocation keeps coordinator traffic local, makes port
+and process ownership unambiguous, and permits exact cleanup without turning
+service bootstrap into an agent-visible general shell tool. Separating bounded
+readiness polling from process restart also preserves failed startup attempts
+as experimental evidence.

@@ -14,8 +14,8 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-The current M15-B2C gate passed 77 focused tests with two real-service tests
-skipped. Full-suite acceptance passed with 549 tests and 36 explicitly gated
+The current M15-B2D gate passed 89 focused tests with two real-service tests
+skipped. Full-suite acceptance passed with 561 tests and 36 explicitly gated
 or external-artifact tests skipped.
 
 M15-B is now **CWRU CPU-verified with a real-plugin contract; live backend
@@ -52,6 +52,17 @@ then passed B2C inspection and staging. This is development evidence, not a
 CWRU live-service or paper-result claim; its compact record is
 `experiments/artifacts/m15_b2_local_native_supply_20260905.json`.
 
+B2D implements the complete allocation-scoped launcher without starting a
+service locally. It requires exact Java 17 and an allowlisted node-local
+filesystem, reserves three dynamic loopback ports, keeps every Neo4j/Fuseki
+state path below the ephemeral root, and uses only their public HTTP
+interfaces. Readiness polling has a fixed deadline and never restarts a failed
+process. The runner performs one fixture load and one federated execution,
+then shuts down job-owned process groups in reverse order, archives logs and
+lifecycle evidence, and lets the Slurm wrapper remove only its validated
+runtime directory. Both real archives passed the exact command-plan audit;
+actual service startup remains a CWRU gate.
+
 The remaining M15-B gate is execution of the same contract against real Neo4j
 and Fuseki with a deliberately partitioned dataset, streaming/batched result
 handling, and live cancellation. No ontology or LLM feature enters before this
@@ -78,10 +89,10 @@ OpenJDK 8 and `/home` was NFS-backed. The Java module inventory advertises
 `native_service_prerequisites_ready=true` is therefore invalid and is not used
 as a gate; probe v2 parses the Java major, attempts the pinned module, and
 requires version compatibility. The next CWRU job only downloads and verifies
-the two frozen Java-17-compatible service archives. The local B2C
-implementation is ready to stage those archives after that gate, but service
-startup is still pending. Extracted service state and database files remain
-allocation-local. See
+the two frozen Java-17-compatible service archives. The local B2C/B2D
+implementation is ready to stage and run those archives after that gate, but
+real service startup is still pending. Extracted service state and database
+files remain allocation-local. See
 `docs/m15_remote_execution_loop.md`.
 
 The `remote.executor` tool and environment-configured CLI are implemented and
@@ -1361,7 +1372,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-B2C local implementation tests passed. M7 backend smoke and M12-C real
+M0-M15-B2D local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1371,11 +1382,11 @@ the local completion run.
 
 Latest recorded command results:
 
-- `./scripts/run_acceptance.sh`: 549 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 561 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
-  passed 77 with two live-service skips. Shell syntax validation passed for
-  both the corrected native prerequisite probe and the download-only artifact
-  preparation job.
+  passed 89 with two live-service skips. Shell syntax validation passed for
+  the corrected native prerequisite probe, download-only artifact preparation,
+  and allocation-scoped native-service jobs.
 - `PYTHONPATH=src python -m pytest`: 492 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,
