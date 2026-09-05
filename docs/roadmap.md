@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A LIVE GATES VERIFIED; F2B QUERY-CONTRACT PRIMITIVE LOCAL, CAMPAIGN BINDING NEXT**
+Current status: **F0/F1/F2A LIVE GATES VERIFIED; F2B QUERY-BOUND CAMPAIGN LOCAL, LIVE BINDING NEXT**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -224,9 +224,20 @@ development query against a verified generated bundle, binds all three backend
 queries plus both oracle files by SHA-256, preserves hard constraints as
 non-relaxable, and emits a portable content hash independent of its local file
 path. It makes zero backend, LLM, or ontology calls and remains
-`paper_result=false`. F2B2 must add the contract reference and expected hash to
-a separately versioned campaign/session path and extend the independent audit;
-the audited F2A v1 configuration is not rewritten.
+`paper_result=false`. This primitive alone was insufficient; F2B2 therefore
+adds the contract reference and expected hash to a separately versioned
+campaign path without rewriting the audited F2A v1 configuration.
+
+F2B2 now layers a query-bound registry over that unchanged F2A plan. The new
+compiler verifies both base campaign hashes, requires one binding for every
+workload/query context, checks the resolved-query source hashes, freezes the
+selective and broad-hot bundle-dependent contract hashes, and carries those
+references through all twelve sessions under a new portable schedule hash.
+The compiler records that live-bundle verification is still pending and makes
+no external call. F2B3 is the next implementation gate: recompute the selected
+contract from the generated bundle before service startup, bind it into the
+matrix execution contract, and extend the independent auditor without changing
+the preserved F2A path.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

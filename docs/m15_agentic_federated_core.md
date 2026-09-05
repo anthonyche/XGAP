@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 682 tests with 36 explicitly gated or
+Current full local acceptance passes 693 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B QUERY-CONTRACT PRIMITIVE LOCAL, CAMPAIGN BINDING NEXT**
+Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B QUERY-BOUND CAMPAIGN LOCAL, LIVE BINDING NEXT**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -341,6 +341,17 @@ a location-independent contract hash without making an external call. This is
 currently a local primitive: the v1 campaign/session still carries its old
 query label, so the remaining sessions stay disabled until F2B binding is
 wired through the scheduler, live runner, and read-only auditor.
+
+F2B2 adds a separately versioned registry over the immutable F2A campaign.
+It requires exact base campaign/spec hashes and complete coverage of every
+workload/query key, verifies each query-spec source hash, freezes the expected
+bundle-dependent contract hashes, injects contract references into every
+method stream, and derives a portable query-bound schedule hash. Local file
+paths remain provenance and do not affect that hash. This closes the
+scheduler-side label gap, but the expected contracts have not yet been
+recomputed against the live generated bundle and the existing session runner
+does not consume this plan. F2B3 must perform both checks before enabling one
+new remote engineering gate.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

@@ -1416,3 +1416,21 @@ execution, so it does not remove the campaign's query-artifact blocker or
 authorize the remaining eleven sessions. This version boundary preserves the
 ability to re-audit job `3787291` against its exact v1 inputs while F2B wiring
 is developed separately.
+
+## D97 Layer query binding over the audited campaign instead of rewriting it
+
+F2B2 introduces a separate query-bound campaign registry whose base inputs are
+the exact F2A campaign-spec and schedule hashes. Every workload/query key must
+have one registry binding containing a repository query-spec reference, its
+expected source hash, and the expected bundle-dependent query-contract hash.
+The compiler rejects incomplete coverage and any drift in the base campaign or
+query specification, then adds contract references to all twelve sessions and
+computes a new query-bound schedule hash.
+
+The query-spec path is provenance, not experimental identity: it remains in
+the registry output but is excluded from the portable binding and schedule
+hashes. Identical content relocated within a repository therefore preserves
+the query-bound schedule. The compiler freezes expected contract hashes but
+does not claim they match a live generated bundle; that check belongs to the
+next session preflight. The plan remains side-effect free,
+`paper_result=false`, and cannot authorize remote dispatch by itself.

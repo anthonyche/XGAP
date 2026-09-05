@@ -71,7 +71,7 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L and the
-F2B query-contract primitive, current full local acceptance passes 682 tests with 36
+F2B query-bound campaign compiler, current full local acceptance passes 693 tests with 36
 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -134,9 +134,19 @@ Fuseki artifact roles, bound-query parameter schema, and answer oracles. The
 compiler loads a fully verified workload bundle, binds every referenced query
 and oracle by SHA-256, and emits a portable contract hash that is stable across
 filesystem locations. It rejects schema, role, parameter, symlink, or
-constraint-relaxability drift before any external call. This primitive is not
-yet wired into the campaign/session path, so the historical F2A audit remains
-reproducible and the query-artifact campaign blocker remains open for F2B2.
+constraint-relaxability drift before any external call. The historical F2A
+audit remains reproducible because this primitive is wired through a new F2B2
+campaign layer rather than by modifying the v1 campaign/session path.
+
+M15-F2B2 adds a separate query-bound campaign registry without rewriting the
+audited F2A configuration. It verifies the exact base campaign-spec and
+schedule hashes, requires complete workload/query coverage, validates each
+resolved-query source hash, freezes the expected selective and broad-hot
+bundle-dependent contract hashes, and adds those references to every method
+stream. The resulting query-bound schedule hash excludes local path provenance
+and is stable when identical query specs move. This is still a side-effect-free
+plan: live bundle verification and runner/auditor consumption remain F2B3, so
+no additional CWRU session is authorized.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
@@ -1593,11 +1603,12 @@ Latest recorded command results:
   independent read-only audit passed 374/374 checks and reported
   `run_tree_mutated=false`. This is a single-session mechanism gate, not a
   comparative result.
-- `./scripts/run_acceptance.sh`: 682 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 693 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
-  compiler, its hash-bound single-session native runner/auditor, and the F2B1
-  portable resolved-query contract compiler. CWRU F1L job `3787267` separately passed
+  compiler, its hash-bound single-session native runner/auditor, the F2B1
+  portable resolved-query contract compiler, and the F2B2 query-bound campaign
+  compiler. CWRU F1L job `3787267` separately passed
   its independent 326-check read-only audit at exact commit `6aafafd`.
 - `./scripts/run_acceptance.sh`: 612 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset

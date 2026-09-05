@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A VERIFIED; F2B1 QUERY-CONTRACT PRIMITIVE LOCAL, NO REMOTE DISPATCH
-- Version Label: m15_remote_loop_v24
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A VERIFIED; F2B2 QUERY-BOUND CAMPAIGN LOCAL, NO REMOTE DISPATCH
+- Version Label: m15_remote_loop_v25
 
 ## Current claim boundary
 
@@ -415,7 +415,11 @@ failure; preserve its top-level output. F2A job `3787291` and its run tree are
 now immutable evidence. The next implementation handoff is F2B query-contract
 binding. F2B1 locally compiles a resolved intent, immutable hard constraints,
 exact backend query roles and parameters, and source/final oracles into a
-portable bundle-bound hash, but that hash is not yet part of a live session.
+portable bundle-bound hash. F2B2 freezes those expected hashes for both
+development workloads, checks exact registry coverage, and emits a new
+location-independent query-bound schedule over all twelve sessions. Those
+expected contract hashes are not yet recomputed from a selected live bundle,
+and the matrix does not consume them yet.
 Do not dispatch the remaining 11 development sessions yet. A
 hash-bound multi-query stream and all paper campaign dispatch remain disabled.
 No paper-performance claim is currently made.
