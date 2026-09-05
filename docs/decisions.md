@@ -1813,6 +1813,13 @@ semantic deviation, semantic-class ID, base and relaxed query identities, and
 overlay hash. A dedicated read-only auditor reconstructs the overlay and plan,
 checks the native lifecycle and full artifact graph, and rejects answer, plan,
 class, hash, call-trace, or cleanup drift. Local acceptance passes 814 tests
-with 36 explicitly gated skips at commit `0aefb87`; real-backend execution is
-still pending, semantic usefulness has not been human-validated, and all
+with 36 explicitly gated skips at implementation commit `0aefb87`.
+
+CWRU job `3787648` then ran exact clean documentation commit `2197aef` on
+`compt386` in 81 seconds. It preserved all three hard bindings, executed the
+single HIGH-to-MEDIUM class with semantic deviation one-third, made exactly two
+remote calls, moved 3,963 bytes, and returned the independently generated 11
+rows. The dedicated audit passed 133/133 checks with no failed IDs or run-tree
+mutation. This closes only the real-backend mechanism gate; semantic usefulness
+has not been human-validated, no physical strategy was compared, and all
 outputs remain `paper_result=false`.

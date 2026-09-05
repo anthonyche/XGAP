@@ -1,0 +1,166 @@
+{
+  "artifact_id": "m15-f2c7b2-cwru-native-semantic-risk-relaxation-3787648",
+  "artifact_role": "cwru_live_semantic_relaxation_mechanism_acceptance_not_quality_or_performance_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "user_returned_cwru_scheduler_run_summary_and_independent_audit",
+  "slurm": {
+    "elapsed": "00:01:21",
+    "exit_code": "0:0",
+    "job_id": "3787648",
+    "node": "compt386",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "2197aef7328ac2e13c783d76692d936d16e4afda",
+    "implementation_commit": "0aefb8753ae365e1c9f0497164a66d29f9c02af7"
+  },
+  "run": {
+    "remote_root": "runs/cwru-m15-native-semantic-risk-relaxation-3787648",
+    "status": "success",
+    "workload_mode": "semantic_risk_relaxation",
+    "automatic_retries": 0
+  },
+  "semantic_execution": {
+    "semantic_class_id": "m15-class-62f92df03f23c3212a47fa32",
+    "semantic_class_count": 1,
+    "semantic_deviation": 0.3333333333333333,
+    "changed_slot_ids": [
+      "risk-level"
+    ],
+    "risk_transition": {
+      "from": "HIGH",
+      "to": "MEDIUM"
+    },
+    "hard_bindings_preserved": true,
+    "physical_strategy": "risk_first_bind_join",
+    "physical_plan_run_count": 1,
+    "total_remote_calls": 2,
+    "total_bytes_moved": 3963,
+    "final_row_count": 11,
+    "validation_passed": true,
+    "answer_oracle_used_for_selection": false,
+    "answer_oracle_used_for_post_execution_validation": true,
+    "memory_enabled": false,
+    "llm_calls_made": 0,
+    "ontology_calls_made": 0,
+    "paper_result": false
+  },
+  "final_rows": [
+    {
+      "amount": 139516,
+      "company": "Company C0001",
+      "currency": "USD",
+      "occurred_on": "2026-08-25",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 144483,
+      "company": "Company C0027",
+      "currency": "USD",
+      "occurred_on": "2026-08-03",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 165604,
+      "company": "Company C0001",
+      "currency": "USD",
+      "occurred_on": "2026-08-22",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 172993,
+      "company": "Company C0030",
+      "currency": "USD",
+      "occurred_on": "2026-08-17",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 195011,
+      "company": "Company C0012",
+      "currency": "USD",
+      "occurred_on": "2026-08-28",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 195942,
+      "company": "Company C0027",
+      "currency": "USD",
+      "occurred_on": "2026-08-13",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 54265,
+      "company": "Company C0020",
+      "currency": "USD",
+      "occurred_on": "2026-08-21",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 67118,
+      "company": "Company C0030",
+      "currency": "USD",
+      "occurred_on": "2026-08-19",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 78810,
+      "company": "Company C0027",
+      "currency": "USD",
+      "occurred_on": "2026-08-08",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 91876,
+      "company": "Company C0028",
+      "currency": "USD",
+      "occurred_on": "2026-08-20",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    },
+    {
+      "amount": 95895,
+      "company": "Company C0010",
+      "currency": "USD",
+      "occurred_on": "2026-08-11",
+      "person": "Alice Smith",
+      "risk": "MEDIUM"
+    }
+  ],
+  "independent_read_only_audit": {
+    "schema_version": "m15-f2c7b2-native-semantic-relaxation-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-f2c7b2-semantic-risk-3787648-audit.json",
+    "success": true,
+    "check_count": 133,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "claim_boundary": {
+    "result_class": "real_backend_semantic_relaxation_mechanism_acceptance",
+    "relaxed_plan_executed": true,
+    "hard_constraints_preserved": true,
+    "exact_relaxed_oracle_answer": true,
+    "semantic_user_utility_supported": false,
+    "physical_strategy_comparison_supported": false,
+    "latency_ranking_supported": false,
+    "comparative": false,
+    "paper_result": false
+  },
+  "limitations": [
+    "one development query and one HIGH-to-MEDIUM semantic class",
+    "one fixed physical strategy selected before execution",
+    "the deterministic oracle validates execution correctness, not user-perceived semantic usefulness",
+    "no ontology service, LLM, family memory, alternate plan, repetition, or counterbalancing",
+    "not a semantic-quality, latency-ranking, or comparative paper result"
+  ],
+  "paper_result": false
+}

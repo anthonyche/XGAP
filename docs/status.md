@@ -243,15 +243,18 @@ and multihop semantics remain open, so this is artifact readiness rather than
 semantic-quality or performance evidence. The compact local record is
 `experiments/artifacts/m15_f2c7b1_local_semantic_overlay_20260906.json`.
 
-M15-F2C7B2 is locally accepted and ready for one CWRU mechanism run at commit
-`0aefb87`. Its dedicated native mode regenerates the base bundle and semantic
-overlay inside the immutable run tree, verifies the full seven-instance
-fixture, and executes only the approved HIGH-to-MEDIUM class with one fixed
-risk-first plan. The semantic query is limited to two backend calls; the
-oracle is used only after execution. A separate read-only auditor reconstructs
-the overlay, execution contract, plan, result, and call trace. This gate does
-not compare physical strategies, use memory/LLM/ontology, validate user utility,
-or enable a paper claim. No F2C7B2 real-backend result exists yet.
+M15-F2C7B2 is verified on CWRU. Job `3787648` ran exact clean commit `2197aef`
+on `compt386` for 81 seconds. Its dedicated native mode regenerated the base
+bundle and semantic overlay, verified the full seven-instance fixture, and
+executed only the approved HIGH-to-MEDIUM class with one fixed risk-first plan.
+The two-call execution moved 3,963 bytes and returned all 11 exact oracle rows;
+person identity, time, and amount hard bindings remained unchanged. The
+independent read-only audit reconstructed the full chain and passed 133/133
+checks with no failures or run-tree mutation. This closes a real-backend
+mechanism gate only: it does not compare physical strategies, use
+memory/LLM/ontology, validate user utility, or enable a paper claim. The
+compact record is
+`experiments/artifacts/m15_f2c7b2_cwru_native_semantic_risk_relaxation_20260906.json`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1816,8 +1819,8 @@ Latest recorded command results:
   risk-level alternative in an immutable overlay with bound source/final
   oracles and identical shared data. F2C7B2 adds one fixed-plan live runner,
   allocation-local native mode, allowlisted Slurm entry, and independent
-  tamper-detecting evidence auditor; it is locally accepted but has not yet
-  run on CWRU. The
+  tamper-detecting evidence auditor; CWRU job `3787648` closed the live gate
+  with an exact 11-row result and a 133/133 read-only audit. The
   F2B3 direct runner verifies the selected
   contract from the
   live bundle before passing a v2 identity into the six-method matrix. F2B4
