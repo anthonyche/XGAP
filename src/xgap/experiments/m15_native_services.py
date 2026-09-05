@@ -34,6 +34,9 @@ from xgap.experiments.m15_live_campaign_session import (
 )
 from xgap.experiments.m15_live_federated import run_m15_live_federated
 from xgap.experiments.m15_live_method_matrix import run_m15_live_method_matrix
+from xgap.experiments.m15_live_parameterized_stream import (
+    run_m15_live_parameterized_stream,
+)
 from xgap.experiments.m15_live_query_bound_session import (
     prepare_m15_live_query_bound_session,
     run_m15_live_query_bound_session,
@@ -46,6 +49,13 @@ from xgap.experiments.m15_native_artifacts import (
     DEFAULT_LOCK_PATH,
     load_native_runtime_lock,
     parse_java_major,
+)
+from xgap.experiments.m15_parameterized_fixture import (
+    load_m15_parameterized_fixture,
+)
+from xgap.experiments.m15_parameterized_workload import (
+    M15ParameterizedWorkloadBundle,
+    load_m15_parameterized_workload_bundle,
 )
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.infrastructure.descriptors import BackendDescriptor
@@ -65,6 +75,9 @@ CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION = (
 QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-f2b-native-live-query-bound-session-service-run-v1"
 )
+PARAMETERIZED_STREAM_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2c4-native-live-parameterized-stream-service-run-v1"
+)
 SERVICE_PLAN_SCHEMA_VERSION = "m15-b2d-native-service-plan-v1"
 WORKLOAD_MODES = frozenset(
     {
@@ -74,6 +87,7 @@ WORKLOAD_MODES = frozenset(
         "scaled_method_matrix",
         "scaled_campaign_session",
         "scaled_query_bound_session",
+        "parameterized_stream",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -751,6 +765,7 @@ def _run_fixture_and_query(
     query_bound_session_id: str | None = None,
     expected_registry_spec_sha256: str | None = None,
     expected_query_bound_schedule_sha256: str | None = None,
+    parameterized_workload_bundle: M15ParameterizedWorkloadBundle | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -764,6 +779,32 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
+        if workload_mode == "parameterized_stream":
+            assert parameterized_workload_bundle is not None
+            fixture = load_m15_parameterized_fixture(
+                workload_bundle=parameterized_workload_bundle,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="parameterized-fixture-load",
+                repo_root=repo_root,
+            )
+            if not fixture.success:
+                raise RuntimeError(
+                    f"parameterized fixture load failed: {fixture.error}"
+                )
+            stream = run_m15_live_parameterized_stream(
+                workload_bundle=parameterized_workload_bundle,
+                clients=clients,
+                output_root=run_root,
+                run_id="parameterized-stream-run",
+                repo_root=repo_root,
+            )
+            if not stream.success:
+                raise RuntimeError(
+                    f"live parameterized stream failed: {stream.error}"
+                )
+            return
         fixture = load_m15_split_fixture(
             output_root=run_root,
             run_id="fixture-load",
@@ -873,6 +914,9 @@ def run_m15_native_services(
     query_bound_session_id: str | None = None,
     expected_registry_spec_sha256: str | None = None,
     expected_query_bound_schedule_sha256: str | None = None,
+    parameterized_workload_bundle: (
+        M15ParameterizedWorkloadBundle | str | Path | None
+    ) = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -892,6 +936,20 @@ def run_m15_native_services(
         if workload_bundle is not None
         else None
     )
+    selected_parameterized_bundle = (
+        load_m15_parameterized_workload_bundle(
+            parameterized_workload_bundle.root
+            if isinstance(
+                parameterized_workload_bundle,
+                M15ParameterizedWorkloadBundle,
+            )
+            else parameterized_workload_bundle
+        )
+        if parameterized_workload_bundle is not None
+        else None
+    )
+    if selected_bundle is not None and selected_parameterized_bundle is not None:
+        raise ValueError("workload bundle inputs are mutually exclusive")
     scaled_mode = workload_mode in {
         "scaled_adaptive",
         "scaled_method_matrix",
@@ -902,6 +960,17 @@ def run_m15_native_services(
         raise ValueError(f"{workload_mode} workload mode requires a verified bundle")
     if not scaled_mode and selected_bundle is not None:
         raise ValueError("a workload bundle is accepted only in a scaled mode")
+    if workload_mode == "parameterized_stream":
+        if selected_parameterized_bundle is None:
+            raise ValueError(
+                "parameterized_stream workload mode requires a verified "
+                "parameterized bundle"
+            )
+    elif selected_parameterized_bundle is not None:
+        raise ValueError(
+            "a parameterized workload bundle is accepted only in "
+            "parameterized_stream"
+        )
     campaign_values = (
         campaign_config,
         campaign_session_id,
@@ -964,6 +1033,7 @@ def run_m15_native_services(
         "scaled_query_bound_session": (
             QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "parameterized_stream": PARAMETERIZED_STREAM_SERVICE_RUN_SCHEMA_VERSION,
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -1026,6 +1096,7 @@ def run_m15_native_services(
                 query_bound_session_id,
                 expected_registry_spec_sha256,
                 expected_query_bound_schedule_sha256,
+                selected_parameterized_bundle,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
@@ -1077,6 +1148,11 @@ def run_m15_native_services(
             "workload_mode": workload_mode,
             "workload_bundle": (
                 dict(selected_bundle.manifest) if selected_bundle is not None else None
+            ),
+            "parameterized_workload_bundle": (
+                dict(selected_parameterized_bundle.manifest)
+                if selected_parameterized_bundle is not None
+                else None
             ),
             "campaign_session": (
                 {
@@ -1138,6 +1214,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         default="vertical_slice",
     )
     parser.add_argument("--workload-bundle")
+    parser.add_argument("--parameterized-workload-bundle")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -1173,6 +1250,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             repo_root=args.repo_root,
             workload_mode=args.workload_mode,
             workload_bundle=args.workload_bundle,
+            parameterized_workload_bundle=args.parameterized_workload_bundle,
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,

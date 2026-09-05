@@ -96,6 +96,10 @@ case "$WORKLOAD_MODE" in
         ;;
     esac
     ;;
+  parameterized_stream)
+    RUN_PREFIX="cwru-m15-native-parameterized-stream"
+    RUN_VERSION="m15-f2c4-native-live-parameterized-stream-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -270,6 +274,17 @@ if [[ "$WORKLOAD_MODE" == scaled_adaptive || "$WORKLOAD_MODE" == scaled_method_m
     --output "$WORKLOAD_BUNDLE" \
     | tee "$RUN_ROOT/workload_generation.json"
   WORKLOAD_ARGS=(--workload-bundle "$WORKLOAD_BUNDLE")
+fi
+if [[ "$WORKLOAD_MODE" == parameterized_stream ]]; then
+  WORKLOAD_BUNDLE="$RUN_ROOT/parameterized-workload-bundle"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_parameterized_workload \
+    --workload-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_workload_dev.json" \
+    --query-template-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_financial_risk_v2.json" \
+    --backend-template-root "$REPO_ROOT/experiments/templates/m15_f2c_financial_risk" \
+    --output "$WORKLOAD_BUNDLE" \
+    | tee "$RUN_ROOT/workload_generation.json"
+  WORKLOAD_ARGS=(--parameterized-workload-bundle "$WORKLOAD_BUNDLE")
 fi
 
 QUERY_BOUND_ARGS=()

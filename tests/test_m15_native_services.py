@@ -15,6 +15,9 @@ from xgap.experiments.m15_campaign import compile_m15_campaign_file
 from xgap.experiments.m15_query_bound_campaign import (
     compile_m15_query_bound_campaign_file,
 )
+from xgap.experiments.m15_parameterized_workload import (
+    generate_m15_parameterized_workload_bundle,
+)
 from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
@@ -485,6 +488,110 @@ def test_full_lifecycle_selects_adaptive_workload_explicitly(
     assert manifest["workload_mode"] == "adaptive"
 
 
+def test_full_lifecycle_selects_parameterized_stream_explicitly(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    with pytest.raises(ValueError, match="requires a verified parameterized bundle"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-runs",
+            run_id="missing-parameterized-bundle",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="parameterized_stream",
+        )
+
+    bundle = generate_m15_parameterized_workload_bundle(
+        workload_spec=(
+            REPO_ROOT
+            / "experiments/configs/m15_f2c_parameterized_workload_dev.json"
+        ),
+        query_template_spec=(
+            REPO_ROOT
+            / "experiments/configs/m15_f2c_parameterized_financial_risk_v2.json"
+        ),
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "parameterized-bundle",
+    )
+    executed: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence("/opt/java17/bin/java", 17, "17"),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "start_service",
+        lambda spec: RunningService(spec, _StableProcess(), io.BytesIO()),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id,
+            True,
+            1,
+            1.0,
+            200,
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args: executed.append(
+            (_args[3], _args[13].spec.workload_id)
+        ),
+    )
+
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "runs",
+        run_id="native-parameterized-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="parameterized_stream",
+        parameterized_workload_bundle=bundle,
+    )
+
+    assert record.success
+    assert executed == [
+        ("parameterized_stream", "financial-risk-multi-instance-dev-v1")
+    ]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.PARAMETERIZED_STREAM_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["workload_mode"] == "parameterized_stream"
+    assert manifest["workload_bundle"] is None
+    assert manifest["parameterized_workload_bundle"][
+        "bundle_content_sha256"
+    ] == bundle.manifest["bundle_content_sha256"]
+
+
 def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -826,6 +933,9 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "scaled_method_matrix" in script
     assert "scaled_campaign_session" in script
     assert "scaled_query_bound_session" in script
+    assert "parameterized_stream" in script
+    assert "m15_parameterized_workload" in script
+    assert "--parameterized-workload-bundle" in script
     assert "--campaign-session-id" in script
     campaign_script = (
         REPO_ROOT / "scripts/slurm/run_m15_native_campaign_session.sbatch"
@@ -848,4 +958,11 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "XGAP_M15_QUERY_BOUND_SCHEDULE_SHA256" in query_bound_script
     assert "SLURM_SUBMIT_DIR" in query_bound_script
     assert "BASH_SOURCE" not in query_bound_script
+    parameterized_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_parameterized_stream.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=parameterized_stream" in parameterized_script
+    assert "SLURM_SUBMIT_DIR" in parameterized_script
+    assert "BASH_SOURCE" not in parameterized_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

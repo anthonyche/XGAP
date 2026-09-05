@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 748 tests with 36 explicitly gated or
+Current full local acceptance passes 762 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C3 CONTRACTS LOCAL**
+Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C4 LOCAL; F2C4 CWRU PENDING**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -429,9 +429,19 @@ same family compatibility hash and own exact compiled artifacts, binding-stage
 records, source oracles, and final oracles. Recursive hashes and full
 regeneration protect the bundle from artifact or manifest tampering. This is
 still a zero-call, one-family development artifact: it neither executes the
-queries nor implements relaxation/Pareto enumeration. F2C4 must connect the
-bundle to the coordinator, native services, and explicit task stream before
-another CWRU gate.
+queries nor implements relaxation/Pareto enumeration.
+
+F2C4 adds the executable bridge. The coordinator receives two exact physical
+plans per query instance, with runtime hard values bound to native artifacts
+and the Fuseki result aligned before it can become Neo4j's `company_ids`
+runtime intermediate. The alignment catalog is generated from the declared
+company-ID domain, not from answer oracles. A fixed task stream orders four
+seed and two held-out instances and executes both strategies, while a distinct
+fixture phase verifies the twelve source fragments. The additive native mode,
+Slurm entry point, zero-retry trace, and independent read-only auditor are
+locally complete. One CWRU engineering run is pending; memory, plan selection,
+semantic relaxation, and paper comparisons are intentionally outside this
+gate.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

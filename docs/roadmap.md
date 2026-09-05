@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C3 CONTRACTS LOCAL**
+Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C4 LOCAL; F2C4 CWRU PENDING**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -303,9 +303,18 @@ under the same family key. Each instance has stage-separated parameters,
 compiled Neo4j/Fuseki artifacts, source oracles, and a final oracle. The
 recursive hash manifest and deterministic loader reject both ordinary tamper
 and content-plus-digest rewrites. The bundle remains unexecuted and covers only
-the exact interpretation. F2C4 must wire this format into the coordinator and
-native lifecycle, validate all six exact answers, and update the explicit task
-stream before one new CWRU engineering run can be considered.
+the exact interpretation.
+
+F2C4 now wires this format into the coordinator and a separate native-service
+mode without changing the audited F2B4 route. A deterministic task stream runs
+the parallel-hash and risk-first-bind plans for each of the four seed and two
+held-out instances. Plan construction uses only the typed bundle and the full
+declared ID-domain alignment catalog; answers are consulted only afterward for
+validation. The native gate loads one shared dataset, verifies twelve source
+queries, executes twelve exact plan runs and 24 backend calls, and emits a
+separate read-only audit surface. Local tests are complete; one clean-commit
+CWRU run and its audit are next. Cross-task memory, plan choice, relaxation,
+Pareto enumeration, and comparative measurements remain later milestones.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

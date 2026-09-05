@@ -1639,3 +1639,30 @@ Pareto set. It also remains one development family rather than the final
 30--50-instance, multi-family benchmark. F2C3 makes no external call and is
 `paper_result=false`; F2C4 must connect its parameter and oracle contracts to
 the coordinator/native-service task path before a new CWRU gate is admitted.
+
+## D106 Exact parameterized execution precedes memory and relaxation experiments
+
+F2C4 admits the six v2 instances through an explicit seed-then-held-out task
+stream and executes both exact physical strategies for every instance. The
+parallel plan reads the full transfer and risk fragments; the bind plan first
+aligns the risk fragment and passes canonical company IDs into the declared
+Neo4j runtime-intermediate parameter. Both plans use the same semantic
+equivalence key, carry zero semantic deviation, and must match each instance's
+final oracle in exactly two backend calls.
+
+Namespace alignment is compiled from the workload's declared company-ID domain
+and backend prefixes. It is never inferred from source or final answer oracles.
+The fixture verifier may read source oracles only after the plans and artifacts
+already exist, and its calls are recorded outside the task-stream execution
+totals. A new additive native mode generates the hash-bound bundle inside one
+fresh Slurm run, starts loopback-only Neo4j and Fuseki, loads the shared data
+once, verifies all twelve source fragments, executes twelve plan runs, and
+shuts down with zero retry. A separate read-only auditor checks every task,
+plan, result, call, lifecycle artifact, and identity edge.
+
+This milestone proves executable parameter variation and exact-plan
+equivalence only. Memory is deliberately disabled, no strategy is selected by
+an oracle, and no relaxation, Pareto ranking, LLM, or ontology call occurs.
+Consequently the local implementation may authorize one CWRU engineering gate
+after a clean commit, but remains `paper_result=false` and cannot support a
+cross-task-memory or performance claim.
