@@ -5,16 +5,16 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: B2D AND READ-ONLY EVIDENCE AUDIT LOCALLY VERIFIED; CWRU B1, B2 PREREQUISITE, AND B2B ARTIFACT SUPPLY VERIFIED
-- Version Label: m15_remote_loop_v10
+- Verification Status: CWRU B2D REAL NEO4J+FUSEKI RUN AND 102-CHECK READ-ONLY AUDIT VERIFIED
+- Version Label: m15_remote_loop_v11
 
 ## Current claim boundary
 
 The legacy M13 Qwen/vLLM path has run on CWRU Pioneer. The M15 agentic
-federated core has now passed its CPU smoke on Pioneer, but its live
-Neo4j-plus-Fuseki path has not yet passed a two-engine service gate. Therefore
-XGAP can claim server execution of the deterministic coordinator core, but not
-live federated backend execution.
+federated core has now also passed a real Neo4j-plus-Fuseki service gate. XGAP
+can claim one audited live two-engine vertical slice through public backend
+interfaces. It cannot yet claim paper-scale performance, streaming transport,
+or live cancellation.
 
 B0 observations on 2026-09-04 established an exact checkout at commit
 `465e2e2454b74aaf7a1c055797740bde8ca5ace0`, working Slurm commands,
@@ -68,6 +68,15 @@ attempts, one for each product, and zero automatic retries. Neo4j Community
 locked 50,290,245-byte SHA-512. No archive was extracted, no service was
 started, and no credentials were persisted. The shared cache can be reused by
 the allocation-scoped service job without another network request.
+
+B2D/B3 job `3787110` then ran exact clean commit `cd564de8` on `compt331` in
+62 seconds. It used Java 17 and allocation-local XFS, started Neo4j 5.26.30 and
+Fuseki 5.6.0 on loopback-only ports, loaded and verified the vertically split
+fixture, and returned the exact federated answer with two remote calls. Both
+services stopped in reverse order without kill escalation and the wrapper
+removed the validated runtime root. The separate read-only audit returned exit
+0 with all 102 checks passing, no failed IDs, and no mutation of the completed
+run tree.
 
 ## Codex-owned development loop
 
@@ -257,11 +266,8 @@ VPN reachability and a working user-owned SSH alias.
 
 ## Next user handoff
 
-B0, B1, the B2 prerequisite probe, and B2B archive supply are complete. The
-clean CWRU checkout is synchronized to published commit `cd564de8`, which
-contains the frozen-lock evidence auditor. Submit exactly one
-`run_m15_native_services.sbatch` job with the dedicated core Python,
-`Miniconda3`, and `Java/17.0.6`. Return the job ID first. After completion,
-inspect the outer status and immutable run tree before running the read-only
-cross-artifact auditor. Do not repeat a failed service job: its first-attempt
-artifacts determine the next diagnosis.
+B0, B1, B2 prerequisite, B2B supply, B2D service lifecycle, B3 federated
+execution, and the independent evidence audit are complete. No further CWRU
+action is requested for M15-B. Keep job `3787110` and its separate audit tree
+immutable. The next server handoff will occur only after the M15-D adaptive
+runner and its exact commit have been published.

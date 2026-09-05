@@ -28,7 +28,7 @@ Acceptance criteria: fragment compilation, remote execution, exchange,
 alignment, coordinator join/merge, correctness, latency, bytes, cardinality,
 and remote-call artifacts; no LLM or ontology required.
 
-Current status: **CWRU CPU CORE AND NATIVE ARTIFACT SUPPLY VERIFIED; REAL BACKEND GATE PENDING**
+Current status: **REAL NEO4J+FUSEKI VERTICAL SLICE VERIFIED ON CWRU; STREAMING/CANCELLATION PENDING**
 
 Execution order:
 
@@ -56,14 +56,14 @@ Execution order:
    allocation-local filesystem check. B2D now implements the allocation-scoped
    launcher, exact Java 17 check, dynamic loopback ports, local Neo4j/Fuseki
    state, bounded health waits, one fixture/load run, reverse shutdown, and
-   guarded cleanup. Its lifecycle is locally verified; the artifact-preparation
-   job is verified; the combined service job remains the CWRU evidence gate. A
-   read-only cross-artifact auditor is locally verified and will accept a live
-   claim only when the exact commit, lock, staging, service, load, query, and
-   cleanup records agree.
+   guarded cleanup. Combined service job `3787110` passed on `compt331` at
+   exact commit `cd564de8`; both engines were healthy and loopback-only, the
+   fixture and exact federated answer passed, shutdown and cleanup passed, and
+   the read-only cross-artifact audit accepted all 102 checks.
 4. **M15-B3 live federated vertical slice** — the typed program, real-plugin
    runner, vertically split fixture, exact oracle, immutable evidence, and
-   gated live test are implemented locally; real service execution is pending.
+   gated live test are implemented. Job `3787110` verified the same contract
+   against real Neo4j 5.26.30 and Fuseki 5.6.0 on CWRU.
 
 The typed remote-executor plugin and its CLI are implemented locally. They
 stage exact commits, allowlist batch entry points, observe jobs, and retrieve

@@ -30,7 +30,7 @@ search, LLM policy decisions, live services, or a UI.
 
 ## M15-B — Executable two-engine vertical slice
 
-Status: **CWRU CPU CORE AND NATIVE ARTIFACT SUPPLY VERIFIED; REAL BACKEND GATE PENDING**
+Status: **REAL NEO4J+FUSEKI VERTICAL SLICE VERIFIED ON CWRU; STREAMING/CANCELLATION PENDING**
 
 Goal: execute one hand-authored semantic program across Neo4j and Fuseki and
 join the normalized results at the coordinator.
@@ -108,9 +108,19 @@ B2B job `3787101` then ran commit `2ce4b53` on `compt398` and admitted exactly
 the two locked archives to the shared cache: Neo4j 5.26.30 passed its frozen
 162,360,826-byte SHA-256 and Fuseki 5.6.0 passed its frozen 50,290,245-byte
 SHA-512. Each artifact used one download attempt, `automatic_retries` was zero,
-and the job neither extracted an archive nor started a service. The next
-external gate is one allocation-scoped B2D service run after a clean
-fast-forward to a commit containing the read-only evidence auditor.
+and the job neither extracted an archive nor started a service. This admitted
+the allocation-scoped B2D service run at a clean commit containing the
+read-only evidence auditor.
+
+B2D job `3787110` ran exact clean commit `cd564de8` on `compt331`. It staged
+the locked products on allocation-local XFS, loaded the split fixture, and
+executed the live coordinator path through the Neo4j and Fuseki HTTP plugins.
+The exact one-row answer used two remote calls. Both loopback-only services
+shut down without `SIGKILL`, the job-owned runtime was removed, and the
+separate read-only audit passed all 102 checks with no mutation. This closes
+the real two-engine vertical-slice gate, but it is engineering acceptance—not
+a paper performance result—and does not close streaming/batching or live
+cancellation.
 
 Acceptance gate:
 

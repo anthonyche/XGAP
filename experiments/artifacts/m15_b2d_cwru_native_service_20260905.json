@@ -1,0 +1,72 @@
+{
+  "artifact_id": "m15-b2d-cwru-native-service-3787110",
+  "artifact_role": "cwru_engineering_acceptance_not_paper_performance_result",
+  "observed_at_utc": "2026-09-05",
+  "slurm": {
+    "elapsed": "00:01:02",
+    "exit_code": "0:0",
+    "job_id": "3787110",
+    "node": "compt331",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "cd564de8bac6a2af066567ec265f214877d919c3"
+  },
+  "runtime": {
+    "automatic_retries": 0,
+    "filesystem_type": "xfs",
+    "java_major": 17,
+    "java_module": "Java/17.0.6",
+    "public_ports": false,
+    "runtime_base": "/tmp",
+    "runtime_removed": true,
+    "service_restarts": 0
+  },
+  "services": {
+    "fuseki": {
+      "health_http_status": 200,
+      "shutdown_escalated_to_kill": false,
+      "shutdown_success": true,
+      "version": "5.6.0"
+    },
+    "neo4j": {
+      "health_http_status": 200,
+      "shutdown_escalated_to_kill": false,
+      "shutdown_success": true,
+      "version": "5.26.30"
+    }
+  },
+  "federated_validation": {
+    "automatic_retries": 0,
+    "exact_answer": [
+      {
+        "amount": 120000,
+        "company": "Redstone Analytics",
+        "currency": "USD",
+        "occurred_on": "2026-08-20",
+        "person": "Alice Smith",
+        "risk": "HIGH"
+      }
+    ],
+    "no_llm": true,
+    "no_ontology": true,
+    "remote_calls": 2,
+    "transferred_bytes_positive": true
+  },
+  "read_only_audit": {
+    "audit_exit": 0,
+    "check_count": 102,
+    "failed_check_ids": [],
+    "remote_output": "runs/cwru-m15-native-evidence-3787110/audit.json",
+    "run_tree_mutated": false,
+    "schema_version": "m15-b2d-native-evidence-audit-v1",
+    "success": true
+  },
+  "limitations": [
+    "single deterministic synthetic vertically partitioned fixture",
+    "not a latency or throughput benchmark",
+    "streaming and batched result transport not yet implemented",
+    "live remote cancellation not yet validated"
+  ]
+}

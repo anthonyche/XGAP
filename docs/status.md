@@ -18,8 +18,8 @@ The current M15-C1 gate passed 113 focused tests with two real-service tests
 skipped. Full-suite acceptance passed with 586 tests and 36 explicitly gated
 or external-artifact tests skipped.
 
-M15-B is now **CWRU CPU- and native-supply-verified with a real-plugin contract;
-live backend gate pending**. The local
+M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
+batching, and live cancellation remain pending**. The local
 runtime compiles independent fragments through the existing M9 compilers,
 runs independent remote nodes in parallel, performs explicit ID alignment and
 exchange, joins or merges rows at the coordinator, propagates failures, skips
@@ -74,8 +74,7 @@ Its immutable manifest reports exactly two downloads and zero automatic
 retries. Neo4j Community 5.26.30 matched 162,360,826 bytes and its frozen
 SHA-256; Fuseki 5.6.0 matched 50,290,245 bytes and its frozen SHA-512. The job
 did not extract either archive, start a service, or persist credentials. The
-shared supply cache is therefore accepted; one allocation-scoped live-service
-run remains before the M15-B real-backend claim can close.
+shared supply cache was therefore accepted for the live service run.
 
 M15-C1 now has a locally executable initial plan space. A versioned observation
 catalog restricts schema, explain, profile, and sample actions to registered
@@ -88,10 +87,16 @@ latency is controlled to be high. The demonstration moves 530 versus 363
 fixture bytes and is labeled `controlled_model_sanity_check` with
 `paper_result=false`; it is not live calibration or a paper result.
 
-The remaining M15-B gate is execution of the same contract against real Neo4j
-and Fuseki with a deliberately partitioned dataset, streaming/batched result
-handling, and live cancellation. No ontology or LLM feature enters before this
-gate.
+M15-B2D/B3 job `3787110` ran exact clean commit `cd564de8` on `compt331` in
+62 seconds. Neo4j 5.26.30 and Fuseki 5.6.0 ran on allocation-local XFS and
+loopback-only ports with Java 17. The fixture load passed, the coordinator
+returned the exact expected row with two remote calls, both services shut down
+without kill escalation, and the validated runtime directory was removed. The
+separate read-only audit returned exit 0 with 102/102 checks passing, no failed
+check IDs, and `run_tree_mutated=false`. The compact evidence record is
+`experiments/artifacts/m15_b2d_cwru_native_service_20260905.json`. This is a
+system acceptance result, not a latency/throughput paper result. Streaming or
+batched result handling and live cancellation remain M15-B follow-up work.
 
 M15-B0/B1 provide a read-only CWRU environment probe and a 15-minute CPU
 Slurm smoke job. B0 verified an exact checkout, Slurm, `gpu2h100`, an
@@ -114,9 +119,9 @@ OpenJDK 8 and `/home` was NFS-backed. The Java module inventory advertises
 `native_service_prerequisites_ready=true` is therefore invalid and is not used
 as a gate; probe v2 parses the Java major, attempts the pinned module, and
 requires version compatibility. The archive gate is now verified by job
-`3787101`. The local B2C/B2D implementation is ready to stage and run those
-cached archives, but real service startup is still pending. Extracted service
-state and database files remain allocation-local. See
+`3787101`. The B2C/B2D implementation staged and ran those cached archives
+successfully in job `3787110`. Extracted service state and database files
+remained allocation-local and were removed after the audited run. See
 `docs/m15_remote_execution_loop.md`.
 
 The `remote.executor` tool and environment-configured CLI are implemented and
