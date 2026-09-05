@@ -72,7 +72,7 @@ acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
 and the F2C0--F2C5 stream, family, typed-query, workload, exact-execution, and
-family-memory contracts, current full local acceptance passes 775 tests with
+family-memory contracts, current full local acceptance passes 779 tests with
 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -171,7 +171,7 @@ It has not called or been validated against live backends, covers only the
 zero-relaxation interpretation, represents one development family, and stays
 `paper_result=false`.
 
-M15-F2C4 is locally implemented and awaiting one CWRU engineering gate. Every
+M15-F2C4 is verified on CWRU. Every
 one of the six parameterized instances compiles into the same two exact
 federated strategies and has passed local end-to-end scheduler execution
 against deterministic backend doubles. The new explicit task stream contains
@@ -183,7 +183,10 @@ read-only auditor binds the generated bundle, service lifecycle, fixture
 verification, 24-call task trace, candidate plans, and twelve exact answers.
 Memory, plan selection, relaxation/Pareto logic, LLM, and ontology are disabled
 in this gate, so it remains `paper_result=false` and makes no performance or
-transfer claim.
+transfer claim. Job `3787592` completed at exact clean commit `66327a47` on
+`compt298` in 69 seconds. Its independent read-only audit passed 172/172
+checks with no failed IDs and no run-tree mutation. The compact evidence record
+is `experiments/artifacts/m15_f2c4_cwru_native_parameterized_stream_20260905.json`.
 
 M15-F2C5 is locally implemented above the unchanged F2C4 execution bridge.
 Its family memory is not the old exact-context cache: compatibility is bound
@@ -196,9 +199,13 @@ oracle-free development KNN, and never write. Optional alternate-plan runs are
 post-selection evaluation shadows with separate call accounting. Thirteen new
 tests cover deterministic feature identity, cross-context rejection, frozen
 predecessor visibility, persistent memory, choice changes, cold start, online
-execution, and zero-retry failure evidence. Native-service wiring, independent
-audit, multiple families, a paper-frozen model, and comparative claims remain
-open.
+execution, and zero-retry failure evidence. The native mode now binds memory
+to the exact Slurm allocation, filesystem, Java, runtime lock, staging
+manifest, and backend versions. Its dedicated wrapper and read-only auditor
+verify seed result-to-memory costs, one frozen view, oracle-free selections,
+selected-before-shadow call roles, exact answers, clean shutdown, and zero
+retry. One clean-commit CWRU F2C5 gate is next; multiple families, a
+paper-frozen model, and comparative claims remain open.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1726,7 +1733,13 @@ Latest recorded command results:
   independent read-only audit passed 374/374 checks and reported
   `run_tree_mutated=false`. This is a single-session mechanism gate, not a
   comparative result.
-- `./scripts/run_acceptance.sh`: 775 passed and 36 explicitly gated or
+- CWRU F2C4 job `3787592`: the six-instance exact parameterized stream
+  completed at exact clean commit `66327a47` in 69 seconds on `compt298`.
+  All twelve strategy executions were exact, their task trace contained 24
+  backend calls with zero retry, and the independent read-only audit passed
+  172/172 checks with `run_tree_mutated=false`. This closes an executable
+  parameter-variation gate, not a memory-transfer or performance result.
+- `./scripts/run_acceptance.sh`: 779 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
@@ -1737,9 +1750,11 @@ Latest recorded command results:
   data, literal-free backend templates, and exact per-instance oracles. F2C4
   adds the oracle-independent alignment catalog, two exact executable plans
   per instance, a six-query native task stream, and its read-only audit. The
-  F2C5 local slice adds a separately keyed family-memory model, exact-only seed
+  F2C5 slice adds a separately keyed family-memory model, exact-only seed
   commits, one reopened frozen evaluation view, oracle-free held-out plan
-  selection, and separated online versus evaluation-shadow calls. The
+  selection, separated online versus evaluation-shadow calls, an
+  allocation-scoped native runtime identity, dedicated service mode, and an
+  independent memory/evidence auditor. The
   F2B3 direct runner verifies the selected
   contract from the
   live bundle before passing a v2 identity into the six-method matrix. F2B4

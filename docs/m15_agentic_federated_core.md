@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C5 LOCAL; F2C4 CWRU JOB 3787592 SUBMITTED**
+Status: **F0/F1/F2A/F2B4/F2C4 LIVE GATES VERIFIED; F2C5 NATIVE GATE READY**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -439,9 +439,11 @@ company-ID domain, not from answer oracles. A fixed task stream orders four
 seed and two held-out instances and executes both strategies, while a distinct
 fixture phase verifies the twelve source fragments. The additive native mode,
 Slurm entry point, zero-retry trace, and independent read-only auditor are
-locally complete. One CWRU engineering run is pending; memory, plan selection,
-semantic relaxation, and paper comparisons are intentionally outside this
-gate.
+complete. CWRU job `3787592` closed this gate at exact clean commit `66327a47`:
+all twelve exact-strategy runs completed in 24 backend calls and its read-only
+audit passed 172/172 checks without modifying the evidence tree. Memory, plan
+selection, semantic relaxation, and paper comparisons are intentionally
+outside this gate.
 
 F2C5 now separates actual family-level transfer from the old exact-context
 snapshot cache. A method/family/workload/runtime compatibility key guards an
@@ -451,9 +453,13 @@ exact strategies succeed and pass post-execution answer validation. The store
 is then reopened and frozen once; both held-out instances select from that
 same predecessor-only view and cannot write. The development KNN policy is
 oracle-free and replaceable. Its optional alternate-plan run is explicitly a
-post-selection evaluation shadow. This slice is locally executable and tested,
-but it is not yet wired to native-service lifecycle/audit and makes no transfer
-or performance claim.
+post-selection evaluation shadow. The native mode binds that context to one
+Slurm allocation and its filesystem, Java, runtime-lock, staging, and
+backend-version identity. A dedicated wrapper and independent auditor now
+verify seed costs against append-only memory, one frozen predecessor view,
+oracle-free held-out selections, selected-before-shadow execution roles,
+exact answers, and clean zero-retry lifecycle. The local gate is ready for one
+CWRU run, but it still makes no transfer or performance claim.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

@@ -37,6 +37,8 @@ DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_native_method_matrix.sbatch",
     "scripts/slurm/run_m15_native_campaign_session.sbatch",
     "scripts/slurm/run_m15_native_query_bound_session.sbatch",
+    "scripts/slurm/run_m15_native_parameterized_stream.sbatch",
+    "scripts/slurm/run_m15_native_family_transfer.sbatch",
 )
 
 

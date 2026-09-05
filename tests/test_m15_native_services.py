@@ -6,6 +6,7 @@ import json
 import signal
 import subprocess
 import urllib.error
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -26,6 +27,7 @@ from xgap.experiments.m15_native_services import (
     RunningService,
     ServiceSpec,
     ShutdownObservation,
+    build_m15_family_runtime_compatibility,
     build_native_service_plan,
     inspect_java_runtime,
     main,
@@ -166,6 +168,41 @@ def test_service_plan_uses_loopback_dynamic_ports_and_local_state(
     assert serialized["public_ports"] is False
     assert serialized["automatic_retries"] == 0
     assert serialized["credentials_persisted"] is False
+
+
+def test_family_runtime_compatibility_is_stable_and_allocation_scoped(
+    tmp_path: Path,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    plan = build_native_service_plan(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        evidence_root=tmp_path / "evidence",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java=JavaEvidence("/opt/java17/bin/java", 17, "openjdk 17.0.6"),
+        neo4j_http_port=17474,
+        neo4j_bolt_port=17687,
+        fuseki_port=13030,
+        lock_path=REPO_ROOT / "services" / "m15-native-runtime.lock.json",
+    )
+
+    first = build_m15_family_runtime_compatibility(plan)
+    assert first == build_m15_family_runtime_compatibility(plan)
+    assert first["allocation_id"] == "12345"
+    assert first["java_major"] == 17
+    assert [item["service_id"] for item in first["services"]] == [
+        "fuseki",
+        "neo4j",
+    ]
+    assert first["reuse_scope"] == "same_native_service_allocation_only"
+
+    second = build_m15_family_runtime_compatibility(
+        replace(plan, allocation_id="12346")
+    )
+    assert second["runtime_compatibility_sha256"] != first[
+        "runtime_compatibility_sha256"
+    ]
 
 
 def test_service_plan_rejects_untrusted_staging_or_allocation(
@@ -488,9 +525,24 @@ def test_full_lifecycle_selects_adaptive_workload_explicitly(
     assert manifest["workload_mode"] == "adaptive"
 
 
-def test_full_lifecycle_selects_parameterized_stream_explicitly(
+@pytest.mark.parametrize(
+    ("workload_mode", "schema_version"),
+    (
+        (
+            "parameterized_stream",
+            native_services.PARAMETERIZED_STREAM_SERVICE_RUN_SCHEMA_VERSION,
+        ),
+        (
+            "parameterized_family_transfer",
+            native_services.FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION,
+        ),
+    ),
+)
+def test_full_lifecycle_selects_parameterized_mode_explicitly(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    workload_mode: str,
+    schema_version: str,
 ) -> None:
     runtime, staging = _staged_runtime(tmp_path)
     with pytest.raises(ValueError, match="requires a verified parameterized bundle"):
@@ -503,7 +555,7 @@ def test_full_lifecycle_selects_parameterized_stream_explicitly(
             allocation_id="12345",
             java_command="/opt/java17/bin/java",
             repo_root=REPO_ROOT,
-            workload_mode="parameterized_stream",
+            workload_mode=workload_mode,
         )
 
     bundle = generate_m15_parameterized_workload_bundle(
@@ -573,19 +625,17 @@ def test_full_lifecycle_selects_parameterized_stream_explicitly(
         allocation_id="12345",
         java_command="/opt/java17/bin/java",
         repo_root=REPO_ROOT,
-        workload_mode="parameterized_stream",
+        workload_mode=workload_mode,
         parameterized_workload_bundle=bundle,
     )
 
     assert record.success
     assert executed == [
-        ("parameterized_stream", "financial-risk-multi-instance-dev-v1")
+        (workload_mode, "financial-risk-multi-instance-dev-v1")
     ]
     manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
-    assert manifest["schema_version"] == (
-        native_services.PARAMETERIZED_STREAM_SERVICE_RUN_SCHEMA_VERSION
-    )
-    assert manifest["workload_mode"] == "parameterized_stream"
+    assert manifest["schema_version"] == schema_version
+    assert manifest["workload_mode"] == workload_mode
     assert manifest["workload_bundle"] is None
     assert manifest["parameterized_workload_bundle"][
         "bundle_content_sha256"
@@ -934,6 +984,7 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "scaled_campaign_session" in script
     assert "scaled_query_bound_session" in script
     assert "parameterized_stream" in script
+    assert "parameterized_family_transfer" in script
     assert "m15_parameterized_workload" in script
     assert "--parameterized-workload-bundle" in script
     assert "--campaign-session-id" in script
@@ -965,4 +1016,13 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "XGAP_M15_WORKLOAD_MODE=parameterized_stream" in parameterized_script
     assert "SLURM_SUBMIT_DIR" in parameterized_script
     assert "BASH_SOURCE" not in parameterized_script
+    family_transfer_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_family_transfer.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=parameterized_family_transfer" in (
+        family_transfer_script
+    )
+    assert "SLURM_SUBMIT_DIR" in family_transfer_script
+    assert "BASH_SOURCE" not in family_transfer_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

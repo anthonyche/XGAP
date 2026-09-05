@@ -100,6 +100,10 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-parameterized-stream"
     RUN_VERSION="m15-f2c4-native-live-parameterized-stream-services-v1"
     ;;
+  parameterized_family_transfer)
+    RUN_PREFIX="cwru-m15-native-family-transfer"
+    RUN_VERSION="m15-f2c5-native-live-family-transfer-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -275,7 +279,7 @@ if [[ "$WORKLOAD_MODE" == scaled_adaptive || "$WORKLOAD_MODE" == scaled_method_m
     | tee "$RUN_ROOT/workload_generation.json"
   WORKLOAD_ARGS=(--workload-bundle "$WORKLOAD_BUNDLE")
 fi
-if [[ "$WORKLOAD_MODE" == parameterized_stream ]]; then
+if [[ "$WORKLOAD_MODE" == parameterized_stream || "$WORKLOAD_MODE" == parameterized_family_transfer ]]; then
   WORKLOAD_BUNDLE="$RUN_ROOT/parameterized-workload-bundle"
   PYTHONPATH="$REPO_ROOT/src" \
   "$PYTHON_BIN" -m xgap.experiments.m15_parameterized_workload \

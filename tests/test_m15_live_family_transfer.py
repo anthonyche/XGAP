@@ -8,9 +8,21 @@ from pathlib import Path
 import pytest
 import xgap.experiments.m15_live_family_transfer as family_transfer
 
+from xgap.experiments.hashing import content_hash
+from xgap.experiments.m15_family_transfer_native_evidence import (
+    audit_m15_family_transfer_native_run,
+)
+from xgap.experiments.m15_fixture_loader import BackendLoadReport
 from xgap.experiments.m15_live_family_transfer import (
     build_m15_family_transfer_task_stream,
     run_m15_live_family_transfer,
+)
+from xgap.experiments.m15_native_services import (
+    FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION,
+    FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION,
+)
+from xgap.experiments.m15_parameterized_fixture import (
+    load_m15_parameterized_fixture,
 )
 from xgap.experiments.m15_parameterized_federation import (
     load_m15_parameterized_instance,
@@ -105,6 +117,22 @@ def _clients(bundle):
         backend_id: TransferClient(backend_id, rows[backend_id])
         for backend_id in ("neo4j", "fuseki")
     }
+
+
+@dataclass
+class RecordingLoader:
+    backend_id: str
+    loaded: list[Path]
+
+    def load(self, path: Path) -> BackendLoadReport:
+        self.loaded.append(path)
+        return BackendLoadReport(
+            backend_id=self.backend_id,
+            success=True,
+            operations_attempted=1,
+            bytes_sent=path.stat().st_size,
+            elapsed_ms=1.0,
+        )
 
 
 def test_transfer_task_stream_freezes_seed_visibility(tmp_path: Path) -> None:
@@ -286,3 +314,216 @@ def test_live_transfer_failure_is_not_retried_or_written_as_evaluation_memory(
     assert manifest["summary"]["memory_commit_count"] == 4
     assert manifest["summary"]["heldout_online_plan_runs"] == 1
     assert manifest["summary"]["evaluation_shadow_plan_runs"] == 0
+
+
+def _write_json(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _auditable_native_transfer(tmp_path: Path) -> tuple[Path, str]:
+    expected_commit = "b" * 40
+    run_root = tmp_path / "native-family-transfer"
+    service_root = run_root / "native-service-run"
+    bundle = generate_m15_parameterized_workload_bundle(
+        workload_spec=WORKLOAD_SPEC,
+        query_template_spec=QUERY_TEMPLATE,
+        backend_template_root=BACKEND_TEMPLATES,
+        destination=run_root / "parameterized-workload-bundle",
+    )
+    clients = _clients(bundle)
+    fixture = load_m15_parameterized_fixture(
+        workload_bundle=bundle,
+        clients=clients,
+        loaders={
+            backend_id: RecordingLoader(backend_id, [])
+            for backend_id in ("neo4j", "fuseki")
+        },
+        output_root=service_root,
+    )
+    service_plan = {
+        "schema_version": "m15-b2d-native-service-plan-v1",
+        "allocation_id": "12345",
+        "runtime_root": "/tmp/xgap-m15-12345.test",
+        "filesystem_type": "xfs",
+        "java": {
+            "command": "/opt/java17/bin/java",
+            "major": 17,
+            "version_text": "openjdk 17.0.6",
+        },
+        "runtime_lock_sha256": "4" * 64,
+        "staging_manifest_sha256": "5" * 64,
+        "neo4j_http_url": "http://127.0.0.1:17474",
+        "fuseki_url": "http://127.0.0.1:13030",
+        "fuseki_dataset": "xgap",
+        "services": [
+            {
+                "service_id": "neo4j",
+                "product": "neo4j",
+                "version": "5.26.30",
+            },
+            {
+                "service_id": "fuseki",
+                "product": "fuseki",
+                "version": "5.6.0",
+            },
+        ],
+        "public_ports": False,
+        "automatic_retries": 0,
+        "credentials_persisted": False,
+    }
+    runtime_identity = {
+        "schema_version": FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION,
+        "allocation_id": "12345",
+        "filesystem_type": "xfs",
+        "java_major": 17,
+        "runtime_lock_sha256": "4" * 64,
+        "staging_manifest_sha256": "5" * 64,
+        "services": [
+            {
+                "service_id": "fuseki",
+                "product": "fuseki",
+                "version": "5.6.0",
+            },
+            {
+                "service_id": "neo4j",
+                "product": "neo4j",
+                "version": "5.26.30",
+            },
+        ],
+        "reuse_scope": "same_native_service_allocation_only",
+    }
+    runtime_compatibility = {
+        **runtime_identity,
+        "runtime_compatibility_sha256": content_hash(runtime_identity),
+    }
+    _write_json(
+        service_root / "family_runtime_compatibility.json",
+        runtime_compatibility,
+    )
+    transfer = run_m15_live_family_transfer(
+        workload_bundle=bundle,
+        clients=clients,
+        runtime_compatibility_sha256=runtime_compatibility[
+            "runtime_compatibility_sha256"
+        ],
+        output_root=service_root,
+    )
+    for path in (fixture.manifest_path, transfer.manifest_path):
+        value = json.loads(path.read_text(encoding="utf-8"))
+        value["git"] = {"commit": expected_commit, "clean": True}
+        _write_json(path, value)
+
+    health = [
+        {"service_id": backend_id, "success": True}
+        for backend_id in ("neo4j", "fuseki")
+    ]
+    shutdown = [
+        {"service_id": backend_id, "success": True}
+        for backend_id in ("fuseki", "neo4j")
+    ]
+    _write_json(service_root / "service_health.json", health)
+    _write_json(service_root / "service_shutdown.json", shutdown)
+    _write_json(
+        service_root / "run_status.json",
+        {
+            "schema_version": FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION,
+            "status": "success",
+            "error": None,
+        },
+    )
+    _write_json(
+        service_root / "run_manifest.json",
+        {
+            "schema_version": FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION,
+            "status": "success",
+            "error": None,
+            "workload_mode": "parameterized_family_transfer",
+            "workload_bundle": None,
+            "parameterized_workload_bundle": dict(bundle.manifest),
+            "service_plan": service_plan,
+            "health": health,
+            "shutdown": shutdown,
+            "automatic_retries": 0,
+            "service_restarts": 0,
+            "public_ports": False,
+            "credentials_persisted": False,
+        },
+    )
+    _write_json(
+        run_root / "run_status.json",
+        {
+            "status": "success",
+            "exit_code": 0,
+            "slurm_job_id": "12345",
+            "git_commit": expected_commit,
+            "workload_mode": "parameterized_family_transfer",
+            "runtime_removed": True,
+            "cleanup_error": None,
+        },
+    )
+    (run_root / "environment.txt").write_text(
+        "\n".join(
+            (
+                "run_version=m15-f2c5-native-live-family-transfer-services-v1",
+                "slurm_job_id=12345",
+                f"git_commit={expected_commit}",
+                "runtime_filesystem_type=xfs",
+                "workload_mode=parameterized_family_transfer",
+                "loopback_only=true",
+                "automatic_retries=0",
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    _write_json(
+        run_root / "workload_generation.json",
+        {"status": "success", "root": str(bundle.root), **bundle.manifest},
+    )
+    return run_root, expected_commit
+
+
+def test_read_only_native_audit_binds_family_transfer_memory(
+    tmp_path: Path,
+) -> None:
+    run_root, expected_commit = _auditable_native_transfer(tmp_path)
+
+    audit = audit_m15_family_transfer_native_run(
+        run_root=run_root,
+        expected_commit=expected_commit,
+    )
+
+    assert audit.success
+    assert len(audit.checks) >= 150
+    assert audit.failed_check_ids == ()
+    assert audit.to_dict()["run_tree_mutated"] is False
+    json.dumps(audit.to_dict(), sort_keys=True)
+
+
+def test_read_only_native_audit_rejects_changed_memory_observation(
+    tmp_path: Path,
+) -> None:
+    run_root, expected_commit = _auditable_native_transfer(tmp_path)
+    memory_path = (
+        run_root
+        / "native-service-run"
+        / "family-transfer-run"
+        / "family_memory.jsonl"
+    )
+    lines = memory_path.read_text(encoding="utf-8").splitlines()
+    first = json.loads(lines[0])
+    first["value"]["outcomes"][0]["elapsed_ms"] += 1000.0
+    lines[0] = json.dumps(first, sort_keys=True, separators=(",", ":"))
+    memory_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    audit = audit_m15_family_transfer_native_run(
+        run_root=run_root,
+        expected_commit=expected_commit,
+    )
+
+    assert not audit.success
+    assert "memory.record.1.hash" in audit.failed_check_ids

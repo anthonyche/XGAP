@@ -83,6 +83,8 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_method_matrix.sbatch",
         "scripts/slurm/run_m15_native_campaign_session.sbatch",
         "scripts/slurm/run_m15_native_query_bound_session.sbatch",
+        "scripts/slurm/run_m15_native_parameterized_stream.sbatch",
+        "scripts/slurm/run_m15_native_family_transfer.sbatch",
     )
     probe = (
         Path(__file__).resolve().parents[1]
@@ -167,6 +169,26 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     assert "scripts/slurm/run_m15_native_query_bound_session.sbatch" in (
         DEFAULT_ALLOWED_SBATCH_SCRIPTS
     )
+    parameterized_run = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "run_m15_native_parameterized_stream.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=parameterized_stream" in parameterized_run
+    assert "SLURM_SUBMIT_DIR" in parameterized_run
+    assert "BASH_SOURCE" not in parameterized_run
+    family_transfer_run = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "run_m15_native_family_transfer.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=parameterized_family_transfer" in (
+        family_transfer_run
+    )
+    assert "SLURM_SUBMIT_DIR" in family_transfer_run
+    assert "BASH_SOURCE" not in family_transfer_run
 
 
 def test_config_enables_cancel_only_with_exact_opt_in(tmp_path: Path) -> None:

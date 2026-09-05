@@ -1696,3 +1696,29 @@ slice proves the temporal and compatibility protocol, not transfer benefit:
 it has one family, four seeds, two held-out instances, an order-confounded
 shadow diagnostic, no preregistered analysis, and remains
 `paper_result=false`.
+
+## D108 Native family transfer is allocation-scoped and independently audited
+
+F2C5 memory compatibility includes the structural family, workload bundle,
+method namespace, and an allocation-scoped native runtime identity. That
+runtime identity is derived from the Slurm allocation, local filesystem type,
+Java major, frozen runtime-lock and staging-manifest hashes, and sorted
+Neo4j/Fuseki product versions. Paths and loopback ports are excluded because
+they are ephemeral, while the allocation ID deliberately prevents measurements
+from one service lifecycle being treated as reusable observations in another.
+
+The dedicated native mode loads and verifies the shared six-instance bundle,
+measures both exact plans for each of four seed tasks, commits four append-only
+records, reopens and freezes the store once, and lets both held-out instances
+select from only that view. Selected plans execute before alternate-plan
+evaluation shadows. The independent read-only auditor recomputes the runtime
+and family context, binds each stored cost back to its seed result, validates
+the memory and selection content hashes, rejects answer rows in memory, checks
+that neither held-out task wrote, and separates the 16 calibration, four online,
+and four shadow backend calls.
+
+This is a mechanism acceptance design. The development Gower-KNN remains a
+replaceable reference policy, the shadow order is confounded, and the workload
+contains only one family with four seed and two held-out instances. A passing
+CWRU run will therefore close native transfer plumbing only; it will not prove
+transfer benefit, latency superiority, or paper readiness.

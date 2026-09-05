@@ -27,6 +27,7 @@ from xgap.experiments.m15_fixture_loader import (
     Neo4jCypherFixtureLoader,
     load_m15_split_fixture,
 )
+from xgap.experiments.hashing import content_hash
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_campaign_session import (
     prepare_m15_live_campaign_session,
@@ -36,6 +37,9 @@ from xgap.experiments.m15_live_federated import run_m15_live_federated
 from xgap.experiments.m15_live_method_matrix import run_m15_live_method_matrix
 from xgap.experiments.m15_live_parameterized_stream import (
     run_m15_live_parameterized_stream,
+)
+from xgap.experiments.m15_live_family_transfer import (
+    run_m15_live_family_transfer,
 )
 from xgap.experiments.m15_live_query_bound_session import (
     prepare_m15_live_query_bound_session,
@@ -78,6 +82,12 @@ QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION = (
 PARAMETERIZED_STREAM_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-f2c4-native-live-parameterized-stream-service-run-v1"
 )
+FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2c5-native-live-family-transfer-service-run-v1"
+)
+FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
+    "m15-f2c5-native-runtime-compatibility-v1"
+)
 SERVICE_PLAN_SCHEMA_VERSION = "m15-b2d-native-service-plan-v1"
 WORKLOAD_MODES = frozenset(
     {
@@ -88,6 +98,7 @@ WORKLOAD_MODES = frozenset(
         "scaled_campaign_session",
         "scaled_query_bound_session",
         "parameterized_stream",
+        "parameterized_family_transfer",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -195,6 +206,31 @@ class NativeServicePlan:
             "automatic_retries": 0,
             "credentials_persisted": False,
         }
+
+
+def build_m15_family_runtime_compatibility(
+    plan: NativeServicePlan,
+) -> dict[str, Any]:
+    """Bind family memory to one allocation and its native runtime identity."""
+
+    identity = {
+        "schema_version": FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION,
+        "allocation_id": plan.allocation_id,
+        "filesystem_type": plan.filesystem_type,
+        "java_major": plan.java.major,
+        "runtime_lock_sha256": plan.runtime_lock_sha256,
+        "staging_manifest_sha256": plan.staging_manifest_sha256,
+        "services": [
+            {
+                "service_id": service.service_id,
+                "product": service.product,
+                "version": service.version,
+            }
+            for service in sorted(plan.services, key=lambda item: item.service_id)
+        ],
+        "reuse_scope": "same_native_service_allocation_only",
+    }
+    return {**identity, "runtime_compatibility_sha256": content_hash(identity)}
 
 
 @dataclass(frozen=True)
@@ -779,7 +815,10 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
-        if workload_mode == "parameterized_stream":
+        if workload_mode in {
+            "parameterized_stream",
+            "parameterized_family_transfer",
+        }:
             assert parameterized_workload_bundle is not None
             fixture = load_m15_parameterized_fixture(
                 workload_bundle=parameterized_workload_bundle,
@@ -793,17 +832,38 @@ def _run_fixture_and_query(
                 raise RuntimeError(
                     f"parameterized fixture load failed: {fixture.error}"
                 )
-            stream = run_m15_live_parameterized_stream(
-                workload_bundle=parameterized_workload_bundle,
-                clients=clients,
-                output_root=run_root,
-                run_id="parameterized-stream-run",
-                repo_root=repo_root,
-            )
-            if not stream.success:
-                raise RuntimeError(
-                    f"live parameterized stream failed: {stream.error}"
+            if workload_mode == "parameterized_stream":
+                stream = run_m15_live_parameterized_stream(
+                    workload_bundle=parameterized_workload_bundle,
+                    clients=clients,
+                    output_root=run_root,
+                    run_id="parameterized-stream-run",
+                    repo_root=repo_root,
                 )
+                if not stream.success:
+                    raise RuntimeError(
+                        f"live parameterized stream failed: {stream.error}"
+                    )
+            else:
+                runtime_compatibility = build_m15_family_runtime_compatibility(plan)
+                _write_json(
+                    run_root / "family_runtime_compatibility.json",
+                    runtime_compatibility,
+                )
+                transfer = run_m15_live_family_transfer(
+                    workload_bundle=parameterized_workload_bundle,
+                    clients=clients,
+                    runtime_compatibility_sha256=runtime_compatibility[
+                        "runtime_compatibility_sha256"
+                    ],
+                    output_root=run_root,
+                    run_id="family-transfer-run",
+                    repo_root=repo_root,
+                )
+                if not transfer.success:
+                    raise RuntimeError(
+                        f"live family transfer failed: {transfer.error}"
+                    )
             return
         fixture = load_m15_split_fixture(
             output_root=run_root,
@@ -960,16 +1020,20 @@ def run_m15_native_services(
         raise ValueError(f"{workload_mode} workload mode requires a verified bundle")
     if not scaled_mode and selected_bundle is not None:
         raise ValueError("a workload bundle is accepted only in a scaled mode")
-    if workload_mode == "parameterized_stream":
+    parameterized_modes = {
+        "parameterized_stream",
+        "parameterized_family_transfer",
+    }
+    if workload_mode in parameterized_modes:
         if selected_parameterized_bundle is None:
             raise ValueError(
-                "parameterized_stream workload mode requires a verified "
+                f"{workload_mode} workload mode requires a verified "
                 "parameterized bundle"
             )
     elif selected_parameterized_bundle is not None:
         raise ValueError(
             "a parameterized workload bundle is accepted only in "
-            "parameterized_stream"
+            "a parameterized workload mode"
         )
     campaign_values = (
         campaign_config,
@@ -1034,6 +1098,9 @@ def run_m15_native_services(
             QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION
         ),
         "parameterized_stream": PARAMETERIZED_STREAM_SERVICE_RUN_SCHEMA_VERSION,
+        "parameterized_family_transfer": (
+            FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id

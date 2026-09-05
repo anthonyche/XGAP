@@ -48,8 +48,8 @@ LIVE_FAMILY_TRANSFER_SCHEMA_VERSION = "m15-f2c5-live-family-transfer-v1"
 FAMILY_TRANSFER_TASK_STREAM_SCHEMA_VERSION = (
     "m15-f2c5-family-transfer-task-stream-v1"
 )
+FAMILY_TRANSFER_METHOD_NAMESPACE = "family_knn_development"
 _SAFE_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
-_METHOD_NAMESPACE = "family_knn_development"
 
 
 @dataclass(frozen=True)
@@ -181,7 +181,7 @@ def build_m15_family_transfer_task_stream(
         "family_compatibility_sha256": bundle.manifest[
             "family_compatibility_sha256"
         ],
-        "method_namespace": _METHOD_NAMESPACE,
+        "method_namespace": FAMILY_TRANSFER_METHOD_NAMESPACE,
         "task_order": "declared_seed_then_heldout_instance",
         "tasks": tasks,
         "heldout_snapshot_policy": "freeze_once_after_all_exact_seed_commits",
@@ -306,7 +306,7 @@ def run_m15_live_family_transfer(
     stream = build_m15_family_transfer_task_stream(bundle)
     context = build_m15_family_memory_context(
         bundle,
-        method_namespace=_METHOD_NAMESPACE,
+        method_namespace=FAMILY_TRANSFER_METHOD_NAMESPACE,
         runtime_compatibility_sha256=runtime_compatibility_sha256,
     )
     _write_json(run_root / "task_stream.json", stream)

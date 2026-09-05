@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C5 LOCAL; F2C4 CWRU JOB 3787592 SUBMITTED**
+Current status: **F0/F1/F2A/F2B4/F2C4 LIVE GATES VERIFIED; F2C5 NATIVE GATE READY**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -312,8 +312,9 @@ held-out instances. Plan construction uses only the typed bundle and the full
 declared ID-domain alignment catalog; answers are consulted only afterward for
 validation. The native gate loads one shared dataset, verifies twelve source
 queries, executes twelve exact plan runs and 24 backend calls, and emits a
-separate read-only audit surface. Local tests are complete; one clean-commit
-CWRU run and its audit are next. Cross-task memory, plan choice, relaxation,
+separate read-only audit surface. CWRU job `3787592` completed this path at
+exact clean commit `66327a47`; its independent audit passed all 172 checks
+without mutating the run tree. Cross-task memory, plan choice, relaxation,
 Pareto enumeration, and comparative measurements remain later milestones.
 
 F2C5 now implements the first executable family-local transfer protocol above
@@ -324,9 +325,13 @@ store is reopened and frozen before either held-out instance, and evaluation
 writes or cross-context reads fail closed. A replaceable development KNN picks
 one exact plan without oracle inputs. The selected plan runs before any
 optional alternate-plan evaluation shadow, and the two call classes are
-reported separately. The local slice proves isolation and temporal ordering;
-native lifecycle/audit, multiple families, a frozen paper model, counterbalanced
-measurement, and preregistered analysis remain open.
+reported separately. The native lifecycle now derives an allocation-scoped
+runtime identity, runs through a dedicated Slurm entry, and has a read-only
+auditor that binds exact seed costs to append-only memory, the frozen view to
+both held-out choices, and online versus shadow calls to distinct trace roles.
+Local acceptance and tamper tests are complete. One CWRU mechanism gate,
+multiple families, a frozen paper model, counterbalanced measurement, and
+preregistered analysis remain open.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
