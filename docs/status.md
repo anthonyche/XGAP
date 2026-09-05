@@ -14,12 +14,12 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-The current M15-B2D gate passed 94 focused tests with two real-service tests
-skipped. Full-suite acceptance passed with 566 tests and 36 explicitly gated
+The current M15-C1 gate passed 113 focused tests with two real-service tests
+skipped. Full-suite acceptance passed with 586 tests and 36 explicitly gated
 or external-artifact tests skipped.
 
-M15-B is now **CWRU CPU-verified with a real-plugin contract; live backend
-gate pending**. The local
+M15-B is now **CWRU CPU- and native-supply-verified with a real-plugin contract;
+live backend gate pending**. The local
 runtime compiles independent fragments through the existing M9 compilers,
 runs independent remote nodes in parallel, performs explicit ID alignment and
 exchange, joins or merges rows at the coordinator, propagates failures, skips
@@ -69,6 +69,25 @@ Java/runtime evidence, service plan and configuration, health, fixture load,
 federated answer, shutdown, or guarded cleanup disagree. It writes reports
 only outside the immutable run tree and does not retry or repair failed runs.
 
+CWRU B2B artifact job `3787101` completed at commit `2ce4b53` on `compt398`.
+Its immutable manifest reports exactly two downloads and zero automatic
+retries. Neo4j Community 5.26.30 matched 162,360,826 bytes and its frozen
+SHA-256; Fuseki 5.6.0 matched 50,290,245 bytes and its frozen SHA-512. The job
+did not extract either archive, start a service, or persist credentials. The
+shared supply cache is therefore accepted; one allocation-scoped live-service
+run remains before the M15-B real-backend claim can close.
+
+M15-C1 now has a locally executable initial plan space. A versioned observation
+catalog restricts schema, explain, profile, and sample actions to registered
+read-only artifacts; Neo4j exposes native `EXPLAIN`/`PROFILE`, while unsupported
+engine observations remain explicit. The runtime adds bounded bind queries and
+coordinator semi joins. Two exact-semantic M15 DAGs—parallel hash and risk-first
+bind—produce the same answer. A frozen-snapshot critical-path and exchange-cost
+selector chooses bind under transfer pressure and parallel when bound-query
+latency is controlled to be high. The demonstration moves 530 versus 363
+fixture bytes and is labeled `controlled_model_sanity_check` with
+`paper_result=false`; it is not live calibration or a paper result.
+
 The remaining M15-B gate is execution of the same contract against real Neo4j
 and Fuseki with a deliberately partitioned dataset, streaming/batched result
 handling, and live cancellation. No ontology or LLM feature enters before this
@@ -94,11 +113,10 @@ OpenJDK 8 and `/home` was NFS-backed. The Java module inventory advertises
 `Java/17.0.6` and no Java 21. The v1 probe's command-presence-only
 `native_service_prerequisites_ready=true` is therefore invalid and is not used
 as a gate; probe v2 parses the Java major, attempts the pinned module, and
-requires version compatibility. The next CWRU job only downloads and verifies
-the two frozen Java-17-compatible service archives. The local B2C/B2D
-implementation is ready to stage and run those archives after that gate, but
-real service startup is still pending. Extracted service state and database
-files remain allocation-local. See
+requires version compatibility. The archive gate is now verified by job
+`3787101`. The local B2C/B2D implementation is ready to stage and run those
+cached archives, but real service startup is still pending. Extracted service
+state and database files remain allocation-local. See
 `docs/m15_remote_execution_loop.md`.
 
 The `remote.executor` tool and environment-configured CLI are implemented and
@@ -1388,7 +1406,7 @@ the local completion run.
 
 Latest recorded command results:
 
-- `./scripts/run_acceptance.sh`: 566 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 586 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
   passed 94 with two live-service skips. Shell syntax validation passed for
   the corrected native prerequisite probe, download-only artifact preparation,

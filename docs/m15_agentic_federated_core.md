@@ -30,7 +30,7 @@ search, LLM policy decisions, live services, or a UI.
 
 ## M15-B — Executable two-engine vertical slice
 
-Status: **CWRU CPU CORE VERIFIED; REAL BACKEND GATE PENDING**
+Status: **CWRU CPU CORE AND NATIVE ARTIFACT SUPPLY VERIFIED; REAL BACKEND GATE PENDING**
 
 Goal: execute one hand-authored semantic program across Neo4j and Fuseki and
 join the normalized results at the coordinator.
@@ -79,8 +79,8 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Local B2B verification passed 69 M15 tests with two real-service tests skipped.
-Full local acceptance passed with 541 tests and 36 explicitly gated or
+Current local M15 verification passed 113 tests with two real-service tests
+skipped. Full local acceptance passed with 586 tests and 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -104,6 +104,14 @@ major. B2B consequently pins Neo4j 5.26.30 LTS plus the final Java-17 Fuseki
 line, 5.6.0, caches only verified archives on shared storage, and reserves
 allocation-local storage for extracted runtime state.
 
+B2B job `3787101` then ran commit `2ce4b53` on `compt398` and admitted exactly
+the two locked archives to the shared cache: Neo4j 5.26.30 passed its frozen
+162,360,826-byte SHA-256 and Fuseki 5.6.0 passed its frozen 50,290,245-byte
+SHA-512. Each artifact used one download attempt, `automatic_retries` was zero,
+and the job neither extracted an archive nor started a service. The next
+external gate is one allocation-scoped B2D service run after a clean
+fast-forward to a commit containing the read-only evidence auditor.
+
 Acceptance gate:
 
 1. neither backend alone can answer the complete question;
@@ -116,11 +124,29 @@ Acceptance gate:
 
 ## M15-C — Nontrivial plan space and observation tools
 
-Status: **PLANNED**
+Status: **INITIAL ACCEPTANCE GATE PASSED LOCALLY; LIVE CALIBRATION PENDING**
 
-Add backend `inspect_schema`, `explain`, `profile`, and `sample` plugins, plus
-alternative fragmentations, pushdown, join orders, hash/bind/semi joins,
-parallel scheduling, and fragment fusion.
+Implemented in the first closed slice:
+
+- a versioned, coordinator-owned observation catalog that exposes only
+  registered read-only schema, query, and bounded-sample artifacts;
+- black-box `inspect_schema`, `explain`, `profile`, and `sample` operations,
+  with explicit `unavailable` outcomes when an engine lacks a capability;
+- Neo4j HTTP `EXPLAIN` and `PROFILE` observations whose native plans remain
+  evidence rather than XGAP physical operators;
+- executable `RemoteBindQuery` and coordinator `SemiJoin` runtime nodes,
+  including binding limits, an empty-binding short circuit, deterministic
+  deduplication, call accounting, and transitive failure skipping;
+- exact-semantic M15 `parallel-hash` and `risk-first-bind` plans;
+- a frozen-snapshot selector using critical-path latency and explicit exchange
+  bytes, with deterministic tie breaking and complete observation provenance.
+
+The controlled M15 sanity check executes both plans to the same exact answer,
+moves 530 versus 363 fixture bytes, selects bind under transfer pressure, and
+flips to parallel when bound-query latency is increased. It is explicitly
+marked `paper_result=false`; live profile-derived calibration is still pending.
+Alternative fragmentation, generalized pushdown/join-order enumeration,
+fragment fusion, and paper-scale observations remain future M15-C work.
 
 Acceptance gate: at least one workload has multiple correct executable plans,
 and the selected plan changes under controlled cardinality or latency changes.

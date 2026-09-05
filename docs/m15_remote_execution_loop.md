@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: B2D AND READ-ONLY EVIDENCE AUDIT LOCALLY VERIFIED; CWRU B1 AND B2 PREREQUISITE PROBE VERIFIED
-- Version Label: m15_remote_loop_v9
+- Verification Status: B2D AND READ-ONLY EVIDENCE AUDIT LOCALLY VERIFIED; CWRU B1, B2 PREREQUISITE, AND B2B ARTIFACT SUPPLY VERIFIED
+- Version Label: m15_remote_loop_v10
 
 ## Current claim boundary
 
@@ -60,6 +60,14 @@ The same job showed that both the checkout and home directory are on
 database state will be extracted and run only on allocation-local storage
 after an explicit filesystem preflight. No service data directory will be
 placed on that network filesystem.
+
+B2B artifact-supply job `3787101` ran commit `2ce4b53` on `compt398` and
+completed in 16 seconds with exit `0:0`. The manifest records two total download
+attempts, one for each product, and zero automatic retries. Neo4j Community
+5.26.30 matched the locked 162,360,826-byte SHA-256; Fuseki 5.6.0 matched the
+locked 50,290,245-byte SHA-512. No archive was extracted, no service was
+started, and no credentials were persisted. The shared cache can be reused by
+the allocation-scoped service job without another network request.
 
 ## Codex-owned development loop
 
@@ -123,7 +131,8 @@ Status: **VERIFIED** by job `3784974` on `compt365`.
   returned exactly one row with two remote calls and 206 transferred bytes.
   The current wrapper includes the B2A loader, B2B artifact-supply, B2C
   allocation-staging, and B2D service-lifecycle suites and therefore expects
-  94 passes and two gated skips, including the read-only evidence-auditor
+  113 passes and two gated skips, including the read-only evidence-auditor,
+  observation, and alternative-plan
   regressions.
 
 ## Typed remote-control entry
@@ -248,16 +257,11 @@ VPN reachability and a working user-owned SSH alias.
 
 ## Next user handoff
 
-B0, B1, and the B2 prerequisite probe are complete. B2B archive supply, B2C
-safe staging, B2D service lifecycle, and the post-run evidence audit are
-implemented locally. The clean CWRU checkout is synchronized to published
-commit `2ce4b534ba97d40abfa5c908f2f208f84610b545`, which is authorized only for
-the download-and-verification gate. Submit exactly one
-`prepare_m15_native_artifacts.sbatch` job with the dedicated core Python. The
-job will make at most two external requests and cache approximately 203 MiB of
-verified archives under `$HOME/xgap-data/m15-native/artifacts`. Return its
-outer `run_status.json`, `environment.txt`, and nested preparation manifest.
-Do not repeat a failed job: its artifact determines whether the next step is
-native extraction or an approved offline-transfer fallback. Before the live
-service job, synchronize to the then-current published branch head so the run
-captures the frozen-lock snapshot required by the evidence audit.
+B0, B1, the B2 prerequisite probe, and B2B archive supply are complete. The
+clean CWRU checkout is synchronized to published commit `cd564de8`, which
+contains the frozen-lock evidence auditor. Submit exactly one
+`run_m15_native_services.sbatch` job with the dedicated core Python,
+`Miniconda3`, and `Java/17.0.6`. Return the job ID first. After completion,
+inspect the outer status and immutable run tree before running the read-only
+cross-artifact auditor. Do not repeat a failed service job: its first-attempt
+artifacts determine the next diagnosis.

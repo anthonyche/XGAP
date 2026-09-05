@@ -17,6 +17,15 @@ from xgap.runtime.fragments import (
     SemanticFragment,
 )
 from xgap.runtime.tool import FEDERATED_EXECUTION_TOOL, FederatedExecutionTool
+from xgap.runtime.planning import (
+    FederatedPlanCandidate,
+    FederatedPlanSelection,
+    FederatedPlanSelector,
+    FederatedPlanningError,
+    PlanCostEstimate,
+    PlanObservationSnapshot,
+    RemoteEstimate,
+)
 
 __all__ = [
     "FEDERATED_EXECUTION_TOOL",
@@ -24,9 +33,16 @@ __all__ = [
     "ExistingM9FragmentCompiler",
     "FederatedExecutionPlan",
     "FederatedExecutionTool",
+    "FederatedPlanCandidate",
+    "FederatedPlanSelection",
+    "FederatedPlanSelector",
+    "FederatedPlanningError",
     "FederatedRunResult",
     "FederatedScheduler",
     "FragmentCompilationError",
+    "PlanCostEstimate",
+    "PlanObservationSnapshot",
+    "RemoteEstimate",
     "RuntimeNode",
     "RuntimeNodeKind",
     "RuntimeNodeResult",

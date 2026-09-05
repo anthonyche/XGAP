@@ -17,9 +17,11 @@ class RuntimePlanError(ValueError):
 
 class RuntimeNodeKind(str, Enum):
     REMOTE_QUERY = "remote_query"
+    REMOTE_BIND_QUERY = "remote_bind_query"
     ALIGN = "align"
     EXCHANGE = "exchange"
     COORDINATOR_JOIN = "coordinator_join"
+    COORDINATOR_SEMI_JOIN = "coordinator_semi_join"
     MERGE = "merge"
     PROJECT = "project"
 
@@ -32,9 +34,11 @@ class RuntimeNodeStatus(str, Enum):
 
 _ARITY: dict[RuntimeNodeKind, tuple[int, int | None]] = {
     RuntimeNodeKind.REMOTE_QUERY: (0, 0),
+    RuntimeNodeKind.REMOTE_BIND_QUERY: (1, 1),
     RuntimeNodeKind.ALIGN: (1, 1),
     RuntimeNodeKind.EXCHANGE: (1, 1),
     RuntimeNodeKind.COORDINATOR_JOIN: (2, 2),
+    RuntimeNodeKind.COORDINATOR_SEMI_JOIN: (2, 2),
     RuntimeNodeKind.MERGE: (1, None),
     RuntimeNodeKind.PROJECT: (1, 1),
 }
@@ -127,7 +131,11 @@ class FederatedExecutionPlan:
                         f"runtime node '{node.node_id}' references unknown input '{input_id}'"
                     )
 
-        remote_calls = sum(node.kind is RuntimeNodeKind.REMOTE_QUERY for node in self.nodes)
+        remote_calls = sum(
+            node.kind
+            in {RuntimeNodeKind.REMOTE_QUERY, RuntimeNodeKind.REMOTE_BIND_QUERY}
+            for node in self.nodes
+        )
         if remote_calls > self.max_remote_calls:
             raise RuntimePlanError(
                 f"plan requires {remote_calls} remote calls but budget is {self.max_remote_calls}"

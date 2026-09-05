@@ -517,3 +517,33 @@ node and edge bindings.
 - arbitrary path bindings
 - general GPC assignments
 - cross-query correlation
+
+
+## M15 Federated Runtime Operators
+
+These coordinator operators consume JSON-row relations. They are execution
+nodes, not additions to the path algebra and not aliases for backend-internal
+physical operators.
+
+`RemoteQuery(backend, artifact)` invokes one complete native artifact through
+the selected black-box backend plugin.
+
+`RemoteBindQuery(input, backend, artifact, bind_field, parameter,
+max_bindings)` extracts non-null JSON-scalar values from `bind_field`, removes
+duplicates deterministically, and injects the bounded list into the named
+artifact parameter. It fails before invocation when the input is malformed or
+exceeds `max_bindings`. An empty binding set succeeds without a remote call.
+
+`Exchange(input)` marks rows as crossing the backend/coordinator boundary and
+charges their encoded byte size exactly once at that node.
+
+`CoordinatorJoin(left, right, left_on, right_on)` is a deterministic equality
+hash join. Conflicting right fields receive the declared right prefix and
+duplicate output rows are removed.
+
+`CoordinatorSemiJoin(left, right, left_on, right_on)` returns each distinct
+left row whose key occurs in the right input; it never adds right-side fields.
+
+`Align`, `Merge`, and coordinator `Project` retain the M15-B semantics. Any
+error causes all transitive descendants to be marked skipped. A plan validates
+its DAG, maximum remote calls, and parallelism before execution.

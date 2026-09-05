@@ -1075,3 +1075,52 @@ An exit code can remain zero while a copied manifest, source artifact, service
 configuration, or answer is inconsistent. Cross-artifact validation makes the
 real Neo4j-plus-Fuseki claim reproducible and tamper-evident without treating
 the auditor itself as part of the measured query path.
+
+## D80 Observation tools select frozen artifacts, not arbitrary query text
+
+Schema inspection, sampling, explain, and profile are exposed through a
+versioned coordinator-owned catalog. An observation action selects a registered
+artifact ID and cannot provide native query text or extra payload fields.
+Neo4j native plans and profiles are stored as black-box evidence; they never
+become XGAP physical operators. An engine without a native explain interface
+returns `unavailable`; profile may use measured execution of the registered
+read-only artifact when that fallback is declared in the result.
+
+Reason:
+
+The agent needs bounded information acquisition, not a second unrestricted
+query channel. Catalog ID, version, artifact digest, observation mode, rows,
+and elapsed time make every estimate attributable while preserving the public
+backend boundary.
+
+## D81 Physical selection occurs only within one exact semantic class
+
+The M15-C selector accepts candidates only when they share one explicit
+semantic-equivalence key. It estimates critical-path latency and exchange bytes
+from one frozen, versioned observation snapshot and uses deterministic tie
+breaking. It does not compare relaxed interpretations, trade semantic
+deviation against execution cost, or use backend-native plan nodes as its
+search states.
+
+Reason:
+
+Choosing a physical representative and choosing among semantic interpretations
+are different decisions. Keeping them separate prevents a cheap semantic
+deviation from being mislabeled as query optimization and leaves future Pareto
+selection auditable.
+
+## D82 Bind and semi joins are explicit bounded coordinator strategies
+
+`RemoteBindQuery` consumes one driving relation, deterministically deduplicates
+one declared binding field, refuses non-scalar/null values and lists above a
+fixed bound, and never overwrites an existing query parameter. Empty bindings
+short-circuit with zero backend calls. `CoordinatorSemiJoin` retains matching
+left rows without importing right-side columns. Failures skip every transitive
+descendant, including chains longer than one edge.
+
+Reason:
+
+These strategies make cross-platform scheduling materially nontrivial without
+claiming access to Neo4j or Fuseki internals. Explicit bounds and accounting
+also prevent a data-dependent bind step from hiding uncontrolled calls or
+transfer work.

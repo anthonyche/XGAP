@@ -1,0 +1,427 @@
+"""Observation-bound selection among equivalent federated execution plans."""
+
+from __future__ import annotations
+
+import json
+import math
+from dataclasses import dataclass
+from typing import Any, Mapping
+
+from xgap.runtime.contracts import (
+    FederatedExecutionPlan,
+    JsonMap,
+    RuntimeNode,
+    RuntimeNodeKind,
+)
+from xgap.tools.contracts import ToolResult, ToolStatus
+
+
+class FederatedPlanningError(ValueError):
+    """Raised when candidates or their observation evidence are incomplete."""
+
+
+def _encoded_size(rows: object) -> int:
+    return len(
+        json.dumps(rows, sort_keys=True, separators=(",", ":"), default=str).encode(
+            "utf-8"
+        )
+    )
+
+
+@dataclass(frozen=True)
+class RemoteEstimate:
+    observation_key: str
+    backend_id: str
+    elapsed_ms: float
+    row_count: int
+    row_width_bytes: float
+    source: str
+    version: str
+
+    def __post_init__(self) -> None:
+        if any(
+            not value.strip()
+            for value in (
+                self.observation_key,
+                self.backend_id,
+                self.source,
+                self.version,
+            )
+        ):
+            raise FederatedPlanningError("remote estimate identities must be nonempty")
+        if not math.isfinite(self.elapsed_ms) or self.elapsed_ms < 0:
+            raise FederatedPlanningError(
+                "remote estimate elapsed_ms must be finite and nonnegative"
+            )
+        if self.row_count < 0:
+            raise FederatedPlanningError("remote estimate row_count must be nonnegative")
+        if not math.isfinite(self.row_width_bytes) or self.row_width_bytes <= 0:
+            raise FederatedPlanningError("remote estimate row width must be finite and positive")
+
+    @property
+    def output_bytes(self) -> float:
+        return self.row_count * self.row_width_bytes
+
+    @classmethod
+    def from_tool_result(
+        cls,
+        observation_key: str,
+        result: ToolResult,
+    ) -> "RemoteEstimate":
+        if result.status is not ToolStatus.SUCCESS or not isinstance(result.value, Mapping):
+            raise FederatedPlanningError(
+                "remote estimate requires a successful backend observation"
+            )
+        value = result.value
+        operation = value.get("operation")
+        if operation not in {"profile", "sample"}:
+            raise FederatedPlanningError(
+                "only profile or sample observations estimate a remote node"
+            )
+        observation = value.get("observation")
+        if not isinstance(observation, Mapping):
+            raise FederatedPlanningError("backend observation report is missing")
+        rows = observation.get("rows")
+        row_count = observation.get("row_count")
+        if (
+            not isinstance(rows, list)
+            or not isinstance(row_count, int)
+            or isinstance(row_count, bool)
+            or row_count != len(rows)
+        ):
+            raise FederatedPlanningError("backend observation rows and row_count disagree")
+        elapsed = observation.get("elapsed_ms")
+        if not isinstance(elapsed, (int, float)) or isinstance(elapsed, bool):
+            raise FederatedPlanningError("backend observation elapsed_ms is unavailable")
+        backend_id = value.get("backend_id")
+        catalog_id = value.get("catalog_id")
+        catalog_version = value.get("catalog_version")
+        artifact_sha256 = value.get("artifact_sha256")
+        if not all(
+            isinstance(item, str) and item
+            for item in (backend_id, catalog_id, catalog_version, artifact_sha256)
+        ):
+            raise FederatedPlanningError("backend observation provenance is incomplete")
+        encoded = _encoded_size(rows)
+        row_width = max(1.0, encoded / max(row_count, 1))
+        return cls(
+            observation_key=observation_key,
+            backend_id=backend_id,
+            elapsed_ms=float(elapsed),
+            row_count=row_count,
+            row_width_bytes=row_width,
+            source=f"{catalog_id}/{value.get('artifact_id')}/{artifact_sha256}",
+            version=catalog_version,
+        )
+
+    def to_dict(self) -> JsonMap:
+        return {
+            "observation_key": self.observation_key,
+            "backend_id": self.backend_id,
+            "elapsed_ms": self.elapsed_ms,
+            "row_count": self.row_count,
+            "row_width_bytes": self.row_width_bytes,
+            "output_bytes": self.output_bytes,
+            "source": self.source,
+            "version": self.version,
+        }
+
+
+@dataclass(frozen=True)
+class PlanObservationSnapshot:
+    snapshot_id: str
+    version: str
+    estimates: tuple[RemoteEstimate, ...]
+    bandwidth_bytes_per_ms: float
+    exchange_fixed_ms: float = 0.0
+    coordinator_row_ms: float = 0.0
+
+    def __post_init__(self) -> None:
+        if not self.snapshot_id.strip() or not self.version.strip():
+            raise FederatedPlanningError("snapshot id and version must be nonempty")
+        keys = [item.observation_key for item in self.estimates]
+        if len(keys) != len(set(keys)):
+            raise FederatedPlanningError("snapshot observation keys must be unique")
+        if not math.isfinite(self.bandwidth_bytes_per_ms) or self.bandwidth_bytes_per_ms <= 0:
+            raise FederatedPlanningError("snapshot bandwidth must be finite and positive")
+        for name, value in (
+            ("exchange_fixed_ms", self.exchange_fixed_ms),
+            ("coordinator_row_ms", self.coordinator_row_ms),
+        ):
+            if not math.isfinite(value) or value < 0:
+                raise FederatedPlanningError(f"snapshot {name} must be finite and nonnegative")
+
+    @property
+    def by_key(self) -> dict[str, RemoteEstimate]:
+        return {item.observation_key: item for item in self.estimates}
+
+    def to_dict(self) -> JsonMap:
+        return {
+            "snapshot_id": self.snapshot_id,
+            "version": self.version,
+            "estimates": [item.to_dict() for item in self.estimates],
+            "bandwidth_bytes_per_ms": self.bandwidth_bytes_per_ms,
+            "exchange_fixed_ms": self.exchange_fixed_ms,
+            "coordinator_row_ms": self.coordinator_row_ms,
+        }
+
+
+@dataclass(frozen=True)
+class FederatedPlanCandidate:
+    plan: FederatedExecutionPlan
+    semantic_equivalence_key: str
+
+    def __post_init__(self) -> None:
+        if not self.semantic_equivalence_key.strip():
+            raise FederatedPlanningError("semantic equivalence key must be nonempty")
+
+
+@dataclass(frozen=True)
+class PlanCostEstimate:
+    plan_id: str
+    predicted_latency_ms: float
+    predicted_transfer_bytes: float
+    remote_calls: int
+    observation_keys: tuple[str, ...]
+    node_completion_ms: Mapping[str, float]
+    node_row_counts: Mapping[str, float]
+
+    def to_dict(self) -> JsonMap:
+        return {
+            "plan_id": self.plan_id,
+            "predicted_latency_ms": self.predicted_latency_ms,
+            "predicted_transfer_bytes": self.predicted_transfer_bytes,
+            "remote_calls": self.remote_calls,
+            "observation_keys": list(self.observation_keys),
+            "node_completion_ms": dict(self.node_completion_ms),
+            "node_row_counts": dict(self.node_row_counts),
+        }
+
+
+@dataclass(frozen=True)
+class FederatedPlanSelection:
+    semantic_equivalence_key: str
+    snapshot_id: str
+    snapshot_version: str
+    selected_plan_id: str
+    estimates: tuple[PlanCostEstimate, ...]
+
+    def to_dict(self) -> JsonMap:
+        return {
+            "semantic_equivalence_key": self.semantic_equivalence_key,
+            "snapshot_id": self.snapshot_id,
+            "snapshot_version": self.snapshot_version,
+            "selected_plan_id": self.selected_plan_id,
+            "estimates": [item.to_dict() for item in self.estimates],
+            "selection_rule": (
+                "minimum predicted latency, then transfer bytes, remote calls, plan id"
+            ),
+        }
+
+
+@dataclass(frozen=True)
+class _NodeEstimate:
+    completion_ms: float
+    row_count: float
+    row_width_bytes: float
+
+
+class FederatedPlanSelector:
+    """Select one lowest-cost plan within one exact semantic equivalence class."""
+
+    def select(
+        self,
+        candidates: tuple[FederatedPlanCandidate, ...],
+        snapshot: PlanObservationSnapshot,
+    ) -> FederatedPlanSelection:
+        if not candidates:
+            raise FederatedPlanningError("at least one federated plan candidate is required")
+        equivalence_keys = {item.semantic_equivalence_key for item in candidates}
+        if len(equivalence_keys) != 1:
+            raise FederatedPlanningError(
+                "one physical selection may contain only one semantic equivalence class"
+            )
+        plan_ids = [item.plan.plan_id for item in candidates]
+        if len(plan_ids) != len(set(plan_ids)):
+            raise FederatedPlanningError("candidate plan ids must be unique")
+        estimates = tuple(
+            self.estimate(candidate.plan, snapshot)
+            for candidate in sorted(candidates, key=lambda item: item.plan.plan_id)
+        )
+        selected = min(
+            estimates,
+            key=lambda item: (
+                item.predicted_latency_ms,
+                item.predicted_transfer_bytes,
+                item.remote_calls,
+                item.plan_id,
+            ),
+        )
+        return FederatedPlanSelection(
+            semantic_equivalence_key=next(iter(equivalence_keys)),
+            snapshot_id=snapshot.snapshot_id,
+            snapshot_version=snapshot.version,
+            selected_plan_id=selected.plan_id,
+            estimates=estimates,
+        )
+
+    def estimate(
+        self,
+        plan: FederatedExecutionPlan,
+        snapshot: PlanObservationSnapshot,
+    ) -> PlanCostEstimate:
+        nodes = {item.node_id: item for item in plan.nodes}
+        pending = set(nodes)
+        estimates: dict[str, _NodeEstimate] = {}
+        used_observations: set[str] = set()
+        transfer_bytes = 0.0
+        remote_calls = 0
+        while pending:
+            ready = [
+                nodes[node_id]
+                for node_id in sorted(pending)
+                if all(input_id in estimates for input_id in nodes[node_id].inputs)
+            ]
+            if not ready:
+                raise FederatedPlanningError("validated plan made no estimation progress")
+            for node in ready:
+                state, moved, calls, observation_key = self._estimate_node(
+                    node,
+                    estimates,
+                    snapshot,
+                )
+                estimates[node.node_id] = state
+                transfer_bytes += moved
+                remote_calls += calls
+                if observation_key is not None:
+                    used_observations.add(observation_key)
+                pending.remove(node.node_id)
+        latency = max(estimates[root].completion_ms for root in plan.roots)
+        return PlanCostEstimate(
+            plan_id=plan.plan_id,
+            predicted_latency_ms=latency,
+            predicted_transfer_bytes=transfer_bytes,
+            remote_calls=remote_calls,
+            observation_keys=tuple(sorted(used_observations)),
+            node_completion_ms={
+                node.node_id: estimates[node.node_id].completion_ms for node in plan.nodes
+            },
+            node_row_counts={
+                node.node_id: estimates[node.node_id].row_count for node in plan.nodes
+            },
+        )
+
+    @staticmethod
+    def _estimate_node(
+        node: RuntimeNode,
+        estimates: Mapping[str, _NodeEstimate],
+        snapshot: PlanObservationSnapshot,
+    ) -> tuple[_NodeEstimate, float, int, str | None]:
+        inputs = [estimates[input_id] for input_id in node.inputs]
+        ready_ms = max((item.completion_ms for item in inputs), default=0.0)
+        if node.kind in {
+            RuntimeNodeKind.REMOTE_QUERY,
+            RuntimeNodeKind.REMOTE_BIND_QUERY,
+        }:
+            observation_key = node.parameters.get("observation_key")
+            if not isinstance(observation_key, str) or not observation_key:
+                raise FederatedPlanningError(
+                    f"remote node '{node.node_id}' has no observation_key"
+                )
+            remote = snapshot.by_key.get(observation_key)
+            if remote is None:
+                raise FederatedPlanningError(
+                    f"snapshot has no estimate '{observation_key}'"
+                )
+            backend_id = node.parameters.get("backend_id")
+            if backend_id != remote.backend_id:
+                raise FederatedPlanningError(
+                    f"estimate '{observation_key}' belongs to backend "
+                    f"'{remote.backend_id}', not '{backend_id}'"
+                )
+            return (
+                _NodeEstimate(
+                    ready_ms + remote.elapsed_ms,
+                    float(remote.row_count),
+                    remote.row_width_bytes,
+                ),
+                0.0,
+                1,
+                observation_key,
+            )
+        if node.kind is RuntimeNodeKind.EXCHANGE:
+            source = inputs[0]
+            moved = source.row_count * source.row_width_bytes
+            duration = snapshot.exchange_fixed_ms + moved / snapshot.bandwidth_bytes_per_ms
+            return (
+                _NodeEstimate(
+                    ready_ms + duration,
+                    source.row_count,
+                    source.row_width_bytes,
+                ),
+                moved,
+                0,
+                None,
+            )
+        if node.kind is RuntimeNodeKind.COORDINATOR_JOIN:
+            left, right = inputs
+            selectivity = FederatedPlanSelector._fraction(node, "join_selectivity", 1.0)
+            rows = min(left.row_count, right.row_count) * selectivity
+            duration = (left.row_count + right.row_count) * snapshot.coordinator_row_ms
+            return (
+                _NodeEstimate(
+                    ready_ms + duration,
+                    rows,
+                    left.row_width_bytes + right.row_width_bytes,
+                ),
+                0.0,
+                0,
+                None,
+            )
+        if node.kind is RuntimeNodeKind.COORDINATOR_SEMI_JOIN:
+            left, right = inputs
+            selectivity = FederatedPlanSelector._fraction(node, "semi_join_selectivity", 1.0)
+            rows = left.row_count * selectivity
+            duration = (left.row_count + right.row_count) * snapshot.coordinator_row_ms
+            return (
+                _NodeEstimate(ready_ms + duration, rows, left.row_width_bytes),
+                0.0,
+                0,
+                None,
+            )
+        if node.kind is RuntimeNodeKind.MERGE:
+            rows = sum(item.row_count for item in inputs)
+            width = max((item.row_width_bytes for item in inputs), default=1.0)
+            duration = rows * snapshot.coordinator_row_ms
+            return _NodeEstimate(ready_ms + duration, rows, width), 0.0, 0, None
+        source = inputs[0]
+        if node.kind is RuntimeNodeKind.PROJECT:
+            width_fraction = FederatedPlanSelector._fraction(
+                node,
+                "width_fraction",
+                1.0,
+            )
+            width = source.row_width_bytes * width_fraction
+        else:
+            width = source.row_width_bytes
+        duration = source.row_count * snapshot.coordinator_row_ms
+        return (
+            _NodeEstimate(ready_ms + duration, source.row_count, width),
+            0.0,
+            0,
+            None,
+        )
+
+    @staticmethod
+    def _fraction(node: RuntimeNode, name: str, default: float) -> float:
+        value = node.parameters.get(name, default)
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            raise FederatedPlanningError(
+                f"runtime node '{node.node_id}' {name} must be numeric"
+            )
+        selected = float(value)
+        if not math.isfinite(selected) or not 0.0 <= selected <= 1.0:
+            raise FederatedPlanningError(
+                f"runtime node '{node.node_id}' {name} must be in [0, 1]"
+            )
+        return selected

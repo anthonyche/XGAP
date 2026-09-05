@@ -49,12 +49,21 @@ class RowsBackendClient:
                 success=False,
                 error="backend unavailable",
             )
+        rows = list(self.rows_by_artifact.get(artifact.artifact_id, []))
+        company_ids = artifact.parameters.get("company_ids")
+        if company_ids is not None:
+            allowed = {str(item) for item in company_ids}
+            rows = [
+                row
+                for row in rows
+                if str(row.get("company_id", "")).removeprefix("neo:") in allowed
+            ]
         return ExecutionReport(
             backend_id=self.backend_id,
             artifact_id=artifact.artifact_id,
             language=artifact.language,
             success=True,
-            rows=self.rows_by_artifact.get(artifact.artifact_id, []),
+            rows=rows,
             elapsed_ms=1.25,
         )
 
@@ -136,7 +145,11 @@ def _plan() -> FederatedExecutionPlan:
     )
 
 
-def _runtime_tool(*, fail_fuseki: bool = False) -> FederatedExecutionTool:
+def _runtime_tool(
+    *,
+    fail_fuseki: bool = False,
+    fuseki_rows: list[dict[str, object]] | None = None,
+) -> FederatedExecutionTool:
     plugins = BackendPluginRegistry()
     plugins.register(
         NativeBackendPlugin(
@@ -157,7 +170,13 @@ def _runtime_tool(*, fail_fuseki: bool = False) -> FederatedExecutionTool:
             "fuseki",
             RowsBackendClient(
                 "fuseki",
-                {"risk": [{"company_id": "rdf:C1", "risk": "high"}]},
+                {
+                    "risk": (
+                        [{"company_id": "rdf:C1", "risk": "high"}]
+                        if fuseki_rows is None
+                        else fuseki_rows
+                    )
+                },
                 fail=fail_fuseki,
             ),
         )
@@ -261,4 +280,153 @@ def test_coordinator_project_removes_internal_join_fields() -> None:
     assert result.success
     assert result.final_rows == (
         {"person_id": "alice:1", "amount": 1200, "risk": "high"},
+    )
+
+
+def _bind_plan(*, max_bindings: int = 8) -> FederatedExecutionPlan:
+    return FederatedExecutionPlan(
+        plan_id="risk-first-bind-query",
+        nodes=(
+            RuntimeNode(
+                "fuseki-risk",
+                RuntimeNodeKind.REMOTE_QUERY,
+                parameters={
+                    "backend_id": "fuseki",
+                    "artifact": {
+                        "artifact_id": "risk",
+                        "language": "sparql",
+                        "text": "SELECT ...",
+                    },
+                },
+            ),
+            RuntimeNode(
+                "align-risk",
+                RuntimeNodeKind.ALIGN,
+                inputs=("fuseki-risk",),
+                parameters={
+                    "field": "company_id",
+                    "output_field": "canonical_company_id",
+                    "mapping": {"rdf:C1": "C1"},
+                },
+            ),
+            RuntimeNode(
+                "exchange-risk",
+                RuntimeNodeKind.EXCHANGE,
+                inputs=("align-risk",),
+            ),
+            RuntimeNode(
+                "neo4j-bound-transfers",
+                RuntimeNodeKind.REMOTE_BIND_QUERY,
+                inputs=("exchange-risk",),
+                parameters={
+                    "backend_id": "neo4j",
+                    "artifact": {
+                        "artifact_id": "transfers",
+                        "language": "cypher",
+                        "text": "MATCH ... WHERE company.id IN $company_ids",
+                    },
+                    "bind_field": "canonical_company_id",
+                    "parameter": "company_ids",
+                    "max_bindings": max_bindings,
+                },
+            ),
+            RuntimeNode(
+                "align-transfers",
+                RuntimeNodeKind.ALIGN,
+                inputs=("neo4j-bound-transfers",),
+                parameters={
+                    "field": "company_id",
+                    "output_field": "canonical_company_id",
+                    "mapping": {"neo:C1": "C1", "neo:C2": "C2"},
+                },
+            ),
+            RuntimeNode(
+                "exchange-transfers",
+                RuntimeNodeKind.EXCHANGE,
+                inputs=("align-transfers",),
+            ),
+            RuntimeNode(
+                "join",
+                RuntimeNodeKind.COORDINATOR_JOIN,
+                inputs=("exchange-transfers", "exchange-risk"),
+                parameters={
+                    "left_on": "canonical_company_id",
+                    "right_on": "canonical_company_id",
+                },
+            ),
+        ),
+        roots=("join",),
+        max_remote_calls=2,
+        max_parallelism=2,
+    )
+
+
+def test_risk_first_bind_query_matches_parallel_hash_answer() -> None:
+    runtime = _runtime_tool()
+
+    parallel = runtime.scheduler.execute(_plan())
+    bound = runtime.scheduler.execute(_bind_plan())
+
+    assert parallel.success and bound.success
+    assert bound.final_rows == parallel.final_rows
+    by_id = {item.node_id: item for item in bound.node_results}
+    assert by_id["neo4j-bound-transfers"].metadata["binding_count"] == 1
+    assert bound.total_remote_calls == 2
+    assert bound.total_bytes_moved < parallel.total_bytes_moved
+
+
+def test_bind_query_short_circuits_empty_driver_without_remote_call() -> None:
+    result = _runtime_tool(fuseki_rows=[]).scheduler.execute(_bind_plan())
+
+    assert result.success
+    assert result.final_rows == ()
+    bound = next(
+        item for item in result.node_results if item.node_id == "neo4j-bound-transfers"
+    )
+    assert bound.remote_calls == 0
+    assert bound.metadata["empty_binding_short_circuit"] is True
+    assert result.total_remote_calls == 1
+
+
+def test_bind_query_limit_fails_before_backend_invocation() -> None:
+    result = _runtime_tool().scheduler.execute(_bind_plan(max_bindings=0))
+
+    assert not result.success
+    bound = next(
+        item for item in result.node_results if item.node_id == "neo4j-bound-transfers"
+    )
+    assert bound.status is RuntimeNodeStatus.ERROR
+    assert "positive max_bindings" in str(bound.error)
+    assert bound.remote_calls == 0
+
+
+def test_coordinator_semi_join_returns_only_matching_left_rows() -> None:
+    base = _plan()
+    semi = RuntimeNode(
+        "semi",
+        RuntimeNodeKind.COORDINATOR_SEMI_JOIN,
+        inputs=("align-transfers", "align-risk"),
+        parameters={
+            "left_on": "canonical_company_id",
+            "right_on": "canonical_company_id",
+        },
+    )
+    plan = FederatedExecutionPlan(
+        "semi-risk",
+        base.nodes[:4] + (semi,),
+        ("semi",),
+        max_remote_calls=2,
+        max_parallelism=2,
+    )
+
+    result = _runtime_tool().scheduler.execute(plan)
+
+    assert result.success
+    assert result.final_rows == (
+        {
+            "person_id": "alice:1",
+            "company_id": "neo:C1",
+            "amount": 1200,
+            "canonical_company_id": "C1",
+        },
     )

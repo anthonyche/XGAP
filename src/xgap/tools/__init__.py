@@ -3,9 +3,11 @@
 from xgap.tools.backends import (
     BACKEND_INVOKE_TOOL,
     BackendInvokeTool,
+    BackendObservationCatalog,
     BackendOperation,
     BackendPlugin,
     BackendPluginRegistry,
+    CatalogBackendPlugin,
     NativeBackendPlugin,
 )
 from xgap.tools.contracts import (
@@ -35,9 +37,11 @@ __all__ = [
     "AgentTool",
     "BACKEND_INVOKE_TOOL",
     "BackendInvokeTool",
+    "BackendObservationCatalog",
     "BackendOperation",
     "BackendPlugin",
     "BackendPluginRegistry",
+    "CatalogBackendPlugin",
     "FunctionTool",
     "NativeBackendPlugin",
     "REMOTE_EXECUTOR_TOOL",

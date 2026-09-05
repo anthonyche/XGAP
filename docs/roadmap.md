@@ -28,7 +28,7 @@ Acceptance criteria: fragment compilation, remote execution, exchange,
 alignment, coordinator join/merge, correctness, latency, bytes, cardinality,
 and remote-call artifacts; no LLM or ontology required.
 
-Current status: **CWRU CPU CORE VERIFIED; REAL BACKEND GATE PENDING**
+Current status: **CWRU CPU CORE AND NATIVE ARTIFACT SUPPLY VERIFIED; REAL BACKEND GATE PENDING**
 
 Execution order:
 
@@ -47,8 +47,9 @@ Execution order:
    readiness flag is explicitly invalidated and fixed in probe v2. B2B pins
    Neo4j 5.26.30 and Fuseki 5.6.0 to a common Java 17 runtime and provides a
    single-attempt, digest-verified, no-overwrite shared archive cache. One CWRU
-   artifact-preparation job is the next external gate; no extraction or service
-   startup occurs in that job. B2C is implemented locally as a second,
+   artifact-preparation job `3787101` passed at commit `2ce4b53`: both archives
+   matched their locked lengths and digests in one attempt each, with no retry,
+   extraction, or service startup. B2C is implemented locally as a second,
    allocation-only trust boundary: verified archives are inspected for safe
    members and staged atomically into a new empty runtime directory. Real
    service launch remains gated on both cached archives and an explicit
@@ -56,7 +57,7 @@ Execution order:
    launcher, exact Java 17 check, dynamic loopback ports, local Neo4j/Fuseki
    state, bounded health waits, one fixture/load run, reverse shutdown, and
    guarded cleanup. Its lifecycle is locally verified; the artifact-preparation
-   job and then the combined service job remain CWRU evidence gates. A
+   job is verified; the combined service job remains the CWRU evidence gate. A
    read-only cross-artifact auditor is locally verified and will accept a live
    claim only when the exact commit, lock, staging, service, load, query, and
    cleanup records agree.
@@ -76,7 +77,15 @@ The command and artifact contract is frozen in
 Goal: add schema/explain/profile/sample tools and alternative correct plans for
 pushdown, join strategy/order, parallel scheduling, and fragment fusion.
 
-Current status: **PLANNED**
+Current status: **INITIAL ACCEPTANCE GATE PASSED LOCALLY; LIVE CALIBRATION PENDING**
+
+The first slice provides catalog-allowlisted observation tools, native Neo4j
+plan/profile evidence, executable bind-query and semi-join nodes, two
+exact-semantic M15 plans, and a deterministic critical-path/transfer selector.
+Both plans return the same fixture answer and the selected plan reverses under
+a controlled bound-query latency change. The controlled artifact is not a
+paper result. General fragmentation, pushdown/order enumeration, fusion, and
+live observation-derived estimates remain open.
 
 ### M15-D Memory-Guided Adaptation and Replanning
 

@@ -10,7 +10,7 @@ import platform
 import re
 import subprocess
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -20,7 +20,12 @@ from xgap.backends.neo4j_client import Neo4jClient
 from xgap.backends.protocol import BackendClient
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import DatasetSpec, QueryArtifact
-from xgap.runtime import FederatedExecutionPlan, FederatedRunResult, FederatedScheduler
+from xgap.runtime import (
+    FederatedExecutionPlan,
+    FederatedPlanCandidate,
+    FederatedRunResult,
+    FederatedScheduler,
+)
 from xgap.runtime import RuntimeNode, RuntimeNodeKind
 from xgap.semantic import (
     ConstraintPolicy,
@@ -30,7 +35,12 @@ from xgap.semantic import (
     SemanticOperatorKind,
     SemanticValueKind,
 )
-from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPlugin
+from xgap.tools import (
+    BackendInvokeTool,
+    BackendObservationCatalog,
+    BackendPluginRegistry,
+    NativeBackendPlugin,
+)
 
 
 RUN_SCHEMA_VERSION = "m15-b3-live-federated-run-v1"
@@ -40,6 +50,9 @@ EXPECTED_SOURCE_PATH = Path(
     "examples/m15_split_financial_risk/expected_source_results.json"
 )
 _SAFE_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+M15_SEMANTIC_EQUIVALENCE_KEY = (
+    "m15:recent-alice-transfers-to-high-risk-company:exact:v1"
+)
 
 
 @dataclass(frozen=True)
@@ -345,6 +358,178 @@ def build_m15_execution_plan(
             "coordinator": "in_process",
         },
     )
+
+
+def _bound_transfer_artifact(repo_root: Path) -> QueryArtifact:
+    path = _repo_path(
+        repo_root,
+        "examples/m15_split_financial_risk/query_recent_transfers_bound.cypher",
+    )
+    return QueryArtifact(
+        artifact_id="m15-split-neo4j-bound",
+        language="cypher",
+        text=path.read_text(encoding="utf-8"),
+        kind="native",
+        source_path=str(path.relative_to(repo_root)),
+    )
+
+
+def build_m15_plan_candidates(
+    repo_root: Path | None = None,
+) -> tuple[FederatedPlanCandidate, ...]:
+    """Build two executable plans for the same exact M15 semantics."""
+
+    root = (repo_root or _repo_root()).resolve()
+    base = build_m15_execution_plan(root)
+    observation_by_node = {
+        "recent-transfers": "neo4j-recent-transfers-full",
+        "high-risk": "fuseki-high-risk",
+    }
+    parallel_nodes = tuple(
+        replace(
+            node,
+            parameters={
+                **dict(node.parameters),
+                "observation_key": observation_by_node[node.node_id],
+            },
+        )
+        if node.node_id in observation_by_node
+        else node
+        for node in base.nodes
+    )
+    parallel = replace(
+        base,
+        plan_id="m15-parallel-hash",
+        nodes=parallel_nodes,
+        metadata={
+            **dict(base.metadata),
+            "physical_strategy": "parallel_hash_join",
+        },
+    )
+
+    bound_query = _bound_transfer_artifact(root)
+    bind = FederatedExecutionPlan(
+        plan_id="m15-risk-first-bind",
+        nodes=(
+            next(node for node in parallel.nodes if node.node_id == "high-risk"),
+            next(node for node in parallel.nodes if node.node_id == "align-risk"),
+            next(node for node in parallel.nodes if node.node_id == "exchange-risk"),
+            RuntimeNode(
+                "bound-recent-transfers",
+                RuntimeNodeKind.REMOTE_BIND_QUERY,
+                inputs=("exchange-risk",),
+                parameters={
+                    "backend_id": "neo4j",
+                    "artifact": bound_query.to_dict(),
+                    "observation_key": "neo4j-recent-transfers-bound",
+                    "bind_field": "canonical_company_id",
+                    "parameter": "company_ids",
+                    "max_bindings": 100,
+                },
+                semantic_operator_ids=(
+                    "resolved-person",
+                    "recent-large-transfers",
+                    "federated-company-join",
+                ),
+            ),
+            replace(
+                next(
+                    node for node in parallel.nodes if node.node_id == "align-transfers"
+                ),
+                node_id="align-bound-transfers",
+                inputs=("bound-recent-transfers",),
+            ),
+            replace(
+                next(
+                    node
+                    for node in parallel.nodes
+                    if node.node_id == "exchange-transfers"
+                ),
+                node_id="exchange-bound-transfers",
+                inputs=("align-bound-transfers",),
+            ),
+            replace(
+                next(node for node in parallel.nodes if node.node_id == "answer"),
+                inputs=("exchange-bound-transfers", "exchange-risk"),
+            ),
+            next(node for node in parallel.nodes if node.node_id == "project-answer"),
+        ),
+        roots=("project-answer",),
+        max_remote_calls=2,
+        max_parallelism=1,
+        metadata={
+            **dict(base.metadata),
+            "physical_strategy": "risk_first_bind_join",
+        },
+    )
+    return (
+        FederatedPlanCandidate(parallel, M15_SEMANTIC_EQUIVALENCE_KEY),
+        FederatedPlanCandidate(bind, M15_SEMANTIC_EQUIVALENCE_KEY),
+    )
+
+
+def build_m15_observation_catalogs(
+    repo_root: Path | None = None,
+) -> dict[str, BackendObservationCatalog]:
+    """Freeze read-only observation artifacts used by M15 plan selection."""
+
+    root = (repo_root or _repo_root()).resolve()
+    dataset = DatasetSpec.from_yaml(_repo_path(root, DATASET_PATH))
+    full_transfer = _query_artifact(root, dataset, "neo4j")
+    bound_transfer = replace(
+        _bound_transfer_artifact(root),
+        parameters={"company_ids": ["C1", "C3"]},
+    )
+    risk = _query_artifact(root, dataset, "fuseki")
+    return {
+        "neo4j": BackendObservationCatalog(
+            catalog_id="m15-neo4j-observations",
+            version="v1",
+            schema_artifact=QueryArtifact(
+                "m15-neo4j-labels",
+                "cypher",
+                "CALL db.labels() YIELD label RETURN label ORDER BY label",
+            ),
+            query_artifacts={
+                "recent-transfers-full": full_transfer,
+                "recent-transfers-bound": bound_transfer,
+            },
+            sample_artifacts={
+                "company-refs": QueryArtifact(
+                    "m15-neo4j-company-ref-sample",
+                    "cypher",
+                    (
+                        "MATCH (c:M15CompanyRef) RETURN c.id AS company_id "
+                        "ORDER BY company_id LIMIT 10"
+                    ),
+                )
+            },
+        ),
+        "fuseki": BackendObservationCatalog(
+            catalog_id="m15-fuseki-observations",
+            version="v1",
+            schema_artifact=QueryArtifact(
+                "m15-fuseki-predicates",
+                "sparql",
+                (
+                    "SELECT DISTINCT ?predicate WHERE { ?subject ?predicate ?object } "
+                    "ORDER BY ?predicate LIMIT 100"
+                ),
+            ),
+            query_artifacts={"high-risk": risk},
+            sample_artifacts={
+                "companies": QueryArtifact(
+                    "m15-fuseki-company-sample",
+                    "sparql",
+                    (
+                        "PREFIX m15: <http://xgap.example.org/m15-split/> "
+                        "SELECT ?company_id WHERE { ?company a m15:Company ; "
+                        "m15:companyId ?company_id } ORDER BY ?company_id LIMIT 10"
+                    ),
+                )
+            },
+        ),
+    }
 
 
 def _default_clients(repo_root: Path) -> dict[str, BackendClient]:

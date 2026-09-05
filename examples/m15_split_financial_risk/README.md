@@ -17,6 +17,12 @@ the expected answer for `C1`.
 while `expected_result.json` freezes the projected coordinator answer. This
 prevents a nonempty-but-wrong source load from satisfying the live gate.
 
+`query_recent_transfers_bound.cypher` is the exact-semantic bind alternative.
+After the coordinator aligns Fuseki company IDs, it injects a bounded
+`company_ids` list into this fixed query artifact. The time window, person,
+amount, and risk interpretation are unchanged; only the cross-source execution
+strategy differs.
+
 This is a deterministic integration fixture, not a realistic financial-risk
 benchmark and not evidence for ontology or ambiguity-resolution quality.
 

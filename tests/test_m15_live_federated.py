@@ -9,12 +9,16 @@ import pytest
 
 from xgap.experiments.m15_live_federated import (
     build_m15_execution_plan,
+    build_m15_observation_catalogs,
+    build_m15_plan_candidates,
     build_m15_semantic_program,
     main,
     run_m15_live_federated,
 )
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport
+from xgap.runtime import FederatedScheduler, RuntimeNodeKind
 from xgap.semantic import ConstraintPolicy
+from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPlugin
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -36,12 +40,21 @@ class FakeClient:
         )
 
     def execute(self, artifact) -> ExecutionReport:
+        rows = self.rows
+        company_ids = artifact.parameters.get("company_ids")
+        if self.backend_id == "neo4j" and isinstance(company_ids, list):
+            rows = [
+                row
+                for row in rows
+                if str(row.get("company_id", "")).removeprefix("neo:")
+                in company_ids
+            ]
         return ExecutionReport(
             backend_id=self.backend_id,
             artifact_id=artifact.artifact_id,
             language=artifact.language,
             success=True,
-            rows=self.rows,
+            rows=rows,
             elapsed_ms=2.0,
             metadata={"transport": "offline-fixture"},
         )
@@ -107,6 +120,51 @@ def test_m15_program_and_runtime_preserve_hard_window_and_split_sources() -> Non
     assert [node.parameters["backend_id"] for node in remote] == ["neo4j", "fuseki"]
     assert plan.max_remote_calls == 2
     assert plan.roots == ("project-answer",)
+
+
+def test_m15_equivalent_plan_space_executes_same_answer_with_different_transfer() -> None:
+    plugins = BackendPluginRegistry()
+    clients = _clients()
+    plugins.register(NativeBackendPlugin("neo4j", clients["neo4j"]))
+    plugins.register(NativeBackendPlugin("fuseki", clients["fuseki"]))
+    scheduler = FederatedScheduler(BackendInvokeTool(plugins))
+    candidates = build_m15_plan_candidates(REPO_ROOT)
+
+    results = {
+        candidate.plan.plan_id: scheduler.execute(candidate.plan)
+        for candidate in candidates
+    }
+
+    assert len({candidate.semantic_equivalence_key for candidate in candidates}) == 1
+    assert all(result.success for result in results.values())
+    assert results["m15-parallel-hash"].final_rows == results[
+        "m15-risk-first-bind"
+    ].final_rows
+    assert results["m15-risk-first-bind"].total_bytes_moved < results[
+        "m15-parallel-hash"
+    ].total_bytes_moved
+    bind_nodes = [
+        node
+        for node in candidates[1].plan.nodes
+        if node.kind is RuntimeNodeKind.REMOTE_BIND_QUERY
+    ]
+    assert len(bind_nodes) == 1
+    assert bind_nodes[0].parameters["max_bindings"] == 100
+
+
+def test_m15_observation_catalogs_are_versioned_and_query_allowlisted() -> None:
+    catalogs = build_m15_observation_catalogs(REPO_ROOT)
+
+    assert set(catalogs) == {"neo4j", "fuseki"}
+    assert catalogs["neo4j"].version == "v1"
+    assert set(catalogs["neo4j"].query_artifacts) == {
+        "recent-transfers-full",
+        "recent-transfers-bound",
+    }
+    assert catalogs["neo4j"].query_artifacts[
+        "recent-transfers-bound"
+    ].parameters == {"company_ids": ["C1", "C3"]}
+    assert set(catalogs["fuseki"].query_artifacts) == {"high-risk"}
 
 
 def test_m15_live_runner_persists_exact_cross_source_evidence(tmp_path: Path) -> None:

@@ -90,6 +90,8 @@ detect_runtime() {
   tests/test_m15_goal_loop.py \
   tests/test_m15_fragment_compiler.py \
   tests/test_m15_federated_runtime.py \
+  tests/test_m15_federated_planning.py \
+  tests/test_m15_backend_observations.py \
   tests/test_m15_fixture_loader.py \
   tests/test_m15_native_artifacts.py \
   tests/test_m15_native_runtime.py \
@@ -103,6 +105,9 @@ detect_runtime() {
 "$PYTHON_BIN" examples/m15_federated_vertical_slice_demo.py \
   > "$RUN_ROOT/vertical_slice.json"
 
+"$PYTHON_BIN" examples/m15_federated_plan_selection_demo.py \
+  > "$RUN_ROOT/plan_selection.json"
+
 "$PYTHON_BIN" - "$RUN_ROOT/vertical_slice.json" <<'PY'
 import json
 import sys
@@ -113,6 +118,23 @@ assert payload["success"] is True
 assert payload["total_remote_calls"] == 2
 assert payload["total_bytes_moved"] > 0
 assert len(payload["final_rows"]) == 1
+PY
+
+"$PYTHON_BIN" - "$RUN_ROOT/plan_selection.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert payload["evidence_class"] == "controlled_model_sanity_check"
+assert payload["paper_result"] is False
+assert payload["same_exact_answer"] is True
+assert payload["selection_flipped"] is True
+assert (
+    payload["selections"]["transfer_sensitive"]["selected_plan_id"]
+    == "m15-risk-first-bind"
+)
+assert payload["selections"]["slow_bind"]["selected_plan_id"] == "m15-parallel-hash"
 PY
 
 echo "M15 core smoke passed."
