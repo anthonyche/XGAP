@@ -1382,3 +1382,18 @@ counterbalance unverifiable. Running the entire campaign before testing one
 bound sequence would multiply lifecycle failures. The single-session gate
 therefore validates the compiler-to-executor seam while preserving a hard
 boundary around the still-unimplemented multi-query paper experiment.
+
+## D95 One audited Williams sequence closes F2A but not the campaign
+
+CWRU job `3787291` is accepted as the F2A compiler-to-live-runner engineering
+gate. It ran exact clean commit `c9a7afe`, used the compiled selective
+`b01.s01` method order, returned exact answers for all six methods, recorded 18
+tool invocations with no automatic retry, cleaned up the native runtime, and
+passed a 374-check independent read-only audit without mutating its run tree.
+
+The run is not treated as a method comparison. It contains one query, one
+workload, and one of the twelve development sequences; therefore it neither
+completes Williams counterbalancing nor measures cross-task memory. The run
+tree remains immutable, the compact repository artifact is
+`paper_result=false`, and remaining session dispatch stays disabled until a
+standalone resolved-query artifact contract replaces the current query label.

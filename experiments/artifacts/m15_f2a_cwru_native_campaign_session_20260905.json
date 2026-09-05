@@ -1,0 +1,80 @@
+{
+  "artifact_id": "m15-f2a-cwru-native-campaign-session-3787291",
+  "artifact_role": "cwru_hash_bound_campaign_session_acceptance_not_comparative_result",
+  "observed_at_utc": "2026-09-05",
+  "evidence_origin": "user_returned_cwru_run_and_independent_audit_summaries",
+  "slurm": {
+    "elapsed": "00:01:26",
+    "exit_code": "0:0",
+    "job_id": "3787291",
+    "node": "compt336",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "c9a7afe73041240d2202d0efea50e0b5615216d5"
+  },
+  "run": {
+    "remote_root": "runs/cwru-m15-native-campaign-session-3787291",
+    "status": "success",
+    "workload_mode": "scaled_campaign_session",
+    "workload_profile": "selective",
+    "runtime_removed": true,
+    "cleanup_error": null
+  },
+  "campaign_session": {
+    "schema_version": "m15-f2-live-campaign-session-v1",
+    "session_id": "m15-f2-development-protocol-v1.selective.b01.s01",
+    "campaign_spec_sha256": "3669a8909943a4106a5f7a2bf0bd98d24715d08e53d3997336bb163bd2dd973a",
+    "schedule_sha256": "fbc3e216d532ae59c4ada45fe9605ff9e3ba4b86371ebddc46a8c76803f7e154",
+    "method_order": [
+      "static_parallel_hash",
+      "no_replan",
+      "no_memory",
+      "no_profile_probe",
+      "static_risk_first_bind",
+      "full_agent"
+    ],
+    "validation_passed": true,
+    "automatic_retries": 0,
+    "paper_result": false
+  },
+  "method_matrix": {
+    "status": "success",
+    "order_policy": "williams_campaign_sequence",
+    "evidence_class": "live_backend_campaign_session_engineering_gate",
+    "validation_passed": true,
+    "all_methods_exact": true,
+    "total_tool_invocations": 18,
+    "automatic_retries": 0,
+    "paper_result": false
+  },
+  "independent_read_only_audit": {
+    "schema_version": "m15-b2d-native-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-f2a-selective-3787291-audit.json",
+    "success": true,
+    "check_count": 374,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "claim_boundary": {
+    "result_class": "real_backend_hash_bound_campaign_session_acceptance",
+    "compiled_order_drove_execution": true,
+    "query_count": 1,
+    "session_count": 1,
+    "counterbalance_complete": false,
+    "cross_task_memory_measured": false,
+    "comparative": false,
+    "latency_ranking_supported": false
+  },
+  "limitations": [
+    "one selective development workload and one resolved query",
+    "one of twelve development sessions was executed",
+    "a single sequence does not complete Williams counterbalancing",
+    "the query ID was not yet bound to a standalone resolved-query artifact contract",
+    "cross-task memory reuse was not measured",
+    "coordinator cost parameters were not calibrated",
+    "not a latency, throughput, scalability, or comparative performance result"
+  ],
+  "paper_result": false
+}

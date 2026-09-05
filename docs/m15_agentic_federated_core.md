@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1 LIVE GATES VERIFIED; F2 HASH-BOUND SESSION EXECUTOR LOCAL; CWRU GATE PENDING**
+Status: **F0/F1 LIVE GATES AND F2A HASH-BOUND SESSION VERIFIED ON CWRU; F2B QUERY CONTRACT NEXT**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -319,8 +319,16 @@ matrix receives this complete campaign binding. The native lifecycle and
 allowlisted Slurm wrapper now carry one such session through fresh
 Neo4j/Fuseki services, fixture load, the 18-call sequence, cleanup, and the
 read-only cross-artifact auditor. The v1 executor deliberately accepts only
-the existing single financial-risk query, so its next CWRU run is a mechanism
-gate and cannot establish cross-task memory or counterbalanced performance.
+the existing single financial-risk query, so the CWRU run is a mechanism gate
+and cannot establish cross-task memory or counterbalanced performance.
+
+CWRU job `3787291` executed the first selective session at exact clean commit
+`c9a7afe` on `compt336`. The compiled Williams order drove all six methods,
+all answers were exact, the trace contained exactly 18 tool invocations and no
+automatic retry, and runtime cleanup succeeded. The independent read-only
+audit passed 374/374 checks without mutating the run tree. This closes the
+compiler-to-live-runner engineering gate only; the other 11 development
+sessions were not dispatched and no comparative claim is supported.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

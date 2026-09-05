@@ -118,10 +118,14 @@ unlocks a custom Williams order in the live six-method runner. The
 native-service mode and allowlisted Slurm wrapper
 give the session a fresh Neo4j/Fuseki lifecycle; the read-only auditor checks
 the outer job, bundle, plan, selected session, binding, nested matrix, exact
-answers, memory records, 18-call trace, shutdown, and cleanup. This path is
-locally verified but not yet run on CWRU. It accepts exactly one development
-query and therefore remains `paper_result=false`, cannot measure cross-task
-memory, and cannot complete the counterbalanced campaign.
+answers, memory records, 18-call trace, shutdown, and cleanup. It accepts
+exactly one development query and therefore remains `paper_result=false`,
+cannot measure cross-task memory, and cannot complete the counterbalanced
+campaign. CWRU job `3787291`
+verified this path at exact clean commit `c9a7afe` on `compt336`: all six
+methods returned exact answers in the compiled order, the trace contained 18
+tool invocations and zero retries, and cleanup succeeded. Its independent
+read-only audit passed 374/374 checks without changing the run tree.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
@@ -1571,6 +1575,13 @@ the local completion run.
 
 Latest recorded command results:
 
+- CWRU F2A job `3787291`: one selective hash-bound campaign session completed
+  at exact clean commit `c9a7afe` in 86 seconds on `compt336`. The compiled
+  Williams order drove the six real-service methods, all answers were exact,
+  and the trace contained exactly 18 tool invocations with zero retry. Its
+  independent read-only audit passed 374/374 checks and reported
+  `run_tree_mutated=false`. This is a single-session mechanism gate, not a
+  comparative result.
 - `./scripts/run_acceptance.sh`: 673 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
