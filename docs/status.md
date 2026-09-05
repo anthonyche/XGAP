@@ -39,7 +39,12 @@ and common probe run through a separate `scaled_adaptive` native mode. Its
 auditor binds the profile to the committed spec and validates the bundle and
 full service/query chain. The current local M15 gate passes 159 tests with two
 live skips; full acceptance passes 631 tests with 36 gated skips. F0 remains
-`paper_result=false`, and its first CWRU selective run is pending.
+`paper_result=false`. Its first CWRU selective submission, job `3787167` at
+commit `36281aa`, reached live Neo4j fixture loading but failed before profile
+or query execution because generator v1 placed JSON-quoted map keys in a
+Cypher `UNWIND` literal. Generator v2 now emits deterministic validated Cypher
+map syntax, and the failure is preserved as a non-paper diagnostic artifact.
+A new selective CWRU run is pending.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local

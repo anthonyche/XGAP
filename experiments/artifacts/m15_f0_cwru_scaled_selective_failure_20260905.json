@@ -1,0 +1,45 @@
+{
+  "artifact_id": "m15-f0-cwru-scaled-selective-failure-3787167",
+  "artifact_role": "cwru_engineering_failure_diagnostic_not_paper_result",
+  "observed_at_utc": "2026-09-05",
+  "slurm": {
+    "elapsed": "00:01:09",
+    "exit_code": "1:0",
+    "job_id": "3787167",
+    "node": "compt336",
+    "state": "FAILED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "36281aa3db78fc9918874c12201de36472d7632c"
+  },
+  "workload": {
+    "answer_rows": 120,
+    "companies": 200,
+    "generator_version": "m15-f0-generator-v1",
+    "high_risk_companies": 20,
+    "profile": "selective",
+    "spec_sha256": "412a74c2b86714db40d3354e203fe17388e9b1ec1858d93e892f332c1d585039",
+    "transfers": 5000,
+    "workload_id": "selective-dev-v1"
+  },
+  "failure": {
+    "automatic_retries": 0,
+    "failed_stage": "neo4j_fixture_load",
+    "fixture_loaded": false,
+    "neo4j_error": "Invalid input '\"account_id\"': expected an identifier or '}' at the first generated UNWIND map literal",
+    "query_invoked": false,
+    "root_cause": "The deterministic generator serialized Python mappings with JSON object syntax inside a Cypher UNWIND literal. JSON quotes map keys, whereas Neo4j 5.26 requires identifier keys in a Cypher map literal.",
+    "runtime_archives_staged": true,
+    "runtime_removed": true,
+    "services_reached_fixture_stage": true
+  },
+  "resolution": {
+    "generator_version": "m15-f0-generator-v2",
+    "strategy": "Encode the bounded generated values with a dedicated deterministic Cypher literal serializer that validates identifier-shaped map keys; keep JSON serialization only for JSON artifacts.",
+    "same_job_resubmitted": false,
+    "new_job_required": true
+  },
+  "remote_run_root": "runs/cwru-m15-native-scaled-adaptive-3787167",
+  "paper_result": false
+}

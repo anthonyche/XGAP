@@ -1214,3 +1214,20 @@ Committing large generated files would make scale changes difficult to audit,
 while generating unbound data would weaken reproducibility. Frozen parameters
 plus deterministic, hash-bound run artifacts preserve exact provenance and let
 selectivity/skew change independently of query semantics or hand-set costs.
+
+## D88 Generated native load artifacts use target-language literals
+
+The M15-F0 generator serializes Cypher load data with a dedicated deterministic
+Cypher literal encoder. Map keys must be identifier-shaped and remain unquoted;
+values are restricted to the bounded JSON-compatible scalar/list/map subset.
+JSON serialization remains authoritative only for JSON artifacts. Changing the
+native artifact bytes increments the generator version, and an earlier bundle
+cannot be silently admitted under the new version.
+
+Reason:
+
+CWRU job `3787167` reached the Neo4j fixture stage but Neo4j 5.26 rejected the
+first generated `UNWIND` value because the v1 generator embedded JSON objects,
+whose quoted keys are not Cypher map syntax. Keeping separate serializers makes
+the target-language boundary explicit and preserves the failed v1 bundle as
+diagnostic evidence rather than rewriting it.

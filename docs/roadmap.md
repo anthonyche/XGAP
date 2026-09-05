@@ -140,7 +140,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0 SCALE/SKEW WORKLOAD SUBSTRATE VERIFIED LOCALLY; CWRU GATE PENDING**
+Current status: **F0 GENERATOR-V2 LOAD REPAIR VERIFIED LOCALLY; NEW CWRU GATE PENDING**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -156,6 +156,13 @@ the declared profile corresponds to its committed spec.
 This closes only the local workload-substrate gate. The artifacts remain
 `paper_result=false`; CWRU execution, calibration, repetitions, baseline and
 ablation scheduling, additional queries/sources, and UI work remain open.
+
+The first selective submission, job `3787167` at clean commit `36281aa`,
+failed at Neo4j fixture load before any profile or query call. Generator v1
+used JSON object syntax inside a Cypher `UNWIND` literal; Neo4j 5.26 requires
+identifier keys. Generator v2 uses a target-specific literal encoder and is
+locally regression-tested. The failed v1 run remains immutable diagnostic
+evidence and must not be counted as a performance result.
 
 ## Historical Milestones
 

@@ -5,7 +5,7 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2 VERIFIED; F0 SCALE/SKEW SUBSTRATE VERIFIED LOCALLY; CWRU F0/CALIBRATION PENDING
+- Verification Status: CWRU B2D/D2 VERIFIED; F0 GENERATOR-V2 LOAD REPAIR VERIFIED LOCALLY; NEW CWRU F0/CALIBRATION PENDING
 - Version Label: m15_remote_loop_v17
 
 ## Current claim boundary
@@ -335,6 +335,12 @@ VPN reachability and a working user-owned SSH alias.
 - `run_m15_native_scaled_adaptive.sbatch` exposes only `selective` and
   `broad_hot` through a separate `scaled_adaptive` mode. The first CWRU gate is
   one selective run; it is not a paper result.
+- First selective job `3787167` at commit `36281aa` failed at the first Neo4j
+  load `UNWIND` before all planning and query calls. Its v1 bundle used JSON
+  object syntax where Cypher requires identifier map keys. The allocation
+  cleaned up successfully. Generator v2 is the only admitted repaired format;
+  the failed run is recorded in
+  `experiments/artifacts/m15_f0_cwru_scaled_selective_failure_20260905.json`.
 - Add external datasets, catalog, and ontology through versioned adapters.
 - Run correctness, cost, scaling, failure, and ambiguity experiments.
 - Build the thin UI only after the CLI trace schema, remote executor, and one

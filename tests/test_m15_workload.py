@@ -54,7 +54,11 @@ def test_workload_generation_is_byte_deterministic_and_hash_bound(
         assert first.path(filename).read_bytes() == second.path(filename).read_bytes()
     assert len(first.expected_source_rows["neo4j"]) == spec.transfer_count
     assert len(first.expected_source_rows["fuseki"]) == spec.high_risk_company_count
-    assert "UNWIND" in first.path("load_neo4j.cypher").read_text("utf-8")
+    neo4j_load = first.path("load_neo4j.cypher").read_text("utf-8")
+    assert "UNWIND" in neo4j_load
+    assert "UNWIND [{account_id:" in neo4j_load
+    assert '{"account_id"' not in neo4j_load
+    assert '{"amount"' not in neo4j_load
     assert "$company_ids" in first.path(
         "query_recent_transfers_bound.cypher"
     ).read_text("utf-8")

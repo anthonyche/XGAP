@@ -225,7 +225,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0 DETERMINISTIC SCALE/SKEW SUBSTRATE VERIFIED LOCALLY; CWRU GATE PENDING**
+Status: **F0 GENERATOR-V2 LOAD REPAIR VERIFIED LOCALLY; NEW CWRU GATE PENDING**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -241,8 +241,14 @@ and risk-first-bind candidates through an explicit `scaled_adaptive` service
 mode. The mode has its own Slurm wrapper and audit contract; the auditor binds
 the profile label back to the committed spec and checks the generated bundle,
 fixture, observations, memory, plan, answer, service lifecycle, and cleanup.
-Local execution is development validation with `paper_result=false`. The first
-CWRU selective run, calibrated repetitions, and the baseline matrix remain
+Local execution is development validation with `paper_result=false`. CWRU job
+`3787167` exercised the first selective bundle at exact commit `36281aa`.
+Archive staging, workload generation, service startup, and guarded cleanup
+reached their declared boundaries, but Neo4j rejected the first load statement
+before profiling because generator v1 embedded JSON objects as Cypher map
+literals. The failed run made zero query calls and is not a performance result.
+Generator v2 now emits validated Cypher literals and has a regression test; a
+new selective job, calibrated repetitions, and the baseline matrix remain
 pending.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large

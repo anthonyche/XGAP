@@ -16,7 +16,7 @@ from typing import Any, Mapping, Sequence
 
 SPEC_SCHEMA_VERSION = "m15-f0-workload-spec-v1"
 BUNDLE_SCHEMA_VERSION = "m15-f0-workload-bundle-v1"
-GENERATOR_VERSION = "m15-f0-generator-v1"
+GENERATOR_VERSION = "m15-f0-generator-v2"
 _SAFE_WORKLOAD_ID = re.compile(r"^[a-z][a-z0-9_-]{0,63}$")
 _FILES = (
     "workload_spec.json",
@@ -223,6 +223,41 @@ def _canonical_json(value: object) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
+def _cypher_literal(value: object) -> str:
+    """Encode the generator's bounded values as Cypher, not JSON.
+
+    JSON objects quote their keys, while Cypher map literals require property
+    key identifiers.  The workload only admits identifier-shaped internal map
+    keys and JSON-compatible scalar values.
+    """
+
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, float):
+        raise ValueError("workload Cypher literals do not admit floating-point values")
+    if isinstance(value, str):
+        return json.dumps(value, ensure_ascii=False)
+    if isinstance(value, (list, tuple)):
+        return "[" + ",".join(_cypher_literal(item) for item in value) + "]"
+    if isinstance(value, Mapping):
+        fields: list[str] = []
+        for key in sorted(value):
+            if not isinstance(key, str) or not re.fullmatch(
+                r"[A-Za-z_][A-Za-z0-9_]*",
+                key,
+            ):
+                raise ValueError(f"invalid generated Cypher map key: {key!r}")
+            fields.append(f"{key}:{_cypher_literal(value[key])}")
+        return "{" + ",".join(fields) + "}"
+    raise ValueError(
+        f"unsupported generated Cypher literal type: {type(value).__name__}"
+    )
+
+
 def _json_text(value: object) -> str:
     return json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
 
@@ -334,11 +369,11 @@ def _neo4j_load(
             'SET person.name = "Alice Smith"\n'
             f'MERGE (source:{account_label} {{id: "{source_account}"}})\n'
             f"MERGE (person)-[:{owns}]->(source);",
-            f"UNWIND {_canonical_json(compact_companies)} AS row\n"
+            f"UNWIND {_cypher_literal(compact_companies)} AS row\n"
             f"MERGE (company:{company_label} {{id: row.id}})\n"
             f"MERGE (target:{account_label} {{id: row.account_id}})\n"
             f"MERGE (company)-[:{owns}]->(target);",
-            f"UNWIND {_canonical_json(compact_transfers)} AS row\n"
+            f"UNWIND {_cypher_literal(compact_transfers)} AS row\n"
             f'MATCH (source:{account_label} {{id: "{source_account}"}})\n'
             f"MATCH (target:{account_label} {{id: row.target_account_id}})\n"
             f"MERGE (source)-[edge:{transfer} {{id: row.id}}]->(target)\n"
