@@ -47,6 +47,12 @@ _TEMPLATE_FILES = {
 _RISK_LEVELS = ("HIGH", "MEDIUM", "LOW")
 _SPLIT_ROLES = frozenset({"seed", "heldout_instance"})
 _NEO4J_BATCH_SIZE = 100
+PARAMETERIZED_RELATIONSHIP_TYPES = {
+    "transfer_to_company": "TRANSFER_TO_COMPANY",
+}
+PARAMETERIZED_PATH_QUANTIFIERS = {
+    "direct": "",
+}
 
 
 class M15ParameterizedWorkloadError(ValueError):
@@ -617,11 +623,11 @@ def _instance_oracles(
     risk = bindings["risk-level"]
     if risk not in spec.risk_levels:
         raise M15ParameterizedWorkloadError("query risk binding is absent from data")
-    if bindings["transfer-predicate"] != "transfer_to_company":
+    if bindings["transfer-predicate"] not in PARAMETERIZED_RELATIONSHIP_TYPES:
         raise M15ParameterizedWorkloadError(
             "exact F2C3 workload supports transfer_to_company only"
         )
-    if bindings["path-shape"] != "direct":
+    if bindings["path-shape"] not in PARAMETERIZED_PATH_QUANTIFIERS:
         raise M15ParameterizedWorkloadError(
             "exact F2C3 workload supports direct path shape only"
         )
@@ -722,10 +728,12 @@ def _build_content(
             )
         instance_hashes.add(contract.instance_hash)
         bindings = instance["binding_values"]
-        relationship_type = {
-            "transfer_to_company": "TRANSFER_TO_COMPANY"
-        }.get(bindings["transfer-predicate"])
-        path_quantifier = {"direct": ""}.get(bindings["path-shape"])
+        relationship_type = PARAMETERIZED_RELATIONSHIP_TYPES.get(
+            bindings["transfer-predicate"]
+        )
+        path_quantifier = PARAMETERIZED_PATH_QUANTIFIERS.get(
+            bindings["path-shape"]
+        )
         if relationship_type is None or path_quantifier is None:
             raise M15ParameterizedWorkloadError(
                 "exact backend template cannot compile this predicate or path shape"
