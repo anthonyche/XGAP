@@ -261,7 +261,8 @@ declared methods. Under one controlled stale-to-current latency transition,
 all return the exact answer; full agent changes from parallel hash to
 risk-first bind while no-replan observes the same preferred change but retains
 the initial plan. Calibration and live timings are deliberately excluded from
-this mechanism-only result.
+this mechanism-only result. The compact clean-commit record is
+`experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

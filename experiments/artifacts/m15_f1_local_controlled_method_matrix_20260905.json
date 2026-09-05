@@ -1,0 +1,102 @@
+{
+  "artifact_id": "m15-f1-local-controlled-method-matrix-20260905",
+  "artifact_role": "controlled_method_mechanism_sanity_check_not_paper_result",
+  "observed_at_utc": "2026-09-05",
+  "git": {
+    "clean": true,
+    "commit": "bba9d9ef0825cb0d3cae60fdbd3900cdffbbacdf"
+  },
+  "workload": {
+    "generator_version": "m15-f0-generator-v2",
+    "profile": "selective",
+    "workload_id": "selective-dev-v1"
+  },
+  "memory_context_fingerprint": "fb02c4d7ff64ea9af54cf77ae9c3f48a19e4746de614a0c1ea51a775db8015a3",
+  "controlled_transition": {
+    "calibration_calls": 3,
+    "calibration_fuseki_risk_latency_ms": 1000.0,
+    "task_fuseki_risk_latency_ms": 2.0,
+    "neo4j_full_latency_ms": 100.0,
+    "neo4j_bound_latency_ms": 10.0,
+    "calibration_included_in_method_metrics": false
+  },
+  "methods": {
+    "static_parallel_hash": {
+      "exact_answer": true,
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 0,
+      "query_remote_calls": 2,
+      "total_backend_calls": 2,
+      "initial_plan": "parallel_hash",
+      "executed_plan": "parallel_hash",
+      "replan_count": 0,
+      "total_bytes_moved": 1097422
+    },
+    "static_risk_first_bind": {
+      "exact_answer": true,
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 0,
+      "query_remote_calls": 2,
+      "total_backend_calls": 2,
+      "initial_plan": "risk_first_bind",
+      "executed_plan": "risk_first_bind",
+      "replan_count": 0,
+      "total_bytes_moved": 28702
+    },
+    "no_memory": {
+      "exact_answer": true,
+      "planning_profile_calls": 3,
+      "probe_remote_calls": 0,
+      "query_remote_calls": 2,
+      "total_backend_calls": 5,
+      "initial_plan": "risk_first_bind",
+      "executed_plan": "risk_first_bind",
+      "replan_count": 0,
+      "total_bytes_moved": 28702
+    },
+    "no_profile_probe": {
+      "exact_answer": true,
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 0,
+      "query_remote_calls": 2,
+      "total_backend_calls": 2,
+      "initial_plan": "parallel_hash",
+      "executed_plan": "parallel_hash",
+      "replan_count": 0,
+      "total_bytes_moved": 1097422
+    },
+    "no_replan": {
+      "exact_answer": true,
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 1,
+      "query_remote_calls": 2,
+      "total_backend_calls": 2,
+      "initial_plan": "parallel_hash",
+      "post_probe_plan": "risk_first_bind",
+      "executed_plan": "parallel_hash",
+      "replan_count": 0,
+      "total_bytes_moved": 1097422
+    },
+    "full_agent": {
+      "exact_answer": true,
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 1,
+      "query_remote_calls": 2,
+      "total_backend_calls": 2,
+      "initial_plan": "parallel_hash",
+      "post_probe_plan": "risk_first_bind",
+      "executed_plan": "risk_first_bind",
+      "replan_count": 1,
+      "total_bytes_moved": 28702
+    }
+  },
+  "validation": {
+    "all_six_methods_present": true,
+    "all_answers_exact": true,
+    "tool_events_match_task_accounting": true,
+    "cold_warm_memory_persistence_tested": true,
+    "full_agent_and_no_replan_are_behaviorally_distinct": true
+  },
+  "automatic_retries": 0,
+  "paper_result": false
+}

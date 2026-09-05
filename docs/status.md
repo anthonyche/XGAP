@@ -58,6 +58,8 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. Full local acceptance now passes 640 tests with 36 gated
 skips. This is `paper_result=false`; no live comparative timing claim is made.
+The compact clean-commit mechanism record is
+`experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
