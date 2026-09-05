@@ -1191,3 +1191,26 @@ Changing the old service job in place would blur the evidence boundary of the
 verified vertical slice. A separate mode allows live control-path validation
 without presenting fixture-scale timings or hand-set cost constants as a
 performance result.
+
+## D87 Scaled federation workloads are generated from frozen bounded specs
+
+M15-F0 commits small, strict workload specifications rather than generated
+database dumps. A deterministic generator materializes namespaced Neo4j and
+Fuseki load/query artifacts, per-source oracles, and the exact federated answer
+inside a new run directory. Every member is bound by SHA-256 in a no-overwrite
+manifest. The loader, adaptive runner, and evidence auditor reopen and validate
+that bundle instead of trusting an in-memory object. The auditor additionally
+binds the declared `selective` or `broad_hot` profile to its exact committed
+specification. Configurations with an empty federated answer are rejected.
+
+The existing tiny `vertical_slice` and `adaptive` modes remain unchanged.
+Scaled execution uses an explicit `scaled_adaptive` mode, a separate run schema
+and Slurm entry point, and remains `paper_result=false` until CWRU execution,
+calibration, repetitions, and comparative baselines are complete.
+
+Reason:
+
+Committing large generated files would make scale changes difficult to audit,
+while generating unbound data would weaken reproducibility. Frozen parameters
+plus deterministic, hash-bound run artifacts preserve exact provenance and let
+selectivity/skew change independently of query semantics or hand-set costs.

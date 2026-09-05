@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 import xgap.experiments.m15_native_services as native_services
 
+from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
     JavaEvidence,
@@ -480,6 +481,105 @@ def test_full_lifecycle_selects_adaptive_workload_explicitly(
     assert manifest["workload_mode"] == "adaptive"
 
 
+def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    bundle = generate_m15_workload_bundle(
+        M15WorkloadSpec(
+            workload_id="native-scaled-test",
+            seed="native-scaled-test-v1",
+            company_count=12,
+            transfer_count=40,
+            high_risk_company_count=3,
+            hot_company_count=2,
+            hot_transfer_count=32,
+            high_risk_placement="cold_first",
+            max_bindings=12,
+        ),
+        tmp_path / "bundle",
+    )
+    with pytest.raises(ValueError, match="requires a verified bundle"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-runs",
+            run_id="missing-scaled-bundle",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="scaled_adaptive",
+        )
+
+    executed: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence("/opt/java17/bin/java", 17, "17"),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "start_service",
+        lambda spec: RunningService(spec, _StableProcess(), io.BytesIO()),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id,
+            True,
+            1,
+            1.0,
+            200,
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args: executed.append((_args[3], _args[4].spec.workload_id)),
+    )
+
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "runs",
+        run_id="native-scaled-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_adaptive",
+        workload_bundle=bundle,
+    )
+
+    assert record.success
+    assert executed == [("scaled_adaptive", "native-scaled-test")]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["workload_mode"] == "scaled_adaptive"
+    assert manifest["workload_bundle"]["spec_sha256"] == bundle.manifest[
+        "spec_sha256"
+    ]
+
+
 def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     script = (
         REPO_ROOT / "scripts" / "slurm" / "run_m15_native_services.sbatch"
@@ -494,4 +594,7 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "rm -rf -- \"$RUNTIME_ROOT\"" in script
     assert "runtime_removed" in script
     assert '--workload-mode "$WORKLOAD_MODE"' in script
+    assert 'WORKLOAD_ARGS=(--workload-bundle "$WORKLOAD_BUNDLE")' in script
+    assert "m15_f0_selective.json" in script
+    assert "m15_f0_broad_hot.json" in script
     assert "--localhost" not in script  # Frozen by the typed service plan.

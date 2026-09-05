@@ -28,6 +28,17 @@ from xgap.experiments.m15_live_federated import (
     build_m15_plan_candidates,
     build_m15_semantic_program,
 )
+from xgap.experiments.m15_scaled_federation import (
+    build_m15_scaled_observation_catalogs,
+    build_m15_scaled_observation_requests,
+    build_m15_scaled_plan_candidates,
+    build_m15_scaled_probe_plan,
+    build_m15_scaled_semantic_program,
+)
+from xgap.experiments.m15_workload import (
+    M15WorkloadBundle,
+    load_m15_workload_bundle,
+)
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.runtime import (
     AdaptiveFederatedExecutor,
@@ -334,6 +345,7 @@ def run_m15_live_adaptive(
     run_id: str | None = None,
     repo_root: str | Path | None = None,
     clients: Mapping[str, BackendClient] | None = None,
+    workload_bundle: M15WorkloadBundle | str | Path | None = None,
     bandwidth_bytes_per_ms: float = 1000.0,
     exchange_fixed_ms: float = 0.5,
     coordinator_row_ms: float = 0.001,
@@ -341,6 +353,15 @@ def run_m15_live_adaptive(
     """Profile registered queries once, persist memory, and run one live query."""
 
     root = Path(repo_root).resolve() if repo_root is not None else _repo_root()
+    selected_bundle = (
+        load_m15_workload_bundle(
+            workload_bundle.root
+            if isinstance(workload_bundle, M15WorkloadBundle)
+            else workload_bundle
+        )
+        if workload_bundle is not None
+        else None
+    )
     selected_run_id = run_id or f"m15-live-adaptive-{_now_slug()}"
     if not _SAFE_RUN_ID.fullmatch(selected_run_id):
         raise ValueError("run_id contains unsupported characters")
@@ -354,9 +375,43 @@ def run_m15_live_adaptive(
     adaptive_path = run_root / "adaptive_result.json"
     started_at = _now()
 
-    candidates = build_m15_plan_candidates(root)
-    probe_plan = build_m15_probe_plan(root)
-    requests = build_m15_observation_requests()
+    if selected_bundle is None:
+        dataset_id = "m15_split_financial_risk"
+        program = build_m15_semantic_program()
+        candidates = build_m15_plan_candidates(root)
+        probe_plan = build_m15_probe_plan(root)
+        requests = build_m15_observation_requests()
+        catalogs = build_m15_observation_catalogs(root)
+        expected = _expected_rows(root)
+        expected_sources = _expected_source_rows(root)
+        source_hashes = {
+            str(path): _sha256_file(_repo_path(root, path)) for path in SOURCE_PATHS
+        }
+        snapshot_id = "m15-live-adaptive"
+        risk_observation_key = "fuseki-high-risk"
+        evidence_class = "live_backend_development_gate"
+    else:
+        dataset_id = f"m15_f0:{selected_bundle.spec.workload_id}"
+        program = build_m15_scaled_semantic_program(selected_bundle)
+        candidates = build_m15_scaled_plan_candidates(selected_bundle)
+        probe_plan = build_m15_scaled_probe_plan(selected_bundle)
+        requests = build_m15_scaled_observation_requests(selected_bundle)
+        catalogs = build_m15_scaled_observation_catalogs(selected_bundle)
+        expected = [dict(row) for row in selected_bundle.expected_rows]
+        expected_sources = {
+            key: [dict(row) for row in rows]
+            for key, rows in selected_bundle.expected_source_rows.items()
+        }
+        source_hashes = {
+            f"bundle:{selected_bundle.spec.workload_id}/{name}": digest
+            for name, digest in selected_bundle.source_hashes.items()
+        }
+        source_hashes[
+            f"bundle:{selected_bundle.spec.workload_id}/manifest.json"
+        ] = _sha256_file(selected_bundle.root / "manifest.json")
+        snapshot_id = f"m15-f0-{selected_bundle.spec.workload_id}-live-adaptive"
+        risk_observation_key = requests[2].observation_key
+        evidence_class = "deterministic_scaled_live_backend_development_gate"
     model_config = {
         "schema_version": MODEL_SCHEMA_VERSION,
         "bandwidth_bytes_per_ms": bandwidth_bytes_per_ms,
@@ -366,7 +421,7 @@ def run_m15_live_adaptive(
         "calibrated": False,
         "paper_result": False,
     }
-    _write_json(run_root / "semantic_program.json", build_m15_semantic_program().to_dict())
+    _write_json(run_root / "semantic_program.json", program.to_dict())
     _write_json(
         run_root / "candidate_plans.json",
         {
@@ -401,7 +456,6 @@ def run_m15_live_adaptive(
         if unavailable:
             raise RuntimeError(f"backend healthcheck failed: {', '.join(unavailable)}")
 
-        catalogs = build_m15_observation_catalogs(root)
         plugins = BackendPluginRegistry()
         for backend_id in ("neo4j", "fuseki"):
             plugins.register(
@@ -417,7 +471,7 @@ def run_m15_live_adaptive(
         backend_tool = BackendInvokeTool(plugins)
         collection = PlanObservationCollector(backend_tool).collect(
             requests,
-            snapshot_id="m15-live-adaptive",
+            snapshot_id=snapshot_id,
             version="profile-task-0",
             bandwidth_bytes_per_ms=bandwidth_bytes_per_ms,
             exchange_fixed_ms=exchange_fixed_ms,
@@ -445,7 +499,7 @@ def run_m15_live_adaptive(
             candidates,
             reopened_before,
             probe_plan=probe_plan,
-            observations=(ProbeObservation("high-risk", "fuseki-high-risk"),),
+            observations=(ProbeObservation("high-risk", risk_observation_key),),
             updated_version="query-task-1",
             observation_source=f"{selected_run_id}/runtime-probe/high-risk",
             policy=ReplanPolicy(max_replans=1),
@@ -462,8 +516,6 @@ def run_m15_live_adaptive(
         if not adaptive.success:
             raise RuntimeError(adaptive.error or "adaptive continuation failed")
 
-        expected = _expected_rows(root)
-        expected_sources = _expected_source_rows(root)
         execute_events = [event for event in events if event["operation"] == "execute"]
         profile_events = [event for event in events if event["operation"] == "profile"]
         full_rows = _observation_rows(collection.tool_results[0])
@@ -529,13 +581,10 @@ def run_m15_live_adaptive(
             "ended_at": ended_at,
         },
     )
-    source_hashes = {
-        str(path): _sha256_file(_repo_path(root, path)) for path in SOURCE_PATHS
-    }
     manifest = {
         "schema_version": RUN_SCHEMA_VERSION,
         "run_id": selected_run_id,
-        "dataset_id": "m15_split_financial_risk",
+        "dataset_id": dataset_id,
         "status": "success" if success else "failed",
         "error": error,
         "started_at": started_at,
@@ -547,6 +596,9 @@ def run_m15_live_adaptive(
             "platform": platform.platform(),
         },
         "input_sha256": source_hashes,
+        "workload_bundle": (
+            dict(selected_bundle.manifest) if selected_bundle is not None else None
+        ),
         "cost_model": model_config,
         "backend_health": health,
         "observation_collection": collection.to_dict() if collection else None,
@@ -577,7 +629,7 @@ def run_m15_live_adaptive(
                 manifest_path.name,
             }
         ),
-        "evidence_class": "live_backend_development_gate",
+        "evidence_class": evidence_class,
         "paper_result": False,
         "no_llm": True,
         "no_ontology": True,
@@ -600,6 +652,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--output-root", default="runs")
     parser.add_argument("--run-id")
     parser.add_argument("--repo-root")
+    parser.add_argument("--workload-bundle")
     args = parser.parse_args(argv)
     if os.environ.get("XGAP_RUN_M15_ADAPTIVE") != "1":
         print(
@@ -620,6 +673,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             output_root=args.output_root,
             run_id=args.run_id,
             repo_root=args.repo_root,
+            workload_bundle=args.workload_bundle,
         )
     except (FileExistsError, ValueError) as exc:
         print(json.dumps({"status": "configuration_error", "error": str(exc)}))

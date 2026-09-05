@@ -15,14 +15,17 @@ from xgap.experiments.m15_native_evidence import audit_m15_native_run, main
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
     ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
+    SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     SERVICE_PLAN_SCHEMA_VERSION,
     SERVICE_RUN_SCHEMA_VERSION,
 )
+from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport, QueryArtifact
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 COMMIT = "a" * 40
+SELECTIVE_CONFIG = REPO_ROOT / "experiments/configs/m15_f0_selective.json"
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -260,8 +263,7 @@ class _AdaptiveFakeClient:
             rows = [
                 row
                 for row in rows
-                if str(row.get("company_id", "")).removeprefix("neo:")
-                in company_ids
+                if str(row.get("company_id", "")).rsplit(":", 1)[-1] in company_ids
             ]
         return ExecutionReport(
             self.backend_id,
@@ -327,6 +329,75 @@ def _complete_adaptive_run(tmp_path: Path) -> Path:
     return run
 
 
+def _complete_scaled_adaptive_run(tmp_path: Path) -> Path:
+    run = _complete_run(tmp_path)
+    service = run / "native-service-run"
+    bundle = generate_m15_workload_bundle(
+        M15WorkloadSpec.from_json(SELECTIVE_CONFIG),
+        run / "workload-bundle",
+    )
+    _write_json(
+        run / "workload_generation.json",
+        {"status": "success", **bundle.to_dict()},
+    )
+    adaptive_record = run_m15_live_adaptive(
+        output_root=service,
+        run_id="adaptive-run",
+        repo_root=REPO_ROOT,
+        clients={
+            "neo4j": _AdaptiveNeo4jClient(
+                "neo4j", bundle.expected_source_rows["neo4j"]
+            ),
+            "fuseki": _AdaptiveFakeClient(
+                "fuseki", bundle.expected_source_rows["fuseki"]
+            ),
+        },
+        workload_bundle=bundle,
+    )
+    assert adaptive_record.success, adaptive_record.error
+
+    outer_path = run / "run_status.json"
+    outer = json.loads(outer_path.read_text(encoding="utf-8"))
+    outer["workload_mode"] = "scaled_adaptive"
+    _write_json(outer_path, outer)
+
+    environment_path = run / "environment.txt"
+    environment = environment_path.read_text(encoding="utf-8").replace(
+        "run_version=m15-b2d-native-services-v1",
+        "run_version=m15-f0-native-scaled-adaptive-services-v1",
+    )
+    environment += "workload_mode=scaled_adaptive\nworkload_profile=selective\n"
+    environment_path.write_text(environment, encoding="utf-8")
+
+    service_manifest_path = service / "run_manifest.json"
+    service_manifest = json.loads(service_manifest_path.read_text(encoding="utf-8"))
+    service_manifest["schema_version"] = SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION
+    service_manifest["workload_mode"] = "scaled_adaptive"
+    service_manifest["workload_bundle"] = dict(bundle.manifest)
+    _write_json(service_manifest_path, service_manifest)
+
+    fixture_path = service / "fixture-load" / "run_manifest.json"
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    fixture["dataset_id"] = "m15_f0:selective-dev-v1"
+    fixture["workload_bundle"] = dict(bundle.manifest)
+    fixture["input_sha256"] = {
+        **{
+            f"bundle:selective-dev-v1/{name}": digest
+            for name, digest in bundle.source_hashes.items()
+        },
+        "bundle:selective-dev-v1/manifest.json": hashlib.sha256(
+            (bundle.root / "manifest.json").read_bytes()
+        ).hexdigest(),
+    }
+    _write_json(fixture_path, fixture)
+
+    adaptive_manifest_path = adaptive_record.manifest_path
+    adaptive_manifest = json.loads(adaptive_manifest_path.read_text(encoding="utf-8"))
+    adaptive_manifest["git"] = {"commit": COMMIT, "clean": True}
+    _write_json(adaptive_manifest_path, adaptive_manifest)
+    return run
+
+
 def test_complete_native_run_passes_cross_artifact_audit(tmp_path: Path) -> None:
     run = _complete_run(tmp_path)
 
@@ -356,6 +427,47 @@ def test_complete_native_adaptive_run_passes_cross_artifact_audit(
     assert audit.success, audit.failed_check_ids
     assert audit.failed_check_ids == ()
     assert len(audit.checks) >= 90
+
+
+def test_complete_native_scaled_adaptive_run_passes_bundle_bound_audit(
+    tmp_path: Path,
+) -> None:
+    run = _complete_scaled_adaptive_run(tmp_path)
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_adaptive",
+    )
+
+    assert audit.success, audit.failed_check_ids
+    assert audit.failed_check_ids == ()
+    assert len(audit.checks) >= 100
+
+
+def test_scaled_audit_rejects_profile_label_that_disagrees_with_frozen_spec(
+    tmp_path: Path,
+) -> None:
+    run = _complete_scaled_adaptive_run(tmp_path)
+    environment_path = run / "environment.txt"
+    environment_path.write_text(
+        environment_path.read_text(encoding="utf-8").replace(
+            "workload_profile=selective",
+            "workload_profile=broad_hot",
+        ),
+        encoding="utf-8",
+    )
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_adaptive",
+    )
+
+    assert not audit.success
+    assert "workload_bundle.profile_spec" in audit.failed_check_ids
 
 
 def test_adaptive_audit_detects_duplicate_query_invocation(tmp_path: Path) -> None:

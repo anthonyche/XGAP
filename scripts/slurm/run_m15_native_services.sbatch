@@ -14,6 +14,7 @@ JAVA_MODULE="${XGAP_JAVA_MODULE:-Java/17.0.6}"
 PYTHON_BIN="${XGAP_PYTHON:-python}"
 CACHE_ROOT="${XGAP_NATIVE_ARTIFACT_CACHE:-$HOME/xgap-data/m15-native/artifacts}"
 WORKLOAD_MODE="${XGAP_M15_WORKLOAD_MODE:-vertical_slice}"
+WORKLOAD_PROFILE="${XGAP_M15_WORKLOAD_PROFILE:-selective}"
 case "$WORKLOAD_MODE" in
   vertical_slice)
     RUN_PREFIX="cwru-m15-native-services"
@@ -22,6 +23,22 @@ case "$WORKLOAD_MODE" in
   adaptive)
     RUN_PREFIX="cwru-m15-native-adaptive"
     RUN_VERSION="m15-d2-native-adaptive-services-v1"
+    ;;
+  scaled_adaptive)
+    RUN_PREFIX="cwru-m15-native-scaled-adaptive"
+    RUN_VERSION="m15-f0-native-scaled-adaptive-services-v1"
+    case "$WORKLOAD_PROFILE" in
+      selective)
+        WORKLOAD_CONFIG="experiments/configs/m15_f0_selective.json"
+        ;;
+      broad_hot)
+        WORKLOAD_CONFIG="experiments/configs/m15_f0_broad_hot.json"
+        ;;
+      *)
+        echo "Unsupported XGAP_M15_WORKLOAD_PROFILE: $WORKLOAD_PROFILE" >&2
+        exit 2
+        ;;
+    esac
     ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
@@ -167,6 +184,7 @@ RUNTIME_ROOT="$(mktemp -d "$LOCAL_BASE/xgap-m15-${SLURM_JOB_ID}.XXXXXX")"
   printf 'loopback_only=true\n'
   printf 'automatic_retries=0\n'
   printf 'workload_mode=%s\n' "$WORKLOAD_MODE"
+  printf 'workload_profile=%s\n' "$WORKLOAD_PROFILE"
 } > "$RUN_ROOT/environment.txt"
 if command -v findmnt >/dev/null 2>&1; then
   findmnt -T "$LOCAL_BASE" -o TARGET,SOURCE,FSTYPE,OPTIONS \
@@ -187,6 +205,17 @@ PYTHONPATH="$REPO_ROOT/src" \
   --manifest "$STAGING_MANIFEST" \
   | tee "$RUN_ROOT/runtime_staging_result.json"
 
+WORKLOAD_ARGS=()
+if [[ "$WORKLOAD_MODE" == scaled_adaptive ]]; then
+  WORKLOAD_BUNDLE="$RUN_ROOT/workload-bundle"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_workload \
+    --spec "$REPO_ROOT/$WORKLOAD_CONFIG" \
+    --output "$WORKLOAD_BUNDLE" \
+    | tee "$RUN_ROOT/workload_generation.json"
+  WORKLOAD_ARGS=(--workload-bundle "$WORKLOAD_BUNDLE")
+fi
+
 XGAP_RUN_M15_NATIVE_SERVICES=1 \
 PYTHONPATH="$REPO_ROOT/src" \
 "$PYTHON_BIN" -m xgap.experiments.m15_native_services \
@@ -199,6 +228,7 @@ PYTHONPATH="$REPO_ROOT/src" \
   --java-command "$JAVA_BIN" \
   --repo-root "$REPO_ROOT" \
   --workload-mode "$WORKLOAD_MODE" \
+  "${WORKLOAD_ARGS[@]}" \
   | tee "$RUN_ROOT/native_service_result.json"
 
 echo "M15 native services workload '$WORKLOAD_MODE' passed."

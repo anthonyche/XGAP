@@ -16,6 +16,7 @@ from xgap.experiments.m15_fixture_loader import (
     main,
     split_cypher_statements,
 )
+from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport
 
@@ -209,6 +210,52 @@ def test_fixture_loader_writes_exact_success_evidence(tmp_path: Path) -> None:
     assert clients["fuseki"].health_calls == 2
     assert clients["neo4j"].execute_calls == 1
     assert clients["fuseki"].execute_calls == 1
+
+
+def test_fixture_loader_consumes_verified_scaled_bundle_without_static_paths(
+    tmp_path: Path,
+) -> None:
+    spec = M15WorkloadSpec(
+        workload_id="loader-test",
+        seed="loader-test-v1",
+        company_count=12,
+        transfer_count=40,
+        high_risk_company_count=3,
+        hot_company_count=2,
+        hot_transfer_count=32,
+        high_risk_placement="cold_first",
+        max_bindings=12,
+    )
+    bundle = generate_m15_workload_bundle(spec, tmp_path / "bundle")
+    clients = {
+        backend_id: FakeClient(backend_id, rows)
+        for backend_id, rows in bundle.expected_source_rows.items()
+    }
+    loaders = {
+        "neo4j": FakeLoader("neo4j"),
+        "fuseki": FakeLoader("fuseki"),
+    }
+
+    record = load_m15_split_fixture(
+        output_root=tmp_path,
+        run_id="scaled-fixture-load",
+        repo_root=REPO_ROOT,
+        clients=clients,
+        loaders=loaders,
+        workload_bundle=bundle,
+    )
+
+    assert record.success, record.error
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["dataset_id"] == "m15_f0:loader-test"
+    assert manifest["workload_bundle"]["spec_sha256"] == bundle.manifest[
+        "spec_sha256"
+    ]
+    assert set(manifest["input_sha256"]) == {
+        *(f"bundle:loader-test/{name}" for name in bundle.source_hashes),
+        "bundle:loader-test/manifest.json",
+    }
+    assert loaders["neo4j"].calls == loaders["fuseki"].calls == 1
 
 
 def test_fixture_loader_persists_partial_failure_without_retry(tmp_path: Path) -> None:

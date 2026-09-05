@@ -12,6 +12,7 @@ from xgap.experiments.m15_live_adaptive import (
     main,
     run_m15_live_adaptive,
 )
+from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport, QueryArtifact
 from xgap.runtime import RuntimeNodeKind
 
@@ -45,8 +46,7 @@ class FakeClient:
             rows = [
                 row
                 for row in rows
-                if str(row.get("company_id", "")).removeprefix("neo:")
-                in company_ids
+                if str(row.get("company_id", "")).rsplit(":", 1)[-1] in company_ids
             ]
         return ExecutionReport(
             self.backend_id,
@@ -195,6 +195,58 @@ def test_live_adaptive_contract_uses_three_profiles_and_two_query_calls(
         .read_text(encoding="utf-8")
         .splitlines()
     ) == 2
+
+
+def test_live_adaptive_consumes_verified_scaled_workload_bundle(
+    tmp_path: Path,
+) -> None:
+    bundle = generate_m15_workload_bundle(
+        M15WorkloadSpec(
+            workload_id="adaptive-test",
+            seed="adaptive-test-v1",
+            company_count=12,
+            transfer_count=40,
+            high_risk_company_count=3,
+            hot_company_count=2,
+            hot_transfer_count=32,
+            high_risk_placement="cold_first",
+            max_bindings=12,
+        ),
+        tmp_path / "bundle",
+    )
+    clients = {
+        "neo4j": ProfileFakeClient(
+            "neo4j",
+            bundle.expected_source_rows["neo4j"],
+        ),
+        "fuseki": FakeClient(
+            "fuseki",
+            bundle.expected_source_rows["fuseki"],
+        ),
+    }
+
+    record = run_m15_live_adaptive(
+        output_root=tmp_path,
+        run_id="scaled-live-adaptive",
+        repo_root=REPO_ROOT,
+        clients=clients,
+        workload_bundle=bundle,
+    )
+
+    assert record.success, record.error
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    adaptive = json.loads(record.adaptive_result_path.read_text(encoding="utf-8"))
+    assert manifest["dataset_id"] == "m15_f0:adaptive-test"
+    assert manifest["evidence_class"] == (
+        "deterministic_scaled_live_backend_development_gate"
+    )
+    assert manifest["workload_bundle"]["spec_sha256"] == bundle.manifest[
+        "spec_sha256"
+    ]
+    assert manifest["validation"]["passed"] is True
+    assert adaptive["final_run"]["final_rows"] == bundle.expected_rows
+    assert adaptive["total_remote_calls"] == 2
+    assert manifest["paper_result"] is False
 
 
 def test_live_adaptive_preserves_partial_observation_failure_without_query(

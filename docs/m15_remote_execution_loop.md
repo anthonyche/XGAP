@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D, REFRESHED D1 CPU, AND D2 LIVE ADAPTIVE GATES VERIFIED; SCALE/CALIBRATION PENDING
-- Version Label: m15_remote_loop_v16
+- Verification Status: CWRU B2D/D2 VERIFIED; F0 SCALE/SKEW SUBSTRATE VERIFIED LOCALLY; CWRU F0/CALIBRATION PENDING
+- Version Label: m15_remote_loop_v17
 
 ## Current claim boundary
 
@@ -182,7 +182,10 @@ Status: **VERIFIED**, most recently by job `3787126` on `compt331`.
   replanning suites and therefore expects 128 passes and two gated skips. The
   subsequent C2/D2 wrapper adds the live adaptive and mode-aware audit
   regressions and passes 140 tests with the same two skips. Job `3787152`
-  verified that live path independently against the real services.
+  verified that live path independently against the real services. The current
+  F0 wrapper also covers deterministic workload generation, scaled plans, and
+  profile-to-spec audit binding and expects 159 passes with two gated skips;
+  that refreshed CPU wrapper has not yet run on CWRU.
 - Refreshed gate: job `3787126` completed at exact clean commit
   `4c26eea06c94c4ac0d650c56cf50b8da051a91bb` in 28 seconds on `compt331`.
   The scheduler exit was `0:0`; all seven expected artifacts were present;
@@ -322,7 +325,16 @@ VPN reachability and a working user-owned SSH alias.
 
 ### M15-F — Workload, baselines, ablations, and UI gate
 
-- Freeze the synthetic federation workload before importing larger datasets.
+- F0 locally freezes two bounded specifications over 200 companies and 5,000
+  transfers. The selective profile has 20 high-risk cold companies and 120
+  exact answer rows; the broad-hot profile has 160 high-risk companies and
+  4,800 exact answer rows.
+- Generated Neo4j/Fuseki loads, native queries, source oracles, and the final
+  oracle exist only in the no-overwrite run tree and are SHA-256 bound. The
+  read-only audit binds the requested profile to its committed spec.
+- `run_m15_native_scaled_adaptive.sbatch` exposes only `selective` and
+  `broad_hot` through a separate `scaled_adaptive` mode. The first CWRU gate is
+  one selective run; it is not a paper result.
 - Add external datasets, catalog, and ontology through versioned adapters.
 - Run correctness, cost, scaling, failure, and ambiguity experiments.
 - Build the thin UI only after the CLI trace schema, remote executor, and one
@@ -334,6 +346,7 @@ B0, both B1 CPU gates, B2 prerequisite, B2B supply, B2D service lifecycle, B3
 federated execution, D2 live adaptation, and their independent evidence audits
 are complete. Keep jobs `3787110`, `3787126`, and `3787152` and their run trees
 immutable. D2 job `3787144` remains a separate pre-service wrapper failure;
-preserve its top-level output. The next external handoff occurs only after the
-scaled/skewed workload and its auditor are published at an exact clean commit.
-No paper-performance claim is currently made.
+preserve its top-level output. The scaled/skewed workload and its auditor are
+now locally verified and must be published at one exact clean commit. The next
+external handoff is one `selective` scaled-adaptive job at that commit, followed
+by a separate read-only audit. No paper-performance claim is currently made.

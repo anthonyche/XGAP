@@ -28,9 +28,15 @@ from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
     ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     LOCAL_FILESYSTEM_TYPES,
+    SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     SERVICE_PLAN_SCHEMA_VERSION,
     SERVICE_RUN_SCHEMA_VERSION,
     WORKLOAD_MODES,
+)
+from xgap.experiments.m15_workload import (
+    M15WorkloadBundle,
+    M15WorkloadSpec,
+    load_m15_workload_bundle,
 )
 
 
@@ -194,6 +200,8 @@ def audit_m15_native_run(
         raise ValueError("expected_commit must be a full lowercase Git commit")
     if workload_mode not in WORKLOAD_MODES:
         raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
+    adaptive_mode = workload_mode in {"adaptive", "scaled_adaptive"}
+    scaled_mode = workload_mode == "scaled_adaptive"
     selected_run = Path(run_root)
     if selected_run.is_symlink():
         raise ValueError("run_root must not be a symbolic link")
@@ -262,6 +270,13 @@ def audit_m15_native_run(
                 "probe_plan": adaptive_root / "probe_plan.json",
             }
         )
+    if scaled_mode:
+        paths.update(
+            {
+                "workload_generation": run / "workload_generation.json",
+                "workload_manifest": run / "workload-bundle" / "manifest.json",
+            }
+        )
     loaded: dict[str, Any] = {}
     states: dict[str, str] = {}
     for key, path in paths.items():
@@ -291,6 +306,14 @@ def audit_m15_native_run(
     for key in paths:
         check(f"artifact.{key}", "ok", states[key])
 
+    scaled_bundle: M15WorkloadBundle | None = None
+    if scaled_mode:
+        try:
+            scaled_bundle = load_m15_workload_bundle(run / "workload-bundle")
+            check("workload_bundle.integrity", True, True)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            check("workload_bundle.integrity", True, f"invalid:{exc}")
+
     outer = _dict(loaded.get("outer_status"))
     environment = _dict(loaded.get("environment"))
     staging = _dict(loaded.get("staging"))
@@ -306,18 +329,46 @@ def audit_m15_native_run(
     check("outer.runtime_removed", True, outer.get("runtime_removed"))
     check("outer.cleanup_error", None, outer.get("cleanup_error"))
 
-    expected_run_version = (
-        "m15-d2-native-adaptive-services-v1"
-        if workload_mode == "adaptive"
-        else "m15-b2d-native-services-v1"
-    )
+    expected_run_version = {
+        "vertical_slice": "m15-b2d-native-services-v1",
+        "adaptive": "m15-d2-native-adaptive-services-v1",
+        "scaled_adaptive": "m15-f0-native-scaled-adaptive-services-v1",
+    }[workload_mode]
     check("environment.run_version", expected_run_version, environment.get("run_version"))
     check("environment.git_commit", expected_commit, environment.get("git_commit"))
     check("environment.java_module", "Java/17.0.6", environment.get("java_module"))
     check("environment.loopback_only", "true", environment.get("loopback_only"))
     check("environment.automatic_retries", "0", environment.get("automatic_retries"))
-    if workload_mode == "adaptive":
-        check("environment.workload_mode", "adaptive", environment.get("workload_mode"))
+    if adaptive_mode:
+        check(
+            "environment.workload_mode",
+            workload_mode,
+            environment.get("workload_mode"),
+        )
+    if scaled_mode:
+        profile = environment.get("workload_profile")
+        check(
+            "environment.workload_profile",
+            True,
+            profile in {"selective", "broad_hot"},
+        )
+        profile_config = {
+            "selective": repo / "experiments/configs/m15_f0_selective.json",
+            "broad_hot": repo / "experiments/configs/m15_f0_broad_hot.json",
+        }.get(str(profile))
+        try:
+            expected_scaled_spec = (
+                M15WorkloadSpec.from_json(profile_config)
+                if profile_config is not None
+                else None
+            )
+        except (OSError, ValueError, json.JSONDecodeError):
+            expected_scaled_spec = None
+        check(
+            "workload_bundle.profile_spec",
+            expected_scaled_spec.to_dict() if expected_scaled_spec else None,
+            scaled_bundle.spec.to_dict() if scaled_bundle else None,
+        )
     filesystem_type = str(environment.get("runtime_filesystem_type", "")).lower()
     check("environment.local_filesystem", True, filesystem_type in LOCAL_FILESYSTEM_TYPES)
     runtime_mount = loaded.get("runtime_mount")
@@ -373,11 +424,11 @@ def audit_m15_native_run(
             inspection.get("digest_value"),
         )
 
-    expected_service_schema = (
-        ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION
-        if workload_mode == "adaptive"
-        else SERVICE_RUN_SCHEMA_VERSION
-    )
+    expected_service_schema = {
+        "vertical_slice": SERVICE_RUN_SCHEMA_VERSION,
+        "adaptive": ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
+        "scaled_adaptive": SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
+    }[workload_mode]
     check("service.schema", expected_service_schema, service_manifest.get("schema_version"))
     check("service.status", "success", service_manifest.get("status"))
     check("service.error", None, service_manifest.get("error"))
@@ -385,9 +436,20 @@ def audit_m15_native_run(
     check("service.restarts", 0, service_manifest.get("service_restarts"))
     check("service.public_ports", False, service_manifest.get("public_ports"))
     check("service.credentials", False, service_manifest.get("credentials_persisted"))
-    if workload_mode == "adaptive":
-        check("outer.workload_mode", "adaptive", outer.get("workload_mode"))
-        check("service.workload_mode", "adaptive", service_manifest.get("workload_mode"))
+    if adaptive_mode:
+        check("outer.workload_mode", workload_mode, outer.get("workload_mode"))
+        check(
+            "service.workload_mode",
+            workload_mode,
+            service_manifest.get("workload_mode"),
+        )
+    if scaled_mode:
+        bundle_manifest = dict(scaled_bundle.manifest) if scaled_bundle else None
+        check(
+            "service.workload_bundle",
+            bundle_manifest,
+            service_manifest.get("workload_bundle"),
+        )
 
     check("plan.schema", SERVICE_PLAN_SCHEMA_VERSION, plan.get("schema_version"))
     check("plan.runtime_lock_sha256", lock_sha256, plan.get("runtime_lock_sha256"))
@@ -528,9 +590,41 @@ def audit_m15_native_run(
     check("fixture.git_commit", expected_commit, _dict(fixture.get("git")).get("commit"))
     check("fixture.git_clean", True, _dict(fixture.get("git")).get("clean"))
 
-    expected_result = json.loads(
-        (repo / "examples" / "m15_split_financial_risk" / "expected_result.json").read_text(
-            encoding="utf-8"
+    if scaled_mode:
+        bundle_manifest = dict(scaled_bundle.manifest) if scaled_bundle else None
+        generation = _dict(loaded.get("workload_generation"))
+        check("workload_generation.status", "success", generation.get("status"))
+        check(
+            "workload_generation.root",
+            str(scaled_bundle.root) if scaled_bundle else None,
+            generation.get("root"),
+        )
+        check(
+            "workload_generation.spec",
+            scaled_bundle.spec.to_dict() if scaled_bundle else None,
+            generation.get("spec"),
+        )
+        check(
+            "workload_generation.manifest",
+            bundle_manifest,
+            generation.get("manifest"),
+        )
+        check("fixture.workload_bundle", bundle_manifest, fixture.get("workload_bundle"))
+        scaled_dataset_id = (
+            f"m15_f0:{scaled_bundle.spec.workload_id}" if scaled_bundle else None
+        )
+        check("fixture.dataset_id", scaled_dataset_id, fixture.get("dataset_id"))
+
+    expected_result = (
+        [dict(row) for row in scaled_bundle.expected_rows]
+        if scaled_bundle is not None
+        else json.loads(
+            (
+                repo
+                / "examples"
+                / "m15_split_financial_risk"
+                / "expected_result.json"
+            ).read_text(encoding="utf-8")
         )
     )
     if workload_mode == "vertical_slice":
@@ -571,6 +665,11 @@ def audit_m15_native_run(
         observation_requests = _list(loaded.get("observation_requests"))
 
         check("adaptive.schema", ADAPTIVE_SCHEMA, adaptive.get("schema_version"))
+        if scaled_mode:
+            scaled_dataset_id = (
+                f"m15_f0:{scaled_bundle.spec.workload_id}" if scaled_bundle else None
+            )
+            check("adaptive.dataset_id", scaled_dataset_id, adaptive.get("dataset_id"))
         check("adaptive.status", "success", adaptive.get("status"))
         check("adaptive.error", None, adaptive.get("error"))
         check("adaptive_status.schema", ADAPTIVE_SCHEMA, adaptive_status.get("schema_version"))
@@ -599,9 +698,17 @@ def audit_m15_native_run(
         check("adaptive.no_llm", True, adaptive.get("no_llm"))
         check("adaptive.no_ontology", True, adaptive.get("no_ontology"))
         check("adaptive.paper_result", False, adaptive.get("paper_result"))
+        scaled_workload_id = (
+            scaled_bundle.spec.workload_id if scaled_bundle is not None else None
+        )
+        expected_evidence_class = (
+            "deterministic_scaled_live_backend_development_gate"
+            if scaled_mode
+            else "live_backend_development_gate"
+        )
         check(
             "adaptive.evidence_class",
-            "live_backend_development_gate",
+            expected_evidence_class,
             adaptive.get("evidence_class"),
         )
         check("adaptive.automatic_retries", 0, adaptive.get("automatic_retries"))
@@ -613,9 +720,24 @@ def audit_m15_native_run(
         check("adaptive.git_clean", True, _dict(adaptive.get("git")).get("clean"))
         check("adaptive.memory_before", True, adaptive.get("memory_before_reopened"))
         check("adaptive.memory_after", True, adaptive.get("memory_after_reopened"))
-        expected_hashes = {
-            str(path): _sha256_file(repo / path) for path in ADAPTIVE_SOURCE_PATHS
-        }
+        if scaled_bundle is not None:
+            expected_hashes = {
+                f"bundle:{scaled_workload_id}/{name}": digest
+                for name, digest in scaled_bundle.source_hashes.items()
+            }
+            expected_hashes[
+                f"bundle:{scaled_workload_id}/manifest.json"
+            ] = _sha256_file(scaled_bundle.root / "manifest.json")
+            check(
+                "adaptive.workload_bundle",
+                dict(scaled_bundle.manifest),
+                adaptive.get("workload_bundle"),
+            )
+            check("fixture.input_sha256", expected_hashes, fixture.get("input_sha256"))
+        else:
+            expected_hashes = {
+                str(path): _sha256_file(repo / path) for path in ADAPTIVE_SOURCE_PATHS
+            }
         check("adaptive.input_sha256", expected_hashes, adaptive.get("input_sha256"))
         expected_artifacts = {
             "adaptive_result.json",
@@ -650,7 +772,14 @@ def audit_m15_native_run(
             and not isinstance(summary.get("replan_count"), bool)
             and summary.get("replan_count") in {0, 1},
         )
-        valid_plan_ids = {"m15-parallel-hash", "m15-risk-first-bind"}
+        valid_plan_ids = (
+            {
+                f"m15-f0-{scaled_workload_id}-parallel-hash",
+                f"m15-f0-{scaled_workload_id}-risk-first-bind",
+            }
+            if scaled_mode
+            else {"m15-parallel-hash", "m15-risk-first-bind"}
+        )
         check(
             "adaptive.summary_initial_plan",
             True,
@@ -703,24 +832,37 @@ def audit_m15_native_run(
             snapshot_before,
             collection.get("snapshot"),
         )
+        observation_prefix = f"m15-f0:{scaled_workload_id}" if scaled_mode else None
         expected_requests = [
             (
                 "profile-neo4j-full",
-                "neo4j-recent-transfers-full",
+                (
+                    f"{observation_prefix}:neo4j-full"
+                    if scaled_mode
+                    else "neo4j-recent-transfers-full"
+                ),
                 "neo4j",
                 "profile",
                 {"query_id": "recent-transfers-full"},
             ),
             (
                 "profile-neo4j-bound",
-                "neo4j-recent-transfers-bound",
+                (
+                    f"{observation_prefix}:neo4j-bound"
+                    if scaled_mode
+                    else "neo4j-recent-transfers-bound"
+                ),
                 "neo4j",
                 "profile",
                 {"query_id": "recent-transfers-bound"},
             ),
             (
                 "profile-fuseki-risk",
-                "fuseki-high-risk",
+                (
+                    f"{observation_prefix}:fuseki-risk"
+                    if scaled_mode
+                    else "fuseki-high-risk"
+                ),
                 "fuseki",
                 "profile",
                 {"query_id": "high-risk"},
@@ -764,13 +906,22 @@ def audit_m15_native_run(
             ["backend_native", "backend_native", "wall_clock_execute"],
             [str(_dict(event).get("observation_mode")) for event in events[:3]],
         )
-        check(
-            "invocations.profile_artifacts",
+        expected_profile_artifacts = (
             [
+                f"m15-f0-{scaled_workload_id}-neo4j-full",
+                f"m15-f0-{scaled_workload_id}-neo4j-bound",
+                f"m15-f0-{scaled_workload_id}-fuseki-risk",
+            ]
+            if scaled_mode
+            else [
                 "m15-split-neo4j",
                 "m15-split-neo4j-bound",
                 "m15-split-fuseki",
-            ],
+            ]
+        )
+        check(
+            "invocations.profile_artifacts",
+            expected_profile_artifacts,
             [str(_dict(event).get("artifact_id")) for event in events[:3]],
         )
         execute_events = [
@@ -800,7 +951,13 @@ def audit_m15_native_run(
         ]
         check(
             "invocations.fuseki_execute_artifact",
-            ["m15-split-fuseki"],
+            [
+                (
+                    f"m15-f0-{scaled_workload_id}-fuseki-risk"
+                    if scaled_mode
+                    else "m15-split-fuseki"
+                )
+            ],
             fuseki_execute_artifacts,
         )
         check(
@@ -808,7 +965,14 @@ def audit_m15_native_run(
             True,
             len(neo4j_execute_artifacts) == 1
             and neo4j_execute_artifacts[0]
-            in {"m15-split-neo4j", "m15-split-neo4j-bound"},
+            in (
+                {
+                    f"m15-f0-{scaled_workload_id}-neo4j-full",
+                    f"m15-f0-{scaled_workload_id}-neo4j-bound",
+                }
+                if scaled_mode
+                else {"m15-split-neo4j", "m15-split-neo4j-bound"}
+            ),
         )
         check(
             "invocations.all_success",
@@ -826,13 +990,22 @@ def audit_m15_native_run(
         )
         check("snapshot.before_estimates", 3, len(_list(snapshot_before.get("estimates"))))
         check("snapshot.after_estimates", 3, len(_list(snapshot_after.get("estimates"))))
-        check(
-            "snapshot.before_observation_keys",
+        expected_observation_keys = (
             {
+                f"{observation_prefix}:neo4j-full",
+                f"{observation_prefix}:neo4j-bound",
+                f"{observation_prefix}:fuseki-risk",
+            }
+            if scaled_mode
+            else {
                 "neo4j-recent-transfers-full",
                 "neo4j-recent-transfers-bound",
                 "fuseki-high-risk",
-            },
+            }
+        )
+        check(
+            "snapshot.before_observation_keys",
+            expected_observation_keys,
             {
                 _dict(item).get("observation_key")
                 for item in _list(snapshot_before.get("estimates"))
@@ -845,14 +1018,24 @@ def audit_m15_native_run(
         check("cost_model.bandwidth", 1000.0, cost_model.get("bandwidth_bytes_per_ms"))
         check("cost_model.exchange_fixed", 0.5, cost_model.get("exchange_fixed_ms"))
         check("cost_model.coordinator_row", 0.001, cost_model.get("coordinator_row_ms"))
+        expected_program_id = (
+            f"m15-f0-{scaled_workload_id}-exact"
+            if scaled_mode
+            else "m15-split-financial-risk-exact"
+        )
         check(
             "semantic_program.id",
-            "m15-split-financial-risk-exact",
+            expected_program_id,
             semantic_program.get("program_id"),
+        )
+        expected_semantic_key = (
+            f"m15-f0:{scaled_workload_id}:exact:{scaled_bundle.manifest['spec_sha256']}"
+            if scaled_bundle is not None
+            else "m15:recent-alice-transfers-to-high-risk-company:exact:v1"
         )
         check(
             "candidate_plans.semantic_equivalence",
-            "m15:recent-alice-transfers-to-high-risk-company:exact:v1",
+            expected_semantic_key,
             candidate_plans.get("semantic_equivalence_key"),
         )
         candidate_ids = {
@@ -860,7 +1043,7 @@ def audit_m15_native_run(
         }
         check(
             "candidate_plans.ids",
-            {"m15-parallel-hash", "m15-risk-first-bind"},
+            valid_plan_ids,
             candidate_ids,
         )
         check("probe_plan.remote_budget", 1, probe_plan.get("max_remote_calls"))

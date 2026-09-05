@@ -140,7 +140,22 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **PLANNED**
+Current status: **F0 SCALE/SKEW WORKLOAD SUBSTRATE VERIFIED LOCALLY; CWRU GATE PENDING**
+
+F0 adds two committed, bounded specifications for the same exact federated
+question: a selective cold-risk regime with 120 answer rows and a broad
+hot-risk regime with 4,800 answer rows, each over 200 companies and 5,000
+transfers. A deterministic no-overwrite generator materializes namespaced
+Neo4j/Fuseki artifacts and exact oracles inside the run tree, binds every file
+by SHA-256, and rejects empty-answer configurations. The fixture loader,
+observation catalogs, two exact-semantic candidate plans, common probe,
+adaptive runner, native lifecycle, and read-only auditor consume the verified
+bundle through a separate `scaled_adaptive` mode. The auditor also proves that
+the declared profile corresponds to its committed spec.
+
+This closes only the local workload-substrate gate. The artifacts remain
+`paper_result=false`; CWRU execution, calibration, repetitions, baseline and
+ablation scheduling, additional queries/sources, and UI work remain open.
 
 ## Historical Milestones
 

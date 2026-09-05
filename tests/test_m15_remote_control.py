@@ -79,6 +79,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/prepare_m15_native_artifacts.sbatch",
         "scripts/slurm/run_m15_native_services.sbatch",
         "scripts/slurm/run_m15_native_adaptive.sbatch",
+        "scripts/slurm/run_m15_native_scaled_adaptive.sbatch",
     )
     probe = (
         Path(__file__).resolve().parents[1]
@@ -118,6 +119,15 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     assert "run_m15_native_services.sbatch" in adaptive_run
     assert "SLURM_SUBMIT_DIR" in adaptive_run
     assert "BASH_SOURCE" not in adaptive_run
+    scaled_run = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "run_m15_native_scaled_adaptive.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=scaled_adaptive" in scaled_run
+    assert "SLURM_SUBMIT_DIR" in scaled_run
+    assert "BASH_SOURCE" not in scaled_run
 
 
 def test_config_enables_cancel_only_with_exact_opt_in(tmp_path: Path) -> None:

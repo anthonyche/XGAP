@@ -27,6 +27,20 @@ It is committed and CWRU job `3787152` has now verified the real-service path;
 its tiny uncalibrated fixture correctly retained the initial plan and remains
 an engineering acceptance result rather than paper-performance evidence.
 
+M15-F0 now supplies the next experiment substrate locally. Two committed,
+strict specifications generate rather than store their larger artifacts. Both
+use 200 companies and 5,000 transfers: `selective-dev-v1` places 20 high-risk
+companies outside the hot set and yields 120 exact rows, while
+`broad-hot-dev-v1` places 160 high-risk companies across the hot region and
+yields 4,800. Generated Neo4j/Fuseki loads, full/bound queries, source oracles,
+and final answers are namespaced, no-overwrite, and SHA-256 bound inside the run
+tree. The same exact semantic program, two candidate plans, observation tuple,
+and common probe run through a separate `scaled_adaptive` native mode. Its
+auditor binds the profile to the committed spec and validates the bundle and
+full service/query chain. The current local M15 gate passes 159 tests with two
+live skips; full acceptance passes 631 tests with 36 gated skips. F0 remains
+`paper_result=false`, and its first CWRU selective run is pending.
+
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
 runtime compiles independent fragments through the existing M9 compilers,

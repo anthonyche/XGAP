@@ -22,6 +22,10 @@ from typing import Any, Mapping, Protocol, Sequence
 from xgap.backends.fuseki_client import FusekiClient
 from xgap.backends.neo4j_client import Neo4jClient
 from xgap.backends.protocol import BackendClient
+from xgap.experiments.m15_workload import (
+    M15WorkloadBundle,
+    load_m15_workload_bundle,
+)
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import ExecutionReport, QueryArtifact
 
@@ -366,7 +370,28 @@ def _default_components(
     return clients, loaders
 
 
-def _query_artifact(repo_root: Path, backend_id: str) -> QueryArtifact:
+def _query_artifact(
+    repo_root: Path,
+    backend_id: str,
+    workload_bundle: M15WorkloadBundle | None = None,
+) -> QueryArtifact:
+    if workload_bundle is not None:
+        filename = (
+            "query_recent_transfers.cypher"
+            if backend_id == "neo4j"
+            else "query_high_risk.rq"
+        )
+        language = "cypher" if backend_id == "neo4j" else "sparql"
+        resolved = workload_bundle.path(filename)
+        return QueryArtifact(
+            artifact_id=(
+                f"m15-f0-{workload_bundle.spec.workload_id}-verify-{backend_id}"
+            ),
+            language=language,
+            text=resolved.read_text(encoding="utf-8"),
+            kind="native",
+            source_path=f"bundle:{workload_bundle.spec.workload_id}/{filename}",
+        )
     path = NEO4J_QUERY_PATH if backend_id == "neo4j" else FUSEKI_QUERY_PATH
     language = "cypher" if backend_id == "neo4j" else "sparql"
     resolved = _repo_path(repo_root, path)
@@ -398,12 +423,22 @@ def load_m15_split_fixture(
     repo_root: str | Path | None = None,
     clients: Mapping[str, BackendClient] | None = None,
     loaders: Mapping[str, BackendFixtureLoader] | None = None,
+    workload_bundle: M15WorkloadBundle | str | Path | None = None,
 ) -> M15FixtureLoadRecord:
     """Load and verify the namespaced M15 fixture exactly once."""
 
     if (clients is None) != (loaders is None):
         raise ValueError("clients and loaders must be supplied together")
     root = Path(repo_root).resolve() if repo_root is not None else _repo_root()
+    selected_bundle = (
+        load_m15_workload_bundle(
+            workload_bundle.root
+            if isinstance(workload_bundle, M15WorkloadBundle)
+            else workload_bundle
+        )
+        if workload_bundle is not None
+        else None
+    )
     selected_run_id = run_id or f"m15-fixture-load-{_now_slug()}"
     if not _SAFE_RUN_ID.fullmatch(selected_run_id):
         raise ValueError("run_id contains unsupported characters")
@@ -426,18 +461,39 @@ def load_m15_split_fixture(
         },
     )
 
-    source_paths = (
-        DATASET_PATH,
-        NEO4J_LOAD_PATH,
-        FUSEKI_LOAD_PATH,
-        NEO4J_QUERY_PATH,
-        FUSEKI_QUERY_PATH,
-        EXPECTED_SOURCE_PATH,
-        EXPECTED_RESULT_PATH,
-    )
-    source_hashes = {
-        str(path): _sha256_file(_repo_path(root, path)) for path in source_paths
-    }
+    if selected_bundle is None:
+        dataset_id = "m15_split_financial_risk"
+        source_paths = (
+            DATASET_PATH,
+            NEO4J_LOAD_PATH,
+            FUSEKI_LOAD_PATH,
+            NEO4J_QUERY_PATH,
+            FUSEKI_QUERY_PATH,
+            EXPECTED_SOURCE_PATH,
+            EXPECTED_RESULT_PATH,
+        )
+        source_hashes = {
+            str(path): _sha256_file(_repo_path(root, path)) for path in source_paths
+        }
+        load_paths = {
+            "neo4j": _repo_path(root, NEO4J_LOAD_PATH),
+            "fuseki": _repo_path(root, FUSEKI_LOAD_PATH),
+        }
+        expected_payload: Mapping[str, list[dict[str, Any]]] | None = None
+    else:
+        dataset_id = f"m15_f0:{selected_bundle.spec.workload_id}"
+        source_hashes = {
+            f"bundle:{selected_bundle.spec.workload_id}/{name}": digest
+            for name, digest in selected_bundle.source_hashes.items()
+        }
+        source_hashes[
+            f"bundle:{selected_bundle.spec.workload_id}/manifest.json"
+        ] = _sha256_file(selected_bundle.root / "manifest.json")
+        load_paths = {
+            "neo4j": selected_bundle.path("load_neo4j.cypher"),
+            "fuseki": selected_bundle.path("load_fuseki.ttl"),
+        }
+        expected_payload = selected_bundle.expected_source_rows
     if clients is None and loaders is None:
         selected_clients, selected_loaders = _default_components(root)
     elif clients is not None and loaders is not None:
@@ -461,11 +517,8 @@ def load_m15_split_fixture(
         if unavailable:
             raise RuntimeError(f"backend healthcheck failed: {', '.join(unavailable)}")
 
-        load_paths = {"neo4j": NEO4J_LOAD_PATH, "fuseki": FUSEKI_LOAD_PATH}
         for backend_id in ("neo4j", "fuseki"):
-            report = selected_loaders[backend_id].load(
-                _repo_path(root, load_paths[backend_id])
-            )
+            report = selected_loaders[backend_id].load(load_paths[backend_id])
             load_reports[backend_id] = report.to_dict()
             _write_json(run_root / "load_reports.json", load_reports)
             if not report.success:
@@ -480,10 +533,14 @@ def load_m15_split_fixture(
 
         for backend_id in ("neo4j", "fuseki"):
             verification_reports[backend_id] = selected_clients[backend_id].execute(
-                _query_artifact(root, backend_id)
+                _query_artifact(root, backend_id, selected_bundle)
             )
-        expected_raw = json.loads(
-            _repo_path(root, EXPECTED_SOURCE_PATH).read_text(encoding="utf-8")
+        expected_raw = (
+            json.loads(
+                _repo_path(root, EXPECTED_SOURCE_PATH).read_text(encoding="utf-8")
+            )
+            if expected_payload is None
+            else expected_payload
         )
         if not isinstance(expected_raw, dict):
             raise ValueError("expected source results must be a JSON object")
@@ -538,7 +595,7 @@ def load_m15_split_fixture(
         {
             "schema_version": RUN_SCHEMA_VERSION,
             "run_id": selected_run_id,
-            "dataset_id": "m15_split_financial_risk",
+            "dataset_id": dataset_id,
             "status": "success" if success else "failed",
             "error": error,
             "started_at": started_at,
@@ -550,6 +607,9 @@ def load_m15_split_fixture(
                 "platform": platform.platform(),
             },
             "input_sha256": source_hashes,
+            "workload_bundle": (
+                dict(selected_bundle.manifest) if selected_bundle is not None else None
+            ),
             "health_before": health_before,
             "health_after": health_after,
             "load_reports": load_reports,
@@ -574,6 +634,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-root", default="runs")
     parser.add_argument("--run-id")
+    parser.add_argument("--workload-bundle")
     args = parser.parse_args(argv)
     if os.environ.get("XGAP_LOAD_M15_FIXTURE") != "1":
         print(
@@ -590,6 +651,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         record = load_m15_split_fixture(
             output_root=args.output_root,
             run_id=args.run_id,
+            workload_bundle=args.workload_bundle,
         )
     except (FileExistsError, ValueError) as exc:
         print(json.dumps({"status": "configuration_error", "error": str(exc)}))

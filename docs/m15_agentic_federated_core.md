@@ -79,8 +79,8 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current local M15 verification passed 140 tests with two real-service tests
-skipped. Full local acceptance passed with 612 tests and 36 explicitly gated or
+Current local M15 verification passed 159 tests with two real-service tests
+skipped. Full local acceptance passed with 631 tests and 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -225,7 +225,25 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **PLANNED**
+Status: **F0 DETERMINISTIC SCALE/SKEW SUBSTRATE VERIFIED LOCALLY; CWRU GATE PENDING**
+
+The first F0 slice commits two bounded workload specifications and generates
+large artifacts only inside a new immutable run tree. The generator produces
+namespaced Neo4j/Fuseki loads, full and bound queries, per-source oracles, and
+the exact cross-source answer; every file is SHA-256 bound and the bundle is
+revalidated at each trust boundary. `selective-dev-v1` has 200 companies,
+5,000 transfers, 20 high-risk companies placed outside the hot set, and 120
+answer rows. `broad-hot-dev-v1` keeps the same graph size but places 160
+high-risk companies across the hot region and has 4,800 answer rows.
+
+Both profiles run the same exact semantic program and the same parallel-hash
+and risk-first-bind candidates through an explicit `scaled_adaptive` service
+mode. The mode has its own Slurm wrapper and audit contract; the auditor binds
+the profile label back to the committed spec and checks the generated bundle,
+fixture, observations, memory, plan, answer, service lifecycle, and cleanup.
+Local execution is development validation with `paper_result=false`. The first
+CWRU selective run, calibrated repetitions, and the baseline matrix remain
+pending.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
