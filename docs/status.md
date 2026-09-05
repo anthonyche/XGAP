@@ -14,14 +14,16 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-The last committed M15-D1 gate passed 128 focused tests with two real-service
+The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
-gated or external-artifact tests skipped. A refreshed CWRU CPU smoke at exact
-clean commit `4c26eea` was submitted as job `3787126`; its terminal state and
-artifacts have not yet been accepted. The subsequent local M15-C2/D2 live
-adaptive implementation passes 140 focused tests with two live-service skips
-and full acceptance with 612 passes and 36 explicit skips. It remains
-unpublished and has not yet run on CWRU.
+gated or external-artifact tests skipped. Refreshed CWRU CPU smoke job
+`3787126` then reproduced that gate at exact clean commit `4c26eea` on
+`compt331`: exit `0:0`, 128 passes, two gated skips, seven declared artifacts,
+and all three control-path oracles passed. Its compact record is
+`experiments/artifacts/m15_d1_cwru_core_smoke_20260905.json`. The subsequent
+local M15-C2/D2 live adaptive implementation passes 140 focused tests with two
+live-service skips and full acceptance with 612 passes and 36 explicit skips.
+It is committed locally and has not yet run on CWRU.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local

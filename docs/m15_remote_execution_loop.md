@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D VERIFIED; LOCAL M15-C2/D2 LIVE ADAPTIVE PATH IMPLEMENTED; REFRESHED CWRU CPU JOB 3787126 PENDING
-- Version Label: m15_remote_loop_v13
+- Verification Status: CWRU B2D AND REFRESHED D1 CPU GATES VERIFIED; LOCAL M15-C2/D2 LIVE ADAPTIVE PATH IMPLEMENTED
+- Version Label: m15_remote_loop_v14
 
 ## Current claim boundary
 
@@ -24,6 +24,13 @@ snapshot, executes the two-engine query with at most one replan, and emits a
 mode-aware immutable evidence bundle. It has not yet run on CWRU, its fixed cost
 model is not calibrated, and its manifest therefore declares
 `paper_result=false`.
+
+Refreshed D1 CPU job `3787126` ran exact clean commit `4c26eea` on `compt331`
+and completed in 28 seconds with exit `0:0`. Its immutable run tree contains
+all seven declared artifacts, 128 focused tests passed with two gated skips,
+and the vertical-slice, alternative-selection, and bounded-replanning
+assertions all passed. This verifies the published offline control substrate;
+it is not a live-service or paper-performance result.
 
 B0 observations on 2026-09-04 established an exact checkout at commit
 `465e2e2454b74aaf7a1c055797740bde8ca5ace0`, working Slurm commands,
@@ -132,7 +139,7 @@ jobs are not silently retried, and old run directories are never overwritten.
 
 ### M15-B1 — CWRU CPU smoke
 
-Status: **VERIFIED** by job `3784974` on `compt365`.
+Status: **VERIFIED**, most recently by job `3787126` on `compt331`.
 
 - Objective: reproduce the M15 contracts, coordinator, and split-source
   fixture on a Pioneer compute node without a GPU or live graph service.
@@ -153,11 +160,13 @@ Status: **VERIFIED** by job `3784974` on `compt365`.
   replanning suites and therefore expects 128 passes and two gated skips. The
   subsequent local C2/D2 wrapper adds the live adaptive and mode-aware audit
   regressions and passes 140 tests with the same two skips; that version has
-  not yet been published or run on CWRU.
-- Refreshed gate: job `3787126` was submitted at exact clean commit
-  `4c26eea06c94c4ac0d650c56cf50b8da051a91bb`. It must not be resubmitted while
-  pending. Its terminal scheduler state and immutable run artifacts have not
-  yet been accepted.
+  not yet run on CWRU.
+- Refreshed gate: job `3787126` completed at exact clean commit
+  `4c26eea06c94c4ac0d650c56cf50b8da051a91bb` in 28 seconds on `compt331`.
+  The scheduler exit was `0:0`; all seven expected artifacts were present;
+  128 tests passed with two gated skips; and the three demonstration oracles
+  passed. The compact evidence record is
+  `experiments/artifacts/m15_d1_cwru_core_smoke_20260905.json`.
 
 ## Typed remote-control entry
 
@@ -272,9 +281,9 @@ VPN reachability and a working user-owned SSH alias.
   point. The historical vertical-slice mode and job `3787110` remain unchanged.
   The same read-only auditor accepts a declared mode and enforces its exact
   schema and artifact contract.
-- Immediate external gate: accept refreshed CPU job `3787126` at its exact
-  published commit. After the local C2/D2 regression gate is committed and
-  published, run exactly one separately numbered native adaptive-service job.
+- Immediate external gate: publish the locally accepted C2/D2 commit, update
+  the CWRU checkout to that exact clean commit, and run exactly one separately
+  numbered native adaptive-service job.
 - Remaining research gate: calibrate the cost model and exercise plan changes
   on scaled/skewed workloads. The tiny fixture may legitimately select zero or
   one replan and is only a live control-path gate, not performance evidence.
@@ -299,11 +308,10 @@ VPN reachability and a working user-owned SSH alias.
 
 ## Next user handoff
 
-B0, B1, B2 prerequisite, B2B supply, B2D service lifecycle, B3 federated
-execution, and the independent evidence audit are complete. Keep job `3787110`
-and its separate audit tree immutable. Refreshed D1 CPU job `3787126` is already
-submitted at exact clean commit `4c26eea`; do not submit it again. The next
-handoff is only its terminal `sacct` record and, after completion, its immutable
-run summary. The local M15-C2/D2 live adaptive implementation must first pass
-regression, be committed, and be published before one distinct native adaptive
-job is requested. No CWRU adaptive or paper-result claim is currently made.
+B0, both B1 CPU gates, B2 prerequisite, B2B supply, B2D service lifecycle, B3
+federated execution, and the independent evidence audit are complete. Keep
+jobs `3787110` and `3787126` and their run trees immutable. The local M15-C2/D2
+live adaptive implementation has passed regression and is committed; after it
+is published and the CWRU checkout is verified at that exact clean commit, the
+next handoff is one distinct native adaptive job. No CWRU adaptive or
+paper-result claim is currently made.
