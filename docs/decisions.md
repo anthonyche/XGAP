@@ -1355,3 +1355,30 @@ verifiable input to execution, not a retrospective analysis choice. Keeping
 the first compiler plan-only prevents an unrun schedule, an arbitrary
 repetition count, or development query labels from being promoted into a
 SIGMOD comparison.
+
+## D94 Custom method order requires a complete compiled campaign binding
+
+The F1L matrix keeps its historical fixed order by default. A caller may
+change that order only by supplying an F2 binding containing the campaign ID,
+campaign-spec hash, schedule hash, session and workload identities, block and
+sequence positions, query IDs, measured task IDs, logical memory namespaces,
+and the exact six-method order. The F2 session
+preflight recompiles the campaign and matches the generated bundle's normalized
+spec hash before any backend call. The native lifecycle repeats this preflight
+before starting services and the matrix persists the same binding beside its
+trace.
+
+The first executor accepts only one declared development query and one session
+per fresh backend allocation. It has no automatic retry and remains
+`paper_result=false`; one sequence neither completes the Williams design nor
+measures cross-task memory. The read-only auditor must reconstruct the selected
+session from the committed configuration and match the wrapper, service, and
+nested matrix artifacts.
+
+Reason:
+
+Allowing a free-form method list at the live runner would make the compiled
+counterbalance unverifiable. Running the entire campaign before testing one
+bound sequence would multiply lifecycle failures. The single-session gate
+therefore validates the compiler-to-executor seam while preserving a hard
+boundary around the still-unimplemented multi-query paper experiment.

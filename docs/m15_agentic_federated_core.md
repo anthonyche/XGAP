@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 663 tests with 36 explicitly gated or
+Current full local acceptance passes 673 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0 SELECTIVE AND F1 LIVE METHOD GATES VERIFIED ON CWRU; F2 CAMPAIGN PROTOCOL IN PROGRESS**
+Status: **F0/F1 LIVE GATES VERIFIED; F2 HASH-BOUND SESSION EXECUTOR LOCAL; CWRU GATE PENDING**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -308,6 +308,19 @@ measure cross-task memory reuse and remains blocked from paper comparison
 until query artifacts, 30--50 query contexts, cost calibration, repetitions,
 live isolation validation, and an author-approved inferential analysis are
 frozen.
+
+F2A connects one compiled sequence to the existing live six-method runner.
+Before a service or backend call, it recompiles the campaign, verifies the
+author-supplied campaign and schedule hashes, matches both the source workload
+configuration hash and normalized bundle-spec hash, and checks the exact
+session, query stream, measured task IDs, logical memory namespaces, and
+method order. A custom order is rejected unless the
+matrix receives this complete campaign binding. The native lifecycle and
+allowlisted Slurm wrapper now carry one such session through fresh
+Neo4j/Fuseki services, fixture load, the 18-call sequence, cleanup, and the
+read-only cross-artifact auditor. The v1 executor deliberately accepts only
+the existing single financial-risk query, so its next CWRU run is a mechanism
+gate and cannot establish cross-task memory or counterbalanced performance.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

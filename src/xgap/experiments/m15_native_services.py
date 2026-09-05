@@ -28,6 +28,10 @@ from xgap.experiments.m15_fixture_loader import (
     load_m15_split_fixture,
 )
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
+from xgap.experiments.m15_live_campaign_session import (
+    prepare_m15_live_campaign_session,
+    run_m15_live_campaign_session,
+)
 from xgap.experiments.m15_live_federated import run_m15_live_federated
 from xgap.experiments.m15_live_method_matrix import run_m15_live_method_matrix
 from xgap.experiments.m15_workload import (
@@ -51,9 +55,18 @@ SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION = (
 METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-f1-native-live-method-matrix-service-run-v1"
 )
+CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2-native-live-campaign-session-service-run-v1"
+)
 SERVICE_PLAN_SCHEMA_VERSION = "m15-b2d-native-service-plan-v1"
 WORKLOAD_MODES = frozenset(
-    {"vertical_slice", "adaptive", "scaled_adaptive", "scaled_method_matrix"}
+    {
+        "vertical_slice",
+        "adaptive",
+        "scaled_adaptive",
+        "scaled_method_matrix",
+        "scaled_campaign_session",
+    }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
     {
@@ -722,6 +735,10 @@ def _run_fixture_and_query(
     repo_root: Path,
     workload_mode: str,
     workload_bundle: M15WorkloadBundle | None = None,
+    campaign_config: str | Path | None = None,
+    campaign_session_id: str | None = None,
+    expected_campaign_spec_sha256: str | None = None,
+    expected_schedule_sha256: str | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -775,6 +792,27 @@ def _run_fixture_and_query(
             )
             if not matrix.success:
                 raise RuntimeError(f"live method matrix failed: {matrix.error}")
+        elif workload_mode == "scaled_campaign_session":
+            assert workload_bundle is not None
+            assert campaign_config is not None
+            assert campaign_session_id is not None
+            assert expected_campaign_spec_sha256 is not None
+            assert expected_schedule_sha256 is not None
+            campaign = run_m15_live_campaign_session(
+                campaign_config=campaign_config,
+                session_id=campaign_session_id,
+                expected_campaign_spec_sha256=expected_campaign_spec_sha256,
+                expected_schedule_sha256=expected_schedule_sha256,
+                workload_bundle=workload_bundle,
+                output_root=run_root,
+                run_id="campaign-session-run",
+                repo_root=repo_root,
+                clients=clients,
+            )
+            if not campaign.success:
+                raise RuntimeError(
+                    f"live campaign session failed: {campaign.error}"
+                )
         else:
             raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
 
@@ -792,6 +830,10 @@ def run_m15_native_services(
     required_java_major: int = 17,
     workload_mode: str = "vertical_slice",
     workload_bundle: M15WorkloadBundle | str | Path | None = None,
+    campaign_config: str | Path | None = None,
+    campaign_session_id: str | None = None,
+    expected_campaign_spec_sha256: str | None = None,
+    expected_schedule_sha256: str | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -811,16 +853,46 @@ def run_m15_native_services(
         if workload_bundle is not None
         else None
     )
-    scaled_mode = workload_mode in {"scaled_adaptive", "scaled_method_matrix"}
+    scaled_mode = workload_mode in {
+        "scaled_adaptive",
+        "scaled_method_matrix",
+        "scaled_campaign_session",
+    }
     if scaled_mode and selected_bundle is None:
         raise ValueError(f"{workload_mode} workload mode requires a verified bundle")
     if not scaled_mode and selected_bundle is not None:
         raise ValueError("a workload bundle is accepted only in a scaled mode")
+    campaign_values = (
+        campaign_config,
+        campaign_session_id,
+        expected_campaign_spec_sha256,
+        expected_schedule_sha256,
+    )
+    if workload_mode == "scaled_campaign_session":
+        if any(value is None for value in campaign_values):
+            raise ValueError(
+                "scaled_campaign_session requires config, session, spec hash, "
+                "and schedule hash"
+            )
+        assert selected_bundle is not None
+        prepare_m15_live_campaign_session(
+            campaign_config=campaign_config,
+            session_id=str(campaign_session_id),
+            expected_campaign_spec_sha256=str(expected_campaign_spec_sha256),
+            expected_schedule_sha256=str(expected_schedule_sha256),
+            workload_bundle=selected_bundle,
+            repo_root=root,
+        )
+    elif any(value is not None for value in campaign_values):
+        raise ValueError(
+            "campaign session inputs are accepted only in scaled_campaign_session"
+        )
     run_schema = {
         "vertical_slice": SERVICE_RUN_SCHEMA_VERSION,
         "adaptive": ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_adaptive": SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_method_matrix": METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
+        "scaled_campaign_session": CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION,
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -875,6 +947,10 @@ def run_m15_native_services(
                 root,
                 workload_mode,
                 selected_bundle,
+                campaign_config,
+                campaign_session_id,
+                expected_campaign_spec_sha256,
+                expected_schedule_sha256,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
@@ -927,6 +1003,16 @@ def run_m15_native_services(
             "workload_bundle": (
                 dict(selected_bundle.manifest) if selected_bundle is not None else None
             ),
+            "campaign_session": (
+                {
+                    "campaign_config": str(campaign_config),
+                    "session_id": campaign_session_id,
+                    "expected_campaign_spec_sha256": expected_campaign_spec_sha256,
+                    "expected_schedule_sha256": expected_schedule_sha256,
+                }
+                if workload_mode == "scaled_campaign_session"
+                else None
+            ),
             "service_plan": plan.to_dict() if plan is not None else None,
             "health": [item.to_dict() for item in health],
             "shutdown": [item.to_dict() for item in shutdown],
@@ -963,6 +1049,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         default="vertical_slice",
     )
     parser.add_argument("--workload-bundle")
+    parser.add_argument("--campaign-config")
+    parser.add_argument("--campaign-session-id")
+    parser.add_argument("--expected-campaign-spec-sha256")
+    parser.add_argument("--expected-schedule-sha256")
     args = parser.parse_args(argv)
     if os.environ.get("XGAP_RUN_M15_NATIVE_SERVICES") != "1":
         print(
@@ -990,6 +1080,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             repo_root=args.repo_root,
             workload_mode=args.workload_mode,
             workload_bundle=args.workload_bundle,
+            campaign_config=args.campaign_config,
+            campaign_session_id=args.campaign_session_id,
+            expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,
+            expected_schedule_sha256=args.expected_schedule_sha256,
         )
     except (FileExistsError, ValueError) as exc:
         print(json.dumps({"status": "configuration_error", "error": str(exc)}))

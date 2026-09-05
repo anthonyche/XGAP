@@ -56,6 +56,26 @@ case "$WORKLOAD_MODE" in
         ;;
     esac
     ;;
+  scaled_campaign_session)
+    RUN_PREFIX="cwru-m15-native-campaign-session"
+    RUN_VERSION="m15-f2-native-live-campaign-session-services-v1"
+    CAMPAIGN_CONFIG="experiments/configs/m15_f2_campaign_dev.json"
+    : "${XGAP_M15_CAMPAIGN_SESSION_ID:?XGAP_M15_CAMPAIGN_SESSION_ID is required}"
+    : "${XGAP_M15_CAMPAIGN_SPEC_SHA256:?XGAP_M15_CAMPAIGN_SPEC_SHA256 is required}"
+    : "${XGAP_M15_CAMPAIGN_SCHEDULE_SHA256:?XGAP_M15_CAMPAIGN_SCHEDULE_SHA256 is required}"
+    case "$WORKLOAD_PROFILE" in
+      selective)
+        WORKLOAD_CONFIG="experiments/configs/m15_f0_selective.json"
+        ;;
+      broad_hot)
+        WORKLOAD_CONFIG="experiments/configs/m15_f0_broad_hot.json"
+        ;;
+      *)
+        echo "Unsupported XGAP_M15_WORKLOAD_PROFILE: $WORKLOAD_PROFILE" >&2
+        exit 2
+        ;;
+    esac
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -222,7 +242,7 @@ PYTHONPATH="$REPO_ROOT/src" \
   | tee "$RUN_ROOT/runtime_staging_result.json"
 
 WORKLOAD_ARGS=()
-if [[ "$WORKLOAD_MODE" == scaled_adaptive || "$WORKLOAD_MODE" == scaled_method_matrix ]]; then
+if [[ "$WORKLOAD_MODE" == scaled_adaptive || "$WORKLOAD_MODE" == scaled_method_matrix || "$WORKLOAD_MODE" == scaled_campaign_session ]]; then
   WORKLOAD_BUNDLE="$RUN_ROOT/workload-bundle"
   PYTHONPATH="$REPO_ROOT/src" \
   "$PYTHON_BIN" -m xgap.experiments.m15_workload \
@@ -230,6 +250,16 @@ if [[ "$WORKLOAD_MODE" == scaled_adaptive || "$WORKLOAD_MODE" == scaled_method_m
     --output "$WORKLOAD_BUNDLE" \
     | tee "$RUN_ROOT/workload_generation.json"
   WORKLOAD_ARGS=(--workload-bundle "$WORKLOAD_BUNDLE")
+fi
+
+CAMPAIGN_ARGS=()
+if [[ "$WORKLOAD_MODE" == scaled_campaign_session ]]; then
+  CAMPAIGN_ARGS=(
+    --campaign-config "$REPO_ROOT/$CAMPAIGN_CONFIG"
+    --campaign-session-id "$XGAP_M15_CAMPAIGN_SESSION_ID"
+    --expected-campaign-spec-sha256 "$XGAP_M15_CAMPAIGN_SPEC_SHA256"
+    --expected-schedule-sha256 "$XGAP_M15_CAMPAIGN_SCHEDULE_SHA256"
+  )
 fi
 
 XGAP_RUN_M15_NATIVE_SERVICES=1 \
@@ -245,6 +275,7 @@ PYTHONPATH="$REPO_ROOT/src" \
   --repo-root "$REPO_ROOT" \
   --workload-mode "$WORKLOAD_MODE" \
   "${WORKLOAD_ARGS[@]}" \
+  "${CAMPAIGN_ARGS[@]}" \
   | tee "$RUN_ROOT/native_service_result.json"
 
 echo "M15 native services workload '$WORKLOAD_MODE' passed."

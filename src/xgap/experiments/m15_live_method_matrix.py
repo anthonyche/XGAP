@@ -52,7 +52,9 @@ from xgap.tools import (
 
 LIVE_MATRIX_SCHEMA_VERSION = "m15-f1-live-method-matrix-v1"
 LIVE_MATRIX_COST_MODEL_VERSION = "m15-f1-live-matrix-cost-model-v1"
+CAMPAIGN_BINDING_SCHEMA_VERSION = "m15-f2-live-campaign-binding-v1"
 _SAFE_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _METHOD_ORDER = (
     M15Method.STATIC_PARALLEL_HASH,
     M15Method.STATIC_RISK_FIRST_BIND,
@@ -61,6 +63,109 @@ _METHOD_ORDER = (
     M15Method.NO_REPLAN,
     M15Method.FULL_AGENT,
 )
+
+
+def _execution_contract(
+    method_order: Sequence[M15Method] | None,
+    campaign_binding: Mapping[str, Any] | None,
+) -> tuple[tuple[M15Method, ...], dict[str, Any] | None, str, str, str]:
+    selected = _METHOD_ORDER if method_order is None else tuple(method_order)
+    if (
+        len(selected) != len(_METHOD_ORDER)
+        or any(not isinstance(method, M15Method) for method in selected)
+        or set(selected) != set(_METHOD_ORDER)
+    ):
+        raise ValueError(
+            "method_order must contain each frozen M15 method exactly once"
+        )
+    if campaign_binding is None:
+        if selected != _METHOD_ORDER:
+            raise ValueError("a custom method_order requires a campaign binding")
+        return (
+            selected,
+            None,
+            "fixed_engineering_gate_not_counterbalanced",
+            "shared_unknown_not_reset_between_methods",
+            "live_backend_method_mechanism_engineering_gate",
+        )
+
+    required = {
+        "schema_version",
+        "campaign_id",
+        "campaign_spec_sha256",
+        "schedule_sha256",
+        "session_id",
+        "workload_label",
+        "workload_id",
+        "block_index",
+        "sequence_index",
+        "query_ids",
+        "method_order",
+        "method_task_ids",
+        "memory_namespaces",
+    }
+    binding = dict(campaign_binding)
+    if set(binding) != required:
+        raise ValueError("campaign binding fields do not match the v1 contract")
+    if binding["schema_version"] != CAMPAIGN_BINDING_SCHEMA_VERSION:
+        raise ValueError("campaign binding schema_version is unsupported")
+    for key in (
+        "campaign_id",
+        "session_id",
+        "workload_label",
+        "workload_id",
+    ):
+        if not isinstance(binding[key], str) or not _SAFE_RUN_ID.fullmatch(
+            binding[key]
+        ):
+            raise ValueError(f"campaign binding {key} is invalid")
+    for key in ("campaign_spec_sha256", "schedule_sha256"):
+        if not isinstance(binding[key], str) or not _SHA256.fullmatch(binding[key]):
+            raise ValueError(f"campaign binding {key} must be a SHA-256 digest")
+    for key in ("block_index", "sequence_index"):
+        if (
+            isinstance(binding[key], bool)
+            or not isinstance(binding[key], int)
+            or binding[key] < 1
+        ):
+            raise ValueError(f"campaign binding {key} must be a positive integer")
+    query_ids = binding["query_ids"]
+    if (
+        not isinstance(query_ids, list)
+        or not query_ids
+        or any(
+            not isinstance(query_id, str) or not _SAFE_RUN_ID.fullmatch(query_id)
+            for query_id in query_ids
+        )
+        or len(query_ids) != len(set(query_ids))
+    ):
+        raise ValueError("campaign binding query_ids must be unique safe identifiers")
+    expected_order = [method.value for method in selected]
+    if binding["method_order"] != expected_order:
+        raise ValueError("campaign binding method_order disagrees with execution")
+    for field in ("method_task_ids", "memory_namespaces"):
+        values = binding[field]
+        if (
+            not isinstance(values, Mapping)
+            or set(values) != set(expected_order)
+            or any(
+                not isinstance(value, str) or not _SAFE_RUN_ID.fullmatch(value)
+                for value in values.values()
+            )
+            or len(set(values.values())) != len(expected_order)
+        ):
+            raise ValueError(
+                f"campaign binding {field} must map every method to a unique "
+                "safe identifier"
+            )
+        binding[field] = dict(values)
+    return (
+        selected,
+        binding,
+        "williams_campaign_sequence",
+        "shared_unflushed_within_sequence_counterbalanced_by_campaign",
+        "live_backend_campaign_session_engineering_gate",
+    )
 
 
 @dataclass(frozen=True)
@@ -208,11 +313,14 @@ def run_m15_live_method_matrix(
     bandwidth_bytes_per_ms: float = 1000.0,
     exchange_fixed_ms: float = 0.5,
     coordinator_row_ms: float = 0.001,
+    method_order: Sequence[M15Method] | None = None,
+    campaign_binding: Mapping[str, Any] | None = None,
 ) -> M15LiveMethodMatrixRecord:
-    """Run one fail-closed engineering matrix against the same live services.
+    """Run one fail-closed six-method sequence against the same live services.
 
-    The fixed method order and shared unknown cache state make this a mechanism
-    and integration gate, not a paper-comparison result.
+    The default remains the fixed F1L engineering matrix. A custom order is
+    admitted only with a hash-bound F2 campaign-session contract. Neither mode
+    is itself a paper-comparison result.
     """
 
     root = Path(repo_root).resolve() if repo_root is not None else _repo_root()
@@ -226,6 +334,13 @@ def run_m15_live_method_matrix(
         exchange_fixed_ms=exchange_fixed_ms,
         coordinator_row_ms=coordinator_row_ms,
     )
+    (
+        selected_method_order,
+        selected_campaign_binding,
+        order_policy,
+        cache_state,
+        evidence_class,
+    ) = _execution_contract(method_order, campaign_binding)
     selected_run_id = run_id or f"m15-f1-live-matrix-{_now_slug()}"
     if not _SAFE_RUN_ID.fullmatch(selected_run_id):
         raise ValueError("run_id contains unsupported characters")
@@ -284,9 +399,14 @@ def run_m15_live_method_matrix(
     )
     _write_json(run_root / "memory_context.json", context.to_dict())
     _write_json(run_root / "cost_model.json", model_config)
+    if selected_campaign_binding is not None:
+        _write_json(run_root / "campaign_binding.json", selected_campaign_binding)
     _write_json(
         run_root / "method_policies.json",
-        [M15_METHOD_POLICIES[method].to_dict() for method in _METHOD_ORDER],
+        [
+            M15_METHOD_POLICIES[method].to_dict()
+            for method in selected_method_order
+        ],
     )
 
     selected_clients = dict(clients) if clients is not None else _default_clients(root)
@@ -330,7 +450,7 @@ def run_m15_live_method_matrix(
             calibration.snapshot.to_dict(),
         )
 
-        for method in _METHOD_ORDER:
+        for method in selected_method_order:
             memory = None
             if M15_METHOD_POLICIES[method].read_memory:
                 memory_path = run_root / "memory" / f"{method.value}.jsonl"
@@ -344,7 +464,11 @@ def run_m15_live_method_matrix(
             events[method.value] = method_events
             result = run_m15_method_task(
                 method=method,
-                task_id=f"{selected_run_id}.{method.value}",
+                task_id=(
+                    selected_campaign_binding["method_task_ids"][method.value]
+                    if selected_campaign_binding is not None
+                    else f"{selected_run_id}.{method.value}"
+                ),
                 context=context,
                 candidates=candidates,
                 requests=requests,
@@ -376,7 +500,7 @@ def run_m15_live_method_matrix(
 
         checks = {
             "all_methods_present": set(results)
-            == {method.value for method in _METHOD_ORDER},
+            == {method.value for method in selected_method_order},
             "all_answers_exact": all(result.exact_answer for result in results.values()),
             "calibration_exactly_three_profiles": calibration.attempted_calls == 3,
             "calibration_neo4j_full_matches_oracle": _observation_rows(
@@ -431,6 +555,11 @@ def run_m15_live_method_matrix(
                 for method, result in results.items()
             ),
             "zero_llm_and_ontology_calls": True,
+            "campaign_binding_matches_order": (
+                selected_campaign_binding is None
+                or selected_campaign_binding["method_order"]
+                == [method.value for method in selected_method_order]
+            ),
         }
         validation = {"passed": all(checks.values()), "checks": checks}
         _write_json(run_root / "validation.json", validation)
@@ -489,9 +618,29 @@ def run_m15_live_method_matrix(
         "cost_model": model_config,
         "memory_context": context.to_dict(),
         "backend_health": health,
-        "method_order": [method.value for method in _METHOD_ORDER],
-        "order_policy": "fixed_engineering_gate_not_counterbalanced",
-        "cache_state": "shared_unknown_not_reset_between_methods",
+        "method_order": [method.value for method in selected_method_order],
+        "order_policy": order_policy,
+        "cache_state": cache_state,
+        "campaign_binding": selected_campaign_binding,
+        "execution_namespaces": {
+            "task_ids": (
+                selected_campaign_binding["method_task_ids"]
+                if selected_campaign_binding is not None
+                else {
+                    method.value: f"{selected_run_id}.{method.value}"
+                    for method in selected_method_order
+                }
+            ),
+            "logical_memory_namespaces": (
+                selected_campaign_binding["memory_namespaces"]
+                if selected_campaign_binding is not None
+                else {
+                    method.value: f"{selected_run_id}.{method.value}"
+                    for method in selected_method_order
+                }
+            ),
+            "memory_storage_scope": "method_file_within_unique_run_root",
+        },
         "calibration": calibration.to_dict() if calibration is not None else None,
         "calibration_accounting": {
             "included_in_method_metrics": False,
@@ -508,7 +657,7 @@ def run_m15_live_method_matrix(
                 manifest_path.name,
             }
         ),
-        "evidence_class": "live_backend_method_mechanism_engineering_gate",
+        "evidence_class": evidence_class,
         "paper_result": False,
         "no_llm": True,
         "no_ontology": True,

@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 import xgap.experiments.m15_native_services as native_services
 
+from xgap.experiments.m15_campaign import compile_m15_campaign_file
 from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
@@ -615,6 +616,73 @@ def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
     )
     assert matrix_manifest["workload_mode"] == "scaled_method_matrix"
 
+    with pytest.raises(ValueError, match="requires config, session, spec hash"):
+        run_m15_native_services(
+            runtime_root=matrix_runtime,
+            staging_manifest=matrix_staging,
+            output_root=tmp_path / "missing-campaign-inputs",
+            run_id="missing-campaign-inputs",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="scaled_campaign_session",
+            workload_bundle=bundle,
+        )
+
+    campaign_runtime, campaign_staging = _staged_runtime(
+        tmp_path / "campaign-lifecycle"
+    )
+    selective_bundle = generate_m15_workload_bundle(
+        M15WorkloadSpec.from_json(
+            REPO_ROOT / "experiments/configs/m15_f0_selective.json"
+        ),
+        tmp_path / "campaign-bundle",
+    )
+    campaign_config = REPO_ROOT / "experiments/configs/m15_f2_campaign_dev.json"
+    campaign_plan = compile_m15_campaign_file(
+        campaign_config,
+        repo_root=REPO_ROOT,
+    ).to_dict()
+    campaign_session = next(
+        item
+        for item in campaign_plan["sessions"]
+        if item["workload_label"] == "selective"
+    )
+    campaign_record = run_m15_native_services(
+        runtime_root=campaign_runtime,
+        staging_manifest=campaign_staging,
+        output_root=tmp_path / "runs",
+        run_id="native-campaign-session-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_campaign_session",
+        workload_bundle=selective_bundle,
+        campaign_config=campaign_config,
+        campaign_session_id=campaign_session["session_id"],
+        expected_campaign_spec_sha256=campaign_plan["campaign_spec_sha256"],
+        expected_schedule_sha256=campaign_plan["schedule_sha256"],
+    )
+
+    assert campaign_record.success
+    assert executed[-1] == ("scaled_campaign_session", "selective-dev-v1")
+    campaign_manifest = json.loads(
+        campaign_record.manifest_path.read_text(encoding="utf-8")
+    )
+    assert campaign_manifest["schema_version"] == (
+        native_services.CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert campaign_manifest["campaign_session"] == {
+        "campaign_config": str(campaign_config),
+        "session_id": campaign_session["session_id"],
+        "expected_campaign_spec_sha256": campaign_plan[
+            "campaign_spec_sha256"
+        ],
+        "expected_schedule_sha256": campaign_plan["schedule_sha256"],
+    }
+
 
 def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     script = (
@@ -634,4 +702,15 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "m15_f0_selective.json" in script
     assert "m15_f0_broad_hot.json" in script
     assert "scaled_method_matrix" in script
+    assert "scaled_campaign_session" in script
+    assert "--campaign-session-id" in script
+    campaign_script = (
+        REPO_ROOT / "scripts/slurm/run_m15_native_campaign_session.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=scaled_campaign_session" in campaign_script
+    assert "XGAP_M15_CAMPAIGN_SESSION_ID" in campaign_script
+    assert "XGAP_M15_CAMPAIGN_SPEC_SHA256" in campaign_script
+    assert "XGAP_M15_CAMPAIGN_SCHEDULE_SHA256" in campaign_script
+    assert "SLURM_SUBMIT_DIR" in campaign_script
+    assert "BASH_SOURCE" not in campaign_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

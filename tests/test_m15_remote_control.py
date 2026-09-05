@@ -81,6 +81,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_adaptive.sbatch",
         "scripts/slurm/run_m15_native_scaled_adaptive.sbatch",
         "scripts/slurm/run_m15_native_method_matrix.sbatch",
+        "scripts/slurm/run_m15_native_campaign_session.sbatch",
     )
     probe = (
         Path(__file__).resolve().parents[1]
@@ -138,6 +139,19 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     assert "XGAP_M15_WORKLOAD_MODE=scaled_method_matrix" in matrix_run
     assert "SLURM_SUBMIT_DIR" in matrix_run
     assert "BASH_SOURCE" not in matrix_run
+    campaign_run = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "run_m15_native_campaign_session.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=scaled_campaign_session" in campaign_run
+    assert "XGAP_M15_CAMPAIGN_SESSION_ID" in campaign_run
+    assert "SLURM_SUBMIT_DIR" in campaign_run
+    assert "BASH_SOURCE" not in campaign_run
+    assert "scripts/slurm/run_m15_native_campaign_session.sbatch" in (
+        DEFAULT_ALLOWED_SBATCH_SCRIPTS
+    )
 
 
 def test_config_enables_cancel_only_with_exact_opt_in(tmp_path: Path) -> None:

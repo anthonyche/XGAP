@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from dataclasses import replace
 from pathlib import Path
 
@@ -87,6 +88,27 @@ def test_campaign_is_stable_and_seed_changes_only_the_valid_design() -> None:
     assert changed["design_validation"]["passed"] is True
 
 
+def test_schedule_hash_binds_workload_spec_content(tmp_path: Path) -> None:
+    config = tmp_path / "experiments/configs/m15_f2_campaign_dev.json"
+    config.parent.mkdir(parents=True)
+    shutil.copyfile(CONFIG, config)
+    for name in ("m15_f0_selective.json", "m15_f0_broad_hot.json"):
+        shutil.copyfile(
+            REPO_ROOT / "experiments/configs" / name,
+            config.parent / name,
+        )
+    before = compile_m15_campaign_file(config, repo_root=tmp_path).to_dict()
+    selective = config.parent / "m15_f0_selective.json"
+    payload = json.loads(selective.read_text(encoding="utf-8"))
+    payload["seed"] = "content-drift-must-change-schedule-hash"
+    selective.write_text(json.dumps(payload), encoding="utf-8")
+    after = compile_m15_campaign_file(config, repo_root=tmp_path).to_dict()
+
+    assert before["campaign_spec_sha256"] == after["campaign_spec_sha256"]
+    assert before["schedule_sha256"] != after["schedule_sha256"]
+    assert before["workload_inputs"] != after["workload_inputs"]
+
+
 def test_campaign_ids_namespaces_and_dispatch_positions_are_unique() -> None:
     plan = compile_m15_campaign_file(CONFIG, repo_root=REPO_ROOT).to_dict()
     sessions = plan["sessions"]
@@ -151,6 +173,10 @@ def test_campaign_binds_workload_files_and_rejects_path_escape() -> None:
     plan = compile_m15_campaign_file(CONFIG, repo_root=REPO_ROOT).to_dict()
     assert all(
         len(item["spec_sha256"]) == 64 for item in plan["workload_inputs"]
+    )
+    assert all(
+        len(item["bundle_spec_sha256"]) == 64
+        for item in plan["workload_inputs"]
     )
 
     value = _payload()

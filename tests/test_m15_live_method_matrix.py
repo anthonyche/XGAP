@@ -211,3 +211,22 @@ def test_live_matrix_cli_is_explicitly_gated(
 
     assert main(["--workload-bundle", "unused"]) == 3
     assert json.loads(capsys.readouterr().out)["status"] == "unavailable"
+
+
+def test_live_matrix_rejects_custom_order_without_campaign_binding(
+    tmp_path: Path,
+) -> None:
+    bundle = _bundle(tmp_path)
+    order = tuple(reversed(tuple(M15Method)))
+
+    with pytest.raises(ValueError, match="requires a campaign binding"):
+        run_m15_live_method_matrix(
+            workload_bundle=bundle,
+            output_root=tmp_path,
+            run_id="unbound-custom-order",
+            repo_root=REPO_ROOT,
+            clients=_clients(bundle),
+            method_order=order,
+        )
+
+    assert not (tmp_path / "unbound-custom-order").exists()

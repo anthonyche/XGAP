@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0 SELECTIVE/F1L LIVE MATRIX VERIFIED; F2 PLAN-ONLY COMPILER LOCAL
-- Version Label: m15_remote_loop_v21
+- Verification Status: CWRU B2D/D2/F0/F1L VERIFIED; F2 HASH-BOUND SESSION RUNNER/AUDITOR LOCAL, CWRU GATE PENDING
+- Version Label: m15_remote_loop_v22
 
 ## Current claim boundary
 
@@ -36,6 +36,15 @@ this is a live mechanism gate, not a performance comparison. Job `3787267`
 completed at exact clean commit `6aafafd`; all six methods returned the exact
 answer and its independent read-only audit passed 326/326 checks without
 mutating the run tree.
+
+The F2A runner is locally complete but not yet verified on CWRU. It recompiles
+the committed development campaign, requires the expected campaign and
+schedule hashes, binds the selected workload to both source and normalized
+bundle-spec hashes, and lets that session's Williams order drive the existing
+six-method runner. The native lifecycle performs the preflight before service
+startup, and the auditor reconstructs the same selection independently. This
+gate still executes one query and one sequence, so it does not establish
+cross-task memory benefit or a counterbalanced comparison.
 
 Refreshed D1 CPU job `3787126` ran exact clean commit `4c26eea` on `compt331`
 and completed in 28 seconds with exit `0:0`. Its immutable run tree contains
@@ -379,7 +388,12 @@ VPN reachability and a working user-owned SSH alias.
   block and proves exact position and directed first-order carryover balance
   without starting services or calling a backend. Its development input has
   only one query per workload, so it cannot measure cross-task memory and is
-  not ready for server execution or paper comparison.
+  not ready for paper comparison.
+- F2A now admits exactly one compiled development session to a new native
+  service mode. It validates campaign/spec/schedule/bundle/session/order
+  binding before service startup, executes the declared six-method order, and
+  exposes a read-only audit over the complete nested evidence tree. The CWRU
+  gate is one selective sequence only; full campaign dispatch is not enabled.
 - Add external datasets, catalog, and ontology through versioned adapters.
 - Run correctness, cost, scaling, failure, and ambiguity experiments.
 - Build the thin UI only after the CLI trace schema, remote executor, and one
@@ -392,7 +406,8 @@ federated execution, D2 live adaptation, F0 selective execution, F1L live
 method execution, and their independent evidence audits are complete. Keep
 jobs `3787110`, `3787126`, `3787152`, `3787213`, and `3787267` and their run
 trees immutable. D2 job `3787144` remains a separate pre-service wrapper
-failure; preserve its top-level output. There is no immediate CWRU command for
-the plan-only F2 compiler. The next external handoff must wait for a separately
-versioned campaign executor and hash-bound multi-query stream. No
-paper-performance claim is currently made.
+failure; preserve its top-level output. The next external handoff is one
+selective F2A session at an exact clean commit, followed by its independent
+read-only audit. It verifies compiler-to-runner binding only. The remaining 11
+development sessions, a hash-bound multi-query stream, and all paper campaign
+dispatch remain disabled. No paper-performance claim is currently made.

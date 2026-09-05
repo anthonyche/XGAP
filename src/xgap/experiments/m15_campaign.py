@@ -421,6 +421,19 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _bundle_spec_sha256(spec: M15WorkloadSpec) -> str:
+    encoded = (
+        json.dumps(
+            spec.to_dict(),
+            indent=2,
+            sort_keys=True,
+            ensure_ascii=False,
+        )
+        + "\n"
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _seed_rank(seed: str, *parts: object) -> str:
     text = ":".join((seed, *(str(part) for part in parts)))
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -502,6 +515,7 @@ def _resolve_workload(
         "workload_id": spec.workload_id,
         "spec_path": workload.spec_path,
         "spec_sha256": _sha256_file(path),
+        "bundle_spec_sha256": _bundle_spec_sha256(spec),
         "query_ids": list(workload.query_ids),
         "query_count": len(workload.query_ids),
         "workload_counts": {
@@ -714,6 +728,10 @@ def compile_m15_campaign(
         "campaign_id": spec.campaign_id,
         "design_seed": spec.design_seed,
         "order_design_version": ORDER_DESIGN_VERSION,
+        "method_policy_schema_version": "m15-f1-method-policy-v1",
+        "methods": [method.value for method in spec.methods],
+        "workload_inputs": workload_inputs,
+        "protocol": spec.protocol.to_dict(),
         "sessions": sessions,
     }
     query_context_count = sum(len(item.query_ids) for item in spec.workloads)

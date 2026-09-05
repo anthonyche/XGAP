@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0 SELECTIVE AND F1 LIVE METHOD GATES VERIFIED ON CWRU; F2 CAMPAIGN PROTOCOL IN PROGRESS**
+Current status: **F0/F1 LIVE GATES VERIFIED; F2 HASH-BOUND SESSION EXECUTOR LOCAL; CWRU GATE PENDING**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -197,6 +197,17 @@ remains unexecuted and `paper_result=false`; its one-query streams cannot test
 cross-task memory reuse, the query label is not yet a hash-bound 30--50 query
 paper workload, and the final repetition/statistical protocol remains
 author-owned.
+
+The F2A development executor now consumes one compiled session instead of an
+ad hoc method list. It validates the expected campaign and schedule hashes,
+the source and generated workload-spec hashes, the supported query ID,
+measured task IDs, logical memory namespaces, and the six-method order before
+any external call. The ordered sequence then runs
+through the existing native lifecycle with a fresh backend pair and an exact
+18-call budget. A new read-only audit binds the outer Slurm evidence, service
+lifecycle, generated bundle, campaign plan/session/binding, nested matrix,
+answers, memory, and call trace. Only one selective session is the next live
+gate; full campaign dispatch and multi-query memory streams remain open.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
