@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1 LIVE GATES AND F2A HASH-BOUND SESSION VERIFIED ON CWRU; F2B QUERY CONTRACT NEXT**
+Current status: **F0/F1/F2A LIVE GATES VERIFIED; F2B QUERY-CONTRACT PRIMITIVE LOCAL, CAMPAIGN BINDING NEXT**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -218,6 +218,15 @@ confirmed that the run tree was unchanged. F2B must next replace the remaining
 query label with a portable contract over resolved hard constraints, exact
 backend artifacts, parameter requirements, and answer oracles before any
 additional campaign sessions are enabled.
+
+F2B1 now provides that standalone contract primitive. It compiles the resolved
+development query against a verified generated bundle, binds all three backend
+queries plus both oracle files by SHA-256, preserves hard constraints as
+non-relaxable, and emits a portable content hash independent of its local file
+path. It makes zero backend, LLM, or ontology calls and remains
+`paper_result=false`. F2B2 must add the contract reference and expected hash to
+a separately versioned campaign/session path and extend the independent audit;
+the audited F2A v1 configuration is not rewritten.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

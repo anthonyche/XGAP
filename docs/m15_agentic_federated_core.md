@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 673 tests with 36 explicitly gated or
+Current full local acceptance passes 682 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1 LIVE GATES AND F2A HASH-BOUND SESSION VERIFIED ON CWRU; F2B QUERY CONTRACT NEXT**
+Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B QUERY-CONTRACT PRIMITIVE LOCAL, CAMPAIGN BINDING NEXT**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -329,6 +329,18 @@ automatic retry, and runtime cleanup succeeded. The independent read-only
 audit passed 374/374 checks without mutating the run tree. This closes the
 compiler-to-live-runner engineering gate only; the other 11 development
 sessions were not dispatched and no comparative claim is supported.
+
+F2B begins by replacing an unstructured query label with a resolved-query
+contract. The committed development specification declares the immutable
+person, time, amount, and risk constraints; semantic operators and answer
+fields; exact Neo4j full/bound and Fuseki risk query roles; the bind parameter
+contract; and source/final oracles. The compiler accepts only a verified
+workload bundle, binds every query and oracle file by SHA-256, rejects role,
+parameter, schema, symlink, or hard-constraint-relaxability drift, and produces
+a location-independent contract hash without making an external call. This is
+currently a local primitive: the v1 campaign/session still carries its old
+query label, so the remaining sessions stay disabled until F2B binding is
+wired through the scheduler, live runner, and read-only auditor.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

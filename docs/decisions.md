@@ -1397,3 +1397,22 @@ completes Williams counterbalancing nor measures cross-task memory. The run
 tree remains immutable, the compact repository artifact is
 `paper_result=false`, and remaining session dispatch stays disabled until a
 standalone resolved-query artifact contract replaces the current query label.
+
+## D96 Query identity is a contract over semantics, artifacts, and oracles
+
+F2B starts with a standalone resolved-query specification rather than adding
+more query labels to the campaign. The specification records the resolved
+intent, non-relaxable hard constraints, semantic operator IDs, output fields,
+the three exact backend artifact roles and parameter contract, and the source
+and final answer oracles. A side-effect-free compiler binds that specification
+to an already verified workload bundle and hashes the complete portable
+contract. The hash excludes the local source path but includes the query-spec
+bytes, workload identity, generated query hashes, oracle hashes, and row
+counts.
+
+The F2A campaign configuration and audited job remain immutable. The first F2B
+compiler is a local primitive and is not yet consumed by campaign/session
+execution, so it does not remove the campaign's query-artifact blocker or
+authorize the remaining eleven sessions. This version boundary preserves the
+ability to re-audit job `3787291` against its exact v1 inputs while F2B wiring
+is developed separately.

@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A HASH-BOUND SESSION VERIFIED; F2B QUERY CONTRACT LOCAL NEXT
-- Version Label: m15_remote_loop_v23
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A VERIFIED; F2B1 QUERY-CONTRACT PRIMITIVE LOCAL, NO REMOTE DISPATCH
+- Version Label: m15_remote_loop_v24
 
 ## Current claim boundary
 
@@ -413,6 +413,9 @@ jobs `3787110`, `3787126`, `3787152`, `3787213`, and `3787267` and their run
 trees immutable. D2 job `3787144` remains a separate pre-service wrapper
 failure; preserve its top-level output. F2A job `3787291` and its run tree are
 now immutable evidence. The next implementation handoff is F2B query-contract
-binding; do not dispatch the remaining 11 development sessions yet. A
+binding. F2B1 locally compiles a resolved intent, immutable hard constraints,
+exact backend query roles and parameters, and source/final oracles into a
+portable bundle-bound hash, but that hash is not yet part of a live session.
+Do not dispatch the remaining 11 development sessions yet. A
 hash-bound multi-query stream and all paper campaign dispatch remain disabled.
 No paper-performance claim is currently made.
