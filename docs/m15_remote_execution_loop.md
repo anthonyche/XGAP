@@ -420,10 +420,11 @@ an independent auditor that recompiles the contract from the run bundle.
 F2C4 job `3787592` and F2C5 job `3787610` are now immutable accepted mechanism
 evidence. The latter completed at commit `30214cb` and passed all 278 dedicated
 read-only audit checks without run-tree mutation. Do not resubmit it or
-dispatch the remaining development campaign sessions. F2C6 and F2C7B1 are
-local planning/artifact gates; neither authorizes a remote relaxation run.
-First finish the supported risk-relaxation live runner and its independent
-auditor, and freeze the multihop hard-constraint semantics before adding path
-execution. Hash-bound multi-family execution and all paper campaign dispatch
-remain disabled.
+dispatch the remaining development campaign sessions. F2C6/F2C7B1 remain
+local planning and artifact gates. F2C7B2 at commit `0aefb87` now supplies the
+fixed-plan risk-relaxation runner, native lifecycle, Slurm entry, and dedicated
+auditor, so exactly one CWRU mechanism job may be dispatched after the branch
+is pushed and the server checkout is clean at that exact commit. Do not add
+path execution until its hard-constraint semantics are frozen. Hash-bound
+multi-family execution and all paper campaign dispatch remain disabled.
 No paper-performance claim is currently made.

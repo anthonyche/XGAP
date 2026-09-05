@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5 LIVE GATES VERIFIED; F2C6/F2C7B1 LOCAL MECHANISMS VERIFIED**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5 LIVE GATES VERIFIED; F2C6/F2C7B2 LOCAL MECHANISMS VERIFIED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -489,6 +489,17 @@ base bundle is untouched, and both backend load files remain byte-identical.
 The 11-row relaxed oracle is still a deterministic development oracle, not a
 human semantic-quality judgment. Live relaxed execution, payment-predicate
 data, and the author-selected multihop hard-constraint semantics remain open.
+
+F2C7B2 adds the first live semantic-plan bridge while keeping the mechanism
+isolated from memory and plan learning. One fixed risk-first physical plan is
+decorated with the approved class identity and positive semantic deviation,
+then sent through the existing backend tool and coordinator scheduler. The
+native wrapper copies the semantic catalog into the run tree, regenerates and
+verifies the overlay, starts fresh loopback-only services, and admits exactly
+one two-call semantic execution. The oracle is post-execution only. A dedicated
+read-only auditor verifies the full chain. Local acceptance passes at commit
+`0aefb87`; one CWRU run is still required before this becomes live mechanism
+evidence.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

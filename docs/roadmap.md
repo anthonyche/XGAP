@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5 LIVE GATES VERIFIED; F2C6/F2C7B1 LOCAL MECHANISMS VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5 LIVE GATES VERIFIED; F2C6/F2C7B2 LOCAL MECHANISMS VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -365,6 +365,15 @@ The base data remains byte-identical and no blocked predicate or path class is
 included. The next implementation step can add payment-predicate support
 without a research decision. Multihop execution remains gated on the author's
 definition of how immutable time and amount constraints apply along the path.
+
+F2C7B2 now binds the one supported risk class to one fixed risk-first physical
+plan and a fresh native Neo4j/Fuseki lifecycle. It verifies all overlay source
+queries, executes the relaxed plan with two backend calls, and validates the
+11-row final oracle after execution. The dedicated auditor reconstructs the
+semantic and native evidence chain without changing the run tree. Local
+acceptance is complete at commit `0aefb87`; the next authorized experiment is
+exactly one CWRU mechanism job and its independent audit. It is not a strategy
+comparison or semantic-quality result.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

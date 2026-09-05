@@ -1794,3 +1794,25 @@ predicate and path classes are not materialized. This validates artifact
 generation and oracle binding only; no relaxed backend query has executed, no
 human semantic-quality judgment has occurred, and all artifacts remain
 `paper_result=false`.
+
+## D112 Isolate the first live relaxation gate from plan learning
+
+F2C7B2 executes only the single readiness-approved HIGH-to-MEDIUM risk class.
+It regenerates the verified base bundle, copies the exact development semantic
+catalog into the run tree, materializes the overlay, and then loads the
+overlay's seven-instance shared dataset into fresh allocation-local Neo4j and
+Fuseki services. The fixture phase verifies all seven source-query pairs. The
+semantic phase executes exactly one `risk_first_bind_join` plan, makes one
+Fuseki and one Neo4j call, and compares the final answer with the independently
+generated 11-row relaxed oracle only after execution.
+
+The physical strategy is fixed as a mechanism-gate input. No KNN, memory,
+ontology service, LLM, oracle-based selection, alternate-plan shadow, retry,
+or comparative measurement is admitted. Plan metadata carries the positive
+semantic deviation, semantic-class ID, base and relaxed query identities, and
+overlay hash. A dedicated read-only auditor reconstructs the overlay and plan,
+checks the native lifecycle and full artifact graph, and rejects answer, plan,
+class, hash, call-trace, or cleanup drift. Local acceptance passes 814 tests
+with 36 explicitly gated skips at commit `0aefb87`; real-backend execution is
+still pending, semantic usefulness has not been human-validated, and all
+outputs remain `paper_result=false`.

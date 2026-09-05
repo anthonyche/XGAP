@@ -73,7 +73,7 @@ kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
 and the F2C0--F2C6 stream, family, typed-query, workload, exact-execution,
 family-memory, semantic-frontier, execution-readiness, and overlay contracts,
-current full local acceptance passes 806 tests with
+current full local acceptance passes 814 tests with
 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -242,6 +242,16 @@ an 11-row final oracle; it has not run against live backends. Predicate support
 and multihop semantics remain open, so this is artifact readiness rather than
 semantic-quality or performance evidence. The compact local record is
 `experiments/artifacts/m15_f2c7b1_local_semantic_overlay_20260906.json`.
+
+M15-F2C7B2 is locally accepted and ready for one CWRU mechanism run at commit
+`0aefb87`. Its dedicated native mode regenerates the base bundle and semantic
+overlay inside the immutable run tree, verifies the full seven-instance
+fixture, and executes only the approved HIGH-to-MEDIUM class with one fixed
+risk-first plan. The semantic query is limited to two backend calls; the
+oracle is used only after execution. A separate read-only auditor reconstructs
+the overlay, execution contract, plan, result, and call trace. This gate does
+not compare physical strategies, use memory/LLM/ontology, validate user utility,
+or enable a paper claim. No F2C7B2 real-backend result exists yet.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1751,7 +1761,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2C7B1 semantic-overlay implementation tests passed. M7 backend
+M0-M15-F2C7B2 live semantic-relaxation implementation tests passed. M7 backend
 smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
@@ -1782,7 +1792,7 @@ Latest recorded command results:
   mutation. The development KNN selected 0/2 post hoc observed latency winners;
   fixed selected-then-shadow order makes that a diagnostic, not a comparative
   estimate.
-- `./scripts/run_acceptance.sh`: 806 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 814 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
@@ -1804,7 +1814,10 @@ Latest recorded command results:
   F2C7A readiness matrix then separates one bound, one safely generatable, and
   ten blocked semantic classes. F2C7B1 materializes only the supported
   risk-level alternative in an immutable overlay with bound source/final
-  oracles and identical shared data, without executing a backend. The
+  oracles and identical shared data. F2C7B2 adds one fixed-plan live runner,
+  allocation-local native mode, allowlisted Slurm entry, and independent
+  tamper-detecting evidence auditor; it is locally accepted but has not yet
+  run on CWRU. The
   F2B3 direct runner verifies the selected
   contract from the
   live bundle before passing a v2 identity into the six-method matrix. F2B4
