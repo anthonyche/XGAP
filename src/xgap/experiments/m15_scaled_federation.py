@@ -7,6 +7,10 @@ from pathlib import Path
 from typing import Mapping
 
 from xgap.experiments.m15_live_federated import build_m15_semantic_program
+from xgap.experiments.m15_method_policy import (
+    M15PlanMemoryContext,
+    build_m15_plan_memory_context,
+)
 from xgap.experiments.m15_workload import (
     M15WorkloadBundle,
     load_m15_workload_bundle,
@@ -410,5 +414,52 @@ def build_m15_scaled_probe_plan(
             "evidence_class": "deterministic_scaled_development_workload",
             "workload_spec_sha256": bundle.manifest["spec_sha256"],
             "paper_result": False,
+        },
+    )
+
+
+def build_m15_scaled_plan_memory_context(
+    workload: M15WorkloadBundle | str | Path,
+    *,
+    bandwidth_bytes_per_ms: float,
+    exchange_fixed_ms: float,
+    coordinator_row_ms: float,
+) -> M15PlanMemoryContext:
+    """Bind reusable task memory to the complete scaled-workload contract."""
+
+    bundle = _bundle(workload)
+    candidates = build_m15_scaled_plan_candidates(bundle)
+    requests = build_m15_scaled_observation_requests(bundle)
+    catalogs = build_m15_scaled_observation_catalogs(bundle)
+    catalog_binding = {
+        backend_id: {
+            "catalog_id": catalog.catalog_id,
+            "version": catalog.version,
+            "schema_artifact": (
+                catalog.schema_artifact.to_dict()
+                if catalog.schema_artifact is not None
+                else None
+            ),
+            "query_artifacts": {
+                key: artifact.to_dict()
+                for key, artifact in sorted(catalog.query_artifacts.items())
+            },
+            "sample_artifacts": {
+                key: artifact.to_dict()
+                for key, artifact in sorted(catalog.sample_artifacts.items())
+            },
+        }
+        for backend_id, catalog in sorted(catalogs.items())
+    }
+    return build_m15_plan_memory_context(
+        context_id=f"m15-f1-{bundle.spec.workload_id}",
+        candidates=candidates,
+        requests=requests,
+        bandwidth_bytes_per_ms=bandwidth_bytes_per_ms,
+        exchange_fixed_ms=exchange_fixed_ms,
+        coordinator_row_ms=coordinator_row_ms,
+        binding={
+            "workload_manifest": dict(bundle.manifest),
+            "observation_catalogs": catalog_binding,
         },
     )

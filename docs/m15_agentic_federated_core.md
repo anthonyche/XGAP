@@ -176,7 +176,7 @@ and the selected plan changes under controlled cardinality or latency changes.
 
 ## M15-D — Memory-guided adaptation and replanning
 
-Status: **LIVE ADAPTIVE RUNNER AND AUDITOR VERIFIED ON CWRU; SCALE/BASELINES PENDING**
+Status: **LIVE ADAPTIVE RUNNER VERIFIED ON CWRU; F1 TASK POLICIES VERIFIED LOCALLY; LIVE MATRIX PENDING**
 
 Use versioned capability and execution memory across tasks, and permit explicit
 within-query replanning after observations invalidate the current estimate.
@@ -192,9 +192,16 @@ latency deviation, returns the exact answer with two total remote calls, and
 reloads the updated snapshot from disk. It is not a live or paper result.
 
 Required baselines: static federation, no memory, no profile/probe, no replan,
-and full agent. The no-replan control is implemented; the complete baseline
-matrix remains pending. CWRU job `3787152` verified the real-backend adaptive
-path, including its legitimate zero-replan branch on the tiny fixture.
+and full agent. F1 now implements two fixed-plan static controls plus explicit
+`no_memory`, `no_profile_probe`, `no_replan`, and `full_agent` policies. Plan
+memory is reusable only under an exact context fingerprint over semantics,
+candidate DAGs/artifacts, observations, cost model, workload, and catalogs.
+Cold full-agent tasks profile and persist; warm tasks skip the three profiles,
+probe one common prefix, and may change plan once. The controlled paired
+matrix proves that the six methods have different action traces and preserve
+one exact answer. It remains `paper_result=false`; a live repeated matrix is
+pending. CWRU job `3787152` verified the earlier real-backend adaptive path,
+including its legitimate zero-replan branch on the tiny fixture.
 
 M15-D2 now has a separate fail-closed live runner. Within one query attempt it
 accounts for exactly three planning-profile calls and two query calls, stores
@@ -225,7 +232,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0 GENERATOR-V2 LOAD REPAIR VERIFIED LOCALLY; NEW CWRU GATE PENDING**
+Status: **F0 GENERATOR-V2 LOAD REPAIR AND F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE GATES PENDING**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -248,8 +255,13 @@ reached their declared boundaries, but Neo4j rejected the first load statement
 before profiling because generator v1 embedded JSON objects as Cypher map
 literals. The failed run made zero query calls and is not a performance result.
 Generator v2 now emits validated Cypher literals and has a regression test; a
-new selective job, calibrated repetitions, and the baseline matrix remain
-pending.
+new selective job, calibrated repetitions, and the live baseline matrix remain
+pending. F1's deterministic paired sanity check already executes all six
+declared methods. Under one controlled stale-to-current latency transition,
+all return the exact answer; full agent changes from parallel hash to
+risk-first bind while no-replan observes the same preferred change but retains
+the initial plan. Calibration and live timings are deliberately excluded from
+this mechanism-only result.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

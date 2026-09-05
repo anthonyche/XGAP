@@ -1231,3 +1231,30 @@ first generated `UNWIND` value because the v1 generator embedded JSON objects,
 whose quoted keys are not Cypher map syntax. Keeping separate serializers makes
 the target-language boundary explicit and preserves the failed v1 bundle as
 diagnostic evidence rather than rewriting it.
+
+## D89 M15 task methods remove explicit agent mechanisms
+
+Cross-task plan memory is reusable only when one SHA-256 context fingerprint
+matches the semantic-equivalence key, complete candidate DAGs and native
+artifacts, declared observation tuple, cost-model parameters, workload
+manifest, and observation catalogs. A full-agent cold task profiles the
+complete tuple and persists it; a compatible warm task skips those profiles,
+runs one exact common-prefix probe, updates memory, and permits at most one
+plan change.
+
+The controlled comparison surface contains two fixed-plan static baselines,
+`no_memory` (re-profile every task), `no_profile_probe` (use frozen compatible
+memory without current observation), `no_replan` (observe the same probe but
+keep the initial plan), and `full_agent`. Each policy serializes its enabled
+actions and reports profile, probe, query, memory, LLM, ontology, latency,
+transfer, and replan counts. A missing or incompatible warm snapshot fails
+before a backend call. A common pre-task calibration is reported separately
+and is not silently included in one method's measurements.
+
+Reason:
+
+The earlier live adaptive gate always collected all profiles inside one run,
+so reopening its JSONL file demonstrated durability but not useful memory
+reuse across tasks. Explicit policies and a fingerprinted cold/warm boundary
+make the memory and replanning mechanisms behaviorally distinguishable and
+prevent named ablations from aliasing the full system.

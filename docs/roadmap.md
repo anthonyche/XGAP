@@ -101,7 +101,7 @@ three-observation path against real Neo4j and Fuseki.
 Goal: use versioned observations across tasks and explicitly replan within a
 query when runtime evidence invalidates the current estimate.
 
-Current status: **LIVE ADAPTIVE PIPELINE VERIFIED ON CWRU; SCALE AND BASELINES PENDING**
+Current status: **LIVE ADAPTIVE PIPELINE VERIFIED ON CWRU; F1 TASK POLICIES VERIFIED LOCALLY; LIVE MATRIX PENDING**
 
 The current slice persists versioned plan snapshots to append-only JSONL,
 validates a probe as an exact common plan prefix before invocation, reuses that
@@ -120,6 +120,15 @@ exact clean commit `247e714`; the 173-check audit passed, the exact answer was
 returned, and the small fixture correctly retained the initial plan with zero
 replans. Until the cost model and scale experiments are complete, the artifact
 remains a development gate with `paper_result=false`.
+
+F1 adds an exact compatibility fingerprint for cross-task snapshots and six
+executable method policies: two fixed-plan static controls, no memory, no
+current profile/probe, no replan, and full agent. A cold full-agent task
+profiles and persists; a warm task skips the profile tuple, executes one
+common probe, and can replan once. The deterministic paired matrix verifies
+distinct action counts, exact answers, cold/warm persistence, and a controlled
+plan flip. It is mechanism evidence only; live repetitions and statistical
+comparison remain open.
 
 First CWRU attempt `3787144` failed before service startup because Slurm's
 copied wrapper used its spool path to locate the repository-owned lifecycle
@@ -140,7 +149,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0 GENERATOR-V2 LOAD REPAIR VERIFIED LOCALLY; NEW CWRU GATE PENDING**
+Current status: **F0 LOAD REPAIR AND F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE GATES PENDING**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad

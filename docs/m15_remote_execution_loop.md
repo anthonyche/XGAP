@@ -341,6 +341,10 @@ VPN reachability and a working user-owned SSH alias.
   cleaned up successfully. Generator v2 is the only admitted repaired format;
   the failed run is recorded in
   `experiments/artifacts/m15_f0_cwru_scaled_selective_failure_20260905.json`.
+- F1 locally defines six executable task policies with exact memory-context
+  compatibility and a controlled paired matrix. Its live gate remains a
+  separate future Slurm mode so the current F0 selective result is not mixed
+  with comparative-method evidence.
 - Add external datasets, catalog, and ontology through versioned adapters.
 - Run correctness, cost, scaling, failure, and ambiguity experiments.
 - Build the thin UI only after the CLI trace schema, remote executor, and one

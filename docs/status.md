@@ -46,6 +46,19 @@ Cypher `UNWIND` literal. Generator v2 now emits deterministic validated Cypher
 map syntax, and the failure is preserved as a non-paper diagnostic artifact.
 A new selective CWRU run is pending.
 
+M15-F1 now has a locally executable cross-task method surface. Snapshot reuse
+is guarded by a SHA-256 context over semantics, candidate plans and native
+artifacts, observation requests, cost parameters, workload manifest, and
+catalogs. Full agent distinguishes a cold profile-and-persist task from a warm
+memory-hit task; the warm path removes three repeated profile calls, executes
+one reusable common-prefix probe, updates append-only memory, and permits one
+plan change. Two fixed-plan controls, `no_memory`, `no_profile_probe`, and
+`no_replan` are explicit policies rather than aliases. In the controlled
+selective matrix, all six methods returned the exact answer; only full agent
+acted on the induced stale-to-current plan flip, while no-replan observed but
+kept the old plan. Full local acceptance now passes 640 tests with 36 gated
+skips. This is `paper_result=false`; no live comparative timing claim is made.
+
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
 runtime compiles independent fragments through the existing M9 compilers,

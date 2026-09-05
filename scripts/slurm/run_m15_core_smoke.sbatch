@@ -102,6 +102,8 @@ detect_runtime() {
   tests/test_m15_live_adaptive.py \
   tests/test_m15_workload.py \
   tests/test_m15_scaled_federation.py \
+  tests/test_m15_method_policy.py \
+  tests/test_m15_method_matrix.py \
   tests/test_m15_remote_executor.py \
   tests/test_m15_remote_control.py \
   | tee "$RUN_ROOT/pytest.txt"
