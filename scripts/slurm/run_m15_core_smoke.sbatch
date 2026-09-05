@@ -94,6 +94,7 @@ detect_runtime() {
   tests/test_m15_native_artifacts.py \
   tests/test_m15_native_runtime.py \
   tests/test_m15_native_services.py \
+  tests/test_m15_native_evidence.py \
   tests/test_m15_live_federated.py \
   tests/test_m15_remote_executor.py \
   tests/test_m15_remote_control.py \

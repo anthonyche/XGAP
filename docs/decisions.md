@@ -1052,3 +1052,26 @@ and process ownership unambiguous, and permits exact cleanup without turning
 service bootstrap into an agent-visible general shell tool. Separating bounded
 readiness polling from process restart also preserves failed startup attempts
 as experimental evidence.
+
+## D79 A live-run claim requires a read-only cross-artifact audit
+
+A completed M15 native-service allocation is not accepted from its Slurm exit
+code or outer status alone. The read-only `m15_native_evidence` audit binds the
+full Git commit, frozen runtime lock, archive sizes and digests,
+allocation-local staging record, exact Java version, loopback-only service
+plan, generated Neo4j configuration, health and shutdown records, fixture
+load, federated result, and guarded cleanup into one verdict. It also requires
+the service manifest to contain exactly the plan, health, and shutdown records
+stored in their separate files. The audit writes no output below the completed
+run tree; any report must be placed in a separate evidence directory.
+
+The Slurm lifecycle snapshots the exact runtime lock into the immutable run
+directory before staging. Failed checks remain individually visible and do
+not trigger a retry, restart, repair, or mutation of the original run.
+
+Reason:
+
+An exit code can remain zero while a copied manifest, source artifact, service
+configuration, or answer is inconsistent. Cross-artifact validation makes the
+real Neo4j-plus-Fuseki claim reproducible and tamper-evident without treating
+the auditor itself as part of the measured query path.

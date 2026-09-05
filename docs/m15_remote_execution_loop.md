@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: B2D LOCALLY VERIFIED; CWRU B1 AND B2 PREREQUISITE PROBE VERIFIED
-- Version Label: m15_remote_loop_v8
+- Verification Status: B2D AND READ-ONLY EVIDENCE AUDIT LOCALLY VERIFIED; CWRU B1 AND B2 PREREQUISITE PROBE VERIFIED
+- Version Label: m15_remote_loop_v9
 
 ## Current claim boundary
 
@@ -123,7 +123,8 @@ Status: **VERIFIED** by job `3784974` on `compt365`.
   returned exactly one row with two remote calls and 206 transferred bytes.
   The current wrapper includes the B2A loader, B2B artifact-supply, B2C
   allocation-staging, and B2D service-lifecycle suites and therefore expects
-  89 passes and two gated skips.
+  94 passes and two gated skips, including the read-only evidence-auditor
+  regressions.
 
 ## Typed remote-control entry
 
@@ -198,6 +199,13 @@ VPN reachability and a working user-owned SSH alias.
   validated job-owned runtime path.
 - Gate: both health checks, both native smoke queries, clean shutdown, and
   immutable service/version artifacts pass without exposing a public port.
+- Evidence acceptance: `python -m xgap.experiments.m15_native_evidence`
+  performs a read-only audit after the job finishes. It requires the exact full
+  Git commit and cross-checks the frozen lock snapshot, archive digests,
+  allocation-local staging, Java 17 record, loopback-only command and
+  configuration, health, fixture load, final answer, shutdown, and guarded
+  cleanup. Its report must be written outside the completed run tree, and it
+  never retries or repairs a failed run.
 
 ### M15-B3 — Live federated vertical slice
 
@@ -240,14 +248,16 @@ VPN reachability and a working user-owned SSH alias.
 
 ## Next user handoff
 
-B0, B1, and the B2 prerequisite probe are complete. B2B archive supply and the
-B2C safe staging and B2D service lifecycle are implemented locally, but the
-published Git branch must contain their exact commits before any server
-action. After that check,
-synchronize the clean CWRU checkout and submit exactly one
+B0, B1, and the B2 prerequisite probe are complete. B2B archive supply, B2C
+safe staging, B2D service lifecycle, and the post-run evidence audit are
+implemented locally. The clean CWRU checkout is synchronized to published
+commit `2ce4b534ba97d40abfa5c908f2f208f84610b545`, which is authorized only for
+the download-and-verification gate. Submit exactly one
 `prepare_m15_native_artifacts.sbatch` job with the dedicated core Python. The
 job will make at most two external requests and cache approximately 203 MiB of
 verified archives under `$HOME/xgap-data/m15-native/artifacts`. Return its
 outer `run_status.json`, `environment.txt`, and nested preparation manifest.
 Do not repeat a failed job: its artifact determines whether the next step is
-native extraction or an approved offline-transfer fallback.
+native extraction or an approved offline-transfer fallback. Before the live
+service job, synchronize to the then-current published branch head so the run
+captures the frozen-lock snapshot required by the evidence audit.

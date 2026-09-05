@@ -56,7 +56,10 @@ Execution order:
    launcher, exact Java 17 check, dynamic loopback ports, local Neo4j/Fuseki
    state, bounded health waits, one fixture/load run, reverse shutdown, and
    guarded cleanup. Its lifecycle is locally verified; the artifact-preparation
-   job and then the combined service job remain CWRU evidence gates.
+   job and then the combined service job remain CWRU evidence gates. A
+   read-only cross-artifact auditor is locally verified and will accept a live
+   claim only when the exact commit, lock, staging, service, load, query, and
+   cleanup records agree.
 4. **M15-B3 live federated vertical slice** — the typed program, real-plugin
    runner, vertically split fixture, exact oracle, immutable evidence, and
    gated live test are implemented locally; real service execution is pending.

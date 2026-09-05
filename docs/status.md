@@ -14,8 +14,8 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-The current M15-B2D gate passed 89 focused tests with two real-service tests
-skipped. Full-suite acceptance passed with 561 tests and 36 explicitly gated
+The current M15-B2D gate passed 94 focused tests with two real-service tests
+skipped. Full-suite acceptance passed with 566 tests and 36 explicitly gated
 or external-artifact tests skipped.
 
 M15-B is now **CWRU CPU-verified with a real-plugin contract; live backend
@@ -62,6 +62,12 @@ then shuts down job-owned process groups in reverse order, archives logs and
 lifecycle evidence, and lets the Slurm wrapper remove only its validated
 runtime directory. Both real archives passed the exact command-plan audit;
 actual service startup remains a CWRU gate.
+
+A read-only post-run auditor now rejects an otherwise successful allocation if
+its full commit, frozen lock snapshot, archive provenance, staging record,
+Java/runtime evidence, service plan and configuration, health, fixture load,
+federated answer, shutdown, or guarded cleanup disagree. It writes reports
+only outside the immutable run tree and does not retry or repair failed runs.
 
 The remaining M15-B gate is execution of the same contract against real Neo4j
 and Fuseki with a deliberately partitioned dataset, streaming/batched result
@@ -1382,9 +1388,9 @@ the local completion run.
 
 Latest recorded command results:
 
-- `./scripts/run_acceptance.sh`: 561 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 566 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
-  passed 89 with two live-service skips. Shell syntax validation passed for
+  passed 94 with two live-service skips. Shell syntax validation passed for
   the corrected native prerequisite probe, download-only artifact preparation,
   and allocation-scoped native-service jobs.
 - `PYTHONPATH=src python -m pytest`: 492 passed, 10 skipped, including the

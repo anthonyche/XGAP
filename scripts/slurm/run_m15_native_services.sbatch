@@ -158,6 +158,8 @@ else
   printf 'findmnt_unavailable=true\n' > "$RUN_ROOT/runtime_mount.txt"
 fi
 java -version > "$RUN_ROOT/java_version.txt" 2>&1
+cp -- "$REPO_ROOT/services/m15-native-runtime.lock.json" \
+  "$RUN_ROOT/runtime_lock.json"
 
 XGAP_STAGE_M15_NATIVE_RUNTIME=1 \
 PYTHONPATH="$REPO_ROOT/src" \
