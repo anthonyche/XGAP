@@ -29,6 +29,7 @@ from xgap.experiments.m15_fixture_loader import (
 )
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_federated import run_m15_live_federated
+from xgap.experiments.m15_live_method_matrix import run_m15_live_method_matrix
 from xgap.experiments.m15_workload import (
     M15WorkloadBundle,
     load_m15_workload_bundle,
@@ -47,8 +48,13 @@ ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION = "m15-d2-native-adaptive-service-run-v1"
 SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-f0-native-scaled-adaptive-service-run-v1"
 )
+METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f1-native-live-method-matrix-service-run-v1"
+)
 SERVICE_PLAN_SCHEMA_VERSION = "m15-b2d-native-service-plan-v1"
-WORKLOAD_MODES = frozenset({"vertical_slice", "adaptive", "scaled_adaptive"})
+WORKLOAD_MODES = frozenset(
+    {"vertical_slice", "adaptive", "scaled_adaptive", "scaled_method_matrix"}
+)
 LOCAL_FILESYSTEM_TYPES = frozenset(
     {
         "apfs",
@@ -758,6 +764,17 @@ def _run_fixture_and_query(
             )
             if not adaptive.success:
                 raise RuntimeError(f"live adaptive run failed: {adaptive.error}")
+        elif workload_mode == "scaled_method_matrix":
+            assert workload_bundle is not None
+            matrix = run_m15_live_method_matrix(
+                output_root=run_root,
+                run_id="method-matrix-run",
+                repo_root=repo_root,
+                clients=clients,
+                workload_bundle=workload_bundle,
+            )
+            if not matrix.success:
+                raise RuntimeError(f"live method matrix failed: {matrix.error}")
         else:
             raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
 
@@ -794,14 +811,16 @@ def run_m15_native_services(
         if workload_bundle is not None
         else None
     )
-    if workload_mode == "scaled_adaptive" and selected_bundle is None:
-        raise ValueError("scaled_adaptive workload mode requires a verified bundle")
-    if workload_mode != "scaled_adaptive" and selected_bundle is not None:
-        raise ValueError("a workload bundle is accepted only in scaled_adaptive mode")
+    scaled_mode = workload_mode in {"scaled_adaptive", "scaled_method_matrix"}
+    if scaled_mode and selected_bundle is None:
+        raise ValueError(f"{workload_mode} workload mode requires a verified bundle")
+    if not scaled_mode and selected_bundle is not None:
+        raise ValueError("a workload bundle is accepted only in a scaled mode")
     run_schema = {
         "vertical_slice": SERVICE_RUN_SCHEMA_VERSION,
         "adaptive": ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_adaptive": SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
+        "scaled_method_matrix": METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id

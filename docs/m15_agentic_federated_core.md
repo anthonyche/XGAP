@@ -79,8 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current local M15 verification passed 159 tests with two real-service tests
-skipped. Full local acceptance passed with 631 tests and 36 explicitly gated or
+Current full local acceptance passes 650 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -176,7 +175,7 @@ and the selected plan changes under controlled cardinality or latency changes.
 
 ## M15-D — Memory-guided adaptation and replanning
 
-Status: **LIVE ADAPTIVE RUNNER VERIFIED ON CWRU; F1 TASK POLICIES VERIFIED LOCALLY; LIVE MATRIX PENDING**
+Status: **LIVE ADAPTIVE RUNNER VERIFIED ON CWRU; F1 LIVE MATRIX IMPLEMENTED LOCALLY; CWRU GATE PENDING**
 
 Use versioned capability and execution memory across tasks, and permit explicit
 within-query replanning after observations invalidate the current estimate.
@@ -202,6 +201,16 @@ matrix proves that the six methods have different action traces and preserve
 one exact answer. It remains `paper_result=false`; a live repeated matrix is
 pending. CWRU job `3787152` verified the earlier real-backend adaptive path,
 including its legitimate zero-replan branch on the tiny fixture.
+
+F1L now composes those policies with the allocation-scoped native-service
+lifecycle. It loads one verified workload, performs one separately accounted
+three-observation calibration, seeds isolated memory histories for the three
+warm methods, and executes all six policies with independent tool-event and
+answer artifacts. The fail-closed auditor binds the workload hashes, policies,
+18-call trace, snapshot identities, exact rows, service lifecycle, and guarded
+cleanup. Fixed order and shared unknown backend cache state are explicit, so
+the pending CWRU run is an engineering mechanism gate rather than a latency
+comparison.
 
 M15-D2 now has a separate fail-closed live runner. Within one query attempt it
 accounts for exactly three planning-profile calls and two query calls, stores
@@ -232,7 +241,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0 SELECTIVE REAL-BACKEND GATE VERIFIED; F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE MATRIX PENDING**
+Status: **F0 SELECTIVE REAL-BACKEND GATE VERIFIED; F1 LIVE MATRIX IMPLEMENTED LOCALLY; CWRU GATE PENDING**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -272,6 +281,14 @@ risk-first bind while no-replan observes the same preferred change but retains
 the initial plan. Calibration and live timings are deliberately excluded from
 this mechanism-only result. The compact clean-commit record is
 `experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
+
+The separate `scaled_method_matrix` mode now carries the same six methods into
+one real Neo4j/Fuseki allocation. It preserves common calibration outside the
+per-method totals, requires an exact 18-invocation trace, writes distinct
+method and memory artifacts, and is covered by the read-only native evidence
+auditor. The fixed-order shared-cache design is intentionally only the next
+CWRU integration gate; randomized/counterbalanced repetitions and calibrated
+cost parameters are still required for paper comparisons.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

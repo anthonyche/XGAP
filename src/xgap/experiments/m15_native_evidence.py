@@ -18,6 +18,15 @@ from xgap.experiments.m15_live_adaptive import (
     SOURCE_PATHS as ADAPTIVE_SOURCE_PATHS,
 )
 from xgap.experiments.m15_live_federated import RUN_SCHEMA_VERSION as LIVE_SCHEMA
+from xgap.experiments.m15_live_method_matrix import (
+    LIVE_MATRIX_COST_MODEL_VERSION,
+    LIVE_MATRIX_SCHEMA_VERSION,
+)
+from xgap.experiments.m15_method_policy import (
+    METHOD_POLICY_SCHEMA_VERSION,
+    M15_METHOD_POLICIES,
+    M15Method,
+)
 from xgap.experiments.m15_native_artifacts import (
     DEFAULT_LOCK_PATH,
     NativeRuntimeLock,
@@ -28,6 +37,7 @@ from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
     ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     LOCAL_FILESYSTEM_TYPES,
+    METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
     SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     SERVICE_PLAN_SCHEMA_VERSION,
     SERVICE_RUN_SCHEMA_VERSION,
@@ -200,8 +210,13 @@ def audit_m15_native_run(
         raise ValueError("expected_commit must be a full lowercase Git commit")
     if workload_mode not in WORKLOAD_MODES:
         raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
-    adaptive_mode = workload_mode in {"adaptive", "scaled_adaptive"}
-    scaled_mode = workload_mode == "scaled_adaptive"
+    adaptive_mode = workload_mode in {
+        "adaptive",
+        "scaled_adaptive",
+        "scaled_method_matrix",
+    }
+    method_matrix_mode = workload_mode == "scaled_method_matrix"
+    scaled_mode = workload_mode in {"scaled_adaptive", "scaled_method_matrix"}
     selected_run = Path(run_root)
     if selected_run.is_symlink():
         raise ValueError("run_root must not be a symbolic link")
@@ -250,6 +265,47 @@ def audit_m15_native_run(
                 ),
             }
         )
+    elif method_matrix_mode:
+        matrix_root = run / "native-service-run" / "method-matrix-run"
+        paths.update(
+            {
+                "matrix": matrix_root / "run_manifest.json",
+                "matrix_status": matrix_root / "run_status.json",
+                "matrix_validation": matrix_root / "validation.json",
+                "matrix_calibration": matrix_root / "calibration.json",
+                "matrix_calibration_snapshot": matrix_root / "calibration_snapshot.json",
+                "matrix_observation_requests": matrix_root
+                / "observation_requests.json",
+                "matrix_invocations": matrix_root / "backend_invocations.json",
+                "matrix_cost_model": matrix_root / "cost_model.json",
+                "matrix_memory_context": matrix_root / "memory_context.json",
+                "matrix_method_policies": matrix_root / "method_policies.json",
+                "matrix_semantic_program": matrix_root / "semantic_program.json",
+                "matrix_candidate_plans": matrix_root / "candidate_plans.json",
+                "matrix_probe_plan": matrix_root / "probe_plan.json",
+                "matrix_static_parallel": matrix_root
+                / "methods"
+                / "static_parallel_hash.json",
+                "matrix_static_bind": matrix_root
+                / "methods"
+                / "static_risk_first_bind.json",
+                "matrix_no_memory": matrix_root / "methods" / "no_memory.json",
+                "matrix_no_profile_probe": matrix_root
+                / "methods"
+                / "no_profile_probe.json",
+                "matrix_no_replan": matrix_root / "methods" / "no_replan.json",
+                "matrix_full_agent": matrix_root / "methods" / "full_agent.json",
+                "matrix_memory_no_profile_probe": matrix_root
+                / "memory"
+                / "no_profile_probe.jsonl",
+                "matrix_memory_no_replan": matrix_root
+                / "memory"
+                / "no_replan.jsonl",
+                "matrix_memory_full_agent": matrix_root
+                / "memory"
+                / "full_agent.jsonl",
+            }
+        )
     else:
         adaptive_root = run / "native-service-run" / "adaptive-run"
         paths.update(
@@ -287,6 +343,9 @@ def audit_m15_native_run(
             "java_version",
             "neo4j_config",
             "plan_memory",
+            "matrix_memory_no_profile_probe",
+            "matrix_memory_no_replan",
+            "matrix_memory_full_agent",
         }:
             loaded[key], states[key] = _read_text(path)
         elif key.endswith("_log"):
@@ -333,6 +392,7 @@ def audit_m15_native_run(
         "vertical_slice": "m15-b2d-native-services-v1",
         "adaptive": "m15-d2-native-adaptive-services-v1",
         "scaled_adaptive": "m15-f0-native-scaled-adaptive-services-v1",
+        "scaled_method_matrix": "m15-f1-native-live-method-matrix-services-v1",
     }[workload_mode]
     check("environment.run_version", expected_run_version, environment.get("run_version"))
     check("environment.git_commit", expected_commit, environment.get("git_commit"))
@@ -428,6 +488,7 @@ def audit_m15_native_run(
         "vertical_slice": SERVICE_RUN_SCHEMA_VERSION,
         "adaptive": ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_adaptive": SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
+        "scaled_method_matrix": METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
     }[workload_mode]
     check("service.schema", expected_service_schema, service_manifest.get("schema_version"))
     check("service.status", "success", service_manifest.get("status"))
@@ -649,6 +710,401 @@ def audit_m15_native_run(
         check("result.remote_calls", 2, result.get("total_remote_calls"))
         moved = result.get("total_bytes_moved")
         check("result.positive_bytes", True, isinstance(moved, int) and moved > 0)
+    elif method_matrix_mode:
+        matrix = _dict(loaded.get("matrix"))
+        matrix_status = _dict(loaded.get("matrix_status"))
+        matrix_validation = _dict(loaded.get("matrix_validation"))
+        calibration = _dict(loaded.get("matrix_calibration"))
+        calibration_snapshot = _dict(loaded.get("matrix_calibration_snapshot"))
+        observation_requests = _list(loaded.get("matrix_observation_requests"))
+        invocations = _dict(loaded.get("matrix_invocations"))
+        cost_model = _dict(loaded.get("matrix_cost_model"))
+        memory_context = _dict(loaded.get("matrix_memory_context"))
+        method_policies = _list(loaded.get("matrix_method_policies"))
+        semantic_program = _dict(loaded.get("matrix_semantic_program"))
+        candidate_plans = _dict(loaded.get("matrix_candidate_plans"))
+        probe_plan = _dict(loaded.get("matrix_probe_plan"))
+
+        workload_id = scaled_bundle.spec.workload_id if scaled_bundle else None
+        dataset_id = f"m15_f0:{workload_id}" if workload_id else None
+        expected_hashes = (
+            {
+                **{
+                    f"bundle:{workload_id}/{name}": digest
+                    for name, digest in scaled_bundle.source_hashes.items()
+                },
+                f"bundle:{workload_id}/manifest.json": _sha256_file(
+                    scaled_bundle.root / "manifest.json"
+                ),
+            }
+            if scaled_bundle is not None
+            else {}
+        )
+        method_order = (
+            M15Method.STATIC_PARALLEL_HASH,
+            M15Method.STATIC_RISK_FIRST_BIND,
+            M15Method.NO_MEMORY,
+            M15Method.NO_PROFILE_PROBE,
+            M15Method.NO_REPLAN,
+            M15Method.FULL_AGENT,
+        )
+        result_keys = {
+            M15Method.STATIC_PARALLEL_HASH: "matrix_static_parallel",
+            M15Method.STATIC_RISK_FIRST_BIND: "matrix_static_bind",
+            M15Method.NO_MEMORY: "matrix_no_memory",
+            M15Method.NO_PROFILE_PROBE: "matrix_no_profile_probe",
+            M15Method.NO_REPLAN: "matrix_no_replan",
+            M15Method.FULL_AGENT: "matrix_full_agent",
+        }
+        results = {
+            method: _dict(loaded.get(result_keys[method])) for method in method_order
+        }
+
+        check("matrix.schema", LIVE_MATRIX_SCHEMA_VERSION, matrix.get("schema_version"))
+        check("matrix.status", "success", matrix.get("status"))
+        check("matrix.error", None, matrix.get("error"))
+        check("matrix.dataset_id", dataset_id, matrix.get("dataset_id"))
+        check(
+            "matrix.workload_bundle",
+            dict(scaled_bundle.manifest) if scaled_bundle else None,
+            matrix.get("workload_bundle"),
+        )
+        check("matrix.input_sha256", expected_hashes, matrix.get("input_sha256"))
+        check("fixture.input_sha256", expected_hashes, fixture.get("input_sha256"))
+        check("matrix.git_commit", expected_commit, _dict(matrix.get("git")).get("commit"))
+        check("matrix.git_clean", True, _dict(matrix.get("git")).get("clean"))
+        check("matrix.backend_health", True, _backend_health_is_exact(matrix.get("backend_health")))
+        check("matrix.no_llm", True, matrix.get("no_llm"))
+        check("matrix.no_ontology", True, matrix.get("no_ontology"))
+        check("matrix.automatic_retries", 0, matrix.get("automatic_retries"))
+        check("matrix.paper_result", False, matrix.get("paper_result"))
+        check(
+            "matrix.evidence_class",
+            "live_backend_method_mechanism_engineering_gate",
+            matrix.get("evidence_class"),
+        )
+        check(
+            "matrix.order_policy",
+            "fixed_engineering_gate_not_counterbalanced",
+            matrix.get("order_policy"),
+        )
+        check(
+            "matrix.cache_state",
+            "shared_unknown_not_reset_between_methods",
+            matrix.get("cache_state"),
+        )
+        check(
+            "matrix.method_order",
+            [method.value for method in method_order],
+            matrix.get("method_order"),
+        )
+        check("matrix.validation", True, _validation_is_exact(matrix.get("validation")))
+        check(
+            "matrix.validation_matches_file",
+            matrix_validation,
+            matrix.get("validation"),
+        )
+        check("matrix_status.schema", LIVE_MATRIX_SCHEMA_VERSION, matrix_status.get("schema_version"))
+        check("matrix_status.status", "success", matrix_status.get("status"))
+        check("matrix_status.error", None, matrix_status.get("error"))
+        check("matrix_status.run_id", matrix.get("run_id"), matrix_status.get("run_id"))
+        expected_artifacts = {
+            "backend_invocations.json",
+            "calibration.json",
+            "calibration_snapshot.json",
+            "candidate_plans.json",
+            "cost_model.json",
+            "health.json",
+            "memory",
+            "memory_context.json",
+            "method_policies.json",
+            "methods",
+            "observation_requests.json",
+            "probe_plan.json",
+            "run_manifest.json",
+            "run_status.json",
+            "semantic_program.json",
+            "validation.json",
+        }
+        check("matrix.artifacts", expected_artifacts, set(_list(matrix.get("artifacts"))))
+
+        check("matrix.cost_model.schema", LIVE_MATRIX_COST_MODEL_VERSION, cost_model.get("schema_version"))
+        check("matrix.cost_model.calibrated", False, cost_model.get("calibrated"))
+        check("matrix.cost_model.paper_result", False, cost_model.get("paper_result"))
+        check("matrix.cost_model.bandwidth", 1000.0, cost_model.get("bandwidth_bytes_per_ms"))
+        check("matrix.cost_model.exchange_fixed", 0.5, cost_model.get("exchange_fixed_ms"))
+        check("matrix.cost_model.coordinator_row", 0.001, cost_model.get("coordinator_row_ms"))
+        check("matrix.cost_model_matches_manifest", cost_model, matrix.get("cost_model"))
+
+        observation_prefix = f"m15-f0:{workload_id}"
+        expected_requests = [
+            (
+                "profile-neo4j-full",
+                f"{observation_prefix}:neo4j-full",
+                "neo4j",
+                "profile",
+                {"query_id": "recent-transfers-full"},
+            ),
+            (
+                "profile-neo4j-bound",
+                f"{observation_prefix}:neo4j-bound",
+                "neo4j",
+                "profile",
+                {"query_id": "recent-transfers-bound"},
+            ),
+            (
+                "profile-fuseki-risk",
+                f"{observation_prefix}:fuseki-risk",
+                "fuseki",
+                "profile",
+                {"query_id": "high-risk"},
+            ),
+        ]
+        observed_requests = [
+            (
+                _dict(item).get("call_id"),
+                _dict(item).get("observation_key"),
+                _dict(item).get("backend_id"),
+                _dict(item).get("operation"),
+                _dict(item).get("payload"),
+            )
+            for item in observation_requests
+        ]
+        check("matrix.requests", expected_requests, observed_requests)
+        check("matrix.calibration.success", True, calibration.get("success"))
+        check("matrix.calibration.error", None, calibration.get("error"))
+        check("matrix.calibration.calls", 3, calibration.get("attempted_calls"))
+        check("matrix.calibration.automatic_retries", 0, calibration.get("automatic_retries"))
+        check("matrix.calibration.requests", observation_requests, calibration.get("requests"))
+        check("matrix.calibration.snapshot_file", calibration_snapshot, calibration.get("snapshot"))
+        check("matrix.calibration.manifest", calibration, matrix.get("calibration"))
+        calibration_results = _list(calibration.get("tool_results"))
+        check(
+            "matrix.calibration.all_success",
+            True,
+            len(calibration_results) == 3
+            and all(_dict(item).get("status") == "success" for item in calibration_results),
+        )
+        accounting = _dict(matrix.get("calibration_accounting"))
+        check("matrix.calibration.excluded", False, accounting.get("included_in_method_metrics"))
+        check("matrix.calibration.seed_writes", 3, accounting.get("seed_memory_writes"))
+
+        expected_semantic_key = (
+            f"m15-f0:{workload_id}:exact:{scaled_bundle.manifest['spec_sha256']}"
+            if scaled_bundle is not None
+            else None
+        )
+        valid_plan_ids = {
+            f"m15-f0-{workload_id}-parallel-hash",
+            f"m15-f0-{workload_id}-risk-first-bind",
+        }
+        check("matrix.semantic_program.id", f"m15-f0-{workload_id}-exact", semantic_program.get("program_id"))
+        check("matrix.candidates.semantic_key", expected_semantic_key, candidate_plans.get("semantic_equivalence_key"))
+        check(
+            "matrix.candidates.plan_ids",
+            valid_plan_ids,
+            {
+                _dict(item).get("plan_id")
+                for item in _list(candidate_plans.get("plans"))
+            },
+        )
+        check("matrix.probe.remote_budget", 1, probe_plan.get("max_remote_calls"))
+        check(
+            "matrix.probe.nodes",
+            ["high-risk", "align-risk", "exchange-risk"],
+            [_dict(item).get("node_id") for item in _list(probe_plan.get("nodes"))],
+        )
+        check("matrix.memory_context_manifest", memory_context, matrix.get("memory_context"))
+        check("matrix.memory_context.semantic_key", expected_semantic_key, memory_context.get("semantic_equivalence_key"))
+        context_fingerprint = memory_context.get("fingerprint")
+        check(
+            "matrix.memory_context.fingerprint",
+            True,
+            isinstance(context_fingerprint, str)
+            and re.fullmatch(r"[0-9a-f]{64}", context_fingerprint) is not None,
+        )
+        check(
+            "matrix.method_policies",
+            [M15_METHOD_POLICIES[method].to_dict() for method in method_order],
+            method_policies,
+        )
+
+        manifest_results = _dict(matrix.get("methods"))
+        check("matrix.method_set", {method.value for method in method_order}, set(manifest_results))
+        expected_calls = {
+            M15Method.STATIC_PARALLEL_HASH: 2,
+            M15Method.STATIC_RISK_FIRST_BIND: 2,
+            M15Method.NO_MEMORY: 5,
+            M15Method.NO_PROFILE_PROBE: 2,
+            M15Method.NO_REPLAN: 2,
+            M15Method.FULL_AGENT: 2,
+        }
+        expected_profiles = {method: 0 for method in method_order}
+        expected_profiles[M15Method.NO_MEMORY] = 3
+        expected_probes = {method: 0 for method in method_order}
+        expected_probes[M15Method.NO_REPLAN] = 1
+        expected_probes[M15Method.FULL_AGENT] = 1
+        for method in method_order:
+            result = results[method]
+            prefix = f"matrix.method.{method.value}"
+            check(f"{prefix}.matches_manifest", result, manifest_results.get(method.value))
+            check(f"{prefix}.schema", METHOD_POLICY_SCHEMA_VERSION, result.get("schema_version"))
+            check(f"{prefix}.policy", M15_METHOD_POLICIES[method].to_dict(), result.get("policy"))
+            check(f"{prefix}.success", True, result.get("success"))
+            check(f"{prefix}.error", None, result.get("error"))
+            check(f"{prefix}.exact_answer", True, result.get("exact_answer"))
+            check(f"{prefix}.rows", expected_result, result.get("final_rows"))
+            check(f"{prefix}.context", context_fingerprint, result.get("context_fingerprint"))
+            check(f"{prefix}.total_calls", expected_calls[method], result.get("total_backend_calls"))
+            check(f"{prefix}.profile_calls", expected_profiles[method], result.get("planning_profile_calls"))
+            check(f"{prefix}.probe_calls", expected_probes[method], result.get("probe_remote_calls"))
+            check(f"{prefix}.query_calls", 2, result.get("query_remote_calls"))
+            check(f"{prefix}.automatic_retries", 0, result.get("automatic_retries"))
+            check(f"{prefix}.llm_calls", 0, result.get("llm_calls"))
+            check(f"{prefix}.ontology_calls", 0, result.get("ontology_calls"))
+            check(f"{prefix}.paper_result", False, result.get("paper_result"))
+            check(f"{prefix}.plan_valid", True, result.get("executed_plan_id") in valid_plan_ids)
+        check(
+            "matrix.method.static_parallel.plan",
+            f"m15-f0-{workload_id}-parallel-hash",
+            results[M15Method.STATIC_PARALLEL_HASH].get("executed_plan_id"),
+        )
+        check(
+            "matrix.method.static_bind.plan",
+            f"m15-f0-{workload_id}-risk-first-bind",
+            results[M15Method.STATIC_RISK_FIRST_BIND].get("executed_plan_id"),
+        )
+        no_replan = results[M15Method.NO_REPLAN]
+        check("matrix.method.no_replan.count", 0, no_replan.get("replan_count"))
+        check("matrix.method.no_replan.plan_stable", no_replan.get("initial_plan_id"), no_replan.get("executed_plan_id"))
+        full_agent = results[M15Method.FULL_AGENT]
+        check(
+            "matrix.method.full_agent.replan_bounded",
+            True,
+            isinstance(full_agent.get("replan_count"), int)
+            and not isinstance(full_agent.get("replan_count"), bool)
+            and full_agent.get("replan_count") in {0, 1},
+        )
+
+        phases = _dict(invocations.get("events_by_phase"))
+        expected_phases = {"calibration", *(method.value for method in method_order)}
+        check("matrix.invocations.phases", expected_phases, set(phases))
+        check("matrix.invocations.total", 18, invocations.get("total_tool_invocations"))
+        check("matrix.invocations.automatic_retries", 0, invocations.get("automatic_retries"))
+        all_events = [
+            _dict(event)
+            for phase in expected_phases
+            for event in _list(phases.get(phase))
+        ]
+        check(
+            "matrix.invocations.all_success",
+            True,
+            len(all_events) == 18
+            and all(event.get("status") == "success" for event in all_events),
+        )
+        calibration_events = [_dict(item) for item in _list(phases.get("calibration"))]
+        check(
+            "matrix.invocations.calibration_sequence",
+            ["profile", "profile", "profile"],
+            [event.get("operation") for event in calibration_events],
+        )
+        check(
+            "matrix.invocations.calibration_modes",
+            ["backend_native", "backend_native", "wall_clock_execute"],
+            [event.get("observation_mode") for event in calibration_events],
+        )
+        for method in method_order:
+            phase_events = [_dict(item) for item in _list(phases.get(method.value))]
+            result = results[method]
+            check(
+                f"matrix.invocations.{method.value}.count",
+                result.get("total_backend_calls"),
+                len(phase_events),
+            )
+            check(
+                f"matrix.invocations.{method.value}.profiles",
+                result.get("planning_profile_calls"),
+                sum(event.get("operation") == "profile" for event in phase_events),
+            )
+            check(
+                f"matrix.invocations.{method.value}.executes",
+                result.get("query_remote_calls"),
+                sum(event.get("operation") == "execute" for event in phase_events),
+            )
+
+        memory_paths = {
+            M15Method.NO_PROFILE_PROBE: "matrix_memory_no_profile_probe",
+            M15Method.NO_REPLAN: "matrix_memory_no_replan",
+            M15Method.FULL_AGENT: "matrix_memory_full_agent",
+        }
+        expected_memory_counts = {
+            M15Method.NO_PROFILE_PROBE: 1,
+            M15Method.NO_REPLAN: 2,
+            M15Method.FULL_AGENT: 2,
+        }
+        for method, key in memory_paths.items():
+            memory_records: list[Any] = []
+            memory_text = loaded.get(key)
+            if isinstance(memory_text, str):
+                try:
+                    memory_records = [
+                        json.loads(line) for line in memory_text.splitlines() if line
+                    ]
+                except json.JSONDecodeError:
+                    memory_records = []
+            check(
+                f"matrix.memory.{method.value}.count",
+                expected_memory_counts[method],
+                len(memory_records),
+            )
+            check(
+                f"matrix.memory.{method.value}.snapshot_identity",
+                True,
+                bool(memory_records)
+                and all(
+                    _dict(_dict(item).get("value")).get("snapshot_id")
+                    == memory_context.get("snapshot_id")
+                    for item in memory_records
+                ),
+            )
+            check(
+                f"matrix.memory.{method.value}.seed_version",
+                f"calibration-{matrix.get('run_id')}",
+                _dict(memory_records[0]).get("version") if memory_records else None,
+            )
+            check(
+                f"matrix.memory.{method.value}.seed_snapshot",
+                calibration_snapshot,
+                _dict(_dict(memory_records[0]).get("value"))
+                if memory_records
+                else None,
+            )
+            check(
+                f"matrix.memory.{method.value}.keys",
+                True,
+                bool(memory_records)
+                and all(
+                    _dict(item).get("key")
+                    == (
+                        "federated-plan-snapshot/"
+                        f"{memory_context.get('snapshot_id')}/"
+                        f"{_dict(item).get('version')}"
+                    )
+                    for item in memory_records
+                ),
+            )
+            expected_last_snapshot = (
+                results[method].get("snapshot_after")
+                if results[method].get("memory_writes")
+                else results[method].get("snapshot_before")
+            )
+            check(
+                f"matrix.memory.{method.value}.last_snapshot",
+                expected_last_snapshot,
+                _dict(_dict(memory_records[-1]).get("value"))
+                if memory_records
+                else None,
+            )
     else:
         adaptive = _dict(loaded.get("adaptive"))
         adaptive_status = _dict(loaded.get("adaptive_status"))

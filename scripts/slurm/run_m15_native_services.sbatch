@@ -40,6 +40,22 @@ case "$WORKLOAD_MODE" in
         ;;
     esac
     ;;
+  scaled_method_matrix)
+    RUN_PREFIX="cwru-m15-native-method-matrix"
+    RUN_VERSION="m15-f1-native-live-method-matrix-services-v1"
+    case "$WORKLOAD_PROFILE" in
+      selective)
+        WORKLOAD_CONFIG="experiments/configs/m15_f0_selective.json"
+        ;;
+      broad_hot)
+        WORKLOAD_CONFIG="experiments/configs/m15_f0_broad_hot.json"
+        ;;
+      *)
+        echo "Unsupported XGAP_M15_WORKLOAD_PROFILE: $WORKLOAD_PROFILE" >&2
+        exit 2
+        ;;
+    esac
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -206,7 +222,7 @@ PYTHONPATH="$REPO_ROOT/src" \
   | tee "$RUN_ROOT/runtime_staging_result.json"
 
 WORKLOAD_ARGS=()
-if [[ "$WORKLOAD_MODE" == scaled_adaptive ]]; then
+if [[ "$WORKLOAD_MODE" == scaled_adaptive || "$WORKLOAD_MODE" == scaled_method_matrix ]]; then
   WORKLOAD_BUNDLE="$RUN_ROOT/workload-bundle"
   PYTHONPATH="$REPO_ROOT/src" \
   "$PYTHON_BIN" -m xgap.experiments.m15_workload \

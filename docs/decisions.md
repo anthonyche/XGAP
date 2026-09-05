@@ -1293,3 +1293,29 @@ CWRU job `3787213` passed all 188 independent checks after two informative
 failed attempts. Keeping the system-acceptance claim separate from a SIGMOD
 performance claim allows implementation to advance without treating one warm
 cluster observation as statistically meaningful evidence.
+
+## D92 The first live method matrix is a mechanism gate with declared interference
+
+The first real-service F1 matrix executes the six frozen method policies in a
+fixed order inside one allocation and against one loaded selective workload.
+One common three-observation calibration is persisted separately from method
+metrics and seeds isolated append-only memory files for the three warm-memory
+methods. Each method then has its own backend-event phase and exact-answer
+artifact. The auditor requires 18 total tool invocations, the declared
+per-method call budgets, compatible snapshot identities, all six oracle-equal
+answers, zero retries, and an immutable run tree.
+
+The manifest also declares that execution order is not counterbalanced and
+that backend cache state is shared and unknown. Consequently this run can show
+that static, no-memory, no-profile/probe, no-replan, and full-agent controls are
+behaviorally executable on the same black-box services. It cannot support a
+latency ranking or paper comparison; calibrated randomized repetitions require
+a later scheduler and remain `paper_result=false` here.
+
+Reason:
+
+Running all policies in one service lifecycle is the smallest bounded test of
+the complete experimental mechanism. Hiding shared cache or charging common
+calibration to one policy would create a misleading comparison, while starting
+with a full counterbalanced campaign before validating every trace would make
+failures expensive and difficult to localize.

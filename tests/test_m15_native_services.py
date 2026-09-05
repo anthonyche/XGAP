@@ -512,6 +512,18 @@ def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
             repo_root=REPO_ROOT,
             workload_mode="scaled_adaptive",
         )
+    with pytest.raises(ValueError, match="requires a verified bundle"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-matrix-runs",
+            run_id="missing-matrix-bundle",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="scaled_method_matrix",
+        )
 
     executed: list[tuple[str, str]] = []
     monkeypatch.setattr(
@@ -579,6 +591,30 @@ def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
         "spec_sha256"
     ]
 
+    matrix_runtime, matrix_staging = _staged_runtime(tmp_path / "matrix-lifecycle")
+    matrix_record = run_m15_native_services(
+        runtime_root=matrix_runtime,
+        staging_manifest=matrix_staging,
+        output_root=tmp_path / "runs",
+        run_id="native-method-matrix-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_method_matrix",
+        workload_bundle=bundle,
+    )
+
+    assert matrix_record.success
+    assert executed[-1] == ("scaled_method_matrix", "native-scaled-test")
+    matrix_manifest = json.loads(
+        matrix_record.manifest_path.read_text(encoding="utf-8")
+    )
+    assert matrix_manifest["schema_version"] == (
+        native_services.METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert matrix_manifest["workload_mode"] == "scaled_method_matrix"
+
 
 def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     script = (
@@ -597,4 +633,5 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert 'WORKLOAD_ARGS=(--workload-bundle "$WORKLOAD_BUNDLE")' in script
     assert "m15_f0_selective.json" in script
     assert "m15_f0_broad_hot.json" in script
+    assert "scaled_method_matrix" in script
     assert "--localhost" not in script  # Frozen by the typed service plan.

@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0 SELECTIVE VERIFIED; F1 LIVE MATRIX AND CALIBRATION PENDING
-- Version Label: m15_remote_loop_v19
+- Verification Status: CWRU B2D/D2/F0 SELECTIVE VERIFIED; F1 LIVE MATRIX IMPLEMENTED LOCALLY, CWRU GATE PENDING
+- Version Label: m15_remote_loop_v20
 
 ## Current claim boundary
 
@@ -25,6 +25,14 @@ mode-aware immutable evidence bundle. CWRU job `3787152` verified that path on
 real Neo4j and Fuseki. Its fixed cost model is not calibrated, the tiny fixture
 did not warrant a plan change, and its manifest therefore declares
 `paper_result=false`.
+
+The next F1L runner is also locally implemented. A separate
+`scaled_method_matrix` mode reuses one verified workload and native-service
+allocation, accounts one common calibration outside method metrics, and then
+executes six frozen policies in explicit phases. The read-only auditor checks
+their 18-call budget, exact answers, isolated memory histories, lifecycle, and
+cleanup. Because order is fixed and backend cache state is shared and unknown,
+this is only the next live mechanism gate, not a performance comparison.
 
 Refreshed D1 CPU job `3787126` ran exact clean commit `4c26eea` on `compt331`
 and completed in 28 seconds with exit `0:0`. Its immutable run tree contains
@@ -313,7 +321,8 @@ VPN reachability and a working user-owned SSH alias.
   on scaled/skewed workloads. The tiny fixture may legitimately select zero or
   one replan and is only a live control-path gate, not performance evidence.
 - Compare static federation, no memory, no probe/profile, no replan, and the
-  full agent under the same workload.
+  full agent under the same workload. The local `scaled_method_matrix` runner
+  and auditor now implement this mechanism gate; CWRU execution is pending.
 
 ### M15-E — Selective semantic resolution and Qwen
 
@@ -357,9 +366,10 @@ VPN reachability and a working user-owned SSH alias.
   `experiments/artifacts/m15_f0_cwru_scaled_selective_success_20260905.json`;
   one run with an uncalibrated model remains `paper_result=false`.
 - F1 locally defines six executable task policies with exact memory-context
-  compatibility and a controlled paired matrix. Its live gate remains a
-  separate future Slurm mode so the current F0 selective result is not mixed
-  with comparative-method evidence.
+  compatibility and a controlled paired matrix. The separate
+  `run_m15_native_method_matrix.sbatch` entry point now executes the six-policy
+  real-service mechanism gate without mixing its artifacts into F0. It uses a
+  fixed order and shared unknown cache, so its result remains non-comparative.
 - Add external datasets, catalog, and ontology through versioned adapters.
 - Run correctness, cost, scaling, failure, and ambiguity experiments.
 - Build the thin UI only after the CLI trace schema, remote executor, and one
@@ -373,6 +383,6 @@ are complete. Keep jobs `3787110`, `3787126`, and `3787152` and their run trees
 immutable. D2 job `3787144` remains a separate pre-service wrapper failure;
 preserve its top-level output. F0 selective job `3787213` and its 188-check
 audit are now complete and immutable. The next external handoff is the
-separately versioned F1 live-method-matrix gate after its runner and auditor are
-published at one exact clean commit. No paper-performance claim is currently
-made.
+separately versioned F1 live-method-matrix gate after this locally passing
+runner and auditor are published at one exact clean commit. No
+paper-performance claim is currently made.

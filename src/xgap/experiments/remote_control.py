@@ -34,6 +34,7 @@ DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_native_services.sbatch",
     "scripts/slurm/run_m15_native_adaptive.sbatch",
     "scripts/slurm/run_m15_native_scaled_adaptive.sbatch",
+    "scripts/slurm/run_m15_native_method_matrix.sbatch",
 )
 
 

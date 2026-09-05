@@ -10,11 +10,13 @@ import pytest
 from xgap.experiments.m15_fixture_loader import RUN_SCHEMA_VERSION as FIXTURE_SCHEMA
 from xgap.experiments.m15_live_federated import RUN_SCHEMA_VERSION as LIVE_SCHEMA
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
+from xgap.experiments.m15_live_method_matrix import run_m15_live_method_matrix
 from xgap.experiments.m15_native_artifacts import load_native_runtime_lock
 from xgap.experiments.m15_native_evidence import audit_m15_native_run, main
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
     ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
+    METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
     SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     SERVICE_PLAN_SCHEMA_VERSION,
     SERVICE_RUN_SCHEMA_VERSION,
@@ -398,6 +400,75 @@ def _complete_scaled_adaptive_run(tmp_path: Path) -> Path:
     return run
 
 
+def _complete_scaled_method_matrix_run(tmp_path: Path) -> Path:
+    run = _complete_run(tmp_path)
+    service = run / "native-service-run"
+    bundle = generate_m15_workload_bundle(
+        M15WorkloadSpec.from_json(SELECTIVE_CONFIG),
+        run / "workload-bundle",
+    )
+    _write_json(
+        run / "workload_generation.json",
+        {"status": "success", **bundle.to_dict()},
+    )
+    matrix_record = run_m15_live_method_matrix(
+        output_root=service,
+        run_id="method-matrix-run",
+        repo_root=REPO_ROOT,
+        clients={
+            "neo4j": _AdaptiveNeo4jClient(
+                "neo4j", bundle.expected_source_rows["neo4j"]
+            ),
+            "fuseki": _AdaptiveFakeClient(
+                "fuseki", bundle.expected_source_rows["fuseki"]
+            ),
+        },
+        workload_bundle=bundle,
+    )
+    assert matrix_record.success, matrix_record.error
+
+    outer_path = run / "run_status.json"
+    outer = json.loads(outer_path.read_text(encoding="utf-8"))
+    outer["workload_mode"] = "scaled_method_matrix"
+    _write_json(outer_path, outer)
+
+    environment_path = run / "environment.txt"
+    environment = environment_path.read_text(encoding="utf-8").replace(
+        "run_version=m15-b2d-native-services-v1",
+        "run_version=m15-f1-native-live-method-matrix-services-v1",
+    )
+    environment += "workload_mode=scaled_method_matrix\nworkload_profile=selective\n"
+    environment_path.write_text(environment, encoding="utf-8")
+
+    service_manifest_path = service / "run_manifest.json"
+    service_manifest = json.loads(service_manifest_path.read_text(encoding="utf-8"))
+    service_manifest["schema_version"] = METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION
+    service_manifest["workload_mode"] = "scaled_method_matrix"
+    service_manifest["workload_bundle"] = dict(bundle.manifest)
+    _write_json(service_manifest_path, service_manifest)
+
+    fixture_path = service / "fixture-load" / "run_manifest.json"
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    fixture["dataset_id"] = "m15_f0:selective-dev-v1"
+    fixture["workload_bundle"] = dict(bundle.manifest)
+    fixture["input_sha256"] = {
+        **{
+            f"bundle:selective-dev-v1/{name}": digest
+            for name, digest in bundle.source_hashes.items()
+        },
+        "bundle:selective-dev-v1/manifest.json": hashlib.sha256(
+            (bundle.root / "manifest.json").read_bytes()
+        ).hexdigest(),
+    }
+    _write_json(fixture_path, fixture)
+
+    matrix_manifest_path = matrix_record.manifest_path
+    matrix_manifest = json.loads(matrix_manifest_path.read_text(encoding="utf-8"))
+    matrix_manifest["git"] = {"commit": COMMIT, "clean": True}
+    _write_json(matrix_manifest_path, matrix_manifest)
+    return run
+
+
 def test_complete_native_run_passes_cross_artifact_audit(tmp_path: Path) -> None:
     run = _complete_run(tmp_path)
 
@@ -444,6 +515,108 @@ def test_complete_native_scaled_adaptive_run_passes_bundle_bound_audit(
     assert audit.success, audit.failed_check_ids
     assert audit.failed_check_ids == ()
     assert len(audit.checks) >= 100
+
+
+def test_complete_native_scaled_method_matrix_passes_cross_artifact_audit(
+    tmp_path: Path,
+) -> None:
+    run = _complete_scaled_method_matrix_run(tmp_path)
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_method_matrix",
+    )
+
+    assert audit.success, audit.failed_check_ids
+    assert audit.failed_check_ids == ()
+    assert len(audit.checks) >= 200
+
+
+def test_method_matrix_audit_detects_a_tampered_method_result(
+    tmp_path: Path,
+) -> None:
+    run = _complete_scaled_method_matrix_run(tmp_path)
+    result_path = (
+        run
+        / "native-service-run"
+        / "method-matrix-run"
+        / "methods"
+        / "full_agent.json"
+    )
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result["final_rows"] = []
+    _write_json(result_path, result)
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_method_matrix",
+    )
+
+    assert not audit.success
+    assert "matrix.method.full_agent.matches_manifest" in audit.failed_check_ids
+    assert "matrix.method.full_agent.rows" in audit.failed_check_ids
+
+
+def test_method_matrix_audit_detects_a_missing_backend_event(
+    tmp_path: Path,
+) -> None:
+    run = _complete_scaled_method_matrix_run(tmp_path)
+    invocations_path = (
+        run
+        / "native-service-run"
+        / "method-matrix-run"
+        / "backend_invocations.json"
+    )
+    invocations = json.loads(invocations_path.read_text(encoding="utf-8"))
+    invocations["events_by_phase"]["full_agent"].pop()
+    _write_json(invocations_path, invocations)
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_method_matrix",
+    )
+
+    assert not audit.success
+    assert "matrix.invocations.all_success" in audit.failed_check_ids
+    assert "matrix.invocations.full_agent.count" in audit.failed_check_ids
+    assert "matrix.invocations.full_agent.executes" in audit.failed_check_ids
+
+
+def test_method_matrix_audit_detects_tampered_seed_memory(
+    tmp_path: Path,
+) -> None:
+    run = _complete_scaled_method_matrix_run(tmp_path)
+    memory_path = (
+        run
+        / "native-service-run"
+        / "method-matrix-run"
+        / "memory"
+        / "no_profile_probe.jsonl"
+    )
+    record = json.loads(memory_path.read_text(encoding="utf-8"))
+    record["value"]["bandwidth_bytes_per_ms"] = 999.0
+    memory_path.write_text(json.dumps(record, sort_keys=True) + "\n", encoding="utf-8")
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_method_matrix",
+    )
+
+    assert not audit.success
+    assert (
+        "matrix.memory.no_profile_probe.seed_snapshot" in audit.failed_check_ids
+    )
+    assert (
+        "matrix.memory.no_profile_probe.last_snapshot" in audit.failed_check_ids
+    )
 
 
 def test_scaled_audit_rejects_profile_label_that_disagrees_with_frozen_spec(
