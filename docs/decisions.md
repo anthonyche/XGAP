@@ -996,3 +996,30 @@ deployment neither correct nor reproducible. A shared compatible runtime
 avoids an unnecessary third binary dependency, while separating immutable
 archives from ephemeral database state respects backend filesystem
 requirements and leaves every network or integrity failure visible.
+
+## D77 Native service archives are staged through a job-owned trust boundary
+
+The live B2 path never extracts an archive directly into shared storage or an
+existing directory. Before extraction, XGAP re-verifies the frozen byte length
+and digest and inspects every tar member. Members must be regular files or
+directories below the single locked product root; absolute paths, traversal,
+backslashes, duplicate names, links, devices, special files, excessive member
+counts, and excessive expanded size are rejected. Extraction creates files
+exclusively in a private temporary directory and publishes the finished
+product root by rename only after the complete pass succeeds.
+
+The destination must be an absolute, existing, empty, non-symlink directory
+owned by the current allocation. The durable staging manifest must live
+outside that ephemeral directory and records the first failure, verified
+archive provenance, extracted member counts and bytes, Java requirement, and
+zero automatic retries. A later service launcher must separately prove that
+the destination filesystem is allocation-local before using these staged
+binaries or creating database state.
+
+Reason:
+
+An exact archive digest establishes artifact identity but does not by itself
+make archive extraction or database placement safe. Keeping verification,
+staging, service lifecycle, and query execution as distinct evidence gates
+prevents a malformed archive, shared-filesystem path, or partial extraction
+from silently becoming experimental state.

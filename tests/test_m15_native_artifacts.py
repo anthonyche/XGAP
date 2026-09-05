@@ -26,6 +26,8 @@ LOCK_PATH = REPO_ROOT / "services" / "m15-native-runtime.lock.json"
 class FakeResponse:
     def __init__(self, payload: bytes):
         self._stream = io.BytesIO(payload)
+        self.status = 200
+        self.headers = {"Content-Length": str(len(payload))}
 
     def __enter__(self) -> "FakeResponse":
         return self
@@ -35,6 +37,9 @@ class FakeResponse:
 
     def read(self, size: int = -1) -> bytes:
         return self._stream.read(size)
+
+    def geturl(self) -> str:
+        return "https://dist.neo4j.org/final.tar.gz"
 
 
 def _artifact(
@@ -222,6 +227,11 @@ def test_fetch_downloads_once_publishes_exact_file_and_cleans_partial(
     assert result.bytes_downloaded == len(payload)
     assert result.destination.read_bytes() == payload
     assert calls == [(artifact.url, 7)]
+    assert result.response_metadata == {
+        "http_status": 200,
+        "content_length": str(len(payload)),
+        "final_url": "https://dist.neo4j.org/final.tar.gz",
+    }
     assert list(tmp_path.glob("*.partial")) == []
 
 

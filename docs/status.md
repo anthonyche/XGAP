@@ -14,8 +14,8 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-The current M15-B2B gate passed 69 focused tests with two real-service tests
-skipped. Full-suite acceptance passed with 541 tests and 36 explicitly gated
+The current M15-B2C gate passed 77 focused tests with two real-service tests
+skipped. Full-suite acceptance passed with 549 tests and 36 explicitly gated
 or external-artifact tests skipped.
 
 M15-B is now **CWRU CPU-verified with a real-plugin contract; live backend
@@ -36,7 +36,21 @@ failures, and records no credential material. B2B now adds a frozen native
 runtime lock plus a fail-closed archive preparer: only exact official Neo4j and
 Fuseki archives can enter the shared cache; existing conflicts are not
 overwritten; invalid downloads are removed when the preparer exits; and no
-attempt is automatically retried.
+attempt is automatically retried. B2C adds safe allocation-local staging:
+each cached archive is re-verified, every tar member is bounded and checked,
+only regular files and directories below the frozen product root are accepted,
+and extraction is privately staged before atomic publication into a new empty
+runtime directory. Links, traversal, duplicate members, special files, partial
+products, and manifests inside the ephemeral root are rejected.
+
+The official-source local supply diagnostic preserved an initial Fuseki short
+read of 50,007,922 bytes against the locked 50,290,245 bytes and did not publish
+it. A separately numbered diagnostic made one additional Fuseki request while
+reusing the verified Neo4j cache with no request; it received HTTP 200 with the
+exact Content-Length and passed the frozen SHA-512. Both exact real archives
+then passed B2C inspection and staging. This is development evidence, not a
+CWRU live-service or paper-result claim; its compact record is
+`experiments/artifacts/m15_b2_local_native_supply_20260905.json`.
 
 The remaining M15-B gate is execution of the same contract against real Neo4j
 and Fuseki with a deliberately partitioned dataset, streaming/batched result
@@ -64,8 +78,10 @@ OpenJDK 8 and `/home` was NFS-backed. The Java module inventory advertises
 `native_service_prerequisites_ready=true` is therefore invalid and is not used
 as a gate; probe v2 parses the Java major, attempts the pinned module, and
 requires version compatibility. The next CWRU job only downloads and verifies
-the two frozen Java-17-compatible service archives. Extracted service state and
-database files remain allocation-local. See
+the two frozen Java-17-compatible service archives. The local B2C
+implementation is ready to stage those archives after that gate, but service
+startup is still pending. Extracted service state and database files remain
+allocation-local. See
 `docs/m15_remote_execution_loop.md`.
 
 The `remote.executor` tool and environment-configured CLI are implemented and
@@ -1345,7 +1361,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-B2B local implementation tests passed. M7 backend smoke and M12-C real
+M0-M15-B2C local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1355,9 +1371,9 @@ the local completion run.
 
 Latest recorded command results:
 
-- `./scripts/run_acceptance.sh`: 541 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 549 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
-  passed 69 with two live-service skips. Shell syntax validation passed for
+  passed 77 with two live-service skips. Shell syntax validation passed for
   both the corrected native prerequisite probe and the download-only artifact
   preparation job.
 - `PYTHONPATH=src python -m pytest`: 492 passed, 10 skipped, including the

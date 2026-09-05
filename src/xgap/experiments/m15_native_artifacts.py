@@ -19,7 +19,7 @@ import tempfile
 import time
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
@@ -267,6 +267,7 @@ class ArtifactFetchRecord:
     elapsed_ms: float
     verification: ArtifactVerification
     error: str | None = None
+    response_metadata: Mapping[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -279,6 +280,7 @@ class ArtifactFetchRecord:
             "elapsed_ms": self.elapsed_ms,
             "verification": self.verification.to_dict(),
             "error": self.error,
+            "response_metadata": dict(self.response_metadata),
         }
 
 
@@ -481,6 +483,7 @@ def fetch_native_artifact(
 
     partial_path: Path | None = None
     downloaded = 0
+    response_metadata: dict[str, Any] = {}
     try:
         with tempfile.NamedTemporaryFile(
             mode="w+b",
@@ -491,6 +494,19 @@ def fetch_native_artifact(
         ) as partial:
             partial_path = Path(partial.name)
             with opener(artifact.url, timeout=timeout_seconds) as response:
+                headers = getattr(response, "headers", None)
+                content_length = (
+                    headers.get("Content-Length")
+                    if headers is not None and hasattr(headers, "get")
+                    else None
+                )
+                response_metadata = {
+                    "http_status": getattr(response, "status", None),
+                    "content_length": content_length,
+                    "final_url": (
+                        response.geturl() if hasattr(response, "geturl") else artifact.url
+                    ),
+                }
                 while True:
                     block = response.read(1024 * 1024)
                     if not block:
@@ -513,6 +529,7 @@ def fetch_native_artifact(
                 (time.perf_counter() - started) * 1000,
                 verification,
                 "download did not match the frozen size and digest",
+                response_metadata,
             )
         try:
             os.link(partial_path, destination)
@@ -528,6 +545,7 @@ def fetch_native_artifact(
                 (time.perf_counter() - started) * 1000,
                 raced,
                 None if raced.success else "concurrent cache entry is invalid",
+                response_metadata,
             )
         except OSError as exc:
             return ArtifactFetchRecord(
@@ -540,6 +558,7 @@ def fetch_native_artifact(
                 (time.perf_counter() - started) * 1000,
                 verification,
                 str(exc),
+                response_metadata,
             )
         published = verify_native_artifact(destination, artifact)
         if not published.success:
@@ -557,6 +576,7 @@ def fetch_native_artifact(
             (time.perf_counter() - started) * 1000,
             published,
             None if published.success else "published cache entry failed verification",
+            response_metadata,
         )
     except Exception as exc:  # Preserve the one external attempt as evidence.
         missing = verify_native_artifact(destination, artifact)
@@ -570,6 +590,7 @@ def fetch_native_artifact(
             (time.perf_counter() - started) * 1000,
             missing,
             str(exc),
+            response_metadata,
         )
     finally:
         if partial_path is not None:
