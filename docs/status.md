@@ -14,9 +14,9 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-The current M15-B2A gate passed 50 focused tests with two real-service tests
-skipped, and full acceptance passed with 522 tests and 36 explicitly gated or
-external-artifact tests skipped.
+The current M15-B2B gate passed 69 focused tests with two real-service tests
+skipped. Full-suite acceptance passed with 541 tests and 36 explicitly gated
+or external-artifact tests skipped.
 
 M15-B is now **CWRU CPU-verified with a real-plugin contract; live backend
 gate pending**. The local
@@ -29,10 +29,14 @@ partitioned fixture gives Neo4j only identity/transfer facts and Fuseki only
 company risk/name facts, so neither source can contain the final answer. A
 fail-closed live runner uses the real Neo4j and Fuseki plugin path and persists
 the semantic program, execution DAG, source hashes, health, result, validation,
-status, and manifest without automatic retry. The next local B2A increment
-adds a separately gated deployment-neutral loader: namespaced Neo4j statements
-and Fuseki Graph Store appends are checked against exact per-source oracles,
-with partial failures preserved and no credential material recorded.
+status, and manifest without automatic retry. The separately gated,
+deployment-neutral loader applies namespaced Neo4j statements and Fuseki Graph
+Store appends, checks both against exact per-source oracles, preserves partial
+failures, and records no credential material. B2B now adds a frozen native
+runtime lock plus a fail-closed archive preparer: only exact official Neo4j and
+Fuseki archives can enter the shared cache; existing conflicts are not
+overwritten; invalid downloads are removed when the preparer exits; and no
+attempt is automatically retried.
 
 The remaining M15-B gate is execution of the same contract against real Neo4j
 and Fuseki with a deliberately partitioned dataset, streaming/batched result
@@ -52,9 +56,16 @@ node. B1 job `3784974` completed at exact commit `4c45931` on `compt365` in
 13 seconds with exit `0:0`; 40 tests passed, one live gate skipped, and the
 coordinator returned the one expected row using two calls and 206 transferred
 bytes. The allocated node reported `backend_runtime=none`, so Podman is not a
-valid Slurm service strategy. The next read-only job probes user-space Java,
-loopback, archive/hash tools, and storage before a native Neo4j/Fuseki launcher
-is implemented. See
+valid Slurm service strategy. B2 prerequisite job `3784980` completed at exact
+commit `1d7af1d` on `compt386` in 36 seconds. It verified loopback and all
+archive/hash/process tools, but its raw artifacts prove the inherited Java was
+OpenJDK 8 and `/home` was NFS-backed. The Java module inventory advertises
+`Java/17.0.6` and no Java 21. The v1 probe's command-presence-only
+`native_service_prerequisites_ready=true` is therefore invalid and is not used
+as a gate; probe v2 parses the Java major, attempts the pinned module, and
+requires version compatibility. The next CWRU job only downloads and verifies
+the two frozen Java-17-compatible service archives. Extracted service state and
+database files remain allocation-local. See
 `docs/m15_remote_execution_loop.md`.
 
 The `remote.executor` tool and environment-configured CLI are implemented and
@@ -1334,7 +1345,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M13-E3B.5 local implementation tests passed. M7 backend smoke and M12-C real
+M0-M15-B2B local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1344,6 +1355,11 @@ the local completion run.
 
 Latest recorded command results:
 
+- `./scripts/run_acceptance.sh`: 541 passed and 36 explicitly gated or
+  external-artifact tests skipped on Python 3.10.19. The M15-focused subset
+  passed 69 with two live-service skips. Shell syntax validation passed for
+  both the corrected native prerequisite probe and the download-only artifact
+  preparation job.
 - `PYTHONPATH=src python -m pytest`: 492 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,

@@ -72,10 +72,11 @@ def test_config_uses_vllm_python_and_scoped_defaults(tmp_path: Path) -> None:
     assert config.allow_cancel is False
 
 
-def test_default_allowlist_includes_only_m15_cpu_and_read_only_probe() -> None:
+def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     assert DEFAULT_ALLOWED_SBATCH_SCRIPTS == (
         "scripts/slurm/run_m15_core_smoke.sbatch",
         "scripts/slurm/probe_m15_native_services.sbatch",
+        "scripts/slurm/prepare_m15_native_artifacts.sbatch",
     )
     probe = (
         Path(__file__).resolve().parents[1]
@@ -87,6 +88,15 @@ def test_default_allowlist_includes_only_m15_cpu_and_read_only_probe() -> None:
     assert "outbound_download_tested=false" in probe
     assert "podman run" not in probe
     assert "docker run" not in probe
+    preparation = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "prepare_m15_native_artifacts.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_PREPARE_M15_NATIVE_ARTIFACTS=1" in preparation
+    assert "archives_extracted=false" in preparation
+    assert "services_started=false" in preparation
 
 
 def test_config_enables_cancel_only_with_exact_opt_in(tmp_path: Path) -> None:

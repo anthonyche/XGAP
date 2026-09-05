@@ -41,7 +41,14 @@ Execution order:
 3. **M15-B2 live backend packaging** — the authoritative compute node has no
    supported container runtime, so login-node Podman is rejected for Slurm
    service execution. The runtime-neutral loader and exact per-source oracle
-   are implemented; the next job probes a user-space Java service path.
+   are implemented. Prerequisite job `3784980` verified loopback/archive tools,
+   found Java 8 as the incompatible default, advertised Java 17 as the highest
+   module, and found NFS-backed home storage. The v1 presence-only Java
+   readiness flag is explicitly invalidated and fixed in probe v2. B2B pins
+   Neo4j 5.26.30 and Fuseki 5.6.0 to a common Java 17 runtime and provides a
+   single-attempt, digest-verified, no-overwrite shared archive cache. One CWRU
+   artifact-preparation job is the next gate; no extraction or service startup
+   occurs in that job.
 4. **M15-B3 live federated vertical slice** — the typed program, real-plugin
    runner, vertically split fixture, exact oracle, immutable evidence, and
    gated live test are implemented locally; real service execution is pending.

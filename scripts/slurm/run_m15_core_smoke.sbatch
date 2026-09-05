@@ -91,6 +91,7 @@ detect_runtime() {
   tests/test_m15_fragment_compiler.py \
   tests/test_m15_federated_runtime.py \
   tests/test_m15_fixture_loader.py \
+  tests/test_m15_native_artifacts.py \
   tests/test_m15_live_federated.py \
   tests/test_m15_remote_executor.py \
   tests/test_m15_remote_control.py \

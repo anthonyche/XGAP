@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: LOCALLY VERIFIED; CWRU B1 VERIFIED
-- Version Label: m15_remote_loop_v5
+- Verification Status: LOCALLY VERIFIED; CWRU B1 AND B2 PREREQUISITE PROBE VERIFIED
+- Version Label: m15_remote_loop_v6
 
 ## Current claim boundary
 
@@ -42,6 +42,24 @@ B1 job `3784974` ran commit
 13 seconds with exit `0:0`. Its immutable artifacts report 40 tests passed,
 one gated live test skipped, a successful one-row coordinator answer, two
 remote calls, and 206 measured transfer bytes.
+
+B2 prerequisite job `3784980` ran exact commit `1d7af1d` on `compt386` and
+completed in 36 seconds with exit `0:0`. It verified loopback binding, curl,
+wget, tar, SHA-256/SHA-512 tools, `setsid`, and `timeout`. It also exposed an
+important v1 probe defect: the inherited `java` executable was OpenJDK 8, but
+the v1 readiness flag checked only command presence and incorrectly reported
+`native_service_prerequisites_ready=true`. The module inventory advertises
+`Java/17.0.6`, while no Java 21 module is available. Probe v2 now parses both
+legacy and modern Java version output, attempts the pinned Java 17 module when
+needed, and requires a compatible major version before reporting readiness.
+The successful v1 job remains evidence; its invalid derived readiness flag is
+not used.
+
+The same job showed that both the checkout and home directory are on
+`vstorvip.lb.cwru.edu:/home`. Verified archives may be cached there, but live
+database state will be extracted and run only on allocation-local storage
+after an explicit filesystem preflight. No service data directory will be
+placed on that network filesystem.
 
 ## Codex-owned development loop
 
@@ -103,8 +121,8 @@ Status: **VERIFIED** by job `3784974` on `compt365`.
 - Verified threshold at commit `4c45931`: status `success`, 40 offline M15
   tests passed, one explicitly gated live test skipped, the vertical slice
   returned exactly one row with two remote calls and 206 transferred bytes.
-  The next wrapper revision adds the B2A loader suite and therefore expects
-  50 passes and two gated skips.
+  The current wrapper includes the B2A loader and B2B artifact-supply suites
+  and therefore expects 69 passes and two gated skips.
 
 ## Typed remote-control entry
 
@@ -140,10 +158,27 @@ VPN reachability and a working user-owned SSH alias.
   This loader is experiment bootstrap infrastructure, not a query-time agent
   tool, so a user query cannot mutate backend data.
 - Compute-node decision: no supported container runtime exists on the verified
-  B1 node. `probe_m15_native_services.sbatch` is the next read-only gate for a
-  user-space Java deployment; it records Java/module availability, download,
-  archive and hash tools, loopback binding, and filesystem evidence without
-  downloading or starting a service.
+  B1 node. `probe_m15_native_services.sbatch` records Java/module availability,
+  download, archive and hash tools, loopback binding, and filesystem evidence
+  without downloading or starting a service.
+- Observed prerequisite evidence: job `3784980` found OpenJDK 8 as the default,
+  advertised Java modules through 17, no Java 21 module, all required archive
+  tools, loopback binding, and an NFS-backed home directory. The v1
+  command-presence readiness result is invalidated by its recorded Java 8
+  version; probe v2 corrects this rather than rewriting the old artifact.
+- Frozen native supply: `services/m15-native-runtime.lock.json` selects Neo4j
+  Community `5.26.30` LTS and Apache Jena Fuseki `5.6.0`, which share the
+  CWRU-provided Java 17 runtime. It records official HTTPS sources, exact byte
+  lengths, SHA-256/SHA-512 digests, archive roots, and the runtime/storage
+  policy. Jena 6 requires Java 21 and is therefore not made an undeclared
+  cluster dependency.
+- Artifact preparation: `xgap.experiments.m15_native_artifacts` performs at
+  most one download attempt per archive, verifies size and digest before an
+  atomic no-overwrite publication, rejects symbolic links and conflicting
+  cache entries, and persists every partial failure. A verified cache is
+  reused without a network call. The separately allowlisted
+  `prepare_m15_native_artifacts.sbatch` downloads only these two archives to
+  shared storage; it does not extract them or start a service.
 - Gate: both health checks, both native smoke queries, clean shutdown, and
   immutable service/version artifacts pass without exposing a public port.
 
@@ -186,11 +221,13 @@ VPN reachability and a working user-owned SSH alias.
 - Build the thin UI only after the CLI trace schema, remote executor, and one
   user-clarification action are stable. The UI is not an experiment runner.
 
-## First user handoff
+## Next user handoff
 
-B0 and B1 are complete. After Codex publishes the B2A commit, synchronize the
-clean CWRU checkout and submit exactly one
-`probe_m15_native_services.sbatch` job. Return its `run_status.json`,
-`environment.txt`, `java_modules.txt`, `java_version.txt`, and
-`filesystem.txt`. No GPU job, download, or live backend is started by that
-probe.
+B0, B1, and the B2 prerequisite probe are complete. After Codex publishes the
+B2B commit, synchronize the clean CWRU checkout and submit exactly one
+`prepare_m15_native_artifacts.sbatch` job with the dedicated core Python. The
+job will make at most two external requests and cache approximately 203 MiB of
+verified archives under `$HOME/xgap-data/m15-native/artifacts`. Return its
+outer `run_status.json`, `environment.txt`, and nested preparation manifest.
+Do not repeat a failed job: its artifact determines whether the next step is
+native extraction or an approved offline-transfer fallback.

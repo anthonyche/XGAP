@@ -970,3 +970,29 @@ and failure behavior, but they are not database-internal physical operators.
 A narrow tool contract lets the same coordinator drive OnDemand/Slurm today
 and a thin UI later without granting an LLM a general remote shell or hiding
 failed experimental attempts.
+
+## D76 Native service supply is pinned and separate from runtime state
+
+The CWRU native-service path uses one common Java 17 module, Neo4j Community
+5.26.30 LTS, and Apache Jena Fuseki 5.6.0. The versions, official HTTPS URLs,
+archive lengths, digests, and extract roots are frozen in
+`services/m15-native-runtime.lock.json`. Archive preparation is a separate,
+explicitly gated batch action. It makes at most one request per missing
+archive, publishes only after exact validation, never overwrites an invalid
+existing cache entry, and never extracts or starts a service.
+
+Verified archives may reside on shared storage. Extracted binaries, logs, and
+database state for a live run must reside on allocation-local storage and are
+destroyed only by the job-owned lifecycle. The Java version is parsed and
+checked rather than inferred from command presence. Jena 6 is not selected
+because the observed CWRU module inventory stops at Java 17, while Jena 5.6 is
+the final Java-17 release and Neo4j 5.26 LTS supports Java 17.
+
+Reason:
+
+The real B2 probe found an inherited Java 8 executable and an NFS-backed home
+directory. Treating those as a runnable database environment would make the
+deployment neither correct nor reproducible. A shared compatible runtime
+avoids an unnecessary third binary dependency, while separating immutable
+archives from ephemeral database state respects backend filesystem
+requirements and leaves every network or integrity failure visible.

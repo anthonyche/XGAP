@@ -70,13 +70,18 @@ Implemented locally:
   verifies both source results exactly, stores no credentials, and persists
   partial failures without retry. It is experiment bootstrap infrastructure,
   not an agent-visible query tool;
+- a frozen native-service supply lock and fail-closed preparation runner for
+  exact Neo4j/Fuseki archives. The cache path is separate from runtime state,
+  verified entries require exact length and digest, conflicting entries are
+  never overwritten, downloads are never retried, and preparation cannot
+  extract archives or start services;
 - a fail-closed live runner that invokes the existing real Neo4j and Fuseki
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Local B2A verification passed 50 M15 tests with two real-service tests skipped.
-Full acceptance passed with 522 tests and 36 live/external-artifact tests
-skipped.
+Local B2B verification passed 69 M15 tests with two real-service tests skipped.
+Full local acceptance passed with 541 tests and 36 explicitly gated or
+external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
 gates before live services are started. Both gates are now verified. See
@@ -90,8 +95,14 @@ dedicated pytest-capable `xgap-core` environment. B1 job `3784974` then passed
 the M15 CPU smoke at exact commit `4c45931` on `compt365`: 40 tests passed, one
 live gate skipped, and the deterministic two-source coordinator result used
 two calls and 206 transferred bytes. The compute node exposed no supported
-container runtime, so login-node Podman is not the B2 strategy. The next gate
-probes user-space Java service prerequisites inside Slurm.
+container runtime, so login-node Podman is not the B2 strategy. B2 prerequisite
+job `3784980` on `compt386` then verified loopback and archive tools, exposed
+OpenJDK 8 as the incompatible default, advertised `Java/17.0.6` as the highest
+available module, and identified `/home` as NFS-backed. The original probe's
+presence-only readiness flag is invalidated; probe v2 now validates the Java
+major. B2B consequently pins Neo4j 5.26.30 LTS plus the final Java-17 Fuseki
+line, 5.6.0, caches only verified archives on shared storage, and reserves
+allocation-local storage for extracted runtime state.
 
 Acceptance gate:
 

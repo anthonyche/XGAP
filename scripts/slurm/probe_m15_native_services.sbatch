@@ -64,12 +64,50 @@ else
   : > "$RUN_ROOT/java_modules.txt"
 fi
 
+MINIMUM_JAVA_MAJOR=17
 JAVA_MODULE_LOADED=none
-if ! command -v java >/dev/null 2>&1 && type module >/dev/null 2>&1; then
+JAVA_INITIAL_AVAILABLE=false
+JAVA_INITIAL_MAJOR=unavailable
+if command -v java >/dev/null 2>&1; then
+  JAVA_INITIAL_AVAILABLE=true
+  java -version > "$RUN_ROOT/java_initial_version.txt" 2>&1
+  JAVA_INITIAL_MAJOR="$(PYTHONPATH="$REPO_ROOT/src" "$PYTHON_BIN" - \
+    "$RUN_ROOT/java_initial_version.txt" <<'PY'
+import sys
+from pathlib import Path
+from xgap.experiments.m15_native_artifacts import parse_java_major
+
+try:
+    print(parse_java_major(Path(sys.argv[1]).read_text(encoding="utf-8")))
+except ValueError:
+    print("unavailable")
+PY
+)"
+fi
+
+java_compatible() {
+  [[ "$1" =~ ^[0-9]+$ ]] && [[ "$1" -ge "$MINIMUM_JAVA_MAJOR" ]]
+}
+
+if ! java_compatible "$JAVA_INITIAL_MAJOR" && type module >/dev/null 2>&1; then
   : > "$RUN_ROOT/java_module_attempts.txt"
-  for candidate in Java java OpenJDK; do
+  for candidate in Java/17.0.6 Java/17 Java; do
     if module load "$candidate" >> "$RUN_ROOT/java_module_attempts.txt" 2>&1; then
-      if command -v java >/dev/null 2>&1; then
+      hash -r
+      java -version > "$RUN_ROOT/java_candidate_version.txt" 2>&1
+      candidate_major="$(PYTHONPATH="$REPO_ROOT/src" "$PYTHON_BIN" - \
+        "$RUN_ROOT/java_candidate_version.txt" <<'PY'
+import sys
+from pathlib import Path
+from xgap.experiments.m15_native_artifacts import parse_java_major
+
+try:
+    print(parse_java_major(Path(sys.argv[1]).read_text(encoding="utf-8")))
+except ValueError:
+    print("unavailable")
+PY
+)"
+      if java_compatible "$candidate_major"; then
         JAVA_MODULE_LOADED="$candidate"
         break
       fi
@@ -106,6 +144,28 @@ PY
 )"
 
 JAVA_AVAILABLE="$(command_available java)"
+JAVA_MAJOR=unavailable
+JAVA_COMPATIBLE=false
+if [[ "$JAVA_AVAILABLE" == true ]]; then
+  java -version > "$RUN_ROOT/java_version.txt" 2>&1
+  JAVA_MAJOR="$(PYTHONPATH="$REPO_ROOT/src" "$PYTHON_BIN" - \
+    "$RUN_ROOT/java_version.txt" <<'PY'
+import sys
+from pathlib import Path
+from xgap.experiments.m15_native_artifacts import parse_java_major
+
+try:
+    print(parse_java_major(Path(sys.argv[1]).read_text(encoding="utf-8")))
+except ValueError:
+    print("unavailable")
+PY
+)"
+  if java_compatible "$JAVA_MAJOR"; then
+    JAVA_COMPATIBLE=true
+  fi
+else
+  : > "$RUN_ROOT/java_version.txt"
+fi
 CURL_AVAILABLE="$(command_available curl)"
 WGET_AVAILABLE="$(command_available wget)"
 TAR_AVAILABLE="$(command_available tar)"
@@ -122,7 +182,7 @@ if [[ "$SHA256SUM_AVAILABLE" == true || "$SHASUM_AVAILABLE" == true ]]; then
   HASH_TOOL_AVAILABLE=true
 fi
 NATIVE_SERVICE_PREREQUISITES_READY=false
-if [[ "$JAVA_AVAILABLE" == true \
+if [[ "$JAVA_COMPATIBLE" == true \
   && "$DOWNLOAD_TOOL_AVAILABLE" == true \
   && "$TAR_AVAILABLE" == true \
   && "$HASH_TOOL_AVAILABLE" == true \
@@ -130,15 +190,10 @@ if [[ "$JAVA_AVAILABLE" == true \
   NATIVE_SERVICE_PREREQUISITES_READY=true
 fi
 
-if [[ "$JAVA_AVAILABLE" == true ]]; then
-  java -version > "$RUN_ROOT/java_version.txt" 2>&1
-else
-  : > "$RUN_ROOT/java_version.txt"
-fi
 df -Pk "$HOME" "$RUN_ROOT" > "$RUN_ROOT/filesystem.txt" 2>&1 || true
 
 {
-  printf 'probe_version=m15-b2-native-v1\n'
+  printf 'probe_version=m15-b2-native-v2\n'
   printf 'timestamp_utc=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   printf 'hostname=%s\n' "$(hostname)"
   printf 'slurm_job_id=%s\n' "${SLURM_JOB_ID:-unavailable}"
@@ -147,6 +202,11 @@ df -Pk "$HOME" "$RUN_ROOT" > "$RUN_ROOT/filesystem.txt" 2>&1 || true
   printf 'python_version=%s\n' "$($PYTHON_BIN --version 2>&1)"
   printf 'backend_runtime=%s\n' "$BACKEND_RUNTIME"
   printf 'java_available=%s\n' "$JAVA_AVAILABLE"
+  printf 'java_initial_available=%s\n' "$JAVA_INITIAL_AVAILABLE"
+  printf 'java_initial_major=%s\n' "$JAVA_INITIAL_MAJOR"
+  printf 'java_minimum_major=%s\n' "$MINIMUM_JAVA_MAJOR"
+  printf 'java_major=%s\n' "$JAVA_MAJOR"
+  printf 'java_compatible=%s\n' "$JAVA_COMPATIBLE"
   printf 'java_module_loaded=%s\n' "$JAVA_MODULE_LOADED"
   printf 'curl_available=%s\n' "$CURL_AVAILABLE"
   printf 'wget_available=%s\n' "$WGET_AVAILABLE"
