@@ -1124,3 +1124,34 @@ These strategies make cross-platform scheduling materially nontrivial without
 claiming access to Neo4j or Fuseki internals. Explicit bounds and accounting
 also prevent a data-dependent bind step from hiding uncontrolled calls or
 transfer work.
+
+## D83 Cross-task plan memory is append-only and version-addressed
+
+Experiment execution memory may use a single-writer JSONL store. Every put
+appends the full typed record and fsyncs it; reopening reconstructs the current
+value without deleting the replacement history. Federated observation
+snapshots use keys containing both snapshot ID and version, and an existing
+live version cannot be silently overwritten.
+
+Reason:
+
+An in-process dictionary cannot support cross-task adaptation or post-run
+audit. Append-only JSON records remain inspectable and make stale versus
+updated estimates explicit without introducing a database dependency into the
+coordinator.
+
+## D84 Replanning reuses an exact common prefix and is bounded to one change
+
+The initial adaptive executor permits at most one within-query plan change. A
+probe plan must be ancestor-closed and every probe node must be structurally
+identical in every candidate before any tool is invoked. Successful prefix
+results seed the chosen continuation and retain their remote-call and transfer
+accounting; they are not executed again. A failed probe terminates the adaptive
+run without an implicit fallback.
+
+Reason:
+
+Re-executing a probe would disguise retry cost as optimization, while reusing a
+semantically different prefix could corrupt the answer. One explicit change is
+enough to test memory-guided adaptation and gives the experiment a finite,
+auditable replan budget.

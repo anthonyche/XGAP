@@ -15,6 +15,7 @@ from xgap.agent.environment import AgentEnvironment
 from xgap.agent.loop import GoalLoop
 from xgap.agent.memory import (
     InMemoryStore,
+    JsonlMemoryStore,
     MemoryRecord,
     MemoryScope,
     MemoryStore,
@@ -33,6 +34,7 @@ __all__ = [
     "GoalStatus",
     "GoalTraceEntry",
     "InMemoryStore",
+    "JsonlMemoryStore",
     "MemoryRecord",
     "MemoryScope",
     "MemoryStore",

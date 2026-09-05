@@ -15,6 +15,7 @@ from xgap.runtime.contracts import (
     RuntimeNodeKind,
     RuntimeNodeResult,
     RuntimeNodeStatus,
+    RuntimePlanError,
 )
 from xgap.tools.backends import BACKEND_INVOKE_TOOL, BackendInvokeTool
 from xgap.tools.contracts import ToolContext, ToolStatus
@@ -48,11 +49,16 @@ class FederatedScheduler:
         plan: FederatedExecutionPlan,
         *,
         goal_id: str = "federated-query",
+        initial_results: Mapping[str, RuntimeNodeResult] | None = None,
     ) -> FederatedRunResult:
         started = time.perf_counter()
         nodes = {node.node_id: node for node in plan.nodes}
-        results: dict[str, RuntimeNodeResult] = {}
-        pending = set(nodes)
+        if initial_results is None:
+            initial_results = {}
+        if not isinstance(initial_results, Mapping):
+            raise RuntimePlanError("initial runtime results must be a mapping")
+        results = self._validate_initial_results(nodes, initial_results)
+        pending = set(nodes) - set(results)
 
         while pending:
             while True:
@@ -133,6 +139,41 @@ class FederatedScheduler:
             node_results=ordered_results,
             elapsed_ms=(time.perf_counter() - started) * 1000,
         )
+
+    @staticmethod
+    def _validate_initial_results(
+        nodes: Mapping[str, RuntimeNode],
+        initial_results: Mapping[str, RuntimeNodeResult],
+    ) -> dict[str, RuntimeNodeResult]:
+        """Validate an ancestor-closed successful prefix before continuation."""
+
+        results: dict[str, RuntimeNodeResult] = {}
+        for key, result in initial_results.items():
+            if not isinstance(key, str) or not isinstance(result, RuntimeNodeResult):
+                raise RuntimePlanError(
+                    "initial runtime results must map node ids to RuntimeNodeResult"
+                )
+            node = nodes.get(key)
+            if node is None:
+                raise RuntimePlanError(f"initial result references unknown node '{key}'")
+            if result.node_id != key or result.kind is not node.kind:
+                raise RuntimePlanError(
+                    f"initial result identity does not match runtime node '{key}'"
+                )
+            if result.status is not RuntimeNodeStatus.SUCCESS:
+                raise RuntimePlanError(
+                    f"initial result for '{key}' must be successful"
+                )
+            results[key] = result
+        for node_id in results:
+            missing = [
+                input_id for input_id in nodes[node_id].inputs if input_id not in results
+            ]
+            if missing:
+                raise RuntimePlanError(
+                    f"initial results are not ancestor-closed at '{node_id}'"
+                )
+        return results
 
     def _execute_remote(
         self,

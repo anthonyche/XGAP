@@ -203,6 +203,28 @@ def test_two_backend_plan_aligns_exchanges_and_joins() -> None:
     assert [item.status for item in result.node_results].count(RuntimeNodeStatus.SUCCESS) == 7
 
 
+def test_continuation_seed_must_be_a_valid_ancestor_closed_prefix() -> None:
+    scheduler = _runtime_tool().scheduler
+    completed = scheduler.execute(_plan())
+    by_id = {item.node_id: item for item in completed.node_results}
+
+    with pytest.raises(RuntimePlanError, match="must be a mapping"):
+        scheduler.execute(
+            _plan(),
+            initial_results=[by_id["neo4j-transfers"]],  # type: ignore[arg-type]
+        )
+    with pytest.raises(RuntimePlanError, match="unknown node"):
+        scheduler.execute(
+            _plan(),
+            initial_results={"unknown": by_id["neo4j-transfers"]},
+        )
+    with pytest.raises(RuntimePlanError, match="ancestor-closed"):
+        scheduler.execute(
+            _plan(),
+            initial_results={"align-transfers": by_id["align-transfers"]},
+        )
+
+
 def test_failed_backend_skips_dependent_nodes_and_preserves_observation() -> None:
     result = _runtime_tool(fail_fuseki=True).scheduler.execute(_plan())
 

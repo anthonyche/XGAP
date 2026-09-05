@@ -1,5 +1,14 @@
 """Federated execution plans and coordinator runtime."""
 
+from xgap.runtime.adaptive import (
+    AdaptiveExecutionError,
+    AdaptiveFederatedExecutor,
+    AdaptiveFederatedRun,
+    PlanSnapshotMemory,
+    ProbeObservation,
+    ReplanPolicy,
+)
+
 from xgap.runtime.contracts import (
     FederatedExecutionPlan,
     FederatedRunResult,
@@ -28,6 +37,9 @@ from xgap.runtime.planning import (
 )
 
 __all__ = [
+    "AdaptiveExecutionError",
+    "AdaptiveFederatedExecutor",
+    "AdaptiveFederatedRun",
     "FEDERATED_EXECUTION_TOOL",
     "CompiledBackendFragment",
     "ExistingM9FragmentCompiler",
@@ -42,7 +54,10 @@ __all__ = [
     "FragmentCompilationError",
     "PlanCostEstimate",
     "PlanObservationSnapshot",
+    "PlanSnapshotMemory",
+    "ProbeObservation",
     "RemoteEstimate",
+    "ReplanPolicy",
     "RuntimeNode",
     "RuntimeNodeKind",
     "RuntimeNodeResult",

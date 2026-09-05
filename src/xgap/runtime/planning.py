@@ -12,12 +12,29 @@ from xgap.runtime.contracts import (
     JsonMap,
     RuntimeNode,
     RuntimeNodeKind,
+    RuntimeNodeResult,
+    RuntimeNodeStatus,
 )
 from xgap.tools.contracts import ToolResult, ToolStatus
 
 
 class FederatedPlanningError(ValueError):
     """Raised when candidates or their observation evidence are incomplete."""
+
+
+def _finite_number(value: object, *, field: str) -> float:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        raise FederatedPlanningError(f"{field} must be numeric")
+    converted = float(value)
+    if not math.isfinite(converted):
+        raise FederatedPlanningError(f"{field} must be finite")
+    return converted
+
+
+def _nonnegative_integer(value: object, *, field: str) -> int:
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        raise FederatedPlanningError(f"{field} must be a nonnegative integer")
+    return value
 
 
 def _encoded_size(rows: object) -> int:
@@ -40,6 +57,16 @@ class RemoteEstimate:
 
     def __post_init__(self) -> None:
         if any(
+            not isinstance(value, str)
+            for value in (
+                self.observation_key,
+                self.backend_id,
+                self.source,
+                self.version,
+            )
+        ):
+            raise FederatedPlanningError("remote estimate identities must be strings")
+        if any(
             not value.strip()
             for value in (
                 self.observation_key,
@@ -49,14 +76,26 @@ class RemoteEstimate:
             )
         ):
             raise FederatedPlanningError("remote estimate identities must be nonempty")
-        if not math.isfinite(self.elapsed_ms) or self.elapsed_ms < 0:
+        elapsed_ms = _finite_number(
+            self.elapsed_ms,
+            field="remote estimate elapsed_ms",
+        )
+        if elapsed_ms < 0:
             raise FederatedPlanningError(
                 "remote estimate elapsed_ms must be finite and nonnegative"
             )
-        if self.row_count < 0:
-            raise FederatedPlanningError("remote estimate row_count must be nonnegative")
-        if not math.isfinite(self.row_width_bytes) or self.row_width_bytes <= 0:
-            raise FederatedPlanningError("remote estimate row width must be finite and positive")
+        _nonnegative_integer(
+            self.row_count,
+            field="remote estimate row_count",
+        )
+        row_width = _finite_number(
+            self.row_width_bytes,
+            field="remote estimate row width",
+        )
+        if row_width <= 0:
+            raise FederatedPlanningError(
+                "remote estimate row width must be finite and positive"
+            )
 
     @property
     def output_bytes(self) -> float:
@@ -114,6 +153,76 @@ class RemoteEstimate:
             version=catalog_version,
         )
 
+    @classmethod
+    def from_runtime_result(
+        cls,
+        observation_key: str,
+        result: RuntimeNodeResult,
+        *,
+        source: str,
+        version: str,
+    ) -> "RemoteEstimate":
+        if result.status is not RuntimeNodeStatus.SUCCESS:
+            raise FederatedPlanningError(
+                "remote estimate requires a successful runtime result"
+            )
+        if result.kind not in {
+            RuntimeNodeKind.REMOTE_QUERY,
+            RuntimeNodeKind.REMOTE_BIND_QUERY,
+        }:
+            raise FederatedPlanningError(
+                "remote estimate requires a remote runtime result"
+            )
+        backend_id = result.metadata.get("backend_id")
+        if not isinstance(backend_id, str) or not backend_id:
+            raise FederatedPlanningError("runtime result backend provenance is missing")
+        tool_metrics = result.metadata.get("tool_metrics", {})
+        backend_elapsed = (
+            tool_metrics.get("elapsed_ms")
+            if isinstance(tool_metrics, Mapping)
+            else None
+        )
+        elapsed_ms = (
+            float(backend_elapsed)
+            if isinstance(backend_elapsed, (int, float))
+            and not isinstance(backend_elapsed, bool)
+            else result.elapsed_ms
+        )
+        row_width = max(1.0, result.output_bytes / max(result.row_count, 1))
+        return cls(
+            observation_key=observation_key,
+            backend_id=backend_id,
+            elapsed_ms=elapsed_ms,
+            row_count=result.row_count,
+            row_width_bytes=row_width,
+            source=source,
+            version=version,
+        )
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> "RemoteEstimate":
+        try:
+            return cls(
+                observation_key=data["observation_key"],
+                backend_id=data["backend_id"],
+                elapsed_ms=_finite_number(
+                    data["elapsed_ms"],
+                    field="remote estimate elapsed_ms",
+                ),
+                row_count=_nonnegative_integer(
+                    data["row_count"],
+                    field="remote estimate row_count",
+                ),
+                row_width_bytes=_finite_number(
+                    data["row_width_bytes"],
+                    field="remote estimate row width",
+                ),
+                source=data["source"],
+                version=data["version"],
+            )
+        except KeyError as exc:
+            raise FederatedPlanningError(f"invalid remote estimate: {exc}") from exc
+
     def to_dict(self) -> JsonMap:
         return {
             "observation_key": self.observation_key,
@@ -137,18 +246,25 @@ class PlanObservationSnapshot:
     coordinator_row_ms: float = 0.0
 
     def __post_init__(self) -> None:
+        if not isinstance(self.snapshot_id, str) or not isinstance(self.version, str):
+            raise FederatedPlanningError("snapshot id and version must be strings")
         if not self.snapshot_id.strip() or not self.version.strip():
             raise FederatedPlanningError("snapshot id and version must be nonempty")
         keys = [item.observation_key for item in self.estimates]
         if len(keys) != len(set(keys)):
             raise FederatedPlanningError("snapshot observation keys must be unique")
-        if not math.isfinite(self.bandwidth_bytes_per_ms) or self.bandwidth_bytes_per_ms <= 0:
+        bandwidth = _finite_number(
+            self.bandwidth_bytes_per_ms,
+            field="snapshot bandwidth",
+        )
+        if bandwidth <= 0:
             raise FederatedPlanningError("snapshot bandwidth must be finite and positive")
         for name, value in (
             ("exchange_fixed_ms", self.exchange_fixed_ms),
             ("coordinator_row_ms", self.coordinator_row_ms),
         ):
-            if not math.isfinite(value) or value < 0:
+            converted = _finite_number(value, field=f"snapshot {name}")
+            if converted < 0:
                 raise FederatedPlanningError(f"snapshot {name} must be finite and nonnegative")
 
     @property
@@ -164,6 +280,58 @@ class PlanObservationSnapshot:
             "exchange_fixed_ms": self.exchange_fixed_ms,
             "coordinator_row_ms": self.coordinator_row_ms,
         }
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> "PlanObservationSnapshot":
+        raw_estimates = data.get("estimates")
+        if not isinstance(raw_estimates, list) or any(
+            not isinstance(item, Mapping) for item in raw_estimates
+        ):
+            raise FederatedPlanningError("snapshot estimates must be a list of objects")
+        try:
+            return cls(
+                snapshot_id=data["snapshot_id"],
+                version=data["version"],
+                estimates=tuple(
+                    RemoteEstimate.from_dict(item) for item in raw_estimates
+                ),
+                bandwidth_bytes_per_ms=_finite_number(
+                    data["bandwidth_bytes_per_ms"],
+                    field="snapshot bandwidth",
+                ),
+                exchange_fixed_ms=_finite_number(
+                    data.get("exchange_fixed_ms", 0.0),
+                    field="snapshot exchange_fixed_ms",
+                ),
+                coordinator_row_ms=_finite_number(
+                    data.get("coordinator_row_ms", 0.0),
+                    field="snapshot coordinator_row_ms",
+                ),
+            )
+        except KeyError as exc:
+            raise FederatedPlanningError(f"invalid observation snapshot: {exc}") from exc
+
+    def with_estimates(
+        self,
+        estimates: tuple[RemoteEstimate, ...],
+        *,
+        version: str,
+    ) -> "PlanObservationSnapshot":
+        update_keys = [item.observation_key for item in estimates]
+        if len(update_keys) != len(set(update_keys)):
+            raise FederatedPlanningError(
+                "updated snapshot observation keys must be unique"
+            )
+        merged = self.by_key
+        merged.update({item.observation_key: item for item in estimates})
+        return PlanObservationSnapshot(
+            snapshot_id=self.snapshot_id,
+            version=version,
+            estimates=tuple(merged[key] for key in sorted(merged)),
+            bandwidth_bytes_per_ms=self.bandwidth_bytes_per_ms,
+            exchange_fixed_ms=self.exchange_fixed_ms,
+            coordinator_row_ms=self.coordinator_row_ms,
+        )
 
 
 @dataclass(frozen=True)

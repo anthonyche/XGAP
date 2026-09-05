@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D REAL NEO4J+FUSEKI RUN AND 102-CHECK READ-ONLY AUDIT VERIFIED
-- Version Label: m15_remote_loop_v11
+- Verification Status: CWRU B2D VERIFIED; LOCAL M15-D1 ADAPTIVE CPU GATE VERIFIED; REFRESHED CWRU CPU SMOKE PENDING
+- Version Label: m15_remote_loop_v12
 
 ## Current claim boundary
 
@@ -14,7 +14,10 @@ The legacy M13 Qwen/vLLM path has run on CWRU Pioneer. The M15 agentic
 federated core has now also passed a real Neo4j-plus-Fuseki service gate. XGAP
 can claim one audited live two-engine vertical slice through public backend
 interfaces. It cannot yet claim paper-scale performance, streaming transport,
-or live cancellation.
+or live cancellation. A controlled local M15-D1 loop now persists observation
+snapshots across processes, runs a declared common probe prefix, and permits
+one evidence-triggered plan change without repeating the probe. This is an
+orchestration sanity check, not a live adaptive-backend or paper result.
 
 B0 observations on 2026-09-04 established an exact checkout at commit
 `465e2e2454b74aaf7a1c055797740bde8ca5ace0`, working Slurm commands,
@@ -140,9 +143,9 @@ Status: **VERIFIED** by job `3784974` on `compt365`.
   returned exactly one row with two remote calls and 206 transferred bytes.
   The current wrapper includes the B2A loader, B2B artifact-supply, B2C
   allocation-staging, and B2D service-lifecycle suites and therefore expects
-  113 passes and two gated skips, including the read-only evidence-auditor,
-  observation, and alternative-plan
-  regressions.
+  128 passes and two gated skips, including the read-only evidence-auditor,
+  observation, alternative-plan, persistent-memory, continuation, and bounded
+  replanning regressions.
 
 ## Typed remote-control entry
 
@@ -242,9 +245,15 @@ VPN reachability and a working user-owned SSH alias.
 
 ### M15-C/D — Alternative plans, observations, memory, and replanning
 
-- Add `inspect_schema`, `explain`, `profile`, and `sample` observations.
-- Add at least two correct federated plans and controlled latency/cardinality
-  changes that reverse the preferred plan.
+- Implemented locally: registered `inspect_schema`, `explain`, `profile`, and
+  `sample` observations; two correct federated plans; controlled cost changes
+  that reverse selection; append-only versioned snapshot memory; and one
+  bounded exact-prefix replan without duplicate remote work.
+- Immediate gate: reproduce the complete 128-pass/two-skip M15 CPU suite and
+  adaptive demo on one CWRU compute node at the exact published commit.
+- Remaining live gate: feed real registered backend observations into the
+  selector and exercise the adaptive continuation while Neo4j and Fuseki are
+  running.
 - Compare static federation, no memory, no probe/profile, no replan, and the
   full agent under the same workload.
 
@@ -269,5 +278,6 @@ VPN reachability and a working user-owned SSH alias.
 B0, B1, B2 prerequisite, B2B supply, B2D service lifecycle, B3 federated
 execution, and the independent evidence audit are complete. No further CWRU
 action is requested for M15-B. Keep job `3787110` and its separate audit tree
-immutable. The next server handoff will occur only after the M15-D adaptive
-runner and its exact commit have been published.
+immutable. The local M15-D1 adaptive runner is ready; after its exact commit is
+published, the next server handoff is one refreshed M15 CPU smoke. A real
+adaptive-service run is a later, separately frozen gate.

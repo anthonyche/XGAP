@@ -86,7 +86,9 @@ Memory is typed and provenance-bearing:
 - cache memory: reusable semantic fragments, plans, and results.
 
 Records carry a source, version, confidence, and optional expiry. Conversation
-text alone is not authoritative system memory.
+text alone is not authoritative system memory. The reference store is
+in-memory; experiment runs may use the single-writer append-only JSONL store so
+cross-task snapshots survive process boundaries without deleting prior values.
 
 ### Actions and termination
 
@@ -137,17 +139,26 @@ clarification even when an ontology exists.
 
 ### Federated Execution Plan
 
-The coordinator-level runtime vocabulary will include:
+The coordinator-level runtime vocabulary includes:
 
 - `RemoteQuery`
+- `RemoteBindQuery`
+- `Align`
 - `Exchange`
 - `CoordinatorJoin`
-- `Materialize`
+- `CoordinatorSemiJoin`
 - `Merge`
+- `Project`
 
 This is called a federated execution plan rather than a database-internal
 physical plan. Each `RemoteQuery` invokes a backend interface; the selected
 backend remains responsible for its internal physical optimization.
+
+Adaptive execution may first run an ancestor-closed common prefix. Before any
+probe call, every prefix node must be structurally identical in every candidate
+plan. A successful prefix can seed exactly one continuation, preserving its
+rows, latency, transfer, and call accounting; it is not executed again. A
+failed prefix is evidence and cannot silently select a fallback.
 
 ## Compatibility with the existing system
 

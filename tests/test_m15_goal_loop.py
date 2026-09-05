@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from pathlib import Path
+
+import pytest
+
 from xgap.agent import (
     AgentEnvironment,
     GoalLoop,
     GoalSpec,
     GoalStatus,
     InMemoryStore,
+    JsonlMemoryStore,
+    MemoryRecord,
     MemoryScope,
     PlannedToolCall,
     SequentialToolPolicy,
@@ -121,3 +127,87 @@ def test_goal_loop_enforces_tool_call_budget() -> None:
 
     assert state.status is GoalStatus.BUDGET_EXHAUSTED
     assert state.tool_calls == 0
+
+
+def test_jsonl_memory_persists_current_records_and_append_only_history(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "memory" / "observations.jsonl"
+    store = JsonlMemoryStore(path, clock=lambda: 15.0)
+    first = MemoryRecord(
+        MemoryScope.EXECUTION,
+        "query/q1",
+        {"latency_ms": 10.0},
+        "backend.profile",
+        "v1",
+        created_at=10.0,
+    )
+    second = MemoryRecord(
+        MemoryScope.EXECUTION,
+        "query/q1",
+        {"latency_ms": 8.0},
+        "backend.profile",
+        "v2",
+        created_at=11.0,
+    )
+    store.put(first)
+    store.put(second)
+
+    reopened = JsonlMemoryStore(path, clock=lambda: 15.0)
+
+    assert reopened.get(MemoryScope.EXECUTION, "query/q1") == second
+    assert reopened.records(MemoryScope.EXECUTION) == (second,)
+    assert reopened.history(MemoryScope.EXECUTION) == (first, second)
+    assert len(path.read_text(encoding="utf-8").splitlines()) == 2
+
+
+def test_jsonl_memory_expires_live_value_but_retains_audit_history(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "memory.jsonl"
+    store = JsonlMemoryStore(path, clock=lambda: 15.0)
+    store.put(
+        MemoryRecord(
+            MemoryScope.CACHE,
+            "schema/neo4j",
+            {"labels": ["Company"]},
+            "backend.inspect",
+            "v1",
+            created_at=10.0,
+            expires_at=20.0,
+        )
+    )
+
+    reopened = JsonlMemoryStore(path, clock=lambda: 25.0)
+
+    assert reopened.get(MemoryScope.CACHE, "schema/neo4j") is None
+    assert len(reopened.history(MemoryScope.CACHE)) == 1
+
+
+def test_jsonl_memory_fails_closed_on_malformed_or_non_json_value(
+    tmp_path: Path,
+) -> None:
+    malformed = tmp_path / "malformed.jsonl"
+    malformed.write_text("{not-json}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="invalid JSONL memory line"):
+        JsonlMemoryStore(malformed)
+
+    store = JsonlMemoryStore(tmp_path / "valid.jsonl")
+    with pytest.raises(ValueError, match="not JSON serializable"):
+        store.put(
+            MemoryRecord(
+                MemoryScope.EXECUTION,
+                "bad",
+                {"value": object()},
+                "test",
+                "v1",
+            )
+        )
+
+
+def test_jsonl_memory_rejects_even_a_broken_symbolic_link(tmp_path: Path) -> None:
+    path = tmp_path / "memory.jsonl"
+    path.symlink_to(tmp_path / "missing-target.jsonl")
+
+    with pytest.raises(ValueError, match="regular file"):
+        JsonlMemoryStore(path)

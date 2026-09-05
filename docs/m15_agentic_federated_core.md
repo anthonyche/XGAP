@@ -79,8 +79,8 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current local M15 verification passed 113 tests with two real-service tests
-skipped. Full local acceptance passed with 586 tests and 36 explicitly gated or
+Current local M15 verification passed 128 tests with two real-service tests
+skipped. Full local acceptance passed with 600 tests and 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -163,13 +163,24 @@ and the selected plan changes under controlled cardinality or latency changes.
 
 ## M15-D — Memory-guided adaptation and replanning
 
-Status: **PLANNED**
+Status: **INITIAL CONTROLLED LOOP IMPLEMENTED LOCALLY; LIVE ADAPTIVE GATE PENDING**
 
 Use versioned capability and execution memory across tasks, and permit explicit
 within-query replanning after observations invalidate the current estimate.
 
+The first slice adds an append-only JSONL memory backend, immutable snapshot
+versions, an ancestor-closed scheduler continuation boundary, and a one-replan
+adaptive executor. A probe must be an exact common prefix of every candidate
+before any remote call. Its successful rows and accounting are reused by the
+selected continuation; a failed probe is retained as evidence and does not
+trigger a fallback query. The controlled demo starts from stale task memory,
+changes selection from parallel hash to risk-first bind after a measured
+latency deviation, returns the exact answer with two total remote calls, and
+reloads the updated snapshot from disk. It is not a live or paper result.
+
 Required baselines: static federation, no memory, no profile/probe, no replan,
-and full agent.
+and full agent. The no-replan control is implemented; the complete baseline
+matrix and real-backend adaptive run remain pending.
 
 ## M15-E — Selective semantic resolution
 

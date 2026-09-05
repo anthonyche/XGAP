@@ -88,6 +88,7 @@ detect_runtime() {
   tests/test_m15_semantic_program.py \
   tests/test_m15_tools.py \
   tests/test_m15_goal_loop.py \
+  tests/test_m15_adaptive_runtime.py \
   tests/test_m15_fragment_compiler.py \
   tests/test_m15_federated_runtime.py \
   tests/test_m15_federated_planning.py \
@@ -107,6 +108,9 @@ detect_runtime() {
 
 "$PYTHON_BIN" examples/m15_federated_plan_selection_demo.py \
   > "$RUN_ROOT/plan_selection.json"
+
+"$PYTHON_BIN" examples/m15_adaptive_replanning_demo.py \
+  > "$RUN_ROOT/adaptive_replanning.json"
 
 "$PYTHON_BIN" - "$RUN_ROOT/vertical_slice.json" <<'PY'
 import json
@@ -135,6 +139,25 @@ assert (
     == "m15-risk-first-bind"
 )
 assert payload["selections"]["slow_bind"]["selected_plan_id"] == "m15-parallel-hash"
+PY
+
+"$PYTHON_BIN" - "$RUN_ROOT/adaptive_replanning.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert payload["evidence_class"] == "controlled_model_sanity_check"
+assert payload["paper_result"] is False
+assert payload["success"] is True
+assert payload["initial_plan_id"] == "m15-parallel-hash"
+assert payload["post_probe_plan_id"] == "m15-risk-first-bind"
+assert payload["executed_plan_id"] == "m15-risk-first-bind"
+assert payload["replan_count"] == 1
+assert payload["no_duplicate_probe_call"] is True
+assert payload["total_remote_calls"] == 2
+assert payload["exact_answer"] is True
+assert payload["persisted_snapshot_version_after_reopen"] == "task-1"
 PY
 
 echo "M15 core smoke passed."

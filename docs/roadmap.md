@@ -92,7 +92,15 @@ live observation-derived estimates remain open.
 Goal: use versioned observations across tasks and explicitly replan within a
 query when runtime evidence invalidates the current estimate.
 
-Current status: **PLANNED**
+Current status: **INITIAL CONTROLLED LOOP IMPLEMENTED LOCALLY; LIVE ADAPTIVE GATE PENDING**
+
+The current slice persists versioned plan snapshots to append-only JSONL,
+validates a probe as an exact common plan prefix before invocation, reuses that
+prefix during continuation, and permits at most one explicit replan. The
+controlled fixture flips from parallel hash to risk-first bind after observed
+latency invalidates stale memory without duplicating the probe call. Probe
+failure and the no-replan control are covered. Real observations, the complete
+baseline matrix, and a CWRU adaptive run remain open.
 
 ### M15-E Selective Semantic Resolution
 

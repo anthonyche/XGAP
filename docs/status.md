@@ -14,8 +14,8 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-The current M15-C1 gate passed 113 focused tests with two real-service tests
-skipped. Full-suite acceptance passed with 586 tests and 36 explicitly gated
+The current M15-D1 gate passed 128 focused tests with two real-service tests
+skipped. Full-suite acceptance passed with 600 tests and 36 explicitly gated
 or external-artifact tests skipped.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
@@ -86,6 +86,20 @@ selector chooses bind under transfer pressure and parallel when bound-query
 latency is controlled to be high. The demonstration moves 530 versus 363
 fixture bytes and is labeled `controlled_model_sanity_check` with
 `paper_result=false`; it is not live calibration or a paper result.
+
+M15-D1 is locally implemented as a controlled adaptive loop. Memory records can
+now survive process boundaries in an append-only JSONL history, while current
+values retain version, provenance, confidence, and expiry semantics. A
+versioned plan snapshot is never silently overwritten. The scheduler can
+continue from a validated ancestor-closed successful prefix, and the adaptive
+executor admits a probe only when it is an exact common prefix of every
+candidate. In the controlled M15 case, stale execution memory initially picks
+parallel hash; the runtime prefix observation exposes a 2000x latency deviation,
+selection changes to risk-first bind, and the already executed Fuseki prefix is
+reused. The exact answer still requires only two total backend calls. A failed
+probe causes no fallback execution, and a no-replan control is implemented.
+This is local orchestration evidence, not a real-backend adaptive or paper
+result.
 
 M15-B2D/B3 job `3787110` ran exact clean commit `cd564de8` on `compt331` in
 62 seconds. Neo4j 5.26.30 and Fuseki 5.6.0 ran on allocation-local XFS and
@@ -1401,7 +1415,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-B2D local implementation tests passed. M7 backend smoke and M12-C real
+M0-M15-D1 local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1411,9 +1425,9 @@ the local completion run.
 
 Latest recorded command results:
 
-- `./scripts/run_acceptance.sh`: 586 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 600 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
-  passed 94 with two live-service skips. Shell syntax validation passed for
+  passed 128 with two live-service skips. Shell syntax validation passed for
   the corrected native prerequisite probe, download-only artifact preparation,
   and allocation-scoped native-service jobs.
 - `PYTHONPATH=src python -m pytest`: 492 passed, 10 skipped, including the
