@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 721 tests with 36 explicitly gated or
+Current full local acceptance passes 737 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0/F2C1 CONTRACTS LOCAL**
+Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C2 CONTRACTS LOCAL**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -411,6 +411,16 @@ The current registry contains only the existing Alice seed and therefore
 reports every missing paper boundary, including typed DAG and backend-template
 structure, workload/oracle binding, held-out coverage, and the 30--50 instance
 target.
+
+F2C2 defines the v2 typed parameterized contract that the next task-stream
+version will consume. It preserves the audited v1 path while making entity,
+time, and amount immutable and allowing only bounded risk, predicate, and path
+relaxations. The compiler materializes the seven-node semantic DAG, validates
+all slot uses, and type-checks backend parameters across compile-time template,
+runtime value, and runtime-intermediate stages. Values change instance identity
+but not family compatibility. Backend query files, multi-instance workload
+data, and oracles remain intentionally unbound, so this local contract is not
+an executable experiment and does not authorize another CWRU job.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

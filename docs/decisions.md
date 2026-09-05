@@ -1582,3 +1582,33 @@ The compiler therefore records those missing bindings along with workload,
 oracle, family-count, instance-count, split, and analysis blockers. Its
 one-family development registry proves fail-closed routing only and remains
 `paper_result=false`.
+
+## D104 Version semantic policy instead of rewriting audited query evidence
+
+F2C2 introduces a separate v2 parameterized query specification. It does not
+modify the v1 resolved-query specification, F2B4 contract, or CWRU job
+`3787430`. In v2, the clarified entity identity, time lower bound, and amount
+lower bound are hard constraints and cannot be relaxed. Risk level, transfer
+predicate, and direct path shape are relaxable only through their declared
+bounded transformations: one ontology-adjacent risk step, one ontology-sibling
+predicate step, and at most two bounded path-expansion steps. The exact
+interpretation is the zero-relaxation instance; later alternatives must be
+compared on semantic deviation and execution cost rather than relabeled as
+exact answers.
+
+The compiler materializes a typed semantic operator DAG and verifies complete
+binding coverage across both semantics and backend artifact interfaces.
+Artifact parameters distinguish runtime values, compile-time query-template
+choices, and runtime intermediate bindings; their declared types must match
+the source binding-slot kinds. Concrete values and descriptive family/template
+labels are excluded from the structural family compatibility hash. Query IDs
+and resolved-intent prose remain provenance rather than identity: only the
+family key, concrete binding values, and bound typed program define a query
+instance, so renaming a label cannot manufacture a new instance.
+
+This closes the typed-template contract only. The declared Cypher/SPARQL
+interfaces are not yet bound to literal-free query files, a multi-instance
+workload bundle, or source/final oracles. F2C2 performs no backend, LLM, or
+ontology call, contains no measurement, remains `paper_result=false`, and does
+not authorize a CWRU submission. F2C3 must bind those executable artifacts
+before the v2 family can enter a task stream.

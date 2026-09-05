@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0/F2C1 CONTRACTS LOCAL**
+Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C2 CONTRACTS LOCAL**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -284,6 +284,17 @@ held-out families to cold start. The one-family development registry is
 deliberately not ready: typed operator-DAG and backend-template binding,
 workload/oracle contracts, additional families, 30--50 instances, and the
 statistical protocol remain open.
+
+F2C2 adds a separately versioned typed parameterized query contract for the
+financial-risk family without changing the audited v1 query. It freezes the
+selected semantic policy: clarified entity identity, time, and amount are
+hard; risk, predicate, and direct-path shape have only explicitly bounded
+relaxations. A typed seven-node semantic DAG, complete slot coverage, backend
+parameter types, and compile-time/runtime/intermediate binding stages now feed
+a value-independent family compatibility hash and a value-bound instance hash.
+The current contract is deliberately unexecuted: F2C3 must bind literal-free
+Neo4j/Fuseki templates, a shared multi-instance workload, and exact source and
+final oracles before any remote run.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

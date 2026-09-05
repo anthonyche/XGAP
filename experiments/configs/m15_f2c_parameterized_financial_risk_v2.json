@@ -1,0 +1,363 @@
+{
+  "schema_version": "m15-f2c-parameterized-query-spec-v2",
+  "query_id": "financial-risk-alice-high-risk-v2",
+  "family_id": "financial-risk-transfer-to-company",
+  "resolved_intent": "Find recent transfers from the clarified Alice Smith identity above the immutable amount threshold to companies matching the preferred HIGH risk class; risk class, transfer predicate, and direct path shape may be relaxed only through declared bounded transformations.",
+  "binding_slots": [
+    {
+      "slot_id": "person-identity",
+      "kind": "entity_id",
+      "value": "person-alice-smith"
+    },
+    {
+      "slot_id": "time-lower-bound",
+      "kind": "date",
+      "value": "2026-08-05"
+    },
+    {
+      "slot_id": "amount-lower-bound",
+      "kind": "integer",
+      "value": 50000
+    },
+    {
+      "slot_id": "risk-level",
+      "kind": "enum",
+      "value": "HIGH"
+    },
+    {
+      "slot_id": "transfer-predicate",
+      "kind": "enum",
+      "value": "transfer_to_company"
+    },
+    {
+      "slot_id": "path-shape",
+      "kind": "enum",
+      "value": "direct"
+    }
+  ],
+  "semantic_template": {
+    "template_id": "financial-risk-transfer-to-company-v1",
+    "operators": [
+      {
+        "operator_id": "resolved-person",
+        "kind": "match",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "binding_set",
+        "parameters": {
+          "entity_id": {
+            "$binding": "person-identity"
+          },
+          "entity_type": "Person"
+        },
+        "constraints": [
+          {
+            "constraint_id": "resolved-person-identity",
+            "expression_template": "entity_id = {{slot:person-identity}}",
+            "policy": "hard",
+            "binding_slot_ids": [
+              "person-identity"
+            ],
+            "relaxation": null
+          }
+        ],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "recent-large-transfers",
+        "kind": "traverse",
+        "input_ids": [
+          "resolved-person"
+        ],
+        "input_kinds": [
+          "binding_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "predicate": {
+            "$binding": "transfer-predicate"
+          },
+          "path_shape": {
+            "$binding": "path-shape"
+          }
+        },
+        "constraints": [
+          {
+            "constraint_id": "time-lower-bound",
+            "expression_template": "occurred_on >= {{slot:time-lower-bound}}",
+            "policy": "hard",
+            "binding_slot_ids": [
+              "time-lower-bound"
+            ],
+            "relaxation": null
+          },
+          {
+            "constraint_id": "amount-lower-bound",
+            "expression_template": "amount >= {{slot:amount-lower-bound}}",
+            "policy": "hard",
+            "binding_slot_ids": [
+              "amount-lower-bound"
+            ],
+            "relaxation": null
+          },
+          {
+            "constraint_id": "transfer-predicate",
+            "expression_template": "predicate = {{slot:transfer-predicate}}",
+            "policy": "relaxable",
+            "binding_slot_ids": [
+              "transfer-predicate"
+            ],
+            "relaxation": {
+              "transformations": [
+                "ontology_sibling"
+              ],
+              "max_steps": 1,
+              "deviation_metric": "semantic_deviation"
+            }
+          },
+          {
+            "constraint_id": "path-shape",
+            "expression_template": "path_shape = {{slot:path-shape}}",
+            "policy": "relaxable",
+            "binding_slot_ids": [
+              "path-shape"
+            ],
+            "relaxation": {
+              "transformations": [
+                "bounded_path_expansion"
+              ],
+              "max_steps": 2,
+              "deviation_metric": "semantic_deviation"
+            }
+          }
+        ],
+        "required_capabilities": [
+          "native.cypher"
+        ]
+      },
+      {
+        "operator_id": "align-transfer-company",
+        "kind": "align",
+        "input_ids": [
+          "recent-large-transfers"
+        ],
+        "input_kinds": [
+          "binding_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "identity_space": "m15-company"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "risk-matched-companies",
+        "kind": "match",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "binding_set",
+        "parameters": {
+          "entity_type": "Company",
+          "risk": {
+            "$binding": "risk-level"
+          }
+        },
+        "constraints": [
+          {
+            "constraint_id": "risk-level",
+            "expression_template": "risk = {{slot:risk-level}}",
+            "policy": "relaxable",
+            "binding_slot_ids": [
+              "risk-level"
+            ],
+            "relaxation": {
+              "transformations": [
+                "ontology_adjacent"
+              ],
+              "max_steps": 1,
+              "deviation_metric": "semantic_deviation"
+            }
+          }
+        ],
+        "required_capabilities": [
+          "native.sparql"
+        ]
+      },
+      {
+        "operator_id": "align-risk-company",
+        "kind": "align",
+        "input_ids": [
+          "risk-matched-companies"
+        ],
+        "input_kinds": [
+          "binding_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "identity_space": "m15-company"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "federated-company-join",
+        "kind": "join",
+        "input_ids": [
+          "align-transfer-company",
+          "align-risk-company"
+        ],
+        "input_kinds": [
+          "binding_set",
+          "binding_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "join_key": "canonical_company_id"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "answer-projection",
+        "kind": "project",
+        "input_ids": [
+          "federated-company-join"
+        ],
+        "input_kinds": [
+          "binding_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "fields": [
+            "person",
+            "company",
+            "amount",
+            "currency",
+            "occurred_on",
+            "risk"
+          ]
+        },
+        "constraints": [],
+        "required_capabilities": []
+      }
+    ],
+    "roots": [
+      "answer-projection"
+    ]
+  },
+  "output_fields": [
+    "person",
+    "company",
+    "amount",
+    "currency",
+    "occurred_on",
+    "risk"
+  ],
+  "artifact_interfaces": [
+    {
+      "role": "neo4j_full",
+      "backend_id": "neo4j",
+      "language": "cypher",
+      "parameter_schema": {
+        "person_id": {
+          "type": "string",
+          "required": true,
+          "binding_stage": "runtime_parameter"
+        },
+        "occurred_on_gte": {
+          "type": "date",
+          "required": true,
+          "binding_stage": "runtime_parameter"
+        },
+        "amount_gte": {
+          "type": "integer",
+          "required": true,
+          "binding_stage": "runtime_parameter"
+        },
+        "transfer_predicate": {
+          "type": "enum",
+          "required": true,
+          "binding_stage": "compile_time_template"
+        },
+        "path_shape": {
+          "type": "enum",
+          "required": true,
+          "binding_stage": "compile_time_template"
+        }
+      },
+      "binding_parameters": {
+        "person_id": "person-identity",
+        "occurred_on_gte": "time-lower-bound",
+        "amount_gte": "amount-lower-bound",
+        "transfer_predicate": "transfer-predicate",
+        "path_shape": "path-shape"
+      }
+    },
+    {
+      "role": "neo4j_bound",
+      "backend_id": "neo4j",
+      "language": "cypher",
+      "parameter_schema": {
+        "person_id": {
+          "type": "string",
+          "required": true,
+          "binding_stage": "runtime_parameter"
+        },
+        "occurred_on_gte": {
+          "type": "date",
+          "required": true,
+          "binding_stage": "runtime_parameter"
+        },
+        "amount_gte": {
+          "type": "integer",
+          "required": true,
+          "binding_stage": "runtime_parameter"
+        },
+        "transfer_predicate": {
+          "type": "enum",
+          "required": true,
+          "binding_stage": "compile_time_template"
+        },
+        "path_shape": {
+          "type": "enum",
+          "required": true,
+          "binding_stage": "compile_time_template"
+        },
+        "company_ids": {
+          "type": "array[string]",
+          "required": true,
+          "binding_stage": "runtime_intermediate"
+        }
+      },
+      "binding_parameters": {
+        "person_id": "person-identity",
+        "occurred_on_gte": "time-lower-bound",
+        "amount_gte": "amount-lower-bound",
+        "transfer_predicate": "transfer-predicate",
+        "path_shape": "path-shape"
+      }
+    },
+    {
+      "role": "fuseki_risk",
+      "backend_id": "fuseki",
+      "language": "sparql",
+      "parameter_schema": {
+        "risk_level": {
+          "type": "enum",
+          "required": true,
+          "binding_stage": "compile_time_template"
+        }
+      },
+      "binding_parameters": {
+        "risk_level": "risk-level"
+      }
+    }
+  ],
+  "candidate_strategy_ids": [
+    "parallel_hash_join",
+    "risk_first_bind_join"
+  ],
+  "automatic_retries": 0,
+  "paper_result": false
+}
