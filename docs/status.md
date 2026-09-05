@@ -23,7 +23,9 @@ and all three control-path oracles passed. Its compact record is
 `experiments/artifacts/m15_d1_cwru_core_smoke_20260905.json`. The subsequent
 local M15-C2/D2 live adaptive implementation passes 140 focused tests with two
 live-service skips and full acceptance with 612 passes and 36 explicit skips.
-It is committed locally and has not yet run on CWRU.
+It is committed and CWRU job `3787152` has now verified the real-service path;
+its tiny uncalibrated fixture correctly retained the initial plan and remains
+an engineering acceptance result rather than paper-performance evidence.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
@@ -123,8 +125,8 @@ and does not fall back to another plan or duplicate memory. The native service
 lifecycle exposes this as a distinct `adaptive` mode with its own Slurm entry
 point, while the read-only evidence auditor validates either the historical
 vertical slice or the adaptive artifact set. The cost model is explicitly
-uncalibrated and every adaptive manifest sets `paper_result=false`; CWRU live
-execution, calibration, scaling, and baselines remain pending.
+uncalibrated and every adaptive manifest sets `paper_result=false`;
+calibration, scaling, and the complete baseline matrix remain pending.
 
 The first CWRU D2 submission, job `3787144` at exact clean commit `ee52c86`,
 failed after two seconds before creating a run tree, staging an archive,
@@ -135,6 +137,19 @@ target script, and is covered by a wrapper regression assertion. The failed
 attempt is frozen in
 `experiments/artifacts/m15_d2_cwru_adaptive_wrapper_failure_20260905.json` and
 is not a live adaptive result.
+
+The repaired wrapper was exercised by explicitly new CWRU D2 job `3787152` at
+exact clean commit `247e714` on `compt336`. It completed in 96 seconds with
+exit `0:0`, ran Neo4j 5.26.30 and Fuseki 5.6.0 on allocation-local XFS with
+Java 17, and shut down and removed the runtime cleanly. The independent
+read-only audit passed 173/173 checks with no run-tree mutation. The exact
+three-profile/two-execute trace and both append-only memory versions passed;
+the selector retained `m15-parallel-hash` before and after the common probe,
+so `replan_count=0` is a valid no-replan outcome. The exact answer required
+two query calls and 530 transferred bytes. The compact record is
+`experiments/artifacts/m15_d2_cwru_native_adaptive_20260905.json`; it remains
+`paper_result=false` because the fixture is tiny and the cost model is not
+calibrated.
 
 M15-B2D/B3 job `3787110` ran exact clean commit `cd564de8` on `compt331` in
 62 seconds. Neo4j 5.26.30 and Fuseki 5.6.0 ran on allocation-local XFS and

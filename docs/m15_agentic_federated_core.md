@@ -88,7 +88,8 @@ gates before live services are started. Both gates are now verified. See
 [`docs/m15_remote_execution_loop.md`](m15_remote_execution_loop.md). These
 gates distinguish the previously exercised legacy M13 CWRU/vLLM path from the
 M15 service path, which subsequently passed the B2D/B3 live gate. The newer
-M15-C2/D2 adaptive-service mode remains unverified on CWRU.
+M15-C2/D2 adaptive-service mode subsequently passed its independent CWRU gate
+in job `3787152`.
 
 B0 artifacts established an exact checkout, working Slurm, visible
 `gpu2h100`, an existing vLLM environment, Miniconda Python 3.11.5, and the
@@ -135,7 +136,7 @@ Acceptance gate:
 
 ## M15-C — Nontrivial plan space and observation tools
 
-Status: **LIVE OBSERVATION PATH IMPLEMENTED LOCALLY; CWRU VALIDATION AND CALIBRATION PENDING**
+Status: **LIVE OBSERVATION PATH VERIFIED ON CWRU; CALIBRATION AND SCALE PENDING**
 
 Implemented in the first closed slice:
 
@@ -164,7 +165,8 @@ partial evidence on failure, and publishes a snapshot only after the complete
 request tuple succeeds. The M15 live contract uses native Neo4j `PROFILE` for
 the full and bound transfer artifacts and an explicit wall-clock execution
 fallback for Fuseki's registered high-risk artifact. This path is implemented
-and offline-tested but has not yet been run against the CWRU services.
+and offline-tested, and CWRU job `3787152` verified all three observations
+against the real services.
 
 Alternative fragmentation, generalized pushdown/join-order enumeration,
 fragment fusion, and paper-scale observations remain future M15-C work.
@@ -174,7 +176,7 @@ and the selected plan changes under controlled cardinality or latency changes.
 
 ## M15-D — Memory-guided adaptation and replanning
 
-Status: **LIVE ADAPTIVE RUNNER AND AUDITOR IMPLEMENTED LOCALLY; CWRU GATE PENDING**
+Status: **LIVE ADAPTIVE RUNNER AND AUDITOR VERIFIED ON CWRU; SCALE/BASELINES PENDING**
 
 Use versioned capability and execution memory across tasks, and permit explicit
 within-query replanning after observations invalidate the current estimate.
@@ -191,7 +193,8 @@ reloads the updated snapshot from disk. It is not a live or paper result.
 
 Required baselines: static federation, no memory, no profile/probe, no replan,
 and full agent. The no-replan control is implemented; the complete baseline
-matrix and real-backend adaptive run remain pending.
+matrix remains pending. CWRU job `3787152` verified the real-backend adaptive
+path, including its legitimate zero-replan branch on the tiny fixture.
 
 M15-D2 now has a separate fail-closed live runner. Within one query attempt it
 accounts for exactly three planning-profile calls and two query calls, stores
@@ -203,6 +206,13 @@ slice remains the default. A mode-aware read-only auditor checks the full
 service, fixture, observation, memory, query, and cleanup chain. All current
 cost constants are explicitly uncalibrated development parameters and the run
 is labeled `paper_result=false`.
+
+Job `3787152` ran this mode at exact clean commit `247e714` on `compt336`.
+The read-only audit passed 173 checks with no mutation, the exact
+three-profile/two-execute trace and two memory versions were present, and the
+federated answer was exact. Both selectors chose `m15-parallel-hash`, so the
+run establishes the live no-replan outcome rather than a plan-flip result.
+Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 

@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D AND REFRESHED D1 CPU GATES VERIFIED; FIRST D2 WRAPPER ATTEMPT FAILED BEFORE SERVICE START AND IS FIXED LOCALLY
-- Version Label: m15_remote_loop_v15
+- Verification Status: CWRU B2D, REFRESHED D1 CPU, AND D2 LIVE ADAPTIVE GATES VERIFIED; SCALE/CALIBRATION PENDING
+- Version Label: m15_remote_loop_v16
 
 ## Current claim boundary
 
@@ -21,8 +21,9 @@ orchestration sanity check, not a live adaptive-backend or paper result. A
 separate live-service adaptive mode is now implemented locally: it collects a
 finite three-observation planning tuple, persists and reopens the complete
 snapshot, executes the two-engine query with at most one replan, and emits a
-mode-aware immutable evidence bundle. It has not yet run on CWRU, its fixed cost
-model is not calibrated, and its manifest therefore declares
+mode-aware immutable evidence bundle. CWRU job `3787152` verified that path on
+real Neo4j and Fuseki. Its fixed cost model is not calibrated, the tiny fixture
+did not warrant a plan change, and its manifest therefore declares
 `paper_result=false`.
 
 Refreshed D1 CPU job `3787126` ran exact clean commit `4c26eea` on `compt331`
@@ -40,6 +41,18 @@ the spool directory. The wrapper now resolves the checkout from the explicit
 `XGAP_REPO_ROOT` or Slurm's `SLURM_SUBMIT_DIR`, validates both repository
 markers before sourcing, and exports the same root to the main lifecycle. The
 failed job is preserved as evidence, not retried in place.
+
+The explicitly new D2 job `3787152` then ran exact clean commit `247e714` on
+`compt336` and completed in 96 seconds with exit `0:0`. It used Neo4j 5.26.30,
+Fuseki 5.6.0, Java 17, loopback-only services, and allocation-local XFS. The
+read-only audit passed all 173 checks without mutating the run tree. The exact
+tool trace contained three planning-profile calls followed by two query calls,
+and the two append-only memory versions were reopened successfully. Both the
+initial and post-probe selector chose `m15-parallel-hash`, so zero replans was
+the correct observed control outcome. The exact one-row answer used two query
+calls and moved 530 bytes. This closes the live adaptive engineering gate, not
+the calibration, scale, or comparative-performance gates; the compact record
+is `experiments/artifacts/m15_d2_cwru_native_adaptive_20260905.json`.
 
 B0 observations on 2026-09-04 established an exact checkout at commit
 `465e2e2454b74aaf7a1c055797740bde8ca5ace0`, working Slurm commands,
@@ -167,9 +180,9 @@ Status: **VERIFIED**, most recently by job `3787126` on `compt331`.
   loader, B2B artifact-supply, B2C allocation-staging, B2D service-lifecycle,
   observation, alternative-plan, persistent-memory, continuation, and bounded
   replanning suites and therefore expects 128 passes and two gated skips. The
-  subsequent local C2/D2 wrapper adds the live adaptive and mode-aware audit
-  regressions and passes 140 tests with the same two skips; that version has
-  not yet run on CWRU.
+  subsequent C2/D2 wrapper adds the live adaptive and mode-aware audit
+  regressions and passes 140 tests with the same two skips. Job `3787152`
+  verified that live path independently against the real services.
 - Refreshed gate: job `3787126` completed at exact clean commit
   `4c26eea06c94c4ac0d650c56cf50b8da051a91bb` in 28 seconds on `compt331`.
   The scheduler exit was `0:0`; all seven expected artifacts were present;
@@ -290,10 +303,9 @@ VPN reachability and a working user-owned SSH alias.
   point. The historical vertical-slice mode and job `3787110` remain unchanged.
   The same read-only auditor accepts a declared mode and enforces its exact
   schema and artifact contract.
-- Immediate external gate: publish the wrapper path-resolution repair, update
-  the CWRU checkout to that exact clean commit, and run one explicitly new
-  native adaptive-service attempt. Job `3787144` must remain immutable and
-  must not be represented as a service-level failure.
+- Verified external gate: job `3787152` ran the repaired wrapper at exact clean
+  commit `247e714`; its read-only audit accepted 173/173 checks. Job `3787144`
+  remains immutable and is not represented as a service-level failure.
 - Remaining research gate: calibrate the cost model and exercise plan changes
   on scaled/skewed workloads. The tiny fixture may legitimately select zero or
   one replan and is only a live control-path gate, not performance evidence.
@@ -319,10 +331,9 @@ VPN reachability and a working user-owned SSH alias.
 ## Next user handoff
 
 B0, both B1 CPU gates, B2 prerequisite, B2B supply, B2D service lifecycle, B3
-federated execution, and the independent evidence audit are complete. Keep
-jobs `3787110` and `3787126` and their run trees immutable. D2 job `3787144`
-failed before creating its run tree because its copied Slurm wrapper resolved
-the sibling service script in the spool directory. Preserve its top-level
-output. After the path repair is published and the CWRU checkout is verified
-at that exact clean commit, the next handoff is one explicitly new adaptive
-job. No CWRU adaptive or paper-result claim is currently made.
+federated execution, D2 live adaptation, and their independent evidence audits
+are complete. Keep jobs `3787110`, `3787126`, and `3787152` and their run trees
+immutable. D2 job `3787144` remains a separate pre-service wrapper failure;
+preserve its top-level output. The next external handoff occurs only after the
+scaled/skewed workload and its auditor are published at an exact clean commit.
+No paper-performance claim is currently made.

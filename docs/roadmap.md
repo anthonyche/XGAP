@@ -80,7 +80,7 @@ The command and artifact contract is frozen in
 Goal: add schema/explain/profile/sample tools and alternative correct plans for
 pushdown, join strategy/order, parallel scheduling, and fragment fusion.
 
-Current status: **LIVE OBSERVATION PATH IMPLEMENTED LOCALLY; CWRU VALIDATION AND CALIBRATION PENDING**
+Current status: **LIVE OBSERVATION PATH VERIFIED ON CWRU; CALIBRATION AND SCALE PENDING**
 
 The first slice provides catalog-allowlisted observation tools, native Neo4j
 plan/profile evidence, executable bind-query and semi-join nodes, two
@@ -92,36 +92,39 @@ observation tuple with no retry and publishes a plan snapshot only when every
 observation succeeds. The live path obtains native Neo4j PROFILE evidence and
 an explicitly labeled Fuseki wall-clock execution fallback. Its fixed cost
 model is intentionally marked uncalibrated. General fragmentation,
-pushdown/order enumeration, fusion, calibrated estimates, and the CWRU live
-gate remain open.
+pushdown/order enumeration, fusion, calibrated estimates, and paper-scale
+observations remain open. CWRU job `3787152` verified the bounded
+three-observation path against real Neo4j and Fuseki.
 
 ### M15-D Memory-Guided Adaptation and Replanning
 
 Goal: use versioned observations across tasks and explicitly replan within a
 query when runtime evidence invalidates the current estimate.
 
-Current status: **LIVE ADAPTIVE PIPELINE IMPLEMENTED LOCALLY; CWRU ADAPTIVE GATE PENDING**
+Current status: **LIVE ADAPTIVE PIPELINE VERIFIED ON CWRU; SCALE AND BASELINES PENDING**
 
 The current slice persists versioned plan snapshots to append-only JSONL,
 validates a probe as an exact common plan prefix before invocation, reuses that
 prefix during continuation, and permits at most one explicit replan. The
 controlled fixture flips from parallel hash to risk-first bind after observed
 latency invalidates stale memory without duplicating the probe call. Probe
-failure and the no-replan control are covered. CWRU observation evidence,
-calibration, the complete baseline matrix, and a live adaptive run remain open.
+failure and the no-replan control are covered. Calibration, scaled/skewed
+workloads, and the complete baseline matrix remain open.
 The new live-service mode
 collects exactly three registered planning observations, reopens the persisted
 snapshot, executes one two-backend federated query with at most one replan,
 persists and reopens two memory versions, and records a five-event tool trace.
 It has its own Slurm entry point and mode-aware read-only audit so the verified
-M15-B vertical slice remains reproducible. Until that job runs and the cost
-model is calibrated, the artifacts remain a development gate with
-`paper_result=false`.
+M15-B vertical slice remains reproducible. Job `3787152` ran the full path at
+exact clean commit `247e714`; the 173-check audit passed, the exact answer was
+returned, and the small fixture correctly retained the initial plan with zero
+replans. Until the cost model and scale experiments are complete, the artifact
+remains a development gate with `paper_result=false`.
 
 First CWRU attempt `3787144` failed before service startup because Slurm's
 copied wrapper used its spool path to locate the repository-owned lifecycle
-script. The checkout-path repair is local and must be published before one new
-attempt; this failure provides no adaptive-query evidence.
+script. This failure provides no adaptive-query evidence and remains separate
+from successful job `3787152`, which used the published path repair.
 
 ### M15-E Selective Semantic Resolution
 
