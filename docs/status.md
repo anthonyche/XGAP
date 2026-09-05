@@ -70,8 +70,8 @@ plan change. Two fixed-plan controls, `no_memory`, `no_profile_probe`, and
 selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
-F0 batch-protocol regression raised that checkpoint to 641. After F1L and the
-F2B4 native query-bound session path, current full local acceptance passes 703 tests with 36
+F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
+and the F2C0 task-stream contract, current full local acceptance passes 712 tests with 36
 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -109,6 +109,25 @@ workload and therefore cannot measure cross-task memory reuse, those labels
 are not hash-bound query artifacts, coordinator costs are uncalibrated,
 isolation is not live-validated, and repetition/statistical
 choices remain author-owned.
+
+M15-F2C0 now compiles the implicit query/repetition products of one selected
+F2B session into explicit, ordered task identities. The compiler recomputes
+the incoming portable query-binding and session-schedule hashes, preserves the
+exact query-spec and bundle-contract identities on every task, isolates all
+method namespaces, freezes each pre-task history view, prohibits within-task
+memory visibility, and permits post-task commits only after successful exact
+answers for write-enabled policies. It makes no external call. The current
+selective session expands to six measured tasks and remains
+`multi_task_memory_ready=false` because each method still has only one query
+task, the query is not parameterized, and an executable family-local transfer
+model has not been bound. This local contract remains `paper_result=false`.
+
+The F2C1 research choice is now frozen at the architectural level: use
+multiple parameterized query families and transfer memory only within an exact
+family compatibility key. Held-out instances of known families will test
+within-family reuse; held-out families will be cold-start fallback conditions.
+The exact family inventory, 30--50 instance allocation, split, and statistical
+protocol are not yet frozen or executed.
 
 F2A now executes one hash-bound development session. The preflight recompiles
 the campaign and rejects campaign-hash, schedule-hash, workload-source,
@@ -1608,7 +1627,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2B4 query-bound native-session implementation tests passed. M7 backend smoke and
+M0-M15-F2C0 query-stream implementation tests passed. M7 backend smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1625,7 +1644,7 @@ Latest recorded command results:
   independent read-only audit passed 374/374 checks and reported
   `run_tree_mutated=false`. This is a single-session mechanism gate, not a
   comparative result.
-- `./scripts/run_acceptance.sh`: 703 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 712 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1

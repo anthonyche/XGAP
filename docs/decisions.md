@@ -1472,3 +1472,73 @@ session, v2 binding, contract artifact, matrix namespace, service manifest,
 and 18-call trace. This authorizes one CWRU engineering gate after a clean
 commit is pulled; it does not authorize the other eleven sessions or convert
 the result into comparative evidence.
+
+## D100 Expand query/repetition products into explicit task and history contracts
+
+F2C does not treat `query_ids × measured_run_ids` as an executable stream.
+Before multi-query work can run, one selected query-bound session is expanded
+in method-major order into unique tasks. Each task binds one logical run ID,
+one query-spec hash, one bundle-dependent query-contract hash, one method, and
+one phase. The query-stream hash covers the complete portable task order,
+method policies, query identities, memory rules, expected counts, and design
+validation; the compiler also recomputes the incoming query-binding and
+session-schedule hashes instead of trusting their recorded values.
+
+Memory visibility is frozen before each task. A method can read only eligible
+predecessors in its own session/method namespace, filtered to successful exact
+commits. Within-task writes are invisible, and a post-task commit is permitted
+only for a policy that writes memory and only after both execution success and
+exact-answer validation. Static and no-memory methods therefore cannot acquire
+history accidentally, and one method can never observe another method's
+history.
+
+The current development session expands to six uniquely identified measured
+tasks but still contains only one query. The compiler consequently reports
+that cross-task memory is not ready: query instances are not parameterized,
+there are fewer than two measured tasks per method stream, and no cross-task
+transfer model is bound. This is a route-independent structural prerequisite,
+not evidence that the existing exact-context snapshot cache learns across
+queries. It makes zero external calls and remains `paper_result=false`.
+
+Reason:
+
+A count derived from a Cartesian product does not define task identity,
+history visibility, or a causal update boundary. Those omissions would allow
+memory leakage between ablations, within-task feedback, or duplicated query
+labels to masquerade as cross-task learning. Freezing this protocol before the
+query-family design keeps the A/B/C research choice author-owned while making
+all three choices implementable and auditable.
+
+## D101 Transfer planning memory only within a declared query family
+
+The first paper design uses multiple parameterized query families. A family
+fixes the resolved semantic/operator DAG shape, output schema, hard-constraint
+schema and relaxability mask, backend artifact roles and parameter schema,
+candidate-plan space, and compatibility-version inputs. Instances vary only
+declared hard binding values and data/selectivity context. Those values remain
+part of task identity and execution evidence, but are excluded from the stable
+family key that gates memory reuse.
+
+Planning memory is isolated by method and family. A task may read only prior
+successful exact commits from the same compatibility key; it never searches a
+global pool of heterogeneous query histories. Held-out instances of seen
+families test within-family transfer. Entirely held-out families start cold and
+test correctness, safe fallback, and planning overhead rather than being
+silently mapped to a superficially similar family. A later hierarchical or
+cross-family prior would be a separately named method, not an implementation
+detail of `full_agent`.
+
+The target benchmark remains 30--50 hand-verified query instances distributed
+over multiple families. Exact family count, instance allocation, split seed,
+repetition count, and inferential analysis must be frozen before paper runs.
+Duplicating query labels or changing only an unbound label does not create a
+new instance. Every instance must carry a distinct resolved binding contract,
+oracle, and bundle-dependent contract hash.
+
+Reason:
+
+Family-local transfer gives the memory mechanism a defensible compatibility
+boundary while still allowing binding-sensitive plan choices. It avoids the
+weakness of a single-template benchmark and avoids claiming an unvalidated
+global similarity model. It also makes a cold, previously unseen family an
+explicit evaluation condition instead of an accidental cache miss.

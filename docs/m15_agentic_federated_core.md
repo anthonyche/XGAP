@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 703 tests with 36 explicitly gated or
+Current full local acceptance passes 712 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B4 NATIVE/AUDIT LOCAL, ONE CWRU GATE READY**
+Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B4 CWRU GATE SUBMITTED; F2C0 TASK CONTRACT LOCAL**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -375,6 +375,26 @@ trace, service lifecycle, and cleanup as one cross-artifact chain. Local
 acceptance now authorizes one selective CWRU engineering gate only. The other
 eleven development sessions, multi-query execution, cross-task memory claims,
 and all comparative paper claims remain disabled.
+
+F2C0 adds the route-independent task-stream boundary needed before those
+multi-query runs exist. It validates the complete F2B query-bound plan and
+recomputes its binding and schedule hashes, then expands one selected session
+into a deterministic method/phase/repetition/query order. Each task has a
+unique content-derived identity and an immutable query-spec/contract reference.
+Its pre-task memory view is frozen, restricted to eligible successful exact
+predecessors in the same method namespace, and cannot observe writes from the
+current task; any post-task write is separately policy- and correctness-gated.
+The present session has one task per method, so its machine-readable validation
+rejects a cross-task-memory claim and also records that no transfer model is
+bound. F2C0 is plan-only and does not authorize another remote run.
+
+F2C1 follows the selected family-local transfer design. A query family fixes
+the semantic/operator shape, hard-constraint schema, backend artifact roles,
+candidate-plan space, and compatibility versions while instances vary explicit
+hard bindings and selectivity. Memory remains isolated by method and family;
+held-out instances of seen families may reuse compatible history, but a
+held-out family must start cold. Cross-family transfer is not part of the first
+paper method and cannot occur as a fallback heuristic.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

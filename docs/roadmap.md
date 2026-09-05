@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A LIVE GATES VERIFIED; F2B4 NATIVE/AUDIT LOCAL, ONE CWRU GATE READY**
+Current status: **F0/F1/F2A LIVE GATES VERIFIED; F2B4 CWRU GATE SUBMITTED; F2C0 TASK CONTRACT LOCAL**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -256,6 +256,27 @@ binding and contract from the completed run bundle and detects contract-file
 tampering. One selective CWRU query-bound gate is ready. Its purpose is only
 to verify the end-to-end identity chain; the remaining eleven sessions and
 paper campaign stay disabled.
+
+F2C0 now removes an independent scheduler ambiguity before any multi-query
+design is chosen. A side-effect-free compiler expands one query-bound session
+into explicit per-method tasks rather than leaving execution as the implicit
+product of query and repetition IDs. Every task freezes its query-contract
+identity, order, isolated memory namespace, eligible predecessor set, and
+success-plus-exact post-task commit gate. The current selective session yields
+six unique tasks and correctly fails the multi-task-memory readiness check: it
+has one unparameterized query and no bound transfer model. This contract does
+not select between the proposed single-family, family-local, or global-transfer
+research designs and does not authorize another CWRU run.
+
+F2C1 will implement the selected family-local design. Multiple parameterized
+families will bind stable semantic/operator, hard-constraint-schema, backend
+artifact, candidate-plan, and compatibility identities; concrete instances
+will bind different hard values and exact oracles. Memory transfer is legal
+only inside the same method/family compatibility key. Held-out instances test
+within-family transfer, while held-out families must start cold and test safe
+fallback. Dataset generation, the exact 30--50 instance composition, and the
+statistical split remain unexecuted until their contracts and author-owned
+analysis choices are frozen.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
