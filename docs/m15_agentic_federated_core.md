@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4 LIVE GATES VERIFIED; F2C5 NATIVE GATE READY**
+Status: **F0/F1/F2A/F2B4/F2C4 LIVE GATES VERIFIED; F2C5 NATIVE GATE DISPATCHED; F2C6 LOCAL MECHANISM VERIFIED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -459,7 +459,21 @@ backend-version identity. A dedicated wrapper and independent auditor now
 verify seed costs against append-only memory, one frozen predecessor view,
 oracle-free held-out selections, selected-before-shadow execution roles,
 exact answers, and clean zero-retry lifecycle. The local gate is ready for one
-CWRU run, but it still makes no transfer or performance claim.
+CWRU run; job `3787610` has now been dispatched and awaits terminal-state and
+independent-audit evidence. It still makes no transfer or performance claim.
+
+F2C6 introduces a separate bounded semantic frontier rather than mixing
+relaxation into family-memory selection. The exact interpretation is always
+present; hard person, time, and amount bindings cannot change. Risk,
+predicate, and path alternatives require explicit evidence-backed transitions
+that satisfy the typed constraint's transformation and step bound, and each
+derived instance is recompiled against the unchanged family key. Semantic
+equivalence is resolved before physical-plan reduction, after which
+semantic-deviation, latency, and resource cost feed Pareto, minimum-gain
+epsilon, and K-bounded representative selection. The development HIGH-risk
+query has 12 interpretations and a maximum of four returned representatives.
+Enumeration is deterministic and zero-call; relaxed execution, answer-quality
+validation, and paper parameter freezing remain F2C7 and later work.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

@@ -71,8 +71,9 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
-and the F2C0--F2C5 stream, family, typed-query, workload, exact-execution, and
-family-memory contracts, current full local acceptance passes 779 tests with
+and the F2C0--F2C6 stream, family, typed-query, workload, exact-execution,
+family-memory, and semantic-frontier contracts, current full local acceptance
+passes 792 tests with
 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -204,8 +205,23 @@ to the exact Slurm allocation, filesystem, Java, runtime lock, staging
 manifest, and backend versions. Its dedicated wrapper and read-only auditor
 verify seed result-to-memory costs, one frozen view, oracle-free selections,
 selected-before-shadow call roles, exact answers, clean shutdown, and zero
-retry. One clean-commit CWRU F2C5 gate is next; multiple families, a
-paper-frozen model, and comparative claims remain open.
+retry. CWRU job `3787610` has been dispatched from clean commit `30214cb` and
+is pending terminal-state evidence plus the independent read-only audit;
+multiple families, a paper-frozen model, and comparative claims remain open.
+
+M15-F2C6 is locally implemented as a planning-only bounded semantic solution
+space. The catalog covers all and only the three declared relaxable
+constraints, while the clarified person identity, time lower bound, and amount
+lower bound remain unchanged in every derived typed query. The HIGH-risk
+reference instance produces 12 raw interpretations. Duplicate semantic
+derivations merge before physical planning; each class keeps one lowest-latency
+successful plan with resource and plan-ID tie breakers. A standard
+semantic-deviation/latency/resource Pareto pass, a semantic-preserving 5%
+minimum-gain epsilon rule, and deterministic exact/extreme/max-min selection
+then return at most four representatives. These values are development
+settings rather than frozen paper parameters. The mechanism makes no backend,
+LLM, or ontology call during enumeration and does not yet execute or validate
+relaxed answers, so it remains `paper_result=false`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1715,7 +1731,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2C5 family-transfer implementation tests passed. M7 backend
+M0-M15-F2C6 semantic-frontier implementation tests passed. M7 backend
 smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
@@ -1739,7 +1755,7 @@ Latest recorded command results:
   backend calls with zero retry, and the independent read-only audit passed
   172/172 checks with `run_tree_mutated=false`. This closes an executable
   parameter-variation gate, not a memory-transfer or performance result.
-- `./scripts/run_acceptance.sh`: 779 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 792 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
@@ -1754,7 +1770,10 @@ Latest recorded command results:
   commits, one reopened frozen evaluation view, oracle-free held-out plan
   selection, separated online versus evaluation-shadow calls, an
   allocation-scoped native runtime identity, dedicated service mode, and an
-  independent memory/evidence auditor. The
+  independent memory/evidence auditor. F2C6 adds evidence-backed bounded
+  relaxation enumeration, typed recompilation, semantic-equivalence merging,
+  per-class physical reduction, Pareto/epsilon filtering, and a K-bounded
+  representative set without making external calls. The
   F2B3 direct runner verifies the selected
   contract from the
   live bundle before passing a v2 identity into the six-method matrix. F2B4

@@ -417,8 +417,12 @@ it into the development campaign, and recompute it from the selected live
 bundle before output or backend observation. F2B4 carries that v2 identity
 through a fresh native lifecycle, a dedicated allowlisted Slurm wrapper, and
 an independent auditor that recompiles the contract from the run bundle.
-Exactly one selective query-bound engineering session may now be dispatched
-after the clean F2B4 commit is pulled. Do not dispatch the remaining 11
-development sessions yet. A hash-bound multi-query stream and all paper
-campaign dispatch remain disabled.
+F2C4 job `3787592` is now immutable accepted evidence. Exactly one F2C5
+family-transfer mechanism job, `3787610`, has been dispatched from commit
+`30214cb`; wait for its terminal Slurm state and then run the dedicated
+read-only family-transfer auditor before accepting it. Do not resubmit it or
+dispatch the remaining development campaign sessions. F2C6 is local and
+planning-only, so it does not authorize a separate remote relaxation run.
+Hash-bound multi-family execution and all paper campaign dispatch remain
+disabled.
 No paper-performance claim is currently made.

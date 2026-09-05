@@ -1,0 +1,124 @@
+{
+  "schema_version": "m15-f2c6-semantic-relaxation-catalog-v1",
+  "catalog_id": "financial-risk-bounded-relaxation-development-v1",
+  "family_compatibility_sha256": "34d432efccebd8d4000d52f910a25746b01e6d884f99eb41de6cbe846c13dfec",
+  "semantic_deviation": {
+    "method": "uniform_mean_normalized_relaxation_steps",
+    "version": "m15-f2c6-semantic-deviation-development-v1"
+  },
+  "dimensions": [
+    {
+      "constraint_id": "risk-level",
+      "slot_id": "risk-level",
+      "transitions": [
+        {
+          "transition_id": "risk-high-to-medium",
+          "from_value": "HIGH",
+          "to_value": "MEDIUM",
+          "semantic_value_id": "risk-medium",
+          "transformation": "ontology_adjacent",
+          "steps": 1,
+          "evidence": {
+            "kind": "development_ontology_fixture",
+            "reference": "risk-level-adjacency-v1"
+          }
+        },
+        {
+          "transition_id": "risk-medium-to-high",
+          "from_value": "MEDIUM",
+          "to_value": "HIGH",
+          "semantic_value_id": "risk-high",
+          "transformation": "ontology_adjacent",
+          "steps": 1,
+          "evidence": {
+            "kind": "development_ontology_fixture",
+            "reference": "risk-level-adjacency-v1"
+          }
+        },
+        {
+          "transition_id": "risk-medium-to-low",
+          "from_value": "MEDIUM",
+          "to_value": "LOW",
+          "semantic_value_id": "risk-low",
+          "transformation": "ontology_adjacent",
+          "steps": 1,
+          "evidence": {
+            "kind": "development_ontology_fixture",
+            "reference": "risk-level-adjacency-v1"
+          }
+        },
+        {
+          "transition_id": "risk-low-to-medium",
+          "from_value": "LOW",
+          "to_value": "MEDIUM",
+          "semantic_value_id": "risk-medium",
+          "transformation": "ontology_adjacent",
+          "steps": 1,
+          "evidence": {
+            "kind": "development_ontology_fixture",
+            "reference": "risk-level-adjacency-v1"
+          }
+        }
+      ]
+    },
+    {
+      "constraint_id": "transfer-predicate",
+      "slot_id": "transfer-predicate",
+      "transitions": [
+        {
+          "transition_id": "transfer-to-payment-sibling",
+          "from_value": "transfer_to_company",
+          "to_value": "payment_to_company",
+          "semantic_value_id": "predicate-payment-to-company",
+          "transformation": "ontology_sibling",
+          "steps": 1,
+          "evidence": {
+            "kind": "development_mapping_fixture",
+            "reference": "financial-relation-siblings-v1"
+          }
+        }
+      ]
+    },
+    {
+      "constraint_id": "path-shape",
+      "slot_id": "path-shape",
+      "transitions": [
+        {
+          "transition_id": "direct-to-bounded-two-hop",
+          "from_value": "direct",
+          "to_value": "bounded_two_hop",
+          "semantic_value_id": "path-bounded-two-hop",
+          "transformation": "bounded_path_expansion",
+          "steps": 1,
+          "evidence": {
+            "kind": "development_policy_fixture",
+            "reference": "bounded-path-policy-v1"
+          }
+        },
+        {
+          "transition_id": "direct-to-bounded-three-hop",
+          "from_value": "direct",
+          "to_value": "bounded_three_hop",
+          "semantic_value_id": "path-bounded-three-hop",
+          "transformation": "bounded_path_expansion",
+          "steps": 2,
+          "evidence": {
+            "kind": "development_policy_fixture",
+            "reference": "bounded-path-policy-v1"
+          }
+        }
+      ]
+    }
+  ],
+  "frontier_policy": {
+    "physical_plan_reduction": "latency_then_resource_then_plan_id",
+    "epsilon_dominance": "semantic_preserving_minimum_cost_gain",
+    "minimum_latency_gain_ratio": 0.05,
+    "minimum_resource_gain_ratio": 0.05,
+    "max_representatives": 4,
+    "representative_selection": "exact_then_cost_extremes_then_maxmin"
+  },
+  "max_raw_interpretations": 64,
+  "automatic_retries": 0,
+  "paper_result": false
+}

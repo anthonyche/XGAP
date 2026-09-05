@@ -1722,3 +1722,33 @@ replaceable reference policy, the shadow order is confounded, and the workload
 contains only one family with four seed and two held-out instances. A passing
 CWRU run will therefore close native transfer plumbing only; it will not prove
 transfer benefit, latency superiority, or paper readiness.
+
+## D109 Build a bounded semantic solution space before binding relaxed execution
+
+F2C6 treats semantic relaxation as a controlled optimizer input, not as an
+unconstrained LLM generation step. The clarified entity identity, time lower
+bound, and amount lower bound remain immutable. Risk level, transfer predicate,
+and path shape may change only through cataloged transitions whose
+transformation is declared by the typed query constraint, whose step count is
+within that constraint's maximum, and whose evidence reference is explicit.
+Every resulting binding is recompiled through the parameterized typed-DAG
+contract; any structural family drift or hard-binding mutation fails closed.
+
+The development deviation metric is the uniform mean of normalized relaxation
+steps across relaxable dimensions. This transparent metric is sufficient to
+test the mechanism but is not a frozen paper weighting. Equivalent semantic
+signatures are merged before physical planning, and each equivalence class
+keeps only the successful plan with minimum latency, then resource cost, then
+plan ID. Standard three-objective Pareto reduction is followed by a
+semantic-preserving epsilon rule: a semantically worse alternative is removed
+when its latency and resource gains over a less-deviated alternative are both
+below the configured minimum. Exact semantics are retained, and deterministic
+cost extremes plus normalized max-min coverage bound the returned set to K.
+
+The selected development catalog yields 12 raw interpretations and 12 semantic
+classes for the HIGH-risk reference instance. Its ontology, mapping, and path
+policy entries are fixtures, not runtime calls or an ontology dependency. This
+milestone validates bounded enumeration, equivalence reduction, and frontier
+cardinality only. It does not yet execute relaxed backend templates, validate
+semantic answer quality, freeze epsilon/K/weights, or support a performance
+claim; all outputs remain `paper_result=false`.

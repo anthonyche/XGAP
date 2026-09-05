@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4 LIVE GATES VERIFIED; F2C5 NATIVE GATE READY**
+Current status: **F0/F1/F2A/F2B4/F2C4 LIVE GATES VERIFIED; F2C5 NATIVE GATE DISPATCHED; F2C6 LOCAL MECHANISM VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -332,6 +332,20 @@ both held-out choices, and online versus shadow calls to distinct trace roles.
 Local acceptance and tamper tests are complete. One CWRU mechanism gate,
 multiple families, a frozen paper model, counterbalanced measurement, and
 preregistered analysis remain open.
+
+F2C6 now adds the bounded semantic solution-space layer without making the
+ontology or LLM a mandatory runtime dependency. A value-independent
+development catalog supplies explicit one-step risk and predicate transitions
+and one- or two-step path expansions. Enumeration recompiles every binding as
+the same typed family and rejects hard-constraint changes, undeclared
+transformations, excessive steps, or missing evidence. Semantically equivalent
+derivations merge before one lowest-cost physical representative is retained
+per class. Pareto, semantic-preserving epsilon dominance, and deterministic
+K-bounded selection prevent the system from returning every generated plan.
+The reference query produces 12 bounded interpretations and at most four
+returned representatives. Local acceptance validates the mechanism only;
+F2C7 must bind relaxed values to executable backend artifacts and semantic
+answer-quality oracles before any live relaxation gate is admitted.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
