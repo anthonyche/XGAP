@@ -151,6 +151,10 @@ def test_service_plan_uses_loopback_dynamic_ports_and_local_state(
     assert "server.http.listen_address=127.0.0.1:17474" in config
     assert str(runtime / "xgap-service-state" / "neo4j" / "data") in config
     serialized = json.loads(plan.plan_path.read_text(encoding="utf-8"))
+    assert serialized["runtime_lock_sha256"]
+    assert serialized["staging_manifest_sha256"] == hashlib.sha256(
+        staging.read_bytes()
+    ).hexdigest()
     assert serialized["public_ports"] is False
     assert serialized["automatic_retries"] == 0
     assert serialized["credentials_persisted"] is False

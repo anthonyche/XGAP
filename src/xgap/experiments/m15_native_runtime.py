@@ -32,6 +32,9 @@ MAX_UNPACKED_SIZE_MULTIPLIER = 16
 @dataclass(frozen=True)
 class ArchiveInspection:
     artifact_id: str
+    archive_size_bytes: int
+    digest_algorithm: str
+    digest_value: str
     member_count: int
     regular_file_count: int
     directory_count: int
@@ -41,6 +44,9 @@ class ArchiveInspection:
     def to_dict(self) -> dict[str, Any]:
         return {
             "artifact_id": self.artifact_id,
+            "archive_size_bytes": self.archive_size_bytes,
+            "digest_algorithm": self.digest_algorithm,
+            "digest_value": self.digest_value,
             "member_count": self.member_count,
             "regular_file_count": self.regular_file_count,
             "directory_count": self.directory_count,
@@ -170,6 +176,9 @@ def inspect_native_archive(
         raise ValueError("archive does not contain its declared root member")
     return ArchiveInspection(
         artifact_id=artifact.artifact_id,
+        archive_size_bytes=verification.actual_size_bytes or 0,
+        digest_algorithm=verification.digest_algorithm,
+        digest_value=verification.actual_digest or "",
         member_count=member_count,
         regular_file_count=file_count,
         directory_count=directory_count,

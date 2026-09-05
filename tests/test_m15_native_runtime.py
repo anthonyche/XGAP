@@ -113,6 +113,9 @@ def test_inspection_and_staging_preserve_only_regular_files_and_modes(
     staged = stage_native_artifact(archive, artifact, runtime)
 
     assert inspection.member_count == 3
+    assert inspection.archive_size_bytes == archive.stat().st_size
+    assert inspection.digest_algorithm == "sha256"
+    assert inspection.digest_value == artifact.digest_value
     assert inspection.regular_file_count == 2
     assert inspection.directory_count == 1
     assert staged.runtime_path == runtime / "neo4j-test"

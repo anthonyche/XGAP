@@ -119,6 +119,8 @@ class NativeServicePlan:
     runtime_root: Path
     filesystem_type: str
     java: JavaEvidence
+    runtime_lock_sha256: str
+    staging_manifest_sha256: str
     neo4j_http_url: str
     fuseki_url: str
     fuseki_dataset: str
@@ -132,6 +134,8 @@ class NativeServicePlan:
             "runtime_root": str(self.runtime_root),
             "filesystem_type": self.filesystem_type,
             "java": self.java.to_dict(),
+            "runtime_lock_sha256": self.runtime_lock_sha256,
+            "staging_manifest_sha256": self.staging_manifest_sha256,
             "neo4j_http_url": self.neo4j_http_url,
             "fuseki_url": self.fuseki_url,
             "fuseki_dataset": self.fuseki_dataset,
@@ -521,6 +525,8 @@ def build_native_service_plan(
         runtime_root=runtime,
         filesystem_type=normalized_fs,
         java=java,
+        runtime_lock_sha256=_sha256_file(lock_file),
+        staging_manifest_sha256=_sha256_file(Path(staging_manifest).resolve()),
         neo4j_http_url=neo4j_url,
         fuseki_url=fuseki_url,
         fuseki_dataset="xgap",
