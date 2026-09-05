@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 712 tests with 36 explicitly gated or
+Current full local acceptance passes 721 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B4 CWRU GATE SUBMITTED; F2C0 TASK CONTRACT LOCAL**
+Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0/F2C1 CONTRACTS LOCAL**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -376,6 +376,12 @@ acceptance now authorizes one selective CWRU engineering gate only. The other
 eleven development sessions, multi-query execution, cross-task memory claims,
 and all comparative paper claims remain disabled.
 
+CWRU job `3787430` now verifies F2B4 at exact clean commit `d795fac`. It
+completed on `compt348` with zero retry and restart, cleaned up both
+loopback-only services and the allocation runtime, and passed all 377
+independent read-only audit checks without run-tree mutation. It remains a
+single-query identity-chain gate, not a method comparison or memory result.
+
 F2C0 adds the route-independent task-stream boundary needed before those
 multi-query runs exist. It validates the complete F2B query-bound plan and
 recomputes its binding and schedule hashes, then expands one selected session
@@ -395,6 +401,16 @@ hard bindings and selectivity. Memory remains isolated by method and family;
 held-out instances of seen families may reuse compatible history, but a
 held-out family must start cold. Cross-family transfer is not part of the first
 paper method and cannot occur as a fallback heuristic.
+
+The first F2C1 compiler and development registry now enforce that boundary.
+Concrete query specs are source-hash verified; hard values receive distinct
+instance identities while the structural family key excludes those values and
+local paths. Duplicate bindings, structural drift, duplicate family keys,
+runtime-version drift, cross-family reads, and evaluation writes fail closed.
+The current registry contains only the existing Alice seed and therefore
+reports every missing paper boundary, including typed DAG and backend-template
+structure, workload/oracle binding, held-out coverage, and the 30--50 instance
+target.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

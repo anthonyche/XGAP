@@ -1,0 +1,102 @@
+{
+  "schema_version": "m15-f2c-query-family-registry-v1",
+  "registry_id": "m15-f2c-family-local-development-v1",
+  "compatibility_versions": {
+    "query_spec_schema_version": "m15-f2-query-spec-v1",
+    "query_contract_schema_version": "m15-f2-query-contract-v1",
+    "method_policy_schema_version": "m15-f1-method-policy-v1",
+    "query_stream_schema_version": "m15-f2c-query-stream-plan-v1",
+    "backend_interface_version": "m15-black-box-backend-interface-v1",
+    "candidate_space_version": "m15-two-strategy-federated-space-v1"
+  },
+  "families": [
+    {
+      "family_id": "financial-risk-transfer-to-company",
+      "evaluation_role": "seen_family",
+      "semantic_operator_ids": [
+        "resolved-person",
+        "recent-large-transfers",
+        "high-risk-companies",
+        "align-transfer-company",
+        "align-risk-company",
+        "federated-company-join",
+        "answer-projection"
+      ],
+      "output_fields": [
+        "person",
+        "company",
+        "amount",
+        "currency",
+        "occurred_on",
+        "risk"
+      ],
+      "hard_constraint_schema": [
+        {
+          "constraint_id": "resolved-person-identity",
+          "kind": "entity_id",
+          "relaxable": false
+        },
+        {
+          "constraint_id": "time-lower-bound",
+          "kind": "date_gte",
+          "relaxable": false
+        },
+        {
+          "constraint_id": "amount-lower-bound",
+          "kind": "integer_gte",
+          "relaxable": false
+        },
+        {
+          "constraint_id": "risk-level",
+          "kind": "enum_eq",
+          "relaxable": false
+        }
+      ],
+      "artifact_interface": [
+        {
+          "role": "neo4j_full",
+          "backend_id": "neo4j",
+          "language": "cypher",
+          "parameters": {}
+        },
+        {
+          "role": "neo4j_bound",
+          "backend_id": "neo4j",
+          "language": "cypher",
+          "parameters": {
+            "company_ids": {
+              "type": "array[string]",
+              "required": true,
+              "max_items_from": "workload.max_bindings"
+            }
+          }
+        },
+        {
+          "role": "fuseki_risk",
+          "backend_id": "fuseki",
+          "language": "sparql",
+          "parameters": {}
+        }
+      ],
+      "candidate_strategy_ids": [
+        "parallel_hash_join",
+        "risk_first_bind_join"
+      ],
+      "instances": [
+        {
+          "instance_id": "financial-risk-alice-high-risk-v1",
+          "split": "memory_seed",
+          "query_spec_path": "experiments/configs/m15_f2_query_contract_dev.json",
+          "expected_query_spec_sha256": "7522f4cc2cd093a8ff5225771c402f24d41c761fcff4538ef0efa9f047297871"
+        }
+      ]
+    }
+  ],
+  "paper_target": {
+    "minimum_families": 3,
+    "minimum_instances": 30,
+    "maximum_instances": 50
+  },
+  "automatic_retries": 0,
+  "paper_result": false
+}

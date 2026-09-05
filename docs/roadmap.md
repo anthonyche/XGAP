@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A LIVE GATES VERIFIED; F2B4 CWRU GATE SUBMITTED; F2C0 TASK CONTRACT LOCAL**
+Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0/F2C1 CONTRACTS LOCAL**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -257,6 +257,12 @@ tampering. One selective CWRU query-bound gate is ready. Its purpose is only
 to verify the end-to-end identity chain; the remaining eleven sessions and
 paper campaign stay disabled.
 
+CWRU job `3787430` closed this gate at exact clean commit `d795fac` on
+`compt348`. The native run completed without retry or restart, cleanup removed
+the runtime, and the independent read-only audit passed 377/377 checks with no
+run-tree mutation. This validates the query identity chain only and does not
+change the single-query, single-sequence claim boundary.
+
 F2C0 now removes an independent scheduler ambiguity before any multi-query
 design is chosen. A side-effect-free compiler expands one query-bound session
 into explicit per-method tasks rather than leaving execution as the implicit
@@ -268,15 +274,16 @@ has one unparameterized query and no bound transfer model. This contract does
 not select between the proposed single-family, family-local, or global-transfer
 research designs and does not authorize another CWRU run.
 
-F2C1 will implement the selected family-local design. Multiple parameterized
-families will bind stable semantic/operator, hard-constraint-schema, backend
-artifact, candidate-plan, and compatibility identities; concrete instances
-will bind different hard values and exact oracles. Memory transfer is legal
-only inside the same method/family compatibility key. Held-out instances test
-within-family transfer, while held-out families must start cold and test safe
-fallback. Dataset generation, the exact 30--50 instance composition, and the
-statistical split remain unexecuted until their contracts and author-owned
-analysis choices are frozen.
+F2C1 now implements the first family-local compatibility compiler. It verifies
+query-spec source hashes, extracts hard binding identity separately from the
+stable semantic/operator, constraint-schema, output, artifact-interface,
+candidate-space, and version signature, and rejects structural drift or two
+family labels for one compatibility key. It freezes seed versus held-out
+instance roles, disallows cross-family reads and evaluation writes, and forces
+held-out families to cold start. The one-family development registry is
+deliberately not ready: typed operator-DAG and backend-template binding,
+workload/oracle contracts, additional families, 30--50 instances, and the
+statistical protocol remain open.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

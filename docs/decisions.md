@@ -1542,3 +1542,43 @@ boundary while still allowing binding-sensitive plan choices. It avoids the
 weakness of a single-template benchmark and avoids claiming an unvalidated
 global similarity model. It also makes a cold, previously unseen family an
 explicit evaluation condition instead of an accidental cache miss.
+
+## D102 The query-bound native identity chain is accepted end to end
+
+CWRU job `3787430` closes the F2B4 engineering gate at exact clean commit
+`d795fac`. The selective query-bound session completed on `compt348` with no
+retry or service restart, both loopback-only services shut down cleanly, and
+the outer runtime was removed. The independent read-only auditor recompiled
+the registry and live-bundle query contract and passed 377/377 checks with no
+failed IDs and no run-tree mutation.
+
+This result validates the identity and lifecycle chain only. It contains one
+query and one Williams sequence, so it is not counterbalanced comparative
+evidence, does not measure cross-task memory, and does not authorize the other
+eleven development sessions. The next remote experiment must consume the F2C
+family/instance and explicit task-stream contracts rather than repeat the old
+single-query schedule.
+
+## D103 Family labels never define memory compatibility by themselves
+
+F2C1 compiles each family key from its ordered semantic-operator IDs, output
+schema, hard-constraint schema and relaxability mask, backend artifact
+interfaces, candidate strategy space, and explicit compatibility versions.
+The family ID is descriptive and is not part of this key. Two differently
+named families with the same structural key are rejected, as is any instance
+whose verified query specification drifts from the declared structure.
+
+Concrete hard values are hashed into instance identity but excluded from the
+family key. Duplicate hard bindings inside one family are rejected because a
+renamed query is not a new parameterized instance. Query-spec paths remain
+provenance and are excluded from the portable family-plan hash. Seen-family
+evaluation reads one snapshot frozen after successful exact seed commits and
+cannot write during evaluation. Held-out families receive an empty snapshot;
+all cross-family reads are prohibited.
+
+The current query specification exposes an operator-ID sequence and artifact
+interfaces, not a fully typed operator DAG or literal-free backend template.
+The compiler therefore records those missing bindings along with workload,
+oracle, family-count, instance-count, split, and analysis blockers. Its
+one-family development registry proves fail-closed routing only and remains
+`paper_result=false`.

@@ -71,7 +71,7 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
-and the F2C0 task-stream contract, current full local acceptance passes 712 tests with 36
+and the F2C0/F2C1 stream/family contracts, current full local acceptance passes 721 tests with 36
 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -128,6 +128,26 @@ family compatibility key. Held-out instances of known families will test
 within-family reuse; held-out families will be cold-start fallback conditions.
 The exact family inventory, 30--50 instance allocation, split, and statistical
 protocol are not yet frozen or executed.
+
+The initial F2C1 compiler is locally implemented. It separates family
+compatibility from concrete hard bindings, verifies every query-spec source,
+rejects structural or version drift, assigns immutable family and instance
+hashes, and freezes seed/held-out memory routing. Its development family key is
+`47ebfcfe5a119122ea299d67bd8c3b93f777ac965649a64c88f0c10d6b1a5b4b`.
+The registry has one Alice seed only, so the compiler reports missing typed
+operator-DAG and backend-template bindings, workload/oracle contracts,
+held-out coverage, additional families, and the 30--50 instance target. It
+makes no external call and remains `paper_result=false`.
+
+M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
+`d795fac` on `compt348` for 73 seconds. The query-bound selective session used
+the frozen registry and schedule hashes, started Neo4j 5.26.30 and Fuseki 5.6.0
+on loopback only, made no automatic retry or service restart, and removed the
+runtime after clean shutdown. Its independent read-only audit recompiled the
+identity chain and passed 377/377 checks with no failures or run-tree mutation.
+This is a one-query engineering result and supports no latency ranking or
+cross-task-memory claim. The compact record is
+`experiments/artifacts/m15_f2b4_cwru_native_query_bound_session_20260905.json`.
 
 F2A now executes one hash-bound development session. The preflight recompiles
 the campaign and rejects campaign-hash, schedule-hash, workload-source,
@@ -1644,7 +1664,7 @@ Latest recorded command results:
   independent read-only audit passed 374/374 checks and reported
   `run_tree_mutated=false`. This is a single-session mechanism gate, not a
   comparative result.
-- `./scripts/run_acceptance.sh`: 712 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 721 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
@@ -1652,9 +1672,14 @@ Latest recorded command results:
   compiler. The F2B3 direct runner verifies the selected contract from the
   live bundle before passing a v2 identity into the six-method matrix. F2B4
   adds the native-service mode, dedicated Slurm entry, and independent
-  recompilation audit; it is locally verified and awaits one CWRU gate.
+  recompilation audit; CWRU job `3787430` subsequently closed that gate.
   CWRU F1L job `3787267` separately passed
   its independent 326-check read-only audit at exact commit `6aafafd`.
+- CWRU F2B4 job `3787430`: one selective query-bound session completed at
+  exact clean commit `d795fac` in 73 seconds on `compt348`. The independent
+  read-only audit recompiled the registry and live-bundle query contract and
+  passed 377/377 checks with `run_tree_mutated=false`. This is an identity-chain
+  engineering gate, not a comparative or cross-task-memory result.
 - `./scripts/run_acceptance.sh`: 612 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
   passed 140 with two live-service skips. Shell syntax validation passed for
