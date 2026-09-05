@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2 VERIFIED; F0 GENERATOR-V2 LOAD REPAIR VERIFIED LOCALLY; NEW CWRU F0/CALIBRATION PENDING
-- Version Label: m15_remote_loop_v17
+- Verification Status: CWRU B2D/D2 VERIFIED; F0 GENERATOR-V3 BATCHED-LOAD REPAIR VERIFIED LOCALLY; NEW CWRU F0/CALIBRATION PENDING
+- Version Label: m15_remote_loop_v18
 
 ## Current claim boundary
 
@@ -341,6 +341,14 @@ VPN reachability and a working user-owned SSH alias.
   cleaned up successfully. Generator v2 is the only admitted repaired format;
   the failed run is recorded in
   `experiments/artifacts/m15_f0_cwru_scaled_selective_failure_20260905.json`.
+- Second selective job `3787173` at clean commit `3a2bce9` passed the syntax
+  boundary and made both services healthy, but the sixth and final Neo4j load
+  statement embedded all 5,000 transfers and timed out after five statements
+  succeeded. It made zero profile and query calls. Generator v3 and bundle
+  schema v2 now fix batches at 100 rows and declare all 56 selective statements
+  in the manifest, without changing the timeout or zero-retry policy. The run
+  is preserved in
+  `experiments/artifacts/m15_f0_cwru_scaled_selective_timeout_20260905.json`.
 - F1 locally defines six executable task policies with exact memory-context
   compatibility and a controlled paired matrix. Its live gate remains a
   separate future Slurm mode so the current F0 selective result is not mixed
@@ -358,5 +366,6 @@ are complete. Keep jobs `3787110`, `3787126`, and `3787152` and their run trees
 immutable. D2 job `3787144` remains a separate pre-service wrapper failure;
 preserve its top-level output. The scaled/skewed workload and its auditor are
 now locally verified and must be published at one exact clean commit. The next
-external handoff is one `selective` scaled-adaptive job at that commit, followed
+external handoff is one `selective` scaled-adaptive job at the generator-v3
+clean commit, followed
 by a separate read-only audit. No paper-performance claim is currently made.

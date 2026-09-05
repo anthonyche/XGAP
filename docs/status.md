@@ -34,7 +34,9 @@ companies outside the hot set and yields 120 exact rows, while
 `broad-hot-dev-v1` places 160 high-risk companies across the hot region and
 yields 4,800. Generated Neo4j/Fuseki loads, full/bound queries, source oracles,
 and final answers are namespaced, no-overwrite, and SHA-256 bound inside the run
-tree. The same exact semantic program, two candidate plans, observation tuple,
+tree. Generator v3 additionally fixes Neo4j load batches at 100 rows and binds
+the strategy, batch size, and statement count into bundle schema v2. The same
+exact semantic program, two candidate plans, observation tuple,
 and common probe run through a separate `scaled_adaptive` native mode. Its
 auditor binds the profile to the committed spec and validates the bundle and
 full service/query chain. The current local M15 gate passes 159 tests with two
@@ -42,9 +44,14 @@ live skips; full acceptance passes 631 tests with 36 gated skips. F0 remains
 `paper_result=false`. Its first CWRU selective submission, job `3787167` at
 commit `36281aa`, reached live Neo4j fixture loading but failed before profile
 or query execution because generator v1 placed JSON-quoted map keys in a
-Cypher `UNWIND` literal. Generator v2 now emits deterministic validated Cypher
-map syntax, and the failure is preserved as a non-paper diagnostic artifact.
-A new selective CWRU run is pending.
+Cypher `UNWIND` literal. Generator v2 then emitted deterministic validated
+Cypher map syntax. Explicitly new job `3787173` at clean commit `3a2bce9`
+proved that repair and made both services healthy, but failed at statement 6/6:
+one request still contained all 5,000 transfers and exceeded the fixed
+30-second Neo4j deadline after five successful statements. It made zero profile
+and query calls. Both failures are preserved as non-paper diagnostic artifacts;
+generator v3 uses 100-row deterministic batches without changing the timeout
+or retry policy. A new selective CWRU run is pending.
 
 M15-F1 now has a locally executable cross-task method surface. Snapshot reuse
 is guarded by a SHA-256 context over semantics, candidate plans and native
@@ -56,8 +63,10 @@ plan change. Two fixed-plan controls, `no_memory`, `no_profile_probe`, and
 `no_replan` are explicit policies rather than aliases. In the controlled
 selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
-kept the old plan. Full local acceptance now passes 640 tests with 36 gated
-skips. This is `paper_result=false`; no live comparative timing claim is made.
+kept the old plan. The clean-commit F1 gate passed 640 tests; with the subsequent
+F0 batch-protocol regression, current full local acceptance passes 641 tests
+with 36 gated skips. This is `paper_result=false`; no live comparative timing
+claim is made.
 The compact clean-commit mechanism record is
 `experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
 

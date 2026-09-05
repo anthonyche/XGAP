@@ -149,7 +149,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0 LOAD REPAIR AND F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE GATES PENDING**
+Current status: **F0 BATCHED-LOAD REPAIR AND F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE GATES PENDING**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -172,6 +172,14 @@ used JSON object syntax inside a Cypher `UNWIND` literal; Neo4j 5.26 requires
 identifier keys. Generator v2 uses a target-specific literal encoder and is
 locally regression-tested. The failed v1 run remains immutable diagnostic
 evidence and must not be counted as a performance result.
+
+The new job `3787173` at clean commit `3a2bce9` passed that syntax boundary and
+made both services healthy, but timed out on load statement 6/6 after the first
+five succeeded. The final statement contained all 5,000 transfers. Generator
+v3 and bundle schema v2 now declare and enforce fixed 100-row Neo4j batches;
+the selective workload therefore has 56 statements. The 30-second request
+deadline and zero-retry policy remain unchanged. This second failed run is also
+immutable diagnostic evidence, not a performance result.
 
 ## Historical Milestones
 

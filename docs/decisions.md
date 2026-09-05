@@ -1258,3 +1258,21 @@ so reopening its JSONL file demonstrated durability but not useful memory
 reuse across tasks. Explicit policies and a fingerprinted cold/warm boundary
 make the memory and replanning mechanisms behaviorally distinguishable and
 prevent named ablations from aliasing the full system.
+
+## D90 Scaled native fixture writes use fixed, manifest-bound batches
+
+Generated Neo4j load artifacts divide company and transfer rows into
+deterministic batches of at most 100 map literals. The bundle manifest declares
+the batching strategy, size, and resulting statement count, and the loader
+recomputes that contract from the hash-bound workload specification. Every
+statement still has one attempt; request deadlines and query semantics are
+unchanged. Changing this native load protocol increments both the generator and
+bundle schema versions.
+
+Reason:
+
+CWRU job `3787173` proved that generator v2 fixed Cypher syntax and that both
+services became healthy, but its sixth and final Neo4j statement put all 5,000
+transfers in one HTTP request and timed out after the preceding five statements
+had succeeded. Fixed-size generation makes request work bounded and auditable
+without disguising the failure through a larger timeout or an automatic retry.

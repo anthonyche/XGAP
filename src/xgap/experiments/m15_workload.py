@@ -15,8 +15,9 @@ from typing import Any, Mapping, Sequence
 
 
 SPEC_SCHEMA_VERSION = "m15-f0-workload-spec-v1"
-BUNDLE_SCHEMA_VERSION = "m15-f0-workload-bundle-v1"
-GENERATOR_VERSION = "m15-f0-generator-v2"
+BUNDLE_SCHEMA_VERSION = "m15-f0-workload-bundle-v2"
+GENERATOR_VERSION = "m15-f0-generator-v3"
+NEO4J_LOAD_BATCH_SIZE = 100
 _SAFE_WORKLOAD_ID = re.compile(r"^[a-z][a-z0-9_-]{0,63}$")
 _FILES = (
     "workload_spec.json",
@@ -332,6 +333,21 @@ def _cypher_token(workload_id: str) -> str:
     return workload_id.replace("-", "_").upper()
 
 
+def _load_protocol(spec: M15WorkloadSpec) -> dict[str, Any]:
+    return {
+        "neo4j_strategy": "sequential_literal_unwind_batches",
+        "neo4j_batch_size": NEO4J_LOAD_BATCH_SIZE,
+        "neo4j_statement_count": (
+            4
+            + (spec.company_count + NEO4J_LOAD_BATCH_SIZE - 1)
+            // NEO4J_LOAD_BATCH_SIZE
+            + (spec.transfer_count + NEO4J_LOAD_BATCH_SIZE - 1)
+            // NEO4J_LOAD_BATCH_SIZE
+        ),
+        "fuseki_strategy": "single_graph_store_post",
+    }
+
+
 def _neo4j_load(
     spec: M15WorkloadSpec,
     companies: list[dict[str, Any]],
@@ -357,6 +373,23 @@ def _neo4j_load(
         for row in transfers
     ]
     source_account = f"acct-{spec.workload_id}-alice"
+    company_statements = tuple(
+        f"UNWIND {_cypher_literal(compact_companies[start:start + NEO4J_LOAD_BATCH_SIZE])} AS row\n"
+        f"MERGE (company:{company_label} {{id: row.id}})\n"
+        f"MERGE (target:{account_label} {{id: row.account_id}})\n"
+        f"MERGE (company)-[:{owns}]->(target);"
+        for start in range(0, len(compact_companies), NEO4J_LOAD_BATCH_SIZE)
+    )
+    transfer_statements = tuple(
+        f"UNWIND {_cypher_literal(compact_transfers[start:start + NEO4J_LOAD_BATCH_SIZE])} AS row\n"
+        f'MATCH (source:{account_label} {{id: "{source_account}"}})\n'
+        f"MATCH (target:{account_label} {{id: row.target_account_id}})\n"
+        f"MERGE (source)-[edge:{transfer} {{id: row.id}}]->(target)\n"
+        "SET edge.amount = row.amount,\n"
+        "    edge.currency = row.currency,\n"
+        "    edge.occurred_on = date(row.occurred_on);"
+        for start in range(0, len(compact_transfers), NEO4J_LOAD_BATCH_SIZE)
+    )
     return "\n\n".join(
         (
             f"CREATE CONSTRAINT m15f0_{token.lower()}_person_id IF NOT EXISTS\n"
@@ -369,17 +402,8 @@ def _neo4j_load(
             'SET person.name = "Alice Smith"\n'
             f'MERGE (source:{account_label} {{id: "{source_account}"}})\n'
             f"MERGE (person)-[:{owns}]->(source);",
-            f"UNWIND {_cypher_literal(compact_companies)} AS row\n"
-            f"MERGE (company:{company_label} {{id: row.id}})\n"
-            f"MERGE (target:{account_label} {{id: row.account_id}})\n"
-            f"MERGE (company)-[:{owns}]->(target);",
-            f"UNWIND {_cypher_literal(compact_transfers)} AS row\n"
-            f'MATCH (source:{account_label} {{id: "{source_account}"}})\n'
-            f"MATCH (target:{account_label} {{id: row.target_account_id}})\n"
-            f"MERGE (source)-[edge:{transfer} {{id: row.id}}]->(target)\n"
-            "SET edge.amount = row.amount,\n"
-            "    edge.currency = row.currency,\n"
-            "    edge.occurred_on = date(row.occurred_on);",
+            *company_statements,
+            *transfer_statements,
         )
     ) + "\n"
 
@@ -544,6 +568,7 @@ def generate_m15_workload_bundle(
                 "high_risk_companies": spec.high_risk_company_count,
                 "answer_rows": len(expected),
             },
+            "load_protocol": _load_protocol(spec),
             "deterministic": True,
             "automatic_retries": 0,
             "paper_result": False,
@@ -586,6 +611,7 @@ def load_m15_workload_bundle(root: str | Path) -> M15WorkloadBundle:
         "spec_sha256",
         "files_sha256",
         "counts",
+        "load_protocol",
         "deterministic",
         "automatic_retries",
         "paper_result",
@@ -612,6 +638,8 @@ def load_m15_workload_bundle(root: str | Path) -> M15WorkloadBundle:
         raise ValueError("workload bundle manifest workload_id does not match its spec")
     if manifest_payload.get("spec_sha256") != raw_hashes["workload_spec.json"]:
         raise ValueError("workload bundle spec digest is inconsistent")
+    if manifest_payload.get("load_protocol") != _load_protocol(spec):
+        raise ValueError("workload bundle load protocol is invalid")
     expected_sources = json.loads(
         (bundle_root / "expected_source_results.json").read_text("utf-8")
     )

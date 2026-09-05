@@ -1,0 +1,70 @@
+{
+  "artifact_id": "m15-f0-cwru-scaled-selective-timeout-3787173",
+  "artifact_role": "cwru_engineering_failure_diagnostic_not_paper_result",
+  "observed_at_utc": "2026-09-05",
+  "slurm": {
+    "elapsed": "00:01:38",
+    "exit_code": "1:0",
+    "job_id": "3787173",
+    "node": "compt336",
+    "state": "FAILED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "3a2bce9818259e2e5296950c4b3761f21056bf1a"
+  },
+  "workload": {
+    "answer_rows": 120,
+    "bundle_schema_version": "m15-f0-workload-bundle-v1",
+    "companies": 200,
+    "generator_version": "m15-f0-generator-v2",
+    "high_risk_companies": 20,
+    "profile": "selective",
+    "spec_sha256": "412a74c2b86714db40d3354e203fe17388e9b1ec1858d93e892f332c1d585039",
+    "transfers": 5000,
+    "workload_id": "selective-dev-v1"
+  },
+  "services": {
+    "fuseki_health_attempts": 4,
+    "fuseki_health_elapsed_ms": 1611.2399995326996,
+    "fuseki_healthy": true,
+    "neo4j_health_attempts": 30,
+    "neo4j_health_elapsed_ms": 16000.266578048468,
+    "neo4j_healthy": true,
+    "restarts": 0
+  },
+  "failure": {
+    "automatic_retries": 0,
+    "bytes_sent": 607782,
+    "elapsed_ms": 33328.32607999444,
+    "error": "timed out",
+    "failed_stage": "neo4j_fixture_load",
+    "failed_statement_index": 6,
+    "fixture_loaded": false,
+    "operations_attempted": 6,
+    "profile_calls": 0,
+    "query_calls": 0,
+    "root_cause": "The first five idempotent Cypher statements completed, but the sixth and final statement embedded all 5,000 transfer rows in one literal UNWIND request and exceeded the fixed Neo4j HTTP deadline.",
+    "statement_count": 6,
+    "strategy": "sequential_idempotent_cypher"
+  },
+  "cleanup": {
+    "cleanup_error": null,
+    "fuseki_kill_escalation": false,
+    "neo4j_kill_escalation": true,
+    "runtime_removed": true,
+    "success": true
+  },
+  "resolution": {
+    "automatic_retries": 0,
+    "bundle_schema_version": "m15-f0-workload-bundle-v2",
+    "generator_version": "m15-f0-generator-v3",
+    "neo4j_batch_size": 100,
+    "selective_neo4j_statement_count": 56,
+    "strategy": "Generate deterministic fixed-size literal UNWIND batches and bind the load protocol into the workload manifest; do not widen the request timeout.",
+    "same_job_resubmitted": false,
+    "new_job_required": true
+  },
+  "remote_run_root": "runs/cwru-m15-native-scaled-adaptive-3787173",
+  "paper_result": false
+}

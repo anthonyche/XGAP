@@ -232,7 +232,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0 GENERATOR-V2 LOAD REPAIR AND F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE GATES PENDING**
+Status: **F0 GENERATOR-V3 BATCHED-LOAD REPAIR AND F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE GATES PENDING**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -254,7 +254,12 @@ Archive staging, workload generation, service startup, and guarded cleanup
 reached their declared boundaries, but Neo4j rejected the first load statement
 before profiling because generator v1 embedded JSON objects as Cypher map
 literals. The failed run made zero query calls and is not a performance result.
-Generator v2 now emits validated Cypher literals and has a regression test; a
+Generator v2 emits validated Cypher literals. New job `3787173` at clean
+commit `3a2bce9` passed that syntax boundary and started both services, but
+statement 6/6 still carried all 5,000 transfers and exceeded the fixed Neo4j
+request deadline after five successful statements. No profile or query ran.
+Generator v3 and bundle schema v2 now bind a fixed 100-row batch protocol,
+producing 56 selective load statements without a timeout increase or retry. A
 new selective job, calibrated repetitions, and the live baseline matrix remain
 pending. F1's deterministic paired sanity check already executes all six
 declared methods. Under one controlled stale-to-current latency transition,

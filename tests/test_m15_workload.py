@@ -6,9 +6,11 @@ from pathlib import Path
 
 import pytest
 
+from xgap.experiments.m15_fixture_loader import split_cypher_statements
 from xgap.experiments.m15_workload import (
     BUNDLE_SCHEMA_VERSION,
     M15WorkloadSpec,
+    NEO4J_LOAD_BATCH_SIZE,
     generate_m15_workload_bundle,
     load_m15_workload_bundle,
     main,
@@ -59,6 +61,15 @@ def test_workload_generation_is_byte_deterministic_and_hash_bound(
     assert "UNWIND [{account_id:" in neo4j_load
     assert '{"account_id"' not in neo4j_load
     assert '{"amount"' not in neo4j_load
+    statements = split_cypher_statements(neo4j_load)
+    assert len(statements) == 6
+    assert first.manifest["load_protocol"] == {
+        "fuseki_strategy": "single_graph_store_post",
+        "neo4j_batch_size": NEO4J_LOAD_BATCH_SIZE,
+        "neo4j_statement_count": len(statements),
+        "neo4j_strategy": "sequential_literal_unwind_batches",
+    }
+    assert sum(statement.startswith("UNWIND ") for statement in statements) == 2
     assert "$company_ids" in first.path(
         "query_recent_transfers_bound.cypher"
     ).read_text("utf-8")
@@ -84,6 +95,21 @@ def test_committed_development_configs_create_opposite_selectivity_regimes(
         selective.expected_rows
     )
     assert broad.manifest["counts"]["answer_rows"] == len(broad.expected_rows)
+
+    selective_statements = split_cypher_statements(
+        selective.path("load_neo4j.cypher").read_text("utf-8")
+    )
+    assert len(selective_statements) == 56
+    assert selective.manifest["load_protocol"]["neo4j_statement_count"] == 56
+    unwind_statements = tuple(
+        statement
+        for statement in selective_statements
+        if statement.startswith("UNWIND ")
+    )
+    assert len(unwind_statements) == 52
+    for statement in unwind_statements:
+        literal = statement.removeprefix("UNWIND ").partition("] AS row")[0]
+        assert literal.count("},{") + 1 <= NEO4J_LOAD_BATCH_SIZE
 
 
 def test_bundle_loader_rejects_tamper_extra_files_and_overwrite(
@@ -123,6 +149,23 @@ def test_bundle_loader_rejects_content_and_hash_changed_together(
     )
 
     with pytest.raises(ValueError, match="not deterministic for its spec"):
+        load_m15_workload_bundle(root)
+
+
+def test_bundle_loader_rejects_a_manifest_only_load_protocol_change(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "bundle"
+    generate_m15_workload_bundle(_small_spec(), root)
+    manifest_path = root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["load_protocol"]["neo4j_batch_size"] = 5000
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="load protocol is invalid"):
         load_m15_workload_bundle(root)
 
 
