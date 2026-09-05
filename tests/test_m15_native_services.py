@@ -19,6 +19,12 @@ from xgap.experiments.m15_query_bound_campaign import (
 from xgap.experiments.m15_parameterized_workload import (
     generate_m15_parameterized_workload_bundle,
 )
+from xgap.experiments.m15_semantic_frontier import (
+    load_m15_semantic_relaxation_catalog,
+)
+from xgap.experiments.m15_semantic_overlay import (
+    generate_m15_semantic_overlay_bundle,
+)
 from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
@@ -642,6 +648,131 @@ def test_full_lifecycle_selects_parameterized_mode_explicitly(
     ] == bundle.manifest["bundle_content_sha256"]
 
 
+def test_full_lifecycle_requires_and_records_semantic_overlay(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    base = generate_m15_parameterized_workload_bundle(
+        workload_spec=(
+            REPO_ROOT
+            / "experiments/configs/m15_f2c_parameterized_workload_dev.json"
+        ),
+        query_template_spec=(
+            REPO_ROOT
+            / "experiments/configs/m15_f2c_parameterized_financial_risk_v2.json"
+        ),
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "semantic-base-bundle",
+    )
+    catalog = load_m15_semantic_relaxation_catalog(
+        REPO_ROOT / "experiments/configs/m15_f2c6_semantic_relaxation_dev.json"
+    )
+    overlay = generate_m15_semantic_overlay_bundle(
+        base_bundle=base,
+        base_query_id="financial-risk-alice-aug-high-v2",
+        catalog=catalog,
+        destination=tmp_path / "semantic-overlay",
+    )
+    with pytest.raises(ValueError, match="requires an overlay"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-semantic-runs",
+            run_id="missing-semantic-inputs",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="semantic_risk_relaxation",
+        )
+
+    executed: list[tuple[str, str, str]] = []
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence(
+            "/opt/java17/bin/java", 17, "17"
+        ),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "start_service",
+        lambda spec: RunningService(spec, _StableProcess(), io.BytesIO()),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id,
+            True,
+            1,
+            1.0,
+            200,
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args: executed.append(
+            (
+                _args[3],
+                _args[14].manifest["overlay_sha256"],
+                _args[15].spec.workload_id,
+            )
+        ),
+    )
+
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "semantic-runs",
+        run_id="native-semantic-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="semantic_risk_relaxation",
+        semantic_overlay=overlay,
+        semantic_base_bundle=base,
+        semantic_catalog=catalog,
+    )
+
+    assert record.success
+    assert executed == [
+        (
+            "semantic_risk_relaxation",
+            overlay.manifest["overlay_sha256"],
+            base.spec.workload_id,
+        )
+    ]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.SEMANTIC_RELAXATION_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["workload_mode"] == "semantic_risk_relaxation"
+    assert manifest["workload_bundle"] is None
+    assert manifest["parameterized_workload_bundle"] is None
+    assert manifest["semantic_base_workload_bundle"] == base.manifest
+    assert manifest["semantic_overlay"] == overlay.manifest
+
+
 def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -985,7 +1116,9 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "scaled_query_bound_session" in script
     assert "parameterized_stream" in script
     assert "parameterized_family_transfer" in script
+    assert "semantic_risk_relaxation" in script
     assert "m15_parameterized_workload" in script
+    assert "m15_semantic_overlay" in script
     assert "--parameterized-workload-bundle" in script
     assert "--campaign-session-id" in script
     campaign_script = (
@@ -1025,4 +1158,13 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     )
     assert "SLURM_SUBMIT_DIR" in family_transfer_script
     assert "BASH_SOURCE" not in family_transfer_script
+    semantic_relaxation_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_semantic_risk_relaxation.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=semantic_risk_relaxation" in (
+        semantic_relaxation_script
+    )
+    assert "SLURM_SUBMIT_DIR" in semantic_relaxation_script
+    assert "BASH_SOURCE" not in semantic_relaxation_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

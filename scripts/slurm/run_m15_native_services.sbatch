@@ -104,6 +104,10 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-family-transfer"
     RUN_VERSION="m15-f2c5-native-live-family-transfer-services-v1"
     ;;
+  semantic_risk_relaxation)
+    RUN_PREFIX="cwru-m15-native-semantic-risk-relaxation"
+    RUN_VERSION="m15-f2c7b2-native-live-semantic-risk-relaxation-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -289,6 +293,32 @@ if [[ "$WORKLOAD_MODE" == parameterized_stream || "$WORKLOAD_MODE" == parameteri
     --output "$WORKLOAD_BUNDLE" \
     | tee "$RUN_ROOT/workload_generation.json"
   WORKLOAD_ARGS=(--parameterized-workload-bundle "$WORKLOAD_BUNDLE")
+fi
+if [[ "$WORKLOAD_MODE" == semantic_risk_relaxation ]]; then
+  SEMANTIC_BASE_BUNDLE="$RUN_ROOT/semantic-base-workload-bundle"
+  SEMANTIC_OVERLAY="$RUN_ROOT/semantic-overlay"
+  SEMANTIC_CATALOG="$RUN_ROOT/semantic_catalog.json"
+  cp -- "$REPO_ROOT/experiments/configs/m15_f2c6_semantic_relaxation_dev.json" \
+    "$SEMANTIC_CATALOG"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_parameterized_workload \
+    --workload-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_workload_dev.json" \
+    --query-template-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_financial_risk_v2.json" \
+    --backend-template-root "$REPO_ROOT/experiments/templates/m15_f2c_financial_risk" \
+    --output "$SEMANTIC_BASE_BUNDLE" \
+    | tee "$RUN_ROOT/semantic_base_generation.json"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_semantic_overlay \
+    --base-bundle-root "$SEMANTIC_BASE_BUNDLE" \
+    --base-query-id financial-risk-alice-aug-high-v2 \
+    --catalog "$SEMANTIC_CATALOG" \
+    --output "$SEMANTIC_OVERLAY" \
+    | tee "$RUN_ROOT/semantic_overlay_generation.json"
+  WORKLOAD_ARGS=(
+    --semantic-overlay "$SEMANTIC_OVERLAY"
+    --semantic-base-bundle "$SEMANTIC_BASE_BUNDLE"
+    --semantic-catalog "$SEMANTIC_CATALOG"
+  )
 fi
 
 QUERY_BOUND_ARGS=()

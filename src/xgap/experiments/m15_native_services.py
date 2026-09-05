@@ -41,6 +41,9 @@ from xgap.experiments.m15_live_parameterized_stream import (
 from xgap.experiments.m15_live_family_transfer import (
     run_m15_live_family_transfer,
 )
+from xgap.experiments.m15_live_semantic_relaxation import (
+    run_m15_live_semantic_risk_relaxation,
+)
 from xgap.experiments.m15_live_query_bound_session import (
     prepare_m15_live_query_bound_session,
     run_m15_live_query_bound_session,
@@ -60,6 +63,14 @@ from xgap.experiments.m15_parameterized_fixture import (
 from xgap.experiments.m15_parameterized_workload import (
     M15ParameterizedWorkloadBundle,
     load_m15_parameterized_workload_bundle,
+)
+from xgap.experiments.m15_semantic_frontier import (
+    M15SemanticRelaxationCatalog,
+    load_m15_semantic_relaxation_catalog,
+)
+from xgap.experiments.m15_semantic_overlay import (
+    M15SemanticOverlayBundle,
+    load_m15_semantic_overlay_bundle,
 )
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.infrastructure.descriptors import BackendDescriptor
@@ -85,6 +96,9 @@ PARAMETERIZED_STREAM_SERVICE_RUN_SCHEMA_VERSION = (
 FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-f2c5-native-live-family-transfer-service-run-v1"
 )
+SEMANTIC_RELAXATION_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2c7b2-native-live-semantic-risk-relaxation-service-run-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -99,6 +113,7 @@ WORKLOAD_MODES = frozenset(
         "scaled_query_bound_session",
         "parameterized_stream",
         "parameterized_family_transfer",
+        "semantic_risk_relaxation",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -802,6 +817,9 @@ def _run_fixture_and_query(
     expected_registry_spec_sha256: str | None = None,
     expected_query_bound_schedule_sha256: str | None = None,
     parameterized_workload_bundle: M15ParameterizedWorkloadBundle | None = None,
+    semantic_overlay: M15SemanticOverlayBundle | None = None,
+    semantic_base_bundle: M15ParameterizedWorkloadBundle | None = None,
+    semantic_catalog: M15SemanticRelaxationCatalog | str | Path | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -864,6 +882,36 @@ def _run_fixture_and_query(
                     raise RuntimeError(
                         f"live family transfer failed: {transfer.error}"
                     )
+            return
+        if workload_mode == "semantic_risk_relaxation":
+            assert semantic_overlay is not None
+            assert semantic_base_bundle is not None
+            assert semantic_catalog is not None
+            fixture = load_m15_parameterized_fixture(
+                workload_bundle=semantic_overlay.workload_bundle,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="semantic-fixture-load",
+                repo_root=repo_root,
+            )
+            if not fixture.success:
+                raise RuntimeError(
+                    f"semantic overlay fixture load failed: {fixture.error}"
+                )
+            semantic = run_m15_live_semantic_risk_relaxation(
+                semantic_overlay=semantic_overlay,
+                base_bundle=semantic_base_bundle,
+                catalog=semantic_catalog,
+                clients=clients,
+                output_root=run_root,
+                run_id="semantic-risk-relaxation-run",
+                repo_root=repo_root,
+            )
+            if not semantic.success:
+                raise RuntimeError(
+                    f"live semantic risk relaxation failed: {semantic.error}"
+                )
             return
         fixture = load_m15_split_fixture(
             output_root=run_root,
@@ -977,6 +1025,11 @@ def run_m15_native_services(
     parameterized_workload_bundle: (
         M15ParameterizedWorkloadBundle | str | Path | None
     ) = None,
+    semantic_overlay: M15SemanticOverlayBundle | str | Path | None = None,
+    semantic_base_bundle: (
+        M15ParameterizedWorkloadBundle | str | Path | None
+    ) = None,
+    semantic_catalog: M15SemanticRelaxationCatalog | str | Path | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1010,6 +1063,38 @@ def run_m15_native_services(
     )
     if selected_bundle is not None and selected_parameterized_bundle is not None:
         raise ValueError("workload bundle inputs are mutually exclusive")
+    selected_semantic_base = (
+        semantic_base_bundle
+        if isinstance(semantic_base_bundle, M15ParameterizedWorkloadBundle)
+        else load_m15_parameterized_workload_bundle(semantic_base_bundle)
+        if semantic_base_bundle is not None
+        else None
+    )
+    selected_semantic_catalog = (
+        semantic_catalog
+        if isinstance(semantic_catalog, M15SemanticRelaxationCatalog)
+        else load_m15_semantic_relaxation_catalog(semantic_catalog)
+        if semantic_catalog is not None
+        else None
+    )
+    selected_semantic_overlay = (
+        load_m15_semantic_overlay_bundle(
+            semantic_overlay.root
+            if isinstance(semantic_overlay, M15SemanticOverlayBundle)
+            else semantic_overlay,
+            base_bundle=selected_semantic_base,
+            catalog=selected_semantic_catalog,
+        )
+        if semantic_overlay is not None
+        and selected_semantic_base is not None
+        and selected_semantic_catalog is not None
+        else None
+    )
+    semantic_values = (
+        semantic_overlay,
+        semantic_base_bundle,
+        semantic_catalog,
+    )
     scaled_mode = workload_mode in {
         "scaled_adaptive",
         "scaled_method_matrix",
@@ -1034,6 +1119,23 @@ def run_m15_native_services(
         raise ValueError(
             "a parameterized workload bundle is accepted only in "
             "a parameterized workload mode"
+        )
+    if workload_mode == "semantic_risk_relaxation":
+        if any(value is None for value in semantic_values):
+            raise ValueError(
+                "semantic_risk_relaxation requires an overlay, base bundle, "
+                "and semantic catalog"
+            )
+        if selected_semantic_overlay is None:
+            raise ValueError("semantic overlay inputs could not be verified")
+        if selected_bundle is not None or selected_parameterized_bundle is not None:
+            raise ValueError(
+                "semantic_risk_relaxation does not accept another workload bundle"
+            )
+    elif any(value is not None for value in semantic_values):
+        raise ValueError(
+            "semantic overlay inputs are accepted only in "
+            "semantic_risk_relaxation"
         )
     campaign_values = (
         campaign_config,
@@ -1101,6 +1203,9 @@ def run_m15_native_services(
         "parameterized_family_transfer": (
             FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "semantic_risk_relaxation": (
+            SEMANTIC_RELAXATION_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -1164,6 +1269,9 @@ def run_m15_native_services(
                 expected_registry_spec_sha256,
                 expected_query_bound_schedule_sha256,
                 selected_parameterized_bundle,
+                selected_semantic_overlay,
+                selected_semantic_base,
+                selected_semantic_catalog,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
@@ -1219,6 +1327,16 @@ def run_m15_native_services(
             "parameterized_workload_bundle": (
                 dict(selected_parameterized_bundle.manifest)
                 if selected_parameterized_bundle is not None
+                else None
+            ),
+            "semantic_base_workload_bundle": (
+                dict(selected_semantic_base.manifest)
+                if selected_semantic_base is not None
+                else None
+            ),
+            "semantic_overlay": (
+                dict(selected_semantic_overlay.manifest)
+                if selected_semantic_overlay is not None
                 else None
             ),
             "campaign_session": (
@@ -1282,6 +1400,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument("--workload-bundle")
     parser.add_argument("--parameterized-workload-bundle")
+    parser.add_argument("--semantic-overlay")
+    parser.add_argument("--semantic-base-bundle")
+    parser.add_argument("--semantic-catalog")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -1318,6 +1439,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             workload_mode=args.workload_mode,
             workload_bundle=args.workload_bundle,
             parameterized_workload_bundle=args.parameterized_workload_bundle,
+            semantic_overlay=args.semantic_overlay,
+            semantic_base_bundle=args.semantic_base_bundle,
+            semantic_catalog=args.semantic_catalog,
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,
