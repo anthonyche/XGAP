@@ -77,30 +77,43 @@ The command and artifact contract is frozen in
 Goal: add schema/explain/profile/sample tools and alternative correct plans for
 pushdown, join strategy/order, parallel scheduling, and fragment fusion.
 
-Current status: **INITIAL ACCEPTANCE GATE PASSED LOCALLY; LIVE CALIBRATION PENDING**
+Current status: **LIVE OBSERVATION PATH IMPLEMENTED LOCALLY; CWRU VALIDATION AND CALIBRATION PENDING**
 
 The first slice provides catalog-allowlisted observation tools, native Neo4j
 plan/profile evidence, executable bind-query and semi-join nodes, two
 exact-semantic M15 plans, and a deterministic critical-path/transfer selector.
 Both plans return the same fixture answer and the selected plan reverses under
 a controlled bound-query latency change. The controlled artifact is not a
-paper result. General fragmentation, pushdown/order enumeration, fusion, and
-live observation-derived estimates remain open.
+paper result. A bounded collector now executes one declared, duplicate-free
+observation tuple with no retry and publishes a plan snapshot only when every
+observation succeeds. The live path obtains native Neo4j PROFILE evidence and
+an explicitly labeled Fuseki wall-clock execution fallback. Its fixed cost
+model is intentionally marked uncalibrated. General fragmentation,
+pushdown/order enumeration, fusion, calibrated estimates, and the CWRU live
+gate remain open.
 
 ### M15-D Memory-Guided Adaptation and Replanning
 
 Goal: use versioned observations across tasks and explicitly replan within a
 query when runtime evidence invalidates the current estimate.
 
-Current status: **INITIAL CONTROLLED LOOP IMPLEMENTED LOCALLY; LIVE ADAPTIVE GATE PENDING**
+Current status: **LIVE ADAPTIVE PIPELINE IMPLEMENTED LOCALLY; CWRU ADAPTIVE GATE PENDING**
 
 The current slice persists versioned plan snapshots to append-only JSONL,
 validates a probe as an exact common plan prefix before invocation, reuses that
 prefix during continuation, and permits at most one explicit replan. The
 controlled fixture flips from parallel hash to risk-first bind after observed
 latency invalidates stale memory without duplicating the probe call. Probe
-failure and the no-replan control are covered. Real observations, the complete
-baseline matrix, and a CWRU adaptive run remain open.
+failure and the no-replan control are covered. CWRU observation evidence,
+calibration, the complete baseline matrix, and a live adaptive run remain open.
+The new live-service mode
+collects exactly three registered planning observations, reopens the persisted
+snapshot, executes one two-backend federated query with at most one replan,
+persists and reopens two memory versions, and records a five-event tool trace.
+It has its own Slurm entry point and mode-aware read-only audit so the verified
+M15-B vertical slice remains reproducible. Until that job runs and the cost
+model is calibrated, the artifacts remain a development gate with
+`paper_result=false`.
 
 ### M15-E Selective Semantic Resolution
 

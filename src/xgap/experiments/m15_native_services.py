@@ -27,6 +27,7 @@ from xgap.experiments.m15_fixture_loader import (
     Neo4jCypherFixtureLoader,
     load_m15_split_fixture,
 )
+from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_federated import run_m15_live_federated
 from xgap.experiments.m15_native_artifacts import (
     DEFAULT_LOCK_PATH,
@@ -38,7 +39,9 @@ from xgap.infrastructure.descriptors import BackendDescriptor
 
 
 SERVICE_RUN_SCHEMA_VERSION = "m15-b2d-native-service-run-v1"
+ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION = "m15-d2-native-adaptive-service-run-v1"
 SERVICE_PLAN_SCHEMA_VERSION = "m15-b2d-native-service-plan-v1"
+WORKLOAD_MODES = frozenset({"vertical_slice", "adaptive"})
 LOCAL_FILESYSTEM_TYPES = frozenset(
     {
         "apfs",
@@ -700,7 +703,12 @@ def _service_environment(plan: NativeServicePlan) -> Iterator[None]:
                 os.environ[key] = value
 
 
-def _run_fixture_and_query(plan: NativeServicePlan, run_root: Path, repo_root: Path) -> None:
+def _run_fixture_and_query(
+    plan: NativeServicePlan,
+    run_root: Path,
+    repo_root: Path,
+    workload_mode: str,
+) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
         neo4j_descriptor = BackendDescriptor.from_yaml(descriptors / "neo4j.yaml")
@@ -722,14 +730,26 @@ def _run_fixture_and_query(plan: NativeServicePlan, run_root: Path, repo_root: P
         )
         if not fixture.success:
             raise RuntimeError(f"fixture load failed: {fixture.error}")
-        live = run_m15_live_federated(
-            output_root=run_root,
-            run_id="federated-run",
-            repo_root=repo_root,
-            clients=clients,
-        )
-        if not live.success:
-            raise RuntimeError(f"live federated run failed: {live.error}")
+        if workload_mode == "vertical_slice":
+            live = run_m15_live_federated(
+                output_root=run_root,
+                run_id="federated-run",
+                repo_root=repo_root,
+                clients=clients,
+            )
+            if not live.success:
+                raise RuntimeError(f"live federated run failed: {live.error}")
+        elif workload_mode == "adaptive":
+            adaptive = run_m15_live_adaptive(
+                output_root=run_root,
+                run_id="adaptive-run",
+                repo_root=repo_root,
+                clients=clients,
+            )
+            if not adaptive.success:
+                raise RuntimeError(f"live adaptive run failed: {adaptive.error}")
+        else:
+            raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
 
 
 def run_m15_native_services(
@@ -743,6 +763,7 @@ def run_m15_native_services(
     java_command: str,
     repo_root: str | Path | None = None,
     required_java_major: int = 17,
+    workload_mode: str = "vertical_slice",
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -751,6 +772,13 @@ def run_m15_native_services(
     )
     if not _SAFE_RUN_ID.fullmatch(run_id):
         raise ValueError("run_id contains unsupported characters")
+    if workload_mode not in WORKLOAD_MODES:
+        raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
+    run_schema = (
+        ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION
+        if workload_mode == "adaptive"
+        else SERVICE_RUN_SCHEMA_VERSION
+    )
     output = Path(output_root).resolve()
     run_root = output / run_id
     run_root.mkdir(parents=True, exist_ok=False)
@@ -798,7 +826,7 @@ def run_m15_native_services(
             if not observation.success:
                 raise RuntimeError(f"Fuseki readiness failed: {observation.last_error}")
 
-            _run_fixture_and_query(plan, run_root, root)
+            _run_fixture_and_query(plan, run_root, root, workload_mode)
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
     finally:
@@ -819,7 +847,7 @@ def run_m15_native_services(
     _write_json(
         status_path,
         {
-            "schema_version": SERVICE_RUN_SCHEMA_VERSION,
+            "schema_version": run_schema,
             "status": "success" if success else "failed",
             "error": error,
             "started_at": started_at,
@@ -837,7 +865,7 @@ def run_m15_native_services(
     _write_json(
         manifest_path,
         {
-            "schema_version": SERVICE_RUN_SCHEMA_VERSION,
+            "schema_version": run_schema,
             "run_id": run_id,
             "status": "success" if success else "failed",
             "error": error,
@@ -846,6 +874,7 @@ def run_m15_native_services(
             "allocation_id": allocation_id,
             "runtime_root": str(Path(runtime_root).resolve()),
             "runtime_cleanup_owner": "slurm_job_wrapper",
+            "workload_mode": workload_mode,
             "service_plan": plan.to_dict() if plan is not None else None,
             "health": [item.to_dict() for item in health],
             "shutdown": [item.to_dict() for item in shutdown],
@@ -876,6 +905,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--allocation-id", required=True)
     parser.add_argument("--java-command", default="java")
     parser.add_argument("--repo-root")
+    parser.add_argument(
+        "--workload-mode",
+        choices=sorted(WORKLOAD_MODES),
+        default="vertical_slice",
+    )
     args = parser.parse_args(argv)
     if os.environ.get("XGAP_RUN_M15_NATIVE_SERVICES") != "1":
         print(
@@ -901,6 +935,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             allocation_id=args.allocation_id,
             java_command=args.java_command,
             repo_root=args.repo_root,
+            workload_mode=args.workload_mode,
         )
     except (FileExistsError, ValueError) as exc:
         print(json.dumps({"status": "configuration_error", "error": str(exc)}))

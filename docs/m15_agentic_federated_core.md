@@ -79,15 +79,16 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current local M15 verification passed 128 tests with two real-service tests
-skipped. Full local acceptance passed with 600 tests and 36 explicitly gated or
+Current local M15 verification passed 140 tests with two real-service tests
+skipped. Full local acceptance passed with 612 tests and 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
 gates before live services are started. Both gates are now verified. See
 [`docs/m15_remote_execution_loop.md`](m15_remote_execution_loop.md). These
 gates distinguish the previously exercised legacy M13 CWRU/vLLM path from the
-still-unverified M15 server path.
+M15 service path, which subsequently passed the B2D/B3 live gate. The newer
+M15-C2/D2 adaptive-service mode remains unverified on CWRU.
 
 B0 artifacts established an exact checkout, working Slurm, visible
 `gpu2h100`, an existing vLLM environment, Miniconda Python 3.11.5, and the
@@ -134,7 +135,7 @@ Acceptance gate:
 
 ## M15-C — Nontrivial plan space and observation tools
 
-Status: **INITIAL ACCEPTANCE GATE PASSED LOCALLY; LIVE CALIBRATION PENDING**
+Status: **LIVE OBSERVATION PATH IMPLEMENTED LOCALLY; CWRU VALIDATION AND CALIBRATION PENDING**
 
 Implemented in the first closed slice:
 
@@ -155,6 +156,16 @@ The controlled M15 sanity check executes both plans to the same exact answer,
 moves 530 versus 363 fixture bytes, selects bind under transfer pressure, and
 flips to parallel when bound-query latency is increased. It is explicitly
 marked `paper_result=false`; live profile-derived calibration is still pending.
+
+The next slice adds a finite observation collector over the registered
+catalogs. It validates the full request and cost-model contract before any
+backend call, invokes each profile/sample once in declared order, retains
+partial evidence on failure, and publishes a snapshot only after the complete
+request tuple succeeds. The M15 live contract uses native Neo4j `PROFILE` for
+the full and bound transfer artifacts and an explicit wall-clock execution
+fallback for Fuseki's registered high-risk artifact. This path is implemented
+and offline-tested but has not yet been run against the CWRU services.
+
 Alternative fragmentation, generalized pushdown/join-order enumeration,
 fragment fusion, and paper-scale observations remain future M15-C work.
 
@@ -163,7 +174,7 @@ and the selected plan changes under controlled cardinality or latency changes.
 
 ## M15-D — Memory-guided adaptation and replanning
 
-Status: **INITIAL CONTROLLED LOOP IMPLEMENTED LOCALLY; LIVE ADAPTIVE GATE PENDING**
+Status: **LIVE ADAPTIVE RUNNER AND AUDITOR IMPLEMENTED LOCALLY; CWRU GATE PENDING**
 
 Use versioned capability and execution memory across tasks, and permit explicit
 within-query replanning after observations invalidate the current estimate.
@@ -181,6 +192,17 @@ reloads the updated snapshot from disk. It is not a live or paper result.
 Required baselines: static federation, no memory, no profile/probe, no replan,
 and full agent. The no-replan control is implemented; the complete baseline
 matrix and real-backend adaptive run remain pending.
+
+M15-D2 now has a separate fail-closed live runner. Within one query attempt it
+accounts for exactly three planning-profile calls and two query calls, stores
+the profile and runtime-updated snapshots in append-only memory, and persists
+candidate plans, probe plan, tool invocations, exact answer, plan selections,
+and replan decision. The allocation-scoped service lifecycle exposes this only
+through an explicit `adaptive` workload mode; the previously audited vertical
+slice remains the default. A mode-aware read-only auditor checks the full
+service, fixture, observation, memory, query, and cleanup chain. All current
+cost constants are explicitly uncalibrated development parameters and the run
+is labeled `paper_result=false`.
 
 ## M15-E — Selective semantic resolution
 

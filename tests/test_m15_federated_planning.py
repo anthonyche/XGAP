@@ -11,6 +11,8 @@ from xgap.runtime import (
     FederatedPlanSelector,
     FederatedPlanningError,
     PlanObservationSnapshot,
+    PlanObservationCollector,
+    PlanObservationRequest,
     RemoteEstimate,
     RuntimeNode,
     RuntimeNodeKind,
@@ -18,6 +20,7 @@ from xgap.runtime import (
 from xgap.tools import (
     BackendInvokeTool,
     BackendObservationCatalog,
+    BackendOperation,
     BackendPluginRegistry,
     CatalogBackendPlugin,
     ToolContext,
@@ -293,3 +296,95 @@ def test_remote_estimate_is_derived_from_catalog_observation_with_provenance() -
     assert estimate.version == "v3"
     assert "m15-catalog/sample-companies/" in estimate.source
     assert estimate.output_bytes > 0
+
+
+def _observation_tool(client: _ObservedClient) -> BackendInvokeTool:
+    plugins = BackendPluginRegistry()
+    plugins.register(
+        CatalogBackendPlugin(
+            "neo4j",
+            client,
+            BackendObservationCatalog(
+                "m15-collector-catalog",
+                "catalog-v1",
+                sample_artifacts={
+                    "companies": QueryArtifact(
+                        "sample-companies",
+                        "cypher",
+                        "MATCH (c:Company) RETURN c.id AS company_id LIMIT 2",
+                    )
+                },
+            ),
+        )
+    )
+    return BackendInvokeTool(plugins)
+
+
+def _sample_request(call_id: str, observation_key: str, sample_id: str):
+    return PlanObservationRequest(
+        call_id,
+        observation_key,
+        "neo4j",
+        BackendOperation.SAMPLE,
+        {"sample_id": sample_id},
+    )
+
+
+def test_observation_collector_freezes_complete_snapshot_without_retry() -> None:
+    collector = PlanObservationCollector(_observation_tool(_ObservedClient()))
+
+    collection = collector.collect(
+        (_sample_request("sample-1", "neo4j-company-sample", "companies"),),
+        snapshot_id="live-m15",
+        version="task-0",
+        bandwidth_bytes_per_ms=1000.0,
+        exchange_fixed_ms=0.5,
+        coordinator_row_ms=0.001,
+    )
+
+    assert collection.success
+    assert collection.attempted_calls == 1
+    assert collection.snapshot is not None
+    assert collection.snapshot.snapshot_id == "live-m15"
+    assert collection.snapshot.estimates[0].source.startswith(
+        "m15-collector-catalog/sample-companies/"
+    )
+    assert collection.to_dict()["automatic_retries"] == 0
+
+
+def test_observation_collector_stops_on_first_failure_and_keeps_partial_evidence() -> None:
+    collector = PlanObservationCollector(_observation_tool(_ObservedClient()))
+    requests = (
+        _sample_request("sample-1", "observed-1", "companies"),
+        _sample_request("missing", "observed-2", "missing"),
+        _sample_request("must-not-run", "observed-3", "companies"),
+    )
+
+    collection = collector.collect(
+        requests,
+        snapshot_id="failed-m15",
+        version="task-0",
+        bandwidth_bytes_per_ms=1000.0,
+    )
+
+    assert not collection.success
+    assert collection.snapshot is None
+    assert collection.attempted_calls == 2
+    assert [result.status.value for result in collection.tool_results] == [
+        "success",
+        "unavailable",
+    ]
+    assert "must-not-run" not in str(collection.to_dict()["tool_results"])
+
+
+def test_observation_collector_rejects_invalid_contract_before_tool_calls() -> None:
+    collector = PlanObservationCollector(_observation_tool(_ObservedClient()))
+    request = _sample_request("same", "same-key", "companies")
+
+    with pytest.raises(FederatedPlanningError, match="call ids must be unique"):
+        collector.collect(
+            (request, request),
+            snapshot_id="invalid",
+            version="task-0",
+            bandwidth_bytes_per_ms=1000.0,
+        )

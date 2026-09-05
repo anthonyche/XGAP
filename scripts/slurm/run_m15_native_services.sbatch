@@ -13,7 +13,22 @@ PYTHON_MODULE="${XGAP_PYTHON_MODULE:-Miniconda3}"
 JAVA_MODULE="${XGAP_JAVA_MODULE:-Java/17.0.6}"
 PYTHON_BIN="${XGAP_PYTHON:-python}"
 CACHE_ROOT="${XGAP_NATIVE_ARTIFACT_CACHE:-$HOME/xgap-data/m15-native/artifacts}"
-RUN_ROOT="${XGAP_CWRU_RUN_ROOT:-$REPO_ROOT/runs/cwru-m15-native-services-${SLURM_JOB_ID:-manual}}"
+WORKLOAD_MODE="${XGAP_M15_WORKLOAD_MODE:-vertical_slice}"
+case "$WORKLOAD_MODE" in
+  vertical_slice)
+    RUN_PREFIX="cwru-m15-native-services"
+    RUN_VERSION="m15-b2d-native-services-v1"
+    ;;
+  adaptive)
+    RUN_PREFIX="cwru-m15-native-adaptive"
+    RUN_VERSION="m15-d2-native-adaptive-services-v1"
+    ;;
+  *)
+    echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
+    exit 2
+    ;;
+esac
+RUN_ROOT="${XGAP_CWRU_RUN_ROOT:-$REPO_ROOT/runs/${RUN_PREFIX}-${SLURM_JOB_ID:-manual}}"
 STATUS_FILE="$RUN_ROOT/run_status.json"
 STAGING_MANIFEST="$RUN_ROOT/runtime_staging.json"
 RUNTIME_ROOT=""
@@ -83,11 +98,12 @@ finalize() {
   if [[ -n "$CLEANUP_ERROR" ]]; then
     cleanup_json="\"$CLEANUP_ERROR\""
   fi
-  printf '{"status":"%s","exit_code":%d,"slurm_job_id":"%s","git_commit":"%s","runtime_removed":%s,"cleanup_error":%s}\n' \
+  printf '{"status":"%s","exit_code":%d,"slurm_job_id":"%s","git_commit":"%s","workload_mode":"%s","runtime_removed":%s,"cleanup_error":%s}\n' \
     "$state" \
     "$exit_code" \
     "$SLURM_JOB_ID" \
     "$(git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null || printf unavailable)" \
+    "$WORKLOAD_MODE" \
     "$RUNTIME_REMOVED" \
     "$cleanup_json" \
     > "$STATUS_FILE"
@@ -135,7 +151,7 @@ esac
 RUNTIME_ROOT="$(mktemp -d "$LOCAL_BASE/xgap-m15-${SLURM_JOB_ID}.XXXXXX")"
 
 {
-  printf 'run_version=m15-b2d-native-services-v1\n'
+  printf 'run_version=%s\n' "$RUN_VERSION"
   printf 'timestamp_utc=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   printf 'hostname=%s\n' "$(hostname)"
   printf 'slurm_job_id=%s\n' "$SLURM_JOB_ID"
@@ -150,6 +166,7 @@ RUNTIME_ROOT="$(mktemp -d "$LOCAL_BASE/xgap-m15-${SLURM_JOB_ID}.XXXXXX")"
   printf 'cache_root=%s\n' "$CACHE_ROOT"
   printf 'loopback_only=true\n'
   printf 'automatic_retries=0\n'
+  printf 'workload_mode=%s\n' "$WORKLOAD_MODE"
 } > "$RUN_ROOT/environment.txt"
 if command -v findmnt >/dev/null 2>&1; then
   findmnt -T "$LOCAL_BASE" -o TARGET,SOURCE,FSTYPE,OPTIONS \
@@ -181,6 +198,7 @@ PYTHONPATH="$REPO_ROOT/src" \
   --allocation-id "$SLURM_JOB_ID" \
   --java-command "$JAVA_BIN" \
   --repo-root "$REPO_ROOT" \
+  --workload-mode "$WORKLOAD_MODE" \
   | tee "$RUN_ROOT/native_service_result.json"
 
-echo "M15 native services and federated vertical slice passed."
+echo "M15 native services workload '$WORKLOAD_MODE' passed."

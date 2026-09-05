@@ -2,19 +2,23 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
 
 from xgap.experiments.m15_fixture_loader import RUN_SCHEMA_VERSION as FIXTURE_SCHEMA
 from xgap.experiments.m15_live_federated import RUN_SCHEMA_VERSION as LIVE_SCHEMA
+from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_native_artifacts import load_native_runtime_lock
 from xgap.experiments.m15_native_evidence import audit_m15_native_run, main
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
+    ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     SERVICE_PLAN_SCHEMA_VERSION,
     SERVICE_RUN_SCHEMA_VERSION,
 )
+from xgap.infrastructure.runtime import BackendStatus, ExecutionReport, QueryArtifact
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -241,6 +245,88 @@ def _complete_run(tmp_path: Path) -> Path:
     return run
 
 
+@dataclass
+class _AdaptiveFakeClient:
+    backend_id: str
+    rows: list[dict[str, object]]
+
+    def healthcheck(self) -> BackendStatus:
+        return BackendStatus(self.backend_id, True, "fixture ready")
+
+    def execute(self, artifact: QueryArtifact) -> ExecutionReport:
+        rows = self.rows
+        company_ids = artifact.parameters.get("company_ids")
+        if self.backend_id == "neo4j" and isinstance(company_ids, list):
+            rows = [
+                row
+                for row in rows
+                if str(row.get("company_id", "")).removeprefix("neo:")
+                in company_ids
+            ]
+        return ExecutionReport(
+            self.backend_id,
+            artifact.artifact_id,
+            artifact.language,
+            True,
+            rows=[dict(row) for row in rows],
+            elapsed_ms=2.0,
+        )
+
+
+@dataclass
+class _AdaptiveNeo4jClient(_AdaptiveFakeClient):
+    def profile(self, artifact: QueryArtifact) -> ExecutionReport:
+        return self.execute(artifact)
+
+
+def _complete_adaptive_run(tmp_path: Path) -> Path:
+    run = _complete_run(tmp_path)
+    service = run / "native-service-run"
+    source_rows = json.loads(
+        (
+            REPO_ROOT
+            / "examples"
+            / "m15_split_financial_risk"
+            / "expected_source_results.json"
+        ).read_text(encoding="utf-8")
+    )
+    adaptive_record = run_m15_live_adaptive(
+        output_root=service,
+        run_id="adaptive-run",
+        repo_root=REPO_ROOT,
+        clients={
+            "neo4j": _AdaptiveNeo4jClient("neo4j", source_rows["neo4j"]),
+            "fuseki": _AdaptiveFakeClient("fuseki", source_rows["fuseki"]),
+        },
+    )
+    assert adaptive_record.success, adaptive_record.error
+
+    outer_path = run / "run_status.json"
+    outer = json.loads(outer_path.read_text(encoding="utf-8"))
+    outer["workload_mode"] = "adaptive"
+    _write_json(outer_path, outer)
+
+    environment_path = run / "environment.txt"
+    environment = environment_path.read_text(encoding="utf-8").replace(
+        "run_version=m15-b2d-native-services-v1",
+        "run_version=m15-d2-native-adaptive-services-v1",
+    )
+    environment += "workload_mode=adaptive\n"
+    environment_path.write_text(environment, encoding="utf-8")
+
+    service_manifest_path = service / "run_manifest.json"
+    service_manifest = json.loads(service_manifest_path.read_text(encoding="utf-8"))
+    service_manifest["schema_version"] = ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION
+    service_manifest["workload_mode"] = "adaptive"
+    _write_json(service_manifest_path, service_manifest)
+
+    adaptive_manifest_path = adaptive_record.manifest_path
+    adaptive_manifest = json.loads(adaptive_manifest_path.read_text(encoding="utf-8"))
+    adaptive_manifest["git"] = {"commit": COMMIT, "clean": True}
+    _write_json(adaptive_manifest_path, adaptive_manifest)
+    return run
+
+
 def test_complete_native_run_passes_cross_artifact_audit(tmp_path: Path) -> None:
     run = _complete_run(tmp_path)
 
@@ -253,6 +339,48 @@ def test_complete_native_run_passes_cross_artifact_audit(tmp_path: Path) -> None
     assert audit.success
     assert audit.failed_check_ids == ()
     assert len(audit.checks) >= 70
+
+
+def test_complete_native_adaptive_run_passes_cross_artifact_audit(
+    tmp_path: Path,
+) -> None:
+    run = _complete_adaptive_run(tmp_path)
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="adaptive",
+    )
+
+    assert audit.success, audit.failed_check_ids
+    assert audit.failed_check_ids == ()
+    assert len(audit.checks) >= 90
+
+
+def test_adaptive_audit_detects_duplicate_query_invocation(tmp_path: Path) -> None:
+    run = _complete_adaptive_run(tmp_path)
+    invocation_path = (
+        run
+        / "native-service-run"
+        / "adaptive-run"
+        / "backend_invocations.json"
+    )
+    invocations = json.loads(invocation_path.read_text(encoding="utf-8"))
+    invocations["events"].append(dict(invocations["events"][-1]))
+    invocations["total_tool_invocations"] = 6
+    _write_json(invocation_path, invocations)
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="adaptive",
+    )
+
+    assert not audit.success
+    assert "invocations.total" in audit.failed_check_ids
+    assert "invocations.sequence" in audit.failed_check_ids
 
 
 def test_audit_detects_tampered_answer(tmp_path: Path) -> None:

@@ -19,6 +19,11 @@ from xgap.runtime.contracts import (
     RuntimePlanError,
 )
 from xgap.runtime.scheduler import FederatedScheduler
+from xgap.runtime.observations import (
+    PlanObservationCollection,
+    PlanObservationCollector,
+    PlanObservationRequest,
+)
 from xgap.runtime.fragments import (
     CompiledBackendFragment,
     ExistingM9FragmentCompiler,
@@ -53,6 +58,9 @@ __all__ = [
     "FederatedScheduler",
     "FragmentCompilationError",
     "PlanCostEstimate",
+    "PlanObservationCollection",
+    "PlanObservationCollector",
+    "PlanObservationRequest",
     "PlanObservationSnapshot",
     "PlanSnapshotMemory",
     "ProbeObservation",

@@ -1155,3 +1155,39 @@ Re-executing a probe would disguise retry cost as optimization, while reusing a
 semantically different prefix could corrupt the answer. One explicit change is
 enough to test memory-guided adaptation and gives the experiment a finite,
 auditable replan budget.
+
+## D85 Cost snapshots require a complete declared observation tuple
+
+Plan-cost evidence is collected only from registered `profile` or `sample`
+artifacts. The collector validates request identity, uniqueness, and all local
+cost parameters before invoking a backend. It then executes the finite request
+tuple once in declared order. The first unavailable, erroneous, malformed, or
+raised observation terminates collection, retains the partial tool results,
+and produces no snapshot.
+
+Reason:
+
+A partially populated snapshot can make an arbitrary candidate appear cheaper,
+while implicit retries hide planning overhead. Complete, provenance-bearing
+snapshots let the experiment report observation cost separately from query
+execution and make missing backend capabilities explicit.
+
+## D86 Live adaptive validation is a separate workload mode
+
+The native-service runner keeps the already audited `vertical_slice` mode as
+its default and adds an explicit `adaptive` mode. The adaptive mode loads the
+same split fixture, performs three registered profile calls, persists the
+complete snapshot, runs one two-call adaptive query with at most one replan,
+and preserves both snapshot versions. It has its own run schema, Slurm entry
+point, and read-only evidence-audit branch.
+
+The current bandwidth, exchange, and coordinator-row constants are labeled as
+fixed development configuration with `calibrated=false` and
+`paper_result=false`.
+
+Reason:
+
+Changing the old service job in place would blur the evidence boundary of the
+verified vertical slice. A separate mode allows live control-path validation
+without presenting fixture-scale timings or hand-set cost constants as a
+performance result.

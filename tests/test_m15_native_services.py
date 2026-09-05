@@ -379,7 +379,7 @@ def test_full_lifecycle_orchestration_records_reverse_shutdown(
     monkeypatch.setattr(
         native_services,
         "_run_fixture_and_query",
-        lambda *_args: executed.append("fixture-and-query"),
+        lambda *_args: executed.append(_args[3]),
     )
 
     record = run_m15_native_services(
@@ -395,7 +395,7 @@ def test_full_lifecycle_orchestration_records_reverse_shutdown(
 
     assert record.success
     assert started == ["neo4j", "fuseki"]
-    assert executed == ["fixture-and-query"]
+    assert executed == ["vertical_slice"]
     assert stopped == ["fuseki", "neo4j"]
     manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
     assert manifest["status"] == "success"
@@ -408,6 +408,76 @@ def test_full_lifecycle_orchestration_records_reverse_shutdown(
         "fuseki",
         "neo4j",
     ]
+    assert manifest["workload_mode"] == "vertical_slice"
+
+
+def test_full_lifecycle_selects_adaptive_workload_explicitly(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    executed: list[str] = []
+
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence("/opt/java17/bin/java", 17, "17"),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "start_service",
+        lambda spec: RunningService(spec, _StableProcess(), io.BytesIO()),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id,
+            True,
+            1,
+            1.0,
+            200,
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args: executed.append(_args[3]),
+    )
+
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "runs",
+        run_id="native-adaptive-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="adaptive",
+    )
+
+    assert record.success
+    assert executed == ["adaptive"]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["workload_mode"] == "adaptive"
 
 
 def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
@@ -423,4 +493,5 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "XGAP_RUN_M15_NATIVE_SERVICES=1" in script
     assert "rm -rf -- \"$RUNTIME_ROOT\"" in script
     assert "runtime_removed" in script
+    assert '--workload-mode "$WORKLOAD_MODE"' in script
     assert "--localhost" not in script  # Frozen by the typed service plan.

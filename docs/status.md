@@ -14,9 +14,14 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
-The current M15-D1 gate passed 128 focused tests with two real-service tests
-skipped. Full-suite acceptance passed with 600 tests and 36 explicitly gated
-or external-artifact tests skipped.
+The last committed M15-D1 gate passed 128 focused tests with two real-service
+tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
+gated or external-artifact tests skipped. A refreshed CWRU CPU smoke at exact
+clean commit `4c26eea` was submitted as job `3787126`; its terminal state and
+artifacts have not yet been accepted. The subsequent local M15-C2/D2 live
+adaptive implementation passes 140 focused tests with two live-service skips
+and full acceptance with 612 passes and 36 explicit skips. It remains
+unpublished and has not yet run on CWRU.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
@@ -52,16 +57,16 @@ then passed B2C inspection and staging. This is development evidence, not a
 CWRU live-service or paper-result claim; its compact record is
 `experiments/artifacts/m15_b2_local_native_supply_20260905.json`.
 
-B2D implements the complete allocation-scoped launcher without starting a
-service locally. It requires exact Java 17 and an allowlisted node-local
+B2D implements the complete allocation-scoped launcher and was not exercised
+against local services. It requires exact Java 17 and an allowlisted node-local
 filesystem, reserves three dynamic loopback ports, keeps every Neo4j/Fuseki
 state path below the ephemeral root, and uses only their public HTTP
 interfaces. Readiness polling has a fixed deadline and never restarts a failed
 process. The runner performs one fixture load and one federated execution,
 then shuts down job-owned process groups in reverse order, archives logs and
 lifecycle evidence, and lets the Slurm wrapper remove only its validated
-runtime directory. Both real archives passed the exact command-plan audit;
-actual service startup remains a CWRU gate.
+runtime directory. Both real archives passed the exact command-plan audit, and
+job `3787110` subsequently exercised the complete service lifecycle on CWRU.
 
 A read-only post-run auditor now rejects an otherwise successful allocation if
 its full commit, frozen lock snapshot, archive provenance, staging record,
@@ -100,6 +105,24 @@ reused. The exact answer still requires only two total backend calls. A failed
 probe causes no fallback execution, and a no-replan control is implemented.
 This is local orchestration evidence, not a real-backend adaptive or paper
 result.
+
+M15-C2/D2 now adds a separate local live-service adaptive path without changing
+the verified M15-B execution mode. Before query execution, a bounded collector
+invokes exactly three catalog-registered observations once each: Neo4j PROFILE
+for the full-transfer and bound-transfer artifacts, followed by the Fuseki
+high-risk artifact through an explicitly labeled wall-clock execution fallback.
+It publishes no snapshot after partial observation failure. A successful
+snapshot is persisted and reopened before the adaptive executor runs the two
+backend query calls, reuses the exact common prefix, and permits at most one
+replan. The run records the complete three-profile/two-execute tool sequence,
+two append-only memory versions, plan snapshots, fixed cost configuration,
+answer validation, and source provenance. Query-probe failure is fail-closed
+and does not fall back to another plan or duplicate memory. The native service
+lifecycle exposes this as a distinct `adaptive` mode with its own Slurm entry
+point, while the read-only evidence auditor validates either the historical
+vertical slice or the adaptive artifact set. The cost model is explicitly
+uncalibrated and every adaptive manifest sets `paper_result=false`; CWRU live
+execution, calibration, scaling, and baselines remain pending.
 
 M15-B2D/B3 job `3787110` ran exact clean commit `cd564de8` on `compt331` in
 62 seconds. Neo4j 5.26.30 and Fuseki 5.6.0 ran on allocation-local XFS and
@@ -1415,7 +1438,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-D1 local implementation tests passed. M7 backend smoke and M12-C real
+M0-M15-D2 local implementation tests passed. M7 backend smoke and M12-C real
 calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1425,11 +1448,11 @@ the local completion run.
 
 Latest recorded command results:
 
-- `./scripts/run_acceptance.sh`: 600 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 612 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
-  passed 128 with two live-service skips. Shell syntax validation passed for
-  the corrected native prerequisite probe, download-only artifact preparation,
-  and allocation-scoped native-service jobs.
+  passed 140 with two live-service skips. Shell syntax validation passed for
+  the CPU smoke, native vertical-slice, and separate native adaptive-service
+  entry points.
 - `PYTHONPATH=src python -m pytest`: 492 passed, 10 skipped, including the
   focused M13-E1 catalog-v2 fixture, M13-E2 CWRU/vLLM contracts, M13-E3 source
   checksum/restart/integrity/audit tests, and M13-E3A frozen-inventory,

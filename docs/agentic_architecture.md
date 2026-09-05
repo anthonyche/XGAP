@@ -51,6 +51,13 @@ The agent may observe:
 - backend errors and availability changes;
 - user clarification answers.
 
+Planning observations are collected through an explicit finite request tuple.
+Every request names a registered `profile` or `sample` artifact, backend,
+observation key, and call ID. All local cost-model parameters and uniqueness
+constraints are validated before the first backend call. Requests execute once
+in declared order, stop at the first non-success, retain partial tool evidence,
+and produce a snapshot only when the complete tuple succeeds.
+
 ### Tools
 
 The initial tool vocabulary is grouped by effect:
@@ -159,6 +166,12 @@ probe call, every prefix node must be structurally identical in every candidate
 plan. A successful prefix can seed exactly one continuation, preserving its
 rows, latency, transfer, and call accounting; it is not executed again. A
 failed prefix is evidence and cannot silently select a fallback.
+
+The live development gate accounts for planning and query work separately.
+Its current M15 contract performs three registered planning observations and
+then at most two query-time remote calls. A fixed, explicitly uncalibrated
+coordinator cost configuration is suitable only for exercising the control
+path; paper experiments require a separately frozen calibration protocol.
 
 ## Compatibility with the existing system
 

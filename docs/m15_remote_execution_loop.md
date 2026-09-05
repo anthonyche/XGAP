@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D VERIFIED; LOCAL M15-D1 ADAPTIVE CPU GATE VERIFIED; REFRESHED CWRU CPU SMOKE PENDING
-- Version Label: m15_remote_loop_v12
+- Verification Status: CWRU B2D VERIFIED; LOCAL M15-C2/D2 LIVE ADAPTIVE PATH IMPLEMENTED; REFRESHED CWRU CPU JOB 3787126 PENDING
+- Version Label: m15_remote_loop_v13
 
 ## Current claim boundary
 
@@ -17,7 +17,13 @@ interfaces. It cannot yet claim paper-scale performance, streaming transport,
 or live cancellation. A controlled local M15-D1 loop now persists observation
 snapshots across processes, runs a declared common probe prefix, and permits
 one evidence-triggered plan change without repeating the probe. This is an
-orchestration sanity check, not a live adaptive-backend or paper result.
+orchestration sanity check, not a live adaptive-backend or paper result. A
+separate live-service adaptive mode is now implemented locally: it collects a
+finite three-observation planning tuple, persists and reopens the complete
+snapshot, executes the two-engine query with at most one replan, and emits a
+mode-aware immutable evidence bundle. It has not yet run on CWRU, its fixed cost
+model is not calibrated, and its manifest therefore declares
+`paper_result=false`.
 
 B0 observations on 2026-09-04 established an exact checkout at commit
 `465e2e2454b74aaf7a1c055797740bde8ca5ace0`, working Slurm commands,
@@ -141,11 +147,17 @@ Status: **VERIFIED** by job `3784974` on `compt365`.
 - Verified threshold at commit `4c45931`: status `success`, 40 offline M15
   tests passed, one explicitly gated live test skipped, the vertical slice
   returned exactly one row with two remote calls and 206 transferred bytes.
-  The current wrapper includes the B2A loader, B2B artifact-supply, B2C
-  allocation-staging, and B2D service-lifecycle suites and therefore expects
-  128 passes and two gated skips, including the read-only evidence-auditor,
+  The published `4c26eea` wrapper used by job `3787126` includes the B2A
+  loader, B2B artifact-supply, B2C allocation-staging, B2D service-lifecycle,
   observation, alternative-plan, persistent-memory, continuation, and bounded
-  replanning regressions.
+  replanning suites and therefore expects 128 passes and two gated skips. The
+  subsequent local C2/D2 wrapper adds the live adaptive and mode-aware audit
+  regressions and passes 140 tests with the same two skips; that version has
+  not yet been published or run on CWRU.
+- Refreshed gate: job `3787126` was submitted at exact clean commit
+  `4c26eea06c94c4ac0d650c56cf50b8da051a91bb`. It must not be resubmitted while
+  pending. Its terminal scheduler state and immutable run artifacts have not
+  yet been accepted.
 
 ## Typed remote-control entry
 
@@ -249,11 +261,23 @@ VPN reachability and a working user-owned SSH alias.
   `sample` observations; two correct federated plans; controlled cost changes
   that reverse selection; append-only versioned snapshot memory; and one
   bounded exact-prefix replan without duplicate remote work.
-- Immediate gate: reproduce the complete 128-pass/two-skip M15 CPU suite and
-  adaptive demo on one CWRU compute node at the exact published commit.
-- Remaining live gate: feed real registered backend observations into the
-  selector and exercise the adaptive continuation while Neo4j and Fuseki are
-  running.
+- The live adaptive runner declares exactly three planning observations,
+  invokes each at most once, and publishes a snapshot only after the complete
+  tuple succeeds. Neo4j contributes two native PROFILE results; Fuseki
+  contributes one explicitly labeled wall-clock execution fallback. The
+  persisted snapshot is reopened before the two-backend query, and the complete
+  run records three profile plus two execute events, memory versions, plan
+  snapshots, validation, and provenance.
+- The adaptive workload is a separate native-service mode and Slurm entry
+  point. The historical vertical-slice mode and job `3787110` remain unchanged.
+  The same read-only auditor accepts a declared mode and enforces its exact
+  schema and artifact contract.
+- Immediate external gate: accept refreshed CPU job `3787126` at its exact
+  published commit. After the local C2/D2 regression gate is committed and
+  published, run exactly one separately numbered native adaptive-service job.
+- Remaining research gate: calibrate the cost model and exercise plan changes
+  on scaled/skewed workloads. The tiny fixture may legitimately select zero or
+  one replan and is only a live control-path gate, not performance evidence.
 - Compare static federation, no memory, no probe/profile, no replan, and the
   full agent under the same workload.
 
@@ -276,8 +300,10 @@ VPN reachability and a working user-owned SSH alias.
 ## Next user handoff
 
 B0, B1, B2 prerequisite, B2B supply, B2D service lifecycle, B3 federated
-execution, and the independent evidence audit are complete. No further CWRU
-action is requested for M15-B. Keep job `3787110` and its separate audit tree
-immutable. The local M15-D1 adaptive runner is ready; after its exact commit is
-published, the next server handoff is one refreshed M15 CPU smoke. A real
-adaptive-service run is a later, separately frozen gate.
+execution, and the independent evidence audit are complete. Keep job `3787110`
+and its separate audit tree immutable. Refreshed D1 CPU job `3787126` is already
+submitted at exact clean commit `4c26eea`; do not submit it again. The next
+handoff is only its terminal `sacct` record and, after completion, its immutable
+run summary. The local M15-C2/D2 live adaptive implementation must first pass
+regression, be committed, and be published before one distinct native adaptive
+job is requested. No CWRU adaptive or paper-result claim is currently made.
