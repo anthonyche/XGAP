@@ -1852,3 +1852,29 @@ and execution plumbing only. It makes no live backend, LLM, or ontology call,
 does not measure semantic usefulness, and cannot authorize a CWRU job until a
 dedicated native runner and independent auditor exist. All outputs remain
 `paper_result=false`.
+
+## D114 Execute predicate relaxation as a two-class mechanism gate
+
+F2C8B executes only the predicate-only and risk-plus-predicate direct classes.
+The risk-only class is not repeated because F2C7B2 already covers it, and all
+multihop classes remain blocked. Both admitted classes bind the same declared
+transfer-to-payment development transition and preserve person identity, time,
+and amount. Each receives exactly one fixed `risk_first_bind_join` plan. This
+requires two physical runs and four backend calls in deterministic
+Fuseki/Neo4j order; it is not a physical-strategy comparison.
+
+The runner constructs both plans and their execution contracts before opening
+any answer oracle, then uses the 6- and 9-row oracles only for post-execution
+validation. A failed plan stops the gate immediately; no second-class
+execution, retry, service restart, memory read/write, LLM call, or ontology
+call is allowed after failure. The native mode revalidates the cumulative
+predicate overlay at the fixture boundary, starts fresh loopback-only services,
+and delegates cleanup to the allocation wrapper.
+
+A separate read-only auditor reloads the base bundle, catalog, mapping, and
+overlay, reconstructs both expected plans and answers, and checks the complete
+outer job, service, fixture, call trace, shutdown, and cleanup chain. Its local
+synthetic run-tree test passes 150 checks and detects answer and plan-identity
+tampering. Full local acceptance passes 834 tests with 36 environment-gated
+skips. This authorizes one CWRU mechanism run only; no live result, semantic
+utility, latency ranking, ontology truth, or paper claim exists yet.

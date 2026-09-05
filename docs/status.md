@@ -271,6 +271,21 @@ a development fixture rather than ontology truth; live payment execution,
 semantic utility, and every multihop class remain open. The compact record is
 `experiments/artifacts/m15_f2c8a_local_predicate_overlay_20260906.json`.
 
+M15-F2C8B is locally accepted and ready for one CWRU mechanism run. A dedicated
+runner executes only the predicate-only and risk-plus-predicate direct classes,
+using one fixed risk-first plan per class. It constructs both plans before any
+oracle access, preserves all hard bindings, expects four backend calls, and
+validates exact 6- and 9-row answers only after execution. The native service
+mode revalidates the predicate overlay at the fixture boundary and the new
+Slurm wrapper is on the remote executor allowlist. The independent read-only
+auditor reconstructs both plans and oracles from the base bundle, catalog,
+mapping, and overlay; its local synthetic run tree passes 150 checks and its
+tamper tests reject changed answers and plan identities. Full pytest and the
+complete acceptance script pass with 834 passed and 36 gated skips. No live
+predicate result, semantic-user-utility evidence, ontology call, plan
+comparison, or paper claim exists yet. The compact local record is
+`experiments/artifacts/m15_f2c8b_local_native_predicate_readiness_20260906.json`.
+
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
 the frozen registry and schedule hashes, started Neo4j 5.26.30 and Fuseki 5.6.0

@@ -511,6 +511,16 @@ execution against deterministic backend doubles returns every added oracle;
 live backends, ontology calls, semantic-utility claims, and multihop execution
 remain outside this gate.
 
+F2C8B adds the native execution boundary for the two predicate-changing direct
+classes. Both plans are constructed before oracle access and use one fixed
+risk-first strategy, so the gate has exactly two plan runs and four expected
+backend calls. The versioned mapping remains a development fixture carried in
+the execution contract; no ontology service is required. A dedicated native
+mode, allowlisted Slurm wrapper, and independent read-only auditor now cover
+overlay revalidation, nine-instance fixture verification, exact post-execution
+answers, zero retry, service shutdown, and allocation-local cleanup. Local
+acceptance is complete; one clean CWRU run is the only next authorized action.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

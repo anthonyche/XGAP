@@ -108,6 +108,10 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-semantic-risk-relaxation"
     RUN_VERSION="m15-f2c7b2-native-live-semantic-risk-relaxation-services-v1"
     ;;
+  semantic_predicate_relaxation)
+    RUN_PREFIX="cwru-m15-native-semantic-predicate-relaxation"
+    RUN_VERSION="m15-f2c8b-native-live-semantic-predicate-relaxation-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -318,6 +322,37 @@ if [[ "$WORKLOAD_MODE" == semantic_risk_relaxation ]]; then
     --semantic-overlay "$SEMANTIC_OVERLAY"
     --semantic-base-bundle "$SEMANTIC_BASE_BUNDLE"
     --semantic-catalog "$SEMANTIC_CATALOG"
+  )
+fi
+if [[ "$WORKLOAD_MODE" == semantic_predicate_relaxation ]]; then
+  SEMANTIC_BASE_BUNDLE="$RUN_ROOT/semantic-base-workload-bundle"
+  PREDICATE_OVERLAY="$RUN_ROOT/predicate-overlay"
+  SEMANTIC_CATALOG="$RUN_ROOT/semantic_catalog.json"
+  PREDICATE_MAPPING="$RUN_ROOT/predicate_mapping.json"
+  cp -- "$REPO_ROOT/experiments/configs/m15_f2c6_semantic_relaxation_dev.json" \
+    "$SEMANTIC_CATALOG"
+  cp -- "$REPO_ROOT/experiments/configs/m15_f2c8_predicate_mapping_dev.json" \
+    "$PREDICATE_MAPPING"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_parameterized_workload \
+    --workload-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_workload_dev.json" \
+    --query-template-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_financial_risk_v2.json" \
+    --backend-template-root "$REPO_ROOT/experiments/templates/m15_f2c_financial_risk" \
+    --output "$SEMANTIC_BASE_BUNDLE" \
+    | tee "$RUN_ROOT/semantic_base_generation.json"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_predicate_overlay \
+    --base-bundle-root "$SEMANTIC_BASE_BUNDLE" \
+    --base-query-id financial-risk-alice-aug-high-v2 \
+    --catalog "$SEMANTIC_CATALOG" \
+    --mapping "$PREDICATE_MAPPING" \
+    --output "$PREDICATE_OVERLAY" \
+    | tee "$RUN_ROOT/predicate_overlay_generation.json"
+  WORKLOAD_ARGS=(
+    --predicate-overlay "$PREDICATE_OVERLAY"
+    --semantic-base-bundle "$SEMANTIC_BASE_BUNDLE"
+    --semantic-catalog "$SEMANTIC_CATALOG"
+    --predicate-mapping "$PREDICATE_MAPPING"
   )
 fi
 

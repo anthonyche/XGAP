@@ -40,6 +40,7 @@ DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_native_parameterized_stream.sbatch",
     "scripts/slurm/run_m15_native_family_transfer.sbatch",
     "scripts/slurm/run_m15_native_semantic_risk_relaxation.sbatch",
+    "scripts/slurm/run_m15_native_semantic_predicate_relaxation.sbatch",
 )
 
 

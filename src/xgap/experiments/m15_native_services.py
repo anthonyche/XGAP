@@ -17,6 +17,7 @@ import urllib.request
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Iterator, Mapping, Protocol, Sequence
 
@@ -44,6 +45,9 @@ from xgap.experiments.m15_live_family_transfer import (
 from xgap.experiments.m15_live_semantic_relaxation import (
     run_m15_live_semantic_risk_relaxation,
 )
+from xgap.experiments.m15_live_predicate_relaxation import (
+    run_m15_live_semantic_predicate_relaxation,
+)
 from xgap.experiments.m15_live_query_bound_session import (
     prepare_m15_live_query_bound_session,
     run_m15_live_query_bound_session,
@@ -63,6 +67,12 @@ from xgap.experiments.m15_parameterized_fixture import (
 from xgap.experiments.m15_parameterized_workload import (
     M15ParameterizedWorkloadBundle,
     load_m15_parameterized_workload_bundle,
+)
+from xgap.experiments.m15_predicate_overlay import (
+    M15PredicateMappingSpec,
+    M15PredicateOverlayBundle,
+    load_m15_predicate_overlay_bundle,
+    load_m15_predicate_overlay_workload_bundle,
 )
 from xgap.experiments.m15_semantic_frontier import (
     M15SemanticRelaxationCatalog,
@@ -99,6 +109,9 @@ FAMILY_TRANSFER_SERVICE_RUN_SCHEMA_VERSION = (
 SEMANTIC_RELAXATION_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-f2c7b2-native-live-semantic-risk-relaxation-service-run-v1"
 )
+PREDICATE_RELAXATION_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2c8b-native-live-semantic-predicate-relaxation-service-run-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -114,6 +127,7 @@ WORKLOAD_MODES = frozenset(
         "parameterized_stream",
         "parameterized_family_transfer",
         "semantic_risk_relaxation",
+        "semantic_predicate_relaxation",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -820,6 +834,8 @@ def _run_fixture_and_query(
     semantic_overlay: M15SemanticOverlayBundle | None = None,
     semantic_base_bundle: M15ParameterizedWorkloadBundle | None = None,
     semantic_catalog: M15SemanticRelaxationCatalog | str | Path | None = None,
+    predicate_overlay: M15PredicateOverlayBundle | None = None,
+    predicate_mapping: M15PredicateMappingSpec | str | Path | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -911,6 +927,46 @@ def _run_fixture_and_query(
             if not semantic.success:
                 raise RuntimeError(
                     f"live semantic risk relaxation failed: {semantic.error}"
+                )
+            return
+        if workload_mode == "semantic_predicate_relaxation":
+            assert predicate_overlay is not None
+            assert semantic_base_bundle is not None
+            assert semantic_catalog is not None
+            assert predicate_mapping is not None
+            fixture = load_m15_parameterized_fixture(
+                workload_bundle=predicate_overlay.workload_bundle,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="predicate-fixture-load",
+                repo_root=repo_root,
+                bundle_loader=partial(
+                    load_m15_predicate_overlay_workload_bundle,
+                    overlay_root=predicate_overlay.root,
+                    base_bundle=semantic_base_bundle,
+                    catalog=semantic_catalog,
+                    mapping=predicate_mapping,
+                ),
+            )
+            if not fixture.success:
+                raise RuntimeError(
+                    f"predicate overlay fixture load failed: {fixture.error}"
+                )
+            predicate = run_m15_live_semantic_predicate_relaxation(
+                predicate_overlay=predicate_overlay,
+                base_bundle=semantic_base_bundle,
+                catalog=semantic_catalog,
+                mapping=predicate_mapping,
+                clients=clients,
+                output_root=run_root,
+                run_id="semantic-predicate-relaxation-run",
+                repo_root=repo_root,
+            )
+            if not predicate.success:
+                raise RuntimeError(
+                    "live semantic predicate relaxation failed: "
+                    f"{predicate.error}"
                 )
             return
         fixture = load_m15_split_fixture(
@@ -1030,6 +1086,8 @@ def run_m15_native_services(
         M15ParameterizedWorkloadBundle | str | Path | None
     ) = None,
     semantic_catalog: M15SemanticRelaxationCatalog | str | Path | None = None,
+    predicate_overlay: M15PredicateOverlayBundle | str | Path | None = None,
+    predicate_mapping: M15PredicateMappingSpec | str | Path | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1090,10 +1148,27 @@ def run_m15_native_services(
         and selected_semantic_catalog is not None
         else None
     )
-    semantic_values = (
-        semantic_overlay,
-        semantic_base_bundle,
-        semantic_catalog,
+    selected_predicate_mapping = (
+        predicate_mapping
+        if isinstance(predicate_mapping, M15PredicateMappingSpec)
+        else M15PredicateMappingSpec.from_json(predicate_mapping)
+        if predicate_mapping is not None
+        else None
+    )
+    selected_predicate_overlay = (
+        load_m15_predicate_overlay_bundle(
+            predicate_overlay.root
+            if isinstance(predicate_overlay, M15PredicateOverlayBundle)
+            else predicate_overlay,
+            base_bundle=selected_semantic_base,
+            catalog=selected_semantic_catalog,
+            mapping=selected_predicate_mapping,
+        )
+        if predicate_overlay is not None
+        and selected_semantic_base is not None
+        and selected_semantic_catalog is not None
+        and selected_predicate_mapping is not None
+        else None
     )
     scaled_mode = workload_mode in {
         "scaled_adaptive",
@@ -1121,10 +1196,21 @@ def run_m15_native_services(
             "a parameterized workload mode"
         )
     if workload_mode == "semantic_risk_relaxation":
-        if any(value is None for value in semantic_values):
+        if any(
+            value is None
+            for value in (
+                semantic_overlay,
+                semantic_base_bundle,
+                semantic_catalog,
+            )
+        ):
             raise ValueError(
                 "semantic_risk_relaxation requires an overlay, base bundle, "
                 "and semantic catalog"
+            )
+        if predicate_overlay is not None or predicate_mapping is not None:
+            raise ValueError(
+                "semantic_risk_relaxation does not accept predicate inputs"
             )
         if selected_semantic_overlay is None:
             raise ValueError("semantic overlay inputs could not be verified")
@@ -1132,10 +1218,43 @@ def run_m15_native_services(
             raise ValueError(
                 "semantic_risk_relaxation does not accept another workload bundle"
             )
-    elif any(value is not None for value in semantic_values):
+    elif workload_mode == "semantic_predicate_relaxation":
+        if any(
+            value is None
+            for value in (
+                predicate_overlay,
+                semantic_base_bundle,
+                semantic_catalog,
+                predicate_mapping,
+            )
+        ):
+            raise ValueError(
+                "semantic_predicate_relaxation requires a predicate overlay, "
+                "base bundle, semantic catalog, and predicate mapping"
+            )
+        if semantic_overlay is not None:
+            raise ValueError(
+                "semantic_predicate_relaxation does not accept a risk overlay"
+            )
+        if selected_predicate_overlay is None:
+            raise ValueError("predicate overlay inputs could not be verified")
+        if selected_bundle is not None or selected_parameterized_bundle is not None:
+            raise ValueError(
+                "semantic_predicate_relaxation does not accept another "
+                "workload bundle"
+            )
+    elif any(
+        value is not None
+        for value in (
+            semantic_overlay,
+            semantic_base_bundle,
+            semantic_catalog,
+            predicate_overlay,
+            predicate_mapping,
+        )
+    ):
         raise ValueError(
-            "semantic overlay inputs are accepted only in "
-            "semantic_risk_relaxation"
+            "semantic inputs are accepted only in a semantic relaxation mode"
         )
     campaign_values = (
         campaign_config,
@@ -1206,6 +1325,9 @@ def run_m15_native_services(
         "semantic_risk_relaxation": (
             SEMANTIC_RELAXATION_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "semantic_predicate_relaxation": (
+            PREDICATE_RELAXATION_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -1272,6 +1394,8 @@ def run_m15_native_services(
                 selected_semantic_overlay,
                 selected_semantic_base,
                 selected_semantic_catalog,
+                selected_predicate_overlay,
+                selected_predicate_mapping,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
@@ -1339,6 +1463,16 @@ def run_m15_native_services(
                 if selected_semantic_overlay is not None
                 else None
             ),
+            "predicate_overlay": (
+                dict(selected_predicate_overlay.manifest)
+                if selected_predicate_overlay is not None
+                else None
+            ),
+            "predicate_mapping": (
+                selected_predicate_mapping.to_dict()
+                if selected_predicate_mapping is not None
+                else None
+            ),
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -1403,6 +1537,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--semantic-overlay")
     parser.add_argument("--semantic-base-bundle")
     parser.add_argument("--semantic-catalog")
+    parser.add_argument("--predicate-overlay")
+    parser.add_argument("--predicate-mapping")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -1442,6 +1578,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             semantic_overlay=args.semantic_overlay,
             semantic_base_bundle=args.semantic_base_bundle,
             semantic_catalog=args.semantic_catalog,
+            predicate_overlay=args.predicate_overlay,
+            predicate_mapping=args.predicate_mapping,
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,

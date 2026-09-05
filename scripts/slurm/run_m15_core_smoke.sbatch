@@ -110,6 +110,9 @@ detect_runtime() {
   tests/test_m15_semantic_overlay.py \
   tests/test_m15_live_semantic_relaxation.py \
   tests/test_m15_semantic_relaxation_native_evidence.py \
+  tests/test_m15_predicate_overlay.py \
+  tests/test_m15_live_predicate_relaxation.py \
+  tests/test_m15_predicate_relaxation_native_evidence.py \
   tests/test_m15_remote_executor.py \
   tests/test_m15_remote_control.py \
   | tee "$RUN_ROOT/pytest.txt"

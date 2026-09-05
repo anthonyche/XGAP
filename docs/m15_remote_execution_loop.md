@@ -423,10 +423,12 @@ passed all 278 dedicated checks; F2C7B2 completed at exact clean commit
 `2197aef` and passed all 133 dedicated checks. Neither audit changed its run
 tree. Do not resubmit these jobs or dispatch the remaining development
 campaign sessions. F2C6/F2C7B1 remain local planning and artifact gates. The
-F2C8A now provides versioned payment-predicate data, compiler, oracle, and
-coordinator plumbing locally, but it has no native lifecycle runner or
-independent evidence auditor; do not submit it to CWRU yet. F2C8B must add those
-two boundaries before one payment-predicate mechanism run can be authorized.
+F2C8A provides versioned payment-predicate data, compiler, oracle, and
+coordinator plumbing. F2C8B now adds its dedicated native lifecycle runner,
+allowlisted Slurm wrapper, and independent evidence auditor. One clean
+`semantic_predicate_relaxation` CWRU mechanism run is authorized next; do not
+dispatch a second run or interpret it as a strategy comparison. After it
+finishes, audit the exact commit and keep the run tree immutable.
 Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.

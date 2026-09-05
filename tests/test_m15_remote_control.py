@@ -86,6 +86,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_parameterized_stream.sbatch",
         "scripts/slurm/run_m15_native_family_transfer.sbatch",
         "scripts/slurm/run_m15_native_semantic_risk_relaxation.sbatch",
+        "scripts/slurm/run_m15_native_semantic_predicate_relaxation.sbatch",
     )
     probe = (
         Path(__file__).resolve().parents[1]
@@ -201,6 +202,17 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     )
     assert "SLURM_SUBMIT_DIR" in semantic_relaxation_run
     assert "BASH_SOURCE" not in semantic_relaxation_run
+    predicate_relaxation_run = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "run_m15_native_semantic_predicate_relaxation.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=semantic_predicate_relaxation" in (
+        predicate_relaxation_run
+    )
+    assert "SLURM_SUBMIT_DIR" in predicate_relaxation_run
+    assert "BASH_SOURCE" not in predicate_relaxation_run
 
 
 def test_config_enables_cancel_only_with_exact_opt_in(tmp_path: Path) -> None:

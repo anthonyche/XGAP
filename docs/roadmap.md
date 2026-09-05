@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2 LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A LOCAL MECHANISMS VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2 LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C8B LOCAL MECHANISMS VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -388,6 +388,16 @@ local acceptance passes 825 tests with 36 gated skips. This is artifact and
 execution-plumbing evidence only; a native runner and independent auditor are
 required before any CWRU payment-predicate job is authorized. All eight
 multihop classes remain blocked pending the author's path semantics.
+
+F2C8B adds the dedicated live runner, native-service mode, allowlisted Slurm
+wrapper, and independent read-only auditor for the two predicate-changing
+direct classes. It builds both plans before oracle access, fixes one risk-first
+strategy per class, and expects exactly four backend calls and exact 6- and
+9-row answers. The fixture path revalidates the cumulative overlay and all nine
+query instances. Full local acceptance passes 834 tests with 36 gated skips;
+the local synthetic native run tree passes all 150 audit checks and answer or
+plan tampering is rejected. This makes one clean CWRU mechanism run ready, but
+does not yet provide live, comparative, semantic-utility, or paper evidence.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
