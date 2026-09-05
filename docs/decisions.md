@@ -1823,3 +1823,32 @@ rows. The dedicated audit passed 133/133 checks with no failed IDs or run-tree
 mutation. This closes only the real-backend mechanism gate; semantic usefulness
 has not been human-validated, no physical strategy was compared, and all
 outputs remain `paper_result=false`.
+
+## D113 Give predicate relaxation a versioned data family
+
+F2C8 does not reinterpret every transfer edge as a payment edge and does not
+add `payment_to_company` to the frozen F2C3 generator's global capabilities.
+Either shortcut would make earlier readiness evidence false or turn a declared
+ontology-sibling transition into an accidental synonym. Instead, F2C8A binds
+the existing catalog transition to a separately versioned development mapping,
+a closed Neo4j relationship type, and an independently generated payment-edge
+family. The mapping evidence remains explicitly a development fixture; no
+ontology service is called and no claim of domain truth is made.
+
+The cumulative overlay preserves the base bundle externally and regenerates a
+new runnable bundle whose Neo4j load is the exact frozen base prefix followed
+by fixed 100-edge payment batches. Its Fuseki data, templates, and all six base
+instance artifacts remain byte-identical. It materializes the three non-exact
+direct classes: risk-only, predicate-only, and their combination. Together with
+the base exact class, this binds all four direct interpretations and leaves all
+eight bounded-multihop interpretations blocked. Person identity, time, and
+amount bindings remain immutable in every class.
+
+The bundle reuses the ordinary parameterized coordinator plans and fixture
+boundary after its format-specific deterministic loader has verified every
+file and manifest. Local doubles execute both physical plans for all three
+added classes and return the 11-, 6-, and 9-row oracles. This proves artifact
+and execution plumbing only. It makes no live backend, LLM, or ontology call,
+does not measure semantic usefulness, and cannot authorize a CWRU job until a
+dedicated native runner and independent auditor exist. All outputs remain
+`paper_result=false`.

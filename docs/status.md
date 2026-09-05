@@ -256,6 +256,21 @@ memory/LLM/ontology, validate user utility, or enable a paper claim. The
 compact record is
 `experiments/artifacts/m15_f2c7b2_cwru_native_semantic_risk_relaxation_20260906.json`.
 
+M15-F2C8A is locally accepted. Its mapping specification binds the cataloged
+`transfer_to_company` to `payment_to_company` transition to a closed Neo4j
+relationship type and a deterministic independent payment-edge fixture. A new
+cumulative overlay preserves 47 base files byte-for-byte, retains the frozen
+Neo4j load as an exact prefix, reuses the Fuseki data unchanged, and appends
+eight fixed-size payment batches. It binds all four direct semantic classes:
+exact, risk-only, predicate-only, and combined risk-plus-predicate. The three
+added final oracles contain 11, 6, and 9 rows. Both existing physical strategies
+return each added oracle in local scheduler tests, and the normal fixture path
+verifies 18 source queries across nine instances. Full pytest passes 825 tests
+with 36 gated skips and the complete acceptance script passes. The mapping is
+a development fixture rather than ontology truth; live payment execution,
+semantic utility, and every multihop class remain open. The compact record is
+`experiments/artifacts/m15_f2c8a_local_predicate_overlay_20260906.json`.
+
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
 the frozen registry and schedule hashes, started Neo4j 5.26.30 and Fuseki 5.6.0

@@ -11,7 +11,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 from xgap.backends.protocol import BackendClient
 from xgap.experiments.m15_fixture_loader import BackendFixtureLoader
@@ -128,6 +128,7 @@ def load_m15_parameterized_fixture(
     output_root: str | Path,
     run_id: str = "parameterized-fixture-load",
     repo_root: str | Path | None = None,
+    bundle_loader: Callable[[Path], M15ParameterizedWorkloadBundle] | None = None,
 ) -> M15ParameterizedFixtureRecord:
     """Load once and verify every exact instance without automatic retry."""
 
@@ -136,11 +137,17 @@ def load_m15_parameterized_fixture(
         if repo_root is not None
         else Path(__file__).resolve().parents[3]
     )
-    bundle = load_m15_parameterized_workload_bundle(
+    bundle_root = Path(
         workload_bundle.root
         if isinstance(workload_bundle, M15ParameterizedWorkloadBundle)
         else workload_bundle
-    )
+    ).resolve()
+    selected_loader = bundle_loader or load_m15_parameterized_workload_bundle
+    bundle = selected_loader(bundle_root)
+    if bundle.root.resolve() != bundle_root:
+        raise ValueError(
+            "bundle loader returned a different parameterized workload root"
+        )
     if not _SAFE_RUN_ID.fullmatch(run_id):
         raise ValueError("run_id contains unsupported characters")
     if set(clients) != {"neo4j", "fuseki"} or set(loaders) != {

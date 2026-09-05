@@ -613,6 +613,10 @@ def _instance_oracles(
     companies: list[dict[str, Any]],
     transfers: list[dict[str, Any]],
     bindings: Mapping[str, Any],
+    *,
+    predicate_rows: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
+    relationship_types: Mapping[str, str] = PARAMETERIZED_RELATIONSHIP_TYPES,
+    path_quantifiers: Mapping[str, str] = PARAMETERIZED_PATH_QUANTIFIERS,
 ) -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, Any]]]:
     people = {item["person_id"]: item["name"] for item in spec.persons}
     person_id = bindings["person-identity"]
@@ -623,13 +627,24 @@ def _instance_oracles(
     risk = bindings["risk-level"]
     if risk not in spec.risk_levels:
         raise M15ParameterizedWorkloadError("query risk binding is absent from data")
-    if bindings["transfer-predicate"] not in PARAMETERIZED_RELATIONSHIP_TYPES:
+    predicate = bindings["transfer-predicate"]
+    if predicate not in relationship_types:
         raise M15ParameterizedWorkloadError(
-            "exact F2C3 workload supports transfer_to_company only"
+            f"workload cannot compile predicate '{predicate}'"
         )
-    if bindings["path-shape"] not in PARAMETERIZED_PATH_QUANTIFIERS:
+    if bindings["path-shape"] not in path_quantifiers:
         raise M15ParameterizedWorkloadError(
-            "exact F2C3 workload supports direct path shape only"
+            f"workload cannot compile path shape '{bindings['path-shape']}'"
+        )
+    rows_by_predicate = (
+        {"transfer_to_company": transfers}
+        if predicate_rows is None
+        else predicate_rows
+    )
+    selected_rows = rows_by_predicate.get(predicate)
+    if selected_rows is None:
+        raise M15ParameterizedWorkloadError(
+            f"workload has no deterministic rows for predicate '{predicate}'"
         )
     date_lower = bindings["time-lower-bound"]
     amount_lower = bindings["amount-lower-bound"]
@@ -645,7 +660,7 @@ def _instance_oracles(
                 "currency": row["currency"],
                 "occurred_on": row["occurred_on"],
             }
-            for row in transfers
+            for row in selected_rows
             if row["person_id"] == person_id
             and row["occurred_on"] >= date_lower
             and row["amount"] >= amount_lower
@@ -699,6 +714,10 @@ def _build_content(
     spec: M15ParameterizedWorkloadSpec,
     base_spec: Mapping[str, Any],
     templates: Mapping[str, str],
+    relationship_types: Mapping[str, str] = PARAMETERIZED_RELATIONSHIP_TYPES,
+    path_quantifiers: Mapping[str, str] = PARAMETERIZED_PATH_QUANTIFIERS,
+    predicate_rows: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
+    neo4j_load_text: str | None = None,
 ) -> tuple[dict[str, str], list[dict[str, Any]], str]:
     base_contract = compile_m15_parameterized_query(base_spec)
     interfaces = _interface_by_role(base_contract)
@@ -706,7 +725,11 @@ def _build_content(
     content = {
         "workload_spec.json": _json_text(spec.to_dict()),
         "parameterized_query_template.json": _json_text(base_spec),
-        "load_neo4j.cypher": _neo4j_load(spec, companies, transfers),
+        "load_neo4j.cypher": (
+            _neo4j_load(spec, companies, transfers)
+            if neo4j_load_text is None
+            else neo4j_load_text
+        ),
         "load_fuseki.ttl": _fuseki_load(spec, companies),
     }
     for role, filename in _TEMPLATE_FILES.items():
@@ -728,10 +751,10 @@ def _build_content(
             )
         instance_hashes.add(contract.instance_hash)
         bindings = instance["binding_values"]
-        relationship_type = PARAMETERIZED_RELATIONSHIP_TYPES.get(
+        relationship_type = relationship_types.get(
             bindings["transfer-predicate"]
         )
-        path_quantifier = PARAMETERIZED_PATH_QUANTIFIERS.get(
+        path_quantifier = path_quantifiers.get(
             bindings["path-shape"]
         )
         if relationship_type is None or path_quantifier is None:
@@ -803,6 +826,9 @@ def _build_content(
             companies,
             transfers,
             bindings,
+            predicate_rows=predicate_rows,
+            relationship_types=relationship_types,
+            path_quantifiers=path_quantifiers,
         )
         query_id = instance["query_id"]
         root = f"instances/{query_id}"

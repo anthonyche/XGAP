@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2 LIVE GATES VERIFIED; F2C6/F2C7B1 LOCAL MECHANISMS VERIFIED**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2 LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A LOCAL MECHANISMS VERIFIED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -501,6 +501,15 @@ read-only auditor verifies the full chain. CWRU job `3787648` at exact clean
 commit `2197aef` returned the exact 11-row answer in two calls and moved 3,963
 bytes; its audit passed 133/133 checks without mutation. This is now live
 mechanism evidence, not a semantic-utility or performance result.
+
+F2C8A extends that bridge at the artifact boundary. A versioned development
+mapping adds an independently generated `payment_to_company` edge family and
+closed Cypher compilation while keeping the base bundle immutable. The
+cumulative overlay binds exact, risk-only, predicate-only, and combined direct
+classes and reuses the same coordinator plans and fixture tool boundary. Local
+execution against deterministic backend doubles returns every added oracle;
+live backends, ontology calls, semantic-utility claims, and multihop execution
+remain outside this gate.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
