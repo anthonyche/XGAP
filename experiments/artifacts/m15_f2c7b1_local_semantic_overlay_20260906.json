@@ -1,0 +1,87 @@
+{
+  "artifact_id": "m15-f2c7b1-local-semantic-overlay-20260906",
+  "artifact_role": "local_semantic_execution_readiness_and_overlay_acceptance_not_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "git": {
+    "clean": true,
+    "commit": "e70b57c715e3330bc5d42f738b52031a76c8c790"
+  },
+  "base": {
+    "query_id": "financial-risk-alice-aug-high-v2",
+    "family_compatibility_sha256": "34d432efccebd8d4000d52f910a25746b01e6d884f99eb41de6cbe846c13dfec",
+    "workload_bundle_content_sha256": "b06b1c4b4e630e37cbea8d4cf5d81bbc31c4a2280b97a64f5a4a9efed0d434e7",
+    "query_instance_count": 6
+  },
+  "readiness": {
+    "readiness_sha256": "da23f6ca103002c34f279f8cdbac4bd15a7246102de973c1a3b2666af99df23a",
+    "semantic_solution_space_sha256": "8a868bb17628f88ac4bed2d8e33650722bda7aa03be6a00b4ff105c8d05949dc",
+    "semantic_catalog_sha256": "e9b411da5fcbc1f49fe8483ae80a0de44e877e619f8e468c405d3362a1aee553",
+    "semantic_class_count": 12,
+    "bound_ready_count": 1,
+    "overlay_generation_ready_count": 1,
+    "blocked_count": 10,
+    "predicate_blocked_class_count": 6,
+    "path_blocked_class_count": 8
+  },
+  "overlay": {
+    "schema_version": "m15-f2c7-semantic-overlay-v1",
+    "generator_version": "m15-f2c7-semantic-overlay-generator-v1",
+    "overlay_sha256": "540af17b9ba631dfa2cd1b83a9540a021e4a524d3c5eb352b815b2c4e048713b",
+    "overlay_workload_bundle_content_sha256": "bc6c6b7f2f2947341c1a87aae2152fb4886814214bbab2fd15afa3a569aa010c",
+    "overlay_query_instance_count": 1,
+    "total_query_instance_count": 7,
+    "semantic_class_id": "m15-class-62f92df03f23c3212a47fa32",
+    "semantic_deviation": 0.3333333333333333,
+    "query_instance_sha256": "10ba34244b71ee7c93fb5d968673b386132f35c612ac28549aa405563ce62371",
+    "binding_sha256": "d2e0ed7bd4887f7e53ead0847f0cd9efc9b9342f27de49e9d79319c40cc25e00",
+    "relaxation": {
+      "risk_from": "HIGH",
+      "risk_to": "MEDIUM",
+      "hard_person": "person-alice-smith",
+      "hard_time_lower_bound": "2026-08-01",
+      "hard_amount_lower_bound": 50000,
+      "predicate": "transfer_to_company",
+      "path_shape": "direct"
+    },
+    "oracle_counts": {
+      "final": 11,
+      "fuseki_risk": 10,
+      "neo4j_bound": 11,
+      "neo4j_full": 39
+    },
+    "shared_neo4j_data_identical": true,
+    "shared_fuseki_data_identical": true,
+    "blocked_classes_materialized": false
+  },
+  "acceptance": {
+    "full_suite_passed": true,
+    "passed": 806,
+    "skipped_gated": 36,
+    "semantic_frontier_tests": 13,
+    "semantic_execution_readiness_tests": 7,
+    "semantic_overlay_tests": 7
+  },
+  "claim_boundary": {
+    "result_class": "local_unexecuted_semantic_artifact_acceptance",
+    "relaxed_backend_artifacts_bound": true,
+    "relaxed_oracles_bound": true,
+    "relaxed_backend_artifacts_executed": false,
+    "semantic_answer_quality_human_validated": false,
+    "predicate_relaxation_supported": false,
+    "path_relaxation_supported": false,
+    "backend_calls_made": 0,
+    "llm_calls_made": 0,
+    "ontology_calls_made": 0,
+    "comparative": false,
+    "paper_result": false
+  },
+  "limitations": [
+    "only the HIGH-to-MEDIUM risk relaxation is currently materializable",
+    "payment predicate data, compiler mapping, and oracle support are absent",
+    "bounded multihop hard-constraint semantics require an author decision",
+    "the overlay has not been executed against live Neo4j and Fuseki",
+    "development semantic weights, epsilon thresholds, and K are not paper-frozen"
+  ],
+  "automatic_retries": 0,
+  "paper_result": false
+}

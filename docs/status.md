@@ -72,8 +72,8 @@ acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
 and the F2C0--F2C6 stream, family, typed-query, workload, exact-execution,
-family-memory, and semantic-frontier contracts, current full local acceptance
-passes 792 tests with
+family-memory, semantic-frontier, execution-readiness, and overlay contracts,
+current full local acceptance passes 806 tests with
 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -205,9 +205,16 @@ to the exact Slurm allocation, filesystem, Java, runtime lock, staging
 manifest, and backend versions. Its dedicated wrapper and read-only auditor
 verify seed result-to-memory costs, one frozen view, oracle-free selections,
 selected-before-shadow call roles, exact answers, clean shutdown, and zero
-retry. CWRU job `3787610` has been dispatched from clean commit `30214cb` and
-is pending terminal-state evidence plus the independent read-only audit;
-multiple families, a paper-frozen model, and comparative claims remain open.
+retry. CWRU job `3787610` completed at exact clean commit `30214cb` on
+`compt298` in 69 seconds. The outer run succeeded, guarded cleanup removed the
+runtime, and the independent read-only audit passed 278/278 checks with no
+failed IDs or run-tree mutation. This closes native family-transfer plumbing;
+both held-out selected answers were exact, but the development KNN selected
+zero of two post hoc observed latency winners. Because each shadow ran after
+the selected plan, this is an order-confounded diagnostic rather than a regret
+estimate. It must not be tuned against. Multiple families, a paper-frozen
+model, and comparative claims remain open. The compact evidence record is
+`experiments/artifacts/m15_f2c5_cwru_native_family_transfer_20260906.json`.
 
 M15-F2C6 is locally implemented as a planning-only bounded semantic solution
 space. The catalog covers all and only the three declared relaxable
@@ -222,6 +229,19 @@ then return at most four representatives. These values are development
 settings rather than frozen paper parameters. The mechanism makes no backend,
 LLM, or ontology call during enumeration and does not yet execute or validate
 relaxed answers, so it remains `paper_result=false`.
+
+M15-F2C7A/B1 is locally implemented. A zero-call readiness audit binds the
+F2C6 semantic classes to the verified F2C3 generator and bundle instead of
+assuming declared relaxations are executable. Of 12 classes, one exact class
+is already bound, one HIGH-to-MEDIUM risk-only class can be generated with the
+current artifacts, and ten are blocked by missing predicate and/or path
+support. The supported class is materialized into a separate deterministic
+seven-instance overlay bundle while the base six-instance bundle and both
+shared backend loads remain byte-identical. The new risk-relaxed instance has
+an 11-row final oracle; it has not run against live backends. Predicate support
+and multihop semantics remain open, so this is artifact readiness rather than
+semantic-quality or performance evidence. The compact local record is
+`experiments/artifacts/m15_f2c7b1_local_semantic_overlay_20260906.json`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1731,7 +1751,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2C6 semantic-frontier implementation tests passed. M7 backend
+M0-M15-F2C7B1 semantic-overlay implementation tests passed. M7 backend
 smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
@@ -1755,7 +1775,14 @@ Latest recorded command results:
   backend calls with zero retry, and the independent read-only audit passed
   172/172 checks with `run_tree_mutated=false`. This closes an executable
   parameter-variation gate, not a memory-transfer or performance result.
-- `./scripts/run_acceptance.sh`: 792 passed and 36 explicitly gated or
+- CWRU F2C5 job `3787610`: the family-transfer mechanism completed at exact
+  clean commit `30214cb` in 69 seconds on `compt298`; four seed records fed one
+  frozen view and two held-out selections, all selected answers were exact,
+  and the independent read-only audit passed 278/278 checks without run-tree
+  mutation. The development KNN selected 0/2 post hoc observed latency winners;
+  fixed selected-then-shadow order makes that a diagnostic, not a comparative
+  estimate.
+- `./scripts/run_acceptance.sh`: 806 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
@@ -1774,6 +1801,10 @@ Latest recorded command results:
   relaxation enumeration, typed recompilation, semantic-equivalence merging,
   per-class physical reduction, Pareto/epsilon filtering, and a K-bounded
   representative set without making external calls. The
+  F2C7A readiness matrix then separates one bound, one safely generatable, and
+  ten blocked semantic classes. F2C7B1 materializes only the supported
+  risk-level alternative in an immutable overlay with bound source/final
+  oracles and identical shared data, without executing a backend. The
   F2B3 direct runner verifies the selected
   contract from the
   live bundle before passing a v2 identity into the six-method matrix. F2B4

@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4 LIVE GATES VERIFIED; F2C5 NATIVE GATE DISPATCHED; F2C6 LOCAL MECHANISM VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5 LIVE GATES VERIFIED; F2C6/F2C7B1 LOCAL MECHANISMS VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -333,6 +333,14 @@ Local acceptance and tamper tests are complete. One CWRU mechanism gate,
 multiple families, a frozen paper model, counterbalanced measurement, and
 preregistered analysis remain open.
 
+The CWRU F2C5 mechanism gate is now closed by job `3787610`: its independent
+audit passed 278 checks, both held-out selected plans were exact, and the
+family-memory lifecycle behaved as specified. The development KNN selected
+neither of the two later observed shadow winners. This negative diagnostic is
+retained without reactive tuning; the paper policy must be trained and frozen
+from a larger development split, then evaluated under counterbalanced
+repetitions.
+
 F2C6 now adds the bounded semantic solution-space layer without making the
 ontology or LLM a mandatory runtime dependency. A value-independent
 development catalog supplies explicit one-step risk and predicate transitions
@@ -346,6 +354,17 @@ The reference query produces 12 bounded interpretations and at most four
 returned representatives. Local acceptance validates the mechanism only;
 F2C7 must bind relaxed values to executable backend artifacts and semantic
 answer-quality oracles before any live relaxation gate is admitted.
+
+F2C7A now performs that binding as an explicit coverage audit. Against the
+current F2C3 bundle, it reports one already-bound exact class, one risk-only
+class ready for deterministic generation, and ten blocked classes rather than
+claiming that all 12 F2C6 interpretations are executable. F2C7B1 materializes
+the supported HIGH-to-MEDIUM risk interpretation into a new, regenerable
+overlay bundle with compiled Neo4j/Fuseki artifacts and source/final oracles.
+The base data remains byte-identical and no blocked predicate or path class is
+included. The next implementation step can add payment-predicate support
+without a research decision. Multihop execution remains gated on the author's
+definition of how immutable time and amount constraints apply along the path.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

@@ -1752,3 +1752,45 @@ milestone validates bounded enumeration, equivalence reduction, and frontier
 cardinality only. It does not yet execute relaxed backend templates, validate
 semantic answer quality, freeze epsilon/K/weights, or support a performance
 claim; all outputs remain `paper_result=false`.
+
+## D110 Accept native family transfer as a mechanism gate only
+
+CWRU job `3787610` closes the F2C5 native mechanism gate at exact clean commit
+`30214cb`. It completed on `compt298` in 69 seconds with exit code 0, preserved
+the declared parameterized-family-transfer mode, removed its allocation-local
+runtime, and reported no cleanup error. The dedicated independent read-only
+auditor passed 278/278 checks with no failed IDs and no run-tree mutation.
+
+The accepted evidence proves the native lifecycle, four exact seed commits,
+one reopened frozen family-local memory view, two oracle-free held-out choices,
+selected-before-shadow execution, exact post-execution answers, and separated
+16 calibration, four online, and four shadow backend calls. It does not prove
+that the selected plan was faster. In fact, the development KNN selected zero
+of two post hoc observed latency winners: it chose parallel hash where the
+later risk-first shadow was faster for Alice, and risk-first where the later
+parallel shadow was faster for Bob. Both selected answers were exact. The
+alternate execution is an order-confounded post-selection diagnostic, the KNN
+is a replaceable development policy, and the workload contains one family with
+only two held-out instances. The result must be preserved rather than tuned
+against; no transfer-benefit or comparative paper claim is enabled.
+
+## D111 Audit execution coverage before extending relaxed backend semantics
+
+F2C7 first compiles a readiness matrix against the verified F2C3 bundle rather
+than assuming every F2C6 interpretation is executable. For the selected HIGH
+risk instance, one exact class is already materialized, one risk-only
+HIGH-to-MEDIUM class is supported by the existing templates, data, and oracle
+generator, and ten classes are blocked. Six classes require a versioned
+payment-predicate mapping/data/oracle extension; eight require a multihop
+semantic definition plus backend template, data, and oracle support, with four
+classes blocked by both dimensions.
+
+Only the readiness-approved risk class is materialized into a new overlay
+bundle. The base bundle is immutable, its Neo4j and Fuseki load artifacts are
+byte-identical in the overlay, and the new typed instance preserves person,
+time, amount, predicate, and direct path while changing risk from HIGH to
+MEDIUM. Its independently generated final oracle contains 11 rows. Unsupported
+predicate and path classes are not materialized. This validates artifact
+generation and oracle binding only; no relaxed backend query has executed, no
+human semantic-quality judgment has occurred, and all artifacts remain
+`paper_result=false`.

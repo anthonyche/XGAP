@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4 LIVE GATES VERIFIED; F2C5 NATIVE GATE DISPATCHED; F2C6 LOCAL MECHANISM VERIFIED**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5 LIVE GATES VERIFIED; F2C6/F2C7B1 LOCAL MECHANISMS VERIFIED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -459,8 +459,13 @@ backend-version identity. A dedicated wrapper and independent auditor now
 verify seed costs against append-only memory, one frozen predecessor view,
 oracle-free held-out selections, selected-before-shadow execution roles,
 exact answers, and clean zero-retry lifecycle. The local gate is ready for one
-CWRU run; job `3787610` has now been dispatched and awaits terminal-state and
-independent-audit evidence. It still makes no transfer or performance claim.
+CWRU run. Job `3787610` completed at exact clean commit `30214cb` and its
+independent read-only audit passed all 278 checks without mutating the run
+tree. This accepts the native mechanism but makes no transfer or performance
+claim. Both selected answers were exact, but the development KNN selected zero
+of two post hoc observed latency winners. The fixed selected-then-shadow order
+makes this a diagnostic; it is preserved without tuning and cannot support a
+regret estimate.
 
 F2C6 introduces a separate bounded semantic frontier rather than mixing
 relaxation into family-memory selection. The exact interpretation is always
@@ -474,6 +479,16 @@ epsilon, and K-bounded representative selection. The development HIGH-risk
 query has 12 interpretations and a maximum of four returned representatives.
 Enumeration is deterministic and zero-call; relaxed execution, answer-quality
 validation, and paper parameter freezing remain F2C7 and later work.
+
+F2C7A binds that abstract frontier to current executor capabilities. It finds
+one bound exact class, one risk-only class that can be generated safely, and
+ten blocked classes requiring predicate or path extensions. F2C7B1
+materializes only the supported HIGH-to-MEDIUM risk class in a separate
+regenerable overlay: typed artifacts and source/final oracles are bound, the
+base bundle is untouched, and both backend load files remain byte-identical.
+The 11-row relaxed oracle is still a deterministic development oracle, not a
+human semantic-quality judgment. Live relaxed execution, payment-predicate
+data, and the author-selected multihop hard-constraint semantics remain open.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
