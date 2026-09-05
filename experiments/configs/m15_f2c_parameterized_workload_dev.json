@@ -1,0 +1,112 @@
+{
+  "schema_version": "m15-f2c-parameterized-workload-spec-v1",
+  "workload_id": "financial-risk-multi-instance-dev-v1",
+  "seed": "xgap-m15-f2c-financial-risk-v1",
+  "company_count": 30,
+  "transfers_per_person": 180,
+  "risk_levels": [
+    "HIGH",
+    "MEDIUM",
+    "LOW"
+  ],
+  "persons": [
+    {
+      "person_id": "person-alice-smith",
+      "name": "Alice Smith"
+    },
+    {
+      "person_id": "person-bob-jones",
+      "name": "Bob Jones"
+    },
+    {
+      "person_id": "person-carol-lee",
+      "name": "Carol Lee"
+    },
+    {
+      "person_id": "person-diego-garcia",
+      "name": "Diego Garcia"
+    }
+  ],
+  "query_instances": [
+    {
+      "query_id": "financial-risk-alice-aug-high-v2",
+      "resolved_intent": "Find Alice Smith transfers since 2026-08-01 of at least 50000 USD to companies in the preferred HIGH risk class.",
+      "split_role": "seed",
+      "binding_values": {
+        "person-identity": "person-alice-smith",
+        "time-lower-bound": "2026-08-01",
+        "amount-lower-bound": 50000,
+        "risk-level": "HIGH",
+        "transfer-predicate": "transfer_to_company",
+        "path-shape": "direct"
+      }
+    },
+    {
+      "query_id": "financial-risk-bob-jul-medium-v2",
+      "resolved_intent": "Find Bob Jones transfers since 2026-07-15 of at least 90000 USD to companies in the preferred MEDIUM risk class.",
+      "split_role": "seed",
+      "binding_values": {
+        "person-identity": "person-bob-jones",
+        "time-lower-bound": "2026-07-15",
+        "amount-lower-bound": 90000,
+        "risk-level": "MEDIUM",
+        "transfer-predicate": "transfer_to_company",
+        "path-shape": "direct"
+      }
+    },
+    {
+      "query_id": "financial-risk-carol-jun-low-v2",
+      "resolved_intent": "Find Carol Lee transfers since 2026-06-15 of at least 120000 USD to companies in the preferred LOW risk class.",
+      "split_role": "seed",
+      "binding_values": {
+        "person-identity": "person-carol-lee",
+        "time-lower-bound": "2026-06-15",
+        "amount-lower-bound": 120000,
+        "risk-level": "LOW",
+        "transfer-predicate": "transfer_to_company",
+        "path-shape": "direct"
+      }
+    },
+    {
+      "query_id": "financial-risk-diego-may-high-v2",
+      "resolved_intent": "Find Diego Garcia transfers since 2026-05-15 of at least 30000 USD to companies in the preferred HIGH risk class.",
+      "split_role": "seed",
+      "binding_values": {
+        "person-identity": "person-diego-garcia",
+        "time-lower-bound": "2026-05-15",
+        "amount-lower-bound": 30000,
+        "risk-level": "HIGH",
+        "transfer-predicate": "transfer_to_company",
+        "path-shape": "direct"
+      }
+    },
+    {
+      "query_id": "financial-risk-alice-jun-medium-v2",
+      "resolved_intent": "Find Alice Smith transfers since 2026-06-01 of at least 140000 USD to companies in the preferred MEDIUM risk class.",
+      "split_role": "heldout_instance",
+      "binding_values": {
+        "person-identity": "person-alice-smith",
+        "time-lower-bound": "2026-06-01",
+        "amount-lower-bound": 140000,
+        "risk-level": "MEDIUM",
+        "transfer-predicate": "transfer_to_company",
+        "path-shape": "direct"
+      }
+    },
+    {
+      "query_id": "financial-risk-bob-may-low-v2",
+      "resolved_intent": "Find Bob Jones transfers since 2026-05-01 of at least 160000 USD to companies in the preferred LOW risk class.",
+      "split_role": "heldout_instance",
+      "binding_values": {
+        "person-identity": "person-bob-jones",
+        "time-lower-bound": "2026-05-01",
+        "amount-lower-bound": 160000,
+        "risk-level": "LOW",
+        "transfer-predicate": "transfer_to_company",
+        "path-shape": "direct"
+      }
+    }
+  ],
+  "automatic_retries": 0,
+  "paper_result": false
+}

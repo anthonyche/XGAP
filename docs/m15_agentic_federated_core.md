@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 737 tests with 36 explicitly gated or
+Current full local acceptance passes 748 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C2 CONTRACTS LOCAL**
+Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C3 CONTRACTS LOCAL**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -421,6 +421,17 @@ runtime value, and runtime-intermediate stages. Values change instance identity
 but not family compatibility. Backend query files, multi-instance workload
 data, and oracles remain intentionally unbound, so this local contract is not
 an executable experiment and does not authorize another CWRU job.
+
+F2C3 binds that type contract to literal-free Cypher/SPARQL templates and a
+shared deterministic data snapshot with four people, 30 companies, and 720
+transfers. Six distinct binding contexts—four seed and two held-out—share the
+same family compatibility hash and own exact compiled artifacts, binding-stage
+records, source oracles, and final oracles. Recursive hashes and full
+regeneration protect the bundle from artifact or manifest tampering. This is
+still a zero-call, one-family development artifact: it neither executes the
+queries nor implements relaxation/Pareto enumeration. F2C4 must connect the
+bundle to the coordinator, native services, and explicit task stream before
+another CWRU gate.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

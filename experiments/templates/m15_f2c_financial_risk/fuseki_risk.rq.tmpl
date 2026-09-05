@@ -1,0 +1,11 @@
+PREFIX data: <{{compile:workload_prefix}}>
+
+SELECT ?company_id ?company ?risk
+WHERE {
+  ?company_node a data:Company ;
+      data:companyId ?company_id ;
+      data:name ?company ;
+      data:riskLevel ?risk .
+  FILTER (?risk = {{compile:risk_literal}})
+}
+ORDER BY ?company_id

@@ -71,8 +71,8 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
-and the F2C0--F2C2 stream, family, and typed-query contracts, current full
-local acceptance passes 737 tests with 36 gated skips. This is
+and the F2C0--F2C3 stream, family, typed-query, and workload contracts, current
+full local acceptance passes 748 tests with 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
 `experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
@@ -154,6 +154,21 @@ The contract does not yet bind executable backend query files, a
 multi-instance workload, or answer oracles, makes zero external calls, and is
 `paper_result=false`. F2C3 is therefore a local artifact-binding milestone,
 not a CWRU experiment.
+
+M15-F2C3 is locally implemented. Its deterministic development bundle binds
+the F2C2 family to literal-free Neo4j full/bound templates, a literal-free
+Fuseki risk template, one shared multi-person dataset, per-instance binding
+records, and independently generated source/final oracles. The snapshot has
+four people, 30 companies, 720 transfers, four seed queries, and two held-out
+instances. Final oracle row counts are 11, 13, 16, 42, 11, and 7; every source
+and final oracle is nonempty. All instances retain family hash
+`34d432efccebd8d4000d52f910a25746b01e6d884f99eb41de6cbe846c13dfec`,
+and the bundle content hash is
+`b06b1c4b4e630e37cbea8d4cf5d81bbc31c4a2280b97a64f5a4a9efed0d434e7`.
+The bundle is fully regenerable and rejects content-plus-manifest tampering.
+It has not called or been validated against live backends, covers only the
+zero-relaxation interpretation, represents one development family, and stays
+`paper_result=false`. F2C4 coordinator/native wiring is the next gate.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1663,7 +1678,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2C2 typed parameterized-query implementation tests passed. M7 backend
+M0-M15-F2C3 parameterized-workload implementation tests passed. M7 backend
 smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
@@ -1681,14 +1696,16 @@ Latest recorded command results:
   independent read-only audit passed 374/374 checks and reported
   `run_tree_mutated=false`. This is a single-session mechanism gate, not a
   comparative result.
-- `./scripts/run_acceptance.sh`: 737 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 748 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
   portable resolved-query contract compiler, and the F2B2 query-bound campaign
   compiler. F2C2 adds the v2 typed parameterized financial-risk contract,
   selected hard/relaxable policy, value-independent family identity, and
-  typed backend binding stages. The F2B3 direct runner verifies the selected
+  typed backend binding stages. F2C3 binds six distinct instances to shared
+  data, literal-free backend templates, and exact per-instance oracles. The
+  F2B3 direct runner verifies the selected
   contract from the
   live bundle before passing a v2 identity into the six-method matrix. F2B4
   adds the native-service mode, dedicated Slurm entry, and independent

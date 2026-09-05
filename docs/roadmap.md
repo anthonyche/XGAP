@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C2 CONTRACTS LOCAL**
+Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C3 CONTRACTS LOCAL**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -295,6 +295,17 @@ a value-independent family compatibility hash and a value-bound instance hash.
 The current contract is deliberately unexecuted: F2C3 must bind literal-free
 Neo4j/Fuseki templates, a shared multi-instance workload, and exact source and
 final oracles before any remote run.
+
+F2C3 now provides that binding as a deterministic development bundle. One
+shared snapshot contains four people, 30 companies, and 720 transfers; four
+seed and two held-out instances vary actual person/date/amount/risk bindings
+under the same family key. Each instance has stage-separated parameters,
+compiled Neo4j/Fuseki artifacts, source oracles, and a final oracle. The
+recursive hash manifest and deterministic loader reject both ordinary tamper
+and content-plus-digest rewrites. The bundle remains unexecuted and covers only
+the exact interpretation. F2C4 must wire this format into the coordinator and
+native lifecycle, validate all six exact answers, and update the explicit task
+stream before one new CWRU engineering run can be considered.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

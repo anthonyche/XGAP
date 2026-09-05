@@ -1612,3 +1612,30 @@ workload bundle, or source/final oracles. F2C2 performs no backend, LLM, or
 ontology call, contains no measurement, remains `paper_result=false`, and does
 not authorize a CWRU submission. F2C3 must bind those executable artifacts
 before the v2 family can enter a task stream.
+
+## D105 Parameterized instances share data but own bindings and oracles
+
+F2C3 binds the v2 typed financial-risk family to three literal-free backend
+templates and one deterministic shared data snapshot. Runtime person, date,
+and amount values remain Neo4j parameters. Transfer predicate and path shape
+are compiled only through closed mappings because Cypher relationship and path
+syntax is not a value parameter. Risk is safely compiled into the SPARQL
+artifact. The bound Neo4j query receives company IDs only as a declared
+runtime intermediate produced by alignment of the Fuseki result.
+
+The development workload contains four resolved person identities, 30
+companies across three risk levels, and 720 dated transfers. Its six query
+instances comprise four seeds and two held-out instances. All six share the
+F2C2 family compatibility key, have distinct semantic binding identities, and
+carry their own compiled artifacts, stage-separated binding record, source
+oracles, and final oracle. Renaming an instance with unchanged bindings is
+rejected as a duplicate. The bundle is recursively hash-bound and the loader
+regenerates every artifact from its included inputs, so changing a file and
+its recorded digest together still fails deterministic validation.
+
+This bundle executes only the zero-relaxation interpretation. It does not yet
+enumerate relaxed interpretations, calculate semantic deviation, or produce a
+Pareto set. It also remains one development family rather than the final
+30--50-instance, multi-family benchmark. F2C3 makes no external call and is
+`paper_result=false`; F2C4 must connect its parameter and oracle contracts to
+the coordinator/native-service task path before a new CWRU gate is admitted.
