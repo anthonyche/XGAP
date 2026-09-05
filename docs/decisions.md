@@ -1666,3 +1666,33 @@ an oracle, and no relaxation, Pareto ranking, LLM, or ontology call occurs.
 Consequently the local implementation may authorize one CWRU engineering gate
 after a clean commit, but remains `paper_result=false` and cannot support a
 cross-task-memory or performance claim.
+
+## D107 Family transfer is a distinct memory model, not an exact-context cache
+
+F2C5 does not relax the identity checks on the existing plan-snapshot cache.
+That cache remains valid only for the exact semantic, artifact, observation,
+cost, workload, and catalog fingerprint that created it. Cross-query transfer
+uses a new memory context keyed by method namespace, structural query-family
+compatibility, workload bundle, and runtime compatibility. A record contains
+typed query bindings and measured per-strategy latency, bytes, and call count;
+it deliberately contains no answer rows or source/final oracle data.
+
+Only a seed task whose complete candidate set executed successfully and
+matched the exact answer may append one observation. Before evaluation, the
+store is reopened and a single immutable view is frozen over explicitly named
+successful seed predecessors. Held-out instances may read that view but may
+not write, and current/future, cross-method, cross-family, cross-workload, and
+cross-runtime records fail closed. The exact-answer oracle is available only
+after a plan has executed as a correctness gate; it is never an input to
+feature extraction or plan selection.
+
+The first development policy uses a transparent Gower-distance KNN over typed
+bindings and selects by predicted elapsed time with predicted bytes as a
+deterministic tie-breaker. It is an executable reference policy, not the
+frozen paper model. Seed tasks measure both exact strategies. A held-out task
+executes the selected plan first; the alternate plan is optional post-decision
+evaluation shadow traffic and cannot affect selection or memory. This local
+slice proves the temporal and compatibility protocol, not transfer benefit:
+it has one family, four seeds, two held-out instances, an order-confounded
+shadow diagnostic, no preregistered analysis, and remains
+`paper_result=false`.

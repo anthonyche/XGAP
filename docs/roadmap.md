@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C4 LOCAL; F2C4 CWRU PENDING**
+Current status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C5 LOCAL; F2C4 CWRU JOB 3787592 SUBMITTED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -315,6 +315,18 @@ queries, executes twelve exact plan runs and 24 backend calls, and emits a
 separate read-only audit surface. Local tests are complete; one clean-commit
 CWRU run and its audit are next. Cross-task memory, plan choice, relaxation,
 Pareto enumeration, and comparative measurements remain later milestones.
+
+F2C5 now implements the first executable family-local transfer protocol above
+that exact stream. It introduces a separate method x family x workload x
+runtime memory identity instead of weakening exact snapshot compatibility.
+Four successful exact seed tasks append typed binding/cost observations; the
+store is reopened and frozen before either held-out instance, and evaluation
+writes or cross-context reads fail closed. A replaceable development KNN picks
+one exact plan without oracle inputs. The selected plan runs before any
+optional alternate-plan evaluation shadow, and the two call classes are
+reported separately. The local slice proves isolation and temporal ordering;
+native lifecycle/audit, multiple families, a frozen paper model, counterbalanced
+measurement, and preregistered analysis remain open.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

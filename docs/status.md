@@ -71,8 +71,9 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
-and the F2C0--F2C4 stream, family, typed-query, workload, and exact-execution
-contracts, current full local acceptance passes 762 tests with 36 gated skips. This is
+and the F2C0--F2C5 stream, family, typed-query, workload, exact-execution, and
+family-memory contracts, current full local acceptance passes 775 tests with
+36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
 `experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
@@ -183,6 +184,21 @@ verification, 24-call task trace, candidate plans, and twelve exact answers.
 Memory, plan selection, relaxation/Pareto logic, LLM, and ontology are disabled
 in this gate, so it remains `paper_result=false` and makes no performance or
 transfer claim.
+
+M15-F2C5 is locally implemented above the unchanged F2C4 execution bridge.
+Its family memory is not the old exact-context cache: compatibility is bound
+to method, structural family, workload bundle, and runtime. Four seed tasks
+measure both exact strategies and append only after complete success and
+post-execution oracle validation; stored records contain typed bindings and
+costs but no answer rows. The store is reopened and frozen before evaluation.
+Both held-out instances read the same seed-only view, select one plan with an
+oracle-free development KNN, and never write. Optional alternate-plan runs are
+post-selection evaluation shadows with separate call accounting. Thirteen new
+tests cover deterministic feature identity, cross-context rejection, frozen
+predecessor visibility, persistent memory, choice changes, cold start, online
+execution, and zero-retry failure evidence. Native-service wiring, independent
+audit, multiple families, a paper-frozen model, and comparative claims remain
+open.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1692,7 +1708,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2C4 parameterized-stream implementation tests passed. M7 backend
+M0-M15-F2C5 family-transfer implementation tests passed. M7 backend
 smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
@@ -1710,7 +1726,7 @@ Latest recorded command results:
   independent read-only audit passed 374/374 checks and reported
   `run_tree_mutated=false`. This is a single-session mechanism gate, not a
   comparative result.
-- `./scripts/run_acceptance.sh`: 762 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 775 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
@@ -1721,6 +1737,9 @@ Latest recorded command results:
   data, literal-free backend templates, and exact per-instance oracles. F2C4
   adds the oracle-independent alignment catalog, two exact executable plans
   per instance, a six-query native task stream, and its read-only audit. The
+  F2C5 local slice adds a separately keyed family-memory model, exact-only seed
+  commits, one reopened frozen evaluation view, oracle-free held-out plan
+  selection, and separated online versus evaluation-shadow calls. The
   F2B3 direct runner verifies the selected
   contract from the
   live bundle before passing a v2 identity into the six-method matrix. F2B4

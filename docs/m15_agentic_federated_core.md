@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C4 LOCAL; F2C4 CWRU PENDING**
+Status: **F0/F1/F2A/F2B4 LIVE GATES VERIFIED; F2C0--F2C5 LOCAL; F2C4 CWRU JOB 3787592 SUBMITTED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -442,6 +442,18 @@ Slurm entry point, zero-retry trace, and independent read-only auditor are
 locally complete. One CWRU engineering run is pending; memory, plan selection,
 semantic relaxation, and paper comparisons are intentionally outside this
 gate.
+
+F2C5 now separates actual family-level transfer from the old exact-context
+snapshot cache. A method/family/workload/runtime compatibility key guards an
+append-only observation store containing typed bindings and per-strategy
+execution costs but no answer rows. Four seed tasks may commit only after both
+exact strategies succeed and pass post-execution answer validation. The store
+is then reopened and frozen once; both held-out instances select from that
+same predecessor-only view and cannot write. The development KNN policy is
+oracle-free and replaceable. Its optional alternate-plan run is explicitly a
+post-selection evaluation shadow. This slice is locally executable and tested,
+but it is not yet wired to native-service lifecycle/audit and makes no transfer
+or performance claim.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
