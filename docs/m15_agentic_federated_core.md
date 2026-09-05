@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 700 tests with 36 explicitly gated or
+Current full local acceptance passes 703 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B LIVE QUERY BINDING LOCAL, NATIVE/AUDIT NEXT**
+Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B4 NATIVE/AUDIT LOCAL, ONE CWRU GATE READY**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -363,6 +363,18 @@ wrong contracts are rejected. The six methods then execute in the compiled
 order with the existing exact-answer and 18-call gates. This path is locally
 verified only: fresh Neo4j/Fuseki service lifecycle, Slurm entry, and an
 independent cross-artifact audit remain F2B4.
+
+F2B4 places that path inside a separately versioned native-service mode and
+allowlisted Slurm wrapper. The native runner requires all four query-bound
+inputs together and completes the F2B3 bundle-contract preflight before Java
+inspection or Neo4j/Fuseki startup. The independent read-only auditor does not
+trust the recorded contract identity: it recompiles the repository registry
+and selected contract from the completed run's verified bundle, then checks
+the wrapper, v2 matrix binding, contract artifact, exact result, 18-call
+trace, service lifecycle, and cleanup as one cross-artifact chain. Local
+acceptance now authorizes one selective CWRU engineering gate only. The other
+eleven development sessions, multi-query execution, cross-task memory claims,
+and all comparative paper claims remain disabled.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

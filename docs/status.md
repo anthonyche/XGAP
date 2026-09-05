@@ -71,7 +71,7 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L and the
-F2B live query-bound session runner, current full local acceptance passes 700 tests with 36
+F2B4 native query-bound session path, current full local acceptance passes 703 tests with 36
 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -158,6 +158,17 @@ new v2 binding and preserves the compiled order, exact-answer requirement,
 with the wrong expected contract is rejected. This path remains local and
 `paper_result=false`; native lifecycle, Slurm packaging, and read-only audit
 are still required before an F2B CWRU gate.
+
+M15-F2B4 adds a separately versioned `scaled_query_bound_session` native mode,
+dedicated Slurm wrapper, and remote allowlist entry. The native runner accepts
+query-bound inputs only as a complete set and executes the F2B3 contract
+preflight before Java inspection or service startup. Its read-only auditor
+recompiles the fixed registry and selected contract from the run's verified
+bundle, then checks the service wrapper, query-bound plan/session, v2 matrix
+binding, persisted contract, exact six-method results, 18-call trace, shutdown,
+and outer cleanup. Normal and adversarial local tests pass; one selective CWRU
+engineering gate is ready, while the other eleven sessions and all paper
+claims remain disabled.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
@@ -1597,7 +1608,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2A campaign-session implementation tests passed. M7 backend smoke and
+M0-M15-F2B4 query-bound native-session implementation tests passed. M7 backend smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
@@ -1614,13 +1625,15 @@ Latest recorded command results:
   independent read-only audit passed 374/374 checks and reported
   `run_tree_mutated=false`. This is a single-session mechanism gate, not a
   comparative result.
-- `./scripts/run_acceptance.sh`: 700 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 703 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
   portable resolved-query contract compiler, and the F2B2 query-bound campaign
-  compiler. The F2B3 direct runner additionally verifies the selected contract
-  from the live bundle before passing a v2 identity into the six-method matrix.
+  compiler. The F2B3 direct runner verifies the selected contract from the
+  live bundle before passing a v2 identity into the six-method matrix. F2B4
+  adds the native-service mode, dedicated Slurm entry, and independent
+  recompilation audit; it is locally verified and awaits one CWRU gate.
   CWRU F1L job `3787267` separately passed
   its independent 326-check read-only audit at exact commit `6aafafd`.
 - `./scripts/run_acceptance.sh`: 612 passed and 36 explicitly gated or

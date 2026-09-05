@@ -15,6 +15,9 @@ from xgap.experiments.m15_live_campaign_session import (
     run_m15_live_campaign_session,
 )
 from xgap.experiments.m15_live_method_matrix import run_m15_live_method_matrix
+from xgap.experiments.m15_live_query_bound_session import (
+    run_m15_live_query_bound_session,
+)
 from xgap.experiments.m15_native_artifacts import load_native_runtime_lock
 from xgap.experiments.m15_native_evidence import audit_m15_native_run, main
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
@@ -22,9 +25,13 @@ from xgap.experiments.m15_native_services import (
     ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION,
     METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
+    QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION,
     SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     SERVICE_PLAN_SCHEMA_VERSION,
     SERVICE_RUN_SCHEMA_VERSION,
+)
+from xgap.experiments.m15_query_bound_campaign import (
+    compile_m15_query_bound_campaign_file,
 )
 from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport, QueryArtifact
@@ -34,6 +41,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 COMMIT = "a" * 40
 SELECTIVE_CONFIG = REPO_ROOT / "experiments/configs/m15_f0_selective.json"
 CAMPAIGN_CONFIG = REPO_ROOT / "experiments/configs/m15_f2_campaign_dev.json"
+QUERY_BOUND_REGISTRY = (
+    REPO_ROOT / "experiments/configs/m15_f2_query_bound_campaign_dev.json"
+)
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -568,6 +578,109 @@ def _complete_scaled_campaign_session_run(tmp_path: Path) -> Path:
     return run
 
 
+def _complete_scaled_query_bound_session_run(tmp_path: Path) -> Path:
+    run = _complete_run(tmp_path)
+    service = run / "native-service-run"
+    bundle = generate_m15_workload_bundle(
+        M15WorkloadSpec.from_json(SELECTIVE_CONFIG),
+        run / "workload-bundle",
+    )
+    _write_json(
+        run / "workload_generation.json",
+        {"status": "success", **bundle.to_dict()},
+    )
+    plan = compile_m15_query_bound_campaign_file(
+        QUERY_BOUND_REGISTRY,
+        repo_root=REPO_ROOT,
+    ).to_dict()
+    session = next(
+        item
+        for item in plan["sessions"]
+        if item["workload_label"] == "selective"
+    )
+    query_record = run_m15_live_query_bound_session(
+        query_bound_registry=QUERY_BOUND_REGISTRY,
+        session_id=session["session_id"],
+        expected_registry_spec_sha256=plan["registry_spec_sha256"],
+        expected_query_bound_schedule_sha256=plan[
+            "query_bound_schedule_sha256"
+        ],
+        workload_bundle=bundle,
+        output_root=service,
+        run_id="query-bound-session-run",
+        repo_root=REPO_ROOT,
+        clients={
+            "neo4j": _AdaptiveNeo4jClient(
+                "neo4j", bundle.expected_source_rows["neo4j"]
+            ),
+            "fuseki": _AdaptiveFakeClient(
+                "fuseki", bundle.expected_source_rows["fuseki"]
+            ),
+        },
+    )
+    assert query_record.success, query_record.error
+
+    outer_path = run / "run_status.json"
+    outer = json.loads(outer_path.read_text(encoding="utf-8"))
+    outer["workload_mode"] = "scaled_query_bound_session"
+    _write_json(outer_path, outer)
+
+    environment_path = run / "environment.txt"
+    environment = environment_path.read_text(encoding="utf-8").replace(
+        "run_version=m15-b2d-native-services-v1",
+        "run_version=m15-f2b-native-live-query-bound-session-services-v1",
+    )
+    environment += (
+        "workload_mode=scaled_query_bound_session\n"
+        "workload_profile=selective\n"
+    )
+    environment_path.write_text(environment, encoding="utf-8")
+
+    service_manifest_path = service / "run_manifest.json"
+    service_manifest = json.loads(
+        service_manifest_path.read_text(encoding="utf-8")
+    )
+    service_manifest["schema_version"] = (
+        QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION
+    )
+    service_manifest["workload_mode"] = "scaled_query_bound_session"
+    service_manifest["workload_bundle"] = dict(bundle.manifest)
+    service_manifest["query_bound_session"] = {
+        "query_bound_registry": str(QUERY_BOUND_REGISTRY),
+        "session_id": session["session_id"],
+        "expected_registry_spec_sha256": plan["registry_spec_sha256"],
+        "expected_query_bound_schedule_sha256": plan[
+            "query_bound_schedule_sha256"
+        ],
+    }
+    _write_json(service_manifest_path, service_manifest)
+
+    fixture_path = service / "fixture-load" / "run_manifest.json"
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    fixture["dataset_id"] = "m15_f0:selective-dev-v1"
+    fixture["workload_bundle"] = dict(bundle.manifest)
+    fixture["input_sha256"] = {
+        **{
+            f"bundle:selective-dev-v1/{name}": digest
+            for name, digest in bundle.source_hashes.items()
+        },
+        "bundle:selective-dev-v1/manifest.json": hashlib.sha256(
+            (bundle.root / "manifest.json").read_bytes()
+        ).hexdigest(),
+    }
+    _write_json(fixture_path, fixture)
+
+    matrix_manifest_path = (
+        query_record.run_root / "method-matrix-run" / "run_manifest.json"
+    )
+    matrix_manifest = json.loads(
+        matrix_manifest_path.read_text(encoding="utf-8")
+    )
+    matrix_manifest["git"] = {"commit": COMMIT, "clean": True}
+    _write_json(matrix_manifest_path, matrix_manifest)
+    return run
+
+
 def test_complete_native_run_passes_cross_artifact_audit(tmp_path: Path) -> None:
     run = _complete_run(tmp_path)
 
@@ -648,6 +761,49 @@ def test_complete_native_campaign_session_passes_hash_bound_audit(
     assert audit.success, audit.failed_check_ids
     assert audit.failed_check_ids == ()
     assert len(audit.checks) >= 225
+
+
+def test_complete_native_query_bound_session_recomputes_contract_in_audit(
+    tmp_path: Path,
+) -> None:
+    run = _complete_scaled_query_bound_session_run(tmp_path)
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_query_bound_session",
+    )
+
+    assert audit.success, audit.failed_check_ids
+    assert audit.failed_check_ids == ()
+    assert len(audit.checks) >= 245
+
+
+def test_query_bound_audit_detects_recomputed_contract_tamper(
+    tmp_path: Path,
+) -> None:
+    run = _complete_scaled_query_bound_session_run(tmp_path)
+    contract_path = (
+        run
+        / "native-service-run"
+        / "query-bound-session-run"
+        / "query_contracts"
+        / "financial-risk-alice-high-risk.json"
+    )
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    contract["query_contract_sha256"] = "0" * 64
+    _write_json(contract_path, contract)
+
+    audit = audit_m15_native_run(
+        run_root=run,
+        expected_commit=COMMIT,
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_query_bound_session",
+    )
+
+    assert not audit.success
+    assert "query_bound.contract_file" in audit.failed_check_ids
 
 
 def test_campaign_session_audit_detects_schedule_binding_tamper(

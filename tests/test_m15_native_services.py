@@ -12,6 +12,9 @@ import pytest
 import xgap.experiments.m15_native_services as native_services
 
 from xgap.experiments.m15_campaign import compile_m15_campaign_file
+from xgap.experiments.m15_query_bound_campaign import (
+    compile_m15_query_bound_campaign_file,
+)
 from xgap.experiments.m15_workload import M15WorkloadSpec, generate_m15_workload_bundle
 from xgap.experiments.m15_native_runtime import STAGING_SCHEMA_VERSION
 from xgap.experiments.m15_native_services import (
@@ -683,6 +686,125 @@ def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
         "expected_schedule_sha256": campaign_plan["schedule_sha256"],
     }
 
+    with pytest.raises(ValueError, match="requires registry, session"):
+        run_m15_native_services(
+            runtime_root=matrix_runtime,
+            staging_manifest=matrix_staging,
+            output_root=tmp_path / "missing-query-bound-inputs",
+            run_id="missing-query-bound-inputs",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="scaled_query_bound_session",
+            workload_bundle=selective_bundle,
+        )
+
+    query_runtime, query_staging = _staged_runtime(
+        tmp_path / "query-bound-lifecycle"
+    )
+    query_registry = (
+        REPO_ROOT / "experiments/configs/m15_f2_query_bound_campaign_dev.json"
+    )
+    query_plan = compile_m15_query_bound_campaign_file(
+        query_registry,
+        repo_root=REPO_ROOT,
+    ).to_dict()
+    query_session = next(
+        item
+        for item in query_plan["sessions"]
+        if item["workload_label"] == "selective"
+    )
+    query_record = run_m15_native_services(
+        runtime_root=query_runtime,
+        staging_manifest=query_staging,
+        output_root=tmp_path / "runs",
+        run_id="native-query-bound-session-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="scaled_query_bound_session",
+        workload_bundle=selective_bundle,
+        query_bound_registry=query_registry,
+        query_bound_session_id=query_session["session_id"],
+        expected_registry_spec_sha256=query_plan["registry_spec_sha256"],
+        expected_query_bound_schedule_sha256=query_plan[
+            "query_bound_schedule_sha256"
+        ],
+    )
+
+    assert query_record.success
+    assert executed[-1] == ("scaled_query_bound_session", "selective-dev-v1")
+    query_manifest = json.loads(
+        query_record.manifest_path.read_text(encoding="utf-8")
+    )
+    assert query_manifest["schema_version"] == (
+        native_services.QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert query_manifest["query_bound_session"] == {
+        "query_bound_registry": str(query_registry),
+        "session_id": query_session["session_id"],
+        "expected_registry_spec_sha256": query_plan["registry_spec_sha256"],
+        "expected_query_bound_schedule_sha256": query_plan[
+            "query_bound_schedule_sha256"
+        ],
+    }
+
+
+def test_query_bound_contract_drift_rejects_before_service_start(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    bundle = generate_m15_workload_bundle(
+        M15WorkloadSpec.from_json(
+            REPO_ROOT / "experiments/configs/m15_f0_selective.json"
+        ),
+        tmp_path / "bundle",
+    )
+    registry = (
+        REPO_ROOT / "experiments/configs/m15_f2_query_bound_campaign_dev.json"
+    )
+    plan = compile_m15_query_bound_campaign_file(
+        registry,
+        repo_root=REPO_ROOT,
+    ).to_dict()
+    session = next(
+        item
+        for item in plan["sessions"]
+        if item["workload_label"] == "selective"
+    )
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: pytest.fail(
+            "contract drift must fail before Java or service observation"
+        ),
+    )
+
+    with pytest.raises(ValueError, match="registry spec hash disagrees"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "runs",
+            run_id="query-bound-drift",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="scaled_query_bound_session",
+            workload_bundle=bundle,
+            query_bound_registry=registry,
+            query_bound_session_id=session["session_id"],
+            expected_registry_spec_sha256="0" * 64,
+            expected_query_bound_schedule_sha256=plan[
+                "query_bound_schedule_sha256"
+            ],
+        )
+
+    assert not (tmp_path / "runs" / "query-bound-drift").exists()
+
 
 def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     script = (
@@ -703,6 +825,7 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "m15_f0_broad_hot.json" in script
     assert "scaled_method_matrix" in script
     assert "scaled_campaign_session" in script
+    assert "scaled_query_bound_session" in script
     assert "--campaign-session-id" in script
     campaign_script = (
         REPO_ROOT / "scripts/slurm/run_m15_native_campaign_session.sbatch"
@@ -713,4 +836,16 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "XGAP_M15_CAMPAIGN_SCHEDULE_SHA256" in campaign_script
     assert "SLURM_SUBMIT_DIR" in campaign_script
     assert "BASH_SOURCE" not in campaign_script
+    query_bound_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_query_bound_session.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=scaled_query_bound_session" in (
+        query_bound_script
+    )
+    assert "XGAP_M15_QUERY_BOUND_SESSION_ID" in query_bound_script
+    assert "XGAP_M15_QUERY_BOUND_REGISTRY_SPEC_SHA256" in query_bound_script
+    assert "XGAP_M15_QUERY_BOUND_SCHEDULE_SHA256" in query_bound_script
+    assert "SLURM_SUBMIT_DIR" in query_bound_script
+    assert "BASH_SOURCE" not in query_bound_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

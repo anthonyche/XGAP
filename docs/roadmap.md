@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A LIVE GATES VERIFIED; F2B LIVE QUERY BINDING LOCAL, NATIVE/AUDIT NEXT**
+Current status: **F0/F1/F2A LIVE GATES VERIFIED; F2B4 NATIVE/AUDIT LOCAL, ONE CWRU GATE READY**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -247,6 +247,15 @@ Tests also cover the adversarial case where a registry and schedule are
 internally consistent but freeze the wrong contract hash. The next F2B4 gate
 must place this runner inside a fresh native Neo4j/Fuseki lifecycle and extend
 the independent auditor before one CWRU query-bound session may run.
+
+F2B4 now supplies that native boundary. The new mode preflights the exact
+registry, bound schedule, session, workload, and recomputed query contract
+before starting either service; its dedicated Slurm wrapper is separately
+allowlisted. The read-only auditor independently regenerates the expected v2
+binding and contract from the completed run bundle and detects contract-file
+tampering. One selective CWRU query-bound gate is ready. Its purpose is only
+to verify the end-to-end identity chain; the remaining eleven sessions and
+paper campaign stay disabled.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

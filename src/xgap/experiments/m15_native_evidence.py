@@ -22,16 +22,24 @@ from xgap.experiments.m15_live_method_matrix import (
     CAMPAIGN_BINDING_SCHEMA_VERSION,
     LIVE_MATRIX_COST_MODEL_VERSION,
     LIVE_MATRIX_SCHEMA_VERSION,
+    QUERY_BOUND_CAMPAIGN_BINDING_SCHEMA_VERSION,
 )
 from xgap.experiments.m15_campaign import compile_m15_campaign_file
 from xgap.experiments.m15_live_campaign_session import (
     LIVE_CAMPAIGN_SESSION_SCHEMA_VERSION,
     SUPPORTED_QUERY_ID as CAMPAIGN_SUPPORTED_QUERY_ID,
 )
+from xgap.experiments.m15_live_query_bound_session import (
+    LIVE_QUERY_BOUND_SESSION_SCHEMA_VERSION,
+    prepare_m15_live_query_bound_session,
+)
 from xgap.experiments.m15_method_policy import (
     METHOD_POLICY_SCHEMA_VERSION,
     M15_METHOD_POLICIES,
     M15Method,
+)
+from xgap.experiments.m15_query_bound_campaign import (
+    compile_m15_query_bound_campaign_file,
 )
 from xgap.experiments.m15_native_artifacts import (
     DEFAULT_LOCK_PATH,
@@ -45,6 +53,7 @@ from xgap.experiments.m15_native_services import (
     CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION,
     LOCAL_FILESYSTEM_TYPES,
     METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
+    QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION,
     SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
     SERVICE_PLAN_SCHEMA_VERSION,
     SERVICE_RUN_SCHEMA_VERSION,
@@ -222,16 +231,21 @@ def audit_m15_native_run(
         "scaled_adaptive",
         "scaled_method_matrix",
         "scaled_campaign_session",
+        "scaled_query_bound_session",
     }
     campaign_session_mode = workload_mode == "scaled_campaign_session"
+    query_bound_session_mode = workload_mode == "scaled_query_bound_session"
+    bound_session_mode = campaign_session_mode or query_bound_session_mode
     method_matrix_mode = workload_mode in {
         "scaled_method_matrix",
         "scaled_campaign_session",
+        "scaled_query_bound_session",
     }
     scaled_mode = workload_mode in {
         "scaled_adaptive",
         "scaled_method_matrix",
         "scaled_campaign_session",
+        "scaled_query_bound_session",
     }
     selected_run = Path(run_root)
     if selected_run.is_symlink():
@@ -295,6 +309,24 @@ def audit_m15_native_run(
                     "campaign_binding": sequence_root / "campaign_binding.json",
                 }
             )
+        elif query_bound_session_mode:
+            sequence_root = sequence_root / "query-bound-session-run"
+            paths.update(
+                {
+                    "query_bound": sequence_root / "run_manifest.json",
+                    "query_bound_status": sequence_root / "run_status.json",
+                    "query_bound_validation": sequence_root / "validation.json",
+                    "query_bound_plan": sequence_root
+                    / "query_bound_campaign_plan.json",
+                    "query_bound_session_plan": sequence_root
+                    / "session_plan.json",
+                    "query_bound_binding": sequence_root
+                    / "campaign_binding.json",
+                    "query_bound_contract": sequence_root
+                    / "query_contracts"
+                    / f"{CAMPAIGN_SUPPORTED_QUERY_ID}.json",
+                }
+            )
         matrix_root = sequence_root / "method-matrix-run"
         paths.update(
             {
@@ -314,7 +346,7 @@ def audit_m15_native_run(
                 "matrix_probe_plan": matrix_root / "probe_plan.json",
                 **(
                     {"matrix_campaign_binding": matrix_root / "campaign_binding.json"}
-                    if campaign_session_mode
+                    if bound_session_mode
                     else {}
                 ),
                 "matrix_static_parallel": matrix_root
@@ -430,6 +462,9 @@ def audit_m15_native_run(
         "scaled_campaign_session": (
             "m15-f2-native-live-campaign-session-services-v1"
         ),
+        "scaled_query_bound_session": (
+            "m15-f2b-native-live-query-bound-session-services-v1"
+        ),
     }[workload_mode]
     check("environment.run_version", expected_run_version, environment.get("run_version"))
     check("environment.git_commit", expected_commit, environment.get("git_commit"))
@@ -527,6 +562,9 @@ def audit_m15_native_run(
         "scaled_adaptive": SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_method_matrix": METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_campaign_session": CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION,
+        "scaled_query_bound_session": (
+            QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     check("service.schema", expected_service_schema, service_manifest.get("schema_version"))
     check("service.status", "success", service_manifest.get("status"))
@@ -756,6 +794,15 @@ def audit_m15_native_run(
         campaign_session_plan = _dict(loaded.get("campaign_session_plan"))
         campaign_binding = _dict(loaded.get("campaign_binding"))
         matrix_campaign_binding = _dict(loaded.get("matrix_campaign_binding"))
+        query_bound = _dict(loaded.get("query_bound"))
+        query_bound_status = _dict(loaded.get("query_bound_status"))
+        query_bound_validation = _dict(loaded.get("query_bound_validation"))
+        query_bound_plan = _dict(loaded.get("query_bound_plan"))
+        query_bound_session_plan = _dict(
+            loaded.get("query_bound_session_plan")
+        )
+        query_bound_binding = _dict(loaded.get("query_bound_binding"))
+        query_bound_contract = _dict(loaded.get("query_bound_contract"))
         matrix = _dict(loaded.get("matrix"))
         matrix_status = _dict(loaded.get("matrix_status"))
         matrix_validation = _dict(loaded.get("matrix_validation"))
@@ -797,6 +844,7 @@ def audit_m15_native_run(
         expected_campaign_plan: dict[str, Any] = {}
         expected_campaign_session: dict[str, Any] = {}
         expected_campaign_binding: dict[str, Any] = {}
+        expected_query_contract: dict[str, Any] = {}
         if campaign_session_mode:
             try:
                 expected_campaign_plan = compile_m15_campaign_file(
@@ -995,6 +1043,230 @@ def audit_m15_native_run(
                     "/experiments/configs/m15_f2_campaign_dev.json"
                 ),
             )
+        elif query_bound_session_mode:
+            try:
+                registry_path = (
+                    repo
+                    / "experiments/configs/m15_f2_query_bound_campaign_dev.json"
+                )
+                compiled_query_plan = compile_m15_query_bound_campaign_file(
+                    registry_path,
+                    repo_root=repo,
+                ).to_dict()
+                if scaled_bundle is None:
+                    raise ValueError("verified workload bundle is unavailable")
+                preparation = prepare_m15_live_query_bound_session(
+                    query_bound_registry=registry_path,
+                    session_id=str(query_bound.get("session_id")),
+                    expected_registry_spec_sha256=compiled_query_plan[
+                        "registry_spec_sha256"
+                    ],
+                    expected_query_bound_schedule_sha256=compiled_query_plan[
+                        "query_bound_schedule_sha256"
+                    ],
+                    workload_bundle=scaled_bundle,
+                    repo_root=repo,
+                )
+                expected_campaign_plan = dict(preparation.plan)
+                expected_campaign_session = dict(preparation.session)
+                expected_campaign_binding = dict(preparation.binding)
+                expected_query_contract = preparation.query_contracts[
+                    CAMPAIGN_SUPPORTED_QUERY_ID
+                ].to_dict()
+                observed_order = _list(
+                    expected_campaign_session.get("method_order")
+                )
+                parsed_order = tuple(
+                    M15Method(str(item)) for item in observed_order
+                )
+                if (
+                    len(parsed_order) != len(canonical_method_order)
+                    or set(parsed_order) != set(canonical_method_order)
+                ):
+                    raise ValueError("query-bound method order is not complete")
+                method_order = parsed_order
+                query_bound_plan_valid: object = True
+            except (
+                KeyError,
+                OSError,
+                TypeError,
+                ValueError,
+                json.JSONDecodeError,
+            ) as exc:
+                query_bound_plan_valid = f"invalid:{exc}"
+            check("query_bound.plan_recompiles", True, query_bound_plan_valid)
+            check(
+                "query_bound.plan_file",
+                expected_campaign_plan,
+                query_bound_plan,
+            )
+            check(
+                "query_bound.session_file",
+                expected_campaign_session,
+                query_bound_session_plan,
+            )
+            check(
+                "query_bound.binding_file",
+                expected_campaign_binding,
+                query_bound_binding,
+            )
+            check(
+                "query_bound.matrix_binding_file",
+                expected_campaign_binding,
+                matrix_campaign_binding,
+            )
+            check(
+                "query_bound.contract_file",
+                expected_query_contract,
+                query_bound_contract,
+            )
+            check(
+                "query_bound.schema",
+                LIVE_QUERY_BOUND_SESSION_SCHEMA_VERSION,
+                query_bound.get("schema_version"),
+            )
+            check("query_bound.status", "success", query_bound.get("status"))
+            check("query_bound.error", None, query_bound.get("error"))
+            check("query_bound.paper_result", False, query_bound.get("paper_result"))
+            check(
+                "query_bound.automatic_retries",
+                0,
+                query_bound.get("automatic_retries"),
+            )
+            check("query_bound.llm_calls", 0, query_bound.get("llm_calls"))
+            check(
+                "query_bound.ontology_calls",
+                0,
+                query_bound.get("ontology_calls"),
+            )
+            check(
+                "query_bound.evidence_class",
+                "development_live_query_bound_session_gate",
+                query_bound.get("evidence_class"),
+            )
+            check(
+                "query_bound.validation",
+                True,
+                _validation_is_exact(query_bound.get("validation")),
+            )
+            check(
+                "query_bound.validation_file",
+                query_bound_validation,
+                query_bound.get("validation"),
+            )
+            check(
+                "query_bound.registry_id",
+                expected_campaign_plan.get("registry_id"),
+                query_bound.get("registry_id"),
+            )
+            check(
+                "query_bound.registry_spec_hash",
+                expected_campaign_plan.get("registry_spec_sha256"),
+                query_bound.get("registry_spec_sha256"),
+            )
+            check(
+                "query_bound.query_binding_hash",
+                expected_campaign_plan.get("query_binding_sha256"),
+                query_bound.get("query_binding_sha256"),
+            )
+            check(
+                "query_bound.schedule_hash",
+                expected_campaign_plan.get("query_bound_schedule_sha256"),
+                query_bound.get("query_bound_schedule_sha256"),
+            )
+            check(
+                "query_bound.session_id",
+                expected_campaign_session.get("session_id"),
+                query_bound.get("session_id"),
+            )
+            check(
+                "query_bound.method_order",
+                expected_campaign_session.get("method_order"),
+                query_bound.get("method_order"),
+            )
+            check(
+                "query_bound.workload_bundle",
+                dict(scaled_bundle.manifest) if scaled_bundle else None,
+                query_bound.get("workload_bundle"),
+            )
+            check(
+                "query_bound.contract_identity",
+                {
+                    CAMPAIGN_SUPPORTED_QUERY_ID: {
+                        "query_contract_sha256": expected_query_contract.get(
+                            "query_contract_sha256"
+                        ),
+                        "artifact": (
+                            "query_contracts/"
+                            f"{CAMPAIGN_SUPPORTED_QUERY_ID}.json"
+                        ),
+                    }
+                },
+                query_bound.get("query_contracts"),
+            )
+            check(
+                "query_bound.artifacts",
+                {
+                    "campaign_binding.json",
+                    "method-matrix-run",
+                    "query_bound_campaign_plan.json",
+                    "query_contracts",
+                    "run_manifest.json",
+                    "run_status.json",
+                    "session_plan.json",
+                    "validation.json",
+                },
+                set(_list(query_bound.get("artifacts"))),
+            )
+            check(
+                "query_bound_status.schema",
+                LIVE_QUERY_BOUND_SESSION_SCHEMA_VERSION,
+                query_bound_status.get("schema_version"),
+            )
+            check(
+                "query_bound_status.status",
+                "success",
+                query_bound_status.get("status"),
+            )
+            check(
+                "query_bound_status.error",
+                None,
+                query_bound_status.get("error"),
+            )
+            check(
+                "query_bound_status.run_id",
+                query_bound.get("run_id"),
+                query_bound_status.get("run_id"),
+            )
+            service_query_bound = _dict(
+                service_manifest.get("query_bound_session")
+            )
+            check(
+                "service.query_bound_session_id",
+                expected_campaign_session.get("session_id"),
+                service_query_bound.get("session_id"),
+            )
+            check(
+                "service.query_bound_registry_hash",
+                expected_campaign_plan.get("registry_spec_sha256"),
+                service_query_bound.get("expected_registry_spec_sha256"),
+            )
+            check(
+                "service.query_bound_schedule_hash",
+                expected_campaign_plan.get("query_bound_schedule_sha256"),
+                service_query_bound.get(
+                    "expected_query_bound_schedule_sha256"
+                ),
+            )
+            registry_value = service_query_bound.get("query_bound_registry")
+            check(
+                "service.query_bound_registry",
+                True,
+                isinstance(registry_value, str)
+                and registry_value.endswith(
+                    "/experiments/configs/m15_f2_query_bound_campaign_dev.json"
+                ),
+            )
         result_keys = {
             M15Method.STATIC_PARALLEL_HASH: "matrix_static_parallel",
             M15Method.STATIC_RISK_FIRST_BIND: "matrix_static_bind",
@@ -1028,9 +1300,13 @@ def audit_m15_native_run(
         check(
             "matrix.evidence_class",
             (
-                "live_backend_campaign_session_engineering_gate"
-                if campaign_session_mode
-                else "live_backend_method_mechanism_engineering_gate"
+                "live_backend_query_bound_session_engineering_gate"
+                if query_bound_session_mode
+                else (
+                    "live_backend_campaign_session_engineering_gate"
+                    if campaign_session_mode
+                    else "live_backend_method_mechanism_engineering_gate"
+                )
             ),
             matrix.get("evidence_class"),
         )
@@ -1038,7 +1314,7 @@ def audit_m15_native_run(
             "matrix.order_policy",
             (
                 "williams_campaign_sequence"
-                if campaign_session_mode
+                if bound_session_mode
                 else "fixed_engineering_gate_not_counterbalanced"
             ),
             matrix.get("order_policy"),
@@ -1047,7 +1323,7 @@ def audit_m15_native_run(
             "matrix.cache_state",
             (
                 "shared_unflushed_within_sequence_counterbalanced_by_campaign"
-                if campaign_session_mode
+                if bound_session_mode
                 else "shared_unknown_not_reset_between_methods"
             ),
             matrix.get("cache_state"),
@@ -1085,18 +1361,18 @@ def audit_m15_native_run(
             "semantic_program.json",
             "validation.json",
         }
-        if campaign_session_mode:
+        if bound_session_mode:
             expected_artifacts.add("campaign_binding.json")
         check("matrix.artifacts", expected_artifacts, set(_list(matrix.get("artifacts"))))
         check(
             "matrix.campaign_binding",
-            expected_campaign_binding if campaign_session_mode else None,
+            expected_campaign_binding if bound_session_mode else None,
             matrix.get("campaign_binding"),
         )
         execution_namespaces = _dict(matrix.get("execution_namespaces"))
         expected_task_ids = (
             _dict(expected_campaign_binding.get("method_task_ids"))
-            if campaign_session_mode
+            if bound_session_mode
             else {
                 method.value: f"{matrix.get('run_id')}.{method.value}"
                 for method in method_order
@@ -1104,7 +1380,7 @@ def audit_m15_native_run(
         )
         expected_memory_namespaces = (
             _dict(expected_campaign_binding.get("memory_namespaces"))
-            if campaign_session_mode
+            if bound_session_mode
             else expected_task_ids
         )
         check(

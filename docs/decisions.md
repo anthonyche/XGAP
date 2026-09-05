@@ -1453,3 +1453,22 @@ contract verification is a completed preflight fact and is not erased if a
 later backend operation fails. The direct runner remains a local engineering
 gate with no native service lifecycle or independent evidence audit; neither
 remote dispatch nor a paper claim is enabled yet.
+
+## D99 Audit query identity by recompilation, not by trusting run metadata
+
+F2B4 adds `scaled_query_bound_session` as a separate native-service mode. The
+mode requires the registry path, session ID, registry-spec hash, and
+query-bound schedule hash together. After the deterministic bundle is
+generated but before Java inspection or service startup, the native runner
+recompiles the selected live-bundle contract through the F2B3 preflight. A
+wrong or incomplete identity therefore creates no native-service run and
+observes no backend.
+
+The Slurm entry point is separately allowlisted and preserves allocation-local
+state, loopback-only Neo4j/Fuseki, zero retry, and guarded cleanup. Its
+read-only auditor independently recompiles the fixed query-bound registry and
+the selected contract from the immutable run bundle, then compares the plan,
+session, v2 binding, contract artifact, matrix namespace, service manifest,
+and 18-call trace. This authorizes one CWRU engineering gate after a clean
+commit is pulled; it does not authorize the other eleven sessions or convert
+the result into comparative evidence.

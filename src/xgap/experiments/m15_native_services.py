@@ -34,6 +34,10 @@ from xgap.experiments.m15_live_campaign_session import (
 )
 from xgap.experiments.m15_live_federated import run_m15_live_federated
 from xgap.experiments.m15_live_method_matrix import run_m15_live_method_matrix
+from xgap.experiments.m15_live_query_bound_session import (
+    prepare_m15_live_query_bound_session,
+    run_m15_live_query_bound_session,
+)
 from xgap.experiments.m15_workload import (
     M15WorkloadBundle,
     load_m15_workload_bundle,
@@ -58,6 +62,9 @@ METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION = (
 CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-f2-native-live-campaign-session-service-run-v1"
 )
+QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2b-native-live-query-bound-session-service-run-v1"
+)
 SERVICE_PLAN_SCHEMA_VERSION = "m15-b2d-native-service-plan-v1"
 WORKLOAD_MODES = frozenset(
     {
@@ -66,6 +73,7 @@ WORKLOAD_MODES = frozenset(
         "scaled_adaptive",
         "scaled_method_matrix",
         "scaled_campaign_session",
+        "scaled_query_bound_session",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -739,6 +747,10 @@ def _run_fixture_and_query(
     campaign_session_id: str | None = None,
     expected_campaign_spec_sha256: str | None = None,
     expected_schedule_sha256: str | None = None,
+    query_bound_registry: str | Path | None = None,
+    query_bound_session_id: str | None = None,
+    expected_registry_spec_sha256: str | None = None,
+    expected_query_bound_schedule_sha256: str | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -813,6 +825,29 @@ def _run_fixture_and_query(
                 raise RuntimeError(
                     f"live campaign session failed: {campaign.error}"
                 )
+        elif workload_mode == "scaled_query_bound_session":
+            assert workload_bundle is not None
+            assert query_bound_registry is not None
+            assert query_bound_session_id is not None
+            assert expected_registry_spec_sha256 is not None
+            assert expected_query_bound_schedule_sha256 is not None
+            query_bound = run_m15_live_query_bound_session(
+                query_bound_registry=query_bound_registry,
+                session_id=query_bound_session_id,
+                expected_registry_spec_sha256=expected_registry_spec_sha256,
+                expected_query_bound_schedule_sha256=(
+                    expected_query_bound_schedule_sha256
+                ),
+                workload_bundle=workload_bundle,
+                output_root=run_root,
+                run_id="query-bound-session-run",
+                repo_root=repo_root,
+                clients=clients,
+            )
+            if not query_bound.success:
+                raise RuntimeError(
+                    f"live query-bound session failed: {query_bound.error}"
+                )
         else:
             raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
 
@@ -834,6 +869,10 @@ def run_m15_native_services(
     campaign_session_id: str | None = None,
     expected_campaign_spec_sha256: str | None = None,
     expected_schedule_sha256: str | None = None,
+    query_bound_registry: str | Path | None = None,
+    query_bound_session_id: str | None = None,
+    expected_registry_spec_sha256: str | None = None,
+    expected_query_bound_schedule_sha256: str | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -857,6 +896,7 @@ def run_m15_native_services(
         "scaled_adaptive",
         "scaled_method_matrix",
         "scaled_campaign_session",
+        "scaled_query_bound_session",
     }
     if scaled_mode and selected_bundle is None:
         raise ValueError(f"{workload_mode} workload mode requires a verified bundle")
@@ -887,12 +927,43 @@ def run_m15_native_services(
         raise ValueError(
             "campaign session inputs are accepted only in scaled_campaign_session"
         )
+    query_bound_values = (
+        query_bound_registry,
+        query_bound_session_id,
+        expected_registry_spec_sha256,
+        expected_query_bound_schedule_sha256,
+    )
+    if workload_mode == "scaled_query_bound_session":
+        if any(value is None for value in query_bound_values):
+            raise ValueError(
+                "scaled_query_bound_session requires registry, session, registry "
+                "hash, and query-bound schedule hash"
+            )
+        assert selected_bundle is not None
+        prepare_m15_live_query_bound_session(
+            query_bound_registry=query_bound_registry,
+            session_id=str(query_bound_session_id),
+            expected_registry_spec_sha256=str(expected_registry_spec_sha256),
+            expected_query_bound_schedule_sha256=str(
+                expected_query_bound_schedule_sha256
+            ),
+            workload_bundle=selected_bundle,
+            repo_root=root,
+        )
+    elif any(value is not None for value in query_bound_values):
+        raise ValueError(
+            "query-bound session inputs are accepted only in "
+            "scaled_query_bound_session"
+        )
     run_schema = {
         "vertical_slice": SERVICE_RUN_SCHEMA_VERSION,
         "adaptive": ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_adaptive": SCALED_ADAPTIVE_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_method_matrix": METHOD_MATRIX_SERVICE_RUN_SCHEMA_VERSION,
         "scaled_campaign_session": CAMPAIGN_SESSION_SERVICE_RUN_SCHEMA_VERSION,
+        "scaled_query_bound_session": (
+            QUERY_BOUND_SESSION_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -951,6 +1022,10 @@ def run_m15_native_services(
                 campaign_session_id,
                 expected_campaign_spec_sha256,
                 expected_schedule_sha256,
+                query_bound_registry,
+                query_bound_session_id,
+                expected_registry_spec_sha256,
+                expected_query_bound_schedule_sha256,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
@@ -1013,6 +1088,20 @@ def run_m15_native_services(
                 if workload_mode == "scaled_campaign_session"
                 else None
             ),
+            "query_bound_session": (
+                {
+                    "query_bound_registry": str(query_bound_registry),
+                    "session_id": query_bound_session_id,
+                    "expected_registry_spec_sha256": (
+                        expected_registry_spec_sha256
+                    ),
+                    "expected_query_bound_schedule_sha256": (
+                        expected_query_bound_schedule_sha256
+                    ),
+                }
+                if workload_mode == "scaled_query_bound_session"
+                else None
+            ),
             "service_plan": plan.to_dict() if plan is not None else None,
             "health": [item.to_dict() for item in health],
             "shutdown": [item.to_dict() for item in shutdown],
@@ -1053,6 +1142,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
     parser.add_argument("--expected-schedule-sha256")
+    parser.add_argument("--query-bound-registry")
+    parser.add_argument("--query-bound-session-id")
+    parser.add_argument("--expected-registry-spec-sha256")
+    parser.add_argument("--expected-query-bound-schedule-sha256")
     args = parser.parse_args(argv)
     if os.environ.get("XGAP_RUN_M15_NATIVE_SERVICES") != "1":
         print(
@@ -1084,6 +1177,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,
             expected_schedule_sha256=args.expected_schedule_sha256,
+            query_bound_registry=args.query_bound_registry,
+            query_bound_session_id=args.query_bound_session_id,
+            expected_registry_spec_sha256=args.expected_registry_spec_sha256,
+            expected_query_bound_schedule_sha256=(
+                args.expected_query_bound_schedule_sha256
+            ),
         )
     except (FileExistsError, ValueError) as exc:
         print(json.dumps({"status": "configuration_error", "error": str(exc)}))

@@ -82,6 +82,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_scaled_adaptive.sbatch",
         "scripts/slurm/run_m15_native_method_matrix.sbatch",
         "scripts/slurm/run_m15_native_campaign_session.sbatch",
+        "scripts/slurm/run_m15_native_query_bound_session.sbatch",
     )
     probe = (
         Path(__file__).resolve().parents[1]
@@ -150,6 +151,20 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     assert "SLURM_SUBMIT_DIR" in campaign_run
     assert "BASH_SOURCE" not in campaign_run
     assert "scripts/slurm/run_m15_native_campaign_session.sbatch" in (
+        DEFAULT_ALLOWED_SBATCH_SCRIPTS
+    )
+    query_bound_run = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "run_m15_native_query_bound_session.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=scaled_query_bound_session" in (
+        query_bound_run
+    )
+    assert "SLURM_SUBMIT_DIR" in query_bound_run
+    assert "BASH_SOURCE" not in query_bound_run
+    assert "scripts/slurm/run_m15_native_query_bound_session.sbatch" in (
         DEFAULT_ALLOWED_SBATCH_SCRIPTS
     )
 
