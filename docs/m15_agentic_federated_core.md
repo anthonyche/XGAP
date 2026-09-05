@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 650 tests with 36 explicitly gated or
+Current full local acceptance passes 663 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -175,7 +175,7 @@ and the selected plan changes under controlled cardinality or latency changes.
 
 ## M15-D — Memory-guided adaptation and replanning
 
-Status: **LIVE ADAPTIVE RUNNER VERIFIED ON CWRU; F1 LIVE MATRIX IMPLEMENTED LOCALLY; CWRU GATE PENDING**
+Status: **LIVE ADAPTIVE RUNNER AND F1 LIVE METHOD MATRIX VERIFIED ON CWRU; PAPER CAMPAIGN PENDING**
 
 Use versioned capability and execution memory across tasks, and permit explicit
 within-query replanning after observations invalidate the current estimate.
@@ -202,15 +202,19 @@ one exact answer. It remains `paper_result=false`; a live repeated matrix is
 pending. CWRU job `3787152` verified the earlier real-backend adaptive path,
 including its legitimate zero-replan branch on the tiny fixture.
 
-F1L now composes those policies with the allocation-scoped native-service
+F1L composes those policies with the allocation-scoped native-service
 lifecycle. It loads one verified workload, performs one separately accounted
 three-observation calibration, seeds isolated memory histories for the three
 warm methods, and executes all six policies with independent tool-event and
 answer artifacts. The fail-closed auditor binds the workload hashes, policies,
 18-call trace, snapshot identities, exact rows, service lifecycle, and guarded
-cleanup. Fixed order and shared unknown backend cache state are explicit, so
-the pending CWRU run is an engineering mechanism gate rather than a latency
-comparison.
+cleanup. CWRU job `3787267` executed this path at exact clean commit
+`6aafafd` on `compt336`; all six methods returned the exact answer, the
+declared phase counts summed to 18 calls, runtime cleanup succeeded, and the
+independent read-only audit passed 326/326 checks without mutating the run
+tree. Fixed order, one selective workload, an uncalibrated cost model, and
+shared unknown backend cache state remain explicit, so this is an engineering
+mechanism gate rather than a latency comparison.
 
 M15-D2 now has a separate fail-closed live runner. Within one query attempt it
 accounts for exactly three planning-profile calls and two query calls, stores
@@ -241,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0 SELECTIVE REAL-BACKEND GATE VERIFIED; F1 LIVE MATRIX IMPLEMENTED LOCALLY; CWRU GATE PENDING**
+Status: **F0 SELECTIVE AND F1 LIVE METHOD GATES VERIFIED ON CWRU; F2 CAMPAIGN PROTOCOL IN PROGRESS**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -273,7 +277,8 @@ Job `3787213` at clean commit `32c157f` then completed: all 56 Neo4j statements
 loaded, the exact 120-row result used risk-first bind with two calls and 28,702
 bytes moved, and a separate read-only audit passed 188/188 checks without run
 mutation. This is a single-run engineering gate. Broad-hot execution,
-calibrated repetitions, and the live baseline matrix remain pending. F1's
+calibrated repetitions, and the paper-scale counterbalanced campaign remain
+pending. F1's
 deterministic paired sanity check already executes all six
 declared methods. Under one controlled stale-to-current latency transition,
 all return the exact answer; full agent changes from parallel hash to
@@ -286,9 +291,23 @@ The separate `scaled_method_matrix` mode now carries the same six methods into
 one real Neo4j/Fuseki allocation. It preserves common calibration outside the
 per-method totals, requires an exact 18-invocation trace, writes distinct
 method and memory artifacts, and is covered by the read-only native evidence
-auditor. The fixed-order shared-cache design is intentionally only the next
-CWRU integration gate; randomized/counterbalanced repetitions and calibrated
-cost parameters are still required for paper comparisons.
+auditor. Job `3787267` passed this contract and its independent 326-check audit.
+The fixed-order shared-cache design remains intentionally a mechanism gate;
+randomized/counterbalanced repetitions and calibrated cost parameters are
+still required for paper comparisons.
+
+F2 begins with a side-effect-free campaign compiler. Its development protocol
+uses a deterministic six-sequence Williams design per workload and block, so
+every method occurs once in every position and every directed first-order
+method transition occurs once. Each sequence declares a fresh service pair,
+separate method memory namespaces, excluded common calibration, raw
+repetition preservation, exact-answer gating, and zero retry. The compiler
+makes no backend, LLM, or ontology call and never labels its output as a
+result. The current two-workload, one-query development configuration cannot
+measure cross-task memory reuse and remains blocked from paper comparison
+until query artifacts, 30--50 query contexts, cost calibration, repetitions,
+live isolation validation, and an author-approved inferential analysis are
+frozen.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

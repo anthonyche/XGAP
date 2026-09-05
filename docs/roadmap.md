@@ -101,7 +101,7 @@ three-observation path against real Neo4j and Fuseki.
 Goal: use versioned observations across tasks and explicitly replan within a
 query when runtime evidence invalidates the current estimate.
 
-Current status: **LIVE ADAPTIVE PIPELINE VERIFIED ON CWRU; F1 LIVE MATRIX IMPLEMENTED LOCALLY; CWRU GATE PENDING**
+Current status: **LIVE ADAPTIVE PIPELINE AND F1 LIVE METHOD MATRIX VERIFIED ON CWRU; PAPER CAMPAIGN PENDING**
 
 The current slice persists versioned plan snapshots to append-only JSONL,
 validates a probe as an exact common plan prefix before invocation, reuses that
@@ -135,9 +135,11 @@ native Neo4j/Fuseki pair. It excludes one common three-profile calibration
 from all per-method metrics, records 18 backend events in named phases, and
 uses separate append-only memory files for warm policies. The independent
 auditor checks the exact workload, results, budgets, memory identity, service
-lifecycle, and cleanup. Its fixed order and shared unknown backend cache are
-declared limitations; the first CWRU execution remains pending and cannot be a
-comparative paper result.
+lifecycle, and cleanup. CWRU job `3787267` passed at exact clean commit
+`6aafafd`: all six exact answers and the 18-call trace validated, cleanup
+succeeded, and the independent read-only audit passed 326/326 checks without
+run-tree mutation. Its fixed order and shared unknown backend cache remain
+declared limitations; this cannot be a comparative paper result.
 
 First CWRU attempt `3787144` failed before service startup because Slurm's
 copied wrapper used its spool path to locate the repository-owned lifecycle
@@ -158,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0 SELECTIVE REAL-BACKEND GATE VERIFIED; F1 LIVE MATRIX IMPLEMENTED LOCALLY; CWRU GATE PENDING**
+Current status: **F0 SELECTIVE AND F1 LIVE METHOD GATES VERIFIED ON CWRU; F2 CAMPAIGN PROTOCOL IN PROGRESS**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -179,9 +181,22 @@ queries/sources, and UI work remain open.
 A separate `scaled_method_matrix` native mode and Slurm entry point now run the
 two static plans plus `no_memory`, `no_profile_probe`, `no_replan`, and
 `full_agent` over the same verified service instance and workload. This first
-live matrix validates action traces and correctness only. Counterbalanced
-ordering, cache controls, repetitions, and calibrated parameters remain the
-paper experiment scheduler's responsibility.
+live matrix validates action traces and correctness only. Job `3787267`
+completed and passed the independent 326-check audit. Counterbalanced ordering,
+cache controls, repetitions, and calibrated parameters remain the paper
+experiment scheduler's responsibility.
+
+F2 now starts that scheduler as a pure campaign-plan compiler. A seeded
+Williams design emits six sequences per workload and block with exact position
+and directed first-order carryover balance, deterministic dispatch order,
+fresh-service and isolated-memory declarations, explicit warmup/measurement
+phases, no retry, and a machine-checked balance proof. The current development
+configuration expands the selective and broad-hot workloads into 12 sessions
+and 72 measured method-query attempts without making any external call. It
+remains unexecuted and `paper_result=false`; its one-query streams cannot test
+cross-task memory reuse, the query label is not yet a hash-bound 30--50 query
+paper workload, and the final repetition/statistical protocol remains
+author-owned.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

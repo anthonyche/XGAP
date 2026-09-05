@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0 SELECTIVE VERIFIED; F1 LIVE MATRIX IMPLEMENTED LOCALLY, CWRU GATE PENDING
-- Version Label: m15_remote_loop_v20
+- Verification Status: CWRU B2D/D2/F0 SELECTIVE/F1L LIVE MATRIX VERIFIED; F2 PLAN-ONLY COMPILER LOCAL
+- Version Label: m15_remote_loop_v21
 
 ## Current claim boundary
 
@@ -26,13 +26,16 @@ real Neo4j and Fuseki. Its fixed cost model is not calibrated, the tiny fixture
 did not warrant a plan change, and its manifest therefore declares
 `paper_result=false`.
 
-The next F1L runner is also locally implemented. A separate
+The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service
 allocation, accounts one common calibration outside method metrics, and then
 executes six frozen policies in explicit phases. The read-only auditor checks
 their 18-call budget, exact answers, isolated memory histories, lifecycle, and
 cleanup. Because order is fixed and backend cache state is shared and unknown,
-this is only the next live mechanism gate, not a performance comparison.
+this is a live mechanism gate, not a performance comparison. Job `3787267`
+completed at exact clean commit `6aafafd`; all six methods returned the exact
+answer and its independent read-only audit passed 326/326 checks without
+mutating the run tree.
 
 Refreshed D1 CPU job `3787126` ran exact clean commit `4c26eea` on `compt331`
 and completed in 28 seconds with exit `0:0`. Its immutable run tree contains
@@ -322,7 +325,8 @@ VPN reachability and a working user-owned SSH alias.
   one replan and is only a live control-path gate, not performance evidence.
 - Compare static federation, no memory, no probe/profile, no replan, and the
   full agent under the same workload. The local `scaled_method_matrix` runner
-  and auditor now implement this mechanism gate; CWRU execution is pending.
+  and auditor implement this mechanism gate. CWRU job `3787267` completed it
+  with all exact answers and an independently accepted 18-call trace.
 
 ### M15-E — Selective semantic resolution and Qwen
 
@@ -365,11 +369,17 @@ VPN reachability and a working user-owned SSH alias.
   Its compact engineering record is
   `experiments/artifacts/m15_f0_cwru_scaled_selective_success_20260905.json`;
   one run with an uncalibrated model remains `paper_result=false`.
-- F1 locally defines six executable task policies with exact memory-context
+- F1 defines six executable task policies with exact memory-context
   compatibility and a controlled paired matrix. The separate
   `run_m15_native_method_matrix.sbatch` entry point now executes the six-policy
   real-service mechanism gate without mixing its artifacts into F0. It uses a
-  fixed order and shared unknown cache, so its result remains non-comparative.
+  fixed order and shared unknown cache, so verified CWRU job `3787267` remains
+  non-comparative despite passing all 326 independent audit checks.
+- F2 locally compiles a seeded six-sequence Williams schedule per workload and
+  block and proves exact position and directed first-order carryover balance
+  without starting services or calling a backend. Its development input has
+  only one query per workload, so it cannot measure cross-task memory and is
+  not ready for server execution or paper comparison.
 - Add external datasets, catalog, and ontology through versioned adapters.
 - Run correctness, cost, scaling, failure, and ambiguity experiments.
 - Build the thin UI only after the CLI trace schema, remote executor, and one
@@ -378,11 +388,11 @@ VPN reachability and a working user-owned SSH alias.
 ## Next user handoff
 
 B0, both B1 CPU gates, B2 prerequisite, B2B supply, B2D service lifecycle, B3
-federated execution, D2 live adaptation, and their independent evidence audits
-are complete. Keep jobs `3787110`, `3787126`, and `3787152` and their run trees
-immutable. D2 job `3787144` remains a separate pre-service wrapper failure;
-preserve its top-level output. F0 selective job `3787213` and its 188-check
-audit are now complete and immutable. The next external handoff is the
-separately versioned F1 live-method-matrix gate after this locally passing
-runner and auditor are published at one exact clean commit. No
+federated execution, D2 live adaptation, F0 selective execution, F1L live
+method execution, and their independent evidence audits are complete. Keep
+jobs `3787110`, `3787126`, `3787152`, `3787213`, and `3787267` and their run
+trees immutable. D2 job `3787144` remains a separate pre-service wrapper
+failure; preserve its top-level output. There is no immediate CWRU command for
+the plan-only F2 compiler. The next external handoff must wait for a separately
+versioned campaign executor and hash-bound multi-query stream. No
 paper-performance claim is currently made.

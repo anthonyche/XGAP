@@ -70,8 +70,9 @@ plan change. Two fixed-plan controls, `no_memory`, `no_profile_probe`, and
 selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
-F0 batch-protocol regression raised that checkpoint to 641. With F1L, current
-full local acceptance passes 650 tests with 36 gated skips. This is
+F0 batch-protocol regression raised that checkpoint to 641. After F1L and the
+F2 campaign compiler, current full local acceptance passes 663 tests with 36
+gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
 `experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
@@ -84,9 +85,30 @@ metrics; each method has an independent event phase and answer artifact, and
 warm policies use isolated append-only memory files seeded from the same
 snapshot. The mode-aware auditor requires the exact 18-call trace, workload
 hashes, policy contracts, snapshot identities, six oracle-equal answers,
-service lifecycle, and cleanup. The Slurm gate is not yet run. Its fixed order,
-shared unknown backend cache, and uncalibrated cost constants keep
-`paper_result=false` and preclude a latency ranking.
+service lifecycle, and cleanup. CWRU job `3787267` completed on `compt336` in
+92 seconds at exact clean commit `6aafafd`. Every method returned the exact
+answer, the phase counts were `3+2+2+5+2+2+2=18`, three warm methods used
+separate append-only memory files, and guarded runtime cleanup succeeded. The
+independent read-only audit passed all 326 checks with no run-tree mutation.
+Its fixed order, shared unknown backend cache, single selective workload, and
+uncalibrated cost constants keep `paper_result=false` and preclude a latency
+ranking. The compact evidence record is
+`experiments/artifacts/m15_f1l_cwru_native_method_matrix_20260905.json`.
+
+M15-F2 now has a pure development campaign compiler. It hash-binds the two F0
+workload specifications, freezes all six F1 policies, and builds a seeded
+Williams design with six sequences per workload and block. The compiler proves
+that every method occupies each position once and that all 30 directed
+first-order method transitions occur once per stratum. It declares fresh
+service lifecycle, cache state, common calibration exclusion, method-isolated
+memory, warmup and measured attempts, exact-answer gating, and zero retry.
+Compilation makes zero backend/model/ontology calls and emits no measurements.
+The current configuration produces 12 sessions and 72 measured query attempts,
+but is intentionally not paper-ready: it has only one query label per
+workload and therefore cannot measure cross-task memory reuse, those labels
+are not hash-bound query artifacts, coordinator costs are uncalibrated,
+isolation is not live-validated, and repetition/statistical
+choices remain author-owned.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
@@ -1526,8 +1548,8 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F1L local implementation tests passed. M7 backend smoke and M12-C real
-calibration acceptance passed on the server. A real DashScope M12-B
+M0-M15-F2 campaign-planning implementation tests passed. M7 backend smoke and
+M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
 and three candidates; its credentialed post-fix rerun verified the revised
 prompt, typed grounding, and exact-request artifact. M12-D live online and
@@ -1536,6 +1558,11 @@ the local completion run.
 
 Latest recorded command results:
 
+- `./scripts/run_acceptance.sh`: 663 passed and 36 explicitly gated or
+  external-artifact tests skipped on Python 3.10.19. This includes the F1L
+  real-service method-matrix contracts and the F2 side-effect-free,
+  counterbalanced campaign compiler. CWRU F1L job `3787267` separately passed
+  its independent 326-check read-only audit at exact commit `6aafafd`.
 - `./scripts/run_acceptance.sh`: 612 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
   passed 140 with two live-service skips. Shell syntax validation passed for

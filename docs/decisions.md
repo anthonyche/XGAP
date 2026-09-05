@@ -1319,3 +1319,39 @@ the complete experimental mechanism. Hiding shared cache or charging common
 calibration to one policy would create a misleading comparison, while starting
 with a full counterbalanced campaign before validating every trace would make
 failures expensive and difficult to localize.
+
+Job `3787267` subsequently closed this gate at exact clean commit `6aafafd`.
+All six methods returned the exact answer, the complete phase trace contained
+18 calls, cleanup succeeded, and the independent read-only audit passed
+326/326 checks without run-tree mutation. The run did not remove the declared
+interference and remains `paper_result=false`.
+
+## D93 Paper-method scheduling is compiled and balance-checked before execution
+
+M15-F2 represents a method campaign as a deterministic plan rather than a loop
+embedded in a service runner. For the six frozen methods, each workload/block
+uses the even-treatment Williams construction: six sequences give each method
+every position exactly once and cover every directed first-order method
+transition exactly once. A content seed deterministically permutes labels and
+dispatch order. Each sequence declares a fresh Neo4j/Fuseki pair, common
+calibration excluded from method metrics, separate per-method memory, explicit
+warmup and measured attempts, and stop-without-retry failure behavior.
+
+The compiler binds workload specifications, validates the complete method set
+and expansion budget, proves balance, and makes zero external calls. Its output
+is always an unexecuted plan with `paper_result=false`. The initial development
+schema intentionally identifies query streams only by label, so it cannot
+become paper-ready until those labels are replaced or supplemented by
+hash-bound query artifacts. Fewer than 30 workload-query contexts and an
+unfrozen inferential analysis also become explicit blockers rather than silent
+defaults. A workload with fewer than two tasks is separately blocked because
+it cannot measure the cross-task memory behavior claimed by the agent design.
+
+Reason:
+
+The F1L mechanism gate showed that all policies execute but also exposed fixed
+order and shared-cache interference. Counterbalancing these effects must be a
+verifiable input to execution, not a retrospective analysis choice. Keeping
+the first compiler plan-only prevents an unrun schedule, an arbitrary
+repetition count, or development query labels from being promoted into a
+SIGMOD comparison.

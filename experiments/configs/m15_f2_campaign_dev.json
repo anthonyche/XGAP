@@ -1,0 +1,64 @@
+{
+  "schema_version": "m15-f2-campaign-spec-v1",
+  "campaign_id": "m15-f2-development-protocol-v1",
+  "experiment_mode": "development",
+  "design_seed": "xgap-m15-f2-development-v1",
+  "methods": [
+    "static_parallel_hash",
+    "static_risk_first_bind",
+    "no_memory",
+    "no_profile_probe",
+    "no_replan",
+    "full_agent"
+  ],
+  "workloads": [
+    {
+      "label": "selective",
+      "spec_path": "experiments/configs/m15_f0_selective.json",
+      "query_ids": [
+        "financial-risk-alice-high-risk"
+      ]
+    },
+    {
+      "label": "broad_hot",
+      "spec_path": "experiments/configs/m15_f0_broad_hot.json",
+      "query_ids": [
+        "financial-risk-alice-high-risk"
+      ]
+    }
+  ],
+  "protocol": {
+    "order_design": "williams_balanced_first_order",
+    "blocks_per_workload": 1,
+    "warmup_runs_per_method": 0,
+    "measured_runs_per_method_per_sequence": 1,
+    "service_lifecycle": "fresh_neo4j_fuseki_pair_per_sequence",
+    "cache_policy": "shared_unflushed_within_sequence_counterbalanced",
+    "calibration_policy": "common_three_profile_calibration_per_sequence_excluded",
+    "memory_policy": "isolated_per_method_sequence_seeded_from_common_calibration",
+    "failure_policy": "stop_sequence_no_retry"
+  },
+  "analysis": {
+    "correctness_gate": "exact_oracle_match_required",
+    "primary_metric": "end_to_end_elapsed_ms",
+    "secondary_metrics": [
+      "planning_elapsed_ms",
+      "query_elapsed_ms",
+      "total_bytes_moved",
+      "total_backend_calls",
+      "replan_count"
+    ],
+    "collection_aggregation": "none_preserve_raw_repetitions",
+    "inferential_analysis": "unfrozen_requires_author_approval"
+  },
+  "paper_readiness_blockers": [
+    "development_workloads_are_not_the_final_30_to_50_query_benchmark",
+    "query_streams_are_labels_not_hash_bound_query_artifacts",
+    "single_query_streams_cannot_measure_cross_task_memory_reuse",
+    "coordinator_cost_model_is_uncalibrated",
+    "paper_repetition_count_and_inferential_analysis_are_not_author_approved",
+    "cache_and_service_isolation_protocol_requires_live_validation"
+  ],
+  "max_sessions": 64,
+  "paper_result": false
+}
