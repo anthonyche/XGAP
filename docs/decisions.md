@@ -1434,3 +1434,22 @@ the query-bound schedule. The compiler freezes expected contract hashes but
 does not claim they match a live generated bundle; that check belongs to the
 next session preflight. The plan remains side-effect free,
 `paper_result=false`, and cannot authorize remote dispatch by itself.
+
+## D98 Recompute expected query contracts before the first backend observation
+
+F2B3 adds a new direct live-session path rather than weakening the F2A v1
+binding. Its preflight recompiles the query-bound campaign, checks the
+caller-supplied registry and bound-schedule hashes, selects the exact session,
+loads the verified workload bundle, recompiles each resolved-query contract,
+and compares the observed query-spec and bundle-dependent contract hashes with
+the registry. It then derives a v2 matrix binding containing the base campaign
+identity plus registry, query-binding, bound-schedule, and per-query contract
+identities.
+
+The matrix accepts this larger field set only under its v2 binding schema. A
+wrong expected contract is rejected before output creation or backend
+healthcheck even when the registry and schedule agree with each other. Query
+contract verification is a completed preflight fact and is not erased if a
+later backend operation fails. The direct runner remains a local engineering
+gate with no native service lifecycle or independent evidence audit; neither
+remote dispatch nor a paper claim is enabled yet.

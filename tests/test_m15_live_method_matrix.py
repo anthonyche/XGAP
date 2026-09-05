@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from xgap.experiments.m15_live_method_matrix import (
+    QUERY_BOUND_CAMPAIGN_BINDING_SCHEMA_VERSION,
     main,
     run_m15_live_method_matrix,
 )
@@ -230,3 +231,45 @@ def test_live_matrix_rejects_custom_order_without_campaign_binding(
         )
 
     assert not (tmp_path / "unbound-custom-order").exists()
+
+
+def test_live_matrix_rejects_incomplete_query_bound_binding(
+    tmp_path: Path,
+) -> None:
+    bundle = _bundle(tmp_path)
+    order = tuple(M15Method)
+
+    with pytest.raises(ValueError, match="cover every query contract"):
+        run_m15_live_method_matrix(
+            workload_bundle=bundle,
+            output_root=tmp_path,
+            run_id="incomplete-query-binding",
+            repo_root=REPO_ROOT,
+            clients=_clients(bundle),
+            method_order=order,
+            campaign_binding={
+                "schema_version": QUERY_BOUND_CAMPAIGN_BINDING_SCHEMA_VERSION,
+                "campaign_id": "campaign",
+                "campaign_spec_sha256": "0" * 64,
+                "schedule_sha256": "1" * 64,
+                "session_id": "session",
+                "workload_label": "selective",
+                "workload_id": bundle.spec.workload_id,
+                "block_index": 1,
+                "sequence_index": 1,
+                "query_ids": ["financial-risk-alice-high-risk"],
+                "method_order": [method.value for method in order],
+                "method_task_ids": {
+                    method.value: f"task.{method.value}" for method in order
+                },
+                "memory_namespaces": {
+                    method.value: f"memory.{method.value}" for method in order
+                },
+                "registry_id": "registry",
+                "query_binding_sha256": "2" * 64,
+                "query_bound_schedule_sha256": "3" * 64,
+                "query_contracts": {},
+            },
+        )
+
+    assert not (tmp_path / "incomplete-query-binding").exists()

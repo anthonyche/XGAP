@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A VERIFIED; F2B2 QUERY-BOUND CAMPAIGN LOCAL, NO REMOTE DISPATCH
-- Version Label: m15_remote_loop_v25
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A VERIFIED; F2B3 LIVE QUERY BINDING LOCAL, NATIVE/AUDIT PENDING
+- Version Label: m15_remote_loop_v26
 
 ## Current claim boundary
 
@@ -419,7 +419,10 @@ portable bundle-bound hash. F2B2 freezes those expected hashes for both
 development workloads, checks exact registry coverage, and emits a new
 location-independent query-bound schedule over all twelve sessions. Those
 expected contract hashes are not yet recomputed from a selected live bundle,
-and the matrix does not consume them yet.
+and F2B3 now recomputes the selected contract from the verified generated
+bundle before output or backend observation. Its v2 matrix binding carries the
+complete identity through the six-method sequence. Native service lifecycle,
+Slurm packaging, and independent audit do not yet consume that path.
 Do not dispatch the remaining 11 development sessions yet. A
 hash-bound multi-query stream and all paper campaign dispatch remain disabled.
 No paper-performance claim is currently made.

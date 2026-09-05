@@ -27,6 +27,7 @@ from xgap.experiments.m15_method_policy import (
     M15MethodTaskResult,
     run_m15_method_task,
 )
+from xgap.experiments.m15_query_contract import QUERY_CONTRACT_SCHEMA_VERSION
 from xgap.experiments.m15_scaled_federation import (
     build_m15_scaled_observation_catalogs,
     build_m15_scaled_observation_requests,
@@ -53,6 +54,9 @@ from xgap.tools import (
 LIVE_MATRIX_SCHEMA_VERSION = "m15-f1-live-method-matrix-v1"
 LIVE_MATRIX_COST_MODEL_VERSION = "m15-f1-live-matrix-cost-model-v1"
 CAMPAIGN_BINDING_SCHEMA_VERSION = "m15-f2-live-campaign-binding-v1"
+QUERY_BOUND_CAMPAIGN_BINDING_SCHEMA_VERSION = (
+    "m15-f2-live-query-bound-campaign-binding-v1"
+)
 _SAFE_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _METHOD_ORDER = (
@@ -89,7 +93,7 @@ def _execution_contract(
             "live_backend_method_mechanism_engineering_gate",
         )
 
-    required = {
+    required_v1 = {
         "schema_version",
         "campaign_id",
         "campaign_spec_sha256",
@@ -105,10 +109,22 @@ def _execution_contract(
         "memory_namespaces",
     }
     binding = dict(campaign_binding)
-    if set(binding) != required:
-        raise ValueError("campaign binding fields do not match the v1 contract")
-    if binding["schema_version"] != CAMPAIGN_BINDING_SCHEMA_VERSION:
+    schema_version = binding.get("schema_version")
+    if schema_version == CAMPAIGN_BINDING_SCHEMA_VERSION:
+        required = required_v1
+        evidence_class = "live_backend_campaign_session_engineering_gate"
+    elif schema_version == QUERY_BOUND_CAMPAIGN_BINDING_SCHEMA_VERSION:
+        required = required_v1 | {
+            "registry_id",
+            "query_binding_sha256",
+            "query_bound_schedule_sha256",
+            "query_contracts",
+        }
+        evidence_class = "live_backend_query_bound_session_engineering_gate"
+    else:
         raise ValueError("campaign binding schema_version is unsupported")
+    if set(binding) != required:
+        raise ValueError("campaign binding fields do not match its versioned contract")
     for key in (
         "campaign_id",
         "session_id",
@@ -159,13 +175,52 @@ def _execution_contract(
                 "safe identifier"
             )
         binding[field] = dict(values)
+    if schema_version == QUERY_BOUND_CAMPAIGN_BINDING_SCHEMA_VERSION:
+        _validate_query_contract_binding(binding, query_ids=query_ids)
     return (
         selected,
         binding,
         "williams_campaign_sequence",
         "shared_unflushed_within_sequence_counterbalanced_by_campaign",
-        "live_backend_campaign_session_engineering_gate",
+        evidence_class,
     )
+
+
+def _validate_query_contract_binding(
+    binding: dict[str, Any],
+    *,
+    query_ids: list[str],
+) -> None:
+    if not isinstance(binding["registry_id"], str) or not _SAFE_RUN_ID.fullmatch(
+        binding["registry_id"]
+    ):
+        raise ValueError("campaign binding registry_id is invalid")
+    for key in ("query_binding_sha256", "query_bound_schedule_sha256"):
+        if not isinstance(binding[key], str) or not _SHA256.fullmatch(binding[key]):
+            raise ValueError(f"campaign binding {key} must be a SHA-256 digest")
+    contracts = binding["query_contracts"]
+    if not isinstance(contracts, Mapping) or set(contracts) != set(query_ids):
+        raise ValueError("campaign binding must cover every query contract exactly")
+    normalized: dict[str, dict[str, Any]] = {}
+    for query_id in query_ids:
+        value = contracts[query_id]
+        if not isinstance(value, Mapping) or set(value) != {
+            "schema_version",
+            "query_spec_sha256",
+            "query_contract_sha256",
+            "workload_id",
+        }:
+            raise ValueError("campaign query contract fields are invalid")
+        record = dict(value)
+        if record["schema_version"] != QUERY_CONTRACT_SCHEMA_VERSION:
+            raise ValueError("campaign query contract schema_version is unsupported")
+        for key in ("query_spec_sha256", "query_contract_sha256"):
+            if not isinstance(record[key], str) or not _SHA256.fullmatch(record[key]):
+                raise ValueError(f"campaign query contract {key} is invalid")
+        if record["workload_id"] != binding["workload_id"]:
+            raise ValueError("campaign query contract workload_id is inconsistent")
+        normalized[query_id] = record
+    binding["query_contracts"] = normalized
 
 
 @dataclass(frozen=True)

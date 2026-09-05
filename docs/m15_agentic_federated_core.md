@@ -79,7 +79,7 @@ Implemented locally:
   clients through backend plugins and persists semantic, plan, health, result,
   validation, status, source-hash, and manifest evidence without retrying.
 
-Current full local acceptance passes 693 tests with 36 explicitly gated or
+Current full local acceptance passes 700 tests with 36 explicitly gated or
 external-artifact tests skipped.
 
 Remote execution is decomposed into explicit B0/B1 environment and CPU-smoke
@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B QUERY-BOUND CAMPAIGN LOCAL, LIVE BINDING NEXT**
+Status: **F0/F1/F2A LIVE GATES VERIFIED; F2B LIVE QUERY BINDING LOCAL, NATIVE/AUDIT NEXT**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -352,6 +352,17 @@ scheduler-side label gap, but the expected contracts have not yet been
 recomputed against the live generated bundle and the existing session runner
 does not consume this plan. F2B3 must perform both checks before enabling one
 new remote engineering gate.
+
+F2B3 now performs the missing live-bundle verification in a direct runner.
+Before it creates an output directory or observes a backend, it recompiles the
+query-bound plan, verifies the expected registry and bound-schedule hashes,
+loads the deterministic bundle, and recomputes the selected resolved-query
+contract. The matrix receives a v2 binding that includes the exact query-spec,
+query-contract, workload, registry, and schedule identities; incomplete or
+wrong contracts are rejected. The six methods then execute in the compiled
+order with the existing exact-answer and 18-call gates. This path is locally
+verified only: fresh Neo4j/Fuseki service lifecycle, Slurm entry, and an
+independent cross-artifact audit remain F2B4.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

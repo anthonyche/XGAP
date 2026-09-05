@@ -71,7 +71,7 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L and the
-F2B query-bound campaign compiler, current full local acceptance passes 693 tests with 36
+F2B live query-bound session runner, current full local acceptance passes 700 tests with 36
 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -147,6 +147,17 @@ stream. The resulting query-bound schedule hash excludes local path provenance
 and is stable when identical query specs move. This is still a side-effect-free
 plan: live bundle verification and runner/auditor consumption remain F2B3, so
 no additional CWRU session is authorized.
+
+M15-F2B3 adds direct live-bundle consumption. Its preflight verifies the
+registry and query-bound schedule hashes, selects the exact session, loads the
+deterministic bundle, recompiles the resolved-query contract, and checks the
+observed query-spec and contract hashes before output creation or backend
+healthcheck. The existing six-method matrix accepts those identities only in a
+new v2 binding and preserves the compiled order, exact-answer requirement,
+18-call budget, and zero-retry rule. A deliberately self-consistent registry
+with the wrong expected contract is rejected. This path remains local and
+`paper_result=false`; native lifecycle, Slurm packaging, and read-only audit
+are still required before an F2B CWRU gate.
 
 M15-B now has a **real Neo4j+Fuseki vertical slice verified on CWRU; streaming,
 batching, and live cancellation remain pending**. The local
@@ -1603,12 +1614,14 @@ Latest recorded command results:
   independent read-only audit passed 374/374 checks and reported
   `run_tree_mutated=false`. This is a single-session mechanism gate, not a
   comparative result.
-- `./scripts/run_acceptance.sh`: 693 passed and 36 explicitly gated or
+- `./scripts/run_acceptance.sh`: 700 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. This includes the F1L
   real-service method-matrix contracts, the F2 counterbalanced campaign
   compiler, its hash-bound single-session native runner/auditor, the F2B1
   portable resolved-query contract compiler, and the F2B2 query-bound campaign
-  compiler. CWRU F1L job `3787267` separately passed
+  compiler. The F2B3 direct runner additionally verifies the selected contract
+  from the live bundle before passing a v2 identity into the six-method matrix.
+  CWRU F1L job `3787267` separately passed
   its independent 326-check read-only audit at exact commit `6aafafd`.
 - `./scripts/run_acceptance.sh`: 612 passed and 36 explicitly gated or
   external-artifact tests skipped on Python 3.10.19. The M15-focused subset
