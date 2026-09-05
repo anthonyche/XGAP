@@ -116,6 +116,8 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     ).read_text(encoding="utf-8")
     assert "XGAP_M15_WORKLOAD_MODE=adaptive" in adaptive_run
     assert "run_m15_native_services.sbatch" in adaptive_run
+    assert "SLURM_SUBMIT_DIR" in adaptive_run
+    assert "BASH_SOURCE" not in adaptive_run
 
 
 def test_config_enables_cancel_only_with_exact_opt_in(tmp_path: Path) -> None:

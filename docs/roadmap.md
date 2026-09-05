@@ -118,6 +118,11 @@ M15-B vertical slice remains reproducible. Until that job runs and the cost
 model is calibrated, the artifacts remain a development gate with
 `paper_result=false`.
 
+First CWRU attempt `3787144` failed before service startup because Slurm's
+copied wrapper used its spool path to locate the repository-owned lifecycle
+script. The checkout-path repair is local and must be published before one new
+attempt; this failure provides no adaptive-query evidence.
+
 ### M15-E Selective Semantic Resolution
 
 Goal: integrate deterministic interpretation, clarification, optional

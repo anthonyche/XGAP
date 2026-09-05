@@ -1,0 +1,33 @@
+{
+  "artifact_id": "m15-d2-cwru-adaptive-wrapper-failure-3787144",
+  "artifact_role": "cwru_engineering_failure_diagnostic_not_paper_result",
+  "observed_at_utc": "2026-09-05",
+  "slurm": {
+    "elapsed": "00:00:02",
+    "exit_code": "1:0",
+    "job_id": "3787144",
+    "node": "compt336",
+    "state": "FAILED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "ee52c86481a86ae87c4e662985fa6f8f6eb95b9a"
+  },
+  "failure": {
+    "automatic_retries": 0,
+    "error": "/var/spool/slurm/job3787144/slurm_script: line 13: /var/spool/slurm/job3787144/run_m15_native_services.sbatch: No such file or directory",
+    "failed_stage": "slurm_adaptive_wrapper_path_resolution",
+    "job_owned_run_root_created": false,
+    "native_archives_staged": false,
+    "services_started": false,
+    "query_invoked": false,
+    "root_cause": "The submitted wrapper derived its sibling script path from BASH_SOURCE[0], but Slurm executes a copied spool script. The sibling service script exists only in the submitted repository checkout."
+  },
+  "resolution": {
+    "strategy": "Resolve the repository from XGAP_REPO_ROOT or SLURM_SUBMIT_DIR, validate pyproject.toml and the service script, export the resolved root, then source the repository-owned service script.",
+    "resubmission_required": true,
+    "same_job_resubmitted": false
+  },
+  "remote_artifact": "slurm-xgap-m15-native-adaptive-3787144.out",
+  "paper_result": false
+}

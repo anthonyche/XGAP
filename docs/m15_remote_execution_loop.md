@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D AND REFRESHED D1 CPU GATES VERIFIED; LOCAL M15-C2/D2 LIVE ADAPTIVE PATH IMPLEMENTED
-- Version Label: m15_remote_loop_v14
+- Verification Status: CWRU B2D AND REFRESHED D1 CPU GATES VERIFIED; FIRST D2 WRAPPER ATTEMPT FAILED BEFORE SERVICE START AND IS FIXED LOCALLY
+- Version Label: m15_remote_loop_v15
 
 ## Current claim boundary
 
@@ -31,6 +31,15 @@ all seven declared artifacts, 128 focused tests passed with two gated skips,
 and the vertical-slice, alternative-selection, and bounded-replanning
 assertions all passed. This verifies the published offline control substrate;
 it is not a live-service or paper-performance result.
+
+The first D2 submission, job `3787144` at exact clean commit `ee52c86`, failed
+on `compt336` after two seconds and made no service or query attempt. Slurm ran
+the copied wrapper as `/var/spool/slurm/job3787144/slurm_script`; deriving a
+sibling path from `BASH_SOURCE[0]` therefore looked for the service script in
+the spool directory. The wrapper now resolves the checkout from the explicit
+`XGAP_REPO_ROOT` or Slurm's `SLURM_SUBMIT_DIR`, validates both repository
+markers before sourcing, and exports the same root to the main lifecycle. The
+failed job is preserved as evidence, not retried in place.
 
 B0 observations on 2026-09-04 established an exact checkout at commit
 `465e2e2454b74aaf7a1c055797740bde8ca5ace0`, working Slurm commands,
@@ -281,9 +290,10 @@ VPN reachability and a working user-owned SSH alias.
   point. The historical vertical-slice mode and job `3787110` remain unchanged.
   The same read-only auditor accepts a declared mode and enforces its exact
   schema and artifact contract.
-- Immediate external gate: publish the locally accepted C2/D2 commit, update
-  the CWRU checkout to that exact clean commit, and run exactly one separately
-  numbered native adaptive-service job.
+- Immediate external gate: publish the wrapper path-resolution repair, update
+  the CWRU checkout to that exact clean commit, and run one explicitly new
+  native adaptive-service attempt. Job `3787144` must remain immutable and
+  must not be represented as a service-level failure.
 - Remaining research gate: calibrate the cost model and exercise plan changes
   on scaled/skewed workloads. The tiny fixture may legitimately select zero or
   one replan and is only a live control-path gate, not performance evidence.
@@ -310,8 +320,9 @@ VPN reachability and a working user-owned SSH alias.
 
 B0, both B1 CPU gates, B2 prerequisite, B2B supply, B2D service lifecycle, B3
 federated execution, and the independent evidence audit are complete. Keep
-jobs `3787110` and `3787126` and their run trees immutable. The local M15-C2/D2
-live adaptive implementation has passed regression and is committed; after it
-is published and the CWRU checkout is verified at that exact clean commit, the
-next handoff is one distinct native adaptive job. No CWRU adaptive or
-paper-result claim is currently made.
+jobs `3787110` and `3787126` and their run trees immutable. D2 job `3787144`
+failed before creating its run tree because its copied Slurm wrapper resolved
+the sibling service script in the spool directory. Preserve its top-level
+output. After the path repair is published and the CWRU checkout is verified
+at that exact clean commit, the next handoff is one explicitly new adaptive
+job. No CWRU adaptive or paper-result claim is currently made.

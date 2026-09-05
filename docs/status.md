@@ -126,6 +126,16 @@ vertical slice or the adaptive artifact set. The cost model is explicitly
 uncalibrated and every adaptive manifest sets `paper_result=false`; CWRU live
 execution, calibration, scaling, and baselines remain pending.
 
+The first CWRU D2 submission, job `3787144` at exact clean commit `ee52c86`,
+failed after two seconds before creating a run tree, staging an archive,
+starting a service, or invoking a query. The copied Slurm wrapper incorrectly
+resolved its sibling service script relative to the spool copy. The local
+repair uses `XGAP_REPO_ROOT` or `SLURM_SUBMIT_DIR`, validates the checkout and
+target script, and is covered by a wrapper regression assertion. The failed
+attempt is frozen in
+`experiments/artifacts/m15_d2_cwru_adaptive_wrapper_failure_20260905.json` and
+is not a live adaptive result.
+
 M15-B2D/B3 job `3787110` ran exact clean commit `cd564de8` on `compt331` in
 62 seconds. Neo4j 5.26.30 and Fuseki 5.6.0 ran on allocation-local XFS and
 loopback-only ports with Java 17. The fixture load passed, the coordinator

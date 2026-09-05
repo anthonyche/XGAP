@@ -8,6 +8,12 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${XGAP_REPO_ROOT:-${SLURM_SUBMIT_DIR:-$PWD}}"
+SERVICE_SCRIPT="$REPO_ROOT/scripts/slurm/run_m15_native_services.sbatch"
+if [[ ! -f "$REPO_ROOT/pyproject.toml" || ! -f "$SERVICE_SCRIPT" ]]; then
+  echo "XGAP_REPO_ROOT is not a complete XGAP checkout: $REPO_ROOT" >&2
+  exit 2
+fi
+export XGAP_REPO_ROOT="$REPO_ROOT"
 export XGAP_M15_WORKLOAD_MODE=adaptive
-source "$SCRIPT_DIR/run_m15_native_services.sbatch"
+source "$SERVICE_SCRIPT"
