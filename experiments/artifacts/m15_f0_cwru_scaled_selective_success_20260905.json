@@ -1,0 +1,78 @@
+{
+  "artifact_id": "m15-f0-cwru-scaled-selective-success-3787213",
+  "artifact_role": "cwru_engineering_acceptance_not_paper_result",
+  "observed_at_utc": "2026-09-05",
+  "slurm": {
+    "elapsed": "00:01:29",
+    "exit_code": "0:0",
+    "job_id": "3787213",
+    "node": "compt336",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "32c157f1f5e84b81f33645f55ebd631b14fbc17c"
+  },
+  "workload": {
+    "answer_rows": 120,
+    "bundle_schema_version": "m15-f0-workload-bundle-v2",
+    "companies": 200,
+    "generator_version": "m15-f0-generator-v3",
+    "high_risk_companies": 20,
+    "profile": "selective",
+    "transfers": 5000,
+    "workload_id": "selective-dev-v1"
+  },
+  "fixture_load": {
+    "fuseki": {
+      "bytes_sent": 31287,
+      "elapsed_ms": 194.3988762795925,
+      "operations_attempted": 1,
+      "strategy": "graph_store_post",
+      "success": true
+    },
+    "neo4j": {
+      "batch_size": 100,
+      "bytes_sent": 625644,
+      "elapsed_ms": 18262.413378804922,
+      "operations_attempted": 56,
+      "statement_count": 56,
+      "strategy": "sequential_idempotent_cypher",
+      "success": true
+    }
+  },
+  "adaptive_execution": {
+    "executed_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+    "final_row_count": 120,
+    "initial_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+    "post_probe_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+    "replan_count": 0,
+    "success": true,
+    "total_bytes_moved": 28702,
+    "total_remote_calls": 2,
+    "validation_passed": true
+  },
+  "service_lifecycle": {
+    "automatic_retries": 0,
+    "cleanup_error": null,
+    "runtime_removed": true,
+    "service_error": null,
+    "service_restarts": 0,
+    "success": true
+  },
+  "independent_audit": {
+    "check_count": 188,
+    "failed_check_ids": [],
+    "output": "runs/audits/cwru-m15-f0-selective-3787213-audit.json",
+    "run_tree_mutated": false,
+    "success": true
+  },
+  "remote_run_root": "runs/cwru-m15-native-scaled-adaptive-3787213",
+  "claim_boundary": {
+    "calibrated": false,
+    "comparative": false,
+    "repetitions": 1,
+    "result_class": "real_backend_scaled_engineering_acceptance"
+  },
+  "paper_result": false
+}

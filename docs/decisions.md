@@ -1276,3 +1276,20 @@ services became healthy, but its sixth and final Neo4j statement put all 5,000
 transfers in one HTTP request and timed out after the preceding five statements
 had succeeded. Fixed-size generation makes request work bounded and auditable
 without disguising the failure through a larger timeout or an automatic retry.
+
+## D91 A single scaled success closes an engineering gate, not a paper claim
+
+The first successful selective run is accepted only when the exact clean Git
+commit, generated workload, service lifecycle, load reports, adaptive result,
+oracle, cleanup, and an external read-only audit agree. It establishes that the
+scaled pipeline can execute on real Neo4j and Fuseki. It does not estimate a
+latency distribution or support a comparison because it has one repetition,
+fixed development cost constants, one workload regime, and no counterbalanced
+baseline matrix.
+
+Reason:
+
+CWRU job `3787213` passed all 188 independent checks after two informative
+failed attempts. Keeping the system-acceptance claim separate from a SIGMOD
+performance claim allows implementation to advance without treating one warm
+cluster observation as statistically meaningful evidence.

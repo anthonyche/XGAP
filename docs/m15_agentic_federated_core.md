@@ -232,7 +232,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0 GENERATOR-V3 BATCHED-LOAD REPAIR AND F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE GATES PENDING**
+Status: **F0 SELECTIVE REAL-BACKEND GATE VERIFIED; F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE MATRIX PENDING**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -259,9 +259,13 @@ commit `3a2bce9` passed that syntax boundary and started both services, but
 statement 6/6 still carried all 5,000 transfers and exceeded the fixed Neo4j
 request deadline after five successful statements. No profile or query ran.
 Generator v3 and bundle schema v2 now bind a fixed 100-row batch protocol,
-producing 56 selective load statements without a timeout increase or retry. A
-new selective job, calibrated repetitions, and the live baseline matrix remain
-pending. F1's deterministic paired sanity check already executes all six
+producing 56 selective load statements without a timeout increase or retry.
+Job `3787213` at clean commit `32c157f` then completed: all 56 Neo4j statements
+loaded, the exact 120-row result used risk-first bind with two calls and 28,702
+bytes moved, and a separate read-only audit passed 188/188 checks without run
+mutation. This is a single-run engineering gate. Broad-hot execution,
+calibrated repetitions, and the live baseline matrix remain pending. F1's
+deterministic paired sanity check already executes all six
 declared methods. Under one controlled stale-to-current latency transition,
 all return the exact answer; full agent changes from parallel hash to
 risk-first bind while no-replan observes the same preferred change but retains

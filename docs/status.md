@@ -51,7 +51,12 @@ one request still contained all 5,000 transfers and exceeded the fixed
 30-second Neo4j deadline after five successful statements. It made zero profile
 and query calls. Both failures are preserved as non-paper diagnostic artifacts;
 generator v3 uses 100-row deterministic batches without changing the timeout
-or retry policy. A new selective CWRU run is pending.
+or retry policy. Job `3787213` at clean commit `32c157f` then completed on
+`compt336` in 89 seconds. Neo4j loaded all 56 statements in 18.26 seconds,
+Fuseki loaded once, and the exact 120-row answer used risk-first bind, two
+remote calls, and 28,702 transferred bytes. The separate read-only audit passed
+188/188 checks with no run-tree mutation. This closes the single-run selective
+engineering gate, not calibration, repetition, or comparative performance.
 
 M15-F1 now has a locally executable cross-task method surface. Snapshot reuse
 is guarded by a SHA-256 context over semantics, candidate plans and native

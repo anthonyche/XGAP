@@ -149,7 +149,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0 BATCHED-LOAD REPAIR AND F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE GATES PENDING**
+Current status: **F0 SELECTIVE REAL-BACKEND GATE VERIFIED; F1 CONTROLLED METHOD MATRIX VERIFIED LOCALLY; LIVE MATRIX PENDING**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -162,9 +162,10 @@ adaptive runner, native lifecycle, and read-only auditor consume the verified
 bundle through a separate `scaled_adaptive` mode. The auditor also proves that
 the declared profile corresponds to its committed spec.
 
-This closes only the local workload-substrate gate. The artifacts remain
-`paper_result=false`; CWRU execution, calibration, repetitions, baseline and
-ablation scheduling, additional queries/sources, and UI work remain open.
+The local workload substrate and one real-backend selective engineering gate
+are closed. The artifacts remain `paper_result=false`; broad-hot execution,
+calibration, repetitions, baseline and ablation scheduling, additional
+queries/sources, and UI work remain open.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
@@ -180,6 +181,14 @@ v3 and bundle schema v2 now declare and enforce fixed 100-row Neo4j batches;
 the selective workload therefore has 56 statements. The 30-second request
 deadline and zero-retry policy remain unchanged. This second failed run is also
 immutable diagnostic evidence, not a performance result.
+
+Generator-v3 job `3787213` at clean commit `32c157f` completed on `compt336`.
+Neo4j loaded all 56 fixed batches, the coordinator returned the exact 120-row
+answer with risk-first bind, two remote calls, and 28,702 bytes moved, and the
+independent read-only audit passed 188/188 checks without mutating the run tree.
+The compact evidence record is
+`experiments/artifacts/m15_f0_cwru_scaled_selective_success_20260905.json`.
+It is a one-run system gate, not calibrated or comparative paper evidence.
 
 ## Historical Milestones
 

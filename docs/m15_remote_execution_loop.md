@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2 VERIFIED; F0 GENERATOR-V3 BATCHED-LOAD REPAIR VERIFIED LOCALLY; NEW CWRU F0/CALIBRATION PENDING
-- Version Label: m15_remote_loop_v18
+- Verification Status: CWRU B2D/D2/F0 SELECTIVE VERIFIED; F1 LIVE MATRIX AND CALIBRATION PENDING
+- Version Label: m15_remote_loop_v19
 
 ## Current claim boundary
 
@@ -349,6 +349,13 @@ VPN reachability and a working user-owned SSH alias.
   in the manifest, without changing the timeout or zero-retry policy. The run
   is preserved in
   `experiments/artifacts/m15_f0_cwru_scaled_selective_timeout_20260905.json`.
+- Third selective job `3787213` at clean commit `32c157f` completed on
+  `compt336`: Neo4j loaded all 56 fixed batches, the exact 120-row answer used
+  risk-first bind with two remote calls and 28,702 bytes moved, and the
+  independent read-only audit passed 188/188 checks with no run-tree mutation.
+  Its compact engineering record is
+  `experiments/artifacts/m15_f0_cwru_scaled_selective_success_20260905.json`;
+  one run with an uncalibrated model remains `paper_result=false`.
 - F1 locally defines six executable task policies with exact memory-context
   compatibility and a controlled paired matrix. Its live gate remains a
   separate future Slurm mode so the current F0 selective result is not mixed
@@ -364,8 +371,8 @@ B0, both B1 CPU gates, B2 prerequisite, B2B supply, B2D service lifecycle, B3
 federated execution, D2 live adaptation, and their independent evidence audits
 are complete. Keep jobs `3787110`, `3787126`, and `3787152` and their run trees
 immutable. D2 job `3787144` remains a separate pre-service wrapper failure;
-preserve its top-level output. The scaled/skewed workload and its auditor are
-now locally verified and must be published at one exact clean commit. The next
-external handoff is one `selective` scaled-adaptive job at the generator-v3
-clean commit, followed
-by a separate read-only audit. No paper-performance claim is currently made.
+preserve its top-level output. F0 selective job `3787213` and its 188-check
+audit are now complete and immutable. The next external handoff is the
+separately versioned F1 live-method-matrix gate after its runner and auditor are
+published at one exact clean commit. No paper-performance claim is currently
+made.
