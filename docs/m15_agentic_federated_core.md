@@ -703,6 +703,16 @@ also rejects tampered choices, costs, or analysis. Full local acceptance now
 passes 939 tests with 36 explicit skips. This authorizes one development CWRU
 gate, not a paper claim; `paper_result=false` remains mandatory.
 
+F2C13C freezes how an accepted paired run is reduced before its measurements
+are available. The summary builder requires the successful independent audit,
+revalidates the exact commit, supported schemas, frozen 264-plan/528-call
+ledger, ten-task selection seals, hashes, and shadow-use boundary, and refuses
+overwrite. It reports both methods, paired profile-minus-memory regret,
+selection agreement, profile acquisition, and historical training as separate
+cost scopes. The result remains a descriptive single-allocation development
+record with zero LLM/ontology calls, no semantic-frontier or generalization
+claim, and `paper_result=false`.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

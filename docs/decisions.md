@@ -2307,3 +2307,24 @@ tests with 36 explicit environment or external-artifact skips. This authorizes
 one clean CWRU development run and audit only; it adds no confirmatory,
 semantic-frontier, LLM, ontology, or paper-performance claim, and all outputs
 remain `paper_result=false`.
+
+## D132 Precommit the compact paired summary before reading a CWRU result
+
+F2C13C adds a deterministic summary builder that accepts only a successful
+F2C13B outer-root audit with the exact supported schema, no failed checks, and
+no run-tree mutation. It rejects a commit mismatch, unsuccessful status,
+invalid validation, schedule-count drift, a changed method set, selection-seal
+coverage or hash drift, analysis-hash drift, shadow leakage into selection, or
+any artifact promoted beyond the frozen descriptive development boundary.
+
+The summary reports the two methods side by side, their per-task and aggregate
+profile-minus-memory regret deltas, selected-plan and selected-strategy
+agreement, profile-acquisition cost, evaluation-only controls, and historical
+training cost as a separate non-amortized ledger. It records that family
+memory made zero current-query profile calls while the comparison method made
+20, and that both made zero LLM and ontology-service calls. The output is
+content-hashed and written outside the immutable source tree with a no-overwrite
+CLI. Its claim boundary is exactly ten semantic tasks in one native allocation,
+descriptive statistics only, with no generalization or semantic-frontier
+claim and `paper_result=false`. This prevents post-result metric selection; it
+does not authorize another CWRU job or choose the future multi-family domains.

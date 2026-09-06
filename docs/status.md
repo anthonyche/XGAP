@@ -494,6 +494,17 @@ tests pass. Full acceptance is 939 passed and 36 explicitly gated skips. No
 CWRU F2C13B result exists yet, so the gate remains local and
 `paper_result=false`.
 
+M15-F2C13C now precommits the result-reduction boundary before any F2C13B
+CWRU measurements are read. Its no-overwrite summary CLI accepts only a
+successful independent read-only audit, verifies the exact commit, schemas,
+264-plan/528-call ledger, ten-task seal coverage, artifact hashes, and
+evaluation-only shadow boundary, and emits one content-hashed comparison. The
+output keeps historical training, current-query profile acquisition, selected
+serving, and shadow evaluation costs distinct; reports both methods and paired
+profile-minus-memory deltas; and remains single-allocation descriptive evidence
+with no generalization, semantic-frontier, LLM, ontology, or paper claim. The
+next external gate is still the single already-authorized F2C13B run and audit.
+
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,
 executed 231 plans and 462 backend calls, returned seven semantic frontier

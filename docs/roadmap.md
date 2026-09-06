@@ -554,7 +554,12 @@ entry, and independent reconstruction auditor. Controlled failure injection
 confirms stop-on-first-failure with zero retry; tamper tests reject altered
 family choices, profile costs, or paired analysis. Full local acceptance
 passes 939 tests with 36 explicit skips. One clean native run plus its
-outer-root audit is the next gate; a larger multi-family workload follows.
+outer-root audit is the next gate. F2C13C now freezes the post-audit reduction:
+one content-hashed no-overwrite summary with separate training, acquisition,
+serving, and evaluation ledgers; method metrics; paired regret deltas; and
+explicitly descriptive ten-task claim limits. It cannot consume an unaudited
+run or promote `paper_result`. A larger multi-family workload follows, but its
+actual family/domain inventory remains an author-level research decision.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

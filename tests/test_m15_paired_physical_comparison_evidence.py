@@ -25,6 +25,10 @@ from xgap.experiments.m15_native_services import (
 from xgap.experiments.m15_paired_physical_comparison_evidence import (
     audit_m15_paired_physical_comparison,
 )
+from xgap.experiments.m15_paired_physical_comparison_summary import (
+    PAIRED_PHYSICAL_SUMMARY_SCHEMA_VERSION,
+    build_m15_paired_physical_comparison_summary,
+)
 from xgap.experiments.m15_parameterized_workload import (
     generate_m15_parameterized_workload_bundle,
 )
@@ -197,6 +201,40 @@ def test_auditor_reconstructs_both_selections_and_analysis_read_only(
     assert audit.success, audit.failed_check_ids
     assert audit.run_tree_mutated is False
     assert len(audit.checks) > 1300
+
+    summary = build_m15_paired_physical_comparison_summary(
+        run_root=root,
+        audit=audit.to_dict(),
+    )
+
+    assert summary["schema_version"] == PAIRED_PHYSICAL_SUMMARY_SCHEMA_VERSION
+    assert summary["counts"]["total_plan_runs"] == 264
+    assert summary["counts"]["total_backend_calls"] == 528
+    assert summary["execution_boundary"] == {
+        "family_memory_current_query_profile_calls": 0,
+        "profile_method_current_query_profile_calls": 20,
+        "shadow_measurements_used_for_evaluation_only": True,
+        "automatic_retries": 0,
+        "llm_calls_made": 0,
+        "ontology_service_calls_made": 0,
+    }
+    assert set(summary["methods"]) == {
+        "family_memory",
+        "current_query_dual_profile",
+    }
+    assert len(summary["paired_profile_minus_memory"]["per_semantic_task"]) == 10
+    assert summary["selection_agreement"]["semantic_task_count"] == 10
+    assert summary["historical_training_cost"]["silently_amortized"] is False
+    assert summary["claim_boundary"]["generalization_claim"] is False
+    assert summary["paper_result"] is False
+
+    rejected_audit = audit.to_dict()
+    rejected_audit["success"] = False
+    with pytest.raises(ValueError, match="accepted read-only audit"):
+        build_m15_paired_physical_comparison_summary(
+            run_root=root,
+            audit=rejected_audit,
+        )
 
 
 @pytest.mark.parametrize(

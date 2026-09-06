@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B VERIFIED; F2C13B PAIRED LIVE GATE LOCAL
-- Version Label: m15_remote_loop_v30
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B VERIFIED; F2C13B PAIRED LIVE GATE LOCAL; F2C13C SUMMARY LOCAL
+- Version Label: m15_remote_loop_v31
 
 ## Current claim boundary
 
@@ -625,3 +625,61 @@ paired analysis, and verifies the exact 528-call phase/run order without
 mutating the run tree. Full local acceptance passes 939 tests with 36 explicit
 environment or external-artifact skips. One clean CWRU run and its successful
 outer-root audit are now the next gate; no result is claimed yet.
+
+After that one F2C13B job succeeds, run its independent auditor once from the
+same exact experiment commit. Do not retry a failed job or overwrite an audit:
+
+```bash
+cd "$HOME/XGAP-m15-465e2e2"
+XGAP_F2C13B_JOB=<successful-job-id>
+XGAP_F2C13B_COMMIT=cf3d430dfe952e7fdbdcf8cc65c1d02cb4e7c660
+XGAP_F2C13B_RUN="$PWD/runs/cwru-m15-native-paired-physical-comparison-$XGAP_F2C13B_JOB"
+XGAP_F2C13B_AUDIT="$PWD/runs/audits/cwru-m15-f2c13b-paired-$XGAP_F2C13B_JOB-audit.json"
+
+mkdir -p "$PWD/runs/audits"
+test ! -e "$XGAP_F2C13B_AUDIT" || {
+  echo "audit output already exists; stop"
+  exit 1
+}
+
+PYTHONPATH="$PWD/src" \
+"$HOME/venvs/xgap-core/bin/python" \
+  -m xgap.experiments.m15_paired_physical_comparison_evidence \
+  --run-root "$XGAP_F2C13B_RUN" \
+  --expected-commit "$XGAP_F2C13B_COMMIT" \
+  --output "$XGAP_F2C13B_AUDIT" \
+  > "$XGAP_F2C13B_AUDIT.stdout"
+
+echo "audit_exit=$?"
+```
+
+Only when that exit is zero, switch to F2C13C and create one compact summary
+outside the immutable run tree:
+
+```bash
+git fetch --prune origin
+git switch codex/m15-f2c13c-paired-summary
+git pull --ff-only origin codex/m15-f2c13c-paired-summary
+
+XGAP_F2C13C_SUMMARY="$PWD/runs/audits/cwru-m15-f2c13c-paired-$XGAP_F2C13B_JOB-summary.json"
+test ! -e "$XGAP_F2C13C_SUMMARY" || {
+  echo "summary output already exists; stop"
+  exit 1
+}
+
+PYTHONPATH="$PWD/src" \
+"$HOME/venvs/xgap-core/bin/python" \
+  -m xgap.experiments.m15_paired_physical_comparison_summary \
+  --run-root "$XGAP_F2C13B_RUN" \
+  --audit "$XGAP_F2C13B_AUDIT" \
+  --output "$XGAP_F2C13C_SUMMARY" \
+  > "$XGAP_F2C13C_SUMMARY.stdout"
+
+echo "summary_exit=$?"
+cat "$XGAP_F2C13C_SUMMARY"
+```
+
+F2C13C does not rerun a backend or reinterpret an unaudited result. It keeps
+historical training cost separate, reports the current-query profile cost, and
+retains the frozen single-allocation descriptive boundary. Do not select the
+paper-scale multi-family domains from this ten-task result alone.
