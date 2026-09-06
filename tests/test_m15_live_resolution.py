@@ -139,6 +139,9 @@ def test_frozen_e2b_spec_and_preflight_bind_one_non_entity_call(monkeypatch) -> 
     assert preflight["dynamic_schema"]["properties"]["candidate_ids"][
         "maxItems"
     ] == 4
+    assert "uniqueItems" not in preflight["dynamic_schema"]["properties"][
+        "candidate_ids"
+    ]
     assert preflight["preflight_sha256"] == content_hash(
         {key: value for key, value in preflight.items() if key != "preflight_sha256"}
     )

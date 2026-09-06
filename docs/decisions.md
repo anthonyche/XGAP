@@ -2508,3 +2508,67 @@ ontology-service call and emit no native query text in the portable bridge
 plan. Offline oracles may be read only afterward to test exact execution. The
 development result remains `paper_result=false`; live execution, cost
 estimation, frontier selection, and aggregate capability are later gates.
+
+## D139 Execute only registered resolved classes through a sealed native lifecycle
+
+M15-E4B carries the E3/E4 semantic boundary into a real Neo4j-plus-Fuseki
+allocation without redefining it. Before either service starts, the native
+producer copies the bridge specification into the immutable run root,
+reconstructs the controlled resolution, recompiles the six semantic classes,
+materializes the direct workload, and seals the two executable tasks and four
+physical candidates in a self-hashed preflight. The two single-transfer
+classes retain both registered strategies. The four aggregate classes remain
+unavailable and may not be approximated, dropped, or sent to a backend.
+
+After service startup and one verified fixture load, the live runner executes
+all four sealed plans in declared order. Each plan invokes exactly one Neo4j
+fragment and one Fuseki fragment through their public interfaces, so a
+successful run contains eight execute calls. It makes zero current-query
+profile, model, ontology-service, repair, or retry calls and emits no portable
+native query text. Exact answer oracles are reconstructed and opened only
+after all selected executions; they validate results but cannot affect class
+or plan selection. A first plan-level failure stops all later plans. Parallel
+fragments already dispatched within that failed plan remain recorded as spent
+calls rather than being erased.
+
+A separate read-only auditor accepts the outer native run tree, recompiles the
+bridge and workload from run-local inputs, reconstructs every exact answer and
+backend-event pair, validates pre-service sealing, lifecycle, cleanup, and the
+six/two/four/eight cardinality contract, and compares a complete run-tree digest
+before and after auditing. Altered rows, hashes, candidate identities, call
+counts, or unavailable-class execution are rejected. Focused cross-layer
+acceptance passes 80 tests and full local acceptance passes 1,009 tests with 36
+explicit environment or external-artifact skips. This authorizes one clean
+CWRU engineering run and independent audit after publication. It adds no
+semantic-quality, cost-frontier, generalization, or paper-performance claim;
+all artifacts remain `paper_result=false`.
+
+## D140 Preserve the same-allocation paired result without predictor retuning
+
+CWRU job `3792343` executed the pre-frozen F2C13B schedule at exact clean
+commit `cf3d430` on `compt292`. It completed 144 historical training, 20
+current-query acquisition, 20 method-specific selected, and 80 shared-shadow
+plan runs, or 264 plans and 528 backend calls. The allocation runtime was
+removed cleanly. The independent read-only audit reconstructed the full chain
+and passed 2,735 checks with no failed ID or run-tree mutation. The precommitted
+F2C13C summary was then generated without another backend call.
+
+Within these ten semantic tasks, family memory made zero current-query profile
+calls and selected seven shadow-median latency winners. The dual-profile method
+made 20 acquisition runs and selected five. Their mean latency regret was
+2.733 and 2.808 ms respectively, so the observed paired profile-minus-memory
+difference was only 0.075 ms. Profiling lowered mean byte regret from 4,658 to
+3,346.4, at a mean acquisition cost of 35.154 ms and 14,056 bytes per task.
+The evaluation-only fixed-parallel control selected nine winners with 0.289 ms
+mean latency regret, while fixed risk-first had zero byte regret but 8.176 ms
+mean latency regret. Historical training remains a separate 144-run ledger and
+the 72-future-task break-even is count-based only.
+
+This evidence is deliberately retained as a mixed development result. It does
+not authorize tuning the family-memory predictor on the ten evaluation tasks,
+does not turn the profiling method or fixed parallel into the system design,
+and does not support a generalization or semantic-frontier claim. It strengthens
+the motivation for the already frozen multi-family design gate: the next
+scientific step is to choose structurally distinct query families and a cold-
+start boundary before implementing or running the larger population. All
+artifacts remain descriptive with `paper_result=false`.

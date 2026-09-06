@@ -1,0 +1,89 @@
+{
+  "artifact_schema_version": "m15-f2c13c-cwru-paired-summary-record-v1",
+  "source_summary_schema_version": "m15-f2c13c-paired-physical-comparison-summary-v1",
+  "recorded_date": "2026-09-06",
+  "slurm_job_id": "3792343",
+  "hostname": "compt292",
+  "git_commit": "cf3d430dfe952e7fdbdcf8cc65c1d02cb4e7c660",
+  "execution_status": "success",
+  "audit": {
+    "success": true,
+    "check_count": 2735,
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "schema_version": "m15-f2c13b-paired-physical-comparison-evidence-audit-v1"
+  },
+  "counts": {
+    "training_plan_runs": 144,
+    "profile_acquisition_plan_runs": 20,
+    "paired_selected_plan_runs": 20,
+    "evaluation_shadow_plan_runs": 80,
+    "total_plan_runs": 264,
+    "total_backend_calls": 528,
+    "family_memory_current_query_profile_calls": 0,
+    "profile_method_current_query_profile_calls": 20,
+    "automatic_retries": 0
+  },
+  "methods": {
+    "family_memory": {
+      "physical_winner_accuracy": 0.7,
+      "mean_selected_plan_latency_regret_ms": 2.7327094227075577,
+      "mean_selected_plan_bytes_regret": 4658.0,
+      "mean_selected_serving_latency_ms": 23.862438648939133,
+      "mean_selected_serving_bytes": 8873.2
+    },
+    "current_query_dual_profile": {
+      "physical_winner_accuracy": 0.5,
+      "mean_selected_plan_latency_regret_ms": 2.807997912168503,
+      "mean_selected_plan_bytes_regret": 3346.4,
+      "mean_selected_serving_latency_ms": 21.360715478658676,
+      "mean_selected_serving_bytes": 7561.6,
+      "mean_acquisition_latency_ms": 35.1535938680172,
+      "mean_acquisition_bytes": 14056.0
+    }
+  },
+  "paired_profile_minus_memory": {
+    "mean_latency_regret_ms": 0.07528848946094513,
+    "median_latency_regret_ms": 0.0,
+    "mean_bytes_regret": -1311.6,
+    "median_bytes_regret": 0.0,
+    "same_selected_strategy_count": 6,
+    "semantic_task_count": 10
+  },
+  "evaluation_only_controls": {
+    "fixed_parallel_hash": {
+      "physical_winner_accuracy": 0.9,
+      "mean_latency_regret_ms": 0.2888426184654236,
+      "mean_bytes_regret": 5625.6
+    },
+    "fixed_risk_first_bind": {
+      "physical_winner_accuracy": 0.1,
+      "mean_latency_regret_ms": 8.176147565245628,
+      "mean_bytes_regret": 0.0
+    }
+  },
+  "historical_training_cost": {
+    "plan_runs": 144,
+    "backend_calls": 288,
+    "total_latency_ms": 4093.330793082714,
+    "total_bytes": 1516980.0,
+    "count_based_break_even_future_tasks": 72,
+    "silently_amortized": false
+  },
+  "claim_boundary": {
+    "evidence_class": "ten_semantic_task_same_allocation_paired_development_run",
+    "descriptive_statistics_only": true,
+    "native_allocation_count": 1,
+    "semantic_task_count": 10,
+    "generalization_claim": false,
+    "semantic_frontier_claim": false,
+    "paper_result": false
+  },
+  "source_hashes": {
+    "analysis_sha256": "b6b635849c18881c0b3b40f9083c305efbbdcd2f2e0ea0920b9bc227f568cdda",
+    "schedule_sha256": "3e888b8811759ebde9380f0fc7fd99f3077f16b8565a5422623e7877b2a4f52d",
+    "family_selection_seal_sha256": "8d56fa38596827b41b6f00d6655929937cb477d6c1c750900fdeb514054f4ccb",
+    "profile_selection_seal_sha256": "871e4f0f92a86edde77f1e88600f28ecbe6da07f9824e38ccb91993d601dd2ea",
+    "summary_sha256": "b18cf66ae38fa8efe47ad62bef9b64b4349e755f4f81a86ed1e339518bde0ee2"
+  }
+}

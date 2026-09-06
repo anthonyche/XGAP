@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B VERIFIED; F2C13B PAIRED LIVE GATE LOCAL; F2C13C SUMMARY LOCAL
-- Version Label: m15_remote_loop_v31
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B VERIFIED; F2C13C SUMMARY ACCEPTED; E4B LIVE GATE LOCAL
+- Version Label: m15_remote_loop_v32
 
 ## Current claim boundary
 
@@ -352,6 +352,51 @@ VPN reachability and a working user-owned SSH alias.
   fallback only when cheaper evidence cannot close a semantic hole.
 - Measure LLM calls, GPU-seconds, planning latency, semantic deviation, and
   execution cost. The easy path must retain a zero-LLM condition.
+- E2B job `3792284` is an immutable pre-generation failure: vLLM 0.11.1
+  rejected the guided-decoding `uniqueItems` keyword after one request and
+  before any tokens. Replacement job `3792307` at exact clean commit
+  `a2ed618` completed on `gput073`. It made one Qwen3-32B/tool/provider call,
+  returned the in-set `predicate:transferred_to` candidate in 1.877 seconds,
+  consumed 452 input and 21 output tokens, preserved hard constraints, and
+  used no repair or retry. Its independent audit passed 127/127 checks without
+  mutation. Preserve both jobs and do not submit another E2B run.
+- E4B now provides the separate native resolution-to-execution gate. It seals
+  the E3 resolution, E4 bridge, six classes, and four physical candidates
+  before starting Neo4j or Fuseki. Only the two executable classes run; each of
+  their two strategies makes one call to each backend, for exactly eight
+  execute calls and zero profile/model/ontology/retry calls. Its CWRU command
+  is released only after the exact E4B commit is published.
+
+After publication, use only the exact clean commit supplied by the handoff and
+submit the dedicated wrapper once:
+
+```bash
+cd "$HOME/XGAP-m15-465e2e2"
+module load Miniconda3
+
+test -z "$(git status --porcelain)" || {
+  echo "checkout is dirty; stop"
+  exit 1
+}
+
+git fetch --prune origin
+git switch codex/m15-e4b-live-resolution-execution
+git pull --ff-only origin codex/m15-e4b-live-resolution-execution
+
+XGAP_E4B_COMMIT=<exact-published-40-character-commit>
+test "$(git rev-parse HEAD)" = "$XGAP_E4B_COMMIT" || {
+  echo "commit mismatch; stop"
+  exit 1
+}
+
+sbatch --parsable \
+  --export=ALL,XGAP_PYTHON="$HOME/venvs/xgap-core/bin/python",XGAP_PYTHON_MODULE=Miniconda3,XGAP_JAVA_MODULE=Java/17.0.6 \
+  scripts/slurm/run_m15_native_resolution_execution_bridge.sbatch
+```
+
+Do not submit it until the handoff replaces the placeholder with a published
+commit. After one successful job, preserve the run and use the independent
+`m15_resolution_execution_bridge_evidence` auditor from that same commit.
 
 ### M15-F — Workload, baselines, ablations, and UI gate
 
@@ -619,71 +664,20 @@ result selected 10/10 observed latency winners, but raw timing must not be
 compared with F2C10D job `3791600` because the allocations differ.
 
 F2C13B implements the frozen F2C13A schedule as one fail-closed native job.
-It seals the schedule before service startup, executes 144 training, 20
-profile-acquisition, 20 method-specific selected, and 80 shared-shadow runs,
-and stops at the first failure with zero retry. Family selection is sealed
-before profiling, and profile selection is sealed before either selected or
-shadow execution. Its independent auditor recompiles the schedule from the
-copied source inputs, rebuilds family memory and both choices, recomputes the
-paired analysis, and verifies the exact 528-call phase/run order without
-mutating the run tree. Full local acceptance passes 939 tests with 36 explicit
-environment or external-artifact skips. One clean CWRU run and its successful
-outer-root audit are now the next gate; no result is claimed yet.
+CWRU job `3792343` completed its exact 264-plan/528-call sequence at clean
+commit `cf3d430` on `compt292` in 134 seconds. The independent outer-root audit
+passed 2,735/2,735 checks with no failed ID and no run-tree mutation. The
+F2C13C no-overwrite summary then completed without another backend call.
+Preserve the job, audit, and summary; do not rerun or overwrite them.
 
-After that one F2C13B job succeeds, run its independent auditor once from the
-same exact experiment commit. Do not retry a failed job or overwrite an audit:
-
-```bash
-cd "$HOME/XGAP-m15-465e2e2"
-XGAP_F2C13B_JOB=<successful-job-id>
-XGAP_F2C13B_COMMIT=cf3d430dfe952e7fdbdcf8cc65c1d02cb4e7c660
-XGAP_F2C13B_RUN="$PWD/runs/cwru-m15-native-paired-physical-comparison-$XGAP_F2C13B_JOB"
-XGAP_F2C13B_AUDIT="$PWD/runs/audits/cwru-m15-f2c13b-paired-$XGAP_F2C13B_JOB-audit.json"
-
-mkdir -p "$PWD/runs/audits"
-test ! -e "$XGAP_F2C13B_AUDIT" || {
-  echo "audit output already exists; stop"
-  exit 1
-}
-
-PYTHONPATH="$PWD/src" \
-"$HOME/venvs/xgap-core/bin/python" \
-  -m xgap.experiments.m15_paired_physical_comparison_evidence \
-  --run-root "$XGAP_F2C13B_RUN" \
-  --expected-commit "$XGAP_F2C13B_COMMIT" \
-  --output "$XGAP_F2C13B_AUDIT" \
-  > "$XGAP_F2C13B_AUDIT.stdout"
-
-echo "audit_exit=$?"
-```
-
-Only when that exit is zero, switch to F2C13C and create one compact summary
-outside the immutable run tree:
-
-```bash
-git fetch --prune origin
-git switch codex/m15-f2c13c-paired-summary
-git pull --ff-only origin codex/m15-f2c13c-paired-summary
-
-XGAP_F2C13C_SUMMARY="$PWD/runs/audits/cwru-m15-f2c13c-paired-$XGAP_F2C13B_JOB-summary.json"
-test ! -e "$XGAP_F2C13C_SUMMARY" || {
-  echo "summary output already exists; stop"
-  exit 1
-}
-
-PYTHONPATH="$PWD/src" \
-"$HOME/venvs/xgap-core/bin/python" \
-  -m xgap.experiments.m15_paired_physical_comparison_summary \
-  --run-root "$XGAP_F2C13B_RUN" \
-  --audit "$XGAP_F2C13B_AUDIT" \
-  --output "$XGAP_F2C13C_SUMMARY" \
-  > "$XGAP_F2C13C_SUMMARY.stdout"
-
-echo "summary_exit=$?"
-cat "$XGAP_F2C13C_SUMMARY"
-```
-
-F2C13C does not rerun a backend or reinterpret an unaudited result. It keeps
-historical training cost separate, reports the current-query profile cost, and
-retains the frozen single-allocation descriptive boundary. Do not select the
-paper-scale multi-family domains from this ten-task result alone.
+The same-allocation result is mixed. Family memory used zero current-query
+profile calls, selected 7/10 shadow-median latency winners, and had 2.733 ms
+mean latency regret. Dual profiling used 20 acquisition plan runs, selected
+5/10, and had 2.808 ms mean latency regret. Profiling lowered mean byte regret
+from 4,658 to 3,346.4, but its two candidates cost 35.154 ms and 14,056 bytes
+per task on average before selected serving. Fixed parallel, an
+evaluation-only control, selected 9/10 winners with 0.289 ms mean latency
+regret. The 144 historical training runs remain a separate cost ledger, with a
+count-only break-even reference of 72 future tasks. These ten-task observations
+remain descriptive and `paper_result=false`; they neither establish
+generalization nor authorize predictor tuning or a paper-scale family choice.

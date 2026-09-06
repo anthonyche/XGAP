@@ -108,7 +108,9 @@ PYTHONPATH=src python examples/m15_resolution_execution_bridge_demo.py
 E4 proves deterministic semantic-to-capability binding for one controlled
 family. It does not rank the two executable interpretations, estimate their
 cost, execute live services, implement window aggregation, or establish
-open-domain coverage. The next gate should add an execution lifecycle and
-independent evidence audit for these four plans, then decide whether `SUM` and
-`COUNT/HAVING` deserve registered operators/templates based on the benchmark
-query-family design rather than silently synthesizing them.
+open-domain coverage. M15-E4B now supplies the separate native execution
+lifecycle and independent evidence audit for the four plans; see
+[`docs/m15_e4b_live_resolution_execution.md`](m15_e4b_live_resolution_execution.md).
+It still does not add `SUM` or `COUNT/HAVING`: those operators/templates should
+be admitted only through the benchmark query-family design rather than silently
+synthesized from an unavailable interpretation.

@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; E4 LIVE EVIDENCE/CWRU RESULT/UI BRIDGE PENDING**
+Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B LIVE GATE VERIFIED ON CWRU; E4B LIVE BRIDGE READY LOCALLY; E4B CWRU RESULT/UI BRIDGE PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -176,17 +176,16 @@ with 36 explicit skips. The E2A demo uses an offline transport: neither E1 nor
 E2A makes a live backend, model, ontology-service, or CWRU call, and neither
 authorizes an experiment.
 
-E2B is now implemented locally. Its frozen four-candidate predicate request is
-sealed before service startup, uses one goal-loop inference request and zero
-repairs/retries, persists success or spent failure cost, and omits the generic
-extra inference smoke. A dedicated 45-minute H100 Slurm wrapper reuses the
-existing verified loopback vLLM launcher and environment contract. A separate
-read-only auditor reconstructs the request, runtime/model identity, trace,
-memory, shutdown, and inventory without mutating the run. Local tests use only a
-fake transport. One clean CWRU engineering run may follow the published exact
-commit; no live E2B result exists yet and all outputs remain
-`paper_result=false`. The E2B/provider/CWRU-infrastructure focused suite passes
-48 tests; full local acceptance passes 977 tests with 36 explicit skips.
+E2B now has accepted CWRU mechanism evidence. Job `3792284` reached the frozen
+Qwen3-32B endpoint but failed before generation because vLLM 0.11.1 rejected
+`uniqueItems`; the spent one-request/zero-token failure is preserved. The
+provider schema now omits only that unsupported keyword while the deterministic
+validator still rejects duplicates. Replacement job `3792307` at exact clean
+commit `a2ed618` returned `predicate:transferred_to` in one 1.877-second
+inference with 452 input and 21 output tokens, one model/tool call, no repair or
+retry, and preserved hard constraints. Its independent read-only audit passed
+127/127 checks without run-tree mutation. This validates the bounded lifecycle,
+not semantic quality or paper performance, and remains `paper_result=false`.
 
 E3 now closes the deterministic parser-to-hole and local artifact-provider
 gap. A versioned exact-phrase intake template builds only the declared semantic
@@ -206,10 +205,15 @@ physical candidates; two window-total and two window-frequency classes remain
 unavailable with explicit aggregate-capability gaps. No hard constraint is
 changed and no backend, model, ontology service, or oracle is used for
 selection. Offline fixture execution validates all four plans after
-construction. The live lifecycle/auditor, cost-aware semantic frontier, and UI
-clarification transport remain later work. Verification counts are refreshed
-at the repository-wide E4 gate: the bridge/E3/registry-focused suite passes 32
-tests, and full local acceptance passes 1,003 tests with 36 explicit skips.
+construction. E4B now supplies the local native lifecycle and read-only audit:
+the six classes and four candidates are sealed before service startup, all four
+plans run through black-box Neo4j and Fuseki interfaces, and exact oracles are
+opened only after execution. The four unavailable aggregate classes make no
+backend call. The successful contract is exactly eight execute calls, with zero
+profile/model/ontology calls and zero retry. Focused cross-layer acceptance
+passes 80 tests; full local acceptance passes 1,009 tests with 36 explicit
+skips. One clean CWRU E4B run and audit remain pending. A cost-aware semantic
+frontier and UI clarification transport remain later work.
 
 ### M15-F Paper Experiment Surface and Optional UI
 
@@ -217,7 +221,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C14A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13B PAIRED LIVE GATE LOCAL**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B/F2C13B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C14A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B/F2C13C AUDITED DEVELOPMENT RESULTS ACCEPTED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -609,14 +613,17 @@ training, acquisition, serving, and shadow costs remain distinct. F2C13B now
 implements the live producer, allocation-scoped service mode, 45-minute Slurm
 entry, and independent reconstruction auditor. Controlled failure injection
 confirms stop-on-first-failure with zero retry; tamper tests reject altered
-family choices, profile costs, or paired analysis. Full local acceptance
-passes 939 tests with 36 explicit skips. One clean native run plus its
-outer-root audit is the next gate. F2C13C now freezes the post-audit reduction:
-one content-hashed no-overwrite summary with separate training, acquisition,
-serving, and evaluation ledgers; method metrics; paired regret deltas; and
-explicitly descriptive ten-task claim limits. It cannot consume an unaudited
-run or promote `paper_result`. A larger multi-family workload follows, but its
-actual family/domain inventory remains an author-level research decision.
+family choices, profile costs, or paired analysis. Job `3792343` completed all
+264 plans and 528 calls at exact clean commit `cf3d430` on `compt292`; its
+outer-root audit passed 2,735/2,735 checks without mutation. The precommitted
+F2C13C summary reports a mixed development result: zero-profile family memory
+selected 7/10 latency winners versus 5/10 for dual profiling, with nearly tied
+mean latency regret (2.733 versus 2.808 ms), while profiling reduced mean byte
+regret by 1,311.6 at a mean acquisition cost of 35.154 ms and 14,056 bytes.
+Fixed parallel still achieved 9/10 and 0.289 ms mean latency regret. These
+single-allocation observations cannot support a generalization claim or
+predictor retuning. A larger multi-family workload follows, but its actual
+family/domain inventory remains an author-level research decision.
 
 F2C14A supplies the first concrete admission gate for that larger workload.
 The current financial-risk family is now a reconstructable executable package,

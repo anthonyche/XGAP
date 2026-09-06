@@ -33,22 +33,30 @@ transport, timeout, malformed-response, and out-of-set failures retain their
 one-call cost in the ordinary tool result. The provider remains
 non-authoritative and cannot emit native query text. Focused E1/E2 acceptance
 passes 42 tests and full local acceptance passes 967 tests with 36 explicit
-skips. These are offline-transport results only. A fail-closed CWRU vLLM
-lifecycle and auditor, real catalog/ontology wiring, parser-to-hole
-construction, and UI clarification transport remain pending.
+skips. Those E2A tests are offline-transport results; the separate E2B live
+lifecycle is recorded below. Real catalog/ontology wiring and parser-to-hole
+construction are handled by E3, while UI clarification transport remains
+pending.
 
-M15-E2B now implements the live lifecycle and independent audit boundary
-locally. It seals one four-candidate predicate request before service startup,
+M15-E2B now has a verified live lifecycle and independent audit boundary. It
+seals one four-candidate predicate request before service startup,
 reuses the exact CWRU Qwen3-32B environment, performs no generic inference
 smoke, and executes exactly one model-backed tool call through the goal loop.
 The wrapper has a 45-minute H100 allocation limit, loopback-only service,
 bounded shutdown, zero repair, and zero automatic retry. The auditor
 reconstructs the preflight, CWRU environment, tool result, provider invocation,
 execution memory, lifecycle, and artifact inventory while checking that the run
-tree is unchanged. Local tests use a fake transport; no E2B CWRU/model result
-exists yet, and the gate remains `paper_result=false`. The combined
-E2B/provider/CWRU-infrastructure suite passes 48 tests; full local acceptance
-passes 977 tests with 36 explicit skips.
+tree is unchanged. CWRU job `3792284` first proved model startup and readiness
+but failed before generation because vLLM 0.11.1 rejected the guided-decoding
+keyword `uniqueItems`; it spent one request with zero tokens and is preserved.
+The provider-facing schema now omits only that unsupported keyword while the
+deterministic validator still rejects duplicates. Replacement job `3792307`
+at exact clean commit `a2ed618` completed on `gput073`: Qwen3-32B returned the
+in-set candidate `predicate:transferred_to` in one 1.877-second inference with
+452 input and 21 output tokens, one tool/provider call, zero repairs/retries,
+and preserved hard constraints. Its read-only audit passed 127/127 checks with
+no run-tree mutation. This is accepted mechanism evidence, not a quality or
+paper result.
 
 M15-E3 now closes the deterministic intake and local artifact-provider gap.
 One versioned exact-phrase template turns the controlled financial-risk request
@@ -81,6 +89,21 @@ executes all four plans against deterministic fixtures. Repository-wide counts
 are now refreshed: the bridge/E3/registry-focused gate passes 32 tests, and
 full local acceptance passes 1,003 tests with 36 explicit skips. All artifacts
 remain `paper_result=false`.
+
+M15-E4B now supplies the local native execution and independent evidence gate
+for that bridge. A self-hashed preflight reconstructs the run-local resolution
+and bridge spec, preserves all six semantic classes, and seals four physical
+candidates before Neo4j or Fuseki starts. The allocation-scoped runner loads a
+hash-bound fixture and executes exactly two strategies for each of the two
+executable classes: one Neo4j plus one Fuseki call per plan, eight calls total,
+zero profile/model/ontology calls, and zero retry. The four unsupported
+aggregate classes never reach a backend. The auditor independently recompiles
+the bridge and workload, compares exact post-execution oracles, validates the
+service lifecycle and invocation graph, detects row tampering, and proves the
+run tree unchanged. This gate is locally implemented; a clean CWRU execution
+and audit remain pending. Focused cross-layer acceptance passes 80 tests and
+full local acceptance passes 1,009 tests with 36 explicit skips;
+`paper_result=false` remains mandatory.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
@@ -558,20 +581,29 @@ independent read-only auditor recompiles the copied source contracts and
 schedule, reconstructs training memory, predictions, both selections, and all
 paired metrics, and checks every phase/run invocation identity. Controlled
 success, first-profile-failure, first-selected-failure, and evidence-tampering
-tests pass. Full acceptance is 939 passed and 36 explicitly gated skips. No
-CWRU F2C13B result exists yet, so the gate remains local and
-`paper_result=false`.
+tests pass. CWRU job `3792343` then completed the exact 264-plan/528-call
+schedule at clean commit `cf3d430` on `compt292` in 134 seconds. The outer run
+and cleanup succeeded, and the read-only reconstruction audit passed
+2,735/2,735 checks without mutating the run tree.
 
-M15-F2C13C now precommits the result-reduction boundary before any F2C13B
-CWRU measurements are read. Its no-overwrite summary CLI accepts only a
+M15-F2C13C precommitted the result-reduction boundary before those measurements
+were read. Its no-overwrite summary CLI accepts only a
 successful independent read-only audit, verifies the exact commit, schemas,
 264-plan/528-call ledger, ten-task seal coverage, artifact hashes, and
 evaluation-only shadow boundary, and emits one content-hashed comparison. The
 output keeps historical training, current-query profile acquisition, selected
-serving, and shadow evaluation costs distinct; reports both methods and paired
-profile-minus-memory deltas; and remains single-allocation descriptive evidence
-with no generalization, semantic-frontier, LLM, ontology, or paper claim. The
-next external gate is still the single already-authorized F2C13B run and audit.
+serving, and shadow evaluation costs distinct. In the accepted ten-task
+summary, family memory used zero current-query profile calls and selected 7/10
+shadow-median latency winners, compared with 5/10 after 20 profile acquisitions.
+Their mean latency regret was nearly tied at 2.733 versus 2.808 ms; profiling
+reduced mean byte regret from 4,658 to 3,346.4 but cost a mean 35.154 ms and
+14,056 bytes to acquire both candidates. Fixed parallel remained the strongest
+evaluation-only latency control at 9/10 and 0.289 ms mean regret. Historical
+training is reported separately at 144 runs, with only a count-based 72-future-
+task break-even reference. This mixed result is preserved without retuning and
+remains single-allocation descriptive evidence with no generalization,
+semantic-frontier, LLM, ontology, or paper claim. Its compact record is
+`experiments/artifacts/m15_f2c13c_cwru_paired_physical_summary_20260906.json`.
 
 M15-F2C14A now replaces the stale one-label family-readiness view with a
 reconstructable executable package registry. The current financial-risk

@@ -33,6 +33,7 @@ from xgap.experiments.m15_predicate_overlay import (
 from xgap.experiments.m15_semantic_frontier import (
     load_m15_semantic_relaxation_catalog,
 )
+from xgap.experiments.m15_semantic_intake import run_semantic_intake
 from xgap.experiments.m15_semantic_overlay import (
     generate_m15_semantic_overlay_bundle,
 )
@@ -1503,6 +1504,130 @@ def test_native_current_query_profile_requires_inputs_and_seals_preflight(
     assert preflight["expected_counts"] == schedule["counts"]
     assert preflight["schedule_sha256"] == schedule["schedule_sha256"]
     assert manifest["current_query_profile_preflight"] == preflight
+
+
+def test_native_resolution_execution_bridge_seals_before_service_start(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    resolution = run_semantic_intake(
+        question="查找过去一个月与 Alice 有密切资金往来的高风险公司。",
+        intake_path=(
+            REPO_ROOT
+            / "experiments/configs/m15_e3_financial_risk_intake_dev.json"
+        ),
+        catalog_path=(
+            REPO_ROOT
+            / "experiments/specs/m15_e3_financial_risk_catalog_dev.json"
+        ),
+        ontology_path=(
+            REPO_ROOT
+            / "experiments/specs/m15_e3_financial_risk_ontology_dev.json"
+        ),
+        user_selections={"person-identity": "person:alice-smith"},
+        user_source_id="native-e4b-test-selection",
+    )
+    resolution_path = tmp_path / "resolution_run.json"
+    resolution_path.write_text(json.dumps(resolution), encoding="utf-8")
+    bridge_spec = (
+        REPO_ROOT
+        / "experiments/configs/m15_e4_resolution_execution_bridge_dev.json"
+    )
+    with pytest.raises(ValueError, match="requires a resolution run"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-e4b",
+            run_id="missing-e4b",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="resolution_execution_bridge",
+        )
+
+    output_root = tmp_path / "e4b-runs"
+    run_id = "native-e4b-test"
+    preflight_path = (
+        output_root
+        / run_id
+        / "resolution-execution-bridge-preflight/preflight_manifest.json"
+    )
+    preflight_seen_at_start: list[bool] = []
+    fixture_args: dict[str, object] = {}
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence(
+            "/opt/java17/bin/java", 17, "17"
+        ),
+    )
+
+    def fake_start(spec):
+        preflight_seen_at_start.append(preflight_path.is_file())
+        return RunningService(spec, _StableProcess(), io.BytesIO())
+
+    monkeypatch.setattr(native_services, "start_service", fake_start)
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id, True, 1, 1.0, 200
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    def fake_fixture(*args, **kwargs):
+        fixture_args["mode"] = args[3]
+        fixture_args.update(kwargs)
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(native_services, "_run_fixture_and_query", fake_fixture)
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=output_root,
+        run_id=run_id,
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="resolution_execution_bridge",
+        resolution_run=resolution_path,
+        resolution_bridge_spec=bridge_spec,
+    )
+
+    assert record.success
+    assert preflight_seen_at_start == [True, True]
+    assert fixture_args["mode"] == "resolution_execution_bridge"
+    assert fixture_args["resolution_run"] == resolution_path
+    assert fixture_args["resolution_bridge_spec"] == bridge_spec
+    assert fixture_args["prepared_resolution_bridge"] is not None
+    preflight = json.loads(preflight_path.read_text(encoding="utf-8"))
+    assert preflight["sealed_before_service_start"] is True
+    assert preflight["backend_calls_before_seal"] == 0
+    assert preflight["answer_oracle_opened_before_seal"] is False
+    assert preflight["preflight_sha256"] == content_hash(
+        {
+            key: value
+            for key, value in preflight.items()
+            if key != "preflight_sha256"
+        }
+    )
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["resolution_execution_bridge_preflight"] == preflight
 
 
 def test_current_query_profile_native_boundary_uses_sixty_second_clients(

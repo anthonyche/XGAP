@@ -196,7 +196,6 @@ class OpenAICompatibleResolutionCandidateProvider:
                     },
                     "minItems": 1,
                     "maxItems": maximum,
-                    "uniqueItems": True,
                 },
             },
         }

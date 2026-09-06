@@ -47,6 +47,12 @@ from xgap.experiments.m15_live_current_query_profile_baseline import (
 from xgap.experiments.m15_live_paired_physical_comparison import (
     run_m15_live_paired_physical_comparison,
 )
+from xgap.experiments.m15_live_resolution_execution_bridge import (
+    M15PreparedResolutionExecutionBridge,
+    RESOLUTION_EXECUTION_BRIDGE_PREFLIGHT_SCHEMA_VERSION,
+    prepare_m15_resolution_execution_bridge,
+    run_m15_live_resolution_execution_bridge,
+)
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_campaign_session import (
     prepare_m15_live_campaign_session,
@@ -170,6 +176,9 @@ PAIRED_PHYSICAL_SERVICE_RUN_SCHEMA_VERSION = (
 PAIRED_PHYSICAL_PREFLIGHT_SCHEMA_VERSION = (
     "m15-f2c13b-native-paired-physical-comparison-preflight-v1"
 )
+RESOLUTION_EXECUTION_BRIDGE_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-e4b-native-live-resolution-execution-bridge-service-run-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -190,6 +199,7 @@ WORKLOAD_MODES = frozenset(
         "direct_family_pilot",
         "current_query_profile_baseline",
         "paired_physical_comparison",
+        "resolution_execution_bridge",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -905,6 +915,10 @@ def _run_fixture_and_query(
     direct_family_predictor_policy: Mapping[str, Any] | str | Path | None = None,
     paired_physical_protocol: Mapping[str, Any] | str | Path | None = None,
     current_query_profile_protocol: Mapping[str, Any] | str | Path | None = None,
+    *,
+    resolution_run: str | Path | None = None,
+    resolution_bridge_spec: str | Path | None = None,
+    prepared_resolution_bridge: M15PreparedResolutionExecutionBridge | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -918,6 +932,59 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
+        if workload_mode == "resolution_execution_bridge":
+            assert resolution_run is not None
+            assert resolution_bridge_spec is not None
+            assert prepared_resolution_bridge is not None
+            for client in clients.values():
+                client.timeout_seconds = 60.0
+
+            expected_root = (
+                prepared_resolution_bridge.workload.workload_bundle.root.resolve()
+            )
+
+            def reload_resolution_bridge_fixture_bundle(
+                bundle_root: Path,
+            ) -> M15ParameterizedWorkloadBundle:
+                if bundle_root.resolve() != expected_root:
+                    raise ValueError(
+                        "resolution bridge fixture loader received a different "
+                        "parameterized workload root"
+                    )
+                reloaded = prepared_resolution_bridge.reload_workload()
+                if reloaded.workload_bundle.root.resolve() != expected_root:
+                    raise ValueError(
+                        "reloaded resolution bridge workload changed its nested root"
+                    )
+                return reloaded.workload_bundle
+
+            fixture = load_m15_parameterized_fixture(
+                workload_bundle=prepared_resolution_bridge.workload.workload_bundle,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="resolution-execution-fixture-load",
+                repo_root=repo_root,
+                bundle_loader=reload_resolution_bridge_fixture_bundle,
+            )
+            if not fixture.success:
+                raise RuntimeError(
+                    f"resolution bridge fixture load failed: {fixture.error}"
+                )
+            bridge = run_m15_live_resolution_execution_bridge(
+                resolution_run_path=resolution_run,
+                bridge_spec_path=resolution_bridge_spec,
+                prepared=prepared_resolution_bridge,
+                clients=clients,
+                output_root=run_root,
+                run_id="resolution-execution-bridge-run",
+                repo_root=repo_root,
+            )
+            if not bridge.success:
+                raise RuntimeError(
+                    f"live resolution-execution bridge failed: {bridge.error}"
+                )
+            return
         if workload_mode == "paired_physical_comparison":
             assert direct_semantic_workload is not None
             assert semantic_base_bundle is not None
@@ -1417,6 +1484,8 @@ def run_m15_native_services(
     direct_family_predictor_policy: Mapping[str, Any] | str | Path | None = None,
     paired_physical_protocol: Mapping[str, Any] | str | Path | None = None,
     current_query_profile_protocol: Mapping[str, Any] | str | Path | None = None,
+    resolution_run: str | Path | None = None,
+    resolution_bridge_spec: str | Path | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1527,6 +1596,7 @@ def run_m15_native_services(
     prepared_paired_physical_schedule: (
         M15PairedPhysicalComparisonSchedule | None
     ) = None
+    prepared_resolution_bridge: M15PreparedResolutionExecutionBridge | None = None
     direct_family_values = (
         direct_family_pilot_protocol,
         direct_family_predictor_policy,
@@ -1556,6 +1626,14 @@ def run_m15_native_services(
         raise ValueError(
             "paired physical protocol is accepted only in "
             "paired_physical_comparison"
+        )
+    resolution_bridge_values = (resolution_run, resolution_bridge_spec)
+    if workload_mode != "resolution_execution_bridge" and any(
+        value is not None for value in resolution_bridge_values
+    ):
+        raise ValueError(
+            "resolution bridge inputs are accepted only in "
+            "resolution_execution_bridge"
         )
     if (
         workload_mode not in {
@@ -1594,7 +1672,35 @@ def run_m15_native_services(
             "a parameterized workload bundle is accepted only in "
             "a parameterized workload mode"
         )
-    if workload_mode == "paired_physical_comparison":
+    if workload_mode == "resolution_execution_bridge":
+        if any(value is None for value in resolution_bridge_values):
+            raise ValueError(
+                "resolution_execution_bridge requires a resolution run and "
+                "bridge specification"
+            )
+        if any(
+            value is not None
+            for value in (
+                workload_bundle,
+                parameterized_workload_bundle,
+                semantic_overlay,
+                semantic_base_bundle,
+                semantic_catalog,
+                predicate_overlay,
+                predicate_mapping,
+                direct_frontier_estimates,
+                direct_semantic_workload,
+                direct_family_pilot_protocol,
+                direct_family_predictor_policy,
+                current_query_profile_protocol,
+                paired_physical_protocol,
+            )
+        ):
+            raise ValueError(
+                "resolution_execution_bridge does not accept another workload, "
+                "semantic, predictor, profile, or paired input"
+            )
+    elif workload_mode == "paired_physical_comparison":
         required_paired_values = (
             paired_physical_protocol,
             direct_family_pilot_protocol,
@@ -1907,6 +2013,9 @@ def run_m15_native_services(
             CURRENT_QUERY_PROFILE_SERVICE_RUN_SCHEMA_VERSION
         ),
         "paired_physical_comparison": PAIRED_PHYSICAL_SERVICE_RUN_SCHEMA_VERSION,
+        "resolution_execution_bridge": (
+            RESOLUTION_EXECUTION_BRIDGE_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -2018,6 +2127,46 @@ def run_m15_native_services(
             paired_physical_preflight,
         )
 
+    resolution_bridge_preflight: dict[str, Any] | None = None
+    if workload_mode == "resolution_execution_bridge":
+        assert resolution_run is not None
+        assert resolution_bridge_spec is not None
+        preflight_root = run_root / "resolution-execution-bridge-preflight"
+        preflight_root.mkdir()
+        prepared_resolution_bridge = prepare_m15_resolution_execution_bridge(
+            resolution_run_path=resolution_run,
+            bridge_spec_path=resolution_bridge_spec,
+            workload_destination=preflight_root / "workload",
+            repo_root=root,
+        )
+        bridge_payload = prepared_resolution_bridge.bridge.to_dict()
+        _write_json(preflight_root / "bridge_plan.json", bridge_payload)
+        resolution_bridge_preflight = {
+            "schema_version": (
+                RESOLUTION_EXECUTION_BRIDGE_PREFLIGHT_SCHEMA_VERSION
+            ),
+            "sealed_before_service_start": True,
+            "bridge_sealed_before_workload_generation": True,
+            "bridge_plan_sha256": bridge_payload["bridge_plan_sha256"],
+            "resolution_run_sha256": _sha256_file(Path(resolution_run)),
+            "bridge_spec_sha256": _sha256_file(Path(resolution_bridge_spec)),
+            "workload_manifest_sha256": _sha256_file(
+                prepared_resolution_bridge.workload.root / "manifest.json"
+            ),
+            "expected_counts": bridge_payload["counts"],
+            "backend_calls_before_seal": 0,
+            "answer_oracle_opened_before_seal": False,
+            "automatic_retries": 0,
+            "paper_result": False,
+        }
+        resolution_bridge_preflight["preflight_sha256"] = content_hash(
+            resolution_bridge_preflight
+        )
+        _write_json(
+            preflight_root / "preflight_manifest.json",
+            resolution_bridge_preflight,
+        )
+
     plan: NativeServicePlan | None = None
     health: list[HealthObservation] = []
     shutdown: list[ShutdownObservation] = []
@@ -2057,7 +2206,7 @@ def run_m15_native_services(
             if not observation.success:
                 raise RuntimeError(f"Fuseki readiness failed: {observation.last_error}")
 
-            _run_fixture_and_query(
+            fixture_args = (
                 plan,
                 run_root,
                 root,
@@ -2085,6 +2234,15 @@ def run_m15_native_services(
                 paired_physical_protocol,
                 current_query_profile_protocol,
             )
+            if workload_mode == "resolution_execution_bridge":
+                _run_fixture_and_query(
+                    *fixture_args,
+                    resolution_run=resolution_run,
+                    resolution_bridge_spec=resolution_bridge_spec,
+                    prepared_resolution_bridge=prepared_resolution_bridge,
+                )
+            else:
+                _run_fixture_and_query(*fixture_args)
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
     finally:
@@ -2200,6 +2358,17 @@ def run_m15_native_services(
                 else None
             ),
             "paired_physical_preflight": paired_physical_preflight,
+            "resolution_execution_bridge": (
+                {
+                    "resolution_run": str(resolution_run),
+                    "bridge_spec": str(resolution_bridge_spec),
+                }
+                if workload_mode == "resolution_execution_bridge"
+                else None
+            ),
+            "resolution_execution_bridge_preflight": (
+                resolution_bridge_preflight
+            ),
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -2272,6 +2441,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--direct-family-predictor-policy")
     parser.add_argument("--current-query-profile-protocol")
     parser.add_argument("--paired-physical-protocol")
+    parser.add_argument("--resolution-run")
+    parser.add_argument("--resolution-bridge-spec")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -2323,6 +2494,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.current_query_profile_protocol
             ),
             paired_physical_protocol=args.paired_physical_protocol,
+            resolution_run=args.resolution_run,
+            resolution_bridge_spec=args.resolution_bridge_spec,
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,

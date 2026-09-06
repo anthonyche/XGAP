@@ -128,6 +128,10 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-paired-physical-comparison"
     RUN_VERSION="m15-f2c13b-native-live-paired-physical-comparison-services-v1"
     ;;
+  resolution_execution_bridge)
+    RUN_PREFIX="cwru-m15-native-resolution-execution-bridge"
+    RUN_VERSION="m15-e4b-native-live-resolution-execution-bridge-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -435,6 +439,24 @@ if [[ "$WORKLOAD_MODE" == direct_family_pilot || "$WORKLOAD_MODE" == current_que
       --paired-physical-protocol "$PAIRED_PHYSICAL_PROTOCOL"
     )
   fi
+fi
+if [[ "$WORKLOAD_MODE" == resolution_execution_bridge ]]; then
+  RESOLUTION_RUN="$RUN_ROOT/resolution_run.json"
+  RESOLUTION_BRIDGE_SPEC="$RUN_ROOT/resolution_bridge_spec.json"
+  cp -- "$REPO_ROOT/experiments/configs/m15_e4_resolution_execution_bridge_dev.json" \
+    "$RESOLUTION_BRIDGE_SPEC"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_semantic_intake \
+    --question '查找过去一个月与 Alice 有密切资金往来的高风险公司。' \
+    --intake "$REPO_ROOT/experiments/configs/m15_e3_financial_risk_intake_dev.json" \
+    --catalog "$REPO_ROOT/experiments/specs/m15_e3_financial_risk_catalog_dev.json" \
+    --ontology "$REPO_ROOT/experiments/specs/m15_e3_financial_risk_ontology_dev.json" \
+    --selection person-identity=person:alice-smith \
+    > "$RESOLUTION_RUN"
+  WORKLOAD_ARGS=(
+    --resolution-run "$RESOLUTION_RUN"
+    --resolution-bridge-spec "$RESOLUTION_BRIDGE_SPEC"
+  )
 fi
 
 QUERY_BOUND_ARGS=()

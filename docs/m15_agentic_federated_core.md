@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1/E2A/E3 VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
+Status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B LIVE GATE VERIFIED ON CWRU; E4B LIVE BRIDGE READY LOCALLY; E4B CWRU RESULT/UI BRIDGE PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -264,25 +264,28 @@ costed tool error with no retry; successes and failures both retain call,
 latency, and token evidence. The provider remains non-authoritative and emits no
 backend-native query text.
 
-E2A has been verified only with an offline transport; it authorizes no live
-model or CWRU run. A fail-closed Slurm lifecycle and independent evidence audit,
-real catalog/ontology wiring, UI clarification transport, deterministic
-parser-to-hole construction, and an end-to-end semantic execution campaign
-remain pending. Focused E1/E2 acceptance passes 42 tests and full local
-acceptance passes 967 tests with 36 explicit environment or external-artifact
-skips.
+E2A was verified with an offline transport before the separate E2B live gate.
+Real catalog/ontology wiring, UI clarification transport, deterministic
+parser-to-hole construction, and execution remain separate stages. Focused
+E1/E2 acceptance passes 42 tests; E2B is accounted independently below.
 
-M15-E2B now supplies that fail-closed lifecycle and auditor locally. One frozen
+M15-E2B supplies that fail-closed lifecycle and auditor. One frozen
 predicate request is sealed before Qwen3-32B startup, executes through the
 ordinary goal loop and execution memory, and permits one inference request with
 zero repair or retry. Readiness uses `/v1/models`; the generic structured-output
 smoke is omitted because it would add another inference request. The independent
 auditor reconstructs the preflight, CWRU runtime/model identity, bounded output,
 tool/invocation/memory links, shutdown, and every inventory hash without
-modifying the run tree. This local implementation authorizes one clean CWRU
-engineering run after commit publication, but no live result exists yet and it
-remains `paper_result=false`. The E2B/provider/CWRU-infrastructure focused suite
-passes 48 tests; full local acceptance passes 977 tests with 36 explicit skips.
+modifying the run tree. The first CWRU job, `3792284`, reached the model but
+vLLM 0.11.1 rejected `uniqueItems` before generation. That spent one-request,
+zero-token failure is preserved. The provider-facing schema now omits only the
+unsupported keyword while deterministic validation still rejects duplicates.
+Replacement job `3792307` at exact clean commit `a2ed618` completed on
+`gput073`: one Qwen3-32B call returned the in-set
+`predicate:transferred_to` candidate in 1.877 seconds with 452 input and 21
+output tokens, zero repairs/retries, and preserved hard constraints. Its
+read-only audit passed 127/127 checks without mutation. This is mechanism
+evidence only and remains `paper_result=false`.
 
 M15-E3 adds the deterministic parser-to-hole and real artifact-provider path
 without invoking the model. A versioned intake template performs only declared
@@ -315,9 +318,25 @@ fixture execution validates the four constructed plans only after selection.
 See
 [`docs/m15_e4_resolution_execution_bridge.md`](m15_e4_resolution_execution_bridge.md).
 
+M15-E4B binds that deterministic bridge to one native Neo4j-plus-Fuseki
+lifecycle. The run-local resolution, bridge spec, six semantic classes, two
+executable tasks, and four physical candidates are reconstructed and sealed
+before either service starts. Each physical plan makes exactly one Neo4j and
+one Fuseki execute call; the successful gate therefore contains eight backend
+calls and no profile, model, ontology-service, retry, or native-query-emission
+action. The four unavailable aggregate classes are retained as explicit
+capability gaps and never reach a backend. Exact answer oracles are opened only
+after all four selected executions. A separate read-only auditor recompiles the
+bridge and workload, reconstructs every result and invocation edge, validates
+service cleanup, detects tampering, and checks that the run tree is unchanged.
+Focused cross-layer acceptance passes 80 tests and full local acceptance passes
+1,009 tests with 36 explicit skips. One clean CWRU run and audit remain the live
+gate; all outputs remain `paper_result=false`. See
+[`docs/m15_e4b_live_resolution_execution.md`](m15_e4b_live_resolution_execution.md).
+
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C14A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13B PAIRED LIVE GATE LOCAL**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B/F2C13B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C14A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B/F2C13C AUDITED DEVELOPMENT RESULTS ACCEPTED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -771,9 +790,10 @@ matrix only after both seals. The first failure stops execution and no retry or
 fallback occurs. A separate read-only auditor reconstructs the source
 schedule, all candidate identities, training memory, prediction suite, both
 selection seals, analysis, and the complete 528-call phase/run sequence. It
-also rejects tampered choices, costs, or analysis. Full local acceptance now
-passes 939 tests with 36 explicit skips. This authorizes one development CWRU
-gate, not a paper claim; `paper_result=false` remains mandatory.
+also rejects tampered choices, costs, or analysis. CWRU job `3792343` completed
+the exact 264-plan/528-call schedule at clean commit `cf3d430` on `compt292`;
+its independent reconstruction audit passed 2,735 checks with no failed ID or
+run-tree mutation.
 
 F2C13C freezes how an accepted paired run is reduced before its measurements
 are available. The summary builder requires the successful independent audit,
@@ -781,9 +801,15 @@ revalidates the exact commit, supported schemas, frozen 264-plan/528-call
 ledger, ten-task selection seals, hashes, and shadow-use boundary, and refuses
 overwrite. It reports both methods, paired profile-minus-memory regret,
 selection agreement, profile acquisition, and historical training as separate
-cost scopes. The result remains a descriptive single-allocation development
-record with zero LLM/ontology calls, no semantic-frontier or generalization
-claim, and `paper_result=false`.
+cost scopes. In the accepted summary, family memory made zero current-query
+profile calls, selected 7/10 observed latency winners, and had 2.733 ms mean
+latency regret. Dual profiling made 20 profile acquisitions, selected 5/10,
+and had 2.808 ms mean latency regret; it lowered mean byte regret from 4,658 to
+3,346.4 while adding 35.154 ms and 14,056 bytes of mean acquisition cost.
+Fixed parallel remained the strongest evaluation-only latency control at 9/10
+and 0.289 ms regret. This mixed ten-task result is retained without retuning and
+remains a descriptive single-allocation record with zero LLM/ontology calls,
+no semantic-frontier or generalization claim, and `paper_result=false`.
 
 F2C14A defines the admission boundary for the larger multi-family population.
 An executable family is not a name or a collection of prose examples: it is a
