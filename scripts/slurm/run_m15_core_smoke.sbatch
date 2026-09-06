@@ -132,6 +132,7 @@ detect_runtime() {
   tests/test_m15_selective_resolution.py \
   tests/test_m15_artifact_resolution.py \
   tests/test_m15_semantic_intake.py \
+  tests/test_m15_resolution_execution_bridge.py \
   tests/test_m15_llm_resolution_provider.py \
   tests/test_m15_live_resolution.py \
   tests/test_m15_remote_executor.py \
@@ -149,6 +150,9 @@ detect_runtime() {
 
 "$PYTHON_BIN" examples/m15_semantic_intake_demo.py \
   > "$RUN_ROOT/semantic_intake.json"
+
+"$PYTHON_BIN" examples/m15_resolution_execution_bridge_demo.py \
+  > "$RUN_ROOT/resolution_execution_bridge.json"
 
 "$PYTHON_BIN" - "$RUN_ROOT/vertical_slice.json" <<'PY'
 import json
@@ -218,6 +222,30 @@ assert payload["resolution"]["resolved_entity_bindings"] == {
     "person-identity": "person:alice-smith"
 }
 assert payload["resolution"]["native_query_text_emitted"] is False
+PY
+
+"$PYTHON_BIN" - "$RUN_ROOT/resolution_execution_bridge.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert payload["counts"] == {
+    "executable_semantic_classes": 2,
+    "physical_candidates": 4,
+    "raw_interpretations": 6,
+    "semantic_equivalence_classes": 6,
+    "unavailable_semantic_classes": 4,
+}
+assert payload["paper_result"] is False
+assert sum(
+    item["availability"] == "executable"
+    for item in payload["semantic_classes"]
+) == 2
+assert sum(
+    item["availability"] == "unavailable"
+    for item in payload["semantic_classes"]
+) == 4
 PY
 
 echo "M15 core smoke passed."

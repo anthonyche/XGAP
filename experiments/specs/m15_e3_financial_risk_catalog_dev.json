@@ -76,6 +76,20 @@
       }
     },
     {
+      "candidate_id": "constraint:single-transfer-at-least-50000",
+      "kind": "constraint",
+      "canonical_label": "at least one transfer of at least 50000 USD",
+      "aliases": [
+        "密切",
+        "close"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-strength-definition",
+        "record_id": "constraint-003"
+      }
+    },
+    {
       "candidate_id": "constraint:frequency-at-least-3",
       "kind": "constraint",
       "canonical_label": "at least three transfers",

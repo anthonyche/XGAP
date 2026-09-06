@@ -30,8 +30,9 @@ The template constructs four existing semantic operators:
 
 It declares four holes: entity identity, transfer predicate, relationship-
 strength constraint, and company risk type. Treating `密切` as only a predicate
-would silently choose one meaning, so the development catalog retains both an
-amount-threshold and a frequency-threshold interpretation. The one-month window
+would silently choose one meaning, so the development catalog retains a
+single-transfer amount threshold, a window-total amount threshold, and a
+window-frequency threshold. The one-month window
 and clarified identity policy are hard constraints; relationship strength and
 risk-type adjacency are relaxable. E3 does not add or redefine an algebra
 operator.
@@ -96,8 +97,8 @@ Focused acceptance covers:
 - no silent candidate truncation;
 - in-set authoritative user selection and out-of-set rejection;
 - the six-action end-to-end route and execution-memory records;
-- explicit preservation of amount-versus-frequency ambiguity in a constraint
-  hole that ontology cannot resolve;
+- explicit preservation of single-transfer, window-total, and window-frequency
+  meanings in a constraint hole that ontology cannot resolve;
 - the no-user blocking route with zero ontology and model calls.
 
 The example is:
@@ -106,17 +107,15 @@ The example is:
 PYTHONPATH=src python examples/m15_semantic_intake_demo.py
 ```
 
-Current local verification passes 27 focused E3/E1 tests and 48 combined
-E1--E3 regression tests. The last full-suite gate before the constraint-hole
-correction passed 993 tests with 36 explicitly gated skips; the corrected full
-count is refreshed at the next repository-wide acceptance gate.
+The E3/E4 bridge and registry-focused gate passes 32 tests. Full local
+acceptance passes 1,003 tests with 36 explicitly gated skips.
 
 ## Limits and next gate
 
 E3 does not establish open-domain parsing quality, ontology quality, user
 interaction latency, answer quality, or optimizer performance. It does not
 execute the resulting candidate interpretations. The next implementation gate
-must bind the E3 resolution result to deterministic semantic-class enumeration
-and the existing executable-family registry without allowing hard constraints
-or clarified identity to change. A UI remains optional; its first useful role
+is now supplied by M15-E4, which preserves unsupported aggregate meanings as
+explicit unavailable classes without allowing hard constraints or clarified
+identity to change. A UI remains optional; its first useful role
 would be transporting `user.clarify`, not displaying a fabricated answer.

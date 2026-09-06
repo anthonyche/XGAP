@@ -1,0 +1,19 @@
+MATCH (person:M15F2C_{{compile:workload_token}}_Person {id: $person_id})
+      -[:M15F2C_{{compile:workload_token}}_OWNS]->
+      (source:M15F2C_{{compile:workload_token}}_Account)
+MATCH (source)-[edge:M15F2C_{{compile:workload_token}}_{{compile:relationship_type}}{{compile:path_quantifier}}]->
+      (target:M15F2C_{{compile:workload_token}}_Account)
+MATCH (company:M15F2C_{{compile:workload_token}}_CompanyRef)
+      -[:M15F2C_{{compile:workload_token}}_OWNS]->(target)
+WHERE edge.occurred_on >= date($occurred_on_gte)
+  AND edge.occurred_on < date($occurred_on_lt)
+  AND edge.amount >= $amount_gte
+  AND company.id IN $company_ids
+RETURN person.id AS person_id,
+       person.name AS person,
+       "neo:{{compile:workload_id}}:" + company.id AS company_id,
+       edge.id AS transfer_id,
+       edge.amount AS amount,
+       edge.currency AS currency,
+       toString(edge.occurred_on) AS occurred_on
+ORDER BY company_id, transfer_id;

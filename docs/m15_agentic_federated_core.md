@@ -287,9 +287,9 @@ passes 48 tests; full local acceptance passes 977 tests with 36 explicit skips.
 M15-E3 adds the deterministic parser-to-hole and real artifact-provider path
 without invoking the model. A versioned intake template performs only declared
 exact-phrase matching and constructs four existing semantic operators, four
-typed holes, and explicit hard/relaxable constraints. The `密切` phrase remains
-an amount-versus-frequency constraint ambiguity rather than being collapsed
-into the transfer predicate. Versioned local catalog
+typed holes, and explicit hard/relaxable constraints. The `密切` phrase retains
+single-transfer, window-total, and window-frequency meanings rather than being
+collapsed into the transfer predicate. Versioned local catalog
 and ontology providers expose bounded IDs, content hashes, and evidence through
 the same E1 tool contract. The ontology permits one hop for predicate/type
 candidates and rejects entities. The controlled `Alice` alias remains
@@ -298,11 +298,22 @@ the goal blocks after one catalog read and makes zero ontology/model calls.
 The successful development route uses four catalog reads, one ontology read,
 one clarification, zero LLM calls, and zero backend calls. These controlled
 fixtures are interface evidence rather than ontology truth or parsing quality.
-The corrected E3 intake/catalog/ontology/E1 focused suite passes 27 tests and
-the combined E1--E3 regression passes 48 tests. The last full local acceptance
-before the constraint-hole correction passed 993 tests with 36 explicit skips;
-the count is refreshed at the next repository-wide gate.
+The E3/E4 bridge and registry-focused gate passes 32 tests. Full local
+acceptance passes 1,003 tests with 36 explicit skips.
 See [`docs/m15_e3_semantic_intake.md`](m15_e3_semantic_intake.md).
+
+M15-E4 now binds the sealed E3 result to the executable-family registry through
+a capability-checked bridge. Three relationship-strength meanings and two
+predicate meanings create six deterministic classes. The single-transfer
+threshold has a valid parent-family binding, and two hash-bound Neo4j extension
+templates preserve the hard exclusive month upper bound; its two predicate
+classes therefore receive both registered physical strategies. Window-total
+and window-frequency meanings need aggregate capabilities absent from the
+family and remain four explicit unavailable classes. The bridge emits no native
+query text and uses zero backend, model, or ontology-service calls. Offline
+fixture execution validates the four constructed plans only after selection.
+See
+[`docs/m15_e4_resolution_execution_bridge.md`](m15_e4_resolution_execution_bridge.md).
 
 ## M15-F — Paper experiment surface and optional UI
 

@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A/E3 VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
+Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; E4 LIVE EVIDENCE/CWRU RESULT/UI BRIDGE PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -196,13 +196,20 @@ and type candidates. Both expose their raw artifact hashes and provenance in
 ordinary tool results and memory. The controlled request blocks after the
 entity catalog when no user choice is available; with one explicit in-set
 choice it completes in six tool calls with zero model and backend calls. The
-development files make no general parsing or ontology-truth claim. The next E
-gate is deterministic binding of this result to executable semantic-class
-enumeration; UI clarification transport remains later work. The corrected
-E3-focused suite passes 27 tests and the combined E1--E3 regression passes 48
-tests. The last full local suite before the constraint-hole correction passed
-993 tests with 36 explicit skips; the count is refreshed at the next
-repository-wide gate.
+development files make no general parsing or ontology-truth claim.
+
+E4 verifies the sealed resolution commit and preserves all six combinations of
+three relationship-strength meanings and two predicate meanings. It checks
+each class against the existing executable-family package plus two hash-bound
+exclusive-window templates. Two single-transfer classes compile to four
+physical candidates; two window-total and two window-frequency classes remain
+unavailable with explicit aggregate-capability gaps. No hard constraint is
+changed and no backend, model, ontology service, or oracle is used for
+selection. Offline fixture execution validates all four plans after
+construction. The live lifecycle/auditor, cost-aware semantic frontier, and UI
+clarification transport remain later work. Verification counts are refreshed
+at the repository-wide E4 gate: the bridge/E3/registry-focused suite passes 32
+tests, and full local acceptance passes 1,003 tests with 36 explicit skips.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

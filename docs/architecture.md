@@ -35,6 +35,15 @@ constraints declared by its versioned template. Its artifact catalog,
 ontology, and user clarification capabilities are agent tools; they do not add
 logical-algebra operations or backend-native text.
 
+M15-E4 is the deterministic boundary between that resolution output and an
+executable family. It first enumerates semantic equivalence classes, then asks
+whether every required capability has hash-bound evidence. Capability checking
+is distinct from semantic resolution and physical strategy selection:
+unsupported meanings remain explicit, while supported meanings alone receive
+registry-backed runtime candidates. Bridge-owned native templates are ordinary
+black-box interface artifacts and cannot redefine the semantic or path
+algebras.
+
 The path-algebra vocabulary remains limited to:
 
 - `Nodes(G)`

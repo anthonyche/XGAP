@@ -163,6 +163,18 @@ result includes artifact identity, version, provenance, and cost. Ambiguous
 entity aliases still require an explicit in-set user clarification, while
 non-entity candidate sets proceed to deterministic interpretation enumeration.
 
+M15-E4 closes that next boundary without assuming that a resolved candidate is
+already executable. It verifies the E3 resolution commit, enumerates the full
+bounded cross-product, assigns content-addressed equivalence classes, and
+checks named semantic requirements against a hash-bound executable-family
+package. Unsupported classes remain visible with explicit missing-capability
+reasons. A pair of registered bridge templates supplies the previously absent
+exclusive time upper bound for full and bind Neo4j queries, so two single-edge
+amount interpretations produce four physical candidates. Window-total and
+window-frequency interpretations remain unavailable rather than being mapped
+to the per-edge filter. No backend, LLM, or ontology service is invoked during
+bridge compilation.
+
 ### Actions and termination
 
 The agent may construct or fill a semantic program, inspect the environment,

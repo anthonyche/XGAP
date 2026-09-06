@@ -196,7 +196,11 @@ Status: **VERIFIED**, most recently by job `3787126` on `compt331`.
   without changing the script.
 - Timeout: 15 minutes.
 - Expected outputs: `run_status.json`, `environment.txt`, `pytest.txt`,
-  `vertical_slice.json`, and `job.log` below the job-owned run directory.
+  `vertical_slice.json`, `plan_selection.json`, `adaptive_replanning.json`,
+  `semantic_intake.json`, `resolution_execution_bridge.json`, and `job.log`
+  below the job-owned run directory. Historical B1 runs predate some of these
+  later wrapper outputs; this list describes the current wrapper rather than
+  retroactively changing their recorded artifact sets.
 - Verified threshold at commit `4c45931`: status `success`, 40 offline M15
   tests passed, one explicitly gated live test skipped, the vertical slice
   returned exactly one row with two remote calls and 206 transferred bytes.

@@ -129,6 +129,7 @@ def test_end_to_end_intake_uses_catalog_ontology_and_explicit_user() -> None:
     ]
     assert candidate_sets["relationship-strength"]["candidate_ids"] == [
         "constraint:amount-at-least-50000",
+        "constraint:single-transfer-at-least-50000",
         "constraint:frequency-at-least-3",
     ]
     assert candidate_sets["company-risk-type"]["candidate_ids"] == [

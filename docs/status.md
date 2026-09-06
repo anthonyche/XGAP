@@ -54,8 +54,8 @@ M15-E3 now closes the deterministic intake and local artifact-provider gap.
 One versioned exact-phrase template turns the controlled financial-risk request
 into four existing semantic operators, four typed holes, two hard constraints,
 and two relaxable constraints with zero external calls. The relationship-
-strength hole preserves amount-versus-frequency ambiguity instead of treating
-`密切` as only a predicate. Versioned catalog and
+strength hole preserves single-transfer, window-total, and window-frequency
+meanings instead of treating `密切` as only a predicate. Versioned catalog and
 ontology providers expose bounded IDs, raw artifact SHA-256, provenance, and
 zero-call cost through the same E1 tools. Ontology expansion is one hop and is
 restricted to predicate/type holes. The alias `Alice` yields two catalog
@@ -65,11 +65,22 @@ or model call. With the explicit development selection, the route succeeds in
 six calls: four local catalog reads, one local ontology read, one user
 clarification, zero LLM calls, and zero backend calls. The fixtures do not
 claim general NL understanding or ontology truth and remain
-`paper_result=false`. The corrected E3 intake/catalog/ontology/E1 focused suite
-passes 27 tests and the combined E1--E3 regression passes 48 tests. The last
-full local acceptance before the constraint-hole correction passed 993 tests
-with 36 explicit skips; the count is refreshed at the next repository-wide
-gate.
+`paper_result=false`.
+
+M15-E4 now verifies that sealed E3 commit before it creates an execution plan.
+The three relationship-strength candidates and two predicate candidates form
+six stable semantic classes. A pair of bridge-registered, SHA-256-bound Neo4j
+templates supplies the hard exclusive month upper bound that the parent F2C
+family lacks. The two single-transfer classes each map to the registry's two
+physical strategies, while the four window-total/frequency classes remain
+explicitly unavailable because `SUM` and `COUNT/HAVING` capabilities are not
+registered. No class, hard constraint, or clarified identity is silently
+changed. Bridge compilation makes zero backend, model, and ontology-service
+calls and exposes no native query text. Offline post-construction validation
+executes all four plans against deterministic fixtures. Repository-wide counts
+are now refreshed: the bridge/E3/registry-focused gate passes 32 tests, and
+full local acceptance passes 1,003 tests with 36 explicit skips. All artifacts
+remain `paper_result=false`.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly

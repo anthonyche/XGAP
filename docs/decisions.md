@@ -2466,7 +2466,8 @@ other native query text, and no failure is retried.
 
 The intake vocabulary includes a separate `constraint` hole kind. In the
 development request, `密切` is not collapsed into the transfer predicate: the
-catalog retains both an amount-threshold and a frequency-threshold condition.
+catalog retains a qualifying-single-transfer threshold, a window-total amount
+threshold, and a window-frequency threshold.
 Ontology does not process this hole kind. A later executable-package bridge
 must therefore expose which condition interpretations have registered
 operators and templates instead of silently discarding the unsupported ones.
@@ -2479,3 +2480,31 @@ catalog lookup on the existing E1 goal loop. This validates routing,
 provenance, hashing, costs, and memory only. The artifacts are not ontology
 truth, the remaining semantic candidates are not declared user intent, no
 backend or LLM is called, and every result remains `paper_result=false`.
+
+## D138 Preserve every resolved meaning before checking executable capability
+
+M15-E4 treats the E3 resolution commit as immutable input. It reconstructs the
+commit hash, hard-constraint hash, authoritative entity choice, and artifact
+identities before enumerating a bounded cross-product. Semantic equivalence is
+content-addressed from the complete canonical meaning rather than list order.
+Every interpretation survives capability checking; an unsupported class is
+published with named missing capabilities and receives no physical candidate.
+
+The controlled `密切` hole contains three meanings and the transfer-predicate
+hole contains two, producing six classes. Window-total `SUM` and window-count
+`COUNT/HAVING` are not equivalent to the existing per-edge amount filter, so
+their four classes remain explicitly unavailable. The qualifying-single-edge
+meaning is compatible with the parent F2C family. Two bridge-owned, hash-bound
+Neo4j templates add the hard exclusive calendar-window upper bound to both the
+full-query and bind-query forms. This extension is a registered black-box
+interface artifact; it neither changes prior F2C evidence nor inspects backend
+internals.
+
+The two executable semantic classes map to exactly one registered semantic
+task each and inherit only the registry's `parallel_hash_join` and
+`risk_first_bind_join` strategies, yielding four unexecuted physical
+candidates. Construction and selection use no oracle, backend, model, or
+ontology-service call and emit no native query text in the portable bridge
+plan. Offline oracles may be read only afterward to test exact execution. The
+development result remains `paper_result=false`; live execution, cost
+estimation, frontier selection, and aggregate capability are later gates.

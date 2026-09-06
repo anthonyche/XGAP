@@ -6,6 +6,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
 PYTHON="${PYTHON:-python}"
+export PYTHONPATH="$REPO_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 
 "$PYTHON" scripts/check_harness.py
 "$PYTHON" -m pytest
@@ -80,4 +81,8 @@ fi
 
 if [ -f examples/m15_semantic_intake_demo.py ]; then
   "$PYTHON" examples/m15_semantic_intake_demo.py
+fi
+
+if [ -f examples/m15_resolution_execution_bridge_demo.py ]; then
+  "$PYTHON" examples/m15_resolution_execution_bridge_demo.py
 fi
