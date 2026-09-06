@@ -114,18 +114,19 @@ The audit-fix branch passes full local acceptance with 1,010 tests and 36
 explicit skips. This is mechanism evidence only; `paper_result=false` remains
 mandatory.
 
-M15-E5 is now blocked on an explicit semantic-objective decision, not on an
-execution mechanism. E4 emits co-equal unresolved interpretations with no
+M15-E5 now has its semantic-objective decision: the author selected a two-level
+interpretation-set and relaxation-frontier design. E4 emits co-equal unresolved
+interpretations with no
 authoritative zero-deviation class; E2B provides bounded but non-authoritative
 candidate IDs without confidence; F2C10 family memory predicts only physical
 latency and bytes; and F2C9 requires exactly one global
 `semantic_deviation=0` class. Directly wiring these layers would invent user
-intent. The decision gate in
-`docs/m15_e5_interpretation_relaxation_gate.md` presents three policies and
-recommends a two-level design: physical reduction and anchored relaxation
-frontiers inside each interpretation, followed by bounded representative
-selection or clarification across unresolved interpretations. No E5 code or
-CWRU run is authorized until the author selects the policy.
+intent. The selected design performs physical reduction and anchored relaxation
+frontiers inside each interpretation, then bounded representative selection or
+clarification across unresolved interpretations. The remaining author decision
+is the clarification-impact rule; no E5 CWRU run is authorized before the
+offline mechanism and that rule are frozen. See
+`docs/m15_e5_interpretation_relaxation_gate.md`.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly

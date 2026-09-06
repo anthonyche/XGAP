@@ -2599,3 +2599,27 @@ experiment was neither retried nor rewritten. This closes E4B as real-backend
 mechanism evidence only; it does not establish semantic quality, cost-frontier
 quality, generalization, or paper performance, and remains
 `paper_result=false`.
+
+## D142 Separate unresolved interpretations from anchored relaxations
+
+The author selected Option A from the M15-E5 interpretation–relaxation gate.
+E5 will preserve unresolved interpretations as co-equal groups rather than
+assigning one a zero-deviation status from list order, ontology proximity, or a
+non-authoritative LLM subset. Physical latency and byte predictions remain the
+responsibility of family memory and must use zero current-query profiling in
+the target path.
+
+Within each interpretation, E5 first retains the cheapest predicted physical
+representative. A semantic-deviation Pareto/epsilon frontier is permitted only
+for a declared relaxation whose reference interpretation has an authoritative
+binding. An unresolved interpretation has nullable semantic deviation and
+cannot dominate or be dominated by another unresolved interpretation on an
+invented scalar. The cross-interpretation layer may return at most K
+representatives or ask a clarification question under a separately frozen
+impact rule.
+
+This rejects both a single global provenance-weighted semantic-loss frontier
+and a mandatory-clarification-before-any-frontier policy. The
+clarification-impact rule remains author-owned and must be selected before E5
+can close its offline mechanism gate. No CWRU run is authorized by this
+decision, and every E5 artifact remains `paper_result=false`.

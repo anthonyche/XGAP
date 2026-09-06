@@ -2,7 +2,7 @@
 
 ## Status
 
-**AUTHOR DECISION REQUIRED; NO E5 IMPLEMENTATION OR CWRU RUN AUTHORIZED**
+**OPTION A SELECTED; CLARIFICATION-IMPACT RULE DECISION REQUIRED; NO CWRU RUN AUTHORIZED**
 
 This gate separates unresolved natural-language interpretations from bounded
 semantic relaxations before XGAP connects the E4 resolution bridge to
@@ -105,7 +105,9 @@ clarification, and reserves `semantic_deviation` for changes relative to an
 actual reference meaning. It also preserves family memory as the source of
 physical-cost predictions with zero current-query profiling.
 
-This recommendation is a design inference, not an author decision.
+The author selected Option A on 2026-09-06. E5 must therefore use the
+two-level contract below. This decision does not yet select the
+clarification-impact rule or authorize a CWRU run.
 
 ## Contract if Option A is selected
 
@@ -152,11 +154,10 @@ The mechanism gate must prove that:
 
 ## Author decision
 
-Select exactly one policy before E5 code is implemented:
+**Selected: A — two-level interpretation sets and relaxation frontiers.**
 
-- **A — two-level interpretation sets and relaxation frontiers (recommended)**
-- **B — one global frontier with provenance-derived semantic loss**
-- **C — authoritative clarification before any semantic frontier**
-
-After that choice, the next author decision will freeze the clarification-impact
-rule. No new CWRU experiment is needed for this design gate.
+Rejected alternatives remain recorded above so the final design cannot be
+silently converted into a global provenance-weighted score or an always-clarify
+policy after results are observed. The next author decision must freeze the
+clarification-impact rule. No new CWRU experiment is needed for this design
+gate.
