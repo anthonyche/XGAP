@@ -683,3 +683,20 @@ F2C13C does not rerun a backend or reinterpret an unaudited result. It keeps
 historical training cost separate, reports the current-query profile cost, and
 retains the frozen single-allocation descriptive boundary. Do not select the
 paper-scale multi-family domains from this ten-task result alone.
+
+## E2B live resolution compatibility rerun
+
+CWRU job `3792284` at exact commit `953f15f` reached a healthy Qwen3-32B
+service but failed before generation because vLLM 0.11.1 rejected
+`uniqueItems` in the guided-decoding schema. Preserve that failed run. Do not
+audit it and do not resubmit the old commit. It spent exactly one provider
+request, with zero repair calls, zero retries, and zero generated tokens.
+
+The compatibility branch removes only the unsupported provider-facing schema
+keyword. XGAP's deterministic validator still rejects duplicate, out-of-set,
+empty, and oversized candidate selections. After the replacement commit is
+published, submit exactly one fresh `run_m15_live_resolution.sbatch` job at
+that exact clean commit. Keep the same frozen model, runtime, token budget,
+timeout, and zero-retry contract. A successful replacement run may be audited
+once with the existing E2B evidence command; a failed replacement run must be
+returned without audit or retry.

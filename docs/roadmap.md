@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
+Current status: **E1/E2A VERIFIED LOCALLY; E2B FIRST LIVE ATTEMPT DIAGNOSED; COMPATIBILITY RERUN/UI BRIDGE PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -176,19 +176,25 @@ with 36 explicit skips. The E2A demo uses an offline transport: neither E1 nor
 E2A makes a live backend, model, ontology-service, or CWRU call, and neither
 authorizes an experiment.
 
-E2B is now implemented locally. Its frozen four-candidate predicate request is
+E2B is implemented locally. Its frozen four-candidate predicate request is
 sealed before service startup, uses one goal-loop inference request and zero
 repairs/retries, persists success or spent failure cost, and omits the generic
 extra inference smoke. A dedicated 45-minute H100 Slurm wrapper reuses the
 existing verified loopback vLLM launcher and environment contract. A separate
 read-only auditor reconstructs the request, runtime/model identity, trace,
 memory, shutdown, and inventory without mutating the run. Local tests use only a
-fake transport. One clean CWRU engineering run may follow the published exact
-commit; no live E2B result exists yet and all outputs remain
-`paper_result=false`. The E2B/provider/CWRU-infrastructure focused suite passes
-48 tests; full local acceptance passes 977 tests with 36 explicit skips. Real
-catalog and ontology wiring and the UI clarification transport remain later
-work.
+fake transport. CWRU job `3792284` at exact commit `953f15f` reached a healthy
+Qwen3-32B endpoint, spent the single authorized request, and then failed before
+generation because vLLM 0.11.1 does not implement the JSON Schema grammar
+keyword `uniqueItems`. The run used no repair or retry and produced zero model
+tokens; preserve it as compatibility-failure evidence and do not audit or
+rerun it. The replacement dynamic schema removes only that unsupported
+provider-facing keyword. Deterministic validation still rejects duplicates and
+enforces the bounded candidate enum, nonempty result, and maximum cardinality.
+One fresh compatibility-rerun job is pending after publication; all outputs
+remain `paper_result=false`. The targeted compatibility regression passes 32
+tests and full local acceptance passes 978 tests with 36 explicit skips. Real catalog and
+ontology wiring and the UI clarification transport remain later work.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

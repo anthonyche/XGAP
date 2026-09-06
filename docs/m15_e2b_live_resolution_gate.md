@@ -36,11 +36,13 @@ latency, and token cost and stops the job without retry.
 
 The local gate uses a fake transport only. Tests cover exact spec and preflight
 reconstruction, identity exclusion, dirty checkout rejection, one-call success,
-costed malformed output, tampered preflight, environment drift, bounded Slurm
-syntax, successful independent audit, and post-run artifact tampering. Local
-acceptance does not authorize a result claim or imply that the CWRU endpoint
-has been exercised. The E2B/provider/CWRU-infrastructure suite passes 48 tests;
-full local acceptance passes 977 tests with 36 explicit skips.
+costed malformed output, duplicate-ID rejection after provider parsing,
+tampered preflight, environment drift, bounded Slurm syntax, successful
+independent audit, and post-run artifact tampering. The provider-facing schema
+omits `uniqueItems` because vLLM 0.11.1 cannot compile it; deterministic
+validation retains the uniqueness contract. The targeted provider,
+live-resolution, and selective-resolution regression passes 32 tests; full
+local acceptance passes 978 tests with 36 explicit skips.
 
 ## CWRU execution
 
@@ -84,9 +86,14 @@ PYTHONPATH="$PWD/src" \
   > "$XGAP_E2B_AUDIT.stdout"
 ```
 
-Do not resubmit automatically after a failure. Return the outer status,
-`job.log`, provider invocation, and audit failure IDs before deciding whether a
-new run is justified.
+The first CWRU attempt, job `3792284` at exact commit `953f15f`, passed runtime,
+GPU, model-startup, and readiness checks, then received HTTP 400 before
+generation because vLLM rejected `uniqueItems`. It spent one external call,
+made no repair or retry, and produced zero tokens. Preserve that failed run,
+do not audit it, and do not rerun the old commit. The compatibility fix
+authorizes one fresh job at its new exact commit. After any future failure,
+return the outer status, `job.log`, and provider invocation before deciding
+whether another new run is justified.
 
 ## Required evidence
 

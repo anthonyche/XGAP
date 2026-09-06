@@ -2442,3 +2442,22 @@ memory, invocation hashes, shutdown, and artifact inventory without changing
 the run tree. Local tests use only a fake transport. The gate authorizes one
 clean CWRU engineering run after its exact commit is published; it makes no
 quality, optimizer, graph-answer, or paper claim.
+
+## D137 Keep uniqueness in deterministic validation when vLLM cannot compile it
+
+The first E2B CWRU attempt reached a healthy Qwen3-32B endpoint and spent its
+single authorized inference request, but vLLM 0.11.1 rejected the dynamic JSON
+Schema before generation because its guided-decoding grammar does not implement
+`uniqueItems`. The replacement provider-facing schema omits only that keyword.
+It keeps the exact candidate-ID enum, nonempty array, and maximum-cardinality
+declarations, and the existing deterministic response validator continues to
+reject duplicate IDs as well as out-of-set or oversized responses.
+
+Reason:
+
+Provider grammar compatibility must not weaken the system's semantic action
+boundary. Enforcing uniqueness after parsing preserves the same accepted
+response language from XGAP's perspective while allowing the frozen vLLM
+version to compile the request grammar. The failed job remains immutable
+evidence; the repair authorizes a fresh job rather than relabeling or retrying
+the spent request.

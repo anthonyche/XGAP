@@ -37,18 +37,27 @@ skips. These are offline-transport results only. A fail-closed CWRU vLLM
 lifecycle and auditor, real catalog/ontology wiring, parser-to-hole
 construction, and UI clarification transport remain pending.
 
-M15-E2B now implements the live lifecycle and independent audit boundary
-locally. It seals one four-candidate predicate request before service startup,
+M15-E2B now implements the live lifecycle and independent audit boundary. It
+seals one four-candidate predicate request before service startup,
 reuses the exact CWRU Qwen3-32B environment, performs no generic inference
 smoke, and executes exactly one model-backed tool call through the goal loop.
 The wrapper has a 45-minute H100 allocation limit, loopback-only service,
 bounded shutdown, zero repair, and zero automatic retry. The auditor
 reconstructs the preflight, CWRU environment, tool result, provider invocation,
 execution memory, lifecycle, and artifact inventory while checking that the run
-tree is unchanged. Local tests use a fake transport; no E2B CWRU/model result
-exists yet, and the gate remains `paper_result=false`. The combined
-E2B/provider/CWRU-infrastructure suite passes 48 tests; full local acceptance
-passes 977 tests with 36 explicit skips.
+tree is unchanged. The first CWRU submission, job `3792284` at exact commit
+`953f15f`, proved the H100, frozen runtime, model startup, and readiness path,
+then failed before generation when vLLM 0.11.1 rejected the provider-facing
+JSON Schema keyword `uniqueItems`. Exactly one external request was charged;
+there were zero repair calls, zero retries, and zero generated tokens. The
+failure tree is preserved and must not be audited or rerun. The replacement
+provider schema omits only that unsupported grammar keyword; duplicate IDs are
+still rejected by the deterministic response validator, while the enum,
+nonempty, and maximum-cardinality bounds remain enforced locally. A fresh CWRU
+engineering job is required after this compatibility fix is published. The
+gate remains `paper_result=false`. The targeted provider/live-resolution/
+selective-resolution regression passes 32 tests; full local acceptance passes
+978 tests with 36 explicit skips.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly

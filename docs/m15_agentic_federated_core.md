@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1/E2A VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
+Status: **E1/E2A VERIFIED LOCALLY; E2B FIRST LIVE ATTEMPT DIAGNOSED; COMPATIBILITY RERUN/UI BRIDGE PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -272,17 +272,23 @@ remain pending. Focused E1/E2 acceptance passes 42 tests and full local
 acceptance passes 967 tests with 36 explicit environment or external-artifact
 skips.
 
-M15-E2B now supplies that fail-closed lifecycle and auditor locally. One frozen
+M15-E2B supplies that fail-closed lifecycle and auditor. One frozen
 predicate request is sealed before Qwen3-32B startup, executes through the
 ordinary goal loop and execution memory, and permits one inference request with
 zero repair or retry. Readiness uses `/v1/models`; the generic structured-output
 smoke is omitted because it would add another inference request. The independent
 auditor reconstructs the preflight, CWRU runtime/model identity, bounded output,
 tool/invocation/memory links, shutdown, and every inventory hash without
-modifying the run tree. This local implementation authorizes one clean CWRU
-engineering run after commit publication, but no live result exists yet and it
-remains `paper_result=false`. The E2B/provider/CWRU-infrastructure focused suite
-passes 48 tests; full local acceptance passes 977 tests with 36 explicit skips.
+modifying the run tree. CWRU job `3792284` at exact commit `953f15f` reached a
+healthy Qwen3-32B service but vLLM 0.11.1 rejected `uniqueItems` in the dynamic
+guided-decoding schema before generation. The spent request, zero repairs,
+zero retries, and zero model tokens are preserved in the failed run. The
+compatibility schema now omits only that provider-facing keyword; the ordinary
+response validator continues to reject duplicate or out-of-set IDs and enforce
+nonempty and maximum-cardinality bounds. A fresh live compatibility rerun is
+pending, and the gate remains `paper_result=false`. The targeted compatibility
+regression passes 32 tests; full local acceptance passes 978 tests with 36
+explicit skips.
 
 ## M15-F — Paper experiment surface and optional UI
 

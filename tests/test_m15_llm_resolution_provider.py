@@ -163,11 +163,40 @@ def test_success_uses_one_request_and_dynamic_candidate_enum(monkeypatch) -> Non
         "predicate:invested",
     ]
     assert schema["properties"]["candidate_ids"]["maxItems"] == 2
+    # vLLM 0.11.1 rejects uniqueItems in its guided-decoding grammar.  XGAP
+    # retains the uniqueness contract in the deterministic response validator.
+    assert "uniqueItems" not in schema["properties"]["candidate_ids"]
     assert "secret-value" not in json.dumps(payload)
     assert provider.last_invocation is not None
     assert provider.last_invocation.external_calls == 1
     assert provider.last_invocation.status == "success"
     assert response.metadata["provider_repair_calls"] == 0
+
+
+def test_duplicate_candidate_ids_are_rejected_after_provider_response(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("XGAP_M15_TEST_API_KEY", "secret-value")
+    structured = {
+        "hole_id": "transfer-predicate",
+        "candidate_ids": ["predicate:paid", "predicate:paid"],
+    }
+    transport = _Transport([_envelope(json.dumps(structured))])
+    provider = _provider(transport)
+
+    with pytest.raises(ResolutionProviderFailure, match="must be unique") as caught:
+        provider.resolve(
+            _request(),
+            ToolContext("goal", 1, "call"),
+        )
+
+    assert caught.value.external_calls == 1
+    assert caught.value.failure_category == "structured_output_error"
+    assert len(transport.calls) == 1
+    schema = transport.calls[0]["payload"]["response_format"]["json_schema"][
+        "schema"
+    ]
+    assert "uniqueItems" not in schema["properties"]["candidate_ids"]
 
 
 def test_entity_request_fails_before_network(monkeypatch) -> None:
