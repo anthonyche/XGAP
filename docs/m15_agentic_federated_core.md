@@ -564,6 +564,17 @@ selector retains the same physical/Pareto/epsilon/K order, and the old F2C9 v1
 hashes remain unchanged. This gate performs no external call or measurement
 and does not turn the six-query development fixture into paper evidence.
 
+F2C10B connects that variable semantic space to agent memory rather than to a
+current-query profiling tool. Its immutable memory view contains only
+successful/exact training-plan histories with raw counterbalanced repetition
+metadata and no answer rows. A strategy-conditioned KNN reference predictor
+uses typed query and semantic bindings to emit latency, transferred-byte, and
+uncertainty estimates for every held-out physical plan. The complete training
+observation order, model configuration, target plan identities, and zero-call
+boundary are hash-bound before the existing frontier selector runs. Cold
+start is an error, not a controlled-estimate or profiling fallback. The local
+values validate architecture only; they are explicitly not measurements.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

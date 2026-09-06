@@ -1,0 +1,106 @@
+{
+  "artifact_id": "m15-f2c10b-local-family-memory-prediction-v1",
+  "artifact_role": "local_leakage_safe_family_memory_prediction_compiler_not_live_or_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "deterministic_controlled_nonmeasurement_training_fixture_and_local_tests",
+  "inputs": {
+    "direct_semantic_workload_artifact": "experiments/artifacts/m15_f2c10a_local_direct_semantic_workload_20260906.json",
+    "predictor_policy": "experiments/configs/m15_f2c10_family_memory_predictor_dev.json",
+    "predictor_policy_sha256": "ee4c4ab09aaf86d06784a928e0a52ffa99d6de53f233440a3573976e96baf89b",
+    "controlled_runtime_compatibility_sha256": "9429e8febfbce29460a46641c59240cac5d5bdb3368031913e593403cdbfefa2"
+  },
+  "artifact_hashes": {
+    "controlled_training_fixture_sha256": "76353f9961fdc9ffbec7eb709412aa414fa9305752cb4bcbac23376a8a6517a7",
+    "training_memory_view_sha256": "b68ca2aade99e2086b70fca5f299fbfd7a908a67431ba5b55c1cb369005b7ffd",
+    "prediction_suite_sha256": "1241cc4555803c98aa2f1e80c7999ed875bd2e272b43f20eadd0a5a845e36157"
+  },
+  "training_memory": {
+    "base_query_count": 4,
+    "semantic_task_count": 18,
+    "physical_plan_observation_count": 36,
+    "raw_repetition_count": 72,
+    "repetitions_per_plan": 2,
+    "counterbalanced_by_task_and_block": true,
+    "successful_exact_only": true,
+    "heldout_task_ids_observed": [],
+    "answer_rows_stored": false
+  },
+  "heldout_prediction_suite": {
+    "base_query_count": 2,
+    "semantic_task_count": 10,
+    "physical_plan_prediction_count": 20,
+    "family_memory_only": true,
+    "current_query_profile_calls": 0,
+    "current_query_sample_calls": 0,
+    "current_query_explain_calls": 0,
+    "heldout_queries_executed": 0,
+    "oracle_inputs": [],
+    "post_execution_measurements_used": false
+  },
+  "heldout_queries": {
+    "financial-risk-alice-jun-medium-v2": {
+      "semantic_class_count": 6,
+      "physical_plan_count": 12,
+      "candidate_set_sha256": "65516e0e65e5ba7bfb85cc1bdf6dbf855711ba70ce3576c1ce3d62641a1cf86a",
+      "prediction_source_sha256": "3bcbf9828f5a89f4a38756e5a6efb10828c55cca0106d40d3dabc95007e627f8",
+      "estimate_snapshot_sha256": "1f3ef23e8f667337137564e1b7df00ef41aed4bf20687b9c9c861ed73379233b",
+      "frontier_sha256": "30c6ada4836df67a6fd5d6a4ad5140befec805a389bdfcfaca3e933a4536cf09",
+      "returned_semantic_plan_count": 3
+    },
+    "financial-risk-bob-may-low-v2": {
+      "semantic_class_count": 4,
+      "physical_plan_count": 8,
+      "candidate_set_sha256": "e399311bbd371241dcc58f5d21534f969e42f14390f2ffb14a5ddb93c0bb7bde",
+      "prediction_source_sha256": "25d7d116dc46cd7763f87c5be2fcf3f791e17fba09cbc79eae767f789f9f49f7",
+      "estimate_snapshot_sha256": "daaa1fbdf67000b1dde3991f0e21a96e7724604e049c98d37c5f588d7d662ab6",
+      "frontier_sha256": "3e58aa518d3e2ef32591e6d1662b2e12a7576e9454de2efe43d052cfe5dabfab",
+      "returned_semantic_plan_count": 1
+    }
+  },
+  "model_contract": {
+    "model_version": "m15-f2c10-family-memory-knn-development-v1",
+    "neighbor_count": 3,
+    "features": [
+      "amount-lower-bound",
+      "person-identity",
+      "risk-level",
+      "time-lower-bound",
+      "transfer-predicate"
+    ],
+    "strategy_conditioned_neighbors": true,
+    "aggregation": "median_per_plan_then_inverse_distance_weighted_mean",
+    "uncertainty": "weighted_mean_absolute_deviation",
+    "cold_start": "fail_closed"
+  },
+  "local_verification": {
+    "focused_prediction_and_frontier_tests": {
+      "passed": 38,
+      "failed": 0
+    },
+    "full_acceptance": {
+      "passed": 870,
+      "skipped": 36,
+      "failed": 0
+    },
+    "harness_check": "passed",
+    "all_existing_examples": "passed",
+    "patch_whitespace_check": "passed"
+  },
+  "claim_boundary": {
+    "controlled_training_values_are_measurements": false,
+    "backend_calls_made": 0,
+    "llm_calls_made": 0,
+    "ontology_service_calls_made": 0,
+    "performance_superiority_supported": false,
+    "prediction_accuracy_supported": false,
+    "generalization_supported": false,
+    "comparative": false,
+    "paper_result": false
+  },
+  "next_gate": {
+    "milestone": "M15-F2C10C",
+    "purpose": "persist_the_compiled_memory_and_prediction_suite_then_reconstruct_it_with_an_independent_read_only_auditor",
+    "cwru_dispatch_authorized": false
+  },
+  "paper_result": false
+}

@@ -342,6 +342,21 @@ and the development population supports no performance, utility, or
 generalization claim. The compact record is
 `experiments/artifacts/m15_f2c10a_local_direct_semantic_workload_20260906.json`.
 
+M15-F2C10B is locally accepted as a leakage-safe prediction mechanism. A
+versioned predictor policy freezes five typed features, strategy-conditioned
+K=3 neighbors, per-plan median aggregation, inverse-distance weighting,
+explicit weighted-MAD uncertainty, and fail-closed cold start. A complete
+training memory view covers 18 training interpretations and 36 physical plans
+with 72 raw counterbalanced successful/exact repetitions while excluding
+held-out IDs, answer rows, oracle inputs, and current-query observations. The
+compiler produces all 20 held-out estimates—12 for MEDIUM and eight for LOW—
+and binds them to the complete ordered training memory, model configuration,
+and candidate identities before the unchanged variable frontier selector.
+The controlled fixture makes no backend, held-out-query, LLM, or ontology
+call and is not measured evidence. The compact record is
+`experiments/artifacts/m15_f2c10b_local_family_memory_prediction_20260906.json`.
+Full local acceptance passes 870 tests with 36 gated skips.
+
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
 the frozen registry and schedule hashes, started Neo4j 5.26.30 and Fuseki 5.6.0

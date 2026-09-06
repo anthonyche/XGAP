@@ -1985,3 +1985,29 @@ already approved Pareto, epsilon-dominance, and maximum-K semantic selection.
 Entity identity, time lower bound, and amount lower bound remain hard; all
 multihop interpretations remain unavailable. This is a design decision, not a
 semantic-utility or performance result.
+
+## D119 Make F2C10 family memory a sealed, strategy-conditioned predictor
+
+F2C10B implements the author-selected primary estimator without a hidden
+current-query observation path. A complete training memory view admits every
+training semantic task and both of its physical strategies only after each
+raw repetition is successful and exact. Repetitions retain block and order
+metadata and must be counterbalanced within each task. The frozen view rejects
+held-out task IDs, answer rows, oracle inputs, incomplete plan coverage,
+failed runs, duplicate records, and recomputed content drift.
+
+For a held-out direct interpretation, the development predictor uses typed
+amount, person, risk, date, and predicate features. Neighbors are restricted
+to the same physical strategy; per-plan raw repetitions are reduced by the
+median before inverse-distance weighted latency and transferred-byte
+prediction. Weighted mean absolute deviation is persisted as uncertainty.
+Every output binds the model configuration, complete ordered training memory,
+target query/class/plan identity, and an empty oracle/current-query-observation
+boundary. Cold start fails closed. The output covers all 12 MEDIUM plans and
+all eight LOW plans before the unchanged Pareto/epsilon/K selector runs.
+
+The local fixture contains constructed non-measurements solely to validate
+the memory and prediction contracts. It executes no held-out query and cannot
+support prediction accuracy, performance, or generalization claims. Native
+training measurements remain blocked until an independent reconstruction
+audit passes and the author freezes the F2C10D campaign protocol.

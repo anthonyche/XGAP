@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B/F2C10A LOCAL MECHANISMS VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B/F2C10A/F2C10B LOCAL MECHANISMS VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -439,8 +439,22 @@ answer artifacts; a separately hash-bound evaluation registry holds the
 post-selection oracle references. Full local acceptance passes 862 tests with
 36 gated skips. This is a zero-external-call development and leakage gate, not
 a measured result; the 4/2 base-query population is too small for a paper
-claim. F2C10B must next compile family-memory predictions without opening the
-held-out evaluation registry.
+claim.
+
+F2C10B now compiles a sealed, strategy-conditioned family-memory prediction
+source without opening the held-out evaluation registry. The controlled local
+memory covers all 18 training interpretations and 36 physical plans with 72
+raw counterbalanced successful/exact repetitions. It produces one prediction
+for each of the 20 held-out physical candidates: twelve for the MEDIUM query
+and eight for the LOW query. Every source binds the complete ordered training
+memory and model configuration; cold start, held-out observation, answer-row
+storage, current-query profiling, fallback, and post-execution updates fail
+closed. The sources feed the unchanged variable-cardinality snapshot and
+Pareto/epsilon/K selector. No held-out query or backend executes, and the
+constructed training values are not measurements. Full local acceptance
+passes 870 tests with 36 gated skips. F2C10C must next persist
+and independently reconstruct this boundary under deterministic backend
+doubles before any native campaign is considered.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

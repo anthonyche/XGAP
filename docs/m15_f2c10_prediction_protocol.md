@@ -230,5 +230,17 @@ bindings and split ownership are preserved, and both MEDIUM adjacency
 directions survive enumeration. Full acceptance passes 862 tests with 36
 gated skips. The existing 4-seed/2-held-out population remains a mechanism and
 leakage-readiness fixture only; its size does not support a paper or
-generalization claim. F2C10B is the next gate and may use only the frozen
-training selection view to compile family-memory predictions.
+generalization claim.
+
+F2C10B is locally accepted as a mechanism. Its frozen controlled memory covers
+18 training semantic tasks, 36 physical plans, and 72 raw counterbalanced
+successful/exact repetitions. The strategy-conditioned predictor emits all
+20 held-out plan estimates and explicit uncertainty while recording zero
+current-query profile/sample/explain calls, zero oracle inputs, and zero
+held-out executions. The MEDIUM target retains 12 predictions and the LOW
+target retains eight before Pareto/epsilon/K. These constructed values test
+the compiler only and provide no prediction-quality or performance evidence.
+Full local acceptance passes 870 tests with 36 gated skips.
+F2C10C is the next gate: persist the inputs and outputs, run deterministic
+backend-double validation, and reconstruct them with an independent read-only
+auditor before any CWRU training campaign is authorized.
