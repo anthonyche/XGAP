@@ -114,7 +114,8 @@ The audit-fix branch passes full local acceptance with 1,010 tests and 36
 explicit skips. This is mechanism evidence only; `paper_result=false` remains
 mandatory.
 
-M15-E5 now has its semantic-objective and clarification decisions: the author selected a two-level
+M15-E5 now has its semantic-objective and clarification decisions: the author
+selected a two-level
 interpretation-set and relaxation-frontier design. E4 emits co-equal unresolved
 interpretations with no
 authoritative zero-deviation class; E2B provides bounded but non-authoritative
@@ -128,8 +129,16 @@ aggregation, path, quantifier, answer-meaning, output-contract, or executable-
 capability differences require clarification, while same-structure predicate
 alternatives remain bounded representatives. The current question must ask
 whether `密切` means a single transfer, cumulative window amount, or frequency.
-The offline mechanism is now the active implementation step; no E5 CWRU run is
-authorized before it passes its invariant suite. See
+The first offline mechanism now passes its invariant suite. It preserves all
+six E4 interpretations, obtains four physical estimates from sealed family
+memory with zero current-query profiling, and keeps one representative inside
+each executable interpretation. Before clarification it emits one R1 question
+and returns no execution-eligible semantic plan; a controlled authoritative
+single-transfer selection returns the two same-structure predicate
+representatives while retaining all unavailable classes. Full acceptance is
+1,021 passes with 36 explicit skips. This remains local mechanism evidence;
+anchored relaxation frontiers, UI transport, and any live E5 gate are still
+open, and no E5 CWRU run is authorized. See
 `docs/m15_e5_interpretation_relaxation_gate.md`.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service

@@ -2,7 +2,7 @@
 
 ## Status
 
-**OPTION A AND R1 SELECTED; OFFLINE MECHANISM IMPLEMENTATION ACTIVE; NO CWRU RUN AUTHORIZED**
+**OPTION A/R1 FROZEN; FIRST OFFLINE MECHANISM VERIFIED; NO CWRU RUN AUTHORIZED**
 
 This gate separates unresolved natural-language interpretations from bounded
 semantic relaxations before XGAP connects the E4 resolution bridge to
@@ -136,6 +136,37 @@ clarification request while keeping execution unauthorized. After an explicit
 in-set relationship-strength selection, it may return the two predicate
 representatives, subject to K. Unselected and unavailable interpretations stay
 visible in the artifact.
+
+## Implemented offline mechanism
+
+Commit `b2d89c4385e2f3cad138e71708cdc9ed8beae6e9` implements a new E5 schema
+rather than weakening F2C9. It consumes the complete E4 bridge and a sealed
+same-family training-memory view. A reusable strategy-conditioned predictor
+estimates latency and transferred bytes for every executable physical target,
+including its target feature record, neighbor provenance, uncertainty, and
+content hash. It makes zero current-query profile, backend, model, ontology-
+service, or oracle calls.
+
+On the controlled local mechanism fixture, E5 retains all six interpretation
+classes and all four physical candidates. It predicts all four plans and keeps
+one physical representative for each of the two executable interpretations.
+With no structural authority, it emits one relationship-strength question,
+returns no execution-eligible semantic plan, and leaves every semantic
+deviation null. With an explicit in-set `single transfer` selection, it returns
+the two same-structure predicate representatives, one for `transferred_to` and
+one for `paid_to`; the four unavailable aggregate interpretations remain in
+the artifact.
+
+The compact, hash-bound record is
+`experiments/artifacts/m15_e5_local_hierarchical_interpretation_frontier_20260907.json`.
+The final repository state passes 1,021 tests with 36 explicit skips. This is
+controlled local mechanism evidence, not user-study evidence, semantic-quality
+evidence, or performance evidence. It remains `paper_result=false`.
+
+Anchored relaxation frontiers remain empty in this slice because E4 supplies
+no authoritative predicate base or calibrated semantic-deviation contract.
+Adding one must be a separate, provenance-bound design step; this gate does not
+invent a distance after observing results.
 
 ## Contract if Option A is selected
 

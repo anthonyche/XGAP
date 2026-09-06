@@ -2646,3 +2646,31 @@ zero backend-profile, LLM, or ontology-service calls. Without an authoritative
 in-set structural selection it may publish predicted physical representatives
 and one bounded question, but it may not authorize execution. This decision
 does not authorize a CWRU job and remains `paper_result=false`.
+
+## D144 Accept the first E5 hierarchical mechanism without a live run
+
+The E5 implementation at `b2d89c4` introduces a separate hierarchical schema.
+It validates the six-class E4 bridge, derives R1 structure signatures, predicts
+all four executable physical candidates from a sealed same-family memory view,
+and keeps one lexicographic latency/bytes/plan-ID representative within each of
+the two executable interpretations. Every target feature record and neighbor
+provenance is hash-bound. The current query contributes zero profile calls and
+no backend, LLM, ontology service, oracle, or post-execution measurement.
+
+Without an authoritative structural selection, the output preserves all six
+classes, emits one three-option relationship-strength question, returns zero
+semantic plans, and marks execution ineligible. A controlled explicit
+`single-transfer` selection returns exactly two bounded predicate
+representatives while retaining the four unavailable aggregate classes. A
+non-authoritative candidate subset is recorded but cannot create semantic
+authority or a zero-deviation class. Reordering E3 candidates preserves the
+returned class identities.
+
+Focused E5/F2C10 acceptance passed 18 tests before the compact evidence check;
+the final full repository suite passes 1,021 tests with 36 explicit skips. The
+hash-bound record is
+`experiments/artifacts/m15_e5_local_hierarchical_interpretation_frontier_20260907.json`.
+This accepts only the unresolved-interpretation/R1 mechanism. Anchored
+relaxation frontiers remain unimplemented because no authoritative predicate
+base or calibrated semantic-deviation contract exists. No CWRU run or paper
+claim is authorized, and `paper_result=false` remains mandatory.

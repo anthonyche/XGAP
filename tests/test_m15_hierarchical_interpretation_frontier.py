@@ -42,6 +42,7 @@ CARDINALITY_POLICY = REPO_ROOT / "experiments/configs/m15_f2c10_direct_semantic_
 PREDICTOR_POLICY = REPO_ROOT / "experiments/configs/m15_f2c10_family_memory_predictor_dev.json"
 INTERPRETATION_POLICY = REPO_ROOT / "experiments/configs/m15_e5_hierarchical_interpretation_policy_dev.json"
 BRIDGE_SPEC = REPO_ROOT / "experiments/configs/m15_e4_resolution_execution_bridge_dev.json"
+COMPACT_ARTIFACT = REPO_ROOT / "experiments/artifacts/m15_e5_local_hierarchical_interpretation_frontier_20260907.json"
 RUNTIME_HASH = content_hash(
     {
         "runtime": "e5-local-controlled-runtime",
@@ -370,3 +371,39 @@ def test_portable_output_preserves_zero_call_and_claim_boundaries(e5_context) ->
     serialized = json.dumps(payload, sort_keys=True)
     assert " MATCH " not in serialized
     assert "SELECT " not in serialized
+
+
+def test_compact_local_artifact_is_hash_bound_and_reproducible(e5_context) -> None:
+    artifact = json.loads(COMPACT_ARTIFACT.read_text(encoding="utf-8"))
+    artifact_body = {
+        key: value for key, value in artifact.items() if key != "artifact_sha256"
+    }
+    unresolved = _select(e5_context).to_dict()
+    bound = _select(
+        e5_context,
+        authoritative_selections={
+            "relationship-strength": "constraint:single-transfer-at-least-50000"
+        },
+        authority_source_id="explicit-e5-test-clarification",
+    ).to_dict()
+
+    assert content_hash(artifact_body) == artifact["artifact_sha256"]
+    assert artifact["bridge_plan_sha256"] == unresolved["bridge_plan_sha256"]
+    assert artifact["training_memory_view_sha256"] == unresolved[
+        "family_cost_prediction_source"
+    ]["training_memory_view_sha256"]
+    assert artifact["family_cost_prediction_source_sha256"] == unresolved[
+        "family_cost_prediction_source"
+    ]["prediction_source_sha256"]
+    assert artifact["unresolved"]["hierarchical_frontier_sha256"] == unresolved[
+        "hierarchical_frontier_sha256"
+    ]
+    assert artifact["authoritatively_bound_single_transfer"][
+        "hierarchical_frontier_sha256"
+    ] == bound["hierarchical_frontier_sha256"]
+    assert artifact["authoritatively_bound_single_transfer"][
+        "selected_physical_plan_ids"
+    ] == [
+        item["physical_representative"]["plan_id"]
+        for item in bound["returned_interpretation_plans"]
+    ]
