@@ -432,14 +432,18 @@ estimate source, selected-only executor, allowlisted Slurm wrapper, and
 independent auditor. The one authorized `semantic_direct_frontier` CWRU job,
 `3791375`, completed at exact commit `2c0ee7f` on `compt298` in 94 seconds with
 exit `0:0`. Do not rerun it. Its result extraction and independent audit are
-still required before F2C9B becomes accepted live evidence; keep the run tree
-immutable and do not interpret the controlled selection as a performance
+now partially resolved: extraction confirms all three exact answers, while the
+first auditor used the wrong outer directory for the service-owned preflight
+seal and emitted 20 false missing-artifact failures. The corrected auditor is
+at `9e1a1db`; run it once against the same immutable tree with a new audit
+output path. Do not interpret the controlled selection as a performance
 comparison.
-F2C10A is now locally accepted and requires no CWRU dispatch. It freezes the
-preserve-all variable-cardinality workload and the disjoint selection and
-evaluation views. Do not send an F2C10 native job until the family-memory
-compiler and its independent local audit pass, then the author freezes order,
-repetitions, timeouts, and analysis in F2C10D.
+F2C10A--F2C10C are now locally accepted and require no CWRU dispatch. They
+freeze the preserve-all variable-cardinality workload and disjoint views,
+compile family-memory predictions without a current-query observation, and
+persist/reconstruct selected-only controlled execution. Do not send an F2C10
+native job until the author freezes order, repetitions, timeouts, and analysis
+in F2C10D.
 Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.

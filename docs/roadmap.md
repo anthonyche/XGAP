@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B/F2C10A/F2C10B LOCAL MECHANISMS VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -422,8 +422,13 @@ read-only reconstruction audit cover the whole lifecycle. Controlled local
 doubles return exact 11-, 9-, and 11-row answers, the synthetic audit passes
 211/211 checks, and full local acceptance passes 853 tests with 36 gated
 skips. The one authorized CWRU mechanism job, `3791375`, completed at exact
-commit `2c0ee7f` with exit `0:0`; result extraction and the independent audit
-remain pending, so the live gate is not yet accepted. Do not rerun it.
+commit `2c0ee7f` with exit `0:0`; its three returned plans produced the exact
+11-, 9-, and 11-row answers with six calls. The first independent audit failed
+20 preflight checks because the auditor looked under the outer run root while
+the producer had sealed the artifacts under `native-service-run`. The
+production/test path mismatch is fixed at `9e1a1db`; a read-only v2 audit of
+the immutable run is still required before the live gate is accepted. Do not
+rerun the job.
 Controlled estimates must not be promoted into a performance claim, and
 multihop remains blocked.
 
@@ -451,10 +456,20 @@ memory and model configuration; cold start, held-out observation, answer-row
 storage, current-query profiling, fallback, and post-execution updates fail
 closed. The sources feed the unchanged variable-cardinality snapshot and
 Pareto/epsilon/K selector. No held-out query or backend executes, and the
-constructed training values are not measurements. Full local acceptance
-passes 870 tests with 36 gated skips. F2C10C must next persist
-and independently reconstruct this boundary under deterministic backend
-doubles before any native campaign is considered.
+constructed training values are not measurements. Full local acceptance at
+that boundary passed 870 tests with 36 gated skips.
+
+F2C10C now persists the complete selection boundary before controlled oracle
+access: training observations, immutable memory, all 20 held-out predictions,
+per-query candidate/snapshot/frontier artifacts, and a hash manifest over
+every selection file. It then executes only the four returned semantic plans
+and stops on the first failed call without retry. The clean-commit mechanism
+run at `4fe396a` returned exact 11-, 9-, 12-, and 7-row answers with eight
+calls; a separate read-only reconstruction passed 134/134 checks and proved
+the run tree unchanged. Full local acceptance passes 879 tests with 36 gated
+skips. These are deterministic backend doubles and constructed training
+values, so F2C10D still requires an author-frozen native measurement campaign
+before any accuracy, latency, resource, or generalization claim.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

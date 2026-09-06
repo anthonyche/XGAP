@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B LOCAL MECHANISMS VERIFIED**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -574,6 +574,17 @@ observation order, model configuration, target plan identities, and zero-call
 boundary are hash-bound before the existing frontier selector runs. Cold
 start is an error, not a controlled-estimate or profiling fallback. The local
 values validate architecture only; they are explicitly not measurements.
+
+F2C10C closes the local execution and evidence boundary. It seals every
+selection input and output before runtime oracle rows are read, then executes
+only the Pareto/epsilon/K representatives through the same coordinator and
+typed backend tool interface used by native services. Its independent auditor
+regenerates the workload, memory, predictions, snapshots, frontiers, selected
+plans, answers, and invocation set from copied inputs, verifies every seal
+hash, and fingerprints the run tree before and after. The clean-commit local
+gate passed 134 checks with zero current-query profiles and no mutation. This
+does not replace the native measurement protocol: training values and backend
+latencies remain controlled nonmeasurements until F2C10D.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

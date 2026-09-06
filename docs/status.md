@@ -318,8 +318,11 @@ cleanup. The controlled native-double path returned 11, 9, and 11 exact rows,
 and its reconstructed synthetic run tree passed 211/211 audit checks. Full
 local acceptance passes 853 tests with 36 gated skips. CWRU job `3791375`
 completed at exact commit `2c0ee7f` on `compt298` in 94 seconds with exit
-`0:0`; its result extraction and independent audit remain pending, so it is
-not yet accepted live evidence and must not be rerun. No semantic-utility,
+`0:0` and returned the expected exact 11-, 9-, and 11-row answers. Its first
+audit failed 20 preflight checks because the auditor searched the outer run
+root instead of the producer's service root. The fix is committed at
+`9e1a1db`; a corrected read-only audit of the unchanged run is pending, so it
+is not yet accepted live evidence and must not be rerun. No semantic-utility,
 comparative, performance, ontology, or paper claim is enabled. The local
 readiness record is
 `experiments/artifacts/m15_f2c9b_local_native_direct_frontier_readiness_20260906.json`.
@@ -356,6 +359,18 @@ The controlled fixture makes no backend, held-out-query, LLM, or ontology
 call and is not measured evidence. The compact record is
 `experiments/artifacts/m15_f2c10b_local_family_memory_prediction_20260906.json`.
 Full local acceptance passes 870 tests with 36 gated skips.
+
+M15-F2C10C is locally accepted as the persistent selected-only reconstruction
+gate. A clean run at commit `4fe396a` sealed all training-memory, prediction,
+candidate, snapshot, and frontier files before controlled runtime oracle
+access. It executed four returned plans, made eight execute calls, and produced
+exact 11-, 9-, 12-, and 7-row answers. The independent auditor regenerated the
+entire selection and execution identity chain, passed 134/134 checks, and
+verified that the run tree was unchanged. Full local acceptance passes 879
+tests with 36 gated skips. Its deterministic doubles and constructed training
+values remain `paper_result=false`; no native timing, prediction-accuracy,
+resource, semantic-utility, or generalization result exists. The compact record
+is `experiments/artifacts/m15_f2c10c_local_controlled_family_memory_validation_20260906.json`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used

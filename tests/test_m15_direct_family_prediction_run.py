@@ -38,6 +38,11 @@ PREDICTOR_POLICY = (
     REPO_ROOT
     / "experiments/configs/m15_f2c10_family_memory_predictor_dev.json"
 )
+COMPACT_ARTIFACT = (
+    REPO_ROOT
+    / "experiments/artifacts/"
+    "m15_f2c10c_local_controlled_family_memory_validation_20260906.json"
+)
 RUNTIME_HASH = content_hash(
     {
         "runtime": "f2c10c-controlled-validation",
@@ -135,6 +140,27 @@ def test_selection_seal_is_deterministic_across_run_ids(tmp_path: Path) -> None:
         (second.run_root / "selection_seal.json").read_text(encoding="utf-8")
     )
     assert first_seal == second_seal
+
+
+def test_compact_artifact_matches_clean_controlled_run(tmp_path: Path) -> None:
+    record = _run(tmp_path, run_id="artifact-replay")
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    seal = json.loads(
+        (record.run_root / "selection_seal.json").read_text(encoding="utf-8")
+    )
+    artifact = json.loads(COMPACT_ARTIFACT.read_text(encoding="utf-8"))
+
+    assert artifact["artifact_hashes"] == {
+        "direct_semantic_workload_sha256": manifest[
+            "direct_semantic_workload_sha256"
+        ],
+        "prediction_suite_sha256": manifest["prediction_suite_sha256"],
+        "selection_seal_sha256": manifest["selection_seal_sha256"],
+        "training_memory_view_sha256": seal[
+            "training_memory_view_sha256"
+        ],
+    }
+    assert artifact["summary"] == manifest["summary"]
 
 
 def test_controlled_validation_stops_after_first_failure_without_retry(
