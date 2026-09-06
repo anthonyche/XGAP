@@ -185,7 +185,7 @@ def _auditable_run(tmp_path: Path) -> tuple[Path, str]:
         repo_root=REPO_ROOT,
     )
     live_root = service_root / "direct-semantic-frontier-run"
-    preflight_root = run_root / "direct-frontier-preflight"
+    preflight_root = service_root / "direct-frontier-preflight"
     preflight_root.mkdir()
     preflight_artifacts = {
         filename: json.loads((live_root / filename).read_text(encoding="utf-8"))
@@ -311,6 +311,14 @@ def _auditable_run(tmp_path: Path) -> tuple[Path, str]:
 
 def test_read_only_audit_reconstructs_direct_frontier(tmp_path: Path) -> None:
     run_root, expected_commit = _auditable_run(tmp_path)
+
+    assert not (run_root / "direct-frontier-preflight").exists()
+    assert (
+        run_root
+        / "native-service-run"
+        / "direct-frontier-preflight"
+        / "preflight_manifest.json"
+    ).is_file()
 
     audit = audit_m15_direct_frontier_native_run(
         run_root=run_root,

@@ -170,7 +170,11 @@ def audit_m15_direct_frontier_native_run(
     catalog_path = run / "semantic_catalog.json"
     mapping_path = run / "predicate_mapping.json"
     estimate_path = run / "direct_frontier_estimates.json"
-    preflight_root = run / "direct-frontier-preflight"
+    # The native service seals the frontier inside its own evidence root before
+    # starting either backend.  Keep the auditor aligned with that production
+    # layout; looking under the outer Slurm run root makes a valid preflight
+    # appear missing and was masked by the original synthetic audit fixture.
+    preflight_root = service_root / "direct-frontier-preflight"
     paths = {
         "outer_status": run / "run_status.json",
         "environment": run / "environment.txt",
