@@ -116,6 +116,10 @@ detect_runtime() {
   tests/test_m15_direct_semantic_frontier.py \
   tests/test_m15_live_direct_semantic_frontier.py \
   tests/test_m15_direct_frontier_native_evidence.py \
+  tests/test_m15_direct_semantic_workload.py \
+  tests/test_m15_direct_family_prediction.py \
+  tests/test_m15_direct_family_prediction_run.py \
+  tests/test_m15_direct_family_prediction_evidence.py \
   tests/test_m15_remote_executor.py \
   tests/test_m15_remote_control.py \
   | tee "$RUN_ROOT/pytest.txt"
