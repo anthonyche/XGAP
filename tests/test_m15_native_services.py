@@ -1381,6 +1381,211 @@ def test_direct_family_native_boundary_uses_sixty_second_clients(
     }
 
 
+def test_native_current_query_profile_requires_inputs_and_seals_preflight(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    configs = REPO_ROOT / "experiments/configs"
+    base = generate_m15_parameterized_workload_bundle(
+        workload_spec=configs / "m15_f2c_parameterized_workload_dev.json",
+        query_template_spec=configs / "m15_f2c_parameterized_financial_risk_v2.json",
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "profile-base",
+    )
+    catalog = configs / "m15_f2c6_semantic_relaxation_dev.json"
+    mapping = configs / "m15_f2c8_predicate_mapping_dev.json"
+    direct = generate_m15_direct_semantic_workload_bundle(
+        base_bundle=base,
+        catalog=catalog,
+        mapping=mapping,
+        policy=configs / "m15_f2c10_direct_semantic_workload_dev.json",
+        destination=tmp_path / "profile-direct",
+    )
+    protocol = configs / "m15_f2c12_current_query_profile_baseline_dev.json"
+    with pytest.raises(ValueError, match="requires a direct workload"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-profile",
+            run_id="missing-profile",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="current_query_profile_baseline",
+        )
+
+    observed: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence(
+            "/opt/java17/bin/java", 17, "17"
+        ),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "start_service",
+        lambda spec: RunningService(spec, _StableProcess(), io.BytesIO()),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id, True, 1, 1.0, 200
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args: observed.append((_args[3], str(_args[-1]))),
+    )
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "profile-runs",
+        run_id="native-current-profile-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="current_query_profile_baseline",
+        semantic_base_bundle=base,
+        semantic_catalog=catalog,
+        predicate_mapping=mapping,
+        direct_semantic_workload=direct,
+        current_query_profile_protocol=protocol,
+    )
+
+    assert record.success
+    assert observed == [("current_query_profile_baseline", str(protocol))]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.CURRENT_QUERY_PROFILE_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["current_query_profile_baseline"] == {
+        "protocol": str(protocol)
+    }
+    preflight = json.loads(
+        (
+            record.run_root
+            / "current-query-profile-preflight/preflight_manifest.json"
+        ).read_text(encoding="utf-8")
+    )
+    schedule = json.loads(
+        (
+            record.run_root
+            / "current-query-profile-preflight/profile_schedule.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert preflight["schema_version"] == (
+        native_services.CURRENT_QUERY_PROFILE_PREFLIGHT_SCHEMA_VERSION
+    )
+    assert preflight["sealed_before_service_start"] is True
+    assert preflight["backend_calls_before_seal"] == 0
+    assert preflight["expected_counts"] == schedule["counts"]
+    assert preflight["schedule_sha256"] == schedule["schedule_sha256"]
+    assert manifest["current_query_profile_preflight"] == preflight
+
+
+def test_current_query_profile_native_boundary_uses_sixty_second_clients(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    configs = REPO_ROOT / "experiments/configs"
+    base = generate_m15_parameterized_workload_bundle(
+        workload_spec=configs / "m15_f2c_parameterized_workload_dev.json",
+        query_template_spec=configs / "m15_f2c_parameterized_financial_risk_v2.json",
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "profile-boundary-base",
+    )
+    catalog = configs / "m15_f2c6_semantic_relaxation_dev.json"
+    mapping = configs / "m15_f2c8_predicate_mapping_dev.json"
+    direct = generate_m15_direct_semantic_workload_bundle(
+        base_bundle=base,
+        catalog=catalog,
+        mapping=mapping,
+        policy=configs / "m15_f2c10_direct_semantic_workload_dev.json",
+        destination=tmp_path / "profile-boundary-direct",
+    )
+    observed: dict[str, object] = {}
+
+    def fake_fixture(**kwargs):
+        observed["fixture_run_id"] = kwargs["run_id"]
+        observed["fixture_timeouts"] = {
+            key: value.timeout_seconds for key, value in kwargs["clients"].items()
+        }
+        observed["fixture_bundle_root"] = str(
+            kwargs["bundle_loader"](kwargs["workload_bundle"].root).root
+        )
+        return SimpleNamespace(success=True, error=None)
+
+    def fake_profile(**kwargs):
+        observed["profile_run_id"] = kwargs["run_id"]
+        observed["profile_timeouts"] = {
+            key: value.timeout_seconds for key, value in kwargs["clients"].items()
+        }
+        observed["direct_hash"] = kwargs["direct_workload"].manifest[
+            "manifest_sha256"
+        ]
+        return SimpleNamespace(success=True, error=None)
+
+    monkeypatch.setattr(native_services, "load_m15_parameterized_fixture", fake_fixture)
+    monkeypatch.setattr(
+        native_services,
+        "run_m15_live_current_query_profile_baseline",
+        fake_profile,
+    )
+    plan = SimpleNamespace(
+        neo4j_http_url="http://127.0.0.1:17474",
+        fuseki_url="http://127.0.0.1:13030",
+        fuseki_dataset="xgap",
+        services=[],
+    )
+
+    native_services._run_fixture_and_query(
+        plan=plan,
+        run_root=tmp_path / "native-current-profile-run",
+        repo_root=REPO_ROOT,
+        workload_mode="current_query_profile_baseline",
+        semantic_base_bundle=base,
+        semantic_catalog=catalog,
+        predicate_mapping=mapping,
+        direct_semantic_workload=direct,
+        current_query_profile_protocol=(
+            configs / "m15_f2c12_current_query_profile_baseline_dev.json"
+        ),
+    )
+
+    assert observed == {
+        "fixture_run_id": "current-query-profile-fixture-load",
+        "fixture_timeouts": {"neo4j": 60.0, "fuseki": 60.0},
+        "fixture_bundle_root": str(direct.workload_bundle.root),
+        "profile_run_id": "current-query-profile-baseline-run",
+        "profile_timeouts": {"neo4j": 60.0, "fuseki": 60.0},
+        "direct_hash": direct.manifest["manifest_sha256"],
+    }
+
+
 def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1728,6 +1933,7 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "semantic_predicate_relaxation" in script
     assert "semantic_direct_frontier" in script
     assert "direct_family_pilot" in script
+    assert "current_query_profile_baseline" in script
     assert "m15_direct_semantic_workload" in script
     assert "m15_parameterized_workload" in script
     assert "m15_semantic_overlay" in script
@@ -1808,4 +2014,14 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "#SBATCH --time=00:45:00" in direct_family_script
     assert "SLURM_SUBMIT_DIR" in direct_family_script
     assert "BASH_SOURCE" not in direct_family_script
+    current_profile_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_current_query_profile_baseline.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=current_query_profile_baseline" in (
+        current_profile_script
+    )
+    assert "#SBATCH --time=00:30:00" in current_profile_script
+    assert "SLURM_SUBMIT_DIR" in current_profile_script
+    assert "BASH_SOURCE" not in current_profile_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

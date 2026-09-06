@@ -2197,3 +2197,36 @@ the independently frozen cost-inclusive current-query profiling comparator and
 a larger multi-family population. The current result does not establish that
 memory is generally ineffective, that fixed parallel is generally optimal, or
 that byte cost should be ignored.
+
+## D128 Bind F2C12 to one fail-closed native producer and reconstruction audit
+
+F2C12B implements the already frozen F2C12A schedule without changing its
+method, population, order, cost accounting, or metrics. The native producer
+seals the 20 physical candidates before a backend call, executes the 20
+full-federated-plan acquisition profiles, persists a cost-only estimate source,
+and seals all ten selections before opening an answer oracle or starting a
+selected or shadow execution. It then executes ten selected plans and the
+80-run counterbalanced shadow matrix. A successful run therefore contains
+exactly 110 plan runs and 220 backend calls in three contiguous phases. Both
+backend clients use a 60-second timeout, the Slurm wrapper uses the frozen
+30-minute bound, and the first failure terminates the run without retry or
+fallback.
+
+The acquisition profile remains a black-box execution of a complete federated
+plan, not an engine-internal Neo4j `PROFILE` request. The producer records
+answer rows for later exactness validation, but selection is reconstructed
+solely from sealed latency, transferred bytes, and plan ID. It reports both
+selected-plan regret and acquisition-plus-selected end-to-end cost; the shadow
+matrix remains evaluation-only.
+
+A separate read-only auditor accepts either the inner live result or the outer
+native Slurm tree. It verifies the clean expected commit, outer/service status,
+recompiles the schedule from the copied source inputs, checks the pre-service
+schedule seal and every schedule/run identity hash, exact result and phase
+cardinality, estimate reconstruction, deterministic selection,
+selection-seal timing claims, exact analysis reconstruction, 220 invocation
+events, and an unchanged run-tree digest. Altering analysis, profile costs, or
+the sealed plan choice is explicitly rejected. Local controlled-double and
+native-boundary tests pass, but no CWRU outcome or comparison with the earlier
+allocation is claimed until one clean job and its independent audit succeed.
+All F2C12 outputs remain exploratory and `paper_result=false`.

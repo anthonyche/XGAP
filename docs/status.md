@@ -437,7 +437,7 @@ confirmatory and paper flags, and an unchanged source-tree digest. Local
 focused acceptance passes; a CWRU F2C11 result and its independent audit remain
 pending the accepted F2C10D producer chain.
 
-M15-F2C12A now freezes the cost-inclusive current-query profiling baseline at
+M15-F2C12A/B now freezes and implements the cost-inclusive current-query profiling baseline at
 the schedule boundary, before accepted F2C10D/F2C11 metrics are available to
 the implementation. For each of ten held-out semantic tasks, both complete
 federated physical candidates are profiled once at the coordinator boundary,
@@ -448,10 +448,15 @@ The resulting development protocol contains 20 acquisition, ten selected, and
 method cost, proves five AB/five BA acquisition balance and per-task shadow
 position balance, and forbids family memory, answer-row selection, early oracle
 access, fallback, retry, LLM, and ontology calls. The compiler makes no
-external call and does not authorize a native job. Full local acceptance
-passes 911 tests with 36 environment-gated skips. Live lifecycle wiring and an
-independent auditor are still pending; all artifacts remain
-`paper_result=false`.
+external call. F2C12B adds a fail-closed live producer, allocation-scoped
+Neo4j/Fuseki mode, 30-minute Slurm entry, pre-service schedule seal, and
+independent read-only reconstruction auditor. Controlled execution makes
+exactly 220 calls in acquisition/selected/shadow order; the auditor rebuilds
+cost estimates, choices, metrics, and hashes and detects tampering of analysis,
+profile costs, selection, or a self-consistently rehashed schedule that differs
+from the copied source inputs. Full acceptance passes 919 tests with 36
+environment-gated skips. No CWRU F2C12 evidence or cross-allocation comparison
+is yet claimed; all artifacts remain `paper_result=false`.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,

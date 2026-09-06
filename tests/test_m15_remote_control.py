@@ -89,6 +89,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_semantic_predicate_relaxation.sbatch",
         "scripts/slurm/run_m15_native_semantic_direct_frontier.sbatch",
         "scripts/slurm/run_m15_native_direct_family_pilot.sbatch",
+        "scripts/slurm/run_m15_native_current_query_profile_baseline.sbatch",
     )
     probe = (
         Path(__file__).resolve().parents[1]

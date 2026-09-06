@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED; F2C10D FIRST NATIVE FAILURE DIAGNOSED AND REPAIR READY**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C12B LOCAL MECHANISMS VERIFIED; F2C11 AUDITED DEVELOPMENT RESULT ACCEPTED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -648,8 +648,16 @@ per task yield 110 plan runs and 220 backend calls overall. Acquisition cost is
 part of the method's end-to-end latency and bytes; shadows are evaluation-only.
 The schedule compiler makes zero calls, proves AB/BA balance, forbids memory,
 LLM, ontology, fallback, retry, and pre-selection oracle access, and does not
-authorize a remote run. A native producer and independent read-only auditor
-remain required.
+authorize a remote run. F2C12B supplies the native producer and independent
+read-only auditor. The producer freezes candidates before acquisition, seals
+the cost-only choice before any oracle or later execution, and enforces the
+exact 40/20/160 backend-call phase split. The auditor reconstructs schedule
+identities, estimates, selection, shadow medians, regret, end-to-end
+acquisition cost, and invocation order while proving the run tree unchanged.
+It also recompiles the source-bound schedule and checks the outer native
+service/preflight chain when given a Slurm run root. Full acceptance passes
+919 tests with 36 environment-gated skips; real-backend evidence remains
+pending one clean audited CWRU job.
 
 The repaired F2C10D pilot and pre-frozen F2C11 analysis are now accepted as
 development evidence. Job `3791600` ran 231 plans and 462 backend calls with

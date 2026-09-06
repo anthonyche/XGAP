@@ -291,6 +291,7 @@ def _run_record(
         "task_position": task_position,
         "strategy_order_position": strategy_position,
         "base_query_id": task["base_query_id"],
+        "query_id": task["executable_query_id"],
         "semantic_task_id": task["semantic_task_id"],
         "semantic_class_id": task["semantic_class_id"],
         "plan_id": candidate["plan_id"],

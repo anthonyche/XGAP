@@ -120,6 +120,10 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-direct-family-pilot"
     RUN_VERSION="m15-f2c10d-native-live-direct-family-pilot-services-v1"
     ;;
+  current_query_profile_baseline)
+    RUN_PREFIX="cwru-m15-native-current-query-profile-baseline"
+    RUN_VERSION="m15-f2c12b-native-current-query-profile-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -369,21 +373,15 @@ if [[ "$WORKLOAD_MODE" == semantic_predicate_relaxation || "$WORKLOAD_MODE" == s
     WORKLOAD_ARGS+=(--direct-frontier-estimates "$DIRECT_FRONTIER_ESTIMATES")
   fi
 fi
-if [[ "$WORKLOAD_MODE" == direct_family_pilot ]]; then
+if [[ "$WORKLOAD_MODE" == direct_family_pilot || "$WORKLOAD_MODE" == current_query_profile_baseline ]]; then
   SEMANTIC_BASE_BUNDLE="$RUN_ROOT/direct-family-base-workload-bundle"
   DIRECT_SEMANTIC_WORKLOAD="$RUN_ROOT/direct-semantic-workload-bundle"
   SEMANTIC_CATALOG="$RUN_ROOT/semantic_catalog.json"
   PREDICATE_MAPPING="$RUN_ROOT/predicate_mapping.json"
-  DIRECT_FAMILY_PILOT_PROTOCOL="$RUN_ROOT/direct_family_pilot_protocol.json"
-  DIRECT_FAMILY_PREDICTOR_POLICY="$RUN_ROOT/direct_family_predictor_policy.json"
   cp -- "$REPO_ROOT/experiments/configs/m15_f2c6_semantic_relaxation_dev.json" \
     "$SEMANTIC_CATALOG"
   cp -- "$REPO_ROOT/experiments/configs/m15_f2c8_predicate_mapping_dev.json" \
     "$PREDICATE_MAPPING"
-  cp -- "$REPO_ROOT/experiments/configs/m15_f2c10d_family_memory_pilot_dev.json" \
-    "$DIRECT_FAMILY_PILOT_PROTOCOL"
-  cp -- "$REPO_ROOT/experiments/configs/m15_f2c10_family_memory_predictor_dev.json" \
-    "$DIRECT_FAMILY_PREDICTOR_POLICY"
   PYTHONPATH="$REPO_ROOT/src" \
   "$PYTHON_BIN" -m xgap.experiments.m15_parameterized_workload \
     --workload-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_workload_dev.json" \
@@ -404,9 +402,26 @@ if [[ "$WORKLOAD_MODE" == direct_family_pilot ]]; then
     --semantic-base-bundle "$SEMANTIC_BASE_BUNDLE"
     --semantic-catalog "$SEMANTIC_CATALOG"
     --predicate-mapping "$PREDICATE_MAPPING"
-    --direct-family-pilot-protocol "$DIRECT_FAMILY_PILOT_PROTOCOL"
-    --direct-family-predictor-policy "$DIRECT_FAMILY_PREDICTOR_POLICY"
   )
+  if [[ "$WORKLOAD_MODE" == direct_family_pilot ]]; then
+    DIRECT_FAMILY_PILOT_PROTOCOL="$RUN_ROOT/direct_family_pilot_protocol.json"
+    DIRECT_FAMILY_PREDICTOR_POLICY="$RUN_ROOT/direct_family_predictor_policy.json"
+    cp -- "$REPO_ROOT/experiments/configs/m15_f2c10d_family_memory_pilot_dev.json" \
+      "$DIRECT_FAMILY_PILOT_PROTOCOL"
+    cp -- "$REPO_ROOT/experiments/configs/m15_f2c10_family_memory_predictor_dev.json" \
+      "$DIRECT_FAMILY_PREDICTOR_POLICY"
+    WORKLOAD_ARGS+=(
+      --direct-family-pilot-protocol "$DIRECT_FAMILY_PILOT_PROTOCOL"
+      --direct-family-predictor-policy "$DIRECT_FAMILY_PREDICTOR_POLICY"
+    )
+  else
+    CURRENT_QUERY_PROFILE_PROTOCOL="$RUN_ROOT/current_query_profile_protocol.json"
+    cp -- "$REPO_ROOT/experiments/configs/m15_f2c12_current_query_profile_baseline_dev.json" \
+      "$CURRENT_QUERY_PROFILE_PROTOCOL"
+    WORKLOAD_ARGS+=(
+      --current-query-profile-protocol "$CURRENT_QUERY_PROFILE_PROTOCOL"
+    )
+  fi
 fi
 
 QUERY_BOUND_ARGS=()

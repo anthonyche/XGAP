@@ -41,6 +41,9 @@ from xgap.experiments.m15_live_direct_semantic_frontier import (
 from xgap.experiments.m15_live_direct_family_pilot import (
     run_m15_live_direct_family_pilot,
 )
+from xgap.experiments.m15_live_current_query_profile_baseline import (
+    run_m15_live_current_query_profile_baseline,
+)
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_campaign_session import (
     prepare_m15_live_campaign_session,
@@ -87,6 +90,10 @@ from xgap.experiments.m15_direct_semantic_workload import (
 from xgap.experiments.m15_direct_family_pilot import (
     M15DirectFamilyPilotSchedule,
     compile_m15_direct_family_pilot_schedule,
+)
+from xgap.experiments.m15_current_query_profile_baseline import (
+    M15CurrentQueryProfileBaselineSchedule,
+    compile_m15_current_query_profile_baseline_schedule,
 )
 from xgap.experiments.m15_predicate_overlay import (
     M15PredicateMappingSpec,
@@ -144,6 +151,12 @@ DIRECT_FAMILY_PILOT_SERVICE_RUN_SCHEMA_VERSION = (
 DIRECT_FAMILY_PILOT_PREFLIGHT_SCHEMA_VERSION = (
     "m15-f2c10d-native-direct-family-pilot-preflight-v1"
 )
+CURRENT_QUERY_PROFILE_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2c12b-native-live-current-query-profile-service-run-v1"
+)
+CURRENT_QUERY_PROFILE_PREFLIGHT_SCHEMA_VERSION = (
+    "m15-f2c12b-native-current-query-profile-preflight-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -162,6 +175,7 @@ WORKLOAD_MODES = frozenset(
         "semantic_predicate_relaxation",
         "semantic_direct_frontier",
         "direct_family_pilot",
+        "current_query_profile_baseline",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -875,6 +889,7 @@ def _run_fixture_and_query(
     direct_semantic_workload: M15DirectSemanticWorkloadBundle | None = None,
     direct_family_pilot_protocol: Mapping[str, Any] | str | Path | None = None,
     direct_family_predictor_policy: Mapping[str, Any] | str | Path | None = None,
+    current_query_profile_protocol: Mapping[str, Any] | str | Path | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -888,6 +903,66 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
+        if workload_mode == "current_query_profile_baseline":
+            assert direct_semantic_workload is not None
+            assert semantic_base_bundle is not None
+            assert semantic_catalog is not None
+            assert predicate_mapping is not None
+            assert current_query_profile_protocol is not None
+            for client in clients.values():
+                client.timeout_seconds = 60.0
+
+            def reload_current_profile_fixture_bundle(
+                bundle_root: Path,
+            ) -> M15ParameterizedWorkloadBundle:
+                expected_root = direct_semantic_workload.workload_bundle.root.resolve()
+                if bundle_root.resolve() != expected_root:
+                    raise ValueError(
+                        "current-query profile fixture loader received a "
+                        "different parameterized workload root"
+                    )
+                reloaded = load_m15_direct_semantic_workload_bundle(
+                    direct_semantic_workload.root,
+                    base_bundle=semantic_base_bundle,
+                    catalog=semantic_catalog,
+                    mapping=predicate_mapping,
+                )
+                if reloaded.workload_bundle.root.resolve() != expected_root:
+                    raise ValueError(
+                        "reloaded current-query profile workload changed its "
+                        "nested root"
+                    )
+                return reloaded.workload_bundle
+
+            fixture = load_m15_parameterized_fixture(
+                workload_bundle=direct_semantic_workload.workload_bundle,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="current-query-profile-fixture-load",
+                repo_root=repo_root,
+                bundle_loader=reload_current_profile_fixture_bundle,
+            )
+            if not fixture.success:
+                raise RuntimeError(
+                    f"current-query profile fixture load failed: {fixture.error}"
+                )
+            profile = run_m15_live_current_query_profile_baseline(
+                direct_workload=direct_semantic_workload,
+                base_bundle=semantic_base_bundle,
+                catalog=semantic_catalog,
+                mapping=predicate_mapping,
+                protocol=current_query_profile_protocol,
+                clients=clients,
+                output_root=run_root,
+                run_id="current-query-profile-baseline-run",
+                repo_root=repo_root,
+            )
+            if not profile.success:
+                raise RuntimeError(
+                    f"live current-query profile baseline failed: {profile.error}"
+                )
+            return
         if workload_mode == "direct_family_pilot":
             assert direct_semantic_workload is not None
             assert semantic_base_bundle is not None
@@ -1252,6 +1327,7 @@ def run_m15_native_services(
     ) = None,
     direct_family_pilot_protocol: Mapping[str, Any] | str | Path | None = None,
     direct_family_predictor_policy: Mapping[str, Any] | str | Path | None = None,
+    current_query_profile_protocol: Mapping[str, Any] | str | Path | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1356,8 +1432,10 @@ def run_m15_native_services(
     )
     prepared_direct_frontier: M15PreparedDirectSemanticFrontier | None = None
     prepared_direct_family_schedule: M15DirectFamilyPilotSchedule | None = None
+    prepared_current_query_profile_schedule: (
+        M15CurrentQueryProfileBaselineSchedule | None
+    ) = None
     direct_family_values = (
-        direct_semantic_workload,
         direct_family_pilot_protocol,
         direct_family_predictor_policy,
     )
@@ -1366,6 +1444,22 @@ def run_m15_native_services(
     ):
         raise ValueError(
             "direct family inputs are accepted only in direct_family_pilot"
+        )
+    if (
+        workload_mode != "current_query_profile_baseline"
+        and current_query_profile_protocol is not None
+    ):
+        raise ValueError(
+            "current-query profile protocol is accepted only in "
+            "current_query_profile_baseline"
+        )
+    if (
+        workload_mode not in {"direct_family_pilot", "current_query_profile_baseline"}
+        and direct_semantic_workload is not None
+    ):
+        raise ValueError(
+            "direct semantic workload is accepted only in a direct-family "
+            "or current-query profile mode"
         )
     scaled_mode = workload_mode in {
         "scaled_adaptive",
@@ -1392,7 +1486,49 @@ def run_m15_native_services(
             "a parameterized workload bundle is accepted only in "
             "a parameterized workload mode"
         )
-    if workload_mode == "direct_family_pilot":
+    if workload_mode == "current_query_profile_baseline":
+        if current_query_profile_protocol is None or any(
+            value is None
+            for value in (
+                direct_semantic_workload,
+                semantic_base_bundle,
+                semantic_catalog,
+                predicate_mapping,
+            )
+        ):
+            raise ValueError(
+                "current_query_profile_baseline requires a direct workload, "
+                "base bundle, semantic catalog, predicate mapping, and "
+                "profile protocol"
+            )
+        if selected_direct_semantic_workload is None:
+            raise ValueError(
+                "current-query profile workload inputs could not be verified"
+            )
+        if any(
+            value is not None
+            for value in (
+                semantic_overlay,
+                predicate_overlay,
+                direct_frontier_estimates,
+                selected_bundle,
+                selected_parameterized_bundle,
+                direct_family_pilot_protocol,
+                direct_family_predictor_policy,
+            )
+        ):
+            raise ValueError(
+                "current_query_profile_baseline does not accept overlays, "
+                "frontier estimates, predictor inputs, or another workload "
+                "bundle"
+            )
+        prepared_current_query_profile_schedule = (
+            compile_m15_current_query_profile_baseline_schedule(
+                workload=selected_direct_semantic_workload,
+                protocol=current_query_profile_protocol,
+            )
+        )
+    elif workload_mode == "direct_family_pilot":
         if any(value is None for value in direct_family_values) or any(
             value is None
             for value in (
@@ -1613,6 +1749,9 @@ def run_m15_native_services(
             DIRECT_SEMANTIC_FRONTIER_SERVICE_RUN_SCHEMA_VERSION
         ),
         "direct_family_pilot": DIRECT_FAMILY_PILOT_SERVICE_RUN_SCHEMA_VERSION,
+        "current_query_profile_baseline": (
+            CURRENT_QUERY_PROFILE_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -1680,6 +1819,29 @@ def run_m15_native_services(
             direct_family_preflight,
         )
 
+    current_query_profile_preflight: dict[str, Any] | None = None
+    if prepared_current_query_profile_schedule is not None:
+        preflight_root = run_root / "current-query-profile-preflight"
+        preflight_root.mkdir()
+        schedule_payload = prepared_current_query_profile_schedule.to_dict()
+        _write_json(preflight_root / "profile_schedule.json", schedule_payload)
+        current_query_profile_preflight = {
+            "schema_version": CURRENT_QUERY_PROFILE_PREFLIGHT_SCHEMA_VERSION,
+            "sealed_before_service_start": True,
+            "schedule_sha256": (
+                prepared_current_query_profile_schedule.schedule_hash
+            ),
+            "expected_counts": schedule_payload["counts"],
+            "backend_calls_before_seal": 0,
+            "answer_oracle_opened_before_seal": False,
+            "automatic_retries": 0,
+            "paper_result": False,
+        }
+        _write_json(
+            preflight_root / "preflight_manifest.json",
+            current_query_profile_preflight,
+        )
+
     plan: NativeServicePlan | None = None
     health: list[HealthObservation] = []
     shutdown: list[ShutdownObservation] = []
@@ -1744,6 +1906,7 @@ def run_m15_native_services(
                 selected_direct_semantic_workload,
                 direct_family_pilot_protocol,
                 direct_family_predictor_policy,
+                current_query_profile_protocol,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
@@ -1841,6 +2004,14 @@ def run_m15_native_services(
                 else None
             ),
             "direct_family_pilot_preflight": direct_family_preflight,
+            "current_query_profile_baseline": (
+                {"protocol": str(current_query_profile_protocol)}
+                if workload_mode == "current_query_profile_baseline"
+                else None
+            ),
+            "current_query_profile_preflight": (
+                current_query_profile_preflight
+            ),
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -1911,6 +2082,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--direct-semantic-workload")
     parser.add_argument("--direct-family-pilot-protocol")
     parser.add_argument("--direct-family-predictor-policy")
+    parser.add_argument("--current-query-profile-protocol")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -1957,6 +2129,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             direct_family_pilot_protocol=args.direct_family_pilot_protocol,
             direct_family_predictor_policy=(
                 args.direct_family_predictor_policy
+            ),
+            current_query_profile_protocol=(
+                args.current_query_profile_protocol
             ),
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,

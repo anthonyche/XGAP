@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A LOCAL MECHANISMS VERIFIED; F2C11 AUDITED DEVELOPMENT RESULT ACCEPTED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C12B LOCAL MECHANISMS VERIFIED; F2C11 AUDITED DEVELOPMENT RESULT ACCEPTED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -525,10 +525,13 @@ and selected execution cost count toward the method; shadow traffic does not.
 The compiled development schedule has 110 plan runs and 220 backend calls,
 five AB and five BA acquisition orders, and 2/2 shadow position balance per
 strategy. It makes no call, uses no family memory, LLM, ontology service,
-answer row, or pre-selection oracle, and remains `paper_result=false`. The next
-implementation gate is a native producer plus an independent auditor; the
-compiler itself authorizes no CWRU submission and no comparison across prior
-allocations.
+answer row, or pre-selection oracle, and remains `paper_result=false`. F2C12B
+now supplies the corresponding fail-closed native producer, pre-service
+schedule seal, allocation-scoped wrapper, and read-only reconstruction
+auditor. Local controlled execution proves the exact 110-plan/220-call phase
+order and tamper detection, and full acceptance passes 919 tests with 36
+environment-gated skips. One clean audited CWRU run remains the next gate. No
+comparison across prior allocations is authorized.
 
 Repair job `3791600` and the frozen F2C11 comparison are now accepted. The
 pilot made 462 backend calls over 231 plan runs and passed a 1,289-check
@@ -538,8 +541,8 @@ the primary family-memory predictor achieved 0.60 physical-winner accuracy and
 primary reduced mean byte regret to 4,658 from 5,625.6, exposing rather than
 eliminating the latency/transfer trade-off. A separate F2C11 reconstruction
 audit passed all 17 checks. No predictor retuning on these ten tasks is
-permitted. F2C12 live implementation and a larger multi-family workload are
-the next experimental gates.
+permitted. One independently audited F2C12B native run and a larger
+multi-family workload are the next experimental gates.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

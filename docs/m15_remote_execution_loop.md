@@ -597,3 +597,21 @@ Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.
 No paper-performance claim is currently made.
+
+## F2C12B current-query profile baseline
+
+F2C12B is the cost-inclusive comparator frozen before the accepted F2C10D and
+F2C11 metrics were read. Its dedicated native entry runs 20 full-plan profile
+acquisitions, seals ten latency/bytes/plan-ID choices, executes those ten
+choices, and then runs 80 evaluation-only shadows. The valid completed tree
+has 110 plan runs and 220 backend calls, zero retry, zero memory/LLM/ontology
+input, and `paper_result=false`.
+
+Do not submit it from an unaccepted or dirty checkout. After local acceptance,
+use only the exact branch, commit, and submission command supplied in the
+active handoff. A completed Slurm state alone is insufficient: acceptance also
+requires the outer and inner status artifacts, the 110/220 summary, and a new
+read-only audit over the outer run root with no failed checks and
+`run_tree_mutated=false`. Do not compare timing directly with job `3791600`;
+the runs belong to different allocations. A paired campaign is required for a
+paper comparison.
