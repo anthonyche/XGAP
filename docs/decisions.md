@@ -1946,3 +1946,23 @@ cannot establish latency superiority, user semantic utility, or appropriate
 epsilon/K values. Exactly one CWRU run is authorized. The eight multihop
 classes remain unavailable until the user freezes their hard-constraint and
 answer semantics.
+
+## D117 Use family memory as the primary F2C10 prediction source
+
+The author selected family-memory prediction for the first non-controlled
+direct semantic frontier. F2C10 will predict latency and transferred bytes
+from successful, exact, same-family training executions frozen before a held-
+out query is opened. It will make no current-query profile, sample, explain,
+ontology, or LLM call. Current-query backend observations remain a later
+baseline rather than a hidden fallback, and the F2C5 development KNN remains
+diagnostic rather than being promoted or tuned against its two held-out
+results.
+
+A zero-call compilation then exposed that the F2C9 four-class/eight-plan
+contract is specific to HIGH and LOW base risk values. A MEDIUM base value has
+two catalog-adjacent alternatives, HIGH and LOW, producing six direct classes
+and twelve physical plans. The current development split contains a MEDIUM
+instance in both seed and held-out partitions. F2C10 therefore remains gated
+on an author-owned choice between preserving every adjacent interpretation and
+generalizing F2C9, choosing one directional MEDIUM relaxation, or excluding
+MEDIUM queries. No option is inferred from implementation convenience.

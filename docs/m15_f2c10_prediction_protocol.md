@@ -17,9 +17,14 @@ must replace those values without allowing answer oracles, current-task
 execution outcomes, evaluation shadows, or held-out observations to influence
 selection.
 
-One author-owned decision is intentionally unresolved: which source should be
-the primary estimator for the first non-controlled direct semantic frontier.
-No implementation or remote run is authorized until that choice is recorded.
+The author selected **Choice A — family-memory prediction** on 2026-09-06.
+Current-query backend observations are reserved for a later baseline and are
+not admitted as fallback evidence for the primary estimator. The approved path
+therefore adds no current-query profile, sample, explain, ontology, or LLM call.
+
+Implementation is now gated on one newly exposed semantic-space decision. The
+four-class F2C9 contract was derived from a HIGH-risk reference instance. It is
+not cardinality-invariant across the already frozen parameterized workload.
 
 ## Provisional research question
 
@@ -38,7 +43,7 @@ This question separates three outcomes:
 
 | Component | Current evidence | F2C10 disposition |
 |---|---|---|
-| F2C9 candidate set | Four executable direct classes, eight physical plans, eight unavailable multihop classes | Reuse unchanged |
+| F2C9 candidate set | The HIGH-risk reference has four executable direct classes, eight physical plans, and eight unavailable multihop classes | Reuse its validation and plan-construction rules; cardinality policy requires the gate below |
 | F2C9 estimate snapshot | Complete, hash-bound, oracle-free, sealed before service startup | Reuse interface; replace controlled values |
 | F2C9 frontier selector | Physical reduction followed by three-objective Pareto, epsilon, and K | Reuse unchanged for the first prediction gate |
 | F2C5 family memory | Successful exact seed-only observations, frozen predecessor view, typed query features | Reuse storage, visibility, and provenance contracts |
@@ -54,14 +59,13 @@ This question separates three outcomes:
 | B — current-query backend observations | Bounded pre-execution explain/profile/sample calls for the current query | Adapts directly to current backend state and avoids cross-task transfer assumptions | Adds user-visible planning latency and tool cost before every query |
 | C — confidence-gated hybrid | Family memory first; current-query observations only below a frozen confidence threshold | Can combine warm-path speed with guarded adaptation | Risks an A+B system story, adds policy degrees of freedom, and needs more ablations |
 
-Recommended first choice: **A — family-memory prediction**. It is the narrowest
+Author-selected choice: **A — family-memory prediction**. It is the narrowest
 single mechanism consistent with the agentic memory story, directly exercises
 the existing `family_memory_prediction` frontier evidence kind, and avoids
 making ambiguity resolution itself pay for backend profiling. Choice B remains
-a later baseline. Choice C should not be implemented until A and B are
-independently understood.
+a later baseline. Choice C is not part of the primary method.
 
-## Design that becomes active if Choice A is approved
+## Approved Choice A design
 
 ### Data split
 
@@ -69,7 +73,8 @@ independently understood.
   query instances rather than only Alice/August/HIGH.
 - Assign query instances to train and held-out partitions before any native
   cost measurement.
-- Materialize all four direct semantic classes for every admitted instance.
+- Materialize every direct semantic class admitted by the author-selected
+  cardinality policy below for every admitted instance.
 - Keep entity identity, time lower bound, and amount lower bound immutable.
 - Keep all multihop classes excluded until their semantics are separately
   approved.
@@ -79,6 +84,26 @@ independently understood.
 The final query count, split ratio, and repetitions are not selected here. The
 existing 4-seed/2-held-out development workload is too small for a performance
 or generalization claim.
+
+## Direct semantic-space cardinality gate
+
+A deterministic, zero-backend-call compilation over the six existing query
+instances exposed this input-dependent cardinality:
+
+| Base risk | Direct semantic classes | Physical plans | Reason |
+|---|---:|---:|---|
+| HIGH | 4 | 8 | only `HIGH -> MEDIUM` is catalog-adjacent |
+| LOW | 4 | 8 | only `LOW -> MEDIUM` is catalog-adjacent |
+| MEDIUM | 6 | 12 | both `MEDIUM -> HIGH` and `MEDIUM -> LOW` are catalog-adjacent |
+
+The development split contains two MEDIUM instances, one seed and one held
+out. Silently choosing only one of their adjacent risk meanings would remove a
+valid catalog-backed interpretation. Excluding MEDIUM would instead change the
+query population and shrink both partitions. Generalizing F2C9 to a variable
+number of direct classes preserves all catalog-backed meanings but changes its
+fixed four-class/eight-plan validation into a cardinality-independent contract.
+
+No workload is generated until the author selects one of those three policies.
 
 ### Measurement protocol
 
@@ -105,8 +130,9 @@ or generalization claim.
 ### Predictor contract
 
 The estimator must emit one latency prediction and one transferred-byte
-prediction for each of the eight direct physical plans. Every prediction must
-carry:
+prediction for every admitted direct physical plan. Under the preserve-all
+policy this means eight plans for HIGH/LOW and twelve for MEDIUM. Every
+prediction must carry:
 
 - model/version/configuration hash;
 - frozen training-memory-view hash;
@@ -187,12 +213,14 @@ or oracle equality. It remains a separate study.
 
 ## Current gate
 
-Author selection required:
+Primary estimator decision: **Choice A accepted by the author**.
 
-- Choice A: family-memory prediction;
-- Choice B: current-query backend-observation prediction;
-- Choice C: confidence-gated hybrid.
+One semantic-cardinality selection remains required:
 
-Until one choice is accepted, F2C9B remains the last executable milestone and
-the F2C10 implementation state is `decision_required`. No paper result is
-claimed.
+1. preserve every catalog-adjacent direct interpretation and generalize F2C9;
+2. freeze one directional MEDIUM-risk relaxation policy;
+3. exclude MEDIUM-risk base queries from this experiment.
+
+Until that policy is accepted, F2C9B remains the last executable milestone and
+the F2C10 implementation state is `semantic_cardinality_decision_required`.
+No paper result is claimed.
