@@ -1,0 +1,41 @@
+{
+  "artifact_id": "m15-f2c10d-cwru-native-direct-family-pilot-failure-3791589",
+  "artifact_role": "cwru_engineering_failure_diagnostic_not_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "slurm": {
+    "elapsed": "00:01:27",
+    "exit_code": "1:0",
+    "job_id": "3791589",
+    "node": "compt303",
+    "state": "FAILED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "d4db59a29d5cc30b995be11fef9203bb5a1ffea7"
+  },
+  "failure": {
+    "automatic_retries": 0,
+    "backend_plan_calls": 0,
+    "direct_family_pilot_run_created": false,
+    "error": "bundle schema_version is unsupported",
+    "failed_stage": "direct_family_fixture_bundle_revalidation",
+    "fixture_run_created": false,
+    "preflight_schedule_created": true,
+    "root_cause": "The verified direct-semantic workload contains an m15-f2c8 predicate-extended parameterized bundle. At fixture handoff, the generic fixture loader reopened that nested directory with the base m15-f2c parameterized-bundle loader, which correctly rejected the extended schema before any fixture mutation or pilot plan call.",
+    "workload_generation_completed": true
+  },
+  "cleanup": {
+    "cleanup_error": null,
+    "runtime_removed": true,
+    "success": true
+  },
+  "resolution": {
+    "automatic_retries": 0,
+    "integrity_strategy": "At fixture time, revalidate the enclosing direct-semantic workload with its base bundle, catalog, mapping, split, deterministic-content, and file-hash contracts, then return the verified nested predicate-extended workload to the unchanged fixture loader.",
+    "schema_allowlist_widened": false,
+    "same_job_resubmitted": false,
+    "new_job_required": true
+  },
+  "remote_run_root": "runs/cwru-m15-native-direct-family-pilot-3791589",
+  "paper_result": false
+}

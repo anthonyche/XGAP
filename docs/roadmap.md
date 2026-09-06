@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED; F2C10D NATIVE DEVELOPMENT PILOT READY**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED; F2C10D FIRST NATIVE FAILURE DIAGNOSED AND REPAIR READY**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -483,10 +483,16 @@ native wrapper reserves 45 minutes and each backend request has a 60-second
 deadline; failure stops immediately and no automatic retry is allowed. The
 post-selection report contains prediction error, winner accuracy, latency and
 byte regret, and predicted/observed frontier overlap. Local implementation,
-native lifecycle wiring, preflight sealing, and read-only reconstruction pass
-898 tests with 36 gated skips. The next gate is exactly one clean-commit CWRU
-development-pilot run followed by exactly one read-only audit; it remains
-non-confirmatory and `paper_result=false`.
+native lifecycle wiring, preflight sealing, and read-only reconstruction
+passed 898 tests with 36 gated skips at the first submission boundary. CWRU
+job `3791589` then exposed a pre-mutation fixture handoff defect: the generic
+fixture loader tried to parse the nested predicate-extended bundle with the
+base parameterized schema loader. The repair revalidates the enclosing
+direct-semantic contract at fixture time, does not widen either schema, and
+passes 899 full-suite tests with 36 gated skips. The failed job is immutable
+diagnostic evidence. The next gate is exactly one
+explicitly new clean-repair-commit CWRU pilot, followed on success by exactly
+one read-only audit; it remains non-confirmatory and `paper_result=false`.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

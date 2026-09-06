@@ -1315,6 +1315,11 @@ def test_direct_family_native_boundary_uses_sixty_second_clients(
             key: value.timeout_seconds
             for key, value in kwargs["clients"].items()
         }
+        reloaded = kwargs["bundle_loader"](
+            Path(kwargs["workload_bundle"].root)
+        )
+        observed["fixture_bundle_root"] = str(reloaded.root)
+        observed["fixture_bundle_schema"] = reloaded.manifest["schema_version"]
         return SimpleNamespace(success=True, error=None)
 
     def fake_pilot(**kwargs):
@@ -1366,6 +1371,10 @@ def test_direct_family_native_boundary_uses_sixty_second_clients(
     assert observed == {
         "fixture_run_id": "direct-family-fixture-load",
         "fixture_timeouts": {"neo4j": 60.0, "fuseki": 60.0},
+        "fixture_bundle_root": str(direct.workload_bundle.root),
+        "fixture_bundle_schema": direct.workload_bundle.manifest[
+            "schema_version"
+        ],
         "pilot_run_id": "direct-family-pilot-run",
         "pilot_timeouts": {"neo4j": 60.0, "fuseki": 60.0},
         "direct_hash": direct.manifest["manifest_sha256"],

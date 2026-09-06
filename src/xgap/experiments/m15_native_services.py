@@ -897,6 +897,37 @@ def _run_fixture_and_query(
             assert direct_family_predictor_policy is not None
             for client in clients.values():
                 client.timeout_seconds = 60.0
+
+            def reload_direct_family_fixture_bundle(
+                bundle_root: Path,
+            ) -> M15ParameterizedWorkloadBundle:
+                """Revalidate the enclosing direct workload at fixture time.
+
+                The nested workload is a predicate-extended parameterized
+                bundle, so the base parameterized loader cannot validate it.
+                Reconstructing the enclosing direct workload preserves its
+                catalog, mapping, split, and file-hash checks immediately
+                before the first fixture mutation.
+                """
+
+                expected_root = direct_semantic_workload.workload_bundle.root.resolve()
+                if bundle_root.resolve() != expected_root:
+                    raise ValueError(
+                        "direct family fixture loader received a different "
+                        "parameterized workload root"
+                    )
+                reloaded = load_m15_direct_semantic_workload_bundle(
+                    direct_semantic_workload.root,
+                    base_bundle=semantic_base_bundle,
+                    catalog=semantic_catalog,
+                    mapping=predicate_mapping,
+                )
+                if reloaded.workload_bundle.root.resolve() != expected_root:
+                    raise ValueError(
+                        "reloaded direct family workload changed its nested root"
+                    )
+                return reloaded.workload_bundle
+
             fixture = load_m15_parameterized_fixture(
                 workload_bundle=direct_semantic_workload.workload_bundle,
                 clients=clients,
@@ -904,6 +935,7 @@ def _run_fixture_and_query(
                 output_root=run_root,
                 run_id="direct-family-fixture-load",
                 repo_root=repo_root,
+                bundle_loader=reload_direct_family_fixture_bundle,
             )
             if not fixture.success:
                 raise RuntimeError(

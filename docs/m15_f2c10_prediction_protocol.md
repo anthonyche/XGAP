@@ -211,10 +211,11 @@ or oracle equality. It remains a separate study.
    memory, plus leakage and tamper tests; no held-out execution.
 3. F2C10C — run deterministic backend-double validation and an independent
    reconstruction audit.
-4. F2C10D — freeze order, repetitions, timeout, and analysis settings with the
-   author before any CWRU calibration campaign.
-5. F2C10E — collect training measurements, freeze the estimator, then run the
-   held-out evaluation as separate immutable jobs.
+4. F2C10D — run the author-frozen, single-allocation six-query native pilot:
+   collect counterbalanced training measurements, freeze family memory and the
+   held-out frontiers, execute selected plans, then execute evaluation shadows.
+5. F2C10E — after a successful audited pilot, decide whether its protocol is
+   accepted unchanged for a separately frozen 30--50-query paper campaign.
 
 ## Current gate
 
@@ -241,6 +242,15 @@ held-out executions. The MEDIUM target retains 12 predictions and the LOW
 target retains eight before Pareto/epsilon/K. These constructed values test
 the compiler only and provide no prediction-quality or performance evidence.
 Full local acceptance passes 870 tests with 36 gated skips.
-F2C10C is the next gate: persist the inputs and outputs, run deterministic
-backend-double validation, and reconstruct them with an independent read-only
-auditor before any CWRU training campaign is authorized.
+
+F2C10C is locally accepted. Its controlled selected-only run persisted and
+sealed the complete selection boundary, executed four exact selected plans,
+and passed 134/134 independent read-only checks without mutating the run tree.
+
+F2C10D is the current gate. The six-query true-frontier protocol is frozen and
+locally tested. Its first CWRU job, `3791589`, exposed a fixture-handoff schema
+bug before any fixture mutation or pilot plan call. The failed run is retained
+as non-paper diagnostic evidence. A repair now revalidates the enclosing
+direct-semantic workload rather than widening the base bundle loader. One new
+clean-commit native job, followed only on success by one read-only audit, is
+required before any 30--50-query protocol decision.

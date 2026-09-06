@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED; F2C10D NATIVE DEVELOPMENT PILOT READY**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED; F2C10D FIRST NATIVE FAILURE DIAGNOSED AND REPAIR READY**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -601,6 +601,15 @@ requests, a 45-minute Slurm allocation, stop-on-first-failure, and zero retry.
 A pre-service schedule seal and a separate read-only reconstruction audit are
 required. This remains six-query development evidence and cannot set
 `paper_result=true` or support a generalization claim.
+
+The first CWRU attempt, job `3791589` at clean commit `d4db59a`, stopped before
+fixture mutation or pilot execution. The direct workload's nested bundle uses
+the predicate-extended F2C8 schema, while fixture handoff accidentally invoked
+the base F2C parameterized-bundle loader. The repair preserves fail-closed
+validation by reconstructing the enclosing direct-semantic workload at the
+fixture boundary and then using its verified nested bundle; it does not make
+the generic loader accept a broader schema. The failed run remains engineering
+diagnostic evidence and a new job is required.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

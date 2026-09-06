@@ -2067,3 +2067,23 @@ call count. There is no current-query profiling, automatic retry, selection
 input from the shadow phase, confirmatory statistic, or paper claim. One
 clean-commit native pilot plus one independent read-only audit is authorized;
 expansion to 30--50 queries remains blocked on its validation.
+
+## D123 Revalidate the enclosing direct workload at F2C10D fixture handoff
+
+CWRU job `3791589` failed before fixture mutation with
+`bundle schema_version is unsupported`. The direct-semantic compiler embeds a
+predicate-extended parameterized workload whose schema is intentionally
+different from the base F2C parameterized bundle. The native path had already
+validated that extension through the enclosing direct-semantic loader, but
+the generic fixture loader reopened the nested directory with its default base
+loader and rejected it.
+
+Do not widen the base loader's accepted schema and do not skip fixture-time
+revalidation. The direct-family native boundary supplies a dedicated loader
+that checks the requested nested root, reconstructs the full enclosing direct
+workload against its base bundle, semantic catalog, predicate mapping,
+deterministic artifacts, and hashes, and returns only the nested workload from
+that reconstruction. The generic fixture load/verification logic remains
+unchanged. Job `3791589` is immutable zero-plan-call diagnostic evidence;
+automatic retry remains disabled and any validation run must be a new Slurm
+job at a clean repair commit.

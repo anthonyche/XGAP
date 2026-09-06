@@ -6,7 +6,7 @@
 - Origin Mode: plan
 - Origin Date: 2026-09-04
 - Verification Status: CWRU B2D/D2/F0/F1L/F2A VERIFIED; F2B4 QUERY-BOUND NATIVE/AUDIT LOCAL, ONE REMOTE GATE READY
-- Version Label: m15_remote_loop_v27
+- Version Label: m15_remote_loop_v28
 
 ## Current claim boundary
 
@@ -438,14 +438,24 @@ tree and passed 211/211 checks with no mutation. F2C9B is accepted mechanism
 evidence; do not interpret its controlled selection as a performance
 comparison.
 
-F2C10A--F2C10C are locally accepted and require no CWRU dispatch. F2C10D is
-the next and only authorized native action. Its frozen development protocol
-measures 144 counterbalanced training plan runs, seals family memory and two
-independent held-out query frontiers with zero current-query profiling,
-executes 2--8 returned online plans, and then executes 80 shadow plan runs.
-The valid total is 226--232 plan runs and 452--464 plan backend calls. Each
-request has a 60-second timeout, the Slurm wrapper reserves 45 minutes, failure
-stops on the first error, and no retry is allowed. Submit exactly one job:
+F2C10A--F2C10C are locally accepted and require no CWRU dispatch. The first
+F2C10D submission, job `3791589` at clean commit `d4db59a`, failed before any
+fixture mutation or pilot plan call. The pre-service schedule seal exists, but
+fixture handoff tried to reopen the nested predicate-extended workload with the
+base parameterized-bundle loader and correctly rejected its schema. Guarded
+cleanup succeeded and no automatic retry occurred. The producer now
+revalidates the enclosing direct-semantic workload at fixture time; the base
+schema allowlist is unchanged. Preserve the failed run and do not audit or
+rerun it. The repair passes the 899-test full local suite with 36 gated skips.
+
+One explicitly new F2C10D job is authorized only after pulling the clean repair
+commit. Its frozen development protocol measures 144 counterbalanced training
+plan runs, seals family memory and two independent held-out query frontiers
+with zero current-query profiling, executes 2--8 returned online plans, and
+then executes 80 shadow plan runs. The valid total is 226--232 plan runs and
+452--464 plan backend calls. Each request has a 60-second timeout, the Slurm
+wrapper reserves 45 minutes, failure stops on the first error, and no retry is
+allowed. Submit exactly one new job:
 
 ```bash
 cd "$HOME/XGAP-m15-465e2e2"
@@ -467,7 +477,7 @@ sbatch --parsable \
   scripts/slurm/run_m15_native_direct_family_pilot.sbatch
 ```
 
-Return the exact commit and job ID before any second submission. After the job
+Return the exact repair commit and new job ID before any further submission. After the job
 finishes, inspect `sacct` and the outer `run_status.json`. If and only if both
 report success, run the independent auditor once with a new output path:
 

@@ -74,7 +74,7 @@ F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
 and the F2C0--F2C10A stream, family, typed-query, workload, exact-execution,
 family-memory, semantic-frontier, execution-readiness, overlay, native
 frontier, variable-cardinality split, and F2C10D pilot contracts, current full
-local acceptance passes 898 tests with 36 gated skips. This is
+local acceptance passes 899 tests with 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
 `experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
@@ -374,8 +374,7 @@ values remain `paper_result=false`; no native timing, prediction-accuracy,
 resource, semantic-utility, or generalization result exists. The compact record
 is `experiments/artifacts/m15_f2c10c_local_controlled_family_memory_validation_20260906.json`.
 
-M15-F2C10D is locally implemented and authorized for one six-query native
-development pilot. The author froze four counterbalanced repetitions of all
+M15-F2C10D is locally implemented. The author froze four counterbalanced repetitions of all
 18 training semantic tasks and both physical strategies (144 plan runs), then
 an immutable family-memory freeze, zero-current-query-call prediction, and
 independent per-query Pareto/epsilon/K selection. The true frontier—not a
@@ -392,9 +391,24 @@ preflight seals the schedule and count bounds, and a separate read-only
 auditor reconstructs the schedule, measurements, memory, predictions,
 frontiers, exact answers, analysis, and call-phase order. A separate compact
 summary accepts only a successful mutation-free audit and retains the claim
-boundary alongside the requested metrics. Full local
-acceptance passes 898 tests with 36 gated skips. No native F2C10D result exists
-yet; the six-query pilot and all outputs remain `paper_result=false`.
+boundary alongside the requested metrics. Full local acceptance at the first
+submission boundary passed 898 tests with 36 gated skips.
+
+The first native pilot, job `3791589` at exact clean commit `d4db59a`, failed
+on `compt303` after 87 seconds. Workload generation and the pre-service
+schedule seal completed, but fixture handoff reopened the nested
+predicate-extended parameterized bundle with the base parameterized-bundle
+loader and was rejected with `bundle schema_version is unsupported`. The
+failure occurred before the fixture run directory, pilot run directory, or any
+pilot plan call was created; no automatic retry occurred and guarded cleanup
+removed the runtime. The repair does not widen a schema allowlist: fixture
+handoff now revalidates the enclosing direct-semantic workload and extracts
+its verified nested bundle; full repair acceptance passes 899 tests with 36
+gated skips. Job `3791589` remains immutable non-paper
+diagnostic evidence and must not be rerun. Exactly one explicitly new pilot is
+required at a clean repair commit. The compact failure record is
+`experiments/artifacts/m15_f2c10d_cwru_native_direct_family_pilot_failure_20260906.json`.
+The six-query pilot and all outputs remain `paper_result=false`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
