@@ -152,7 +152,25 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **PLANNED**
+Current status: **E1 LOCAL MECHANISM VERIFIED; LIVE PROVIDER/UI BRIDGE PENDING**
+
+E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
+ontology, bounded LLM proposal, and user clarification. The route is selective:
+fully bound programs use zero calls; entity ambiguity can use only bounded
+catalog candidates plus authoritative user clarification; predicate/type/source
+ambiguity may use optional semantic tools. Model output is non-authoritative,
+candidate-ID bounded, native-query-free, limited to one external call, recorded
+in the goal trace and execution memory, and still requires deterministic
+enumeration/validation. Tool failure is terminal without retry; an unavailable
+optional ontology/model is reported while preserving the bounded candidate set.
+
+The offline demo exercises a clarification and returns a semantic candidate set
+without an LLM. Focused acceptance passes 21 goal/semantic tests and the full
+suite passes 956 tests with 36 explicit skips. E1 makes no backend, model,
+ontology-service, or CWRU call and authorizes no experiment. E2 must adapt the
+existing OpenAI-compatible provider with repairs disabled, bind a real catalog
+and ontology provider, and freeze the live evidence/audit contract. The UI
+clarification transport remains later work.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

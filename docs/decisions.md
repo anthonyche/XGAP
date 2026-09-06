@@ -2359,3 +2359,34 @@ families, an executable entirely held-out family, 30--50 base instances, and a
 preregistered inferential analysis. F2C14A is an unexecuted deterministic
 contract, authorizes no CWRU job, contains no measurement, and remains
 `paper_result=false`.
+
+## D134 Identity clarification and semantic proposals use different tools
+
+M15-E1 routes partially bound semantic programs through the existing finite
+goal loop. A fully bound program terminates without a tool call. A catalog may
+produce bounded candidates for any hole, but an entity hole with zero or
+multiple identities cannot be delegated to an ontology or LLM: it blocks until
+an authoritative user-clarification tool selects exactly one bounded identity.
+Predicate and type holes may use catalog, ontology, and an explicitly enabled
+bounded LLM proposal in that order; source holes omit ontology. Multiple valid
+non-entity candidates remain an interpretation set for deterministic
+enumeration rather than being mislabeled as resolved ambiguity.
+
+Every resolution tool reports its external-call, latency, and token costs
+through the shared tool result. The M15 LLM role may make at most one external
+call, may return only candidate IDs already present in its request, cannot mark
+its choice authoritative, and cannot carry Cypher, SPARQL, GQL, or other native
+query text in metadata. Hard semantic constraints are hashed before every call
+and are not rewritten. A tool error ends the attempt without retry; unavailable
+ontology/LLM tools are explicit optional observations and cannot erase the
+bounded candidate set.
+
+Reason:
+
+Identity disambiguation changes which real-world entity the query denotes and
+therefore needs user authority. Ontology and LLM evidence can organize bounded
+semantic alternatives but cannot guarantee user intent. Keeping both paths in
+the ordinary tool/trace/memory contract makes their latency and inference cost
+visible and preserves the deterministic compiler boundary. E1 supplies local
+providers and a tested control path only; adapting the existing live
+OpenAI-compatible provider with repairs disabled is a separate E2 gate.

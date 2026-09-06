@@ -32,6 +32,16 @@ from xgap.tools.remote import (
     SlurmRemoteExecutor,
     SshTransport,
 )
+from xgap.tools.resolution import (
+    SEMANTIC_CATALOG_LOOKUP_TOOL,
+    SEMANTIC_LLM_PROPOSE_TOOL,
+    SEMANTIC_ONTOLOGY_LOOKUP_TOOL,
+    USER_CLARIFY_TOOL,
+    ResolutionCandidateProvider,
+    ResolutionCandidateRequest,
+    ResolutionCandidateResponse,
+    ResolutionCandidateTool,
+)
 
 __all__ = [
     "AgentTool",
@@ -52,6 +62,13 @@ __all__ = [
     "RemoteExecutorTool",
     "RemoteJobState",
     "RemoteTransport",
+    "ResolutionCandidateProvider",
+    "ResolutionCandidateRequest",
+    "ResolutionCandidateResponse",
+    "ResolutionCandidateTool",
+    "SEMANTIC_CATALOG_LOOKUP_TOOL",
+    "SEMANTIC_LLM_PROPOSE_TOOL",
+    "SEMANTIC_ONTOLOGY_LOOKUP_TOOL",
     "SlurmRemoteExecutor",
     "SshTransport",
     "ToolContext",
@@ -61,4 +78,5 @@ __all__ = [
     "ToolResult",
     "ToolSpec",
     "ToolStatus",
+    "USER_CLARIFY_TOOL",
 ]

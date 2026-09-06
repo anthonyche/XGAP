@@ -236,12 +236,29 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **PLANNED**
+Status: **E1 LOCAL MECHANISM VERIFIED; LIVE PROVIDER/UI BRIDGE PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
 Easy cases use zero LLM calls; unresolved identity ambiguity asks the user;
 hard constraints remain immutable.
+
+M15-E1 implements the finite routing and tool contracts. A fully bound program
+succeeds with zero tool calls. Empty candidate sets may invoke a bounded catalog;
+predicate/type ambiguity may next invoke ontology lookup and, only when enabled,
+one bounded LLM proposal. Entity ambiguity cannot enter either ontology or LLM
+and requires one authoritative clarification chosen from the bounded identity
+candidates. The LLM tool rejects new candidate IDs, authoritative claims,
+native-query metadata, and more than one external call. Every result appears in
+the normal goal trace and execution memory; failed calls are not retried, while
+unavailable optional semantic tools remain explicit observations.
+
+This local gate uses supplied providers only. An adapter from the existing
+OpenAI-compatible M12 provider must separately enforce the M15 one-call/no-repair
+boundary before a CWRU vLLM run is authorized. A UI clarification transport,
+deterministic parser-to-hole construction, and end-to-end semantic execution
+campaign also remain pending. Full local acceptance passes 956 tests with 36
+explicit environment or external-artifact skips.
 
 ## M15-F — Paper experiment surface and optional UI
 

@@ -21,6 +21,13 @@ from xgap.agent.memory import (
     MemoryStore,
 )
 from xgap.agent.policy import SequentialToolPolicy
+from xgap.agent.resolution import (
+    SelectiveResolutionConfig,
+    SelectiveSemanticResolutionPolicy,
+    build_selective_resolution_goal,
+    hard_constraints_sha256,
+    selective_resolution_environment,
+)
 
 __all__ = [
     "AgentDecision",
@@ -40,4 +47,9 @@ __all__ = [
     "MemoryStore",
     "PlannedToolCall",
     "SequentialToolPolicy",
+    "SelectiveResolutionConfig",
+    "SelectiveSemanticResolutionPolicy",
+    "build_selective_resolution_goal",
+    "hard_constraints_sha256",
+    "selective_resolution_environment",
 ]

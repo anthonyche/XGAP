@@ -112,6 +112,27 @@ ontology service. A family declared entirely held out may not expose its own
 training records. This keeps the seen-family transfer and cold-family fallback
 conditions explicit before a multi-family experiment is scheduled.
 
+### Selective semantic resolution
+
+M15-E1 routes unresolved semantic holes through the same finite goal loop and
+typed tool boundary as backend work. A fully bound program terminates with no
+tool or model call. Entity ambiguity is a distinct identity problem: a bounded
+catalog may supply identity candidates, but more than one candidate requires an
+authoritative user-clarification result and is never sent to an ontology or
+LLM. Predicate and type candidates may be narrowed by a versioned ontology and
+then by an optional bounded model proposal; source candidates may use catalog
+and optional model evidence.
+
+Resolution tools return candidate identifiers, provenance, latency, token, and
+external-call counts. An LLM may select only from the identifiers in its
+request, cannot mark a binding authoritative, cannot return native query text,
+and may make at most one external call in one M15 tool invocation. Its result
+remains a proposal for deterministic interpretation enumeration and validation.
+Hard constraints are content-hashed before every action and are never mutated
+by the resolution policy. A missing required clarification or candidate source
+blocks explicitly; an unavailable optional ontology/model leaves the existing
+bounded candidate set visible rather than masquerading as resolution.
+
 ### Actions and termination
 
 The agent may construct or fill a semantic program, inspect the environment,

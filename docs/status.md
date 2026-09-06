@@ -14,6 +14,20 @@ LLM, does not automatically retry tool failures, and records every tool result
 as both an observation and execution-memory record. M15-A adds no cross-source
 movement, coordinator join, plan search, or live service claim.
 
+M15-E1 is now locally implemented as a selective semantic-resolution policy on
+that same goal loop. Four typed tool roles cover catalog lookup, ontology
+lookup, bounded LLM proposal, and user clarification. Fully bound programs use
+zero tools; ambiguous identities are never sent to ontology or LLM and require
+an authoritative bounded clarification. Non-entity candidates may use optional
+ontology/model evidence, but model output cannot add IDs, claim authority,
+carry native query text, or hide more than one external call. Hard constraints
+are hashed and preserved, calls are observable and stored in execution memory,
+and failures are never retried. The live OpenAI-compatible adapter, real
+catalog/ontology wiring, parser-to-hole construction, and UI clarification
+transport remain pending. The E1-focused suite passes 21 tests, its offline
+demo succeeds with one clarification and zero LLM calls, and full local
+acceptance passes 956 tests with 36 explicit skips.
+
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
 gated or external-artifact tests skipped. Refreshed CWRU CPU smoke job
