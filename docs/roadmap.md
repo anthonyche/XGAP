@@ -516,6 +516,20 @@ source-tree digests before and after. A valid analysis therefore needs both a
 zero-exit analyzer artifact and a separate zero-exit audit with no failed
 checks or run-tree mutation; both stay exploratory and outside the source run.
 
+F2C12A freezes the later live current-query profiling baseline before accepted
+F2C10D/F2C11 outcomes can influence its design. Each of the ten held-out
+semantic tasks profiles both complete federated physical plans once, seals a
+latency/bytes/plan-ID choice, executes the selected plan once, and then runs
+four counterbalanced evaluation repetitions for both strategies. Acquisition
+and selected execution cost count toward the method; shadow traffic does not.
+The compiled development schedule has 110 plan runs and 220 backend calls,
+five AB and five BA acquisition orders, and 2/2 shadow position balance per
+strategy. It makes no call, uses no family memory, LLM, ontology service,
+answer row, or pre-selection oracle, and remains `paper_result=false`. The next
+implementation gate is a native producer plus an independent auditor; the
+compiler itself authorizes no CWRU submission and no comparison across prior
+allocations.
+
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
 used JSON object syntax inside a Cypher `UNWIND` literal; Neo4j 5.26 requires

@@ -437,6 +437,22 @@ confirmatory and paper flags, and an unchanged source-tree digest. Local
 focused acceptance passes; a CWRU F2C11 result and its independent audit remain
 pending the accepted F2C10D producer chain.
 
+M15-F2C12A now freezes the cost-inclusive current-query profiling baseline at
+the schedule boundary, before accepted F2C10D/F2C11 metrics are available to
+the implementation. For each of ten held-out semantic tasks, both complete
+federated physical candidates are profiled once at the coordinator boundary,
+selection uses only latency, bytes, and plan ID, and exactly one selected plan
+then executes. A four-repetition evaluation shadow follows the sealed choice.
+The resulting development protocol contains 20 acquisition, ten selected, and
+80 shadow plan runs (220 backend calls). It includes acquisition overhead in
+method cost, proves five AB/five BA acquisition balance and per-task shadow
+position balance, and forbids family memory, answer-row selection, early oracle
+access, fallback, retry, LLM, and ontology calls. The compiler makes no
+external call and does not authorize a native job. Full local acceptance
+passes 911 tests with 36 environment-gated skips. Live lifecycle wiring and an
+independent auditor are still pending; all artifacts remain
+`paper_result=false`.
+
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
 the frozen registry and schedule hashes, started Neo4j 5.26.30 and Fuseki 5.6.0

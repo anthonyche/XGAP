@@ -637,6 +637,20 @@ ten-semantic-task, zero-call, results-blind, and non-confirmatory boundaries
 while comparing source-tree digests before and after. The audit artifact also
 lives outside the F2C10D run tree and cannot promote `paper_result`.
 
+F2C12A freezes the missing cost-inclusive current-query profiling comparator
+without reading F2C10D results. Within each of the same ten held-out semantic
+classes it seals both physical strategies, measures each complete federated
+plan once, selects from latency/bytes/plan identity only, and then executes the
+selected plan once. This deliberately uses the shared black-box coordinator
+boundary rather than asymmetric backend-internal `PROFILE` features. Two
+acquisition plan runs, one selected run, and eight four-repetition shadow runs
+per task yield 110 plan runs and 220 backend calls overall. Acquisition cost is
+part of the method's end-to-end latency and bytes; shadows are evaluation-only.
+The schedule compiler makes zero calls, proves AB/BA balance, forbids memory,
+LLM, ontology, fallback, retry, and pre-selection oracle access, and does not
+authorize a remote run. A native producer and independent read-only auditor
+remain required.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

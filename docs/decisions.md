@@ -2136,3 +2136,34 @@ the zero-call and results-blind boundaries, and the exploratory
 `paper_result=false` claim. It does not make the development comparison
 confirmatory or broaden it beyond physical strategy choice within an already
 selected semantic class.
+
+## D126 Compare family memory with a cost-inclusive current-query profiler
+
+F2C12A freezes the live current-query observation baseline before any accepted
+F2C10D or F2C11 metric is read. For each of the ten held-out direct semantic
+tasks, the baseline seals both physical candidates, executes each complete
+federated plan once as an acquisition profile, and selects by observed latency,
+then transferred bytes, then plan ID. The selected plan executes once only
+after that cost-only selection is sealed. Answer rows, answer oracles, online
+results, and later shadow results are not selection inputs. Missing or failed
+acquisition terminates the run; there is no fallback or automatic retry.
+
+The acquisition operation is explicitly a complete black-box federated-plan
+execution labeled as profiling. It is not Neo4j's engine-internal `PROFILE`
+operator, and it does not assume Fuseki exposes a symmetric native explain or
+profile API. This gives both candidate strategies the same observable
+coordinator boundary and charges all four acquisition backend calls per task.
+End-to-end method cost is acquisition plus the selected execution; the later
+four-repetition, counterbalanced shadow matrix is evaluation-only and excluded
+from method cost.
+
+The development compiler covers 20 acquisition plan runs, ten selected-plan
+runs, and 80 shadow runs: 110 plan runs and 220 backend calls. Acquisition
+order is balanced five AB and five BA across tasks; every shadow strategy
+occupies each within-task order position twice. Family memory, training data,
+LLM calls, ontology-service calls, semantic-frontier comparison, and
+cross-allocation comparison are forbidden. The compiler makes zero calls and
+does not authorize a CWRU run. A live runner and independent auditor are
+required before this protocol becomes executable evidence, and all outputs
+remain exploratory with `paper_result=false`. Full local acceptance passes
+911 tests with 36 explicitly environment-gated skips.

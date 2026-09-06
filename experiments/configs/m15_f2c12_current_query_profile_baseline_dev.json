@@ -1,0 +1,119 @@
+{
+  "schema_version": "m15-f2c12-current-query-profile-baseline-protocol-v1",
+  "protocol_id": "m15-f2c12-development-dual-profile-baseline-v1",
+  "development_population_id": "m15-f2c10-direct-six-query-development-v1",
+  "method_id": "current_query_dual_profile",
+  "phase_order": [
+    "candidate_seal",
+    "current_query_profile_acquisition",
+    "physical_selection_seal",
+    "selected_plan_execution",
+    "postselection_shadow_evaluation",
+    "analysis"
+  ],
+  "scope": {
+    "heldout_base_query_count": 2,
+    "heldout_semantic_task_count": 10,
+    "physical_candidates_per_task": 2,
+    "physical_plan_count": 20
+  },
+  "acquisition": {
+    "operation": "profile",
+    "measurement_implementation": "full_federated_plan_execution_labeled_profile",
+    "repetitions_per_candidate": 1,
+    "task_order": "sha256_seeded",
+    "strategy_order": "per_task_ab_ba_counterbalanced",
+    "schedule_seed": "m15-f2c12-dual-profile-acquisition-v1",
+    "selection_fields": [
+      "elapsed_ms",
+      "total_bytes_moved",
+      "plan_id"
+    ],
+    "answer_rows_selection_input": false
+  },
+  "selection": {
+    "scope": "within_one_semantic_class",
+    "order": [
+      "profile_elapsed_ms",
+      "profile_total_bytes_moved",
+      "plan_id"
+    ],
+    "selected_plans_per_task": 1,
+    "seal_before_selected_execution": true,
+    "fallback_allowed": false
+  },
+  "online": {
+    "repetitions_per_selected_plan": 1,
+    "selection_input": false,
+    "memory_writes_allowed": false
+  },
+  "shadow": {
+    "physical_plan_count": 20,
+    "repetitions_per_plan": 4,
+    "starts_after_selection_seal": true,
+    "selection_input": false,
+    "memory_writes_allowed": false,
+    "task_order": "sha256_seeded_per_block",
+    "strategy_order": "per_task_alternating_ab_ba_counterbalanced",
+    "schedule_seed": "m15-f2c12-dual-profile-shadow-v1"
+  },
+  "cost_accounting": {
+    "method_latency": "sum_acquisition_elapsed_ms_plus_selected_execution_elapsed_ms",
+    "method_bytes": "sum_acquisition_bytes_plus_selected_execution_bytes",
+    "shadow_cost_excluded_from_method_cost": true,
+    "acquisition_cost_reported_separately": true
+  },
+  "execution": {
+    "backend_timeout_seconds": 60,
+    "slurm_timeout_minutes": 30,
+    "remote_calls_per_plan": 2,
+    "failure_policy": "stop_on_first_failure",
+    "automatic_retries": 0
+  },
+  "analysis": {
+    "per_plan_aggregation": "median_over_four_shadow_repetitions",
+    "observed_physical_winner_order": [
+      "median_elapsed_ms",
+      "median_total_bytes_moved",
+      "plan_id"
+    ],
+    "metrics": [
+      "physical_winner_accuracy",
+      "selected_plan_latency_regret_ms",
+      "selected_plan_bytes_regret",
+      "acquisition_latency_ms",
+      "acquisition_bytes",
+      "end_to_end_latency_ms",
+      "end_to_end_bytes"
+    ],
+    "confirmatory_statistics": false
+  },
+  "input_boundary": {
+    "training_memory_allowed": false,
+    "family_memory_predictions_allowed": false,
+    "current_query_profile_operations_per_task": 2,
+    "current_query_sample_operations_per_task": 0,
+    "current_query_explain_operations_per_task": 0,
+    "llm_calls": 0,
+    "ontology_service_calls": 0,
+    "answer_oracle_opened_before_selection_seal": false,
+    "online_or_shadow_measurements_used_for_selection": false
+  },
+  "expected_counts": {
+    "acquisition_plan_runs": 20,
+    "selected_plan_runs": 10,
+    "evaluation_shadow_plan_runs": 80,
+    "total_plan_runs": 110,
+    "acquisition_backend_calls": 40,
+    "selected_plan_backend_calls": 20,
+    "evaluation_shadow_backend_calls": 160,
+    "total_backend_calls": 220
+  },
+  "claim_boundary": {
+    "development_protocol_only": true,
+    "live_execution_authorized": false,
+    "comparison_with_prior_allocation_authorized": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}
