@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C12B LOCAL MECHANISMS VERIFIED; F2C11 AUDITED DEVELOPMENT RESULT ACCEPTED**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13A PAIRED PROTOCOL LOCAL**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -669,6 +669,26 @@ lower (4,658 versus 5,625.6). The independent F2C11 audit reconstructed the
 exact five-method analysis and passed 17/17 checks. This negative development
 result is preserved without predictor tuning and does not alter the already
 frozen F2C12A protocol.
+
+F2C12B job `3791649` subsequently completed at exact clean commit `64f750b`
+on `compt268`. It executed the frozen 110-plan/220-call protocol and its
+independent outer-root audit passed 1,185 checks without mutation. The method
+selected 10/10 shadow-median latency winners with zero latency regret, while
+incurring 5,625.6 mean byte regret against the separate byte winner and a
+median two-plan acquisition cost of 61.816 ms/14,082 bytes. This accepts the
+live comparator as development evidence, but the different allocation from
+F2C10D forbids a causal timing comparison.
+
+F2C13A freezes that missing paired boundary. It composes the exact 144-run
+family training schedule with the exact 20-run profile acquisition and 80-run
+shared shadow schedules. Family selection seals before current-query
+profiling; both methods then execute one selected plan for each of ten tasks in
+a counterbalanced order. The result is a fixed 264-plan/528-call future
+allocation with separate training, acquisition, serving, and shadow ledgers.
+The local compiler makes zero calls and authorizes no live execution. It tests
+physical selection within semantic classes only and remains descriptive and
+`paper_result=false`. Full local acceptance passes 931 tests with 36 explicit
+environment or external-artifact skips.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

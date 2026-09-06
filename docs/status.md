@@ -437,7 +437,7 @@ confirmatory and paper flags, and an unchanged source-tree digest. Local
 focused acceptance passes; a CWRU F2C11 result and its independent audit remain
 pending the accepted F2C10D producer chain.
 
-M15-F2C12A/B now freezes and implements the cost-inclusive current-query profiling baseline at
+M15-F2C12A/B now freezes, implements, and verifies the cost-inclusive current-query profiling baseline at
 the schedule boundary, before accepted F2C10D/F2C11 metrics are available to
 the implementation. For each of ten held-out semantic tasks, both complete
 federated physical candidates are profiled once at the coordinator boundary,
@@ -455,8 +455,29 @@ exactly 220 calls in acquisition/selected/shadow order; the auditor rebuilds
 cost estimates, choices, metrics, and hashes and detects tampering of analysis,
 profile costs, selection, or a self-consistently rehashed schedule that differs
 from the copied source inputs. Full acceptance passes 919 tests with 36
-environment-gated skips. No CWRU F2C12 evidence or cross-allocation comparison
-is yet claimed; all artifacts remain `paper_result=false`.
+environment-gated skips. CWRU job `3791649` then completed all 110 plan runs
+and 220 backend calls at exact clean commit `64f750b` on `compt268`; its
+independent outer-root audit passed 1,185/1,185 checks without mutation. The
+profiler selected all ten observed latency winners, with zero latency regret
+and 5,625.6 mean byte regret. Median acquisition cost was 61.816 ms and 14,082
+bytes; median acquisition-plus-selected cost was 84.279 ms and 23,791 bytes.
+These are allocation-local development observations. Cross-allocation timing
+comparison with F2C10D remains forbidden and all artifacts stay
+`paper_result=false`.
+
+M15-F2C13A now freezes the same-allocation comparison needed to interpret the
+two mechanisms. It reuses the exact F2C10D 144-run training schedule and the
+exact F2C12 20-run acquisition and 80-run shadow schedules. Family-memory
+choices are sealed before profiling; then family memory and dual profile each
+execute one selected plan for all ten semantic tasks under a five/five
+counterbalanced method order. The complete future allocation is fixed at 264
+plan runs and 528 backend calls. Training, acquisition, serving, and shadow
+costs are separate, fixed and oracle controls are evaluation-only, and the
+count-based historical-training break-even is reported as 72 future tasks.
+The compiler makes no call and does not authorize a live run. This remains a
+descriptive physical-selection protocol, not a semantic-frontier or paper
+claim. Full local acceptance passes 931 tests with 36 explicit environment or
+external-artifact skips.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,

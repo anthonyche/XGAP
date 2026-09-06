@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A VERIFIED; F2B4 QUERY-BOUND NATIVE/AUDIT LOCAL, ONE REMOTE GATE READY
-- Version Label: m15_remote_loop_v28
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B VERIFIED; F2C13A PAIRED PROTOCOL LOCAL
+- Version Label: m15_remote_loop_v29
 
 ## Current claim boundary
 
@@ -607,11 +607,15 @@ choices, and then runs 80 evaluation-only shadows. The valid completed tree
 has 110 plan runs and 220 backend calls, zero retry, zero memory/LLM/ontology
 input, and `paper_result=false`.
 
-Do not submit it from an unaccepted or dirty checkout. After local acceptance,
-use only the exact branch, commit, and submission command supplied in the
-active handoff. A completed Slurm state alone is insufficient: acceptance also
-requires the outer and inner status artifacts, the 110/220 summary, and a new
-read-only audit over the outer run root with no failed checks and
-`run_tree_mutated=false`. Do not compare timing directly with job `3791600`;
-the runs belong to different allocations. A paired campaign is required for a
-paper comparison.
+CWRU job `3791649` completed this exact protocol at clean commit `64f750b` on
+`compt268`. The outer, service, and live status chain succeeded, and the
+independent outer-root audit passed 1,185/1,185 checks with no mutation.
+Preserve this run and do not resubmit it. The allocation-local development
+result selected 10/10 observed latency winners, but raw timing must not be
+compared with F2C10D job `3791600` because the allocations differ.
+
+F2C13A is the next local-only gate. Its compiler binds the exact F2C10D
+training schedule and F2C12 acquisition/shadow schedules into one future
+same-allocation comparison with 264 plan runs and 528 backend calls. No CWRU
+command is authorized until a live producer and independent auditor are
+implemented and locally accepted.

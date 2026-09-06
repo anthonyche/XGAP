@@ -2230,3 +2230,52 @@ the sealed plan choice is explicitly rejected. Local controlled-double and
 native-boundary tests pass, but no CWRU outcome or comparison with the earlier
 allocation is claimed until one clean job and its independent audit succeed.
 All F2C12 outputs remain exploratory and `paper_result=false`.
+
+## D129 Accept F2C12B as allocation-local development evidence
+
+CWRU job `3791649` completed at exact clean commit `64f750b` on `compt268`
+in 305 seconds. Its three contiguous phases contain exactly 20 acquisition,
+ten selected, and 80 shadow plan runs, or 220 backend calls in total. The
+selection source contains only the sealed full-federated-plan acquisition
+costs. The outer, service, and live statuses succeeded; cleanup removed the
+allocation-local runtime. The independent outer-root reconstruction audit
+passed 1,185 checks with no failed ID and no run-tree mutation.
+
+Within this allocation, the current-query profiler selected the observed
+latency winner for all ten held-out semantic tasks and therefore had zero
+shadow-median latency regret. Its mean byte regret against the separately
+defined byte winner was 5,625.6. Two acquisition plan executions per task cost
+a median 61.816 ms and 14,082 transferred bytes; acquisition plus selected
+execution had a median 84.279 ms and 23,791 bytes. These are descriptive
+development observations, not evidence that the method beats family memory:
+job `3791600` ran in another allocation, so its timing is not a paired
+counterfactual. The accepted artifact remains non-confirmatory and
+`paper_result=false`.
+
+## D130 Freeze a same-allocation paired physical comparison before execution
+
+F2C13A composes the frozen F2C10D training schedule and F2C12 acquisition and
+shadow schedules without changing either source protocol. Eighteen training
+semantic tasks execute both strategies four times (144 runs). Family-memory
+choices for all ten held-out semantic tasks are then sealed from training
+memory only, before the dual-profile method may execute either current-query
+candidate. The profiler performs 20 acquisition runs and seals one choice per
+task. Both methods subsequently execute one selected plan per task in a
+five/five counterbalanced method order. Even when they choose the same plan,
+their serving observations remain distinct. One shared 80-run shadow matrix is
+opened only after both seals.
+
+The paired campaign therefore contains exactly 264 plan runs and 528 backend
+calls in one native allocation. Historical training, current-query
+acquisition, selected serving, and evaluation-shadow costs are reported as
+four distinct scopes; training is never silently amortized. The count-only
+break-even reference is 72 future semantic tasks because 144 historical
+training runs replace two acquisition runs per target task. Fixed strategies
+and the observed oracle are evaluation-only controls reconstructed from the
+shared shadows. Analysis is descriptive at ten held-out tasks and reports no
+p-value. The gate isolates physical selection within an already chosen
+semantic class; it makes no semantic-frontier, ambiguity-resolution, LLM, or
+ontology claim. The compiler performs no external call, authorizes no CWRU
+run, fails closed on protocol or source-contract drift, and remains
+`paper_result=false`. Full local acceptance passes 931 tests with 36 explicit
+environment or external-artifact skips.
