@@ -44,6 +44,7 @@ class SemanticHoleKind(str, Enum):
     PREDICATE = "predicate"
     TYPE = "type"
     SOURCE = "source"
+    CONSTRAINT = "constraint"
 
 
 class ConstraintPolicy(str, Enum):

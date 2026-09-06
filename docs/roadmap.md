@@ -195,12 +195,14 @@ candidate IDs; a separate versioned one-hop ontology may expand only predicate
 and type candidates. Both expose their raw artifact hashes and provenance in
 ordinary tool results and memory. The controlled request blocks after the
 entity catalog when no user choice is available; with one explicit in-set
-choice it completes in five tool calls with zero model and backend calls. The
+choice it completes in six tool calls with zero model and backend calls. The
 development files make no general parsing or ontology-truth claim. The next E
 gate is deterministic binding of this result to executable semantic-class
-enumeration; UI clarification transport remains later work. The E3-focused
-suite passes 26 tests, the combined E1--E3 regression passes 47 tests, and the
-full local suite passes 993 tests with 36 explicit skips.
+enumeration; UI clarification transport remains later work. The corrected
+E3-focused suite passes 27 tests and the combined E1--E3 regression passes 48
+tests. The last full local suite before the constraint-hole correction passed
+993 tests with 36 explicit skips; the count is refreshed at the next
+repository-wide gate.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

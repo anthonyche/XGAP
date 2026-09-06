@@ -22,6 +22,15 @@
       "required": true
     },
     {
+      "hole_id": "relationship-strength",
+      "kind": "constraint",
+      "phrases": [
+        "密切",
+        "close"
+      ],
+      "required": true
+    },
+    {
       "hole_id": "company-risk-type",
       "kind": "type",
       "phrases": [
@@ -55,6 +64,17 @@
       "required": true
     },
     {
+      "constraint_id": "relationship-strength-definition",
+      "operator_id": "match-transfers",
+      "expression": "relationship-strength may use only a declared bounded condition",
+      "policy": "relaxable",
+      "phrases": [
+        "密切",
+        "close"
+      ],
+      "required": true
+    },
+    {
       "constraint_id": "risk-type-adjacency-only",
       "operator_id": "match-risk",
       "expression": "company-risk-type may use only declared ontology-adjacent alternatives",
@@ -81,7 +101,8 @@
       ],
       "hole_ids": [
         "person-identity",
-        "transfer-predicate"
+        "transfer-predicate",
+        "relationship-strength"
       ]
     },
     {

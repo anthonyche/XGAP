@@ -32,11 +32,13 @@ def test_deterministic_intake_compiles_typed_holes_and_constraints() -> None:
     assert [item.kind for item in first.program.holes] == [
         SemanticHoleKind.ENTITY,
         SemanticHoleKind.PREDICATE,
+        SemanticHoleKind.CONSTRAINT,
         SemanticHoleKind.TYPE,
     ]
     assert [item.mention for item in first.program.holes] == [
         "Alice",
         "密切资金往来",
+        "密切",
         "高风险公司",
     ]
     constraints = [
@@ -47,6 +49,7 @@ def test_deterministic_intake_compiles_typed_holes_and_constraints() -> None:
     assert [item.policy for item in constraints] == [
         ConstraintPolicy.HARD,
         ConstraintPolicy.HARD,
+        ConstraintPolicy.RELAXABLE,
         ConstraintPolicy.RELAXABLE,
     ]
     assert len(hard_constraints_sha256(first.program)) == 64
@@ -105,13 +108,13 @@ def test_end_to_end_intake_uses_catalog_ontology_and_explicit_user() -> None:
     state = result["goal_state"]
     assert state["status"] == GoalStatus.SUCCEEDED.value
     assert result["cost"] == {
-        "tool_calls": 5,
+        "tool_calls": 6,
         "external_calls": 1,
         "llm_calls": 0,
-        "catalog_artifact_reads": 3,
+        "catalog_artifact_reads": 4,
         "ontology_artifact_reads": 1,
     }
-    assert len(result["execution_memory"]) == 5
+    assert len(result["execution_memory"]) == 6
     output = state["output"]
     assert output["hard_constraints_preserved"] is True
     assert output["resolved_entity_bindings"] == {
@@ -123,6 +126,10 @@ def test_end_to_end_intake_uses_catalog_ontology_and_explicit_user() -> None:
     assert candidate_sets["transfer-predicate"]["candidate_ids"] == [
         "predicate:transferred_to",
         "predicate:paid_to",
+    ]
+    assert candidate_sets["relationship-strength"]["candidate_ids"] == [
+        "constraint:amount-at-least-50000",
+        "constraint:frequency-at-least-3",
     ]
     assert candidate_sets["company-risk-type"]["candidate_ids"] == [
         "type:HighRiskCompany"

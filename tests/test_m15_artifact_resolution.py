@@ -132,6 +132,24 @@ def test_ontology_never_resolves_entity_identity() -> None:
     assert result.metadata["failure_category"] == "unsupported_hole_kind"
 
 
+def test_ontology_does_not_interpret_constraint_holes() -> None:
+    tool = artifact_ontology_tool(ArtifactOntologyProvider(ONTOLOGY))
+    request = _request(
+        SemanticHoleKind.CONSTRAINT,
+        "密切",
+        (
+            "constraint:amount-at-least-50000",
+            "constraint:frequency-at-least-3",
+        ),
+    )
+
+    result = tool.invoke(request.to_dict(), CONTEXT)
+
+    assert result.status is ToolStatus.ERROR
+    assert result.metrics["external_calls"] == 0.0
+    assert result.metadata["failure_category"] == "unsupported_hole_kind"
+
+
 def test_ontology_can_ground_an_empty_nonentity_request_from_exact_label() -> None:
     response = ArtifactOntologyProvider(ONTOLOGY).resolve(
         _request(SemanticHoleKind.PREDICATE, "密切资金往来"),

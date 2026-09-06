@@ -286,19 +286,22 @@ passes 48 tests; full local acceptance passes 977 tests with 36 explicit skips.
 
 M15-E3 adds the deterministic parser-to-hole and real artifact-provider path
 without invoking the model. A versioned intake template performs only declared
-exact-phrase matching and constructs four existing semantic operators, three
-typed holes, and explicit hard/relaxable constraints. Versioned local catalog
+exact-phrase matching and constructs four existing semantic operators, four
+typed holes, and explicit hard/relaxable constraints. The `密切` phrase remains
+an amount-versus-frequency constraint ambiguity rather than being collapsed
+into the transfer predicate. Versioned local catalog
 and ontology providers expose bounded IDs, content hashes, and evidence through
 the same E1 tool contract. The ontology permits one hop for predicate/type
 candidates and rejects entities. The controlled `Alice` alias remains
 ambiguous until an explicit in-set user choice is supplied; without that tool
 the goal blocks after one catalog read and makes zero ontology/model calls.
-The successful development route uses three catalog reads, one ontology read,
+The successful development route uses four catalog reads, one ontology read,
 one clarification, zero LLM calls, and zero backend calls. These controlled
 fixtures are interface evidence rather than ontology truth or parsing quality.
-The E3 intake/catalog/ontology/E1 focused suite passes 26 tests; the combined
-E1--E3 regression passes 47 tests, and full local acceptance passes 993 tests
-with 36 explicit skips.
+The corrected E3 intake/catalog/ontology/E1 focused suite passes 27 tests and
+the combined E1--E3 regression passes 48 tests. The last full local acceptance
+before the constraint-hole correction passed 993 tests with 36 explicit skips;
+the count is refreshed at the next repository-wide gate.
 See [`docs/m15_e3_semantic_intake.md`](m15_e3_semantic_intake.md).
 
 ## M15-F — Paper experiment surface and optional UI

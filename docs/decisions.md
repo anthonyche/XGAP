@@ -2464,6 +2464,13 @@ selection already inside the bounded catalog set, marks it authoritative, and
 charges one external interaction. No provider emits Cypher, SPARQL, GQL, or
 other native query text, and no failure is retried.
 
+The intake vocabulary includes a separate `constraint` hole kind. In the
+development request, `密切` is not collapsed into the transfer predicate: the
+catalog retains both an amount-threshold and a frequency-threshold condition.
+Ontology does not process this hole kind. A later executable-package bridge
+must therefore expose which condition interpretations have registered
+operators and templates instead of silently discarding the unsupported ones.
+
 The controlled development request deliberately maps `Alice` to two identities.
 Without explicit user input, the goal blocks immediately after its first
 catalog observation and never consults ontology or a model. With the explicit

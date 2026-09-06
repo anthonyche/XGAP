@@ -52,20 +52,24 @@ passes 977 tests with 36 explicit skips.
 
 M15-E3 now closes the deterministic intake and local artifact-provider gap.
 One versioned exact-phrase template turns the controlled financial-risk request
-into four existing semantic operators, three typed holes, two hard constraints,
-and one relaxable constraint with zero external calls. Versioned catalog and
+into four existing semantic operators, four typed holes, two hard constraints,
+and two relaxable constraints with zero external calls. The relationship-
+strength hole preserves amount-versus-frequency ambiguity instead of treating
+`密切` as only a predicate. Versioned catalog and
 ontology providers expose bounded IDs, raw artifact SHA-256, provenance, and
 zero-call cost through the same E1 tools. Ontology expansion is one hop and is
 restricted to predicate/type holes. The alias `Alice` yields two catalog
 identities and cannot proceed without an explicit in-set user clarification;
 without that tool the goal blocks after one catalog read and makes no ontology
 or model call. With the explicit development selection, the route succeeds in
-five calls: three local catalog reads, one local ontology read, one user
+six calls: four local catalog reads, one local ontology read, one user
 clarification, zero LLM calls, and zero backend calls. The fixtures do not
 claim general NL understanding or ontology truth and remain
-`paper_result=false`. The E3 intake/catalog/ontology/E1 focused suite passes 26
-tests, the combined E1--E3 regression passes 47 tests, and full local
-acceptance passes 993 tests with 36 explicit skips.
+`paper_result=false`. The corrected E3 intake/catalog/ontology/E1 focused suite
+passes 27 tests and the combined E1--E3 regression passes 48 tests. The last
+full local acceptance before the constraint-hole correction passed 993 tests
+with 36 explicit skips; the count is refreshed at the next repository-wide
+gate.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly

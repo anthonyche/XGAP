@@ -207,11 +207,11 @@ payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 assert payload["status"] == "succeeded"
 assert payload["paper_result"] is False
 assert payload["cost"] == {
-    "catalog_artifact_reads": 3,
+    "catalog_artifact_reads": 4,
     "external_calls": 1,
     "llm_calls": 0,
     "ontology_artifact_reads": 1,
-    "tool_calls": 5,
+    "tool_calls": 6,
 }
 assert payload["resolution"]["hard_constraints_preserved"] is True
 assert payload["resolution"]["resolved_entity_bindings"] == {

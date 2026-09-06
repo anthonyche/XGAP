@@ -28,10 +28,13 @@ The template constructs four existing semantic operators:
 3. coordinator `Join` the aligned company identities;
 4. `Project` the answer fields.
 
-It declares three holes: entity identity, transfer predicate, and company risk
-type. The one-month window and clarified identity policy are hard constraints;
-the risk-type adjacency policy is relaxable. E3 does not add or redefine an
-algebra operator.
+It declares four holes: entity identity, transfer predicate, relationship-
+strength constraint, and company risk type. Treating `密切` as only a predicate
+would silently choose one meaning, so the development catalog retains both an
+amount-threshold and a frequency-threshold interpretation. The one-month window
+and clarified identity policy are hard constraints; relationship strength and
+risk-type adjacency are relaxable. E3 does not add or redefine an algebra
+operator.
 
 ## Tools and environment
 
@@ -50,7 +53,7 @@ Candidate overflow is an error rather than silent truncation. Tool failures
 are not retried.
 
 Ontology input is limited to predicate and type holes. Calling it with an
-entity or source hole fails before any external action. A catalog lookup for
+entity, source, or constraint hole fails before any external action. A catalog lookup for
 the mention `Alice` deliberately yields two identities and is not
 authoritative. Only an explicit user choice can reduce that set to one
 authoritative binding. Without a user tool the goal stops as `blocked` before
@@ -59,10 +62,11 @@ predicate or ontology work.
 The controlled development run uses this action sequence:
 
 ```text
-entity catalog -> user clarification -> predicate catalog -> ontology -> type catalog
+entity catalog -> user clarification -> predicate catalog -> ontology
+  -> relationship-strength catalog -> type catalog
 ```
 
-It uses five tools in total: three local catalog reads, one local ontology
+It uses six tools in total: four local catalog reads, one local ontology
 read, and one explicit user interaction. It uses zero LLM and zero backend
 calls. The remaining non-entity candidate sets are inputs to deterministic
 interpretation enumeration; they are not claimed to be the user's resolved
@@ -91,7 +95,9 @@ Focused acceptance covers:
 - ontology rejection of entity identity;
 - no silent candidate truncation;
 - in-set authoritative user selection and out-of-set rejection;
-- the five-action end-to-end route and execution-memory records;
+- the six-action end-to-end route and execution-memory records;
+- explicit preservation of amount-versus-frequency ambiguity in a constraint
+  hole that ontology cannot resolve;
 - the no-user blocking route with zero ontology and model calls.
 
 The example is:
@@ -100,8 +106,10 @@ The example is:
 PYTHONPATH=src python examples/m15_semantic_intake_demo.py
 ```
 
-Current local verification passes 26 focused E3/E1 tests, 47 combined E1--E3
-regression tests, and 993 full-suite tests with 36 explicitly gated skips.
+Current local verification passes 27 focused E3/E1 tests and 48 combined
+E1--E3 regression tests. The last full-suite gate before the constraint-hole
+correction passed 993 tests with 36 explicitly gated skips; the corrected full
+count is refreshed at the next repository-wide acceptance gate.
 
 ## Limits and next gate
 

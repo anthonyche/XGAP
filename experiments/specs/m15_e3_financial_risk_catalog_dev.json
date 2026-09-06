@@ -62,6 +62,34 @@
       }
     },
     {
+      "candidate_id": "constraint:amount-at-least-50000",
+      "kind": "constraint",
+      "canonical_label": "total amount at least 50000 USD",
+      "aliases": [
+        "密切",
+        "close"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-strength-definition",
+        "record_id": "constraint-001"
+      }
+    },
+    {
+      "candidate_id": "constraint:frequency-at-least-3",
+      "kind": "constraint",
+      "canonical_label": "at least three transfers",
+      "aliases": [
+        "密切",
+        "close"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-strength-definition",
+        "record_id": "constraint-002"
+      }
+    },
+    {
       "candidate_id": "type:HighRiskCompany",
       "kind": "type",
       "canonical_label": "high-risk company",
