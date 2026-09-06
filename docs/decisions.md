@@ -2328,3 +2328,34 @@ CLI. Its claim boundary is exactly ten semantic tasks in one native allocation,
 descriptive statistics only, with no generalization or semantic-frontier
 claim and `paper_result=false`. This prevents post-result metric selection; it
 does not authorize another CWRU job or choose the future multi-family domains.
+
+## D133 A query family enters the benchmark only through an executable package
+
+F2C14A replaces the stale label-oriented readiness view with a reconstructable
+package boundary. A family package binds one typed semantic-operator DAG,
+binding and hard/relaxable constraint schemas, output schema, registered
+literal-free Cypher/SPARQL templates, a deterministic multi-instance workload,
+per-instance source and final oracles, a direct semantic workload and split,
+the physical candidate space, and a family-memory policy. The compiler checks
+the SHA-256 of every source, regenerates both workload layers in temporary
+storage, and compares their family, bundle, manifest, selection-view,
+evaluation-registry, count, and operator identities with the registry before
+emitting a plan.
+
+The same registry explicitly declares the agent environment, black-box Neo4j
+and Fuseki boundaries, semantic/coordinator/backend/memory tools, allowed
+actions, and forbidden actions. Catalog, ontology, and LLM inputs remain
+optional; compilation makes zero calls to them or to a backend. A held-out
+family package is rejected if it exposes family-local training tasks, so cold
+start cannot be relabeled after the fact. Distinct labels may not share one
+family compatibility hash, hard constraints cannot be changed, arbitrary
+native text cannot be emitted, and automatic retry remains forbidden.
+
+The current financial-risk package now closes the old typed-DAG,
+backend-template, workload, and oracle blockers with six base queries, 28
+direct semantic tasks, and 56 physical candidates. It does not invent the
+remaining domains. Paper readiness still requires at least three executable
+families, an executable entirely held-out family, 30--50 base instances, and a
+preregistered inferential analysis. F2C14A is an unexecuted deterministic
+contract, authorizes no CWRU job, contains no measurement, and remains
+`paper_result=false`.

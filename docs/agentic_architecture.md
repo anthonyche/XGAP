@@ -97,6 +97,21 @@ text alone is not authoritative system memory. The reference store is
 in-memory; experiment runs may use the single-writer append-only JSONL store so
 cross-task snapshots survive process boundaries without deleting prior values.
 
+### Executable query-family admission
+
+Family-local memory is available only after a query family passes one
+reconstructable package contract. The package binds a typed semantic DAG,
+binding and constraint schemas, registered backend templates, deterministic
+instances and per-instance oracles, semantic alternatives, physical
+candidates, split-safe views, and a family-memory policy to one compatibility
+identity. A label alone never grants memory compatibility.
+
+Package compilation is a deterministic validation action: it verifies source
+hashes and regenerates derived artifacts without contacting a backend, LLM, or
+ontology service. A family declared entirely held out may not expose its own
+training records. This keeps the seen-family transfer and cold-family fallback
+conditions explicit before a multi-family experiment is scheduled.
+
 ### Actions and termination
 
 The agent may construct or fill a semantic program, inspect the environment,

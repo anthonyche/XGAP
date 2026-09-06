@@ -505,6 +505,28 @@ profile-minus-memory deltas; and remains single-allocation descriptive evidence
 with no generalization, semantic-frontier, LLM, ontology, or paper claim. The
 next external gate is still the single already-authorized F2C13B run and audit.
 
+M15-F2C14A now replaces the stale one-label family-readiness view with a
+reconstructable executable package registry. The current financial-risk
+package binds its seven-node typed semantic DAG, hard/relaxable schemas, three
+literal-free registered backend templates, six base query instances and their
+source/final oracles, 28 direct semantic tasks, 56 physical candidates,
+selection-safe training/held-out views, and family-memory predictor policy.
+Compilation verifies every source SHA-256, regenerates both workload layers in
+temporary storage, and rejects generated hash, count, family, or operator
+drift. It makes zero backend, LLM, or ontology-service calls.
+
+The registry also states the agent boundary directly: XGAP coordinates
+black-box Neo4j and Fuseki; semantic, memory, coordinator, and registered
+backend execution are its tools; hard-constraint changes, arbitrary native
+queries, backend-internal inspection, pre-execution oracle reads, and automatic
+retry are forbidden. The old typed-DAG/template/workload/oracle blockers are
+closed for this one family. Paper readiness remains false because only one
+family and six base instances exist, no entirely held-out family is executable,
+and inferential analysis is not preregistered. Future family/domain selection
+remains with the author; F2C14A authorizes no CWRU job and all artifacts remain
+`paper_result=false`. Full local acceptance passes 946 tests with 36 explicit
+environment or external-artifact skips.
+
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,
 executed 231 plans and 462 backend calls, returned seven semantic frontier

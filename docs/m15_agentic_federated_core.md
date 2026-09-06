@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13B PAIRED LIVE GATE LOCAL**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C14A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13B PAIRED LIVE GATE LOCAL**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -712,6 +712,34 @@ selection agreement, profile acquisition, and historical training as separate
 cost scopes. The result remains a descriptive single-allocation development
 record with zero LLM/ontology calls, no semantic-frontier or generalization
 claim, and `paper_result=false`.
+
+F2C14A defines the admission boundary for the larger multi-family population.
+An executable family is not a name or a collection of prose examples: it is a
+hash-bound package containing a typed semantic DAG, binding and constraint
+schemas, registered literal-free backend templates, deterministic instances,
+source/final oracles, direct semantic tasks, physical candidates, split-safe
+selection views, and a family-memory policy. The compiler reconstructs those
+layers from their source inputs in temporary storage and rejects any source,
+generated hash, operator, or count drift.
+
+The registry also makes the agent model explicit. Its environment contains the
+coordinator plus black-box Neo4j and Fuseki services. Its tools are registered
+backend execution, coordinator federation, bounded semantic enumeration and
+selection, and family-local memory. It may compile, enumerate, predict, select,
+invoke registered fragments, and coordinate results; it may not change hard
+constraints, issue arbitrary native text, inspect backend internals, read an
+answer oracle before execution, or retry automatically. Catalog, ontology, and
+LLM facilities are optional inputs, not preconditions for package validity.
+
+The existing financial-risk family now passes this executable admission gate:
+seven typed operators, three native templates, six base instances with their
+own oracles, 28 direct semantic tasks, and 56 physical candidates are bound to
+one compatibility key. This removes the old implementation blockers for that
+family only. Additional family domains, an entirely held-out family, the
+30--50-query allocation, and inferential preregistration remain author-owned
+paper blockers. F2C14A makes no external call, authorizes no remote run, and
+remains `paper_result=false`. Full local acceptance passes 946 tests with 36
+explicit environment or external-artifact skips.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

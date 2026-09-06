@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13B PAIRED LIVE GATE LOCAL**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A/F2C14A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13B PAIRED LIVE GATE LOCAL**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -560,6 +560,21 @@ serving, and evaluation ledgers; method metrics; paired regret deltas; and
 explicitly descriptive ten-task claim limits. It cannot consume an unaudited
 run or promote `paper_result`. A larger multi-family workload follows, but its
 actual family/domain inventory remains an author-level research decision.
+
+F2C14A supplies the first concrete admission gate for that larger workload.
+The current financial-risk family is now a reconstructable executable package,
+not merely a registry label: its typed seven-operator program, three registered
+native templates, six instance-specific query/oracle contracts, 28 direct
+semantic tasks, 56 physical candidates, split-safe views, and family-memory
+policy are regenerated and hash checked together. The registry also freezes
+the coordinator/backends as the agent environment and the semantic, memory,
+coordinator, and backend interfaces as its tools and allowed actions. It makes
+no external call and does not choose future domains. The next research-design
+gate is to author the remaining family packages and freeze the 30--50-query
+allocation, including an entirely held-out family and the inferential analysis;
+only then should the multi-family execution campaign be compiled. Full local
+acceptance passes 946 tests with 36 explicit environment or external-artifact
+skips.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
