@@ -152,6 +152,17 @@ goal-loop inference request; it deliberately omits the older extra inference
 smoke. A separate read-only auditor reconstructs the request, tool trace,
 execution-memory record, provider cost, service lifecycle, and artifact hashes.
 
+M15-E3 supplies the missing deterministic front edge. A versioned semantic
+intake template maps only explicitly declared request phrases to existing
+semantic operators, typed holes, and hard/relaxable constraints. It is not an
+open-domain parser and fails closed outside its template. Local artifact-backed
+catalog and ontology providers then run as ordinary typed tools. The catalog
+uses exact normalized mention lookup; the ontology performs at most one
+declared hop for predicate/type candidates and cannot handle entities. Every
+result includes artifact identity, version, provenance, and cost. Ambiguous
+entity aliases still require an explicit in-set user clarification, while
+non-entity candidate sets proceed to deterministic interpretation enumeration.
+
 ### Actions and termination
 
 The agent may construct or fill a semantic program, inspect the environment,

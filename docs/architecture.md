@@ -8,6 +8,7 @@ The agentic pipeline is:
 
 ```text
 User goal + session
+  -> optional versioned deterministic intake template
   -> partially bound Semantic Graph Program
   -> bounded observation / decision / tool-action loop
   -> semantic resolution and source binding when required
@@ -27,6 +28,12 @@ Semantic query/dataflow operators, agent/control actions, and federated runtime
 operators live above this algebra in separate typed namespaces. For example,
 `ResolveEntity` is an agent action and semantic `Traverse` may carry a
 `PathPatternQuery`; neither is a new path-algebra operator.
+
+M15-E3's deterministic intake compiler is likewise a frontend compilation
+step, not an operator. It may instantiate only the semantic DAG, holes, and
+constraints declared by its versioned template. Its artifact catalog,
+ontology, and user clarification capabilities are agent tools; they do not add
+logical-algebra operations or backend-native text.
 
 The path-algebra vocabulary remains limited to:
 

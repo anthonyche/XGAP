@@ -130,6 +130,8 @@ detect_runtime() {
   tests/test_m15_live_paired_physical_comparison.py \
   tests/test_m15_paired_physical_comparison_evidence.py \
   tests/test_m15_selective_resolution.py \
+  tests/test_m15_artifact_resolution.py \
+  tests/test_m15_semantic_intake.py \
   tests/test_m15_llm_resolution_provider.py \
   tests/test_m15_live_resolution.py \
   tests/test_m15_remote_executor.py \
@@ -144,6 +146,9 @@ detect_runtime() {
 
 "$PYTHON_BIN" examples/m15_adaptive_replanning_demo.py \
   > "$RUN_ROOT/adaptive_replanning.json"
+
+"$PYTHON_BIN" examples/m15_semantic_intake_demo.py \
+  > "$RUN_ROOT/semantic_intake.json"
 
 "$PYTHON_BIN" - "$RUN_ROOT/vertical_slice.json" <<'PY'
 import json
@@ -191,6 +196,28 @@ assert payload["no_duplicate_probe_call"] is True
 assert payload["total_remote_calls"] == 2
 assert payload["exact_answer"] is True
 assert payload["persisted_snapshot_version_after_reopen"] == "task-1"
+PY
+
+"$PYTHON_BIN" - "$RUN_ROOT/semantic_intake.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert payload["status"] == "succeeded"
+assert payload["paper_result"] is False
+assert payload["cost"] == {
+    "catalog_artifact_reads": 3,
+    "external_calls": 1,
+    "llm_calls": 0,
+    "ontology_artifact_reads": 1,
+    "tool_calls": 5,
+}
+assert payload["resolution"]["hard_constraints_preserved"] is True
+assert payload["resolution"]["resolved_entity_bindings"] == {
+    "person-identity": "person:alice-smith"
+}
+assert payload["resolution"]["native_query_text_emitted"] is False
 PY
 
 echo "M15 core smoke passed."

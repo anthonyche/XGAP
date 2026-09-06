@@ -7,6 +7,11 @@ rename or redefine the audited operators documented below. Their contracts are
 specified in `docs/agentic_architecture.md` and
 `docs/m15_agentic_federated_core.md`.
 
+M15-E3 deterministic intake does not add an operator. It instantiates only the
+existing semantic operator kinds declared by a versioned template. Catalog,
+ontology, and user clarification are typed agent tools whose outputs are
+candidate IDs and provenance; they do not alter the algebra vocabulary.
+
 XGAP contains two deterministic logical support layers:
 
 1. the path algebra, whose primary objects are `PathSet` and

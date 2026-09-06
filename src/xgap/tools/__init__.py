@@ -1,5 +1,15 @@
 """Typed tools and pluggable graph-backend adapters."""
 
+from xgap.tools.artifact_resolution import (
+    CATALOG_SCHEMA_VERSION,
+    ONTOLOGY_SCHEMA_VERSION,
+    ArtifactCatalogProvider,
+    ArtifactOntologyProvider,
+    ExplicitUserSelectionProvider,
+    artifact_catalog_tool,
+    artifact_ontology_tool,
+    explicit_user_clarification_tool,
+)
 from xgap.tools.backends import (
     BACKEND_INVOKE_TOOL,
     BackendInvokeTool,
@@ -46,15 +56,20 @@ from xgap.tools.resolution import (
 
 __all__ = [
     "AgentTool",
+    "ArtifactCatalogProvider",
+    "ArtifactOntologyProvider",
     "BACKEND_INVOKE_TOOL",
     "BackendInvokeTool",
     "BackendObservationCatalog",
     "BackendOperation",
     "BackendPlugin",
     "BackendPluginRegistry",
+    "CATALOG_SCHEMA_VERSION",
     "CatalogBackendPlugin",
     "FunctionTool",
+    "ExplicitUserSelectionProvider",
     "NativeBackendPlugin",
+    "ONTOLOGY_SCHEMA_VERSION",
     "REMOTE_EXECUTOR_TOOL",
     "RemoteCommandResult",
     "RemoteExecutorOperation",
@@ -81,4 +96,7 @@ __all__ = [
     "ToolSpec",
     "ToolStatus",
     "USER_CLARIFY_TOOL",
+    "artifact_catalog_tool",
+    "artifact_ontology_tool",
+    "explicit_user_clarification_tool",
 ]

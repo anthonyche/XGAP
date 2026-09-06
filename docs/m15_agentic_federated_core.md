@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1/E2A VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
+Status: **E1/E2A/E3 VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -283,6 +283,23 @@ modifying the run tree. This local implementation authorizes one clean CWRU
 engineering run after commit publication, but no live result exists yet and it
 remains `paper_result=false`. The E2B/provider/CWRU-infrastructure focused suite
 passes 48 tests; full local acceptance passes 977 tests with 36 explicit skips.
+
+M15-E3 adds the deterministic parser-to-hole and real artifact-provider path
+without invoking the model. A versioned intake template performs only declared
+exact-phrase matching and constructs four existing semantic operators, three
+typed holes, and explicit hard/relaxable constraints. Versioned local catalog
+and ontology providers expose bounded IDs, content hashes, and evidence through
+the same E1 tool contract. The ontology permits one hop for predicate/type
+candidates and rejects entities. The controlled `Alice` alias remains
+ambiguous until an explicit in-set user choice is supplied; without that tool
+the goal blocks after one catalog read and makes zero ontology/model calls.
+The successful development route uses three catalog reads, one ontology read,
+one clarification, zero LLM calls, and zero backend calls. These controlled
+fixtures are interface evidence rather than ontology truth or parsing quality.
+The E3 intake/catalog/ontology/E1 focused suite passes 26 tests; the combined
+E1--E3 regression passes 47 tests, and full local acceptance passes 993 tests
+with 36 explicit skips.
+See [`docs/m15_e3_semantic_intake.md`](m15_e3_semantic_intake.md).
 
 ## M15-F — Paper experiment surface and optional UI
 

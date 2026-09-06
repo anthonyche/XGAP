@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
+Current status: **E1/E2A/E3 VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -186,9 +186,21 @@ memory, shutdown, and inventory without mutating the run. Local tests use only a
 fake transport. One clean CWRU engineering run may follow the published exact
 commit; no live E2B result exists yet and all outputs remain
 `paper_result=false`. The E2B/provider/CWRU-infrastructure focused suite passes
-48 tests; full local acceptance passes 977 tests with 36 explicit skips. Real
-catalog and ontology wiring and the UI clarification transport remain later
-work.
+48 tests; full local acceptance passes 977 tests with 36 explicit skips.
+
+E3 now closes the deterministic parser-to-hole and local artifact-provider
+gap. A versioned exact-phrase intake template builds only the declared semantic
+DAG, holes, and constraints. A versioned catalog supplies exact normalized
+candidate IDs; a separate versioned one-hop ontology may expand only predicate
+and type candidates. Both expose their raw artifact hashes and provenance in
+ordinary tool results and memory. The controlled request blocks after the
+entity catalog when no user choice is available; with one explicit in-set
+choice it completes in five tool calls with zero model and backend calls. The
+development files make no general parsing or ontology-truth claim. The next E
+gate is deterministic binding of this result to executable semantic-class
+enumeration; UI clarification transport remains later work. The E3-focused
+suite passes 26 tests, the combined E1--E3 regression passes 47 tests, and the
+full local suite passes 993 tests with 36 explicit skips.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

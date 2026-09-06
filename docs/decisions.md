@@ -2442,3 +2442,33 @@ memory, invocation hashes, shutdown, and artifact inventory without changing
 the run tree. Local tests use only a fake transport. The gate authorizes one
 clean CWRU engineering run after its exact commit is published; it makes no
 quality, optimizer, graph-answer, or paper claim.
+
+## D137 Compile declared phrases before using artifact-backed resolution tools
+
+M15-E3 introduces a deterministic frontend contract instead of asking an LLM
+to create the initial semantic program. A versioned intake template declares
+every accepted phrase, typed hole, hard or relaxable constraint, semantic
+operator, capability, and root. Compilation uses Unicode-normalized exact
+phrase matching with a longest-unique rule and fails closed when a required
+phrase is missing or ambiguous. The template may instantiate only existing
+semantic operators and cannot contain backend-native query text. This is a
+bounded template compiler, not a general natural-language parser.
+
+Catalog and ontology are separate versioned local tool providers. Catalog
+lookup is exact normalized mention matching and refuses to truncate an
+over-cap identity set. Ontology lookup may introduce only artifact-declared
+predicate or type candidates by at most one hop; it rejects entity and source
+holes. Both expose their raw artifact SHA-256 and evidence and report zero
+external calls. A user clarification provider accepts only an explicit entity
+selection already inside the bounded catalog set, marks it authoritative, and
+charges one external interaction. No provider emits Cypher, SPARQL, GQL, or
+other native query text, and no failure is retried.
+
+The controlled development request deliberately maps `Alice` to two identities.
+Without explicit user input, the goal blocks immediately after its first
+catalog observation and never consults ontology or a model. With the explicit
+development selection it continues through predicate catalog/ontology and type
+catalog lookup on the existing E1 goal loop. This validates routing,
+provenance, hashing, costs, and memory only. The artifacts are not ontology
+truth, the remaining semantic candidates are not declared user intent, no
+backend or LLM is called, and every result remains `paper_result=false`.

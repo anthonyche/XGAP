@@ -77,3 +77,7 @@ fi
 if [ -f examples/m15_federated_vertical_slice_demo.py ]; then
   "$PYTHON" examples/m15_federated_vertical_slice_demo.py
 fi
+
+if [ -f examples/m15_semantic_intake_demo.py ]; then
+  "$PYTHON" examples/m15_semantic_intake_demo.py
+fi

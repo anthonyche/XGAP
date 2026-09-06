@@ -21,6 +21,7 @@ from xgap.agent.contracts import (
     PlannedToolCall,
 )
 from xgap.agent.environment import AgentEnvironment
+from xgap.agent.memory import MemoryStore
 from xgap.semantic import ConstraintPolicy, SemanticGraphProgram, SemanticHole
 from xgap.tools import ToolRegistry, ToolStatus
 from xgap.tools.resolution import (
@@ -365,32 +366,52 @@ class SelectiveSemanticResolutionPolicy(AgentPolicy):
         all_authoritative = all(
             len(item.candidate_ids) == 1 and item.authoritative for item in holes
         )
+        candidate_sets = [
+            {
+                "hole_id": item.hole.hole_id,
+                "hole_kind": item.hole.kind.value,
+                "mention": item.hole.mention,
+                "candidate_ids": list(item.candidate_ids),
+                "authoritative": item.authoritative,
+                "sources": list(item.sources),
+            }
+            for item in holes
+        ]
+        resolved_entity_bindings = {
+            item.hole.hole_id: item.candidate_ids[0]
+            for item in holes
+            if item.hole.kind.value == "entity"
+            and len(item.candidate_ids) == 1
+            and item.authoritative
+        }
+        hard_sha256 = hard_constraints_sha256(self.program)
+        resolution_commit_sha256 = hashlib.sha256(
+            json.dumps(
+                {
+                    "schema_version": "m15-e3-resolution-commit-v1",
+                    "program_id": self.program.program_id,
+                    "hard_constraints_sha256": hard_sha256,
+                    "resolved_entity_bindings": resolved_entity_bindings,
+                    "candidate_sets": candidate_sets,
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+            ).encode("utf-8")
+        ).hexdigest()
         return {
             "schema_version": "m15-e1-selective-resolution-result-v1",
             "program_id": self.program.program_id,
             "resolution_status": (
                 "resolved" if all_authoritative else "candidate_set_ready"
             ),
-            "hard_constraints_sha256": hard_constraints_sha256(self.program),
+            "hard_constraints_sha256": hard_sha256,
             "hard_constraints_preserved": True,
-            "candidate_sets": [
-                {
-                    "hole_id": item.hole.hole_id,
-                    "hole_kind": item.hole.kind.value,
-                    "mention": item.hole.mention,
-                    "candidate_ids": list(item.candidate_ids),
-                    "authoritative": item.authoritative,
-                    "sources": list(item.sources),
-                }
-                for item in holes
-            ],
-            "resolved_entity_bindings": {
-                item.hole.hole_id: item.candidate_ids[0]
-                for item in holes
-                if item.hole.kind.value == "entity"
-                and len(item.candidate_ids) == 1
-                and item.authoritative
-            },
+            "candidate_sets": candidate_sets,
+            "resolved_entity_bindings": resolved_entity_bindings,
+            "resolved_entity_bindings_hard": True,
+            "resolution_commit_schema_version": "m15-e3-resolution-commit-v1",
+            "resolution_commit_sha256": resolution_commit_sha256,
             "semantic_alternative_hole_ids": [
                 item.hole.hole_id
                 for item in holes
@@ -460,8 +481,12 @@ def build_selective_resolution_goal(
 def selective_resolution_environment(
     tools: ToolRegistry,
     *,
+    memory: MemoryStore | None = None,
     metadata: Mapping[str, Any] | None = None,
 ) -> AgentEnvironment:
+    arguments: dict[str, Any] = {}
+    if memory is not None:
+        arguments["memory"] = memory
     return AgentEnvironment(
         environment_id="m15-selective-semantic-resolution",
         tools=tools,
@@ -471,5 +496,5 @@ def selective_resolution_environment(
             "hard_constraint_relaxation_allowed": False,
             **dict(metadata or {}),
         },
+        **arguments,
     )
-
