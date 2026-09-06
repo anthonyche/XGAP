@@ -16,6 +16,7 @@ from xgap.experiments.m15_live_resolution_execution_bridge import (
 )
 from xgap.experiments.m15_native_services import (
     RESOLUTION_EXECUTION_BRIDGE_SERVICE_RUN_SCHEMA_VERSION,
+    SERVICE_PLAN_SCHEMA_VERSION,
 )
 from xgap.experiments.m15_parameterized_fixture import (
     PARAMETERIZED_FIXTURE_SCHEMA_VERSION,
@@ -207,7 +208,44 @@ def audited_run(tmp_path_factory: pytest.TempPathFactory) -> Path:
         encoding="utf-8",
     )
     _write(service / "run_status.json", {"status": "success"})
-    _write(service / "service_plan.json", {"loopback_only": True})
+    neo4j_url = "http://127.0.0.1:17474"
+    fuseki_url = "http://127.0.0.1:13030"
+    _write(service / "service_plan.json", {
+        "schema_version": SERVICE_PLAN_SCHEMA_VERSION,
+        "neo4j_http_url": neo4j_url,
+        "fuseki_url": fuseki_url,
+        "services": [
+            {
+                "service_id": "neo4j",
+                "command": ["neo4j", "console"],
+                "health_url": f"{neo4j_url}/db/neo4j/tx/commit",
+            },
+            {
+                "service_id": "fuseki",
+                "command": [
+                    "fuseki-server",
+                    "--localhost",
+                    "--port",
+                    "13030",
+                    "--mem",
+                    "/xgap",
+                ],
+                "health_url": f"{fuseki_url}/$/ping",
+            },
+        ],
+        "public_ports": False,
+    })
+    (service / "neo4j.conf").write_text(
+        "\n".join((
+            "server.default_listen_address=127.0.0.1",
+            "server.default_advertised_address=127.0.0.1",
+            "server.bolt.listen_address=127.0.0.1:17687",
+            "server.bolt.advertised_address=127.0.0.1:17687",
+            "server.http.listen_address=127.0.0.1:17474",
+            "server.http.advertised_address=127.0.0.1:17474",
+        )) + "\n",
+        encoding="utf-8",
+    )
     _write(service / "service_health.json", [
         {"service_id": "neo4j", "success": True},
         {"service_id": "fuseki", "success": True},
@@ -289,4 +327,26 @@ def test_e4b_audit_rejects_postexecution_row_tampering(
 
     assert not audit.success
     assert "result.0.exact_rows" in audit.failed_check_ids
+    assert not audit.run_tree_mutated
+
+
+def test_e4b_audit_rejects_nonloopback_service_plan(
+    audited_run: Path,
+    tmp_path: Path,
+) -> None:
+    copied = tmp_path / "nonloopback"
+    shutil.copytree(audited_run, copied)
+    plan_path = copied / "native-service-run/service_plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["neo4j_http_url"] = "http://0.0.0.0:17474"
+    _write(plan_path, plan)
+
+    audit = audit_m15_resolution_execution_bridge_run(
+        run_root=copied,
+        expected_commit=EXPECTED_COMMIT,
+        repo_root=REPO_ROOT,
+    )
+
+    assert not audit.success
+    assert "service.plan.loopback_only" in audit.failed_check_ids
     assert not audit.run_tree_mutated

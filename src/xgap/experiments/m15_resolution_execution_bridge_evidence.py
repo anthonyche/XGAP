@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import re
+import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -145,12 +146,64 @@ def _read_environment(path: Path) -> tuple[dict[str, str] | None, str]:
     return values, "ok"
 
 
+def _read_text(path: Path) -> tuple[str | None, str]:
+    if path.is_symlink() or not path.is_file() or path.stat().st_size == 0:
+        return None, "missing_empty_or_nonregular"
+    try:
+        return path.read_text(encoding="utf-8"), "ok"
+    except (OSError, UnicodeDecodeError) as exc:
+        return None, f"invalid_text:{exc}"
+
+
 def _dict(value: object) -> Mapping[str, Any]:
     return value if isinstance(value, Mapping) else {}
 
 
 def _list(value: object) -> list[Any]:
     return value if isinstance(value, list) else []
+
+
+def _loopback_http_url(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    try:
+        parsed = urllib.parse.urlsplit(value)
+        return (
+            parsed.scheme == "http"
+            and parsed.hostname == "127.0.0.1"
+            and parsed.port is not None
+            and parsed.username is None
+            and parsed.password is None
+        )
+    except ValueError:
+        return False
+
+
+def _neo4j_loopback_configuration(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    settings: dict[str, str] = {}
+    for line in value.splitlines():
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, item = line.split("=", 1)
+        settings[key] = item
+    expected_keys = (
+        "server.default_listen_address",
+        "server.default_advertised_address",
+        "server.bolt.listen_address",
+        "server.bolt.advertised_address",
+        "server.http.listen_address",
+        "server.http.advertised_address",
+    )
+    return all(
+        key in settings
+        and (
+            settings[key] == "127.0.0.1"
+            or settings[key].startswith("127.0.0.1:")
+        )
+        for key in expected_keys
+    )
 
 
 def _exact_validation(value: object) -> bool:
@@ -209,6 +262,7 @@ def audit_m15_resolution_execution_bridge_run(
         "service_status": service_root / "run_status.json",
         "service_manifest": service_root / "run_manifest.json",
         "service_plan": service_root / "service_plan.json",
+        "neo4j_config": service_root / "neo4j.conf",
         "service_health": service_root / "service_health.json",
         "service_shutdown": service_root / "service_shutdown.json",
         "preflight_manifest": preflight_root / "preflight_manifest.json",
@@ -230,6 +284,8 @@ def audit_m15_resolution_execution_bridge_run(
     for key, path in paths.items():
         if key == "environment":
             loaded[key], states[key] = _read_environment(path)
+        elif key == "neo4j_config":
+            loaded[key], states[key] = _read_text(path)
         else:
             loaded[key], states[key] = _read_json(path)
 
@@ -294,6 +350,7 @@ def audit_m15_resolution_execution_bridge_run(
     service_status = _dict(loaded.get("service_status"))
     service = _dict(loaded.get("service_manifest"))
     service_plan = _dict(loaded.get("service_plan"))
+    neo4j_config = loaded.get("neo4j_config")
     service_health = _list(loaded.get("service_health"))
     service_shutdown = _list(loaded.get("service_shutdown"))
     preflight = _dict(loaded.get("preflight_manifest"))
@@ -368,7 +425,27 @@ def audit_m15_resolution_execution_bridge_run(
         == ["fuseki", "neo4j"]
         and all(_dict(item).get("success") is True for item in service_shutdown),
     )
-    check("service.plan.loopback_only", True, service_plan.get("loopback_only"))
+    planned_services = {
+        str(_dict(item).get("service_id")): _dict(item)
+        for item in _list(service_plan.get("services"))
+    }
+    fuseki_command = _list(planned_services.get("fuseki", {}).get("command"))
+    plan_is_loopback_only = (
+        service_plan.get("public_ports") is False
+        and set(planned_services) == {"neo4j", "fuseki"}
+        and all(
+            _loopback_http_url(url)
+            for url in (
+                service_plan.get("neo4j_http_url"),
+                service_plan.get("fuseki_url"),
+                planned_services["neo4j"].get("health_url"),
+                planned_services["fuseki"].get("health_url"),
+            )
+        )
+        and "--localhost" in fuseki_command
+        and _neo4j_loopback_configuration(neo4j_config)
+    )
+    check("service.plan.loopback_only", True, plan_is_loopback_only)
     check(
         "service.bridge_inputs",
         {
