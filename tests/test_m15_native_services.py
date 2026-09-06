@@ -13,9 +13,13 @@ from types import SimpleNamespace
 import pytest
 import xgap.experiments.m15_native_services as native_services
 
+from xgap.experiments.hashing import content_hash
 from xgap.experiments.m15_campaign import compile_m15_campaign_file
 from xgap.experiments.m15_direct_semantic_estimates import (
     load_m15_direct_estimate_source,
+)
+from xgap.experiments.m15_direct_semantic_workload import (
+    generate_m15_direct_semantic_workload_bundle,
 )
 from xgap.experiments.m15_query_bound_campaign import (
     compile_m15_query_bound_campaign_file,
@@ -1142,6 +1146,232 @@ def test_full_lifecycle_requires_and_records_direct_frontier_inputs(
     assert manifest["direct_frontier_preflight"] == preflight
 
 
+def test_native_direct_family_pilot_requires_and_records_frozen_inputs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    configs = REPO_ROOT / "experiments/configs"
+    base = generate_m15_parameterized_workload_bundle(
+        workload_spec=configs / "m15_f2c_parameterized_workload_dev.json",
+        query_template_spec=configs / "m15_f2c_parameterized_financial_risk_v2.json",
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "direct-family-base",
+    )
+    catalog = configs / "m15_f2c6_semantic_relaxation_dev.json"
+    mapping = configs / "m15_f2c8_predicate_mapping_dev.json"
+    direct = generate_m15_direct_semantic_workload_bundle(
+        base_bundle=base,
+        catalog=catalog,
+        mapping=mapping,
+        policy=configs / "m15_f2c10_direct_semantic_workload_dev.json",
+        destination=tmp_path / "direct-family-workload",
+    )
+    protocol = configs / "m15_f2c10d_family_memory_pilot_dev.json"
+    predictor = configs / "m15_f2c10_family_memory_predictor_dev.json"
+    with pytest.raises(ValueError, match="requires a direct workload"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-direct-family",
+            run_id="missing-direct-family",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="direct_family_pilot",
+        )
+
+    executed: list[tuple[str, str, str, str]] = []
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence(
+            "/opt/java17/bin/java", 17, "17"
+        ),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "start_service",
+        lambda spec: RunningService(spec, _StableProcess(), io.BytesIO()),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id, True, 1, 1.0, 200
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args: executed.append(
+            (
+                _args[3],
+                _args[21].manifest["manifest_sha256"],
+                str(_args[22]),
+                str(_args[23]),
+            )
+        ),
+    )
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "direct-family-runs",
+        run_id="native-direct-family-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="direct_family_pilot",
+        semantic_base_bundle=base,
+        semantic_catalog=catalog,
+        predicate_mapping=mapping,
+        direct_semantic_workload=direct,
+        direct_family_pilot_protocol=protocol,
+        direct_family_predictor_policy=predictor,
+    )
+
+    assert record.success
+    assert executed == [
+        (
+            "direct_family_pilot",
+            direct.manifest["manifest_sha256"],
+            str(protocol),
+            str(predictor),
+        )
+    ]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.DIRECT_FAMILY_PILOT_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["workload_mode"] == "direct_family_pilot"
+    assert manifest["direct_semantic_workload"] == direct.manifest
+    assert manifest["direct_family_pilot"] == {
+        "protocol": str(protocol),
+        "predictor_policy": str(predictor),
+    }
+    preflight = json.loads(
+        (
+            record.run_root
+            / "direct-family-pilot-preflight/preflight_manifest.json"
+        ).read_text(encoding="utf-8")
+    )
+    schedule = json.loads(
+        (
+            record.run_root
+            / "direct-family-pilot-preflight/pilot_schedule.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert preflight["sealed_before_service_start"] is True
+    assert preflight["backend_calls_before_seal"] == 0
+    assert preflight["schedule_sha256"] == schedule["schedule_sha256"]
+    assert manifest["direct_family_pilot_preflight"] == preflight
+
+
+def test_direct_family_native_boundary_uses_sixty_second_clients(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    configs = REPO_ROOT / "experiments/configs"
+    base = generate_m15_parameterized_workload_bundle(
+        workload_spec=configs / "m15_f2c_parameterized_workload_dev.json",
+        query_template_spec=configs / "m15_f2c_parameterized_financial_risk_v2.json",
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "boundary-base",
+    )
+    catalog = configs / "m15_f2c6_semantic_relaxation_dev.json"
+    mapping = configs / "m15_f2c8_predicate_mapping_dev.json"
+    direct = generate_m15_direct_semantic_workload_bundle(
+        base_bundle=base,
+        catalog=catalog,
+        mapping=mapping,
+        policy=configs / "m15_f2c10_direct_semantic_workload_dev.json",
+        destination=tmp_path / "boundary-direct",
+    )
+    observed: dict[str, object] = {}
+
+    def fake_fixture(**kwargs):
+        observed["fixture_run_id"] = kwargs["run_id"]
+        observed["fixture_timeouts"] = {
+            key: value.timeout_seconds
+            for key, value in kwargs["clients"].items()
+        }
+        return SimpleNamespace(success=True, error=None)
+
+    def fake_pilot(**kwargs):
+        observed["pilot_run_id"] = kwargs["run_id"]
+        observed["pilot_timeouts"] = {
+            key: value.timeout_seconds
+            for key, value in kwargs["clients"].items()
+        }
+        observed["direct_hash"] = kwargs["direct_workload"].manifest[
+            "manifest_sha256"
+        ]
+        return SimpleNamespace(success=True, error=None)
+
+    monkeypatch.setattr(native_services, "load_m15_parameterized_fixture", fake_fixture)
+    monkeypatch.setattr(native_services, "run_m15_live_direct_family_pilot", fake_pilot)
+    monkeypatch.setattr(
+        native_services,
+        "build_m15_family_runtime_compatibility",
+        lambda _plan: {
+            "runtime_compatibility_sha256": content_hash(
+                {"runtime": "direct-family-boundary-test"}
+            )
+        },
+    )
+    plan = SimpleNamespace(
+        neo4j_http_url="http://127.0.0.1:17474",
+        fuseki_url="http://127.0.0.1:13030",
+        fuseki_dataset="xgap",
+        services=[],
+    )
+
+    native_services._run_fixture_and_query(
+        plan=plan,
+        run_root=tmp_path / "native-direct-family-run",
+        repo_root=REPO_ROOT,
+        workload_mode="direct_family_pilot",
+        semantic_base_bundle=base,
+        semantic_catalog=catalog,
+        predicate_mapping=mapping,
+        direct_semantic_workload=direct,
+        direct_family_pilot_protocol=(
+            configs / "m15_f2c10d_family_memory_pilot_dev.json"
+        ),
+        direct_family_predictor_policy=(
+            configs / "m15_f2c10_family_memory_predictor_dev.json"
+        ),
+    )
+
+    assert observed == {
+        "fixture_run_id": "direct-family-fixture-load",
+        "fixture_timeouts": {"neo4j": 60.0, "fuseki": 60.0},
+        "pilot_run_id": "direct-family-pilot-run",
+        "pilot_timeouts": {"neo4j": 60.0, "fuseki": 60.0},
+        "direct_hash": direct.manifest["manifest_sha256"],
+    }
+
+
 def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1488,6 +1718,8 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "semantic_risk_relaxation" in script
     assert "semantic_predicate_relaxation" in script
     assert "semantic_direct_frontier" in script
+    assert "direct_family_pilot" in script
+    assert "m15_direct_semantic_workload" in script
     assert "m15_parameterized_workload" in script
     assert "m15_semantic_overlay" in script
     assert "m15_predicate_overlay" in script
@@ -1557,4 +1789,14 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     )
     assert "SLURM_SUBMIT_DIR" in direct_frontier_script
     assert "BASH_SOURCE" not in direct_frontier_script
+    direct_family_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_direct_family_pilot.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=direct_family_pilot" in (
+        direct_family_script
+    )
+    assert "#SBATCH --time=00:45:00" in direct_family_script
+    assert "SLURM_SUBMIT_DIR" in direct_family_script
+    assert "BASH_SOURCE" not in direct_family_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

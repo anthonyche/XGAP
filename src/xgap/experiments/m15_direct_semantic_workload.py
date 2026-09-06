@@ -9,6 +9,7 @@ leakage gate only, not paper evidence.
 
 from __future__ import annotations
 
+import argparse
 import copy
 import hashlib
 import json
@@ -884,3 +885,26 @@ def load_m15_direct_semantic_workload_bundle(
         heldout,
         evaluation,
     )
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--base-bundle-root", required=True)
+    parser.add_argument("--catalog", required=True)
+    parser.add_argument("--mapping", required=True)
+    parser.add_argument("--policy", required=True)
+    parser.add_argument("--output", required=True)
+    args = parser.parse_args(argv)
+    bundle = generate_m15_direct_semantic_workload_bundle(
+        base_bundle=args.base_bundle_root,
+        catalog=args.catalog,
+        mapping=args.mapping,
+        policy=args.policy,
+        destination=args.output,
+    )
+    print(_json_text(bundle.to_dict()), end="")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

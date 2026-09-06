@@ -38,6 +38,9 @@ from xgap.experiments.m15_live_direct_semantic_frontier import (
     prepare_m15_direct_semantic_frontier,
     run_m15_live_direct_semantic_frontier,
 )
+from xgap.experiments.m15_live_direct_family_pilot import (
+    run_m15_live_direct_family_pilot,
+)
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_campaign_session import (
     prepare_m15_live_campaign_session,
@@ -76,6 +79,14 @@ from xgap.experiments.m15_parameterized_fixture import (
 from xgap.experiments.m15_parameterized_workload import (
     M15ParameterizedWorkloadBundle,
     load_m15_parameterized_workload_bundle,
+)
+from xgap.experiments.m15_direct_semantic_workload import (
+    M15DirectSemanticWorkloadBundle,
+    load_m15_direct_semantic_workload_bundle,
+)
+from xgap.experiments.m15_direct_family_pilot import (
+    M15DirectFamilyPilotSchedule,
+    compile_m15_direct_family_pilot_schedule,
 )
 from xgap.experiments.m15_predicate_overlay import (
     M15PredicateMappingSpec,
@@ -127,6 +138,12 @@ DIRECT_SEMANTIC_FRONTIER_SERVICE_RUN_SCHEMA_VERSION = (
 DIRECT_SEMANTIC_FRONTIER_PREFLIGHT_SCHEMA_VERSION = (
     "m15-f2c9b-native-direct-semantic-frontier-preflight-v1"
 )
+DIRECT_FAMILY_PILOT_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2c10d-native-live-direct-family-pilot-service-run-v1"
+)
+DIRECT_FAMILY_PILOT_PREFLIGHT_SCHEMA_VERSION = (
+    "m15-f2c10d-native-direct-family-pilot-preflight-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -144,6 +161,7 @@ WORKLOAD_MODES = frozenset(
         "semantic_risk_relaxation",
         "semantic_predicate_relaxation",
         "semantic_direct_frontier",
+        "direct_family_pilot",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -854,6 +872,9 @@ def _run_fixture_and_query(
     predicate_mapping: M15PredicateMappingSpec | str | Path | None = None,
     direct_frontier_estimates: str | Path | None = None,
     prepared_direct_frontier: M15PreparedDirectSemanticFrontier | None = None,
+    direct_semantic_workload: M15DirectSemanticWorkloadBundle | None = None,
+    direct_family_pilot_protocol: Mapping[str, Any] | str | Path | None = None,
+    direct_family_predictor_policy: Mapping[str, Any] | str | Path | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -867,6 +888,50 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
+        if workload_mode == "direct_family_pilot":
+            assert direct_semantic_workload is not None
+            assert semantic_base_bundle is not None
+            assert semantic_catalog is not None
+            assert predicate_mapping is not None
+            assert direct_family_pilot_protocol is not None
+            assert direct_family_predictor_policy is not None
+            for client in clients.values():
+                client.timeout_seconds = 60.0
+            fixture = load_m15_parameterized_fixture(
+                workload_bundle=direct_semantic_workload.workload_bundle,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="direct-family-fixture-load",
+                repo_root=repo_root,
+            )
+            if not fixture.success:
+                raise RuntimeError(
+                    f"direct family pilot fixture load failed: {fixture.error}"
+                )
+            runtime_compatibility = build_m15_family_runtime_compatibility(plan)
+            _write_json(
+                run_root / "family_runtime_compatibility.json",
+                runtime_compatibility,
+            )
+            pilot = run_m15_live_direct_family_pilot(
+                direct_workload=direct_semantic_workload,
+                base_bundle=semantic_base_bundle,
+                catalog=semantic_catalog,
+                mapping=predicate_mapping,
+                protocol=direct_family_pilot_protocol,
+                predictor_policy=direct_family_predictor_policy,
+                clients=clients,
+                runtime_compatibility_sha256=runtime_compatibility[
+                    "runtime_compatibility_sha256"
+                ],
+                output_root=run_root,
+                run_id="direct-family-pilot-run",
+                repo_root=repo_root,
+            )
+            if not pilot.success:
+                raise RuntimeError(f"live direct family pilot failed: {pilot.error}")
+            return
         if workload_mode in {
             "parameterized_stream",
             "parameterized_family_transfer",
@@ -1150,6 +1215,11 @@ def run_m15_native_services(
     predicate_overlay: M15PredicateOverlayBundle | str | Path | None = None,
     predicate_mapping: M15PredicateMappingSpec | str | Path | None = None,
     direct_frontier_estimates: str | Path | None = None,
+    direct_semantic_workload: (
+        M15DirectSemanticWorkloadBundle | str | Path | None
+    ) = None,
+    direct_family_pilot_protocol: Mapping[str, Any] | str | Path | None = None,
+    direct_family_predictor_policy: Mapping[str, Any] | str | Path | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1232,12 +1302,39 @@ def run_m15_native_services(
         and selected_predicate_mapping is not None
         else None
     )
+    selected_direct_semantic_workload = (
+        direct_semantic_workload
+        if isinstance(direct_semantic_workload, M15DirectSemanticWorkloadBundle)
+        else load_m15_direct_semantic_workload_bundle(
+            direct_semantic_workload,
+            base_bundle=selected_semantic_base,
+            catalog=selected_semantic_catalog,
+            mapping=selected_predicate_mapping,
+        )
+        if direct_semantic_workload is not None
+        and selected_semantic_base is not None
+        and selected_semantic_catalog is not None
+        and selected_predicate_mapping is not None
+        else None
+    )
     selected_direct_frontier_estimates: M15DirectEstimateSource | None = (
         load_m15_direct_estimate_source(direct_frontier_estimates)
         if direct_frontier_estimates is not None
         else None
     )
     prepared_direct_frontier: M15PreparedDirectSemanticFrontier | None = None
+    prepared_direct_family_schedule: M15DirectFamilyPilotSchedule | None = None
+    direct_family_values = (
+        direct_semantic_workload,
+        direct_family_pilot_protocol,
+        direct_family_predictor_policy,
+    )
+    if workload_mode != "direct_family_pilot" and any(
+        value is not None for value in direct_family_values
+    ):
+        raise ValueError(
+            "direct family inputs are accepted only in direct_family_pilot"
+        )
     scaled_mode = workload_mode in {
         "scaled_adaptive",
         "scaled_method_matrix",
@@ -1263,7 +1360,45 @@ def run_m15_native_services(
             "a parameterized workload bundle is accepted only in "
             "a parameterized workload mode"
         )
-    if workload_mode == "semantic_risk_relaxation":
+    if workload_mode == "direct_family_pilot":
+        if any(value is None for value in direct_family_values) or any(
+            value is None
+            for value in (
+                semantic_base_bundle,
+                semantic_catalog,
+                predicate_mapping,
+            )
+        ):
+            raise ValueError(
+                "direct_family_pilot requires a direct workload, base bundle, "
+                "semantic catalog, predicate mapping, pilot protocol, and "
+                "predictor policy"
+            )
+        if selected_direct_semantic_workload is None:
+            raise ValueError("direct family workload inputs could not be verified")
+        if any(
+            value is not None
+            for value in (
+                semantic_overlay,
+                predicate_overlay,
+                direct_frontier_estimates,
+                selected_bundle,
+                selected_parameterized_bundle,
+            )
+        ):
+            raise ValueError(
+                "direct_family_pilot does not accept overlays, frontier "
+                "estimates, or another workload bundle"
+            )
+        assert selected_direct_semantic_workload is not None
+        assert direct_family_pilot_protocol is not None
+        assert direct_family_predictor_policy is not None
+        prepared_direct_family_schedule = compile_m15_direct_family_pilot_schedule(
+            workload=selected_direct_semantic_workload,
+            protocol=direct_family_pilot_protocol,
+            predictor_policy=direct_family_predictor_policy,
+        )
+    elif workload_mode == "semantic_risk_relaxation":
         if any(
             value is None
             for value in (
@@ -1445,6 +1580,7 @@ def run_m15_native_services(
         "semantic_direct_frontier": (
             DIRECT_SEMANTIC_FRONTIER_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "direct_family_pilot": DIRECT_FAMILY_PILOT_SERVICE_RUN_SCHEMA_VERSION,
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -1487,6 +1623,29 @@ def run_m15_native_services(
         _write_json(
             preflight_root / "preflight_manifest.json",
             direct_frontier_preflight,
+        )
+
+    direct_family_preflight: dict[str, Any] | None = None
+    if prepared_direct_family_schedule is not None:
+        preflight_root = run_root / "direct-family-pilot-preflight"
+        preflight_root.mkdir()
+        schedule_payload = prepared_direct_family_schedule.to_dict()
+        _write_json(preflight_root / "pilot_schedule.json", schedule_payload)
+        direct_family_preflight = {
+            "schema_version": DIRECT_FAMILY_PILOT_PREFLIGHT_SCHEMA_VERSION,
+            "sealed_before_service_start": True,
+            "schedule_sha256": prepared_direct_family_schedule.schedule_hash,
+            "online_cardinality": schedule_payload["selection_boundary"][
+                "online_cardinality"
+            ],
+            "expected_counts": schedule_payload["counts"],
+            "backend_calls_before_seal": 0,
+            "automatic_retries": 0,
+            "paper_result": False,
+        }
+        _write_json(
+            preflight_root / "preflight_manifest.json",
+            direct_family_preflight,
         )
 
     plan: NativeServicePlan | None = None
@@ -1550,6 +1709,9 @@ def run_m15_native_services(
                 selected_predicate_mapping,
                 direct_frontier_estimates,
                 prepared_direct_frontier,
+                selected_direct_semantic_workload,
+                direct_family_pilot_protocol,
+                direct_family_predictor_policy,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
@@ -1633,6 +1795,20 @@ def run_m15_native_services(
                 else None
             ),
             "direct_frontier_preflight": direct_frontier_preflight,
+            "direct_semantic_workload": (
+                dict(selected_direct_semantic_workload.manifest)
+                if selected_direct_semantic_workload is not None
+                else None
+            ),
+            "direct_family_pilot": (
+                {
+                    "protocol": str(direct_family_pilot_protocol),
+                    "predictor_policy": str(direct_family_predictor_policy),
+                }
+                if workload_mode == "direct_family_pilot"
+                else None
+            ),
+            "direct_family_pilot_preflight": direct_family_preflight,
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -1700,6 +1876,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--predicate-overlay")
     parser.add_argument("--predicate-mapping")
     parser.add_argument("--direct-frontier-estimates")
+    parser.add_argument("--direct-semantic-workload")
+    parser.add_argument("--direct-family-pilot-protocol")
+    parser.add_argument("--direct-family-predictor-policy")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -1742,6 +1921,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             predicate_overlay=args.predicate_overlay,
             predicate_mapping=args.predicate_mapping,
             direct_frontier_estimates=args.direct_frontier_estimates,
+            direct_semantic_workload=args.direct_semantic_workload,
+            direct_family_pilot_protocol=args.direct_family_pilot_protocol,
+            direct_family_predictor_policy=(
+                args.direct_family_predictor_policy
+            ),
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,

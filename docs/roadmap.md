@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED; F2C10D NATIVE DEVELOPMENT PILOT READY**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -470,6 +470,23 @@ the run tree unchanged. Full local acceptance passes 879 tests with 36 gated
 skips. These are deterministic backend doubles and constructed training
 values, so F2C10D still requires an author-frozen native measurement campaign
 before any accuracy, latency, resource, or generalization claim.
+
+F2C10D freezes that native development campaign. Four counterbalanced blocks
+execute 18 training interpretations under both strategies (144 plan runs),
+then family memory and all held-out prediction/frontier artifacts are sealed
+with zero current-query profiling. The two held-out base queries retain their
+independent true Pareto/epsilon/K frontiers, yielding 2--8 online selected
+plans rather than forcing an artificial global count. A complete 20-plan by
+four-repetition shadow matrix follows only after selection, so the bounded
+campaign contains 226--232 plan runs and 452--464 plan backend calls. The
+native wrapper reserves 45 minutes and each backend request has a 60-second
+deadline; failure stops immediately and no automatic retry is allowed. The
+post-selection report contains prediction error, winner accuracy, latency and
+byte regret, and predicted/observed frontier overlap. Local implementation,
+native lifecycle wiring, preflight sealing, and read-only reconstruction pass
+898 tests with 36 gated skips. The next gate is exactly one clean-commit CWRU
+development-pilot run followed by exactly one read-only audit; it remains
+non-confirmatory and `paper_result=false`.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

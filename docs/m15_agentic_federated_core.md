@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED; F2C10D NATIVE DEVELOPMENT PILOT READY**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -585,6 +585,22 @@ hash, and fingerprints the run tree before and after. The clean-commit local
 gate passed 134 checks with zero current-query profiles and no mutation. This
 does not replace the native measurement protocol: training values and backend
 latencies remain controlled nonmeasurements until F2C10D.
+
+F2C10D turns that mechanism into one bounded native development pilot without
+changing the optimizer. It measures all 36 training physical plans four times
+under deterministic counterbalancing, freezes strategy-conditioned family
+memory, predicts all 20 held-out physical plans without a current-query tool
+call, and seals the two per-query semantic frontiers. Because frontier
+cardinality is a query-level result, each query retains one to K=4 plans:
+online cardinality is 2--8, total plan runs are 226--232, and plan backend
+calls are 452--464. Online execution precedes a post-selection 80-run shadow
+matrix. The shadow matrix cannot affect selection or memory; it exists only to
+compute prediction error, physical-winner accuracy, latency/byte regret, and
+predicted/observed frontier overlap. The native boundary fixes 60-second
+requests, a 45-minute Slurm allocation, stop-on-first-failure, and zero retry.
+A pre-service schedule seal and a separate read-only reconstruction audit are
+required. This remains six-query development evidence and cannot set
+`paper_result=true` or support a generalization claim.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

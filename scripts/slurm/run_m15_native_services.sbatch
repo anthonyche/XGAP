@@ -116,6 +116,10 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-semantic-direct-frontier"
     RUN_VERSION="m15-f2c9b-native-live-direct-semantic-frontier-services-v1"
     ;;
+  direct_family_pilot)
+    RUN_PREFIX="cwru-m15-native-direct-family-pilot"
+    RUN_VERSION="m15-f2c10d-native-live-direct-family-pilot-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -364,6 +368,45 @@ if [[ "$WORKLOAD_MODE" == semantic_predicate_relaxation || "$WORKLOAD_MODE" == s
       "$DIRECT_FRONTIER_ESTIMATES"
     WORKLOAD_ARGS+=(--direct-frontier-estimates "$DIRECT_FRONTIER_ESTIMATES")
   fi
+fi
+if [[ "$WORKLOAD_MODE" == direct_family_pilot ]]; then
+  SEMANTIC_BASE_BUNDLE="$RUN_ROOT/direct-family-base-workload-bundle"
+  DIRECT_SEMANTIC_WORKLOAD="$RUN_ROOT/direct-semantic-workload-bundle"
+  SEMANTIC_CATALOG="$RUN_ROOT/semantic_catalog.json"
+  PREDICATE_MAPPING="$RUN_ROOT/predicate_mapping.json"
+  DIRECT_FAMILY_PILOT_PROTOCOL="$RUN_ROOT/direct_family_pilot_protocol.json"
+  DIRECT_FAMILY_PREDICTOR_POLICY="$RUN_ROOT/direct_family_predictor_policy.json"
+  cp -- "$REPO_ROOT/experiments/configs/m15_f2c6_semantic_relaxation_dev.json" \
+    "$SEMANTIC_CATALOG"
+  cp -- "$REPO_ROOT/experiments/configs/m15_f2c8_predicate_mapping_dev.json" \
+    "$PREDICATE_MAPPING"
+  cp -- "$REPO_ROOT/experiments/configs/m15_f2c10d_family_memory_pilot_dev.json" \
+    "$DIRECT_FAMILY_PILOT_PROTOCOL"
+  cp -- "$REPO_ROOT/experiments/configs/m15_f2c10_family_memory_predictor_dev.json" \
+    "$DIRECT_FAMILY_PREDICTOR_POLICY"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_parameterized_workload \
+    --workload-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_workload_dev.json" \
+    --query-template-spec "$REPO_ROOT/experiments/configs/m15_f2c_parameterized_financial_risk_v2.json" \
+    --backend-template-root "$REPO_ROOT/experiments/templates/m15_f2c_financial_risk" \
+    --output "$SEMANTIC_BASE_BUNDLE" \
+    | tee "$RUN_ROOT/direct_family_base_generation.json"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_direct_semantic_workload \
+    --base-bundle-root "$SEMANTIC_BASE_BUNDLE" \
+    --catalog "$SEMANTIC_CATALOG" \
+    --mapping "$PREDICATE_MAPPING" \
+    --policy "$REPO_ROOT/experiments/configs/m15_f2c10_direct_semantic_workload_dev.json" \
+    --output "$DIRECT_SEMANTIC_WORKLOAD" \
+    | tee "$RUN_ROOT/direct_semantic_workload_generation.json"
+  WORKLOAD_ARGS=(
+    --direct-semantic-workload "$DIRECT_SEMANTIC_WORKLOAD"
+    --semantic-base-bundle "$SEMANTIC_BASE_BUNDLE"
+    --semantic-catalog "$SEMANTIC_CATALOG"
+    --predicate-mapping "$PREDICATE_MAPPING"
+    --direct-family-pilot-protocol "$DIRECT_FAMILY_PILOT_PROTOCOL"
+    --direct-family-predictor-policy "$DIRECT_FAMILY_PREDICTOR_POLICY"
+  )
 fi
 
 QUERY_BOUND_ARGS=()

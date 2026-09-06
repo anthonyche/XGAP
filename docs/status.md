@@ -73,8 +73,8 @@ kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
 and the F2C0--F2C10A stream, family, typed-query, workload, exact-execution,
 family-memory, semantic-frontier, execution-readiness, overlay, native
-frontier, and variable-cardinality split contracts, current full local
-acceptance passes 862 tests with 36 gated skips. This is
+frontier, variable-cardinality split, and F2C10D pilot contracts, current full
+local acceptance passes 898 tests with 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
 `experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
@@ -303,8 +303,9 @@ occurs, and no performance or semantic-utility claim is enabled. The compact
 record is
 `experiments/artifacts/m15_f2c9a_local_direct_semantic_frontier_20260906.json`.
 
-M15-F2C9B is locally ready and its one authorized native mechanism job has
-finished at the scheduler level. A versioned
+M15-F2C9B is accepted live. Its one authorized native mechanism job finished
+at the scheduler level, and the corrected auditor has now verified the same
+immutable run tree. A versioned
 controlled estimate source is copied into the immutable run tree and bound to
 all eight direct physical candidates. The runner persists the candidate set,
 estimate source, sealed snapshot, and three-plan frontier before reading an
@@ -320,9 +321,10 @@ local acceptance passes 853 tests with 36 gated skips. CWRU job `3791375`
 completed at exact commit `2c0ee7f` on `compt298` in 94 seconds with exit
 `0:0` and returned the expected exact 11-, 9-, and 11-row answers. Its first
 audit failed 20 preflight checks because the auditor searched the outer run
-root instead of the producer's service root. The fix is committed at
-`9e1a1db`; a corrected read-only audit of the unchanged run is pending, so it
-is not yet accepted live evidence and must not be rerun. No semantic-utility,
+root instead of the producer's service root. The fix at `9e1a1db` was applied
+only to the auditor; the v2 read-only audit then passed 211/211 checks against
+the unchanged job tree with `run_tree_mutated=false`. The job must not be
+rerun. No semantic-utility,
 comparative, performance, ontology, or paper claim is enabled. The local
 readiness record is
 `experiments/artifacts/m15_f2c9b_local_native_direct_frontier_readiness_20260906.json`.
@@ -371,6 +373,26 @@ tests with 36 gated skips. Its deterministic doubles and constructed training
 values remain `paper_result=false`; no native timing, prediction-accuracy,
 resource, semantic-utility, or generalization result exists. The compact record
 is `experiments/artifacts/m15_f2c10c_local_controlled_family_memory_validation_20260906.json`.
+
+M15-F2C10D is locally implemented and authorized for one six-query native
+development pilot. The author froze four counterbalanced repetitions of all
+18 training semantic tasks and both physical strategies (144 plan runs), then
+an immutable family-memory freeze, zero-current-query-call prediction, and
+independent per-query Pareto/epsilon/K selection. The true frontier—not a
+forced session-wide count—returns one to four plans for each of two held-out
+base queries, so online execution is bounded at 2--8 plan runs. Only after the
+selection seal may the runner execute those online plans and the complete
+20-plan by four-repetition shadow matrix (80 plan runs). The resulting total
+is 226--232 plan runs and 452--464 measured plan backend calls. Native clients
+use a 60-second request timeout; the dedicated Slurm wrapper uses 45 minutes;
+the first failure stops the campaign and automatic retries remain zero. The
+analysis reports latency/byte prediction error, physical-winner accuracy,
+latency/byte regret, and predicted/observed frontier overlap. A service-start
+preflight seals the schedule and count bounds, and a separate read-only
+auditor reconstructs the schedule, measurements, memory, predictions,
+frontiers, exact answers, analysis, and call-phase order. Full local
+acceptance passes 898 tests with 36 gated skips. No native F2C10D result exists
+yet; the six-query pilot and all outputs remain `paper_result=false`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used

@@ -19,6 +19,7 @@ from xgap.experiments.m15_direct_semantic_workload import (
     M15DirectSemanticWorkloadError,
     generate_m15_direct_semantic_workload_bundle,
     load_m15_direct_semantic_workload_bundle,
+    main as direct_semantic_workload_main,
 )
 from xgap.experiments.m15_parameterized_workload import (
     generate_m15_parameterized_workload_bundle,
@@ -339,3 +340,39 @@ def test_generator_refuses_existing_destination(tmp_path: Path) -> None:
             policy=CARDINALITY_POLICY,
             destination=destination,
         )
+
+
+def test_cli_generates_a_reloadable_direct_workload(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    base = generate_m15_parameterized_workload_bundle(
+        workload_spec=WORKLOAD_SPEC,
+        query_template_spec=QUERY_TEMPLATE,
+        backend_template_root=BACKEND_TEMPLATES,
+        destination=tmp_path / "cli-base",
+    )
+    destination = tmp_path / "cli-direct"
+
+    assert direct_semantic_workload_main(
+        [
+            "--base-bundle-root",
+            str(base.root),
+            "--catalog",
+            str(SEMANTIC_CATALOG),
+            "--mapping",
+            str(PREDICATE_MAPPING),
+            "--policy",
+            str(CARDINALITY_POLICY),
+            "--output",
+            str(destination),
+        ]
+    ) == 0
+
+    emitted = json.loads(capsys.readouterr().out)
+    loaded = load_m15_direct_semantic_workload_bundle(
+        destination,
+        base_bundle=base,
+        catalog=SEMANTIC_CATALOG,
+        mapping=PREDICATE_MAPPING,
+    )
+    assert emitted == loaded.manifest

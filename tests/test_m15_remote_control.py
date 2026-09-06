@@ -88,6 +88,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_semantic_risk_relaxation.sbatch",
         "scripts/slurm/run_m15_native_semantic_predicate_relaxation.sbatch",
         "scripts/slurm/run_m15_native_semantic_direct_frontier.sbatch",
+        "scripts/slurm/run_m15_native_direct_family_pilot.sbatch",
     )
     probe = (
         Path(__file__).resolve().parents[1]
@@ -225,6 +226,16 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     )
     assert "SLURM_SUBMIT_DIR" in direct_frontier_run
     assert "BASH_SOURCE" not in direct_frontier_run
+    direct_family_run = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "slurm"
+        / "run_m15_native_direct_family_pilot.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=direct_family_pilot" in direct_family_run
+    assert "#SBATCH --time=00:45:00" in direct_family_run
+    assert "SLURM_SUBMIT_DIR" in direct_family_run
+    assert "BASH_SOURCE" not in direct_family_run
 
 
 def test_config_enables_cancel_only_with_exact_opt_in(tmp_path: Path) -> None:
