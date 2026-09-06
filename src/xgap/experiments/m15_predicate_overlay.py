@@ -40,6 +40,7 @@ from xgap.experiments.m15_parameterized_workload import (
 )
 from xgap.experiments.m15_semantic_frontier import (
     M15SemanticRelaxationCatalog,
+    M15SemanticSolutionSpace,
     build_m15_semantic_solution_space,
     load_m15_semantic_relaxation_catalog,
 )
@@ -524,6 +525,34 @@ def _direct_semantic_classes(
     return solution, sorted(
         selected, key=lambda item: item["semantic_class_id"]
     ), exact_bindings
+
+
+def build_m15_predicate_semantic_solution_space(
+    *,
+    base_bundle: M15ParameterizedWorkloadBundle | str | Path,
+    base_query_id: str,
+    catalog: M15SemanticRelaxationCatalog | str | Path,
+    mapping: M15PredicateMappingSpec | str | Path,
+) -> M15SemanticSolutionSpace:
+    """Return the verified full solution space used by the predicate overlay.
+
+    The result still contains blocked multihop classes.  Consumers must use
+    the overlay manifest to distinguish executable direct classes from those
+    declared-but-unbound interpretations.
+    """
+
+    selected_base = (
+        base_bundle
+        if isinstance(base_bundle, M15ParameterizedWorkloadBundle)
+        else load_m15_parameterized_workload_bundle(base_bundle)
+    )
+    solution, _, _ = _direct_semantic_classes(
+        bundle=selected_base,
+        query_id=_safe_id(base_query_id, name="base_query_id"),
+        catalog=_selected_catalog(catalog),
+        mapping=_selected_mapping(mapping),
+    )
+    return solution
 
 
 def _overlay_query_id(base_query_id: str, semantic_class_id: str) -> str:

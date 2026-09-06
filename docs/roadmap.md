@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2 LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C8B LOCAL MECHANISMS VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9A LOCAL MECHANISMS VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -396,8 +396,26 @@ strategy per class, and expects exactly four backend calls and exact 6- and
 9-row answers. The fixture path revalidates the cumulative overlay and all nine
 query instances. Full local acceptance passes 834 tests with 36 gated skips;
 the local synthetic native run tree passes all 150 audit checks and answer or
-plan tampering is rejected. This makes one clean CWRU mechanism run ready, but
-does not yet provide live, comparative, semantic-utility, or paper evidence.
+plan tampering is rejected. CWRU job `3790680` completed at exact clean commit
+`2d39c3c` on `compt295` in 96 seconds. It returned both exact relaxed answers
+with four calls and 6,262 moved bytes; the independent audit passed 150/150
+checks without mutation. This closes live predicate execution plumbing but
+does not provide comparative, semantic-utility, ontology-truth, or paper
+evidence.
+
+F2C9A adds a capability-aware direct semantic frontier. It keeps all 12
+semantic-class identities visible, excludes the eight unbound multihop classes
+from executable planning, and constructs two physical plans for each of the
+four direct classes. A complete hash-bound estimate snapshot must be sealed
+before execution and may contain predictions only; answer fields and observed
+execution measurements fail closed. Physical reduction precedes the
+semantic-deviation/predicted-cost Pareto, 5% epsilon, and K=4 passes. The
+controlled fixture reduces 8 physical candidates to 4 class representatives,
+4 Pareto points, and 3 returned semantic plans with exact semantics first.
+Full local acceptance passes 844 tests with 36 gated skips. F2C9B is the next
+implementation gate: persist the selected frontier inside one fresh native
+service run and execute only its returned direct plans. Controlled estimates
+must not be promoted into a performance claim, and multihop remains blocked.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

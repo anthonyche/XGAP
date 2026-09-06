@@ -1,0 +1,111 @@
+{
+  "artifact_id": "m15-f2c9a-local-direct-semantic-frontier-v1",
+  "artifact_role": "local_capability_aware_preexecution_semantic_frontier_contract_not_live_or_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "deterministic_controlled_preexecution_estimates_and_local_acceptance_suite",
+  "inputs": {
+    "base_query_id": "financial-risk-alice-aug-high-v2",
+    "base_workload_bundle_content_sha256": "b06b1c4b4e630e37cbea8d4cf5d81bbc31c4a2280b97a64f5a4a9efed0d434e7",
+    "semantic_solution_space_sha256": "8a868bb17628f88ac4bed2d8e33650722bda7aa03be6a00b4ff105c8d05949dc",
+    "predicate_mapping_sha256": "0151ae7782842e1ce74ae9d56452cadda77759502bcc4897401ee624940f05c2",
+    "predicate_overlay_sha256": "18b1a729926f6e2c9dce970513e72adce2cfab861a62eedaffb6d562b66a7668"
+  },
+  "artifact_hashes": {
+    "candidate_set_sha256": "807433b49895ac00f1f46446f49987f7cb19b92b58db70c58974082398217e02",
+    "estimate_snapshot_sha256": "6bf27a10fa46f4f176a9cc05cf5d8dddc8154c17d51abb4f6a3e24db2f7123a5",
+    "frontier_sha256": "e915ffdc4a19a21377cf18134024cbae47dbdaa80f8609296b52d28e41b8517a"
+  },
+  "capability_partition": {
+    "declared_semantic_classes": 12,
+    "executable_direct_semantic_classes": 4,
+    "unavailable_multihop_semantic_classes": 8,
+    "physical_candidates": 8,
+    "physical_candidates_per_direct_class": 2,
+    "blocked_classes_excluded_from_planning": true
+  },
+  "selection_protocol": {
+    "estimate_evidence_kind": "controlled_preexecution_fixture",
+    "estimate_evidence_id": "m15-f2c9-controlled-estimates-v1",
+    "sealed_before_execution": true,
+    "answer_oracle_fields": [],
+    "post_execution_measurements_used": false,
+    "physical_representatives": 4,
+    "pareto_semantic_plans": 4,
+    "epsilon_frontier_semantic_plans": 3,
+    "returned_semantic_plans": 3,
+    "max_representatives": 4,
+    "exact_semantics_retained_first": true,
+    "automatic_retries": 0
+  },
+  "controlled_frontier": {
+    "epsilon_removed_semantic_class_id": "m15-class-b3cf0ee1b03a3bf46874629c",
+    "epsilon_removed_changed_slot_ids": [
+      "transfer-predicate"
+    ],
+    "epsilon_witness_semantic_class_id": "m15-class-f0a1e2cd7425abb7e1795e79",
+    "epsilon_witness_latency_gain_ratio": 0.04,
+    "epsilon_witness_resource_gain_ratio": 0.03,
+    "returned_semantic_class_ids_in_rank_order": [
+      "m15-class-f0a1e2cd7425abb7e1795e79",
+      "m15-class-fcee94caee862d244dc5f3f2",
+      "m15-class-62f92df03f23c3212a47fa32"
+    ],
+    "returned_changed_slot_sets_in_rank_order": [
+      [],
+      [
+        "risk-level",
+        "transfer-predicate"
+      ],
+      [
+        "risk-level"
+      ]
+    ]
+  },
+  "contract_guards": {
+    "candidate_and_snapshot_hashes_deterministic": true,
+    "candidate_runtime_plan_drift_rejected": true,
+    "missing_duplicate_and_unknown_estimates_rejected": true,
+    "answer_oracle_field_rejected": true,
+    "post_execution_evidence_kind_rejected": true,
+    "post_seal_hash_tamper_rejected": true,
+    "preexecution_estimate_change_can_flip_one_physical_representative": true
+  },
+  "local_verification": {
+    "focused_frontier_tests": {
+      "passed": 10,
+      "failed": 0
+    },
+    "adjacent_regression_tests": {
+      "passed": 44,
+      "failed": 0
+    },
+    "full_pytest": {
+      "passed": 844,
+      "skipped": 36,
+      "failed": 0
+    },
+    "acceptance_script": "passed",
+    "harness_check": "passed",
+    "all_existing_examples": "passed",
+    "patch_whitespace_check": "passed"
+  },
+  "claim_boundary": {
+    "result_class": "local_preexecution_estimated_direct_semantic_frontier",
+    "costs_are_controlled_predictions_not_observed_execution": true,
+    "answer_oracle_used": false,
+    "backend_calls_made_by_selector": 0,
+    "llm_calls_made": 0,
+    "ontology_calls_made": 0,
+    "blocked_multihop_classes_returned": false,
+    "semantic_user_utility_supported": false,
+    "performance_superiority_supported": false,
+    "comparative": false,
+    "paper_result": false
+  },
+  "remaining_blockers": [
+    "connect a sealed preexecution estimate source and selected direct frontier to one native-service mechanism run",
+    "replace controlled estimate fixtures with a preregistered prediction protocol before performance evaluation",
+    "multihop semantics remain author-unresolved and are deliberately excluded"
+  ],
+  "paper_result": false
+}

@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2 LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A LOCAL MECHANISMS VERIFIED**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9A LOCAL MECHANISMS VERIFIED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -518,8 +518,24 @@ backend calls. The versioned mapping remains a development fixture carried in
 the execution contract; no ontology service is required. A dedicated native
 mode, allowlisted Slurm wrapper, and independent read-only auditor now cover
 overlay revalidation, nine-instance fixture verification, exact post-execution
-answers, zero retry, service shutdown, and allocation-local cleanup. Local
-acceptance is complete; one clean CWRU run is the only next authorized action.
+answers, zero retry, service shutdown, and allocation-local cleanup. CWRU job
+`3790680` at exact clean commit `2d39c3c` returned exact 6- and 9-row answers
+with four total backend calls and 6,262 moved bytes. Its independent audit
+passed 150/150 checks without modifying the run tree. This is live mechanism
+evidence, not a semantic-utility, ontology-truth, or performance result.
+
+F2C9A now joins the four executable direct interpretations to physical plan
+selection without pretending that the eight blocked multihop classes are
+available. It builds two physical candidates per direct class, binds all eight
+plans to a sealed pre-execution estimate snapshot, keeps one predicted-cost
+representative per class, and applies the existing semantic-deviation/cost
+Pareto, epsilon, and K policy. Snapshot and candidate hashes fail closed on
+oracle fields, post-execution evidence, incomplete coverage, runtime-plan
+drift, or post-seal mutation. A controlled readiness fixture exercises the
+8-to-4-to-4-to-3 reduction and retains exact semantics first. These are
+constructed estimates; no backend, oracle, LLM, or ontology call occurs and no
+performance or semantic-quality claim is enabled. F2C9B must bind the selected
+frontier to the native service lifecycle while multihop remains author-gated.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

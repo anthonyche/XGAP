@@ -1876,5 +1876,43 @@ overlay, reconstructs both expected plans and answers, and checks the complete
 outer job, service, fixture, call trace, shutdown, and cleanup chain. Its local
 synthetic run-tree test passes 150 checks and detects answer and plan-identity
 tampering. Full local acceptance passes 834 tests with 36 environment-gated
-skips. This authorizes one CWRU mechanism run only; no live result, semantic
-utility, latency ranking, ontology truth, or paper claim exists yet.
+skips.
+
+CWRU job `3790680` then ran exact clean commit `2d39c3c` on `compt295` in
+96 seconds. The predicate-only and risk-plus-predicate classes returned their
+exact 6- and 9-row oracles in two calls each, moving 2,767 and 3,495 bytes.
+The aggregate trace contains exactly four remote calls and 6,262 moved bytes.
+The dedicated audit passed 150/150 checks with no failures or run-tree
+mutation. This closes the live direct-predicate mechanism gate only; the fixed
+strategy, development mapping, and post-execution oracle prevent semantic
+utility, latency ranking, ontology-truth, or paper claims.
+
+## D115 Select a capability-aware direct semantic frontier from sealed estimates
+
+F2C9A exposes the mismatch between the declared semantic search space and the
+current executor instead of silently treating every interpretation as
+executable. The 12-class solution space is partitioned into four verified
+direct classes and eight unavailable multihop classes. Only the direct classes
+enter physical planning. Each receives both existing federated strategies, so
+the candidate set contains eight physical plans and preserves the unavailable
+class identities plus their explicit capability reason.
+
+Online selection accepts only a complete, hash-bound estimate snapshot sealed
+before execution. Its closed evidence kinds are controlled pre-execution
+fixtures, family-memory predictions, and backend-observation predictions. The
+contract rejects answer-oracle fields, observed-execution evidence, incomplete
+or duplicate plan coverage, candidate/runtime-plan drift, and post-seal hash
+changes. It first keeps the minimum predicted-latency plan per semantic class,
+using predicted resource cost and plan ID only as tie breakers, then applies
+the existing semantic-deviation/predicted-latency/predicted-resource Pareto,
+5% epsilon, and maximum-K policy. Exact semantics must remain first.
+
+The deterministic readiness fixture reduces eight candidates to four physical
+representatives. All four are Pareto-optimal; the predicate-only class is then
+removed because its 4% latency and 3% resource gains over exact semantics are
+below epsilon, leaving three representatives under K=4. These values are
+constructed estimates used to validate control flow, not measured costs or a
+recommended semantic trade-off. The selector makes no backend, LLM, ontology,
+or oracle call and remains `paper_result=false`. F2C9B must connect this sealed
+frontier to one native execution gate before any live frontier claim exists;
+multihop remains excluded until its hard-constraint semantics are author-owned.

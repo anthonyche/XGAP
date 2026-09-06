@@ -73,7 +73,7 @@ kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
 and the F2C0--F2C6 stream, family, typed-query, workload, exact-execution,
 family-memory, semantic-frontier, execution-readiness, and overlay contracts,
-current full local acceptance passes 814 tests with
+current full local acceptance passes 844 tests with
 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -271,7 +271,7 @@ a development fixture rather than ontology truth; live payment execution,
 semantic utility, and every multihop class remain open. The compact record is
 `experiments/artifacts/m15_f2c8a_local_predicate_overlay_20260906.json`.
 
-M15-F2C8B is locally accepted and ready for one CWRU mechanism run. A dedicated
+M15-F2C8B is verified on CWRU. A dedicated
 runner executes only the predicate-only and risk-plus-predicate direct classes,
 using one fixed risk-first plan per class. It constructs both plans before any
 oracle access, preserves all hard bindings, expects four backend calls, and
@@ -280,11 +280,28 @@ mode revalidates the predicate overlay at the fixture boundary and the new
 Slurm wrapper is on the remote executor allowlist. The independent read-only
 auditor reconstructs both plans and oracles from the base bundle, catalog,
 mapping, and overlay; its local synthetic run tree passes 150 checks and its
-tamper tests reject changed answers and plan identities. Full pytest and the
-complete acceptance script pass with 834 passed and 36 gated skips. No live
-predicate result, semantic-user-utility evidence, ontology call, plan
-comparison, or paper claim exists yet. The compact local record is
-`experiments/artifacts/m15_f2c8b_local_native_predicate_readiness_20260906.json`.
+tamper tests reject changed answers and plan identities. CWRU job `3790680`
+ran exact clean commit `2d39c3c` on `compt295` for 96 seconds. Both classes
+matched their exact 6- and 9-row oracles in four aggregate calls and moved
+6,262 bytes; the independent audit passed 150/150 checks with no failures or
+run-tree mutation. No semantic-user-utility evidence, ontology call, plan
+comparison, or paper claim exists. The live record is
+`experiments/artifacts/m15_f2c8b_cwru_native_predicate_relaxation_20260906.json`.
+
+M15-F2C9A is locally accepted. The new capability-aware candidate set retains
+all 12 declared class identities but admits only the four verified direct
+classes and records all eight multihop classes as unavailable. Two physical
+strategies per direct class produce eight candidates. A complete hash-bound
+prediction snapshot is sealed before execution; oracle fields, post-execution
+evidence, incomplete or duplicate estimates, runtime-plan drift, and post-seal
+mutation fail closed. Selection keeps one predicted-cost physical plan per
+class before applying semantic-deviation/predicted-latency/predicted-resource
+Pareto, 5% epsilon, and K=4 reduction. The controlled fixture exercises an
+8-to-4-to-4-to-3 path and retains exact semantics first. Full acceptance passes
+844 tests with 36 gated skips. The estimates are constructed, no external call
+occurs, and no performance or semantic-utility claim is enabled. The compact
+record is
+`experiments/artifacts/m15_f2c9a_local_direct_semantic_frontier_20260906.json`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1794,7 +1811,8 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2C7B2 live semantic-relaxation implementation tests passed. M7 backend
+M0-M15-F2C8B live semantic-relaxation and F2C9A local direct-frontier
+implementation tests passed. M7 backend
 smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
 development run completed one question with one generation call, no repair,
@@ -1805,6 +1823,19 @@ the local completion run.
 
 Latest recorded command results:
 
+- CWRU F2C8B job `3790680`: the predicate-only and
+  risk-plus-predicate direct classes completed at exact clean commit
+  `2d39c3c` in 96 seconds on `compt295`. Their fixed risk-first plans returned
+  exact 6- and 9-row answers in four aggregate backend calls and moved 6,262
+  bytes. The independent read-only audit passed 150/150 checks without
+  mutating the run tree. This is a live mechanism gate, not a comparative,
+  semantic-utility, ontology-truth, or paper result.
+- `./scripts/run_acceptance.sh`: 844 passed and 36 explicitly gated or
+  external-artifact tests skipped on Python 3.10.19. F2C9A adds four
+  capability-aware direct semantic classes, eight physical candidates, a
+  sealed pre-execution estimate snapshot, per-class physical reduction, and
+  Pareto/epsilon/K filtering. The controlled readiness fixture returns three
+  representatives with exact semantics first and makes no external call.
 - CWRU F2A job `3787291`: one selective hash-bound campaign session completed
   at exact clean commit `c9a7afe` in 86 seconds on `compt336`. The compiled
   Williams order drove the six real-service methods, all answers were exact,
