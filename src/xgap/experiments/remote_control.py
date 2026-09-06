@@ -45,6 +45,7 @@ DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_native_direct_family_pilot.sbatch",
     "scripts/slurm/run_m15_native_current_query_profile_baseline.sbatch",
     "scripts/slurm/run_m15_native_paired_physical_comparison.sbatch",
+    "scripts/slurm/run_m15_live_resolution.sbatch",
 )
 
 

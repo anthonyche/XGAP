@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A LOCAL MECHANISMS VERIFIED; LIVE CWRU PROVIDER/UI BRIDGE PENDING**
+Current status: **E1/E2A VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -174,9 +174,21 @@ failure. Entity requests and configuration drift fail before network access.
 Focused E1/E2 acceptance passes 42 tests and the full suite passes 967 tests
 with 36 explicit skips. The E2A demo uses an offline transport: neither E1 nor
 E2A makes a live backend, model, ontology-service, or CWRU call, and neither
-authorizes an experiment. E2B must freeze the CWRU vLLM service lifecycle and
-independent evidence/audit contract before one live provider gate. Real catalog
-and ontology wiring and the UI clarification transport remain later work.
+authorizes an experiment.
+
+E2B is now implemented locally. Its frozen four-candidate predicate request is
+sealed before service startup, uses one goal-loop inference request and zero
+repairs/retries, persists success or spent failure cost, and omits the generic
+extra inference smoke. A dedicated 45-minute H100 Slurm wrapper reuses the
+existing verified loopback vLLM launcher and environment contract. A separate
+read-only auditor reconstructs the request, runtime/model identity, trace,
+memory, shutdown, and inventory without mutating the run. Local tests use only a
+fake transport. One clean CWRU engineering run may follow the published exact
+commit; no live E2B result exists yet and all outputs remain
+`paper_result=false`. The E2B/provider/CWRU-infrastructure focused suite passes
+48 tests; full local acceptance passes 977 tests with 36 explicit skips. Real
+catalog and ontology wiring and the UI clarification transport remain later
+work.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

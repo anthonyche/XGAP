@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1/E2A LOCAL MECHANISMS VERIFIED; LIVE CWRU PROVIDER/UI BRIDGE PENDING**
+Status: **E1/E2A VERIFIED LOCALLY; E2B LIVE GATE READY LOCALLY; CWRU RESULT/UI BRIDGE PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -271,6 +271,18 @@ parser-to-hole construction, and an end-to-end semantic execution campaign
 remain pending. Focused E1/E2 acceptance passes 42 tests and full local
 acceptance passes 967 tests with 36 explicit environment or external-artifact
 skips.
+
+M15-E2B now supplies that fail-closed lifecycle and auditor locally. One frozen
+predicate request is sealed before Qwen3-32B startup, executes through the
+ordinary goal loop and execution memory, and permits one inference request with
+zero repair or retry. Readiness uses `/v1/models`; the generic structured-output
+smoke is omitted because it would add another inference request. The independent
+auditor reconstructs the preflight, CWRU runtime/model identity, bounded output,
+tool/invocation/memory links, shutdown, and every inventory hash without
+modifying the run tree. This local implementation authorizes one clean CWRU
+engineering run after commit publication, but no live result exists yet and it
+remains `paper_result=false`. The E2B/provider/CWRU-infrastructure focused suite
+passes 48 tests; full local acceptance passes 977 tests with 36 explicit skips.
 
 ## M15-F — Paper experiment surface and optional UI
 

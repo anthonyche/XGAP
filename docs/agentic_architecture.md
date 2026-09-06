@@ -143,6 +143,15 @@ and bundle/schema drift fail before network access. Transport, timeout, or
 malformed-response failures preserve their one external call, latency, and
 token evidence as a costed tool error. No failure path retries or repairs.
 
+M15-E2B packages one live-provider request as a fail-closed CWRU gate. Its
+preflight is sealed before model startup and binds the clean commit, deployment
+contract, model bundle, prompt and schema, hard constraints, dynamic candidate
+enumeration, request payload, and token budget. The allocation starts one
+loopback-only vLLM service and performs readiness observation followed by one
+goal-loop inference request; it deliberately omits the older extra inference
+smoke. A separate read-only auditor reconstructs the request, tool trace,
+execution-memory record, provider cost, service lifecycle, and artifact hashes.
+
 ### Actions and termination
 
 The agent may construct or fill a semantic program, inspect the environment,

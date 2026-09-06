@@ -129,6 +129,9 @@ detect_runtime() {
   tests/test_m15_paired_physical_comparison.py \
   tests/test_m15_live_paired_physical_comparison.py \
   tests/test_m15_paired_physical_comparison_evidence.py \
+  tests/test_m15_selective_resolution.py \
+  tests/test_m15_llm_resolution_provider.py \
+  tests/test_m15_live_resolution.py \
   tests/test_m15_remote_executor.py \
   tests/test_m15_remote_control.py \
   | tee "$RUN_ROOT/pytest.txt"

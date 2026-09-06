@@ -2419,3 +2419,26 @@ space, while costed failures prevent model latency from disappearing from the
 optimizer's evidence. E2A is verified only with an offline transport and
 authorizes no CWRU/model execution; the live lifecycle and independent audit
 are a separate E2B gate.
+
+## D136 The live resolution gate spends exactly one inference request
+
+M15-E2B freezes one four-candidate predicate-resolution request before starting
+Qwen3-32B. The sealed preflight binds the clean commit, CWRU deployment
+contract, model bundle, prompt and schema hashes, typed semantic program, hard
+constraints, dynamic candidate enum, exact request payload, and token budget.
+Entity identity is already clarified and cannot enter this model call.
+
+The Slurm allocation may poll `/v1/models` to observe readiness, but it performs
+exactly one inference request through the M15 LLM tool. It does not run the
+older generic structured-output smoke because that would spend a second
+inference. The request has a 60-second provider deadline, 256 output-token cap,
+zero repair calls, and zero automatic retries. A failure retains its spent
+call, latency, and token cost, persists the failed goal, and ends the job.
+
+A separate auditor reconstructs the preflight and validates the exact CWRU
+runtime, H100, cached model revision, loopback endpoint, bounded
+non-authoritative output, hard-constraint preservation, goal trace, execution
+memory, invocation hashes, shutdown, and artifact inventory without changing
+the run tree. Local tests use only a fake transport. The gate authorizes one
+clean CWRU engineering run after its exact commit is published; it makes no
+quality, optimizer, graph-answer, or paper claim.
