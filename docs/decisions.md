@@ -2390,3 +2390,32 @@ the ordinary tool/trace/memory contract makes their latency and inference cost
 visible and preserves the deterministic compiler boundary. E1 supplies local
 providers and a tested control path only; adapting the existing live
 OpenAI-compatible provider with repairs disabled is a separate E2 gate.
+
+## D135 Give M15 semantic resolution a one-call candidate-ID provider
+
+M15-E2A uses a dedicated OpenAI-compatible response contract for semantic-hole
+candidate selection. It does not reuse the earlier `PathPatternQuery` schema.
+For every invocation, the provider derives a strict JSON schema whose
+`candidate_ids` enumeration is exactly the identifiers already admitted by the
+deterministic catalog/ontology boundary. The response must be a nonempty unique
+subset, capped at eight candidates. The frozen Qwen3-32B bundle permits at most
+256 output tokens, one request with a 60-second deadline, and zero repair calls.
+
+Entity ambiguity remains outside the model boundary. Entity requests, missing
+credentials, and prompt/schema binding drift fail before any network call.
+Transport errors, timeouts, malformed structured output, and out-of-set IDs
+fail after exactly one charged external call; their latency and token evidence
+remain visible in the shared tool result and execution memory. No failure path
+retries, repairs, or silently substitutes a deterministic answer. Successful
+model output is still non-authoritative and cannot contain Cypher, SPARQL, GQL,
+or other native query text.
+
+Reason:
+
+The system needs the LLM as an optional bounded semantic-ranking tool, not as a
+second query compiler or an unmetered recovery loop. A dynamic candidate enum
+makes the model's action space identical to the deterministic interpretation
+space, while costed failures prevent model latency from disappearing from the
+optimizer's evidence. E2A is verified only with an offline transport and
+authorizes no CWRU/model execution; the live lifecycle and independent audit
+are a separate E2B gate.

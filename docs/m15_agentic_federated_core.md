@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1 LOCAL MECHANISM VERIFIED; LIVE PROVIDER/UI BRIDGE PENDING**
+Status: **E1/E2A LOCAL MECHANISMS VERIFIED; LIVE CWRU PROVIDER/UI BRIDGE PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -253,12 +253,24 @@ native-query metadata, and more than one external call. Every result appears in
 the normal goal trace and execution memory; failed calls are not retried, while
 unavailable optional semantic tools remain explicit observations.
 
-This local gate uses supplied providers only. An adapter from the existing
-OpenAI-compatible M12 provider must separately enforce the M15 one-call/no-repair
-boundary before a CWRU vLLM run is authorized. A UI clarification transport,
-deterministic parser-to-hole construction, and end-to-end semantic execution
-campaign also remain pending. Full local acceptance passes 956 tests with 36
-explicit environment or external-artifact skips.
+M15-E2A adds a dedicated OpenAI-compatible candidate provider and a frozen
+Qwen3-32B CWRU model bundle. It does not reuse the M12 `PathPatternQuery`
+response shape: every request derives a strict candidate-ID schema from the
+current bounded set, caps the response at eight IDs and 256 tokens, permits one
+request with a 60-second deadline, and disables repair calls. Entity requests,
+missing credentials, or prompt/schema drift fail before the network. A timeout,
+transport failure, malformed response, or out-of-set response becomes one
+costed tool error with no retry; successes and failures both retain call,
+latency, and token evidence. The provider remains non-authoritative and emits no
+backend-native query text.
+
+E2A has been verified only with an offline transport; it authorizes no live
+model or CWRU run. A fail-closed Slurm lifecycle and independent evidence audit,
+real catalog/ontology wiring, UI clarification transport, deterministic
+parser-to-hole construction, and an end-to-end semantic execution campaign
+remain pending. Focused E1/E2 acceptance passes 42 tests and full local
+acceptance passes 967 tests with 36 explicit environment or external-artifact
+skips.
 
 ## M15-F — Paper experiment surface and optional UI
 

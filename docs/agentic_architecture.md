@@ -133,6 +133,16 @@ by the resolution policy. A missing required clarification or candidate source
 blocks explicitly; an unavailable optional ontology/model leaves the existing
 bounded candidate set visible rather than masquerading as resolution.
 
+M15-E2A binds that role to a dedicated OpenAI-compatible provider rather than
+reusing the older path-pattern response shape. Each request derives a JSON
+schema whose `candidate_ids` enumeration is exactly the bounded input set; the
+provider accepts at most eight identifiers and returns only a nonempty unique
+subset. The frozen Qwen3-32B bundle allows one request, 256 output tokens, a
+60-second timeout, and zero repair calls. Entity holes, missing credentials,
+and bundle/schema drift fail before network access. Transport, timeout, or
+malformed-response failures preserve their one external call, latency, and
+token evidence as a costed tool error. No failure path retries or repairs.
+
 ### Actions and termination
 
 The agent may construct or fill a semantic program, inspect the environment,

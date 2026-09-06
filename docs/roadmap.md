@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1 LOCAL MECHANISM VERIFIED; LIVE PROVIDER/UI BRIDGE PENDING**
+Current status: **E1/E2A LOCAL MECHANISMS VERIFIED; LIVE CWRU PROVIDER/UI BRIDGE PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -164,13 +164,19 @@ in the goal trace and execution memory, and still requires deterministic
 enumeration/validation. Tool failure is terminal without retry; an unavailable
 optional ontology/model is reported while preserving the bounded candidate set.
 
-The offline demo exercises a clarification and returns a semantic candidate set
-without an LLM. Focused acceptance passes 21 goal/semantic tests and the full
-suite passes 956 tests with 36 explicit skips. E1 makes no backend, model,
-ontology-service, or CWRU call and authorizes no experiment. E2 must adapt the
-existing OpenAI-compatible provider with repairs disabled, bind a real catalog
-and ontology provider, and freeze the live evidence/audit contract. The UI
-clarification transport remains later work.
+The E1 offline demo exercises a clarification and returns a semantic candidate
+set without an LLM. E2A adds a dedicated OpenAI-compatible provider and frozen
+Qwen3-32B bundle for non-authoritative candidate selection. It builds a strict
+dynamic enumeration from the bounded input candidates, permits one request and
+zero repairs, and preserves external-call, latency, and token cost on success or
+failure. Entity requests and configuration drift fail before network access.
+
+Focused E1/E2 acceptance passes 42 tests and the full suite passes 967 tests
+with 36 explicit skips. The E2A demo uses an offline transport: neither E1 nor
+E2A makes a live backend, model, ontology-service, or CWRU call, and neither
+authorizes an experiment. E2B must freeze the CWRU vLLM service lifecycle and
+independent evidence/audit contract before one live provider gate. Real catalog
+and ontology wiring and the UI clarification transport remain later work.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

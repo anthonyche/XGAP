@@ -22,11 +22,20 @@ an authoritative bounded clarification. Non-entity candidates may use optional
 ontology/model evidence, but model output cannot add IDs, claim authority,
 carry native query text, or hide more than one external call. Hard constraints
 are hashed and preserved, calls are observable and stored in execution memory,
-and failures are never retried. The live OpenAI-compatible adapter, real
-catalog/ontology wiring, parser-to-hole construction, and UI clarification
-transport remain pending. The E1-focused suite passes 21 tests, its offline
-demo succeeds with one clarification and zero LLM calls, and full local
-acceptance passes 956 tests with 36 explicit skips.
+and failures are never retried.
+
+M15-E2A now supplies the OpenAI-compatible adapter as a separate candidate-ID
+protocol and frozen Qwen3-32B bundle. Its per-request schema enumerates exactly
+the bounded candidate set; the bundle caps results at eight IDs and 256 output
+tokens, uses a 60-second timeout, permits one external request, and disables all
+repair calls. Entity/configuration failures occur before network access, while
+transport, timeout, malformed-response, and out-of-set failures retain their
+one-call cost in the ordinary tool result. The provider remains
+non-authoritative and cannot emit native query text. Focused E1/E2 acceptance
+passes 42 tests and full local acceptance passes 967 tests with 36 explicit
+skips. These are offline-transport results only. A fail-closed CWRU vLLM
+lifecycle and auditor, real catalog/ontology wiring, parser-to-hole
+construction, and UI clarification transport remain pending.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly

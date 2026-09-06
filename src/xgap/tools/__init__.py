@@ -41,6 +41,7 @@ from xgap.tools.resolution import (
     ResolutionCandidateRequest,
     ResolutionCandidateResponse,
     ResolutionCandidateTool,
+    ResolutionProviderFailure,
 )
 
 __all__ = [
@@ -66,6 +67,7 @@ __all__ = [
     "ResolutionCandidateRequest",
     "ResolutionCandidateResponse",
     "ResolutionCandidateTool",
+    "ResolutionProviderFailure",
     "SEMANTIC_CATALOG_LOOKUP_TOOL",
     "SEMANTIC_LLM_PROPOSE_TOOL",
     "SEMANTIC_ONTOLOGY_LOOKUP_TOOL",

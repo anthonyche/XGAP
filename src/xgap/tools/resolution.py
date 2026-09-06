@@ -15,7 +15,13 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping, Protocol
 
 from xgap.semantic import SemanticHoleKind
-from xgap.tools.contracts import ToolContext, ToolEffect, ToolResult, ToolSpec
+from xgap.tools.contracts import (
+    ToolContext,
+    ToolEffect,
+    ToolResult,
+    ToolSpec,
+    ToolStatus,
+)
 
 
 SEMANTIC_CATALOG_LOOKUP_TOOL = "semantic.catalog.lookup"
@@ -214,6 +220,71 @@ class ResolutionCandidateProvider(Protocol):
         """Return bounded candidates for exactly one request."""
 
 
+class ResolutionProviderFailure(RuntimeError):
+    """A provider failure whose spent resources remain observable."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        source_id: str,
+        failure_category: str,
+        external_calls: int = 0,
+        latency_ms: float = 0.0,
+        input_tokens: int = 0,
+        output_tokens: int = 0,
+        metadata: Mapping[str, Any] | None = None,
+    ) -> None:
+        if not isinstance(message, str) or not message.strip():
+            raise ValueError("resolution provider failure message must be nonempty")
+        if not isinstance(source_id, str) or not source_id.strip():
+            raise ValueError("resolution provider failure source_id must be nonempty")
+        if not isinstance(failure_category, str) or not failure_category.strip():
+            raise ValueError("resolution provider failure category must be nonempty")
+        for name, value in (
+            ("external_calls", external_calls),
+            ("input_tokens", input_tokens),
+            ("output_tokens", output_tokens),
+        ):
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise ValueError(f"{name} must be a nonnegative integer")
+        if (
+            isinstance(latency_ms, bool)
+            or not isinstance(latency_ms, (int, float))
+            or not math.isfinite(latency_ms)
+            or latency_ms < 0
+        ):
+            raise ValueError("latency_ms must be finite and nonnegative")
+        super().__init__(message)
+        self.source_id = source_id
+        self.failure_category = failure_category
+        self.external_calls = external_calls
+        self.latency_ms = float(latency_ms)
+        self.input_tokens = input_tokens
+        self.output_tokens = output_tokens
+        self.metadata = _validate_safe_metadata(metadata or {})
+
+    def to_tool_result(self, tool_name: str) -> ToolResult:
+        return ToolResult(
+            tool_name=tool_name,
+            status=ToolStatus.ERROR,
+            error=str(self),
+            metrics={
+                "latency_ms": self.latency_ms,
+                "external_calls": float(self.external_calls),
+                "input_tokens": float(self.input_tokens),
+                "output_tokens": float(self.output_tokens),
+            },
+            metadata={
+                "source_id": self.source_id,
+                "failure_category": self.failure_category,
+                "bounded_candidate_ids": True,
+                "native_query_text_allowed": False,
+                **self.metadata,
+            },
+        )
+
+
 @dataclass
 class ResolutionCandidateTool:
     """Expose a candidate provider through the common agent-tool boundary."""
@@ -291,6 +362,13 @@ class ResolutionCandidateTool:
                 raise ValueError("resolution provider exceeded its external-call budget")
             if self.name == SEMANTIC_LLM_PROPOSE_TOOL and response.authoritative:
                 raise ValueError("LLM proposals cannot be authoritative bindings")
+        except ResolutionProviderFailure as exc:
+            if exc.external_calls > self.maximum_external_calls:
+                return ToolResult.error_result(
+                    self.name,
+                    "resolution provider failure exceeded its external-call budget",
+                )
+            return exc.to_tool_result(self.name)
         except (TypeError, ValueError) as exc:
             return ToolResult.error_result(self.name, str(exc))
         return ToolResult.success(
