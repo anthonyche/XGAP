@@ -124,6 +124,10 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-current-query-profile-baseline"
     RUN_VERSION="m15-f2c12b-native-current-query-profile-services-v1"
     ;;
+  paired_physical_comparison)
+    RUN_PREFIX="cwru-m15-native-paired-physical-comparison"
+    RUN_VERSION="m15-f2c13b-native-live-paired-physical-comparison-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -373,7 +377,7 @@ if [[ "$WORKLOAD_MODE" == semantic_predicate_relaxation || "$WORKLOAD_MODE" == s
     WORKLOAD_ARGS+=(--direct-frontier-estimates "$DIRECT_FRONTIER_ESTIMATES")
   fi
 fi
-if [[ "$WORKLOAD_MODE" == direct_family_pilot || "$WORKLOAD_MODE" == current_query_profile_baseline ]]; then
+if [[ "$WORKLOAD_MODE" == direct_family_pilot || "$WORKLOAD_MODE" == current_query_profile_baseline || "$WORKLOAD_MODE" == paired_physical_comparison ]]; then
   SEMANTIC_BASE_BUNDLE="$RUN_ROOT/direct-family-base-workload-bundle"
   DIRECT_SEMANTIC_WORKLOAD="$RUN_ROOT/direct-semantic-workload-bundle"
   SEMANTIC_CATALOG="$RUN_ROOT/semantic_catalog.json"
@@ -403,7 +407,7 @@ if [[ "$WORKLOAD_MODE" == direct_family_pilot || "$WORKLOAD_MODE" == current_que
     --semantic-catalog "$SEMANTIC_CATALOG"
     --predicate-mapping "$PREDICATE_MAPPING"
   )
-  if [[ "$WORKLOAD_MODE" == direct_family_pilot ]]; then
+  if [[ "$WORKLOAD_MODE" == direct_family_pilot || "$WORKLOAD_MODE" == paired_physical_comparison ]]; then
     DIRECT_FAMILY_PILOT_PROTOCOL="$RUN_ROOT/direct_family_pilot_protocol.json"
     DIRECT_FAMILY_PREDICTOR_POLICY="$RUN_ROOT/direct_family_predictor_policy.json"
     cp -- "$REPO_ROOT/experiments/configs/m15_f2c10d_family_memory_pilot_dev.json" \
@@ -414,12 +418,21 @@ if [[ "$WORKLOAD_MODE" == direct_family_pilot || "$WORKLOAD_MODE" == current_que
       --direct-family-pilot-protocol "$DIRECT_FAMILY_PILOT_PROTOCOL"
       --direct-family-predictor-policy "$DIRECT_FAMILY_PREDICTOR_POLICY"
     )
-  else
+  fi
+  if [[ "$WORKLOAD_MODE" == current_query_profile_baseline || "$WORKLOAD_MODE" == paired_physical_comparison ]]; then
     CURRENT_QUERY_PROFILE_PROTOCOL="$RUN_ROOT/current_query_profile_protocol.json"
     cp -- "$REPO_ROOT/experiments/configs/m15_f2c12_current_query_profile_baseline_dev.json" \
       "$CURRENT_QUERY_PROFILE_PROTOCOL"
     WORKLOAD_ARGS+=(
       --current-query-profile-protocol "$CURRENT_QUERY_PROFILE_PROTOCOL"
+    )
+  fi
+  if [[ "$WORKLOAD_MODE" == paired_physical_comparison ]]; then
+    PAIRED_PHYSICAL_PROTOCOL="$RUN_ROOT/paired_physical_protocol.json"
+    cp -- "$REPO_ROOT/experiments/configs/m15_f2c13_paired_physical_comparison_dev.json" \
+      "$PAIRED_PHYSICAL_PROTOCOL"
+    WORKLOAD_ARGS+=(
+      --paired-physical-protocol "$PAIRED_PHYSICAL_PROTOCOL"
     )
   fi
 fi

@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13A PAIRED PROTOCOL LOCAL**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13B PAIRED LIVE GATE LOCAL**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -689,6 +689,19 @@ The local compiler makes zero calls and authorizes no live execution. It tests
 physical selection within semantic classes only and remains descriptive and
 `paper_result=false`. Full local acceptance passes 931 tests with 36 explicit
 environment or external-artifact skips.
+
+F2C13B implements that protocol without changing its population, order, or
+metrics. A pre-service seal binds all 264 runs. Within one native allocation,
+the producer loads the fixture once, seals family-memory choices after the 144
+training runs, executes and seals 20 cost-only profiles, runs both methods once
+per held-out task in counterbalanced order, and opens the shared 80-run shadow
+matrix only after both seals. The first failure stops execution and no retry or
+fallback occurs. A separate read-only auditor reconstructs the source
+schedule, all candidate identities, training memory, prediction suite, both
+selection seals, analysis, and the complete 528-call phase/run sequence. It
+also rejects tampered choices, costs, or analysis. Full local acceptance now
+passes 939 tests with 36 explicit skips. This authorizes one development CWRU
+gate, not a paper claim; `paper_result=false` remains mandatory.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

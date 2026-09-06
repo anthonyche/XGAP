@@ -1586,6 +1586,154 @@ def test_current_query_profile_native_boundary_uses_sixty_second_clients(
     }
 
 
+def test_native_paired_physical_comparison_seals_preflight_and_inputs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    configs = REPO_ROOT / "experiments/configs"
+    base = generate_m15_parameterized_workload_bundle(
+        workload_spec=configs / "m15_f2c_parameterized_workload_dev.json",
+        query_template_spec=configs / "m15_f2c_parameterized_financial_risk_v2.json",
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "paired-base",
+    )
+    catalog = configs / "m15_f2c6_semantic_relaxation_dev.json"
+    mapping = configs / "m15_f2c8_predicate_mapping_dev.json"
+    direct = generate_m15_direct_semantic_workload_bundle(
+        base_bundle=base,
+        catalog=catalog,
+        mapping=mapping,
+        policy=configs / "m15_f2c10_direct_semantic_workload_dev.json",
+        destination=tmp_path / "paired-direct",
+    )
+    paired = configs / "m15_f2c13_paired_physical_comparison_dev.json"
+    family = configs / "m15_f2c10d_family_memory_pilot_dev.json"
+    predictor = configs / "m15_f2c10_family_memory_predictor_dev.json"
+    profile = configs / "m15_f2c12_current_query_profile_baseline_dev.json"
+    with pytest.raises(ValueError, match="requires a direct workload"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-paired",
+            run_id="missing-paired",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="paired_physical_comparison",
+        )
+
+    observed: list[tuple[str, str, str, str, str]] = []
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence(
+            "/opt/java17/bin/java", 17, "17"
+        ),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "start_service",
+        lambda spec: RunningService(spec, _StableProcess(), io.BytesIO()),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id, True, 1, 1.0, 200
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args: observed.append(
+            (
+                _args[3],
+                _args[21].manifest["manifest_sha256"],
+                str(_args[22]),
+                str(_args[24]),
+                str(_args[25]),
+            )
+        ),
+    )
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "paired-runs",
+        run_id="native-paired-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="paired_physical_comparison",
+        semantic_base_bundle=base,
+        semantic_catalog=catalog,
+        predicate_mapping=mapping,
+        direct_semantic_workload=direct,
+        paired_physical_protocol=paired,
+        direct_family_pilot_protocol=family,
+        direct_family_predictor_policy=predictor,
+        current_query_profile_protocol=profile,
+    )
+
+    assert record.success
+    assert observed == [
+        (
+            "paired_physical_comparison",
+            direct.manifest["manifest_sha256"],
+            str(family),
+            str(paired),
+            str(profile),
+        )
+    ]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.PAIRED_PHYSICAL_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["paired_physical_comparison"] == {
+        "protocol": str(paired),
+        "family_protocol": str(family),
+        "predictor_policy": str(predictor),
+        "profile_protocol": str(profile),
+    }
+    preflight = json.loads(
+        (
+            record.run_root
+            / "paired-physical-preflight/preflight_manifest.json"
+        ).read_text(encoding="utf-8")
+    )
+    schedule = json.loads(
+        (
+            record.run_root / "paired-physical-preflight/paired_schedule.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert preflight["schema_version"] == (
+        native_services.PAIRED_PHYSICAL_PREFLIGHT_SCHEMA_VERSION
+    )
+    assert preflight["sealed_before_service_start"] is True
+    assert preflight["backend_calls_before_seal"] == 0
+    assert preflight["expected_counts"] == schedule["counts"]
+    assert preflight["schedule_sha256"] == schedule["schedule_sha256"]
+    assert manifest["paired_physical_preflight"] == preflight
+
+
 def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1934,6 +2082,7 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "semantic_direct_frontier" in script
     assert "direct_family_pilot" in script
     assert "current_query_profile_baseline" in script
+    assert "paired_physical_comparison" in script
     assert "m15_direct_semantic_workload" in script
     assert "m15_parameterized_workload" in script
     assert "m15_semantic_overlay" in script
@@ -2024,4 +2173,12 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "#SBATCH --time=00:30:00" in current_profile_script
     assert "SLURM_SUBMIT_DIR" in current_profile_script
     assert "BASH_SOURCE" not in current_profile_script
+    paired_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_paired_physical_comparison.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=paired_physical_comparison" in paired_script
+    assert "#SBATCH --time=00:45:00" in paired_script
+    assert "SLURM_SUBMIT_DIR" in paired_script
+    assert "BASH_SOURCE" not in paired_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

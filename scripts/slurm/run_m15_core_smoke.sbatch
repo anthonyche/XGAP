@@ -126,6 +126,9 @@ detect_runtime() {
   tests/test_m15_current_query_profile_baseline.py \
   tests/test_m15_live_current_query_profile_baseline.py \
   tests/test_m15_current_query_profile_baseline_evidence.py \
+  tests/test_m15_paired_physical_comparison.py \
+  tests/test_m15_live_paired_physical_comparison.py \
+  tests/test_m15_paired_physical_comparison_evidence.py \
   tests/test_m15_remote_executor.py \
   tests/test_m15_remote_control.py \
   | tee "$RUN_ROOT/pytest.txt"

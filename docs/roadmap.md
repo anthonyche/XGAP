@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13A PAIRED PROTOCOL LOCAL**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B/F2C10D/F2C12B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11/F2C12A LOCAL MECHANISMS VERIFIED; F2C11/F2C12B AUDITED DEVELOPMENT RESULTS ACCEPTED; F2C13B PAIRED LIVE GATE LOCAL**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -544,15 +544,17 @@ the primary family-memory predictor achieved 0.60 physical-winner accuracy and
 primary reduced mean byte regret to 4,658 from 5,625.6, exposing rather than
 eliminating the latency/transfer trade-off. A separate F2C11 reconstruction
 audit passed all 17 checks. No predictor retuning on these ten tasks is
-permitted. F2C13A now freezes one same-allocation paired comparison: 144
+permitted. F2C13A freezes one same-allocation paired comparison: 144
 historical training runs, 20 dual-profile acquisitions, 20 counterbalanced
 method-specific selected runs, and 80 shared shadows, for 264 plan runs and
 528 backend calls. Family selection seals before profile acquisition, and
-training, acquisition, serving, and shadow costs remain distinct. Its compiler
-is the current local implementation gate; a live producer, independent
-auditor, one clean native run, and a larger multi-family workload remain the
-next experimental gates. Full local acceptance at this protocol boundary
-passes 931 tests with 36 explicit skips.
+training, acquisition, serving, and shadow costs remain distinct. F2C13B now
+implements the live producer, allocation-scoped service mode, 45-minute Slurm
+entry, and independent reconstruction auditor. Controlled failure injection
+confirms stop-on-first-failure with zero retry; tamper tests reject altered
+family choices, profile costs, or paired analysis. Full local acceptance
+passes 939 tests with 36 explicit skips. One clean native run plus its
+outer-root audit is the next gate; a larger multi-family workload follows.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

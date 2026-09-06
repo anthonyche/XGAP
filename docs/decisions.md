@@ -2279,3 +2279,31 @@ ontology claim. The compiler performs no external call, authorizes no CWRU
 run, fails closed on protocol or source-contract drift, and remains
 `paper_result=false`. Full local acceptance passes 931 tests with 36 explicit
 environment or external-artifact skips.
+
+## D131 Bind the paired comparison to one fail-closed native evidence chain
+
+F2C13B implements the frozen F2C13A schedule without changing its tasks,
+methods, order, counts, or descriptive claim boundary. Before starting either
+backend, the native service writes an exact paired schedule and preflight
+manifest. One fixture load and one runtime-compatibility identity are shared by
+both methods. The live producer then executes 144 training runs, seals ten
+family-memory choices before any current-query profile, executes 20 profile
+acquisitions, seals ten profiler choices, runs 20 counterbalanced
+method-specific selected executions, and finally runs 80 shared shadows. This
+is exactly 264 plan runs and 528 backend calls. Both backend timeouts are 60
+seconds; the Slurm limit is 45 minutes; the first failure is preserved and
+stops the campaign with zero retry or fallback.
+
+The producer persists candidate identities, training observations and memory,
+prediction sources, both selection seals, cost-only profile estimates, all
+results, invocation events, and the paired descriptive analysis. The separate
+read-only auditor trusts none of the producer's aggregate claims: it recompiles
+the schedule from the copied workload and four source contracts, reconstructs
+the family memory and prediction suite, independently reselects both methods,
+recomputes analysis, checks the exact phase and run identity for every call,
+and verifies that the run tree did not change. Controlled failure and tamper
+tests cover the main fail-closed boundaries. Full local acceptance passes 939
+tests with 36 explicit environment or external-artifact skips. This authorizes
+one clean CWRU development run and audit only; it adds no confirmatory,
+semantic-frontier, LLM, ontology, or paper-performance claim, and all outputs
+remain `paper_result=false`.

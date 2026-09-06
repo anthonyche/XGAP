@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B VERIFIED; F2C13A PAIRED PROTOCOL LOCAL
-- Version Label: m15_remote_loop_v29
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B VERIFIED; F2C13B PAIRED LIVE GATE LOCAL
+- Version Label: m15_remote_loop_v30
 
 ## Current claim boundary
 
@@ -614,8 +614,14 @@ Preserve this run and do not resubmit it. The allocation-local development
 result selected 10/10 observed latency winners, but raw timing must not be
 compared with F2C10D job `3791600` because the allocations differ.
 
-F2C13A is the next local-only gate. Its compiler binds the exact F2C10D
-training schedule and F2C12 acquisition/shadow schedules into one future
-same-allocation comparison with 264 plan runs and 528 backend calls. No CWRU
-command is authorized until a live producer and independent auditor are
-implemented and locally accepted.
+F2C13B implements the frozen F2C13A schedule as one fail-closed native job.
+It seals the schedule before service startup, executes 144 training, 20
+profile-acquisition, 20 method-specific selected, and 80 shared-shadow runs,
+and stops at the first failure with zero retry. Family selection is sealed
+before profiling, and profile selection is sealed before either selected or
+shadow execution. Its independent auditor recompiles the schedule from the
+copied source inputs, rebuilds family memory and both choices, recomputes the
+paired analysis, and verifies the exact 528-call phase/run order without
+mutating the run tree. Full local acceptance passes 939 tests with 36 explicit
+environment or external-artifact skips. One clean CWRU run and its successful
+outer-root audit are now the next gate; no result is claimed yet.

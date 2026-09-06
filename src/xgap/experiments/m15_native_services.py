@@ -44,6 +44,9 @@ from xgap.experiments.m15_live_direct_family_pilot import (
 from xgap.experiments.m15_live_current_query_profile_baseline import (
     run_m15_live_current_query_profile_baseline,
 )
+from xgap.experiments.m15_live_paired_physical_comparison import (
+    run_m15_live_paired_physical_comparison,
+)
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_campaign_session import (
     prepare_m15_live_campaign_session,
@@ -94,6 +97,10 @@ from xgap.experiments.m15_direct_family_pilot import (
 from xgap.experiments.m15_current_query_profile_baseline import (
     M15CurrentQueryProfileBaselineSchedule,
     compile_m15_current_query_profile_baseline_schedule,
+)
+from xgap.experiments.m15_paired_physical_comparison import (
+    M15PairedPhysicalComparisonSchedule,
+    compile_m15_paired_physical_comparison_schedule,
 )
 from xgap.experiments.m15_predicate_overlay import (
     M15PredicateMappingSpec,
@@ -157,6 +164,12 @@ CURRENT_QUERY_PROFILE_SERVICE_RUN_SCHEMA_VERSION = (
 CURRENT_QUERY_PROFILE_PREFLIGHT_SCHEMA_VERSION = (
     "m15-f2c12b-native-current-query-profile-preflight-v1"
 )
+PAIRED_PHYSICAL_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2c13b-native-live-paired-physical-comparison-service-run-v1"
+)
+PAIRED_PHYSICAL_PREFLIGHT_SCHEMA_VERSION = (
+    "m15-f2c13b-native-paired-physical-comparison-preflight-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -176,6 +189,7 @@ WORKLOAD_MODES = frozenset(
         "semantic_direct_frontier",
         "direct_family_pilot",
         "current_query_profile_baseline",
+        "paired_physical_comparison",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -889,6 +903,7 @@ def _run_fixture_and_query(
     direct_semantic_workload: M15DirectSemanticWorkloadBundle | None = None,
     direct_family_pilot_protocol: Mapping[str, Any] | str | Path | None = None,
     direct_family_predictor_policy: Mapping[str, Any] | str | Path | None = None,
+    paired_physical_protocol: Mapping[str, Any] | str | Path | None = None,
     current_query_profile_protocol: Mapping[str, Any] | str | Path | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
@@ -903,6 +918,79 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
+        if workload_mode == "paired_physical_comparison":
+            assert direct_semantic_workload is not None
+            assert semantic_base_bundle is not None
+            assert semantic_catalog is not None
+            assert predicate_mapping is not None
+            assert paired_physical_protocol is not None
+            assert direct_family_pilot_protocol is not None
+            assert direct_family_predictor_policy is not None
+            assert current_query_profile_protocol is not None
+            for client in clients.values():
+                client.timeout_seconds = 60.0
+
+            def reload_paired_fixture_bundle(
+                bundle_root: Path,
+            ) -> M15ParameterizedWorkloadBundle:
+                expected_root = direct_semantic_workload.workload_bundle.root.resolve()
+                if bundle_root.resolve() != expected_root:
+                    raise ValueError(
+                        "paired physical fixture loader received a different "
+                        "parameterized workload root"
+                    )
+                reloaded = load_m15_direct_semantic_workload_bundle(
+                    direct_semantic_workload.root,
+                    base_bundle=semantic_base_bundle,
+                    catalog=semantic_catalog,
+                    mapping=predicate_mapping,
+                )
+                if reloaded.workload_bundle.root.resolve() != expected_root:
+                    raise ValueError(
+                        "reloaded paired physical workload changed its nested root"
+                    )
+                return reloaded.workload_bundle
+
+            fixture = load_m15_parameterized_fixture(
+                workload_bundle=direct_semantic_workload.workload_bundle,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="paired-physical-fixture-load",
+                repo_root=repo_root,
+                bundle_loader=reload_paired_fixture_bundle,
+            )
+            if not fixture.success:
+                raise RuntimeError(
+                    f"paired physical fixture load failed: {fixture.error}"
+                )
+            runtime_compatibility = build_m15_family_runtime_compatibility(plan)
+            _write_json(
+                run_root / "family_runtime_compatibility.json",
+                runtime_compatibility,
+            )
+            paired = run_m15_live_paired_physical_comparison(
+                direct_workload=direct_semantic_workload,
+                base_bundle=semantic_base_bundle,
+                catalog=semantic_catalog,
+                mapping=predicate_mapping,
+                protocol=paired_physical_protocol,
+                family_protocol=direct_family_pilot_protocol,
+                predictor_policy=direct_family_predictor_policy,
+                profile_protocol=current_query_profile_protocol,
+                clients=clients,
+                runtime_compatibility_sha256=runtime_compatibility[
+                    "runtime_compatibility_sha256"
+                ],
+                output_root=run_root,
+                run_id="paired-physical-comparison-run",
+                repo_root=repo_root,
+            )
+            if not paired.success:
+                raise RuntimeError(
+                    f"live paired physical comparison failed: {paired.error}"
+                )
+            return
         if workload_mode == "current_query_profile_baseline":
             assert direct_semantic_workload is not None
             assert semantic_base_bundle is not None
@@ -1327,6 +1415,7 @@ def run_m15_native_services(
     ) = None,
     direct_family_pilot_protocol: Mapping[str, Any] | str | Path | None = None,
     direct_family_predictor_policy: Mapping[str, Any] | str | Path | None = None,
+    paired_physical_protocol: Mapping[str, Any] | str | Path | None = None,
     current_query_profile_protocol: Mapping[str, Any] | str | Path | None = None,
 ) -> NativeServiceRunRecord:
     root = (
@@ -1435,31 +1524,50 @@ def run_m15_native_services(
     prepared_current_query_profile_schedule: (
         M15CurrentQueryProfileBaselineSchedule | None
     ) = None
+    prepared_paired_physical_schedule: (
+        M15PairedPhysicalComparisonSchedule | None
+    ) = None
     direct_family_values = (
         direct_family_pilot_protocol,
         direct_family_predictor_policy,
     )
-    if workload_mode != "direct_family_pilot" and any(
+    if workload_mode not in {
+        "direct_family_pilot",
+        "paired_physical_comparison",
+    } and any(
         value is not None for value in direct_family_values
     ):
         raise ValueError(
-            "direct family inputs are accepted only in direct_family_pilot"
+            "direct family inputs are accepted only in direct-family modes"
         )
     if (
-        workload_mode != "current_query_profile_baseline"
+        workload_mode not in {
+            "current_query_profile_baseline",
+            "paired_physical_comparison",
+        }
         and current_query_profile_protocol is not None
     ):
         raise ValueError(
-            "current-query profile protocol is accepted only in "
-            "current_query_profile_baseline"
+            "current-query profile protocol is accepted only in profile modes"
+        )
+    if workload_mode != "paired_physical_comparison" and (
+        paired_physical_protocol is not None
+    ):
+        raise ValueError(
+            "paired physical protocol is accepted only in "
+            "paired_physical_comparison"
         )
     if (
-        workload_mode not in {"direct_family_pilot", "current_query_profile_baseline"}
+        workload_mode not in {
+            "direct_family_pilot",
+            "current_query_profile_baseline",
+            "paired_physical_comparison",
+        }
         and direct_semantic_workload is not None
     ):
         raise ValueError(
             "direct semantic workload is accepted only in a direct-family "
-            "or current-query profile mode"
+            "or profile comparison mode"
         )
     scaled_mode = workload_mode in {
         "scaled_adaptive",
@@ -1486,7 +1594,53 @@ def run_m15_native_services(
             "a parameterized workload bundle is accepted only in "
             "a parameterized workload mode"
         )
-    if workload_mode == "current_query_profile_baseline":
+    if workload_mode == "paired_physical_comparison":
+        required_paired_values = (
+            paired_physical_protocol,
+            direct_family_pilot_protocol,
+            direct_family_predictor_policy,
+            current_query_profile_protocol,
+            direct_semantic_workload,
+            semantic_base_bundle,
+            semantic_catalog,
+            predicate_mapping,
+        )
+        if any(value is None for value in required_paired_values):
+            raise ValueError(
+                "paired_physical_comparison requires a direct workload, base "
+                "bundle, semantic catalog, predicate mapping, paired protocol, "
+                "family protocol, predictor policy, and profile protocol"
+            )
+        if selected_direct_semantic_workload is None:
+            raise ValueError("paired physical workload inputs could not be verified")
+        if any(
+            value is not None
+            for value in (
+                semantic_overlay,
+                predicate_overlay,
+                direct_frontier_estimates,
+                selected_bundle,
+                selected_parameterized_bundle,
+            )
+        ):
+            raise ValueError(
+                "paired_physical_comparison does not accept overlays, frontier "
+                "estimates, or another workload bundle"
+            )
+        assert paired_physical_protocol is not None
+        assert direct_family_pilot_protocol is not None
+        assert direct_family_predictor_policy is not None
+        assert current_query_profile_protocol is not None
+        prepared_paired_physical_schedule = (
+            compile_m15_paired_physical_comparison_schedule(
+                workload=selected_direct_semantic_workload,
+                protocol=paired_physical_protocol,
+                family_protocol=direct_family_pilot_protocol,
+                predictor_policy=direct_family_predictor_policy,
+                profile_protocol=current_query_profile_protocol,
+            )
+        )
+    elif workload_mode == "current_query_profile_baseline":
         if current_query_profile_protocol is None or any(
             value is None
             for value in (
@@ -1752,6 +1906,7 @@ def run_m15_native_services(
         "current_query_profile_baseline": (
             CURRENT_QUERY_PROFILE_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "paired_physical_comparison": PAIRED_PHYSICAL_SERVICE_RUN_SCHEMA_VERSION,
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -1842,6 +1997,27 @@ def run_m15_native_services(
             current_query_profile_preflight,
         )
 
+    paired_physical_preflight: dict[str, Any] | None = None
+    if prepared_paired_physical_schedule is not None:
+        preflight_root = run_root / "paired-physical-preflight"
+        preflight_root.mkdir()
+        schedule_payload = prepared_paired_physical_schedule.to_dict()
+        _write_json(preflight_root / "paired_schedule.json", schedule_payload)
+        paired_physical_preflight = {
+            "schema_version": PAIRED_PHYSICAL_PREFLIGHT_SCHEMA_VERSION,
+            "sealed_before_service_start": True,
+            "schedule_sha256": prepared_paired_physical_schedule.schedule_hash,
+            "expected_counts": schedule_payload["counts"],
+            "backend_calls_before_seal": 0,
+            "answer_oracle_opened_before_seal": False,
+            "automatic_retries": 0,
+            "paper_result": False,
+        }
+        _write_json(
+            preflight_root / "preflight_manifest.json",
+            paired_physical_preflight,
+        )
+
     plan: NativeServicePlan | None = None
     health: list[HealthObservation] = []
     shutdown: list[ShutdownObservation] = []
@@ -1906,6 +2082,7 @@ def run_m15_native_services(
                 selected_direct_semantic_workload,
                 direct_family_pilot_protocol,
                 direct_family_predictor_policy,
+                paired_physical_protocol,
                 current_query_profile_protocol,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
@@ -2012,6 +2189,17 @@ def run_m15_native_services(
             "current_query_profile_preflight": (
                 current_query_profile_preflight
             ),
+            "paired_physical_comparison": (
+                {
+                    "protocol": str(paired_physical_protocol),
+                    "family_protocol": str(direct_family_pilot_protocol),
+                    "predictor_policy": str(direct_family_predictor_policy),
+                    "profile_protocol": str(current_query_profile_protocol),
+                }
+                if workload_mode == "paired_physical_comparison"
+                else None
+            ),
+            "paired_physical_preflight": paired_physical_preflight,
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -2083,6 +2271,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--direct-family-pilot-protocol")
     parser.add_argument("--direct-family-predictor-policy")
     parser.add_argument("--current-query-profile-protocol")
+    parser.add_argument("--paired-physical-protocol")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -2133,6 +2322,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             current_query_profile_protocol=(
                 args.current_query_profile_protocol
             ),
+            paired_physical_protocol=args.paired_physical_protocol,
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,

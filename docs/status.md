@@ -465,7 +465,7 @@ These are allocation-local development observations. Cross-allocation timing
 comparison with F2C10D remains forbidden and all artifacts stay
 `paper_result=false`.
 
-M15-F2C13A now freezes the same-allocation comparison needed to interpret the
+M15-F2C13A freezes the same-allocation comparison needed to interpret the
 two mechanisms. It reuses the exact F2C10D 144-run training schedule and the
 exact F2C12 20-run acquisition and 80-run shadow schedules. Family-memory
 choices are sealed before profiling; then family memory and dual profile each
@@ -478,6 +478,21 @@ The compiler makes no call and does not authorize a live run. This remains a
 descriptive physical-selection protocol, not a semantic-frontier or paper
 claim. Full local acceptance passes 931 tests with 36 explicit environment or
 external-artifact skips.
+
+M15-F2C13B now provides the executable boundary for that frozen comparison.
+The producer seals all 264 scheduled runs before service startup, uses exactly
+60-second backend timeouts, and records 528 execute calls across four
+contiguous phases with no automatic retry. Family-memory selections are
+materialized before any current-query profile; profile selections are sealed
+before method-specific serving and shared shadow evaluation. A dedicated
+45-minute wrapper and remote-control allowlist entry are present. The
+independent read-only auditor recompiles the copied source contracts and
+schedule, reconstructs training memory, predictions, both selections, and all
+paired metrics, and checks every phase/run invocation identity. Controlled
+success, first-profile-failure, first-selected-failure, and evidence-tampering
+tests pass. Full acceptance is 939 passed and 36 explicitly gated skips. No
+CWRU F2C13B result exists yet, so the gate remains local and
+`paper_result=false`.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,
