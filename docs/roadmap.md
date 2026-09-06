@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B LIVE GATE VERIFIED ON CWRU; E4B LIVE BRIDGE READY LOCALLY; E4B CWRU RESULT/UI BRIDGE PENDING**
+Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; COST-AWARE SEMANTIC FRONTIER/UI BRIDGE PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -212,7 +212,13 @@ opened only after execution. The four unavailable aggregate classes make no
 backend call. The successful contract is exactly eight execute calls, with zero
 profile/model/ontology calls and zero retry. Focused cross-layer acceptance
 passes 80 tests; full local acceptance passes 1,009 tests with 36 explicit
-skips. One clean CWRU E4B run and audit remain pending. A cost-aware semantic
+skips. CWRU job `3792349` at exact clean commit `8056ee4` completed all four
+plans and eight backend calls on `compt292`; the allocation runtime was removed
+and cleanup succeeded. The initial audit's only failure was an auditor-only
+assumption about a nonexistent `loopback_only` service-plan field. Fix
+`aed12e3` derives the same invariant from the real service schema and persisted
+Neo4j/Fuseki configuration. Its read-only v2 audit of the unchanged run passed
+152/152 checks with no mutation and no experiment rerun. A cost-aware semantic
 frontier and UI clarification transport remain later work.
 
 ### M15-F Paper Experiment Surface and Optional UI

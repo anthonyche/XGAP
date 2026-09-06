@@ -2572,3 +2572,30 @@ the motivation for the already frozen multi-family design gate: the next
 scientific step is to choose structurally distinct query families and a cold-
 start boundary before implementing or running the larger population. All
 artifacts remain descriptive with `paper_result=false`.
+
+## D141 Accept E4B from the immutable run after correcting the auditor schema
+
+CWRU job `3792349` executed exact clean commit `8056ee4` on `compt292` and
+completed in 94 seconds. Its outer lifecycle reports success, zero cleanup
+error, and removal of the allocation-local runtime. The sealed E4B contract
+therefore exercised four physical plans over two executable semantic classes,
+eight black-box backend calls, four retained but unexecuted aggregate classes,
+zero current-query profile/model/ontology-service calls, and zero retry.
+
+The first independent read-only audit passed 150 checks and failed only
+`service.plan.loopback_only`. That check read a `loopback_only` key invented by
+the unit-test fixture but absent from the actual `NativeServicePlan` schema. It
+was an auditor defect, not an experiment failure: the real plan records
+`public_ports=false`, loopback service and health URLs, Fuseki's `--localhost`
+argument, and a persisted Neo4j configuration whose default, Bolt, and HTTP
+listen and advertised addresses are all `127.0.0.1`.
+
+Fix `aed12e3` removes the synthetic fixture contract and derives the isolation
+verdict from those real artifacts. A new tamper test proves that a non-loopback
+endpoint is rejected. The same immutable job was then audited again under a
+new output name; the v2 audit passed 152/152 checks with no failed ID and no
+run-tree mutation. The original failed audit remains preserved, and the
+experiment was neither retried nor rewritten. This closes E4B as real-backend
+mechanism evidence only; it does not establish semantic quality, cost-frontier
+quality, generalization, or paper performance, and remains
+`paper_result=false`.

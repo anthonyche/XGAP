@@ -2,7 +2,7 @@
 
 ## Status and claim boundary
 
-M15-E4B is implemented locally as a native Neo4j/Fuseki mechanism gate. It
+M15-E4B is verified on CWRU as a native Neo4j/Fuseki mechanism gate. It
 consumes one sealed E3 resolution commit through the E4 capability bridge,
 materializes the matching namespaced workload before service startup, loads
 both black-box backends, and executes all and only the four physical plans
@@ -52,10 +52,17 @@ invocations and service cleanup, and compares the run tree before and after the
 audit. A modified result row therefore fails reconstruction even if the stored
 success marker was left unchanged.
 
-The local tests use deterministic backend clients only. A successful local
-gate authorizes one clean CWRU CPU/native-services engineering run after its
-exact commit is published. Until that run and its separate audit pass, E4B is
-not live-verified and remains `paper_result=false`.
+The local tests use deterministic backend clients only. CWRU job `3792349`
+executed exact clean commit `8056ee4` on `compt292` in 94 seconds. It completed
+all four plans and eight backend calls, removed the allocation runtime, and
+reported no cleanup error. The first read-only audit failed only because the
+auditor expected a synthetic `loopback_only` field absent from the real
+`NativeServicePlan` schema. Fix `aed12e3` now verifies `public_ports=false`, all
+loopback HTTP endpoints, Fuseki's `--localhost` argument, and Neo4j's persisted
+listen and advertised addresses. The v2 audit of the unchanged run passed all
+152 checks with no run-tree mutation. The original failed audit is retained;
+the experiment was not rerun. E4B remains `paper_result=false` because this is
+mechanism acceptance, not semantic-quality, frontier, or performance evidence.
 
 ## Entry points
 

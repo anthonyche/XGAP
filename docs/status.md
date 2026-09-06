@@ -100,10 +100,17 @@ zero profile/model/ontology calls, and zero retry. The four unsupported
 aggregate classes never reach a backend. The auditor independently recompiles
 the bridge and workload, compares exact post-execution oracles, validates the
 service lifecycle and invocation graph, detects row tampering, and proves the
-run tree unchanged. This gate is locally implemented; a clean CWRU execution
-and audit remain pending. Focused cross-layer acceptance passes 80 tests and
-full local acceptance passes 1,009 tests with 36 explicit skips;
-`paper_result=false` remains mandatory.
+run tree unchanged. CWRU job `3792349` executed the gate at exact clean commit
+`8056ee4` on `compt292` in 94 seconds: all four physical plans completed, the
+eight-call contract held, the runtime was removed, and cleanup succeeded. The
+first independent audit exposed an auditor-only schema mismatch: it expected a
+synthetic `loopback_only` field not emitted by the real service-plan schema.
+Fix `aed12e3` now reconstructs isolation from the persisted endpoints, Fuseki
+startup arguments, and Neo4j listen/advertised addresses. Re-auditing the same
+immutable run passed 152/152 checks with no run-tree mutation; no experiment
+was retried. The compact record is
+`experiments/artifacts/m15_e4b_cwru_native_resolution_execution_20260906.json`.
+This is mechanism evidence only; `paper_result=false` remains mandatory.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly

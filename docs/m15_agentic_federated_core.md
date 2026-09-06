@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B LIVE GATE VERIFIED ON CWRU; E4B LIVE BRIDGE READY LOCALLY; E4B CWRU RESULT/UI BRIDGE PENDING**
+Status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; COST-AWARE SEMANTIC FRONTIER/UI BRIDGE PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -330,8 +330,14 @@ after all four selected executions. A separate read-only auditor recompiles the
 bridge and workload, reconstructs every result and invocation edge, validates
 service cleanup, detects tampering, and checks that the run tree is unchanged.
 Focused cross-layer acceptance passes 80 tests and full local acceptance passes
-1,009 tests with 36 explicit skips. One clean CWRU run and audit remain the live
-gate; all outputs remain `paper_result=false`. See
+1,009 tests with 36 explicit skips. CWRU job `3792349` at exact clean commit
+`8056ee4` completed the four-plan/eight-call contract on `compt292` in 94
+seconds and removed its allocation runtime. An initial independent audit
+correctly left the run untouched but falsely expected a synthetic
+`loopback_only` service-plan field. Audit fix `aed12e3` reconstructs that
+invariant from the actual endpoints and persisted Neo4j/Fuseki configuration;
+its v2 audit of the same run passed 152/152 checks with no mutation or
+experiment rerun. All outputs remain `paper_result=false`. See
 [`docs/m15_e4b_live_resolution_execution.md`](m15_e4b_live_resolution_execution.md).
 
 ## M15-F — Paper experiment surface and optional UI
