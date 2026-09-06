@@ -651,6 +651,17 @@ LLM, ontology, fallback, retry, and pre-selection oracle access, and does not
 authorize a remote run. A native producer and independent read-only auditor
 remain required.
 
+The repaired F2C10D pilot and pre-frozen F2C11 analysis are now accepted as
+development evidence. Job `3791600` ran 231 plans and 462 backend calls with
+zero current-query profiles; its read-only audit passed 1,289 checks. Family
+memory selected 6/10 observed physical winners, compared with 8/10 for the
+no-instance family median and fixed parallel controls. Its mean latency regret
+was 2.282 ms versus 1.276 ms for fixed parallel, while mean byte regret was
+lower (4,658 versus 5,625.6). The independent F2C11 audit reconstructed the
+exact five-method analysis and passed 17/17 checks. This negative development
+result is preserved without predictor tuning and does not alter the already
+frozen F2C12A protocol.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

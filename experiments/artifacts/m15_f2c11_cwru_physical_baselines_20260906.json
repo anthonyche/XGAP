@@ -1,0 +1,105 @@
+{
+  "artifact_id": "m15-f2c11-cwru-physical-baselines-3791600",
+  "artifact_role": "results_blind_physical_baseline_analysis_not_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "user_returned_cwru_analysis_and_independent_reconstruction_audit",
+  "source": {
+    "slurm_job_id": "3791600",
+    "git_commit": "08f1911dfab2617e2598df91578fa0997f90eb11",
+    "run_root": "runs/cwru-m15-native-direct-family-pilot-3791600",
+    "source_audit_check_count": 1289,
+    "source_run_tree_mutated": false
+  },
+  "analysis": {
+    "schema_version": "m15-f2c11-physical-baseline-analysis-v1",
+    "policy_id": "m15-f2c11-results-blind-development-baselines-v1",
+    "policy_sha256": "c560fd75ba349364e4f93431700188df4d9415979904100ec00ad906c3307be1",
+    "analysis_sha256": "973eb42347b38563b8d8089643219432925533393149c7916e916a370fe70936",
+    "heldout_semantic_tasks": 10,
+    "methods": 5,
+    "training_physical_plans": 36,
+    "shadow_plan_runs": 80
+  },
+  "method_metrics": {
+    "family_memory_primary": {
+      "physical_winner_accuracy": 0.6,
+      "physical_winner_correct_count": 6,
+      "mean_latency_regret_ms": 2.2822152823209763,
+      "median_latency_regret_ms": 0.0,
+      "mean_bytes_regret": 4658.0,
+      "selected_parallel_hash": 8,
+      "selected_risk_first_bind": 2
+    },
+    "family_global_no_instance_features": {
+      "physical_winner_accuracy": 0.8,
+      "physical_winner_correct_count": 8,
+      "mean_latency_regret_ms": 1.2759741395711899,
+      "median_latency_regret_ms": 0.0,
+      "mean_bytes_regret": 5625.6,
+      "selected_parallel_hash": 10,
+      "selected_risk_first_bind": 0
+    },
+    "fixed_parallel_hash": {
+      "physical_winner_accuracy": 0.8,
+      "physical_winner_correct_count": 8,
+      "mean_latency_regret_ms": 1.2759741395711899,
+      "median_latency_regret_ms": 0.0,
+      "mean_bytes_regret": 5625.6,
+      "selected_parallel_hash": 10,
+      "selected_risk_first_bind": 0
+    },
+    "fixed_risk_first_bind": {
+      "physical_winner_accuracy": 0.2,
+      "physical_winner_correct_count": 2,
+      "mean_latency_regret_ms": 6.024063378572464,
+      "median_latency_regret_ms": 7.3635876178741455,
+      "mean_bytes_regret": 0.0,
+      "selected_parallel_hash": 0,
+      "selected_risk_first_bind": 10
+    },
+    "observed_oracle_upper_bound": {
+      "physical_winner_accuracy": 1.0,
+      "physical_winner_correct_count": 10,
+      "mean_latency_regret_ms": 0.0,
+      "median_latency_regret_ms": 0.0,
+      "mean_bytes_regret": 4595.6,
+      "selected_parallel_hash": 8,
+      "selected_risk_first_bind": 2
+    }
+  },
+  "independent_read_only_audit": {
+    "schema_version": "m15-f2c11-physical-baseline-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-f2c11-physical-baselines-3791600-audit.json",
+    "success": true,
+    "check_count": 17,
+    "failed_check_ids": [],
+    "reconstruction_success": true,
+    "analysis_exact_match": true,
+    "run_tree_mutated": false
+  },
+  "interpretation": {
+    "primary_beats_fixed_parallel_on_winner_accuracy": false,
+    "primary_beats_fixed_parallel_on_mean_latency_regret": false,
+    "primary_beats_fixed_parallel_on_mean_bytes_regret": true,
+    "primary_and_latency_oracle_strategy_counts_match": true,
+    "primary_and_latency_oracle_task_choices_match": false,
+    "result_class": "exploratory_negative_physical_prediction_result"
+  },
+  "execution_boundary": {
+    "analysis_backend_calls": 0,
+    "analysis_llm_calls": 0,
+    "analysis_ontology_service_calls": 0,
+    "current_query_observation_operations": [],
+    "online_selected_results_used": false,
+    "answer_row_values_used": false
+  },
+  "claim_boundary": {
+    "physical_strategy_within_semantic_class_only": true,
+    "semantic_frontier_comparison": false,
+    "live_current_query_profiling_baseline": false,
+    "development_candidate_baselines_only": true,
+    "confirmatory_statistics": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

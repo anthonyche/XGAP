@@ -453,6 +453,25 @@ passes 911 tests with 36 environment-gated skips. Live lifecycle wiring and an
 independent auditor are still pending; all artifacts remain
 `paper_result=false`.
 
+M15-F2C10D repair job `3791600` is now accepted as a real-backend development
+pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,
+executed 231 plans and 462 backend calls, returned seven semantic frontier
+plans across the two held-out base queries, made no current-query profile call
+or retry, and passed a 1,289-check independent audit with no run-tree mutation.
+Its physical-winner accuracy is 0.60 and mean predicted/observed semantic
+frontier Jaccard is 0.55. The result remains a six-query, non-confirmatory
+development observation.
+
+The pre-frozen F2C11 analysis is also accepted after its independent auditor
+reconstructed the exact artifact and passed 17/17 checks. Family memory chose
+6/10 observed latency winners with 2.282 ms mean latency regret and 4,658 mean
+byte regret. Fixed parallel and the no-instance family-median ablation each
+chose 8/10 winners with 1.276 ms mean latency regret and 5,625.6 mean byte
+regret. Fixed risk-first has zero byte regret but 6.024 ms mean latency regret.
+This is preserved as an exploratory negative result for the present predictor;
+it does not support retuning on the ten held-out tasks or a general claim about
+memory. Compact immutable records now exist for both F2C10D and F2C11.
+
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
 the frozen registry and schedule hashes, started Neo4j 5.26.30 and Fuseki 5.6.0

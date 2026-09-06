@@ -2167,3 +2167,33 @@ does not authorize a CWRU run. A live runner and independent auditor are
 required before this protocol becomes executable evidence, and all outputs
 remain exploratory with `paper_result=false`. Full local acceptance passes
 911 tests with 36 explicitly environment-gated skips.
+
+## D127 Preserve the accepted F2C10D/F2C11 result even though it is negative
+
+CWRU repair job `3791600` completed at exact clean commit `08f1911` on
+`compt303` in 220 seconds. The run executed 144 training plans, seven online
+frontier plans, and 80 post-selection shadow plans: 231 plan runs and 462
+backend calls with zero current-query profiles and zero retry. It returned
+four MEDIUM-query and three LOW-query semantic representatives. The independent
+read-only source audit passed 1,289 checks with no failure or run-tree
+mutation, so the six-query development pilot is accepted as real-backend
+evidence. It remains non-confirmatory and `paper_result=false`.
+
+The pre-frozen F2C11 comparison then reconstructed all five methods over ten
+held-out semantic tasks. Family memory selected six of ten observed latency
+winners with 2.282 ms mean latency regret. The no-instance family median and
+fixed parallel baseline both selected eight of ten winners with 1.276 ms mean
+latency regret. Family memory reduced mean byte regret from 5,625.6 to 4,658,
+while fixed risk-first achieved zero byte regret at 6.024 ms mean latency
+regret. The latency oracle chose the same aggregate 8:2 strategy split as
+family memory, but family memory assigned the two bind choices to the wrong
+task identities often enough to lose accuracy. The independent F2C11 auditor
+reconstructed the exact analysis and passed all 17 checks without source-tree
+mutation.
+
+This is an exploratory negative result for the current instance-conditioned
+predictor, not a reason to tune it on these ten tasks. The next valid steps are
+the independently frozen cost-inclusive current-query profiling comparator and
+a larger multi-family population. The current result does not establish that
+memory is generally ineffective, that fixed parallel is generally optimal, or
+that byte cost should be ignored.

@@ -1,0 +1,74 @@
+{
+  "artifact_id": "m15-f2c10d-cwru-native-direct-family-pilot-success-3791600",
+  "artifact_role": "cwru_six_query_native_development_pilot_not_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "user_returned_cwru_summary_and_independent_audit",
+  "slurm": {
+    "elapsed": "00:03:40",
+    "exit_code": "0:0",
+    "job_id": "3791600",
+    "node": "compt303",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "08f1911dfab2617e2598df91578fa0997f90eb11"
+  },
+  "counts": {
+    "training_plan_runs": 144,
+    "training_backend_calls": 288,
+    "online_selected_plan_runs": 7,
+    "online_backend_calls": 14,
+    "evaluation_shadow_plan_runs": 80,
+    "evaluation_shadow_backend_calls": 160,
+    "total_plan_runs": 231,
+    "total_backend_calls": 462,
+    "current_query_profile_calls": 0
+  },
+  "semantic_frontier": {
+    "financial-risk-alice-jun-medium-v2": 4,
+    "financial-risk-bob-may-low-v2": 3,
+    "mean_predicted_observed_jaccard": 0.55
+  },
+  "prediction_metrics": {
+    "physical_winner_accuracy": 0.6,
+    "physical_winner_correct_count": 6,
+    "semantic_class_count": 10,
+    "latency_prediction_mae_ms": 5.783539301065613,
+    "latency_prediction_rmse_ms": 7.025512929521542,
+    "bytes_prediction_mae": 882.7981224779114,
+    "bytes_prediction_rmse": 1168.61820731156,
+    "latency_regret_mae_ms": 2.2822152823209763,
+    "latency_regret_median_ms": 0.0,
+    "bytes_regret_mae": 1997.6,
+    "bytes_regret_median": 0.0
+  },
+  "hashes": {
+    "schedule_sha256": "75e65a396a0eb9ae432b71f5abfa8cab909c291828f00ebce83d9eb845948b2f",
+    "selection_seal_sha256": "c1e23031a61b90b3f074de09c1d73d9e9dd7c06218ddd6402cdef8f10ec0c835",
+    "training_memory_view_sha256": "7ed39e1097e3138666b87ec9c8ea82ed135d77a8e12e9f2893931892ba0b7e57",
+    "prediction_suite_sha256": "8b198106407de21b9e2c721fcfdbfa90ff50a92b947d0744807eacb271f367f5",
+    "analysis_sha256": "e4a3cb0679baef8649331e442a212ff34ccc571551212c19c5042fd5a5deb4fb",
+    "summary_sha256": "4c1e3278144e283e0b6a189e1ebe236042f07ef17e7a1c1f759eb785f0b167d3"
+  },
+  "independent_read_only_audit": {
+    "schema_version": "m15-f2c10d-direct-family-pilot-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-f2c10d-direct-family-pilot-3791600-audit.json",
+    "success": true,
+    "check_count": 1289,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "execution_boundary": {
+    "automatic_retries": 0,
+    "current_query_profile_calls": 0,
+    "shadow_used_for_selection": false
+  },
+  "claim_boundary": {
+    "development_pilot_only": true,
+    "confirmatory_statistics": false,
+    "generalization_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}
