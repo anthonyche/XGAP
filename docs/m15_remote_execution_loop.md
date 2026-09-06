@@ -431,19 +431,69 @@ direct frontier, and F2C9B now adds its native lifecycle, versioned controlled
 estimate source, selected-only executor, allowlisted Slurm wrapper, and
 independent auditor. The one authorized `semantic_direct_frontier` CWRU job,
 `3791375`, completed at exact commit `2c0ee7f` on `compt298` in 94 seconds with
-exit `0:0`. Do not rerun it. Its result extraction and independent audit are
-now partially resolved: extraction confirms all three exact answers, while the
-first auditor used the wrong outer directory for the service-owned preflight
-seal and emitted 20 false missing-artifact failures. The corrected auditor is
-at `9e1a1db`; run it once against the same immutable tree with a new audit
-output path. Do not interpret the controlled selection as a performance
+exit `0:0`. Do not rerun it. Its first audit used the wrong outer directory
+for the service-owned preflight seal and emitted 20 false missing-artifact
+failures. The corrected auditor was then run read-only against the unchanged
+tree and passed 211/211 checks with no mutation. F2C9B is accepted mechanism
+evidence; do not interpret its controlled selection as a performance
 comparison.
-F2C10A--F2C10C are now locally accepted and require no CWRU dispatch. They
-freeze the preserve-all variable-cardinality workload and disjoint views,
-compile family-memory predictions without a current-query observation, and
-persist/reconstruct selected-only controlled execution. Do not send an F2C10
-native job until the author freezes order, repetitions, timeouts, and analysis
-in F2C10D.
+
+F2C10A--F2C10C are locally accepted and require no CWRU dispatch. F2C10D is
+the next and only authorized native action. Its frozen development protocol
+measures 144 counterbalanced training plan runs, seals family memory and two
+independent held-out query frontiers with zero current-query profiling,
+executes 2--8 returned online plans, and then executes 80 shadow plan runs.
+The valid total is 226--232 plan runs and 452--464 plan backend calls. Each
+request has a 60-second timeout, the Slurm wrapper reserves 45 minutes, failure
+stops on the first error, and no retry is allowed. Submit exactly one job:
+
+```bash
+cd "$HOME/XGAP-m15-465e2e2"
+
+test -z "$(git status --porcelain)" || {
+  echo "checkout is dirty; stop"
+  exit 1
+}
+
+git fetch --prune origin
+git switch codex/m15-f2c10-family-memory-prediction
+git pull --ff-only origin codex/m15-f2c10-family-memory-prediction
+
+git rev-parse HEAD
+git status --short
+
+sbatch --parsable \
+  --export=ALL,XGAP_PYTHON="$HOME/venvs/xgap-core/bin/python",XGAP_PYTHON_MODULE=Miniconda3,XGAP_JAVA_MODULE=Java/17.0.6 \
+  scripts/slurm/run_m15_native_direct_family_pilot.sbatch
+```
+
+Return the exact commit and job ID before any second submission. After the job
+finishes, inspect `sacct` and the outer `run_status.json`. If and only if both
+report success, run the independent auditor once with a new output path:
+
+```bash
+cd "$HOME/XGAP-m15-465e2e2"
+XGAP_F2C10D_JOB=<successful-job-id>
+XGAP_F2C10D_COMMIT=<exact-40-character-job-commit>
+XGAP_F2C10D_RUN="$PWD/runs/cwru-m15-native-direct-family-pilot-$XGAP_F2C10D_JOB"
+XGAP_F2C10D_AUDIT="$PWD/runs/audits/cwru-m15-f2c10d-direct-family-pilot-$XGAP_F2C10D_JOB-audit.json"
+
+mkdir -p "$PWD/runs/audits"
+test ! -e "$XGAP_F2C10D_AUDIT" || {
+  echo "audit output already exists; stop"
+  exit 1
+}
+
+PYTHONPATH="$PWD/src" \
+"$HOME/venvs/xgap-core/bin/python" \
+  -m xgap.experiments.m15_direct_family_pilot_evidence \
+  --run-root "$XGAP_F2C10D_RUN" \
+  --expected-commit "$XGAP_F2C10D_COMMIT" \
+  --output "$XGAP_F2C10D_AUDIT" \
+  > "$XGAP_F2C10D_AUDIT.stdout"
+
+echo "audit_exit=$?"
+```
 Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.
