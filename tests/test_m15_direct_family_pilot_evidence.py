@@ -19,6 +19,10 @@ from xgap.experiments.m15_direct_family_baselines import (
     DIRECT_FAMILY_BASELINE_ANALYSIS_SCHEMA_VERSION,
     analyze_m15_direct_family_baselines,
 )
+from xgap.experiments.m15_direct_family_baselines_evidence import (
+    DIRECT_FAMILY_BASELINE_AUDIT_SCHEMA_VERSION,
+    audit_m15_direct_family_baselines,
+)
 from xgap.experiments.m15_direct_family_prediction_run import (
     _ControlledState,
     _clients_after_selection_seal,
@@ -274,6 +278,42 @@ def test_results_blind_physical_baselines_reconstruct_five_frozen_methods(
         "answer_row_values_used_for_selection_or_metrics"
     ] is False
     assert analysis["paper_result"] is False
+
+    analysis_path = tmp_path / "f2c11-analysis.json"
+    analysis_path.write_text(json.dumps(analysis), encoding="utf-8")
+    evidence = audit_m15_direct_family_baselines(
+        run_root=root,
+        source_audit=audit,
+        policy=CONFIGS / "m15_f2c11_physical_baselines_dev.json",
+        analysis=analysis_path,
+    )
+    assert evidence.success, evidence.failed_check_ids
+    assert evidence.run_tree_mutated is False
+    assert evidence.to_dict()["schema_version"] == (
+        DIRECT_FAMILY_BASELINE_AUDIT_SCHEMA_VERSION
+    )
+
+    tampered = dict(analysis)
+    tampered["methods"] = dict(tampered["methods"])
+    tampered["methods"]["family_memory_primary"] = dict(
+        tampered["methods"]["family_memory_primary"]
+    )
+    tampered["methods"]["family_memory_primary"][
+        "physical_winner_accuracy"
+    ] = -1
+    tampered_body = {
+        key: value for key, value in tampered.items() if key != "analysis_sha256"
+    }
+    tampered["analysis_sha256"] = content_hash(tampered_body)
+    analysis_path.write_text(json.dumps(tampered), encoding="utf-8")
+    rejected_evidence = audit_m15_direct_family_baselines(
+        run_root=root,
+        source_audit=audit,
+        policy=CONFIGS / "m15_f2c11_physical_baselines_dev.json",
+        analysis=analysis_path,
+    )
+    assert not rejected_evidence.success
+    assert "analysis.exact" in rejected_evidence.failed_check_ids
 
     rejected = dict(audit)
     rejected["success"] = False

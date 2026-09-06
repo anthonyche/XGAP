@@ -2118,3 +2118,21 @@ uses no confirmatory statistic, and stays `paper_result=false` regardless of
 which method wins. It isolates physical choice inside each semantic class; it
 is not a semantic-frontier comparison and does not replace a later live
 current-query-profiling baseline with acquisition overhead included.
+
+## D125 Require an independent reconstruction audit for F2C11
+
+The persisted F2C11 comparison is not accepted from its self-reported hash or
+summary alone. A separate read-only auditor must rerun the complete F2C10D
+source audit, reconstruct the five-method analysis from the frozen policy and
+source measurements, and require exact equality with the persisted analysis.
+Recomputing an analysis hash after changing a metric must therefore still
+fail. Both the analysis and its audit output must remain outside the immutable
+F2C10D run tree, and the auditor must prove that the source tree digest is
+unchanged.
+
+This additional admission step makes no backend, profile, sample, explain,
+LLM, or ontology call. It checks the ten-task and five-method cardinalities,
+the zero-call and results-blind boundaries, and the exploratory
+`paper_result=false` claim. It does not make the development comparison
+confirmatory or broaden it beyond physical strategy choice within an already
+selected semantic class.

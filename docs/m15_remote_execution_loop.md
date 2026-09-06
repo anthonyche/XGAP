@@ -562,10 +562,37 @@ echo "baseline_exit=$?"
 cat "$XGAP_F2C11_ANALYSIS"
 ```
 
+Only after the analyzer exits zero, run its independent reconstruction audit.
+The output name is unique and neither artifact may be placed below the F2C10D
+source run:
+
+```bash
+XGAP_F2C11_AUDIT="${PWD}/runs/audits/\
+cwru-m15-f2c11-physical-baselines-${XGAP_F2C10D_JOB}-audit.json"
+test ! -e "$XGAP_F2C11_AUDIT" || {
+  echo "baseline audit output already exists; stop"
+  exit 1
+}
+
+PYTHONPATH="$PWD/src" \
+"$HOME/venvs/xgap-core/bin/python" \
+  -m xgap.experiments.m15_direct_family_baselines_evidence \
+  --run-root "$XGAP_F2C10D_RUN" \
+  --source-audit "$XGAP_F2C10D_AUDIT" \
+  --policy experiments/configs/m15_f2c11_physical_baselines_dev.json \
+  --analysis "$XGAP_F2C11_ANALYSIS" \
+  --output "$XGAP_F2C11_AUDIT" \
+  > "$XGAP_F2C11_AUDIT.stdout"
+
+echo "baseline_audit_exit=$?"
+cat "$XGAP_F2C11_AUDIT"
+```
+
 This comparison makes no backend, profile, sample, explain, LLM, or ontology
 call. It is an exploratory physical-choice analysis over ten held-out semantic
 tasks, not a semantic-frontier comparison or a substitute for a later live
-current-query-profiling baseline.
+current-query-profiling baseline. The independent audit must report success,
+no failed checks, and no source-run mutation before the comparison is admitted.
 Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.

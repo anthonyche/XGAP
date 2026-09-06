@@ -509,6 +509,13 @@ writes only outside the source run tree, and remains exploratory with
 job `3791600` was still pending, so the method set cannot be selected from the
 observed outcome.
 
+F2C11 also has an independent read-only evidence auditor. It reruns the source
+admission audit and the five-method reconstruction, requires exact equality
+with the persisted analysis rather than trusting a self-hash, and compares
+source-tree digests before and after. A valid analysis therefore needs both a
+zero-exit analyzer artifact and a separate zero-exit audit with no failed
+checks or run-tree mutation; both stay exploratory and outside the source run.
+
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
 used JSON object syntax inside a Cypher `UNWIND` literal; Neo4j 5.26 requires

@@ -630,6 +630,13 @@ No current-query observation or external call is introduced, output stays
 outside the immutable run tree, and all F2C11 artifacts remain exploratory and
 `paper_result=false`.
 
+An independent F2C11 evidence auditor then repeats that reconstruction and
+requires exact equality with the persisted comparison, even when a tampered
+artifact carries a recomputed self-hash. It verifies the five-method,
+ten-semantic-task, zero-call, results-blind, and non-confirmatory boundaries
+while comparing source-tree digests before and after. The audit artifact also
+lives outside the F2C10D run tree and cannot promote `paper_result`.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

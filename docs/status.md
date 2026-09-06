@@ -428,6 +428,15 @@ comparison remains exploratory six-query development evidence with
 `paper_result=false` until job `3791600` finishes and passes its independent
 audit.
 
+The F2C11 comparison now has a separate results-blind evidence auditor. It
+reruns the F2C10D admission audit, reconstructs all five methods over all ten
+held-out semantic tasks, and requires exact equality with the persisted
+analysis even if a tampered artifact recomputes its self-hash. It also verifies
+zero external calls, exclusion of online results and answer-row values, false
+confirmatory and paper flags, and an unchanged source-tree digest. Local
+focused acceptance passes; a CWRU F2C11 result and its independent audit remain
+pending the accepted F2C10D producer chain.
+
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
 the frozen registry and schedule hashes, started Neo4j 5.26.30 and Fuseki 5.6.0
