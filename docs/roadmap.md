@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B LOCAL MECHANISMS VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B/F2C10A LOCAL MECHANISMS VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -421,8 +421,26 @@ stops without retry. A dedicated allowlisted Slurm wrapper and independent
 read-only reconstruction audit cover the whole lifecycle. Controlled local
 doubles return exact 11-, 9-, and 11-row answers, the synthetic audit passes
 211/211 checks, and full local acceptance passes 853 tests with 36 gated
-skips. Exactly one CWRU mechanism run is authorized next. Controlled estimates
-must not be promoted into a performance claim, and multihop remains blocked.
+skips. The one authorized CWRU mechanism job, `3791375`, completed at exact
+commit `2c0ee7f` with exit `0:0`; result extraction and the independent audit
+remain pending, so the live gate is not yet accepted. Do not rerun it.
+Controlled estimates must not be promoted into a performance claim, and
+multihop remains blocked.
+
+F2C10A generalizes the direct frontier under a new versioned contract while
+leaving every frozen F2C9 v1 hash unchanged. The author-selected preserve-all
+policy compiles all catalog-adjacent direct interpretations: HIGH/LOW yield
+four classes and eight plans, while MEDIUM yields six classes and twelve
+plans. Across the existing development split this creates 28 semantic tasks
+and 56 physical candidates, with 18 training and 10 held-out tasks. Every
+derived interpretation inherits its base query's split and preserves entity,
+time, and amount bindings. Selection-safe train/held-out views contain no
+answer artifacts; a separately hash-bound evaluation registry holds the
+post-selection oracle references. Full local acceptance passes 862 tests with
+36 gated skips. This is a zero-external-call development and leakage gate, not
+a measured result; the 4/2 base-query population is too small for a paper
+claim. F2C10B must next compile family-memory predictions without opening the
+held-out evaluation registry.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

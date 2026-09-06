@@ -2,9 +2,10 @@
 
 The full semantic solution space may contain interpretations that no current
 backend artifact can execute.  This module keeps that coverage visible while
-building candidates only for the four verified direct classes.  It reduces
-two physical plans per class using sealed pre-execution estimates, then applies
-semantic-deviation/cost Pareto, epsilon, and K-bounded selection.
+building candidates for every verified direct class.  It reduces two physical
+plans per class using sealed pre-execution estimates, then applies semantic-
+deviation/cost Pareto, epsilon, and K-bounded selection.  The F2C9 v1 contract
+remains fixed at four classes; F2C10 v2 is catalog-driven and variable-sized.
 """
 
 from __future__ import annotations
@@ -17,6 +18,10 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from xgap.experiments.hashing import content_hash
+from xgap.experiments.m15_direct_semantic_workload import (
+    M15DirectSemanticWorkloadBundle,
+    load_m15_direct_semantic_workload_bundle,
+)
 from xgap.experiments.m15_parameterized_federation import (
     build_m15_parameterized_plan_candidates,
     load_m15_parameterized_contract,
@@ -33,6 +38,7 @@ from xgap.experiments.m15_predicate_overlay import (
 )
 from xgap.experiments.m15_semantic_frontier import (
     M15SemanticRelaxationCatalog,
+    load_m15_semantic_relaxation_catalog,
 )
 from xgap.runtime import FederatedExecutionPlan
 
@@ -45,6 +51,15 @@ PREEXECUTION_ESTIMATE_SNAPSHOT_SCHEMA_VERSION = (
 )
 DIRECT_SEMANTIC_FRONTIER_SCHEMA_VERSION = (
     "m15-f2c9-direct-semantic-frontier-v1"
+)
+VARIABLE_DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION = (
+    "m15-f2c10-direct-semantic-candidate-set-v2"
+)
+VARIABLE_PREEXECUTION_ESTIMATE_SNAPSHOT_SCHEMA_VERSION = (
+    "m15-f2c10-preexecution-estimate-snapshot-v2"
+)
+VARIABLE_DIRECT_SEMANTIC_FRONTIER_SCHEMA_VERSION = (
+    "m15-f2c10-direct-semantic-frontier-v2"
 )
 _SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
 _ALLOWED_EVIDENCE_KINDS = frozenset(
@@ -73,6 +88,10 @@ _CANDIDATE_SET_FIELDS = frozenset(
         "paper_result",
         "candidate_set_sha256",
     }
+)
+_VARIABLE_CANDIDATE_SET_FIELDS = frozenset(
+    (_CANDIDATE_SET_FIELDS - {"predicate_overlay_sha256"})
+    | {"direct_semantic_workload_sha256"}
 )
 _ESTIMATE_SNAPSHOT_FIELDS = frozenset(
     {
@@ -185,21 +204,36 @@ def _hash_bound_payload(
 def _validated_candidate_payload(
     candidate_set: M15DirectSemanticCandidateSet,
 ) -> dict[str, Any]:
+    if not isinstance(candidate_set.payload, Mapping):
+        raise M15DirectSemanticFrontierError("candidate set must be an object")
+    schema_version = candidate_set.payload.get("schema_version")
+    if schema_version == DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION:
+        fields = _CANDIDATE_SET_FIELDS
+    elif schema_version == VARIABLE_DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION:
+        fields = _VARIABLE_CANDIDATE_SET_FIELDS
+    else:
+        raise M15DirectSemanticFrontierError(
+            "candidate set schema_version is unsupported"
+        )
     payload = _hash_bound_payload(
         candidate_set.payload,
         name="candidate set",
-        schema_version=DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION,
+        schema_version=str(schema_version),
         hash_field="candidate_set_sha256",
-        fields=_CANDIDATE_SET_FIELDS,
+        fields=fields,
     )
-    counts = payload.get("counts")
-    if counts != {
+    fixed_counts = {
         "declared_semantic_classes": 12,
         "executable_direct_semantic_classes": 4,
         "unavailable_semantic_classes": 8,
         "physical_candidates": 8,
         "physical_candidates_per_class": 2,
-    }:
+    }
+    counts = payload.get("counts")
+    if (
+        schema_version == DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION
+        and counts != fixed_counts
+    ):
         raise M15DirectSemanticFrontierError(
             "candidate set counts do not match the F2C9 contract"
         )
@@ -214,35 +248,30 @@ def _validated_candidate_payload(
         raise M15DirectSemanticFrontierError(
             "candidate set unavailable class records are invalid"
         )
-    if len(classes) != 4 or not all(isinstance(item, Mapping) for item in classes):
+    if not classes or not all(isinstance(item, Mapping) for item in classes):
         raise M15DirectSemanticFrontierError(
-            "candidate set requires four direct semantic class records"
+            "candidate set requires direct semantic class records"
         )
-    if len(physical) != 8 or not all(
+    if not physical or not all(
         isinstance(item, Mapping) for item in physical
     ):
         raise M15DirectSemanticFrontierError(
-            "candidate set requires eight physical plan records"
-        )
-    if len(unavailable) != 8:
-        raise M15DirectSemanticFrontierError(
-            "candidate set requires eight unavailable semantic classes"
+            "candidate set requires physical plan records"
         )
     class_ids = [
         _safe_id(item.get("semantic_class_id"), name="semantic_class_id")
         for item in classes
     ]
-    if len(class_ids) != 4 or len(set(class_ids)) != 4:
+    if len(class_ids) != len(set(class_ids)):
         raise M15DirectSemanticFrontierError(
-            "candidate set requires four unique direct semantic classes"
+            "candidate set requires unique direct semantic classes"
         )
     unavailable_ids = [
         _safe_id(value, name="unavailable semantic_class_id")
         for value in unavailable
     ]
     if (
-        len(unavailable_ids) != 8
-        or len(set(unavailable_ids)) != 8
+        len(unavailable_ids) != len(set(unavailable_ids))
         or set(class_ids) & set(unavailable_ids)
     ):
         raise M15DirectSemanticFrontierError(
@@ -273,13 +302,30 @@ def _validated_candidate_payload(
                 "candidate set physical plan payload and runtime plan differ"
             )
     if (
-        len(plan_ids) != 8
-        or len(set(plan_ids)) != 8
+        len(plan_ids) != len(set(plan_ids))
         or set(plan_ids) != set(candidate_set.plans)
         or set(class_counts.values()) != {2}
     ):
         raise M15DirectSemanticFrontierError(
             "candidate set physical candidate coverage is invalid"
+        )
+    expected_counts = {
+        "declared_semantic_classes": len(class_ids) + len(unavailable_ids),
+        "executable_direct_semantic_classes": len(class_ids),
+        "unavailable_semantic_classes": len(unavailable_ids),
+        "physical_candidates": len(plan_ids),
+        "physical_candidates_per_class": 2,
+    }
+    if counts != expected_counts:
+        raise M15DirectSemanticFrontierError(
+            "candidate set counts do not match its availability partition"
+        )
+    exact_classes = [
+        item for item in classes if float(item.get("semantic_deviation", -1)) == 0
+    ]
+    if len(exact_classes) != 1:
+        raise M15DirectSemanticFrontierError(
+            "candidate set requires exactly one exact semantic class"
         )
     if (
         payload.get("automatic_retries") != 0
@@ -296,10 +342,16 @@ def _validated_snapshot_payload(
     *,
     candidate_set: M15DirectSemanticCandidateSet,
 ) -> dict[str, Any]:
+    candidate_schema = candidate_set.payload.get("schema_version")
+    snapshot_schema = (
+        VARIABLE_PREEXECUTION_ESTIMATE_SNAPSHOT_SCHEMA_VERSION
+        if candidate_schema == VARIABLE_DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION
+        else PREEXECUTION_ESTIMATE_SNAPSHOT_SCHEMA_VERSION
+    )
     payload = _hash_bound_payload(
         snapshot.payload,
         name="estimate snapshot",
-        schema_version=PREEXECUTION_ESTIMATE_SNAPSHOT_SCHEMA_VERSION,
+        schema_version=snapshot_schema,
         hash_field="estimate_snapshot_sha256",
         fields=_ESTIMATE_SNAPSHOT_FIELDS,
     )
@@ -587,6 +639,197 @@ def build_m15_direct_semantic_candidate_set(
     return candidate_set
 
 
+def build_m15_variable_direct_semantic_candidate_set(
+    *,
+    direct_workload: M15DirectSemanticWorkloadBundle | str | Path,
+    base_bundle: M15ParameterizedWorkloadBundle | str | Path,
+    base_query_id: str,
+    catalog: M15SemanticRelaxationCatalog | str | Path,
+    mapping: M15PredicateMappingSpec | str | Path,
+) -> M15DirectSemanticCandidateSet:
+    """Build the F2C10 v2 variable-cardinality candidate set for one query."""
+
+    selected_base = _selected_base(base_bundle)
+    workload = load_m15_direct_semantic_workload_bundle(
+        direct_workload.root
+        if isinstance(direct_workload, M15DirectSemanticWorkloadBundle)
+        else direct_workload,
+        base_bundle=selected_base,
+        catalog=catalog,
+        mapping=mapping,
+    )
+    selected_query_id = _safe_id(base_query_id, name="base_query_id")
+    base_records = [
+        item
+        for item in workload.manifest["base_queries"]
+        if item["base_query_id"] == selected_query_id
+    ]
+    if len(base_records) != 1:
+        raise M15DirectSemanticFrontierError(
+            "base_query_id must identify one direct-semantic base query"
+        )
+    base_record = dict(base_records[0])
+    selection_tasks = [
+        dict(item)
+        for view in (
+            workload.training_selection_view,
+            workload.heldout_selection_view,
+        )
+        for item in view["semantic_tasks"]
+        if item["base_query_id"] == selected_query_id
+    ]
+    if len(selection_tasks) != base_record["direct_semantic_class_count"]:
+        raise M15DirectSemanticFrontierError(
+            "direct semantic workload class coverage is incomplete"
+        )
+
+    class_records: list[dict[str, Any]] = []
+    plan_records: list[dict[str, Any]] = []
+    plans: dict[str, FederatedExecutionPlan] = {}
+    for task in sorted(
+        selection_tasks,
+        key=lambda item: (
+            float(item["semantic_deviation"]),
+            str(item["semantic_class_id"]),
+        ),
+    ):
+        class_id = str(task["semantic_class_id"])
+        query_id = str(task["executable_query_id"])
+        contract = load_m15_parameterized_contract(
+            workload.workload_bundle,
+            query_id,
+        )["contract"]
+        if contract["query_instance_sha256"] != task[
+            "target_query_instance_sha256"
+        ]:
+            raise M15DirectSemanticFrontierError(
+                "semantic task and executable query identity differ"
+            )
+        class_records.append(
+            {
+                "semantic_class_id": class_id,
+                "canonical_interpretation_id": task[
+                    "canonical_interpretation_id"
+                ],
+                "semantic_deviation": float(task["semantic_deviation"]),
+                "semantic_deviation_fraction": dict(
+                    task["semantic_deviation_fraction"]
+                ),
+                "query_id": query_id,
+                "query_instance_sha256": contract[
+                    "query_instance_sha256"
+                ],
+                "binding_sha256": contract["binding_sha256"],
+                "changed_slot_ids": list(task["changed_slot_ids"]),
+                "binding_values": _binding_values(contract["bindings"]),
+            }
+        )
+        candidates = build_m15_parameterized_plan_candidates(
+            workload.workload_bundle,
+            query_id=query_id,
+        )
+        if len(candidates) != 2:
+            raise M15DirectSemanticFrontierError(
+                "each direct semantic class requires two physical candidates"
+            )
+        for candidate in candidates:
+            original = candidate.plan
+            decorated = replace(
+                original,
+                metadata={
+                    **dict(original.metadata),
+                    "semantic_class_id": class_id,
+                    "semantic_deviation": float(task["semantic_deviation"]),
+                    "canonical_interpretation_id": task[
+                        "canonical_interpretation_id"
+                    ],
+                    "changed_slot_ids": list(task["changed_slot_ids"]),
+                    "direct_semantic_workload_sha256": workload.manifest[
+                        "manifest_sha256"
+                    ],
+                    "answer_oracle_used_for_construction": False,
+                    "paper_result": False,
+                },
+            )
+            if decorated.plan_id in plans:
+                raise M15DirectSemanticFrontierError(
+                    "direct physical plan IDs are not unique"
+                )
+            plans[decorated.plan_id] = decorated
+            plan_records.append(
+                {
+                    "plan_id": decorated.plan_id,
+                    "semantic_class_id": class_id,
+                    "canonical_interpretation_id": task[
+                        "canonical_interpretation_id"
+                    ],
+                    "query_id": query_id,
+                    "physical_strategy": decorated.metadata[
+                        "physical_strategy"
+                    ],
+                    "plan": decorated.to_dict(),
+                }
+            )
+    unavailable = list(base_record["unavailable_semantic_class_ids"])
+    catalog_payload = (
+        catalog.to_dict()
+        if isinstance(catalog, M15SemanticRelaxationCatalog)
+        else load_m15_semantic_relaxation_catalog(catalog).to_dict()
+    )
+    body = {
+        "schema_version": VARIABLE_DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION,
+        "source_solution_space_sha256": base_record[
+            "source_solution_space_sha256"
+        ],
+        "direct_semantic_workload_sha256": workload.manifest[
+            "manifest_sha256"
+        ],
+        "predicate_mapping_sha256": workload.manifest[
+            "predicate_mapping_sha256"
+        ],
+        "family_compatibility_sha256": workload.manifest[
+            "family_compatibility_sha256"
+        ],
+        "base_query_id": selected_query_id,
+        "frontier_policy": dict(catalog_payload["frontier_policy"]),
+        "counts": {
+            "declared_semantic_classes": base_record[
+                "declared_semantic_class_count"
+            ],
+            "executable_direct_semantic_classes": len(class_records),
+            "unavailable_semantic_classes": len(unavailable),
+            "physical_candidates": len(plans),
+            "physical_candidates_per_class": 2,
+        },
+        "semantic_classes": class_records,
+        "physical_candidates": sorted(
+            plan_records,
+            key=lambda item: (item["semantic_class_id"], item["plan_id"]),
+        ),
+        "unavailable_semantic_class_ids": unavailable,
+        "unavailable_reason": "bounded_multihop_semantics_and_artifacts_unbound",
+        "claim_boundary": {
+            "artifact_class": "unexecuted_variable_direct_candidates",
+            "preserve_all_adjacent_direct_interpretations": True,
+            "blocked_classes_excluded_from_planning": True,
+            "answer_oracle_used": False,
+            "backend_calls_made": 0,
+            "llm_calls_made": 0,
+            "ontology_calls_made": 0,
+            "contains_cost_estimates": False,
+            "paper_result": False,
+        },
+        "automatic_retries": 0,
+        "paper_result": False,
+    }
+    candidate_set = M15DirectSemanticCandidateSet(
+        {**body, "candidate_set_sha256": content_hash(body)},
+        plans,
+    )
+    _validated_candidate_payload(candidate_set)
+    return candidate_set
+
+
 def build_m15_preexecution_estimate_snapshot(
     candidate_set: M15DirectSemanticCandidateSet,
     estimates: Sequence[Mapping[str, Any]],
@@ -630,8 +873,14 @@ def build_m15_preexecution_estimate_snapshot(
         raise M15DirectSemanticFrontierError(
             "estimate snapshot must cover exactly every physical candidate"
         )
+    snapshot_schema = (
+        VARIABLE_PREEXECUTION_ESTIMATE_SNAPSHOT_SCHEMA_VERSION
+        if candidate_set.payload["schema_version"]
+        == VARIABLE_DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION
+        else PREEXECUTION_ESTIMATE_SNAPSHOT_SCHEMA_VERSION
+    )
     body = {
-        "schema_version": PREEXECUTION_ESTIMATE_SNAPSHOT_SCHEMA_VERSION,
+        "schema_version": snapshot_schema,
         "candidate_set_sha256": candidate_set.candidate_set_hash,
         "evidence_kind": evidence_kind,
         "evidence_id": selected_evidence_id,
@@ -940,8 +1189,14 @@ def select_m15_direct_semantic_frontier(
         candidate_set.plans[item["plan_id"]].to_dict() for item in returned
     ]
     returned_class_ids = {item["semantic_class_id"] for item in returned}
+    frontier_schema = (
+        VARIABLE_DIRECT_SEMANTIC_FRONTIER_SCHEMA_VERSION
+        if candidates["schema_version"]
+        == VARIABLE_DIRECT_SEMANTIC_CANDIDATE_SET_SCHEMA_VERSION
+        else DIRECT_SEMANTIC_FRONTIER_SCHEMA_VERSION
+    )
     body = {
-        "schema_version": DIRECT_SEMANTIC_FRONTIER_SCHEMA_VERSION,
+        "schema_version": frontier_schema,
         "candidate_set_sha256": candidate_set.candidate_set_hash,
         "estimate_snapshot_sha256": estimate_snapshot.snapshot_hash,
         "estimate_evidence_kind": snapshot["evidence_kind"],

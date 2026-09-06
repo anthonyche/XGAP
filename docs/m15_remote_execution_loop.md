@@ -429,10 +429,17 @@ coordinator plumbing. F2C8B job `3790680` has completed at exact commit
 mechanism evidence and must not be rerun. F2C9A builds the capability-aware
 direct frontier, and F2C9B now adds its native lifecycle, versioned controlled
 estimate source, selected-only executor, allowlisted Slurm wrapper, and
-independent auditor. Exactly one clean `semantic_direct_frontier` CWRU
-mechanism run is authorized next. After it finishes, audit the exact commit and
-keep the run tree immutable. Do not dispatch a second run or interpret the
-controlled selection as a performance comparison.
+independent auditor. The one authorized `semantic_direct_frontier` CWRU job,
+`3791375`, completed at exact commit `2c0ee7f` on `compt298` in 94 seconds with
+exit `0:0`. Do not rerun it. Its result extraction and independent audit are
+still required before F2C9B becomes accepted live evidence; keep the run tree
+immutable and do not interpret the controlled selection as a performance
+comparison.
+F2C10A is now locally accepted and requires no CWRU dispatch. It freezes the
+preserve-all variable-cardinality workload and the disjoint selection and
+evaluation views. Do not send an F2C10 native job until the family-memory
+compiler and its independent local audit pass, then the author freezes order,
+repetitions, timeouts, and analysis in F2C10D.
 Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.

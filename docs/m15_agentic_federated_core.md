@@ -552,6 +552,18 @@ full acceptance passes 853 tests with 36 gated skips. One CWRU mechanism run is
 the next gate. Constructed cost estimates cannot support a performance claim,
 and all eight multihop classes remain excluded pending author-owned semantics.
 
+F2C10A introduces the separately versioned variable-cardinality successor to
+that mechanism. It enumerates every catalog-adjacent direct interpretation
+before bounding the result: four classes for HIGH/LOW and six for MEDIUM, each
+with both physical strategies. The six development base queries become 28
+semantic tasks and 56 candidates. Split ownership remains at the base-query
+level, so every interpretation of one base query stays entirely in training or
+held-out. Selection-safe views are hash-bound and exclude answer artifacts;
+the evaluation registry is a separate post-selection input. The generalized
+selector retains the same physical/Pareto/epsilon/K order, and the old F2C9 v1
+hashes remain unchanged. This gate performs no external call or measurement
+and does not turn the six-query development fixture into paper evidence.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

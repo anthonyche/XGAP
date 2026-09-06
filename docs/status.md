@@ -71,10 +71,10 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
-and the F2C0--F2C9B stream, family, typed-query, workload, exact-execution,
-family-memory, semantic-frontier, execution-readiness, overlay, and native
-frontier contracts, current full local acceptance passes 853 tests with
-36 gated skips. This is
+and the F2C0--F2C10A stream, family, typed-query, workload, exact-execution,
+family-memory, semantic-frontier, execution-readiness, overlay, native
+frontier, and variable-cardinality split contracts, current full local
+acceptance passes 862 tests with 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
 `experiments/artifacts/m15_f1_local_controlled_method_matrix_20260905.json`.
@@ -303,7 +303,8 @@ occurs, and no performance or semantic-utility claim is enabled. The compact
 record is
 `experiments/artifacts/m15_f2c9a_local_direct_semantic_frontier_20260906.json`.
 
-M15-F2C9B is locally ready for one native mechanism gate. A versioned
+M15-F2C9B is locally ready and its one authorized native mechanism job has
+finished at the scheduler level. A versioned
 controlled estimate source is copied into the immutable run tree and bound to
 all eight direct physical candidates. The runner persists the candidate set,
 estimate source, sealed snapshot, and three-plan frontier before reading an
@@ -315,11 +316,31 @@ auditor cover overlay regeneration, fixture verification, frontier
 reconstruction, exact answers, call order, service shutdown, and runtime
 cleanup. The controlled native-double path returned 11, 9, and 11 exact rows,
 and its reconstructed synthetic run tree passed 211/211 audit checks. Full
-local acceptance passes 853 tests with 36 gated skips. This is readiness only:
-the estimates are constructed, no real backend frontier run has occurred, and
-no semantic-utility, comparative, performance, ontology, or paper claim is
-enabled. The compact record is
+local acceptance passes 853 tests with 36 gated skips. CWRU job `3791375`
+completed at exact commit `2c0ee7f` on `compt298` in 94 seconds with exit
+`0:0`; its result extraction and independent audit remain pending, so it is
+not yet accepted live evidence and must not be rerun. No semantic-utility,
+comparative, performance, ontology, or paper claim is enabled. The local
+readiness record is
 `experiments/artifacts/m15_f2c9b_local_native_direct_frontier_readiness_20260906.json`.
+
+M15-F2C10A is locally accepted. The author selected family-memory prediction
+and preservation of every catalog-adjacent direct interpretation. A new
+versioned compiler expands the six frozen development base queries into 28
+semantic tasks and 56 physical candidates: HIGH/LOW have four classes and
+eight plans, while MEDIUM keeps both adjacent risk directions and therefore
+has six classes and twelve plans. The four seed base queries produce 18
+training tasks; the two held-out base queries produce 10 held-out tasks. Every
+interpretation inherits the base split and preserves the hard entity, time,
+and amount bindings. Hash-bound selection views expose no answer artifacts,
+while an independent evaluation registry binds their post-selection location
+and hashes. The generalized F2C10 v2 selector accepts either cardinality and
+still applies physical reduction, Pareto, epsilon, and K; the three frozen
+F2C9 v1 hashes remain byte-identical. Full acceptance passes 862 tests with 36
+gated skips. No backend, LLM, or ontology-service call or measurement occurs,
+and the development population supports no performance, utility, or
+generalization claim. The compact record is
+`experiments/artifacts/m15_f2c10a_local_direct_semantic_workload_20260906.json`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used

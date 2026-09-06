@@ -22,9 +22,10 @@ Current-query backend observations are reserved for a later baseline and are
 not admitted as fallback evidence for the primary estimator. The approved path
 therefore adds no current-query profile, sample, explain, ontology, or LLM call.
 
-Implementation is now gated on one newly exposed semantic-space decision. The
-four-class F2C9 contract was derived from a HIGH-risk reference instance. It is
-not cardinality-invariant across the already frozen parameterized workload.
+The author selected the preserve-all semantic-space policy on 2026-09-06. The
+four-class F2C9 contract was derived from a HIGH-risk reference instance and
+is not cardinality-invariant across the already frozen parameterized workload;
+F2C10 therefore uses a separately versioned variable-cardinality contract.
 
 ## Provisional research question
 
@@ -103,7 +104,9 @@ query population and shrink both partitions. Generalizing F2C9 to a variable
 number of direct classes preserves all catalog-backed meanings but changes its
 fixed four-class/eight-plan validation into a cardinality-independent contract.
 
-No workload is generated until the author selects one of those three policies.
+This preserve-all policy is now author-approved: no adjacent MEDIUM direction
+may be discarded before Pareto/epsilon/K selection. The fixed F2C9 v1 artifact
+remains immutable evidence for its HIGH-risk mechanism gate.
 
 ### Measurement protocol
 
@@ -119,9 +122,9 @@ No workload is generated until the author selects one of those three policies.
   metadata. Never store answer rows.
 - Freeze the training memory view and estimator configuration before opening
   held-out measurements.
-- For each held-out query, generate estimates for all eight direct physical
-  plans, seal the F2C9 snapshot, and select the frontier before executing any
-  held-out plan.
+- For each held-out query, generate estimates for every direct physical plan
+  (eight for HIGH/LOW and twelve for MEDIUM), seal the generalized snapshot,
+  and select the frontier before executing any held-out plan.
 - Run non-selected candidates only in a separately labeled, counterbalanced
   evaluation phase that cannot update the estimator or selection.
 - Never automatically retry a failed attempt. Preserve failures as outcomes
@@ -190,8 +193,10 @@ or oracle equality. It remains a separate study.
   must be recorded.
 - Query-instance leakage: no hard-binding instance may appear in both training
   and held-out views.
-- Semantic-class imbalance: every admitted query instance must expose the same
-  four direct classes or be explicitly marked unavailable before measurement.
+- Semantic-space cardinality: every admitted query instance must expose all
+  direct classes permitted by its base value and the frozen catalog (four for
+  HIGH/LOW, six for MEDIUM); cardinality is recorded rather than balanced by
+  deleting meanings.
 - Tuning leakage: the existing two F2C5 held-out results and the future F2C9B
   CWRU mechanism result may be used as diagnostics only, never as F2C10
   estimator-training or hyperparameter-selection data.
@@ -215,12 +220,15 @@ or oracle equality. It remains a separate study.
 
 Primary estimator decision: **Choice A accepted by the author**.
 
-One semantic-cardinality selection remains required:
+Semantic-cardinality decision: **preserve every catalog-adjacent direct
+interpretation and generalize the mechanism under a new F2C10 contract**.
 
-1. preserve every catalog-adjacent direct interpretation and generalize F2C9;
-2. freeze one directional MEDIUM-risk relaxation policy;
-3. exclude MEDIUM-risk base queries from this experiment.
-
-Until that policy is accepted, F2C9B remains the last executable milestone and
-the F2C10 implementation state is `semantic_cardinality_decision_required`.
-No paper result is claimed.
+F2C10A is locally accepted. It compiles 6 base queries into 28 direct semantic
+tasks and 56 physical candidates, with 18 training and 10 held-out tasks. The
+separate selection views and evaluation registry are hash-bound, all hard
+bindings and split ownership are preserved, and both MEDIUM adjacency
+directions survive enumeration. Full acceptance passes 862 tests with 36
+gated skips. The existing 4-seed/2-held-out population remains a mechanism and
+leakage-readiness fixture only; its size does not support a paper or
+generalization claim. F2C10B is the next gate and may use only the frozen
+training selection view to compile family-memory predictions.

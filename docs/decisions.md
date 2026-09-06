@@ -1966,3 +1966,22 @@ instance in both seed and held-out partitions. F2C10 therefore remains gated
 on an author-owned choice between preserving every adjacent interpretation and
 generalizing F2C9, choosing one directional MEDIUM relaxation, or excluding
 MEDIUM queries. No option is inferred from implementation convenience.
+
+## D118 Preserve every catalog-adjacent direct interpretation in F2C10
+
+The author selected the preserve-all cardinality policy. F2C10 must retain
+every direct interpretation admitted by the frozen semantic catalog: HIGH and
+LOW base risks each produce four semantic classes and eight physical plans,
+while MEDIUM produces six semantic classes and twelve physical plans. The
+implementation must not choose one MEDIUM direction for convenience or remove
+MEDIUM queries from the predeclared population.
+
+Candidate enumeration is therefore variable-cardinality and catalog-driven.
+The existing F2C9 v1 four-class/eight-plan artifacts remain immutable evidence
+for their HIGH-risk mechanism gate; F2C10 introduces a separately versioned
+generalized contract. Candidate growth is bounded only after enumeration:
+minimum predicted-cost physical reduction per semantic class, followed by the
+already approved Pareto, epsilon-dominance, and maximum-K semantic selection.
+Entity identity, time lower bound, and amount lower bound remain hard; all
+multihop interpretations remain unavailable. This is a design decision, not a
+semantic-utility or performance result.

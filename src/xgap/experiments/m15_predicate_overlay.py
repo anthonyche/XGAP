@@ -461,13 +461,20 @@ def _catalog_transition(
     return transition
 
 
-def _direct_semantic_classes(
+def build_m15_catalog_bound_direct_semantic_classes(
     *,
     bundle: M15ParameterizedWorkloadBundle,
     query_id: str,
     catalog: M15SemanticRelaxationCatalog,
     mapping: M15PredicateMappingSpec,
-) -> tuple[Mapping[str, Any], list[dict[str, Any]], dict[str, Any]]:
+) -> tuple[M15SemanticSolutionSpace, list[dict[str, Any]], dict[str, Any]]:
+    """Return every executable direct class admitted by the frozen catalog.
+
+    Unlike the original F2C8 overlay gate, this helper is cardinality
+    independent.  HIGH/LOW currently yield four classes while MEDIUM yields
+    six because both adjacent risk transitions remain available.
+    """
+
     if bundle.manifest["family_compatibility_sha256"] != (
         mapping.family_compatibility_sha256
     ):
@@ -483,7 +490,6 @@ def _direct_semantic_classes(
         )
     if exact_bindings["path-shape"] != "direct":
         raise M15PredicateOverlayError("F2C8A requires a direct base query")
-    selected: list[dict[str, Any]] = []
     supported: list[dict[str, Any]] = []
     for semantic_class in payload["semantic_equivalence_classes"]:
         record = dict(semantic_class)
@@ -507,8 +513,40 @@ def _direct_semantic_classes(
         record["changed_slot_ids"] = changed
         record["binding_values"] = bindings
         supported.append(record)
-        if changed:
-            selected.append(record)
+    exact = [
+        item for item in supported if not item["changed_slot_ids"]
+    ]
+    if len(exact) != 1:
+        raise M15PredicateOverlayError(
+            "direct semantic space requires exactly one exact class"
+        )
+    if len(supported) not in {4, 6}:
+        raise M15PredicateOverlayError(
+            "direct semantic class count is outside the approved F2C10 policy"
+        )
+    return solution, sorted(
+        supported, key=lambda item: item["semantic_class_id"]
+    ), exact_bindings
+
+
+def _direct_semantic_classes(
+    *,
+    bundle: M15ParameterizedWorkloadBundle,
+    query_id: str,
+    catalog: M15SemanticRelaxationCatalog,
+    mapping: M15PredicateMappingSpec,
+) -> tuple[M15SemanticSolutionSpace, list[dict[str, Any]], dict[str, Any]]:
+    """Retain the frozen four-class F2C8 overlay contract."""
+
+    solution, supported, exact_bindings = (
+        build_m15_catalog_bound_direct_semantic_classes(
+            bundle=bundle,
+            query_id=query_id,
+            catalog=catalog,
+            mapping=mapping,
+        )
+    )
+    selected = [item for item in supported if item["changed_slot_ids"]]
     expected_changes = {
         ("risk-level",),
         ("transfer-predicate",),
@@ -546,7 +584,7 @@ def build_m15_predicate_semantic_solution_space(
         if isinstance(base_bundle, M15ParameterizedWorkloadBundle)
         else load_m15_parameterized_workload_bundle(base_bundle)
     )
-    solution, _, _ = _direct_semantic_classes(
+    solution, _, _ = build_m15_catalog_bound_direct_semantic_classes(
         bundle=selected_base,
         query_id=_safe_id(base_query_id, name="base_query_id"),
         catalog=_selected_catalog(catalog),
