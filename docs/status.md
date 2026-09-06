@@ -110,7 +110,9 @@ startup arguments, and Neo4j listen/advertised addresses. Re-auditing the same
 immutable run passed 152/152 checks with no run-tree mutation; no experiment
 was retried. The compact record is
 `experiments/artifacts/m15_e4b_cwru_native_resolution_execution_20260906.json`.
-This is mechanism evidence only; `paper_result=false` remains mandatory.
+The audit-fix branch passes full local acceptance with 1,010 tests and 36
+explicit skips. This is mechanism evidence only; `paper_result=false` remains
+mandatory.
 
 M15-E5 is now blocked on an explicit semantic-objective decision, not on an
 execution mechanism. E4 emits co-equal unresolved interpretations with no

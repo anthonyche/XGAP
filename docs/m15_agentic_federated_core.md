@@ -329,8 +329,8 @@ capability gaps and never reach a backend. Exact answer oracles are opened only
 after all four selected executions. A separate read-only auditor recompiles the
 bridge and workload, reconstructs every result and invocation edge, validates
 service cleanup, detects tampering, and checks that the run tree is unchanged.
-Focused cross-layer acceptance passes 80 tests and full local acceptance passes
-1,009 tests with 36 explicit skips. CWRU job `3792349` at exact clean commit
+Focused cross-layer acceptance passes 81 tests and full local acceptance passes
+1,010 tests with 36 explicit skips. CWRU job `3792349` at exact clean commit
 `8056ee4` completed the four-plan/eight-call contract on `compt292` in 94
 seconds and removed its allocation runtime. An initial independent audit
 correctly left the run untouched but falsely expected a synthetic

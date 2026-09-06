@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B VERIFIED; F2C13C SUMMARY ACCEPTED; E4B LIVE GATE LOCAL
-- Version Label: m15_remote_loop_v32
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B VERIFIED; F2C13C SUMMARY ACCEPTED
+- Version Label: m15_remote_loop_v33
 
 ## Current claim boundary
 
@@ -364,39 +364,14 @@ VPN reachability and a working user-owned SSH alias.
   the E3 resolution, E4 bridge, six classes, and four physical candidates
   before starting Neo4j or Fuseki. Only the two executable classes run; each of
   their two strategies makes one call to each backend, for exactly eight
-  execute calls and zero profile/model/ontology/retry calls. Its CWRU command
-  is released only after the exact E4B commit is published.
-
-After publication, use only the exact clean commit supplied by the handoff and
-submit the dedicated wrapper once:
-
-```bash
-cd "$HOME/XGAP-m15-465e2e2"
-module load Miniconda3
-
-test -z "$(git status --porcelain)" || {
-  echo "checkout is dirty; stop"
-  exit 1
-}
-
-git fetch --prune origin
-git switch codex/m15-e4b-live-resolution-execution
-git pull --ff-only origin codex/m15-e4b-live-resolution-execution
-
-XGAP_E4B_COMMIT=<exact-published-40-character-commit>
-test "$(git rev-parse HEAD)" = "$XGAP_E4B_COMMIT" || {
-  echo "commit mismatch; stop"
-  exit 1
-}
-
-sbatch --parsable \
-  --export=ALL,XGAP_PYTHON="$HOME/venvs/xgap-core/bin/python",XGAP_PYTHON_MODULE=Miniconda3,XGAP_JAVA_MODULE=Java/17.0.6 \
-  scripts/slurm/run_m15_native_resolution_execution_bridge.sbatch
-```
-
-Do not submit it until the handoff replaces the placeholder with a published
-commit. After one successful job, preserve the run and use the independent
-`m15_resolution_execution_bridge_evidence` auditor from that same commit.
+  execute calls and zero profile/model/ontology/retry calls. CWRU job `3792349`
+  at exact clean commit `8056ee4` completed this contract on `compt292` in 94
+  seconds and removed the runtime cleanly. The initial independent audit exposed
+  one auditor-only mismatch with the real service-plan schema. Fix `aed12e3`
+  reconstructs loopback isolation from the actual endpoints, startup arguments,
+  and Neo4j configuration. The v2 audit of the unchanged run passed 152/152
+  checks without mutation or experiment retry. Preserve both audit outputs and
+  do not submit another E4B job.
 
 ### M15-F — Workload, baselines, ablations, and UI gate
 

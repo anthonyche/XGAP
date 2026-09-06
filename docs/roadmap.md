@@ -211,7 +211,7 @@ plans run through black-box Neo4j and Fuseki interfaces, and exact oracles are
 opened only after execution. The four unavailable aggregate classes make no
 backend call. The successful contract is exactly eight execute calls, with zero
 profile/model/ontology calls and zero retry. Focused cross-layer acceptance
-passes 80 tests; full local acceptance passes 1,009 tests with 36 explicit
+passes 81 tests; full local acceptance passes 1,010 tests with 36 explicit
 skips. CWRU job `3792349` at exact clean commit `8056ee4` completed all four
 plans and eight backend calls on `compt292`; the allocation runtime was removed
 and cleanup succeeded. The initial audit's only failure was an auditor-only

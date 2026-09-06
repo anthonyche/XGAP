@@ -2537,7 +2537,7 @@ backend-event pair, validates pre-service sealing, lifecycle, cleanup, and the
 six/two/four/eight cardinality contract, and compares a complete run-tree digest
 before and after auditing. Altered rows, hashes, candidate identities, call
 counts, or unavailable-class execution are rejected. Focused cross-layer
-acceptance passes 80 tests and full local acceptance passes 1,009 tests with 36
+acceptance passes 81 tests and full local acceptance passes 1,010 tests with 36
 explicit environment or external-artifact skips. This authorizes one clean
 CWRU engineering run and independent audit after publication. It adds no
 semantic-quality, cost-frontier, generalization, or paper-performance claim;
