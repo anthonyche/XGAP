@@ -221,6 +221,17 @@ Neo4j/Fuseki configuration. Its read-only v2 audit of the unchanged run passed
 152/152 checks with no mutation and no experiment rerun. A cost-aware semantic
 frontier and UI clarification transport remain later work.
 
+E5 cannot reuse the existing F2C9 frontier unchanged. The E4 classes are
+unresolved interpretations and have no authoritative exact member, while F2C9
+requires exactly one zero-deviation class. E2B adds no calibrated confidence,
+and family memory estimates physical cost rather than intent. The author must
+therefore choose whether E5 uses a two-level interpretation/relaxation design,
+a global provenance-weighted semantic-loss frontier, or mandatory
+clarification before frontier construction. The decision boundary and
+recommended two-level contract are frozen in
+[`docs/m15_e5_interpretation_relaxation_gate.md`](m15_e5_interpretation_relaxation_gate.md).
+No E5 implementation or CWRU run is authorized before that choice.
+
 ### M15-F Paper Experiment Surface and Optional UI
 
 Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI

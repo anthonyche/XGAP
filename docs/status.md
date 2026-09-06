@@ -112,6 +112,19 @@ was retried. The compact record is
 `experiments/artifacts/m15_e4b_cwru_native_resolution_execution_20260906.json`.
 This is mechanism evidence only; `paper_result=false` remains mandatory.
 
+M15-E5 is now blocked on an explicit semantic-objective decision, not on an
+execution mechanism. E4 emits co-equal unresolved interpretations with no
+authoritative zero-deviation class; E2B provides bounded but non-authoritative
+candidate IDs without confidence; F2C10 family memory predicts only physical
+latency and bytes; and F2C9 requires exactly one global
+`semantic_deviation=0` class. Directly wiring these layers would invent user
+intent. The decision gate in
+`docs/m15_e5_interpretation_relaxation_gate.md` presents three policies and
+recommends a two-level design: physical reduction and anchored relaxation
+frontiers inside each interpretation, followed by bounded representative
+selection or clarification across unresolved interpretations. No E5 code or
+CWRU run is authorized until the author selects the policy.
+
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
 gated or external-artifact tests skipped. Refreshed CWRU CPU smoke job
