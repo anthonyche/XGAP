@@ -2,7 +2,7 @@
 
 ## Status
 
-**OPTION A/R1 FROZEN; FIRST OFFLINE MECHANISM VERIFIED; NO CWRU RUN AUTHORIZED**
+**OPTION A/R1 FROZEN; OFFLINE HIERARCHICAL AND ANCHORED MECHANISMS VERIFIED; NO CWRU RUN AUTHORIZED**
 
 This gate separates unresolved natural-language interpretations from bounded
 semantic relaxations before XGAP connects the E4 resolution bridge to
@@ -163,10 +163,45 @@ The final repository state passes 1,021 tests with 36 explicit skips. This is
 controlled local mechanism evidence, not user-study evidence, semantic-quality
 evidence, or performance evidence. It remains `paper_result=false`.
 
-Anchored relaxation frontiers remain empty in this slice because E4 supplies
-no authoritative predicate base or calibrated semantic-deviation contract.
-Adding one must be a separate, provenance-bound design step; this gate does not
-invent a distance after observing results.
+## Implemented anchored relaxation mechanism
+
+E5B adds the separate anchored layer without changing the unresolved R1
+artifact. It accepts only an already-authoritatively selected structural
+frontier plus an explicit in-set predicate base. The LLM subset, ontology
+neighbor order, family-memory cost, and candidate order cannot create that
+base. The predicate selection has its own authority source and is distinct
+from the earlier relationship-strength clarification.
+
+Once the base is present, E5B validates the raw SHA-256 of the exact E3
+ontology artifact sealed by E4. It admits only declared one-hop `sibling`
+edges between active same-structure predicate interpretations and reads the
+semantic deviation directly from that relation. In the development ontology,
+`transferred_to -> paid_to` has deviation `0.25` and record provenance
+`relation-predicate-001`; reverse traversal is permitted only because the
+relation is explicitly bidirectional. This number is a controlled ontology
+fixture value, not a calibrated user-intent probability or a domain-truth
+claim.
+
+The authoritative class receives deviation `0`; its ontology sibling receives
+the declared `0.25`. The selector then performs three-objective Pareto,
+semantic-preserving 5% epsilon, and K=4 reduction over this anchored set only.
+It reuses the one family-memory physical representative already chosen inside
+each interpretation and performs zero current-query profiling. With
+`transferred_to` as base, both classes remain on the controlled frontier
+because `paid_to` trades semantic deviation for lower predicted latency and
+bytes. With `paid_to` as base, it dominates the more expensive relaxed
+`transferred_to` class, so only the exact base is returned. All six original
+E4 classes, including four unavailable aggregate meanings, remain visible.
+
+The compact evidence record is
+`experiments/artifacts/m15_e5b_local_anchored_interpretation_frontier_20260907.json`.
+It binds the implementation commit, bridge, hierarchical frontier, training
+memory, ontology, policy, both anchor directions, and zero-call claim boundary.
+This is controlled local nonmeasurement evidence with `paper_result=false`.
+The final repository acceptance run passes 1,030 tests with 36 explicit
+environment/external-artifact skips; the focused E5 suite passes 20 tests.
+No CWRU run is needed for this selector-only mechanism; the next live-relevant
+gate is clarification/UI transport into execution.
 
 ## Contract if Option A is selected
 
@@ -217,8 +252,12 @@ The mechanism gate must prove that:
 
 **Selected: R1 — semantic structure clarification gate.**
 
+**Implemented: E5B — explicit predicate base followed by provenance-bound
+one-hop sibling relaxation.**
+
 Rejected alternatives remain recorded above so the final design cannot be
 silently converted into a global provenance-weighted score, a cost-triggered
 meaning choice, or an always-clarify policy after results are observed. No new
-CWRU experiment is needed for this design gate; the next step is the offline
-mechanism and invariant suite.
+CWRU experiment is needed for this design gate. The next step is the
+clarification transport and execution handoff; it must keep both authority
+events explicit and preserve the existing zero-retry backend boundary.

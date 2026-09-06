@@ -1,0 +1,123 @@
+{
+  "artifact_sha256": "66d8a3c47d098276ca5cf2eb52171325be2df2420e9262a1663229287ca16975",
+  "authoritative_anchor_results": {
+    "predicate:paid_to": {
+      "anchored_frontier_sha256": "278031baa52353b95f73c61a49aca7647126b58be72b74f1860d91e624fbfb92",
+      "counts": {
+        "active_interpretation_classes": 2,
+        "anchored_interpretation_classes": 2,
+        "current_query_profile_calls": 0,
+        "epsilon_frontier_interpretation_plans": 1,
+        "interpretation_classes": 6,
+        "pareto_interpretation_plans": 1,
+        "physical_representatives": 2,
+        "returned_interpretation_plans": 1
+      },
+      "relaxation_evidence": [
+        {
+          "bidirectional": true,
+          "declared_deviation": 0.25,
+          "hop_count": 1,
+          "kind": "ontology_declared_one_hop_relaxation",
+          "ontology_id": "financial-risk-resolution-ontology",
+          "ontology_sha256": "6e8e74235923cf6a5c186849156a26d6e5ec577bab60069f3a49a51b97ad6961",
+          "ontology_version": "dev-v1",
+          "provenance": {
+            "evidence": "controlled-development-relation",
+            "record_id": "relation-predicate-001"
+          },
+          "relation": "sibling",
+          "relation_source_id": "predicate:transferred_to",
+          "relation_target_id": "predicate:paid_to",
+          "traversal_direction": "reverse"
+        }
+      ],
+      "returned": [
+        {
+          "estimated_latency_ms": 53.25,
+          "estimated_total_bytes_moved": 2458.0,
+          "interpretation_class_id": "m15-e4-class-a36fcf626f49f25d9e56122f",
+          "interpretation_status": "authoritatively_bound",
+          "physical_strategy": "risk_first_bind_join",
+          "plan_id": "m15-f2c-financial-risk-alice-aug-high-v2-relaxed-b3cf0ee1b03a3bf46874629c-risk-first-bind-window-e4",
+          "selection_rank": 1,
+          "semantic_deviation": 0.0
+        }
+      ]
+    },
+    "predicate:transferred_to": {
+      "anchored_frontier_sha256": "5cd402709c6141f8c6070e0b83ef1ec139431e758cdd82866cda70deb8485a08",
+      "counts": {
+        "active_interpretation_classes": 2,
+        "anchored_interpretation_classes": 2,
+        "current_query_profile_calls": 0,
+        "epsilon_frontier_interpretation_plans": 2,
+        "interpretation_classes": 6,
+        "pareto_interpretation_plans": 2,
+        "physical_representatives": 2,
+        "returned_interpretation_plans": 2
+      },
+      "relaxation_evidence": [
+        {
+          "bidirectional": true,
+          "declared_deviation": 0.25,
+          "hop_count": 1,
+          "kind": "ontology_declared_one_hop_relaxation",
+          "ontology_id": "financial-risk-resolution-ontology",
+          "ontology_sha256": "6e8e74235923cf6a5c186849156a26d6e5ec577bab60069f3a49a51b97ad6961",
+          "ontology_version": "dev-v1",
+          "provenance": {
+            "evidence": "controlled-development-relation",
+            "record_id": "relation-predicate-001"
+          },
+          "relation": "sibling",
+          "relation_source_id": "predicate:transferred_to",
+          "relation_target_id": "predicate:paid_to",
+          "traversal_direction": "forward"
+        }
+      ],
+      "returned": [
+        {
+          "estimated_latency_ms": 69.0,
+          "estimated_total_bytes_moved": 3475.0,
+          "interpretation_class_id": "m15-e4-class-5fe5eee1f1d164c0bb57ecd1",
+          "interpretation_status": "authoritatively_bound",
+          "physical_strategy": "risk_first_bind_join",
+          "plan_id": "m15-f2c-financial-risk-alice-aug-high-v2-risk-first-bind-window-e4",
+          "selection_rank": 1,
+          "semantic_deviation": 0.0
+        },
+        {
+          "estimated_latency_ms": 53.25,
+          "estimated_total_bytes_moved": 2458.0,
+          "interpretation_class_id": "m15-e4-class-a36fcf626f49f25d9e56122f",
+          "interpretation_status": "anchored_relaxation",
+          "physical_strategy": "risk_first_bind_join",
+          "plan_id": "m15-f2c-financial-risk-alice-aug-high-v2-relaxed-b3cf0ee1b03a3bf46874629c-risk-first-bind-window-e4",
+          "selection_rank": 2,
+          "semantic_deviation": 0.25
+        }
+      ]
+    }
+  },
+  "bridge_plan_sha256": "1c91428005811af9510495fc9b249711de08ddb768c8d5376876a40bc40416a6",
+  "claim_boundary": {
+    "backend_calls_made": 0,
+    "controlled_local_nonmeasurement": true,
+    "current_query_profile_calls": 0,
+    "domain_truth_claim": false,
+    "hard_constraints_preserved": true,
+    "llm_calls_made": 0,
+    "ontology_service_calls_made": 0,
+    "oracle_inputs": [],
+    "paper_result": false
+  },
+  "evidence_class": "controlled_local_nonmeasurement_mechanism",
+  "git_commit": "3392889b72c53ba6fd6adcc0a187952e1d0d6091",
+  "hierarchical_frontier_sha256": "0890df560e2bf850576538ecec0a88dc1cb0ea61074f3510d3f62260845c3d9d",
+  "ontology_sha256": "6e8e74235923cf6a5c186849156a26d6e5ec577bab60069f3a49a51b97ad6961",
+  "paper_result": false,
+  "relaxation_policy_sha256": "232af0fde6d7c6627143f706d22c144b8f68cb1ad549aae1701daa8ae39f618c",
+  "schema_version": "m15-e5b-local-anchored-interpretation-evidence-v1",
+  "training_memory_view_sha256": "3fd2931d1fa4c1f5a96cee767f5c23c5fc36ccb0872b45bc97d4ade6a9c97540"
+}

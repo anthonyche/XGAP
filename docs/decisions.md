@@ -2674,3 +2674,37 @@ This accepts only the unresolved-interpretation/R1 mechanism. Anchored
 relaxation frontiers remain unimplemented because no authoritative predicate
 base or calibrated semantic-deviation contract exists. No CWRU run or paper
 claim is authorized, and `paper_result=false` remains mandatory.
+
+## D145 Require explicit predicate authority before ontology-anchored relaxation
+
+E5B must not reinterpret the two same-structure predicate representatives as
+an exact/relaxed pair until an explicit in-set authority source selects one of
+them as the base. Structural R1 clarification and predicate-base authority are
+separate events. Candidate order, an E2B model subset, family-memory cost, and
+ontology proximity remain non-authoritative.
+
+After that base exists, E5B may read only the exact ontology artifact already
+sealed by E4 and may admit only a declared one-hop `sibling` relation between
+active same-structure predicate classes. The base receives semantic deviation
+0. A sibling receives the relation's declared deviation and complete
+provenance; reverse traversal is legal only when the source relation is marked
+bidirectional. In the controlled E3 artifact this yields deviation 0.25 from
+`relation-predicate-001`. That value is a development fixture, not a calibrated
+intent probability or an ontology-truth claim.
+
+Physical reduction remains upstream and family-memory-only. E5B reuses one
+physical representative per interpretation, then applies the frozen
+semantic-deviation/latency/bytes Pareto rule, 5% semantic-preserving epsilon,
+and K=4 bound within the anchored set. An exact `transferred_to` base retains
+the cheaper relaxed `paid_to` trade-off; an exact lower-cost `paid_to` base
+dominates the more expensive relaxed transfer class. All original E4 classes
+remain visible, hard constraints remain hash-identical, and selection makes
+zero current-query profile, backend, LLM, ontology-service, oracle, repair, or
+retry calls.
+
+The implementation commit is `3392889`; its compact record is
+`experiments/artifacts/m15_e5b_local_anchored_interpretation_frontier_20260907.json`.
+Focused E5 acceptance passes 20 tests and full repository acceptance passes
+1,030 tests with 36 explicit skips. This closes a controlled local mechanism
+only. It does not authorize a CWRU run, UI behavior, user-utility claim,
+calibrated semantic metric, or paper result.

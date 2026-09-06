@@ -135,10 +135,20 @@ memory with zero current-query profiling, and keeps one representative inside
 each executable interpretation. Before clarification it emits one R1 question
 and returns no execution-eligible semantic plan; a controlled authoritative
 single-transfer selection returns the two same-structure predicate
-representatives while retaining all unavailable classes. Full acceptance is
-1,021 passes with 36 explicit skips. This remains local mechanism evidence;
-anchored relaxation frontiers, UI transport, and any live E5 gate are still
-open, and no E5 CWRU run is authorized. See
+representatives while retaining all unavailable classes. E5B now requires a
+second explicit authority event before treating either predicate as the exact
+base. It verifies the E4-sealed E3 ontology, admits only the declared one-hop
+bidirectional sibling, attaches the relation's `0.25` development deviation
+and provenance, and applies Pareto/5%-epsilon/K only inside that anchored set.
+With `transferred_to` as base both plans survive; with lower-cost `paid_to` as
+base the relaxed transfer class is dominated. The selector retains all six E4
+classes and makes zero current-query profile, backend, LLM, or ontology-service
+calls. The compact E5B record is
+`experiments/artifacts/m15_e5b_local_anchored_interpretation_frontier_20260907.json`.
+Focused E5 acceptance passes 20 tests and full repository acceptance passes
+1,030 tests with 36 explicit skips. This remains local nonmeasurement
+mechanism evidence; UI transport and any live E5 gate are still open, and no
+E5 CWRU run is authorized. See
 `docs/m15_e5_interpretation_relaxation_gate.md`.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service

@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1 AND FIRST OFFLINE HIERARCHICAL MECHANISM VERIFIED; ANCHORED RELAXATION/UI BRIDGE PENDING**
+Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1 HIERARCHICAL AND E5B ANCHORED RELAXATION MECHANISMS VERIFIED OFFLINE; UI/EXECUTION BRIDGE PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -231,8 +231,22 @@ inside each interpretation, then select representatives or clarify across
 unresolved interpretations. The rejected global-score and always-clarify
 alternatives remain frozen in
 [`docs/m15_e5_interpretation_relaxation_gate.md`](m15_e5_interpretation_relaxation_gate.md).
-The clarification-impact rule is the next author decision. No E5 CWRU run is
-authorized before that rule and the offline mechanism are verified.
+R1 is now implemented as the clarification-impact rule. Before structural
+clarification the selector returns no execution-eligible plan; after an
+explicit single-transfer choice it preserves both same-structure predicate
+representatives and one family-memory physical plan per interpretation.
+
+E5B closes the anchored-relaxation half of that contract. It requires a
+separate explicit in-set predicate base, verifies the exact E4-sealed ontology
+artifact, and admits only its declared one-hop sibling. The exact class gets
+semantic deviation 0; the sibling gets the ontology relation's development
+value 0.25 plus record provenance. Pareto, 5% epsilon, and K=4 apply only
+inside this anchored set. All six E4 classes remain visible, and selection
+makes zero current-query profile, backend, model, or ontology-service calls.
+Focused E5 acceptance passes 20 tests and full repository acceptance passes
+1,030 tests with 36 explicit skips.
+The next E5 step is clarification/UI transport into execution; no additional
+selector-only CWRU run is authorized.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

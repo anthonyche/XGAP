@@ -50,6 +50,7 @@ ANCHORED_POLICY = REPO_ROOT / "experiments/configs/m15_e5b_anchored_predicate_re
 RESOLUTION_ONTOLOGY = REPO_ROOT / "experiments/specs/m15_e3_financial_risk_ontology_dev.json"
 BRIDGE_SPEC = REPO_ROOT / "experiments/configs/m15_e4_resolution_execution_bridge_dev.json"
 COMPACT_ARTIFACT = REPO_ROOT / "experiments/artifacts/m15_e5_local_hierarchical_interpretation_frontier_20260907.json"
+ANCHORED_COMPACT_ARTIFACT = REPO_ROOT / "experiments/artifacts/m15_e5b_local_anchored_interpretation_frontier_20260907.json"
 RUNTIME_HASH = content_hash(
     {
         "runtime": "e5-local-controlled-runtime",
@@ -59,14 +60,16 @@ RUNTIME_HASH = content_hash(
 )
 
 
-def _resolution() -> dict[str, object]:
+def _resolution(
+    *, user_source_id: str = "explicit-e5-test-selection"
+) -> dict[str, object]:
     return run_semantic_intake(
         question="查找过去一个月与 Alice 有密切资金往来的高风险公司。",
         intake_path=REPO_ROOT / "experiments/configs/m15_e3_financial_risk_intake_dev.json",
         catalog_path=REPO_ROOT / "experiments/specs/m15_e3_financial_risk_catalog_dev.json",
         ontology_path=REPO_ROOT / "experiments/specs/m15_e3_financial_risk_ontology_dev.json",
         user_selections={"person-identity": "person:alice-smith"},
-        user_source_id="explicit-e5-test-selection",
+        user_source_id=user_source_id,
     )
 
 
@@ -668,3 +671,47 @@ def test_compact_local_artifact_is_hash_bound_and_reproducible(e5_context) -> No
         item["physical_representative"]["plan_id"]
         for item in bound["returned_interpretation_plans"]
     ]
+
+
+def test_anchored_compact_artifact_is_hash_bound_and_reproducible(
+    e5_context,
+) -> None:
+    direct, memory, _ = e5_context
+    artifact = json.loads(ANCHORED_COMPACT_ARTIFACT.read_text(encoding="utf-8"))
+    artifact_body = {
+        key: value for key, value in artifact.items() if key != "artifact_sha256"
+    }
+    bridge = _bridge(
+        _resolution(user_source_id="explicit-e5-evidence-selection")
+    )
+    hierarchical = select_m15_hierarchical_interpretation_frontier(
+        bridge=bridge,
+        workload=direct,
+        memory=memory,
+        predictor_policy=PREDICTOR_POLICY,
+        interpretation_policy=INTERPRETATION_POLICY,
+        authoritative_selections={
+            "relationship-strength": "constraint:single-transfer-at-least-50000"
+        },
+        authority_source_id="explicit-e5-structural-selection",
+    )
+
+    assert content_hash(artifact_body) == artifact["artifact_sha256"]
+    assert artifact["bridge_plan_sha256"] == bridge.plan_hash
+    assert artifact["hierarchical_frontier_sha256"] == hierarchical.frontier_hash
+    assert artifact["training_memory_view_sha256"] == memory.memory_view_hash
+    for base_candidate_id, expected in artifact[
+        "authoritative_anchor_results"
+    ].items():
+        actual = select_m15_anchored_interpretation_frontier(
+            hierarchical_frontier=hierarchical,
+            bridge=bridge,
+            ontology_path=RESOLUTION_ONTOLOGY,
+            relaxation_policy=ANCHORED_POLICY,
+            authoritative_base_candidate_id=base_candidate_id,
+            authority_source_id="explicit-e5-predicate-selection",
+        ).to_dict()
+        assert expected["anchored_frontier_sha256"] == actual[
+            "anchored_frontier_sha256"
+        ]
+        assert expected["counts"] == actual["counts"]
