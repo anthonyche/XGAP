@@ -2623,3 +2623,26 @@ and a mandatory-clarification-before-any-frontier policy. The
 clarification-impact rule remains author-owned and must be selected before E5
 can close its offline mechanism gate. No CWRU run is authorized by this
 decision, and every E5 artifact remains `paper_result=false`.
+
+## D143 Use semantic structure, not predicted cost, to trigger clarification
+
+The author selected R1 for E5. An unresolved set requires clarification when
+its members differ in aggregation, path structure, quantification, answer
+meaning, output contract, or executable capability. Family-memory latency and
+byte estimates are forbidden from deciding among those meanings. For the
+current example this means asking whether `密切` denotes one qualifying
+transfer, cumulative window amount, or window frequency.
+
+Differences that retain the same semantic-operator structure and output
+contract remain bounded representatives. Thus `transferred_to` and `paid_to`
+may coexist after the relationship-strength meaning is authoritatively bound;
+each keeps only its cheapest predicted physical plan. Unresolved classes have
+nullable semantic deviation, while Pareto/epsilon semantic pruning remains
+limited to relaxations anchored at an authoritative base.
+
+The offline selector must fail closed, preserve all unavailable classes, emit
+no native query text, read no oracle or post-execution measurement, and make
+zero backend-profile, LLM, or ontology-service calls. Without an authoritative
+in-set structural selection it may publish predicted physical representatives
+and one bounded question, but it may not authorize execution. This decision
+does not authorize a CWRU job and remains `paper_result=false`.

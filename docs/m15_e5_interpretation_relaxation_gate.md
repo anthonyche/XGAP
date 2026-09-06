@@ -2,7 +2,7 @@
 
 ## Status
 
-**OPTION A SELECTED; CLARIFICATION-IMPACT RULE DECISION REQUIRED; NO CWRU RUN AUTHORIZED**
+**OPTION A AND R1 SELECTED; OFFLINE MECHANISM IMPLEMENTATION ACTIVE; NO CWRU RUN AUTHORIZED**
 
 This gate separates unresolved natural-language interpretations from bounded
 semantic relaxations before XGAP connects the E4 resolution bridge to
@@ -106,8 +106,36 @@ actual reference meaning. It also preserves family memory as the source of
 physical-cost predictions with zero current-query profiling.
 
 The author selected Option A on 2026-09-06. E5 must therefore use the
-two-level contract below. This decision does not yet select the
-clarification-impact rule or authorize a CWRU run.
+two-level contract below. The author subsequently selected R1, the semantic
+structure gate, as the clarification-impact rule. Neither decision authorizes
+a CWRU run.
+
+## R1 — semantic structure clarification gate
+
+E5 must ask for authoritative clarification whenever unresolved
+interpretations differ in aggregation, path structure, quantification, answer
+meaning, output contract, or executable capability. These are semantic or
+operator-level changes, not cost differences, and family-memory predictions
+cannot resolve them.
+
+For the frozen financial-risk example, `qualifying_single_transfer`,
+`window_total_amount`, and `window_transfer_count` therefore trigger one
+bounded question asking whether `密切` means a qualifying single transfer,
+cumulative amount within the window, or transfer frequency. A cost estimate,
+candidate order, ontology hop, or non-authoritative model subset may not answer
+that question.
+
+Interpretations that preserve the same semantic-operator structure and output
+contract remain eligible for bounded representative return. In the current
+example, `transferred_to` and `paid_to` within one selected relationship-
+strength meaning are such representatives. E5 performs physical reduction
+inside each of them but assigns neither an invented semantic-deviation score.
+
+The first offline mechanism must publish the physical representatives and the
+clarification request while keeping execution unauthorized. After an explicit
+in-set relationship-strength selection, it may return the two predicate
+representatives, subject to K. Unselected and unavailable interpretations stay
+visible in the artifact.
 
 ## Contract if Option A is selected
 
@@ -152,12 +180,14 @@ The mechanism gate must prove that:
 9. oracle and post-execution measurements cannot enter selection;
 10. all outputs remain development-only with `paper_result=false`.
 
-## Author decision
+## Author decisions
 
 **Selected: A — two-level interpretation sets and relaxation frontiers.**
 
+**Selected: R1 — semantic structure clarification gate.**
+
 Rejected alternatives remain recorded above so the final design cannot be
-silently converted into a global provenance-weighted score or an always-clarify
-policy after results are observed. The next author decision must freeze the
-clarification-impact rule. No new CWRU experiment is needed for this design
-gate.
+silently converted into a global provenance-weighted score, a cost-triggered
+meaning choice, or an always-clarify policy after results are observed. No new
+CWRU experiment is needed for this design gate; the next step is the offline
+mechanism and invariant suite.

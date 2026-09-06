@@ -53,6 +53,9 @@ DIRECT_FAMILY_PREDICTION_SOURCE_SCHEMA_VERSION = (
 DIRECT_FAMILY_PREDICTION_SUITE_SCHEMA_VERSION = (
     "m15-f2c10-family-memory-prediction-suite-v1"
 )
+FAMILY_COST_TARGET_PREDICTION_SOURCE_SCHEMA_VERSION = (
+    "m15-e5-family-cost-target-prediction-source-v1"
+)
 CONTROLLED_TRAINING_FIXTURE_SCHEMA_VERSION = (
     "m15-f2c10-controlled-training-observations-v1"
 )
@@ -834,6 +837,233 @@ def _distance(
     ) / denominator
 
 
+def _validated_feature_vector(value: object, *, name: str) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        raise M15DirectFamilyPredictionError(f"{name} must be an object")
+    expected = {slot_id for slot_id, _ in _FEATURE_SCHEMA}
+    if set(value) != expected:
+        raise M15DirectFamilyPredictionError(
+            f"{name} fields do not match the family feature contract"
+        )
+    return _features({"binding_values": {**dict(value), "path-shape": "direct"}})
+
+
+def _predict_family_cost(
+    *,
+    target_features: Mapping[str, Any],
+    physical_strategy: str,
+    training: Sequence[Mapping[str, Any]],
+    selected_policy: Mapping[str, Any],
+) -> dict[str, Any]:
+    eligible = [
+        item
+        for item in training
+        if item["physical_strategy"] == physical_strategy
+    ]
+    if not eligible:
+        raise M15DirectFamilyPredictionError(
+            "cold start is forbidden for the primary family predictor"
+        )
+    weights = selected_policy["feature_weights"]
+    ranked = sorted(
+        (
+            (_distance(target_features, item["features"], weights=weights), item)
+            for item in eligible
+        ),
+        key=lambda pair: (pair[0], pair[1]["observation_id"]),
+    )
+    neighbors = ranked[: min(selected_policy["neighbor_count"], len(ranked))]
+    zero_distance = [pair for pair in neighbors if pair[0] == 0]
+    used = zero_distance or neighbors
+    weighted: list[tuple[float, Mapping[str, Any], float]] = []
+    for distance, observation in used:
+        weight = 1.0 if zero_distance else 1.0 / max(distance, 1e-12)
+        weighted.append((distance, observation, weight))
+    total_weight = sum(item[2] for item in weighted)
+    latency = sum(
+        item[1]["median_elapsed_ms"] * item[2] for item in weighted
+    ) / total_weight
+    bytes_moved = sum(
+        item[1]["median_total_bytes_moved"] * item[2]
+        for item in weighted
+    ) / total_weight
+    latency_mad = sum(
+        abs(item[1]["median_elapsed_ms"] - latency) * item[2]
+        for item in weighted
+    ) / total_weight
+    bytes_mad = sum(
+        abs(item[1]["median_total_bytes_moved"] - bytes_moved) * item[2]
+        for item in weighted
+    ) / total_weight
+    return {
+        "estimated_latency_ms": latency,
+        "estimated_total_bytes_moved": bytes_moved,
+        "uncertainty": {
+            "kind": selected_policy["uncertainty"],
+            "latency_mad_ms": latency_mad,
+            "bytes_moved_mad": bytes_mad,
+        },
+        "neighbor_observation_ids": [
+            item[1]["observation_id"] for item in weighted
+        ],
+        "neighbor_distances": [item[0] for item in weighted],
+    }
+
+
+@dataclass(frozen=True)
+class M15FamilyCostTargetPredictionSource:
+    """Sealed family-memory costs for arbitrary same-family physical targets."""
+
+    payload: Mapping[str, Any]
+
+    def to_dict(self) -> dict[str, Any]:
+        return copy.deepcopy(dict(self.payload))
+
+    @property
+    def source_hash(self) -> str:
+        return str(self.payload["prediction_source_sha256"])
+
+
+def build_m15_family_cost_target_predictions(
+    *,
+    workload: M15DirectSemanticWorkloadBundle,
+    memory: M15DirectTrainingMemoryView,
+    policy: Mapping[str, Any] | str | Path,
+    targets: Sequence[Mapping[str, Any]],
+) -> M15FamilyCostTargetPredictionSource:
+    """Estimate new same-family plans without observing the current query.
+
+    Targets are semantic/physical identities plus the frozen family feature
+    vector. The function neither builds a semantic preference nor accepts an
+    answer oracle; it only reuses admitted strategy-conditioned memory.
+    """
+
+    selected_policy = _predictor_policy(policy)
+    memory_payload = _validated_memory(memory, workload=workload)
+    policy_hash = content_hash(selected_policy)
+    if memory_payload["predictor_policy_sha256"] != policy_hash:
+        raise M15DirectFamilyPredictionError(
+            "training memory and predictor policy identities differ"
+        )
+    if not isinstance(targets, Sequence) or isinstance(targets, (str, bytes)):
+        raise M15DirectFamilyPredictionError("prediction targets must be a sequence")
+    normalized_targets: list[dict[str, Any]] = []
+    target_ids: set[str] = set()
+    expected_fields = {
+        "target_id",
+        "semantic_class_id",
+        "target_query_instance_sha256",
+        "physical_strategy",
+        "features",
+    }
+    for index, item in enumerate(targets):
+        if not isinstance(item, Mapping) or set(item) != expected_fields:
+            raise M15DirectFamilyPredictionError(
+                f"prediction target {index} fields do not match the contract"
+            )
+        target_id = _safe_id(item["target_id"], name="target_id")
+        if target_id in target_ids:
+            raise M15DirectFamilyPredictionError(
+                "prediction target IDs must be unique"
+            )
+        target_ids.add(target_id)
+        strategy = item["physical_strategy"]
+        if strategy not in _STRATEGIES:
+            raise M15DirectFamilyPredictionError(
+                "prediction target physical strategy is unsupported"
+            )
+        normalized_targets.append(
+            {
+                "target_id": target_id,
+                "semantic_class_id": _safe_id(
+                    item["semantic_class_id"], name="semantic_class_id"
+                ),
+                "target_query_instance_sha256": _sha256(
+                    item["target_query_instance_sha256"],
+                    name="target_query_instance_sha256",
+                ),
+                "physical_strategy": strategy,
+                "features": _validated_feature_vector(
+                    item["features"], name=f"prediction target {target_id} features"
+                ),
+            }
+        )
+    if not normalized_targets:
+        raise M15DirectFamilyPredictionError(
+            "at least one family-cost prediction target is required"
+        )
+    normalized_targets.sort(key=lambda item: item["target_id"])
+    predictions: list[dict[str, Any]] = []
+    for target in normalized_targets:
+        estimate = _predict_family_cost(
+            target_features=target["features"],
+            physical_strategy=target["physical_strategy"],
+            training=memory_payload["observations"],
+            selected_policy=selected_policy,
+        )
+        predictions.append(
+            {
+                "target_id": target["target_id"],
+                "semantic_class_id": target["semantic_class_id"],
+                "target_query_instance_sha256": target[
+                    "target_query_instance_sha256"
+                ],
+                "physical_strategy": target["physical_strategy"],
+                **estimate,
+                "oracle_inputs": [],
+                "post_execution_measurements_used": False,
+            }
+        )
+    target_set_hash = content_hash(normalized_targets)
+    source_id = "m15-e5-family-cost-" + content_hash(
+        {
+            "target_set_sha256": target_set_hash,
+            "training_memory_view_sha256": memory.memory_view_hash,
+            "model_configuration_sha256": policy_hash,
+        }
+    )[:24]
+    body = {
+        "schema_version": FAMILY_COST_TARGET_PREDICTION_SOURCE_SCHEMA_VERSION,
+        "source_id": source_id,
+        "model_version": selected_policy["model_version"],
+        "model_configuration_sha256": policy_hash,
+        "direct_semantic_workload_sha256": workload.manifest["manifest_sha256"],
+        "training_memory_view_sha256": memory.memory_view_hash,
+        "training_selection_view_sha256": workload.training_selection_view[
+            "selection_view_sha256"
+        ],
+        "runtime_compatibility_sha256": memory_payload[
+            "runtime_compatibility_sha256"
+        ],
+        "feature_schema_sha256": content_hash(
+            [
+                {"slot_id": slot_id, "kind": kind}
+                for slot_id, kind in _FEATURE_SCHEMA
+            ]
+        ),
+        "ordered_training_observation_ids": list(
+            memory_payload["ordered_observation_ids"]
+        ),
+        "target_set_sha256": target_set_hash,
+        "targets": normalized_targets,
+        "prediction_count": len(predictions),
+        "predictions": predictions,
+        "sealed_before_execution": True,
+        "oracle_inputs": [],
+        "current_query_observation_operations": [],
+        "backend_calls_made": 0,
+        "llm_calls_made": 0,
+        "ontology_service_calls_made": 0,
+        "post_execution_measurements_used": False,
+        "cold_start": False,
+        "automatic_retries": 0,
+        "paper_result": False,
+    }
+    return M15FamilyCostTargetPredictionSource(
+        {**body, "prediction_source_sha256": content_hash(body)}
+    )
+
+
 @dataclass(frozen=True)
 class M15DirectFamilyPredictionSource:
     payload: Mapping[str, Any]
@@ -1082,51 +1312,16 @@ def build_m15_direct_family_prediction_source(
         if item["base_query_id"] == selected_query_id
     }
     training = memory_payload["observations"]
-    weights = selected_policy["feature_weights"]
-    k = selected_policy["neighbor_count"]
     predictions: list[dict[str, Any]] = []
     for plan in candidate_set.payload["physical_candidates"]:
         task = tasks_by_class[plan["semantic_class_id"]]
         target_features = _features(task)
-        eligible = [
-            item
-            for item in training
-            if item["physical_strategy"] == plan["physical_strategy"]
-        ]
-        if not eligible:
-            raise M15DirectFamilyPredictionError(
-                "cold start is forbidden for the primary family predictor"
-            )
-        ranked = sorted(
-            (
-                (_distance(target_features, item["features"], weights=weights), item)
-                for item in eligible
-            ),
-            key=lambda pair: (pair[0], pair[1]["observation_id"]),
+        estimate = _predict_family_cost(
+            target_features=target_features,
+            physical_strategy=plan["physical_strategy"],
+            training=training,
+            selected_policy=selected_policy,
         )
-        neighbors = ranked[: min(k, len(ranked))]
-        zero_distance = [pair for pair in neighbors if pair[0] == 0]
-        used = zero_distance or neighbors
-        weighted: list[tuple[float, Mapping[str, Any], float]] = []
-        for distance, observation in used:
-            weight = 1.0 if zero_distance else 1.0 / max(distance, 1e-12)
-            weighted.append((distance, observation, weight))
-        total_weight = sum(item[2] for item in weighted)
-        latency = sum(
-            item[1]["median_elapsed_ms"] * item[2] for item in weighted
-        ) / total_weight
-        bytes_moved = sum(
-            item[1]["median_total_bytes_moved"] * item[2]
-            for item in weighted
-        ) / total_weight
-        latency_mad = sum(
-            abs(item[1]["median_elapsed_ms"] - latency) * item[2]
-            for item in weighted
-        ) / total_weight
-        bytes_mad = sum(
-            abs(item[1]["median_total_bytes_moved"] - bytes_moved) * item[2]
-            for item in weighted
-        ) / total_weight
         predictions.append(
             {
                 "plan_id": plan["plan_id"],
@@ -1135,17 +1330,7 @@ def build_m15_direct_family_prediction_source(
                     "target_query_instance_sha256"
                 ],
                 "physical_strategy": plan["physical_strategy"],
-                "estimated_latency_ms": latency,
-                "estimated_total_bytes_moved": bytes_moved,
-                "uncertainty": {
-                    "kind": selected_policy["uncertainty"],
-                    "latency_mad_ms": latency_mad,
-                    "bytes_moved_mad": bytes_mad,
-                },
-                "neighbor_observation_ids": [
-                    item[1]["observation_id"] for item in weighted
-                ],
-                "neighbor_distances": [item[0] for item in weighted],
+                **estimate,
                 "oracle_inputs": [],
                 "post_execution_measurements_used": False,
             }

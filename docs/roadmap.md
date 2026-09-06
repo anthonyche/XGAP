@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; COST-AWARE SEMANTIC FRONTIER/UI BRIDGE PENDING**
+Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1 FROZEN; OFFLINE HIERARCHICAL FRONTIER IN PROGRESS**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
