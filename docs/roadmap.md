@@ -576,6 +576,17 @@ only then should the multi-family execution campaign be compiled. Full local
 acceptance passes 946 tests with 36 explicit environment or external-artifact
 skips.
 
+F2C14B now has an explicit author decision gate in
+`docs/m15_f2c14b_multi_family_design_gate.md`. It defines a family by its
+executable DAG, schemas, backend partition, physical candidates, and memory
+compatibility rather than by a topic label. It compares a controlled
+single-domain structural population, a cross-domain/imported population, and a
+staged hybrid. The provisional recommendation is the hybrid: first a
+30--48-query controlled financial population with three structurally distinct
+families, then a separately reported external validation. This is not yet an
+author decision, does not name the final families or cold-start rule, and
+authorizes neither package generation nor a CWRU run.
+
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
 used JSON object syntax inside a Cypher `UNWIND` literal; Neo4j 5.26 requires

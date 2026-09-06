@@ -527,6 +527,16 @@ remains with the author; F2C14A authorizes no CWRU job and all artifacts remain
 `paper_result=false`. Full local acceptance passes 946 tests with 36 explicit
 environment or external-artifact skips.
 
+M15-F2C14B is currently an author decision gate, not an implemented benchmark.
+The design note `docs/m15_f2c14b_multi_family_design_gate.md` defines the
+research question, structural family boundary, variables, endpoints,
+confounds, and three population alternatives. It recommends a staged hybrid:
+a controlled three-DAG financial primary population followed by a separate
+standard-workload validation. The population choice, exact DAGs, entirely
+held-out family, cold-start rule, and inferential preregistration remain
+unresolved. No new data, family package, external call, or executable campaign
+has been created, and `paper_result=false` remains mandatory.
+
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,
 executed 231 plans and 462 backend calls, returned seven semantic frontier
