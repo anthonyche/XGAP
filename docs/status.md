@@ -390,7 +390,9 @@ analysis reports latency/byte prediction error, physical-winner accuracy,
 latency/byte regret, and predicted/observed frontier overlap. A service-start
 preflight seals the schedule and count bounds, and a separate read-only
 auditor reconstructs the schedule, measurements, memory, predictions,
-frontiers, exact answers, analysis, and call-phase order. Full local
+frontiers, exact answers, analysis, and call-phase order. A separate compact
+summary accepts only a successful mutation-free audit and retains the claim
+boundary alongside the requested metrics. Full local
 acceptance passes 898 tests with 36 gated skips. No native F2C10D result exists
 yet; the six-query pilot and all outputs remain `paper_result=false`.
 

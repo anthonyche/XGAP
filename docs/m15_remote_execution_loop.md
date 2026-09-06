@@ -494,6 +494,31 @@ PYTHONPATH="$PWD/src" \
 
 echo "audit_exit=$?"
 ```
+
+When `audit_exit=0`, pull the current branch (the completed run still remains
+bound to its original commit) and produce one compact, claim-bounded result
+outside the immutable run tree:
+
+```bash
+cd "$HOME/XGAP-m15-465e2e2"
+git pull --ff-only origin codex/m15-f2c10-family-memory-prediction
+
+XGAP_F2C10D_SUMMARY="$PWD/runs/audits/cwru-m15-f2c10d-direct-family-pilot-$XGAP_F2C10D_JOB-summary.json"
+test ! -e "$XGAP_F2C10D_SUMMARY" || {
+  echo "summary output already exists; stop"
+  exit 1
+}
+
+PYTHONPATH="$PWD/src" \
+"$HOME/venvs/xgap-core/bin/python" \
+  -m xgap.experiments.m15_direct_family_pilot_summary \
+  --run-root "$XGAP_F2C10D_RUN" \
+  --audit "$XGAP_F2C10D_AUDIT" \
+  --output "$XGAP_F2C10D_SUMMARY" \
+  > "$XGAP_F2C10D_SUMMARY.stdout"
+
+cat "$XGAP_F2C10D_SUMMARY"
+```
 Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.

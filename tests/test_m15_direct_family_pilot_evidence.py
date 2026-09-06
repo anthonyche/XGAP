@@ -11,6 +11,10 @@ from xgap.experiments.hashing import content_hash
 from xgap.experiments.m15_direct_family_pilot_evidence import (
     audit_m15_direct_family_pilot,
 )
+from xgap.experiments.m15_direct_family_pilot_summary import (
+    DIRECT_FAMILY_PILOT_SUMMARY_SCHEMA_VERSION,
+    build_m15_direct_family_pilot_summary,
+)
 from xgap.experiments.m15_direct_family_prediction_run import (
     _ControlledState,
     _clients_after_selection_seal,
@@ -173,3 +177,42 @@ def test_auditor_rejects_analysis_tampering(
     assert not audit.success
     assert "analysis.exact" in audit.failed_check_ids
     assert audit.run_tree_mutated is False
+
+
+def test_compact_summary_accepts_only_the_successful_read_only_audit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _native_run(tmp_path, monkeypatch)
+    audit = audit_m15_direct_family_pilot(
+        run_root=root,
+        expected_commit=COMMIT,
+    ).to_dict()
+
+    summary = build_m15_direct_family_pilot_summary(
+        run_root=root,
+        audit=audit,
+    )
+
+    assert summary["schema_version"] == DIRECT_FAMILY_PILOT_SUMMARY_SCHEMA_VERSION
+    assert 2 <= summary["counts"]["online_selected_plan_runs"] <= 8
+    assert summary["counts"]["total_plan_runs"] == (
+        224 + summary["counts"]["online_selected_plan_runs"]
+    )
+    assert summary["counts"]["total_backend_calls"] == (
+        2 * summary["counts"]["total_plan_runs"]
+    )
+    assert summary["execution_boundary"] == {
+        "current_query_profile_calls": 0,
+        "shadow_used_for_selection": False,
+        "automatic_retries": 0,
+    }
+    assert summary["audit"]["failed_check_ids"] == []
+    assert summary["paper_result"] is False
+
+    rejected = dict(audit)
+    rejected["success"] = False
+    with pytest.raises(ValueError, match="accepted read-only audit"):
+        build_m15_direct_family_pilot_summary(
+            run_root=root,
+            audit=rejected,
+        )
