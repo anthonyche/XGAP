@@ -245,7 +245,7 @@ hard constraints remain immutable.
 
 ## M15-F — Paper experiment surface and optional UI
 
-Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9A LOCAL MECHANISMS VERIFIED**
+Status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B LOCAL MECHANISMS VERIFIED**
 
 The first F0 slice commits two bounded workload specifications and generates
 large artifacts only inside a new immutable run tree. The generator produces
@@ -534,8 +534,23 @@ oracle fields, post-execution evidence, incomplete coverage, runtime-plan
 drift, or post-seal mutation. A controlled readiness fixture exercises the
 8-to-4-to-4-to-3 reduction and retains exact semantics first. These are
 constructed estimates; no backend, oracle, LLM, or ontology call occurs and no
-performance or semantic-quality claim is enabled. F2C9B must bind the selected
-frontier to the native service lifecycle while multihop remains author-gated.
+performance or semantic-quality claim is enabled. At the F2C9A boundary, the
+native lifecycle and every multihop interpretation remained unavailable.
+
+F2C9B now supplies that native boundary without changing the selection policy.
+The exact controlled estimate source is versioned and copied into each run;
+all eight estimates bind to the complete candidate hash before the selector
+persists its snapshot and three-plan frontier. Only after that seal may the
+runner open answer oracles and invoke Neo4j/Fuseki. It executes exactly the
+returned exact, combined, and risk-only semantic plans in rank order, stops on
+the first failure, and admits no retry, fallback, memory, LLM, or ontology
+call. A dedicated native mode, allowlisted Slurm wrapper, and read-only
+reconstruction auditor bind the overlay, fixture, selection artifacts, exact
+answers, six-call trace, lifecycle, and cleanup. Controlled local doubles
+returned 11, 9, and 11 rows and the synthetic native audit passed 211 checks;
+full acceptance passes 853 tests with 36 gated skips. One CWRU mechanism run is
+the next gate. Constructed cost estimates cannot support a performance claim,
+and all eight multihop classes remain excluded pending author-owned semantics.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9A LOCAL MECHANISMS VERIFIED**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C9B LOCAL MECHANISMS VERIFIED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -412,9 +412,16 @@ execution measurements fail closed. Physical reduction precedes the
 semantic-deviation/predicted-cost Pareto, 5% epsilon, and K=4 passes. The
 controlled fixture reduces 8 physical candidates to 4 class representatives,
 4 Pareto points, and 3 returned semantic plans with exact semantics first.
-Full local acceptance passes 844 tests with 36 gated skips. F2C9B is the next
-implementation gate: persist the selected frontier inside one fresh native
-service run and execute only its returned direct plans. Controlled estimates
+F2C9B persists that selected frontier inside a fresh native-service mode. A
+versioned controlled estimate source binds all eight direct physical plans;
+the complete candidate set, snapshot, and three returned representatives are
+written before any oracle or backend access. Only the exact, combined, and
+risk-only returned plans execute, for six expected backend calls, and failure
+stops without retry. A dedicated allowlisted Slurm wrapper and independent
+read-only reconstruction audit cover the whole lifecycle. Controlled local
+doubles return exact 11-, 9-, and 11-row answers, the synthetic audit passes
+211/211 checks, and full local acceptance passes 853 tests with 36 gated
+skips. Exactly one CWRU mechanism run is authorized next. Controlled estimates
 must not be promoted into a performance claim, and multihop remains blocked.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,

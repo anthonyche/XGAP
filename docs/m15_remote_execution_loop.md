@@ -424,11 +424,15 @@ passed all 278 dedicated checks; F2C7B2 completed at exact clean commit
 tree. Do not resubmit these jobs or dispatch the remaining development
 campaign sessions. F2C6/F2C7B1 remain local planning and artifact gates. The
 F2C8A provides versioned payment-predicate data, compiler, oracle, and
-coordinator plumbing. F2C8B now adds its dedicated native lifecycle runner,
-allowlisted Slurm wrapper, and independent evidence auditor. One clean
-`semantic_predicate_relaxation` CWRU mechanism run is authorized next; do not
-dispatch a second run or interpret it as a strategy comparison. After it
-finishes, audit the exact commit and keep the run tree immutable.
+coordinator plumbing. F2C8B job `3790680` has completed at exact commit
+`2d39c3c`; its two exact answers and 150/150 audit are immutable accepted
+mechanism evidence and must not be rerun. F2C9A builds the capability-aware
+direct frontier, and F2C9B now adds its native lifecycle, versioned controlled
+estimate source, selected-only executor, allowlisted Slurm wrapper, and
+independent auditor. Exactly one clean `semantic_direct_frontier` CWRU
+mechanism run is authorized next. After it finishes, audit the exact commit and
+keep the run tree immutable. Do not dispatch a second run or interpret the
+controlled selection as a performance comparison.
 Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.

@@ -1916,3 +1916,33 @@ recommended semantic trade-off. The selector makes no backend, LLM, ontology,
 or oracle call and remains `paper_result=false`. F2C9B must connect this sealed
 frontier to one native execution gate before any live frontier claim exists;
 multihop remains excluded until its hard-constraint semantics are author-owned.
+
+## D116 Execute only the sealed direct frontier in the next native gate
+
+F2C9B carries the F2C9A selector into the native lifecycle without learning
+from the execution it is about to evaluate. A committed, versioned controlled
+estimate source must cover all eight direct physical candidates exactly once.
+The runner reconstructs the candidate set, binds and hashes the complete
+estimate snapshot, applies physical/Pareto/epsilon/K reduction, and persists
+all four artifacts before any answer oracle is opened or backend call is made.
+Only the three returned semantic plans may execute, in deterministic rank
+order. The first failed external call terminates the gate; automatic retry,
+fallback, shadow execution, memory updates, LLM calls, and ontology calls are
+forbidden.
+
+The admitted local control executes exact, combined risk-plus-predicate, and
+risk-only semantics with one risk-first physical representative each. It
+therefore expects three plan runs, six backend calls in Fuseki/Neo4j pairs, and
+post-execution oracle row counts 11, 9, and 11. The dedicated native mode and
+Slurm wrapper use fresh loopback-only services, revalidate the cumulative
+predicate fixture, and require guarded allocation-local cleanup. An
+independent read-only auditor reconstructs the full frontier and answer chain;
+its synthetic run tree passes 211 checks and detects frontier or answer
+tampering.
+
+This is a mechanism gate. The cost values are constructed pre-execution
+predictions designed to exercise the selector, so even a successful CWRU run
+cannot establish latency superiority, user semantic utility, or appropriate
+epsilon/K values. Exactly one CWRU run is authorized. The eight multihop
+classes remain unavailable until the user freezes their hard-constraint and
+answer semantics.

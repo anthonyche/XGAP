@@ -112,6 +112,10 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-semantic-predicate-relaxation"
     RUN_VERSION="m15-f2c8b-native-live-semantic-predicate-relaxation-services-v1"
     ;;
+  semantic_direct_frontier)
+    RUN_PREFIX="cwru-m15-native-semantic-direct-frontier"
+    RUN_VERSION="m15-f2c9b-native-live-direct-semantic-frontier-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -324,7 +328,7 @@ if [[ "$WORKLOAD_MODE" == semantic_risk_relaxation ]]; then
     --semantic-catalog "$SEMANTIC_CATALOG"
   )
 fi
-if [[ "$WORKLOAD_MODE" == semantic_predicate_relaxation ]]; then
+if [[ "$WORKLOAD_MODE" == semantic_predicate_relaxation || "$WORKLOAD_MODE" == semantic_direct_frontier ]]; then
   SEMANTIC_BASE_BUNDLE="$RUN_ROOT/semantic-base-workload-bundle"
   PREDICATE_OVERLAY="$RUN_ROOT/predicate-overlay"
   SEMANTIC_CATALOG="$RUN_ROOT/semantic_catalog.json"
@@ -354,6 +358,12 @@ if [[ "$WORKLOAD_MODE" == semantic_predicate_relaxation ]]; then
     --semantic-catalog "$SEMANTIC_CATALOG"
     --predicate-mapping "$PREDICATE_MAPPING"
   )
+  if [[ "$WORKLOAD_MODE" == semantic_direct_frontier ]]; then
+    DIRECT_FRONTIER_ESTIMATES="$RUN_ROOT/direct_frontier_estimates.json"
+    cp -- "$REPO_ROOT/experiments/configs/m15_f2c9_direct_frontier_estimates_dev.json" \
+      "$DIRECT_FRONTIER_ESTIMATES"
+    WORKLOAD_ARGS+=(--direct-frontier-estimates "$DIRECT_FRONTIER_ESTIMATES")
+  fi
 fi
 
 QUERY_BOUND_ARGS=()

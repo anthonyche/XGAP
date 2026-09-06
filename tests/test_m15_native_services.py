@@ -14,6 +14,9 @@ import pytest
 import xgap.experiments.m15_native_services as native_services
 
 from xgap.experiments.m15_campaign import compile_m15_campaign_file
+from xgap.experiments.m15_direct_semantic_estimates import (
+    load_m15_direct_estimate_source,
+)
 from xgap.experiments.m15_query_bound_campaign import (
     compile_m15_query_bound_campaign_file,
 )
@@ -986,6 +989,159 @@ def test_predicate_native_mode_revalidates_overlay_at_fixture_boundary(
     }
 
 
+def test_full_lifecycle_requires_and_records_direct_frontier_inputs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    base = generate_m15_parameterized_workload_bundle(
+        workload_spec=(
+            REPO_ROOT
+            / "experiments/configs/m15_f2c_parameterized_workload_dev.json"
+        ),
+        query_template_spec=(
+            REPO_ROOT
+            / "experiments/configs/m15_f2c_parameterized_financial_risk_v2.json"
+        ),
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "frontier-base-bundle",
+    )
+    catalog = load_m15_semantic_relaxation_catalog(
+        REPO_ROOT / "experiments/configs/m15_f2c6_semantic_relaxation_dev.json"
+    )
+    mapping = REPO_ROOT / "experiments/configs/m15_f2c8_predicate_mapping_dev.json"
+    estimates = (
+        REPO_ROOT
+        / "experiments/configs/m15_f2c9_direct_frontier_estimates_dev.json"
+    )
+    overlay = generate_m15_predicate_overlay_bundle(
+        base_bundle=base,
+        base_query_id="financial-risk-alice-aug-high-v2",
+        catalog=catalog,
+        mapping=mapping,
+        destination=tmp_path / "frontier-overlay",
+    )
+    with pytest.raises(ValueError, match="requires a predicate overlay"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "missing-frontier-runs",
+            run_id="missing-frontier-inputs",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="semantic_direct_frontier",
+        )
+
+    executed: list[tuple[str, str, str, str]] = []
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence(
+            "/opt/java17/bin/java", 17, "17"
+        ),
+    )
+    preflight_root = (
+        tmp_path
+        / "frontier-runs"
+        / "native-frontier-test"
+        / "direct-frontier-preflight"
+    )
+
+    def fake_frontier_start(spec):
+        assert (preflight_root / "candidate_set.json").is_file()
+        assert (preflight_root / "estimate_source.json").is_file()
+        assert (preflight_root / "estimate_snapshot.json").is_file()
+        assert (preflight_root / "semantic_frontier.json").is_file()
+        assert (preflight_root / "preflight_manifest.json").is_file()
+        return RunningService(spec, _StableProcess(), io.BytesIO())
+
+    monkeypatch.setattr(native_services, "start_service", fake_frontier_start)
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id,
+            True,
+            1,
+            1.0,
+            200,
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args: executed.append(
+            (
+                _args[3],
+                _args[17].manifest["overlay_sha256"],
+                str(_args[19]),
+                _args[20].frontier.to_dict()["frontier_sha256"],
+            )
+        ),
+    )
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "frontier-runs",
+        run_id="native-frontier-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="semantic_direct_frontier",
+        predicate_overlay=overlay,
+        semantic_base_bundle=base,
+        semantic_catalog=catalog,
+        predicate_mapping=mapping,
+        direct_frontier_estimates=estimates,
+    )
+
+    assert record.success
+    assert executed == [
+        (
+            "semantic_direct_frontier",
+            overlay.manifest["overlay_sha256"],
+            str(estimates),
+            "e915ffdc4a19a21377cf18134024cbae47dbdaa80f8609296b52d28e41b8517a",
+        )
+    ]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.DIRECT_SEMANTIC_FRONTIER_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["workload_mode"] == "semantic_direct_frontier"
+    assert manifest["predicate_overlay"] == overlay.manifest
+    assert manifest["direct_frontier_estimates"] == (
+        load_m15_direct_estimate_source(estimates).to_dict()
+    )
+    preflight = json.loads(
+        (preflight_root / "preflight_manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert preflight["sealed_before_service_start"] is True
+    assert preflight["backend_calls_before_seal"] == 0
+    assert manifest["direct_frontier_preflight"] == preflight
+
+
 def test_full_lifecycle_requires_and_records_scaled_workload_bundle(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1331,6 +1487,7 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "parameterized_family_transfer" in script
     assert "semantic_risk_relaxation" in script
     assert "semantic_predicate_relaxation" in script
+    assert "semantic_direct_frontier" in script
     assert "m15_parameterized_workload" in script
     assert "m15_semantic_overlay" in script
     assert "m15_predicate_overlay" in script
@@ -1391,4 +1548,13 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     )
     assert "SLURM_SUBMIT_DIR" in predicate_relaxation_script
     assert "BASH_SOURCE" not in predicate_relaxation_script
+    direct_frontier_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_semantic_direct_frontier.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=semantic_direct_frontier" in (
+        direct_frontier_script
+    )
+    assert "SLURM_SUBMIT_DIR" in direct_frontier_script
+    assert "BASH_SOURCE" not in direct_frontier_script
     assert "--localhost" not in script  # Frozen by the typed service plan.

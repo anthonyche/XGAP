@@ -71,9 +71,9 @@ selective matrix, all six methods returned the exact answer; only full agent
 acted on the induced stale-to-current plan flip, while no-replan observed but
 kept the old plan. The clean-commit F1 gate passed 640 tests and the subsequent
 F0 batch-protocol regression raised that checkpoint to 641. After F1L, F2B4,
-and the F2C0--F2C6 stream, family, typed-query, workload, exact-execution,
-family-memory, semantic-frontier, execution-readiness, and overlay contracts,
-current full local acceptance passes 844 tests with
+and the F2C0--F2C9B stream, family, typed-query, workload, exact-execution,
+family-memory, semantic-frontier, execution-readiness, overlay, and native
+frontier contracts, current full local acceptance passes 853 tests with
 36 gated skips. This is
 `paper_result=false`; no live comparative timing claim is made.
 The compact clean-commit mechanism record is
@@ -302,6 +302,24 @@ Pareto, 5% epsilon, and K=4 reduction. The controlled fixture exercises an
 occurs, and no performance or semantic-utility claim is enabled. The compact
 record is
 `experiments/artifacts/m15_f2c9a_local_direct_semantic_frontier_20260906.json`.
+
+M15-F2C9B is locally ready for one native mechanism gate. A versioned
+controlled estimate source is copied into the immutable run tree and bound to
+all eight direct physical candidates. The runner persists the candidate set,
+estimate source, sealed snapshot, and three-plan frontier before reading an
+answer oracle or invoking a backend. It then executes only the returned exact,
+combined, and risk-only plans in rank order, for exactly six expected backend
+calls; any first external failure stops the run without retry or fallback. The
+new native mode, dedicated allowlisted Slurm wrapper, and independent read-only
+auditor cover overlay regeneration, fixture verification, frontier
+reconstruction, exact answers, call order, service shutdown, and runtime
+cleanup. The controlled native-double path returned 11, 9, and 11 exact rows,
+and its reconstructed synthetic run tree passed 211/211 audit checks. Full
+local acceptance passes 853 tests with 36 gated skips. This is readiness only:
+the estimates are constructed, no real backend frontier run has occurred, and
+no semantic-utility, comparative, performance, ontology, or paper claim is
+enabled. The compact record is
+`experiments/artifacts/m15_f2c9b_local_native_direct_frontier_readiness_20260906.json`.
 
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
@@ -1811,7 +1829,7 @@ baselines, or M12-D experiment semantics.
 
 # Latest Known Acceptance Status
 
-M0-M15-F2C8B live semantic-relaxation and F2C9A local direct-frontier
+M0-M15-F2C8B live semantic-relaxation and F2C9B local native-direct-frontier
 implementation tests passed. M7 backend
 smoke and
 M12-C real calibration acceptance passed on the server. A real DashScope M12-B
@@ -1830,12 +1848,14 @@ Latest recorded command results:
   bytes. The independent read-only audit passed 150/150 checks without
   mutating the run tree. This is a live mechanism gate, not a comparative,
   semantic-utility, ontology-truth, or paper result.
-- `./scripts/run_acceptance.sh`: 844 passed and 36 explicitly gated or
-  external-artifact tests skipped on Python 3.10.19. F2C9A adds four
-  capability-aware direct semantic classes, eight physical candidates, a
-  sealed pre-execution estimate snapshot, per-class physical reduction, and
-  Pareto/epsilon/K filtering. The controlled readiness fixture returns three
-  representatives with exact semantics first and makes no external call.
+- `./scripts/run_acceptance.sh`: 853 passed and 36 explicitly gated or
+  external-artifact tests skipped on Python 3.10.19. F2C9B carries the F2C9A
+  capability-aware direct frontier into a native-service mode using a
+  versioned controlled estimate source. Selection is persisted before oracle
+  or backend access; only three returned plans execute, the controlled native
+  double path makes six calls and returns exact 11-, 9-, and 11-row answers,
+  and its independent reconstruction audit passes 211/211 checks. This is
+  local mechanism readiness, not real-backend or performance evidence.
 - CWRU F2A job `3787291`: one selective hash-bound campaign session completed
   at exact clean commit `c9a7afe` in 86 seconds on `compt336`. The compiled
   Williams order drove the six real-service methods, all answers were exact,

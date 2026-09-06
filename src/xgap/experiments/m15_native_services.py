@@ -29,6 +29,15 @@ from xgap.experiments.m15_fixture_loader import (
     load_m15_split_fixture,
 )
 from xgap.experiments.hashing import content_hash
+from xgap.experiments.m15_direct_semantic_estimates import (
+    M15DirectEstimateSource,
+    load_m15_direct_estimate_source,
+)
+from xgap.experiments.m15_live_direct_semantic_frontier import (
+    M15PreparedDirectSemanticFrontier,
+    prepare_m15_direct_semantic_frontier,
+    run_m15_live_direct_semantic_frontier,
+)
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_campaign_session import (
     prepare_m15_live_campaign_session,
@@ -112,6 +121,12 @@ SEMANTIC_RELAXATION_SERVICE_RUN_SCHEMA_VERSION = (
 PREDICATE_RELAXATION_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-f2c8b-native-live-semantic-predicate-relaxation-service-run-v1"
 )
+DIRECT_SEMANTIC_FRONTIER_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-f2c9b-native-live-direct-semantic-frontier-service-run-v1"
+)
+DIRECT_SEMANTIC_FRONTIER_PREFLIGHT_SCHEMA_VERSION = (
+    "m15-f2c9b-native-direct-semantic-frontier-preflight-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -128,6 +143,7 @@ WORKLOAD_MODES = frozenset(
         "parameterized_family_transfer",
         "semantic_risk_relaxation",
         "semantic_predicate_relaxation",
+        "semantic_direct_frontier",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -836,6 +852,8 @@ def _run_fixture_and_query(
     semantic_catalog: M15SemanticRelaxationCatalog | str | Path | None = None,
     predicate_overlay: M15PredicateOverlayBundle | None = None,
     predicate_mapping: M15PredicateMappingSpec | str | Path | None = None,
+    direct_frontier_estimates: str | Path | None = None,
+    prepared_direct_frontier: M15PreparedDirectSemanticFrontier | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -969,6 +987,49 @@ def _run_fixture_and_query(
                     f"{predicate.error}"
                 )
             return
+        if workload_mode == "semantic_direct_frontier":
+            assert predicate_overlay is not None
+            assert semantic_base_bundle is not None
+            assert semantic_catalog is not None
+            assert predicate_mapping is not None
+            assert direct_frontier_estimates is not None
+            assert prepared_direct_frontier is not None
+            fixture = load_m15_parameterized_fixture(
+                workload_bundle=predicate_overlay.workload_bundle,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="frontier-fixture-load",
+                repo_root=repo_root,
+                bundle_loader=partial(
+                    load_m15_predicate_overlay_workload_bundle,
+                    overlay_root=predicate_overlay.root,
+                    base_bundle=semantic_base_bundle,
+                    catalog=semantic_catalog,
+                    mapping=predicate_mapping,
+                ),
+            )
+            if not fixture.success:
+                raise RuntimeError(
+                    f"direct frontier fixture load failed: {fixture.error}"
+                )
+            frontier = run_m15_live_direct_semantic_frontier(
+                predicate_overlay=predicate_overlay,
+                base_bundle=semantic_base_bundle,
+                catalog=semantic_catalog,
+                mapping=predicate_mapping,
+                estimate_source=direct_frontier_estimates,
+                clients=clients,
+                output_root=run_root,
+                run_id="direct-semantic-frontier-run",
+                repo_root=repo_root,
+                prepared_frontier=prepared_direct_frontier,
+            )
+            if not frontier.success:
+                raise RuntimeError(
+                    f"live direct semantic frontier failed: {frontier.error}"
+                )
+            return
         fixture = load_m15_split_fixture(
             output_root=run_root,
             run_id="fixture-load",
@@ -1088,6 +1149,7 @@ def run_m15_native_services(
     semantic_catalog: M15SemanticRelaxationCatalog | str | Path | None = None,
     predicate_overlay: M15PredicateOverlayBundle | str | Path | None = None,
     predicate_mapping: M15PredicateMappingSpec | str | Path | None = None,
+    direct_frontier_estimates: str | Path | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1170,6 +1232,12 @@ def run_m15_native_services(
         and selected_predicate_mapping is not None
         else None
     )
+    selected_direct_frontier_estimates: M15DirectEstimateSource | None = (
+        load_m15_direct_estimate_source(direct_frontier_estimates)
+        if direct_frontier_estimates is not None
+        else None
+    )
+    prepared_direct_frontier: M15PreparedDirectSemanticFrontier | None = None
     scaled_mode = workload_mode in {
         "scaled_adaptive",
         "scaled_method_matrix",
@@ -1208,7 +1276,11 @@ def run_m15_native_services(
                 "semantic_risk_relaxation requires an overlay, base bundle, "
                 "and semantic catalog"
             )
-        if predicate_overlay is not None or predicate_mapping is not None:
+        if (
+            predicate_overlay is not None
+            or predicate_mapping is not None
+            or direct_frontier_estimates is not None
+        ):
             raise ValueError(
                 "semantic_risk_relaxation does not accept predicate inputs"
             )
@@ -1243,6 +1315,47 @@ def run_m15_native_services(
                 "semantic_predicate_relaxation does not accept another "
                 "workload bundle"
             )
+        if direct_frontier_estimates is not None:
+            raise ValueError(
+                "semantic_predicate_relaxation does not accept frontier estimates"
+            )
+    elif workload_mode == "semantic_direct_frontier":
+        if any(
+            value is None
+            for value in (
+                predicate_overlay,
+                semantic_base_bundle,
+                semantic_catalog,
+                predicate_mapping,
+                direct_frontier_estimates,
+            )
+        ):
+            raise ValueError(
+                "semantic_direct_frontier requires a predicate overlay, base "
+                "bundle, semantic catalog, predicate mapping, and estimates"
+            )
+        if semantic_overlay is not None:
+            raise ValueError(
+                "semantic_direct_frontier does not accept a risk overlay"
+            )
+        if selected_predicate_overlay is None:
+            raise ValueError("direct frontier predicate inputs could not be verified")
+        if selected_direct_frontier_estimates is None:
+            raise ValueError("direct frontier estimates could not be verified")
+        if selected_bundle is not None or selected_parameterized_bundle is not None:
+            raise ValueError(
+                "semantic_direct_frontier does not accept another workload bundle"
+            )
+        assert selected_semantic_base is not None
+        assert selected_semantic_catalog is not None
+        assert selected_predicate_mapping is not None
+        prepared_direct_frontier = prepare_m15_direct_semantic_frontier(
+            predicate_overlay=selected_predicate_overlay,
+            base_bundle=selected_semantic_base,
+            catalog=selected_semantic_catalog,
+            mapping=selected_predicate_mapping,
+            estimate_source=direct_frontier_estimates,
+        )
     elif any(
         value is not None
         for value in (
@@ -1251,6 +1364,7 @@ def run_m15_native_services(
             semantic_catalog,
             predicate_overlay,
             predicate_mapping,
+            direct_frontier_estimates,
         )
     ):
         raise ValueError(
@@ -1328,6 +1442,9 @@ def run_m15_native_services(
         "semantic_predicate_relaxation": (
             PREDICATE_RELAXATION_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "semantic_direct_frontier": (
+            DIRECT_SEMANTIC_FRONTIER_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -1336,6 +1453,41 @@ def run_m15_native_services(
     manifest_path = run_root / "run_manifest.json"
     started_at = _now()
     _write_json(status_path, {"status": "running", "started_at": started_at})
+
+    direct_frontier_preflight: dict[str, Any] | None = None
+    if prepared_direct_frontier is not None:
+        preflight_root = run_root / "direct-frontier-preflight"
+        preflight_root.mkdir()
+        preflight_artifacts = prepared_direct_frontier.artifacts()
+        for filename, payload in preflight_artifacts.items():
+            _write_json(preflight_root / filename, payload)
+        candidate_payload = preflight_artifacts["candidate_set.json"]
+        estimate_payload = preflight_artifacts["estimate_source.json"]
+        snapshot_payload = preflight_artifacts["estimate_snapshot.json"]
+        frontier_payload = preflight_artifacts["semantic_frontier.json"]
+        direct_frontier_preflight = {
+            "schema_version": DIRECT_SEMANTIC_FRONTIER_PREFLIGHT_SCHEMA_VERSION,
+            "sealed_before_service_start": True,
+            "answer_oracle_fields": snapshot_payload["answer_oracle_fields"],
+            "post_execution_measurements_used": snapshot_payload[
+                "post_execution_measurements_used"
+            ],
+            "estimate_source_sha256": estimate_payload[
+                "estimate_source_sha256"
+            ],
+            "candidate_set_sha256": candidate_payload["candidate_set_sha256"],
+            "estimate_snapshot_sha256": snapshot_payload[
+                "estimate_snapshot_sha256"
+            ],
+            "frontier_sha256": frontier_payload["frontier_sha256"],
+            "backend_calls_before_seal": 0,
+            "automatic_retries": 0,
+            "paper_result": False,
+        }
+        _write_json(
+            preflight_root / "preflight_manifest.json",
+            direct_frontier_preflight,
+        )
 
     plan: NativeServicePlan | None = None
     health: list[HealthObservation] = []
@@ -1396,6 +1548,8 @@ def run_m15_native_services(
                 selected_semantic_catalog,
                 selected_predicate_overlay,
                 selected_predicate_mapping,
+                direct_frontier_estimates,
+                prepared_direct_frontier,
             )
     except Exception as exc:  # Persist the first lifecycle failure; never restart.
         error = str(exc)
@@ -1473,6 +1627,12 @@ def run_m15_native_services(
                 if selected_predicate_mapping is not None
                 else None
             ),
+            "direct_frontier_estimates": (
+                selected_direct_frontier_estimates.to_dict()
+                if selected_direct_frontier_estimates is not None
+                else None
+            ),
+            "direct_frontier_preflight": direct_frontier_preflight,
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -1539,6 +1699,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--semantic-catalog")
     parser.add_argument("--predicate-overlay")
     parser.add_argument("--predicate-mapping")
+    parser.add_argument("--direct-frontier-estimates")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -1580,6 +1741,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             semantic_catalog=args.semantic_catalog,
             predicate_overlay=args.predicate_overlay,
             predicate_mapping=args.predicate_mapping,
+            direct_frontier_estimates=args.direct_frontier_estimates,
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,
