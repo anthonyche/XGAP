@@ -2087,3 +2087,34 @@ that reconstruction. The generic fixture load/verification logic remains
 unchanged. Job `3791589` is immutable zero-plan-call diagnostic evidence;
 automatic retry remains disabled and any validation run must be a new Slurm
 job at a clean repair commit.
+
+## D124 Freeze result-blind physical baselines before reading F2C10D outcomes
+
+F2C11 defines the first comparison surface for the F2C10D physical prediction
+mechanism before the replacement CWRU pilot result is available. It contains
+exactly five methods: the sealed instance-aware family-memory predictor, a
+no-instance-feature family strategy-median ablation, fixed parallel hash,
+fixed risk-first bind, and an observed post-selection oracle upper bound. The
+method list, aggregation, selection order, and metrics are a versioned policy;
+the analysis may not add or remove a method after seeing the pilot.
+
+The primary and ablation methods may use only the already sealed training
+measurements and prediction artifacts. The two fixed methods use no learned
+measurement. The observed oracle may use the four-repetition shadow medians
+only as an evaluation upper bound. Shadow measurements cannot select any other
+method, and online selected-plan results and answer-row values cannot enter
+selection or metrics. Physical-winner accuracy and latency regret use the
+latency-first observed oracle; byte regret uses a separately declared
+byte-first reference so every reported regret is nonnegative rather than
+conflating resource trade-offs with the latency winner.
+
+Analysis is admitted only after a successful mutation-free F2C10D audit and
+reruns that independent read-only reconstruction immediately before reading
+the baseline inputs. This closes the time-of-check/time-of-use gap without a
+backend, LLM, ontology, profile, sample, explain, retry, or run-tree write. The
+baseline output must live outside the immutable source run. The six-query,
+ten-held-out-semantic-task result remains exploratory development evidence,
+uses no confirmatory statistic, and stays `paper_result=false` regardless of
+which method wins. It isolates physical choice inside each semantic class; it
+is not a semantic-frontier comparison and does not replace a later live
+current-query-profiling baseline with acquisition overhead included.

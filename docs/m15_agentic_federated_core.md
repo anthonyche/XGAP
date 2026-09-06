@@ -611,6 +611,25 @@ fixture boundary and then using its verified nested bundle; it does not make
 the generic loader accept a broader schema. The failed run remains engineering
 diagnostic evidence and a new job is required.
 
+F2C11 freezes the first physical baseline surface before the replacement
+pilot outcome is available. The agent-memory primary is compared with a
+family-wide strategy-median ablation that removes instance features, both
+fixed coordinator strategies, and a post-selection observed oracle upper
+bound. This is a physical choice within each semantic class; it does not
+change or rerank the semantic frontier. The primary and ablation paths use
+only training-time evidence. Shadow measurements supply independent
+four-repetition evaluation medians and can select only the explicitly labeled
+oracle upper bound. Online results and answer-row values are not baseline
+inputs.
+
+The analyzer accepts only a successful read-only F2C10D audit and reruns the
+complete reconstruction immediately before analysis, then rebuilds the
+training memory and prediction suite instead of trusting result metadata.
+Latency-first and byte-first evaluation references are declared separately.
+No current-query observation or external call is introduced, output stays
+outside the immutable run tree, and all F2C11 artifacts remain exploratory and
+`paper_result=false`.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

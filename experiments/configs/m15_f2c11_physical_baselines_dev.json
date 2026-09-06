@@ -1,0 +1,77 @@
+{
+  "schema_version": "m15-f2c11-physical-baseline-policy-v1",
+  "policy_id": "m15-f2c11-results-blind-development-baselines-v1",
+  "source_experiment": "m15-f2c10d-direct-family-pilot",
+  "methods": [
+    {
+      "method_id": "family_memory_primary",
+      "role": "primary_method",
+      "selection_source": "sealed_family_memory_predictions"
+    },
+    {
+      "method_id": "family_global_no_instance_features",
+      "role": "ablation",
+      "selection_source": "training_strategy_global_medians"
+    },
+    {
+      "method_id": "fixed_parallel_hash",
+      "role": "static_baseline",
+      "selection_source": "fixed_parallel_hash_join"
+    },
+    {
+      "method_id": "fixed_risk_first_bind",
+      "role": "static_baseline",
+      "selection_source": "fixed_risk_first_bind_join"
+    },
+    {
+      "method_id": "observed_oracle_upper_bound",
+      "role": "evaluation_upper_bound",
+      "selection_source": "postselection_shadow_medians"
+    }
+  ],
+  "aggregation": {
+    "per_plan": "median_over_four_repetitions",
+    "family_global": "median_of_training_plan_medians_per_strategy"
+  },
+  "physical_selection_order": [
+    "latency_ms",
+    "total_bytes_moved",
+    "plan_id"
+  ],
+  "evaluation_oracles": {
+    "physical_winner": [
+      "latency_ms",
+      "total_bytes_moved",
+      "plan_id"
+    ],
+    "latency_regret_reference": [
+      "latency_ms",
+      "total_bytes_moved",
+      "plan_id"
+    ],
+    "bytes_regret_reference": [
+      "total_bytes_moved",
+      "latency_ms",
+      "plan_id"
+    ]
+  },
+  "metrics": [
+    "physical_winner_accuracy",
+    "latency_regret_ms",
+    "bytes_regret",
+    "strategy_selection_counts"
+  ],
+  "input_boundary": {
+    "requires_successful_f2c10d_read_only_audit": true,
+    "admission_audit_may_validate_full_run": true,
+    "training_measurements_allowed": true,
+    "postselection_shadow_measurements_allowed_for_evaluation_only": true,
+    "online_selected_results_allowed_for_selection_or_metrics": false,
+    "answer_row_values_allowed_for_selection_or_metrics": false,
+    "current_query_observation_operations": []
+  },
+  "analysis_backend_calls": 0,
+  "confirmatory_statistics": false,
+  "development_candidate_baselines_only": true,
+  "paper_result": false
+}

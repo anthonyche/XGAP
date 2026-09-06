@@ -448,14 +448,16 @@ revalidates the enclosing direct-semantic workload at fixture time; the base
 schema allowlist is unchanged. Preserve the failed run and do not audit or
 rerun it. The repair passes the 899-test full local suite with 36 gated skips.
 
-One explicitly new F2C10D job is authorized only after pulling the clean repair
-commit. Its frozen development protocol measures 144 counterbalanced training
+The one explicitly new F2C10D repair job was submitted as job `3791600` at
+exact clean commit `08f1911dfab2617e2598df91578fa0997f90eb11`. Do not submit
+another job while it is pending or after it succeeds. Its frozen development
+protocol measures 144 counterbalanced training
 plan runs, seals family memory and two independent held-out query frontiers
 with zero current-query profiling, executes 2--8 returned online plans, and
 then executes 80 shadow plan runs. The valid total is 226--232 plan runs and
 452--464 plan backend calls. Each request has a 60-second timeout, the Slurm
 wrapper reserves 45 minutes, failure stops on the first error, and no retry is
-allowed. Submit exactly one new job:
+allowed. The submitted command was:
 
 ```bash
 cd "$HOME/XGAP-m15-465e2e2"
@@ -477,8 +479,7 @@ sbatch --parsable \
   scripts/slurm/run_m15_native_direct_family_pilot.sbatch
 ```
 
-Return the exact repair commit and new job ID before any further submission. After the job
-finishes, inspect `sacct` and the outer `run_status.json`. If and only if both
+After the job finishes, inspect `sacct` and the outer `run_status.json`. If and only if both
 report success, run the independent auditor once with a new output path:
 
 ```bash
@@ -529,6 +530,42 @@ PYTHONPATH="$PWD/src" \
 
 cat "$XGAP_F2C10D_SUMMARY"
 ```
+
+F2C11 was frozen on a separate branch before job `3791600` completed. After
+the F2C10D audit and compact summary both succeed, switch to that branch and
+produce the result-blind physical comparison outside the source run tree. The
+analyzer reruns the F2C10D audit read-only, so any post-audit mutation fails:
+
+```bash
+cd "$HOME/XGAP-m15-465e2e2"
+
+git fetch --prune origin
+git switch codex/m15-f2c11-physical-baselines
+git pull --ff-only origin codex/m15-f2c11-physical-baselines
+
+XGAP_F2C11_ANALYSIS="$PWD/runs/audits/cwru-m15-f2c11-physical-baselines-$XGAP_F2C10D_JOB.json"
+test ! -e "$XGAP_F2C11_ANALYSIS" || {
+  echo "baseline output already exists; stop"
+  exit 1
+}
+
+PYTHONPATH="$PWD/src" \
+"$HOME/venvs/xgap-core/bin/python" \
+  -m xgap.experiments.m15_direct_family_baselines \
+  --run-root "$XGAP_F2C10D_RUN" \
+  --audit "$XGAP_F2C10D_AUDIT" \
+  --policy experiments/configs/m15_f2c11_physical_baselines_dev.json \
+  --output "$XGAP_F2C11_ANALYSIS" \
+  > "$XGAP_F2C11_ANALYSIS.stdout"
+
+echo "baseline_exit=$?"
+cat "$XGAP_F2C11_ANALYSIS"
+```
+
+This comparison makes no backend, profile, sample, explain, LLM, or ontology
+call. It is an exploratory physical-choice analysis over ten held-out semantic
+tasks, not a semantic-frontier comparison or a substitute for a later live
+current-query-profiling baseline.
 Do not add path execution until its hard-constraint semantics are frozen.
 Hash-bound multi-family execution and all paper campaign dispatch remain
 disabled.

@@ -160,7 +160,7 @@ Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI
 only after the CLI, goal trace, coordinator, and remote-executor contracts are
 stable.
 
-Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C LOCAL MECHANISMS VERIFIED; F2C10D FIRST NATIVE FAILURE DIAGNOSED AND REPAIR READY**
+Current status: **F0/F1/F2A/F2B4/F2C4/F2C5/F2C7B2/F2C8B/F2C9B LIVE GATES VERIFIED; F2C6/F2C7B1/F2C8A/F2C10A/F2C10B/F2C10C/F2C11 LOCAL MECHANISMS VERIFIED; F2C10D REPAIR PILOT SUBMITTED**
 
 F0 adds two committed, bounded specifications for the same exact federated
 question: a selective cold-risk regime with 120 answer rows and a broad
@@ -493,6 +493,21 @@ passes 899 full-suite tests with 36 gated skips. The failed job is immutable
 diagnostic evidence. The next gate is exactly one
 explicitly new clean-repair-commit CWRU pilot, followed on success by exactly
 one read-only audit; it remains non-confirmatory and `paper_result=false`.
+
+F2C11 freezes the downstream physical baseline and ablation surface before
+that replacement pilot result is read. It compares the primary sealed
+family-memory predictor with a family strategy-median ablation that removes
+instance features, two fixed physical strategies, and a shadow-derived oracle
+upper bound. All ten held-out semantic tasks are included. Four-repetition
+shadow medians independently reconstruct the observed physical winners;
+latency and byte regrets have separately declared nonnegative reference
+oracles. A successful mutation-free F2C10D audit is both required and rerun
+read-only at analysis time. The analyzer makes zero external calls, ignores
+online selected-plan results and answer-row values for selection and metrics,
+writes only outside the source run tree, and remains exploratory with
+`paper_result=false`. Its policy and implementation were fixed while repair
+job `3791600` was still pending, so the method set cannot be selected from the
+observed outcome.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

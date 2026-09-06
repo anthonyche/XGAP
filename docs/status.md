@@ -410,6 +410,24 @@ required at a clean repair commit. The compact failure record is
 `experiments/artifacts/m15_f2c10d_cwru_native_direct_family_pilot_failure_20260906.json`.
 The six-query pilot and all outputs remain `paper_result=false`.
 
+M15-F2C11 is locally implemented as a results-blind physical comparison layer
+for the eventual accepted F2C10D run. Before repair job `3791600` produced an
+outcome, the repository froze five methods: primary family memory, a
+no-instance-feature family strategy-median ablation, fixed parallel hash,
+fixed risk-first bind, and an observed shadow oracle used only as an upper
+bound. The analysis covers all ten held-out semantic tasks, independently
+reduces each of 20 shadow plans over four repetitions, and reports physical
+winner accuracy, nonnegative latency and byte regret, and strategy counts.
+It requires and immediately reruns the full mutation-free F2C10D read-only
+audit, reconstructs the sealed prediction suite from training measurements,
+and rejects source drift. Online selected-plan results and answer-row values
+are excluded from selection and metrics. It makes no backend, LLM, ontology,
+profile, sample, or explain call and cannot write below the source run tree.
+Full local regression passes 901 tests with 36 environment-gated skips. The
+comparison remains exploratory six-query development evidence with
+`paper_result=false` until job `3791600` finishes and passes its independent
+audit.
+
 M15-F2B4 is now verified on CWRU. Job `3787430` ran exact clean commit
 `d795fac` on `compt348` for 73 seconds. The query-bound selective session used
 the frozen registry and schedule hashes, started Neo4j 5.26.30 and Fuseki 5.6.0

@@ -15,6 +15,10 @@ from xgap.experiments.m15_direct_family_pilot_summary import (
     DIRECT_FAMILY_PILOT_SUMMARY_SCHEMA_VERSION,
     build_m15_direct_family_pilot_summary,
 )
+from xgap.experiments.m15_direct_family_baselines import (
+    DIRECT_FAMILY_BASELINE_ANALYSIS_SCHEMA_VERSION,
+    analyze_m15_direct_family_baselines,
+)
 from xgap.experiments.m15_direct_family_prediction_run import (
     _ControlledState,
     _clients_after_selection_seal,
@@ -215,4 +219,93 @@ def test_compact_summary_accepts_only_the_successful_read_only_audit(
         build_m15_direct_family_pilot_summary(
             run_root=root,
             audit=rejected,
+        )
+
+
+def test_results_blind_physical_baselines_reconstruct_five_frozen_methods(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _native_run(tmp_path, monkeypatch)
+    audit = audit_m15_direct_family_pilot(
+        run_root=root,
+        expected_commit=COMMIT,
+    ).to_dict()
+
+    analysis = analyze_m15_direct_family_baselines(
+        run_root=root,
+        audit=audit,
+        policy=CONFIGS / "m15_f2c11_physical_baselines_dev.json",
+    )
+
+    assert analysis["schema_version"] == (
+        DIRECT_FAMILY_BASELINE_ANALYSIS_SCHEMA_VERSION
+    )
+    assert list(analysis["methods"]) == [
+        "family_memory_primary",
+        "family_global_no_instance_features",
+        "fixed_parallel_hash",
+        "fixed_risk_first_bind",
+        "observed_oracle_upper_bound",
+    ]
+    assert len(analysis["per_semantic_task"]) == 10
+    assert all(
+        method["semantic_task_count"] == 10
+        for method in analysis["methods"].values()
+    )
+    oracle = analysis["methods"]["observed_oracle_upper_bound"]
+    assert oracle["physical_winner_accuracy"] == 1.0
+    assert oracle["latency_regret_ms"]["maximum"] == 0.0
+    assert all(
+        method[metric]["minimum"] >= 0
+        for method in analysis["methods"].values()
+        for metric in ("latency_regret_ms", "bytes_regret")
+    )
+    assert analysis["analysis_backend_calls"] == 0
+    assert analysis["analysis_scope"] == (
+        "physical_strategy_within_semantic_class"
+    )
+    assert analysis["semantic_frontier_comparison"] is False
+    assert analysis["live_current_query_profiling_baseline"] is False
+    assert analysis["current_query_observation_operations"] == []
+    assert analysis[
+        "online_selected_results_used_for_selection_or_metrics"
+    ] is False
+    assert analysis[
+        "answer_row_values_used_for_selection_or_metrics"
+    ] is False
+    assert analysis["paper_result"] is False
+
+    rejected = dict(audit)
+    rejected["success"] = False
+    with pytest.raises(ValueError, match="accepted F2C10D audit"):
+        analyze_m15_direct_family_baselines(
+            run_root=root,
+            audit=rejected,
+            policy=CONFIGS / "m15_f2c11_physical_baselines_dev.json",
+        )
+
+
+def test_results_blind_physical_baselines_reaudit_source_before_analysis(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _native_run(tmp_path, monkeypatch)
+    audit = audit_m15_direct_family_pilot(
+        run_root=root,
+        expected_commit=COMMIT,
+    ).to_dict()
+    source = next(
+        (
+            root
+            / "native-service-run/direct-family-pilot-run/selection/queries"
+        ).glob("*/prediction_source.json")
+    )
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    payload["predictions"][0]["estimated_latency_ms"] += 1
+    source.write_text(json.dumps(payload), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="no longer passes"):
+        analyze_m15_direct_family_baselines(
+            run_root=root,
+            audit=audit,
+            policy=CONFIGS / "m15_f2c11_physical_baselines_dev.json",
         )
