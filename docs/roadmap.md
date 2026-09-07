@@ -270,7 +270,9 @@ stops on the first failure and never retries. The independent auditor
 reconstructs the complete native tree and loopback configuration read-only.
 Full repository acceptance passes 1,054 tests with 36 explicit skips. Local
 readiness is complete; one clean CWRU E5D run and audit are next. The remaining
-UI surface is a thin adapter over the same session/event API.
+UI surface is a thin adapter over the same session/event API. The local record
+is
+`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

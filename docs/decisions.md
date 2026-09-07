@@ -2767,4 +2767,6 @@ run and one successful audit are required before E5D is accepted. Full local
 acceptance passes 1,054 tests with 36 explicit skips. The result remains
 mechanism evidence with `paper_result=false`; it makes no performance,
 semantic-quality, user-utility, or ontology-truth claim, and the UI remains a
-separate adapter.
+separate adapter. Implementation commit `8fb1999` and
+`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`
+bind this local readiness boundary.

@@ -268,7 +268,9 @@ native-service integration suite passes. Full repository acceptance passes
 1,054 tests with 36 explicit environment/external-artifact skips. This is
 mechanism readiness only: `paper_result=false`, no latency or quality claim is
 admitted, and a single clean CWRU native run plus read-only audit is still
-required.
+required. The local readiness record is
+`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`
+and binds implementation commit `8fb1999`.
 
 ## Contract if Option A is selected
 

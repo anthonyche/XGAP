@@ -371,6 +371,8 @@ auditor reconstructs the full control/data-plane chain and real loopback
 configuration without mutating the run. Full repository acceptance passes
 1,054 tests with 36 explicit skips. Local readiness is complete; one clean CWRU
 mechanism run and audit remain pending. The UI is still only a later adapter.
+The compact readiness record is
+`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`.
 See
 [`docs/m15_e5_interpretation_relaxation_gate.md`](m15_e5_interpretation_relaxation_gate.md).
 

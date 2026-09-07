@@ -174,7 +174,8 @@ read-only auditor reconstructs E4/E5C, goal/memory/results/invocations, cleanup,
 and actual Neo4j/Fuseki loopback configuration. E5D is locally ready but has no
 CWRU result yet; full repository acceptance passes 1,054 tests with 36 explicit
 skips. It remains `paper_result=false`. The UI remains an optional adapter. See
-`docs/m15_e5_interpretation_relaxation_gate.md`.
+`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`
+and `docs/m15_e5_interpretation_relaxation_gate.md`.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
