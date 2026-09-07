@@ -90,6 +90,13 @@ Wait for its terminal state, then run the independent campaign auditor before
 interpreting any metric. The campaign remains non-confirmatory and
 `paper_result=false`.
 
+Job `3793702` subsequently completed successfully in 180 seconds. Its first
+audit command exposed an auditor-only set-serialization defect after
+reconstruction; it did not establish audit success. Preserve that run and the
+first audit/stdout files, do not submit another campaign, and use the repaired
+auditor with a new `audit-v2` output path. Acceptance still requires a zero
+audit exit, an empty failed-check list, and `run_tree_mutated=false`.
+
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service
 allocation, accounts one common calibration outside method metrics, and then

@@ -3186,3 +3186,22 @@ gates and do not block implementation of the primary physical experiment.
 The committed readiness record is deliberately `paper_result=false`.
 The post-gate repository acceptance suite passes 1,138 tests with 36
 intentional live/external skips.
+
+## D165 Treat the first family-campaign audit exit as auditor failure only
+
+CWRU job `3793702` completed the frozen 368-plan, 736-call development
+campaign at exact producer commit `c00c389` with a successful outer status,
+zero automatic retry, and complete runtime cleanup. Its first independent
+audit reconstructed the run but failed while rendering its terminal JSON:
+the `loads.backends` check retained Python set values, the file writer hid
+them behind `default=str`, and the final strict `json.dumps` raised a
+serialization error. This is an auditor-output defect, not evidence that the
+producer failed or that the audit passed.
+
+The repair canonicalizes sets and frozensets as deterministically sorted JSON
+arrays and removes the writer's string-conversion fallback. The original run,
+first audit artifact, and stdout are immutable diagnostic evidence. A new
+`audit-v2` path must independently reconstruct the old producer run at commit
+`c00c389`; only a zero exit, no failed check, and no run-tree mutation can
+admit the campaign for development interpretation. No campaign is resubmitted,
+and `paper_result=false` remains mandatory.

@@ -893,6 +893,15 @@ FedShop are tracked as separate paper-completeness requirements.
 The post-gate repository acceptance suite passes 1,138 tests with 36
 intentional live/external skips.
 
+CWRU development campaign job `3793702` has now completed successfully at
+exact producer commit `c00c389` in 180 seconds on `compt329`; its outer status
+records zero cleanup error. The first independent audit attempt is not an
+accepted audit: reconstruction reached output, then the auditor raised on a
+Python set in the `loads.backends` check while printing JSON. The producer run
+is preserved and must not be resubmitted. A strict canonical-JSON auditor
+repair is published separately, and a new `audit-v2` output must pass without
+mutating the old run before any development metric is interpreted.
+
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,
 executed 231 plans and 462 backend calls, returned seven semantic frontier

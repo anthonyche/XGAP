@@ -492,3 +492,18 @@ def test_family_campaign_auditor_refuses_overwrite_and_in_tree_output(
         ]
     ) == 2
     assert existing.read_text(encoding="utf-8") == "preserve-me"
+
+
+def test_family_campaign_audit_canonicalizes_sets_as_json_arrays() -> None:
+    check = evidence.FinBenchFamilyCampaignEvidenceCheck(
+        check_id="loads.backends",
+        passed=True,
+        expected={"neo4j", "fuseki"},
+        observed=frozenset({"fuseki", "neo4j"}),
+    )
+
+    serialized = check.to_dict()
+
+    assert serialized["expected"] == ["fuseki", "neo4j"]
+    assert serialized["observed"] == ["fuseki", "neo4j"]
+    assert json.loads(json.dumps(serialized, allow_nan=False)) == serialized
