@@ -124,6 +124,9 @@ def test_neo4j_loader_stops_at_first_failure_without_retry(tmp_path: Path) -> No
     assert not report.success
     assert report.operations_attempted == 2
     assert report.metadata["failed_statement_index"] == 2
+    assert report.metadata["failed_statement_kind"] == "RETURN"
+    assert report.metadata["failed_statement_bytes"] == len(b"RETURN 2")
+    assert len(report.metadata["failed_statement_sha256"]) == 64
     assert client.calls == ["m15-load-neo4j-001", "m15-load-neo4j-002"]
 
 

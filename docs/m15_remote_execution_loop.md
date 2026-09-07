@@ -59,12 +59,14 @@ triples. This is a development scale gate only; it remains
 evidence.
 
 The SF0.01 prerequisite and independent audit have passed. The verified
-SF0.1 archive is now present on CWRU, and job `3793681` was submitted at exact
-clean commit `6d9925f` through the dedicated 16-GiB, 90-minute wrapper. Do not
-submit a duplicate or retry it automatically. Its terminal Slurm state,
-producer status, measured load/query costs, and independent read-only audit
-must be inspected before selecting SF0.3/SF1 or dispatching a comparative
-campaign.
+SF0.1 archive is present on CWRU. Its first dedicated 16-GiB, 90-minute job,
+`3793681`, failed at exact clean commit `6d9925f`: both services were healthy
+and 72 plans were sealed, but Neo4j fixture statement 46/194 returned HTTP 500
+after 45 successful statements. No experiment plan ran, no oracle was opened,
+and peak batch-step RSS was about 2.06 GB. Preserve the failed tree and do not
+retry automatically. The next action is to classify its saved Neo4j log; the
+client-side error path has separately been repaired to retain bounded Neo4j
+status/code/message evidence on any future authorized attempt.
 
 Meanwhile, the next comparison schedule is locally frozen but not remotely
 authorized. It binds 368 complete plans and 736 backend calls in one

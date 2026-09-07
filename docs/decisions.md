@@ -3077,3 +3077,23 @@ measurements, not additional online systems. This is a result-blind
 development protocol; it does not freeze confirmatory statistics, authorize a
 paper run, or turn the pending SF0.1 scale gate into performance evidence.
 `paper_result=false` remains mandatory.
+
+## D161 Treat the first SF0.1 load failure as diagnostics, not a scale result
+
+CWRU job `3793681` ran the dedicated SF0.1 wrapper at exact clean commit
+`6d9925f` and failed after 10 minutes 21 seconds on `compt268`. Both native
+services reached healthy state and the complete 36-query/72-plan catalog was
+sealed, but Neo4j returned HTTP 500 on fixture statement 46 of 194 after 45
+successful statements. No federated plan ran, the oracle remained unopened,
+Fuseki fixture loading had not begun, and automatic retries remained zero.
+Peak batch-step RSS was approximately 2.06 GB against a 16-GB request, so the
+Slurm evidence does not support an allocation-level OOM diagnosis.
+
+The previous Neo4j client retained only urllib's generic `HTTP Error 500`
+text. It now parses and bounds the Neo4j JSON error response, retaining status,
+Neo4j error code, and message without persisting credentials. Fixture failure
+evidence also records the failed statement index, operation kind, byte length,
+and SHA-256 without copying statement text. The immutable failed run will not
+be retried until its saved Neo4j log and the enriched error boundary identify
+or safely constrain the cause. It is engineering failure evidence only and
+`paper_result=false` remains mandatory.

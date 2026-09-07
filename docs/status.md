@@ -840,6 +840,14 @@ selection seals. The compiler opens no backend or oracle and makes no LLM or
 ontology call. This is protocol readiness only; a native producer, auditor,
 and successful scale gate are still required before execution, and
 `paper_result=false` remains fixed.
+The first SF0.1 scale attempt is preserved as a failed load diagnostic. Job
+`3793681` reached healthy Neo4j and Fuseki services and sealed all 72 plans,
+then Neo4j returned HTTP 500 at fixture statement 46/194 after approximately
+537 seconds of fixture work. No query plan executed and no oracle content was
+opened. Batch-step peak RSS was about 2.06 GB of the requested 16 GB. The
+client now retains bounded structured Neo4j HTTP error details and the loader
+adds content-free statement identity metadata. A rerun is not authorized
+until the saved Neo4j service log is classified.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen

@@ -15,6 +15,9 @@ from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport, QueryArtifact
 
 
+_MAX_HTTP_ERROR_BODY_BYTES = 64 * 1024
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -25,6 +28,43 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, list):
         return [_jsonable(item) for item in value]
     return value
+
+
+def _neo4j_http_error_message(error: urllib.error.HTTPError) -> str:
+    """Return bounded structured Neo4j error evidence instead of a generic 500."""
+
+    try:
+        raw = error.read(_MAX_HTTP_ERROR_BODY_BYTES + 1)
+    except (OSError, ValueError):
+        raw = b""
+    truncated = len(raw) > _MAX_HTTP_ERROR_BODY_BYTES
+    raw = raw[:_MAX_HTTP_ERROR_BODY_BYTES]
+    text = raw.decode("utf-8", errors="replace").strip()
+    details: list[str] = []
+    if text:
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError:
+            payload = None
+        if isinstance(payload, dict) and isinstance(payload.get("errors"), list):
+            for item in payload["errors"]:
+                if not isinstance(item, dict):
+                    continue
+                code = str(item.get("code", "")).strip()
+                message = str(item.get("message", "")).strip()
+                detail = ": ".join(value for value in (code, message) if value)
+                if detail:
+                    details.append(detail)
+        if not details:
+            details.append(" ".join(text.split()))
+    detail_text = "; ".join(details)
+    if len(detail_text) > 8192:
+        detail_text = detail_text[:8192] + "..."
+        truncated = True
+    suffix = " [response truncated]" if truncated else ""
+    if detail_text:
+        return f"Neo4j HTTP {error.code}: {detail_text}{suffix}"
+    return f"Neo4j HTTP {error.code}: {error.reason}"
 
 
 class Neo4jClient:
@@ -242,8 +282,13 @@ class Neo4jClient:
             },
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-            body = response.read().decode("utf-8")
+        try:
+            with urllib.request.urlopen(
+                request, timeout=self.timeout_seconds
+            ) as response:
+                body = response.read().decode("utf-8")
+        except urllib.error.HTTPError as exc:
+            raise ValueError(_neo4j_http_error_message(exc)) from exc
         parsed = json.loads(body)
         errors = parsed.get("errors", [])
         if errors:

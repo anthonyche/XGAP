@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+import hashlib
 import json
 import os
 import platform
@@ -201,6 +202,8 @@ class Neo4jCypherFixtureLoader:
             except Exception as exc:  # Preserve an unexpected adapter failure as evidence.
                 operation_error = str(exc)
             if operation_error is not None:
+                statement_bytes = statement.encode("utf-8")
+                statement_kind = statement.lstrip().split(None, 1)[0].upper()
                 return BackendLoadReport(
                     backend_id=self.backend_id,
                     success=False,
@@ -212,6 +215,11 @@ class Neo4jCypherFixtureLoader:
                         "strategy": "sequential_idempotent_cypher",
                         "statement_count": len(statements),
                         "failed_statement_index": index,
+                        "failed_statement_kind": statement_kind,
+                        "failed_statement_bytes": len(statement_bytes),
+                        "failed_statement_sha256": hashlib.sha256(
+                            statement_bytes
+                        ).hexdigest(),
                     },
                 )
         return BackendLoadReport(
