@@ -3266,3 +3266,33 @@ and training repetitions are an explicit author decision. No value is selected
 by code. Live scheduling, confirmatory statistics, and the independent campaign
 auditor remain implementation blockers. Full repository acceptance passes
 1,152 tests with 36 intentional live/external skips.
+
+## D168 Freeze author Option A before implementing or running confirmatory measurement
+
+The author explicitly selected Option A on 2026-09-07. The selection fixes the
+48-instance answer-independent cross-fit population, SF0.1 as the primary
+scale, seven repetitions for training, selected serving, and shadow plans, and
+one infrastructure-only replacement. SF1 remains a deadline-gated robustness
+scale: include it only if it is ready by 2026-09-12. GrailQA is the primary
+semantic track, and FedShop is included only if ready by 2026-09-24. Query
+timeouts remain method outcomes and are never replacement eligible.
+
+The choice is stored as a content-addressed author-selection artifact bound to
+the pre-measurement protocol draft. Applying it selects all nine author-owned
+decisions and signs the resulting protocol subject, but explicitly does not
+authorize confirmatory execution. For the primary SF0.1 run, the frozen design
+contains 32 seen-family inferential query instances, 16 cold-family queries,
+448 cross-fit training runs, 96 dual-profile acquisition runs, 672 paired
+selected-serving runs, and 672 post-selection shadow runs: 1,888 plan runs and
+at most 3,776 black-box backend calls. Repetitions remain within-query
+measurements, not independent samples.
+
+A CPU-only freeze job now replays the accepted population audit, binds the
+selection to the exact registry and 48-query option hashes, materializes the
+public workload and separately sealed oracle, and freezes all 22 measurement
+blocks. Its independent auditor reconstructs the approval, workload, and
+schedule without modifying the producer tree. Both keep
+`confirmatory_execution_authorized=false` and `paper_result=false`; live
+measurement still requires the runner, statistics analyzer, and final campaign
+auditor to pass their implementation gates. Full repository acceptance passes
+1,156 tests with 36 intentional live/external skips.

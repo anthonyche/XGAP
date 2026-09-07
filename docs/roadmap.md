@@ -810,14 +810,15 @@ The result-blind population gate is now accepted on CWRU. Job `3793727`
 compiled nested 36/48/60 options from the verified SF0.1 archive and its
 independent audit passed 29/29 checks without mutation. The next local layer
 requires a hash-bound author choice before it materializes public instances,
-templates, and isolated oracles; empty answers remain in the population. Its
+templates, and isolated oracles; empty answers remain in the population. The
+author selected Option A: 48 queries at SF0.1, 7/7/7 repetitions, one
+infrastructure-only replacement, GrailQA primary, and deadline-gated SF1 and
+FedShop extensions. The choice is hash-bound and the 1,888-plan, 3,776-call
+primary schedule is locally frozen across 22 service-isolated blocks. Its
 cross-fit prediction core excludes every evaluation fold from its own F1/F2
-memory and reports F3 separately. The remaining physical work is to freeze the
-seven author decisions, implement the live schedule, add confirmatory
-statistics, and add the independent campaign auditor. The recommended
-population remains 48 answer- and cost-independent instances, but no option is
-selected by code. The current generalized compilation and cross-fit core pass
-full repository acceptance with 1,152 tests and 36 intentional skips.
+memory and reports F3 separately. The next gate is a CPU-only CWRU
+freeze/reconstruction pass; after that, implement and accept the live block
+runner, confirmatory statistics, and final independent campaign auditor.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet

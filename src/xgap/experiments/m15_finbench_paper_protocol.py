@@ -39,8 +39,14 @@ FINBENCH_PAPER_READINESS_SCHEMA_VERSION = (
 FINBENCH_PAPER_EVIDENCE_BINDINGS_SCHEMA_VERSION = (
     "m15-finbench-paper-evidence-bindings-v1"
 )
+FINBENCH_PAPER_AUTHOR_SELECTION_SCHEMA_VERSION = (
+    "m15-finbench-paper-author-selection-v1"
+)
 DEFAULT_PROTOCOL_PATH = Path(
     "experiments/configs/m15_finbench_paper_protocol_draft_v1.json"
+)
+DEFAULT_AUTHOR_SELECTION_PATH = Path(
+    "experiments/artifacts/m15_finbench_paper_protocol_author_selection_a_v1.json"
 )
 
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -754,11 +760,103 @@ def _approval_subject(protocol: Mapping[str, Any]) -> dict[str, Any]:
     } | {"implementation_requirement_identity": implementation_identity}
 
 
+def _apply_author_selection(
+    protocol: Mapping[str, Any],
+    author_selection: Mapping[str, Any] | str | Path,
+) -> tuple[dict[str, Any], str]:
+    selection = (
+        copy.deepcopy(dict(author_selection))
+        if isinstance(author_selection, Mapping)
+        else _load_json_object(Path(author_selection), name="author selection")
+    )
+    raw = _strict_object(
+        selection,
+        name="author selection",
+        fields={
+            "schema_version",
+            "selection_id",
+            "authority_source_id",
+            "base_protocol_sha256",
+            "decisions",
+            "selection_basis",
+            "confirmatory_workload_compilation_authorized",
+            "confirmatory_execution_authorized",
+            "automatic_retries",
+            "paper_result",
+            "selection_sha256",
+        },
+    )
+    if (
+        raw["schema_version"] != FINBENCH_PAPER_AUTHOR_SELECTION_SCHEMA_VERSION
+        or raw["selection_basis"]
+        != "explicit_author_choice_A_before_confirmatory_measurement"
+        or raw["confirmatory_workload_compilation_authorized"] is not True
+        or raw["confirmatory_execution_authorized"] is not False
+        or raw["automatic_retries"] != 0
+        or raw["paper_result"] is not False
+    ):
+        raise FinBenchPaperProtocolError("author selection boundary changed")
+    _safe_id(raw["selection_id"], name="selection_id")
+    authority_source_id = _safe_id(
+        raw["authority_source_id"], name="authority_source_id"
+    )
+    if raw["base_protocol_sha256"] != content_hash(protocol):
+        raise FinBenchPaperProtocolError(
+            "author selection does not bind the current base protocol"
+        )
+    decisions = _strict_object(
+        raw["decisions"],
+        name="author selection decisions",
+        fields=set(_DECISION_IDS),
+    )
+    selected = copy.deepcopy(dict(protocol))
+    by_id = {
+        str(item["decision_id"]): item for item in selected["author_decisions"]
+    }
+    if tuple(by_id) != _DECISION_IDS:
+        raise FinBenchPaperProtocolError("author decision registry changed")
+    for decision_id in _DECISION_IDS:
+        value = decisions[decision_id]
+        if value not in by_id[decision_id]["allowed_values"]:
+            raise FinBenchPaperProtocolError(
+                f"author selection value is not allowed: {decision_id}"
+            )
+        by_id[decision_id]["selected_value"] = value
+    claimed = _sha256(raw["selection_sha256"], name="selection_sha256")
+    body = {key: value for key, value in raw.items() if key != "selection_sha256"}
+    if content_hash(body) != claimed:
+        raise FinBenchPaperProtocolError("author selection hash mismatch")
+    selected["approval"] = {
+        "status": "approved",
+        "authority_source_id": authority_source_id,
+        "approved_subject_sha256": content_hash(_approval_subject(selected)),
+    }
+    return selected, claimed
+
+
+def apply_finbench_paper_protocol_author_selection(
+    protocol: Mapping[str, Any] | str | Path,
+    author_selection: Mapping[str, Any] | str | Path,
+) -> dict[str, Any]:
+    """Apply a hash-bound, explicit author selection without authorizing a run."""
+
+    selected = (
+        copy.deepcopy(dict(protocol))
+        if isinstance(protocol, Mapping)
+        else _load_json_object(Path(protocol), name="paper protocol")
+    )
+    applied, _selection_sha256 = _apply_author_selection(
+        selected, author_selection
+    )
+    return applied
+
+
 def compile_finbench_paper_protocol_readiness(
     protocol: Mapping[str, Any] | str | Path = DEFAULT_PROTOCOL_PATH,
     *,
     repo_root: str | Path,
     evidence_bindings: str | Path | None = None,
+    author_selection: Mapping[str, Any] | str | Path | None = None,
 ) -> FinBenchPaperProtocolReadiness:
     """Compile a deterministic, zero-experiment-call promotion decision."""
 
@@ -771,6 +869,11 @@ def compile_finbench_paper_protocol_readiness(
         if isinstance(protocol, Mapping)
         else _load_json_object(Path(protocol), name="paper protocol")
     )
+    author_selection_sha256: str | None = None
+    if author_selection is not None:
+        selected, author_selection_sha256 = _apply_author_selection(
+            selected, author_selection
+        )
     raw = _strict_object(
         selected,
         name="paper protocol",
@@ -893,6 +996,7 @@ def compile_finbench_paper_protocol_readiness(
         "schema_version": FINBENCH_PAPER_READINESS_SCHEMA_VERSION,
         "protocol_id": raw["protocol_id"],
         "protocol_draft_sha256": content_hash(raw),
+        "author_selection_sha256": author_selection_sha256,
         "approval_subject_sha256": subject_sha256,
         "source_artifacts": sources,
         "author_decisions": decisions,
@@ -963,6 +1067,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--protocol", default=str(DEFAULT_PROTOCOL_PATH))
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--evidence-bindings")
+    parser.add_argument("--author-selection")
     parser.add_argument("--output", required=True)
     arguments = parser.parse_args(argv)
     try:
@@ -970,6 +1075,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             arguments.protocol,
             repo_root=arguments.repo_root,
             evidence_bindings=arguments.evidence_bindings,
+            author_selection=arguments.author_selection,
         )
         write_finbench_paper_protocol_readiness(readiness, arguments.output)
     except (

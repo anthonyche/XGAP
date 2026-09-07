@@ -6,9 +6,11 @@ from pathlib import Path
 import pytest
 
 from xgap.experiments.m15_finbench_paper_protocol import (
+    DEFAULT_AUTHOR_SELECTION_PATH,
     DEFAULT_PROTOCOL_PATH,
     FINBENCH_PAPER_READINESS_SCHEMA_VERSION,
     FinBenchPaperProtocolError,
+    apply_finbench_paper_protocol_author_selection,
     compile_finbench_paper_protocol_readiness,
     main,
     write_finbench_paper_protocol_readiness,
@@ -43,6 +45,7 @@ def test_result_blind_draft_exposes_every_real_promotion_blocker() -> None:
         "paper_experiment_stack_ready": False,
     }
     assert len(readiness["source_artifacts"]) == 4
+    assert readiness["author_selection_sha256"] is None
     assert all(item["verified"] for item in readiness["source_artifacts"])
     assert len(readiness["next_author_decisions"]) == 9
     assert (
@@ -169,6 +172,40 @@ def test_author_approval_binds_all_selected_choices_and_subject_hash() -> None:
     selected["approval"]["approved_subject_sha256"] = "0" * 64
     with pytest.raises(FinBenchPaperProtocolError, match="does not bind"):
         compile_finbench_paper_protocol_readiness(selected, repo_root=ROOT)
+
+
+def test_explicit_option_a_selection_is_hash_bound_and_still_not_run_authority() -> None:
+    selected = apply_finbench_paper_protocol_author_selection(
+        ROOT / DEFAULT_PROTOCOL_PATH,
+        ROOT / DEFAULT_AUTHOR_SELECTION_PATH,
+    )
+    readiness = compile_finbench_paper_protocol_readiness(
+        ROOT / DEFAULT_PROTOCOL_PATH,
+        repo_root=ROOT,
+        author_selection=ROOT / DEFAULT_AUTHOR_SELECTION_PATH,
+    ).to_dict()
+
+    assert [
+        item["selected_value"] for item in selected["author_decisions"]
+    ] == [item["recommended_value"] for item in selected["author_decisions"]]
+    assert selected["approval"]["status"] == "approved"
+    assert readiness["author_selection_sha256"] == (
+        "d2bc5980ed61e1e4c8472c6dc12223179267f7083d67df8b98ee0388c0a6aa1e"
+    )
+    assert readiness["gates"]["all_author_decisions_selected"] is True
+    assert readiness["gates"]["author_approved"] is True
+    assert readiness["gates"]["physical_confirmatory_run_authorized"] is False
+    assert readiness["next_author_decisions"] == []
+
+    tampered = json.loads(
+        (ROOT / DEFAULT_AUTHOR_SELECTION_PATH).read_text(encoding="utf-8")
+    )
+    tampered["decisions"]["training_repetitions_per_plan"] = "4"
+    with pytest.raises(FinBenchPaperProtocolError, match="hash mismatch"):
+        apply_finbench_paper_protocol_author_selection(
+            ROOT / DEFAULT_PROTOCOL_PATH,
+            tampered,
+        )
 
 
 def test_physical_approval_does_not_require_semantic_or_external_choice() -> None:

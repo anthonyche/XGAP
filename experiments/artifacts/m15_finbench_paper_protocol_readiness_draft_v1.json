@@ -1,5 +1,6 @@
 {
   "approval_subject_sha256": "e6bc11924af4fc94a55047679d7544d7acfd84cf10740ad08774b68dd579e393",
+  "author_selection_sha256": null,
   "author_decisions": [
     {
       "allowed_values": [
@@ -270,7 +271,7 @@
   ],
   "protocol_draft_sha256": "d39896e27b5a20e7eface845953c05635867546cfe77cb768135fe777bd9641d",
   "protocol_id": "m15-finbench-sigmod2027-physical-confirmatory-draft-v1",
-  "readiness_sha256": "55de2954cedd9a2671b9548c471eafd020074263235466230f2d73da119eb275",
+  "readiness_sha256": "692171dc4043a582e0a3ac572d29a30d5f6fa8fa9029fb052d27384603bc8c83",
   "schema_version": "m15-finbench-paper-protocol-readiness-v1",
   "source_artifacts": [
     {

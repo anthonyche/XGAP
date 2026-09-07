@@ -104,12 +104,14 @@ there were no failed IDs, and the run tree was unchanged. Preserve job
 The CPU-only confirmatory-population compiler is complete and accepted. CWRU
 job `3793727` ran exact clean commit `10b5600` on `compt393`; its independent
 audit passed 29/29 checks without mutating the run tree. Preserve that run and
-audit and do not resubmit them. There is no next CWRU command yet. The next
-remote job must wait for an explicit hash-bound author choice of population,
-training/serving/shadow repetitions, scale policy, and infrastructure
-replacement limit, followed by publication of the live schedule and auditor
-at one clean commit. Workload compilation authority alone must not be treated
-as confirmatory-execution authority.
+audit and do not resubmit them. The author subsequently selected Option A. A
+content-addressed record fixes all nine protocol decisions, and the local
+freeze layer compiles the 48-query workload plus all 1,888 measurement slots.
+The next CWRU action is CPU-only: replay the population audit, bind the exact
+registry and option hashes, materialize the workload, and independently
+reconstruct the result. It must make zero backend/profile/LLM/ontology calls.
+Workload compilation authority alone must not be treated as
+confirmatory-execution authority.
 
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service

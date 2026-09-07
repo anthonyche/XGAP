@@ -914,19 +914,24 @@ completed at exact clean commit `10b5600` on `compt393` in 15 seconds; its
 audit passed 29/29 checks with no mutation. Sampling frames contain 3,038 F1,
 15,452 F2, and 90 F3 candidates.
 
-The next result-blind layer is locally implemented but not yet a live runner.
-An author selection record must bind one registry option before workload
-compilation; compilation alone cannot authorize measurement. The generated
+The author has now explicitly selected Option A. A content-addressed selection
+record fixes the 48-query population, SF0.1 primary scale, 7/7/7
+training/serving/shadow repetitions, one infrastructure-only replacement,
+GrailQA primary, and the deadline-gated SF1 and FedShop extensions. Applying
+the record selects all nine protocol decisions and signs the protocol subject,
+but compilation alone cannot authorize measurement. The generated
 workload retains empty answers, isolates its oracle, and remains compatible
 with the existing two-plan Neo4j/Fuseki compiler. Four fold-specific memories
 exclude each F1/F2 evaluation fold from its own prediction, while F3 remains a
-separate cold-start stratum. The protocol now exposes training repetitions as
-a seventh physical author decision and fixes its 36-instance label to the
-answer-independent option. No option or repetition count has been selected.
-The live schedule, statistics analyzer, and campaign auditor remain pending,
-so no confirmatory campaign is authorized and `paper_result=false` remains
-mandatory. Full repository acceptance passes 1,152 tests with 36 intentional
-live/external skips.
+separate cold-start stratum. The frozen primary schedule has 32 seen-family
+inferential queries, 16 cold-family queries, 22 measurement blocks, 1,888 plan
+runs, and at most 3,776 black-box backend calls. A new CPU-only freeze job and
+independent reconstruction auditor bind the accepted population registry to
+this author choice without executing a backend. The live runner, statistics
+analyzer, and final campaign auditor remain pending, so no confirmatory
+campaign is authorized and `paper_result=false` remains mandatory. Full
+repository acceptance passes 1,156 tests with 36 intentional live/external
+skips.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,

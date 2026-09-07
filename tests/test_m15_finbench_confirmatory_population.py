@@ -14,6 +14,10 @@ from xgap.experiments import (
     m15_finbench_confirmatory_population_evidence as evidence,
 )
 from xgap.experiments import m15_finbench_confirmatory_population_job as job
+from xgap.experiments import m15_finbench_confirmatory_freeze_job as freeze_job
+from xgap.experiments import (
+    m15_finbench_confirmatory_freeze_evidence as freeze_evidence,
+)
 from xgap.experiments.m15_finbench_confirmatory_population import (
     DEFAULT_DESIGN_PATH,
     FINBENCH_CONFIRMATORY_POPULATION_REGISTRY_SCHEMA_VERSION,
@@ -31,6 +35,14 @@ from xgap.experiments.m15_finbench_confirmatory_workload import (
 from xgap.experiments.m15_finbench_confirmatory_crossfit import (
     FinBenchConfirmatoryCrossfitError,
     build_finbench_confirmatory_crossfit_predictions,
+)
+from xgap.experiments.m15_finbench_confirmatory_schedule import (
+    FinBenchConfirmatoryScheduleError,
+    build_finbench_confirmatory_schedule,
+)
+from xgap.experiments.m15_finbench_paper_protocol import (
+    DEFAULT_AUTHOR_SELECTION_PATH,
+    DEFAULT_PROTOCOL_PATH,
 )
 from xgap.experiments.m15_finbench_federation import (
     build_finbench_plan_candidates,
@@ -389,6 +401,103 @@ def test_confirmatory_workload_keeps_empty_answers_and_rejects_unbound_choice(
         )
 
 
+def test_option_a_freezes_complete_result_blind_confirmatory_schedule(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data = _data()
+    registry = _compile(data)
+    option = registry["population_options"][1]
+    assert option["population_option_id"] == "m15-finbench-confirmatory-48-v1"
+    approval = build_finbench_confirmatory_population_approval(
+        registry,
+        selected_population_option_id=option["population_option_id"],
+        approval_id="author-selection-option-a-v1",
+        authority_source_id="author:anthonyche:explicit-option-a-2026-09-07",
+    )
+    archive = tmp_path / "sf0.1.tar.gz"
+    archive.write_bytes(b"verified-test-archive")
+    lock = SimpleNamespace(
+        artifact=SimpleNamespace(
+            artifact_id=registry["source_artifact_id"],
+            digest_value=registry["source_archive_sha256"],
+        )
+    )
+    monkeypatch.setattr(workload, "load_finbench_artifact_lock", lambda _path: lock)
+    monkeypatch.setattr(workload, "load_finbench_query_data", lambda *_args: data)
+    output = tmp_path / "option-a-workload"
+    build_finbench_confirmatory_workload(
+        archive_path=archive,
+        population_registry=registry,
+        population_approval=approval,
+        output_root=output,
+        lock_path=tmp_path / "unused-lock.json",
+        family_contract=ROOT / DEFAULT_FAMILY_CONTRACT_PATH,
+    )
+
+    schedule = build_finbench_confirmatory_schedule(
+        workload_root=output,
+        protocol=ROOT / DEFAULT_PROTOCOL_PATH,
+        author_selection=ROOT / DEFAULT_AUTHOR_SELECTION_PATH,
+    ).to_dict()
+
+    assert schedule["population_id"] == "m15-finbench-confirmatory-48-v1"
+    assert schedule["expected_counts"] == {
+        "seen_family_query_count": 32,
+        "cold_family_query_count": 16,
+        "inferential_query_count": 32,
+        "training_plan_runs": 448,
+        "profile_acquisition_plan_runs": 96,
+        "selected_serving_plan_runs": 672,
+        "evaluation_shadow_plan_runs": 672,
+        "total_plan_runs": 1888,
+        "total_backend_calls": 3776,
+    }
+    assert schedule["measurement_block_count"] == 22
+    assert schedule["current_query_profile_calls_for_family_memory"] == 0
+    assert schedule["oracle_inputs"] == []
+    assert schedule["confirmatory_execution_authorized"] is False
+    assert schedule["paper_result"] is False
+    assert all(
+        record["oracle_inputs"] == []
+        for records in (
+            schedule["crossfit_training_runs"],
+            schedule["profile_acquisition_runs"],
+            schedule["selected_serving_slots"],
+            schedule["evaluation_shadow_runs"],
+        )
+        for record in records
+    )
+    method_counts = {
+        method: sum(
+            item["method_id"] == method
+            for item in schedule["selected_serving_slots"]
+        )
+        for method in (
+            "family_memory_zero_profile",
+            "predeclared_family_fallback",
+            "current_query_dual_profile",
+        )
+    }
+    assert method_counts == {
+        "family_memory_zero_profile": 224,
+        "predeclared_family_fallback": 112,
+        "current_query_dual_profile": 336,
+    }
+    assert len({item["run_id"] for item in schedule["crossfit_training_runs"]}) == 448
+    assert len({item["slot_id"] for item in schedule["selected_serving_slots"]}) == 672
+
+    changed = json.loads(
+        (ROOT / DEFAULT_AUTHOR_SELECTION_PATH).read_text(encoding="utf-8")
+    )
+    changed["decisions"]["selected_serving_repetitions"] = "5"
+    with pytest.raises(FinBenchConfirmatoryScheduleError, match="hash mismatch"):
+        build_finbench_confirmatory_schedule(
+            workload_root=output,
+            protocol=ROOT / DEFAULT_PROTOCOL_PATH,
+            author_selection=changed,
+        )
+
+
 def test_confirmatory_crossfit_excludes_own_fold_and_keeps_cold_family_separate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -700,6 +809,129 @@ def test_population_job_and_auditor_reject_archive_symlinks(
             archive=link,
             expected_commit="a" * 40,
         )
+
+
+def test_option_a_freeze_job_and_independent_auditor_round_trip(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "pyproject.toml").write_text("", encoding="utf-8")
+    archive = tmp_path / "sf0.1.tar.gz"
+    archive.write_bytes(b"verified-test-archive")
+    archive_sha256 = hashlib.sha256(archive.read_bytes()).hexdigest()
+    lock_path = tmp_path / "lock.json"
+    lock_path.write_text('{"schema_version":"test-lock"}\n', encoding="utf-8")
+    design_path = tmp_path / "design.json"
+    design_path.write_text(
+        (ROOT / DEFAULT_DESIGN_PATH).read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    lock = SimpleNamespace(
+        artifact=SimpleNamespace(
+            artifact_id="ldbc-finbench-v0.1.0-sf0.1",
+            digest_value=archive_sha256,
+        )
+    )
+    population_commit = "b" * 40
+    freeze_commit = "c" * 40
+    monkeypatch.setattr(job, "_git_state", lambda _root: {
+        "commit": population_commit,
+        "clean": True,
+    })
+    monkeypatch.setattr(job, "load_finbench_artifact_lock", lambda _path: lock)
+    monkeypatch.setattr(job, "load_finbench_query_data", lambda *_args: _data())
+    monkeypatch.setattr(evidence, "load_finbench_artifact_lock", lambda _path: lock)
+    monkeypatch.setattr(evidence, "load_finbench_query_data", lambda *_args: _data())
+    monkeypatch.setattr(workload, "load_finbench_artifact_lock", lambda _path: lock)
+    monkeypatch.setattr(workload, "load_finbench_query_data", lambda *_args: _data())
+    population_run = tmp_path / "population-run"
+    job.run_finbench_confirmatory_population_job(
+        repo_root=repo,
+        archive=archive,
+        lock_path=lock_path,
+        design_path=design_path,
+        output_root=population_run,
+        slurm_job_id="population-test",
+    )
+    population_audit = evidence.audit_finbench_confirmatory_population(
+        run_root=population_run,
+        archive=archive,
+        expected_commit=population_commit,
+        lock_path=lock_path,
+        design_path=design_path,
+    ).to_dict()
+    population_audit_path = tmp_path / "population-audit.json"
+    population_audit_path.write_text(
+        json.dumps(population_audit, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(freeze_job, "_git_state", lambda _root: {
+        "commit": freeze_commit,
+        "clean": True,
+    })
+    freeze_run = tmp_path / "freeze-run"
+    manifest = freeze_job.run_finbench_confirmatory_freeze_job(
+        repo_root=repo,
+        archive=archive,
+        population_run_root=population_run,
+        population_audit=population_audit_path,
+        population_expected_commit=population_commit,
+        output_root=freeze_run,
+        slurm_job_id="freeze-test",
+        lock_path=lock_path,
+        protocol=ROOT / DEFAULT_PROTOCOL_PATH,
+        author_selection=ROOT / DEFAULT_AUTHOR_SELECTION_PATH,
+        family_contract=ROOT / DEFAULT_FAMILY_CONTRACT_PATH,
+    )
+    before = {
+        path.relative_to(freeze_run): path.read_bytes()
+        for path in freeze_run.rglob("*")
+        if path.is_file()
+    }
+    audit = freeze_evidence.audit_finbench_confirmatory_freeze(
+        run_root=freeze_run,
+        archive=archive,
+        population_run_root=population_run,
+        population_audit=population_audit_path,
+        population_expected_commit=population_commit,
+        expected_commit=freeze_commit,
+        lock_path=lock_path,
+        protocol=ROOT / DEFAULT_PROTOCOL_PATH,
+        author_selection=ROOT / DEFAULT_AUTHOR_SELECTION_PATH,
+        family_contract=ROOT / DEFAULT_FAMILY_CONTRACT_PATH,
+    )
+
+    assert manifest["expected_counts"]["total_plan_runs"] == 1888
+    assert manifest["expected_counts"]["total_backend_calls"] == 3776
+    assert manifest["external_call_counts"] == {
+        "backend_calls": 0,
+        "current_query_profile_calls": 0,
+        "llm_calls": 0,
+        "ontology_service_calls": 0,
+    }
+    assert manifest["confirmatory_execution_authorized"] is False
+    assert audit.success, audit.failed_check_ids
+    assert audit.run_tree_mutated is False
+    assert before == {
+        path.relative_to(freeze_run): path.read_bytes()
+        for path in freeze_run.rglob("*")
+        if path.is_file()
+    }
+
+
+def test_confirmatory_freeze_slurm_entry_is_cpu_only_and_no_execution() -> None:
+    wrapper = (
+        ROOT / "scripts/slurm/run_m15_finbench_confirmatory_freeze.sbatch"
+    ).read_text(encoding="utf-8")
+
+    assert "#SBATCH --partition=batch" in wrapper
+    assert "#SBATCH --time=00:30:00" in wrapper
+    assert "m15_finbench_confirmatory_freeze_job" in wrapper
+    assert "m15_finbench_paper_protocol_author_selection_a_v1.json" in wrapper
+    assert "native_services" not in wrapper
+    assert "vllm" not in wrapper.lower()
+    assert "--gres=gpu" not in wrapper
 
 
 def test_population_slurm_entry_is_cpu_only_and_result_blind() -> None:
