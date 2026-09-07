@@ -14,6 +14,7 @@ from xgap.experiments.m15_clarification_transport import (
     CLARIFICATION_TRANSPORT_SESSION_SCHEMA_VERSION,
     SELECTED_EXECUTION_HANDOFF_SCHEMA_VERSION,
     M15ClarificationTransportError,
+    M15ClarificationTransportSession,
     advance_m15_clarification_transport_session,
     build_m15_clarification_authority_event,
     compile_m15_clarification_transport_session,
@@ -46,6 +47,14 @@ from xgap.runtime import FEDERATED_EXECUTION_TOOL, FederatedExecutionPlan
 from xgap.runtime import FederatedExecutionTool, FederatedScheduler
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPlugin
 from xgap.tools.contracts import ToolContext, ToolStatus
+from xgap.ui import (
+    CLARIFICATION_VIEW_SCHEMA_VERSION,
+    SELECTED_SESSION_SUBMISSION_PREVIEW_SCHEMA_VERSION,
+    M15ClarificationUiError,
+    build_m15_clarification_selection_event,
+    build_m15_clarification_view,
+    build_m15_selected_session_submission_preview,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -68,6 +77,11 @@ RUNTIME_HASH = content_hash(
         "neo4j": "controlled",
         "fuseki": "controlled",
     }
+)
+REMOTE_MEMORY_PATH = (
+    "/home/hxc859/XGAP-m15-465e2e2/runs/"
+    "cwru-m15-native-direct-family-pilot-3791600/native-service-run/"
+    "direct-family-pilot-run/training/training_memory_view.json"
 )
 
 
@@ -169,6 +183,25 @@ def _ready(e5c_context, *, predicate="predicate:transferred_to"):
         authority_source_id="explicit-e5c-predicate-user-input",
     )
     return _advance(e5c_context, structural, event)
+
+
+def _ready_with_shared_authority(e5c_context):
+    authority_source_id = "author:anthonyche:e6b-ui-test"
+    initial = _start(e5c_context)
+    structural_event = build_m15_clarification_authority_event(
+        session=initial,
+        event_id="e6b-ui-structural-event",
+        candidate_id="constraint:single-transfer-at-least-50000",
+        authority_source_id=authority_source_id,
+    )
+    structural = _advance(e5c_context, initial, structural_event)
+    predicate_event = build_m15_clarification_authority_event(
+        session=structural,
+        event_id="e6b-ui-predicate-event",
+        candidate_id="predicate:transferred_to",
+        authority_source_id=authority_source_id,
+    )
+    return _advance(e5c_context, structural, predicate_event)
 
 
 def test_e5c_starts_with_one_hash_bound_r1_question(e5c_context) -> None:
@@ -651,3 +684,182 @@ def test_e5c_compact_evidence_is_hash_bound_and_reproducible(
         {key: value for key, value in artifact.items() if key != "artifact_sha256"}
     ) == artifact["artifact_sha256"]
     assert actual == artifact
+
+
+def test_e6b_projects_pending_question_without_execution_details(
+    e5c_context,
+) -> None:
+    view = build_m15_clarification_view(_start(e5c_context))
+
+    assert view["schema_version"] == CLARIFICATION_VIEW_SCHEMA_VERSION
+    assert view["status"] == "awaiting_structural_clarification"
+    assert view["execution_eligible"] is False
+    assert view["execution_handoff"] is None
+    assert view["question"]["hole_id"] == "relationship-strength"
+    assert view["question"]["response_contract"] == (
+        "explicit_candidate_id_only"
+    )
+    assert [item["candidate_id"] for item in view["question"]["options"]] == [
+        "constraint:single-transfer-at-least-50000",
+        "constraint:amount-at-least-50000",
+        "constraint:frequency-at-least-3",
+    ]
+    serialized = json.dumps(view, sort_keys=True)
+    assert "runtime_plan" not in serialized
+    assert " MATCH " not in serialized
+    assert "SELECT " not in serialized
+    assert content_hash(
+        {key: value for key, value in view.items() if key != "view_sha256"}
+    ) == view["view_sha256"]
+
+
+def test_e6b_selection_is_by_candidate_id_not_display_order(e5c_context) -> None:
+    initial = _start(e5c_context)
+    payload = initial.to_dict()
+    question = payload["pending_question"]
+    question["options"] = list(reversed(question["options"]))
+    question["question_sha256"] = content_hash(
+        {
+            key: value
+            for key, value in question.items()
+            if key != "question_sha256"
+        }
+    )
+    payload["session_sha256"] = content_hash(
+        {
+            key: value
+            for key, value in payload.items()
+            if key != "session_sha256"
+        }
+    )
+    reordered = M15ClarificationTransportSession(
+        payload=payload,
+        hierarchical_frontier=initial.hierarchical_frontier,
+    )
+
+    event = build_m15_clarification_selection_event(
+        session=reordered,
+        event_id="e6b-reordered-choice",
+        candidate_id="constraint:single-transfer-at-least-50000",
+        authority_source_id="author:anthonyche:e6b-reordered",
+    )
+
+    assert event["candidate_id"] == (
+        "constraint:single-transfer-at-least-50000"
+    )
+    assert event["question_sha256"] == question["question_sha256"]
+
+
+def test_e6b_refuses_out_of_set_or_terminal_selection(e5c_context) -> None:
+    with pytest.raises(M15ClarificationUiError, match="outside the pending"):
+        build_m15_clarification_selection_event(
+            session=_start(e5c_context),
+            event_id="e6b-out-of-set",
+            candidate_id="constraint:invented",
+            authority_source_id="author:anthonyche:e6b-test",
+        )
+
+    with pytest.raises(M15ClarificationUiError, match="no pending"):
+        build_m15_clarification_selection_event(
+            session=_ready_with_shared_authority(e5c_context),
+            event_id="e6b-after-terminal",
+            candidate_id="predicate:transferred_to",
+            authority_source_id="author:anthonyche:e6b-test",
+        )
+
+
+def test_e6b_builds_exact_script_scoped_selected_session_preview(
+    e5c_context,
+) -> None:
+    ready = _ready_with_shared_authority(e5c_context)
+    memory_hash = ready.to_dict()["source_contract"][
+        "training_memory_view_sha256"
+    ]
+
+    preview = build_m15_selected_session_submission_preview(
+        session=ready,
+        remote_training_memory_path=REMOTE_MEMORY_PATH,
+        expected_training_memory_sha256=memory_hash,
+    )
+
+    assert preview["schema_version"] == (
+        SELECTED_SESSION_SUBMISSION_PREVIEW_SCHEMA_VERSION
+    )
+    assert preview["remote_operation"] == "submit_job"
+    assert preview["remote_payload"]["script"] == (
+        "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch"
+    )
+    environment = preview["remote_payload"]["environment"]
+    assert set(environment) == {
+        "XGAP_M15_SELECTED_TRAINING_MEMORY",
+        "XGAP_M15_SELECTED_MEMORY_SHA256",
+        "XGAP_M15_SELECTED_SESSION_ID",
+        "XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE",
+        "XGAP_M15_SELECTED_PREDICATE_CANDIDATE",
+        "XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID",
+    }
+    assert environment["XGAP_M15_SELECTED_TRAINING_MEMORY"] == (
+        REMOTE_MEMORY_PATH
+    )
+    assert environment["XGAP_M15_SELECTED_MEMORY_SHA256"] == memory_hash
+    assert environment["XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE"] == (
+        "constraint:single-transfer-at-least-50000"
+    )
+    assert environment["XGAP_M15_SELECTED_PREDICATE_CANDIDATE"] == (
+        "predicate:transferred_to"
+    )
+    serialized = json.dumps(preview, sort_keys=True)
+    assert "password" not in serialized.lower()
+    assert "token" not in serialized.lower()
+    assert " MATCH " not in serialized
+    assert "SELECT " not in serialized
+    assert content_hash(
+        {
+            key: value
+            for key, value in preview.items()
+            if key != "submission_preview_sha256"
+        }
+    ) == preview["submission_preview_sha256"]
+
+
+def test_e6b_refuses_nonready_memory_drift_and_unsafe_remote_path(
+    e5c_context,
+) -> None:
+    initial = _start(e5c_context)
+    with pytest.raises(M15ClarificationUiError, match="only a ready"):
+        build_m15_selected_session_submission_preview(
+            session=initial,
+            remote_training_memory_path=REMOTE_MEMORY_PATH,
+            expected_training_memory_sha256=initial.to_dict()[
+                "source_contract"
+            ]["training_memory_view_sha256"],
+        )
+
+    ready = _ready_with_shared_authority(e5c_context)
+    memory_hash = ready.to_dict()["source_contract"][
+        "training_memory_view_sha256"
+    ]
+    with pytest.raises(M15ClarificationUiError, match="differs"):
+        build_m15_selected_session_submission_preview(
+            session=ready,
+            remote_training_memory_path=REMOTE_MEMORY_PATH,
+            expected_training_memory_sha256="0" * 64,
+        )
+    with pytest.raises(M15ClarificationUiError, match="unsafe"):
+        build_m15_selected_session_submission_preview(
+            session=ready,
+            remote_training_memory_path="/home/hxc859/memory.json,OTHER=value",
+            expected_training_memory_sha256=memory_hash,
+        )
+
+
+def test_e6b_refuses_two_different_authority_sources(e5c_context) -> None:
+    ready = _ready(e5c_context)
+    with pytest.raises(M15ClarificationUiError, match="one shared"):
+        build_m15_selected_session_submission_preview(
+            session=ready,
+            remote_training_memory_path=REMOTE_MEMORY_PATH,
+            expected_training_memory_sha256=ready.to_dict()[
+                "source_contract"
+            ]["training_memory_view_sha256"],
+        )
