@@ -893,14 +893,26 @@ FedShop are tracked as separate paper-completeness requirements.
 The post-gate repository acceptance suite passes 1,138 tests with 36
 intentional live/external skips.
 
-CWRU development campaign job `3793702` has now completed successfully at
-exact producer commit `c00c389` in 180 seconds on `compt329`; its outer status
-records zero cleanup error. The first independent audit attempt is not an
-accepted audit: reconstruction reached output, then the auditor raised on a
-Python set in the `loads.backends` check while printing JSON. The producer run
-is preserved and must not be resubmitted. A strict canonical-JSON auditor
-repair is published separately, and a new `audit-v2` output must pass without
-mutating the old run before any development metric is interpreted.
+CWRU development campaign job `3793702` completed successfully at exact
+producer commit `c00c389` in 180 seconds on `compt329`; its outer status
+records zero cleanup error. The first independent audit attempt remains
+preserved as an auditor-output failure caused by a Python set. The repaired
+auditor at commit `455b47b` then wrote a separate `audit-v2`, exited zero,
+passed 92/92 checks with no failed ID, and reported no run-tree mutation. The
+campaign is accepted as real FinBench SF0.1 same-allocation development
+evidence, but remains non-confirmatory and `paper_result=false`.
+
+The answer-independent confirmatory population implementation is locally
+complete and awaits one CWRU artifact gate. It compiles
+nested 36/48/60-instance options together with equal F1/F2/F3 allocation,
+four structural strata, stable four-fold F1/F2 cross-fit membership, and F3
+held out as a family. It does not select an option or use blocked labels,
+answers, observed costs, profiles, LLMs, ontology services, or backends. The
+CPU-only producer binds source/design/Git identities; the independent auditor
+recompiles the registry from the verified SF0.1 archive and checks immutable
+execution evidence. No confirmatory campaign is authorized yet.
+The complete local acceptance suite passes 1,147 tests with 36 intentional
+live/external skips; shell syntax and whitespace checks also pass.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,

@@ -3205,3 +3205,34 @@ first audit artifact, and stdout are immutable diagnostic evidence. A new
 `c00c389`; only a zero exit, no failed check, and no run-tree mutation can
 admit the campaign for development interpretation. No campaign is resubmitted,
 and `paper_result=false` remains mandatory.
+
+The repaired auditor at commit `455b47b` subsequently reconstructed the
+original producer tree into a new output. It exited zero, passed 92/92 checks,
+reported no failed ID, and confirmed `run_tree_mutated=false`. Job `3793702`
+is therefore accepted as development evidence. It is not retroactively a
+confirmatory run and no metric is promoted to a paper result.
+
+## D166 Compile every population-size option before the author chooses one
+
+The answer-independent FinBench population compiler materializes all three
+declared total sizes—36, 48, and 60 query instances—in one registry rather
+than compiling only a size chosen after observations. Each option allocates
+equally across the three primary families and four structural strata. F1 and
+F2 use stable four-fold cross-fit assignments derived from stratum and
+within-stratum sampling rank; F3 remains an entirely held-out family. The
+options are nested by candidate identity, and no option is selected by code.
+
+Sampling uses only public source identifiers, graph structure, timestamps,
+and the source risk-level parameter domain. Blocked labels, answer rows,
+observed latency or bytes, winner labels, and current-query profiles are not
+sampling inputs. The compiler makes zero backend, LLM, ontology, or profiling
+call and fixes `paper_result=false`. A dedicated CPU-only CWRU job records the
+clean producer commit and source identities, while a separate auditor reloads
+the verified SF0.1 archive, recompiles the complete registry, compares it
+exactly, and checks that the source run tree was unchanged. Local readiness
+does not choose the confirmatory population or authorize a paper run; the
+real SF0.1 compiler job and audit must pass first.
+
+The complete repository acceptance suite passed 1,147 tests with 36
+intentional live/external skips; shell syntax and whitespace checks also
+passed. This establishes local implementation readiness only.

@@ -147,6 +147,7 @@ detect_runtime() {
   tests/test_m15_finbench_family_campaign.py \
   tests/test_m15_live_finbench_family_campaign.py \
   tests/test_m15_finbench_paper_protocol.py \
+  tests/test_m15_finbench_confirmatory_population.py \
   tests/test_neo4j_http_errors.py \
   tests/test_m15_llm_resolution_provider.py \
   tests/test_m15_live_resolution.py \

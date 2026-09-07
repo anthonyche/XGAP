@@ -97,6 +97,17 @@ first audit/stdout files, do not submit another campaign, and use the repaired
 auditor with a new `audit-v2` output path. Acceptance still requires a zero
 audit exit, an empty failed-check list, and `run_tree_mutated=false`.
 
+The repaired v2 audit subsequently met that boundary: 92/92 checks passed,
+there were no failed IDs, and the run tree was unchanged. Preserve job
+`3793702`; it is accepted development evidence and must not be resubmitted.
+
+The next remote action is the CPU-only confirmatory-population compiler. It
+starts no native database or model service and compiles every 36/48/60 option
+before an author choice. Submit it only from the exact published compiler
+commit and the already verified SF0.1 archive. After completion, run the
+separate population-evidence module with a new audit path; do not interpret or
+select a population size until that audit passes.
+
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service
 allocation, accounts one common calibration outside method metrics, and then
