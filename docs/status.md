@@ -790,11 +790,15 @@ ordered-limit operators rather than a benchmark-specific evaluator. Native
 CWRU load-and-correctness job `3793654` completed with exit `0:0` in 245
 seconds on `compt292` at exact clean commit `a718e91`; its official archive
 download and inspection passed on CWRU before submission. The outer producer
-status is success, but the first independent-audit invocation exited before
-writing its audit JSON and is not evidence of either audit success or producer
-failure. Until the existing run passes the independent audit, this closes local
-compiler/coordinator correctness only, not live public-data execution,
-performance comparison, or confirmatory sampling.
+status is success. The first independent-audit invocation reconstructed the run
+but exposed an auditor-only `PosixPath` JSON serialization defect before an
+audit file could be written. The repaired auditor explicitly serializes only
+path-valued check fields; it then re-audited the unchanged run and passed all
+363 checks without run-tree mutation. All 72 plans were exact, each physical
+pair was answer-equivalent, and the run made 144 backend calls with zero retry.
+This accepts live public-data compiler/coordinator correctness, not performance
+comparison or confirmatory sampling. The immutable compact record is
+`experiments/artifacts/m15_finbench_sf001_cwru_correctness_20260907.json`.
 The first CWRU archive-preparation attempt failed safely with HTTP 403 before
 Slurm submission or any backend/query action. The default Python request is
 now replaced by a fixed XGAP user agent with identity encoding while all
@@ -808,8 +812,8 @@ In parallel, SF0.1 is pinned as the next scale gate. Its official archive
 contains 365,181 snapshot rows; a real local partition with batch size 2,000
 produced 194 Cypher statements, 282,426 Turtle triples, and approximately
 123 MB of load payload. The same three-family compiler produced 36 distinct
-scale-bound queries. A dedicated 16-GiB, 90-minute wrapper is ready, but it is
-not authorized until job `3793654` and its independent audit pass. SF0.3/SF1,
+scale-bound queries. Job `3793654` and its independent audit now satisfy the
+precondition for the dedicated 16-GiB, 90-minute SF0.1 wrapper. SF0.3/SF1,
 repetitions, and statistical analysis remain protocol decisions rather than
 implicit defaults.
 The first FinBench-specific family-memory protocol is now implemented locally.

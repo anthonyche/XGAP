@@ -2993,9 +2993,10 @@ auditor recompiles the public query population and all physical plans,
 reconstructs every final answer and paired-equivalence check from the sealed
 oracle after the run, verifies the outer/service/live status and Git identity,
 and hashes the run tree before and after inspection. Its output is forbidden
-below the source run. This does not turn the pending CWRU job into a paper
-result; it makes the development gate admissible only if both producer and
-independent audit pass.
+below the source run. Producer job `3793654` completed all 72 plans and 144
+backend calls; after repair of an auditor-only path-serialization defect, the
+auditor passed 363/363 checks without mutating the source run. This accepts the
+development correctness gate but does not turn it into a paper result.
 
 ## D158 Admit SF0.1 as the next development scale gate, not as a paper result
 
@@ -3018,9 +3019,9 @@ batch size 2,000. SF0.3 or SF1 will not be selected until this gate reports
 actual load time, query time, memory pressure, and failures.
 
 This is an engineering-scale admission, not an author-approved confirmatory
-protocol. It must not be submitted before the SF0.01 native correctness run and
-its independent audit pass. All generated artifacts retain
-`paper_result=false`.
+protocol. The SF0.01 native correctness run and independent audit have now
+passed, so the SF0.1 gate may be submitted once its pinned archive is present
+and verified on CWRU. All generated artifacts retain `paper_result=false`.
 
 ## D159 Make FinBench family memory leakage-safe before native measurement
 

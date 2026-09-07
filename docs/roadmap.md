@@ -765,14 +765,15 @@ exact plans per family, including real bound-query pushdown plus coordinator
 collection filtering, grouped aggregation, and deterministic Top-K. An
 oracle-isolated local replay passed all 72 plan/query comparisons. CWRU job
 `3793654` has now completed with exit `0:0` over the same 36 queries and 72
-plans. Its outer status is successful; the mandatory independent audit still
-has to complete against that immutable run before the public-data correctness
-gate is accepted. The official download/inspection stage passed at clean
-commit `a718e91`.
+plans. The repaired independent auditor passed 363/363 checks against that
+immutable run without mutation; all plans were exact and every physical pair
+was answer-equivalent. The public-data native correctness gate is therefore
+accepted as development evidence. The official download/inspection stage and
+producer both ran at clean commit `a718e91`.
 SF0.1 is already prepared as the immediate scale successor: its pinned archive
 contains 365,181 rows, its 2,000-row partition batches compile to 194 Cypher
 requests plus one Fuseki load, and the three-family population compiles at the
-new scale. Submit that scale gate only after the SF0.01 audit passes. Use its
+new scale. Its SF0.01 prerequisite is now satisfied. Use the SF0.1 gate's
 measured load/query/resource evidence to choose SF0.3 or SF1, then freeze
 baseline, repetition, and analysis protocols; do not add another toy mechanism
 milestone.
