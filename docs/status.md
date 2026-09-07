@@ -847,8 +847,9 @@ calls. Its analysis reports known-family prediction error, physical-winner
 accuracy, latency/byte regret, frontier overlap, and selection-plus-serving
 cost while keeping F3 cold-start separate. Full repository acceptance passes
 1,125 tests with 36 intentional live/external skips. This is executable
-development readiness, not authorization to run before the SF0.1 correctness
-audit succeeds; `paper_result=false` remains fixed.
+development readiness. The SF0.1 correctness audit has now succeeded and the
+development campaign was submitted exactly once as job `3793702`; its result
+and independent audit remain pending. `paper_result=false` remains fixed.
 The first SF0.1 scale attempt is preserved as a failed load diagnostic. Job
 `3793681` reached healthy Neo4j and Fuseki services and sealed all 72 plans,
 then Neo4j returned HTTP 500 at fixture statement 46/194 after approximately
@@ -867,10 +868,10 @@ no old run is retried or counted as a result.
 The repair implementation passed the complete local acceptance suite at its
 published commit: 1,123 tests passed and 36 explicitly live/external tests were
 skipped. Shell syntax validation and `git diff --check` also passed. The single
-repaired CWRU SF0.1 correctness run has been submitted as job `3793698` at
-exact commit `bc57a9d`; its terminal status and independent read-only audit are
-still pending. Do not submit a duplicate or start the 736-call campaign from
-an unaudited scale run.
+repaired CWRU SF0.1 correctness job `3793698` completed at exact commit
+`bc57a9d`; its independent read-only audit passed 368/368 checks with no failed
+ID or run-tree mutation. The 736-call development campaign was then submitted
+once as job `3793702` at commit `c00c389`. Do not submit a duplicate.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen
@@ -878,6 +879,19 @@ paper protocol. The accelerated target is local ingestion and family
 correctness by Sep 9, a first CWRU paper-candidate pilot by Sep 10, and protocol
 freeze immediately afterward. Decisions 2--6, paper-scale execution, and
 inferential claims remain unresolved; `paper_result=false` remains mandatory.
+
+The result-blind paper-promotion gate is now implemented separately from the
+development producer. It validates immutable source identities, the primary
+family-memory versus cost-inclusive dual-profile contrast, query-level
+inference, fixed statistical seeds, counterbalancing, timeout, failure
+replacement, and zero-retry policy without making a measurement call. Its
+draft readiness artifact reports all blockers rather than inferring author
+choices. The physical path still requires six author decisions, the campaign
+audit, an answer-independent cross-fit population compiler, an out-of-sample
+runner, confirmatory statistics, and an independent auditor. GrailQA and
+FedShop are tracked as separate paper-completeness requirements.
+The post-gate repository acceptance suite passes 1,138 tests with 36
+intentional live/external skips.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,

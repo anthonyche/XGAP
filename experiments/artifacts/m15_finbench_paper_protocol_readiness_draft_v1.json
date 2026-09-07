@@ -1,0 +1,279 @@
+{
+  "approval_subject_sha256": "8d79278be7ef2bb8f3722b7e194e5f2dcb40446dc6e873bd4313a9ecf1a3c6d5",
+  "author_decisions": [
+    {
+      "allowed_values": [
+        "36_frozen_development_split",
+        "48_answer_independent_crossfit",
+        "60_answer_independent_crossfit"
+      ],
+      "decision_id": "confirmatory_population",
+      "recommended_value": "48_answer_independent_crossfit",
+      "selected_value": null
+    },
+    {
+      "allowed_values": [
+        "sf0_1",
+        "sf1"
+      ],
+      "decision_id": "primary_scale",
+      "recommended_value": "sf0_1",
+      "selected_value": null
+    },
+    {
+      "allowed_values": [
+        "sf0_01",
+        "sf1_if_feasible_by_2026-09-12_else_omit",
+        "omit"
+      ],
+      "decision_id": "robustness_scale",
+      "recommended_value": "sf1_if_feasible_by_2026-09-12_else_omit",
+      "selected_value": null
+    },
+    {
+      "allowed_values": [
+        "5",
+        "7",
+        "10"
+      ],
+      "decision_id": "selected_serving_repetitions",
+      "recommended_value": "7",
+      "selected_value": null
+    },
+    {
+      "allowed_values": [
+        "5",
+        "7",
+        "10"
+      ],
+      "decision_id": "shadow_repetitions_per_plan",
+      "recommended_value": "7",
+      "selected_value": null
+    },
+    {
+      "allowed_values": [
+        "0",
+        "1",
+        "2"
+      ],
+      "decision_id": "infrastructure_replacement_limit",
+      "recommended_value": "1",
+      "selected_value": null
+    },
+    {
+      "allowed_values": [
+        "grailqa_primary",
+        "grailqa_reduced",
+        "defer"
+      ],
+      "decision_id": "semantic_track",
+      "recommended_value": "grailqa_primary",
+      "selected_value": null
+    },
+    {
+      "allowed_values": [
+        "fedshop_if_ready_by_2026-09-24_else_omit",
+        "omit"
+      ],
+      "decision_id": "external_validation",
+      "recommended_value": "fedshop_if_ready_by_2026-09-24_else_omit",
+      "selected_value": null
+    }
+  ],
+  "automatic_retries": 0,
+  "claim_boundary": {
+    "artifact_class": "result_blind_paper_protocol_readiness",
+    "author_decision_inferred": false,
+    "backend_calls_made": 0,
+    "contains_measurements": false,
+    "llm_calls_made": 0,
+    "ontology_service_calls_made": 0,
+    "paper_result": false
+  },
+  "development_evidence_receipts": [],
+  "evidence_bindings_sha256": null,
+  "gates": {
+    "all_author_decisions_selected": false,
+    "author_approved": false,
+    "development_evidence_verified": false,
+    "paper_experiment_stack_ready": false,
+    "physical_confirmatory_run_authorized": false,
+    "physical_implementation_ready": false,
+    "result_blind_protocol_structurally_valid": true
+  },
+  "implementation_requirements": [
+    {
+      "evidence": null,
+      "requirement_id": "answer_independent_confirmatory_population_compiler",
+      "scope": "physical_confirmatory",
+      "status": "missing"
+    },
+    {
+      "evidence": null,
+      "requirement_id": "out_of_sample_family_memory_runner",
+      "scope": "physical_confirmatory",
+      "status": "missing"
+    },
+    {
+      "evidence": null,
+      "requirement_id": "confirmatory_statistics_analyzer",
+      "scope": "physical_confirmatory",
+      "status": "missing"
+    },
+    {
+      "evidence": null,
+      "requirement_id": "confirmatory_evidence_auditor",
+      "scope": "physical_confirmatory",
+      "status": "missing"
+    },
+    {
+      "evidence": null,
+      "requirement_id": "grailqa_semantic_protocol",
+      "scope": "paper_complete",
+      "status": "missing"
+    },
+    {
+      "evidence": null,
+      "requirement_id": "fedshop_external_validation_protocol",
+      "scope": "paper_complete",
+      "status": "missing"
+    }
+  ],
+  "next_author_decisions": [
+    {
+      "allowed_values": [
+        "36_frozen_development_split",
+        "48_answer_independent_crossfit",
+        "60_answer_independent_crossfit"
+      ],
+      "decision_id": "confirmatory_population",
+      "recommended_value": "48_answer_independent_crossfit"
+    },
+    {
+      "allowed_values": [
+        "sf0_1",
+        "sf1"
+      ],
+      "decision_id": "primary_scale",
+      "recommended_value": "sf0_1"
+    },
+    {
+      "allowed_values": [
+        "sf0_01",
+        "sf1_if_feasible_by_2026-09-12_else_omit",
+        "omit"
+      ],
+      "decision_id": "robustness_scale",
+      "recommended_value": "sf1_if_feasible_by_2026-09-12_else_omit"
+    },
+    {
+      "allowed_values": [
+        "5",
+        "7",
+        "10"
+      ],
+      "decision_id": "selected_serving_repetitions",
+      "recommended_value": "7"
+    },
+    {
+      "allowed_values": [
+        "5",
+        "7",
+        "10"
+      ],
+      "decision_id": "shadow_repetitions_per_plan",
+      "recommended_value": "7"
+    },
+    {
+      "allowed_values": [
+        "0",
+        "1",
+        "2"
+      ],
+      "decision_id": "infrastructure_replacement_limit",
+      "recommended_value": "1"
+    },
+    {
+      "allowed_values": [
+        "grailqa_primary",
+        "grailqa_reduced",
+        "defer"
+      ],
+      "decision_id": "semantic_track",
+      "recommended_value": "grailqa_primary"
+    },
+    {
+      "allowed_values": [
+        "fedshop_if_ready_by_2026-09-24_else_omit",
+        "omit"
+      ],
+      "decision_id": "external_validation",
+      "recommended_value": "fedshop_if_ready_by_2026-09-24_else_omit"
+    }
+  ],
+  "paper_experiment_blockers": [
+    "author_approval.pending",
+    "author_decision.confirmatory_population.unselected",
+    "author_decision.external_validation.unselected",
+    "author_decision.infrastructure_replacement_limit.unselected",
+    "author_decision.primary_scale.unselected",
+    "author_decision.robustness_scale.unselected",
+    "author_decision.selected_serving_repetitions.unselected",
+    "author_decision.semantic_track.unselected",
+    "author_decision.shadow_repetitions_per_plan.unselected",
+    "development_evidence.sf0_1_correctness_audit.unbound",
+    "development_evidence.sf0_1_family_campaign_audit.unbound",
+    "implementation.answer_independent_confirmatory_population_compiler.missing",
+    "implementation.confirmatory_evidence_auditor.missing",
+    "implementation.confirmatory_statistics_analyzer.missing",
+    "implementation.fedshop_external_validation_protocol.missing",
+    "implementation.grailqa_semantic_protocol.missing",
+    "implementation.out_of_sample_family_memory_runner.missing"
+  ],
+  "paper_result": false,
+  "physical_confirmatory_blockers": [
+    "author_approval.pending",
+    "author_decision.confirmatory_population.unselected",
+    "author_decision.infrastructure_replacement_limit.unselected",
+    "author_decision.primary_scale.unselected",
+    "author_decision.robustness_scale.unselected",
+    "author_decision.selected_serving_repetitions.unselected",
+    "author_decision.shadow_repetitions_per_plan.unselected",
+    "development_evidence.sf0_1_correctness_audit.unbound",
+    "development_evidence.sf0_1_family_campaign_audit.unbound",
+    "implementation.answer_independent_confirmatory_population_compiler.missing",
+    "implementation.confirmatory_evidence_auditor.missing",
+    "implementation.confirmatory_statistics_analyzer.missing",
+    "implementation.out_of_sample_family_memory_runner.missing"
+  ],
+  "protocol_draft_sha256": "d730f433f344d9601d079a8edc45c5cf85421146d57247981ad60edc95e6e3ac",
+  "protocol_id": "m15-finbench-sigmod2027-physical-confirmatory-draft-v1",
+  "readiness_sha256": "94fbfa99c2144b2011abd720251fa246bf42f21d72ab443a2f762d5b21b21ee2",
+  "schema_version": "m15-finbench-paper-protocol-readiness-v1",
+  "source_artifacts": [
+    {
+      "artifact_id": "finbench-v010-sf0_1-source-lock",
+      "path": "experiments/artifacts/m15_finbench_v010_sf0_1_sources.json",
+      "sha256": "07f788fbedf43765d1585cd4b1a49915248425cf041b7100f1eba9879a38ae8d",
+      "verified": true
+    },
+    {
+      "artifact_id": "finbench-sf0_1-primary-population",
+      "path": "experiments/configs/m15_finbench_sf0_1_primary_population_v1.json",
+      "sha256": "2294a8edb2ff59624a2ea2080c44e7620a6975e5de59f20d930f8d70e3d2dde1",
+      "verified": true
+    },
+    {
+      "artifact_id": "finbench-development-campaign",
+      "path": "experiments/configs/m15_finbench_family_campaign_dev_v1.json",
+      "sha256": "c7ed457b5c35b513720d454c4764259de57d6c06ceaa68b7795e4cff7f4b19c9",
+      "verified": true
+    },
+    {
+      "artifact_id": "finbench-family-memory-policy",
+      "path": "experiments/configs/m15_finbench_family_memory_policy_v1.json",
+      "sha256": "605cc968d09955683b94b764eb0663d7a1315a1dd46d223abd3828e16bdb7760",
+      "verified": true
+    }
+  ]
+}

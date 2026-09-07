@@ -6,7 +6,7 @@
 - Origin Mode: plan
 - Origin Date: 2026-09-04
 - Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B/E5D VERIFIED; F2C13C SUMMARY ACCEPTED
-- Version Label: m15_remote_loop_v41
+- Version Label: m15_remote_loop_v42
 
 ## Current claim boundary
 
@@ -69,12 +69,12 @@ as the first 2,000-row transfer-relationship batch. The repair changes the
 partition to hash-bound parameterized JSONL batches, verifies Neo4j affected
 rows, and selects a persisted 1/2/1-GiB SF0.1 heap/page-cache profile. Full
 local acceptance passed before publication, and exactly one repaired gate was
-submitted as job `3793698` at commit `bc57a9d`. Wait for its terminal state;
-do not submit another correctness or campaign job.
+submitted as job `3793698` at commit `bc57a9d`. It completed successfully, and
+its independent audit passed 368/368 checks without changing the run tree.
+Preserve both runs; do not submit another correctness job.
 
-Meanwhile, the next comparison schedule and native implementation are locally
-complete but not remotely authorized. It binds 368 complete plans and 736
-backend calls in one
+The next comparison schedule and native implementation bind 368 complete plans
+and 736 backend calls in one
 allocation: 128 training, 40 dual-profile acquisition, 40 paired serving, and
 160 evaluation-only shadow runs. Known-family zero-profile memory and F3
 cold-start fallback remain distinct methods, both paired with the
@@ -83,9 +83,12 @@ audited correctness run with the same workload hash, seals both selections
 before serving, opens the oracle after all calls, and never retries. Its
 independent auditor reconstructs schedule, candidates, admission, memory,
 selections, results, oracle comparisons, and analysis without mutating the run
-tree. Full local acceptance passes 1,125 tests with 36 intentional skips. This
-is readiness only: job `3793698` must succeed and pass audit before a campaign
-command is issued.
+tree. Full local acceptance passed 1,125 tests with 36 intentional skips. After
+the correctness audit passed, exactly one development campaign was submitted
+as CWRU job `3793702` at clean commit `c00c389`. Do not submit a duplicate.
+Wait for its terminal state, then run the independent campaign auditor before
+interpreting any metric. The campaign remains non-confirmatory and
+`paper_result=false`.
 
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service

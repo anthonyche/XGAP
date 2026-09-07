@@ -911,9 +911,21 @@ the oracle only after execution. A separate read-only auditor reconstructs the
 schedule, candidate catalog, correctness admission, family memory, both
 selection seals, all result sets, oracle comparisons, and analysis. Full local
 acceptance passes 1,125 tests with 36 intentional skips. The repaired SF0.1
-correctness job `3793698` remains the execution gate, so the campaign is not
-yet remotely authorized and remains non-confirmatory with
-`paper_result=false`.
+correctness job `3793698` and its 368-check independent audit have passed.
+Exactly one development campaign was then submitted as job `3793702` at clean
+commit `c00c389`; its result and audit are pending. It remains
+non-confirmatory with `paper_result=false`.
+
+A distinct paper-protocol readiness compiler now prevents development evidence
+from being silently promoted. It fixes the primary physical contrast and
+statistical/failure boundaries, binds author choices by a subject hash,
+reconstructs external development audits read-only, and makes no backend,
+model, or ontology call. It explicitly rejects the answer-filtered 36-query
+development split as an automatic confirmatory population and records four
+missing physical components: an answer-independent population compiler, an
+out-of-sample family runner, a confirmatory analyzer, and its independent
+auditor. Semantic GrailQA and external FedShop protocols remain separate
+paper-completeness requirements.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

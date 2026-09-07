@@ -781,9 +781,8 @@ The first attempt localized an HTTP 500 to the first expanded 2,000-row
 transfer batch without producing query measurements. Before the single next
 attempt, schema-v2 parameter batches, affected-row verification, explicit
 SF0.1 service resources, focused tests, and full acceptance must pass at one
-clean commit. Those conditions passed and exactly one repaired gate is now
-pending as CWRU job `3793698` at commit `bc57a9d`. If it fails, use its
-structured Neo4j error as the decision boundary rather than blind retuning.
+clean commit. Those conditions passed, CWRU job `3793698` completed at commit
+`bc57a9d`, and its independent audit passed 368/368 checks without mutation.
 Do not submit a duplicate.
 The leakage-safe FinBench family-memory layer is also implemented locally. It
 accepts only the 16-query training split with two strategies and four or more
@@ -800,12 +799,20 @@ zero current-query profile calls for the eight known-family held-out queries;
 the 12 F3 queries use only their separately reported predeclared cold-start
 fallback. The paired comparator profiles both complete physical routes and
 includes that acquisition cost. Its fail-closed native producer and independent
-reconstruction auditor now pass full local acceptance: 1,125 tests pass with
-36 intentional live/external skips. The producer requires an externally
+reconstruction auditor pass full local acceptance: 1,125 tests pass with 36
+intentional live/external skips. The producer requires an externally
 audited, workload-matching correctness run, freezes both selection seals before
-serving, and parses oracle answers only after all calls. The only remaining
-execution gate is successful independent audit of job `3793698`; until then the
-736-call campaign is not authorized and remains `paper_result=false`.
+serving, and parses oracle answers only after all calls. Exactly one 736-call
+development campaign was submitted as job `3793702` at commit `c00c389`; wait
+for its terminal state and independent audit. It remains
+`paper_result=false`.
+The next local milestone is a result-blind paper-promotion gate, now
+implemented as an executable draft. It prevents the answer-filtered 36-query
+development population from being reused as confirmatory evidence, recommends
+a 48-instance answer- and cost-independent cross-fit population, and exposes
+the remaining author/evidence/implementation blockers. After job `3793702` is
+audited, freeze author decisions and implement the population compiler,
+out-of-sample runner, statistics analyzer, and independent evidence auditor.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet

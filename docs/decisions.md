@@ -3156,3 +3156,33 @@ job `3793698` is the only pending repaired SF0.1 correctness gate; the campaign
 must not run until that job terminates successfully and its independent audit
 passes. All resulting artifacts remain development-only with
 `paper_result=false`.
+
+## D164 Separate the development campaign from a result-blind paper promotion gate
+
+CWRU job `3793698` completed successfully at exact producer commit `bc57a9d`.
+Its independent reconstruction audit passed 368/368 checks, reported no failed
+check ID, and did not mutate the run tree. This accepts SF0.1 as a development
+correctness substrate. It does not convert any existing measurement into a
+paper result. The already frozen development family campaign was consequently
+submitted exactly once as job `3793702` at clean commit `c00c389`; its result
+and independent audit remain pending.
+
+The next boundary is a separate result-blind confirmatory-protocol compiler.
+It binds the FinBench source lock, population, development schedule, and
+family-memory policy; fixes the primary family-memory-versus-dual-profile
+contrast, inferential unit, cost scope, counterbalancing, timeout, zero-retry
+policy, statistics, seeds, and failure handling; and makes zero backend, LLM,
+or ontology calls. It independently reconstructs the accepted correctness and
+campaign audits when their external paths are supplied.
+
+The gate refuses authorization while any physical author decision,
+development audit, implementation requirement, or approval receipt is
+missing. In particular, the current 36-query development population is not a
+valid default confirmatory population because its admission used answer
+properties. The recommended replacement is a 48-instance, answer- and
+cost-independent cross-fit population with query instance as the inferential
+unit. GrailQA and cutoff-bounded FedShop remain separate paper-completeness
+gates and do not block implementation of the primary physical experiment.
+The committed readiness record is deliberately `paper_result=false`.
+The post-gate repository acceptance suite passes 1,138 tests with 36
+intentional live/external skips.

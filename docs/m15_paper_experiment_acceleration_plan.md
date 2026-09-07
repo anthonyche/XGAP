@@ -274,7 +274,12 @@ the primary evidence or writing schedule.
 
 ## Immediate loop
 
-The official SF0.01 archive lock, safe single-attempt cache acquisition, and
-streaming schema inspection are implemented. The next code milestone is the
-deterministic source partition and load bundle. VPN is not needed until that
-bundle and its offline oracles pass and one immutable CWRU command is ready.
+The complete FinBench partition, all three physical families, SF0.01 and SF0.1
+correctness gates, and the SF0.1 independent audit are complete. Development
+campaign job `3793702` is now the only active remote action; do not duplicate
+it. In parallel, the result-blind paper-promotion gate is implemented and
+exposes the remaining author, evidence, and implementation blockers without
+making a measurement call. After the campaign audit, freeze the author-owned
+choices by Sep 12 and implement the answer-independent cross-fit population,
+out-of-sample runner, confirmatory statistics, and independent auditor. The
+36-query development split remains pilot evidence only.
