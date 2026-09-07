@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import http.client
 import json
+import threading
 from dataclasses import dataclass
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+import xgap.ui.local_app as local_app
 
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.m15_clarification_transport import (
@@ -49,8 +53,15 @@ from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPl
 from xgap.tools.contracts import ToolContext, ToolStatus
 from xgap.ui import (
     CLARIFICATION_VIEW_SCHEMA_VERSION,
+    LOCAL_UI_STATE_SCHEMA_VERSION,
+    LOCAL_UI_SUBMISSION_RESULT_SCHEMA_VERSION,
+    LOCAL_UI_HTTP_SCHEMA_VERSION,
     SELECTED_SESSION_SUBMISSION_PREVIEW_SCHEMA_VERSION,
     M15ClarificationUiError,
+    M15LocalClarificationController,
+    M15LocalControlError,
+    M15LocalHttpConfig,
+    build_m15_local_http_server,
     build_m15_clarification_selection_event,
     build_m15_clarification_view,
     build_m15_selected_session_submission_preview,
@@ -83,6 +94,7 @@ REMOTE_MEMORY_PATH = (
     "cwru-m15-native-direct-family-pilot-3791600/native-service-run/"
     "direct-family-pilot-run/training/training_memory_view.json"
 )
+DISPLAY_QUERY = "查找过去一个月与 Alice 有密切资金往来的高风险公司。"
 
 
 @pytest.fixture(scope="module")
@@ -863,3 +875,539 @@ def test_e6b_refuses_two_different_authority_sources(e5c_context) -> None:
                 "source_contract"
             ]["training_memory_view_sha256"],
         )
+
+
+def _local_controller(e5c_context, *, session=None, **overrides):
+    current = session or _start(e5c_context)
+    arguments = {
+        "session": current,
+        "advance_session": lambda value, event: _advance(
+            e5c_context, value, event
+        ),
+        "remote_training_memory_path": REMOTE_MEMORY_PATH,
+        "expected_training_memory_sha256": current.to_dict()[
+            "source_contract"
+        ]["training_memory_view_sha256"],
+        "authority_source_id": "author:anthonyche:e6c-loopback-test",
+        "display_query": DISPLAY_QUERY,
+    }
+    arguments.update(overrides)
+    return M15LocalClarificationController(**arguments)
+
+
+def _select_current(controller, candidate_id):
+    state = controller.snapshot()
+    question = state["clarification"]["question"]
+    return controller.select_candidate(
+        expected_session_sha256=state["clarification"]["session_sha256"],
+        expected_question_sha256=question["question_sha256"],
+        candidate_id=candidate_id,
+    )
+
+
+def _ready_local_controller(e5c_context, **overrides):
+    controller = _local_controller(e5c_context, **overrides)
+    _select_current(
+        controller, "constraint:single-transfer-at-least-50000"
+    )
+    _select_current(controller, "predicate:transferred_to")
+    return controller
+
+
+def _successful_remote_submission(payload):
+    return {
+        "tool_name": "remote.executor",
+        "status": "success",
+        "value": {
+            "executor_id": "cwru-pioneer",
+            "operation": "submit_job",
+            "state": "submitted",
+            "job_id": "3793365",
+            "script": payload["script"],
+            "job_environment_keys": sorted(payload["environment"]),
+        },
+        "error": None,
+        "metrics": {"control_calls": 1.0},
+        "metadata": {},
+    }
+
+
+def test_e6c_initial_snapshot_is_browser_safe(e5c_context) -> None:
+    state = _local_controller(e5c_context).snapshot()
+    serialized = json.dumps(state, sort_keys=True)
+
+    assert state["schema_version"] == LOCAL_UI_STATE_SCHEMA_VERSION
+    assert state["connected"] is True
+    assert state["request"] == {
+        "text": DISPLAY_QUERY,
+        "sha256": hashlib.sha256(DISPLAY_QUERY.encode("utf-8")).hexdigest(),
+    }
+    assert state["submission_preview"] is None
+    assert state["submission_enabled"] is False
+    assert state["submission_attempted"] is False
+    assert "authority_source_id" not in serialized
+    assert REMOTE_MEMORY_PATH not in serialized
+    assert "XGAP_M15_SELECTED" not in serialized
+    assert content_hash(
+        {key: value for key, value in state.items() if key != "state_sha256"}
+    ) == state["state_sha256"]
+
+
+def test_e6c_commits_hash_bound_choices_and_persists(e5c_context) -> None:
+    persisted = []
+    controller = _local_controller(
+        e5c_context,
+        persist_session=lambda session: persisted.append(session.to_dict()),
+    )
+    initial = controller.snapshot()
+    question = initial["clarification"]["question"]
+
+    after = controller.select_candidate(
+        expected_session_sha256=initial["clarification"]["session_sha256"],
+        expected_question_sha256=question["question_sha256"],
+        candidate_id="constraint:single-transfer-at-least-50000",
+    )
+
+    assert len(persisted) == 1
+    assert after["clarification"]["authority_event_count"] == 1
+    assert after["clarification"]["question"]["hole_id"] == (
+        "transfer-predicate"
+    )
+    assert persisted[0]["session_sha256"] == after["clarification"][
+        "session_sha256"
+    ]
+
+
+def test_e6c_rejects_stale_hashes_without_mutation(e5c_context) -> None:
+    persisted = []
+    controller = _local_controller(
+        e5c_context,
+        persist_session=lambda session: persisted.append(session.to_dict()),
+    )
+    initial = controller.snapshot()
+    question = initial["clarification"]["question"]
+
+    with pytest.raises(M15LocalControlError, match="session changed"):
+        controller.select_candidate(
+            expected_session_sha256="0" * 64,
+            expected_question_sha256=question["question_sha256"],
+            candidate_id="constraint:single-transfer-at-least-50000",
+        )
+    with pytest.raises(M15LocalControlError, match="question changed"):
+        controller.select_candidate(
+            expected_session_sha256=initial["clarification"]["session_sha256"],
+            expected_question_sha256="0" * 64,
+            candidate_id="constraint:single-transfer-at-least-50000",
+        )
+
+    assert persisted == []
+    assert controller.snapshot()["state_sha256"] == initial["state_sha256"]
+
+
+def test_e6c_ready_preview_hides_server_owned_submission_values(
+    e5c_context,
+) -> None:
+    controller = _ready_local_controller(e5c_context)
+    state = controller.snapshot()
+    serialized = json.dumps(state, sort_keys=True)
+
+    assert state["clarification"]["status"] == (
+        "ready_for_execution_handoff"
+    )
+    assert state["submission_preview"]["confirmation_required"] is True
+    assert "remote_payload" not in state["submission_preview"]
+    assert "authority_source_id" not in serialized
+    assert REMOTE_MEMORY_PATH not in serialized
+    assert "XGAP_M15_SELECTED" not in serialized
+
+
+def test_e6c_submission_requires_enablement_confirmation_and_fresh_preview(
+    e5c_context,
+) -> None:
+    disabled = _ready_local_controller(e5c_context)
+    preview_hash = disabled.snapshot()["submission_preview"][
+        "submission_preview_sha256"
+    ]
+    with pytest.raises(M15LocalControlError, match="disabled"):
+        disabled.submit_selected_session(
+            expected_submission_preview_sha256=preview_hash,
+            confirmed=True,
+        )
+
+    controller = _ready_local_controller(
+        e5c_context, submit_job=_successful_remote_submission
+    )
+    preview_hash = controller.snapshot()["submission_preview"][
+        "submission_preview_sha256"
+    ]
+    with pytest.raises(M15LocalControlError, match="explicit confirmation"):
+        controller.submit_selected_session(
+            expected_submission_preview_sha256=preview_hash,
+            confirmed=False,
+        )
+    with pytest.raises(M15LocalControlError, match="preview changed"):
+        controller.submit_selected_session(
+            expected_submission_preview_sha256="0" * 64,
+            confirmed=True,
+        )
+    assert controller.snapshot()["submission_attempted"] is False
+
+
+def test_e6c_publishes_only_normalized_submission_result_once(
+    e5c_context,
+) -> None:
+    payloads = []
+
+    def submit(payload):
+        payloads.append(copy.deepcopy(payload))
+        return _successful_remote_submission(payload)
+
+    controller = _ready_local_controller(e5c_context, submit_job=submit)
+    preview_hash = controller.snapshot()["submission_preview"][
+        "submission_preview_sha256"
+    ]
+    state = controller.submit_selected_session(
+        expected_submission_preview_sha256=preview_hash,
+        confirmed=True,
+    )
+
+    assert len(payloads) == 1
+    assert set(payloads[0]) == {"script", "environment"}
+    assert state["submission_enabled"] is False
+    assert state["submission_attempted"] is True
+    assert state["submission_result"] == {
+        "schema_version": LOCAL_UI_SUBMISSION_RESULT_SCHEMA_VERSION,
+        "status": "success",
+        "executor_id": "cwru-pioneer",
+        "job_id": "3793365",
+        "state": "submitted",
+        "script": payloads[0]["script"],
+    }
+    with pytest.raises(M15LocalControlError, match="already submitted"):
+        controller.submit_selected_session(
+            expected_submission_preview_sha256=preview_hash,
+            confirmed=True,
+        )
+    assert len(payloads) == 1
+
+
+def test_e6c_unsafe_or_uncertain_submitter_never_retries(e5c_context) -> None:
+    calls = []
+
+    def unsafe(payload):
+        calls.append(payload)
+        return {
+            **_successful_remote_submission(payload),
+            "secret": "do-not-expose",
+        }
+
+    controller = _ready_local_controller(e5c_context, submit_job=unsafe)
+    preview_hash = controller.snapshot()["submission_preview"][
+        "submission_preview_sha256"
+    ]
+    with pytest.raises(M15LocalControlError, match="invalid observation"):
+        controller.submit_selected_session(
+            expected_submission_preview_sha256=preview_hash,
+            confirmed=True,
+        )
+    state = controller.snapshot()
+    assert state["submission_result"]["status"] == "unknown"
+    assert "secret" not in json.dumps(state, sort_keys=True)
+    with pytest.raises(M15LocalControlError, match="already submitted"):
+        controller.submit_selected_session(
+            expected_submission_preview_sha256=preview_hash,
+            confirmed=True,
+        )
+    assert len(calls) == 1
+
+
+def _http_json(connection, method, path, *, origin=None, body=None):
+    headers = {}
+    encoded = None
+    if origin is not None:
+        headers["Origin"] = origin
+    if body is not None:
+        encoded = json.dumps(body).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    connection.request(method, path, body=encoded, headers=headers)
+    response = connection.getresponse()
+    payload = json.loads(response.read().decode("utf-8"))
+    return response, payload
+
+
+def _run_local_server(controller):
+    config = M15LocalHttpConfig(port=0)
+    server = build_m15_local_http_server(controller, config)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    return server, thread
+
+
+def test_e6c_http_server_refuses_nonloopback_configuration() -> None:
+    with pytest.raises(ValueError, match="127.0.0.1"):
+        M15LocalHttpConfig(bind_address="0.0.0.0")
+    with pytest.raises(ValueError, match="loopback"):
+        M15LocalHttpConfig(allowed_origins=("https://example.com",))
+
+
+def test_e6c_http_server_projects_state_and_enforces_origin(e5c_context) -> None:
+    controller = _local_controller(e5c_context)
+    server, thread = _run_local_server(controller)
+    connection = http.client.HTTPConnection(
+        "127.0.0.1", server.server_address[1], timeout=5
+    )
+    try:
+        response, health = _http_json(connection, "GET", "/health")
+        assert response.status == 200
+        assert health == {
+            "schema_version": LOCAL_UI_HTTP_SCHEMA_VERSION,
+            "status": "ready",
+            "bind_address": "127.0.0.1",
+            "paper_result": False,
+        }
+
+        response, state = _http_json(
+            connection,
+            "GET",
+            "/api/session",
+            origin="http://localhost:3000",
+        )
+        assert response.status == 200
+        assert response.getheader("Access-Control-Allow-Origin") == (
+            "http://localhost:3000"
+        )
+        assert state["state_sha256"] == controller.snapshot()["state_sha256"]
+
+        response, failure = _http_json(
+            connection,
+            "POST",
+            "/api/clarification",
+            origin="https://example.com",
+            body={
+                "session_sha256": "0" * 64,
+                "question_sha256": "0" * 64,
+                "candidate_id": "constraint:single-transfer-at-least-50000",
+                "confirmed": True,
+            },
+        )
+        assert response.status == 403
+        assert failure == {"error": "request origin is not allowed"}
+        assert controller.snapshot()["clarification"][
+            "authority_event_count"
+        ] == 0
+    finally:
+        connection.close()
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_e6c_http_server_commits_confirmed_choices(e5c_context) -> None:
+    controller = _local_controller(e5c_context)
+    server, thread = _run_local_server(controller)
+    connection = http.client.HTTPConnection(
+        "127.0.0.1", server.server_address[1], timeout=5
+    )
+    origin = "http://127.0.0.1:3000"
+    try:
+        initial = controller.snapshot()
+        question = initial["clarification"]["question"]
+        request = {
+            "session_sha256": initial["clarification"]["session_sha256"],
+            "question_sha256": question["question_sha256"],
+            "candidate_id": "constraint:single-transfer-at-least-50000",
+            "confirmed": False,
+        }
+        response, failure = _http_json(
+            connection,
+            "POST",
+            "/api/clarification",
+            origin=origin,
+            body=request,
+        )
+        assert response.status == 409
+        assert "explicit confirmation" in failure["error"]
+        assert failure["state"]["clarification"][
+            "authority_event_count"
+        ] == 0
+
+        request["confirmed"] = True
+        response, after = _http_json(
+            connection,
+            "POST",
+            "/api/clarification",
+            origin=origin,
+            body=request,
+        )
+        assert response.status == 200
+        assert after["clarification"]["authority_event_count"] == 1
+        assert after["clarification"]["question"]["sequence"] == 2
+    finally:
+        connection.close()
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_e6c_http_server_submits_only_fixed_confirmed_preview(
+    e5c_context,
+) -> None:
+    controller = _ready_local_controller(
+        e5c_context, submit_job=_successful_remote_submission
+    )
+    server, thread = _run_local_server(controller)
+    connection = http.client.HTTPConnection(
+        "127.0.0.1", server.server_address[1], timeout=5
+    )
+    origin = "http://localhost:3000"
+    try:
+        state = controller.snapshot()
+        response, submitted = _http_json(
+            connection,
+            "POST",
+            "/api/submit",
+            origin=origin,
+            body={
+                "submission_preview_sha256": state["submission_preview"][
+                    "submission_preview_sha256"
+                ],
+                "confirmed": True,
+            },
+        )
+        assert response.status == 200
+        assert submitted["submission_result"]["job_id"] == "3793365"
+        assert submitted["submission_enabled"] is False
+
+        response, repeated = _http_json(
+            connection,
+            "POST",
+            "/api/submit",
+            origin=origin,
+            body={
+                "submission_preview_sha256": state["submission_preview"][
+                    "submission_preview_sha256"
+                ],
+                "confirmed": True,
+            },
+        )
+        assert response.status == 409
+        assert "already submitted" in repeated["error"]
+    finally:
+        connection.close()
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_e6c_session_store_round_trips_only_reconstruction_key(
+    e5c_context,
+    tmp_path,
+) -> None:
+    session = _structurally_bound(e5c_context)
+    store_path = tmp_path / "ui-state.json"
+
+    local_app.persist_m15_local_ui_session(store_path, session)
+    stored = local_app.load_m15_local_ui_session_store(store_path)
+
+    assert stored is not None
+    assert stored["schema_version"] == (
+        local_app.LOCAL_UI_SESSION_STORE_SCHEMA_VERSION
+    )
+    assert stored["session_id"] == session.to_dict()["session_id"]
+    assert stored["authority_events"] == session.to_dict()["authority_events"]
+    assert stored["session_sha256"] == session.session_hash
+    assert set(stored) == {
+        "schema_version",
+        "session_id",
+        "authority_events",
+        "session_sha256",
+        "paper_result",
+        "store_sha256",
+    }
+    serialized = store_path.read_text(encoding="utf-8")
+    assert "native_query" not in serialized
+    assert REMOTE_MEMORY_PATH not in serialized
+
+
+def test_e6c_session_store_rejects_tampering_and_symlinks(
+    e5c_context,
+    tmp_path,
+) -> None:
+    store_path = tmp_path / "ui-state.json"
+    local_app.persist_m15_local_ui_session(
+        store_path, _start(e5c_context)
+    )
+    payload = json.loads(store_path.read_text(encoding="utf-8"))
+    payload["session_id"] = "tampered-session"
+    store_path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(local_app.M15LocalAppError, match="hash mismatch"):
+        local_app.load_m15_local_ui_session_store(store_path)
+
+    store_path.unlink()
+    target = tmp_path / "target.json"
+    target.write_text("{}", encoding="utf-8")
+    store_path.symlink_to(target)
+    with pytest.raises(local_app.M15LocalAppError, match="non-symbolic-link"):
+        local_app.load_m15_local_ui_session_store(store_path)
+    with pytest.raises(local_app.M15LocalAppError, match="non-symbolic-link"):
+        local_app.persist_m15_local_ui_session(
+            store_path, _start(e5c_context)
+        )
+
+
+def test_e6c_local_app_reconstructs_session_from_persisted_events(
+    e5c_context,
+    tmp_path,
+    monkeypatch,
+) -> None:
+    workload, memory, bridge = e5c_context
+    prepared = SimpleNamespace(bridge=bridge, workload=workload)
+    monkeypatch.setattr(
+        local_app,
+        "prepare_m15_resolution_execution_bridge",
+        lambda **kwargs: prepared,
+    )
+    monkeypatch.setattr(
+        local_app,
+        "load_m15_direct_training_memory_view",
+        lambda *args, **kwargs: memory,
+    )
+    monkeypatch.setattr(
+        local_app,
+        "_resolution_question_sha256",
+        lambda path: hashlib.sha256(DISPLAY_QUERY.encode("utf-8")).hexdigest(),
+    )
+    state_path = tmp_path / "session.json"
+    arguments = {
+        "resolution_run_path": tmp_path / "resolution.json",
+        "training_memory_path": tmp_path / "memory.json",
+        "remote_training_memory_path": REMOTE_MEMORY_PATH,
+        "expected_training_memory_sha256": memory.memory_view_hash,
+        "session_id": "m15-e6c-local-app-test",
+        "authority_source_id": "author:anthonyche:e6c-local-app-test",
+        "display_query": DISPLAY_QUERY,
+        "session_store_path": state_path,
+        "repo_root": REPO_ROOT,
+    }
+
+    initial = local_app.build_m15_local_clarification_controller(
+        **arguments,
+        workload_destination=tmp_path / "workload-one",
+    )
+    _select_current(
+        initial, "constraint:single-transfer-at-least-50000"
+    )
+    persisted = local_app.load_m15_local_ui_session_store(state_path)
+    assert persisted is not None
+    assert len(persisted["authority_events"]) == 1
+
+    resumed = local_app.build_m15_local_clarification_controller(
+        **arguments,
+        workload_destination=tmp_path / "workload-two",
+    )
+    snapshot = resumed.snapshot()
+    assert snapshot["clarification"]["authority_event_count"] == 1
+    assert snapshot["clarification"]["question"]["sequence"] == 2
+    assert snapshot["clarification"]["session_sha256"] == persisted[
+        "session_sha256"
+    ]
