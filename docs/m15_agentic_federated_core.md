@@ -897,6 +897,16 @@ paper blockers. F2C14A makes no external call, authorizes no remote run, and
 remains `paper_result=false`. Full local acceptance passes 946 tests with 36
 explicit environment or external-artifact skips.
 
+The public FinBench family-memory comparison is now frozen as a distinct
+development campaign rather than inferred from the earlier toy protocols. It
+binds 128 training, 40 current-query acquisition, 40 paired serving, and 160
+post-selection shadow plan runs in one result-blind schedule. The agent-memory
+method receives no current-query profile for known-family queries; F3 uses an
+explicitly different cold-start fallback. The dual-profile comparator pays for
+both complete federated probes. Selection seals precede paired serving, and
+all shadow observations remain evaluation-only. The compiler performs no tool
+call and the campaign remains non-confirmatory with `paper_result=false`.
+
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and
 failure injection. Report answer correctness, P50/P95 end-to-end latency,

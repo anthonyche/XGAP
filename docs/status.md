@@ -829,6 +829,17 @@ metric is fabricated. Revalidation rejects recomputed-hash semantic tampering,
 held-out leakage, incomplete strategy history, and false exact matches caused
 by a zero-width feature range. This is protocol/model readiness only; no native
 training observations or comparative result exist and `paper_result=false`.
+The next same-allocation development comparison is now frozen locally. Its
+result-blind schedule contains 128 training, 40 current-query profile
+acquisition, 40 paired selected-serving, and 160 evaluation-shadow plan runs,
+for 368 complete plans and 736 backend calls. The eight known-family held-out
+queries use the zero-profile family-memory method; the 12 F3 queries retain a
+separately labeled predeclared cold-start fallback. Both are paired against
+the cost-inclusive dual-profile method under balanced order and distinct
+selection seals. The compiler opens no backend or oracle and makes no LLM or
+ontology call. This is protocol readiness only; a native producer, auditor,
+and successful scale gate are still required before execution, and
+`paper_result=false` remains fixed.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen

@@ -1,0 +1,110 @@
+{
+  "schema_version": "m15-finbench-family-campaign-protocol-v1",
+  "protocol_id": "m15-finbench-family-campaign-development-v1",
+  "phase_order": [
+    "training_measurement",
+    "family_memory_freeze",
+    "family_memory_prediction",
+    "family_selection_seal",
+    "current_query_profile_acquisition",
+    "profile_selection_seal",
+    "paired_selected_execution",
+    "postselection_shadow_evaluation",
+    "analysis"
+  ],
+  "population": {
+    "query_count": 36,
+    "training_query_count": 16,
+    "heldout_instance_query_count": 8,
+    "heldout_family_query_count": 12
+  },
+  "training": {
+    "strategies_per_query": 2,
+    "repetitions_per_plan": 4,
+    "query_order": "sha256_seeded_per_block",
+    "strategy_order": "per_query_ab_ba_counterbalanced",
+    "schedule_seed": "m15-finbench-family-campaign-training-v1"
+  },
+  "family_memory": {
+    "known_family_method_id": "family_memory_zero_profile",
+    "cold_start_method_id": "predeclared_family_fallback",
+    "current_query_profile_calls": 0,
+    "oracle_inputs": [],
+    "post_execution_measurements_used": false,
+    "selected_execution_repetitions": 1
+  },
+  "current_query_profile": {
+    "method_id": "current_query_dual_profile",
+    "profiles_per_strategy": 1,
+    "query_order": "sha256_seeded",
+    "strategy_order": "balanced_across_queries",
+    "schedule_seed": "m15-finbench-family-campaign-profile-v1",
+    "selection_order": [
+      "observed_elapsed_ms",
+      "observed_total_bytes_moved",
+      "physical_strategy"
+    ],
+    "selected_execution_repetitions": 1,
+    "acquisition_cost_included": true
+  },
+  "paired_selected_execution": {
+    "method_order": "sha256_seeded_ab_ba_balanced",
+    "schedule_seed": "m15-finbench-family-campaign-serving-v1",
+    "selection_input": false,
+    "memory_writes_allowed": false
+  },
+  "shadow": {
+    "strategies_per_query": 2,
+    "repetitions_per_plan": 4,
+    "starts_after_all_selection_seals": true,
+    "query_order": "sha256_seeded_per_block",
+    "strategy_order": "per_query_ab_ba_counterbalanced",
+    "selection_input": false,
+    "memory_writes_allowed": false,
+    "schedule_seed": "m15-finbench-family-campaign-shadow-v1"
+  },
+  "analysis_methods": [
+    "family_memory_zero_profile",
+    "predeclared_family_fallback",
+    "family_global_no_instance_features",
+    "fixed_route_a",
+    "fixed_route_b",
+    "current_query_dual_profile",
+    "observed_oracle_upper_bound"
+  ],
+  "analysis": {
+    "known_family_and_cold_start_reported_separately": true,
+    "per_plan_aggregation": "median_over_four_shadow_repetitions",
+    "metrics": [
+      "physical_winner_accuracy",
+      "latency_regret_ms",
+      "bytes_regret",
+      "prediction_error",
+      "predicted_observed_frontier_overlap",
+      "selection_and_serving_end_to_end_cost"
+    ],
+    "confirmatory_statistics": false
+  },
+  "execution": {
+    "remote_calls_per_plan": 2,
+    "backend_timeout_seconds": 60,
+    "slurm_timeout_minutes": 90,
+    "failure_policy": "stop_on_first_failure",
+    "automatic_retries": 0,
+    "single_allocation": true
+  },
+  "expected_counts": {
+    "training_plan_runs": 128,
+    "profile_acquisition_plan_runs": 40,
+    "paired_selected_plan_runs": 40,
+    "evaluation_shadow_plan_runs": 160,
+    "total_plan_runs": 368,
+    "total_backend_calls": 736
+  },
+  "claim_boundary": {
+    "development_campaign_only": true,
+    "benchmark_conformance_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

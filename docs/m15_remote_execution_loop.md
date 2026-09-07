@@ -6,7 +6,7 @@
 - Origin Mode: plan
 - Origin Date: 2026-09-04
 - Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B/E5D VERIFIED; F2C13C SUMMARY ACCEPTED
-- Version Label: m15_remote_loop_v39
+- Version Label: m15_remote_loop_v40
 
 ## Current claim boundary
 
@@ -57,6 +57,22 @@ matching lock, population spec, batch size 2,000, 16-GiB allocation, and
 triples. This is a development scale gate only; it remains
 `paper_result=false`, and SF0.3/SF1 selection waits for measured server
 evidence.
+
+The SF0.01 prerequisite and independent audit have passed. The verified
+SF0.1 archive is now present on CWRU, and job `3793681` was submitted at exact
+clean commit `6d9925f` through the dedicated 16-GiB, 90-minute wrapper. Do not
+submit a duplicate or retry it automatically. Its terminal Slurm state,
+producer status, measured load/query costs, and independent read-only audit
+must be inspected before selecting SF0.3/SF1 or dispatching a comparative
+campaign.
+
+Meanwhile, the next comparison schedule is locally frozen but not remotely
+authorized. It binds 368 complete plans and 736 backend calls in one
+allocation: 128 training, 40 dual-profile acquisition, 40 paired serving, and
+160 evaluation-only shadow runs. Known-family zero-profile memory and F3
+cold-start fallback remain distinct methods, both paired with the
+cost-inclusive profile comparator. A native producer and independent auditor
+are still required; the compiler alone is not a run instruction.
 
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service

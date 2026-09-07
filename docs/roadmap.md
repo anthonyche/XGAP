@@ -785,6 +785,16 @@ keeps the 12-query held-out family in a separately labeled predeclared
 cold-start path. The next implementation boundary is the native measurement
 producer and frozen baseline/analysis schedule; local model tests are not a
 paper result.
+The immediate comparison protocol is now also frozen without observations. In
+one future allocation it schedules 128 training plan runs, 40 full-plan
+current-query profile acquisitions, 40 counterbalanced selected-plan serving
+runs, and a 160-run post-selection shadow matrix. Family-memory selection has
+zero current-query profile calls for the eight known-family held-out queries;
+the 12 F3 queries use only their separately reported predeclared cold-start
+fallback. The paired comparator profiles both complete physical routes and
+includes that acquisition cost. This 368-plan/736-call campaign remains a
+development schedule until its producer, independent auditor, and SF0.1
+resource gate pass; it does not yet authorize paper execution.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet

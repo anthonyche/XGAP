@@ -3049,3 +3049,31 @@ measurement. Its cold-start results must be reported separately from
 known-family accuracy and regret. This decision freezes a development
 mechanism, not the confirmatory statistical design; no native observation has
 yet entered the memory and `paper_result=false` remains mandatory.
+
+## D160 Freeze a same-allocation FinBench development comparison before observations
+
+The first public-data comparison schedule is compiled only from the 36-query
+FinBench workload, the family-memory policy, and an explicit development
+protocol. It contains 128 counterbalanced training measurements, 40
+current-query dual-profile acquisitions, 40 paired selected-plan serving
+slots, and 160 post-selection shadow measurements: 368 complete federated
+plan runs and 736 backend calls in one allocation. Every phase, query order,
+route order, method order, timeout, retry rule, and expected count is
+content-bound before a backend or answer oracle is opened.
+
+For the eight held-out instances from known families, the primary is
+`family_memory_zero_profile`. For the 12 queries from the entirely held-out F3
+family, the corresponding primary slot is explicitly
+`predeclared_family_fallback`; those queries must not be relabeled as memory
+predictions. Both are paired with the cost-inclusive
+`current_query_dual_profile` comparator. The primary and comparator each serve
+one selected plan per held-out query in a deterministic balanced order. Their
+selection seals are distinct, and the later four-repetition shadow matrix may
+evaluate but never alter either choice.
+
+Known-family and cold-start results are reported separately. Family-global,
+fixed-route, and observed-oracle methods are analysis controls over the shared
+measurements, not additional online systems. This is a result-blind
+development protocol; it does not freeze confirmatory statistics, authorize a
+paper run, or turn the pending SF0.1 scale gate into performance evidence.
+`paper_result=false` remains mandatory.
