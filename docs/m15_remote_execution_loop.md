@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B VERIFIED; F2C13C SUMMARY ACCEPTED
-- Version Label: m15_remote_loop_v33
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B VERIFIED; F2C13C SUMMARY ACCEPTED; E5D LOCAL READY, AUTHOR AUTHORITY VALUES AND CWRU RUN PENDING
+- Version Label: m15_remote_loop_v34
 
 ## Current claim boundary
 
@@ -428,7 +428,117 @@ VPN reachability and a working user-owned SSH alias.
 - Build the thin UI only after the CLI trace schema, remote executor, and one
   user-clarification action are stable. The UI is not an experiment runner.
 
-## Next user handoff
+## Current E5D user handoff
+
+E5D is published at exact commit
+`52fe4d8d626604e40bdcc1c3f336c22e2eb61313` on branch
+`codex/m15-e5d-live-selected-session`. Full local acceptance passed 1,054
+tests with 36 explicit skips. The job reuses the immutable historical
+family-memory view from accepted F2C10D job `3791600`, reconstructs the two E5C
+authority events, seals the selected handoff before service startup, and then
+executes all and only its plans through one finite goal. It makes zero
+current-query profile, LLM, or ontology-service calls and performs no retry.
+
+Do not submit the job until the author explicitly supplies both semantic
+authority values. The current E5D executable gate admits only
+`constraint:single-transfer-at-least-50000` for the R1 structural choice. The
+predicate-base choice must be exactly one of `predicate:transferred_to` or
+`predicate:paid_to`. Neither value has a default; a missing value stops before
+submission. After those decisions are available, run exactly one job:
+
+```bash
+module load Miniconda3
+cd "$HOME/XGAP-m15-465e2e2"
+
+test -z "$(git status --porcelain)" || {
+  echo "checkout is dirty; stop"
+  exit 1
+}
+
+XGAP_E5D_COMMIT=52fe4d8d626604e40bdcc1c3f336c22e2eb61313
+git fetch origin codex/m15-e5d-live-selected-session
+git switch --detach "$XGAP_E5D_COMMIT"
+test "$(git rev-parse HEAD)" = "$XGAP_E5D_COMMIT" || {
+  echo "commit mismatch; stop"
+  exit 1
+}
+
+XGAP_E5D_MEMORY="$PWD/runs/cwru-m15-native-direct-family-pilot-3791600/native-service-run/direct-family-pilot-run/training/training_memory_view.json"
+test -f "$XGAP_E5D_MEMORY" && test ! -L "$XGAP_E5D_MEMORY" || {
+  echo "accepted F2C10D historical memory is missing or is a symlink; stop"
+  exit 1
+}
+
+: "${XGAP_E5D_STRUCTURAL_CANDIDATE:?set the explicit author-selected R1 structural candidate}"
+: "${XGAP_E5D_PREDICATE_CANDIDATE:?set the explicit author-selected predicate base}"
+
+test "$XGAP_E5D_STRUCTURAL_CANDIDATE" = \
+  "constraint:single-transfer-at-least-50000" || {
+  echo "the selected structure is not executable in E5D; stop"
+  exit 1
+}
+case "$XGAP_E5D_PREDICATE_CANDIDATE" in
+  predicate:transferred_to|predicate:paid_to) ;;
+  *) echo "predicate choice is outside the sealed E5D set; stop"; exit 1 ;;
+esac
+
+XGAP_E5D_JOB="$(
+  sbatch --parsable \
+    --export=ALL,XGAP_PYTHON="$HOME/venvs/xgap-core/bin/python",XGAP_PYTHON_MODULE=Miniconda3,XGAP_JAVA_MODULE=Java/17.0.6,XGAP_M15_SELECTED_TRAINING_MEMORY="$XGAP_E5D_MEMORY",XGAP_M15_SELECTED_MEMORY_SHA256=7ed39e1097e3138666b87ec9c8ea82ed135d77a8e12e9f2893931892ba0b7e57,XGAP_M15_SELECTED_SESSION_ID=m15-e5d-r1-selected-session-v1,XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE="$XGAP_E5D_STRUCTURAL_CANDIDATE",XGAP_M15_SELECTED_PREDICATE_CANDIDATE="$XGAP_E5D_PREDICATE_CANDIDATE",XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID=author:anthonyche:explicit-e5d-r1-v1 \
+    scripts/slurm/run_m15_native_selected_interpretation_session.sbatch
+)"
+
+echo "commit=$(git rev-parse HEAD)"
+echo "job_id=$XGAP_E5D_JOB"
+```
+
+Wait for that exact job. Do not resubmit after a failure. Inspect terminal
+state with `sacct`; after `COMPLETED|0:0`, run the independent audit once:
+
+```bash
+cd "$HOME/XGAP-m15-465e2e2"
+XGAP_E5D_COMMIT=52fe4d8d626604e40bdcc1c3f336c22e2eb61313
+XGAP_E5D_RUN="$PWD/runs/cwru-m15-native-selected-interpretation-session-$XGAP_E5D_JOB"
+XGAP_E5D_AUDIT="$PWD/runs/audits/cwru-m15-e5d-selected-session-$XGAP_E5D_JOB-audit.json"
+
+cat "$XGAP_E5D_RUN/run_status.json"
+mkdir -p "$PWD/runs/audits"
+test ! -e "$XGAP_E5D_AUDIT" || {
+  echo "audit output already exists; stop"
+  exit 1
+}
+
+PYTHONPATH="$PWD/src" \
+"$HOME/venvs/xgap-core/bin/python" \
+  -m xgap.experiments.m15_selected_interpretation_session_evidence \
+  --run-root "$XGAP_E5D_RUN" \
+  --expected-commit "$XGAP_E5D_COMMIT" \
+  --repo-root "$PWD" \
+  --output "$XGAP_E5D_AUDIT" \
+  > "$XGAP_E5D_AUDIT.stdout"
+
+echo "audit_exit=$?"
+"$HOME/venvs/xgap-core/bin/python" - "$XGAP_E5D_AUDIT" <<'PY'
+import json
+import sys
+
+audit = json.load(open(sys.argv[1]))
+print(json.dumps({
+    "success": audit["success"],
+    "check_count": audit["check_count"],
+    "failed_check_ids": audit["failed_check_ids"],
+    "run_tree_mutated": audit["run_tree_mutated"],
+    "expected_commit": audit["expected_commit"],
+}, indent=2, sort_keys=True))
+PY
+```
+
+Accept E5D only if the outer job succeeded and the audit reports `success=true`,
+an empty `failed_check_ids`, and `run_tree_mutated=false`. Preserve any failed
+run or failed audit; never repair or overwrite an immutable run tree. The gate
+is mechanism evidence and must remain `paper_result=false`.
+
+## Previous completed handoffs
 
 B0, both B1 CPU gates, B2 prerequisite, B2B supply, B2D service lifecycle, B3
 federated execution, D2 live adaptation, F0 selective execution, F1L live
