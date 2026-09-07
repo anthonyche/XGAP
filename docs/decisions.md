@@ -2933,3 +2933,25 @@ This closes only deterministic source placement. It does not validate backend
 load time, query correctness, scale, benchmark conformance, or any paper claim;
 no backend, model, ontology service, or answer oracle was called and
 `paper_result=false` remains fixed.
+
+## D155 Admit one reviewable 36-query FinBench development population
+
+The first non-toy F1--F3 population is compiled from the verified SF0.01
+archive and complete D154 partition. It contains 12 instances per structural
+family. F1 and F2 each reserve stratified positions 3, 6, 9, and 12 as
+held-out instances; their other 16 combined instances are the only family-
+memory training population. F3 is entirely held out and uses the predeclared
+`aggregate_first_hash` cold-start fallback.
+
+Parameter curation is deterministic, documented, and independent of method
+latency or bytes, but it intentionally requires nonempty exact answers for the
+SF0.01 development pilot. This avoids an all-empty smoke test while making the
+selection effect explicit. It is not yet the confirmatory sampling protocol.
+Public instances contain no source or final oracle rows; a separately hashed
+oracle artifact is inaccessible to selection until the plan seal exists.
+
+The real local compilation contains 36 nonempty queries and has workload
+SHA-256 `6cf2aa7a09bebbae7e0ff244e0d2c8f850bd44393461c8b8c22e4ea2f68b5647`.
+It makes zero backend, model, or ontology-service calls. This decision admits
+native execution testing only and remains author-reviewable before paper
+protocol freeze; `paper_result=false` is mandatory.

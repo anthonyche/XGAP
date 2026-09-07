@@ -177,6 +177,25 @@ delaying or rescuing the primary result.
    aggregate patterns of Complex Read 6/7. Strategies: aggregate-first hash and
    control-first bound aggregate.
 
+The first executable development population now contains 36 nonempty SF0.01
+instances: 12 per family. F1 and F2 each use eight training and four
+stratified held-out instances; all 12 F3 instances are an entirely held-out
+structural family. F1 parameters are degree-stratified among persons with a
+nonempty blocked-company-account result. F2 parameters are degree-stratified
+among bounded-degree start accounts with a nonempty blocked-medium result. F3
+is the Cartesian product of three declared risk categories and four suffix
+time windows anchored at temporal quartiles. These development curation rules
+are explicit and must be reviewed before confirmatory protocol freeze.
+
+The compiler publishes public natural-language instances and nine literal-free
+Neo4j/SPARQL templates separately from the exact source/final oracles. The
+oracle file is hash-bound and forbidden to selection until the selected plan
+is sealed. A real SF0.01 compilation produced 16 training, eight held-out
+instance, and 12 held-out-family queries under workload identity
+`6cf2aa7a09bebbae7e0ff244e0d2c8f850bd44393461c8b8c22e4ea2f68b5647`.
+This is still local development evidence with `paper_result=false`; native
+template execution and source-oracle agreement are the next gate.
+
 Entity, time window, direction, path semantics, thresholds, aggregation
 function, group key, ordering, K, and output schema are hard when present. Only
 declared predicate and control/risk-category slots may relax. F3 is the proposed

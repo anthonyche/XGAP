@@ -775,6 +775,15 @@ replication. The bundle generator is atomic, non-overwriting, archive-verified,
 and makes no backend/model/ontology/oracle call. The next boundary is local
 F1--F3 query/oracle admission followed by one CWRU SF0.01 load-and-correctness
 pilot; this data-readiness result remains `paper_result=false`.
+The local F1--F3 admission is now also implemented. It compiles 36 nonempty
+SF0.01 development queries (12 direct, 12 temporal-path, and 12 aggregate),
+with 16 training, eight held-out-instance, and 12 entirely held-out-family
+assignments. Nine literal-free Neo4j/SPARQL templates expose two physical
+routes per family, while exact source/final rows live only in a separately
+hashed oracle file whose pre-selection access is forbidden. Real compilation
+identity is `6cf2aa7a09bebbae7e0ff244e0d2c8f850bd44393461c8b8c22e4ea2f68b5647`.
+This closes local population construction, not live native execution or
+confirmatory sampling; native template/oracle agreement is next.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen

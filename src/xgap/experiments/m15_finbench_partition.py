@@ -398,6 +398,46 @@ def _validate_complete_placement(lock: FinBenchArtifactLock) -> dict[str, Snapsh
     return tables
 
 
+def load_finbench_source_partition(root: str | Path) -> dict[str, Any]:
+    """Load and verify the identity and two load files of one partition bundle."""
+
+    bundle_root = Path(root).resolve()
+    if bundle_root.is_symlink() or not bundle_root.is_dir():
+        raise ValueError("FinBench partition root must be a regular directory")
+    manifest_path = bundle_root / "source_partition_manifest.json"
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise ValueError("FinBench source partition manifest is missing or unsafe")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(manifest, Mapping):
+        raise ValueError("FinBench source partition manifest must be an object")
+    if manifest.get("schema_version") != PARTITION_SCHEMA_VERSION:
+        raise ValueError("FinBench source partition schema is unsupported")
+    if manifest.get("paper_result") is not False:
+        raise ValueError("FinBench source partition must remain paper_result=false")
+    claimed = manifest.get("partition_sha256")
+    if not isinstance(claimed, str) or claimed != _canonical_sha256(
+        {key: value for key, value in manifest.items() if key != "partition_sha256"}
+    ):
+        raise ValueError("FinBench source partition identity mismatch")
+    output_files = manifest.get("output_files")
+    if not isinstance(output_files, Mapping) or set(output_files) != {
+        "load_neo4j.cypher",
+        "load_fuseki.ttl",
+    }:
+        raise ValueError("FinBench source partition output file set is invalid")
+    for name, raw in output_files.items():
+        if not isinstance(raw, Mapping):
+            raise ValueError(f"FinBench source partition file record is invalid: {name}")
+        candidate = bundle_root / name
+        if candidate.is_symlink() or not candidate.is_file():
+            raise ValueError(f"FinBench source partition file is missing or unsafe: {name}")
+        if raw.get("size_bytes") != candidate.stat().st_size:
+            raise ValueError(f"FinBench source partition file size mismatch: {name}")
+        if raw.get("sha256") != _file_sha256(candidate):
+            raise ValueError(f"FinBench source partition file digest mismatch: {name}")
+    return dict(manifest)
+
+
 def build_finbench_source_partition(
     *,
     archive_path: str | Path,

@@ -757,6 +757,13 @@ primary structural families share one declared source boundary. Next, admit
 the F1--F3 parameter/query/oracle packages against that partition, then run one
 CWRU SF0.01 backend load-and-correctness pilot. No paper run is authorized by
 the partition itself.
+The 36-instance development population and its isolated exact oracles are now
+locally compiled. F1/F2 each provide an 8/4 training/held-out split; F3
+provides 12 entirely held-out-family queries with its cold-start fallback
+declared before measurement. The next implementation gate is a generic
+three-family native binder/coordinator plus exact source/final validation on
+the already generated SF0.01 bundle. Only after that local gate passes should
+one CWRU backend pilot be submitted.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet

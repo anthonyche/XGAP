@@ -13,6 +13,7 @@ from xgap.experiments.m15_finbench_partition import (
     ENTITY_PLACEMENTS,
     RELATIONSHIP_PLACEMENTS,
     build_finbench_source_partition,
+    load_finbench_source_partition,
 )
 
 
@@ -121,6 +122,7 @@ def test_partition_is_complete_split_and_loadable(tmp_path: Path) -> None:
     assert manifest["output_files"]["load_neo4j.cypher"]["sha256"] == hashlib.sha256(
         cypher.encode("utf-8")
     ).hexdigest()
+    assert load_finbench_source_partition(output) == manifest
 
 
 def test_partition_is_byte_deterministic(tmp_path: Path) -> None:
@@ -173,3 +175,16 @@ def test_partition_refuses_to_overwrite_bundle(tmp_path: Path) -> None:
         build_finbench_source_partition(
             archive_path=archive, lock_path=lock, output_root=output
         )
+
+
+def test_partition_loader_detects_load_file_mutation(tmp_path: Path) -> None:
+    archive, lock = _write_fixture(tmp_path)
+    output = tmp_path / "bundle"
+    build_finbench_source_partition(
+        archive_path=archive, lock_path=lock, output_root=output
+    )
+    with (output / "load_fuseki.ttl").open("a", encoding="utf-8") as handle:
+        handle.write("# mutation\n")
+
+    with pytest.raises(ValueError, match="size mismatch"):
+        load_finbench_source_partition(output)
