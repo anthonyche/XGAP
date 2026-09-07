@@ -274,6 +274,15 @@ UI surface is a thin adapter over the same session/event API. The local record
 is
 `experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`.
 
+E6A has now removed the UI-to-Slurm authority transport gap without broadening
+the remote tool. The selected-session wrapper alone may receive six explicitly
+allowlisted, non-secret authority fields; other scripts reject them and unsafe
+values fail before SSH. Full repository acceptance passes 1,055 tests with 36
+explicit skips. Next, keep the UI local and implement a pure clarification view
+adapter over E5C plus an E5D submission preview over this typed envelope. Do not
+add a generic environment editor, direct backend/model access, or paper-run
+controls.
+
 ### M15-F Paper Experiment Surface and Optional UI
 
 Goal: freeze a cross-platform workload and baselines/ablations; add a thin UI

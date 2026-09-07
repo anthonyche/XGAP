@@ -82,6 +82,11 @@ Other wrappers accept none of those fields. Fixed Python/Java module settings
 remain separately configured, and credential-shaped variables are never in an
 allowlist.
 
+E6A full-repository acceptance passes 1,055 tests with 36 explicit skips. This
+is local control-plane readiness only: the validation made no SSH, Slurm,
+backend, or LLM call. The compact boundary record is
+`experiments/artifacts/m15_e6a_local_remote_authority_envelope_20260907.json`.
+
 ## UI go/no-go gate
 
 The UI gate required:

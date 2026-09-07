@@ -2809,4 +2809,6 @@ accepted.
 The thin UI remains a local working surface and adapter over this tool. It is
 not an experiment runner, semantic authority source, direct vLLM client, or
 direct Neo4j/Fuseki client. Paper jobs continue to use frozen CLI protocols and
-immutable artifacts.
+immutable artifacts. Full-repository acceptance passes 1,055 tests with 36
+explicit skips. This establishes local control-plane readiness only; no SSH,
+Slurm, backend, or model call was made by that validation.

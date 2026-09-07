@@ -177,6 +177,17 @@ skips. It remains `paper_result=false`. The UI remains an optional adapter. See
 `experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`
 and `docs/m15_e5_interpretation_relaxation_gate.md`.
 
+E6A now supplies the missing typed control-plane envelope needed by that
+adapter. Per-job environment values are accepted only for the exact allowlisted
+Slurm script; the E5D wrapper alone accepts its six non-secret memory, session,
+and authority fields. Other scripts reject them, and unsafe or oversized values
+fail before any SSH call. Fixed runtime settings remain separate, no credentials
+or native query text are accepted, and returned observations expose keys rather
+than values. Full repository acceptance passes 1,055 tests with 36 explicit
+skips. This is local mechanism readiness only; no remote or backend call was
+made. See
+`experiments/artifacts/m15_e6a_local_remote_authority_envelope_20260907.json`.
+
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
 gated or external-artifact tests skipped. Refreshed CWRU CPU smoke job

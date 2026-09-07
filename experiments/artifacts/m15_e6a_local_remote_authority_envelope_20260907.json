@@ -1,0 +1,46 @@
+{
+  "artifact_id": "m15-e6a-local-remote-authority-envelope-20260907",
+  "artifact_role": "local_remote_authority_transport_readiness_not_paper_result",
+  "observed_at_utc": "2026-09-07",
+  "git": {
+    "implementation_commit": "a985c6875ee0e9777ac9828f762566d1aa3ae251"
+  },
+  "validation": {
+    "command": "./scripts/run_acceptance.sh",
+    "passed": 1055,
+    "skipped": 36,
+    "failed": 0,
+    "selected_session_script_scope_tested": true,
+    "wrong_script_rejection_tested": true,
+    "unsafe_value_rejection_tested": true,
+    "duplicate_cli_key_rejection_tested": true,
+    "remote_calls_made": 0
+  },
+  "transport_contract": {
+    "selected_script": "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch",
+    "allowed_job_environment_keys": [
+      "XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID",
+      "XGAP_M15_SELECTED_MEMORY_SHA256",
+      "XGAP_M15_SELECTED_PREDICATE_CANDIDATE",
+      "XGAP_M15_SELECTED_SESSION_ID",
+      "XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE",
+      "XGAP_M15_SELECTED_TRAINING_MEMORY"
+    ],
+    "allowlist_scope": "exact_selected_slurm_script",
+    "shell_interpolation": false,
+    "generic_environment_editor": false,
+    "credential_variables_allowed": false,
+    "native_query_text_allowed": false,
+    "returned_observation_contains_values": false
+  },
+  "claim_boundary": {
+    "evidence_class": "controlled_local_control_plane_readiness",
+    "ssh_or_slurm_result": false,
+    "real_backend_result": false,
+    "ui_implemented": false,
+    "performance_claim": false,
+    "semantic_quality_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}
