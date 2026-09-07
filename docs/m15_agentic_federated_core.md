@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1/E2A/E3/E4/E5/E5B/E5C VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; THIN UI AND OPTIONAL LIVE SELECTED-PLAN GATE PENDING**
+Status: **E1/E2A/E3/E4/E5/E5B/E5C VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5D LIVE SELECTED-PLAN GATE READY LOCALLY; CWRU E5D RUN AND THIN UI PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -360,8 +360,18 @@ existing `runtime.execute_plan` capability; portable artifacts expose no native
 query text. The mechanism and its independent auditor make zero current-query
 profile, backend, LLM, ontology-service, oracle, repair, or retry calls. Full
 local acceptance passes 1,044 tests with 36 explicit skips. This is local
-control-plane evidence only; the UI and any live selected-plan demonstration
-remain later gates. See
+control-plane evidence only. E5D now binds that handoff to the E4B native
+Neo4j/Fuseki lifecycle. It imports the exact accepted F2C10D historical-memory
+view, requires explicit structural and predicate authority at submission, and
+seals the reconstructed session and selected plans before service startup.
+One finite goal can invoke only `runtime.execute_plan`, executes all and only
+the ranked handoff plans, stops on first failure, and uses zero profile, LLM,
+ontology-service, oracle-for-selection, repair, or retry calls. Its independent
+auditor reconstructs the full control/data-plane chain and real loopback
+configuration without mutating the run. Full repository acceptance passes
+1,054 tests with 36 explicit skips. Local readiness is complete; one clean CWRU
+mechanism run and audit remain pending. The UI is still only a later adapter.
+See
 [`docs/m15_e5_interpretation_relaxation_gate.md`](m15_e5_interpretation_relaxation_gate.md).
 
 ## M15-F — Paper experiment surface and optional UI

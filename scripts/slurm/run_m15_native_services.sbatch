@@ -132,6 +132,16 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-resolution-execution-bridge"
     RUN_VERSION="m15-e4b-native-live-resolution-execution-bridge-services-v1"
     ;;
+  selected_interpretation_session)
+    RUN_PREFIX="cwru-m15-native-selected-interpretation-session"
+    RUN_VERSION="m15-e5d-native-live-selected-interpretation-session-services-v1"
+    : "${XGAP_M15_SELECTED_TRAINING_MEMORY:?XGAP_M15_SELECTED_TRAINING_MEMORY is required}"
+    : "${XGAP_M15_SELECTED_MEMORY_SHA256:?XGAP_M15_SELECTED_MEMORY_SHA256 is required}"
+    : "${XGAP_M15_SELECTED_SESSION_ID:?XGAP_M15_SELECTED_SESSION_ID is required}"
+    : "${XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE:?XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE is required}"
+    : "${XGAP_M15_SELECTED_PREDICATE_CANDIDATE:?XGAP_M15_SELECTED_PREDICATE_CANDIDATE is required}"
+    : "${XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID:?XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID is required}"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -440,7 +450,7 @@ if [[ "$WORKLOAD_MODE" == direct_family_pilot || "$WORKLOAD_MODE" == current_que
     )
   fi
 fi
-if [[ "$WORKLOAD_MODE" == resolution_execution_bridge ]]; then
+if [[ "$WORKLOAD_MODE" == resolution_execution_bridge || "$WORKLOAD_MODE" == selected_interpretation_session ]]; then
   RESOLUTION_RUN="$RUN_ROOT/resolution_run.json"
   RESOLUTION_BRIDGE_SPEC="$RUN_ROOT/resolution_bridge_spec.json"
   cp -- "$REPO_ROOT/experiments/configs/m15_e4_resolution_execution_bridge_dev.json" \
@@ -457,6 +467,52 @@ if [[ "$WORKLOAD_MODE" == resolution_execution_bridge ]]; then
     --resolution-run "$RESOLUTION_RUN"
     --resolution-bridge-spec "$RESOLUTION_BRIDGE_SPEC"
   )
+  if [[ "$WORKLOAD_MODE" == selected_interpretation_session ]]; then
+    if [[ "$XGAP_M15_SELECTED_TRAINING_MEMORY" != /* ]]; then
+      echo "XGAP_M15_SELECTED_TRAINING_MEMORY must be absolute." >&2
+      exit 2
+    fi
+    if [[ -L "$XGAP_M15_SELECTED_TRAINING_MEMORY" || ! -f "$XGAP_M15_SELECTED_TRAINING_MEMORY" ]]; then
+      echo "XGAP_M15_SELECTED_TRAINING_MEMORY must be a regular non-symbolic-link file." >&2
+      exit 2
+    fi
+    SELECTED_INPUT_ROOT="$RUN_ROOT/selected-session-inputs"
+    mkdir -p "$SELECTED_INPUT_ROOT"
+    SELECTED_TRAINING_MEMORY="$SELECTED_INPUT_ROOT/training_memory_view.json"
+    SELECTED_PREDICTOR_POLICY="$SELECTED_INPUT_ROOT/predictor_policy.json"
+    SELECTED_INTERPRETATION_POLICY="$SELECTED_INPUT_ROOT/interpretation_policy.json"
+    SELECTED_ONTOLOGY="$SELECTED_INPUT_ROOT/ontology.json"
+    SELECTED_RELAXATION_POLICY="$SELECTED_INPUT_ROOT/relaxation_policy.json"
+    SELECTED_TRANSPORT_POLICY="$SELECTED_INPUT_ROOT/transport_policy.json"
+    SELECTED_LIVE_POLICY="$SELECTED_INPUT_ROOT/live_policy.json"
+    cp -- "$XGAP_M15_SELECTED_TRAINING_MEMORY" "$SELECTED_TRAINING_MEMORY"
+    cp -- "$REPO_ROOT/experiments/configs/m15_f2c10_family_memory_predictor_dev.json" \
+      "$SELECTED_PREDICTOR_POLICY"
+    cp -- "$REPO_ROOT/experiments/configs/m15_e5_hierarchical_interpretation_policy_dev.json" \
+      "$SELECTED_INTERPRETATION_POLICY"
+    cp -- "$REPO_ROOT/experiments/specs/m15_e3_financial_risk_ontology_dev.json" \
+      "$SELECTED_ONTOLOGY"
+    cp -- "$REPO_ROOT/experiments/configs/m15_e5b_anchored_predicate_relaxation_dev.json" \
+      "$SELECTED_RELAXATION_POLICY"
+    cp -- "$REPO_ROOT/experiments/configs/m15_e5c_clarification_transport_dev.json" \
+      "$SELECTED_TRANSPORT_POLICY"
+    cp -- "$REPO_ROOT/experiments/configs/m15_e5d_live_selected_session_dev.json" \
+      "$SELECTED_LIVE_POLICY"
+    WORKLOAD_ARGS+=(
+      --selected-session-training-memory "$SELECTED_TRAINING_MEMORY"
+      --selected-session-expected-memory-sha256 "$XGAP_M15_SELECTED_MEMORY_SHA256"
+      --selected-session-predictor-policy "$SELECTED_PREDICTOR_POLICY"
+      --selected-session-interpretation-policy "$SELECTED_INTERPRETATION_POLICY"
+      --selected-session-ontology "$SELECTED_ONTOLOGY"
+      --selected-session-relaxation-policy "$SELECTED_RELAXATION_POLICY"
+      --selected-session-transport-policy "$SELECTED_TRANSPORT_POLICY"
+      --selected-session-live-policy "$SELECTED_LIVE_POLICY"
+      --selected-session-id "$XGAP_M15_SELECTED_SESSION_ID"
+      --selected-session-structural-candidate-id "$XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE"
+      --selected-session-predicate-candidate-id "$XGAP_M15_SELECTED_PREDICATE_CANDIDATE"
+      --selected-session-authority-source-id "$XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID"
+    )
+  fi
 fi
 
 QUERY_BOUND_ARGS=()

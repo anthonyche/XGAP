@@ -53,6 +53,12 @@ from xgap.experiments.m15_live_resolution_execution_bridge import (
     prepare_m15_resolution_execution_bridge,
     run_m15_live_resolution_execution_bridge,
 )
+from xgap.experiments.m15_live_selected_interpretation_session import (
+    M15PreparedSelectedInterpretationSession,
+    build_m15_selected_session_preflight,
+    prepare_m15_selected_interpretation_session,
+    run_m15_live_selected_interpretation_session,
+)
 from xgap.experiments.m15_live_adaptive import run_m15_live_adaptive
 from xgap.experiments.m15_live_campaign_session import (
     prepare_m15_live_campaign_session,
@@ -179,6 +185,9 @@ PAIRED_PHYSICAL_PREFLIGHT_SCHEMA_VERSION = (
 RESOLUTION_EXECUTION_BRIDGE_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-e4b-native-live-resolution-execution-bridge-service-run-v1"
 )
+SELECTED_INTERPRETATION_SESSION_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-e5d-native-live-selected-interpretation-session-service-run-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -200,6 +209,7 @@ WORKLOAD_MODES = frozenset(
         "current_query_profile_baseline",
         "paired_physical_comparison",
         "resolution_execution_bridge",
+        "selected_interpretation_session",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -919,6 +929,7 @@ def _run_fixture_and_query(
     resolution_run: str | Path | None = None,
     resolution_bridge_spec: str | Path | None = None,
     prepared_resolution_bridge: M15PreparedResolutionExecutionBridge | None = None,
+    prepared_selected_session: M15PreparedSelectedInterpretationSession | None = None,
 ) -> None:
     descriptors = repo_root / "descriptors" / "backends"
     with _service_environment(plan):
@@ -932,15 +943,25 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
-        if workload_mode == "resolution_execution_bridge":
+        if workload_mode in {
+            "resolution_execution_bridge",
+            "selected_interpretation_session",
+        }:
             assert resolution_run is not None
             assert resolution_bridge_spec is not None
-            assert prepared_resolution_bridge is not None
+            selected_prepared_bridge = (
+                prepared_resolution_bridge
+                if workload_mode == "resolution_execution_bridge"
+                else prepared_selected_session.resolution_bridge
+                if prepared_selected_session is not None
+                else None
+            )
+            assert selected_prepared_bridge is not None
             for client in clients.values():
                 client.timeout_seconds = 60.0
 
             expected_root = (
-                prepared_resolution_bridge.workload.workload_bundle.root.resolve()
+                selected_prepared_bridge.workload.workload_bundle.root.resolve()
             )
 
             def reload_resolution_bridge_fixture_bundle(
@@ -951,7 +972,7 @@ def _run_fixture_and_query(
                         "resolution bridge fixture loader received a different "
                         "parameterized workload root"
                     )
-                reloaded = prepared_resolution_bridge.reload_workload()
+                reloaded = selected_prepared_bridge.reload_workload()
                 if reloaded.workload_bundle.root.resolve() != expected_root:
                     raise ValueError(
                         "reloaded resolution bridge workload changed its nested root"
@@ -959,7 +980,7 @@ def _run_fixture_and_query(
                 return reloaded.workload_bundle
 
             fixture = load_m15_parameterized_fixture(
-                workload_bundle=prepared_resolution_bridge.workload.workload_bundle,
+                workload_bundle=selected_prepared_bridge.workload.workload_bundle,
                 clients=clients,
                 loaders=loaders,
                 output_root=run_root,
@@ -971,19 +992,36 @@ def _run_fixture_and_query(
                 raise RuntimeError(
                     f"resolution bridge fixture load failed: {fixture.error}"
                 )
-            bridge = run_m15_live_resolution_execution_bridge(
-                resolution_run_path=resolution_run,
-                bridge_spec_path=resolution_bridge_spec,
-                prepared=prepared_resolution_bridge,
-                clients=clients,
-                output_root=run_root,
-                run_id="resolution-execution-bridge-run",
-                repo_root=repo_root,
-            )
-            if not bridge.success:
-                raise RuntimeError(
-                    f"live resolution-execution bridge failed: {bridge.error}"
+            if workload_mode == "resolution_execution_bridge":
+                assert prepared_resolution_bridge is not None
+                bridge = run_m15_live_resolution_execution_bridge(
+                    resolution_run_path=resolution_run,
+                    bridge_spec_path=resolution_bridge_spec,
+                    prepared=prepared_resolution_bridge,
+                    clients=clients,
+                    output_root=run_root,
+                    run_id="resolution-execution-bridge-run",
+                    repo_root=repo_root,
                 )
+                if not bridge.success:
+                    raise RuntimeError(
+                        "live resolution-execution bridge failed: "
+                        f"{bridge.error}"
+                    )
+            else:
+                assert prepared_selected_session is not None
+                selected = run_m15_live_selected_interpretation_session(
+                    prepared=prepared_selected_session,
+                    clients=clients,
+                    output_root=run_root,
+                    run_id="selected-interpretation-session-run",
+                    repo_root=repo_root,
+                )
+                if not selected.success:
+                    raise RuntimeError(
+                        "live selected-interpretation session failed: "
+                        f"{selected.error}"
+                    )
             return
         if workload_mode == "paired_physical_comparison":
             assert direct_semantic_workload is not None
@@ -1486,6 +1524,18 @@ def run_m15_native_services(
     current_query_profile_protocol: Mapping[str, Any] | str | Path | None = None,
     resolution_run: str | Path | None = None,
     resolution_bridge_spec: str | Path | None = None,
+    selected_session_training_memory: str | Path | None = None,
+    selected_session_expected_memory_sha256: str | None = None,
+    selected_session_predictor_policy: str | Path | None = None,
+    selected_session_interpretation_policy: str | Path | None = None,
+    selected_session_ontology: str | Path | None = None,
+    selected_session_relaxation_policy: str | Path | None = None,
+    selected_session_transport_policy: str | Path | None = None,
+    selected_session_live_policy: str | Path | None = None,
+    selected_session_id: str | None = None,
+    selected_session_structural_candidate_id: str | None = None,
+    selected_session_predicate_candidate_id: str | None = None,
+    selected_session_authority_source_id: str | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1597,6 +1647,7 @@ def run_m15_native_services(
         M15PairedPhysicalComparisonSchedule | None
     ) = None
     prepared_resolution_bridge: M15PreparedResolutionExecutionBridge | None = None
+    prepared_selected_session: M15PreparedSelectedInterpretationSession | None = None
     direct_family_values = (
         direct_family_pilot_protocol,
         direct_family_predictor_policy,
@@ -1628,12 +1679,36 @@ def run_m15_native_services(
             "paired_physical_comparison"
         )
     resolution_bridge_values = (resolution_run, resolution_bridge_spec)
-    if workload_mode != "resolution_execution_bridge" and any(
+    resolution_modes = {
+        "resolution_execution_bridge",
+        "selected_interpretation_session",
+    }
+    if workload_mode not in resolution_modes and any(
         value is not None for value in resolution_bridge_values
     ):
         raise ValueError(
-            "resolution bridge inputs are accepted only in "
-            "resolution_execution_bridge"
+            "resolution bridge inputs are accepted only in a resolution mode"
+        )
+    selected_session_values = (
+        selected_session_training_memory,
+        selected_session_expected_memory_sha256,
+        selected_session_predictor_policy,
+        selected_session_interpretation_policy,
+        selected_session_ontology,
+        selected_session_relaxation_policy,
+        selected_session_transport_policy,
+        selected_session_live_policy,
+        selected_session_id,
+        selected_session_structural_candidate_id,
+        selected_session_predicate_candidate_id,
+        selected_session_authority_source_id,
+    )
+    if workload_mode != "selected_interpretation_session" and any(
+        value is not None for value in selected_session_values
+    ):
+        raise ValueError(
+            "selected-session inputs are accepted only in "
+            "selected_interpretation_session"
         )
     if (
         workload_mode not in {
@@ -1672,11 +1747,11 @@ def run_m15_native_services(
             "a parameterized workload bundle is accepted only in "
             "a parameterized workload mode"
         )
-    if workload_mode == "resolution_execution_bridge":
+    if workload_mode in resolution_modes:
         if any(value is None for value in resolution_bridge_values):
             raise ValueError(
-                "resolution_execution_bridge requires a resolution run and "
-                "bridge specification"
+                f"{workload_mode} requires a resolution run and bridge "
+                "specification"
             )
         if any(
             value is not None
@@ -1697,8 +1772,16 @@ def run_m15_native_services(
             )
         ):
             raise ValueError(
-                "resolution_execution_bridge does not accept another workload, "
+                f"{workload_mode} does not accept another workload, "
                 "semantic, predictor, profile, or paired input"
+            )
+        if workload_mode == "selected_interpretation_session" and any(
+            value is None for value in selected_session_values
+        ):
+            raise ValueError(
+                "selected_interpretation_session requires historical memory, "
+                "its expected hash, all E5 policy inputs, a session ID, both "
+                "explicit candidate IDs, and an authority source ID"
             )
     elif workload_mode == "paired_physical_comparison":
         required_paired_values = (
@@ -2016,6 +2099,9 @@ def run_m15_native_services(
         "resolution_execution_bridge": (
             RESOLUTION_EXECUTION_BRIDGE_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "selected_interpretation_session": (
+            SELECTED_INTERPRETATION_SESSION_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -2167,6 +2253,62 @@ def run_m15_native_services(
             resolution_bridge_preflight,
         )
 
+    selected_session_preflight: dict[str, Any] | None = None
+    if workload_mode == "selected_interpretation_session":
+        assert resolution_run is not None
+        assert resolution_bridge_spec is not None
+        assert selected_session_training_memory is not None
+        assert selected_session_expected_memory_sha256 is not None
+        assert selected_session_predictor_policy is not None
+        assert selected_session_interpretation_policy is not None
+        assert selected_session_ontology is not None
+        assert selected_session_relaxation_policy is not None
+        assert selected_session_transport_policy is not None
+        assert selected_session_live_policy is not None
+        assert selected_session_id is not None
+        assert selected_session_structural_candidate_id is not None
+        assert selected_session_predicate_candidate_id is not None
+        assert selected_session_authority_source_id is not None
+        preflight_root = run_root / "selected-interpretation-session-preflight"
+        preflight_root.mkdir()
+        prepared_selected_session = prepare_m15_selected_interpretation_session(
+            resolution_run_path=resolution_run,
+            bridge_spec_path=resolution_bridge_spec,
+            workload_destination=preflight_root / "workload",
+            training_memory_path=selected_session_training_memory,
+            expected_training_memory_sha256=(
+                selected_session_expected_memory_sha256
+            ),
+            predictor_policy_path=selected_session_predictor_policy,
+            interpretation_policy_path=selected_session_interpretation_policy,
+            ontology_path=selected_session_ontology,
+            relaxation_policy_path=selected_session_relaxation_policy,
+            transport_policy_path=selected_session_transport_policy,
+            live_policy_path=selected_session_live_policy,
+            session_id=selected_session_id,
+            structural_candidate_id=selected_session_structural_candidate_id,
+            predicate_candidate_id=selected_session_predicate_candidate_id,
+            authority_source_id=selected_session_authority_source_id,
+            repo_root=root,
+        )
+        selected_session_preflight = build_m15_selected_session_preflight(
+            prepared_selected_session
+        )
+        session_payload = prepared_selected_session.clarification_session.to_dict()
+        _write_json(preflight_root / "clarification_session.json", session_payload)
+        _write_json(
+            preflight_root / "authority_events.json",
+            session_payload["authority_events"],
+        )
+        _write_json(
+            preflight_root / "execution_handoff.json",
+            session_payload["execution_handoff"],
+        )
+        _write_json(
+            preflight_root / "preflight_manifest.json",
+            selected_session_preflight,
+        )
+
     plan: NativeServicePlan | None = None
     health: list[HealthObservation] = []
     shutdown: list[ShutdownObservation] = []
@@ -2234,12 +2376,16 @@ def run_m15_native_services(
                 paired_physical_protocol,
                 current_query_profile_protocol,
             )
-            if workload_mode == "resolution_execution_bridge":
+            if workload_mode in {
+                "resolution_execution_bridge",
+                "selected_interpretation_session",
+            }:
                 _run_fixture_and_query(
                     *fixture_args,
                     resolution_run=resolution_run,
                     resolution_bridge_spec=resolution_bridge_spec,
                     prepared_resolution_bridge=prepared_resolution_bridge,
+                    prepared_selected_session=prepared_selected_session,
                 )
             else:
                 _run_fixture_and_query(*fixture_args)
@@ -2369,6 +2515,37 @@ def run_m15_native_services(
             "resolution_execution_bridge_preflight": (
                 resolution_bridge_preflight
             ),
+            "selected_interpretation_session": (
+                {
+                    "resolution_run": str(resolution_run),
+                    "bridge_spec": str(resolution_bridge_spec),
+                    "training_memory": str(selected_session_training_memory),
+                    "expected_training_memory_sha256": (
+                        selected_session_expected_memory_sha256
+                    ),
+                    "predictor_policy": str(selected_session_predictor_policy),
+                    "interpretation_policy": str(
+                        selected_session_interpretation_policy
+                    ),
+                    "ontology": str(selected_session_ontology),
+                    "relaxation_policy": str(selected_session_relaxation_policy),
+                    "transport_policy": str(selected_session_transport_policy),
+                    "live_policy": str(selected_session_live_policy),
+                    "session_id": selected_session_id,
+                    "structural_candidate_id": (
+                        selected_session_structural_candidate_id
+                    ),
+                    "predicate_candidate_id": (
+                        selected_session_predicate_candidate_id
+                    ),
+                    "authority_source_id": selected_session_authority_source_id,
+                }
+                if workload_mode == "selected_interpretation_session"
+                else None
+            ),
+            "selected_interpretation_session_preflight": (
+                selected_session_preflight
+            ),
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -2443,6 +2620,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--paired-physical-protocol")
     parser.add_argument("--resolution-run")
     parser.add_argument("--resolution-bridge-spec")
+    parser.add_argument("--selected-session-training-memory")
+    parser.add_argument("--selected-session-expected-memory-sha256")
+    parser.add_argument("--selected-session-predictor-policy")
+    parser.add_argument("--selected-session-interpretation-policy")
+    parser.add_argument("--selected-session-ontology")
+    parser.add_argument("--selected-session-relaxation-policy")
+    parser.add_argument("--selected-session-transport-policy")
+    parser.add_argument("--selected-session-live-policy")
+    parser.add_argument("--selected-session-id")
+    parser.add_argument("--selected-session-structural-candidate-id")
+    parser.add_argument("--selected-session-predicate-candidate-id")
+    parser.add_argument("--selected-session-authority-source-id")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -2496,6 +2685,36 @@ def main(argv: Sequence[str] | None = None) -> int:
             paired_physical_protocol=args.paired_physical_protocol,
             resolution_run=args.resolution_run,
             resolution_bridge_spec=args.resolution_bridge_spec,
+            selected_session_training_memory=(
+                args.selected_session_training_memory
+            ),
+            selected_session_expected_memory_sha256=(
+                args.selected_session_expected_memory_sha256
+            ),
+            selected_session_predictor_policy=(
+                args.selected_session_predictor_policy
+            ),
+            selected_session_interpretation_policy=(
+                args.selected_session_interpretation_policy
+            ),
+            selected_session_ontology=args.selected_session_ontology,
+            selected_session_relaxation_policy=(
+                args.selected_session_relaxation_policy
+            ),
+            selected_session_transport_policy=(
+                args.selected_session_transport_policy
+            ),
+            selected_session_live_policy=args.selected_session_live_policy,
+            selected_session_id=args.selected_session_id,
+            selected_session_structural_candidate_id=(
+                args.selected_session_structural_candidate_id
+            ),
+            selected_session_predicate_candidate_id=(
+                args.selected_session_predicate_candidate_id
+            ),
+            selected_session_authority_source_id=(
+                args.selected_session_authority_source_id
+            ),
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,

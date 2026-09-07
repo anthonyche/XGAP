@@ -162,8 +162,18 @@ unselected plan. An independent reconstruction audit passes 13/13 checks, the
 focused E4/E5 regression passes 43 tests, and full repository acceptance passes
 1,044 tests with 36 explicit skips. The compact nonmeasurement record is
 `experiments/artifacts/m15_e5c_local_clarification_transport_20260907.json`.
-The UI remains an optional adapter, any live selected-plan E5 gate remains
-separate, and no E5C CWRU run is authorized. See
+E5D now provides the separate live selected-plan gate. It imports the accepted
+F2C10D historical family-memory view by exact identity, requires explicit R1
+structural and predicate authority, and seals the reconstructed E5C session,
+events, frontier, handoff, and expected calls before native services start.
+One finite goal exposes only `runtime.execute_plan`, executes every and only
+the ranked handoff plans, stops after the first failure, and never retries.
+Selection has zero current-query profiles, backend, LLM, ontology-service, or
+oracle calls; answer oracles open only after all execution succeeds. A separate
+read-only auditor reconstructs E4/E5C, goal/memory/results/invocations, cleanup,
+and actual Neo4j/Fuseki loopback configuration. E5D is locally ready but has no
+CWRU result yet; full repository acceptance passes 1,054 tests with 36 explicit
+skips. It remains `paper_result=false`. The UI remains an optional adapter. See
 `docs/m15_e5_interpretation_relaxation_gate.md`.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service

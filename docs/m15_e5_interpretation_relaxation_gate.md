@@ -2,7 +2,7 @@
 
 ## Status
 
-**OPTION A/R1 FROZEN; E5/E5B/E5C OFFLINE MECHANISMS VERIFIED; NO E5C CWRU RUN AUTHORIZED**
+**OPTION A/R1 FROZEN; E5/E5B/E5C OFFLINE MECHANISMS VERIFIED; E5D LIVE GATE READY LOCALLY; CWRU RUN PENDING**
 
 This gate separates unresolved natural-language interpretations from bounded
 semantic relaxations before XGAP connects the E4 resolution bridge to
@@ -241,6 +241,35 @@ future UI is only an adapter over this session/event API. A live selected-plan
 gate, if needed, must be frozen separately and reuse the existing E4B native
 service lifecycle without changing E5C semantics.
 
+## Implemented live selected-plan gate
+
+E5D freezes that separate gate. It imports the exact historical family-memory
+view from accepted F2C10D job `3791600`, verifies its internal content hash,
+and requires two explicit authority values at submission: the executable R1
+`single-transfer` structure and one listed predicate base. The clarification
+session, authority events, E5B frontier, selected handoff, source-file hashes,
+and expected call count are reconstructed and sealed before Neo4j or Fuseki
+starts. No current-query profile, LLM, ontology service, answer oracle, or
+backend call can influence selection.
+
+After service readiness and fixture loading, one finite `GoalLoop` receives
+only `runtime.execute_plan`. It executes all and only the handoff plans in
+selection-rank order, stops on the first failure, and never retries. Each plan
+must make exactly one Neo4j and one Fuseki execute call. Exact answer oracles
+are opened only after every selected execution succeeds. Portable session and
+handoff artifacts still contain no Cypher or SPARQL.
+
+The independent E5D auditor reads the completed tree without mutation,
+reconstructs E4, E5C, the historical-memory identity, the pre-service seal,
+goal trace, runtime memory, result/oracle edges, and backend invocations, and
+also derives loopback isolation from the real Fuseki command and persisted
+Neo4j listen/advertised addresses. The local live-double, failure, tamper, and
+native-service integration suite passes. Full repository acceptance passes
+1,054 tests with 36 explicit environment/external-artifact skips. This is
+mechanism readiness only: `paper_result=false`, no latency or quality claim is
+admitted, and a single clean CWRU native run plus read-only audit is still
+required.
+
 ## Contract if Option A is selected
 
 E5 should introduce a new schema rather than weaken the existing F2C9 schema.
@@ -296,9 +325,13 @@ one-hop sibling relaxation.**
 **Implemented: E5C — resumable two-stage authority transport and all-and-only
 selected execution handoff.**
 
+**Implemented locally: E5D — pre-service-sealed selected handoff executed by
+one finite goal over native-service adapters; CWRU verification pending.**
+
 Rejected alternatives remain recorded above so the final design cannot be
 silently converted into a global provenance-weighted score, a cost-triggered
-meaning choice, or an always-clarify policy after results are observed. No new
-CWRU experiment is needed for this design gate. The next step is a thin UI
-adapter and a separately justified live selected-plan gate; neither may change
-the two explicit authority events or the existing zero-retry backend boundary.
+meaning choice, or an always-clarify policy after results are observed. The
+next authorized experiment is one E5D CWRU mechanism run using the accepted
+historical memory and explicit authority values. The thin UI remains a later
+adapter; neither the live gate nor UI may change the two authority events or
+the existing zero-retry backend boundary.

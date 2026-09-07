@@ -287,6 +287,49 @@ class M15DirectTrainingMemoryView:
         return str(self.payload["training_memory_view_sha256"])
 
 
+def load_m15_direct_training_memory_view(
+    path: str | Path,
+    *,
+    workload: M15DirectSemanticWorkloadBundle,
+    expected_memory_view_sha256: str | None = None,
+) -> M15DirectTrainingMemoryView:
+    """Load and verify one persisted family-memory view.
+
+    The external file is treated as experiment evidence, not trusted runtime
+    state.  Its content-bound digest, workload/split binding, leakage guards,
+    and optional caller-supplied identity are checked before the memory can be
+    used for a new query.
+    """
+
+    source = Path(path)
+    if source.is_symlink() or not source.is_file():
+        raise M15DirectFamilyPredictionError(
+            "training memory view must be a regular non-symbolic-link file"
+        )
+    try:
+        raw = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise M15DirectFamilyPredictionError(
+            "training memory view is not valid JSON"
+        ) from exc
+    if not isinstance(raw, Mapping):
+        raise M15DirectFamilyPredictionError(
+            "training memory view must be a JSON object"
+        )
+    memory = M15DirectTrainingMemoryView(copy.deepcopy(dict(raw)))
+    payload = _validated_memory(memory, workload=workload)
+    if expected_memory_view_sha256 is not None:
+        expected = _sha256(
+            expected_memory_view_sha256,
+            name="expected training memory view hash",
+        )
+        if payload["training_memory_view_sha256"] != expected:
+            raise M15DirectFamilyPredictionError(
+                "training memory view does not match the expected identity"
+            )
+    return memory
+
+
 def _validated_memory(
     memory: M15DirectTrainingMemoryView,
     *,

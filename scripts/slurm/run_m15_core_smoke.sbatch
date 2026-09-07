@@ -135,6 +135,9 @@ detect_runtime() {
   tests/test_m15_resolution_execution_bridge.py \
   tests/test_m15_live_resolution_execution_bridge.py \
   tests/test_m15_resolution_execution_bridge_evidence.py \
+  tests/test_m15_hierarchical_interpretation_frontier.py \
+  tests/test_m15_clarification_transport.py \
+  tests/test_m15_live_selected_interpretation_session.py \
   tests/test_m15_llm_resolution_provider.py \
   tests/test_m15_live_resolution.py \
   tests/test_m15_remote_executor.py \

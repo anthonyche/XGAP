@@ -2737,3 +2737,34 @@ checks, focused E4/E5 regression passes 43 tests, and full local acceptance
 passes 1,044 tests with 36 explicit skips. This decision does not authorize a
 CWRU run, make a UI part of the experiment acceptance path, or support a
 performance, user-utility, calibrated-semantic, or paper claim.
+
+## D147 Execute the selected frontier with one sealed finite goal
+
+E5D is the only authorized live continuation of E5C. It must load the exact
+historical family-memory view produced by accepted F2C10D job `3791600` and
+verify its internal identity
+`7ed39e1097e3138666b87ec9c8ea82ed135d77a8e12e9f2893931892ba0b7e57`.
+The CWRU submission must also provide explicit authority for the executable
+R1 `single-transfer` structure, one listed predicate base, and an authority
+source ID. Defaults, candidate order, family-memory cost, model output, and
+ontology proximity cannot synthesize those values.
+
+The resolution bridge, historical memory, two authority events, E5B frontier,
+execution handoff, source hashes, selected plan order, and expected call count
+are reconstructed and sealed before Neo4j or Fuseki starts. The live phase is
+one bounded `GoalLoop` whose only registered capability is
+`runtime.execute_plan`. It executes all and only selected plans in rank order,
+stops after the first failure, and performs no automatic retry. Selection uses
+zero current-query profile, backend, LLM, ontology-service, answer-oracle, or
+post-execution observation calls. Exact oracles open only after every selected
+execution succeeds.
+
+An independent read-only auditor must recompile the complete E4/E5C chain,
+verify the real service isolation configuration, and match the goal trace,
+memory, results, and exactly two execute calls per plan without changing the
+run tree. Local tests establish implementation readiness only. One clean CWRU
+run and one successful audit are required before E5D is accepted. Full local
+acceptance passes 1,054 tests with 36 explicit skips. The result remains
+mechanism evidence with `paper_result=false`; it makes no performance,
+semantic-quality, user-utility, or ontology-truth claim, and the UI remains a
+separate adapter.

@@ -89,6 +89,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_semantic_predicate_relaxation.sbatch",
         "scripts/slurm/run_m15_native_semantic_direct_frontier.sbatch",
         "scripts/slurm/run_m15_native_resolution_execution_bridge.sbatch",
+        "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch",
         "scripts/slurm/run_m15_native_direct_family_pilot.sbatch",
         "scripts/slurm/run_m15_native_current_query_profile_baseline.sbatch",
         "scripts/slurm/run_m15_native_paired_physical_comparison.sbatch",
@@ -248,6 +249,19 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
     assert "#SBATCH --time=00:45:00" in paired_run
     assert "SLURM_SUBMIT_DIR" in paired_run
     assert "BASH_SOURCE" not in paired_run
+    selected_session_run = (
+        Path(__file__).resolve().parents[1]
+        / "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=selected_interpretation_session" in (
+        selected_session_run
+    )
+    assert "#SBATCH --time=00:30:00" in selected_session_run
+    assert "SLURM_SUBMIT_DIR" in selected_session_run
+    assert "BASH_SOURCE" not in selected_session_run
+    assert "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch" in (
+        DEFAULT_ALLOWED_SBATCH_SCRIPTS
+    )
     live_resolution_run = (
         Path(__file__).resolve().parents[1]
         / "scripts/slurm/run_m15_live_resolution.sbatch"

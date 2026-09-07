@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1, E5B ANCHORED RELAXATION, AND E5C RESUMABLE CLARIFICATION/HANDOFF VERIFIED OFFLINE; THIN UI AND LIVE SELECTED-PLAN SESSION PENDING**
+Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1, E5B, AND E5C VERIFIED OFFLINE; E5D LIVE SELECTED-PLAN SESSION READY LOCALLY; CWRU E5D RUN AND THIN UI PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -260,9 +260,17 @@ ontology-service calls and use zero retries. The independent auditor passes
 13/13 checks, focused E4/E5 regression passes 43 tests, and full local
 acceptance passes 1,044 tests with 36 explicit skips. The compact record is
 `experiments/artifacts/m15_e5c_local_clarification_transport_20260907.json`.
-No E5C CWRU run is authorized by this offline mechanism gate. The remaining E
-surface is a thin UI adapter over the same session/event API and, if required
-for end-to-end system evidence, one separately frozen live selected-plan gate.
+No E5C-only CWRU run is needed. E5D is the separately frozen end-to-end
+mechanism gate: it imports the exact accepted F2C10D family-memory view,
+requires explicit R1 structural and predicate authority, seals E5C before
+service start, and executes all and only its returned plans through one finite
+goal with only `runtime.execute_plan`. Selection uses zero current-query
+profiles and no LLM, ontology service, answer oracle, or backend call; runtime
+stops on the first failure and never retries. The independent auditor
+reconstructs the complete native tree and loopback configuration read-only.
+Full repository acceptance passes 1,054 tests with 36 explicit skips. Local
+readiness is complete; one clean CWRU E5D run and audit are next. The remaining
+UI surface is a thin adapter over the same session/event API.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

@@ -16,6 +16,7 @@ from xgap.experiments.m15_direct_family_prediction import (
     build_m15_controlled_training_observations,
     build_m15_direct_family_prediction_suite,
     build_m15_direct_training_memory_view,
+    load_m15_direct_training_memory_view,
 )
 from xgap.experiments.m15_direct_semantic_frontier import (
     select_m15_direct_semantic_frontier,
@@ -134,6 +135,49 @@ def test_training_memory_is_complete_raw_and_training_only(tmp_path: Path) -> No
     assert payload["heldout_task_ids_observed"] == []
     assert payload["answer_rows_stored"] is False
     assert payload["oracle_inputs"] == []
+
+
+def test_persisted_training_memory_loads_only_with_exact_identity(
+    tmp_path: Path,
+) -> None:
+    _, direct, _, memory = _memory(tmp_path)
+    path = tmp_path / "training-memory.json"
+    path.write_text(json.dumps(memory.to_dict()), encoding="utf-8")
+
+    loaded = load_m15_direct_training_memory_view(
+        path,
+        workload=direct,
+        expected_memory_view_sha256=memory.memory_view_hash,
+    )
+
+    assert loaded.to_dict() == memory.to_dict()
+    with pytest.raises(
+        M15DirectFamilyPredictionError,
+        match="expected identity",
+    ):
+        load_m15_direct_training_memory_view(
+            path,
+            workload=direct,
+            expected_memory_view_sha256="0" * 64,
+        )
+
+
+def test_persisted_training_memory_rejects_symlink_and_tampering(
+    tmp_path: Path,
+) -> None:
+    _, direct, _, memory = _memory(tmp_path)
+    path = tmp_path / "training-memory.json"
+    path.write_text(json.dumps(memory.to_dict()), encoding="utf-8")
+    link = tmp_path / "training-memory-link.json"
+    link.symlink_to(path)
+    with pytest.raises(M15DirectFamilyPredictionError, match="non-symbolic-link"):
+        load_m15_direct_training_memory_view(link, workload=direct)
+
+    tampered = memory.to_dict()
+    tampered["observations"][0]["median_elapsed_ms"] += 0.5
+    path.write_text(json.dumps(tampered), encoding="utf-8")
+    with pytest.raises(M15DirectFamilyPredictionError, match="hash mismatch"):
+        load_m15_direct_training_memory_view(path, workload=direct)
 
 
 def test_prediction_suite_covers_every_heldout_plan_without_profiles(

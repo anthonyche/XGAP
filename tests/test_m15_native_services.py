@@ -21,6 +21,10 @@ from xgap.experiments.m15_direct_semantic_estimates import (
 from xgap.experiments.m15_direct_semantic_workload import (
     generate_m15_direct_semantic_workload_bundle,
 )
+from xgap.experiments.m15_direct_family_prediction import (
+    build_m15_controlled_training_observations,
+    build_m15_direct_training_memory_view,
+)
 from xgap.experiments.m15_query_bound_campaign import (
     compile_m15_query_bound_campaign_file,
 )
@@ -1628,6 +1632,157 @@ def test_native_resolution_execution_bridge_seals_before_service_start(
     )
     manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
     assert manifest["resolution_execution_bridge_preflight"] == preflight
+
+
+def test_native_selected_interpretation_session_seals_before_service_start(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    configs = REPO_ROOT / "experiments/configs"
+    specs = REPO_ROOT / "experiments/specs"
+    source_base = generate_m15_parameterized_workload_bundle(
+        workload_spec=configs / "m15_f2c_parameterized_workload_dev.json",
+        query_template_spec=(
+            configs / "m15_f2c_parameterized_financial_risk_v2.json"
+        ),
+        backend_template_root=(
+            REPO_ROOT / "experiments/templates/m15_f2c_financial_risk"
+        ),
+        destination=tmp_path / "selected-source-base",
+    )
+    source_direct = generate_m15_direct_semantic_workload_bundle(
+        base_bundle=source_base,
+        catalog=configs / "m15_f2c6_semantic_relaxation_dev.json",
+        mapping=configs / "m15_f2c8_predicate_mapping_dev.json",
+        policy=configs / "m15_f2c10_direct_semantic_workload_dev.json",
+        destination=tmp_path / "selected-source-direct",
+    )
+    observations = build_m15_controlled_training_observations(source_direct)
+    memory = build_m15_direct_training_memory_view(
+        workload=source_direct,
+        raw_observations=observations["observations"],
+        runtime_compatibility_sha256=content_hash(
+            {"runtime": "native-selected-session-test"}
+        ),
+        policy=configs / "m15_f2c10_family_memory_predictor_dev.json",
+        measurement_source_kind="controlled_local_nonmeasurement_fixture",
+    )
+    memory_path = tmp_path / "training-memory.json"
+    memory_path.write_text(json.dumps(memory.to_dict()), encoding="utf-8")
+    resolution = run_semantic_intake(
+        question="查找过去一个月与 Alice 有密切资金往来的高风险公司。",
+        intake_path=configs / "m15_e3_financial_risk_intake_dev.json",
+        catalog_path=specs / "m15_e3_financial_risk_catalog_dev.json",
+        ontology_path=specs / "m15_e3_financial_risk_ontology_dev.json",
+        user_selections={"person-identity": "person:alice-smith"},
+        user_source_id="explicit-native-e5d-test-entity-selection",
+    )
+    resolution_path = tmp_path / "selected-resolution-run.json"
+    resolution_path.write_text(json.dumps(resolution), encoding="utf-8")
+    output_root = tmp_path / "selected-native-runs"
+    run_id = "native-e5d-test"
+    preflight_path = (
+        output_root
+        / run_id
+        / "selected-interpretation-session-preflight/preflight_manifest.json"
+    )
+    preflight_seen_at_start: list[bool] = []
+    fixture_args: dict[str, object] = {}
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence(
+            "/opt/java17/bin/java", 17, "17"
+        ),
+    )
+
+    def fake_start(spec):
+        preflight_seen_at_start.append(preflight_path.is_file())
+        return RunningService(spec, _StableProcess(), io.BytesIO())
+
+    monkeypatch.setattr(native_services, "start_service", fake_start)
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id, True, 1, 1.0, 200
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    def fake_fixture(*args, **kwargs):
+        fixture_args["mode"] = args[3]
+        fixture_args.update(kwargs)
+
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(native_services, "_run_fixture_and_query", fake_fixture)
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=output_root,
+        run_id=run_id,
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="selected_interpretation_session",
+        resolution_run=resolution_path,
+        resolution_bridge_spec=(
+            configs / "m15_e4_resolution_execution_bridge_dev.json"
+        ),
+        selected_session_training_memory=memory_path,
+        selected_session_expected_memory_sha256=memory.memory_view_hash,
+        selected_session_predictor_policy=(
+            configs / "m15_f2c10_family_memory_predictor_dev.json"
+        ),
+        selected_session_interpretation_policy=(
+            configs / "m15_e5_hierarchical_interpretation_policy_dev.json"
+        ),
+        selected_session_ontology=(
+            specs / "m15_e3_financial_risk_ontology_dev.json"
+        ),
+        selected_session_relaxation_policy=(
+            configs / "m15_e5b_anchored_predicate_relaxation_dev.json"
+        ),
+        selected_session_transport_policy=(
+            configs / "m15_e5c_clarification_transport_dev.json"
+        ),
+        selected_session_live_policy=(
+            configs / "m15_e5d_live_selected_session_dev.json"
+        ),
+        selected_session_id="m15-e5d-native-test-session",
+        selected_session_structural_candidate_id=(
+            "constraint:single-transfer-at-least-50000"
+        ),
+        selected_session_predicate_candidate_id="predicate:transferred_to",
+        selected_session_authority_source_id=(
+            "explicit-native-e5d-test-user-input"
+        ),
+    )
+
+    assert record.success
+    assert preflight_seen_at_start == [True, True]
+    assert fixture_args["mode"] == "selected_interpretation_session"
+    assert fixture_args["prepared_selected_session"] is not None
+    preflight = json.loads(preflight_path.read_text(encoding="utf-8"))
+    assert preflight["sealed_before_service_start"] is True
+    assert preflight["backend_calls_before_seal"] == 0
+    assert preflight["current_query_profile_calls"] == 0
+    assert preflight["training_memory_view_sha256"] == memory.memory_view_hash
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["selected_interpretation_session_preflight"] == preflight
 
 
 def test_current_query_profile_native_boundary_uses_sixty_second_clients(
