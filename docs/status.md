@@ -790,6 +790,14 @@ ordered-limit operators rather than a benchmark-specific evaluator. The
 native CWRU load-and-correctness job remains pending, so this closes local
 compiler/coordinator correctness only, not live public-data execution,
 performance comparison, or confirmatory sampling.
+The first CWRU archive-preparation attempt failed safely with HTTP 403 before
+Slurm submission or any backend/query action. The default Python request is
+now replaced by a fixed XGAP user agent with identity encoding while all
+official-host, redirect, size, SHA-256, single-attempt, and no-overwrite gates
+remain intact. A real local official-URL fetch verified the pinned archive and
+all 18 tables. An independent no-mutation correctness auditor is also locally
+implemented and rejects altered execution answers. Server preparation must be
+retried only from the repaired commit.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen

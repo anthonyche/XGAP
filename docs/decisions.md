@@ -2976,3 +2976,23 @@ queries and both routes without a backend call. This accepts compiler and
 coordinator correctness only. The next gate is one native CWRU execution of
 the same 72 plans; scale, latency comparison, predictor quality, and any paper
 claim remain disabled and `paper_result=false` is mandatory.
+
+## D157 Keep public-data acquisition and correctness evidence independently verifiable
+
+The first CWRU preparation attempt stopped before Slurm submission because the
+official dataset host returned HTTP 403 to Python's default request identity.
+No archive, backend, query, or experimental result was produced. The fetcher
+now sends one fixed, truthful XGAP user agent and requests identity transfer
+encoding. It retains the exact approved HTTPS host, redirect-host check,
+single-attempt policy, temporary-file isolation, pinned byte count and SHA-256,
+and no-overwrite cache behavior. A real local fetch of the official SF0.01 URL
+then verified 6,516,867 bytes, the pinned digest, 18 tables, and 36,881 rows.
+
+The native correctness gate also receives a separate read-only auditor. The
+auditor recompiles the public query population and all physical plans,
+reconstructs every final answer and paired-equivalence check from the sealed
+oracle after the run, verifies the outer/service/live status and Git identity,
+and hashes the run tree before and after inspection. Its output is forbidden
+below the source run. This does not turn the pending CWRU job into a paper
+result; it makes the development gate admissible only if both producer and
+independent audit pass.

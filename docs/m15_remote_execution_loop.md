@@ -6,7 +6,7 @@
 - Origin Mode: plan
 - Origin Date: 2026-09-04
 - Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B/E5D VERIFIED; F2C13C SUMMARY ACCEPTED
-- Version Label: m15_remote_loop_v37
+- Version Label: m15_remote_loop_v38
 
 ## Current claim boundary
 
@@ -38,6 +38,14 @@ artifact identity; no oracle JSON is parsed. This is the next authorized
 development job. It remains
 `paper_result=false`; a successful run authorizes protocol freeze, not a paper
 performance claim.
+
+The first server preparation attempt returned HTTP 403 before creating a
+Slurm job. The official archive was not cached and no service or query ran.
+The downloader now uses a fixed XGAP request identity while preserving exact
+host, redirect, byte-count, digest, single-attempt, and no-overwrite checks.
+The repaired path has completed one real local official-URL fetch and archive
+inspection. The next server action must use the repaired commit; the prior
+download command must not simply be repeated at the older commit.
 
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service

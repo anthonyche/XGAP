@@ -30,6 +30,7 @@ INSPECTION_SCHEMA_VERSION = "m15-finbench-snapshot-inspection-v1"
 DEFAULT_LOCK_PATH = Path("experiments/artifacts/m15_finbench_v010_sources.json")
 _APPROVED_HOST = "datasets.ldbcouncil.org"
 _HEX_64 = re.compile(r"^[0-9a-f]{64}$")
+_DOWNLOAD_USER_AGENT = "XGAP/0.1 verified-research-artifact-fetch"
 
 
 @dataclass(frozen=True)
@@ -388,7 +389,15 @@ def fetch_finbench_archive(
             delete=False,
         ) as output:
             temporary = Path(output.name)
-            with opener(lock.artifact.url, timeout=timeout_seconds) as response:
+            request = urllib.request.Request(
+                lock.artifact.url,
+                headers={
+                    "User-Agent": _DOWNLOAD_USER_AGENT,
+                    "Accept-Encoding": "identity",
+                },
+                method="GET",
+            )
+            with opener(request, timeout=timeout_seconds) as response:
                 final_url = str(response.geturl())
                 parsed = urllib.parse.urlsplit(final_url)
                 if parsed.scheme != "https" or parsed.hostname != _APPROVED_HOST:

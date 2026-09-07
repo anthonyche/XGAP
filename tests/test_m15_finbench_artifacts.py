@@ -4,6 +4,7 @@ import hashlib
 import io
 import json
 import tarfile
+import urllib.request
 from pathlib import Path
 
 import pytest
@@ -190,10 +191,10 @@ def test_fetch_is_single_attempt_and_reuses_verified_cache(tmp_path: Path) -> No
     )
     payload = _archive_bytes(table)
     lock = _lock(payload)
-    calls: list[tuple[str, float]] = []
+    calls: list[tuple[urllib.request.Request, float]] = []
 
-    def opener(url: str, timeout: float) -> FakeResponse:
-        calls.append((url, timeout))
+    def opener(request: urllib.request.Request, timeout: float) -> FakeResponse:
+        calls.append((request, timeout))
         return FakeResponse(payload)
 
     archive, first = fetch_finbench_archive(
@@ -210,7 +211,15 @@ def test_fetch_is_single_attempt_and_reuses_verified_cache(tmp_path: Path) -> No
     assert first["download_attempts"] == 1
     assert second["status"] == "reused_verified_cache"
     assert second["download_attempts"] == 0
-    assert calls == [(lock.artifact.url, 7)]
+    assert len(calls) == 1
+    request, timeout = calls[0]
+    assert request.full_url == lock.artifact.url
+    assert request.get_method() == "GET"
+    assert request.headers["User-agent"] == (
+        "XGAP/0.1 verified-research-artifact-fetch"
+    )
+    assert request.headers["Accept-encoding"] == "identity"
+    assert timeout == 7
     assert list(tmp_path.glob("*.partial")) == []
 
 
