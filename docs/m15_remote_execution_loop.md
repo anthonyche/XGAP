@@ -5,7 +5,7 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B VERIFIED; F2C13C SUMMARY ACCEPTED; E5D LOCAL READY, AUTHOR AUTHORITY VALUES AND CWRU RUN PENDING
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B VERIFIED; F2C13C SUMMARY ACCEPTED; E5D LOCAL READY, AUTHOR CHOICE A RECORDED, CWRU RUN PENDING
 - Version Label: m15_remote_loop_v34
 
 ## Current claim boundary
@@ -439,12 +439,11 @@ authority events, seals the selected handoff before service startup, and then
 executes all and only its plans through one finite goal. It makes zero
 current-query profile, LLM, or ontology-service calls and performs no retry.
 
-Do not submit the job until the author explicitly supplies both semantic
-authority values. The current E5D executable gate admits only
-`constraint:single-transfer-at-least-50000` for the R1 structural choice. The
-predicate-base choice must be exactly one of `predicate:transferred_to` or
-`predicate:paid_to`. Neither value has a default; a missing value stops before
-submission. After those decisions are available, run exactly one job:
+The author selected A for this one development run:
+`constraint:single-transfer-at-least-50000` is the R1 structural choice and
+`predicate:transferred_to` is the exact predicate base. `predicate:paid_to`
+remains only a bounded sibling relaxation. This is not a system-wide default.
+Run exactly one job with the following explicit values:
 
 ```bash
 module load Miniconda3
@@ -469,8 +468,8 @@ test -f "$XGAP_E5D_MEMORY" && test ! -L "$XGAP_E5D_MEMORY" || {
   exit 1
 }
 
-: "${XGAP_E5D_STRUCTURAL_CANDIDATE:?set the explicit author-selected R1 structural candidate}"
-: "${XGAP_E5D_PREDICATE_CANDIDATE:?set the explicit author-selected predicate base}"
+XGAP_E5D_STRUCTURAL_CANDIDATE=constraint:single-transfer-at-least-50000
+XGAP_E5D_PREDICATE_CANDIDATE=predicate:transferred_to
 
 test "$XGAP_E5D_STRUCTURAL_CANDIDATE" = \
   "constraint:single-transfer-at-least-50000" || {

@@ -330,6 +330,9 @@ selected execution handoff.**
 **Implemented locally: E5D — pre-service-sealed selected handoff executed by
 one finite goal over native-service adapters; CWRU verification pending.**
 
+**Selected for the one E5D development run: interpretation A — single transfer
+of at least 50,000 with `transferred_to` as the exact predicate base.**
+
 Rejected alternatives remain recorded above so the final design cannot be
 silently converted into a global provenance-weighted score, a cost-triggered
 meaning choice, or an always-clarify policy after results are observed. The

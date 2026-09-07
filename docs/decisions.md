@@ -2770,3 +2770,20 @@ semantic-quality, user-utility, or ontology-truth claim, and the UI remains a
 separate adapter. Implementation commit `8fb1999` and
 `experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`
 bind this local readiness boundary.
+
+## D148 Use author-selected interpretation A for the one E5D development run
+
+The author explicitly selected interpretation A for the pending E5D CWRU
+mechanism gate. For this run only, `密切` means a single transfer whose amount
+is at least 50,000, represented by
+`constraint:single-transfer-at-least-50000`; the authoritative predicate base
+is `predicate:transferred_to`. The ontology-declared `predicate:paid_to`
+sibling may remain a bounded relaxed interpretation, but it is not the exact
+base.
+
+This decision supplies the two authority events required by E5C/E5D. It is not
+a parser rule, system default, learned preference, calibrated semantic label,
+or claim about how other users interpret the phrase. The live run must persist
+the selected IDs and an explicit author authority-source ID, and its auditor
+must reconstruct the same event chain. No optimizer cost, model output,
+candidate order, or ontology proximity may replace this decision.
