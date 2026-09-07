@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+import json
+from pathlib import Path
 
 import pytest
 
@@ -17,6 +19,28 @@ from xgap.experiments.m15_finbench_confirmatory_crossfit import (
 )
 from xgap.experiments.m15_finbench_confirmatory_schedule import (
     FINBENCH_CONFIRMATORY_SCHEDULE_SCHEMA_VERSION,
+)
+from xgap.experiments.m15_finbench_confirmatory_execution import (
+    FinBenchConfirmatoryExecutionError,
+    build_finbench_confirmatory_execution_authority,
+    build_finbench_confirmatory_execution_request,
+    build_finbench_confirmatory_block_execution_envelope,
+    compile_finbench_confirmatory_block_attempt,
+    validate_finbench_confirmatory_block_execution_envelope,
+)
+from xgap.experiments.m15_finbench_confirmatory_freeze_evidence import (
+    FINBENCH_CONFIRMATORY_FREEZE_AUDIT_SCHEMA_VERSION,
+)
+from xgap.experiments.m15_finbench_confirmatory_freeze_job import (
+    FINBENCH_CONFIRMATORY_FREEZE_MANIFEST_SCHEMA_VERSION,
+)
+from xgap.experiments import m15_live_finbench_confirmatory_block as live_block
+from xgap.experiments.m15_fixture_loader import BackendLoadReport
+from xgap.runtime import (
+    FederatedExecutionPlan,
+    FederatedPlanCandidate,
+    RuntimeNode,
+    RuntimeNodeKind,
 )
 
 
@@ -320,6 +344,60 @@ def _ledger() -> tuple[dict, dict, dict, list[dict]]:
     return ledger, schedule, suite, measurements
 
 
+def _execution_boundary(schedule: dict) -> tuple[dict, dict, dict, dict]:
+    manifest = {
+        "schema_version": FINBENCH_CONFIRMATORY_FREEZE_MANIFEST_SCHEMA_VERSION,
+        "status": "success",
+        "git": {"commit": "a" * 40, "clean": True},
+        "expected_counts": schedule["expected_counts"],
+        "schedule_sha256": schedule["schedule_sha256"],
+        "workload_sha256": schedule["workload_sha256"],
+        "author_selection_sha256": "b" * 64,
+        "population_approval_sha256": "c" * 64,
+        "external_call_counts": {
+            "backend_calls": 0,
+            "current_query_profile_calls": 0,
+            "llm_calls": 0,
+            "ontology_service_calls": 0,
+        },
+        "confirmatory_workload_compilation_authorized": True,
+        "confirmatory_execution_authorized": False,
+        "automatic_retries": 0,
+        "paper_result": False,
+    }
+    manifest["manifest_sha256"] = content_hash(manifest)
+    checks = [
+        {
+            "check_id": f"check-{index:02d}",
+            "passed": True,
+            "expected": True,
+            "observed": True,
+        }
+        for index in range(44)
+    ]
+    audit = {
+        "schema_version": FINBENCH_CONFIRMATORY_FREEZE_AUDIT_SCHEMA_VERSION,
+        "success": True,
+        "run_root": "/sealed/freeze",
+        "expected_commit": "a" * 40,
+        "check_count": 44,
+        "failed_check_ids": [],
+        "checks": checks,
+        "run_tree_mutated": False,
+    }
+    request = build_finbench_confirmatory_execution_request(
+        freeze_manifest=manifest,
+        freeze_audit=audit,
+        runner_commit="d" * 40,
+    )
+    authority = build_finbench_confirmatory_execution_authority(
+        execution_request=request,
+        authority_source_id="author:test:confirmatory-v1",
+        decision="authorize_exact_confirmatory_execution",
+    )
+    return manifest, audit, request, authority
+
+
 def test_confirmatory_analysis_uses_32_queries_not_repetitions() -> None:
     ledger, _, _, _ = _ledger()
     first = analyze_finbench_confirmatory_measurement_ledger(ledger)
@@ -436,3 +514,308 @@ def test_schedule_and_ledger_tampering_fail_closed() -> None:
     tampered_ledger["measurements"][0]["analysis_elapsed_ms"] += 1.0
     with pytest.raises(FinBenchConfirmatoryAnalysisError, match="hash mismatch"):
         analyze_finbench_confirmatory_measurement_ledger(tampered_ledger)
+
+
+def test_execution_authority_is_separate_from_population_selection() -> None:
+    schedule, _, _ = _fixture()
+    manifest, audit, request, authority = _execution_boundary(schedule)
+
+    assert request["confirmatory_execution_authorized"] is False
+    assert request["execution_scope"]["total_plan_runs"] == 1888
+    assert request["execution_scope"]["maximum_backend_calls"] == 3776
+    assert authority["confirmatory_execution_authorized"] is True
+    assert authority["execution_request_sha256"] == request["execution_request_sha256"]
+
+    changed_audit = copy.deepcopy(audit)
+    changed_audit["checks"][0]["passed"] = False
+    with pytest.raises(
+        FinBenchConfirmatoryExecutionError,
+        match="independent freeze audit is not accepted",
+    ):
+        build_finbench_confirmatory_execution_request(
+            freeze_manifest=manifest,
+            freeze_audit=changed_audit,
+            runner_commit="d" * 40,
+        )
+    with pytest.raises(FinBenchConfirmatoryExecutionError, match="does not authorize"):
+        build_finbench_confirmatory_execution_authority(
+            execution_request=request,
+            authority_source_id="author:test:confirmatory-v1",
+            decision="select_population_option_a",
+        )
+
+
+def test_block_attempt_resolves_only_its_frozen_measurements() -> None:
+    schedule, suite, measurements = _fixture()
+    _, _, request, authority = _execution_boundary(schedule)
+    family = build_finbench_confirmatory_family_selection_seal(
+        schedule=schedule, crossfit_prediction_suite=suite
+    )
+    profile_ids = {item["run_id"] for item in schedule["profile_acquisition_runs"]}
+    profile = build_finbench_confirmatory_profile_selection_seal(
+        schedule=schedule,
+        profile_measurements=[
+            item for item in measurements if item["scheduled_identity"] in profile_ids
+        ],
+    )
+
+    training = compile_finbench_confirmatory_block_attempt(
+        schedule=schedule,
+        execution_request=request,
+        execution_authority=authority,
+        measurement_block_id="crossfit_training_measurement-block-01",
+    )
+    assert training["phase"] == "crossfit_training_measurement"
+    assert training["expected_plan_run_count"] == 64
+    assert training["maximum_backend_calls"] == 128
+    assert all(item["method_id"] is None for item in training["measurements"])
+
+    with pytest.raises(
+        FinBenchConfirmatoryExecutionError, match="requires both pre-execution"
+    ):
+        compile_finbench_confirmatory_block_attempt(
+            schedule=schedule,
+            execution_request=request,
+            execution_authority=authority,
+            measurement_block_id="paired_selected_serving-block-01",
+        )
+
+    serving = compile_finbench_confirmatory_block_attempt(
+        schedule=schedule,
+        execution_request=request,
+        execution_authority=authority,
+        measurement_block_id="paired_selected_serving-block-01",
+        family_selection_seal=family,
+        profile_selection_seal=profile,
+    )
+    family_choices = {
+        item["query_id"]: item["selected_physical_strategy"]
+        for item in family["selections"]
+    }
+    profile_choices = {
+        item["query_id"]: item["selected_physical_strategy"]
+        for item in profile["selections"]
+    }
+    assert serving["expected_plan_run_count"] == 96
+    assert all(item["physical_strategy"] for item in serving["measurements"])
+    assert {
+        item["physical_strategy"]
+        for item in serving["measurements"]
+        if item["query_id"] == "q01"
+    } == {family_choices["q01"], profile_choices["q01"]}
+
+    envelope = build_finbench_confirmatory_block_execution_envelope(
+        block_attempt=training,
+        schedule=schedule,
+        execution_request=request,
+        execution_authority=authority,
+    )
+    forged = copy.deepcopy(envelope)
+    forged_attempt = forged["block_attempt"]
+    forged_attempt["measurements"][0]["query_id"] = "q02"
+    attempt_identity = {
+        key: value
+        for key, value in forged_attempt.items()
+        if key not in {"attempt_id", "block_attempt_sha256"}
+    }
+    forged_attempt["attempt_id"] = (
+        "finbench-confirmatory-attempt-"
+        + content_hash(attempt_identity)[:24]
+    )
+    forged_attempt["block_attempt_sha256"] = content_hash(
+        {
+            key: value
+            for key, value in forged_attempt.items()
+            if key != "block_attempt_sha256"
+        }
+    )
+    forged["execution_context_sha256"] = content_hash(
+        {
+            key: value
+            for key, value in forged.items()
+            if key != "execution_context_sha256"
+        }
+    )
+    with pytest.raises(
+        FinBenchConfirmatoryExecutionError,
+        match="exact authorized schedule projection",
+    ):
+        validate_finbench_confirmatory_block_execution_envelope(forged)
+
+
+def test_replacement_attempt_requires_explicit_provenance() -> None:
+    schedule, _, _ = _fixture()
+    _, _, request, authority = _execution_boundary(schedule)
+    with pytest.raises(FinBenchConfirmatoryExecutionError, match="provenance"):
+        compile_finbench_confirmatory_block_attempt(
+            schedule=schedule,
+            execution_request=request,
+            execution_authority=authority,
+            measurement_block_id="crossfit_training_measurement-block-01",
+            attempt_index=2,
+        )
+    replacement = compile_finbench_confirmatory_block_attempt(
+        schedule=schedule,
+        execution_request=request,
+        execution_authority=authority,
+        measurement_block_id="crossfit_training_measurement-block-01",
+        attempt_index=2,
+        replacement_of_attempt_id="finbench-confirmatory-attempt-original",
+    )
+    assert replacement["attempt_index"] == 2
+    assert replacement["replacement_of_attempt_id"].endswith("original")
+
+
+def test_live_block_retains_timeout_without_retry_or_oracle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    schedule, _, _ = _fixture()
+    _, _, request, authority = _execution_boundary(schedule)
+    attempt = compile_finbench_confirmatory_block_attempt(
+        schedule=schedule,
+        execution_request=request,
+        execution_authority=authority,
+        measurement_block_id="crossfit_training_measurement-block-01",
+    )
+    execution_context = build_finbench_confirmatory_block_execution_envelope(
+        block_attempt=attempt,
+        schedule=schedule,
+        execution_request=request,
+        execution_authority=authority,
+    )
+    partition_root = tmp_path / "partition"
+    partition_root.mkdir()
+    (partition_root / "load_neo4j_batches.jsonl").write_text("{}\n")
+    (partition_root / "load_fuseki.ttl").write_text("# fixture\n")
+    monkeypatch.setattr(
+        live_block,
+        "load_finbench_source_partition",
+        lambda _root: {
+            "partition_sha256": "e" * 64,
+            "source_archive": {"sha256": "f" * 64},
+            "neo4j_load": {"filename": "load_neo4j_batches.jsonl"},
+        },
+    )
+    monkeypatch.setattr(
+        live_block,
+        "load_finbench_primary_public_workload",
+        lambda _root: {
+            "manifest": {
+                "workload_sha256": schedule["workload_sha256"],
+                "source_archive_sha256": "f" * 64,
+            }
+        },
+    )
+    monkeypatch.setattr(
+        live_block, "_git_state", lambda _root: {"commit": "d" * 40, "clean": True}
+    )
+
+    def candidates(_root: object, *, query_id: str):
+        family = FAMILIES[0] if int(query_id[-2:]) <= 16 else FAMILIES[1]
+        values = []
+        for strategy in STRATEGIES[family]:
+            plan = FederatedExecutionPlan(
+                plan_id=f"{query_id}-{strategy}",
+                nodes=(
+                    RuntimeNode(
+                        "remote",
+                        RuntimeNodeKind.REMOTE_QUERY,
+                        parameters={
+                            "backend_id": "neo4j",
+                            "artifact": {
+                                "artifact_id": f"{query_id}-{strategy}",
+                                "language": "cypher",
+                                "text": "RETURN 1",
+                            },
+                        },
+                    ),
+                ),
+                roots=("remote",),
+                metadata={
+                    "physical_strategy": strategy,
+                    "workload_sha256": schedule["workload_sha256"],
+                },
+            )
+            values.append(FederatedPlanCandidate(plan, f"{query_id}:exact"))
+        return tuple(values)
+
+    monkeypatch.setattr(live_block, "build_finbench_plan_candidates", candidates)
+    monkeypatch.setattr(
+        live_block, "canonicalize_finbench_rows", lambda _family, rows: list(rows)
+    )
+
+    class Result:
+        def __init__(self, *, timeout: bool):
+            self.success = not timeout
+            self.elapsed_ms = 60_003.0 if timeout else 3.0
+            self.total_remote_calls = 1 if timeout else 2
+            self.total_bytes_moved = 0 if timeout else 17
+            self.final_rows = () if timeout else ({"ok": True},)
+            self._timeout = timeout
+
+        def to_dict(self):
+            return {
+                "success": self.success,
+                "elapsed_ms": self.elapsed_ms,
+                "total_remote_calls": self.total_remote_calls,
+                "total_bytes_moved": self.total_bytes_moved,
+                "final_rows": list(self.final_rows),
+                "node_results": [
+                    {
+                        "status": "error" if self._timeout else "success",
+                        "error": "timed out" if self._timeout else None,
+                    }
+                ],
+            }
+
+    class Scheduler:
+        calls = 0
+
+        def __init__(self, _tool):
+            pass
+
+        def execute(self, _plan, *, goal_id: str):
+            del goal_id
+            type(self).calls += 1
+            return Result(timeout=type(self).calls == 1)
+
+    monkeypatch.setattr(live_block, "FederatedScheduler", Scheduler)
+
+    class Loader:
+        def __init__(self, backend_id: str):
+            self.backend_id = backend_id
+
+        def load(self, path: Path):
+            return BackendLoadReport(
+                backend_id=self.backend_id,
+                success=True,
+                operations_attempted=1,
+                bytes_sent=path.stat().st_size,
+                elapsed_ms=1.0,
+            )
+
+    record = live_block.run_m15_live_finbench_confirmatory_block(
+        execution_context=execution_context,
+        workload_root=tmp_path / "workload",
+        partition_root=partition_root,
+        clients={"neo4j": object(), "fuseki": object()},
+        loaders={
+            "neo4j": Loader("neo4j"),
+            "fuseki": Loader("fuseki"),
+        },
+        output_root=tmp_path / "runs",
+        repo_root=tmp_path,
+    )
+
+    assert record.success is True
+    assert record.replacement_eligible is False
+    raw = json.loads((record.run_root / "raw_measurements.json").read_text())
+    manifest = json.loads(record.manifest_path.read_text())
+    assert raw["measurement_count"] == 64
+    assert raw["query_timeout_count"] == 1
+    assert raw["measurements"][0]["outcome"] == "query_timeout"
+    assert raw["measurements"][0]["total_bytes_moved"] is None
+    assert raw["measurements"][0]["exact_answer"] is None
+    assert manifest["oracle_content_parsed"] is False
+    assert manifest["automatic_retries"] == 0
+    assert Scheduler.calls == 64

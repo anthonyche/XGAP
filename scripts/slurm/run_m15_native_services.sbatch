@@ -160,6 +160,12 @@ case "$WORKLOAD_MODE" in
     : "${XGAP_FINBENCH_CORRECTNESS_RUN:?XGAP_FINBENCH_CORRECTNESS_RUN is required}"
     : "${XGAP_FINBENCH_CORRECTNESS_AUDIT:?XGAP_FINBENCH_CORRECTNESS_AUDIT is required}"
     ;;
+  finbench_confirmatory_block)
+    RUN_PREFIX="cwru-m15-native-finbench-confirmatory-block"
+    RUN_VERSION="m15-finbench-native-live-confirmatory-block-services-v1"
+    : "${XGAP_FINBENCH_CONFIRMATORY_FREEZE_RUN:?XGAP_FINBENCH_CONFIRMATORY_FREEZE_RUN is required}"
+    : "${XGAP_FINBENCH_CONFIRMATORY_EXECUTION_CONTEXT:?XGAP_FINBENCH_CONFIRMATORY_EXECUTION_CONTEXT is required}"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -327,7 +333,9 @@ PYTHONPATH="$REPO_ROOT/src" \
   | tee "$RUN_ROOT/runtime_staging_result.json"
 
 WORKLOAD_ARGS=()
-if [[ "$WORKLOAD_MODE" == finbench_correctness || "$WORKLOAD_MODE" == finbench_family_campaign ]]; then
+if [[ "$WORKLOAD_MODE" == finbench_correctness || \
+      "$WORKLOAD_MODE" == finbench_family_campaign || \
+      "$WORKLOAD_MODE" == finbench_confirmatory_block ]]; then
   FINBENCH_ARCHIVE="${XGAP_FINBENCH_ARCHIVE:-$HOME/.cache/xgap/finbench-v0.1.0/sf0.01.tar.gz}"
   FINBENCH_LOCK="${XGAP_FINBENCH_LOCK:-$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sources.json}"
   FINBENCH_SPEC="${XGAP_FINBENCH_SPEC:-$REPO_ROOT/experiments/configs/m15_finbench_primary_population_v1.json}"
@@ -376,19 +384,43 @@ if [[ "$WORKLOAD_MODE" == finbench_correctness || "$WORKLOAD_MODE" == finbench_f
     --output-root "$FINBENCH_PARTITION" \
     --batch-size "$FINBENCH_BATCH_SIZE" \
     | tee "$RUN_ROOT/finbench_partition_generation.json"
-  PYTHONPATH="$REPO_ROOT/src" \
-  "$PYTHON_BIN" -m xgap.experiments.m15_finbench_workload \
-    --archive "$FINBENCH_ARCHIVE" \
-    --partition-root "$FINBENCH_PARTITION" \
-    --lock "$FINBENCH_LOCK" \
-    --spec "$FINBENCH_SPEC" \
-    --output-root "$FINBENCH_WORKLOAD" \
-    | tee "$RUN_ROOT/finbench_workload_generation.json"
+  if [[ "$WORKLOAD_MODE" == finbench_confirmatory_block ]]; then
+    if [[ "$XGAP_FINBENCH_CONFIRMATORY_FREEZE_RUN" != /* || \
+          ! -d "$XGAP_FINBENCH_CONFIRMATORY_FREEZE_RUN" || \
+          -L "$XGAP_FINBENCH_CONFIRMATORY_FREEZE_RUN" ]]; then
+      echo "Confirmatory freeze run root is missing or unsafe." >&2
+      exit 2
+    fi
+    FINBENCH_WORKLOAD="$XGAP_FINBENCH_CONFIRMATORY_FREEZE_RUN/confirmatory-workload"
+    if [[ ! -d "$FINBENCH_WORKLOAD" || -L "$FINBENCH_WORKLOAD" ]]; then
+      echo "Frozen confirmatory workload is missing or unsafe." >&2
+      exit 2
+    fi
+    if [[ "$XGAP_FINBENCH_CONFIRMATORY_EXECUTION_CONTEXT" != /* || \
+          ! -f "$XGAP_FINBENCH_CONFIRMATORY_EXECUTION_CONTEXT" || \
+          -L "$XGAP_FINBENCH_CONFIRMATORY_EXECUTION_CONTEXT" ]]; then
+      echo "Confirmatory execution context is missing or unsafe." >&2
+      exit 2
+    fi
+  else
+    PYTHONPATH="$REPO_ROOT/src" \
+    "$PYTHON_BIN" -m xgap.experiments.m15_finbench_workload \
+      --archive "$FINBENCH_ARCHIVE" \
+      --partition-root "$FINBENCH_PARTITION" \
+      --lock "$FINBENCH_LOCK" \
+      --spec "$FINBENCH_SPEC" \
+      --output-root "$FINBENCH_WORKLOAD" \
+      | tee "$RUN_ROOT/finbench_workload_generation.json"
+  fi
   WORKLOAD_ARGS=(
     --finbench-workload "$FINBENCH_WORKLOAD"
     --finbench-partition "$FINBENCH_PARTITION"
   )
-  if [[ "$WORKLOAD_MODE" == finbench_family_campaign ]]; then
+  if [[ "$WORKLOAD_MODE" == finbench_confirmatory_block ]]; then
+    WORKLOAD_ARGS+=(
+      --finbench-confirmatory-execution-context "$XGAP_FINBENCH_CONFIRMATORY_EXECUTION_CONTEXT"
+    )
+  elif [[ "$WORKLOAD_MODE" == finbench_family_campaign ]]; then
     if [[ "$XGAP_FINBENCH_CORRECTNESS_RUN" != /* || \
           ! -d "$XGAP_FINBENCH_CORRECTNESS_RUN" || \
           -L "$XGAP_FINBENCH_CORRECTNESS_RUN" ]]; then

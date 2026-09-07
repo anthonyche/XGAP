@@ -2367,6 +2367,136 @@ def test_query_bound_contract_drift_rejects_before_service_start(
     assert not (tmp_path / "runs" / "query-bound-drift").exists()
 
 
+def test_confirmatory_block_context_is_validated_before_fresh_services(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    context = {
+        "execution_context_sha256": "a" * 64,
+        "block_attempt": {
+            "attempt_id": "finbench-confirmatory-attempt-test",
+            "measurement_block_id": "crossfit_training_measurement-block-01",
+            "block_attempt_sha256": "b" * 64,
+        },
+    }
+    monkeypatch.setattr(
+        native_services,
+        "_validate_finbench_confirmatory_context_lazily",
+        lambda value: context if value == context else pytest.fail("context changed"),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: JavaEvidence("/opt/java17/bin/java", 17, "17"),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "start_service",
+        lambda spec: RunningService(spec, _StableProcess(), io.BytesIO()),
+    )
+    monkeypatch.setattr(
+        native_services,
+        "wait_for_service_health",
+        lambda service: native_services.HealthObservation(
+            service.spec.service_id,
+            True,
+            1,
+            1.0,
+            200,
+        ),
+    )
+
+    def fake_stop(service):
+        service.log_handle.close()
+        return ShutdownObservation(
+            service.spec.service_id,
+            service.process.pid,
+            None,
+            0,
+            "SIGTERM",
+            False,
+            True,
+        )
+
+    observed: list[dict] = []
+    monkeypatch.setattr(native_services, "stop_service", fake_stop)
+    monkeypatch.setattr(
+        native_services,
+        "_run_fixture_and_query",
+        lambda *_args, **kwargs: observed.append(kwargs),
+    )
+
+    record = run_m15_native_services(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        output_root=tmp_path / "runs",
+        run_id="confirmatory-block-test",
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java_command="/opt/java17/bin/java",
+        repo_root=REPO_ROOT,
+        workload_mode="finbench_confirmatory_block",
+        finbench_workload=tmp_path / "frozen-workload",
+        finbench_partition=tmp_path / "partition",
+        finbench_confirmatory_execution_context=context,
+    )
+
+    assert record.success is True
+    assert observed == [
+        {
+            "finbench_workload": tmp_path / "frozen-workload",
+            "finbench_partition": tmp_path / "partition",
+            "finbench_query_ids": None,
+            "finbench_correctness_run": None,
+            "finbench_correctness_audit": None,
+            "finbench_campaign_protocol": None,
+            "finbench_family_memory_policy": None,
+            "finbench_confirmatory_execution_context": context,
+        }
+    ]
+    manifest = json.loads(record.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == (
+        native_services.FINBENCH_CONFIRMATORY_BLOCK_SERVICE_RUN_SCHEMA_VERSION
+    )
+    assert manifest["finbench_confirmatory_block"] == {
+        "workload": str(tmp_path / "frozen-workload"),
+        "partition": str(tmp_path / "partition"),
+        "attempt_id": "finbench-confirmatory-attempt-test",
+        "measurement_block_id": "crossfit_training_measurement-block-01",
+        "block_attempt_sha256": "b" * 64,
+        "execution_context_sha256": "a" * 64,
+    }
+
+
+def test_confirmatory_block_rejects_missing_context_before_java(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    monkeypatch.setattr(
+        native_services,
+        "inspect_java_runtime",
+        lambda *_args, **_kwargs: pytest.fail(
+            "missing execution authority must fail before Java inspection"
+        ),
+    )
+    with pytest.raises(ValueError, match="requires a sealed execution context"):
+        run_m15_native_services(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            output_root=tmp_path / "runs",
+            run_id="confirmatory-block-missing-context",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java_command="/opt/java17/bin/java",
+            repo_root=REPO_ROOT,
+            workload_mode="finbench_confirmatory_block",
+            finbench_workload=tmp_path / "frozen-workload",
+            finbench_partition=tmp_path / "partition",
+        )
+
+
 def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     script = (
         REPO_ROOT / "scripts" / "slurm" / "run_m15_native_services.sbatch"
@@ -2396,6 +2526,7 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "current_query_profile_baseline" in script
     assert "paired_physical_comparison" in script
     assert "finbench_family_campaign" in script
+    assert "finbench_confirmatory_block" in script
     assert "m15_direct_semantic_workload" in script
     assert "m15_parameterized_workload" in script
     assert "m15_semantic_overlay" in script
@@ -2528,6 +2659,21 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "#SBATCH --time=01:30:00" in finbench_campaign_script
     assert "SLURM_SUBMIT_DIR" in finbench_campaign_script
     assert "BASH_SOURCE" not in finbench_campaign_script
+    confirmatory_block_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_finbench_confirmatory_block.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=finbench_confirmatory_block" in (
+        confirmatory_block_script
+    )
+    assert "XGAP_FINBENCH_CONFIRMATORY_FREEZE_RUN" in confirmatory_block_script
+    assert "XGAP_FINBENCH_CONFIRMATORY_EXECUTION_CONTEXT" in (
+        confirmatory_block_script
+    )
+    assert "#SBATCH --mem=16G" in confirmatory_block_script
+    assert "#SBATCH --time=04:00:00" in confirmatory_block_script
+    assert "SLURM_SUBMIT_DIR" in confirmatory_block_script
+    assert "BASH_SOURCE" not in confirmatory_block_script
     assert 'FINBENCH_BATCH_SIZE="${XGAP_FINBENCH_BATCH_SIZE:-250}"' in script
     assert '--neo4j-resource-profile "$NEO4J_RESOURCE_PROFILE"' in script
     assert "XGAP_FINBENCH_LOCK is not an allowlisted repository lock" in script

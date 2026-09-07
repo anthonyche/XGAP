@@ -49,6 +49,15 @@ FINBENCH_FAMILY_CAMPAIGN_JOB_ENVIRONMENT_KEYS = frozenset(
         "XGAP_FINBENCH_CORRECTNESS_AUDIT",
     }
 )
+FINBENCH_CONFIRMATORY_BLOCK_SBATCH_SCRIPT = (
+    "scripts/slurm/run_m15_native_finbench_confirmatory_block.sbatch"
+)
+FINBENCH_CONFIRMATORY_BLOCK_JOB_ENVIRONMENT_KEYS = frozenset(
+    {
+        "XGAP_FINBENCH_CONFIRMATORY_FREEZE_RUN",
+        "XGAP_FINBENCH_CONFIRMATORY_EXECUTION_CONTEXT",
+    }
+)
 DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_core_smoke.sbatch",
     "scripts/slurm/probe_m15_native_services.sbatch",
@@ -72,6 +81,7 @@ DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_native_finbench_correctness.sbatch",
     "scripts/slurm/run_m15_native_finbench_sf0_1_correctness.sbatch",
     FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT,
+    FINBENCH_CONFIRMATORY_BLOCK_SBATCH_SCRIPT,
     "scripts/slurm/run_m15_live_resolution.sbatch",
 )
 
@@ -88,6 +98,10 @@ def _default_job_environment_allowlist(
     if FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT in allowed:
         result[FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT] = (
             FINBENCH_FAMILY_CAMPAIGN_JOB_ENVIRONMENT_KEYS
+        )
+    if FINBENCH_CONFIRMATORY_BLOCK_SBATCH_SCRIPT in allowed:
+        result[FINBENCH_CONFIRMATORY_BLOCK_SBATCH_SCRIPT] = (
+            FINBENCH_CONFIRMATORY_BLOCK_JOB_ENVIRONMENT_KEYS
         )
     return result
 

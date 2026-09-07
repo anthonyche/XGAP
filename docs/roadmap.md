@@ -1603,3 +1603,25 @@ Files involved: `src/xgap/datasets/kgqa.py`, evaluation scripts, dataset tests.
 Acceptance criteria: Evaluation can compare generated queries or answers against KGQA benchmarks.
 
 Current status: TODO
+
+## M15-FinBench Confirmatory Execution Milestones
+
+- **Freeze accepted:** CWRU job `3793747` and its 44-check independent audit
+  bind the Option-A workload and 22-block schedule. This milestone does not
+  grant execution authority.
+- **Block execution locally ready:** a separately authorized, hash-bound block
+  envelope is validated before service startup; one worker executes only that
+  schedule projection against native Neo4j and Fuseki with a 60-second query
+  timeout and zero automatic retry.
+- **Next implementation gate:** independently reconstruct one block and expose
+  only result-blind training/profile inputs. Selection-time training admission
+  must distinguish a prevalidated physical-plan semantic contract from a
+  current-query answer-oracle observation.
+- **Then:** assemble seven training blocks into leakage-safe cross-fit memory,
+  seal family choices, assemble the profile block, seal profile choices, run
+  paired serving and shadow blocks, and open the answer oracle only after all
+  1,888 scheduled outcomes exist.
+- **Authorization gate:** create the final execution request only after the
+  runner, block auditor, phase assembler, delayed oracle gate, and campaign
+  auditor share one clean commit. A separate explicit author decision is then
+  required before any confirmatory block is submitted.

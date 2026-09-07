@@ -6,6 +6,8 @@ import pytest
 
 from xgap.experiments.remote_control import (
     DEFAULT_ALLOWED_SBATCH_SCRIPTS,
+    FINBENCH_CONFIRMATORY_BLOCK_JOB_ENVIRONMENT_KEYS,
+    FINBENCH_CONFIRMATORY_BLOCK_SBATCH_SCRIPT,
     FINBENCH_FAMILY_CAMPAIGN_JOB_ENVIRONMENT_KEYS,
     FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT,
     RemoteControlConfig,
@@ -78,6 +80,9 @@ def test_config_uses_vllm_python_and_scoped_defaults(tmp_path: Path) -> None:
         FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT: (
             FINBENCH_FAMILY_CAMPAIGN_JOB_ENVIRONMENT_KEYS
         ),
+        FINBENCH_CONFIRMATORY_BLOCK_SBATCH_SCRIPT: (
+            FINBENCH_CONFIRMATORY_BLOCK_JOB_ENVIRONMENT_KEYS
+        ),
     }
     assert config.allow_cancel is False
 
@@ -106,6 +111,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_finbench_correctness.sbatch",
         "scripts/slurm/run_m15_native_finbench_sf0_1_correctness.sbatch",
         "scripts/slurm/run_m15_native_finbench_family_campaign.sbatch",
+        "scripts/slurm/run_m15_native_finbench_confirmatory_block.sbatch",
         "scripts/slurm/run_m15_live_resolution.sbatch",
     )
     probe = (

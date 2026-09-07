@@ -205,6 +205,9 @@ FINBENCH_CORRECTNESS_SERVICE_RUN_SCHEMA_VERSION = (
 FINBENCH_FAMILY_CAMPAIGN_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-finbench-native-live-family-campaign-service-run-v1"
 )
+FINBENCH_CONFIRMATORY_BLOCK_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-finbench-native-live-confirmatory-block-service-run-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -229,6 +232,7 @@ WORKLOAD_MODES = frozenset(
         "selected_interpretation_session",
         "finbench_correctness",
         "finbench_family_campaign",
+        "finbench_confirmatory_block",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -570,6 +574,18 @@ def _load_staging_manifest(path: Path, runtime_root: Path) -> dict[str, Any]:
     if products != {"neo4j", "fuseki"}:
         raise ValueError("staging manifest must contain Neo4j and Fuseki")
     return payload
+
+
+def _validate_finbench_confirmatory_context_lazily(
+    value: Mapping[str, Any],
+) -> dict[str, Any]:
+    # Keep the confirmatory analysis stack out of this module's import cycle:
+    # correctness evidence imports the native-service schema constants.
+    from xgap.experiments.m15_finbench_confirmatory_execution import (
+        validate_finbench_confirmatory_block_execution_envelope,
+    )
+
+    return validate_finbench_confirmatory_block_execution_envelope(value)
 
 
 NEO4J_RESOURCE_PROFILES: dict[str, dict[str, str]] = {
@@ -980,6 +996,7 @@ def _run_fixture_and_query(
     finbench_correctness_audit: str | Path | None = None,
     finbench_campaign_protocol: Mapping[str, Any] | str | Path | None = None,
     finbench_family_memory_policy: Mapping[str, Any] | str | Path | None = None,
+    finbench_confirmatory_execution_context: Mapping[str, Any] | None = None,
     resolution_run: str | Path | None = None,
     resolution_bridge_spec: str | Path | None = None,
     prepared_resolution_bridge: M15PreparedResolutionExecutionBridge | None = None,
@@ -997,7 +1014,11 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
-        if workload_mode in {"finbench_correctness", "finbench_family_campaign"}:
+        if workload_mode in {
+            "finbench_correctness",
+            "finbench_family_campaign",
+            "finbench_confirmatory_block",
+        }:
             assert finbench_workload is not None
             assert finbench_partition is not None
             partition_manifest = load_finbench_source_partition(finbench_partition)
@@ -1025,7 +1046,7 @@ def _run_fixture_and_query(
                     raise RuntimeError(
                         f"live FinBench correctness gate failed: {correctness.error}"
                     )
-            else:
+            elif workload_mode == "finbench_family_campaign":
                 assert finbench_correctness_run is not None
                 assert finbench_correctness_audit is not None
                 assert finbench_campaign_protocol is not None
@@ -1046,6 +1067,26 @@ def _run_fixture_and_query(
                 if not campaign.success:
                     raise RuntimeError(
                         f"live FinBench family campaign failed: {campaign.error}"
+                    )
+            else:
+                assert finbench_confirmatory_execution_context is not None
+                from xgap.experiments.m15_live_finbench_confirmatory_block import (
+                    run_m15_live_finbench_confirmatory_block,
+                )
+
+                block = run_m15_live_finbench_confirmatory_block(
+                    execution_context=finbench_confirmatory_execution_context,
+                    workload_root=finbench_workload,
+                    partition_root=finbench_partition,
+                    clients=clients,
+                    loaders=loaders,
+                    output_root=run_root,
+                    repo_root=repo_root,
+                )
+                if not block.success:
+                    raise RuntimeError(
+                        "live FinBench confirmatory block failed: "
+                        f"{block.error}"
                     )
             return
         if workload_mode in {
@@ -1649,6 +1690,9 @@ def run_m15_native_services(
     finbench_correctness_audit: str | Path | None = None,
     finbench_campaign_protocol: Mapping[str, Any] | str | Path | None = None,
     finbench_family_memory_policy: Mapping[str, Any] | str | Path | None = None,
+    finbench_confirmatory_execution_context: (
+        Mapping[str, Any] | str | Path | None
+    ) = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1660,7 +1704,12 @@ def run_m15_native_services(
     if workload_mode not in WORKLOAD_MODES:
         raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
     finbench_values = (finbench_workload, finbench_partition)
-    if workload_mode in {"finbench_correctness", "finbench_family_campaign"}:
+    finbench_modes = {
+        "finbench_correctness",
+        "finbench_family_campaign",
+        "finbench_confirmatory_block",
+    }
+    if workload_mode in finbench_modes:
         if any(value is None for value in finbench_values):
             raise ValueError(
                 f"{workload_mode} requires a verified workload and partition"
@@ -1679,6 +1728,20 @@ def run_m15_native_services(
             )
         if workload_mode == "finbench_family_campaign" and finbench_query_ids is not None:
             raise ValueError("finbench_family_campaign does not accept a query subset")
+        if workload_mode == "finbench_confirmatory_block":
+            if finbench_confirmatory_execution_context is None:
+                raise ValueError(
+                    "finbench_confirmatory_block requires a sealed execution context"
+                )
+            if finbench_query_ids is not None:
+                raise ValueError(
+                    "finbench_confirmatory_block does not accept a query subset"
+                )
+        elif finbench_confirmatory_execution_context is not None:
+            raise ValueError(
+                "sealed execution contexts are accepted only in "
+                "finbench_confirmatory_block"
+            )
     elif (
         any(value is not None for value in finbench_values)
         or finbench_query_ids is not None
@@ -1689,11 +1752,45 @@ def run_m15_native_services(
                 finbench_correctness_audit,
                 finbench_campaign_protocol,
                 finbench_family_memory_policy,
+                finbench_confirmatory_execution_context,
             )
         )
     ):
         raise ValueError(
             "FinBench inputs are accepted only in FinBench workload modes"
+        )
+    selected_finbench_confirmatory_execution_context: dict[str, Any] | None = None
+    if finbench_confirmatory_execution_context is not None:
+        if isinstance(finbench_confirmatory_execution_context, Mapping):
+            execution_context_value = dict(finbench_confirmatory_execution_context)
+        else:
+            unresolved_execution_context_path = Path(
+                finbench_confirmatory_execution_context
+            )
+            if (
+                unresolved_execution_context_path.is_symlink()
+                or not unresolved_execution_context_path.is_file()
+            ):
+                raise ValueError(
+                    "FinBench confirmatory execution context must be a regular file"
+                )
+            execution_context_path = unresolved_execution_context_path.resolve()
+            try:
+                execution_context_value = json.loads(
+                    execution_context_path.read_text(encoding="utf-8")
+                )
+            except (OSError, json.JSONDecodeError) as exc:
+                raise ValueError(
+                    "FinBench confirmatory execution context is not valid JSON"
+                ) from exc
+            if not isinstance(execution_context_value, dict):
+                raise ValueError(
+                    "FinBench confirmatory execution context must contain an object"
+                )
+        selected_finbench_confirmatory_execution_context = (
+            _validate_finbench_confirmatory_context_lazily(
+                execution_context_value
+            )
         )
     selected_bundle = (
         load_m15_workload_bundle(
@@ -2255,6 +2352,9 @@ def run_m15_native_services(
         "finbench_family_campaign": (
             FINBENCH_FAMILY_CAMPAIGN_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "finbench_confirmatory_block": (
+            FINBENCH_CONFIRMATORY_BLOCK_SERVICE_RUN_SCHEMA_VERSION
+        ),
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -2530,7 +2630,7 @@ def run_m15_native_services(
                 paired_physical_protocol,
                 current_query_profile_protocol,
             )
-            if workload_mode in {"finbench_correctness", "finbench_family_campaign"}:
+            if workload_mode in finbench_modes:
                 _run_fixture_and_query(
                     *fixture_args,
                     finbench_workload=finbench_workload,
@@ -2540,6 +2640,9 @@ def run_m15_native_services(
                     finbench_correctness_audit=finbench_correctness_audit,
                     finbench_campaign_protocol=finbench_campaign_protocol,
                     finbench_family_memory_policy=finbench_family_memory_policy,
+                    finbench_confirmatory_execution_context=(
+                        selected_finbench_confirmatory_execution_context
+                    ),
                 )
             elif workload_mode in {
                 "resolution_execution_bridge",
@@ -2734,6 +2837,32 @@ def run_m15_native_services(
                 if workload_mode == "finbench_family_campaign"
                 else None
             ),
+            "finbench_confirmatory_block": (
+                {
+                    "workload": str(finbench_workload),
+                    "partition": str(finbench_partition),
+                    "attempt_id": selected_finbench_confirmatory_execution_context[
+                        "block_attempt"
+                    ]["attempt_id"],
+                    "measurement_block_id": (
+                        selected_finbench_confirmatory_execution_context[
+                            "block_attempt"
+                        ]["measurement_block_id"]
+                    ),
+                    "block_attempt_sha256": (
+                        selected_finbench_confirmatory_execution_context[
+                            "block_attempt"
+                        ]["block_attempt_sha256"]
+                    ),
+                    "execution_context_sha256": (
+                        selected_finbench_confirmatory_execution_context[
+                            "execution_context_sha256"
+                        ]
+                    ),
+                }
+                if workload_mode == "finbench_confirmatory_block"
+                else None
+            ),
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -2832,6 +2961,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--finbench-correctness-audit")
     parser.add_argument("--finbench-campaign-protocol")
     parser.add_argument("--finbench-family-memory-policy")
+    parser.add_argument("--finbench-confirmatory-execution-context")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -2924,6 +3054,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             finbench_campaign_protocol=args.finbench_campaign_protocol,
             finbench_family_memory_policy=(
                 args.finbench_family_memory_policy
+            ),
+            finbench_confirmatory_execution_context=(
+                args.finbench_confirmatory_execution_context
             ),
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,

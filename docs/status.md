@@ -2667,3 +2667,33 @@ Expected checks include:
 - M12-D methods, ablations, candidate freeze, direct baseline, online
   lifecycle, matrix, resume, aggregation, and readiness tests
 - examples/m12d_experiment_matrix_demo.py
+
+## M15 FinBench Confirmatory Execution Boundary
+
+The author-selected Option-A freeze is now accepted on CWRU. Job `3793747`
+completed at producer commit `c242d45`; its independent replay at the later
+auditor commit passed 44/44 checks with no run-tree mutation. The accepted
+schedule contains 22 measurement blocks, 1,888 plan runs, and at most 3,776
+black-box backend calls. Its schedule SHA-256 is
+`27b7c1391fb507ec83bd84fcf559e40f0572100190205052f0f26243cdac2298` and
+its workload SHA-256 is
+`63a8ef36bc7576033db93caa2aa486409bc90ecfc699385b61e7d02be4320a5f`.
+The freeze made zero backend, profile, LLM, and ontology calls and does not
+authorize confirmatory execution.
+
+The first execution layer is locally implemented. It separates a
+non-authorizing execution request from explicit author authority, compiles one
+immutable schedule block at a time, and requires the complete request,
+authority, schedule, and applicable selection seals to validate before Java or
+either backend starts. The native worker uses fresh job-owned Neo4j and Fuseki
+services, preserves query timeouts as method outcomes, performs no automatic
+retry, retains canonical rows without opening the answer oracle, and refuses a
+forged schedule projection. The targeted confirmatory-population,
+execution/native-service, and remote-control suite passes 63 tests.
+The full repository regression also passes with 1,166 tests and 36 explicit
+environment or external-artifact skips in 433.14 seconds.
+
+This is local runner readiness only. The independent per-block evidence
+auditor, phase assembler, selection-time exactness-admission record, delayed
+oracle opener, and final campaign audit are still required before author
+execution authority may be requested. `paper_result` remains false.

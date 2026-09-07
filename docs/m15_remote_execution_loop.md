@@ -920,3 +920,23 @@ regret. The 144 historical training runs remain a separate cost ledger, with a
 count-only break-even reference of 72 future tasks. These ten-task observations
 remain descriptive and `paper_result=false`; they neither establish
 generalization nor authorize predictor tuning or a paper-scale family choice.
+
+### Option-A confirmatory execution status
+
+CWRU freeze job `3793747` is accepted: the read-only audit passed all 44 checks
+without mutating the source tree. Preserve that run, its audit, and the verified
+SF0.1 archive. Do not resubmit the freeze.
+
+The confirmatory execution entry point is deliberately not a campaign-wide
+shell loop. Each of the 22 blocks receives a self-contained execution envelope
+that binds the accepted schedule, non-authorizing request, explicit execution
+authority, exact runner commit, attempt index, and (for serving) both selection
+seals. Native-service validation occurs before Java or either backend starts.
+Each allocation then loads a fresh SF0.1 partition, executes only the resolved
+block order, records timeouts without retry, and leaves answer-oracle fields
+unopened.
+
+No CWRU confirmatory measurement command should be run yet. The per-block
+auditor, result-blind training/profile phase assembler, delayed oracle opener,
+and final campaign audit must first be accepted at one clean runner commit.
+Population Option A and the successful freeze are not execution authority.

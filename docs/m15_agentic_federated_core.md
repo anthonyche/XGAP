@@ -935,3 +935,26 @@ GPU-seconds, replans, and recovery rate.
 
 The UI is optional and must consume the same goal/trace/artifact API as the CLI.
 It is not an acceptance dependency for M15-B through M15-E.
+
+### Confirmatory execution authority and block isolation
+
+The accepted FinBench Option-A freeze fixes 48 query instances, 22 measurement
+blocks, and 1,888 plan runs. It intentionally leaves
+`confirmatory_execution_authorized=false`. The execution design adds a second,
+explicit author authority record after the freeze audit; an approved population
+choice alone cannot activate backend work.
+
+Every measurement allocation is one agent environment episode: the environment
+contains a coordinator and fresh job-owned black-box Neo4j/Fuseki services; the
+only data-plane tools are the two registered backend adapters and coordinator
+federation. A hash-bound block envelope constrains the agent to the exact
+schedule projection, physical strategy, order, timeout, and retry policy. The
+worker cannot inspect backend internals, emit an unscheduled native query,
+profile outside the profile block, read an oracle, or expand its authority.
+
+Training-memory admission requires an additional semantic distinction before
+formal execution: a plan-family equivalence contract established by compiler
+invariants and development correctness evidence is not the same as observing a
+current confirmatory answer. Selection artifacts must preserve that provenance;
+the current-query oracle remains sealed until every scheduled block has
+completed and is authoritative for the final correctness gate.
