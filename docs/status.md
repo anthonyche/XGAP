@@ -188,6 +188,18 @@ skips. This is local mechanism readiness only; no remote or backend call was
 made. See
 `experiments/artifacts/m15_e6a_local_remote_authority_envelope_20260907.json`.
 
+E6B now supplies the presentation-independent UI adapter. It exposes only the
+hash-bound E5C question and candidate IDs, delegates selected IDs to the E5C
+authority-event builder, and refuses out-of-set or terminal responses. A ready
+session can produce one explicit-confirmation E5D submission preview only when
+its two events share one authority source and its historical-memory hash still
+matches the E5C source contract. The preview uses the fixed E5D script and
+exactly six E6A fields; it exposes no native query, credential, arbitrary
+environment, or shell command. Full repository acceptance passes 1,061 tests
+with 36 explicit skips. This remains local nonmeasurement readiness; an HTTP
+server and interactive page do not yet exist. See
+`experiments/artifacts/m15_e6b_local_clarification_ui_adapter_20260907.json`.
+
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
 gated or external-artifact tests skipped. Refreshed CWRU CPU smoke job

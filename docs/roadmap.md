@@ -278,10 +278,13 @@ E6A has now removed the UI-to-Slurm authority transport gap without broadening
 the remote tool. The selected-session wrapper alone may receive six explicitly
 allowlisted, non-secret authority fields; other scripts reject them and unsafe
 values fail before SSH. Full repository acceptance passes 1,055 tests with 36
-explicit skips. Next, keep the UI local and implement a pure clarification view
-adapter over E5C plus an E5D submission preview over this typed envelope. Do not
-add a generic environment editor, direct backend/model access, or paper-run
-controls.
+explicit skips. E6B has also completed the pure clarification view adapter over
+E5C and E5D submission preview over this typed envelope. It passes full
+repository acceptance with 1,061 tests and 36 explicit skips. Next, keep the UI
+local and add the smallest interactive shell around this model: explicit
+candidate buttons and submit confirmation first, then typed job status, bounded
+logs, and immutable result panels. Do not add a generic environment editor,
+direct backend/model access, or paper-run controls.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

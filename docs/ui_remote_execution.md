@@ -87,6 +87,19 @@ is local control-plane readiness only: the validation made no SSH, Slurm,
 backend, or LLM call. The compact boundary record is
 `experiments/artifacts/m15_e6a_local_remote_authority_envelope_20260907.json`.
 
+E6B now adds the presentation-independent adapter beneath the future page. It
+projects a typed E5C session into a hash-bound question view, converts only an
+explicit in-set candidate ID into the existing E5C authority event, and creates
+an E5D submission preview only after the session is terminal and execution
+eligible. The preview has one fixed script and exactly the E6A six-field
+environment; it contains no credential, native query, shell fragment, or
+generic editable environment. Candidate display order is not authority.
+
+E6B does not yet provide an HTTP server or interactive page. Full-repository
+acceptance passes 1,061 tests with 36 explicit skips and made no external call.
+Its compact boundary record is
+`experiments/artifacts/m15_e6b_local_clarification_ui_adapter_20260907.json`.
+
 ## UI go/no-go gate
 
 The UI gate required:
@@ -96,9 +109,10 @@ The UI gate required:
 3. remote batch submission works through a CLI tool plugin;
 4. at least one clarification action needs user interaction.
 
-All four conditions now hold. The next UI slice is a small local working
-surface: clarification prompt first, sealed selection preview, explicit submit,
-live job state, bounded logs, and immutable result/metric panels. It must call
-the typed remote executor rather than build shell commands, must not expose a
-generic environment editor, and must never contact vLLM or graph backends
-directly. No graph editor or database-administration UI is required.
+All four conditions now hold, and E6B supplies the safe view/submission model.
+The next UI slice is a small local working surface: clarification prompt first,
+sealed selection preview, explicit submit, live job state, bounded logs, and
+immutable result/metric panels. It must call the typed remote executor rather
+than build shell commands, must not expose a generic environment editor, and
+must never contact vLLM or graph backends directly. No graph editor or
+database-administration UI is required.

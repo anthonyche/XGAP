@@ -2812,3 +2812,26 @@ direct Neo4j/Fuseki client. Paper jobs continue to use frozen CLI protocols and
 immutable artifacts. Full-repository acceptance passes 1,055 tests with 36
 explicit skips. This establishes local control-plane readiness only; no SSH,
 Slurm, backend, or model call was made by that validation.
+
+## D150 Keep the UI projection subordinate to E5C authority
+
+E6B introduces no new semantic state machine. The local UI adapter accepts only
+a typed, hash-valid E5C clarification session; displays its bounded question;
+and delegates an explicit candidate-ID choice to the existing E5C authority
+event builder. It does not accept free text as authority, infer a default from
+option order, rank interpretations, compile plans, or expose backend-native
+query text.
+
+Only a terminal `ready_for_execution_handoff` session may produce an E5D
+submission preview. The adapter reconstructs the structural and predicate IDs
+from the two authority events, requires one shared explicit authority source,
+binds the historical-memory hash to the E5C source contract, and emits a typed
+`submit_job` payload for the one E5D wrapper with exactly the six E6A fields.
+The page cannot edit arbitrary environment variables or construct a shell
+command. Submission still requires an explicit confirmation and execution
+still belongs to the remote tool.
+
+E6B is a local presentation/control adapter, not the interactive page and not
+an experiment result. Full-repository acceptance passes 1,061 tests with 36
+explicit skips. No SSH, Slurm, graph-backend, ontology-service, or model call
+was made by validation; `paper_result` remains false.
