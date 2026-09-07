@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; COST-AWARE SEMANTIC FRONTIER/UI BRIDGE PENDING**
+Status: **E1/E2A/E3/E4/E5/E5B/E5C VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; THIN UI AND OPTIONAL LIVE SELECTED-PLAN GATE PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -339,6 +339,30 @@ invariant from the actual endpoints and persisted Neo4j/Fuseki configuration;
 its v2 audit of the same run passed 152/152 checks with no mutation or
 experiment rerun. All outputs remain `paper_result=false`. See
 [`docs/m15_e4b_live_resolution_execution.md`](m15_e4b_live_resolution_execution.md).
+
+M15-E5/E5B/E5C separate unresolved interpretations, anchored relaxations, and
+interactive authority transport. R1 first asks about operator-level meaning
+when aggregation, quantification, answer meaning, output contract, or
+capability differs. Family memory reduces physical plans only inside each
+interpretation and cannot select user intent. Once the single-transfer meaning
+is explicitly chosen, a second explicit event selects the predicate base for a
+one-hop, provenance-bound ontology sibling relaxation. Pareto/epsilon/K applies
+only inside that anchored set.
+
+E5C persists those choices as a deterministic two-stage session. Every event
+is restricted to the pending bounded set and binds the session ID, sequence,
+hole, question hash, authority source, and its own content hash. Recompiling
+the session from the same sealed E4 bridge, workload, family memory, policies,
+ontology, and event log yields an exact byte-equivalent portable state. An
+unsupported structural choice ends without execution. A ready state produces
+an E4 runtime handoff containing exactly the E5B returned plans and only the
+existing `runtime.execute_plan` capability; portable artifacts expose no native
+query text. The mechanism and its independent auditor make zero current-query
+profile, backend, LLM, ontology-service, oracle, repair, or retry calls. Full
+local acceptance passes 1,044 tests with 36 explicit skips. This is local
+control-plane evidence only; the UI and any live selected-plan demonstration
+remain later gates. See
+[`docs/m15_e5_interpretation_relaxation_gate.md`](m15_e5_interpretation_relaxation_gate.md).
 
 ## M15-F — Paper experiment surface and optional UI
 

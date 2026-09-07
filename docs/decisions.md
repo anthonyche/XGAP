@@ -2708,3 +2708,32 @@ Focused E5 acceptance passes 20 tests and full repository acceptance passes
 1,030 tests with 36 explicit skips. This closes a controlled local mechanism
 only. It does not authorize a CWRU run, UI behavior, user-utility claim,
 calibrated semantic metric, or paper result.
+
+## D146 Use a resumable authority-event session between E5 and E4 execution
+
+The author selected Option A for the clarification-to-execution transport.
+E5C therefore represents interaction as a deterministic session reconstructed
+from sealed optimizer inputs and an ordered authority-event log, not as mutable
+chat history. Stage one asks the R1 relationship-strength question. Only an
+explicit in-set user event bound to the session, sequence, hole, pending-
+question hash, authority source, and its own content hash can select the
+structure. Unsupported aggregate structures terminate without execution.
+Stage two is reached only for the executable single-transfer structure and
+separately selects the predicate base required by E5B anchored relaxation.
+
+The ready handoff binds the session state, event chain, anchored frontier,
+resolution commit, hard constraints, E4 bridge, returned set, and runtime-plan
+hashes. It contains all and only E5B's returned physical representatives in
+selection-rank order and exposes only the existing allowlisted
+`runtime.execute_plan` interface. Its portable representation contains no
+Cypher or SPARQL. Conversation text, candidate order, model output, cost, and
+ontology proximity remain non-authoritative. There is no automatic semantic
+choice and no retry.
+
+Core implementation commit `5f87bcc` and the compact record
+`experiments/artifacts/m15_e5c_local_clarification_transport_20260907.json`
+establish the controlled local mechanism. The independent audit passes 13/13
+checks, focused E4/E5 regression passes 43 tests, and full local acceptance
+passes 1,044 tests with 36 explicit skips. This decision does not authorize a
+CWRU run, make a UI part of the experiment acceptance path, or support a
+performance, user-utility, calibrated-semantic, or paper claim.

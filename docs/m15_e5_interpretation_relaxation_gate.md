@@ -2,7 +2,7 @@
 
 ## Status
 
-**OPTION A/R1 FROZEN; OFFLINE HIERARCHICAL AND ANCHORED MECHANISMS VERIFIED; NO CWRU RUN AUTHORIZED**
+**OPTION A/R1 FROZEN; E5/E5B/E5C OFFLINE MECHANISMS VERIFIED; NO E5C CWRU RUN AUTHORIZED**
 
 This gate separates unresolved natural-language interpretations from bounded
 semantic relaxations before XGAP connects the E4 resolution bridge to
@@ -200,8 +200,46 @@ memory, ontology, policy, both anchor directions, and zero-call claim boundary.
 This is controlled local nonmeasurement evidence with `paper_result=false`.
 The final repository acceptance run passes 1,030 tests with 36 explicit
 environment/external-artifact skips; the focused E5 suite passes 20 tests.
-No CWRU run is needed for this selector-only mechanism; the next live-relevant
-gate is clarification/UI transport into execution.
+No CWRU run is needed for this selector-only mechanism.
+
+## Implemented clarification-to-execution transport
+
+E5C implements the selected resumable transport without turning the UI or free
+conversation into part of the optimizer. A session is reconstructed from the
+sealed E4 bridge, direct workload, same-family memory view, E5/E5B policies,
+the exact E4-bound ontology, a transport policy, and an ordered authority-event
+log. With no event it emits the one R1 relationship-strength question. An
+accepted event must select exactly one listed candidate and bind its session,
+sequence, hole, pending-question hash, explicit authority source, and event
+hash. It then either stops because the selected aggregate structure lacks an
+executable family, or emits a second bounded question asking which active
+predicate is the authoritative base for anchored relaxation.
+
+Only the second explicit event activates E5B. The resulting selected-execution
+handoff binds the session-state hash, authority-event-chain hash, anchored-
+frontier hash, resolution commit, hard constraints, E4 bridge, returned-set
+hash, and each attached runtime-plan hash. Its plan map contains all and only
+the E5B returned plans in selection-rank order. The portable form contains no
+backend-native query text and allowlists only the existing
+`runtime.execute_plan` interface. A controlled integration test executes the
+attached plans through that tool and verifies that no other E4 plan runs.
+
+The event log can be persisted and replayed after a process restart; exact
+reconstruction is a gate, not an advisory. Added, reordered, out-of-set,
+cross-session, or text-bearing authority events fail closed. A separate
+auditor independently recompiles the session and verifies the session/state/
+event/handoff hashes, all-and-only plan membership, tool allowlist, native-text
+absence, and zero-call claim boundary. It passes 13/13 checks. Focused adjacent
+E4/E5 regression passes 43 tests and the full repository passes 1,044 tests
+with 36 explicit skips.
+
+The compact record is
+`experiments/artifacts/m15_e5c_local_clarification_transport_20260907.json`.
+It is controlled local nonmeasurement evidence, keeps `paper_result=false`,
+and authorizes neither a CWRU run nor a user-utility or performance claim. A
+future UI is only an adapter over this session/event API. A live selected-plan
+gate, if needed, must be frozen separately and reuse the existing E4B native
+service lifecycle without changing E5C semantics.
 
 ## Contract if Option A is selected
 
@@ -255,9 +293,12 @@ The mechanism gate must prove that:
 **Implemented: E5B — explicit predicate base followed by provenance-bound
 one-hop sibling relaxation.**
 
+**Implemented: E5C — resumable two-stage authority transport and all-and-only
+selected execution handoff.**
+
 Rejected alternatives remain recorded above so the final design cannot be
 silently converted into a global provenance-weighted score, a cost-triggered
 meaning choice, or an always-clarify policy after results are observed. No new
-CWRU experiment is needed for this design gate. The next step is the
-clarification transport and execution handoff; it must keep both authority
-events explicit and preserve the existing zero-retry backend boundary.
+CWRU experiment is needed for this design gate. The next step is a thin UI
+adapter and a separately justified live selected-plan gate; neither may change
+the two explicit authority events or the existing zero-retry backend boundary.

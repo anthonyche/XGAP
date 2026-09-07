@@ -147,8 +147,23 @@ calls. The compact E5B record is
 `experiments/artifacts/m15_e5b_local_anchored_interpretation_frontier_20260907.json`.
 Focused E5 acceptance passes 20 tests and full repository acceptance passes
 1,030 tests with 36 explicit skips. This remains local nonmeasurement
-mechanism evidence; UI transport and any live E5 gate are still open, and no
-E5 CWRU run is authorized. See
+mechanism evidence. E5C now adds the missing resumable authority transport.
+Its two content-addressed questions keep R1 structural authority separate from
+the predicate base required for anchored relaxation. Each accepted response is
+an explicit in-set user event bound to the session, sequence, hole, and pending
+question hash; arbitrary conversation text cannot serve as authority. The full
+event log reconstructs the same state after a process restart. Choosing either
+unsupported aggregate interpretation terminates without execution, while a
+ready session creates a hash-bound handoff containing all and only the E5B
+returned runtime plans in selection-rank order. The portable handoff exposes no
+Cypher or SPARQL and allowlists only `runtime.execute_plan`; a controlled test
+passes each attached plan through that existing interface and observes no
+unselected plan. An independent reconstruction audit passes 13/13 checks, the
+focused E4/E5 regression passes 43 tests, and full repository acceptance passes
+1,044 tests with 36 explicit skips. The compact nonmeasurement record is
+`experiments/artifacts/m15_e5c_local_clarification_transport_20260907.json`.
+The UI remains an optional adapter, any live selected-plan E5 gate remains
+separate, and no E5C CWRU run is authorized. See
 `docs/m15_e5_interpretation_relaxation_gate.md`.
 
 The last published M15-D1 gate passed 128 focused tests with two real-service

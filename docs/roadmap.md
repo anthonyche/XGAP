@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1 HIERARCHICAL AND E5B ANCHORED RELAXATION MECHANISMS VERIFIED OFFLINE; UI/EXECUTION BRIDGE PENDING**
+Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1, E5B ANCHORED RELAXATION, AND E5C RESUMABLE CLARIFICATION/HANDOFF VERIFIED OFFLINE; THIN UI AND LIVE SELECTED-PLAN SESSION PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -245,8 +245,24 @@ inside this anchored set. All six E4 classes remain visible, and selection
 makes zero current-query profile, backend, model, or ontology-service calls.
 Focused E5 acceptance passes 20 tests and full repository acceptance passes
 1,030 tests with 36 explicit skips.
-The next E5 step is clarification/UI transport into execution; no additional
-selector-only CWRU run is authorized.
+E5C closes the deterministic clarification-to-execution transport. A portable
+session begins with the R1 structural question, accepts only a content-hashed
+explicit in-set authority event, then asks for the separate predicate base
+needed by anchored relaxation. Replaying the event log reconstructs the exact
+session. Selecting either unavailable aggregate meaning terminates without a
+handoff. A ready session binds the E5B frontier, authority-event chain, hard
+constraints, E4 bridge, and runtime-plan hashes, and exposes all and only the
+returned plans through the existing allowlisted `runtime.execute_plan` tool.
+Conversation text and native query text never enter the portable contract.
+The controlled handoff test executes only the attached plans; the selector and
+transport themselves make zero current-query profile, backend, LLM, or
+ontology-service calls and use zero retries. The independent auditor passes
+13/13 checks, focused E4/E5 regression passes 43 tests, and full local
+acceptance passes 1,044 tests with 36 explicit skips. The compact record is
+`experiments/artifacts/m15_e5c_local_clarification_transport_20260907.json`.
+No E5C CWRU run is authorized by this offline mechanism gate. The remaining E
+surface is a thin UI adapter over the same session/event API and, if required
+for end-to-end system evidence, one separately frozen live selected-plan gate.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

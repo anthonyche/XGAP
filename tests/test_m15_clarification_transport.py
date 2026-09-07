@@ -20,7 +20,9 @@ from xgap.experiments.m15_clarification_transport import (
 )
 from xgap.experiments.m15_clarification_transport_evidence import (
     CLARIFICATION_TRANSPORT_AUDIT_SCHEMA_VERSION,
+    CLARIFICATION_TRANSPORT_COMPACT_EVIDENCE_SCHEMA_VERSION,
     audit_m15_clarification_transport_session,
+    build_m15_clarification_transport_compact_evidence,
 )
 from xgap.experiments.m15_direct_family_prediction import (
     build_m15_controlled_training_observations,
@@ -59,6 +61,7 @@ RELAXATION_POLICY = REPO_ROOT / "experiments/configs/m15_e5b_anchored_predicate_
 TRANSPORT_POLICY = REPO_ROOT / "experiments/configs/m15_e5c_clarification_transport_dev.json"
 RESOLUTION_ONTOLOGY = REPO_ROOT / "experiments/specs/m15_e3_financial_risk_ontology_dev.json"
 BRIDGE_SPEC = REPO_ROOT / "experiments/configs/m15_e4_resolution_execution_bridge_dev.json"
+COMPACT_EVIDENCE = REPO_ROOT / "experiments/artifacts/m15_e5c_local_clarification_transport_20260907.json"
 RUNTIME_HASH = content_hash(
     {
         "runtime": "e5c-local-controlled-runtime",
@@ -553,3 +556,98 @@ def test_e5c_independent_audit_reports_tampered_portable_session(
     assert "session.exact_reconstruction" in audit["failed_check_ids"]
     assert "handoff.all_and_only_returned_plan_ids" in audit["failed_check_ids"]
     assert audit["paper_result"] is False
+
+
+def test_e5c_compact_evidence_is_hash_bound_and_reproducible(
+    e5c_context,
+) -> None:
+    artifact = json.loads(COMPACT_EVIDENCE.read_text(encoding="utf-8"))
+    workload, memory, _ = e5c_context
+    resolution = run_semantic_intake(
+        question="查找过去一个月与 Alice 有密切资金往来的高风险公司。",
+        intake_path=REPO_ROOT
+        / "experiments/configs/m15_e3_financial_risk_intake_dev.json",
+        catalog_path=REPO_ROOT
+        / "experiments/specs/m15_e3_financial_risk_catalog_dev.json",
+        ontology_path=RESOLUTION_ONTOLOGY,
+        user_selections={"person-identity": "person:alice-smith"},
+        user_source_id="explicit-e5c-evidence-entity-selection",
+    )
+    bridge = compile_m15_resolution_execution_bridge(
+        resolution,
+        json.loads(BRIDGE_SPEC.read_text(encoding="utf-8")),
+        repo_root=REPO_ROOT,
+        bridge_spec_sha256=hashlib.sha256(BRIDGE_SPEC.read_bytes()).hexdigest(),
+    )
+    common = {
+        "bridge": bridge,
+        "workload": workload,
+        "memory": memory,
+        "predictor_policy": PREDICTOR_POLICY,
+        "interpretation_policy": INTERPRETATION_POLICY,
+        "ontology_path": RESOLUTION_ONTOLOGY,
+        "relaxation_policy": RELAXATION_POLICY,
+        "transport_policy": TRANSPORT_POLICY,
+    }
+    initial = compile_m15_clarification_transport_session(
+        session_id="m15-e5c-controlled-evidence-session",
+        **common,
+    )
+    structural_event = build_m15_clarification_authority_event(
+        session=initial,
+        event_id="m15-e5c-evidence-structural-event",
+        candidate_id="constraint:single-transfer-at-least-50000",
+        authority_source_id="explicit-e5c-evidence-structural-user-input",
+    )
+    structural = advance_m15_clarification_transport_session(
+        session=initial,
+        authority_event=structural_event,
+        **common,
+    )
+    predicate_event = build_m15_clarification_authority_event(
+        session=structural,
+        event_id="m15-e5c-evidence-predicate-event",
+        candidate_id="predicate:transferred_to",
+        authority_source_id="explicit-e5c-evidence-predicate-user-input",
+    )
+    ready = advance_m15_clarification_transport_session(
+        session=structural,
+        authority_event=predicate_event,
+        **common,
+    )
+    unavailable = {}
+    for candidate_id in (
+        "constraint:amount-at-least-50000",
+        "constraint:frequency-at-least-3",
+    ):
+        event = build_m15_clarification_authority_event(
+            session=initial,
+            event_id="m15-e5c-evidence-" + candidate_id.rsplit(":", 1)[-1],
+            candidate_id=candidate_id,
+            authority_source_id="explicit-e5c-evidence-unavailable-user-input",
+        )
+        unavailable[candidate_id] = advance_m15_clarification_transport_session(
+            session=initial,
+            authority_event=event,
+            **common,
+        )
+    audit = audit_m15_clarification_transport_session(
+        session=ready,
+        **common,
+    )
+    actual = build_m15_clarification_transport_compact_evidence(
+        git_commit=artifact["git_commit"],
+        initial=initial,
+        structurally_bound=structural,
+        ready=ready,
+        unavailable_structures=unavailable,
+        audit=audit,
+    )
+
+    assert artifact["schema_version"] == (
+        CLARIFICATION_TRANSPORT_COMPACT_EVIDENCE_SCHEMA_VERSION
+    )
+    assert content_hash(
+        {key: value for key, value in artifact.items() if key != "artifact_sha256"}
+    ) == artifact["artifact_sha256"]
+    assert actual == artifact

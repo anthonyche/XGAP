@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
@@ -30,6 +31,10 @@ from xgap.runtime.tool import FEDERATED_EXECUTION_TOOL
 CLARIFICATION_TRANSPORT_AUDIT_SCHEMA_VERSION = (
     "m15-e5c-clarification-transport-evidence-audit-v1"
 )
+CLARIFICATION_TRANSPORT_COMPACT_EVIDENCE_SCHEMA_VERSION = (
+    "m15-e5c-local-clarification-transport-evidence-v1"
+)
+_COMMIT = re.compile(r"^[0-9a-f]{40}$")
 
 
 @dataclass(frozen=True)
@@ -282,3 +287,157 @@ def audit_m15_clarification_transport_session(
     return M15ClarificationTransportEvidenceAudit(
         {**body, "audit_sha256": content_hash(body)}
     )
+
+
+def build_m15_clarification_transport_compact_evidence(
+    *,
+    git_commit: str,
+    initial: M15ClarificationTransportSession,
+    structurally_bound: M15ClarificationTransportSession,
+    ready: M15ClarificationTransportSession,
+    unavailable_structures: Mapping[str, M15ClarificationTransportSession],
+    audit: M15ClarificationTransportEvidenceAudit,
+) -> dict[str, Any]:
+    """Build the compact, nonmeasurement E5C mechanism record."""
+
+    if _COMMIT.fullmatch(git_commit) is None:
+        raise ValueError("git_commit must be a full lowercase Git commit")
+    initial_payload = initial.to_dict()
+    structural_payload = structurally_bound.to_dict()
+    ready_payload = ready.to_dict()
+    audit_payload = audit.to_dict()
+    expected_states = (
+        (initial_payload, "awaiting_structural_clarification", 0),
+        (structural_payload, "awaiting_predicate_base_authority", 1),
+        (ready_payload, "ready_for_execution_handoff", 2),
+    )
+    for payload, status, event_count in expected_states:
+        if (
+            payload.get("status") != status
+            or len(payload.get("authority_events", [])) != event_count
+            or payload.get("source_contract") != ready_payload.get("source_contract")
+        ):
+            raise ValueError("clarification evidence session sequence is invalid")
+        if content_hash(
+            {
+                key: value
+                for key, value in payload.items()
+                if key != "session_sha256"
+            }
+        ) != payload.get("session_sha256"):
+            raise ValueError("clarification evidence session hash mismatch")
+    handoff = ready_payload.get("execution_handoff")
+    anchored = ready_payload.get("anchored_state")
+    if (
+        not isinstance(handoff, Mapping)
+        or not isinstance(anchored, Mapping)
+        or ready.execution_handoff is None
+        or ready.anchored_frontier is None
+        or audit_payload.get("success") is not True
+        or audit_payload.get("session_sha256") != ready_payload["session_sha256"]
+    ):
+        raise ValueError("ready session or independent audit is invalid")
+    unavailable: dict[str, dict[str, Any]] = {}
+    for candidate_id, session in sorted(unavailable_structures.items()):
+        payload = session.to_dict()
+        if (
+            payload.get("status") != "selected_structure_unavailable"
+            or payload.get("execution_eligible") is not False
+            or payload.get("execution_handoff") is not None
+            or len(payload.get("authority_events", [])) != 1
+            or payload.get("source_contract") != ready_payload["source_contract"]
+            or payload["authority_events"][0].get("candidate_id") != candidate_id
+        ):
+            raise ValueError("unavailable structure evidence is invalid")
+        unavailable[candidate_id] = {
+            "status": payload["status"],
+            "session_sha256": payload["session_sha256"],
+            "execution_eligible": payload["execution_eligible"],
+            "execution_handoff": payload["execution_handoff"],
+            "active_interpretation_class_ids": payload["hierarchical_state"][
+                "active_interpretation_class_ids"
+            ],
+        }
+    structural_event = structural_payload["authority_events"][0]
+    predicate_event = ready_payload["authority_events"][1]
+    body = {
+        "schema_version": CLARIFICATION_TRANSPORT_COMPACT_EVIDENCE_SCHEMA_VERSION,
+        "git_commit": git_commit,
+        "evidence_class": "controlled_local_nonmeasurement_mechanism",
+        "source_contract": copy.deepcopy(ready_payload["source_contract"]),
+        "transitions": {
+            "initial": {
+                "status": initial_payload["status"],
+                "session_sha256": initial_payload["session_sha256"],
+                "pending_question_sha256": initial_payload["pending_question"][
+                    "question_sha256"
+                ],
+                "bounded_candidate_ids": [
+                    item["candidate_id"]
+                    for item in initial_payload["pending_question"]["options"]
+                ],
+                "execution_eligible": initial_payload["execution_eligible"],
+            },
+            "structural_authority": {
+                "authority_event_sha256": structural_event[
+                    "authority_event_sha256"
+                ],
+                "status": structural_payload["status"],
+                "session_sha256": structural_payload["session_sha256"],
+                "pending_question_sha256": structural_payload[
+                    "pending_question"
+                ]["question_sha256"],
+                "bounded_candidate_ids": [
+                    item["candidate_id"]
+                    for item in structural_payload["pending_question"]["options"]
+                ],
+                "execution_eligible": structural_payload["execution_eligible"],
+            },
+            "predicate_base_authority": {
+                "authority_event_sha256": predicate_event[
+                    "authority_event_sha256"
+                ],
+                "status": ready_payload["status"],
+                "session_sha256": ready_payload["session_sha256"],
+                "session_state_sha256": ready_payload["session_state_sha256"],
+                "authority_event_chain_sha256": ready_payload[
+                    "authority_event_chain_sha256"
+                ],
+                "anchored_frontier_sha256": anchored[
+                    "anchored_frontier_sha256"
+                ],
+                "returned_plan_ids": list(handoff["selected_plan_ids"]),
+                "execution_handoff_sha256": handoff[
+                    "execution_handoff_sha256"
+                ],
+                "selected_runtime_plan_sha256": {
+                    item["plan_id"]: item["runtime_plan_sha256"]
+                    for item in handoff["selected_plans"]
+                },
+                "execution_eligible": ready_payload["execution_eligible"],
+            },
+            "unavailable_structures": unavailable,
+        },
+        "audit": {
+            "schema_version": audit_payload["schema_version"],
+            "success": audit_payload["success"],
+            "check_count": audit_payload["check_count"],
+            "failed_check_ids": list(audit_payload["failed_check_ids"]),
+            "audit_sha256": audit_payload["audit_sha256"],
+            "source_session_mutated": audit_payload["source_session_mutated"],
+        },
+        "claim_boundary": {
+            "development_artifacts_only": True,
+            "hard_constraints_preserved": True,
+            "conversation_text_used_as_authority": False,
+            "current_query_profile_calls": 0,
+            "backend_calls_made": 0,
+            "llm_calls_made": 0,
+            "ontology_service_calls_made": 0,
+            "native_query_text_emitted": False,
+            "automatic_retries": 0,
+            "paper_result": False,
+        },
+        "paper_result": False,
+    }
+    return {**body, "artifact_sha256": content_hash(body)}
