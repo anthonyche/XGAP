@@ -190,6 +190,38 @@ def test_service_plan_uses_loopback_dynamic_ports_and_local_state(
     assert serialized["public_ports"] is False
     assert serialized["automatic_retries"] == 0
     assert serialized["credentials_persisted"] is False
+    assert serialized["neo4j_resource_profile"] == {
+        "profile_id": "development",
+        "heap_initial_size": "256m",
+        "heap_max_size": "512m",
+        "pagecache_size": "256m",
+    }
+
+
+def test_service_plan_uses_explicit_finbench_scale_resource_profile(
+    tmp_path: Path,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    evidence = tmp_path / "evidence"
+    plan = build_native_service_plan(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        evidence_root=evidence,
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java=JavaEvidence("/opt/java17/bin/java", 17, "openjdk 17.0.6"),
+        neo4j_http_port=17474,
+        neo4j_bolt_port=17687,
+        fuseki_port=13030,
+        lock_path=REPO_ROOT / "services" / "m15-native-runtime.lock.json",
+        neo4j_resource_profile_id="finbench_sf0_1",
+    )
+
+    assert plan.neo4j_resource_profile["profile_id"] == "finbench_sf0_1"
+    config = (evidence / "neo4j.conf").read_text(encoding="utf-8")
+    assert "server.memory.heap.initial_size=1g" in config
+    assert "server.memory.heap.max_size=2g" in config
+    assert "server.memory.pagecache.size=1g" in config
 
 
 def test_family_runtime_compatibility_is_stable_and_allocation_scoped(
@@ -2469,11 +2501,13 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "m15_finbench_v010_sf0_1_sources.json" in finbench_scale_script
     assert "m15_finbench_sf0_1_primary_population_v1.json" in finbench_scale_script
     assert "XGAP_FINBENCH_BATCH_SIZE=2000" in finbench_scale_script
+    assert "XGAP_NEO4J_RESOURCE_PROFILE=finbench_sf0_1" in finbench_scale_script
     assert "#SBATCH --mem=16G" in finbench_scale_script
     assert "#SBATCH --time=01:30:00" in finbench_scale_script
     assert "SLURM_SUBMIT_DIR" in finbench_scale_script
     assert "BASH_SOURCE" not in finbench_scale_script
     assert 'FINBENCH_BATCH_SIZE="${XGAP_FINBENCH_BATCH_SIZE:-250}"' in script
+    assert '--neo4j-resource-profile "$NEO4J_RESOURCE_PROFILE"' in script
     assert "XGAP_FINBENCH_LOCK is not an allowlisted repository lock" in script
     assert "XGAP_FINBENCH_SPEC is not an allowlisted repository spec" in script
     assert "--localhost" not in script  # Frozen by the typed service plan.

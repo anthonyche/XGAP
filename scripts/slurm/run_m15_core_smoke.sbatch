@@ -138,6 +138,7 @@ detect_runtime() {
   tests/test_m15_hierarchical_interpretation_frontier.py \
   tests/test_m15_clarification_transport.py \
   tests/test_m15_live_selected_interpretation_session.py \
+  tests/test_m15_finbench_partition.py \
   tests/test_m15_finbench_workload.py \
   tests/test_m15_finbench_federation.py \
   tests/test_m15_live_finbench_correctness.py \

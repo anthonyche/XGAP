@@ -11,6 +11,9 @@ import pytest
 from xgap.experiments.m15_finbench_artifacts import DEFAULT_LOCK_PATH
 from xgap.experiments.m15_finbench_partition import (
     ENTITY_PLACEMENTS,
+    LEGACY_PARTITION_SCHEMA_VERSION,
+    NEO4J_BATCH_FILENAME,
+    NEO4J_BATCH_SCHEMA_VERSION,
     RELATIONSHIP_PLACEMENTS,
     build_finbench_source_partition,
     load_finbench_source_partition,
@@ -102,7 +105,9 @@ def test_partition_is_complete_split_and_loadable(tmp_path: Path) -> None:
         batch_size=2,
     )
 
-    cypher = (output / "load_neo4j.cypher").read_text(encoding="utf-8")
+    batch_text = (output / NEO4J_BATCH_FILENAME).read_text(encoding="utf-8")
+    batches = [json.loads(line) for line in batch_text.splitlines()]
+    statements = [item["statement"] for item in batches]
     turtle = (output / "load_fuseki.ttl").read_text(encoding="utf-8")
     persisted = json.loads(
         (output / "source_partition_manifest.json").read_text(encoding="utf-8")
@@ -114,13 +119,25 @@ def test_partition_is_complete_split_and_loadable(tmp_path: Path) -> None:
     assert manifest["backend_calls"] == 0
     assert manifest["answer_oracle_accessed"] is False
     assert manifest["paper_result"] is False
-    assert "TRANSFERRED_TO" in cypher
-    assert "WITHDREW_TO" in cypher
-    assert "isBlocked" not in cypher
+    assert any("TRANSFERRED_TO" in statement for statement in statements)
+    assert any("WITHDREW_TO" in statement for statement in statements)
+    assert all("UNWIND [" not in statement for statement in statements)
+    assert all(
+        item["schema_version"] == NEO4J_BATCH_SCHEMA_VERSION for item in batches
+    )
+    assert all(item["automatic_retries"] == 0 for item in batches)
+    transfer_batch = next(
+        item
+        for item in batches
+        if item["source_table"] == "account_transfer_account"
+    )
+    assert transfer_batch["parameters"]["rows"][0]["props"]["amount"] == 1.25
+    assert "isBlocked" not in batch_text
     assert "xgapfb:isBlocked false" in turtle
     assert "xgapfb:riskLevel" in turtle
-    assert manifest["output_files"]["load_neo4j.cypher"]["sha256"] == hashlib.sha256(
-        cypher.encode("utf-8")
+    assert manifest["neo4j_load"]["filename"] == NEO4J_BATCH_FILENAME
+    assert manifest["output_files"][NEO4J_BATCH_FILENAME]["sha256"] == hashlib.sha256(
+        batch_text.encode("utf-8")
     ).hexdigest()
     assert load_finbench_source_partition(output) == manifest
 
@@ -138,7 +155,7 @@ def test_partition_is_byte_deterministic(tmp_path: Path) -> None:
     )
 
     assert one == two
-    for name in ("load_neo4j.cypher", "load_fuseki.ttl", "source_partition_manifest.json"):
+    for name in (NEO4J_BATCH_FILENAME, "load_fuseki.ttl", "source_partition_manifest.json"):
         assert (first / name).read_bytes() == (second / name).read_bytes()
 
 
@@ -188,3 +205,36 @@ def test_partition_loader_detects_load_file_mutation(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="size mismatch"):
         load_finbench_source_partition(output)
+
+
+def test_partition_loader_keeps_legacy_v1_bundle_readable(tmp_path: Path) -> None:
+    output = tmp_path / "legacy"
+    output.mkdir()
+    neo4j = output / "load_neo4j.cypher"
+    fuseki = output / "load_fuseki.ttl"
+    neo4j.write_text("RETURN 1;\n", encoding="utf-8")
+    fuseki.write_text("# legacy\n", encoding="utf-8")
+    manifest = {
+        "schema_version": LEGACY_PARTITION_SCHEMA_VERSION,
+        "paper_result": False,
+        "output_files": {
+            path.name: {
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "size_bytes": path.stat().st_size,
+            }
+            for path in (neo4j, fuseki)
+        },
+    }
+    manifest["partition_sha256"] = hashlib.sha256(
+        json.dumps(
+            manifest,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    (output / "source_partition_manifest.json").write_text(
+        json.dumps(manifest), encoding="utf-8"
+    )
+
+    assert load_finbench_source_partition(output) == manifest

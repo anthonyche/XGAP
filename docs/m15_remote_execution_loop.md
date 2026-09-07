@@ -64,9 +64,13 @@ SF0.1 archive is present on CWRU. Its first dedicated 16-GiB, 90-minute job,
 and 72 plans were sealed, but Neo4j fixture statement 46/194 returned HTTP 500
 after 45 successful statements. No experiment plan ran, no oracle was opened,
 and peak batch-step RSS was about 2.06 GB. Preserve the failed tree and do not
-retry automatically. The next action is to classify its saved Neo4j log; the
-client-side error path has separately been repaired to retain bounded Neo4j
-status/code/message evidence on any future authorized attempt.
+retry automatically. Its saved console log contains only normal startup and a
+request-initiated shutdown; deterministic generation identifies statement 46
+as the first 2,000-row transfer-relationship batch. The repair changes the
+partition to hash-bound parameterized JSONL batches, verifies Neo4j affected
+rows, and selects a persisted 1/2/1-GiB SF0.1 heap/page-cache profile. Submit
+exactly one repaired gate only after the repair commit and tests are published;
+the command and expected commit will be issued separately.
 
 Meanwhile, the next comparison schedule is locally frozen but not remotely
 authorized. It binds 368 complete plans and 736 backend calls in one

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import urllib.request
@@ -12,6 +13,8 @@ from xgap.experiments.m15_fixture_loader import (
     BackendLoadReport,
     FusekiGraphStoreFixtureLoader,
     Neo4jCypherFixtureLoader,
+    Neo4jParameterizedFixtureLoader,
+    NEO4J_PARAMETERIZED_BATCH_SCHEMA_VERSION,
     load_m15_split_fixture,
     main,
     split_cypher_statements,
@@ -146,6 +149,127 @@ def test_neo4j_loader_records_raised_adapter_failure(tmp_path: Path) -> None:
     assert not report.success
     assert report.operations_attempted == 1
     assert "m15-load-neo4j-001" in str(report.error)
+
+
+def _parameterized_batch(
+    *, batch_id: str = "nodes-account-000001", rows: list[dict] | None = None
+) -> dict:
+    selected_rows = rows or [{"id": "A1", "props": {"amount": 1.25}}]
+    batch = {
+        "schema_version": NEO4J_PARAMETERIZED_BATCH_SCHEMA_VERSION,
+        "batch_id": batch_id,
+        "kind": "nodes",
+        "source_table": "account",
+        "statement": (
+            "UNWIND $rows AS row CREATE (n:Account {id: row.id}) "
+            "SET n += row.props RETURN count(*) AS loaded"
+        ),
+        "parameters": {"rows": selected_rows},
+        "expected_affected_rows": len(selected_rows),
+        "mutation_semantics": "create_into_empty_job_owned_database",
+        "automatic_retries": 0,
+    }
+    batch["batch_sha256"] = hashlib.sha256(
+        json.dumps(
+            batch,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    return batch
+
+
+def test_parameterized_neo4j_loader_streams_exact_parameters(tmp_path: Path) -> None:
+    path = tmp_path / "load.jsonl"
+    batches = [
+        _parameterized_batch(),
+        _parameterized_batch(
+            batch_id="nodes-account-000002",
+            rows=[{"id": "A2", "props": {"amount": 2}}],
+        ),
+    ]
+    path.write_text(
+        "".join(json.dumps(item, sort_keys=True) + "\n" for item in batches),
+        encoding="utf-8",
+    )
+
+    class Client:
+        def __init__(self) -> None:
+            self.artifacts = []
+
+        def execute(self, artifact) -> ExecutionReport:
+            self.artifacts.append(artifact)
+            return ExecutionReport(
+                backend_id="neo4j",
+                artifact_id=artifact.artifact_id,
+                language="cypher",
+                success=True,
+                rows=[{"loaded": len(artifact.parameters["rows"])}],
+            )
+
+    client = Client()
+    report = Neo4jParameterizedFixtureLoader(client).load(path)
+
+    assert report.success
+    assert report.operations_attempted == 2
+    assert report.metadata["automatic_retries"] == 0
+    assert client.artifacts[0].parameters == batches[0]["parameters"]
+    assert "$rows" in client.artifacts[0].text
+    assert "A1" not in client.artifacts[0].text
+
+
+def test_parameterized_neo4j_loader_rejects_tamper_before_call(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "load.jsonl"
+    batch = _parameterized_batch()
+    batch["parameters"]["rows"][0]["id"] = "tampered"
+    path.write_text(json.dumps(batch) + "\n", encoding="utf-8")
+
+    class Client:
+        calls = 0
+
+        def execute(self, artifact) -> ExecutionReport:
+            self.calls += 1
+            raise AssertionError("tampered batch must not execute")
+
+    client = Client()
+    report = Neo4jParameterizedFixtureLoader(client).load(path)
+
+    assert not report.success
+    assert report.operations_attempted == 0
+    assert "identity mismatch" in str(report.error)
+    assert client.calls == 0
+
+
+def test_parameterized_neo4j_loader_stops_on_affected_row_mismatch(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "load.jsonl"
+    path.write_text(json.dumps(_parameterized_batch()) + "\n", encoding="utf-8")
+
+    class Client:
+        calls = 0
+
+        def execute(self, artifact) -> ExecutionReport:
+            self.calls += 1
+            return ExecutionReport(
+                backend_id="neo4j",
+                artifact_id=artifact.artifact_id,
+                language="cypher",
+                success=True,
+                rows=[{"loaded": 0}],
+            )
+
+    client = Client()
+    report = Neo4jParameterizedFixtureLoader(client).load(path)
+
+    assert not report.success
+    assert report.operations_attempted == 1
+    assert "affected-row mismatch" in str(report.error)
+    assert client.calls == 1
 
 
 def test_fuseki_loader_uses_append_post_without_persisting_credentials(

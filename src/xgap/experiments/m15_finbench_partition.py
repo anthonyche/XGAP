@@ -34,8 +34,14 @@ from xgap.experiments.m15_finbench_artifacts import (
 )
 
 
-PARTITION_SCHEMA_VERSION = "m15-finbench-source-partition-v1"
-GENERATOR_VERSION = "m15-finbench-partition-generator-v1"
+LEGACY_PARTITION_SCHEMA_VERSION = "m15-finbench-source-partition-v1"
+PARTITION_SCHEMA_VERSION = "m15-finbench-source-partition-v2"
+SUPPORTED_PARTITION_SCHEMA_VERSIONS = frozenset(
+    {LEGACY_PARTITION_SCHEMA_VERSION, PARTITION_SCHEMA_VERSION}
+)
+GENERATOR_VERSION = "m15-finbench-partition-generator-v2"
+NEO4J_BATCH_SCHEMA_VERSION = "m15-finbench-neo4j-parameterized-batch-v1"
+NEO4J_BATCH_FILENAME = "load_neo4j_batches.jsonl"
 DEFAULT_BATCH_SIZE = 250
 _DECIMAL = re.compile(
     r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$"
@@ -273,11 +279,7 @@ def _file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _cypher_string(value: str) -> str:
-    return json.dumps(value, ensure_ascii=False)
-
-
-def _numeric_literal(value: str, *, table_id: str, column: str) -> str:
+def _numeric_value(value: str, *, table_id: str, column: str) -> int | float:
     if not value or _DECIMAL.fullmatch(value) is None:
         raise ValueError(f"Invalid FinBench numeric value: {table_id}.{column}")
     try:
@@ -288,22 +290,28 @@ def _numeric_literal(value: str, *, table_id: str, column: str) -> str:
         ) from exc
     if not parsed.is_finite():
         raise ValueError(f"Non-finite FinBench numeric value: {table_id}.{column}")
-    return value
+    if "." not in value and "e" not in value.lower():
+        return int(value)
+    converted = float(parsed)
+    if not converted == converted or converted in {float("inf"), float("-inf")}:
+        raise ValueError(f"Non-finite FinBench numeric value: {table_id}.{column}")
+    return converted
 
 
-def _cypher_map(
-    value: Mapping[str, str], *, numeric_columns: frozenset[str] = frozenset()
-) -> str:
-    fields: list[str] = []
-    for key in sorted(value):
-        raw = value[key]
-        encoded = (
-            _numeric_literal(raw, table_id="cypher", column=key)
+def _parameter_map(
+    value: Mapping[str, str],
+    *,
+    table_id: str,
+    numeric_columns: frozenset[str] = frozenset(),
+) -> dict[str, str | int | float]:
+    return {
+        key: (
+            _numeric_value(value[key], table_id=table_id, column=key)
             if key in numeric_columns
-            else _cypher_string(raw)
+            else value[key]
         )
-        fields.append(f"{key}:{encoded}")
-    return "{" + ",".join(fields) + "}"
+        for key in sorted(value)
+    }
 
 
 def _rdf_literal(value: str, *, boolean: bool = False) -> str:
@@ -348,29 +356,82 @@ def _iter_rows(
             yield row_number, dict(zip(header, row, strict=True))
 
 
-def _write_batches(
+def _write_parameterized_batches(
     output: TextIO,
-    rows: Iterator[str],
+    rows: Iterator[Mapping[str, Any]],
     statement: str,
     *,
+    kind: str,
+    source_table: str,
     batch_size: int,
 ) -> tuple[int, int]:
     row_count = 0
     statement_count = 0
-    batch: list[str] = []
-    for encoded in rows:
-        batch.append(encoded)
+    batch: list[dict[str, Any]] = []
+
+    def write_batch(items: Sequence[Mapping[str, Any]]) -> None:
+        nonlocal statement_count
+        statement_count += 1
+        batch_id = f"{kind}-{source_table}-{statement_count:06d}"
+        record: dict[str, Any] = {
+            "schema_version": NEO4J_BATCH_SCHEMA_VERSION,
+            "batch_id": batch_id,
+            "kind": kind,
+            "source_table": source_table,
+            "statement": statement,
+            "parameters": {"rows": [dict(item) for item in items]},
+            "expected_affected_rows": len(items),
+            "mutation_semantics": "create_into_empty_job_owned_database",
+            "automatic_retries": 0,
+        }
+        record["batch_sha256"] = _canonical_sha256(record)
+        output.write(
+            json.dumps(
+                record,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            )
+            + "\n"
+        )
+
+    for row in rows:
+        batch.append(dict(row))
         row_count += 1
         if len(batch) == batch_size:
-            output.write("UNWIND [" + ",".join(batch) + "] AS row\n")
-            output.write(statement + ";\n")
-            statement_count += 1
+            write_batch(batch)
             batch.clear()
     if batch:
-        output.write("UNWIND [" + ",".join(batch) + "] AS row\n")
-        output.write(statement + ";\n")
-        statement_count += 1
+        write_batch(batch)
     return row_count, statement_count
+
+
+def _write_constraint_batch(
+    output: TextIO, *, source_table: str, statement: str
+) -> None:
+    record: dict[str, Any] = {
+        "schema_version": NEO4J_BATCH_SCHEMA_VERSION,
+        "batch_id": f"constraint-{source_table}",
+        "kind": "constraint",
+        "source_table": source_table,
+        "statement": statement,
+        "parameters": {},
+        "expected_affected_rows": None,
+        "mutation_semantics": "create_into_empty_job_owned_database",
+        "automatic_retries": 0,
+    }
+    record["batch_sha256"] = _canonical_sha256(record)
+    output.write(
+        json.dumps(
+            record,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+        + "\n"
+    )
 
 
 def _validate_complete_placement(lock: FinBenchArtifactLock) -> dict[str, SnapshotTableSpec]:
@@ -410,7 +471,8 @@ def load_finbench_source_partition(root: str | Path) -> dict[str, Any]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if not isinstance(manifest, Mapping):
         raise ValueError("FinBench source partition manifest must be an object")
-    if manifest.get("schema_version") != PARTITION_SCHEMA_VERSION:
+    schema_version = manifest.get("schema_version")
+    if schema_version not in SUPPORTED_PARTITION_SCHEMA_VERSIONS:
         raise ValueError("FinBench source partition schema is unsupported")
     if manifest.get("paper_result") is not False:
         raise ValueError("FinBench source partition must remain paper_result=false")
@@ -420,10 +482,12 @@ def load_finbench_source_partition(root: str | Path) -> dict[str, Any]:
     ):
         raise ValueError("FinBench source partition identity mismatch")
     output_files = manifest.get("output_files")
-    if not isinstance(output_files, Mapping) or set(output_files) != {
-        "load_neo4j.cypher",
-        "load_fuseki.ttl",
-    }:
+    expected_files = (
+        {"load_neo4j.cypher", "load_fuseki.ttl"}
+        if schema_version == LEGACY_PARTITION_SCHEMA_VERSION
+        else {NEO4J_BATCH_FILENAME, "load_fuseki.ttl"}
+    )
+    if not isinstance(output_files, Mapping) or set(output_files) != expected_files:
         raise ValueError("FinBench source partition output file set is invalid")
     for name, raw in output_files.items():
         if not isinstance(raw, Mapping):
@@ -435,6 +499,17 @@ def load_finbench_source_partition(root: str | Path) -> dict[str, Any]:
             raise ValueError(f"FinBench source partition file size mismatch: {name}")
         if raw.get("sha256") != _file_sha256(candidate):
             raise ValueError(f"FinBench source partition file digest mismatch: {name}")
+    if schema_version == PARTITION_SCHEMA_VERSION:
+        neo4j_load = manifest.get("neo4j_load")
+        if not isinstance(neo4j_load, Mapping) or dict(neo4j_load) != {
+            "format": "parameterized_jsonl_batches_v1",
+            "filename": NEO4J_BATCH_FILENAME,
+            "batch_schema_version": NEO4J_BATCH_SCHEMA_VERSION,
+            "mutation_semantics": "create_into_empty_job_owned_database",
+            "requires_empty_job_owned_database": True,
+            "automatic_retries": 0,
+        }:
+            raise ValueError("FinBench source partition Neo4j load contract is invalid")
     return dict(manifest)
 
 
@@ -465,7 +540,7 @@ def build_finbench_source_partition(
     staging = Path(
         tempfile.mkdtemp(prefix=destination.name + ".partial-", dir=destination.parent)
     )
-    neo4j_path = staging / "load_neo4j.cypher"
+    neo4j_path = staging / NEO4J_BATCH_FILENAME
     fuseki_path = staging / "load_fuseki.ttl"
     manifest_path = staging / "source_partition_manifest.json"
     source_counts: dict[str, int] = {}
@@ -482,15 +557,18 @@ def build_finbench_source_partition(
             inventory = validate_finbench_tar_inventory(
                 handle, lock.artifact.archive_root
             )
-            neo4j.write("// XGAP FinBench v0.1.0-derived heterogeneous source partition\n")
             fuseki.write(f"@prefix xgapfb: <{_SCHEMA_IRI}> .\n")
             fuseki.write("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n\n")
 
             for entity in ENTITY_PLACEMENTS:
                 constraint_name = f"xgap_finbench_{entity.table_id}_id"
-                neo4j.write(
-                    f"CREATE CONSTRAINT {constraint_name} IF NOT EXISTS "
-                    f"FOR (n:{entity.neo4j_label}) REQUIRE n.id IS UNIQUE;\n"
+                _write_constraint_batch(
+                    neo4j,
+                    source_table=entity.table_id,
+                    statement=(
+                        f"CREATE CONSTRAINT {constraint_name} IF NOT EXISTS "
+                        f"FOR (n:{entity.neo4j_label}) REQUIRE n.id IS UNIQUE"
+                    ),
                 )
                 neo4j_statements[f"constraint:{entity.table_id}"] = 1
 
@@ -498,7 +576,7 @@ def build_finbench_source_partition(
                 seen: set[str] = set()
                 rdf_count = 0
 
-                def encoded_nodes() -> Iterator[str]:
+                def encoded_nodes() -> Iterator[dict[str, Any]]:
                     nonlocal rdf_count
                     for _row_number, row in _iter_rows(
                         handle, inventory, tables[entity.table_id]
@@ -529,19 +607,25 @@ def build_finbench_source_partition(
                             fuseki.write(f"{subject} xgapfb:{predicate} {literal} .\n")
                             rdf_count += 1
                         fuseki.write("\n")
-                        numeric = frozenset(entity.numeric_columns)
-                        yield (
-                            "{id:"
-                            + _cypher_string(identifier)
-                            + ",props:"
-                            + _cypher_map(properties, numeric_columns=numeric)
-                            + "}"
-                        )
+                        yield {
+                            "id": identifier,
+                            "props": _parameter_map(
+                                properties,
+                                table_id=entity.table_id,
+                                numeric_columns=frozenset(entity.numeric_columns),
+                            ),
+                        }
 
-                row_count, statement_count = _write_batches(
+                row_count, statement_count = _write_parameterized_batches(
                     neo4j,
                     encoded_nodes(),
-                    f"MERGE (n:{entity.neo4j_label} {{id: row.id}}) SET n += row.props",
+                    (
+                        "UNWIND $rows AS row "
+                        f"CREATE (n:{entity.neo4j_label} {{id: row.id}}) "
+                        "SET n += row.props RETURN count(*) AS loaded"
+                    ),
+                    kind="nodes",
+                    source_table=entity.table_id,
                     batch_size=batch_size,
                 )
                 source_counts[entity.table_id] = row_count
@@ -554,7 +638,7 @@ def build_finbench_source_partition(
                 from_label = entity_by_id[edge.from_entity].neo4j_label
                 to_label = entity_by_id[edge.to_entity].neo4j_label
 
-                def encoded_edges() -> Iterator[str]:
+                def encoded_edges() -> Iterator[dict[str, Any]]:
                     nonlocal missing_references
                     numeric = frozenset(edge.numeric_columns)
                     for row_number, row in _iter_rows(
@@ -580,25 +664,30 @@ def build_finbench_source_partition(
                                 ensure_ascii=False,
                             ).encode("utf-8")
                         ).hexdigest()
-                        yield (
-                            "{fromId:"
-                            + _cypher_string(from_id)
-                            + ",toId:"
-                            + _cypher_string(to_id)
-                            + ",sourceKey:"
-                            + _cypher_string(source_key)
-                            + ",props:"
-                            + _cypher_map(properties, numeric_columns=numeric)
-                            + "}"
-                        )
+                        yield {
+                            "fromId": from_id,
+                            "toId": to_id,
+                            "sourceKey": source_key,
+                            "props": _parameter_map(
+                                properties,
+                                table_id=edge.table_id,
+                                numeric_columns=numeric,
+                            ),
+                        }
 
-                row_count, statement_count = _write_batches(
+                row_count, statement_count = _write_parameterized_batches(
                     neo4j,
                     encoded_edges(),
-                    f"MATCH (a:{from_label} {{id: row.fromId}}) "
-                    f"MATCH (b:{to_label} {{id: row.toId}}) "
-                    f"MERGE (a)-[r:{edge.neo4j_type} {{sourceKey: row.sourceKey}}]->(b) "
-                    "SET r += row.props",
+                    (
+                        "UNWIND $rows AS row "
+                        f"MATCH (a:{from_label} {{id: row.fromId}}) "
+                        f"MATCH (b:{to_label} {{id: row.toId}}) "
+                        f"CREATE (a)-[r:{edge.neo4j_type} "
+                        "{sourceKey: row.sourceKey}]->(b) "
+                        "SET r += row.props RETURN count(*) AS loaded"
+                    ),
+                    kind="relationships",
+                    source_table=edge.table_id,
                     batch_size=batch_size,
                 )
                 source_counts[edge.table_id] = row_count + missing_references
@@ -661,7 +750,7 @@ def build_finbench_source_partition(
             },
         }
         output_files = {
-            "load_neo4j.cypher": {
+            NEO4J_BATCH_FILENAME: {
                 "sha256": _file_sha256(neo4j_path),
                 "size_bytes": neo4j_path.stat().st_size,
             },
@@ -673,7 +762,7 @@ def build_finbench_source_partition(
         manifest: dict[str, Any] = {
             "schema_version": PARTITION_SCHEMA_VERSION,
             "generator_version": GENERATOR_VERSION,
-            "bundle_id": f"{lock.artifact.artifact_id}-xgap-heterogeneous-v1",
+            "bundle_id": f"{lock.artifact.artifact_id}-xgap-heterogeneous-v2",
             "artifact_id": lock.artifact.artifact_id,
             "benchmark": lock.artifact.benchmark,
             "benchmark_version": lock.artifact.version,
@@ -691,6 +780,14 @@ def build_finbench_source_partition(
             "placement": placement,
             "neo4j_statement_counts": neo4j_statements,
             "neo4j_statement_count": sum(neo4j_statements.values()),
+            "neo4j_load": {
+                "format": "parameterized_jsonl_batches_v1",
+                "filename": NEO4J_BATCH_FILENAME,
+                "batch_schema_version": NEO4J_BATCH_SCHEMA_VERSION,
+                "mutation_semantics": "create_into_empty_job_owned_database",
+                "requires_empty_job_owned_database": True,
+                "automatic_retries": 0,
+            },
             "fuseki_triple_counts": fuseki_triples,
             "fuseki_triple_count": sum(fuseki_triples.values()),
             "referential_integrity": {

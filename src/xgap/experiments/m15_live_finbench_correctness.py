@@ -221,8 +221,19 @@ def run_m15_live_finbench_correctness(
     execution_started = time.perf_counter()
     try:
         partition_path = Path(partition_root).resolve()
+        neo4j_contract = partition.get("neo4j_load")
+        neo4j_filename = (
+            neo4j_contract.get("filename")
+            if isinstance(neo4j_contract, Mapping)
+            else "load_neo4j.cypher"
+        )
+        if neo4j_filename not in {
+            "load_neo4j.cypher",
+            "load_neo4j_batches.jsonl",
+        }:
+            raise ValueError("FinBench Neo4j load filename is unsupported")
         for backend_id, filename in (
-            ("neo4j", "load_neo4j.cypher"),
+            ("neo4j", neo4j_filename),
             ("fuseki", "load_fuseki.ttl"),
         ):
             report = loaders[backend_id].load(partition_path / filename)

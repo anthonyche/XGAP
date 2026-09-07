@@ -15,7 +15,10 @@ from xgap.experiments.m15_finbench_federation import (
     build_finbench_plan_candidates,
     canonicalize_finbench_rows,
 )
-from xgap.experiments.m15_finbench_partition import load_finbench_source_partition
+from xgap.experiments.m15_finbench_partition import (
+    PARTITION_SCHEMA_VERSION,
+    load_finbench_source_partition,
+)
 from xgap.experiments.m15_finbench_workload import (
     load_finbench_primary_public_workload,
     load_finbench_primary_workload,
@@ -329,6 +332,38 @@ def audit_m15_finbench_correctness(
         check(f"load.{backend_id}.backend_id", backend_id, report.get("backend_id"))
         check(f"load.{backend_id}.success", True, report.get("success"))
         check(f"load.{backend_id}.error", None, report.get("error"))
+    if partition.get("schema_version") == PARTITION_SCHEMA_VERSION:
+        neo4j_load = _mapping(partition.get("neo4j_load"))
+        neo4j_report = _mapping(load_reports.get("neo4j"))
+        neo4j_metadata = _mapping(neo4j_report.get("metadata"))
+        check(
+            "load.neo4j.parameterized_format",
+            "parameterized_jsonl_batches_v1",
+            neo4j_load.get("format"),
+        )
+        check(
+            "load.neo4j.parameterized_strategy",
+            "streamed_parameterized_jsonl_batches",
+            neo4j_metadata.get("strategy"),
+        )
+        check("load.neo4j.retry", 0, neo4j_metadata.get("automatic_retries"))
+        check(
+            "load.neo4j.mutation_semantics",
+            "create_into_empty_job_owned_database",
+            neo4j_metadata.get("mutation_semantics"),
+        )
+        expected_profile = (
+            "finbench_sf0_1"
+            if partition.get("scale_factor") == "0.1"
+            else "development"
+        )
+        service_plan = _mapping(service_manifest.get("service_plan"))
+        resource_profile = _mapping(service_plan.get("neo4j_resource_profile"))
+        check(
+            "service.neo4j_resource_profile",
+            expected_profile,
+            resource_profile.get("profile_id"),
+        )
 
     executions = _list(execution_payload.get("results"))
     expected_plan_ids = [entry["plan"]["plan_id"] for entry in expected_entries]

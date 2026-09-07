@@ -26,7 +26,12 @@ from xgap.backends.neo4j_client import Neo4jClient
 from xgap.experiments.m15_fixture_loader import (
     FusekiGraphStoreFixtureLoader,
     Neo4jCypherFixtureLoader,
+    Neo4jParameterizedFixtureLoader,
     load_m15_split_fixture,
+)
+from xgap.experiments.m15_finbench_partition import (
+    PARTITION_SCHEMA_VERSION as FINBENCH_PARTITION_SCHEMA_VERSION,
+    load_finbench_source_partition,
 )
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.m15_direct_semantic_estimates import (
@@ -301,6 +306,7 @@ class NativeServicePlan:
     java: JavaEvidence
     runtime_lock_sha256: str
     staging_manifest_sha256: str
+    neo4j_resource_profile: Mapping[str, str]
     neo4j_http_url: str
     fuseki_url: str
     fuseki_dataset: str
@@ -316,6 +322,7 @@ class NativeServicePlan:
             "java": self.java.to_dict(),
             "runtime_lock_sha256": self.runtime_lock_sha256,
             "staging_manifest_sha256": self.staging_manifest_sha256,
+            "neo4j_resource_profile": dict(self.neo4j_resource_profile),
             "neo4j_http_url": self.neo4j_http_url,
             "fuseki_url": self.fuseki_url,
             "fuseki_dataset": self.fuseki_dataset,
@@ -558,12 +565,29 @@ def _load_staging_manifest(path: Path, runtime_root: Path) -> dict[str, Any]:
     return payload
 
 
+NEO4J_RESOURCE_PROFILES: dict[str, dict[str, str]] = {
+    "development": {
+        "profile_id": "development",
+        "heap_initial_size": "256m",
+        "heap_max_size": "512m",
+        "pagecache_size": "256m",
+    },
+    "finbench_sf0_1": {
+        "profile_id": "finbench_sf0_1",
+        "heap_initial_size": "1g",
+        "heap_max_size": "2g",
+        "pagecache_size": "1g",
+    },
+}
+
+
 def _neo4j_configuration(
     *,
     neo4j_root: Path,
     state_root: Path,
     http_port: int,
     bolt_port: int,
+    resource_profile: Mapping[str, str],
 ) -> str:
     neo_state = state_root / "neo4j"
     values = {
@@ -580,9 +604,12 @@ def _neo4j_configuration(
         "# Generated for one job-owned XGAP M15 allocation.",
         *(f"{key}={value}" for key, value in values.items()),
         "dbms.security.auth_enabled=false",
-        "server.memory.heap.initial_size=256m",
-        "server.memory.heap.max_size=512m",
-        "server.memory.pagecache.size=256m",
+        (
+            "server.memory.heap.initial_size="
+            f"{resource_profile['heap_initial_size']}"
+        ),
+        f"server.memory.heap.max_size={resource_profile['heap_max_size']}",
+        f"server.memory.pagecache.size={resource_profile['pagecache_size']}",
         "server.default_listen_address=127.0.0.1",
         "server.default_advertised_address=127.0.0.1",
         "server.bolt.enabled=true",
@@ -608,6 +635,7 @@ def build_native_service_plan(
     neo4j_bolt_port: int,
     fuseki_port: int,
     lock_path: str | Path = DEFAULT_LOCK_PATH,
+    neo4j_resource_profile_id: str = "development",
 ) -> NativeServicePlan:
     runtime = Path(runtime_root).resolve()
     evidence = Path(evidence_root).resolve()
@@ -619,6 +647,9 @@ def build_native_service_plan(
     if runtime.stat().st_uid != os.getuid():
         raise ValueError("runtime_root must be owned by the current user")
     normalized_fs = validate_local_filesystem_type(filesystem_type)
+    if neo4j_resource_profile_id not in NEO4J_RESOURCE_PROFILES:
+        raise ValueError("unsupported Neo4j resource profile")
+    resource_profile = dict(NEO4J_RESOURCE_PROFILES[neo4j_resource_profile_id])
     staging = _load_staging_manifest(Path(staging_manifest).resolve(), runtime)
     if evidence == runtime or runtime in evidence.parents:
         raise ValueError("durable evidence must be outside runtime_root")
@@ -675,6 +706,7 @@ def build_native_service_plan(
         state_root=state_root,
         http_port=neo4j_http_port,
         bolt_port=neo4j_bolt_port,
+        resource_profile=resource_profile,
     )
     (neo4j_conf / "neo4j.conf").write_text(neo4j_configuration, encoding="utf-8")
     (evidence / "neo4j.conf").write_text(neo4j_configuration, encoding="utf-8")
@@ -732,6 +764,7 @@ def build_native_service_plan(
         java=java,
         runtime_lock_sha256=_sha256_file(lock_file),
         staging_manifest_sha256=_sha256_file(Path(staging_manifest).resolve()),
+        neo4j_resource_profile=resource_profile,
         neo4j_http_url=neo4j_url,
         fuseki_url=fuseki_url,
         fuseki_dataset="xgap",
@@ -956,6 +989,14 @@ def _run_fixture_and_query(
         if workload_mode == "finbench_correctness":
             assert finbench_workload is not None
             assert finbench_partition is not None
+            partition_manifest = load_finbench_source_partition(finbench_partition)
+            if (
+                partition_manifest.get("schema_version")
+                == FINBENCH_PARTITION_SCHEMA_VERSION
+            ):
+                loaders["neo4j"] = Neo4jParameterizedFixtureLoader(
+                    clients["neo4j"]
+                )
             for client in clients.values():
                 client.timeout_seconds = 60.0
             correctness = run_m15_live_finbench_correctness(
@@ -1524,6 +1565,7 @@ def run_m15_native_services(
     java_command: str,
     repo_root: str | Path | None = None,
     required_java_major: int = 17,
+    neo4j_resource_profile_id: str = "development",
     workload_mode: str = "vertical_slice",
     workload_bundle: M15WorkloadBundle | str | Path | None = None,
     campaign_config: str | Path | None = None,
@@ -2374,6 +2416,7 @@ def run_m15_native_services(
                 neo4j_http_port=ports.ports[0],
                 neo4j_bolt_port=ports.ports[1],
                 fuseki_port=ports.ports[2],
+                neo4j_resource_profile_id=neo4j_resource_profile_id,
             )
             ports.release(0)
             ports.release(1)
@@ -2661,6 +2704,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--filesystem-type", required=True)
     parser.add_argument("--allocation-id", required=True)
     parser.add_argument("--java-command", default="java")
+    parser.add_argument(
+        "--neo4j-resource-profile",
+        choices=sorted(NEO4J_RESOURCE_PROFILES),
+        default="development",
+    )
     parser.add_argument("--repo-root")
     parser.add_argument(
         "--workload-mode",
@@ -2729,6 +2777,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             filesystem_type=args.filesystem_type,
             allocation_id=args.allocation_id,
             java_command=args.java_command,
+            neo4j_resource_profile_id=args.neo4j_resource_profile,
             repo_root=args.repo_root,
             workload_mode=args.workload_mode,
             workload_bundle=args.workload_bundle,

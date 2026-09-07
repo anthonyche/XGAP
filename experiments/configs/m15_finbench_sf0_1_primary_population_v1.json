@@ -2,7 +2,7 @@
   "schema_version": "m15-finbench-primary-population-spec-v1",
   "population_id": "m15-finbench-v010-sf0_1-primary-3family-v1",
   "source_artifact_id": "ldbc-finbench-v0.1.0-sf0.1",
-  "partition_schema_version": "m15-finbench-source-partition-v1",
+  "partition_schema_version": "m15-finbench-source-partition-v2",
   "benchmark_claim": "finbench_derived_heterogeneous_workload_not_a_conformant_finbench_result",
   "families": [
     {

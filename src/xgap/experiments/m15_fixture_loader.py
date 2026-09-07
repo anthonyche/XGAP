@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
-import hashlib
 import json
 import os
 import platform
@@ -231,6 +230,236 @@ class Neo4jCypherFixtureLoader:
             metadata={
                 "strategy": "sequential_idempotent_cypher",
                 "statement_count": len(statements),
+            },
+        )
+
+
+NEO4J_PARAMETERIZED_BATCH_SCHEMA_VERSION = (
+    "m15-finbench-neo4j-parameterized-batch-v1"
+)
+_PARAMETERIZED_BATCH_FIELDS = {
+    "schema_version",
+    "batch_id",
+    "kind",
+    "source_table",
+    "statement",
+    "parameters",
+    "expected_affected_rows",
+    "mutation_semantics",
+    "automatic_retries",
+    "batch_sha256",
+}
+_PARAMETERIZED_BATCH_KINDS = {"constraint", "nodes", "relationships"}
+
+
+def _canonical_batch_sha256(value: Mapping[str, Any]) -> str:
+    payload = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _load_parameterized_batch(line: str, *, line_number: int) -> dict[str, Any]:
+    try:
+        raw = json.loads(line)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} is invalid JSON"
+        ) from exc
+    if not isinstance(raw, Mapping) or set(raw) != _PARAMETERIZED_BATCH_FIELDS:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} has invalid fields"
+        )
+    batch = dict(raw)
+    if batch.get("schema_version") != NEO4J_PARAMETERIZED_BATCH_SCHEMA_VERSION:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} has unsupported schema"
+        )
+    batch_id = batch.get("batch_id")
+    if not isinstance(batch_id, str) or _SAFE_RUN_ID.fullmatch(batch_id) is None:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} has unsafe batch_id"
+        )
+    kind = batch.get("kind")
+    if kind not in _PARAMETERIZED_BATCH_KINDS:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} has invalid kind"
+        )
+    if not isinstance(batch.get("source_table"), str) or not batch["source_table"]:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} has invalid source_table"
+        )
+    statement = batch.get("statement")
+    if not isinstance(statement, str) or not statement.strip() or ";" in statement:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} has invalid statement"
+        )
+    parameters = batch.get("parameters")
+    expected = batch.get("expected_affected_rows")
+    if kind == "constraint":
+        if parameters != {} or expected is not None:
+            raise ValueError(
+                f"Neo4j parameterized constraint line {line_number} is invalid"
+            )
+    else:
+        if (
+            not isinstance(parameters, Mapping)
+            or set(parameters) != {"rows"}
+            or not isinstance(parameters.get("rows"), list)
+            or not parameters["rows"]
+            or any(not isinstance(row, Mapping) for row in parameters["rows"])
+            or not isinstance(expected, int)
+            or isinstance(expected, bool)
+            or expected != len(parameters["rows"])
+            or "UNWIND $rows AS row" not in statement
+            or "RETURN count(*) AS loaded" not in statement
+        ):
+            raise ValueError(
+                f"Neo4j parameterized data batch line {line_number} is invalid"
+            )
+    if batch.get("mutation_semantics") != "create_into_empty_job_owned_database":
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} has invalid mutation semantics"
+        )
+    if batch.get("automatic_retries") != 0:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} enables retry"
+        )
+    claimed = batch.get("batch_sha256")
+    observed = _canonical_batch_sha256(
+        {key: value for key, value in batch.items() if key != "batch_sha256"}
+    )
+    if not isinstance(claimed, str) or claimed != observed:
+        raise ValueError(
+            f"Neo4j parameterized batch line {line_number} identity mismatch"
+        )
+    return batch
+
+
+class Neo4jParameterizedFixtureLoader:
+    """Stream sealed JSONL batches to Neo4j without retry or query text expansion."""
+
+    backend_id = "neo4j"
+
+    def __init__(self, client: BackendClient):
+        self._client = client
+
+    def load(self, path: Path) -> BackendLoadReport:
+        started = time.perf_counter()
+        attempted = 0
+        bytes_sent = 0
+        seen_ids: set[str] = set()
+        last_line = 0
+        current_batch: dict[str, Any] | None = None
+        try:
+            if path.is_symlink() or not path.is_file():
+                raise ValueError("Neo4j parameterized load artifact is missing or unsafe")
+            with path.open("r", encoding="utf-8", newline="") as handle:
+                for line_number, raw_line in enumerate(handle, start=1):
+                    last_line = line_number
+                    current_batch = None
+                    if not raw_line.strip():
+                        raise ValueError(
+                            f"Neo4j parameterized batch line {line_number} is empty"
+                        )
+                    batch = _load_parameterized_batch(
+                        raw_line.rstrip("\n"), line_number=line_number
+                    )
+                    current_batch = batch
+                    batch_id = str(batch["batch_id"])
+                    if batch_id in seen_ids:
+                        raise ValueError(
+                            f"Neo4j parameterized batch_id is duplicated: {batch_id}"
+                        )
+                    seen_ids.add(batch_id)
+                    attempted += 1
+                    request_bytes = len(
+                        json.dumps(
+                            {
+                                "statement": batch["statement"],
+                                "parameters": batch["parameters"],
+                            },
+                            sort_keys=True,
+                            separators=(",", ":"),
+                            ensure_ascii=False,
+                            allow_nan=False,
+                        ).encode("utf-8")
+                    )
+                    bytes_sent += request_bytes
+                    report = self._client.execute(
+                        QueryArtifact(
+                            artifact_id=f"m15-load-neo4j-{batch_id}",
+                            language="cypher",
+                            text=str(batch["statement"]),
+                            kind="native",
+                            source_path=f"{path}:{line_number}",
+                            parameters=dict(batch["parameters"]),
+                        )
+                    )
+                    if not report.success:
+                        raise RuntimeError(
+                            report.error or f"Neo4j parameterized batch {batch_id} failed"
+                        )
+                    expected = batch["expected_affected_rows"]
+                    if expected is not None and report.rows != [{"loaded": expected}]:
+                        raise RuntimeError(
+                            f"Neo4j parameterized batch {batch_id} affected-row mismatch"
+                        )
+        except Exception as exc:
+            metadata: dict[str, Any] = {
+                "strategy": "streamed_parameterized_jsonl_batches",
+                "format_schema_version": NEO4J_PARAMETERIZED_BATCH_SCHEMA_VERSION,
+                "failed_line_number": last_line or 1,
+            }
+            if current_batch is not None:
+                metadata.update(
+                    {
+                        "failed_batch_id": current_batch.get("batch_id"),
+                        "failed_batch_kind": current_batch.get("kind"),
+                        "failed_batch_sha256": current_batch.get("batch_sha256"),
+                        "failed_batch_row_count": current_batch.get(
+                            "expected_affected_rows"
+                        ),
+                    }
+                )
+            return BackendLoadReport(
+                backend_id=self.backend_id,
+                success=False,
+                operations_attempted=attempted,
+                bytes_sent=bytes_sent,
+                elapsed_ms=(time.perf_counter() - started) * 1000,
+                error=str(exc),
+                metadata=metadata,
+            )
+        if attempted == 0:
+            return BackendLoadReport(
+                backend_id=self.backend_id,
+                success=False,
+                operations_attempted=0,
+                bytes_sent=0,
+                elapsed_ms=(time.perf_counter() - started) * 1000,
+                error="Neo4j parameterized load artifact contains no batches",
+                metadata={
+                    "strategy": "streamed_parameterized_jsonl_batches",
+                    "format_schema_version": NEO4J_PARAMETERIZED_BATCH_SCHEMA_VERSION,
+                },
+            )
+        return BackendLoadReport(
+            backend_id=self.backend_id,
+            success=True,
+            operations_attempted=attempted,
+            bytes_sent=bytes_sent,
+            elapsed_ms=(time.perf_counter() - started) * 1000,
+            metadata={
+                "strategy": "streamed_parameterized_jsonl_batches",
+                "format_schema_version": NEO4J_PARAMETERIZED_BATCH_SCHEMA_VERSION,
+                "batch_count": attempted,
+                "automatic_retries": 0,
+                "mutation_semantics": "create_into_empty_job_owned_database",
             },
         )
 

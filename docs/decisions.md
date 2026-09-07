@@ -3093,7 +3093,37 @@ The previous Neo4j client retained only urllib's generic `HTTP Error 500`
 text. It now parses and bounds the Neo4j JSON error response, retaining status,
 Neo4j error code, and message without persisting credentials. Fixture failure
 evidence also records the failed statement index, operation kind, byte length,
-and SHA-256 without copying statement text. The immutable failed run will not
-be retried until its saved Neo4j log and the enriched error boundary identify
-or safely constrain the cause. It is engineering failure evidence only and
-`paper_result=false` remains mandatory.
+and SHA-256 without copying statement text. The saved console log contains a
+normal Neo4j 5.26.30 start and request-initiated shutdown, but no crash or OOM;
+the saved configuration used a 512-MiB maximum heap and 256-MiB page cache.
+Deterministic generator order places statement 46 at the first 2,000-row
+`account_transfer_account` relationship batch. These observations constrain
+the failure location but do not establish whether parsing, transaction memory,
+or another server condition caused the HTTP 500. It is engineering failure
+evidence only and `paper_result=false` remains mandatory.
+
+## D162 Replace scale-load query expansion with sealed parameter batches
+
+The repair does not rerun or mutate job `3793681`. FinBench source partitions
+now use schema v2 and stream one hash-bound JSON record per Neo4j operation.
+Each data record carries a fixed Cypher template, a `$rows` parameter, expected
+affected-row count, source-table identity, and zero-retry declaration. The
+loader verifies every record before invocation, sends data only through the
+backend parameter interface, requires Neo4j's returned count to match, and
+stops on the first discrepancy. Relationship and node operations use `CREATE`
+only because every native run owns a newly created empty database and the
+partition generator already proves unique entities and complete endpoints.
+Legacy schema-v1 partitions remain readable for independent audits.
+
+The SF0.1 wrapper also selects an explicit scale resource profile: 1-GiB
+initial heap, 2-GiB maximum heap, and 1-GiB page cache inside the unchanged
+16-GiB Slurm allocation. Development fixtures retain the 256/512/256-MiB
+profile. The selected profile is persisted in the service plan, environment,
+and Neo4j configuration, and the correctness auditor requires the SF0.1
+profile plus the parameterized zero-retry load evidence. This is a repair gate,
+not a performance result; a new exact clean commit and independent audit are
+required before any scale or campaign conclusion, with `paper_result=false`.
+The complete local acceptance suite subsequently passed 1,123 tests with 36
+intentional live/external skips; shell syntax and whitespace checks also
+passed. This authorizes publication of the repair commit and one CWRU
+correctness submission, not the 736-call comparison campaign.

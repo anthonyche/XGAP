@@ -777,6 +777,16 @@ new scale. Its SF0.01 prerequisite is now satisfied. Use the SF0.1 gate's
 measured load/query/resource evidence to choose SF0.3 or SF1, then freeze
 baseline, repetition, and analysis protocols; do not add another toy mechanism
 milestone.
+The first attempt localized an HTTP 500 to the first expanded 2,000-row
+transfer batch without producing query measurements. Before the single next
+attempt, schema-v2 parameter batches, affected-row verification, explicit
+SF0.1 service resources, focused tests, and full acceptance must pass at one
+clean commit. If that repaired correctness gate passes, implement and run the
+already frozen 368-plan same-allocation family campaign; if it fails, use its
+structured Neo4j error as the decision boundary rather than blind retuning.
+The local implementation boundary is closed with 1,123 passing tests and 36
+intentional live/external skips. The next action is therefore the single
+repaired CWRU correctness gate, not another local mechanism milestone.
 The leakage-safe FinBench family-memory layer is also implemented locally. It
 accepts only the 16-query training split with two strategies and four or more
 counterbalanced exact repetitions, predicts the eight held-out-instance

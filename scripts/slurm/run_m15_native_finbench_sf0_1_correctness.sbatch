@@ -21,5 +21,6 @@ export XGAP_FINBENCH_ARCHIVE="${XGAP_FINBENCH_ARCHIVE:-$HOME/.cache/xgap/finbenc
 export XGAP_FINBENCH_LOCK="$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sf0_1_sources.json"
 export XGAP_FINBENCH_SPEC="$REPO_ROOT/experiments/configs/m15_finbench_sf0_1_primary_population_v1.json"
 export XGAP_FINBENCH_BATCH_SIZE=2000
+export XGAP_NEO4J_RESOURCE_PROFILE=finbench_sf0_1
 
 source "$SERVICE_SCRIPT"

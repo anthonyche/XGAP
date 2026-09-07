@@ -1,5 +1,5 @@
 {
-  "schema_version": "m15-finbench-sf0-1-cwru-load-failure-v1",
+  "schema_version": "m15-finbench-sf0-1-cwru-load-failure-v2",
   "recorded_at_utc": "2026-09-07",
   "job": {
     "slurm_job_id": "3793681",
@@ -28,6 +28,23 @@
     "bytes_sent_through_failed_attempt": 12903300,
     "elapsed_ms": 536888.3269215003,
     "reported_error": "HTTP Error 500: Server Error"
+  },
+  "failure_location_inference": {
+    "basis": "deterministic generator order and statement counts",
+    "failed_batch_role": "first account_transfer_account relationship batch",
+    "failed_batch_size": 2000,
+    "inference_not_server_root_cause": true
+  },
+  "neo4j_service_evidence": {
+    "version": "5.26.30",
+    "http_listen_address": "127.0.0.1:39975",
+    "bolt_listen_address": "127.0.0.1:48011",
+    "heap_initial_size": "256m",
+    "heap_max_size": "512m",
+    "pagecache_size": "256m",
+    "console_log_contains_crash_or_oom": false,
+    "shutdown_initiated_by_request": true,
+    "console_log_absence_does_not_establish_root_cause": true
   },
   "boundary": {
     "neo4j_service_healthy": true,

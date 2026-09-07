@@ -14,6 +14,14 @@ JAVA_MODULE="${XGAP_JAVA_MODULE:-Java/17.0.6}"
 PYTHON_BIN="${XGAP_PYTHON:-python}"
 CACHE_ROOT="${XGAP_NATIVE_ARTIFACT_CACHE:-$HOME/xgap-data/m15-native/artifacts}"
 WORKLOAD_MODE="${XGAP_M15_WORKLOAD_MODE:-vertical_slice}"
+NEO4J_RESOURCE_PROFILE="${XGAP_NEO4J_RESOURCE_PROFILE:-development}"
+case "$NEO4J_RESOURCE_PROFILE" in
+  development|finbench_sf0_1) ;;
+  *)
+    echo "Unsupported XGAP_NEO4J_RESOURCE_PROFILE: $NEO4J_RESOURCE_PROFILE" >&2
+    exit 2
+    ;;
+esac
 WORKLOAD_PROFILE="${XGAP_M15_WORKLOAD_PROFILE:-selective}"
 case "$WORKLOAD_MODE" in
   vertical_slice)
@@ -291,6 +299,7 @@ RUNTIME_ROOT="$(mktemp -d "$LOCAL_BASE/xgap-m15-${SLURM_JOB_ID}.XXXXXX")"
   printf 'automatic_retries=0\n'
   printf 'workload_mode=%s\n' "$WORKLOAD_MODE"
   printf 'workload_profile=%s\n' "$WORKLOAD_PROFILE"
+  printf 'neo4j_resource_profile=%s\n' "$NEO4J_RESOURCE_PROFILE"
 } > "$RUN_ROOT/environment.txt"
 if command -v findmnt >/dev/null 2>&1; then
   findmnt -T "$LOCAL_BASE" -o TARGET,SOURCE,FSTYPE,OPTIONS \
@@ -621,6 +630,7 @@ PYTHONPATH="$REPO_ROOT/src" \
   --filesystem-type "$FILESYSTEM_TYPE" \
   --allocation-id "$SLURM_JOB_ID" \
   --java-command "$JAVA_BIN" \
+  --neo4j-resource-profile "$NEO4J_RESOURCE_PROFILE" \
   --repo-root "$REPO_ROOT" \
   --workload-mode "$WORKLOAD_MODE" \
   "${WORKLOAD_ARGS[@]}" \

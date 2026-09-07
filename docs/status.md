@@ -846,8 +846,19 @@ then Neo4j returned HTTP 500 at fixture statement 46/194 after approximately
 537 seconds of fixture work. No query plan executed and no oracle content was
 opened. Batch-step peak RSS was about 2.06 GB of the requested 16 GB. The
 client now retains bounded structured Neo4j HTTP error details and the loader
-adds content-free statement identity metadata. A rerun is not authorized
-until the saved Neo4j service log is classified.
+adds content-free statement identity metadata. The preserved Neo4j console log
+shows a normal start and request-initiated shutdown, not a crash; statement 46
+is deterministically the first 2,000-row transfer-relationship batch. Partition
+schema v2 now replaces inline row literals with hash-bound `$rows` batches,
+verifies affected-row counts, remains first-error/zero-retry, and keeps v1
+audits readable. The SF0.1 wrapper explicitly records a 1/2/1-GiB
+initial-heap/max-heap/page-cache profile inside its unchanged 16-GiB request.
+Local regression and full acceptance must pass before one repaired CWRU gate;
+no old run is retried or counted as a result.
+The repair implementation has now passed the complete local acceptance suite:
+1,123 tests passed and 36 explicitly live/external tests were skipped. Shell
+syntax validation and `git diff --check` also passed. The remaining boundary is
+one exact-commit CWRU SF0.1 correctness run and its independent read-only audit.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen

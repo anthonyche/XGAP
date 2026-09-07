@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from xgap.experiments import m15_finbench_federation as federation
@@ -14,8 +14,10 @@ from xgap.infrastructure.runtime import BackendStatus, ExecutionReport
 @dataclass
 class Loader:
     backend_id: str
+    paths: list[Path] = field(default_factory=list)
 
     def load(self, path: Path) -> BackendLoadReport:
+        self.paths.append(path)
         return BackendLoadReport(
             backend_id=self.backend_id,
             success=True,
@@ -60,7 +62,7 @@ def test_live_gate_seals_plans_before_load_and_opens_oracle_after_execution(
         (templates / name).write_text(text, encoding="utf-8")
     partition_root = tmp_path / "partition"
     partition_root.mkdir()
-    (partition_root / "load_neo4j.cypher").write_text("RETURN 1;\n")
+    (partition_root / "load_neo4j_batches.jsonl").write_text("{}\n")
     (partition_root / "load_fuseki.ttl").write_text("# empty\n")
     instance = {
         "query_id": "q-f1",
@@ -102,6 +104,10 @@ def test_live_gate_seals_plans_before_load_and_opens_oracle_after_execution(
     partition = {
         "partition_sha256": "b" * 64,
         "source_archive": {"sha256": "c" * 64},
+        "neo4j_load": {
+            "format": "parameterized_jsonl_batches_v1",
+            "filename": "load_neo4j_batches.jsonl",
+        },
     }
     oracle_load_observations: list[int] = []
     clients = {backend_id: Client(backend_id) for backend_id in ("neo4j", "fuseki")}
@@ -140,6 +146,9 @@ def test_live_gate_seals_plans_before_load_and_opens_oracle_after_execution(
     )
 
     assert record.success
+    assert loaders["neo4j"].paths == [
+        partition_root / "load_neo4j_batches.jsonl"
+    ]
     assert oracle_load_observations == [4]
     plan_catalog = json.loads((record.run_root / "plan_catalog.json").read_text())
     manifest = json.loads(record.manifest_path.read_text())
