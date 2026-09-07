@@ -730,11 +730,16 @@ F2C14B now has an explicit author decision gate in
 executable DAG, schemas, backend partition, physical candidates, and memory
 compatibility rather than by a topic label. It compares a controlled
 single-domain structural population, a cross-domain/imported population, and a
-staged hybrid. The provisional recommendation is the hybrid: first a
-30--48-query controlled financial population with three structurally distinct
-families, then a separately reported external validation. This is not yet an
-author decision, does not name the final families or cold-start rule, and
-authorizes neither package generation nor a CWRU run.
+staged hybrid. The concrete P1 proposal instantiates that recommendation as 36
+base queries across three structurally distinct financial families: the
+existing direct join, an exact-two-hop path join, and an entirely held-out
+aggregate-ranking family. It freezes proposed backend ownership, hard and
+relaxable slots, two physical candidates per family, an 8/4 split for each seen
+family, and a zero-profile aggregate-first cold-start rule for the held-out
+family. This is not yet an author decision and authorizes neither package
+generation nor a CWRU run. Accepting P1 would freeze decisions 1--4; the
+inferential protocol and external-validation slice would remain separate later
+gates.
 
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1

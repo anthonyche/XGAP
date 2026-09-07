@@ -748,12 +748,17 @@ environment or external-artifact skips.
 M15-F2C14B is currently an author decision gate, not an implemented benchmark.
 The design note `docs/m15_f2c14b_multi_family_design_gate.md` defines the
 research question, structural family boundary, variables, endpoints,
-confounds, and three population alternatives. It recommends a staged hybrid:
-a controlled three-DAG financial primary population followed by a separate
-standard-workload validation. The population choice, exact DAGs, entirely
-held-out family, cold-start rule, and inferential preregistration remain
-unresolved. No new data, family package, external call, or executable campaign
-has been created, and `paper_result=false` remains mandatory.
+confounds, and three population alternatives. Its concrete P1 proposal turns
+the recommended staged hybrid into an author-selectable 36-instance primary
+population: the existing direct join, an exact-two-hop path join, and an
+entirely held-out aggregate-ranking family, with explicit backend ownership,
+hard and relaxable slots, physical candidates, splits, and a zero-profile
+aggregate-first cold-start rule. P1 has not been accepted; therefore no new
+data, family package, external call, or executable campaign has been created.
+Accepting P1 would freeze design decisions 1--4 and authorize local package and
+generator implementation only. Inferential preregistration and the later
+external-validation slice remain unresolved, and `paper_result=false` remains
+mandatory.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,

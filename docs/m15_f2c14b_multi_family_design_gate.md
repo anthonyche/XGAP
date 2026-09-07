@@ -147,6 +147,151 @@ Option A is the defensible minimum.  Option B alone is not recommended because
 it entangles too many factors before the core mechanism has a multi-family
 result.
 
+## Concrete recommended primary package P1
+
+This section turns the Option C recommendation into one author-selectable
+package. It is still a proposal: none of the identifiers below is admitted to
+the executable registry until the author explicitly selects P1 (or requests a
+revision). The proposal deliberately reuses the current semantic-operator
+vocabulary rather than creating a second algebra.
+
+### Population and split
+
+P1 uses one controlled synthetic financial graph with 36 base query instances:
+
+| Family | Role | Base instances | Split |
+|---|---|---:|---|
+| F1 direct transfer-to-risk join | seen | 12 | 8 training, 4 held-out instances |
+| F2 exact-two-hop counterparty-to-risk join | seen | 12 | 8 training, 4 held-out instances |
+| F3 aggregate exposure ranking | entirely held out | 12 | 0 training, 12 cold-start evaluation |
+
+The 12 instances in each family should be allocated before execution across
+three selectivity buckets with four independently bound instances per bucket.
+Entity IDs used for held-out instances must not appear in that family's
+training instances. Semantic interpretations inherit the base-instance split;
+they do not become additional independent base queries.
+
+### F1: direct transfer-to-risk join
+
+F1 is the existing executable package and remains a seen family.
+
+```text
+MATCH(person)
+  -> TRAVERSE(direct transfer)
+  -> ALIGN(company)
+MATCH(company risk)
+  -> ALIGN(company)
+  -> JOIN(canonical company id)
+  -> PROJECT
+```
+
+- Neo4j owns person, account, transfer, and company-reference traversal.
+- Fuseki owns company risk classification.
+- XGAP owns alignment, exchange, join, and projection.
+- Entity identity, time bounds, amount bound, currency, and direct path shape
+  are hard.
+- Risk class and the declared transfer/payment predicate are the only bounded
+  relaxable slots.
+- Physical candidates remain `parallel_hash_join` and
+  `risk_first_bind_join`.
+
+### F2: exact-two-hop counterparty-to-risk join
+
+F2 asks for terminal companies reached by an exact two-transfer account path
+from a clarified person's account. It is not the old optional path relaxation;
+its two-hop meaning is the exact family semantics.
+
+```text
+MATCH(person)
+  -> TRAVERSE(exactly two account-transfer edges)
+  -> FILTER(per-edge time, amount, currency, and simple-path constraints)
+  -> ALIGN(terminal company)
+MATCH(terminal company risk)
+  -> ALIGN(company)
+  -> JOIN(canonical company id)
+  -> PROJECT
+```
+
+- Neo4j owns the account graph and exact-two-hop path enumeration.
+- Fuseki owns terminal-company risk classification.
+- XGAP owns terminal-company alignment, exchange, join, and projection.
+- Person identity, a closed-open time window applied to both edges, currency,
+  minimum amount on every edge, exactly two hops, no repeated edge, and the
+  terminal-company output contract are hard.
+- Risk class and the declared transfer/payment edge predicate are the only
+  bounded relaxable slots. One-hop, at-most-two-hop, path-total, and reachability
+  interpretations are not silently admitted; they would require a separate
+  author decision and compatibility identity.
+- The two physical candidates are `parallel_path_hash_join` (enumerate the
+  complete qualifying path side and join it with risk rows) and
+  `risk_first_bound_path` (retrieve risk IDs first and bind terminal IDs into
+  the registered Neo4j path template).
+- Output fields are person, terminal company, the two transfer IDs,
+  intermediary account ID, hop count, minimum edge amount, currency, and risk.
+
+### F3: aggregate exposure ranking
+
+F3 asks for the top-K companies by total qualifying transfer exposure from a
+clarified person, restricted to a risk class. It is the entirely held-out
+family because its grouping, ranking, and output contract are structurally
+different from F1/F2.
+
+```text
+MATCH(person)
+  -> TRAVERSE(direct transfers)
+  -> FILTER(time, amount, and currency)
+  -> AGGREGATE(group by company; sum amount; count transfers)
+  -> ALIGN(company)
+MATCH(company risk)
+  -> ALIGN(company)
+  -> JOIN(canonical company id)
+  -> ORDER_LIMIT(total exposure descending, deterministic tie break, K)
+  -> PROJECT
+```
+
+- Neo4j owns transfer filtering and per-company aggregation.
+- Fuseki owns company risk classification.
+- XGAP owns alignment, exchange, join, deterministic ranking, and projection.
+- Person identity, closed-open time window, currency, qualifying-transfer
+  amount bound, group key, `SUM(amount)`, `COUNT(transfer)`, descending ranking,
+  deterministic tie break, K, and output schema are hard.
+- Risk class and the declared transfer/payment predicate are the only bounded
+  relaxable slots. SUM must not become AVG/MAX, and top-K must not be enlarged
+  as a semantic relaxation.
+- The two physical candidates are `aggregate_first_hash_join` (aggregate all
+  qualifying companies, then join risk rows) and `risk_first_bound_aggregate`
+  (retrieve risk IDs first, bind them into the registered aggregate template,
+  then rank the semantically equivalent result).
+- Output fields are person, company, risk, total exposure, transfer count, and
+  deterministic rank.
+
+### Cold-start rule
+
+P1 freezes a fail-closed, zero-current-profile rule for F3: the family-memory
+method must not borrow records from F1 or F2 and must select
+`aggregate_first_hash_join`, the family-declared nonlearned default. This is a
+declared limitation of family-local memory, not a claim that the fallback is
+optimal. Current-query profiling remains a separately costed comparison method,
+never a hidden fallback. If either F3 candidate is unavailable, the method
+reports unavailable rather than changing semantics or profiling implicitly.
+
+### Why P1 is the recommended decision
+
+P1 creates three genuinely distinct optimizer regimes over the same backend
+partition: selective direct join, path expansion, and aggregation plus ranking.
+It therefore varies the conditions under which parallel versus bind-first
+execution can win without confounding the primary result with a new domain or
+ETL stack. Holding F3 out entirely makes the no-cross-family-memory boundary
+observable. A later external slice remains separate and cannot redefine the
+primary endpoints or rescue its result.
+
+Author acceptance of **P1** would simultaneously freeze required decisions
+1--4 below: staged Option C, the three DAG/ownership contracts above, F3 with
+the fixed aggregate-first cold-start rule, and the 36-instance allocation. It
+would authorize package and generator implementation, but not a CWRU run.
+Inferential analysis and external-validation selection would still require
+their later gates.
+
 ## Required follow-on decisions
 
 The author should decide these in order, one at a time:
@@ -173,4 +318,3 @@ F2C14B may advance from design to implementation only when:
 - primary and external-validation claims, if both exist, are separated;
 - no automatic retry, oracle leakage, or hard-constraint relaxation is allowed;
 - the inferential analysis is preregistered before the paper-scale run.
-
