@@ -764,6 +764,17 @@ optional FIBO mapping, and a cutoff-bounded FedShop validation slice. The
 official FinBench SF0.01 archive was downloaded outside the repository,
 inspected, and verified at SHA-256
 `888c8fbe06b68cc48de9f07fde8c0fd3295618fc41af13ae1aa216aaec1e0430`.
+The deterministic source-partition gate is now implemented across all 18
+snapshot tables. A real local build processed 36,881 rows, rejected no
+relationship endpoint, and emitted 160 batched Neo4j statements plus 28,374
+Fuseki triples under one content-hashed manifest. Transaction, path,
+ownership, withdrawal, loan, guarantee, investment, and numeric-flow facts are
+Neo4j-authoritative; types and semantic/control classifications are
+Fuseki-authoritative; stable entity IDs are the only intentional identity
+replication. The bundle generator is atomic, non-overwriting, archive-verified,
+and makes no backend/model/ontology/oracle call. The next boundary is local
+F1--F3 query/oracle admission followed by one CWRU SF0.01 load-and-correctness
+pilot; this data-readiness result remains `paper_result=false`.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen

@@ -118,7 +118,8 @@ factors. XGAP changes source placement and derives cross-platform queries, so
 the result is named **FinBench-derived heterogeneous workload**, not a
 conformant FinBench score.
 
-The initial deterministic partition is:
+The initial deterministic partition covers all 18 v0.1.0 snapshot tables, not
+only the eight tables needed by the first direct-transfer slice:
 
 - Neo4j: Person, Account, ownership, transfer, withdrawal, loan-flow, and path
   structure;
@@ -126,6 +127,17 @@ The initial deterministic partition is:
   blocked/risk categories, types, and pinned mappings;
 - XGAP: identity alignment, exchange, cross-source join, final declared
   aggregation/ranking, provenance, and scheduling.
+
+The committed partition generator verifies the exact archive before reading,
+streams the snapshot without extraction, rejects orphan relationships, and
+produces immutable Neo4j Cypher, Fuseki Turtle, and a source-placement manifest.
+Stable entity IDs are the only cross-backend identity replication. Control and
+classification fields (`isBlocked`, account/medium categories, and risk level)
+are authoritative in Fuseki; graph structure, transfers, withdrawals, loans,
+ownership, guarantees, investments, and numeric flows are authoritative in
+Neo4j. The SF0.01 local admission contains 36,881 source rows, 160 batched
+Neo4j statements, and 28,374 Fuseki triples with zero orphan endpoints. This is
+a data/readiness result and remains `paper_result=false`.
 
 ### Semantic evidence: GrailQA v1.0
 
@@ -221,7 +233,7 @@ infrastructure-failure replacement rule are frozen before confirmatory runs.
 | Date | Deliverable |
 |---|---|
 | Sep 7 | Option C, public artifact lock, exact SF0.01 inspection |
-| Sep 8 | deterministic Neo4j/Fuseki partition and source manifest |
+| Sep 8 | deterministic Neo4j/Fuseki partition and source manifest | complete locally; CWRU load verification next |
 | Sep 9 | F1--F3 local templates, parameters, and exact oracles |
 | Sep 10 | first CWRU SF0.01 paper-candidate pilot |
 | Sep 11 | pilot audit and SF0.1 feasibility |

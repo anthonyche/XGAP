@@ -749,6 +749,14 @@ is a FinBench v0.1.0-derived Neo4j/Fuseki workload, with GrailQA semantic
 evaluation and a separately scoped external-validation slice. The official
 SF0.01 archive was fetched outside the repository and verified at SHA-256
 `888c8fbe06b68cc48de9f07fde8c0fd3295618fc41af13ae1aa216aaec1e0430`.
+The full 18-table deterministic partition is now locally executable and
+audited by content identity: one verified SF0.01 build contains 36,881 source
+rows, zero orphan endpoints, 160 batched Cypher statements, and 28,374 Turtle
+triples. This replaces the earlier eight-table ingestion minimum so all three
+primary structural families share one declared source boundary. Next, admit
+the F1--F3 parameter/query/oracle packages against that partition, then run one
+CWRU SF0.01 backend load-and-correctness pilot. No paper run is authorized by
+the partition itself.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet

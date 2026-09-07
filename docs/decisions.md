@@ -2910,3 +2910,26 @@ and correctness. The target is a local FinBench SF0.01 proof within 48 hours, a
 first CWRU paper-candidate pilot within 72 hours, and an author-approved
 confirmatory protocol immediately afterward. Pilots retain
 `paper_result=false` and cannot be relabeled after inspection.
+
+## D154 Partition the complete FinBench v0.1.0 snapshot before query admission
+
+The first public-data boundary uses every one of the 18 snapshot tables in the
+pinned SF0.01 archive. Limiting ingestion to the eight tables needed by one
+direct-transfer example would recreate the toy-family bias that D153 is meant
+to remove and would make later path, withdrawal, loan, investment, and
+aggregate families depend on a second undocumented data boundary.
+
+Neo4j is authoritative for graph structure, transactions, ownership, loans,
+guarantees, investments, and numeric flow. Fuseki is authoritative for entity
+types and semantic/control classifications. Stable entity identity is
+replicated explicitly so the coordinator can align sources; control attributes
+are not copied into Neo4j. The generator verifies the pinned archive, rejects
+unsafe members, duplicate entity IDs, invalid numeric literals, and orphan
+relationships, and writes the complete bundle atomically without overwrite.
+
+The real SF0.01 local admission processed 36,881 rows with zero orphan
+endpoints and emitted 160 batched Cypher statements plus 28,374 Turtle triples.
+This closes only deterministic source placement. It does not validate backend
+load time, query correctness, scale, benchmark conformance, or any paper claim;
+no backend, model, ontology service, or answer oracle was called and
+`paper_result=false` remains fixed.

@@ -97,7 +97,7 @@ def test_committed_lock_pins_official_sf001_archive() -> None:
     assert lock.artifact.digest_value == (
         "888c8fbe06b68cc48de9f07fde8c0fd3295618fc41af13ae1aa216aaec1e0430"
     )
-    assert len(lock.snapshot_tables) == 8
+    assert len(lock.snapshot_tables) == 18
     assert {table.table_id for table in lock.snapshot_tables} == {
         "person",
         "account",
@@ -107,6 +107,16 @@ def test_committed_lock_pins_official_sf001_archive() -> None:
         "company_own_account",
         "account_transfer_account",
         "medium_sign_in_account",
+        "person_guarantee_person",
+        "person_apply_loan",
+        "loan_deposit_account",
+        "company_apply_loan",
+        "loan",
+        "account_withdraw_account",
+        "account_repay_loan",
+        "company_invest_company",
+        "company_guarantee_company",
+        "person_invest_company",
     }
 
 

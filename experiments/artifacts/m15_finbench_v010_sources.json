@@ -120,6 +120,108 @@
         "createTime",
         "location"
       ]
+    },
+    {
+      "table_id": "person_guarantee_person",
+      "member": "sf0.01/snapshot/PersonGuaranteePerson.csv",
+      "columns": [
+        "fromId",
+        "toId",
+        "createTime",
+        "relation"
+      ]
+    },
+    {
+      "table_id": "person_apply_loan",
+      "member": "sf0.01/snapshot/PersonApplyLoan.csv",
+      "columns": [
+        "personId",
+        "loanId",
+        "createTime",
+        "org"
+      ]
+    },
+    {
+      "table_id": "loan_deposit_account",
+      "member": "sf0.01/snapshot/LoanDepositAccount.csv",
+      "columns": [
+        "loanId",
+        "accountId",
+        "amount",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "company_apply_loan",
+      "member": "sf0.01/snapshot/CompanyApplyLoan.csv",
+      "columns": [
+        "companyId",
+        "loanId",
+        "createTime",
+        "org"
+      ]
+    },
+    {
+      "table_id": "loan",
+      "member": "sf0.01/snapshot/Loan.csv",
+      "columns": [
+        "loanId",
+        "loanAmount",
+        "balance",
+        "createTime",
+        "loanUsage",
+        "interestRate"
+      ]
+    },
+    {
+      "table_id": "account_withdraw_account",
+      "member": "sf0.01/snapshot/AccountWithdrawAccount.csv",
+      "columns": [
+        "fromId",
+        "toId",
+        "amount",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "account_repay_loan",
+      "member": "sf0.01/snapshot/AccountRepayLoan.csv",
+      "columns": [
+        "accountId",
+        "loanId",
+        "amount",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "company_invest_company",
+      "member": "sf0.01/snapshot/CompanyInvestCompany.csv",
+      "columns": [
+        "investorId",
+        "companyId",
+        "ratio",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "company_guarantee_company",
+      "member": "sf0.01/snapshot/CompanyGuaranteeCompany.csv",
+      "columns": [
+        "fromId",
+        "toId",
+        "createTime",
+        "relation"
+      ]
+    },
+    {
+      "table_id": "person_invest_company",
+      "member": "sf0.01/snapshot/PersonInvestCompany.csv",
+      "columns": [
+        "investorId",
+        "companyId",
+        "ratio",
+        "createTime"
+      ]
     }
   ],
   "paper_result": false

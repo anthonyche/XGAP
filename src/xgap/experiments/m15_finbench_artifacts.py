@@ -272,7 +272,9 @@ def verify_finbench_archive(
     )
 
 
-def _validate_tar_inventory(handle: tarfile.TarFile, archive_root: str) -> dict[str, tarfile.TarInfo]:
+def validate_finbench_tar_inventory(
+    handle: tarfile.TarFile, archive_root: str
+) -> dict[str, tarfile.TarInfo]:
     inventory: dict[str, tarfile.TarInfo] = {}
     for member in handle.getmembers():
         path = PurePosixPath(member.name)
@@ -298,7 +300,7 @@ def inspect_finbench_snapshot(
         raise ValueError(f"FinBench archive verification failed: {verification.status}")
     tables: list[dict[str, Any]] = []
     with tarfile.open(Path(archive_path), mode="r:gz") as handle:
-        inventory = _validate_tar_inventory(handle, lock.artifact.archive_root)
+        inventory = validate_finbench_tar_inventory(handle, lock.artifact.archive_root)
         for table in lock.snapshot_tables:
             member = inventory.get(table.member)
             if member is None or not member.isfile():
