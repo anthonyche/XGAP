@@ -3296,3 +3296,38 @@ schedule without modifying the producer tree. Both keep
 measurement still requires the runner, statistics analyzer, and final campaign
 auditor to pass their implementation gates. Full repository acceptance passes
 1,156 tests with 36 intentional live/external skips.
+
+## D169 Make the query instance—not repeated executions—the confirmatory unit
+
+The confirmatory analysis contract is now executable independently of the live
+runner. A content-addressed measurement ledger requires exactly one valid
+method outcome for every identity in the frozen 1,888-plan schedule. The
+executed physical strategy must match the pre-execution family or profile seal,
+all 22 blocks must have a completed attempt, and a replacement is allowed only
+after an infrastructure attempt produced zero valid measurements. A query
+timeout is retained at the predeclared 60-second analysis boundary and cannot
+trigger a replacement; missing byte counts remain missing rather than being
+imputed.
+
+RQ-P1 uses only the 32 cross-fit F1/F2 query instances. Seven serving
+repetitions are reduced to a within-query median. Family-memory end-to-end cost
+has zero current-query acquisition, while the dual-profile comparator includes
+both acquisition plans plus its selected serving median. The primary effects
+are the geometric mean within-query latency ratio and paired median latency
+difference, with a fixed-seed 10,000-resample query-cluster bootstrap and a
+100,000-draw two-sided paired sign-flip test. Repetitions contribute no
+independent sample count.
+
+RQ-P2 reconstructs winner accuracy, latency and byte regret, serving-only and
+end-to-end latency, prediction error, and predicted/observed frontier overlap
+for family memory, leakage-safe family-global, both fixed routes, dual profile,
+and the postexecution oracle. Secondary paired tests use Holm adjustment. RQ-P3
+keeps all 16 F3 queries in a distinct cold-start report and never labels their
+predeclared fallback as family memory. Offline training cost and amortization
+are reported outside the primary end-to-end estimand. Synthetic acceptance
+passes together with the existing protocol, population, workload, cross-fit,
+schedule, and freeze regressions. The analysis still requires a live block
+runner and independent evidence reconstruction before any output can set
+`paper_result=true`. The compact local readiness record is
+`experiments/artifacts/m15_finbench_confirmatory_analysis_readiness_v1.json`;
+full repository acceptance passes 1,160 tests with 36 intentional skips.

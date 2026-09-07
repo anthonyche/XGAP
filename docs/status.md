@@ -933,6 +933,21 @@ campaign is authorized and `paper_result=false` remains mandatory. Full
 repository acceptance passes 1,156 tests with 36 intentional live/external
 skips.
 
+The confirmatory statistics layer is now locally implemented. Its ledger
+binds every frozen run/slot identity to the physical strategy selected before
+execution, preserves query timeouts as 60-second method outcomes, refuses
+silent retries or partial-block infrastructure replacement, and leaves missing
+bytes unimputed. RQ-P1 performs paired inference over exactly 32 F1/F2 query
+instances after within-query median aggregation; RQ-P2 adds physical-selection
+quality, regret, prediction, frontier, and Holm-adjusted secondary comparisons;
+RQ-P3 reports the 16 F3 queries only as cold start. The fixed 10,000-resample
+bootstrap and 100,000-draw sign-flip test are deterministic. Offline training
+cost is reported separately. This is implementation readiness only: the live
+block runner and final independent campaign auditor remain required, and
+`paper_result=false` is unchanged. Full repository acceptance passes 1,160
+tests with 36 intentional skips; the compact record is
+`experiments/artifacts/m15_finbench_confirmatory_analysis_readiness_v1.json`.
+
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,
 executed 231 plans and 462 backend calls, returned seven semantic frontier

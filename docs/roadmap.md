@@ -819,6 +819,13 @@ cross-fit prediction core excludes every evaluation fold from its own F1/F2
 memory and reports F3 separately. The next gate is a CPU-only CWRU
 freeze/reconstruction pass; after that, implement and accept the live block
 runner, confirmatory statistics, and final independent campaign auditor.
+The pure confirmatory ledger/statistics layer is now implemented: it enforces
+the 22-block identity and attempt contract, reduces seven repetitions within
+each query, computes the frozen RQ-P1 bootstrap/randomization analysis over
+N=32, applies Holm to declared secondary comparisons, and isolates F3 cold
+start. Remaining primary-path implementation work is the restart-safe live
+block runner plus its independent evidence auditor; no confirmatory execution
+is authorized until those gates and the CWRU freeze audit pass.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet
