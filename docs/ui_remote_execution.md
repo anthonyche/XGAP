@@ -95,10 +95,28 @@ eligible. The preview has one fixed script and exactly the E6A six-field
 environment; it contains no credential, native query, shell fragment, or
 generic editable environment. Candidate display order is not authority.
 
-E6B does not yet provide an HTTP server or interactive page. Full-repository
-acceptance passes 1,061 tests with 36 explicit skips and made no external call.
-Its compact boundary record is
+E6B is the pure adapter boundary. Full-repository acceptance at that boundary
+passes 1,061 tests with 36 explicit skips and made no external call. Its compact
+record is
 `experiments/artifacts/m15_e6b_local_clarification_ui_adapter_20260907.json`.
+
+E6C now provides the local HTTP server and interactive page. The service binds
+only to `127.0.0.1`, accepts exact loopback origins, persists a content-hashed
+authority-event reconstruction key, and exposes only session read,
+clarification commit, and selected-session submit endpoints. The displayed
+request is hash-bound to the sealed resolution artifact. Each mutating action
+requires an explicit confirmation and current content hash; the browser does
+not control the authority-source ID or receive the remote environment payload.
+Submission is disabled by default and becomes a one-attempt typed
+`remote.executor` action only when the local operator opts in at process start.
+The page's declared model-context tools invoke exactly these same actions and
+have no hidden authority.
+
+Focused E6C acceptance passes 34 tests, full repository acceptance passes 1,075
+tests with 36 explicit skips, and the frontend production build passes. No
+remote job or external service was called. Model-context registration still
+needs validation in a supported browser runtime. The compact record is
+`experiments/artifacts/m15_e6c_local_clarification_ui_20260907.json`.
 
 ## UI go/no-go gate
 
@@ -109,10 +127,12 @@ The UI gate required:
 3. remote batch submission works through a CLI tool plugin;
 4. at least one clarification action needs user interaction.
 
-All four conditions now hold, and E6B supplies the safe view/submission model.
-The next UI slice is a small local working surface: clarification prompt first,
-sealed selection preview, explicit submit, live job state, bounded logs, and
-immutable result/metric panels. It must call the typed remote executor rather
-than build shell commands, must not expose a generic environment editor, and
-must never contact vLLM or graph backends directly. No graph editor or
-database-administration UI is required.
+All four conditions hold, E6B supplies the safe view/submission model, and E6C
+implements the first local working surface: clarification prompt, sealed
+selection preview, and explicit submit confirmation. The first operator
+walkthrough remains local-only with submission disabled. Later slices may add
+typed job state, bounded logs, and immutable result/metric panels after the
+model-context runtime is validated and a separate remote-submit run is
+authorized. They must continue to use the typed executor rather than build
+shell commands, expose a generic environment editor, or contact vLLM or graph
+backends directly. No graph editor or database-administration UI is required.

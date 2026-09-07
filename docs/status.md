@@ -204,6 +204,25 @@ with 36 explicit skips. This remains local nonmeasurement readiness; an HTTP
 server and interactive page do not yet exist. See
 `experiments/artifacts/m15_e6b_local_clarification_ui_adapter_20260907.json`.
 
+E6C now supplies the smallest interactive local working surface over that
+adapter. A loopback-only Python service reconstructs E5C from a sealed
+resolution artifact, the accepted historical-memory view, fixed policies, and
+a content-hashed two-event store. The displayed request must match the sealed
+resolution question hash. Browser actions carry the current session/question
+hash, an in-set candidate ID, and explicit confirmation; the browser cannot
+provide the authority-source ID, remote memory path, environment values,
+credentials, native query text, or a shell command. Remote submission is off by
+default. When explicitly enabled, one confirmed terminal handoff may invoke
+only the existing typed `remote.executor` for the fixed E5D wrapper and is never
+automatically retried, including when the outcome is uncertain. The local page
+uses the same two actions for visible controls and its declared model-context
+tools. Focused controller/server acceptance passes 34 tests, full repository
+acceptance passes 1,075 tests with 36 explicit skips, the production frontend
+build passes, and page-level static checks pass. No CWRU job or external service
+was invoked. Model-context runtime registration has not yet been browser-
+validated, and the page has not undergone a user study or paper experiment.
+See `experiments/artifacts/m15_e6c_local_clarification_ui_20260907.json`.
+
 The last published M15-D1 gate passed 128 focused tests with two real-service
 tests skipped. Full-suite acceptance passed with 600 tests and 36 explicitly
 gated or external-artifact tests skipped. Refreshed CWRU CPU smoke job

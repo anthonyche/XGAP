@@ -6,7 +6,7 @@
 - Origin Mode: plan
 - Origin Date: 2026-09-04
 - Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B/E5D VERIFIED; F2C13C SUMMARY ACCEPTED
-- Version Label: m15_remote_loop_v35
+- Version Label: m15_remote_loop_v36
 
 ## Current claim boundary
 
@@ -544,6 +544,66 @@ the run and audit trees; never repair, overwrite, or resubmit them. The compact
 record is
 `experiments/artifacts/m15_e5d_cwru_native_selected_session_20260907.json`.
 The gate is mechanism evidence and remains `paper_result=false`.
+
+## Local E6C clarification working surface
+
+E6C is implemented and locally verified. It is not deployed and does not need
+a CWRU build or Slurm run. Before the first operator walkthrough, copy only the
+two accepted read-only inputs from CWRU while connected to the VPN. The explicit
+login host below may be replaced with the user's existing SSH alias; do not put
+credentials in the repository:
+
+```bash
+cd /path/to/local/XGAP
+mkdir -p runs/ui-inputs runs/ui-state
+
+XGAP_CWRU_HOST='hxc859@pioneer.case.edu'
+scp \
+  "$XGAP_CWRU_HOST:/home/hxc859/XGAP-m15-465e2e2/runs/cwru-m15-native-selected-interpretation-session-3793365/native-service-run/resolution_run.json" \
+  runs/ui-inputs/e5d-3793365-resolution_run.json
+scp \
+  "$XGAP_CWRU_HOST:/home/hxc859/XGAP-m15-465e2e2/runs/cwru-m15-native-direct-family-pilot-3791600/native-service-run/direct-family-pilot-run/training/training_memory_view.json" \
+  runs/ui-inputs/f2c10d-3791600-training_memory_view.json
+```
+
+Start the local control service from the repository root. Keep remote
+submission disabled for the first walkthrough by omitting
+`--enable-remote-submit`:
+
+```bash
+PYTHONPATH="$PWD/src" python3 -m xgap.ui.local_app \
+  --resolution-run "$PWD/runs/ui-inputs/e5d-3793365-resolution_run.json" \
+  --training-memory "$PWD/runs/ui-inputs/f2c10d-3791600-training_memory_view.json" \
+  --remote-training-memory "/home/hxc859/XGAP-m15-465e2e2/runs/cwru-m15-native-direct-family-pilot-3791600/native-service-run/direct-family-pilot-run/training/training_memory_view.json" \
+  --expected-training-memory-sha256 7ed39e1097e3138666b87ec9c8ea82ed135d77a8e12e9f2893931892ba0b7e57 \
+  --session-id m15-e6c-local-walkthrough-v1 \
+  --authority-source-id author:anthonyche:explicit-e6c-local-walkthrough-v1 \
+  --display-query '查找过去一个月与 Alice 有密切资金往来的高风险公司。' \
+  --session-store "$PWD/runs/ui-state/e6c-local-walkthrough-v1.json" \
+  --repo-root "$PWD"
+```
+
+In a second terminal, start the local page:
+
+```bash
+cd /path/to/local/XGAP/apps/xgap-ui
+pnpm install --frozen-lockfile
+pnpm dev --host 127.0.0.1 --port 3000
+```
+
+Open `http://127.0.0.1:3000`. The first walkthrough may commit the two local
+authority events and inspect the sealed-plan preview, but it cannot submit a
+job. The session file makes those choices restart-safe; use a new session ID
+and store path for a new walkthrough instead of editing it.
+
+Real remote submission is a separate, still-pending operator gate. It requires
+working VPN/SSH reachability plus the non-secret `XGAP_REMOTE_*` configuration,
+and the local service must be restarted with `--enable-remote-submit`. Do not
+enable it merely to retest E5D job `3793365`; that immutable accepted job must
+not be resubmitted. The E6C page has no cancellation, generic command,
+environment editor, direct backend/model call, bounded log, or artifact-fetch
+control. Model-context tool registration is present in the page source but has
+not yet been validated in a supported browser runtime.
 
 ## Previous completed handoffs
 

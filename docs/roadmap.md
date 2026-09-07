@@ -152,7 +152,7 @@ Goal: integrate deterministic interpretation, clarification, optional
 catalog/ontology lookup, and bounded LLM fallback without making any one of
 them a prerequisite for federated execution.
 
-Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1, E5B, AND E5C VERIFIED OFFLINE; E5D LIVE SELECTED-PLAN SESSION READY LOCALLY; CWRU E5D RUN AND THIN UI PENDING**
+Current status: **E1/E2A/E3/E4 VERIFIED LOCALLY; E2B, E4B, AND E5D LIVE GATES VERIFIED ON CWRU; E5 OPTION A/R1, E5B, AND E5C VERIFIED OFFLINE; E6C LOCAL CLARIFICATION WORKING SURFACE VERIFIED; REMOTE UI SUBMISSION AND MODEL-CONTEXT RUNTIME VALIDATION PENDING**
 
 E1 adds a real `AgentPolicy` and four typed candidate-tool roles for catalog,
 ontology, bounded LLM proposal, and user clarification. The route is selective:
@@ -284,11 +284,21 @@ allowlisted, non-secret authority fields; other scripts reject them and unsafe
 values fail before SSH. Full repository acceptance passes 1,055 tests with 36
 explicit skips. E6B has also completed the pure clarification view adapter over
 E5C and E5D submission preview over this typed envelope. It passes full
-repository acceptance with 1,061 tests and 36 explicit skips. Next, keep the UI
-local and add the smallest interactive shell around this model: explicit
-candidate buttons and submit confirmation first, then typed job status, bounded
-logs, and immutable result panels. Do not add a generic environment editor,
-direct backend/model access, or paper-run controls.
+repository acceptance with 1,061 tests and 36 explicit skips. E6C now adds the
+smallest interactive local shell: a loopback-only typed server, content-hashed
+authority-event persistence, explicit candidate and submit confirmation, a
+browser-safe sealed-plan preview, and a local research page. Remote submission
+is disabled by default and, when enabled, can make one call only through the
+E6A typed executor; the browser never owns authority-source IDs, remote paths,
+environment values, credentials, or native queries. Full repository acceptance
+passes 1,075 tests with 36 explicit skips, focused E6C acceptance passes 34
+tests, and the frontend production build passes. Next, retrieve the two accepted
+read-only CWRU inputs and perform one local operator walkthrough with remote
+submission still disabled. After that, validate the declared model-context
+tools in a supported browser surface and separately decide whether one fresh
+remote development submission is justified. Typed job status, bounded logs,
+and immutable result panels remain later slices. Do not add a generic
+environment editor, direct backend/model access, or paper-run controls.
 
 ### M15-F Paper Experiment Surface and Optional UI
 

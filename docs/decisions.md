@@ -2857,3 +2857,31 @@ execution is not a performance comparison, the observed rows are not a user
 study, ontology proximity is not treated as truth, and the result remains
 `paper_result=false`. The immutable run and audit must not be overwritten or
 resubmitted.
+
+## D152 Keep the interactive clarification surface local and contract-bound
+
+E6C implements the optional UI as a local researcher working surface, not as a
+new agent, semantic state machine, or experiment runner. Its Python service
+binds only to `127.0.0.1`, reconstructs E5C from the sealed resolution artifact,
+accepted historical-memory view, fixed policies, and a content-hashed
+authority-event store, and refuses to start when the displayed request does not
+match the resolution question hash. The page is not deployed.
+
+Every clarification mutation must include the current session hash, pending
+question hash, one in-set candidate ID, and explicit confirmation. Authority-
+source identity remains server-owned. The browser never receives the typed
+remote payload, remote memory path, environment values, credentials, native
+query text, or a generic command/filesystem/backend/model interface. A terminal
+session exposes only a sanitized handoff preview. Remote submission is disabled
+by default; if the local operator explicitly enables it, one confirmed action
+may call only `remote.executor` with the fixed E5D script and six-field E6A
+allowlist. Any result ambiguity consumes the one attempt and is never retried.
+
+Visible buttons and the page's two model-context tools call the same local
+actions; the tools do not gain additional authority. Source-level tool
+registration is implemented, but no supported browser runtime was used to
+validate registration in this gate. Focused E6C acceptance passes 34 tests,
+full repository acceptance passes 1,075 tests with 36 explicit skips, and the
+frontend production build passes. This is local engineering readiness only: no
+CWRU submission, backend/model/ontology call, user study, performance result,
+or paper claim is accepted, and `paper_result=false` remains mandatory.

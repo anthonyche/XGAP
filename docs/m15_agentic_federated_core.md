@@ -236,7 +236,7 @@ Scaled/skewed workloads and calibration are required before performance claims.
 
 ## M15-E — Selective semantic resolution
 
-Status: **E1/E2A/E3/E4/E5/E5B/E5C VERIFIED LOCALLY; E2B AND E4B LIVE GATES VERIFIED ON CWRU; E5D LIVE SELECTED-PLAN GATE READY LOCALLY; CWRU E5D RUN AND THIN UI PENDING**
+Status: **E1/E2A/E3/E4/E5/E5B/E5C VERIFIED LOCALLY; E2B, E4B, AND E5D LIVE GATES VERIFIED ON CWRU; E6C LOCAL CLARIFICATION WORKING SURFACE VERIFIED; REMOTE UI SUBMISSION AND MODEL-CONTEXT RUNTIME VALIDATION PENDING**
 
 Integrate deterministic parsing, the preserved interpretation prototype,
 catalog/ontology lookup, clarification, and the existing bounded LLM provider.
@@ -369,12 +369,28 @@ the ranked handoff plans, stops on first failure, and uses zero profile, LLM,
 ontology-service, oracle-for-selection, repair, or retry calls. Its independent
 auditor reconstructs the full control/data-plane chain and real loopback
 configuration without mutating the run. Full repository acceptance passes
-1,054 tests with 36 explicit skips. Local readiness is complete; one clean CWRU
-mechanism run and audit remain pending. The UI is still only a later adapter.
-The compact readiness record is
+1,054 tests with 36 explicit skips. CWRU job `3793365` completed the selected
+two-plan handoff through four backend calls and passed its 127-check read-only
+audit with no run-tree mutation. It remains mechanism evidence only. The compact
+readiness record is
 `experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`.
 See
 [`docs/m15_e5_interpretation_relaxation_gate.md`](m15_e5_interpretation_relaxation_gate.md).
+
+M15-E6A/E6B/E6C add only the local presentation and typed remote-control
+boundary. The loopback service reconstructs the existing E5C session from
+sealed inputs, persists only content-hashed authority events, and accepts
+hash-bound, explicitly confirmed candidate choices. The browser cannot supply
+the authority-source ID or remote environment. A terminal session exposes a
+sanitized E5D handoff preview; remote submission is disabled unless the local
+operator explicitly enables it, and then one attempt can reach only the fixed
+selected-session wrapper through `remote.executor`. The companion page uses
+the same actions for visible controls and model-context tools and contains no
+direct Neo4j, Fuseki, vLLM, SSH, or generic command path. Focused E6C tests pass
+34 cases, full repository acceptance passes 1,075 tests with 36 explicit skips,
+and the frontend production build succeeds. This is local engineering
+readiness, not experiment or user-utility evidence. Model-context runtime
+registration and one real local-to-CWRU submission remain unverified.
 
 ## M15-F — Paper experiment surface and optional UI
 
