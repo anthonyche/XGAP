@@ -2835,3 +2835,25 @@ E6B is a local presentation/control adapter, not the interactive page and not
 an experiment result. Full-repository acceptance passes 1,061 tests with 36
 explicit skips. No SSH, Slurm, graph-backend, ontology-service, or model call
 was made by validation; `paper_result` remains false.
+
+## D151 Accept one live E5D selected-interpretation mechanism gate
+
+CWRU job `3793365` ran the only authorized E5D development session at exact
+commit `52fe4d8d626604e40bdcc1c3f336c22e2eb61313`. It reconstructed the explicit
+author choice `constraint:single-transfer-at-least-50000` plus
+`predicate:transferred_to`, verified the accepted F2C10D memory identity, and
+sealed two selected semantic plans before starting native services.
+
+The job completed on `compt351` with exit `0:0` in 82 seconds. The finite goal
+made two `runtime.execute_plan` calls, corresponding to two physical plan runs
+and four backend calls. Final row counts were 11 and 6 and total bytes moved
+were 17,784. Selection made zero current-query profile, LLM, and
+ontology-service calls and performed no automatic retry. The independent
+read-only audit passed all 127 checks with no failed check and no run-tree
+mutation.
+
+This accepts E5D as an end-to-end live mechanism result only. The two-plan
+execution is not a performance comparison, the observed rows are not a user
+study, ontology proximity is not treated as truth, and the result remains
+`paper_result=false`. The immutable run and audit must not be overwritten or
+resubmitted.

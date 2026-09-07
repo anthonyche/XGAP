@@ -1,0 +1,73 @@
+{
+  "artifact_id": "m15-e5d-cwru-native-selected-session-20260907",
+  "artifact_role": "cwru_live_selected_interpretation_mechanism_evidence_not_paper_result",
+  "observed_at_utc": "2026-09-07",
+  "execution": {
+    "slurm_job_id": "3793365",
+    "git_commit": "52fe4d8d626604e40bdcc1c3f336c22e2eb61313",
+    "hostname": "compt351",
+    "elapsed_seconds": 82,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "workload_mode": "selected_interpretation_session",
+    "runtime_removed": true,
+    "cleanup_error": null
+  },
+  "authority": {
+    "source_id": "author:anthonyche:explicit-e5d-r1-v1",
+    "selections": [
+      {
+        "sequence": 1,
+        "hole_id": "relationship-strength",
+        "candidate_id": "constraint:single-transfer-at-least-50000"
+      },
+      {
+        "sequence": 2,
+        "hole_id": "transfer-predicate",
+        "candidate_id": "predicate:transferred_to"
+      }
+    ],
+    "authority_event_chain_sha256": "0306da18bd52bc28bcb1914660eb052a90f2cdedebdbb97f18191207507c6ea7"
+  },
+  "sealed_inputs": {
+    "training_memory_view_sha256": "7ed39e1097e3138666b87ec9c8ea82ed135d77a8e12e9f2893931892ba0b7e57",
+    "session_sha256": "e97b6cfdb95ff672e7063f5337035180d1c5e394650754104e090771ae95a210",
+    "execution_handoff_sha256": "ad3b87780741a12437da989ec35e01a5f0ffcd31517c822024c06aff2e905046",
+    "selection_sealed_before_live_execution": true
+  },
+  "selected_plan_ids": [
+    "m15-f2c-financial-risk-alice-aug-high-v2-parallel-hash-window-e4",
+    "m15-f2c-financial-risk-alice-aug-high-v2-relaxed-b3cf0ee1b03a3bf46874629c-parallel-hash-window-e4"
+  ],
+  "observed_summary": {
+    "selected_semantic_plan_count": 2,
+    "physical_plan_run_count": 2,
+    "goal_tool_calls": 2,
+    "total_remote_calls": 4,
+    "total_bytes_moved": 17784,
+    "final_row_counts": [11, 6],
+    "current_query_profile_calls": 0,
+    "llm_calls_made": 0,
+    "ontology_service_calls_made": 0,
+    "automatic_retries": 0,
+    "validation_passed": true
+  },
+  "independent_audit": {
+    "module": "xgap.experiments.m15_selected_interpretation_session_evidence",
+    "success": true,
+    "check_count": 127,
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "expected_commit": "52fe4d8d626604e40bdcc1c3f336c22e2eb61313"
+  },
+  "claim_boundary": {
+    "evidence_class": "live_selected_interpretation_mechanism_gate",
+    "real_neo4j_and_fuseki_execution": true,
+    "performance_comparison": false,
+    "semantic_quality_claim": false,
+    "user_utility_claim": false,
+    "ontology_truth_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

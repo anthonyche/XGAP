@@ -268,11 +268,15 @@ goal with only `runtime.execute_plan`. Selection uses zero current-query
 profiles and no LLM, ontology service, answer oracle, or backend call; runtime
 stops on the first failure and never retries. The independent auditor
 reconstructs the complete native tree and loopback configuration read-only.
-Full repository acceptance passes 1,054 tests with 36 explicit skips. Local
-readiness is complete; one clean CWRU E5D run and audit are next. The remaining
-UI surface is a thin adapter over the same session/event API. The local record
-is
-`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`.
+Full repository acceptance passes 1,054 tests with 36 explicit skips. CWRU job
+`3793365` now closes the live gate at the frozen commit: two selected plans,
+two goal calls, four backend calls, final row counts 11 and 6, zero current-query
+profiles, and no retry. Its 127-check independent audit passed without mutating
+the run tree. E5D is accepted as live mechanism evidence, not performance or
+paper evidence. The local and CWRU records are
+`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`
+and
+`experiments/artifacts/m15_e5d_cwru_native_selected_session_20260907.json`.
 
 E6A has now removed the UI-to-Slurm authority transport gap without broadening
 the remote tool. The selected-session wrapper alone may receive six explicitly

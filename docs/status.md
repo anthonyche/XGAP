@@ -171,11 +171,15 @@ the ranked handoff plans, stops after the first failure, and never retries.
 Selection has zero current-query profiles, backend, LLM, ontology-service, or
 oracle calls; answer oracles open only after all execution succeeds. A separate
 read-only auditor reconstructs E4/E5C, goal/memory/results/invocations, cleanup,
-and actual Neo4j/Fuseki loopback configuration. E5D is locally ready but has no
-CWRU result yet; full repository acceptance passes 1,054 tests with 36 explicit
-skips. It remains `paper_result=false`. The UI remains an optional adapter. See
-`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`
-and `docs/m15_e5_interpretation_relaxation_gate.md`.
+and actual Neo4j/Fuseki loopback configuration. CWRU job `3793365` completed at
+the frozen commit on `compt351` in 82 seconds and passed all 127 independent
+audit checks without mutating its run tree. It executed two selected semantic
+plans through two goal calls and four backend calls, returned 11 and 6 rows,
+and moved 17,784 bytes. Selection made zero current-query profile, LLM, or
+ontology-service calls and used no retry. It remains `paper_result=false`. See
+`experiments/artifacts/m15_e5d_local_live_selected_session_readiness_20260907.json`,
+`experiments/artifacts/m15_e5d_cwru_native_selected_session_20260907.json`, and
+`docs/m15_e5_interpretation_relaxation_gate.md`.
 
 E6A now supplies the missing typed control-plane envelope needed by that
 adapter. Per-job environment values are accepted only for the exact allowlisted

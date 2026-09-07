@@ -5,8 +5,8 @@
 - Origin Skill: experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-04
-- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B VERIFIED; F2C13C SUMMARY ACCEPTED; E5D LOCAL READY, AUTHOR CHOICE A RECORDED, CWRU RUN PENDING
-- Version Label: m15_remote_loop_v34
+- Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B/E5D VERIFIED; F2C13C SUMMARY ACCEPTED
+- Version Label: m15_remote_loop_v35
 
 ## Current claim boundary
 
@@ -428,7 +428,7 @@ VPN reachability and a working user-owned SSH alias.
 - Build the thin UI only after the CLI trace schema, remote executor, and one
   user-clarification action are stable. The UI is not an experiment runner.
 
-## Current E5D user handoff
+## Completed E5D user handoff
 
 E5D is published at exact commit
 `52fe4d8d626604e40bdcc1c3f336c22e2eb61313` on branch
@@ -443,7 +443,13 @@ The author selected A for this one development run:
 `constraint:single-transfer-at-least-50000` is the R1 structural choice and
 `predicate:transferred_to` is the exact predicate base. `predicate:paid_to`
 remains only a bounded sibling relaxation. This is not a system-wide default.
-Run exactly one job with the following explicit values:
+The single authorized CWRU job `3793365` completed at the frozen commit on
+`compt351` in 82 seconds and its independent audit passed all 127 checks. The
+run executed two selected semantic plans through two goal tool calls and four
+backend calls, returned 11 and 6 rows, and moved 17,784 bytes. It used zero
+current-query profiles, LLM calls, ontology-service calls, and retries. The run
+tree remained unchanged and `paper_result=false`. Do not submit it again. The
+commands below are retained only as the exact historical protocol:
 
 ```bash
 module load Miniconda3
@@ -532,10 +538,12 @@ print(json.dumps({
 PY
 ```
 
-Accept E5D only if the outer job succeeded and the audit reports `success=true`,
-an empty `failed_check_ids`, and `run_tree_mutated=false`. Preserve any failed
-run or failed audit; never repair or overwrite an immutable run tree. The gate
-is mechanism evidence and must remain `paper_result=false`.
+E5D met the acceptance rule: the outer job succeeded, the audit reported
+`success=true`, `failed_check_ids=[]`, and `run_tree_mutated=false`. Preserve
+the run and audit trees; never repair, overwrite, or resubmit them. The compact
+record is
+`experiments/artifacts/m15_e5d_cwru_native_selected_session_20260907.json`.
+The gate is mechanism evidence and remains `paper_result=false`.
 
 ## Previous completed handoffs
 
