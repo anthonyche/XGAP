@@ -40,6 +40,15 @@ SELECTED_SESSION_JOB_ENVIRONMENT_KEYS = frozenset(
         "XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID",
     }
 )
+FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT = (
+    "scripts/slurm/run_m15_native_finbench_family_campaign.sbatch"
+)
+FINBENCH_FAMILY_CAMPAIGN_JOB_ENVIRONMENT_KEYS = frozenset(
+    {
+        "XGAP_FINBENCH_CORRECTNESS_RUN",
+        "XGAP_FINBENCH_CORRECTNESS_AUDIT",
+    }
+)
 DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_core_smoke.sbatch",
     "scripts/slurm/probe_m15_native_services.sbatch",
@@ -62,8 +71,25 @@ DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_native_paired_physical_comparison.sbatch",
     "scripts/slurm/run_m15_native_finbench_correctness.sbatch",
     "scripts/slurm/run_m15_native_finbench_sf0_1_correctness.sbatch",
+    FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT,
     "scripts/slurm/run_m15_live_resolution.sbatch",
 )
+
+
+def _default_job_environment_allowlist(
+    allowed_scripts: Sequence[str],
+) -> dict[str, frozenset[str]]:
+    allowed = set(allowed_scripts)
+    result: dict[str, frozenset[str]] = {}
+    if SELECTED_SESSION_SBATCH_SCRIPT in allowed:
+        result[SELECTED_SESSION_SBATCH_SCRIPT] = (
+            SELECTED_SESSION_JOB_ENVIRONMENT_KEYS
+        )
+    if FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT in allowed:
+        result[FINBENCH_FAMILY_CAMPAIGN_SBATCH_SCRIPT] = (
+            FINBENCH_FAMILY_CAMPAIGN_JOB_ENVIRONMENT_KEYS
+        )
+    return result
 
 
 @dataclass(frozen=True)
@@ -132,14 +158,8 @@ def load_remote_control_config(
     if job_java_module:
         submission_environment["XGAP_JAVA_MODULE"] = job_java_module
 
-    job_environment_allowlist = (
-        {
-            SELECTED_SESSION_SBATCH_SCRIPT: (
-                SELECTED_SESSION_JOB_ENVIRONMENT_KEYS
-            )
-        }
-        if SELECTED_SESSION_SBATCH_SCRIPT in allowed_scripts
-        else {}
+    job_environment_allowlist = _default_job_environment_allowlist(
+        allowed_scripts
     )
     return RemoteControlConfig(
         host_alias=host_alias,
@@ -176,15 +196,8 @@ def build_remote_executor(
         job_environment_allowlist=dict(
             config.job_environment_allowlist
             if config.job_environment_allowlist is not None
-            else (
-                {
-                    SELECTED_SESSION_SBATCH_SCRIPT: (
-                        SELECTED_SESSION_JOB_ENVIRONMENT_KEYS
-                    )
-                }
-                if SELECTED_SESSION_SBATCH_SCRIPT
-                in config.allowed_sbatch_scripts
-                else {}
+            else _default_job_environment_allowlist(
+                config.allowed_sbatch_scripts
             )
         ),
         allow_cancel=config.allow_cancel,

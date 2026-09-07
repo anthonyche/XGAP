@@ -2395,6 +2395,7 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "direct_family_pilot" in script
     assert "current_query_profile_baseline" in script
     assert "paired_physical_comparison" in script
+    assert "finbench_family_campaign" in script
     assert "m15_direct_semantic_workload" in script
     assert "m15_parameterized_workload" in script
     assert "m15_semantic_overlay" in script
@@ -2506,6 +2507,27 @@ def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:
     assert "#SBATCH --time=01:30:00" in finbench_scale_script
     assert "SLURM_SUBMIT_DIR" in finbench_scale_script
     assert "BASH_SOURCE" not in finbench_scale_script
+    finbench_campaign_script = (
+        REPO_ROOT
+        / "scripts/slurm/run_m15_native_finbench_family_campaign.sbatch"
+    ).read_text(encoding="utf-8")
+    assert "XGAP_M15_WORKLOAD_MODE=finbench_family_campaign" in (
+        finbench_campaign_script
+    )
+    assert "XGAP_FINBENCH_CORRECTNESS_RUN" in finbench_campaign_script
+    assert "XGAP_FINBENCH_CORRECTNESS_AUDIT" in finbench_campaign_script
+    assert "m15_finbench_v010_sf0_1_sources.json" in finbench_campaign_script
+    assert "m15_finbench_sf0_1_primary_population_v1.json" in (
+        finbench_campaign_script
+    )
+    assert "XGAP_FINBENCH_BATCH_SIZE=2000" in finbench_campaign_script
+    assert "XGAP_NEO4J_RESOURCE_PROFILE=finbench_sf0_1" in (
+        finbench_campaign_script
+    )
+    assert "#SBATCH --mem=16G" in finbench_campaign_script
+    assert "#SBATCH --time=01:30:00" in finbench_campaign_script
+    assert "SLURM_SUBMIT_DIR" in finbench_campaign_script
+    assert "BASH_SOURCE" not in finbench_campaign_script
     assert 'FINBENCH_BATCH_SIZE="${XGAP_FINBENCH_BATCH_SIZE:-250}"' in script
     assert '--neo4j-resource-profile "$NEO4J_RESOURCE_PROFILE"' in script
     assert "XGAP_FINBENCH_LOCK is not an allowlisted repository lock" in script

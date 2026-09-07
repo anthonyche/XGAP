@@ -837,9 +837,18 @@ queries use the zero-profile family-memory method; the 12 F3 queries retain a
 separately labeled predeclared cold-start fallback. Both are paired against
 the cost-inclusive dual-profile method under balanced order and distinct
 selection seals. The compiler opens no backend or oracle and makes no LLM or
-ontology call. This is protocol readiness only; a native producer, auditor,
-and successful scale gate are still required before execution, and
-`paper_result=false` remains fixed.
+ontology call. The native producer and independent read-only auditor are now
+implemented against this exact schedule. The producer admits training
+exactness only from a successful external correctness audit, seals all 72
+physical candidates before fixture loading, seals family-memory selection
+before current-query profiling, seals the profile comparator before paired
+serving, and opens the answer oracle only after all 368 runs and 736 backend
+calls. Its analysis reports known-family prediction error, physical-winner
+accuracy, latency/byte regret, frontier overlap, and selection-plus-serving
+cost while keeping F3 cold-start separate. Full repository acceptance passes
+1,125 tests with 36 intentional live/external skips. This is executable
+development readiness, not authorization to run before the SF0.1 correctness
+audit succeeds; `paper_result=false` remains fixed.
 The first SF0.1 scale attempt is preserved as a failed load diagnostic. Job
 `3793681` reached healthy Neo4j and Fuseki services and sealed all 72 plans,
 then Neo4j returned HTTP 500 at fixture statement 46/194 after approximately
@@ -855,10 +864,13 @@ audits readable. The SF0.1 wrapper explicitly records a 1/2/1-GiB
 initial-heap/max-heap/page-cache profile inside its unchanged 16-GiB request.
 Local regression and full acceptance must pass before one repaired CWRU gate;
 no old run is retried or counted as a result.
-The repair implementation has now passed the complete local acceptance suite:
-1,123 tests passed and 36 explicitly live/external tests were skipped. Shell
-syntax validation and `git diff --check` also passed. The remaining boundary is
-one exact-commit CWRU SF0.1 correctness run and its independent read-only audit.
+The repair implementation passed the complete local acceptance suite at its
+published commit: 1,123 tests passed and 36 explicitly live/external tests were
+skipped. Shell syntax validation and `git diff --check` also passed. The single
+repaired CWRU SF0.1 correctness run has been submitted as job `3793698` at
+exact commit `bc57a9d`; its terminal status and independent read-only audit are
+still pending. Do not submit a duplicate or start the 736-call campaign from
+an unaudited scale run.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen

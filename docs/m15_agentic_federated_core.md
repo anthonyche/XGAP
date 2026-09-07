@@ -905,7 +905,15 @@ method receives no current-query profile for known-family queries; F3 uses an
 explicitly different cold-start fallback. The dual-profile comparator pays for
 both complete federated probes. Selection seals precede paired serving, and
 all shadow observations remain evaluation-only. The compiler performs no tool
-call and the campaign remains non-confirmatory with `paper_result=false`.
+call. A native producer now enforces the exact 368-plan/736-call phase order,
+requires an independently audited workload-matching correctness run, and opens
+the oracle only after execution. A separate read-only auditor reconstructs the
+schedule, candidate catalog, correctness admission, family memory, both
+selection seals, all result sets, oracle comparisons, and analysis. Full local
+acceptance passes 1,125 tests with 36 intentional skips. The repaired SF0.1
+correctness job `3793698` remains the execution gate, so the campaign is not
+yet remotely authorized and remains non-confirmatory with
+`paper_result=false`.
 
 Freeze a 30–50 query hand-verified federated workload before importing a large
 external benchmark. Vary data skew, latency, schema overlap, source count, and

@@ -6,7 +6,7 @@
 - Origin Mode: plan
 - Origin Date: 2026-09-04
 - Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B/E5D VERIFIED; F2C13C SUMMARY ACCEPTED
-- Version Label: m15_remote_loop_v40
+- Version Label: m15_remote_loop_v41
 
 ## Current claim boundary
 
@@ -34,12 +34,11 @@ Local oracle replay passes all 72 comparisons. The dedicated
 rebuilds its partition and workload inside a fresh run tree, loads native
 Neo4j/Fuseki services, seals every plan before load, and opens the oracle only
 after all executions. Pre-execution access is limited to byte hashing for
-artifact identity; no oracle JSON is parsed. This is the next authorized
-development job. It remains
-`paper_result=false`; a successful run authorizes protocol freeze, not a paper
-performance claim. The repaired CWRU acquisition has verified the official
-archive and submitted this gate as job `3793654` at clean commit `a718e91`; do
-not submit a duplicate while that job is pending.
+artifact identity; no oracle JSON is parsed. Job `3793654` completed this gate
+at clean commit `a718e91`; all 72 plans were exact and answer-equivalent, and
+the repaired independent audit passed 363/363 checks without run-tree
+mutation. Preserve it as development correctness evidence; it remains
+`paper_result=false` and is not a paper performance result.
 
 The first server preparation attempt returned HTTP 403 before creating a
 Slurm job. The official archive was not cached and no service or query ran.
@@ -68,17 +67,25 @@ retry automatically. Its saved console log contains only normal startup and a
 request-initiated shutdown; deterministic generation identifies statement 46
 as the first 2,000-row transfer-relationship batch. The repair changes the
 partition to hash-bound parameterized JSONL batches, verifies Neo4j affected
-rows, and selects a persisted 1/2/1-GiB SF0.1 heap/page-cache profile. Submit
-exactly one repaired gate only after the repair commit and tests are published;
-the command and expected commit will be issued separately.
+rows, and selects a persisted 1/2/1-GiB SF0.1 heap/page-cache profile. Full
+local acceptance passed before publication, and exactly one repaired gate was
+submitted as job `3793698` at commit `bc57a9d`. Wait for its terminal state;
+do not submit another correctness or campaign job.
 
-Meanwhile, the next comparison schedule is locally frozen but not remotely
-authorized. It binds 368 complete plans and 736 backend calls in one
+Meanwhile, the next comparison schedule and native implementation are locally
+complete but not remotely authorized. It binds 368 complete plans and 736
+backend calls in one
 allocation: 128 training, 40 dual-profile acquisition, 40 paired serving, and
 160 evaluation-only shadow runs. Known-family zero-profile memory and F3
 cold-start fallback remain distinct methods, both paired with the
-cost-inclusive profile comparator. A native producer and independent auditor
-are still required; the compiler alone is not a run instruction.
+cost-inclusive profile comparator. The producer accepts only an independently
+audited correctness run with the same workload hash, seals both selections
+before serving, opens the oracle after all calls, and never retries. Its
+independent auditor reconstructs schedule, candidates, admission, memory,
+selections, results, oracle comparisons, and analysis without mutating the run
+tree. Full local acceptance passes 1,125 tests with 36 intentional skips. This
+is readiness only: job `3793698` must succeed and pass audit before a campaign
+command is issued.
 
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service

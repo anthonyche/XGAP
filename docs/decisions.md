@@ -3127,3 +3127,32 @@ The complete local acceptance suite subsequently passed 1,123 tests with 36
 intentional live/external skips; shell syntax and whitespace checks also
 passed. This authorizes publication of the repair commit and one CWRU
 correctness submission, not the 736-call comparison campaign.
+
+## D163 Implement the frozen FinBench campaign without weakening its scale gate
+
+The D160 schedule is now connected to one fail-closed native producer and a
+separate read-only reconstruction auditor. This does not authorize premature
+execution. The producer requires a successful external FinBench correctness
+run and its mutation-free audit for the exact workload identity; it copies no
+answer rows from that gate and uses it only to admit training exactness.
+
+All 72 physical candidates and all 368 scheduled runs are fixed before fixture
+loading. The producer then executes 128 training plans, builds the family
+memory, and seals the zero-current-query-profile choices before it performs any
+of the 40 profile acquisitions. A second seal fixes the profile comparator
+before the 40 paired serving runs. The 160 shadow runs are evaluation-only,
+and the answer oracle is parsed only after all 368 plan runs and 736 backend
+calls complete. The first failure stops the campaign and automatic retries
+remain zero.
+
+The persisted comparison reports family memory, explicitly separate F3
+cold-start fallback, family-global ablation, both fixed routes, the
+cost-inclusive dual-profile method, and an observed oracle upper bound.
+Known-family prediction error, physical-winner accuracy, latency and byte
+regret, predicted/observed physical-frontier overlap, and
+selection-plus-serving cost are reconstructed independently. Full local
+acceptance passes 1,125 tests with 36 intentional live/external skips. CWRU
+job `3793698` is the only pending repaired SF0.1 correctness gate; the campaign
+must not run until that job terminates successfully and its independent audit
+passes. All resulting artifacts remain development-only with
+`paper_result=false`.

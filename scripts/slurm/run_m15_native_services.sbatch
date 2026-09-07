@@ -154,6 +154,12 @@ case "$WORKLOAD_MODE" in
     RUN_PREFIX="cwru-m15-native-finbench-correctness"
     RUN_VERSION="m15-finbench-native-live-correctness-services-v1"
     ;;
+  finbench_family_campaign)
+    RUN_PREFIX="cwru-m15-native-finbench-family-campaign"
+    RUN_VERSION="m15-finbench-native-live-family-campaign-services-v1"
+    : "${XGAP_FINBENCH_CORRECTNESS_RUN:?XGAP_FINBENCH_CORRECTNESS_RUN is required}"
+    : "${XGAP_FINBENCH_CORRECTNESS_AUDIT:?XGAP_FINBENCH_CORRECTNESS_AUDIT is required}"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -321,7 +327,7 @@ PYTHONPATH="$REPO_ROOT/src" \
   | tee "$RUN_ROOT/runtime_staging_result.json"
 
 WORKLOAD_ARGS=()
-if [[ "$WORKLOAD_MODE" == finbench_correctness ]]; then
+if [[ "$WORKLOAD_MODE" == finbench_correctness || "$WORKLOAD_MODE" == finbench_family_campaign ]]; then
   FINBENCH_ARCHIVE="${XGAP_FINBENCH_ARCHIVE:-$HOME/.cache/xgap/finbench-v0.1.0/sf0.01.tar.gz}"
   FINBENCH_LOCK="${XGAP_FINBENCH_LOCK:-$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sources.json}"
   FINBENCH_SPEC="${XGAP_FINBENCH_SPEC:-$REPO_ROOT/experiments/configs/m15_finbench_primary_population_v1.json}"
@@ -382,7 +388,26 @@ if [[ "$WORKLOAD_MODE" == finbench_correctness ]]; then
     --finbench-workload "$FINBENCH_WORKLOAD"
     --finbench-partition "$FINBENCH_PARTITION"
   )
-  if [[ -n "${XGAP_FINBENCH_QUERY_IDS:-}" ]]; then
+  if [[ "$WORKLOAD_MODE" == finbench_family_campaign ]]; then
+    if [[ "$XGAP_FINBENCH_CORRECTNESS_RUN" != /* || \
+          ! -d "$XGAP_FINBENCH_CORRECTNESS_RUN" || \
+          -L "$XGAP_FINBENCH_CORRECTNESS_RUN" ]]; then
+      echo "FinBench correctness run root is missing or unsafe." >&2
+      exit 2
+    fi
+    if [[ "$XGAP_FINBENCH_CORRECTNESS_AUDIT" != /* || \
+          ! -f "$XGAP_FINBENCH_CORRECTNESS_AUDIT" || \
+          -L "$XGAP_FINBENCH_CORRECTNESS_AUDIT" ]]; then
+      echo "FinBench correctness audit is missing or unsafe." >&2
+      exit 2
+    fi
+    WORKLOAD_ARGS+=(
+      --finbench-correctness-run "$XGAP_FINBENCH_CORRECTNESS_RUN"
+      --finbench-correctness-audit "$XGAP_FINBENCH_CORRECTNESS_AUDIT"
+      --finbench-campaign-protocol "$REPO_ROOT/experiments/configs/m15_finbench_family_campaign_dev_v1.json"
+      --finbench-family-memory-policy "$REPO_ROOT/experiments/configs/m15_finbench_family_memory_policy_v1.json"
+    )
+  elif [[ -n "${XGAP_FINBENCH_QUERY_IDS:-}" ]]; then
     IFS=',' read -r -a FINBENCH_QUERY_IDS <<< "$XGAP_FINBENCH_QUERY_IDS"
     for FINBENCH_QUERY_ID in "${FINBENCH_QUERY_IDS[@]}"; do
       if [[ -z "$FINBENCH_QUERY_ID" ]]; then
