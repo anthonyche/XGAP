@@ -27,6 +27,19 @@ from xgap.tools import (
 
 
 DEFAULT_EXECUTOR_ID = "cwru-pioneer"
+SELECTED_SESSION_SBATCH_SCRIPT = (
+    "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch"
+)
+SELECTED_SESSION_JOB_ENVIRONMENT_KEYS = frozenset(
+    {
+        "XGAP_M15_SELECTED_TRAINING_MEMORY",
+        "XGAP_M15_SELECTED_MEMORY_SHA256",
+        "XGAP_M15_SELECTED_SESSION_ID",
+        "XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE",
+        "XGAP_M15_SELECTED_PREDICATE_CANDIDATE",
+        "XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID",
+    }
+)
 DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_core_smoke.sbatch",
     "scripts/slurm/probe_m15_native_services.sbatch",
@@ -43,7 +56,7 @@ DEFAULT_ALLOWED_SBATCH_SCRIPTS = (
     "scripts/slurm/run_m15_native_semantic_predicate_relaxation.sbatch",
     "scripts/slurm/run_m15_native_semantic_direct_frontier.sbatch",
     "scripts/slurm/run_m15_native_resolution_execution_bridge.sbatch",
-    "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch",
+    SELECTED_SESSION_SBATCH_SCRIPT,
     "scripts/slurm/run_m15_native_direct_family_pilot.sbatch",
     "scripts/slurm/run_m15_native_current_query_profile_baseline.sbatch",
     "scripts/slurm/run_m15_native_paired_physical_comparison.sbatch",
@@ -61,6 +74,7 @@ class RemoteControlConfig:
     executor_id: str = DEFAULT_EXECUTOR_ID
     allowed_sbatch_scripts: tuple[str, ...] = DEFAULT_ALLOWED_SBATCH_SCRIPTS
     submission_environment: Mapping[str, str] | None = None
+    job_environment_allowlist: Mapping[str, frozenset[str]] | None = None
     allow_cancel: bool = False
     timeout_seconds: float = 30.0
 
@@ -108,11 +122,23 @@ def load_remote_control_config(
     submission_environment = {}
     job_python = values.get("XGAP_REMOTE_JOB_PYTHON", "").strip()
     job_module = values.get("XGAP_REMOTE_JOB_MODULE", "Miniconda3").strip()
+    job_java_module = values.get("XGAP_REMOTE_JOB_JAVA_MODULE", "").strip()
     if job_python:
         submission_environment["XGAP_PYTHON"] = job_python
     if job_module:
         submission_environment["XGAP_PYTHON_MODULE"] = job_module
+    if job_java_module:
+        submission_environment["XGAP_JAVA_MODULE"] = job_java_module
 
+    job_environment_allowlist = (
+        {
+            SELECTED_SESSION_SBATCH_SCRIPT: (
+                SELECTED_SESSION_JOB_ENVIRONMENT_KEYS
+            )
+        }
+        if SELECTED_SESSION_SBATCH_SCRIPT in allowed_scripts
+        else {}
+    )
     return RemoteControlConfig(
         host_alias=host_alias,
         remote_repo_root=remote_repo_root,
@@ -122,6 +148,7 @@ def load_remote_control_config(
         executor_id=values.get("XGAP_REMOTE_EXECUTOR_ID", DEFAULT_EXECUTOR_ID).strip(),
         allowed_sbatch_scripts=allowed_scripts,
         submission_environment=submission_environment,
+        job_environment_allowlist=job_environment_allowlist,
         allow_cancel=values.get("XGAP_REMOTE_ALLOW_CANCEL", "0") == "1",
         timeout_seconds=timeout_seconds,
     )
@@ -144,6 +171,20 @@ def build_remote_executor(
         local_artifact_root=config.local_artifact_root,
         allowed_sbatch_scripts=frozenset(config.allowed_sbatch_scripts),
         submission_environment=dict(config.submission_environment or {}),
+        job_environment_allowlist=dict(
+            config.job_environment_allowlist
+            if config.job_environment_allowlist is not None
+            else (
+                {
+                    SELECTED_SESSION_SBATCH_SCRIPT: (
+                        SELECTED_SESSION_JOB_ENVIRONMENT_KEYS
+                    )
+                }
+                if SELECTED_SESSION_SBATCH_SCRIPT
+                in config.allowed_sbatch_scripts
+                else {}
+            )
+        ),
         allow_cancel=config.allow_cancel,
         timeout_seconds=config.timeout_seconds,
     )
@@ -183,6 +224,13 @@ def _parser() -> argparse.ArgumentParser:
 
     submit = subparsers.add_parser("submit", help="submit an allowlisted Slurm script")
     submit.add_argument("--script", required=True)
+    submit.add_argument(
+        "--env",
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help="explicit per-job environment entry (script allowlist enforced)",
+    )
 
     status = subparsers.add_parser("status", help="inspect one Slurm job")
     status.add_argument("--job-id", required=True)
@@ -208,7 +256,18 @@ def _operation_and_payload(args: argparse.Namespace) -> tuple[RemoteExecutorOper
             "commit": args.commit,
         }
     if args.command == "submit":
-        return RemoteExecutorOperation.SUBMIT_JOB, {"script": args.script}
+        environment: dict[str, str] = {}
+        for item in args.env:
+            if "=" not in item:
+                raise ValueError("--env values must use KEY=VALUE")
+            key, value = item.split("=", 1)
+            if not key or key in environment:
+                raise ValueError("--env keys must be nonempty and unique")
+            environment[key] = value
+        payload: dict[str, Any] = {"script": args.script}
+        if environment:
+            payload["environment"] = environment
+        return RemoteExecutorOperation.SUBMIT_JOB, payload
     if args.command == "status":
         return RemoteExecutorOperation.JOB_STATUS, {"job_id": args.job_id}
     if args.command == "log":

@@ -7,6 +7,8 @@ import pytest
 from xgap.experiments.remote_control import (
     DEFAULT_ALLOWED_SBATCH_SCRIPTS,
     RemoteControlConfig,
+    SELECTED_SESSION_JOB_ENVIRONMENT_KEYS,
+    SELECTED_SESSION_SBATCH_SCRIPT,
     _operation_and_payload,
     _parser,
     build_remote_executor,
@@ -68,6 +70,9 @@ def test_config_uses_vllm_python_and_scoped_defaults(tmp_path: Path) -> None:
     assert config.submission_environment == {
         "XGAP_PYTHON": "/home/hxc859/venvs/xgap-core/bin/python",
         "XGAP_PYTHON_MODULE": "Miniconda3",
+    }
+    assert config.job_environment_allowlist == {
+        SELECTED_SESSION_SBATCH_SCRIPT: SELECTED_SESSION_JOB_ENVIRONMENT_KEYS
     }
     assert config.allow_cancel is False
 
@@ -302,6 +307,45 @@ def test_cli_parser_maps_commands_to_typed_operations() -> None:
     )
     assert operation is RemoteExecutorOperation.FETCH_ARTIFACTS
     assert payload == {"remote_path": "run-1", "local_path": "run-1"}
+
+    operation, payload = _operation_and_payload(
+        parser.parse_args(
+            [
+                "submit",
+                "--script",
+                SELECTED_SESSION_SBATCH_SCRIPT,
+                "--env",
+                "XGAP_M15_SELECTED_PREDICATE_CANDIDATE=predicate:transferred_to",
+                "--env",
+                "XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID=author:test:choice-a",
+            ]
+        )
+    )
+    assert operation is RemoteExecutorOperation.SUBMIT_JOB
+    assert payload == {
+        "script": SELECTED_SESSION_SBATCH_SCRIPT,
+        "environment": {
+            "XGAP_M15_SELECTED_PREDICATE_CANDIDATE": (
+                "predicate:transferred_to"
+            ),
+            "XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID": "author:test:choice-a",
+        },
+    }
+
+    with pytest.raises(ValueError, match="unique"):
+        _operation_and_payload(
+            parser.parse_args(
+                [
+                    "submit",
+                    "--script",
+                    SELECTED_SESSION_SBATCH_SCRIPT,
+                    "--env",
+                    "XGAP_M15_SELECTED_SESSION_ID=one",
+                    "--env",
+                    "XGAP_M15_SELECTED_SESSION_ID=two",
+                ]
+            )
+        )
 
 
 def test_control_entry_invokes_registered_executor(tmp_path: Path) -> None:

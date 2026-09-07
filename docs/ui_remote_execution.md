@@ -1,12 +1,13 @@
 # UI and CWRU Remote Execution Decision
 
-## Decision
+## Decision and current gate status
 
 A UI is useful for demonstrations, clarification, and plan-trace inspection,
-but it is not currently necessary for obtaining the core experimental results.
-The first executable interface should remain a reproducible CLI plus structured
-run artifacts. A thin UI should be added only after the M15-B coordinator API
-is stable.
+but it is not part of the paper experiment mechanism. The reproducible CLI and
+structured run artifacts remain authoritative. The original four-condition UI
+gate is now satisfied: the cross-engine CLI, portable goal trace, SSH/Slurm
+remote executor, and bounded clarification transport all exist. E6 may
+therefore add a thin local working surface without changing experiment logic.
 
 This avoids coupling correctness and benchmark automation to a web framework,
 while ensuring the eventual UI visualizes the same goals, tool calls,
@@ -59,8 +60,7 @@ environment contract:
 
 - <https://ondemand-pioneer.case.edu/public/sinfo_pioneer.html>
 
-The missing piece is a general remote-executor plugin around SSH/Slurm, not a
-new model-serving stack. Its interface should expose:
+The remote-executor plugin around SSH/Slurm now exposes:
 
 - `stage_run`
 - `submit_job`
@@ -72,16 +72,28 @@ new model-serving stack. Its interface should expose:
 All operations must return normalized tool observations and measured control
 cost. `cancel_job` is state-changing and must be separately allowlisted.
 
+E6A closes the remaining clarification-submission gap. `submit_job` may carry
+an explicit per-job environment object, but every key is checked against the
+selected Slurm script rather than a global list. Only the E5D selected-session
+wrapper accepts the six non-secret historical-memory and authority fields.
+Values are passed as an argument vector, never shell-interpolated; commas,
+whitespace, newlines, equals signs, and oversized values fail before SSH.
+Other wrappers accept none of those fields. Fixed Python/Java module settings
+remain separately configured, and credential-shaped variables are never in an
+allowlist.
+
 ## UI go/no-go gate
 
-Build a UI only after:
+The UI gate required:
 
 1. the M15-B CLI returns a correct cross-engine answer;
 2. the goal state and trace serialize without UI-specific fields;
 3. remote batch submission works through a CLI tool plugin;
 4. at least one clarification action needs user interaction.
 
-At that point a small local web application is sufficient: goal submission,
-backend/tool status, semantic/federated plan view, clarification prompt,
-live job state, and result/metric panels. No graph editor or full database
-administration UI is required for the paper.
+All four conditions now hold. The next UI slice is a small local working
+surface: clarification prompt first, sealed selection preview, explicit submit,
+live job state, bounded logs, and immutable result/metric panels. It must call
+the typed remote executor rather than build shell commands, must not expose a
+generic environment editor, and must never contact vLLM or graph backends
+directly. No graph editor or database-administration UI is required.

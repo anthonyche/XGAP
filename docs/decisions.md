@@ -2787,3 +2787,26 @@ or claim about how other users interpret the phrase. The live run must persist
 the selected IDs and an explicit author authority-source ID, and its auditor
 must reconstruct the same event chain. No optimizer cost, model output,
 candidate order, or ontology proximity may replace this decision.
+
+## D149 Carry UI authority through a script-scoped remote envelope
+
+The UI go/no-go prerequisites are now satisfied, but the existing remote
+executor could submit only fixed Python/module settings. A visual
+clarification choice could not reach the E5D Slurm wrapper through the typed
+tool and would otherwise tempt the UI to construct a shell command. E6A closes
+that control-plane gap before any page is built.
+
+`submit_job` may now accept an explicit per-job environment object. The
+executor validates each key against the exact allowlisted Slurm script and
+passes normalized values as an argv vector. Only the E5D selected-session
+wrapper accepts its six non-secret memory/session/authority keys. Those keys
+are rejected for every other wrapper; commas, whitespace, newlines, equals
+signs, unsafe characters, and values over 1,024 characters fail before a
+remote call. Fixed runtime settings remain separate. No credential, API-key,
+token, password, arbitrary environment, native query, or shell fragment is
+accepted.
+
+The thin UI remains a local working surface and adapter over this tool. It is
+not an experiment runner, semantic authority source, direct vLLM client, or
+direct Neo4j/Fuseki client. Paper jobs continue to use frozen CLI protocols and
+immutable artifacts.

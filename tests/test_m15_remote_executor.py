@@ -20,6 +20,9 @@ from xgap.tools import (
 
 
 COMMIT = "465e2e2454b74aaf7a1c055797740bde8ca5ace0"
+SELECTED_SESSION_SCRIPT = (
+    "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch"
+)
 
 
 @dataclass
@@ -64,6 +67,8 @@ def _executor(
     *,
     allow_cancel: bool = False,
     submission_environment: dict[str, str] | None = None,
+    allowed_sbatch_scripts: frozenset[str] | None = None,
+    job_environment_allowlist: dict[str, frozenset[str]] | None = None,
 ):
     return SlurmRemoteExecutor(
         executor_id="cwru-pioneer",
@@ -71,10 +76,10 @@ def _executor(
         remote_repo_root="/home/researcher/XGAP-m15",
         remote_artifact_root="/home/researcher/XGAP-m15/runs",
         local_artifact_root=tmp_path,
-        allowed_sbatch_scripts=frozenset(
-            {"scripts/slurm/run_m15_core_smoke.sbatch"}
-        ),
+        allowed_sbatch_scripts=allowed_sbatch_scripts
+        or frozenset({"scripts/slurm/run_m15_core_smoke.sbatch"}),
         submission_environment=submission_environment or {},
+        job_environment_allowlist=job_environment_allowlist or {},
         allow_cancel=allow_cancel,
     )
 
@@ -190,6 +195,106 @@ def test_submit_job_exports_only_configured_environment(tmp_path: Path) -> None:
             FakeTransport(),
             submission_environment={"LD_PRELOAD": "/tmp/injected"},
         )
+
+
+def test_submit_job_accepts_only_script_scoped_authority_environment(
+    tmp_path: Path,
+) -> None:
+    authority_keys = frozenset(
+        {
+            "XGAP_M15_SELECTED_TRAINING_MEMORY",
+            "XGAP_M15_SELECTED_MEMORY_SHA256",
+            "XGAP_M15_SELECTED_SESSION_ID",
+            "XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE",
+            "XGAP_M15_SELECTED_PREDICATE_CANDIDATE",
+            "XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID",
+        }
+    )
+    environment = {
+        "XGAP_M15_SELECTED_TRAINING_MEMORY": (
+            "/home/researcher/XGAP-m15/runs/source/training_memory_view.json"
+        ),
+        "XGAP_M15_SELECTED_MEMORY_SHA256": "a" * 64,
+        "XGAP_M15_SELECTED_SESSION_ID": "m15-e5d-session-v1",
+        "XGAP_M15_SELECTED_STRUCTURAL_CANDIDATE": (
+            "constraint:single-transfer-at-least-50000"
+        ),
+        "XGAP_M15_SELECTED_PREDICATE_CANDIDATE": (
+            "predicate:transferred_to"
+        ),
+        "XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID": (
+            "author:researcher:explicit-choice-a-v1"
+        ),
+    }
+    transport = FakeTransport(results=[RemoteCommandResult(0, "4220\n")])
+    executor = _executor(
+        tmp_path,
+        transport,
+        submission_environment={"XGAP_JAVA_MODULE": "Java/17.0.6"},
+        allowed_sbatch_scripts=frozenset(
+            {
+                "scripts/slurm/run_m15_core_smoke.sbatch",
+                SELECTED_SESSION_SCRIPT,
+            }
+        ),
+        job_environment_allowlist={
+            SELECTED_SESSION_SCRIPT: authority_keys,
+        },
+    )
+    result = _invoke(
+        _tool(executor),
+        RemoteExecutorOperation.SUBMIT_JOB,
+        {"script": SELECTED_SESSION_SCRIPT, "environment": environment},
+    )
+
+    assert result.status is ToolStatus.SUCCESS
+    assert result.value["job_environment_keys"] == sorted(authority_keys)
+    export_value = transport.calls[0][5]
+    assert export_value.startswith("ALL,")
+    for key, value in {"XGAP_JAVA_MODULE": "Java/17.0.6", **environment}.items():
+        assert f"{key}={value}" in export_value.split(",")
+
+    core_tool = _tool(
+        _executor(
+            tmp_path,
+            FakeTransport(),
+            allowed_sbatch_scripts=frozenset(
+                {
+                    "scripts/slurm/run_m15_core_smoke.sbatch",
+                    SELECTED_SESSION_SCRIPT,
+                }
+            ),
+            job_environment_allowlist={
+                SELECTED_SESSION_SCRIPT: authority_keys,
+            },
+        )
+    )
+    wrong_script = _invoke(
+        core_tool,
+        RemoteExecutorOperation.SUBMIT_JOB,
+        {
+            "script": "scripts/slurm/run_m15_core_smoke.sbatch",
+            "environment": {
+                "XGAP_M15_SELECTED_PREDICATE_CANDIDATE": (
+                    "predicate:transferred_to"
+                )
+            },
+        },
+    )
+    unsafe_value = _invoke(
+        _tool(executor),
+        RemoteExecutorOperation.SUBMIT_JOB,
+        {
+            "script": SELECTED_SESSION_SCRIPT,
+            "environment": {
+                "XGAP_M15_SELECTED_PREDICATE_CANDIDATE": "bad,value"
+            },
+        },
+    )
+    assert wrong_script.status is ToolStatus.ERROR
+    assert "not allowlisted for this script" in str(wrong_script.error)
+    assert unsafe_value.status is ToolStatus.ERROR
+    assert "unsafe" in str(unsafe_value.error)
 
 
 def test_job_status_uses_squeue_then_terminal_sacct(tmp_path: Path) -> None:

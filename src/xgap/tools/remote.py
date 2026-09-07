@@ -26,8 +26,10 @@ _SAFE_BRANCH = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*$")
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
 _JOB_ID = re.compile(r"^[0-9]+$")
 _SAFE_REMOTE_PATH = re.compile(r"^/[A-Za-z0-9._/-]+$")
-_SAFE_ENV_VALUE = re.compile(r"^[A-Za-z0-9._/+-]+$")
-_ALLOWED_SUBMISSION_ENVIRONMENT = frozenset({"XGAP_PYTHON", "XGAP_PYTHON_MODULE"})
+_SAFE_ENV_VALUE = re.compile(r"^[A-Za-z0-9._/:+-]+$")
+_ALLOWED_SUBMISSION_ENVIRONMENT = frozenset(
+    {"XGAP_PYTHON", "XGAP_PYTHON_MODULE", "XGAP_JAVA_MODULE"}
+)
 
 
 class RemoteExecutorOperation(str, Enum):
@@ -268,6 +270,9 @@ class SlurmRemoteExecutor:
     local_artifact_root: Path
     allowed_sbatch_scripts: frozenset[str]
     submission_environment: Mapping[str, str] = field(default_factory=dict)
+    job_environment_allowlist: Mapping[str, frozenset[str]] = field(
+        default_factory=dict
+    )
     allow_cancel: bool = False
     timeout_seconds: float = 30.0
     supported_operations: frozenset[RemoteExecutorOperation] = field(
@@ -297,6 +302,27 @@ class SlurmRemoteExecutor:
                 raise ValueError(f"submission environment value for '{key}' is unsafe")
             normalized_environment[key] = value
         self.submission_environment = normalized_environment
+        normalized_job_allowlist: dict[str, frozenset[str]] = {}
+        for script, keys in self.job_environment_allowlist.items():
+            if script not in self.allowed_sbatch_scripts:
+                raise ValueError(
+                    "job environment allowlist references a non-allowlisted script"
+                )
+            normalized_keys: set[str] = set()
+            for key in keys:
+                if (
+                    not isinstance(key, str)
+                    or not key.startswith("XGAP_")
+                    or not key.replace("_", "").isalnum()
+                ):
+                    raise ValueError("job environment key is unsafe")
+                if key in self.submission_environment:
+                    raise ValueError(
+                        "job environment key duplicates fixed submission environment"
+                    )
+                normalized_keys.add(key)
+            normalized_job_allowlist[script] = frozenset(normalized_keys)
+        self.job_environment_allowlist = normalized_job_allowlist
 
     def invoke(
         self,
@@ -398,12 +424,33 @@ class SlurmRemoteExecutor:
         script = payload.get("script")
         if not isinstance(script, str) or script not in self.allowed_sbatch_scripts:
             raise ValueError("sbatch script is not allowlisted")
+        raw_environment = payload.get("environment", {})
+        if not isinstance(raw_environment, Mapping):
+            raise ValueError("job environment must be an object")
+        allowed_keys = self.job_environment_allowlist.get(script, frozenset())
+        job_environment: dict[str, str] = {}
+        for key, value in raw_environment.items():
+            if not isinstance(key, str) or key not in allowed_keys:
+                raise ValueError(
+                    f"job environment key '{key}' is not allowlisted for this script"
+                )
+            if (
+                not isinstance(value, str)
+                or len(value) > 1024
+                or not _SAFE_ENV_VALUE.fullmatch(value)
+            ):
+                raise ValueError(f"job environment value for '{key}' is unsafe")
+            job_environment[key] = value
         remote_script = self._join_remote(self.remote_repo_root, script, "sbatch script")
         command = ["sbatch", "--parsable", "--chdir", self.remote_repo_root]
-        if self.submission_environment:
+        combined_environment = {
+            **self.submission_environment,
+            **job_environment,
+        }
+        if combined_environment:
             exported = ",".join(
                 f"{key}={value}"
-                for key, value in sorted(self.submission_environment.items())
+                for key, value in sorted(combined_environment.items())
             )
             command.extend(("--export", f"ALL,{exported}"))
         command.append(remote_script)
@@ -412,7 +459,12 @@ class SlurmRemoteExecutor:
         raw_job_id = result.stdout.strip().split(";", 1)[0]
         if not _JOB_ID.fullmatch(raw_job_id):
             raise ValueError("sbatch returned an invalid job id")
-        return {"state": "submitted", "job_id": raw_job_id, "script": script}, 1
+        return {
+            "state": "submitted",
+            "job_id": raw_job_id,
+            "script": script,
+            "job_environment_keys": sorted(job_environment),
+        }, 1
 
     def _job_status(self, payload: Mapping[str, Any]) -> tuple[dict[str, Any], int]:
         job_id = self._validated_job_id(payload)
