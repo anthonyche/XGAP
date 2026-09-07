@@ -806,13 +806,18 @@ serving, and parses oracle answers only after all calls. Exactly one 736-call
 development campaign was submitted as job `3793702` at commit `c00c389`; wait
 for its terminal state and independent audit. It remains
 `paper_result=false`.
-The next local milestone is a result-blind paper-promotion gate, now
-implemented as an executable draft. It prevents the answer-filtered 36-query
-development population from being reused as confirmatory evidence, recommends
-a 48-instance answer- and cost-independent cross-fit population, and exposes
-the remaining author/evidence/implementation blockers. After job `3793702` is
-audited, freeze author decisions and implement the population compiler,
-out-of-sample runner, statistics analyzer, and independent evidence auditor.
+The result-blind population gate is now accepted on CWRU. Job `3793727`
+compiled nested 36/48/60 options from the verified SF0.1 archive and its
+independent audit passed 29/29 checks without mutation. The next local layer
+requires a hash-bound author choice before it materializes public instances,
+templates, and isolated oracles; empty answers remain in the population. Its
+cross-fit prediction core excludes every evaluation fold from its own F1/F2
+memory and reports F3 separately. The remaining physical work is to freeze the
+seven author decisions, implement the live schedule, add confirmatory
+statistics, and add the independent campaign auditor. The recommended
+population remains 48 answer- and cost-independent instances, but no option is
+selected by code. The current generalized compilation and cross-fit core pass
+full repository acceptance with 1,152 tests and 36 intentional skips.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet

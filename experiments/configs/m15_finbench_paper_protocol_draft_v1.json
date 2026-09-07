@@ -147,7 +147,7 @@
     {
       "decision_id": "confirmatory_population",
       "allowed_values": [
-        "36_frozen_development_split",
+        "36_answer_independent_crossfit",
         "48_answer_independent_crossfit",
         "60_answer_independent_crossfit"
       ],
@@ -171,6 +171,16 @@
         "omit"
       ],
       "recommended_value": "sf1_if_feasible_by_2026-09-12_else_omit",
+      "selected_value": null
+    },
+    {
+      "decision_id": "training_repetitions_per_plan",
+      "allowed_values": [
+        "4",
+        "5",
+        "7"
+      ],
+      "recommended_value": "7",
       "selected_value": null
     },
     {
@@ -227,8 +237,11 @@
     {
       "requirement_id": "answer_independent_confirmatory_population_compiler",
       "scope": "physical_confirmatory",
-      "status": "missing",
-      "evidence": null
+      "status": "ready",
+      "evidence": {
+        "path": "experiments/artifacts/m15_finbench_confirmatory_population_cwru_3793727_receipt.json",
+        "sha256": "e535feae80af7e41b5ad6c4c951fcf79841c13c966e881726f750cf0bf7fb91a"
+      }
     },
     {
       "requirement_id": "out_of_sample_family_memory_runner",

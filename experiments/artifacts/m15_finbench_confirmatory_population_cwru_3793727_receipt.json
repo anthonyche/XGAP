@@ -1,0 +1,67 @@
+{
+  "schema_version": "m15-finbench-confirmatory-population-external-receipt-v1",
+  "record_id": "m15-finbench-confirmatory-population-cwru-3793727",
+  "recorded_date": "2026-09-07",
+  "evidence_source": "author_returned_cwru_terminal_output",
+  "producer": {
+    "slurm_job_id": "3793727",
+    "git_commit": "10b560053f5cd5e9a49337875dc8a747c9a28336",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "00:00:15",
+    "node": "compt393",
+    "status": "success",
+    "workload_mode": "finbench_confirmatory_population",
+    "paper_result": false
+  },
+  "independent_audit": {
+    "auditor_git_commit": "10b560053f5cd5e9a49337875dc8a747c9a28336",
+    "expected_producer_commit": "10b560053f5cd5e9a49337875dc8a747c9a28336",
+    "output_basename": "cwru-m15-finbench-confirmatory-population-3793727-audit.json",
+    "exit_code": 0,
+    "success": true,
+    "check_count": 29,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "sampling_frame_counts": {
+    "f1_direct_transfer_control": 3038,
+    "f2_temporal_path_control": 15452,
+    "f3_aggregate_risk_ranking": 90
+  },
+  "population_options": [
+    {
+      "population_option_id": "m15-finbench-confirmatory-36-v1",
+      "total_instance_count": 36,
+      "per_family_instance_count": 12
+    },
+    {
+      "population_option_id": "m15-finbench-confirmatory-48-v1",
+      "total_instance_count": 48,
+      "per_family_instance_count": 16
+    },
+    {
+      "population_option_id": "m15-finbench-confirmatory-60-v1",
+      "total_instance_count": 60,
+      "per_family_instance_count": 20
+    }
+  ],
+  "sampling_provenance": {
+    "answer_oracle_reads": 0,
+    "observed_cost_reads": 0,
+    "current_query_profile_calls": 0,
+    "backend_calls": 0,
+    "llm_calls": 0,
+    "ontology_service_calls": 0,
+    "forbidden_fields_used_for_sampling": []
+  },
+  "claim_boundary": {
+    "real_public_benchmark_data": true,
+    "result_blind_population_registry": true,
+    "author_selected_population_option_id": null,
+    "confirmatory_execution_authorized": false,
+    "confirmatory_statistics": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

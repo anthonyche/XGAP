@@ -306,7 +306,7 @@ The author subsequently accepted Option C but required a public-artifact
 primary workload on a submission-driven schedule. Therefore the 36-instance
 allocation and the three DAG shapes remain useful candidate controls, while
 the original locally generated financial world is superseded as the proposed
-paper data source. Decisions 2--6 will be frozen against the FinBench-derived
+paper data source. The remaining physical decisions will be frozen against the FinBench-derived
 package, GrailQA semantic track, and external-validation boundary described in
 the acceleration plan. No result from the old toy workload may be relabeled as
 a paper result.

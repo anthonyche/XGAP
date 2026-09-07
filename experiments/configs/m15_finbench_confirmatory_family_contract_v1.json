@@ -1,0 +1,90 @@
+{
+  "schema_version": "m15-finbench-confirmatory-family-contract-v1",
+  "contract_id": "m15-finbench-confirmatory-three-family-v1",
+  "benchmark_claim": "finbench_derived_heterogeneous_workload_not_a_conformant_finbench_result",
+  "families": [
+    {
+      "family_id": "f1_direct_transfer_control",
+      "derived_from": [
+        "LDBC FinBench v0.1.0 Transaction Complex Read 12"
+      ],
+      "physical_strategies": [
+        "graph_first_hash",
+        "control_first_bind"
+      ],
+      "hard_constraints": [
+        "person_id",
+        "inclusive_time_window",
+        "company_account_ownership",
+        "destination_account_is_blocked_true",
+        "transfer_direction",
+        "sum_amount_by_company_and_account",
+        "output_schema"
+      ],
+      "relaxable_slots": [
+        "transfer_predicate",
+        "destination_control_category"
+      ]
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "derived_from": [
+        "LDBC FinBench v0.1.0 Transaction Complex Read 1",
+        "LDBC FinBench v0.1.0 Transaction Complex Read 5"
+      ],
+      "physical_strategies": [
+        "path_first_hash",
+        "control_first_bound_path"
+      ],
+      "max_hops": 3,
+      "hard_constraints": [
+        "start_account_id",
+        "inclusive_time_window",
+        "transfer_direction",
+        "strictly_increasing_transfer_timestamps",
+        "cycle_free_account_path",
+        "max_hops_3",
+        "medium_is_blocked_true",
+        "output_schema"
+      ],
+      "relaxable_slots": [
+        "transfer_predicate",
+        "medium_control_category"
+      ]
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "derived_from": [
+        "LDBC FinBench v0.1.0 Transaction Complex Read 12",
+        "LDBC FinBench v0.1.0 Transaction Complex Read 6",
+        "LDBC FinBench v0.1.0 Transaction Complex Read 7"
+      ],
+      "physical_strategies": [
+        "aggregate_first_hash",
+        "control_first_bound_aggregate"
+      ],
+      "hard_constraints": [
+        "closed_open_time_window",
+        "company_account_ownership",
+        "exact_medium_risk_category",
+        "transfer_direction",
+        "sum_amount_by_company",
+        "descending_amount_then_company_order",
+        "top_k",
+        "output_schema"
+      ],
+      "relaxable_slots": [
+        "transfer_predicate",
+        "medium_risk_category"
+      ],
+      "cold_start_fallback": "aggregate_first_hash"
+    }
+  ],
+  "query_instance_is_inferential_unit": true,
+  "repetitions_are_not_independent_units": true,
+  "automatic_retries": 0,
+  "backend_calls": 0,
+  "llm_calls": 0,
+  "ontology_service_calls": 0,
+  "paper_result": false
+}

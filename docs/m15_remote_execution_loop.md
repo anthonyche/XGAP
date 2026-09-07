@@ -101,12 +101,15 @@ The repaired v2 audit subsequently met that boundary: 92/92 checks passed,
 there were no failed IDs, and the run tree was unchanged. Preserve job
 `3793702`; it is accepted development evidence and must not be resubmitted.
 
-The next remote action is the CPU-only confirmatory-population compiler. It
-starts no native database or model service and compiles every 36/48/60 option
-before an author choice. Submit it only from the exact published compiler
-commit and the already verified SF0.1 archive. After completion, run the
-separate population-evidence module with a new audit path; do not interpret or
-select a population size until that audit passes.
+The CPU-only confirmatory-population compiler is complete and accepted. CWRU
+job `3793727` ran exact clean commit `10b5600` on `compt393`; its independent
+audit passed 29/29 checks without mutating the run tree. Preserve that run and
+audit and do not resubmit them. There is no next CWRU command yet. The next
+remote job must wait for an explicit hash-bound author choice of population,
+training/serving/shadow repetitions, scale policy, and infrastructure
+replacement limit, followed by publication of the live schedule and auditor
+at one clean commit. Workload compilation authority alone must not be treated
+as confirmatory-execution authority.
 
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service

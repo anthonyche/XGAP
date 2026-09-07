@@ -44,7 +44,7 @@ def test_result_blind_draft_exposes_every_real_promotion_blocker() -> None:
     }
     assert len(readiness["source_artifacts"]) == 4
     assert all(item["verified"] for item in readiness["source_artifacts"])
-    assert len(readiness["next_author_decisions"]) == 8
+    assert len(readiness["next_author_decisions"]) == 9
     assert (
         "author_decision.confirmatory_population.unselected"
         in readiness["physical_confirmatory_blockers"]
@@ -173,7 +173,7 @@ def test_author_approval_binds_all_selected_choices_and_subject_hash() -> None:
 
 def test_physical_approval_does_not_require_semantic_or_external_choice() -> None:
     selected = _protocol()
-    for decision in selected["author_decisions"][:6]:
+    for decision in selected["author_decisions"][:7]:
         decision["selected_value"] = decision["recommended_value"]
     pending = compile_finbench_paper_protocol_readiness(
         selected, repo_root=ROOT

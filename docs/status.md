@@ -877,7 +877,7 @@ XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen
 paper protocol. The accelerated target is local ingestion and family
 correctness by Sep 9, a first CWRU paper-candidate pilot by Sep 10, and protocol
-freeze immediately afterward. Decisions 2--6, paper-scale execution, and
+freeze immediately afterward. The remaining physical decisions, paper-scale execution, and
 inferential claims remain unresolved; `paper_result=false` remains mandatory.
 
 The result-blind paper-promotion gate is now implemented separately from the
@@ -886,7 +886,7 @@ family-memory versus cost-inclusive dual-profile contrast, query-level
 inference, fixed statistical seeds, counterbalancing, timeout, failure
 replacement, and zero-retry policy without making a measurement call. Its
 draft readiness artifact reports all blockers rather than inferring author
-choices. The physical path still requires six author decisions, the campaign
+choices. The physical path still requires seven author decisions, the campaign
 audit, an answer-independent cross-fit population compiler, an out-of-sample
 runner, confirmatory statistics, and an independent auditor. GrailQA and
 FedShop are tracked as separate paper-completeness requirements.
@@ -902,17 +902,31 @@ passed 92/92 checks with no failed ID, and reported no run-tree mutation. The
 campaign is accepted as real FinBench SF0.1 same-allocation development
 evidence, but remains non-confirmatory and `paper_result=false`.
 
-The answer-independent confirmatory population implementation is locally
-complete and awaits one CWRU artifact gate. It compiles
+The answer-independent confirmatory population implementation is now accepted
+on the real SF0.1 artifact. It compiles
 nested 36/48/60-instance options together with equal F1/F2/F3 allocation,
 four structural strata, stable four-fold F1/F2 cross-fit membership, and F3
 held out as a family. It does not select an option or use blocked labels,
 answers, observed costs, profiles, LLMs, ontology services, or backends. The
 CPU-only producer binds source/design/Git identities; the independent auditor
-recompiles the registry from the verified SF0.1 archive and checks immutable
-execution evidence. No confirmatory campaign is authorized yet.
-The complete local acceptance suite passes 1,147 tests with 36 intentional
-live/external skips; shell syntax and whitespace checks also pass.
+recompiled the registry from the verified SF0.1 archive. CWRU job `3793727`
+completed at exact clean commit `10b5600` on `compt393` in 15 seconds; its
+audit passed 29/29 checks with no mutation. Sampling frames contain 3,038 F1,
+15,452 F2, and 90 F3 candidates.
+
+The next result-blind layer is locally implemented but not yet a live runner.
+An author selection record must bind one registry option before workload
+compilation; compilation alone cannot authorize measurement. The generated
+workload retains empty answers, isolates its oracle, and remains compatible
+with the existing two-plan Neo4j/Fuseki compiler. Four fold-specific memories
+exclude each F1/F2 evaluation fold from its own prediction, while F3 remains a
+separate cold-start stratum. The protocol now exposes training repetitions as
+a seventh physical author decision and fixes its 36-instance label to the
+answer-independent option. No option or repetition count has been selected.
+The live schedule, statistics analyzer, and campaign auditor remain pending,
+so no confirmatory campaign is authorized and `paper_result=false` remains
+mandatory. Full repository acceptance passes 1,152 tests with 36 intentional
+live/external skips.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,

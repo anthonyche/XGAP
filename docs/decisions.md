@@ -3236,3 +3236,33 @@ real SF0.1 compiler job and audit must pass first.
 The complete repository acceptance suite passed 1,147 tests with 36
 intentional live/external skips; shell syntax and whitespace checks also
 passed. This establishes local implementation readiness only.
+
+## D167 Accept the result-blind population gate and bind later compilation to author authority
+
+CWRU job `3793727` compiled all three answer-independent SF0.1 population
+options at exact clean commit `10b5600` on `compt393` in 15 seconds. The
+independent auditor reloaded the verified archive, reconstructed the registry,
+passed 29/29 checks, reported no failed check ID, and confirmed that the run
+tree was unchanged. The available public sampling frames contain 3,038 F1,
+15,452 F2, and 90 F3 candidates. Sampling read no blocked label, answer row,
+observed cost, current-query profile, backend, model, or ontology service. This
+accepts the population compiler as real-artifact evidence; it does not select
+36, 48, or 60 instances and remains `paper_result=false`.
+
+The next compiler therefore cannot accept an unbound size string. It requires
+an explicit author approval record bound to the registry hash and the selected
+option hash. That approval may authorize workload compilation but explicitly
+does not authorize confirmatory execution. The compiler retains empty-answer
+queries, writes public instances and exact oracles to separate files, reuses
+the common black-box Neo4j/Fuseki plans, and makes zero external calls. A new
+cross-fit prediction core constructs four fold-specific family memories,
+excludes the evaluation fold and the query's own observations from every F1/F2
+prediction, and keeps F3 as a separately labeled cold family.
+
+The paper-protocol draft also closes two specification gaps before author
+approval: its 36-instance choice now refers to the new answer-independent
+cross-fit option rather than the invalid answer-filtered development split,
+and training repetitions are an explicit author decision. No value is selected
+by code. Live scheduling, confirmatory statistics, and the independent campaign
+auditor remain implementation blockers. Full repository acceptance passes
+1,152 tests with 36 intentional live/external skips.

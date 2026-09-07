@@ -1,9 +1,9 @@
 {
-  "approval_subject_sha256": "8d79278be7ef2bb8f3722b7e194e5f2dcb40446dc6e873bd4313a9ecf1a3c6d5",
+  "approval_subject_sha256": "e6bc11924af4fc94a55047679d7544d7acfd84cf10740ad08774b68dd579e393",
   "author_decisions": [
     {
       "allowed_values": [
-        "36_frozen_development_split",
+        "36_answer_independent_crossfit",
         "48_answer_independent_crossfit",
         "60_answer_independent_crossfit"
       ],
@@ -28,6 +28,16 @@
       ],
       "decision_id": "robustness_scale",
       "recommended_value": "sf1_if_feasible_by_2026-09-12_else_omit",
+      "selected_value": null
+    },
+    {
+      "allowed_values": [
+        "4",
+        "5",
+        "7"
+      ],
+      "decision_id": "training_repetitions_per_plan",
+      "recommended_value": "7",
       "selected_value": null
     },
     {
@@ -103,10 +113,13 @@
   },
   "implementation_requirements": [
     {
-      "evidence": null,
+      "evidence": {
+        "path": "experiments/artifacts/m15_finbench_confirmatory_population_cwru_3793727_receipt.json",
+        "sha256": "e535feae80af7e41b5ad6c4c951fcf79841c13c966e881726f750cf0bf7fb91a"
+      },
       "requirement_id": "answer_independent_confirmatory_population_compiler",
       "scope": "physical_confirmatory",
-      "status": "missing"
+      "status": "ready"
     },
     {
       "evidence": null,
@@ -142,7 +155,7 @@
   "next_author_decisions": [
     {
       "allowed_values": [
-        "36_frozen_development_split",
+        "36_answer_independent_crossfit",
         "48_answer_independent_crossfit",
         "60_answer_independent_crossfit"
       ],
@@ -165,6 +178,15 @@
       ],
       "decision_id": "robustness_scale",
       "recommended_value": "sf1_if_feasible_by_2026-09-12_else_omit"
+    },
+    {
+      "allowed_values": [
+        "4",
+        "5",
+        "7"
+      ],
+      "decision_id": "training_repetitions_per_plan",
+      "recommended_value": "7"
     },
     {
       "allowed_values": [
@@ -221,9 +243,9 @@
     "author_decision.selected_serving_repetitions.unselected",
     "author_decision.semantic_track.unselected",
     "author_decision.shadow_repetitions_per_plan.unselected",
+    "author_decision.training_repetitions_per_plan.unselected",
     "development_evidence.sf0_1_correctness_audit.unbound",
     "development_evidence.sf0_1_family_campaign_audit.unbound",
-    "implementation.answer_independent_confirmatory_population_compiler.missing",
     "implementation.confirmatory_evidence_auditor.missing",
     "implementation.confirmatory_statistics_analyzer.missing",
     "implementation.fedshop_external_validation_protocol.missing",
@@ -239,16 +261,16 @@
     "author_decision.robustness_scale.unselected",
     "author_decision.selected_serving_repetitions.unselected",
     "author_decision.shadow_repetitions_per_plan.unselected",
+    "author_decision.training_repetitions_per_plan.unselected",
     "development_evidence.sf0_1_correctness_audit.unbound",
     "development_evidence.sf0_1_family_campaign_audit.unbound",
-    "implementation.answer_independent_confirmatory_population_compiler.missing",
     "implementation.confirmatory_evidence_auditor.missing",
     "implementation.confirmatory_statistics_analyzer.missing",
     "implementation.out_of_sample_family_memory_runner.missing"
   ],
-  "protocol_draft_sha256": "d730f433f344d9601d079a8edc45c5cf85421146d57247981ad60edc95e6e3ac",
+  "protocol_draft_sha256": "d39896e27b5a20e7eface845953c05635867546cfe77cb768135fe777bd9641d",
   "protocol_id": "m15-finbench-sigmod2027-physical-confirmatory-draft-v1",
-  "readiness_sha256": "94fbfa99c2144b2011abd720251fa246bf42f21d72ab443a2f762d5b21b21ee2",
+  "readiness_sha256": "55de2954cedd9a2671b9548c471eafd020074263235466230f2d73da119eb275",
   "schema_version": "m15-finbench-paper-protocol-readiness-v1",
   "source_artifacts": [
     {

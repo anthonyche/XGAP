@@ -55,13 +55,14 @@ _DECISION_IDS = (
     "confirmatory_population",
     "primary_scale",
     "robustness_scale",
+    "training_repetitions_per_plan",
     "selected_serving_repetitions",
     "shadow_repetitions_per_plan",
     "infrastructure_replacement_limit",
     "semantic_track",
     "external_validation",
 )
-_PHYSICAL_DECISION_IDS = frozenset(_DECISION_IDS[:6])
+_PHYSICAL_DECISION_IDS = frozenset(_DECISION_IDS[:7])
 _SOURCE_ARTIFACT_IDS = (
     "finbench-v010-sf0_1-source-lock",
     "finbench-sf0_1-primary-population",

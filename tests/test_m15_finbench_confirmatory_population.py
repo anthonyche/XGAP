@@ -21,9 +21,24 @@ from xgap.experiments.m15_finbench_confirmatory_population import (
     compile_finbench_confirmatory_population_registry,
     write_finbench_confirmatory_population_registry,
 )
+from xgap.experiments import m15_finbench_confirmatory_workload as workload
+from xgap.experiments.m15_finbench_confirmatory_workload import (
+    DEFAULT_FAMILY_CONTRACT_PATH,
+    FinBenchConfirmatoryWorkloadError,
+    build_finbench_confirmatory_population_approval,
+    build_finbench_confirmatory_workload,
+)
+from xgap.experiments.m15_finbench_confirmatory_crossfit import (
+    FinBenchConfirmatoryCrossfitError,
+    build_finbench_confirmatory_crossfit_predictions,
+)
+from xgap.experiments.m15_finbench_federation import (
+    build_finbench_plan_candidates,
+)
 from xgap.experiments.m15_finbench_workload import (
     FinBenchQueryData,
     Transfer,
+    load_finbench_primary_workload,
 )
 
 
@@ -64,6 +79,7 @@ def _data() -> FinBenchQueryData:
             "mediumId": f"M{index}",
             "riskLevel": risk,
             "isBlocked": "true" if index % 2 else "false",
+            "mediumType": f"type-{index}",
         }
         for index, risk in enumerate(risk_levels)
     }
@@ -251,6 +267,263 @@ def test_registry_is_zero_call_result_blind_and_deterministic() -> None:
     assert first["automatic_retries"] == 0
     assert first["paper_result"] is False
     assert len(first["registry_sha256"]) == 64
+
+
+def test_explicit_approval_materializes_confirmatory_workload_without_calls(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data = _data()
+    registry = _compile(data)
+    option = registry["population_options"][0]
+    approval = build_finbench_confirmatory_population_approval(
+        registry,
+        selected_population_option_id=option["population_option_id"],
+        approval_id="author-selection-test-v1",
+        authority_source_id="author:test:explicit-choice",
+    )
+    archive = tmp_path / "sf0.1.tar.gz"
+    archive.write_bytes(b"verified-test-archive")
+    lock = SimpleNamespace(
+        artifact=SimpleNamespace(
+            artifact_id=registry["source_artifact_id"],
+            digest_value=registry["source_archive_sha256"],
+        )
+    )
+    monkeypatch.setattr(workload, "load_finbench_artifact_lock", lambda _path: lock)
+    monkeypatch.setattr(workload, "load_finbench_query_data", lambda *_args: data)
+    output = tmp_path / "confirmatory-workload"
+
+    manifest = build_finbench_confirmatory_workload(
+        archive_path=archive,
+        population_registry=registry,
+        population_approval=approval,
+        output_root=output,
+        lock_path=tmp_path / "unused-lock.json",
+        family_contract=ROOT / DEFAULT_FAMILY_CONTRACT_PATH,
+    )
+    loaded = load_finbench_primary_workload(output)
+
+    assert manifest["instance_count"] == 36
+    assert manifest["population_registry_sha256"] == registry["registry_sha256"]
+    assert manifest["population_approval_sha256"] == approval["approval_sha256"]
+    assert manifest["confirmatory_execution_authorized"] is False
+    assert manifest["backend_calls"] == 0
+    assert manifest["current_query_profile_calls"] == 0
+    assert manifest["llm_calls"] == 0
+    assert manifest["ontology_service_calls"] == 0
+    assert manifest["paper_result"] is False
+    assert len(loaded["public_instances"]["instances"]) == 36
+    assert set(loaded["sealed_oracles"]["queries"]) == {
+        item["query_id"] for item in loaded["public_instances"]["instances"]
+    }
+    for family_id in (F1, F2, F3):
+        query_id = next(
+            item["query_id"]
+            for item in loaded["public_instances"]["instances"]
+            if item["family_id"] == family_id
+        )
+        candidates = build_finbench_plan_candidates(output, query_id=query_id)
+        assert len(candidates) == 2
+        assert all(candidate.plan.max_remote_calls == 2 for candidate in candidates)
+
+
+def test_confirmatory_workload_keeps_empty_answers_and_rejects_unbound_choice(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    original = _data()
+    data = replace(
+        original,
+        accounts={
+            key: {**value, "isBlocked": "false"}
+            for key, value in original.accounts.items()
+        },
+        media={
+            key: {**value, "isBlocked": "false"}
+            for key, value in original.media.items()
+        },
+    )
+    registry = _compile(data)
+    option = registry["population_options"][1]
+    approval = build_finbench_confirmatory_population_approval(
+        registry,
+        selected_population_option_id=option["population_option_id"],
+        approval_id="author-selection-empty-v1",
+        authority_source_id="author:test:explicit-choice",
+    )
+    archive = tmp_path / "sf0.1.tar.gz"
+    archive.write_bytes(b"verified-test-archive")
+    lock = SimpleNamespace(
+        artifact=SimpleNamespace(
+            artifact_id=registry["source_artifact_id"],
+            digest_value=registry["source_archive_sha256"],
+        )
+    )
+    monkeypatch.setattr(workload, "load_finbench_artifact_lock", lambda _path: lock)
+    monkeypatch.setattr(workload, "load_finbench_query_data", lambda *_args: data)
+    output = tmp_path / "empty-answer-workload"
+
+    manifest = build_finbench_confirmatory_workload(
+        archive_path=archive,
+        population_registry=registry,
+        population_approval=approval,
+        output_root=output,
+        lock_path=tmp_path / "unused-lock.json",
+        family_contract=ROOT / DEFAULT_FAMILY_CONTRACT_PATH,
+    )
+    loaded = load_finbench_primary_workload(output)
+    queries = loaded["sealed_oracles"]["queries"]
+    assert manifest["instance_count"] == 48
+    assert any(not value["final_rows"] for value in queries.values())
+    assert manifest["oracle_isolation"]["empty_answers_retained"] is True
+
+    tampered = copy.deepcopy(approval)
+    tampered["selected_population_option_id"] = "m15-finbench-confirmatory-60-v1"
+    with pytest.raises(FinBenchConfirmatoryWorkloadError, match="approval hash"):
+        build_finbench_confirmatory_workload(
+            archive_path=archive,
+            population_registry=registry,
+            population_approval=tampered,
+            output_root=tmp_path / "must-not-exist",
+            lock_path=tmp_path / "unused-lock.json",
+            family_contract=ROOT / DEFAULT_FAMILY_CONTRACT_PATH,
+        )
+
+
+def test_confirmatory_crossfit_excludes_own_fold_and_keeps_cold_family_separate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data = _data()
+    registry = _compile(data)
+    option = registry["population_options"][0]
+    approval = build_finbench_confirmatory_population_approval(
+        registry,
+        selected_population_option_id=option["population_option_id"],
+        approval_id="author-selection-crossfit-v1",
+        authority_source_id="author:test:explicit-choice",
+    )
+    archive = tmp_path / "sf0.1.tar.gz"
+    archive.write_bytes(b"verified-test-archive")
+    lock = SimpleNamespace(
+        artifact=SimpleNamespace(
+            artifact_id=registry["source_artifact_id"],
+            digest_value=registry["source_archive_sha256"],
+        )
+    )
+    monkeypatch.setattr(workload, "load_finbench_artifact_lock", lambda _path: lock)
+    monkeypatch.setattr(workload, "load_finbench_query_data", lambda *_args: data)
+    output = tmp_path / "crossfit-workload"
+    build_finbench_confirmatory_workload(
+        archive_path=archive,
+        population_registry=registry,
+        population_approval=approval,
+        output_root=output,
+        lock_path=tmp_path / "unused-lock.json",
+        family_contract=ROOT / DEFAULT_FAMILY_CONTRACT_PATH,
+    )
+    loaded = load_finbench_primary_workload(output)
+    families = {
+        item["family_id"]: item
+        for item in loaded["family_contracts"]["families"]
+    }
+    raw_observations = []
+    for instance in loaded["public_instances"]["instances"]:
+        family_id = instance["family_id"]
+        if family_id == F3:
+            continue
+        feature = next(iter(instance["selection_feature"].values()))
+        for strategy_position, strategy in enumerate(
+            families[family_id]["physical_strategies"], start=1
+        ):
+            repetitions = []
+            for block in range(1, 5):
+                order_position = (
+                    strategy_position if block % 2 else 3 - strategy_position
+                )
+                repetitions.append(
+                    {
+                        "repetition_id": (
+                            f"r-{instance['query_id']}-{strategy}-{block}"
+                        ),
+                        "block_index": block,
+                        "order_position": order_position,
+                        "elapsed_ms": float(feature + strategy_position * 10 + block),
+                        "total_bytes_moved": int(
+                            feature * 100 + strategy_position * 1000 + block
+                        ),
+                        "total_remote_calls": 2,
+                        "execution_success": True,
+                        "exact_answer": True,
+                    }
+                )
+            raw_observations.append(
+                {
+                    "query_id": instance["query_id"],
+                    "family_id": family_id,
+                    "physical_strategy": strategy,
+                    "repetitions": repetitions,
+                }
+            )
+
+    suite = build_finbench_confirmatory_crossfit_predictions(
+        workload_root=output,
+        raw_observations=raw_observations,
+        measurement_source_id="test-crossfit-observations-v1",
+        policy=ROOT / "experiments/configs/m15_finbench_family_memory_policy_v1.json",
+    ).to_dict()
+
+    assert suite["prediction_count"] == 36
+    assert suite["seen_family_prediction_count"] == 24
+    assert suite["cold_family_prediction_count"] == 12
+    assert suite["current_query_profile_calls"] == 0
+    assert suite["historical_training_measurements_used"] is True
+    assert suite["current_query_measurements_used_for_own_prediction"] is False
+    assert suite["oracle_inputs"] == []
+    assert suite["crossfit_exclusion_enforced"] is True
+    assert all(memory["training_query_count"] == 18 for memory in suite["fold_memories"])
+    assert all(memory["evaluation_query_count"] == 6 for memory in suite["fold_memories"])
+    assert all(
+        not set(memory["training_query_ids"]).intersection(
+            memory["evaluation_query_ids"]
+        )
+        and memory["evaluation_query_observations_in_memory"] == []
+        for memory in suite["fold_memories"]
+    )
+    for prediction in suite["predictions"]:
+        assert prediction["own_query_observation_used"] is False
+        assert prediction["current_query_measurements_used"] is False
+        assert prediction["current_query_profile_calls"] == 0
+        if prediction["family_id"] in (F1, F2):
+            neighbors = {
+                query_id
+                for item in prediction["strategy_predictions"]
+                for query_id in item["neighbor_query_ids"]
+            }
+            assert prediction["query_id"] not in neighbors
+            assert all(
+                next(
+                    instance["evaluation_fold_id"]
+                    for instance in loaded["public_instances"]["instances"]
+                    if instance["query_id"] == query_id
+                )
+                != prediction["evaluation_fold_id"]
+                for query_id in neighbors
+            )
+        else:
+            assert prediction["selection_source"] == (
+                "predeclared_cold_start_fallback"
+            )
+            assert prediction["strategy_predictions"] == []
+
+    with pytest.raises(FinBenchConfirmatoryCrossfitError, match="cover every"):
+        build_finbench_confirmatory_crossfit_predictions(
+            workload_root=output,
+            raw_observations=raw_observations[:-1],
+            measurement_source_id="test-crossfit-observations-v1",
+            policy=(
+                ROOT
+                / "experiments/configs/m15_finbench_family_memory_policy_v1.json"
+            ),
+        )
 
 
 def test_design_drift_and_insufficient_frame_fail_closed() -> None:
