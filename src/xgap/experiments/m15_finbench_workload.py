@@ -641,8 +641,8 @@ ORDER BY ?medium_id""",
     }
 
 
-def load_finbench_primary_workload(root: str | Path) -> dict[str, Any]:
-    """Load one workload bundle and verify every content identity."""
+def load_finbench_primary_public_workload(root: str | Path) -> dict[str, Any]:
+    """Load the public workload contract without opening answer-oracle content."""
 
     bundle_root = Path(root).resolve()
     if bundle_root.is_symlink() or not bundle_root.is_dir():
@@ -685,21 +685,13 @@ def load_finbench_primary_workload(root: str | Path) -> dict[str, Any]:
     public = _read_json_object(
         bundle_root / "public_instances.json", name="FinBench public instances"
     )
-    oracle = _read_json_object(
-        bundle_root / "sealed_oracles.json", name="FinBench sealed oracles"
-    )
     contracts = _read_json_object(
         bundle_root / "family_contracts.json", name="FinBench family contracts"
     )
     instances = public.get("instances")
-    queries = oracle.get("queries")
     families = contracts.get("families")
     if not isinstance(instances, list) or len(instances) != manifest.get("instance_count"):
         raise ValueError("FinBench public instance count mismatch")
-    if not isinstance(queries, Mapping) or set(queries) != {
-        item.get("query_id") for item in instances if isinstance(item, Mapping)
-    }:
-        raise ValueError("FinBench oracle query set mismatch")
     if not isinstance(families, list) or [
         item.get("family_id") for item in families if isinstance(item, Mapping)
     ] != list(_FAMILY_IDS):
@@ -711,9 +703,24 @@ def load_finbench_primary_workload(root: str | Path) -> dict[str, Any]:
         "root": bundle_root,
         "manifest": manifest,
         "public_instances": public,
-        "sealed_oracles": oracle,
         "family_contracts": contracts,
     }
+
+
+def load_finbench_primary_workload(root: str | Path) -> dict[str, Any]:
+    """Load the public contract and sealed oracle for offline evaluation only."""
+
+    loaded = load_finbench_primary_public_workload(root)
+    oracle = _read_json_object(
+        loaded["root"] / "sealed_oracles.json", name="FinBench sealed oracles"
+    )
+    instances = loaded["public_instances"].get("instances")
+    queries = oracle.get("queries")
+    if not isinstance(queries, Mapping) or set(queries) != {
+        item.get("query_id") for item in instances if isinstance(item, Mapping)
+    }:
+        raise ValueError("FinBench oracle query set mismatch")
+    return {**loaded, "sealed_oracles": oracle}
 
 
 def build_finbench_primary_workload(

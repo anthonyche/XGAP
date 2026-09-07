@@ -181,6 +181,39 @@ def test_selector_prefers_bind_when_it_avoids_large_transfer() -> None:
         "fuseki-risk",
         "neo4j-bound",
     )
+
+
+def test_selector_estimates_group_reduction_and_ordered_limit() -> None:
+    plan = FederatedExecutionPlan(
+        plan_id="aggregate-top-k",
+        nodes=(
+            _remote("transfers", "neo4j", "neo4j-full"),
+            RuntimeNode(
+                "company-totals",
+                RuntimeNodeKind.COORDINATOR_GROUP_AGGREGATE,
+                inputs=("transfers",),
+                parameters={"group_reduction_fraction": 0.25},
+            ),
+            RuntimeNode(
+                "top-companies",
+                RuntimeNodeKind.COORDINATOR_SORT_LIMIT,
+                inputs=("company-totals",),
+                parameters={
+                    "order_by": [{"field": "total_amount", "direction": "desc"}],
+                    "limit": 10,
+                },
+            ),
+        ),
+        roots=("top-companies",),
+    )
+
+    selection = FederatedPlanSelector().select(
+        (FederatedPlanCandidate(plan, SEMANTIC_KEY),), _snapshot()
+    )
+
+    estimate = selection.estimates[0]
+    assert estimate.node_row_counts["company-totals"] == 2_500
+    assert estimate.node_row_counts["top-companies"] == 10
     assert selection.to_dict()["snapshot_version"] == "v1"
 
 

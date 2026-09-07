@@ -8,6 +8,8 @@ from collections import defaultdict
 from decimal import Decimal
 from pathlib import Path
 
+import pytest
+
 from xgap.experiments import m15_finbench_workload as workload_module
 from xgap.experiments.m15_finbench_artifacts import DEFAULT_LOCK_PATH
 from xgap.experiments.m15_finbench_partition import (
@@ -24,6 +26,7 @@ from xgap.experiments.m15_finbench_workload import (
     _f3_instances,
     _templates,
     build_finbench_primary_workload,
+    load_finbench_primary_public_workload,
     load_finbench_primary_workload,
 )
 
@@ -259,3 +262,41 @@ def test_workload_loader_detects_public_instance_mutation(
         assert "size mismatch" in str(exc)
     else:
         raise AssertionError("mutated public instance file was accepted")
+
+
+def test_public_loader_verifies_but_does_not_open_sealed_oracle(
+    tmp_path: Path, monkeypatch
+) -> None:
+    archive, lock, partition = _write_minimal_verified_partition(tmp_path)
+    monkeypatch.setattr(
+        workload_module,
+        "load_finbench_query_data",
+        lambda _archive, _lock: _synthetic_query_data(),
+    )
+    output = tmp_path / "workload"
+    build_finbench_primary_workload(
+        archive_path=archive,
+        partition_root=partition,
+        output_root=output,
+        lock_path=lock,
+        spec_path=REPO_ROOT / DEFAULT_SPEC_PATH,
+    )
+    oracle_path = output / "sealed_oracles.json"
+    oracle_path.write_text("not-json\n", encoding="utf-8")
+    manifest_path = output / "workload_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    payload = oracle_path.read_bytes()
+    manifest["output_files"]["sealed_oracles.json"] = {
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "size_bytes": len(payload),
+    }
+    manifest["workload_sha256"] = workload_module._canonical_sha256(
+        {key: value for key, value in manifest.items() if key != "workload_sha256"}
+    )
+    manifest_path.write_text(workload_module._json_text(manifest), encoding="utf-8")
+
+    public = load_finbench_primary_public_workload(output)
+
+    assert "sealed_oracles" not in public
+    with pytest.raises(json.JSONDecodeError):
+        load_finbench_primary_workload(output)

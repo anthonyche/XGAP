@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 from concurrent.futures import ThreadPoolExecutor
+from decimal import Decimal, InvalidOperation
+from functools import cmp_to_key
 from typing import Any, Iterable, Mapping
 
 from xgap.runtime.contracts import (
@@ -336,6 +339,12 @@ class FederatedScheduler:
             elif node.kind is RuntimeNodeKind.COORDINATOR_SEMI_JOIN:
                 rows = self._semi_join(node, inputs[0], inputs[1])
                 bytes_moved = 0
+            elif node.kind is RuntimeNodeKind.COORDINATOR_GROUP_AGGREGATE:
+                rows = self._group_aggregate(node, inputs[0])
+                bytes_moved = 0
+            elif node.kind is RuntimeNodeKind.COORDINATOR_SORT_LIMIT:
+                rows = self._sort_limit(node, inputs[0])
+                bytes_moved = 0
             elif node.kind is RuntimeNodeKind.MERGE:
                 rows = _deduplicate(row for group in inputs for row in group)
                 bytes_moved = 0
@@ -432,9 +441,14 @@ class FederatedScheduler:
     ) -> tuple[JsonRow, ...]:
         left_on = node.parameters.get("left_on")
         right_on = node.parameters.get("right_on")
+        left_value_mode = node.parameters.get("left_value_mode", "scalar")
         if not isinstance(left_on, str) or not isinstance(right_on, str):
             raise ValueError(
                 "coordinator_semi_join requires string left_on and right_on"
+            )
+        if left_value_mode not in {"scalar", "collection"}:
+            raise ValueError(
+                "coordinator_semi_join left_value_mode must be scalar or collection"
             )
         right_keys: set[str] = set()
         for row in right_rows:
@@ -445,10 +459,162 @@ class FederatedScheduler:
         for row in left_rows:
             if left_on not in row:
                 raise ValueError(f"left semi-join field '{left_on}' is missing")
-            key = json.dumps(row[left_on], sort_keys=True, default=str)
-            if key in right_keys:
+            raw_value = row[left_on]
+            if left_value_mode == "collection":
+                if not isinstance(raw_value, (list, tuple)):
+                    raise ValueError(
+                        f"left semi-join field '{left_on}' must be a collection"
+                    )
+                keys = {
+                    json.dumps(value, sort_keys=True, default=str)
+                    for value in raw_value
+                }
+                matched = bool(keys.intersection(right_keys))
+            else:
+                key = json.dumps(raw_value, sort_keys=True, default=str)
+                matched = key in right_keys
+            if matched:
                 selected.append(dict(row))
         return _deduplicate(selected)
+
+    @staticmethod
+    def _group_aggregate(
+        node: RuntimeNode, rows: tuple[JsonRow, ...]
+    ) -> tuple[JsonRow, ...]:
+        group_by = node.parameters.get("group_by")
+        aggregations = node.parameters.get("aggregations")
+        if (
+            not isinstance(group_by, (list, tuple))
+            or not group_by
+            or any(not isinstance(field, str) or not field for field in group_by)
+            or len(set(group_by)) != len(group_by)
+        ):
+            raise ValueError(
+                "coordinator_group_aggregate requires unique nonempty group_by fields"
+            )
+        if not isinstance(aggregations, Mapping) or not aggregations:
+            raise ValueError(
+                "coordinator_group_aggregate requires a nonempty aggregations mapping"
+            )
+        normalized: dict[str, tuple[str, str | None]] = {}
+        for output_field, raw in aggregations.items():
+            if not isinstance(output_field, str) or not output_field:
+                raise ValueError("aggregate output fields must be nonempty strings")
+            if output_field in group_by or not isinstance(raw, Mapping):
+                raise ValueError("aggregate outputs must be distinct mappings")
+            operation = raw.get("op")
+            source_field = raw.get("field")
+            if operation not in {"sum", "count", "min", "max"}:
+                raise ValueError("aggregate op must be sum, count, min, or max")
+            if operation != "count" and (
+                not isinstance(source_field, str) or not source_field
+            ):
+                raise ValueError(f"aggregate '{operation}' requires a field")
+            if source_field is not None and not isinstance(source_field, str):
+                raise ValueError("aggregate field must be a string")
+            normalized[output_field] = (str(operation), source_field)
+
+        groups: dict[str, tuple[tuple[Any, ...], list[JsonRow]]] = {}
+        for row in rows:
+            missing = [field for field in group_by if field not in row]
+            if missing:
+                raise ValueError(
+                    f"aggregate group fields are missing: {', '.join(missing)}"
+                )
+            values = tuple(row[field] for field in group_by)
+            key = json.dumps(values, sort_keys=True, separators=(",", ":"), default=str)
+            groups.setdefault(key, (values, []))[1].append(row)
+
+        output: list[JsonRow] = []
+        for key in sorted(groups):
+            values, members = groups[key]
+            aggregated: JsonRow = dict(zip(group_by, values, strict=True))
+            for output_field, (operation, source_field) in normalized.items():
+                if operation == "count":
+                    aggregated[output_field] = len(members)
+                    continue
+                assert source_field is not None
+                if any(source_field not in member for member in members):
+                    raise ValueError(
+                        f"aggregate field '{source_field}' is missing"
+                    )
+                raw_values = [member[source_field] for member in members]
+                if operation == "sum":
+                    try:
+                        decimals = [Decimal(str(value)) for value in raw_values]
+                    except (InvalidOperation, ValueError) as exc:
+                        raise ValueError(
+                            f"aggregate field '{source_field}' must be numeric"
+                        ) from exc
+                    if any(not value.is_finite() for value in decimals):
+                        raise ValueError(
+                            f"aggregate field '{source_field}' must be finite"
+                        )
+                    aggregated[output_field] = float(sum(decimals, Decimal(0)))
+                elif operation == "min":
+                    aggregated[output_field] = min(raw_values)
+                else:
+                    aggregated[output_field] = max(raw_values)
+            output.append(aggregated)
+        return tuple(output)
+
+    @staticmethod
+    def _sort_limit(
+        node: RuntimeNode, rows: tuple[JsonRow, ...]
+    ) -> tuple[JsonRow, ...]:
+        order_by = node.parameters.get("order_by")
+        limit = node.parameters.get("limit")
+        if not isinstance(order_by, (list, tuple)) or not order_by:
+            raise ValueError(
+                "coordinator_sort_limit requires a nonempty order_by list"
+            )
+        if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
+            raise ValueError("coordinator_sort_limit requires a positive integer limit")
+        ordering: list[tuple[str, str]] = []
+        for raw in order_by:
+            if not isinstance(raw, Mapping):
+                raise ValueError("sort fields must be mappings")
+            field = raw.get("field")
+            direction = raw.get("direction", "asc")
+            if not isinstance(field, str) or not field or direction not in {"asc", "desc"}:
+                raise ValueError("sort fields require a field and asc or desc direction")
+            ordering.append((field, str(direction)))
+        if len({field for field, _ in ordering}) != len(ordering):
+            raise ValueError("sort field names must be unique")
+
+        def compare(left: JsonRow, right: JsonRow) -> int:
+            for field, direction in ordering:
+                if field not in left or field not in right:
+                    raise ValueError(f"sort field '{field}' is missing")
+                left_value = left[field]
+                right_value = right[field]
+                if (
+                    isinstance(left_value, (int, float))
+                    and not isinstance(left_value, bool)
+                    and isinstance(right_value, (int, float))
+                    and not isinstance(right_value, bool)
+                ):
+                    if any(
+                        isinstance(value, float) and not math.isfinite(value)
+                        for value in (left_value, right_value)
+                    ):
+                        raise ValueError(f"sort field '{field}' must be finite")
+                    order = (left_value > right_value) - (left_value < right_value)
+                elif type(left_value) is type(right_value) and isinstance(
+                    left_value, (str, bool)
+                ):
+                    order = (left_value > right_value) - (left_value < right_value)
+                else:
+                    raise ValueError(
+                        f"sort field '{field}' values must share a scalar type"
+                    )
+                if order:
+                    return order if direction == "asc" else -order
+            left_key = json.dumps(left, sort_keys=True, default=str)
+            right_key = json.dumps(right, sort_keys=True, default=str)
+            return (left_key > right_key) - (left_key < right_key)
+
+        return tuple(sorted((dict(row) for row in rows), key=cmp_to_key(compare))[:limit])
 
     @staticmethod
     def _project(node: RuntimeNode, rows: tuple[JsonRow, ...]) -> tuple[JsonRow, ...]:

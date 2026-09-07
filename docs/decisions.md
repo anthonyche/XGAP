@@ -2955,3 +2955,24 @@ SHA-256 `6cf2aa7a09bebbae7e0ff244e0d2c8f850bd44393461c8b8c22e4ea2f68b5647`.
 It makes zero backend, model, or ontology-service calls. This decision admits
 native execution testing only and remains author-reviewable before paper
 protocol freeze; `paper_result=false` is mandatory.
+
+## D156 Use one shared federated runtime for all three FinBench families
+
+The F1--F3 correctness gate must exercise XGAP's common coordinator rather
+than a benchmark-specific evaluator. The runtime therefore adds only the
+general operations missing from the existing federated DAG: collection-aware
+semi-join, grouped aggregation, and deterministic ordered limit. F1, F2, and
+F3 each compile to two exact physical routes over the same black-box Neo4j and
+Fuseki interfaces. The control-first routes use real bound-query pushdown;
+the graph/aggregate-first routes exchange and combine source results at the
+coordinator.
+
+Plan compilation reads only the public instance and hash-verified templates.
+All 72 plans are sealed before fixture loading. Oracle bytes are hashed only
+to verify artifact identity; their JSON content may be parsed only after every
+selected plan has executed. A
+local replay against the real SF0.01 oracle verified exact results for all 36
+queries and both routes without a backend call. This accepts compiler and
+coordinator correctness only. The next gate is one native CWRU execution of
+the same 72 plans; scale, latency comparison, predictor quality, and any paper
+claim remain disabled and `paper_result=false` is mandatory.

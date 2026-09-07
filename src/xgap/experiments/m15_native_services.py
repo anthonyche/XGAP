@@ -72,6 +72,9 @@ from xgap.experiments.m15_live_parameterized_stream import (
 from xgap.experiments.m15_live_family_transfer import (
     run_m15_live_family_transfer,
 )
+from xgap.experiments.m15_live_finbench_correctness import (
+    run_m15_live_finbench_correctness,
+)
 from xgap.experiments.m15_live_semantic_relaxation import (
     run_m15_live_semantic_risk_relaxation,
 )
@@ -188,6 +191,9 @@ RESOLUTION_EXECUTION_BRIDGE_SERVICE_RUN_SCHEMA_VERSION = (
 SELECTED_INTERPRETATION_SESSION_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-e5d-native-live-selected-interpretation-session-service-run-v1"
 )
+FINBENCH_CORRECTNESS_SERVICE_RUN_SCHEMA_VERSION = (
+    "m15-finbench-native-live-correctness-service-run-v1"
+)
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -210,6 +216,7 @@ WORKLOAD_MODES = frozenset(
         "paired_physical_comparison",
         "resolution_execution_bridge",
         "selected_interpretation_session",
+        "finbench_correctness",
     }
 )
 LOCAL_FILESYSTEM_TYPES = frozenset(
@@ -926,6 +933,9 @@ def _run_fixture_and_query(
     paired_physical_protocol: Mapping[str, Any] | str | Path | None = None,
     current_query_profile_protocol: Mapping[str, Any] | str | Path | None = None,
     *,
+    finbench_workload: str | Path | None = None,
+    finbench_partition: str | Path | None = None,
+    finbench_query_ids: Sequence[str] | None = None,
     resolution_run: str | Path | None = None,
     resolution_bridge_spec: str | Path | None = None,
     prepared_resolution_bridge: M15PreparedResolutionExecutionBridge | None = None,
@@ -943,6 +953,26 @@ def _run_fixture_and_query(
             "neo4j": Neo4jCypherFixtureLoader(clients["neo4j"]),
             "fuseki": FusekiGraphStoreFixtureLoader(fuseki_descriptor),
         }
+        if workload_mode == "finbench_correctness":
+            assert finbench_workload is not None
+            assert finbench_partition is not None
+            for client in clients.values():
+                client.timeout_seconds = 60.0
+            correctness = run_m15_live_finbench_correctness(
+                workload_root=finbench_workload,
+                partition_root=finbench_partition,
+                clients=clients,
+                loaders=loaders,
+                output_root=run_root,
+                run_id="finbench-correctness-run",
+                repo_root=repo_root,
+                query_ids=finbench_query_ids,
+            )
+            if not correctness.success:
+                raise RuntimeError(
+                    f"live FinBench correctness gate failed: {correctness.error}"
+                )
+            return
         if workload_mode in {
             "resolution_execution_bridge",
             "selected_interpretation_session",
@@ -1536,6 +1566,9 @@ def run_m15_native_services(
     selected_session_structural_candidate_id: str | None = None,
     selected_session_predicate_candidate_id: str | None = None,
     selected_session_authority_source_id: str | None = None,
+    finbench_workload: str | Path | None = None,
+    finbench_partition: str | Path | None = None,
+    finbench_query_ids: Sequence[str] | None = None,
 ) -> NativeServiceRunRecord:
     root = (
         Path(repo_root).resolve()
@@ -1546,6 +1579,16 @@ def run_m15_native_services(
         raise ValueError("run_id contains unsupported characters")
     if workload_mode not in WORKLOAD_MODES:
         raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
+    finbench_values = (finbench_workload, finbench_partition)
+    if workload_mode == "finbench_correctness":
+        if any(value is None for value in finbench_values):
+            raise ValueError(
+                "finbench_correctness requires a verified workload and partition"
+            )
+    elif any(value is not None for value in finbench_values) or finbench_query_ids is not None:
+        raise ValueError(
+            "FinBench inputs are accepted only in finbench_correctness mode"
+        )
     selected_bundle = (
         load_m15_workload_bundle(
             workload_bundle.root
@@ -2102,6 +2145,7 @@ def run_m15_native_services(
         "selected_interpretation_session": (
             SELECTED_INTERPRETATION_SESSION_SERVICE_RUN_SCHEMA_VERSION
         ),
+        "finbench_correctness": FINBENCH_CORRECTNESS_SERVICE_RUN_SCHEMA_VERSION,
     }[workload_mode]
     output = Path(output_root).resolve()
     run_root = output / run_id
@@ -2376,7 +2420,14 @@ def run_m15_native_services(
                 paired_physical_protocol,
                 current_query_profile_protocol,
             )
-            if workload_mode in {
+            if workload_mode == "finbench_correctness":
+                _run_fixture_and_query(
+                    *fixture_args,
+                    finbench_workload=finbench_workload,
+                    finbench_partition=finbench_partition,
+                    finbench_query_ids=finbench_query_ids,
+                )
+            elif workload_mode in {
                 "resolution_execution_bridge",
                 "selected_interpretation_session",
             }:
@@ -2546,6 +2597,17 @@ def run_m15_native_services(
             "selected_interpretation_session_preflight": (
                 selected_session_preflight
             ),
+            "finbench_correctness": (
+                {
+                    "workload": str(finbench_workload),
+                    "partition": str(finbench_partition),
+                    "query_ids": list(finbench_query_ids)
+                    if finbench_query_ids is not None
+                    else None,
+                }
+                if workload_mode == "finbench_correctness"
+                else None
+            ),
             "campaign_session": (
                 {
                     "campaign_config": str(campaign_config),
@@ -2632,6 +2694,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--selected-session-structural-candidate-id")
     parser.add_argument("--selected-session-predicate-candidate-id")
     parser.add_argument("--selected-session-authority-source-id")
+    parser.add_argument("--finbench-workload")
+    parser.add_argument("--finbench-partition")
+    parser.add_argument("--finbench-query-id", action="append", dest="finbench_query_ids")
     parser.add_argument("--campaign-config")
     parser.add_argument("--campaign-session-id")
     parser.add_argument("--expected-campaign-spec-sha256")
@@ -2715,6 +2780,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             selected_session_authority_source_id=(
                 args.selected_session_authority_source_id
             ),
+            finbench_workload=args.finbench_workload,
+            finbench_partition=args.finbench_partition,
+            finbench_query_ids=args.finbench_query_ids,
             campaign_config=args.campaign_config,
             campaign_session_id=args.campaign_session_id,
             expected_campaign_spec_sha256=args.expected_campaign_spec_sha256,

@@ -736,9 +736,9 @@ existing direct join, an exact-two-hop path join, and an entirely held-out
 aggregate-ranking family. It freezes proposed backend ownership, hard and
 relaxable slots, two physical candidates per family, an 8/4 split for each seen
 family, and a zero-profile aggregate-first cold-start rule for the held-out
-family. This is not yet an author decision and authorizes neither package
-generation nor a CWRU run. Accepting P1 would freeze decisions 1--4; the
-inferential protocol and external-validation slice would remain separate later
+family. At proposal time this authorized neither package generation nor a
+CWRU run; the following author decision supersedes that proposal boundary.
+The inferential protocol and external-validation slice remain separate later
 gates.
 
 The author selected Option C on 2026-09-07, closing population decision 1. The
@@ -760,10 +760,13 @@ the partition itself.
 The 36-instance development population and its isolated exact oracles are now
 locally compiled. F1/F2 each provide an 8/4 training/held-out split; F3
 provides 12 entirely held-out-family queries with its cold-start fallback
-declared before measurement. The next implementation gate is a generic
-three-family native binder/coordinator plus exact source/final validation on
-the already generated SF0.01 bundle. Only after that local gate passes should
-one CWRU backend pilot be submitted.
+declared before measurement. The common federated runtime now compiles two
+exact plans per family, including real bound-query pushdown plus coordinator
+collection filtering, grouped aggregation, and deterministic Top-K. An
+oracle-isolated local replay passed all 72 plan/query comparisons. The next
+gate is one CWRU SF0.01 load-and-correctness run over the same 36 queries and
+72 plans. If it passes, freeze SF0.1/SF1 scale, baseline, repetition, and
+analysis protocols immediately; do not add another toy mechanism milestone.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet

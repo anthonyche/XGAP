@@ -6,7 +6,7 @@
 - Origin Mode: plan
 - Origin Date: 2026-09-04
 - Verification Status: CWRU B2D/D2/F0/F1L/F2A/F2B4/F2C10D/F2C12B/F2C13B/E2B/E4B/E5D VERIFIED; F2C13C SUMMARY ACCEPTED
-- Version Label: m15_remote_loop_v36
+- Version Label: m15_remote_loop_v37
 
 ## Current claim boundary
 
@@ -25,6 +25,19 @@ mode-aware immutable evidence bundle. CWRU job `3787152` verified that path on
 real Neo4j and Fuseki. Its fixed cost model is not calibrated, the tiny fixture
 did not warrant a plan change, and its manifest therefore declares
 `paper_result=false`.
+
+The next live boundary is no longer the toy financial-risk fixture. A pinned
+FinBench v0.1.0 SF0.01 archive now feeds a complete 18-table split, 36 public
+F1--F3 query instances, and 72 exact physical plans through the same runtime.
+Local oracle replay passes all 72 comparisons. The dedicated
+`run_m15_native_finbench_correctness.sbatch` entry verifies the archive,
+rebuilds its partition and workload inside a fresh run tree, loads native
+Neo4j/Fuseki services, seals every plan before load, and opens the oracle only
+after all executions. Pre-execution access is limited to byte hashing for
+artifact identity; no oracle JSON is parsed. This is the next authorized
+development job. It remains
+`paper_result=false`; a successful run authorizes protocol freeze, not a paper
+performance claim.
 
 The F1L runner is also verified on CWRU. A separate
 `scaled_method_matrix` mode reuses one verified workload and native-service

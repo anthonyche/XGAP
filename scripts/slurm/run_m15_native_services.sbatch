@@ -142,6 +142,10 @@ case "$WORKLOAD_MODE" in
     : "${XGAP_M15_SELECTED_PREDICATE_CANDIDATE:?XGAP_M15_SELECTED_PREDICATE_CANDIDATE is required}"
     : "${XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID:?XGAP_M15_SELECTED_AUTHORITY_SOURCE_ID is required}"
     ;;
+  finbench_correctness)
+    RUN_PREFIX="cwru-m15-native-finbench-correctness"
+    RUN_VERSION="m15-finbench-native-live-correctness-services-v1"
+    ;;
   *)
     echo "Unsupported XGAP_M15_WORKLOAD_MODE: $WORKLOAD_MODE" >&2
     exit 2
@@ -308,6 +312,45 @@ PYTHONPATH="$REPO_ROOT/src" \
   | tee "$RUN_ROOT/runtime_staging_result.json"
 
 WORKLOAD_ARGS=()
+if [[ "$WORKLOAD_MODE" == finbench_correctness ]]; then
+  FINBENCH_ARCHIVE="${XGAP_FINBENCH_ARCHIVE:-$HOME/.cache/xgap/finbench-v0.1.0/sf0.01.tar.gz}"
+  if [[ "$FINBENCH_ARCHIVE" != /* || ! -f "$FINBENCH_ARCHIVE" || -L "$FINBENCH_ARCHIVE" ]]; then
+    echo "Verified FinBench archive is missing or unsafe: $FINBENCH_ARCHIVE" >&2
+    echo "Run scripts/server/prepare_m15_finbench_sf001.sh before submission." >&2
+    exit 2
+  fi
+  FINBENCH_PARTITION="$RUN_ROOT/finbench-source-partition"
+  FINBENCH_WORKLOAD="$RUN_ROOT/finbench-primary-workload"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_finbench_partition \
+    --archive "$FINBENCH_ARCHIVE" \
+    --lock "$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sources.json" \
+    --output-root "$FINBENCH_PARTITION" \
+    --batch-size 250 \
+    | tee "$RUN_ROOT/finbench_partition_generation.json"
+  PYTHONPATH="$REPO_ROOT/src" \
+  "$PYTHON_BIN" -m xgap.experiments.m15_finbench_workload \
+    --archive "$FINBENCH_ARCHIVE" \
+    --partition-root "$FINBENCH_PARTITION" \
+    --lock "$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sources.json" \
+    --spec "$REPO_ROOT/experiments/configs/m15_finbench_primary_population_v1.json" \
+    --output-root "$FINBENCH_WORKLOAD" \
+    | tee "$RUN_ROOT/finbench_workload_generation.json"
+  WORKLOAD_ARGS=(
+    --finbench-workload "$FINBENCH_WORKLOAD"
+    --finbench-partition "$FINBENCH_PARTITION"
+  )
+  if [[ -n "${XGAP_FINBENCH_QUERY_IDS:-}" ]]; then
+    IFS=',' read -r -a FINBENCH_QUERY_IDS <<< "$XGAP_FINBENCH_QUERY_IDS"
+    for FINBENCH_QUERY_ID in "${FINBENCH_QUERY_IDS[@]}"; do
+      if [[ -z "$FINBENCH_QUERY_ID" ]]; then
+        echo "XGAP_FINBENCH_QUERY_IDS contains an empty query ID." >&2
+        exit 2
+      fi
+      WORKLOAD_ARGS+=(--finbench-query-id "$FINBENCH_QUERY_ID")
+    done
+  fi
+fi
 if [[ "$WORKLOAD_MODE" == scaled_adaptive || "$WORKLOAD_MODE" == scaled_method_matrix || "$WORKLOAD_MODE" == scaled_campaign_session || "$WORKLOAD_MODE" == scaled_query_bound_session ]]; then
   WORKLOAD_BUNDLE="$RUN_ROOT/workload-bundle"
   PYTHONPATH="$REPO_ROOT/src" \

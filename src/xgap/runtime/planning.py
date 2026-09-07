@@ -557,6 +557,34 @@ class FederatedPlanSelector:
                 0,
                 None,
             )
+        if node.kind is RuntimeNodeKind.COORDINATOR_GROUP_AGGREGATE:
+            source = inputs[0]
+            reduction = FederatedPlanSelector._fraction(
+                node, "group_reduction_fraction", 1.0
+            )
+            rows = source.row_count * reduction
+            duration = source.row_count * snapshot.coordinator_row_ms
+            return (
+                _NodeEstimate(ready_ms + duration, rows, source.row_width_bytes),
+                0.0,
+                0,
+                None,
+            )
+        if node.kind is RuntimeNodeKind.COORDINATOR_SORT_LIMIT:
+            source = inputs[0]
+            limit = node.parameters.get("limit")
+            if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
+                raise FederatedPlanningError(
+                    f"runtime node '{node.node_id}' limit must be a positive integer"
+                )
+            rows = min(source.row_count, float(limit))
+            duration = source.row_count * snapshot.coordinator_row_ms
+            return (
+                _NodeEstimate(ready_ms + duration, rows, source.row_width_bytes),
+                0.0,
+                0,
+                None,
+            )
         if node.kind is RuntimeNodeKind.MERGE:
             rows = sum(item.row_count for item in inputs)
             width = max((item.row_width_bytes for item in inputs), default=1.0)

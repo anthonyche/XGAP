@@ -745,8 +745,8 @@ remains with the author; F2C14A authorizes no CWRU job and all artifacts remain
 `paper_result=false`. Full local acceptance passes 946 tests with 36 explicit
 environment or external-artifact skips.
 
-M15-F2C14B has closed population decision 1 but is not yet an implemented
-benchmark.
+M15-F2C14B has progressed from the population decision to a locally executable
+development benchmark, but not yet to a native or paper-result gate.
 The design note `docs/m15_f2c14b_multi_family_design_gate.md` defines the
 research question, structural family boundary, variables, endpoints,
 confounds, and three population alternatives. Its concrete P1 proposal turns
@@ -782,8 +782,14 @@ assignments. Nine literal-free Neo4j/SPARQL templates expose two physical
 routes per family, while exact source/final rows live only in a separately
 hashed oracle file whose pre-selection access is forbidden. Real compilation
 identity is `6cf2aa7a09bebbae7e0ff244e0d2c8f850bd44393461c8b8c22e4ea2f68b5647`.
-This closes local population construction, not live native execution or
-confirmatory sampling; native template/oracle agreement is next.
+The shared federated compiler and coordinator are now implemented for all
+three families. Both exact routes for all 36 queries were replayed against the
+sealed SF0.01 oracle after plan construction, and all 72 comparisons passed.
+The new F3 path uses common collection semi-join, grouped aggregation, and
+ordered-limit operators rather than a benchmark-specific evaluator. The
+native CWRU load-and-correctness job remains pending, so this closes local
+compiler/coordinator correctness only, not live public-data execution,
+performance comparison, or confirmatory sampling.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen
