@@ -745,7 +745,8 @@ remains with the author; F2C14A authorizes no CWRU job and all artifacts remain
 `paper_result=false`. Full local acceptance passes 946 tests with 36 explicit
 environment or external-artifact skips.
 
-M15-F2C14B is currently an author decision gate, not an implemented benchmark.
+M15-F2C14B has closed population decision 1 but is not yet an implemented
+benchmark.
 The design note `docs/m15_f2c14b_multi_family_design_gate.md` defines the
 research question, structural family boundary, variables, endpoints,
 confounds, and three population alternatives. Its concrete P1 proposal turns
@@ -753,12 +754,23 @@ the recommended staged hybrid into an author-selectable 36-instance primary
 population: the existing direct join, an exact-two-hop path join, and an
 entirely held-out aggregate-ranking family, with explicit backend ownership,
 hard and relaxable slots, physical candidates, splits, and a zero-profile
-aggregate-first cold-start rule. P1 has not been accepted; therefore no new
-data, family package, external call, or executable campaign has been created.
-Accepting P1 would freeze design decisions 1--4 and authorize local package and
-generator implementation only. Inferential preregistration and the later
-external-validation slice remain unresolved, and `paper_result=false` remains
-mandatory.
+aggregate-first cold-start rule. The author selected Option C: three controlled
+financial structures are primary and a smaller external-validation stratum
+follows. The original all-local synthetic P1 world is not accepted as paper
+evidence. Its three DAG shapes remain candidates, but they must be rebound to a
+traceable public artifact. The recommended path is FinBench v0.1.0-derived
+heterogeneous physical execution, GrailQA semantic evaluation, an execution-
+optional FIBO mapping, and a cutoff-bounded FedShop validation slice. The
+official FinBench SF0.01 archive was downloaded outside the repository,
+inspected, and verified at SHA-256
+`888c8fbe06b68cc48de9f07fde8c0fd3295618fc41af13ae1aa216aaec1e0430`.
+The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
+XGAP has already crossed the real-backend boundary through audited native
+Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen
+paper protocol. The accelerated target is local ingestion and family
+correctness by Sep 9, a first CWRU paper-candidate pilot by Sep 10, and protocol
+freeze immediately afterward. Decisions 2--6, paper-scale execution, and
+inferential claims remain unresolved; `paper_result=false` remains mandatory.
 
 M15-F2C10D repair job `3791600` is now accepted as a real-backend development
 pilot. It ran exact clean commit `08f1911` on `compt303` for 220 seconds,

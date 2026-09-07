@@ -741,6 +741,19 @@ generation nor a CWRU run. Accepting P1 would freeze decisions 1--4; the
 inferential protocol and external-validation slice would remain separate later
 gates.
 
+The author selected Option C on 2026-09-07, closing population decision 1. The
+original all-local synthetic P1 world is not accepted as sufficient paper
+evidence: its three controlled DAG shapes remain candidates, but the primary
+data/query substrate must be rebound to a public artifact. The immediate route
+is a FinBench v0.1.0-derived Neo4j/Fuseki workload, with GrailQA semantic
+evaluation and a separately scoped external-validation slice. The official
+SF0.01 archive was fetched outside the repository and verified at SHA-256
+`888c8fbe06b68cc48de9f07fde8c0fd3295618fc41af13ae1aa216aaec1e0430`.
+The submission-driven target is local ingestion/correctness by Sep 9, a first
+CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
+that pilot rather than a two-to-three-week delay. No paper run is yet
+authorized.
+
 The first selective submission, job `3787167` at clean commit `36281aa`,
 failed at Neo4j fixture load before any profile or query call. Generator v1
 used JSON object syntax inside a Cypher `UNWIND` literal; Neo4j 5.26 requires

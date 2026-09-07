@@ -2885,3 +2885,28 @@ full repository acceptance passes 1,075 tests with 36 explicit skips, and the
 frontend production build passes. This is local engineering readiness only: no
 CWRU submission, backend/model/ontology call, user study, performance result,
 or paper claim is accepted, and `paper_result=false` remains mandatory.
+
+## D153 Select a controlled primary population plus external validation
+
+The author selected F2C14B Option C on 2026-09-07. Three controlled financial
+query structures will form the primary population and a smaller standard-
+workload slice will be reported separately as external validation. This closes
+population decision 1 only; it does not accept the original P1 data source,
+freeze the statistical protocol, or authorize a paper run.
+
+The existing `financial_risk_dev` world is a toy development fixture. It remains
+useful for deterministic regression, failure injection, and mechanism audits,
+but it cannot support paper-scale performance or generalization claims. The
+primary paper-candidate path must instead use a traceable public artifact while
+retaining the controlled direct, temporal-path, and aggregate DAG differences.
+The current recommendation is a transparently named FinBench-derived
+heterogeneous Neo4j/Fuseki workload, with GrailQA as a separate semantic track,
+an optional pinned FIBO mapping, and a cutoff-bounded FedShop validation slice.
+
+The schedule is governed by the SIGMOD 2027 Round 4 deadlines: abstract and
+COIs on 2026-10-10 and paper on 2026-10-17, both 11:59 PM AoE. Work therefore
+switches immediately from extending the toy world to public-artifact ingestion
+and correctness. The target is a local FinBench SF0.01 proof within 48 hours, a
+first CWRU paper-candidate pilot within 72 hours, and an author-approved
+confirmatory protocol immediately afterward. Pilots retain
+`paper_result=false` and cannot be relabeled after inspection.

@@ -1,12 +1,22 @@
 # M15-F2C14B Multi-Family Population Design Gate
 
-Status: **AUTHOR DECISION REQUIRED; NO EXECUTION AUTHORIZED**
+Status: **OPTION C ACCEPTED; EXTERNAL-ARTIFACT REVISION IN PROGRESS; NO PAPER RUN AUTHORIZED**
 
 This document freezes the decision boundary that must be crossed before XGAP
 adds a second executable query family or compiles a multi-family campaign.  It
 does not choose a domain, create a workload, authorize a CWRU run, or support a
 paper claim.  Every artifact discussed here remains development-only with
 `paper_result=false`.
+
+The author selected **Option C** on 2026-09-07: three controlled financial
+structures form the primary population and a separate standard-workload slice
+provides external validation. The selection freezes population decision 1
+only. It does not accept the original all-local synthetic P1 package as a paper
+dataset. Under the accelerated SIGMOD schedule, P1 must be revised so that its
+schema, data, and query shapes are traceably derived from public artifacts;
+`datasets/financial_risk_dev/` remains a regression fixture rather than paper
+evidence. The revised artifact and deadline contract is in
+`docs/m15_paper_experiment_acceleration_plan.md`.
 
 ## Why this gate exists
 
@@ -275,7 +285,7 @@ optimal. Current-query profiling remains a separately costed comparison method,
 never a hidden fallback. If either F3 candidate is unavailable, the method
 reports unavailable rather than changing semantics or profiling implicitly.
 
-### Why P1 is the recommended decision
+### Why P1 was the initial recommended decision
 
 P1 creates three genuinely distinct optimizer regimes over the same backend
 partition: selective direct join, path expansion, and aggregation plus ranking.
@@ -291,6 +301,15 @@ the fixed aggregate-first cold-start rule, and the 36-instance allocation. It
 would authorize package and generator implementation, but not a CWRU run.
 Inferential analysis and external-validation selection would still require
 their later gates.
+
+The author subsequently accepted Option C but required a public-artifact
+primary workload on a submission-driven schedule. Therefore the 36-instance
+allocation and the three DAG shapes remain useful candidate controls, while
+the original locally generated financial world is superseded as the proposed
+paper data source. Decisions 2--6 will be frozen against the FinBench-derived
+package, GrailQA semantic track, and external-validation boundary described in
+the acceleration plan. No result from the old toy workload may be relabeled as
+a paper result.
 
 ## Required follow-on decisions
 

@@ -1,0 +1,126 @@
+{
+  "schema_version": "m15-finbench-artifact-lock-v1",
+  "artifact": {
+    "artifact_id": "ldbc-finbench-v0.1.0-sf0.01",
+    "benchmark": "LDBC FinBench",
+    "version": "v0.1.0",
+    "scale_factor": "0.01",
+    "filename": "sf0.01.tar.gz",
+    "url": "https://datasets.ldbcouncil.org/finbench/sf0.01.tar.gz",
+    "size_bytes": 6516867,
+    "digest": {
+      "algorithm": "sha256",
+      "value": "888c8fbe06b68cc48de9f07fde8c0fd3295618fc41af13ae1aa216aaec1e0430"
+    },
+    "archive_format": "tar.gz",
+    "archive_root": "sf0.01",
+    "source_page": "https://ldbcouncil.org/benchmarks/finbench/datasets/",
+    "specification_repository": "https://github.com/ldbc/ldbc_finbench_docs",
+    "specification_ref": "v0.1.0",
+    "specification_commit": "d3ec7036bf6919df8cd3eeaa3a986048e779ea02",
+    "claim_boundary": "finbench_derived_heterogeneous_workload_not_a_conformant_finbench_result",
+    "redistribution_terms_status": "verify_before_redistributing_downloaded_data"
+  },
+  "snapshot_tables": [
+    {
+      "table_id": "person",
+      "member": "sf0.01/snapshot/Person.csv",
+      "columns": [
+        "personId",
+        "personName",
+        "isBlocked",
+        "createTime",
+        "gender",
+        "birthday",
+        "country",
+        "city"
+      ]
+    },
+    {
+      "table_id": "account",
+      "member": "sf0.01/snapshot/Account.csv",
+      "columns": [
+        "accountId",
+        "createTime",
+        "isBlocked",
+        "accoutType",
+        "nickname",
+        "phonenum",
+        "email",
+        "freqLoginType",
+        "lastLoginTime",
+        "accountLevel"
+      ]
+    },
+    {
+      "table_id": "company",
+      "member": "sf0.01/snapshot/Company.csv",
+      "columns": [
+        "companyId",
+        "companyName",
+        "isBlocked",
+        "createTime",
+        "country",
+        "city",
+        "business",
+        "description",
+        "url"
+      ]
+    },
+    {
+      "table_id": "medium",
+      "member": "sf0.01/snapshot/Medium.csv",
+      "columns": [
+        "mediumId",
+        "mediumType",
+        "isBlocked",
+        "createTime",
+        "lastLoginTime",
+        "riskLevel"
+      ]
+    },
+    {
+      "table_id": "person_own_account",
+      "member": "sf0.01/snapshot/PersonOwnAccount.csv",
+      "columns": [
+        "personId",
+        "accountId",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "company_own_account",
+      "member": "sf0.01/snapshot/CompanyOwnAccount.csv",
+      "columns": [
+        "companyId",
+        "accountId",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "account_transfer_account",
+      "member": "sf0.01/snapshot/AccountTransferAccount.csv",
+      "columns": [
+        "fromId",
+        "toId",
+        "amount",
+        "createTime",
+        "orderNum",
+        "comment",
+        "payType",
+        "goodsType"
+      ]
+    },
+    {
+      "table_id": "medium_sign_in_account",
+      "member": "sf0.01/snapshot/MediumSignInAccount.csv",
+      "columns": [
+        "mediumId",
+        "accountId",
+        "createTime",
+        "location"
+      ]
+    }
+  ],
+  "paper_result": false
+}
