@@ -99,6 +99,7 @@ def test_default_allowlist_includes_only_scoped_m15_bootstrap_jobs() -> None:
         "scripts/slurm/run_m15_native_current_query_profile_baseline.sbatch",
         "scripts/slurm/run_m15_native_paired_physical_comparison.sbatch",
         "scripts/slurm/run_m15_native_finbench_correctness.sbatch",
+        "scripts/slurm/run_m15_native_finbench_sf0_1_correctness.sbatch",
         "scripts/slurm/run_m15_live_resolution.sbatch",
     )
     probe = (

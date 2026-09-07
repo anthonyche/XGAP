@@ -19,12 +19,14 @@ from xgap.experiments.m15_finbench_partition import (
 )
 from xgap.experiments.m15_finbench_workload import (
     DEFAULT_SPEC_PATH,
+    SF0_1_SPEC_PATH,
     FinBenchQueryData,
     Transfer,
     _f1_instances,
     _f2_instances,
     _f3_instances,
     _templates,
+    _validate_population_spec,
     build_finbench_primary_workload,
     load_finbench_primary_public_workload,
     load_finbench_primary_workload,
@@ -32,6 +34,22 @@ from xgap.experiments.m15_finbench_workload import (
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_committed_sf01_population_spec_is_scale_bound() -> None:
+    spec = _validate_population_spec(REPO_ROOT / SF0_1_SPEC_PATH)
+
+    assert spec["population_id"] == (
+        "m15-finbench-v010-sf0_1-primary-3family-v1"
+    )
+    assert spec["source_artifact_id"] == "ldbc-finbench-v0.1.0-sf0.1"
+    assert [item["family_id"] for item in spec["families"]] == [
+        "f1_direct_transfer_control",
+        "f2_temporal_path_control",
+        "f3_aggregate_risk_ranking",
+    ]
+    assert spec["automatic_retries"] == 0
+    assert spec["paper_result"] is False
 
 
 def _synthetic_query_data() -> FinBenchQueryData:

@@ -12,6 +12,7 @@ import pytest
 from xgap.experiments.m15_finbench_artifacts import (
     DEFAULT_LOCK_PATH,
     LOCK_SCHEMA_VERSION,
+    SF0_1_LOCK_PATH,
     FinBenchArtifactSpec,
     FinBenchArtifactLock,
     SnapshotTableSpec,
@@ -119,6 +120,31 @@ def test_committed_lock_pins_official_sf001_archive() -> None:
         "company_guarantee_company",
         "person_invest_company",
     }
+
+
+def test_committed_scale_gate_lock_pins_official_sf01_archive() -> None:
+    baseline = load_finbench_artifact_lock(REPO_ROOT / DEFAULT_LOCK_PATH)
+    lock = load_finbench_artifact_lock(REPO_ROOT / SF0_1_LOCK_PATH)
+
+    assert lock.artifact.artifact_id == "ldbc-finbench-v0.1.0-sf0.1"
+    assert lock.artifact.scale_factor == "0.1"
+    assert lock.artifact.filename == "sf0.1.tar.gz"
+    assert lock.artifact.url == (
+        "https://datasets.ldbcouncil.org/finbench/sf0.1.tar.gz"
+    )
+    assert lock.artifact.size_bytes == 66710298
+    assert lock.artifact.digest_value == (
+        "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60"
+    )
+    assert lock.artifact.archive_root == "sf0.1"
+    assert len(lock.snapshot_tables) == 18
+    assert {table.table_id for table in lock.snapshot_tables} == {
+        table.table_id for table in baseline.snapshot_tables
+    }
+    assert all(
+        table.member.startswith("sf0.1/snapshot/")
+        for table in lock.snapshot_tables
+    )
 
 
 def test_inspection_streams_allowlisted_table_without_extraction(tmp_path: Path) -> None:

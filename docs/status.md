@@ -786,8 +786,10 @@ The shared federated compiler and coordinator are now implemented for all
 three families. Both exact routes for all 36 queries were replayed against the
 sealed SF0.01 oracle after plan construction, and all 72 comparisons passed.
 The new F3 path uses common collection semi-join, grouped aggregation, and
-ordered-limit operators rather than a benchmark-specific evaluator. The
-native CWRU load-and-correctness job remains pending, so this closes local
+ordered-limit operators rather than a benchmark-specific evaluator. Native
+CWRU load-and-correctness job `3793654` is now submitted at exact clean commit
+`a718e91`; its official archive download and inspection passed on CWRU before
+submission. Until the job and independent audit finish, this closes local
 compiler/coordinator correctness only, not live public-data execution,
 performance comparison, or confirmatory sampling.
 The first CWRU archive-preparation attempt failed safely with HTTP 403 before
@@ -796,8 +798,17 @@ now replaced by a fixed XGAP user agent with identity encoding while all
 official-host, redirect, size, SHA-256, single-attempt, and no-overwrite gates
 remain intact. A real local official-URL fetch verified the pinned archive and
 all 18 tables. An independent no-mutation correctness auditor is also locally
-implemented and rejects altered execution answers. Server preparation must be
-retried only from the repaired commit.
+implemented and rejects altered execution answers. Server preparation was
+retried from the repaired commit and passed; job `3793654` must not be
+duplicated.
+In parallel, SF0.1 is pinned as the next scale gate. Its official archive
+contains 365,181 snapshot rows; a real local partition with batch size 2,000
+produced 194 Cypher statements, 282,426 Turtle triples, and approximately
+123 MB of load payload. The same three-family compiler produced 36 distinct
+scale-bound queries. A dedicated 16-GiB, 90-minute wrapper is ready, but it is
+not authorized until job `3793654` and its independent audit pass. SF0.3/SF1,
+repetitions, and statistical analysis remain protocol decisions rather than
+implicit defaults.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen

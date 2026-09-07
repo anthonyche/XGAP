@@ -45,6 +45,9 @@ GENERATOR_VERSION = "m15-finbench-primary-workload-generator-v1"
 DEFAULT_SPEC_PATH = Path(
     "experiments/configs/m15_finbench_primary_population_v1.json"
 )
+SF0_1_SPEC_PATH = Path(
+    "experiments/configs/m15_finbench_sf0_1_primary_population_v1.json"
+)
 _SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,191}$")
 _FAMILY_IDS = (
     "f1_direct_transfer_control",

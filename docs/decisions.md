@@ -2996,3 +2996,28 @@ and hashes the run tree before and after inspection. Its output is forbidden
 below the source run. This does not turn the pending CWRU job into a paper
 result; it makes the development gate admissible only if both producer and
 independent audit pass.
+
+## D158 Admit SF0.1 as the next development scale gate, not as a paper result
+
+The official FinBench v0.1.0 SF0.1 archive is pinned separately from the
+SF0.01 correctness artifact. A real local official-archive inspection verified
+66,710,298 bytes, SHA-256
+`f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60`,
+the same 18 snapshot tables, and 365,181 rows. The corresponding three-family
+population compiles 36 queries with the same 16 training, eight held-out
+instance, and 12 held-out-family roles. It is a scale-specific population;
+identifiers and content hashes are not reused from SF0.01.
+
+At batch size 2,000, a local full partition emitted 194 Cypher statements,
+282,426 Turtle triples, a 91,934,990-byte Neo4j load file, and a
+30,972,563-byte Fuseki load file in nine seconds. This makes SF0.1 the smallest
+useful server load/latency gate while keeping the request count close to the
+SF0.01 path. The native entry point accepts only the two committed lock/spec
+pairs and a bounded batch size; the SF0.1 wrapper fixes 16 GiB, 90 minutes, and
+batch size 2,000. SF0.3 or SF1 will not be selected until this gate reports
+actual load time, query time, memory pressure, and failures.
+
+This is an engineering-scale admission, not an author-approved confirmatory
+protocol. It must not be submitted before the SF0.01 native correctness run and
+its independent audit pass. All generated artifacts retain
+`paper_result=false`.

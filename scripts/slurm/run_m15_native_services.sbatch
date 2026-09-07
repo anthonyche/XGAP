@@ -314,26 +314,59 @@ PYTHONPATH="$REPO_ROOT/src" \
 WORKLOAD_ARGS=()
 if [[ "$WORKLOAD_MODE" == finbench_correctness ]]; then
   FINBENCH_ARCHIVE="${XGAP_FINBENCH_ARCHIVE:-$HOME/.cache/xgap/finbench-v0.1.0/sf0.01.tar.gz}"
+  FINBENCH_LOCK="${XGAP_FINBENCH_LOCK:-$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sources.json}"
+  FINBENCH_SPEC="${XGAP_FINBENCH_SPEC:-$REPO_ROOT/experiments/configs/m15_finbench_primary_population_v1.json}"
+  FINBENCH_BATCH_SIZE="${XGAP_FINBENCH_BATCH_SIZE:-250}"
   if [[ "$FINBENCH_ARCHIVE" != /* || ! -f "$FINBENCH_ARCHIVE" || -L "$FINBENCH_ARCHIVE" ]]; then
     echo "Verified FinBench archive is missing or unsafe: $FINBENCH_ARCHIVE" >&2
-    echo "Run scripts/server/prepare_m15_finbench_sf001.sh before submission." >&2
+    echo "Run the matching scripts/server/prepare_m15_finbench_* entry before submission." >&2
     exit 2
   fi
+  case "$FINBENCH_LOCK" in
+    "$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sources.json"|\
+    "$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sf0_1_sources.json") ;;
+    *)
+      echo "XGAP_FINBENCH_LOCK is not an allowlisted repository lock: $FINBENCH_LOCK" >&2
+      exit 2
+      ;;
+  esac
+  case "$FINBENCH_SPEC" in
+    "$REPO_ROOT/experiments/configs/m15_finbench_primary_population_v1.json"|\
+    "$REPO_ROOT/experiments/configs/m15_finbench_sf0_1_primary_population_v1.json") ;;
+    *)
+      echo "XGAP_FINBENCH_SPEC is not an allowlisted repository spec: $FINBENCH_SPEC" >&2
+      exit 2
+      ;;
+  esac
+  if [[ ! -f "$FINBENCH_LOCK" || -L "$FINBENCH_LOCK" || ! -f "$FINBENCH_SPEC" || -L "$FINBENCH_SPEC" ]]; then
+    echo "FinBench lock or population spec is missing or unsafe." >&2
+    exit 2
+  fi
+  if [[ ! "$FINBENCH_BATCH_SIZE" =~ ^[1-9][0-9]{0,4}$ ]] || (( FINBENCH_BATCH_SIZE > 10000 )); then
+    echo "XGAP_FINBENCH_BATCH_SIZE must be an integer from 1 through 10000." >&2
+    exit 2
+  fi
+  {
+    printf 'finbench_archive=%s\n' "$FINBENCH_ARCHIVE"
+    printf 'finbench_lock=%s\n' "$FINBENCH_LOCK"
+    printf 'finbench_spec=%s\n' "$FINBENCH_SPEC"
+    printf 'finbench_batch_size=%s\n' "$FINBENCH_BATCH_SIZE"
+  } >> "$RUN_ROOT/environment.txt"
   FINBENCH_PARTITION="$RUN_ROOT/finbench-source-partition"
   FINBENCH_WORKLOAD="$RUN_ROOT/finbench-primary-workload"
   PYTHONPATH="$REPO_ROOT/src" \
   "$PYTHON_BIN" -m xgap.experiments.m15_finbench_partition \
     --archive "$FINBENCH_ARCHIVE" \
-    --lock "$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sources.json" \
+    --lock "$FINBENCH_LOCK" \
     --output-root "$FINBENCH_PARTITION" \
-    --batch-size 250 \
+    --batch-size "$FINBENCH_BATCH_SIZE" \
     | tee "$RUN_ROOT/finbench_partition_generation.json"
   PYTHONPATH="$REPO_ROOT/src" \
   "$PYTHON_BIN" -m xgap.experiments.m15_finbench_workload \
     --archive "$FINBENCH_ARCHIVE" \
     --partition-root "$FINBENCH_PARTITION" \
-    --lock "$REPO_ROOT/experiments/artifacts/m15_finbench_v010_sources.json" \
-    --spec "$REPO_ROOT/experiments/configs/m15_finbench_primary_population_v1.json" \
+    --lock "$FINBENCH_LOCK" \
+    --spec "$FINBENCH_SPEC" \
     --output-root "$FINBENCH_WORKLOAD" \
     | tee "$RUN_ROOT/finbench_workload_generation.json"
   WORKLOAD_ARGS=(
