@@ -763,10 +763,12 @@ provides 12 entirely held-out-family queries with its cold-start fallback
 declared before measurement. The common federated runtime now compiles two
 exact plans per family, including real bound-query pushdown plus coordinator
 collection filtering, grouped aggregation, and deterministic Top-K. An
-oracle-isolated local replay passed all 72 plan/query comparisons. The next
-gate is CWRU job `3793654`, one SF0.01 load-and-correctness run over the same
-36 queries and 72 plans, followed by its independent audit. The official
-download/inspection stage has passed at clean commit `a718e91`.
+oracle-isolated local replay passed all 72 plan/query comparisons. CWRU job
+`3793654` has now completed with exit `0:0` over the same 36 queries and 72
+plans. Its outer status is successful; the mandatory independent audit still
+has to complete against that immutable run before the public-data correctness
+gate is accepted. The official download/inspection stage passed at clean
+commit `a718e91`.
 SF0.1 is already prepared as the immediate scale successor: its pinned archive
 contains 365,181 rows, its 2,000-row partition batches compile to 194 Cypher
 requests plus one Fuseki load, and the three-family population compiles at the
@@ -774,6 +776,14 @@ new scale. Submit that scale gate only after the SF0.01 audit passes. Use its
 measured load/query/resource evidence to choose SF0.3 or SF1, then freeze
 baseline, repetition, and analysis protocols; do not add another toy mechanism
 milestone.
+The leakage-safe FinBench family-memory layer is also implemented locally. It
+accepts only the 16-query training split with two strategies and four or more
+counterbalanced exact repetitions, predicts the eight held-out-instance
+queries from public family features with zero current-query profiles, and
+keeps the 12-query held-out family in a separately labeled predeclared
+cold-start path. The next implementation boundary is the native measurement
+producer and frozen baseline/analysis schedule; local model tests are not a
+paper result.
 The submission-driven target is local ingestion/correctness by Sep 9, a first
 CWRU paper-candidate pilot by Sep 10, and protocol freeze immediately after
 that pilot rather than a two-to-three-week delay. No paper run is yet

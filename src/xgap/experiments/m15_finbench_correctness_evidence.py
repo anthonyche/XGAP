@@ -36,6 +36,19 @@ FINBENCH_CORRECTNESS_AUDIT_SCHEMA_VERSION = (
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
 
 
+def _json_safe_check_value(value: Any) -> Any:
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, Mapping):
+        return {
+            str(key): _json_safe_check_value(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, (list, tuple)):
+        return [_json_safe_check_value(item) for item in value]
+    return value
+
+
 @dataclass(frozen=True)
 class FinBenchCorrectnessEvidenceCheck:
     check_id: str
@@ -47,8 +60,8 @@ class FinBenchCorrectnessEvidenceCheck:
         return {
             "check_id": self.check_id,
             "passed": self.passed,
-            "expected": self.expected,
-            "observed": self.observed,
+            "expected": _json_safe_check_value(self.expected),
+            "observed": _json_safe_check_value(self.observed),
         }
 
 

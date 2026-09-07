@@ -142,6 +142,7 @@ detect_runtime() {
   tests/test_m15_finbench_federation.py \
   tests/test_m15_live_finbench_correctness.py \
   tests/test_m15_finbench_correctness_evidence.py \
+  tests/test_m15_finbench_family_memory.py \
   tests/test_m15_llm_resolution_provider.py \
   tests/test_m15_live_resolution.py \
   tests/test_m15_remote_executor.py \

@@ -3021,3 +3021,30 @@ This is an engineering-scale admission, not an author-approved confirmatory
 protocol. It must not be submitted before the SF0.01 native correctness run and
 its independent audit pass. All generated artifacts retain
 `paper_result=false`.
+
+## D159 Make FinBench family memory leakage-safe before native measurement
+
+The primary zero-profile method may use only selection features published in
+the frozen workload at ingestion time. For F1 this is structural degree; for
+F2 it is start-account out-degree. Each of the 16 training queries contributes
+both declared physical strategies with at least four successful, exact, AB/BA
+counterbalanced repetitions. The immutable memory retains those raw
+repetitions and their per-plan medians so later audits can reconstruct both
+admission and aggregation. Held-out observations, answer rows, current-query
+profiles, post-execution measurements, retries, and oracle inputs are rejected.
+
+For the eight held-out-instance queries, the development predictor uses
+within-family normalized Manhattan distance, exact-feature matches when
+present, otherwise three inverse-distance neighbors, and separately predicts
+latency and transferred bytes for both strategies. Strategy selection is
+lexicographic by predicted latency, bytes, and stable strategy ID; the
+predicted physical Pareto set remains observable. A constant training feature
+does not make a different held-out value an exact match: such a dimension
+contributes unit distance.
+
+F3 remains an entirely held-out family. It receives no invented prediction or
+frontier and uses only the aggregate-first fallback declared before native
+measurement. Its cold-start results must be reported separately from
+known-family accuracy and regret. This decision freezes a development
+mechanism, not the confirmatory statistical design; no native observation has
+yet entered the memory and `paper_result=false` remains mandatory.

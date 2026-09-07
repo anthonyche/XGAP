@@ -301,3 +301,32 @@ def test_finbench_correctness_audit_rejects_tampered_answer(
 
     assert not audit.success
     assert "validation.exact" in audit.failed_check_ids
+
+
+def test_finbench_correctness_cli_serializes_path_checks(
+    tmp_path: Path, monkeypatch
+) -> None:
+    root = _run_tree(tmp_path, monkeypatch)
+    output = tmp_path / "audit.json"
+
+    exit_code = evidence.main(
+        [
+            "--run-root",
+            str(root),
+            "--expected-commit",
+            COMMIT,
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert exit_code == 0
+    persisted = json.loads(output.read_text(encoding="utf-8"))
+    assert persisted["success"] is True
+    assert persisted["run_tree_mutated"] is False
+    assert any(
+        check["check_id"] == "service.workload_path"
+        and isinstance(check["expected"], str)
+        and isinstance(check["observed"], str)
+        for check in persisted["checks"]
+    )

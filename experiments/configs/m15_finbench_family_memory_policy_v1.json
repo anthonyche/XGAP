@@ -1,0 +1,42 @@
+{
+  "schema_version": "m15-finbench-family-memory-policy-v1",
+  "policy_id": "m15-finbench-family-memory-knn-development-v1",
+  "model_version": "m15-finbench-normalized-knn-development-v1",
+  "neighbor_count": 3,
+  "feature_source": "public_selection_feature_only",
+  "feature_schema_by_family": {
+    "f1_direct_transfer_control": [
+      "structural_degree"
+    ],
+    "f2_temporal_path_control": [
+      "out_degree"
+    ],
+    "f3_aggregate_risk_ranking": [
+      "window_position",
+      "risk_position"
+    ]
+  },
+  "normalization": "within_family_training_range",
+  "distance": "normalized_manhattan",
+  "zero_distance_policy": "exact_feature_matches_only",
+  "neighbor_weight": "inverse_distance",
+  "metric_aggregation": "median_per_plan_over_raw_repetitions",
+  "uncertainty": "neighbor_weighted_mean_absolute_deviation",
+  "selection_order": [
+    "predicted_elapsed_ms",
+    "predicted_total_bytes_moved",
+    "physical_strategy"
+  ],
+  "training_admission": "successful_exact_counterbalanced_repetitions_only",
+  "minimum_repetitions_per_plan": 4,
+  "cold_start": {
+    "source": "family_contract_predeclared_fallback",
+    "report_as_separate_stratum": true,
+    "predicted_metrics_available": false
+  },
+  "current_query_profile_calls": 0,
+  "oracle_inputs": [],
+  "post_execution_measurements_used": false,
+  "automatic_retries": 0,
+  "paper_result": false
+}

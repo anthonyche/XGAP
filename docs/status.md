@@ -787,9 +787,12 @@ three families. Both exact routes for all 36 queries were replayed against the
 sealed SF0.01 oracle after plan construction, and all 72 comparisons passed.
 The new F3 path uses common collection semi-join, grouped aggregation, and
 ordered-limit operators rather than a benchmark-specific evaluator. Native
-CWRU load-and-correctness job `3793654` is now submitted at exact clean commit
-`a718e91`; its official archive download and inspection passed on CWRU before
-submission. Until the job and independent audit finish, this closes local
+CWRU load-and-correctness job `3793654` completed with exit `0:0` in 245
+seconds on `compt292` at exact clean commit `a718e91`; its official archive
+download and inspection passed on CWRU before submission. The outer producer
+status is success, but the first independent-audit invocation exited before
+writing its audit JSON and is not evidence of either audit success or producer
+failure. Until the existing run passes the independent audit, this closes local
 compiler/coordinator correctness only, not live public-data execution,
 performance comparison, or confirmatory sampling.
 The first CWRU archive-preparation attempt failed safely with HTTP 403 before
@@ -809,6 +812,19 @@ scale-bound queries. A dedicated 16-GiB, 90-minute wrapper is ready, but it is
 not authorized until job `3793654` and its independent audit pass. SF0.3/SF1,
 repetitions, and statistical analysis remain protocol decisions rather than
 implicit defaults.
+The first FinBench-specific family-memory protocol is now implemented locally.
+It admits exactly 32 physical-plan observations from the 16 declared training
+queries, requires at least four successful exact counterbalanced repetitions
+per plan, and freezes raw repetitions plus medians under content identity. It
+uses only the public ingestion-time feature declared by each query family and
+predicts one route plus a physical Pareto set for the eight held-out-instance
+queries with zero current-query profiles and no oracle or post-execution input.
+The 12 entirely held-out F3 queries are reported as a separate cold-start
+stratum: only their predeclared fallback may run, and no predicted frontier or
+metric is fabricated. Revalidation rejects recomputed-hash semantic tampering,
+held-out leakage, incomplete strategy history, and false exact matches caused
+by a zero-width feature range. This is protocol/model readiness only; no native
+training observations or comparative result exist and `paper_result=false`.
 The current `financial_risk_dev` bundle is explicitly a toy regression fixture.
 XGAP has already crossed the real-backend boundary through audited native
 Neo4j/Fuseki runs; the pending boundary is public benchmark data and a frozen
