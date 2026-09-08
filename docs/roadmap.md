@@ -1695,9 +1695,10 @@ verify the ignored GrailQA, ontology, and query-independent catalog bodies and
 write a runtime receipt. Alternatively, the exact-hash-matching recovered
 local directories may be transferred into the checkout and verified there.
 This closes a deployment/test-skip gap but does not authorize either live gate.
-The complete shell-handoff regression passes 1,264 tests with 36 intentional
+The complete shell-handoff and replay regression passes 1,275 tests with 36 intentional
 environment or external-artifact skips, including the final result-admission
-and eleven executable single-use CWRU dependency-pipeline checks.
+and eleven executable single-use CWRU dependency-pipeline checks plus eleven
+read-only rejection-replay tests.
 
 Five scientific choices remain explicitly unselected. Both independent audits
 have been returned, but preflight interpretation and author review remain open.

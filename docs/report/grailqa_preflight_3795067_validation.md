@@ -64,6 +64,8 @@ provider failure, repair ledgers, identity tampering, source preservation, and
 execution directly from stdin. The combined replay, shell-handoff, endpoint,
 and preflight-audit regression passes 31 tests. These tests do not establish
 which guard rejected the real CWRU responses; that diagnostic remains pending.
+Full repository regression passes 1,275 tests with 36 intentional skips; the
+offline LLM-boundary and M15 goal-loop examples also pass.
 
 ## Fallacy Scan
 

@@ -2890,7 +2890,7 @@ acceptance of the 150-query experiment. See
 
 The read-only rejection replay CLI is implemented and tested offline. It
 reconstructs only the saved prompt and provider envelope, checks their hash
-identities, and reports the original normalization/grounding exception without
+identities, and reports the replayed normalization/grounding rejection without
 opening gold, loading a catalog, or making an external call. The real CWRU
 replay result is still pending; no specific rejection cause or repaired live
 outcome is claimed. Eleven replay tests and the related shell/endpoint/audit
@@ -2919,8 +2919,9 @@ the frozen prompt, model, catalog, ranking, epsilon, and outcome code are unchan
 
 The compact readiness record is
 `experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
-The shell-handoff repository regression passes 1,264 tests with 36 intentional
+The shell-handoff and replay regression passes 1,275 tests with 36 intentional
 environment or external-artifact skips, including the explicit author-choice
 builder, single-use CWRU pipeline, dual independent reconstruction, and final
 paper-result admission fail-closed tests. Eleven of those tests execute the
-shell handoffs without model or backend calls.
+shell handoffs without model or backend calls; eleven more cover read-only
+rejection replay. Both offline boundary examples also pass.
