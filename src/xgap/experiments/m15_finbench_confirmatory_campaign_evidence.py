@@ -145,6 +145,57 @@ def _mapping(value: object) -> Mapping[str, Any]:
     return value if isinstance(value, Mapping) else {}
 
 
+def _compact_check_value(value: Any) -> Any:
+    """Retain bounded diagnostic evidence instead of whole campaign objects.
+
+    The confirmatory campaign contains raw result rows for 1,888 plan runs.
+    Keeping both sides of every successful equality check in ``checks`` made
+    the independent auditor retain several complete copies of that evidence.
+    Scalar values remain directly inspectable.  Container values retain their
+    shape and already-sealed identities; the auditor still performs equality
+    against the complete in-memory objects before this projection is made.
+    """
+
+    if value is None or isinstance(value, (bool, int, float)):
+        return value
+    if isinstance(value, str):
+        if len(value) <= 256:
+            return value
+        return {
+            "value_type": "string",
+            "character_count": len(value),
+        }
+    if isinstance(value, Mapping):
+        identity_fields = {
+            str(key): item
+            for key, item in value.items()
+            if (
+                isinstance(key, str)
+                and (
+                    key == "schema_version"
+                    or key.endswith("_sha256")
+                )
+                and isinstance(item, str)
+            )
+        }
+        return {
+            "value_type": "mapping",
+            "entry_count": len(value),
+            "identity_fields": dict(sorted(identity_fields.items())),
+        }
+    if isinstance(value, (list, tuple)):
+        return {
+            "value_type": "sequence",
+            "item_count": len(value),
+        }
+    if isinstance(value, (set, frozenset)):
+        return {
+            "value_type": "set",
+            "item_count": len(value),
+        }
+    return {"value_type": type(value).__name__}
+
+
 def _hash_matches(value: object, field: str) -> bool:
     if not isinstance(value, Mapping) or not isinstance(value.get(field), str):
         return False
@@ -244,12 +295,13 @@ def audit_finbench_confirmatory_campaign(
     checks: list[FinBenchConfirmatoryCampaignCheck] = []
 
     def check(check_id: str, expected: Any, observed: Any) -> None:
+        passed = expected == observed
         checks.append(
             FinBenchConfirmatoryCampaignCheck(
                 check_id=check_id,
-                passed=expected == observed,
-                expected=expected,
-                observed=observed,
+                passed=passed,
+                expected=_compact_check_value(expected),
+                observed=_compact_check_value(observed),
             )
         )
 
@@ -314,7 +366,7 @@ def audit_finbench_confirmatory_campaign(
         ]
         check("blocks.identities", 22, len(all_ids) if len(set(all_ids)) == 22 else -1)
         accepted: dict[str, dict[str, Any]] = {}
-        saved_audits: dict[str, dict[str, Any]] = {}
+        saved_audit_success: dict[str, bool] = {}
         rebuilt_contexts: dict[str, dict[str, Any]] = {}
         for block_id in all_ids:
             context_value, context_state = _read_json(
@@ -369,7 +421,7 @@ def audit_finbench_confirmatory_campaign(
                 saved_accepted_value,
             )
             accepted[block_id] = rebuilt_accepted
-            saved_audits[block_id] = rebuilt_audit
+            saved_audit_success[block_id] = rebuilt_audit.get("success") is True
         base_manifest = build_finbench_confirmatory_campaign_manifest(
             freeze_manifest=inputs["freeze_manifest"],
             freeze_audit=inputs["freeze_audit"],
@@ -409,7 +461,7 @@ def audit_finbench_confirmatory_campaign(
         check(
             "blocks.all_audits_success",
             True,
-            all(item.get("success") is True for item in saved_audits.values()),
+            all(saved_audit_success.values()),
         )
         training_ids = rebuilt_manifest["measurement_blocks"][
             "crossfit_training_measurement"

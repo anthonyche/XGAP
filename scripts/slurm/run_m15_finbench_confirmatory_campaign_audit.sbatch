@@ -2,7 +2,11 @@
 #SBATCH --job-name=xgap-m15-finbench-confirmatory-audit
 #SBATCH --partition=batch
 #SBATCH --cpus-per-task=2
-#SBATCH --mem=8G
+# The auditor reconstructs all 1,888 measurements and the delayed-oracle
+# analysis in one read-only process.  This is deliberately larger than a
+# measurement block; command-line --mem remains an explicit scheduler
+# override for recovery of an already-frozen runner.
+#SBATCH --mem=32G
 #SBATCH --time=02:00:00
 #SBATCH --output=slurm-%x-%j.out
 

@@ -3405,3 +3405,28 @@ Admission of this FinBench report supports the heterogeneous physical-plan
 optimization comparison only. It cannot support the semantic-ambiguity,
 ontology, or general KGQA claims, which require their separate GrailQA and
 external-validation evidence.
+
+## D173 Recover final campaign admission without rerunning measurements
+
+The authorized Option-A campaign completed all 22 measurement blocks, all
+1,888 scheduled plan runs, delayed-oracle validation, and confirmatory
+statistics at the frozen runner commit. Its first independent final audit was
+killed after exhausting the exactly requested 8 GiB allocation while
+reconstructing the 3.8 GiB campaign tree. It wrote neither a final audit nor a
+partial admission artifact. This is an audit-infrastructure failure, not a
+measurement-block failure: no measurement may be retried, replaced, filtered,
+or recomputed, and the campaign result remains immutable and
+`paper_result=false` until independent admission succeeds.
+
+The permitted recovery is one audit-only replay at the original frozen runner
+commit with a distinct output path and a 32 GiB scheduler allocation. This
+does not consume the predeclared measurement-block infrastructure replacement
+because it executes no query plan and makes no backend call. Future auditor
+runs also request 32 GiB by default.
+
+To remove the avoidable multiplier, the auditor still compares complete
+reconstructed objects but stores only bounded type/count/hash diagnostics for
+container-valued checks. Per-block audit state is reduced to the
+success predicate after its full reconstruction check. Failed check IDs,
+sealed identities, campaign immutability, and the sole authority of the final
+independent audit are unchanged.

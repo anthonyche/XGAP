@@ -319,6 +319,14 @@ def test_complete_campaign_is_admitted_only_by_independent_audit(
     assert audit["run_tree_mutated"] is False
     assert audit["confirmatory_result_admitted"] is True
     assert audit["paper_result"] is True
+    accepted_check = next(
+        item
+        for item in audit["checks"]
+        if item["check_id"].endswith("accepted_reconstruction")
+    )
+    assert accepted_check["expected"]["value_type"] == "mapping"
+    assert accepted_check["observed"]["value_type"] == "mapping"
+    assert "raw_measurements" not in json.dumps(accepted_check)
 
 
 def test_invalidated_campaign_never_becomes_paper_result() -> None:
@@ -334,6 +342,28 @@ def test_invalidated_campaign_never_becomes_paper_result() -> None:
     assert audit["success"] is True
     assert audit["confirmatory_result_admitted"] is False
     assert audit["paper_result"] is False
+
+
+def test_campaign_audit_checks_do_not_retain_large_equal_payloads() -> None:
+    payload = {
+        "schema_version": "large-test-v1",
+        "raw_measurements_sha256": "a" * 64,
+        "measurements": [
+            {"canonical_rows": [{"value": "x" * 4096}]} for _ in range(16)
+        ],
+    }
+
+    compact = evidence._compact_check_value(payload)
+
+    assert compact == {
+        "value_type": "mapping",
+        "entry_count": 3,
+        "identity_fields": {
+            "raw_measurements_sha256": "a" * 64,
+            "schema_version": "large-test-v1",
+        },
+    }
+    assert "measurements" not in compact
 
 
 def test_only_audited_zero_measurement_failure_can_mint_attempt_two(
