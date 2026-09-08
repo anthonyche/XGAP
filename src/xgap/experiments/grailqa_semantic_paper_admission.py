@@ -26,6 +26,7 @@ from typing import Any, Mapping, Sequence
 from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
 from xgap.experiments.grailqa_local_catalog import validate_local_catalog
 from xgap.experiments.grailqa_semantic_paper_protocol import (
+    AUTHOR_SELECTION_SCHEMA_VERSION,
     DEFAULT_PROTOCOL_PATH,
     compile_grailqa_semantic_paper_readiness,
 )
@@ -273,6 +274,53 @@ def _selected_decisions(readiness: Mapping[str, Any]) -> dict[str, str]:
     return {key: str(value) for key, value in selected.items()}
 
 
+def build_grailqa_semantic_author_selection(
+    *,
+    protocol_path: str | Path,
+    repo_root: str | Path,
+    authority_source_id: str,
+    decisions: Mapping[str, str],
+) -> dict[str, Any]:
+    """Seal five explicit author choices without inferring any selection."""
+
+    repo = _regular_directory(repo_root, name="repo_root")
+    protocol = _regular_file(protocol_path, name="semantic protocol")
+    readiness = compile_grailqa_semantic_paper_readiness(
+        protocol,
+        repo_root=repo,
+    ).to_dict()
+    if _SAFE_ID.fullmatch(authority_source_id) is None:
+        raise GrailQASemanticPaperAdmissionError("authority_source_id is not safe")
+    normalized = {str(key): str(value) for key, value in decisions.items()}
+    if set(normalized) != set(_ALLOWED_DECISIONS):
+        raise GrailQASemanticPaperAdmissionError(
+            "author selection must contain exactly the five frozen decisions"
+        )
+    allowed_by_id = {
+        str(item["decision_id"]): {str(value) for value in item["allowed_values"]}
+        for item in readiness["author_decisions"]
+    }
+    if allowed_by_id != _ALLOWED_DECISIONS:
+        raise GrailQASemanticPaperAdmissionError(
+            "protocol decision registry differs from the admission contract"
+        )
+    for decision_id, selected_value in normalized.items():
+        if selected_value not in allowed_by_id[decision_id]:
+            raise GrailQASemanticPaperAdmissionError(
+                f"author selection is not allowed: {decision_id}={selected_value}"
+            )
+    body: dict[str, Any] = {
+        "schema_version": AUTHOR_SELECTION_SCHEMA_VERSION,
+        "protocol_sha256": readiness["protocol_sha256"],
+        "authority_source_id": authority_source_id,
+        "decisions": {
+            decision_id: normalized[decision_id]
+            for decision_id in _ALLOWED_DECISIONS
+        },
+    }
+    return {**body, "selection_sha256": content_hash(body)}
+
+
 def build_grailqa_semantic_preexecution_admission(
     *,
     protocol_path: str | Path,
@@ -435,6 +483,36 @@ def validate_grailqa_semantic_preexecution_admission(
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
+    select = commands.add_parser("select")
+    select.add_argument("--protocol", default=str(DEFAULT_PROTOCOL_PATH))
+    select.add_argument("--repo-root", default=".")
+    select.add_argument("--authority-source-id", required=True)
+    select.add_argument(
+        "--primary-reporting-population",
+        required=True,
+        choices=tuple(sorted(_ALLOWED_DECISIONS["primary_reporting_population"])),
+    )
+    select.add_argument(
+        "--primary-epsilon",
+        required=True,
+        choices=tuple(sorted(_ALLOWED_DECISIONS["primary_epsilon"])),
+    )
+    select.add_argument(
+        "--primary-comparator",
+        required=True,
+        choices=tuple(sorted(_ALLOWED_DECISIONS["primary_comparator"])),
+    )
+    select.add_argument(
+        "--inference-failure-estimand",
+        required=True,
+        choices=tuple(sorted(_ALLOWED_DECISIONS["inference_failure_estimand"])),
+    )
+    select.add_argument(
+        "--interactive-clarification-role",
+        required=True,
+        choices=tuple(sorted(_ALLOWED_DECISIONS["interactive_clarification_role"])),
+    )
+    select.add_argument("--output", required=True)
     review = commands.add_parser("review")
     review.add_argument("--preflight-audit", required=True)
     review.add_argument("--authority-source-id", required=True)
@@ -458,7 +536,27 @@ def main(argv: Sequence[str] | None = None) -> int:
     check.add_argument("--admission", required=True)
     args = parser.parse_args(argv)
     try:
-        if args.command == "review":
+        if args.command == "select":
+            result = build_grailqa_semantic_author_selection(
+                protocol_path=args.protocol,
+                repo_root=args.repo_root,
+                authority_source_id=args.authority_source_id,
+                decisions={
+                    "primary_reporting_population": (
+                        args.primary_reporting_population
+                    ),
+                    "primary_epsilon": args.primary_epsilon,
+                    "primary_comparator": args.primary_comparator,
+                    "inference_failure_estimand": (
+                        args.inference_failure_estimand
+                    ),
+                    "interactive_clarification_role": (
+                        args.interactive_clarification_role
+                    ),
+                },
+            )
+            _write_json_exclusive(Path(args.output), result)
+        elif args.command == "review":
             result = build_grailqa_preflight_author_review(
                 preflight_audit=_load_json(
                     args.preflight_audit, name="preflight audit"

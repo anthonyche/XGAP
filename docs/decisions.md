@@ -3615,3 +3615,25 @@ the independent run auditor reconstructs the complete admission/request/
 authority/seal/ledger chain without importing the producer. No review receipt,
 author selection, admission, or execution authority is created on the author's
 behalf.
+
+## D182 Admit a GrailQA paper result only after two independent reconstructions
+
+Successful H100 inference is measurement evidence, not yet a paper result. The
+150-query producer always writes `paper_result=false`. A dependent CPU-only
+finalizer first runs the producer-independent run auditor, then the frozen
+query-level analyzer, then the independent analysis reconstruction auditor.
+Only a fourth, non-measuring admission step may set `paper_result=true`, and
+only when all four artifacts bind the same protocol, author selection,
+preexecution admission, execution request, execution authority, source run,
+and outcome ledger identities. The final claim remains limited to the frozen
+GrailQA population; it cannot assert backend performance or general KGQA
+generalization.
+
+The server submission helper performs the complete authority-chain and
+gold-blind readiness check before requesting an H100, records a single-use
+submission lease, and submits exactly one CPU finalizer with an `afterok`
+dependency. It does not retry a failed model run. The five scientific choices
+are created only through an explicit author-selection command requiring all
+five values; recommendations are never silently copied into authority. No
+catalog/preflight audit, author review, author selection, request, authority,
+or successful final paper artifact may be inferred from a Slurm exit code.

@@ -102,7 +102,7 @@
     {
       "evidence": {
         "path": "src/xgap/experiments/grailqa_semantic_paper_admission.py",
-        "sha256": "1e4f45c133adef72d248cfd04e627eb2d09fdc2fea1df25728015dd4300cd0f2"
+        "sha256": "5e2bcf8513e483c0d1d14e5fb3fe15027e832f8aba1eafc14dafb24c1dfa8d0a"
       },
       "requirement_id": "preexecution_admission_chain",
       "status": "ready"
@@ -137,6 +137,14 @@
         "sha256": "55bd5cc4248ced3105afc13bf39b1a52a0029d377d2c6f5654224f650b143c8d"
       },
       "requirement_id": "independent_semantic_run_evidence_auditor",
+      "status": "ready"
+    },
+    {
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_result.py",
+        "sha256": "5760495d028a299501bfd8ccaecc12ae9422dcb2fb6aa7b847c8b41c30b64ca5"
+      },
+      "requirement_id": "semantic_paper_result_admission",
       "status": "ready"
     }
   ],
@@ -186,8 +194,8 @@
   ],
   "paper_result": false,
   "protocol_id": "m13e4-grailqa-sigmod2027-semantic-draft-v1",
-  "protocol_sha256": "577ac8a2774ad66969b57164a4428235f065997ecc19855e0805803cd7bf3fcd",
-  "readiness_sha256": "5fbb95d90374729100138c3869a07374e416f7587a6a82383d7e7aa3e1c1ba59",
+  "protocol_sha256": "6a224e75ed3fcba20ca759a7b8a9a48f3733feff8d520e3a973bf6116b7959dc",
+  "readiness_sha256": "e494efe7c7c2a7645850cea873005785a72c272ff6cf10b5cb090883089f37fb",
   "schema_version": "m13e4-grailqa-semantic-paper-readiness-v1",
   "source_artifacts": [
     {

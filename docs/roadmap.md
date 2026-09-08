@@ -1617,7 +1617,8 @@ full-150 execution authority.
 
 Current status:
 **RESULT-BLIND DRAFT, EVIDENCE-BOUND ADMISSION, AUTHORITY-GATED 150-QUERY
-RUNNER, QUERY-LEVEL ANALYZER, AND THREE INDEPENDENT AUDITORS IMPLEMENTED; LIVE
+RUNNER, QUERY-LEVEL ANALYZER, FINAL PAPER-RESULT ADMISSION, AND THREE
+INDEPENDENT AUDITORS IMPLEMENTED; LIVE
 CATALOG/AUDIT AND PREFLIGHT GATES ACTIVE, AUTHOR CHOICES AND EXACT-RUN
 AUTHORITY PENDING.**
 `grailqa_semantic_paper_protocol.py` and its frozen draft configuration compile
@@ -1653,6 +1654,15 @@ wrapper, inference seal, manifest, and independent run auditor bind the
 admission hash. The review receipt explicitly forbids tuning those choices from
 preflight outcomes and cannot itself authorize the 150-query execution.
 
+The post-run promotion path is also implemented. One CPU-only dependency runs
+the independent source-run audit, the frozen query-level analyzer, the
+independent analysis reconstruction, and then a separate final admission.
+Only that last step may set `paper_result=true`; all producers and auditors
+remain non-promoting. A single-use submission helper checks the complete
+authority chain and the catalog before requesting the H100, records both job
+IDs, and performs no retry. The explicit selection command requires all five
+author values and never substitutes recommendations automatically.
+
 The pilot150 catalog now also has a producer-independent, read-only auditor.
 It binds the exact 150 question-only inputs, pinned Freebase source-manifest
 identity, every catalog content hash, SQLite integrity and JSONL equivalence,
@@ -1677,8 +1687,9 @@ verify the ignored GrailQA, ontology, and query-independent catalog bodies and
 write a runtime receipt. Alternatively, the exact-hash-matching recovered
 local directories may be transferred into the checkout and verified there.
 This closes a deployment/test-skip gap but does not authorize either live gate.
-The complete admission-aware regression passes 1,245 tests with 36 intentional
-environment or external-artifact skips.
+The complete admission-aware regression passes 1,253 tests with 36 intentional
+environment or external-artifact skips, including the final result-admission
+and single-use CWRU dependency pipeline.
 
 Five scientific choices remain explicitly unselected. The submitted final
 18-query CWRU rerun still requires independent audit and author review, and the

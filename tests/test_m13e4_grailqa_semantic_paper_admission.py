@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from pathlib import Path
 import subprocess
 
@@ -12,8 +13,14 @@ from xgap.experiments.grailqa_semantic_paper_admission import (
     PREFLIGHT_AUDIT_SCHEMA_VERSION,
     GrailQASemanticPaperAdmissionError,
     build_grailqa_preflight_author_review,
+    build_grailqa_semantic_author_selection,
+    main,
     validate_grailqa_preflight_author_review,
     validate_grailqa_semantic_preexecution_admission,
+)
+from xgap.experiments.grailqa_semantic_paper_protocol import (
+    DEFAULT_PROTOCOL_PATH,
+    compile_grailqa_semantic_paper_readiness,
 )
 from xgap.experiments.hashing import content_hash
 
@@ -133,6 +140,92 @@ def test_review_and_admission_bind_exact_independent_evidence() -> None:
         preflight_audit=preflight, author_review=review
     ) == review
     assert validate_grailqa_semantic_preexecution_admission(_admission()) == _admission()
+
+
+def test_author_selection_requires_five_explicit_allowed_choices(
+    tmp_path: Path,
+) -> None:
+    decisions = {
+        "primary_reporting_population": "all_150_plus_joint_reachability_stratum",
+        "primary_epsilon": "0.1",
+        "primary_comparator": "model_confidence_top1_same_candidate_set",
+        "inference_failure_estimand": "all_queries_failures_count_incorrect",
+        "interactive_clarification_role": "oracle_upper_bound_only",
+    }
+    selection = build_grailqa_semantic_author_selection(
+        protocol_path=ROOT / DEFAULT_PROTOCOL_PATH,
+        repo_root=ROOT,
+        authority_source_id="author:test:semantic-selection-v1",
+        decisions=decisions,
+    )
+    readiness = compile_grailqa_semantic_paper_readiness(
+        ROOT / DEFAULT_PROTOCOL_PATH,
+        repo_root=ROOT,
+        author_selection=selection,
+    ).to_dict()
+    assert readiness["gates"]["author_approved"] is True
+    assert selection["decisions"] == decisions
+
+    output = tmp_path / "author-selection.json"
+    assert main(
+        [
+            "select",
+            "--protocol",
+            str(ROOT / DEFAULT_PROTOCOL_PATH),
+            "--repo-root",
+            str(ROOT),
+            "--authority-source-id",
+            "author:test:semantic-selection-v1",
+            "--primary-reporting-population",
+            decisions["primary_reporting_population"],
+            "--primary-epsilon",
+            decisions["primary_epsilon"],
+            "--primary-comparator",
+            decisions["primary_comparator"],
+            "--inference-failure-estimand",
+            decisions["inference_failure_estimand"],
+            "--interactive-clarification-role",
+            decisions["interactive_clarification_role"],
+            "--output",
+            str(output),
+        ]
+    ) == 0
+    assert json.loads(output.read_text(encoding="utf-8")) == selection
+    assert main(
+        [
+            "select",
+            "--protocol",
+            str(ROOT / DEFAULT_PROTOCOL_PATH),
+            "--repo-root",
+            str(ROOT),
+            "--authority-source-id",
+            "author:test:semantic-selection-v1",
+            "--primary-reporting-population",
+            decisions["primary_reporting_population"],
+            "--primary-epsilon",
+            decisions["primary_epsilon"],
+            "--primary-comparator",
+            decisions["primary_comparator"],
+            "--inference-failure-estimand",
+            decisions["inference_failure_estimand"],
+            "--interactive-clarification-role",
+            decisions["interactive_clarification_role"],
+            "--output",
+            str(output),
+        ]
+    ) == 2
+
+    changed = dict(decisions)
+    changed.pop("primary_epsilon")
+    with pytest.raises(
+        GrailQASemanticPaperAdmissionError, match="exactly the five"
+    ):
+        build_grailqa_semantic_author_selection(
+            protocol_path=ROOT / DEFAULT_PROTOCOL_PATH,
+            repo_root=ROOT,
+            authority_source_id="author:test:semantic-selection-v1",
+            decisions=changed,
+        )
 
 
 def test_review_cannot_authorize_execution_or_float_to_another_audit() -> None:

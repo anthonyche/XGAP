@@ -192,7 +192,7 @@
       "status": "ready",
       "evidence": {
         "path": "src/xgap/experiments/grailqa_semantic_paper_admission.py",
-        "sha256": "1e4f45c133adef72d248cfd04e627eb2d09fdc2fea1df25728015dd4300cd0f2"
+        "sha256": "5e2bcf8513e483c0d1d14e5fb3fe15027e832f8aba1eafc14dafb24c1dfa8d0a"
       }
     },
     {
@@ -226,6 +226,14 @@
         "path": "src/xgap/experiments/grailqa_semantic_paper_run_evidence.py",
         "sha256": "55bd5cc4248ced3105afc13bf39b1a52a0029d377d2c6f5654224f650b143c8d"
       }
+    },
+    {
+      "requirement_id": "semantic_paper_result_admission",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_result.py",
+        "sha256": "5760495d028a299501bfd8ccaecc12ae9422dcb2fb6aa7b847c8b41c30b64ca5"
+      }
     }
   ],
   "claim_boundary": {
@@ -237,5 +245,5 @@
   },
   "automatic_retries": 0,
   "paper_result": false,
-  "freeze_hash": "b048094cbef89e14b7de093522d47494603bc720c4247aca44447ca936db74f8"
+  "freeze_hash": "b7548713484b8609cc368e6ac754459d98a51f5856452a1ecdb4f20863d6eeee"
 }

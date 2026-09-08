@@ -58,6 +58,7 @@ _REQUIREMENT_IDS = (
     "query_level_statistics_analyzer",
     "independent_semantic_evidence_auditor",
     "independent_semantic_run_evidence_auditor",
+    "semantic_paper_result_admission",
 )
 
 

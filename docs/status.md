@@ -2874,8 +2874,22 @@ shares the checkout subsequently used for the repaired CPU submissions, its
 authoritative producer commit will be taken from `cwru_environment.json` after
 execution, not inferred from submission time. None of these job submissions is
 an author review or 150-query execution authority.
+
+The post-run boundary is now complete in code. A CPU-only finalizer performs a
+producer-independent run audit, frozen query-level analysis, independent full
+analysis reconstruction, and a final identity admission. The producer and both
+audits remain `paper_result=false`; only the last admission can emit
+`paper_result=true`, and only for the exact frozen GrailQA population. A
+single-use submission helper verifies the entire request/admission/authority
+chain and catalog readiness before submitting an H100 job, then attaches the
+finalizer with `afterok`. It performs no automatic retry. An explicit
+author-selection CLI requires all five choices and cannot manufacture the
+recommended defaults. No 150-query GrailQA run has been authorized or
+submitted.
+
 The compact readiness record is
 `experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
-The complete repository regression now passes 1,245 tests with 36 intentional
-environment or external-artifact skips, including focused fail-closed tests for
-exact audit/review binding and the CPU-only preflight-audit wrapper.
+The complete repository regression passes 1,253 tests with 36 intentional
+environment or external-artifact skips, including the explicit author-choice
+builder, single-use CWRU pipeline, dual independent reconstruction, and final
+paper-result admission fail-closed tests.
