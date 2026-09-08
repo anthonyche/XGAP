@@ -43,7 +43,7 @@ from xgap.llm.parser import (
     parse_planner_response,
     path_pattern_query_to_dict,
 )
-from xgap.llm.schemas import PlannerRequest
+from xgap.llm.schemas import PlannerRequest, PlannerResponse
 from xgap.llm.validation import validate_candidate
 from xgap.pattern.ast import Alt, Bounded, OptionalExpr, Plus, RegexExpr, Rel, Seq, Star
 
@@ -196,9 +196,14 @@ class SemanticPilotProvider(Protocol):
 @dataclass
 class LiveSemanticPilotProvider:
     model: ModelBundle
+    response_parser: Callable[
+        [Mapping[str, Any], PlannerRequest], PlannerResponse
+    ] = parse_planner_response
 
     def __post_init__(self) -> None:
-        self._provider = build_openai_compatible_provider(self.model)
+        self._provider = build_openai_compatible_provider(
+            self.model, response_parser=self.response_parser
+        )
 
     @property
     def provider_id(self) -> str:

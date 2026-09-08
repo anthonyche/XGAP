@@ -454,7 +454,9 @@ def run_preflight(
         raise RuntimeError("Preflight readiness failed before any provider call.")
     catalog = GrailQAInferenceCatalogV2.load(readiness["catalog_root"])
     model = ModelBundle.load(repo / str(spec.data["model_bundle_root"]))
-    provider = LiveSemanticPilotProvider(model)
+    provider = LiveSemanticPilotProvider(
+        model, response_parser=parse_normalized_planner_response
+    )
     question_rows = {
         str(item["question_id"]): item
         for item in _read_jsonl(repo / str(spec.data["pilot_root"]) / "inference_questions.jsonl")
@@ -622,13 +624,15 @@ def _evaluate_preflight(
             equivalent=matches,
         )
         if category is not None:
-            failures.append(
-                {
-                    "schema_version": "m13e1-stage-aware-failure-v1",
-                    "question_id": question_id,
-                    "category": category,
-                }
-            )
+            failure_row: dict[str, Any] = {
+                "schema_version": "m13e1-stage-aware-failure-v1",
+                "question_id": question_id,
+                "category": category,
+            }
+            # Retain producer diagnostics without changing the frozen taxonomy.
+            if old_failure is not None:
+                failure_row["original_inference_failure"] = dict(old_failure)
+            failures.append(failure_row)
     match_fields = tuple(component_rows[0]["matches"]) if component_rows else ()
     component_accuracy = {
         key: sum(bool(item["matches"][key]) for item in component_rows) / len(component_rows)

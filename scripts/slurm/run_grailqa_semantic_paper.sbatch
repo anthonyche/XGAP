@@ -13,7 +13,7 @@ set -euo pipefail
 XGAP_REPO_ROOT="${XGAP_REPO_ROOT:-${SLURM_SUBMIT_DIR:-$PWD}}"
 export XGAP_REPO_ROOT
 SPEC="$XGAP_REPO_ROOT/experiments/specs/grailqa_semantic_paper_run_cwru_qwen3_32b.json"
-PROTOCOL="${XGAP_GRAILQA_SEMANTIC_PROTOCOL:-$XGAP_REPO_ROOT/experiments/configs/grailqa_semantic_paper_protocol_draft_v1.json}"
+PROTOCOL="${XGAP_GRAILQA_SEMANTIC_PROTOCOL:-$XGAP_REPO_ROOT/experiments/configs/grailqa_semantic_paper_protocol_draft_v2.json}"
 CORE_PYTHON="${XGAP_PYTHON:-$HOME/venvs/xgap-core/bin/python}"
 CATALOG_ROOT="${XGAP_GRAILQA_PILOT150_CATALOG:-$HOME/xgap-data/freebase/grailqa-local-catalog-v1/pilot150}"
 REACHABILITY_SUMMARY="${XGAP_GRAILQA_PILOT150_REACHABILITY_SUMMARY:-$CATALOG_ROOT/audit_summary.json}"

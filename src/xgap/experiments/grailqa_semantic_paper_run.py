@@ -1117,7 +1117,9 @@ def run_grailqa_semantic_paper(
         pilot_root / "inference_questions.jsonl",
         name="inference questions",
     )
-    provider = provider_override or LiveSemanticPilotProvider(model)
+    provider = provider_override or LiveSemanticPilotProvider(
+        model, response_parser=parse_normalized_planner_response
+    )
     environment = None
     environment_path = os.environ.get("XGAP_RUN_ENVIRONMENT_FILE")
     if environment_path:

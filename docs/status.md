@@ -2883,18 +2883,43 @@ candidate and candidate recall was zero. The five jointly prompt-reachable
 queries also had zero candidates. The remaining 13 queries have catalog,
 retrieval, or prompt-visibility limitations under the frozen diagnostic
 classification. All 18 failures remain in the denominator. The next engineering
-step is read-only replay of retained responses and exact request prompt views
-to identify the pre-candidate rejection, not an automatic model rerun or
+gate is contract diagnosis and correction, not an automatic model rerun or
 acceptance of the 150-query experiment. See
 `docs/report/grailqa_preflight_3795067_validation.md`.
 
 The read-only rejection replay CLI is implemented and tested offline. It
 reconstructs only the saved prompt and provider envelope, checks their hash
 identities, and reports the replayed normalization/grounding rejection without
-opening gold, loading a catalog, or making an external call. The real CWRU
-replay result is still pending; no specific rejection cause or repaired live
-outcome is claimed. Eleven replay tests and the related shell/endpoint/audit
-tests pass together (31 tests).
+opening gold, loading a catalog, or making an external call. The operator has
+returned its CWRU result and both raw ledgers; local hashes exactly match the
+101-check audit. Local reconstruction reproduces 16 incomplete top-level
+anchor rejections, one invalid `n2` component reference, and one provider
+failure. The 17 schema-valid envelopes contain 47 candidates. All 16 anchor
+failures omit candidate-optional hop slots, but top-level anchors are mandatory
+under the existing grounder. A separate inventory finds invalid structural
+references in 26 candidates across 10 queries, often hidden by the earlier
+anchor rejection. These are overlapping diagnostics, not a new outcome
+taxonomy or recovered valid candidates.
+
+For the provider-failed query, both raw bodies omit selector/restrictor defaults
+as the frozen prompt permits. They pass existing normalization but are rejected
+by the provider's earlier legacy parser. Explicit parser injection now aligns
+the normalized preflight/paper entrypoints with their existing downstream
+parser while preserving the legacy default for all other consumers. Both raw
+bodies still fail the unchanged grounder on an out-of-set type anchor, so this
+engineering fix establishes no live improvement. The frozen prompt/schema,
+model, query population, grounding rules, and bounded repair policy are not
+changed. No additional artifacts or remote commands are needed for this
+diagnosis; a new prompt/grounding-repair contract must be versioned and reviewed
+separately before any model run.
+
+Future preflight failure rows now also preserve `original_inference_failure`
+when the inference state contains one. This additive producer diagnostic
+retains the original category and message even when the frozen first-failure
+classifier prioritizes reachability or zero candidate rows. Top-level failure
+categories, row populations, candidates, metrics, prompts, and model calls are
+unchanged. The field does not retrofit the already audited run, and the
+existing auditor does not independently reconstruct its causal content.
 
 The post-run boundary is now complete in code. A CPU-only finalizer performs a
 producer-independent run audit, frozen query-level analysis, independent full
@@ -2925,3 +2950,20 @@ builder, single-use CWRU pipeline, dual independent reconstruction, and final
 paper-result admission fail-closed tests. Eleven of those tests execute the
 shell handoffs without model or backend calls; eleven more cover read-only
 rejection replay. Both offline boundary examples also pass.
+
+The normalization correction changes the paper runner's implementation hash.
+The existing v1 draft correctly fails its pinned implementation check; neither
+that draft nor its readiness artifact is overwritten. A separate unapproved
+draft v2 binds the corrected runner under a new protocol identity, retaining
+all scientific fields, source artifacts, model/prompt/schema, and five
+unselected choices. Current CLI/shell defaults refer to v2. All authorization
+gates remain false, and an old author receipt cannot approve the new identity.
+The historical 1,275-test acceptance above predates this revision.
+
+Current parser/diagnostic revision acceptance (2026-09-08): **1,301 passed,
+36 skipped** in the full offline suite (503.96 seconds), including 26 new
+diagnostic/parser/wiring/freeze-boundary cases. Both offline boundary examples
+pass. The uploaded ledgers retain their audited hashes, and independent code
+review found no weakened grounding or semantic guards. This is engineering
+acceptance only: no new model/backend calls, no recovered live candidate claim,
+and no grant for the 150-query run.

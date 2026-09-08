@@ -29,7 +29,7 @@ AUTHOR_SELECTION_SCHEMA_VERSION = (
     "m13e4-grailqa-semantic-paper-author-selection-v1"
 )
 DEFAULT_PROTOCOL_PATH = Path(
-    "experiments/configs/grailqa_semantic_paper_protocol_draft_v1.json"
+    "experiments/configs/grailqa_semantic_paper_protocol_draft_v2.json"
 )
 
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")

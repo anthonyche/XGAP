@@ -3659,3 +3659,51 @@ rejection without changing the source artifacts. Any repaired diagnostic must
 remain separate from the frozen audit, and implementation fixes must not be
 presented as new live results. No scientific choice is selected from these
 outcomes, and no fresh model invocation is implicit in diagnosis.
+
+Future preflight failure rows may include an optional
+`original_inference_failure` copied from the inference state before reporting
+classification. This preserves the existing original schema, question ID,
+category, and message; it does not add failure rows or change the existing
+top-level classification. Metrics and interpretation decisions must remain
+identical when the extra field is stripped. It is retained producer diagnostic
+data, not a new independently reconstructed causal claim. Existing immutable
+run files are never rewritten to add it, and no inference is rerun merely to
+obtain the additional field.
+
+## D184 Align normalized GrailQA provider parsing without weakening grounding
+
+Hash-matched raw envelopes from preflight `3795067` demonstrate a concrete
+implementation mismatch: the frozen prompt/schema allow omitted selector and
+restrictor defaults, but the provider invokes the legacy parser before the
+normalized GrailQA runner can supply those existing defaults. The failed
+query's generation and repair bodies both omit the fields, are identical, and
+both pass the existing normalized parser. They still fail grounding on an
+out-of-set type anchor; this correction must not be presented as a recovered
+valid interpretation or new live result.
+
+Expose an explicit response parser at the existing provider/factory/wrapper
+boundary. Its default stays the legacy parser; only the GrailQA entrypoints
+that already normalize downstream select that same normalized parser during
+provider validation. Keep raw responses unchanged, the validator hook intact,
+and the existing generation/repair bound. Do not broaden exception handling,
+silently fall back between parsers, accept malformed semantics, or alter the
+frozen model/prompt/schema files.
+
+The other recorded failures remain valid rejections under the current contract:
+16 responses omit top-level anchors for candidate-optional hops, and structural
+component references are invalid in 26 of the 47 retained candidates. These
+overlapping diagnostics do not authorize inferred anchors or variable-to-path
+aliases. Making the distinction between top-level anchor completeness and
+per-candidate optional realizations explicit, or changing which failures enter
+model repair, requires a separately versioned, reviewed interface contract.
+The original 18-query negative result and all scientific gates remain intact.
+
+The corrected runner must not bypass the existing implementation hash gate.
+Preserve the v1 paper draft and its readiness artifact byte-for-byte; create
+a separately numbered, still-unapproved draft v2 with a new protocol ID, the
+corrected runner hash, and regenerated freeze/readiness hashes. All scientific,
+source, model, prompt/schema, and unselected author fields remain identical.
+Current defaults may select that new implementation-bound draft, but old
+selection/review/request/authority receipts do not migrate automatically.
+This mechanical implementation rebind is distinct from a future prompt or
+grounding-policy revision and never authorizes a model run.

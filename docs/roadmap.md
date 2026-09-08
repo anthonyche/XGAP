@@ -1683,11 +1683,21 @@ is job `3795089`. Both completed, and the operator returned a successful
 completed with actual producer `4994120`. Independent audit `3795103` passed
 101 integrity checks, but records zero candidate-bearing queries out of 18
 (17 schema-valid provider envelopes, one provider failure). The five jointly
-prompt-reachable queries also yielded no validated candidates. The next gate
-is read-only rejection diagnosis from existing request/response artifacts,
-not the 150-query model run or outcome-driven scientific parameter selection.
-The compact read-only replay CLI is now implemented with 11 offline tests;
-its output on the retained CWRU envelopes remains the next external input.
+prompt-reachable queries also yielded no validated candidates. The returned
+read-only CWRU replay and hash-matched raw ledgers now reproduce all 18 first
+rejections locally: 16 omit mandatory top-level anchors for candidate-optional
+hop slots, one uses a variable name instead of a structural component path,
+and one encounters the provider's premature legacy-parser requirement for
+selector defaults. The latter is corrected through explicit injection of the
+already-existing normalized parser at both normalized GrailQA entrypoints;
+legacy consumers retain their default. The same real response remains invalid
+under the unchanged anchor validator, so this is not an accuracy recovery.
+No new artifact upload is required. The next gate is a separately reviewed
+interface-contract clarification, not the 150-query model run or
+outcome-driven scientific parameter selection.
+For future preflights, additive original-error retention closes the identified
+logging gap without changing the frozen failure taxonomy or any measured
+outcome. It is not a repair of semantic generation and does not authorize a run.
 
 The catalog wrapper now enforces frozen runtime-artifact verification before
 starting its 32 GB scan. A CPU-only preparation job can download/rebuild and
@@ -1710,7 +1720,21 @@ The production shell pipeline now has executable fake-command integration
 tests, not only syntax/static checks. It propagates the chosen protocol and
 paths, uses core Python before model activation, preserves accepted GPU job IDs
 on partial submission, and rejects finalization of an unrelated source run.
+
+The parser correction is separately bound by unapproved protocol draft v2;
+the v1 draft/readiness remain unchanged. Only the protocol identity, runner
+implementation hash, and derived hashes change. Scientific choices, source
+artifacts, and model/prompt/schema do not. No approval or authority is carried
+forward from an older identity. A future prompt clarification remains a
+different review gate, not something this implementation rebind authorizes.
 No new model/backend measurement is performed by these tests.
+
+The parser/diagnostic revision passes the full offline suite: **1,301 passed,
+36 skipped** (503.96 seconds), plus both offline boundary examples. All 26 new
+cases pass, including exact v1 preservation and rejection of v1-bound approval
+under v2. The next live gate remains a separately versioned and reviewed output
+contract followed by an explicitly scoped small validation run; the negative
+18-query result is not replaced by these offline tests.
 
 ## M14 KGQA Evaluation
 

@@ -14,7 +14,7 @@ from typing import Any, Callable, Mapping, Protocol, Sequence
 
 from xgap.experiments.hashing import content_hash
 from xgap.llm.parser import PlannerSchemaError, parse_planner_response
-from xgap.llm.schemas import PlannerRequest
+from xgap.llm.schemas import PlannerRequest, PlannerResponse
 
 
 class LiveFailureCategory(str, Enum):
@@ -280,6 +280,9 @@ class OpenAICompatibleStructuredCandidateProvider:
         default_factory=UrllibOpenAICompatibleTransport
     )
     response_validator: Callable[[Mapping[str, Any], PlannerRequest], None] | None = None
+    response_parser: Callable[
+        [Mapping[str, Any], PlannerRequest], PlannerResponse
+    ] = parse_planner_response
     last_invocation: LiveInvocationArtifact | None = field(default=None, init=False)
 
     @property
@@ -411,7 +414,7 @@ class OpenAICompatibleStructuredCandidateProvider:
                 _validate_candidate_array_bounds(
                     structured, self.config.structured_schema
                 )
-                parse_planner_response(structured, request)
+                self.response_parser(structured, request)
                 _validate_grounded_shape(structured)
                 if self.response_validator is not None:
                     self.response_validator(structured, request)

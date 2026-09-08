@@ -19,7 +19,7 @@ from xgap.experiments.hashing import content_hash
 ROOT = Path(__file__).resolve().parents[1]
 READINESS_ARTIFACT = ROOT / (
     "experiments/artifacts/"
-    "grailqa_semantic_paper_protocol_readiness_draft_v1.json"
+    "grailqa_semantic_paper_protocol_readiness_draft_v2.json"
 )
 
 

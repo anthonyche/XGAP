@@ -12,6 +12,14 @@ interpretations over the frozen query-local Freebase catalog. It emits no
 native query, executes no backend, performs no automatic retry, and opens gold
 only after all inference states are durably sealed.
 
+Implementation-binding update: the current unapproved draft is
+`grailqa_semantic_paper_protocol_draft_v2.json`. It preserves the v1 scientific
+fields, source artifacts, model/prompt/schema, and all unselected author choices,
+but binds the corrected runner under a new protocol ID and content hash. The
+v1 draft and readiness files remain unchanged historical records. A receipt
+for v1 is not authority for v2. This is **not** a revised prompt or a grant to
+execute either version.
+
 ## 1. Inspect And Independently Audit Both Live Gates
 
 Check the catalog build, catalog audit, and preflight without changing Git:
@@ -56,8 +64,8 @@ preflight auditor is job `3795103` with output
 `runs/audits/grailqa-semantic-preflight-v2-3795067-audit-b421a42.json`;
 do not submit a duplicate. It passed 101 integrity checks but reported zero
 validated candidates on all 18 queries. **Do not advance this runbook to the
-150-query execution based on that audit pass.** First diagnose retained
-request/response artifacts without model calls or source mutation and present
+150-query execution based on that audit pass.** Retained request/response
+diagnosis is now complete without model calls or source mutation; present
 the exact negative result for author review. The audit does not imply an
 effectiveness result, reviewed preflight, scientific choice, or execution grant.
 
@@ -89,6 +97,28 @@ For this exact audit, the reported input hashes must match:
 A source-identity error exits with code 2. This replay does not replace the
 frozen outcome taxonomy or create a repaired live result.
 
+The operator has completed this replay; do not repeat the server command merely
+to supply the same diagnosis. Both uploaded ledgers match the hashes above.
+The 17 schema-valid envelopes have 47 candidates; 16 responses miss mandatory
+top-level anchors and one fails on `component_ref=n2`. The one provider-failed
+response omits allowed selector/restrictor defaults. Explicit normalized-parser
+wiring repairs that implementation mismatch, but its raw response still fails
+the unchanged allowed-anchor check. Other candidate component references are
+also invalid. This does not establish recovery or authorize 150 queries.
+See `grailqa_preflight_3795067_validation.md` for the source-bound diagnosis.
+
+No frozen prompt/schema is overwritten. A future clarification of top-level
+anchor completeness, candidate-optional slots, and structural component paths
+must have a distinct contract identity, offline tests, author review, and a
+separate exact execution decision. Never silently fill anchors, map arbitrary
+variable names to components, or import gold into inference.
+
+Later preflight producers retain `original_inference_failure` on existing
+failure rows where an original inference error exists. That additive field is
+producer diagnostic data, not a replacement for the frozen top-level category
+or an independent causal finding. Do not rerun preflight or rewrite old files
+solely to populate it; use retained-envelope replay for the existing run.
+
 ## 2. Record The Five Author Choices
 
 Create this record only after the author has explicitly chosen every value.
@@ -97,7 +127,7 @@ The command has no defaults for the choices:
 ```bash
 PYTHONPATH="$PWD/src" "$XGAP_PYTHON" \
   -m xgap.experiments.grailqa_semantic_paper_admission select \
-  --protocol experiments/configs/grailqa_semantic_paper_protocol_draft_v1.json \
+  --protocol experiments/configs/grailqa_semantic_paper_protocol_draft_v2.json \
   --repo-root "$PWD" \
   --authority-source-id '<author-owned-id>' \
   --primary-reporting-population '<explicit-value>' \
@@ -130,7 +160,7 @@ Then build the non-authorizing preexecution admission:
 ```bash
 PYTHONPATH="$PWD/src" "$XGAP_PYTHON" \
   -m xgap.experiments.grailqa_semantic_paper_admission admit \
-  --protocol experiments/configs/grailqa_semantic_paper_protocol_draft_v1.json \
+  --protocol experiments/configs/grailqa_semantic_paper_protocol_draft_v2.json \
   --author-selection '<author-selection.json>' \
   --repo-root "$PWD" \
   --catalog-root "$HOME/xgap-data/freebase/grailqa-local-catalog-v1/pilot150" \
@@ -149,7 +179,7 @@ non-authorizing:
 ```bash
 PYTHONPATH="$PWD/src" "$XGAP_PYTHON" \
   -m xgap.experiments.grailqa_semantic_paper_run request \
-  --protocol experiments/configs/grailqa_semantic_paper_protocol_draft_v1.json \
+  --protocol experiments/configs/grailqa_semantic_paper_protocol_draft_v2.json \
   --author-selection '<author-selection.json>' \
   --repo-root "$PWD" \
   --catalog-root "$HOME/xgap-data/freebase/grailqa-local-catalog-v1/pilot150" \
