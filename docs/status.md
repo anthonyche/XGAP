@@ -2703,11 +2703,29 @@ selection is cost-only. The delayed oracle gate first requires all 22 accepted
 blocks and all 1,888 outcomes, then opens the sealed oracle once; any mismatch
 invalidates the whole campaign.
 
-This is still local pre-campaign readiness. A deterministic staged coordinator
-and a final independent campaign auditor remain required before author
-execution authority may be requested. No confirmatory measurements have been
-submitted and `paper_result` remains false. Full repository regression passes
-1,176 tests with 36 intentional environment or external-artifact skips. The
-content-addressed implementation inventory and external correctness receipt are
-recorded in
+The deterministic staged coordinator and final independent campaign auditor
+are now implemented. The coordinator initializes an immutable workspace,
+submits seven sequential training blocks plus one profile block, seals
+selection before seven serving and seven shadow blocks, and opens the oracle
+only after both post-selection arrays finish. The independent auditor then
+reconstructs all inputs, contexts, 22 block audits, phase seals, delayed oracle,
+campaign result, and Slurm dependency receipt without mutating the run tree.
+Only that final audit may set `paper_result=true`.
+
+The normal dependency graph is fail-closed: a failed block stops all dependent
+jobs. There is no automatic retry. A separately invoked recovery command may
+mint attempt 2 only after the block auditor proves that attempt 1 was an
+infrastructure failure with zero measurements; method timeout, partial output,
+and backend or plan failure remain ineligible. Recovery and downstream resume
+remain explicit operator actions rather than scheduler retries.
+
+This is still local pre-submission readiness. No confirmatory measurements have
+been submitted, no execution authority exists, and `paper_result` remains
+false. Full repository regression passes 1,181 tests with 36 intentional
+environment or external-artifact skips. The final content-addressed local
+readiness record is
+`experiments/artifacts/m15_finbench_confirmatory_campaign_readiness_v1.json`;
+the earlier pre-oracle inventory remains in
 `experiments/artifacts/m15_finbench_confirmatory_preoracle_readiness_v1.json`.
+The exact non-authorizing request must bind the eventual clean pushed commit
+before it is shown to the author for a separate execution decision.

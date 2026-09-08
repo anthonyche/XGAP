@@ -1628,13 +1628,28 @@ Current status: TODO
   until all 22 accepted blocks and all 1,888 outcomes reconstruct exactly.
   Once opened, it remains authoritative and any answer mismatch invalidates the
   complete campaign.
-- **Next implementation gate:** build the deterministic staged campaign
-  coordinator and final independent campaign auditor. They must assemble seven
-  training blocks, one profile block, seven paired-serving blocks, seven shadow
-  blocks, and the delayed oracle without a manual 22-command loop.
-  Pre-oracle local readiness is frozen in
-  `experiments/artifacts/m15_finbench_confirmatory_preoracle_readiness_v1.json`.
-- **Authorization gate:** create the final execution request only after the
-  runner, block auditor, phase assembler, delayed oracle gate, coordinator, and
-  campaign auditor share one clean commit. A separate explicit author decision
-  is then required before any confirmatory block is submitted.
+- **Staged coordinator locally ready:** one submission helper creates the
+  immutable campaign workspace and a fail-closed Slurm dependency graph for
+  seven training blocks, one profile block, pre-oracle selection, seven
+  paired-serving blocks, seven shadow blocks, delayed oracle opening, and one
+  independent final audit. It records job identities and dependencies in the
+  campaign receipt and never retries automatically.
+- **Final campaign audit locally ready:** the read-only auditor independently
+  reconstructs every input, context, block audit, accepted block, phase seal,
+  selection checkpoint, oracle result, campaign result, and submission receipt.
+  It is the only component permitted to admit `paper_result=true`.
+- **Failure recovery boundary:** the normal graph stops on failure. A manual
+  recovery path may prepare attempt 2 only for an independently audited
+  zero-measurement infrastructure failure. Query timeout, backend or plan
+  failure, and partial measurements cannot be replaced or imputed.
+- **Local readiness accepted:** full repository regression passes 1,181 tests
+  with 36 intentional skips. The coordinator/auditor inventory and scientific
+  boundary are frozen in
+  `experiments/artifacts/m15_finbench_confirmatory_campaign_readiness_v1.json`;
+  the earlier pre-oracle record remains unchanged.
+- **Current gate:** push one clean runner/auditor commit and bind that exact
+  commit into the non-authorizing execution request.
+- **Authorization gate:** after the clean commit, create and inspect the final
+  non-authorizing execution request. A separate explicit author decision is
+  required before the staged submission helper may be invoked; choosing Option
+  A and accepting the freeze did not grant execution authority.

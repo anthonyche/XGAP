@@ -913,8 +913,16 @@ selection seals, all result sets, oracle comparisons, and analysis. Full local
 acceptance passes 1,125 tests with 36 intentional skips. The repaired SF0.1
 correctness job `3793698` and its 368-check independent audit have passed.
 Exactly one development campaign was then submitted as job `3793702` at clean
-commit `c00c389`; its result and audit are pending. It remains
-non-confirmatory with `paper_result=false`.
+commit `c00c389`; its repaired independent audit passed 92/92 checks without
+mutating the run tree. It remains non-confirmatory with `paper_result=false`.
+
+For the answer-independent Option-A population, the campaign coordinator and
+final reconstruction auditor are now implemented as a staged, immutable
+dependency graph. The producer cannot promote its own result: it always writes
+`paper_result=false`, and only the independent final audit can admit a
+successful, exact campaign. This closes the local execution-plumbing gap but
+does not grant CWRU execution authority; the exact request, explicit author
+authority, clean runner commit, and full regression remain mandatory.
 
 A distinct paper-protocol readiness compiler now prevents development evidence
 from being silently promoted. It fixes the primary physical contrast and

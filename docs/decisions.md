@@ -3357,5 +3357,30 @@ a 65-second grace. A replacement is possible only for one independently
 audited, zero-measurement infrastructure failure and must explicitly reference
 the failed attempt. Backend/plan failures, partial blocks, and query timeouts
 cannot enter that path. These rules add no execution authority and keep
-`paper_result=false`; the staged coordinator and final campaign auditor must
-still pass before the author is asked to authorize the exact campaign.
+`paper_result=false`. The staged coordinator and final campaign auditor now
+pass local acceptance; their exact clean commit must still be bound into the
+request before the author is asked to authorize the campaign.
+
+## D171 Make the confirmatory campaign a one-way staged dependency graph
+
+The 22-block Option-A campaign is coordinated through immutable files and
+Slurm dependencies, not a long-running controller that can silently mutate its
+plan. Seven sequential training blocks and one profile block must complete and
+pass independent per-block reconstruction before selection is assembled.
+Seven serving and seven shadow blocks are then compiled from the sealed
+selection state. The delayed oracle job runs only after both arrays complete,
+and the final audit runs after the oracle job has terminated.
+
+Every normal dependency is fail-closed and automatic retries are zero. A
+failed block therefore pauses the campaign. The only replacement path is an
+explicit operator action that first reruns the independent block auditor and
+accepts attempt 2 only when attempt 1 made zero measurements and was classified
+as infrastructure failure. Method timeout, backend or plan failure, partial
+measurement, and any second failure cannot be replaced.
+
+The campaign producer always writes `paper_result=false`. A separate read-only
+auditor reconstructs the complete campaign tree and the recorded Slurm
+dependency contract; only its successful admission of a successful campaign
+may emit `paper_result=true`. This implementation does not itself authorize a
+remote run. The exact execution request and a later explicit author authority
+record remain mandatory inputs to initialization.

@@ -945,8 +945,28 @@ measurement are never replacement eligible. Selection costs remain
 `exact_answer=null`, and the answer oracle cannot be loaded until all 22 blocks
 and 1,888 scheduled outcomes are present.
 
-No CWRU confirmatory measurement command should be run yet. The remaining gate
-is a deterministic staged coordinator plus a final independent campaign audit,
-followed by one clean full-regression commit. Population Option A and the
-successful freeze are not execution authority; after those gates pass, the
-exact request will be shown to the author for a separate explicit decision.
+The staged coordinator and final independent campaign auditor are implemented
+but no CWRU confirmatory measurement command should be run yet. One helper
+initializes a hash-bound campaign workspace and submits a one-way dependency
+graph: training and profile, selection assembly, serving and shadow, delayed
+oracle, then independent audit. Array concurrency is one within each
+seven-block phase, all normal dependencies are `afterok`, and automatic retries
+are zero. The final audit is scheduled after the finalize job terminates so an
+invalidated oracle can still be independently reconstructed, but it cannot
+admit that campaign.
+
+If a block fails, the dependency graph pauses. Recovery is deliberately not an
+automatic continuation: the operator must run the independent block auditor,
+invoke the explicit replacement preparation command, and resubmit only the
+eligible attempt and its downstream stages. Attempt 2 exists solely for one
+audited infrastructure failure with zero measurements. A method timeout,
+backend or plan failure, partial measurement, or second failure ends the
+campaign under the frozen protocol.
+
+Local full regression now passes 1,181 tests with 36 intentional skips, and the
+content-addressed readiness record is
+`experiments/artifacts/m15_finbench_confirmatory_campaign_readiness_v1.json`.
+Population Option A and the successful freeze are not execution authority.
+The exact clean pushed commit must be bound into a new non-authorizing request
+and inspected first; only a separate explicit author decision may create the
+authority record and permit the submission helper to run.
