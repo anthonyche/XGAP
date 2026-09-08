@@ -1671,15 +1671,21 @@ and the prompt gate. It makes no external call, does not rescan the 32 GB source
 does not modify the catalog, and cannot authorize model execution. CWRU jobs
 `3795066` (pilot150 catalog) and `3795067` (final 18-query H100 preflight) were
 submitted from commit `52b1b256b577313e42ccf2d8d24d02d537781e22`; their
-outcomes are not yet admitted here. The catalog job stopped before its Freebase
+outcomes were not admitted at submission. The catalog job stopped before its Freebase
 scan because the Git-ignored frozen GrailQA question body was not installed;
-it left no pilot150 catalog. The preflight job remains separately queued.
+it left no pilot150 catalog. The preflight job remained separately queued during
+the catalog repair.
 
 The recovered bodies now pass frozen-spec verification on CWRU. The repaired
 pilot150 build is job `3795088`, and its dependent producer-independent audit
-is job `3795089`; the preflight remains job `3795067`. Its authoritative
-producer commit will be read from the immutable environment record after the
-queued job executes, rather than inferred from submission time.
+is job `3795089`. Both completed, and the operator returned a successful
+73-check, non-mutating catalog audit for 150 questions. Preflight `3795067`
+completed with actual producer `4994120`. Independent audit `3795103` passed
+101 integrity checks, but records zero candidate-bearing queries out of 18
+(17 schema-valid provider envelopes, one provider failure). The five jointly
+prompt-reachable queries also yielded no validated candidates. The next gate
+is read-only rejection diagnosis from existing request/response artifacts,
+not the 150-query model run or outcome-driven scientific parameter selection.
 
 The catalog wrapper now enforces frozen runtime-artifact verification before
 starting its 32 GB scan. A CPU-only preparation job can download/rebuild and
@@ -1687,16 +1693,21 @@ verify the ignored GrailQA, ontology, and query-independent catalog bodies and
 write a runtime receipt. Alternatively, the exact-hash-matching recovered
 local directories may be transferred into the checkout and verified there.
 This closes a deployment/test-skip gap but does not authorize either live gate.
-The complete admission-aware regression passes 1,253 tests with 36 intentional
+The complete shell-handoff regression passes 1,264 tests with 36 intentional
 environment or external-artifact skips, including the final result-admission
-and single-use CWRU dependency pipeline.
+and eleven executable single-use CWRU dependency-pipeline checks.
 
-Five scientific choices remain explicitly unselected. The submitted final
-18-query CWRU rerun still requires independent audit and author review, and the
-submitted pilot150 query-local catalog still requires independent audit. A
-separate exact-run execution authority remains mandatory. This
+Five scientific choices remain explicitly unselected. Both independent audits
+have been returned, but preflight interpretation and author review remain open.
+A separate exact-run execution authority remains mandatory. This
 milestone does not change ranking, prompts, model parameters, catalog
 construction, or the admitted FinBench campaign.
+
+The production shell pipeline now has executable fake-command integration
+tests, not only syntax/static checks. It propagates the chosen protocol and
+paths, uses core Python before model activation, preserves accepted GPU job IDs
+on partial submission, and rejects finalization of an unrelated source run.
+No new model/backend measurement is performed by these tests.
 
 ## M14 KGQA Evaluation
 

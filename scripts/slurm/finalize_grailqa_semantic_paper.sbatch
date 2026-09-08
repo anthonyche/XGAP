@@ -14,6 +14,7 @@ PYTHON_BIN="${XGAP_PYTHON:-$HOME/venvs/xgap-core/bin/python}"
 PAPER_JOB_ID="${XGAP_GRAILQA_SEMANTIC_PAPER_JOB_ID:-}"
 RUNNER_COMMIT="${XGAP_GRAILQA_SEMANTIC_RUNNER_COMMIT:-}"
 REQUEST="${XGAP_GRAILQA_SEMANTIC_EXECUTION_REQUEST:-}"
+AUTHORITY="${XGAP_GRAILQA_SEMANTIC_EXECUTION_AUTHORITY:-}"
 AUTHOR_SELECTION="${XGAP_GRAILQA_SEMANTIC_AUTHOR_SELECTION:-}"
 PROTOCOL="${XGAP_GRAILQA_SEMANTIC_PROTOCOL:-$REPO_ROOT/experiments/configs/grailqa_semantic_paper_protocol_draft_v1.json}"
 
@@ -29,7 +30,7 @@ if [[ ! -x "$PYTHON_BIN" ]]; then
   echo "Core Python is unavailable: $PYTHON_BIN" >&2
   exit 2
 fi
-for path in "$REQUEST" "$AUTHOR_SELECTION" "$PROTOCOL"; do
+for path in "$REQUEST" "$AUTHORITY" "$AUTHOR_SELECTION" "$PROTOCOL"; do
   if [[ -L "$path" || ! -f "$path" ]]; then
     echo "Required control artifact is missing or unsafe: $path" >&2
     exit 2
@@ -44,7 +45,7 @@ if [[ -n "$(git -C "$REPO_ROOT" status --porcelain --untracked-files=all)" ]]; t
   exit 2
 fi
 
-RUN_ID="$($PYTHON_BIN - "$REQUEST" <<'PY'
+RUN_ID="$("$PYTHON_BIN" - "$REQUEST" <<'PY'
 import json
 import sys
 
@@ -56,7 +57,8 @@ if [[ ! "$RUN_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._:-]{0,191}$ ]]; then
   exit 2
 fi
 
-SOURCE_RUN_ROOT="${XGAP_GRAILQA_SEMANTIC_SOURCE_RUN_ROOT:-$REPO_ROOT/runs/cwru-grailqa-semantic-paper-$PAPER_JOB_ID/results/$RUN_ID}"
+OUTER_RUN_ROOT="${XGAP_CWRU_RUN_ROOT:-$REPO_ROOT/runs/cwru-grailqa-semantic-paper-$PAPER_JOB_ID}"
+SOURCE_RUN_ROOT="${XGAP_GRAILQA_SEMANTIC_SOURCE_RUN_ROOT:-$OUTER_RUN_ROOT/results/$RUN_ID}"
 FINAL_ROOT="${XGAP_GRAILQA_SEMANTIC_FINAL_ROOT:-$REPO_ROOT/runs/grailqa-semantic-paper-finalizations/$RUN_ID-$PAPER_JOB_ID}"
 RUN_AUDIT="$FINAL_ROOT/run_audit.json"
 ANALYSIS="$FINAL_ROOT/analysis.json"
@@ -72,6 +74,23 @@ if [[ -e "$FINAL_ROOT" || -L "$FINAL_ROOT" ]]; then
   echo "Semantic finalization root already exists: $FINAL_ROOT" >&2
   exit 2
 fi
+
+# A source-root override must still identify the submitted request and authority.
+"$PYTHON_BIN" - "$REQUEST" "$AUTHORITY" "$SOURCE_RUN_ROOT/run_manifest.json" <<'PY'
+import json
+import sys
+
+request, authority, manifest = [json.load(open(path)) for path in sys.argv[1:]]
+for field in (
+    "run_id", "runner_commit", "protocol_sha256", "author_selection_sha256",
+    "preexecution_admission_sha256", "execution_request_sha256",
+):
+    if manifest[field] != request[field]:
+        raise ValueError(f"Source run differs from submitted request: {field}")
+if manifest["execution_authority_sha256"] != authority["execution_authority_sha256"]:
+    raise ValueError("Source run differs from submitted execution authority")
+PY
+
 mkdir -p "$FINAL_ROOT"
 
 cd "$REPO_ROOT"
@@ -82,7 +101,7 @@ PYTHONPATH="$REPO_ROOT/src" "$PYTHON_BIN" \
   --expected-commit "$RUNNER_COMMIT" \
   --output "$RUN_AUDIT"
 
-SOURCE_RUN_SHA256="$($PYTHON_BIN - "$SOURCE_RUN_ROOT/run_manifest.json" <<'PY'
+SOURCE_RUN_SHA256="$("$PYTHON_BIN" - "$SOURCE_RUN_ROOT/run_manifest.json" <<'PY'
 import json
 import sys
 

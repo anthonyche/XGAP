@@ -1,16 +1,32 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="${XGAP_REPO_ROOT:-$(git rev-parse --show-toplevel)}"
-PYTHON_BIN="${XGAP_PYTHON:-$HOME/venvs/xgap-core/bin/python}"
-AUTHOR_SELECTION="${XGAP_GRAILQA_SEMANTIC_AUTHOR_SELECTION:-}"
-ADMISSION="${XGAP_GRAILQA_SEMANTIC_PREEXECUTION_ADMISSION:-}"
-REQUEST="${XGAP_GRAILQA_SEMANTIC_EXECUTION_REQUEST:-}"
-AUTHORITY="${XGAP_GRAILQA_SEMANTIC_EXECUTION_AUTHORITY:-}"
-PROTOCOL="${XGAP_GRAILQA_SEMANTIC_PROTOCOL:-$REPO_ROOT/experiments/configs/grailqa_semantic_paper_protocol_draft_v1.json}"
-CATALOG_ROOT="${XGAP_GRAILQA_PILOT150_CATALOG:-$HOME/xgap-data/freebase/grailqa-local-catalog-v1/pilot150}"
-REACHABILITY_SUMMARY="${XGAP_GRAILQA_PILOT150_REACHABILITY_SUMMARY:-$CATALOG_ROOT/audit_summary.json}"
-REACHABILITY_ROWS="${XGAP_GRAILQA_PILOT150_REACHABILITY_ROWS:-$CATALOG_ROOT/reachability.jsonl}"
+# Preserve submission-time path meaning when later wrappers change directory.
+# Do not resolve symlinks: the regular-file/directory checks below must see them.
+absolute_path() {
+  if [[ -z "$1" || "$1" = /* ]]; then
+    printf '%s\n' "$1"
+  else
+    printf '%s/%s\n' "$PWD" "$1"
+  fi
+}
+
+REPO_ROOT="$(absolute_path "${XGAP_REPO_ROOT:-$(git rev-parse --show-toplevel)}")"
+PYTHON_BIN="$(absolute_path "${XGAP_PYTHON:-$HOME/venvs/xgap-core/bin/python}")"
+AUTHOR_SELECTION="$(absolute_path "${XGAP_GRAILQA_SEMANTIC_AUTHOR_SELECTION:-}")"
+ADMISSION="$(absolute_path "${XGAP_GRAILQA_SEMANTIC_PREEXECUTION_ADMISSION:-}")"
+REQUEST="$(absolute_path "${XGAP_GRAILQA_SEMANTIC_EXECUTION_REQUEST:-}")"
+AUTHORITY="$(absolute_path "${XGAP_GRAILQA_SEMANTIC_EXECUTION_AUTHORITY:-}")"
+PROTOCOL="$(absolute_path "${XGAP_GRAILQA_SEMANTIC_PROTOCOL:-$REPO_ROOT/experiments/configs/grailqa_semantic_paper_protocol_draft_v1.json}")"
+CATALOG_ROOT="$(absolute_path "${XGAP_GRAILQA_PILOT150_CATALOG:-$HOME/xgap-data/freebase/grailqa-local-catalog-v1/pilot150}")"
+REACHABILITY_SUMMARY="$(absolute_path "${XGAP_GRAILQA_PILOT150_REACHABILITY_SUMMARY:-$CATALOG_ROOT/audit_summary.json}")"
+REACHABILITY_ROWS="$(absolute_path "${XGAP_GRAILQA_PILOT150_REACHABILITY_ROWS:-$CATALOG_ROOT/reachability.jsonl}")"
+
+for path_variable in XGAP_CWRU_RUN_ROOT XGAP_GRAILQA_SEMANTIC_SOURCE_RUN_ROOT XGAP_GRAILQA_SEMANTIC_FINAL_ROOT; do
+  if [[ -n "${!path_variable:-}" ]]; then
+    export "$path_variable=$(absolute_path "${!path_variable}")"
+  fi
+done
 
 if [[ ! -x "$PYTHON_BIN" ]]; then
   echo "Core Python is unavailable: $PYTHON_BIN" >&2
@@ -115,6 +131,9 @@ export XGAP_GRAILQA_SEMANTIC_PREEXECUTION_ADMISSION="$ADMISSION"
 export XGAP_GRAILQA_SEMANTIC_EXECUTION_REQUEST="$REQUEST"
 export XGAP_GRAILQA_SEMANTIC_EXECUTION_AUTHORITY="$AUTHORITY"
 export XGAP_GRAILQA_SEMANTIC_PROTOCOL="$PROTOCOL"
+export XGAP_GRAILQA_PILOT150_CATALOG="$CATALOG_ROOT"
+export XGAP_GRAILQA_PILOT150_REACHABILITY_SUMMARY="$REACHABILITY_SUMMARY"
+export XGAP_GRAILQA_PILOT150_REACHABILITY_ROWS="$REACHABILITY_ROWS"
 export XGAP_GRAILQA_SEMANTIC_RUNNER_COMMIT="$RUNNER_COMMIT"
 
 PYTHONPATH="$REPO_ROOT/src" "$PYTHON_BIN" \
@@ -138,13 +157,22 @@ if [[ ! "$PAPER_JOB_ID" =~ ^[0-9]+$ ]]; then
   exit 2
 fi
 
-FINALIZE_JOB_ID="$({ sbatch --parsable \
+# Preserve the accepted GPU job even if the dependent submission fails.
+printf '%s\n' "$PAPER_JOB_ID" > "$SUBMISSION_LEASE/paper-job-id"
+echo "paper_job_id=$PAPER_JOB_ID"
+
+if ! FINALIZE_JOB_ID="$({ sbatch --parsable \
   --dependency="afterok:$PAPER_JOB_ID" \
   --export="ALL,XGAP_GRAILQA_SEMANTIC_PAPER_JOB_ID=$PAPER_JOB_ID" \
-  "$REPO_ROOT/scripts/slurm/finalize_grailqa_semantic_paper.sbatch"; } | tr -d '[:space:]')"
+  "$REPO_ROOT/scripts/slurm/finalize_grailqa_semantic_paper.sbatch"; } | tr -d '[:space:]')"; then
+  echo "Finalizer submission failed; paper job $PAPER_JOB_ID remains submitted." >&2
+  echo "Recorded paper job: $SUBMISSION_LEASE/paper-job-id" >&2
+  exit 2
+fi
 
 if [[ ! "$FINALIZE_JOB_ID" =~ ^[0-9]+$ ]]; then
   echo "Slurm returned an invalid finalizer job identifier." >&2
+  echo "Paper job $PAPER_JOB_ID is recorded in $SUBMISSION_LEASE/paper-job-id." >&2
   exit 2
 fi
 
@@ -180,6 +208,5 @@ os.replace(temporary, output)
 print(json.dumps(record, indent=2, sort_keys=True))
 PY
 
-echo "paper_job_id=$PAPER_JOB_ID"
 echo "finalize_job_id=$FINALIZE_JOB_ID"
 echo "submission_record=$SUBMISSION_RECORD"

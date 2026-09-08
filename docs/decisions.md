@@ -3637,3 +3637,25 @@ are created only through an explicit author-selection command requiring all
 five values; recommendations are never silently copied into authority. No
 catalog/preflight audit, author review, author selection, request, authority,
 or successful final paper artifact may be inferred from a Slurm exit code.
+
+## D183 Test executable handoffs and distinguish evidence integrity from readiness
+
+The GrailQA production pipeline must be tested across the actual submission,
+GPU wrapper, generic CWRU launcher, and CPU finalizer scripts with deterministic
+process doubles. Syntax and string assertions alone do not prove that these
+stages share interpreter, protocol, and artifact paths. Prelaunch control and
+cleanup use the configured core Python; environment capture remains inside the
+activated vLLM environment. Submission resolves relative paths against the
+submission directory without hiding symlinks. An accepted GPU job ID is saved
+before dependent submission; failures do not silently create retries. A source
+override cannot finalize an unrelated request or authority.
+
+Audit `3795103` demonstrates a separate distinction: all 101 integrity checks
+can pass while all 18 measured queries have zero validated candidates. This
+preserves a negative development result; it does not establish an operationally
+usable semantic pipeline or authorize 150-query inference. Existing provider
+envelopes and exact prompt views may be replayed offline to identify the first
+rejection without changing the source artifacts. Any repaired diagnostic must
+remain separate from the frozen audit, and implementation fixes must not be
+presented as new live results. No scientific choice is selected from these
+outcomes, and no fresh model invocation is implicit in diagnosis.

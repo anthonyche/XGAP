@@ -51,6 +51,16 @@ Inspect both audit JSON files. Each must report `success=true`, no failed
 checks, and no source-tree mutation. Do not choose paper parameters from the
 18-query outcomes.
 
+Recorded update (2026-09-08): the catalog audit passed 73 checks. The existing
+preflight auditor is job `3795103` with output
+`runs/audits/grailqa-semantic-preflight-v2-3795067-audit-b421a42.json`;
+do not submit a duplicate. It passed 101 integrity checks but reported zero
+validated candidates on all 18 queries. **Do not advance this runbook to the
+150-query execution based on that audit pass.** First diagnose retained
+request/response artifacts without model calls or source mutation and present
+the exact negative result for author review. The audit does not imply an
+effectiveness result, reviewed preflight, scientific choice, or execution grant.
+
 ## 2. Record The Five Author Choices
 
 Create this record only after the author has explicitly chosen every value.
@@ -136,7 +146,9 @@ PYTHONPATH="$PWD/src" "$XGAP_PYTHON" \
 
 ## 5. Submit Once And Let The Independent Finalizer Run
 
-Set the four exact control paths, then use the single submission helper:
+Set the four exact control paths, then use the single submission helper.
+Paths supplied to the helper are anchored to the submission directory before
+Slurm export. Keep the authority-bound checkout fixed until both jobs terminate:
 
 ```bash
 export XGAP_GRAILQA_SEMANTIC_AUTHOR_SELECTION='<author-selection.json>'
@@ -153,3 +165,11 @@ audits the source run, computes the frozen query-level statistics, reconstructs
 that analysis independently, and only then attempts final paper-result
 admission. If the H100 job fails, the finalizer does not run and no retry is
 scheduled. Only a successful final `paper_result.json` is paper evidence.
+
+If finalizer submission fails after GPU submission, the GPU job remains
+submitted. Its ID is printed immediately and preserved in
+`runs/grailqa-semantic-paper-submissions/<run-id>.submission-lease/paper-job-id`.
+Do not rerun the complete helper or remove the lease to obtain another GPU job.
+Inspect the accepted job and failed submission first. Custom protocol and outer
+run-root settings are shared with finalization, and any source-root override
+must still match the submitted request and authority exactly.

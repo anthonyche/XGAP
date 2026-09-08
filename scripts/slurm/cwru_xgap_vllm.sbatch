@@ -18,6 +18,8 @@ fi
 EXPERIMENT_SPEC=$1
 shift
 EXPERIMENT_COMMAND=("$@")
+# Prelaunch checks and failure cleanup must also work before vLLM activation.
+CONTROL_PYTHON="${XGAP_PYTHON:-python}"
 XGAP_REPO_ROOT="${XGAP_REPO_ROOT:-${SLURM_SUBMIT_DIR:-$PWD}}"
 export XGAP_REPO_ROOT
 if [[ ! -f "$XGAP_REPO_ROOT/pyproject.toml" ]]; then
@@ -51,7 +53,7 @@ cleanup() {
     fi
   fi
   cd "$XGAP_REPO_ROOT"
-  PYTHONPATH=src python -m xgap.experiments.cwru_vllm finalize-run \
+  PYTHONPATH=src "$CONTROL_PYTHON" -m xgap.experiments.cwru_vllm finalize-run \
     --root "$XGAP_CWRU_RUN_ROOT" \
     --exit-code "$exit_code" || true
   echo "CWRU run artifacts: $XGAP_CWRU_RUN_ROOT"
@@ -78,7 +80,7 @@ else
 fi
 
 echo "Checking frozen request token budget against the served context window."
-PYTHONPATH=src python -m xgap.experiments.cwru_vllm verify-token-budget \
+PYTHONPATH=src "$CONTROL_PYTHON" -m xgap.experiments.cwru_vllm verify-token-budget \
   --repo-root "$XGAP_REPO_ROOT" \
   --spec "$EXPERIMENT_SPEC" \
   --contract "$XGAP_CWRU_CONTRACT"

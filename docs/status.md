@@ -2835,11 +2835,11 @@ so the authority-bound ledger accounts for every model request.
 
 A real pilot150 query-local catalog plus its reachability evidence and the final
 18-query H100 preflight were submitted as CWRU jobs `3795066` and `3795067`
-from commit `52b1b256b577313e42ccf2d8d24d02d537781e22`. Their outcomes are
-not yet admitted. Job `3795066` failed before scanning Freebase because the
+from commit `52b1b256b577313e42ccf2d8d24d02d537781e22`. Job `3795066`
+failed before scanning Freebase because the
 Git-ignored frozen `inference_questions.jsonl` body was absent from the server
-checkout; it created no pilot150 catalog. Job `3795067` remains an independent
-queued H100 preflight and does not need to be cancelled. The catalog has a new
+checkout; it created no pilot150 catalog. Job `3795067` remained an independent
+queued H100 preflight during the catalog repair. The catalog has a new
 independent read-only auditor and CWRU
 wrapper that reconstruct the exact population, source inventory, file and
 SQLite identities, query isolation, reachability evidence, and prompt gate
@@ -2854,9 +2854,8 @@ backup containing the complete two dataset directories was independently
 checked: all five pilot hashes and the catalog identity match the frozen spec,
 so it may be transferred directly and then verified on CWRU.
 
-The five explicit author choices, successful independent audits of both live
-gates, author preflight review, and a later exact execution authority remain
-missing. The previously implicit review gate is now implemented as a separate
+The five explicit author choices, author preflight review, and a later exact
+execution authority remain missing. The previously implicit review gate is implemented as a separate
 content-addressed preexecution admission. It embeds the successful catalog and
 preflight audits plus the exact author review receipt, binds all five choices,
 and remains non-authorizing. Execution request/authority schemas, the H100
@@ -2867,13 +2866,27 @@ false. The work remains isolated from the frozen FinBench confirmatory runner
 and admitted campaign.
 
 After the recovered runtime artifacts passed frozen-spec verification on CWRU,
-the repaired pilot150 catalog build was submitted as job `3795088`; its
-producer-independent audit is dependency job `3795089`. The already-submitted
-18-query H100 preflight remains job `3795067`. Because the pending GPU job
-shares the checkout subsequently used for the repaired CPU submissions, its
-authoritative producer commit will be taken from `cwru_environment.json` after
-execution, not inferred from submission time. None of these job submissions is
-an author review or 150-query execution authority.
+the repaired pilot150 catalog build `3795088` and independent audit `3795089`
+completed. The operator returned a successful 73-check audit of 150 questions,
+with no catalog mutation and catalog hash
+`a83c368ca23a03845787ab122182a66e5e2ea8cf3cc7dd7287b47ffdd54f6a49`.
+The 18-query preflight `3795067` also completed; its actual producer commit,
+read from `cwru_environment.json`, is `49941203612fae841340c2c651bd93d0ecc8b619`,
+not the earlier submission-time commit.
+
+Independent CPU audit `3795103`, using auditor `b421a42`, passed 101 checks
+without changing the run. Audit hash
+`233cdd368580174a39337c90d7be9ee3c542cb57699f50475d3cdb0dbb38bbe6`
+admits the integrity of the returned evidence, not semantic effectiveness:
+17/18 provider envelopes were schema-valid, yet no query produced a validated
+candidate and candidate recall was zero. The five jointly prompt-reachable
+queries also had zero candidates. The remaining 13 queries have catalog,
+retrieval, or prompt-visibility limitations under the frozen diagnostic
+classification. All 18 failures remain in the denominator. The next engineering
+step is read-only replay of retained responses and exact request prompt views
+to identify the pre-candidate rejection, not an automatic model rerun or
+acceptance of the 150-query experiment. See
+`docs/report/grailqa_preflight_3795067_validation.md`.
 
 The post-run boundary is now complete in code. A CPU-only finalizer performs a
 producer-independent run audit, frozen query-level analysis, independent full
@@ -2887,9 +2900,19 @@ author-selection CLI requires all five choices and cannot manufacture the
 recommended defaults. No 150-query GrailQA run has been authorized or
 submitted.
 
+The shell handoffs now have executable offline coverage using fake scheduler
+and provider process boundaries, including the real generic CWRU wrapper.
+Configured Python works before vLLM activation and on startup-failure cleanup;
+protocol and output-root overrides stay consistent; submission-relative paths
+are anchored before job directory changes; and partial submission preserves the
+accepted GPU job ID without retry. Finalization also binds its source manifest
+to the exact submitted request and authority. These are deployment fixes only:
+the frozen prompt, model, catalog, ranking, epsilon, and outcome code are unchanged.
+
 The compact readiness record is
 `experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
-The complete repository regression passes 1,253 tests with 36 intentional
+The shell-handoff repository regression passes 1,264 tests with 36 intentional
 environment or external-artifact skips, including the explicit author-choice
 builder, single-use CWRU pipeline, dual independent reconstruction, and final
-paper-result admission fail-closed tests.
+paper-result admission fail-closed tests. Eleven of those tests execute the
+shell handoffs without model or backend calls.
