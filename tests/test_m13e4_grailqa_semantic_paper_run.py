@@ -19,6 +19,12 @@ from xgap.experiments.grailqa_semantic_paper_run import (
     validate_grailqa_semantic_execution_authority,
     validate_grailqa_semantic_execution_request,
 )
+from xgap.experiments.grailqa_semantic_paper_admission import (
+    CATALOG_AUDIT_SCHEMA_VERSION,
+    PREEXECUTION_ADMISSION_SCHEMA_VERSION,
+    PREFLIGHT_AUDIT_SCHEMA_VERSION,
+    build_grailqa_preflight_author_review,
+)
 from xgap.experiments.grailqa_semantic_paper_run_evidence import (
     AUDIT_SCHEMA_VERSION,
     audit_grailqa_semantic_paper_run,
@@ -46,13 +52,117 @@ def _decisions() -> dict[str, str]:
     }
 
 
+def _catalog_audit() -> dict[str, object]:
+    body: dict[str, object] = {
+        "schema_version": CATALOG_AUDIT_SCHEMA_VERSION,
+        "audited_at": "2026-09-08T00:00:00+00:00",
+        "catalog_root": "/catalog",
+        "expected_builder_commit": "b" * 40,
+        "catalog_hash": "5" * 64,
+        "reachability_audit_hash": "7" * 64,
+        "question_count": 150,
+        "check_count": 1,
+        "failed_check_ids": [],
+        "checks": [{"check_id": "fixture", "passed": True, "detail": None}],
+        "run_tree_mutated": False,
+        "source_verification_boundary": {
+            "source_manifest_sha256": "c" * 64,
+            "source_inventory_bound": True,
+            "freebase_bytes_rescanned_by_auditor": 0,
+        },
+        "external_call_counts": {
+            "llm_calls": 0,
+            "backend_calls": 0,
+            "ontology_service_calls": 0,
+        },
+        "claim_boundary": {
+            "independent_catalog_reconstruction": True,
+            "catalog_construction_gold_blind": True,
+            "reachability_uses_gold_for_evaluation_only": True,
+            "authorizes_model_execution": False,
+            "paper_result": False,
+        },
+        "success": True,
+        "paper_result": False,
+    }
+    return {**body, "audit_sha256": content_hash(body)}
+
+
+def _preflight_audit() -> dict[str, object]:
+    body: dict[str, object] = {
+        "schema_version": PREFLIGHT_AUDIT_SCHEMA_VERSION,
+        "created_at": "2026-09-08T00:00:00+00:00",
+        "run_root": "/preflight",
+        "expected_commit": "d" * 40,
+        "success": True,
+        "check_count": 1,
+        "failed_check_ids": [],
+        "run_tree_mutated": False,
+        "diagnostic": {
+            "provider_success_count": 18,
+            "provider_failure_count": 0,
+            "candidate_bearing_query_count": 18,
+            "matched_query_count": 10,
+            "candidate_recall_is_unconfounded_by_provider_failure": True,
+        },
+        "claim_boundary": {
+            "development_preflight_only": True,
+            "paper_result": False,
+            "full_150_run_authorized": False,
+            "backend_execution": False,
+            "jointly_reachable_subset_reported_separately": True,
+        },
+        "checks": [{"check_id": "fixture", "passed": True, "detail": None}],
+    }
+    return {**body, "audit_sha256": content_hash(body)}
+
+
+def _admission() -> dict[str, object]:
+    preflight = _preflight_audit()
+    review = build_grailqa_preflight_author_review(
+        preflight_audit=preflight,
+        authority_source_id="author:test:preflight-review-v1",
+        decision="accept_exact_preflight_without_parameter_tuning",
+    )
+    body: dict[str, object] = {
+        "schema_version": PREEXECUTION_ADMISSION_SCHEMA_VERSION,
+        "protocol_sha256": "2" * 64,
+        "author_selection_sha256": "3" * 64,
+        "selected_decisions": _decisions(),
+        "catalog_hash": "5" * 64,
+        "reachability_audit_hash": "7" * 64,
+        "catalog_audit": _catalog_audit(),
+        "preflight_audit": preflight,
+        "author_preflight_review": review,
+        "gates": {
+            "catalog_independently_audited": True,
+            "preflight_independently_audited": True,
+            "preflight_explicitly_reviewed_by_author": True,
+            "parameter_tuning_from_preflight_forbidden": True,
+            "all_five_scientific_decisions_explicit": True,
+        },
+        "external_call_counts": {
+            "llm_calls": 0,
+            "backend_calls": 0,
+            "ontology_service_calls": 0,
+        },
+        "full_150_execution_authorized": False,
+        "paper_result": False,
+    }
+    return {**body, "preexecution_admission_sha256": content_hash(body)}
+
+
 def _request() -> dict[str, object]:
+    admission = _admission()
     body: dict[str, object] = {
         "schema_version": EXECUTION_REQUEST_SCHEMA_VERSION,
         "run_id": "grailqa-paper-test-v1",
         "runner_commit": "1" * 40,
         "protocol_sha256": "2" * 64,
         "author_selection_sha256": "3" * 64,
+        "preexecution_admission_sha256": admission[
+            "preexecution_admission_sha256"
+        ],
         "selected_decisions": _decisions(),
         "population": {
             "query_count": 150,
@@ -102,6 +212,7 @@ def _request() -> dict[str, object]:
 def _authority(request: dict[str, object]) -> dict[str, object]:
     return build_grailqa_semantic_execution_authority(
         execution_request=request,
+        preexecution_admission=_admission(),
         authority_source_id="author:test:semantic-paper-v1",
         decision="authorize_exact_150_query_semantic_execution",
     )
@@ -224,7 +335,9 @@ def test_authority_is_exactly_bound_and_fails_closed_on_tampering() -> None:
     assert validate_grailqa_semantic_execution_request(request) == request
     assert (
         validate_grailqa_semantic_execution_authority(
-            execution_request=request, authority=authority
+            execution_request=request,
+            preexecution_admission=_admission(),
+            authority=authority,
         )
         == authority
     )
@@ -236,7 +349,9 @@ def test_authority_is_exactly_bound_and_fails_closed_on_tampering() -> None:
     changed_authority["single_run_only"] = False
     with pytest.raises(GrailQASemanticPaperRunError, match="authority is invalid"):
         validate_grailqa_semantic_execution_authority(
-            execution_request=request, authority=changed_authority
+            execution_request=request,
+            preexecution_admission=_admission(),
+            authority=changed_authority,
         )
 
 
@@ -292,6 +407,7 @@ def test_exact_150_states_are_sealed_before_any_gold_loader(
     manifest = execute_grailqa_semantic_paper_run(
         output_root=output,
         request=request,
+        admission=_admission(),
         authority=authority,
         question_rows=questions,
         expected_ids=_ids(),
@@ -360,6 +476,7 @@ def test_exact_150_states_are_sealed_before_any_gold_loader(
         execute_grailqa_semantic_paper_run(
             output_root=output,
             request=request,
+            admission=_admission(),
             authority=authority,
             question_rows=questions,
             expected_ids=_ids(),
@@ -377,6 +494,7 @@ def test_runner_rejects_less_than_the_frozen_population(tmp_path: Path) -> None:
         execute_grailqa_semantic_paper_run(
             output_root=tmp_path / "run",
             request=request,
+            admission=_admission(),
             authority=_authority(request),
             question_rows=_questions()[:-1],
             expected_ids=_ids()[:-1],
@@ -403,6 +521,8 @@ def test_cwru_wrapper_is_frozen_authority_gated_and_syntax_valid() -> None:
     text = script.read_text(encoding="utf-8")
     assert "#SBATCH -C gpu2h100" in text
     assert "XGAP_GRAILQA_SEMANTIC_EXECUTION_AUTHORITY" in text
+    assert "XGAP_GRAILQA_SEMANTIC_PREEXECUTION_ADMISSION" in text
+    assert "--admission" in text
     assert "grailqa_semantic_paper_run check" in text
     assert "grailqa_semantic_paper_run run" in text
     assert "XGAP_SKIP_VLLM_STRUCTURED_SMOKE=1" in text

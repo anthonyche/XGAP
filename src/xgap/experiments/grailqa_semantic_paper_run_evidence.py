@@ -22,13 +22,25 @@ from xgap.experiments.hashing import content_hash
 
 AUDIT_SCHEMA_VERSION = "m13e4-grailqa-semantic-paper-run-evidence-audit-v1"
 EXECUTION_REQUEST_SCHEMA_VERSION = (
-    "m13e4-grailqa-semantic-execution-request-v1"
+    "m13e4-grailqa-semantic-execution-request-v2"
 )
 EXECUTION_AUTHORITY_SCHEMA_VERSION = (
-    "m13e4-grailqa-semantic-execution-authority-v1"
+    "m13e4-grailqa-semantic-execution-authority-v2"
 )
-INFERENCE_SEAL_SCHEMA_VERSION = "m13e4-grailqa-semantic-inference-seal-v1"
-RUN_MANIFEST_SCHEMA_VERSION = "m13e4-grailqa-semantic-paper-run-v1"
+PREEXECUTION_ADMISSION_SCHEMA_VERSION = (
+    "m13e4-grailqa-semantic-preexecution-admission-v1"
+)
+PREFLIGHT_REVIEW_SCHEMA_VERSION = (
+    "m13e4-grailqa-semantic-preflight-author-review-v1"
+)
+CATALOG_AUDIT_SCHEMA_VERSION = (
+    "m13e4-grailqa-local-catalog-evidence-audit-v1"
+)
+PREFLIGHT_AUDIT_SCHEMA_VERSION = (
+    "m13e3b5-grailqa-preflight-evidence-audit-v1"
+)
+INFERENCE_SEAL_SCHEMA_VERSION = "m13e4-grailqa-semantic-inference-seal-v2"
+RUN_MANIFEST_SCHEMA_VERSION = "m13e4-grailqa-semantic-paper-run-v2"
 RUN_STATUS_SCHEMA_VERSION = "m13e4-grailqa-semantic-paper-run-status-v1"
 QUERY_OUTCOME_SCHEMA_VERSION = "m13e4-grailqa-semantic-query-outcome-v1"
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -183,6 +195,11 @@ def audit_grailqa_semantic_paper_run(
             }
         )
 
+    admission = _load_json(
+        root / "control/preexecution_admission.json",
+        root=root,
+        name="preexecution admission",
+    )
     request = _load_json(
         root / "control/execution_request.json",
         root=root,
@@ -205,6 +222,138 @@ def audit_grailqa_semantic_paper_run(
         outcomes_path, root=root, name="query outcome ledger"
     )
 
+    catalog_audit = admission.get("catalog_audit")
+    preflight_audit = admission.get("preflight_audit")
+    author_review = admission.get("author_preflight_review")
+    catalog_map = dict(catalog_audit) if isinstance(catalog_audit, Mapping) else {}
+    preflight_map = (
+        dict(preflight_audit) if isinstance(preflight_audit, Mapping) else {}
+    )
+    review_map = dict(author_review) if isinstance(author_review, Mapping) else {}
+    check(
+        "admission.schema",
+        PREEXECUTION_ADMISSION_SCHEMA_VERSION,
+        admission.get("schema_version"),
+    )
+    check(
+        "admission.self_hash",
+        _self_hash(admission, "preexecution_admission_sha256"),
+        admission.get("preexecution_admission_sha256"),
+    )
+    check("admission.authorized", False, admission.get("full_150_execution_authorized"))
+    check("admission.paper_result", False, admission.get("paper_result"))
+    check(
+        "admission.zero_calls",
+        {
+            "llm_calls": 0,
+            "backend_calls": 0,
+            "ontology_service_calls": 0,
+        },
+        admission.get("external_call_counts"),
+    )
+    check(
+        "admission.gates",
+        {
+            "catalog_independently_audited": True,
+            "preflight_independently_audited": True,
+            "preflight_explicitly_reviewed_by_author": True,
+            "parameter_tuning_from_preflight_forbidden": True,
+            "all_five_scientific_decisions_explicit": True,
+        },
+        admission.get("gates"),
+    )
+    check(
+        "admission.catalog_audit.schema",
+        CATALOG_AUDIT_SCHEMA_VERSION,
+        catalog_map.get("schema_version"),
+    )
+    check(
+        "admission.catalog_audit.self_hash",
+        _self_hash(catalog_map, "audit_sha256"),
+        catalog_map.get("audit_sha256"),
+    )
+    check("admission.catalog_audit.success", True, catalog_map.get("success"))
+    check("admission.catalog_audit.failed_checks", [], catalog_map.get("failed_check_ids"))
+    check("admission.catalog_audit.non_mutating", False, catalog_map.get("run_tree_mutated"))
+    check("admission.catalog_audit.paper_result", False, catalog_map.get("paper_result"))
+    check(
+        "admission.catalog_audit.claim_boundary",
+        {
+            "independent_catalog_reconstruction": True,
+            "catalog_construction_gold_blind": True,
+            "reachability_uses_gold_for_evaluation_only": True,
+            "authorizes_model_execution": False,
+            "paper_result": False,
+        },
+        catalog_map.get("claim_boundary"),
+    )
+    check("admission.catalog_binding", catalog_map.get("catalog_hash"), admission.get("catalog_hash"))
+    check(
+        "admission.reachability_binding",
+        catalog_map.get("reachability_audit_hash"),
+        admission.get("reachability_audit_hash"),
+    )
+    check(
+        "admission.preflight_audit.schema",
+        PREFLIGHT_AUDIT_SCHEMA_VERSION,
+        preflight_map.get("schema_version"),
+    )
+    check(
+        "admission.preflight_audit.self_hash",
+        _self_hash(preflight_map, "audit_sha256"),
+        preflight_map.get("audit_sha256"),
+    )
+    check("admission.preflight_audit.success", True, preflight_map.get("success"))
+    check("admission.preflight_audit.failed_checks", [], preflight_map.get("failed_check_ids"))
+    check("admission.preflight_audit.non_mutating", False, preflight_map.get("run_tree_mutated"))
+    check(
+        "admission.preflight_audit.claim_boundary",
+        {
+            "development_preflight_only": True,
+            "paper_result": False,
+            "full_150_run_authorized": False,
+            "backend_execution": False,
+            "jointly_reachable_subset_reported_separately": True,
+        },
+        preflight_map.get("claim_boundary"),
+    )
+    check(
+        "admission.review.schema",
+        PREFLIGHT_REVIEW_SCHEMA_VERSION,
+        review_map.get("schema_version"),
+    )
+    check(
+        "admission.review.self_hash",
+        _self_hash(review_map, "preflight_review_sha256"),
+        review_map.get("preflight_review_sha256"),
+    )
+    check(
+        "admission.review.audit_binding",
+        preflight_map.get("audit_sha256"),
+        review_map.get("preflight_audit_sha256"),
+    )
+    check(
+        "admission.review.commit_binding",
+        preflight_map.get("expected_commit"),
+        review_map.get("preflight_runner_commit"),
+    )
+    check(
+        "admission.review.decision",
+        "accept_exact_preflight_without_parameter_tuning",
+        review_map.get("decision"),
+    )
+    check(
+        "admission.review.no_parameter_tuning",
+        True,
+        review_map.get("parameter_tuning_from_preflight_forbidden"),
+    )
+    check(
+        "admission.review.non_authorizing",
+        False,
+        review_map.get("full_150_execution_authorized"),
+    )
+    check("admission.review.paper_result", False, review_map.get("paper_result"))
+
     check("request.schema", EXECUTION_REQUEST_SCHEMA_VERSION, request.get("schema_version"))
     check(
         "request.self_hash",
@@ -214,6 +363,38 @@ def audit_grailqa_semantic_paper_run(
     check("request.authorized", False, request.get("full_150_execution_authorized"))
     check("request.paper_result", False, request.get("paper_result"))
     check("request.runner_commit", expected_commit, request.get("runner_commit"))
+    check(
+        "request.admission_binding",
+        admission.get("preexecution_admission_sha256"),
+        request.get("preexecution_admission_sha256"),
+    )
+    check("request.admission_protocol", admission.get("protocol_sha256"), request.get("protocol_sha256"))
+    check(
+        "request.admission_author_selection",
+        admission.get("author_selection_sha256"),
+        request.get("author_selection_sha256"),
+    )
+    check("request.admission_decisions", admission.get("selected_decisions"), request.get("selected_decisions"))
+    request_catalog = request.get("catalog")
+    request_reachability = request.get("reachability")
+    check(
+        "request.admission_catalog",
+        admission.get("catalog_hash"),
+        (
+            request_catalog.get("catalog_hash")
+            if isinstance(request_catalog, Mapping)
+            else None
+        ),
+    )
+    check(
+        "request.admission_reachability",
+        admission.get("reachability_audit_hash"),
+        (
+            request_reachability.get("audit_hash")
+            if isinstance(request_reachability, Mapping)
+            else None
+        ),
+    )
 
     check(
         "authority.schema",
@@ -229,6 +410,11 @@ def audit_grailqa_semantic_paper_run(
         "authority.request_binding",
         request.get("execution_request_sha256"),
         authority.get("execution_request_sha256"),
+    )
+    check(
+        "authority.admission_binding",
+        admission.get("preexecution_admission_sha256"),
+        authority.get("preexecution_admission_sha256"),
     )
     check(
         "authority.decision",
@@ -266,6 +452,11 @@ def audit_grailqa_semantic_paper_run(
         "seal.request_binding",
         request.get("execution_request_sha256"),
         seal.get("execution_request_sha256"),
+    )
+    check(
+        "seal.admission_binding",
+        admission.get("preexecution_admission_sha256"),
+        seal.get("preexecution_admission_sha256"),
     )
     check(
         "seal.authority_binding",
@@ -408,6 +599,11 @@ def audit_grailqa_semantic_paper_run(
         manifest.get("execution_request_sha256"),
     )
     check(
+        "manifest.admission_binding",
+        admission.get("preexecution_admission_sha256"),
+        manifest.get("preexecution_admission_sha256"),
+    )
+    check(
         "manifest.authority_binding",
         authority.get("execution_authority_sha256"),
         manifest.get("execution_authority_sha256"),
@@ -450,6 +646,9 @@ def audit_grailqa_semantic_paper_run(
     source_body = {
         "run_id": request.get("run_id"),
         "execution_request_sha256": request.get("execution_request_sha256"),
+        "preexecution_admission_sha256": admission.get(
+            "preexecution_admission_sha256"
+        ),
         "execution_authority_sha256": authority.get("execution_authority_sha256"),
         "inference_seal_sha256": seal.get("inference_seal_sha256"),
         "inference_sealed_at": seal.get("sealed_at"),
@@ -466,6 +665,7 @@ def audit_grailqa_semantic_paper_run(
     check("status.paper_result", False, status.get("paper_result"))
 
     expected_files = {
+        "control/preexecution_admission.json",
         "control/execution_request.json",
         "control/execution_authority.json",
         "inference/inference_seal.json",
@@ -484,6 +684,9 @@ def audit_grailqa_semantic_paper_run(
         "run_root": str(root),
         "expected_commit": expected_commit,
         "source_run_sha256": manifest.get("source_run_sha256"),
+        "preexecution_admission_sha256": admission.get(
+            "preexecution_admission_sha256"
+        ),
         "check_count": len(checks),
         "failed_check_ids": failed,
         "checks": checks,

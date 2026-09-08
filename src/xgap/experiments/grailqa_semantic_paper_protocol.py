@@ -53,6 +53,7 @@ _DECISION_IDS = (
 _REQUIREMENT_IDS = (
     "preflight18_independent_audit",
     "pilot150_query_local_catalog",
+    "preexecution_admission_chain",
     "paper_semantic_runner",
     "query_level_statistics_analyzer",
     "independent_semantic_evidence_auditor",

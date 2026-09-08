@@ -3594,3 +3594,24 @@ against all five declared pilot hashes and the expected catalog identity.
 Neither transfer nor preparation authorizes the pilot150 catalog, the semantic
 model run, or a paper claim; those retain their independent audit and
 author-authority boundaries.
+
+## D181 Require an evidence-bound GrailQA preexecution admission
+
+The 150-query semantic authority may not assert preflight review with an
+unverifiable Boolean. Before an execution request can be created, a separate
+preexecution admission must embed and validate four exact records: the
+successful independent pilot150 catalog audit, the successful independent
+18-query preflight audit, an explicit author review receipt bound to that exact
+preflight audit, and the author selection containing all five scientific
+choices. The review decision explicitly forbids tuning those choices from the
+preflight outcomes.
+
+The admission binds the protocol, author selection, catalog, reachability, both
+audits, and review receipt through content hashes. It makes no LLM, backend, or
+ontology-service call and remains non-authorizing with `paper_result=false`.
+The later execution request and exact-run authority both bind the admission
+hash; the H100 runner copies the admission into its immutable control tree and
+the independent run auditor reconstructs the complete admission/request/
+authority/seal/ledger chain without importing the producer. No review receipt,
+author selection, admission, or execution authority is created on the author's
+behalf.

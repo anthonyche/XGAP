@@ -101,8 +101,16 @@
     },
     {
       "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_admission.py",
+        "sha256": "1e4f45c133adef72d248cfd04e627eb2d09fdc2fea1df25728015dd4300cd0f2"
+      },
+      "requirement_id": "preexecution_admission_chain",
+      "status": "ready"
+    },
+    {
+      "evidence": {
         "path": "src/xgap/experiments/grailqa_semantic_paper_run.py",
-        "sha256": "3daaf94ed2e589f14a535c13edebda02fdad1e1179462d90ba33920219b760e2"
+        "sha256": "6e0b2ec3bc72cdf90d2462c3bf8cf44d04c0a5c17ba516100001f74d0126ee24"
       },
       "requirement_id": "paper_semantic_runner",
       "status": "ready"
@@ -126,7 +134,7 @@
     {
       "evidence": {
         "path": "src/xgap/experiments/grailqa_semantic_paper_run_evidence.py",
-        "sha256": "45e6c0794565a59fce9467331c5aa401563387861e08319f5d482b4fc99d9fc9"
+        "sha256": "55bd5cc4248ced3105afc13bf39b1a52a0029d377d2c6f5654224f650b143c8d"
       },
       "requirement_id": "independent_semantic_run_evidence_auditor",
       "status": "ready"
@@ -178,8 +186,8 @@
   ],
   "paper_result": false,
   "protocol_id": "m13e4-grailqa-sigmod2027-semantic-draft-v1",
-  "protocol_sha256": "427f1c264100d32ae538b6aa0f58aa8eb6961f9125897edcb91c912ef5a47910",
-  "readiness_sha256": "0349cef2a99c879f1edf5eebd7965a8cb70ef9d87dcfeb064622a76cd17cf9fb",
+  "protocol_sha256": "577ac8a2774ad66969b57164a4428235f065997ecc19855e0805803cd7bf3fcd",
+  "readiness_sha256": "5fbb95d90374729100138c3869a07374e416f7587a6a82383d7e7aa3e1c1ba59",
   "schema_version": "m13e4-grailqa-semantic-paper-readiness-v1",
   "source_artifacts": [
     {

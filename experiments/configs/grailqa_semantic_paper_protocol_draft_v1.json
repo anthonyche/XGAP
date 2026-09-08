@@ -188,11 +188,19 @@
       "evidence": null
     },
     {
+      "requirement_id": "preexecution_admission_chain",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_admission.py",
+        "sha256": "1e4f45c133adef72d248cfd04e627eb2d09fdc2fea1df25728015dd4300cd0f2"
+      }
+    },
+    {
       "requirement_id": "paper_semantic_runner",
       "status": "ready",
       "evidence": {
         "path": "src/xgap/experiments/grailqa_semantic_paper_run.py",
-        "sha256": "3daaf94ed2e589f14a535c13edebda02fdad1e1179462d90ba33920219b760e2"
+        "sha256": "6e0b2ec3bc72cdf90d2462c3bf8cf44d04c0a5c17ba516100001f74d0126ee24"
       }
     },
     {
@@ -216,7 +224,7 @@
       "status": "ready",
       "evidence": {
         "path": "src/xgap/experiments/grailqa_semantic_paper_run_evidence.py",
-        "sha256": "45e6c0794565a59fce9467331c5aa401563387861e08319f5d482b4fc99d9fc9"
+        "sha256": "55bd5cc4248ced3105afc13bf39b1a52a0029d377d2c6f5654224f650b143c8d"
       }
     }
   ],
@@ -229,5 +237,5 @@
   },
   "automatic_retries": 0,
   "paper_result": false,
-  "freeze_hash": "153a4bcf2d6c0dbf76dfdf9086307c4bc77716bfb4aefd5164e1f165f55fd136"
+  "freeze_hash": "b048094cbef89e14b7de093522d47494603bc720c4247aca44447ca936db74f8"
 }

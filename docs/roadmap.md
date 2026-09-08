@@ -1616,9 +1616,10 @@ author and implementation blocker; makes no external call; and cannot grant
 full-150 execution authority.
 
 Current status:
-**RESULT-BLIND DRAFT, AUTHORITY-GATED 150-QUERY RUNNER, QUERY-LEVEL ANALYZER,
-AND THREE INDEPENDENT AUDITORS IMPLEMENTED; TWO LIVE GATES SUBMITTED, AUTHOR
-CHOICES AND EXACT-RUN AUTHORITY PENDING.**
+**RESULT-BLIND DRAFT, EVIDENCE-BOUND ADMISSION, AUTHORITY-GATED 150-QUERY
+RUNNER, QUERY-LEVEL ANALYZER, AND THREE INDEPENDENT AUDITORS IMPLEMENTED; LIVE
+CATALOG/AUDIT AND PREFLIGHT GATES ACTIVE, AUTHOR CHOICES AND EXACT-RUN
+AUTHORITY PENDING.**
 `grailqa_semantic_paper_protocol.py` and its frozen draft configuration compile
 a deterministic readiness record. The post-inference analyzer now requires
 the exact 150-query ID, split, and Q-bucket population, binds the source ledger,
@@ -1644,6 +1645,14 @@ backend or emits native query text. A separate run-evidence auditor independentl
 reconstructs the request-to-ledger hash chain and the gold-isolation phase order.
 The CWRU H100 wrapper is ready and excludes unrelated model smoke calls.
 
+The runner can no longer accept a self-asserted Boolean saying that preflight
+was reviewed. A separate non-authorizing admission embeds and validates the
+successful catalog audit, successful preflight audit, exact author review
+receipt, and all five explicit author selections. Request, authority, H100
+wrapper, inference seal, manifest, and independent run auditor bind the
+admission hash. The review receipt explicitly forbids tuning those choices from
+preflight outcomes and cannot itself authorize the 150-query execution.
+
 The pilot150 catalog now also has a producer-independent, read-only auditor.
 It binds the exact 150 question-only inputs, pinned Freebase source-manifest
 identity, every catalog content hash, SQLite integrity and JSONL equivalence,
@@ -1651,10 +1660,16 @@ Top-50 per-query candidate isolation, lexical evidence, reachability hash chain,
 and the prompt gate. It makes no external call, does not rescan the 32 GB source,
 does not modify the catalog, and cannot authorize model execution. CWRU jobs
 `3795066` (pilot150 catalog) and `3795067` (final 18-query H100 preflight) were
-submitted at commit `52b1b256b577313e42ccf2d8d24d02d537781e22`; their
+submitted from commit `52b1b256b577313e42ccf2d8d24d02d537781e22`; their
 outcomes are not yet admitted here. The catalog job stopped before its Freebase
 scan because the Git-ignored frozen GrailQA question body was not installed;
 it left no pilot150 catalog. The preflight job remains separately queued.
+
+The recovered bodies now pass frozen-spec verification on CWRU. The repaired
+pilot150 build is job `3795088`, and its dependent producer-independent audit
+is job `3795089`; the preflight remains job `3795067`. Its authoritative
+producer commit will be read from the immutable environment record after the
+queued job executes, rather than inferred from submission time.
 
 The catalog wrapper now enforces frozen runtime-artifact verification before
 starting its 32 GB scan. A CPU-only preparation job can download/rebuild and
@@ -1662,7 +1677,7 @@ verify the ignored GrailQA, ontology, and query-independent catalog bodies and
 write a runtime receipt. Alternatively, the exact-hash-matching recovered
 local directories may be transferred into the checkout and verified there.
 This closes a deployment/test-skip gap but does not authorize either live gate.
-The complete post-repair regression passes 1,241 tests with 36 intentional
+The complete admission-aware regression passes 1,245 tests with 36 intentional
 environment or external-artifact skips.
 
 Five scientific choices remain explicitly unselected. The submitted final

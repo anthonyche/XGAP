@@ -33,6 +33,9 @@ from xgap.experiments.grailqa_semantic_paper_protocol import (
     DEFAULT_PROTOCOL_PATH,
     compile_grailqa_semantic_paper_readiness,
 )
+from xgap.experiments.grailqa_semantic_paper_admission import (
+    validate_grailqa_semantic_preexecution_admission,
+)
 from xgap.experiments.grailqa_semantic_pilot import (
     LiveSemanticPilotProvider,
     SemanticPilotProvider,
@@ -53,13 +56,13 @@ from xgap.experiments.semantic import (
 
 
 EXECUTION_REQUEST_SCHEMA_VERSION = (
-    "m13e4-grailqa-semantic-execution-request-v1"
+    "m13e4-grailqa-semantic-execution-request-v2"
 )
 EXECUTION_AUTHORITY_SCHEMA_VERSION = (
-    "m13e4-grailqa-semantic-execution-authority-v1"
+    "m13e4-grailqa-semantic-execution-authority-v2"
 )
-INFERENCE_SEAL_SCHEMA_VERSION = "m13e4-grailqa-semantic-inference-seal-v1"
-RUN_MANIFEST_SCHEMA_VERSION = "m13e4-grailqa-semantic-paper-run-v1"
+INFERENCE_SEAL_SCHEMA_VERSION = "m13e4-grailqa-semantic-inference-seal-v2"
+RUN_MANIFEST_SCHEMA_VERSION = "m13e4-grailqa-semantic-paper-run-v2"
 RUN_STATUS_SCHEMA_VERSION = "m13e4-grailqa-semantic-paper-run-status-v1"
 _SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,191}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -290,6 +293,7 @@ def build_grailqa_semantic_execution_request(
     catalog_root: str | Path,
     reachability_summary_path: str | Path,
     reachability_rows_path: str | Path,
+    preexecution_admission_path: str | Path,
     run_id: str,
     runner_commit: str | None = None,
 ) -> dict[str, Any]:
@@ -308,6 +312,12 @@ def build_grailqa_semantic_execution_request(
     if readiness["gates"]["author_approved"] is not True:
         raise GrailQASemanticPaperRunError("author selection is not approved")
     decisions = _selected_decisions(readiness)
+    admission = validate_grailqa_semantic_preexecution_admission(
+        _load_json(
+            preexecution_admission_path,
+            name="preexecution admission",
+        )
+    )
     pilot_path = repo / "datasets/grailqa_pilot_v1/pilot_ids.json"
     pilot = _load_json(pilot_path, name="GrailQA pilot selection")
     expected_ids = _exact_ids(
@@ -329,6 +339,17 @@ def build_grailqa_semantic_execution_request(
         parse_rows=True,
     )
     assert rows is not None
+    if (
+        admission["protocol_sha256"] != readiness["protocol_sha256"]
+        or admission["author_selection_sha256"]
+        != readiness["author_selection_sha256"]
+        or admission["selected_decisions"] != decisions
+        or admission["catalog_hash"] != catalog.catalog_hash
+        or admission["reachability_audit_hash"] != summary["audit_hash"]
+    ):
+        raise GrailQASemanticPaperRunError(
+            "preexecution admission does not bind the current frozen inputs"
+        )
     commit = runner_commit or _git_commit(repo)
     if _COMMIT.fullmatch(commit) is None:
         raise GrailQASemanticPaperRunError("runner_commit must be exact 40-hex")
@@ -339,6 +360,9 @@ def build_grailqa_semantic_execution_request(
         "runner_commit": commit,
         "protocol_sha256": readiness["protocol_sha256"],
         "author_selection_sha256": readiness["author_selection_sha256"],
+        "preexecution_admission_sha256": admission[
+            "preexecution_admission_sha256"
+        ],
         "selected_decisions": decisions,
         "population": {
             "query_count": 150,
@@ -388,12 +412,23 @@ def build_grailqa_semantic_execution_request(
 def build_grailqa_semantic_execution_authority(
     *,
     execution_request: Mapping[str, Any],
+    preexecution_admission: Mapping[str, Any],
     authority_source_id: str,
     decision: str,
 ) -> dict[str, Any]:
     """Create authority only for an explicit exact-run authorization command."""
 
     request = validate_grailqa_semantic_execution_request(execution_request)
+    admission = validate_grailqa_semantic_preexecution_admission(
+        preexecution_admission
+    )
+    if (
+        request["preexecution_admission_sha256"]
+        != admission["preexecution_admission_sha256"]
+    ):
+        raise GrailQASemanticPaperRunError(
+            "execution request does not bind this preexecution admission"
+        )
     if _SAFE_ID.fullmatch(authority_source_id) is None:
         raise GrailQASemanticPaperRunError("authority_source_id is not safe")
     if decision != "authorize_exact_150_query_semantic_execution":
@@ -403,6 +438,9 @@ def build_grailqa_semantic_execution_authority(
     body: dict[str, Any] = {
         "schema_version": EXECUTION_AUTHORITY_SCHEMA_VERSION,
         "execution_request_sha256": request["execution_request_sha256"],
+        "preexecution_admission_sha256": admission[
+            "preexecution_admission_sha256"
+        ],
         "run_id": request["run_id"],
         "runner_commit": request["runner_commit"],
         "authority_source_id": authority_source_id,
@@ -414,7 +452,6 @@ def build_grailqa_semantic_execution_authority(
             "automatic_retries": 0,
             "backend_execution": False,
         },
-        "preflight18_independently_audited_and_reviewed": True,
         "full_150_execution_authorized": True,
         "single_run_only": True,
         "scope_expansion_requires_new_authority": True,
@@ -487,6 +524,10 @@ def validate_grailqa_semantic_execution_request(
             str(request.get("author_selection_sha256", ""))
         )
         is None
+        or _SHA256.fullmatch(
+            str(request.get("preexecution_admission_sha256", ""))
+        )
+        is None
         or population.get("query_count") != 150
         or _SHA256.fullmatch(
             str(population.get("question_ids_sha256", ""))
@@ -526,9 +567,15 @@ def validate_grailqa_semantic_execution_request(
 
 
 def validate_grailqa_semantic_execution_authority(
-    *, execution_request: Mapping[str, Any], authority: Mapping[str, Any]
+    *,
+    execution_request: Mapping[str, Any],
+    preexecution_admission: Mapping[str, Any],
+    authority: Mapping[str, Any],
 ) -> dict[str, Any]:
     request = validate_grailqa_semantic_execution_request(execution_request)
+    admission = validate_grailqa_semantic_preexecution_admission(
+        preexecution_admission
+    )
     value = dict(authority)
     expected = value.get("execution_authority_sha256")
     body = {
@@ -544,11 +591,14 @@ def validate_grailqa_semantic_execution_authority(
         or content_hash(body) != expected
         or value.get("execution_request_sha256")
         != request["execution_request_sha256"]
+        or request.get("preexecution_admission_sha256")
+        != admission["preexecution_admission_sha256"]
+        or value.get("preexecution_admission_sha256")
+        != admission["preexecution_admission_sha256"]
         or value.get("run_id") != request["run_id"]
         or value.get("runner_commit") != request["runner_commit"]
         or value.get("decision")
         != "authorize_exact_150_query_semantic_execution"
-        or value.get("preflight18_independently_audited_and_reviewed") is not True
         or value.get("full_150_execution_authorized") is not True
         or value.get("single_run_only") is not True
         or value.get("scope_expansion_requires_new_authority") is not True
@@ -570,6 +620,7 @@ def validate_grailqa_semantic_execution_authority(
 def _validate_run_inputs_without_opening_gold(
     *,
     request: Mapping[str, Any],
+    admission: Mapping[str, Any],
     authority: Mapping[str, Any],
     repo_root: Path,
     protocol_path: Path,
@@ -577,12 +628,24 @@ def _validate_run_inputs_without_opening_gold(
     catalog_root: Path,
     reachability_summary_path: Path,
     reachability_rows_path: Path,
-) -> tuple[dict[str, Any], dict[str, Any], tuple[str, ...], GrailQAInferenceCatalogV2, ModelBundle]:
+) -> tuple[
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
+    tuple[str, ...],
+    GrailQAInferenceCatalogV2,
+    ModelBundle,
+]:
     """Validate identities before inference; hash but do not parse gold artifacts."""
 
     frozen_request = validate_grailqa_semantic_execution_request(request)
+    frozen_admission = validate_grailqa_semantic_preexecution_admission(
+        admission
+    )
     frozen_authority = validate_grailqa_semantic_execution_authority(
-        execution_request=frozen_request, authority=authority
+        execution_request=frozen_request,
+        preexecution_admission=frozen_admission,
+        authority=authority,
     )
     if _git_commit(repo_root) != frozen_request["runner_commit"]:
         raise GrailQASemanticPaperRunError("runner commit differs from authority")
@@ -596,6 +659,12 @@ def _validate_run_inputs_without_opening_gold(
         or readiness["author_selection_sha256"]
         != frozen_request["author_selection_sha256"]
         or _selected_decisions(readiness) != frozen_request["selected_decisions"]
+        or readiness["protocol_sha256"]
+        != frozen_admission["protocol_sha256"]
+        or readiness["author_selection_sha256"]
+        != frozen_admission["author_selection_sha256"]
+        or _selected_decisions(readiness)
+        != frozen_admission["selected_decisions"]
     ):
         raise GrailQASemanticPaperRunError("protocol or author selection drifted")
     pilot_path = repo_root / "datasets/grailqa_pilot_v1/pilot_ids.json"
@@ -615,6 +684,7 @@ def _validate_run_inputs_without_opening_gold(
     catalog = _validate_local_150_catalog(catalog_root, expected_ids)
     if (
         catalog.catalog_hash != frozen_request["catalog"]["catalog_hash"]
+        or catalog.catalog_hash != frozen_admission["catalog_hash"]
         or _sha256_file(catalog_root / "manifest.json")
         != frozen_request["catalog"]["manifest_sha256"]
     ):
@@ -628,12 +698,29 @@ def _validate_run_inputs_without_opening_gold(
         != frozen_request["reachability"]["rows_sha256"]
     ):
         raise GrailQASemanticPaperRunError("reachability artifact identity drifted")
+    summary = _load_json(
+        reachability_summary_path, name="reachability summary"
+    )
+    if (
+        summary.get("audit_hash")
+        != frozen_admission["reachability_audit_hash"]
+    ):
+        raise GrailQASemanticPaperRunError(
+            "admission-bound reachability identity drifted"
+        )
     model = ModelBundle.load(
         repo_root / "models/qwen3_32b_vllm_cwru_m13e2"
     )
     if model.bundle_hash != frozen_request["inference"]["model_bundle_hash"]:
         raise GrailQASemanticPaperRunError("model bundle identity drifted")
-    return frozen_request, frozen_authority, expected_ids, catalog, model
+    return (
+        frozen_request,
+        frozen_admission,
+        frozen_authority,
+        expected_ids,
+        catalog,
+        model,
+    )
 
 
 def _state_provider_account(
@@ -787,6 +874,7 @@ def execute_grailqa_semantic_paper_run(
     *,
     output_root: str | Path,
     request: Mapping[str, Any],
+    admission: Mapping[str, Any],
     authority: Mapping[str, Any],
     question_rows: Sequence[Mapping[str, Any]],
     expected_ids: Sequence[str],
@@ -800,8 +888,13 @@ def execute_grailqa_semantic_paper_run(
     """Execute the state machine with injected gold loaders for audit tests."""
 
     frozen_request = validate_grailqa_semantic_execution_request(request)
+    frozen_admission = validate_grailqa_semantic_preexecution_admission(
+        admission
+    )
     frozen_authority = validate_grailqa_semantic_execution_authority(
-        execution_request=frozen_request, authority=authority
+        execution_request=frozen_request,
+        preexecution_admission=frozen_admission,
+        authority=authority,
     )
     ids = _exact_ids(expected_ids, expected_ids, name="expected IDs")
     question_by_id = {str(item["question_id"]): dict(item) for item in question_rows}
@@ -812,6 +905,10 @@ def execute_grailqa_semantic_paper_run(
     if output.exists() or output.is_symlink():
         raise FileExistsError(f"semantic run output exists: {output}")
     output.mkdir(parents=True, exist_ok=False)
+    _write_json_exclusive(
+        output / "control/preexecution_admission.json",
+        frozen_admission,
+    )
     _write_json_exclusive(output / "control/execution_request.json", frozen_request)
     _write_json_exclusive(
         output / "control/execution_authority.json", frozen_authority
@@ -854,6 +951,9 @@ def execute_grailqa_semantic_paper_run(
         "run_id": frozen_request["run_id"],
         "sealed_at": datetime.now(timezone.utc).isoformat(),
         "execution_request_sha256": frozen_request["execution_request_sha256"],
+        "preexecution_admission_sha256": frozen_admission[
+            "preexecution_admission_sha256"
+        ],
         "execution_authority_sha256": frozen_authority[
             "execution_authority_sha256"
         ],
@@ -897,6 +997,9 @@ def execute_grailqa_semantic_paper_run(
     source_body: dict[str, Any] = {
         "run_id": frozen_request["run_id"],
         "execution_request_sha256": frozen_request["execution_request_sha256"],
+        "preexecution_admission_sha256": frozen_admission[
+            "preexecution_admission_sha256"
+        ],
         "execution_authority_sha256": frozen_authority[
             "execution_authority_sha256"
         ],
@@ -919,6 +1022,9 @@ def execute_grailqa_semantic_paper_run(
         ],
         "execution_request_sha256": frozen_request[
             "execution_request_sha256"
+        ],
+        "preexecution_admission_sha256": frozen_admission[
+            "preexecution_admission_sha256"
         ],
         "execution_authority_sha256": frozen_authority[
             "execution_authority_sha256"
@@ -966,6 +1072,7 @@ def execute_grailqa_semantic_paper_run(
 def run_grailqa_semantic_paper(
     *,
     request_path: str | Path,
+    admission_path: str | Path,
     authority_path: str | Path,
     protocol_path: str | Path,
     author_selection_path: str | Path,
@@ -985,10 +1092,12 @@ def run_grailqa_semantic_paper(
     )
     rows_path = _regular_file(reachability_rows_path, name="reachability rows")
     request = _load_json(request_path, name="execution request")
+    admission = _load_json(admission_path, name="preexecution admission")
     authority = _load_json(authority_path, name="execution authority")
-    request, authority, expected_ids, catalog, model = (
+    request, admission, authority, expected_ids, catalog, model = (
         _validate_run_inputs_without_opening_gold(
             request=request,
+            admission=admission,
             authority=authority,
             repo_root=repo,
             protocol_path=protocol,
@@ -1039,6 +1148,7 @@ def run_grailqa_semantic_paper(
     return execute_grailqa_semantic_paper_run(
         output_root=output,
         request=request,
+        admission=admission,
         authority=authority,
         question_rows=questions,
         expected_ids=expected_ids,
@@ -1057,9 +1167,13 @@ def check_grailqa_semantic_paper_run(
     """Perform the pre-model gate without parsing gold-derived rows."""
 
     request = _load_json(kwargs["request_path"], name="execution request")
+    admission = _load_json(
+        kwargs["admission_path"], name="preexecution admission"
+    )
     authority = _load_json(kwargs["authority_path"], name="execution authority")
     validated = _validate_run_inputs_without_opening_gold(
         request=request,
+        admission=admission,
         authority=authority,
         repo_root=_regular_directory(kwargs["repo_root"], name="repo_root"),
         protocol_path=_regular_file(kwargs["protocol_path"], name="semantic protocol"),
@@ -1097,6 +1211,7 @@ def _common_paths(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--catalog-root", required=True)
     parser.add_argument("--reachability-summary", required=True)
     parser.add_argument("--reachability-rows", required=True)
+    parser.add_argument("--admission", required=True)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -1108,6 +1223,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     request_parser.add_argument("--output", required=True)
     authority_parser = commands.add_parser("authorize")
     authority_parser.add_argument("--request", required=True)
+    authority_parser.add_argument("--admission", required=True)
     authority_parser.add_argument("--authority-source-id", required=True)
     authority_parser.add_argument(
         "--decision",
@@ -1134,12 +1250,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 catalog_root=args.catalog_root,
                 reachability_summary_path=args.reachability_summary,
                 reachability_rows_path=args.reachability_rows,
+                preexecution_admission_path=args.admission,
                 run_id=args.run_id,
             )
             _write_json_exclusive(Path(args.output), value)
         elif args.command == "authorize":
             value = build_grailqa_semantic_execution_authority(
                 execution_request=_load_json(args.request, name="execution request"),
+                preexecution_admission=_load_json(
+                    args.admission, name="preexecution admission"
+                ),
                 authority_source_id=args.authority_source_id,
                 decision=args.decision,
             )
@@ -1147,6 +1267,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.command == "check":
             value = check_grailqa_semantic_paper_run(
                 request_path=args.request,
+                admission_path=args.admission,
                 authority_path=args.authority,
                 protocol_path=args.protocol,
                 author_selection_path=args.author_selection,
@@ -1158,6 +1279,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             value = run_grailqa_semantic_paper(
                 request_path=args.request,
+                admission_path=args.admission,
                 authority_path=args.authority,
                 protocol_path=args.protocol,
                 author_selection_path=args.author_selection,
