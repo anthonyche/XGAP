@@ -1592,7 +1592,11 @@ validation and rejection boundaries. The next run proved that vLLM 0.11.1 did
 not enforce those array cardinality keywords and again returned only empty
 arrays. E3B.5.5 deterministically checks the active bundle's candidate
 `minItems/maxItems` at the provider boundary and routes violations through the
-existing single repair call. The rerun remains the next experiment action.
+existing single repair call. A read-only post-run auditor now reconstructs the
+exact 18-query set, CWRU/model identity, external reachability hash chain,
+generation/repair calls, candidate cardinality, overall metrics, and the
+jointly reachable five-query subset without changing the source tree. The
+rerun plus this independent audit remains the next experiment action.
 
 ## M14 KGQA Evaluation
 
@@ -1647,12 +1651,11 @@ Current status: TODO
   boundary are frozen in
   `experiments/artifacts/m15_finbench_confirmatory_campaign_readiness_v1.json`;
   the earlier pre-oracle record remains unchanged.
-- **Current gate:** push one clean runner/auditor commit and bind that exact
-  commit into the non-authorizing execution request.
-- **Authorization gate:** after the clean commit, create and inspect the final
-  non-authorizing execution request. A separate explicit author decision is
-  required before the staged submission helper may be invoked; choosing Option
-  A and accepting the freeze did not grant execution authority.
+- **Execution submitted:** the author separately authorized exact request
+  `4b83e273...de2a5` with authority `8809ef2d...e4a5`, and the frozen
+  `cf622cb` runner submitted the seven-stage CWRU dependency graph on
+  2026-09-08. The final independent audit remains the admission gate; no
+  individual job completion or intermediate measurement is a paper result.
 - **Paper reporting locally ready:** after—and only after—the final campaign
   audit admits the run, a read-only presentation layer projects the frozen
   analysis into RQ-P1/P2/P3 JSON and Markdown tables. It preserves the

@@ -1279,7 +1279,12 @@ provider boundary. It reads `minItems/maxItems` from the active bundle schema,
 rejects violations, and invokes the already frozen single repair call. Bundles
 without those declared constraints retain their prior behavior. Parser,
 retrieval, grounding, semantics, lowering, model parameters, and experiment
-bounds remain unchanged. One final CWRU 18-query resubmission is pending.
+bounds remain unchanged. A separate read-only CWRU evidence auditor now binds
+the clean producer commit, H100/model/deployment identity, exact query-local
+reachability artifact, request/repair ledger, nonempty candidate boundary, and
+all row-level metric reconstructions. It distinguishes provider failure from
+model recall and leaves `paper_result=false`. One final CWRU 18-query
+resubmission and independent audit are pending.
 
 ## Completed
 
@@ -1329,9 +1334,11 @@ Leave the running global M13-E3/E3A job untouched. Pull the M13-E3B.5
 deterministic candidate-cardinality repair on CWRU,
 run `scripts/server/check_cwru_grailqa_preflight_ready.sh`, and submit exactly
 the frozen 18-query Qwen3-32B Slurm preflight. Review overall Candidate Recall
-and the separately reported jointly reachable 5-question subset before any
-larger experiment. Freebase rescanning, prompt-bound changes, embeddings,
-pilot150, RQ2/RQ3, full M13 disambiguation, and M14 remain outside this step.
+and the separately reported jointly reachable 5-question subset only after the
+new read-only run auditor passes. Do not interpret zero or low recall as model
+quality when its diagnostic reports provider failures. Freebase rescanning,
+prompt-bound changes, embeddings, pilot150, RQ2/RQ3, full M13 disambiguation,
+and M14 remain outside this step.
 
 ## M13-E3 Freebase Catalog-v2 And Reachability Audit
 
@@ -2719,16 +2726,19 @@ infrastructure failure with zero measurements; method timeout, partial output,
 and backend or plan failure remain ineligible. Recovery and downstream resume
 remain explicit operator actions rather than scheduler retries.
 
-This is still local pre-submission readiness. No confirmatory measurements have
-been submitted, no execution authority exists, and `paper_result` remains
-false. Full repository regression passes 1,181 tests with 36 intentional
-environment or external-artifact skips. The final content-addressed local
-readiness record is
+The author issued the exact single-campaign authority
+`8809ef2ddb9e914e8177bd264a283ca6406ff5f869c2a2df9bd7075bbf63e4a5`
+for runner commit `cf622cbc024e3aa945213df68e177d2cc1eb7d8a` on
+2026-09-08. The staged campaign was then submitted as training/profile/
+selection/serving/shadow/finalize/audit jobs
+`3794919`/`3794920`/`3794921`/`3794922`/`3794923`/`3794924`/`3794925`.
+Measurements and the final independent audit are pending; `paper_result`
+remains false until that audit admits the complete run. Full repository
+regression before submission passed 1,181 tests with 36 intentional environment
+or external-artifact skips. The final content-addressed local readiness record is
 `experiments/artifacts/m15_finbench_confirmatory_campaign_readiness_v1.json`;
 the earlier pre-oracle inventory remains in
 `experiments/artifacts/m15_finbench_confirmatory_preoracle_readiness_v1.json`.
-The exact non-authorizing request must bind the eventual clean pushed commit
-before it is shown to the author for a separate execution decision.
 
 The post-campaign paper-report layer is also locally implemented on a branch
 separate from the frozen runner. It accepts only a successful campaign result
@@ -2742,3 +2752,8 @@ claim-boundary drift, deterministic rendering, and source-tree immutability.
 The complete reporting-branch regression passes 1,188 tests with 36 intentional
 environment or external-artifact skips; the frozen formal runner and its
 content-addressed execution request are unchanged.
+
+The independent GrailQA 18-query preflight auditor is isolated on a separate
+branch and brings the complete local regression to 1,191 passes with the same
+36 intentional skips. It does not modify or authorize the running FinBench
+campaign.

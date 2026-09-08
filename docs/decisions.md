@@ -3405,3 +3405,21 @@ Admission of this FinBench report supports the heterogeneous physical-plan
 optimization comparison only. It cannot support the semantic-ambiguity,
 ontology, or general KGQA claims, which require their separate GrailQA and
 external-validation evidence.
+
+## D173 Audit live semantic preflights independently of process success
+
+A successful CWRU process exit is necessary but not sufficient evidence for
+the GrailQA interpretation preflight. A separate read-only auditor must bind
+the clean producer commit, H100 and vLLM environment, model and prompt bundle,
+deployment contract, exact frozen 18-query set, and the query-local catalog and
+reachability hash chain. It must reconstruct the generation/repair call ledger,
+enforce the declared one-to-three candidate boundary on every schema-valid
+provider response, and recompute the overall and jointly reachable-subset
+metrics from row-level artifacts.
+
+The auditor does not impose a recall threshold. It reports provider failures
+separately and marks whether they confound the observed Candidate Recall, so a
+transport or structured-output failure cannot be presented as evidence about
+model capability. Its output is outside the immutable source run tree and
+retains `paper_result=false`; the 18-query run remains a development gate and
+does not authorize the 150-query pilot or support a paper claim by itself.
