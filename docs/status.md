@@ -2888,6 +2888,14 @@ to identify the pre-candidate rejection, not an automatic model rerun or
 acceptance of the 150-query experiment. See
 `docs/report/grailqa_preflight_3795067_validation.md`.
 
+The read-only rejection replay CLI is implemented and tested offline. It
+reconstructs only the saved prompt and provider envelope, checks their hash
+identities, and reports the original normalization/grounding exception without
+opening gold, loading a catalog, or making an external call. The real CWRU
+replay result is still pending; no specific rejection cause or repaired live
+outcome is claimed. Eleven replay tests and the related shell/endpoint/audit
+tests pass together (31 tests).
+
 The post-run boundary is now complete in code. A CPU-only finalizer performs a
 producer-independent run audit, frozen query-level analysis, independent full
 analysis reconstruction, and a final identity admission. The producer and both

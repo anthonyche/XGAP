@@ -61,6 +61,34 @@ request/response artifacts without model calls or source mutation and present
 the exact negative result for author review. The audit does not imply an
 effectiveness result, reviewed preflight, scientific choice, or execution grant.
 
+### Read-only rejection replay (no new inference)
+
+`xgap.experiments.grailqa_preflight_replay` accepts the **inner results
+directory**, not the outer CWRU run. It checks the recorded request hashes,
+request/response identities, and exact prompt-view reconstruction before
+replaying normalization and grounding. It prints compact per-query rejection
+messages and input-file digests to stdout; it writes no artifacts, loads no
+gold or catalog, and makes no model/backend/ontology-service call.
+
+Keep the original run and audit intact. When the diagnostic source is obtained
+from a later commit, retain the original checkout for its unchanged parser and
+grounding imports. With the source available in the current checkout, use:
+
+```bash
+PYTHONPATH="$PWD/src" "$HOME/venvs/xgap-core/bin/python" -B \
+  -m xgap.experiments.grailqa_preflight_replay \
+  --run-root "$PWD/runs/cwru-grailqa-preflight-v2-3795067/results/grailqa-semantic-preflight-v2"
+```
+
+For this exact audit, the reported input hashes must match:
+
+- `llm_requests.jsonl`: `6060078b189fa11a0fbf3840960f372b61d4306e004855c52093a3cf278363d0`
+- `llm_responses.jsonl`: `557d5b250d299cd7fff3d7ffe4f13537a00f4e3bd3843b41c6731c110a3c12ce`
+
+`status=complete` means the diagnostic ran, not that any candidate passed.
+A source-identity error exits with code 2. This replay does not replace the
+frozen outcome taxonomy or create a repaired live result.
+
 ## 2. Record The Five Author Choices
 
 Create this record only after the author has explicitly chosen every value.

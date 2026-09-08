@@ -1686,6 +1686,8 @@ completed with actual producer `4994120`. Independent audit `3795103` passed
 prompt-reachable queries also yielded no validated candidates. The next gate
 is read-only rejection diagnosis from existing request/response artifacts,
 not the 150-query model run or outcome-driven scientific parameter selection.
+The compact read-only replay CLI is now implemented with 11 offline tests;
+its output on the retained CWRU envelopes remains the next external input.
 
 The catalog wrapper now enforces frozen runtime-artifact verification before
 starting its 32 GB scan. A CPU-only preparation job can download/rebuild and

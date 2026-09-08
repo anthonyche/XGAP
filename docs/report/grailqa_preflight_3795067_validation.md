@@ -58,6 +58,13 @@ backend, or ontology-service calls. Replay diagnostics must remain separate
 from the frozen result; they do not replace its metrics or establish a repaired
 live outcome. No scientific parameter is selected from these observations.
 
+The read-only replay is now implemented in `grailqa_preflight_replay.py`.
+Eleven offline tests cover valid grounding, rejected grounding, retained
+provider failure, repair ledgers, identity tampering, source preservation, and
+execution directly from stdin. The combined replay, shell-handoff, endpoint,
+and preflight-audit regression passes 31 tests. These tests do not establish
+which guard rejected the real CWRU responses; that diagnostic remains pending.
+
 ## Fallacy Scan
 
 Coverage: 11/11 categories checked for applicability; this is a descriptive
