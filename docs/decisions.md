@@ -3423,3 +3423,33 @@ transport or structured-output failure cannot be presented as evidence about
 model capability. Its output is outside the immutable source run tree and
 retains `paper_result=false`; the 18-query run remains a development gate and
 does not authorize the 150-query pilot or support a paper claim by itself.
+
+## D174 Freeze the semantic estimand before reviewing the live preflight
+
+The GrailQA paper track now has a result-blind protocol compiler rather than a
+direct path from the 18-query engineering run to the 150-query experiment. The
+draft binds the existing outcome-independent 150-query population, the frozen
+Qwen3-32B/vLLM bundle, Top-20 retrieval, Top-4 per-slot prompt visibility, the
+three-candidate cap, one repair call, and no backend or native-query execution.
+It cannot read live preflight results and cannot authorize a full run.
+
+The proposed primary comparison reuses one generated, validated, and grounded
+candidate set for both methods: ontology-bounded `c_sem`/epsilon ranking versus
+model-confidence Top-1. The primary outcome is exact canonical structural
+interpretation match. Candidate Recall@3, feasible coverage, hard-constraint
+violations, frontier cardinality, provider/repair/token/latency cost, and the
+jointly prompt-reachable stratum are reported separately. Catalog reachability
+is a diagnostic rather than a semantic baseline. Gold-simulated clarification
+may be an explicitly labelled post-inference oracle upper bound, never the
+treatment or evidence of real user interaction.
+
+The query is the inferential unit. The draft predeclares exact paired McNemar
+testing for correctness, a fixed-seed 10,000-resample paired query bootstrap,
+Holm adjustment for secondary comparisons, no imputation, and completer-only
+analysis as diagnostic. Provider, malformed-output, grounding, and empty-set
+failures remain query outcomes under the recommended all-query estimand.
+Five scientific choices remain author-owned. Even after their approval, the
+18-query independent audit and author review, query-local pilot150 catalog,
+paper runner, analyzer, auditor, and a separate full-run authority remain
+mandatory. The draft therefore stays `paper_result=false` and makes zero LLM,
+backend, or ontology-service calls.

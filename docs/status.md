@@ -2757,3 +2757,26 @@ The independent GrailQA 18-query preflight auditor is isolated on a separate
 branch and brings the complete local regression to 1,191 passes with the same
 36 intentional skips. It does not modify or authorize the running FinBench
 campaign.
+
+## M13-E4 GrailQA Semantic Paper Protocol Boundary
+
+A result-blind, non-executing GrailQA paper-protocol compiler now binds the
+frozen 150-query outcome-independent population, public ontology artifacts,
+Qwen3-32B/vLLM bundle, bounded query-local retrieval/prompt contract, common
+candidate-generation boundary, proposed primary comparison, query-level
+statistics, gold isolation, failure handling, and the required ablations.
+Compilation validates six source artifacts and makes zero LLM, backend, or
+ontology-service calls.
+
+The draft intentionally remains blocked. Five scientific decisions are still
+owned by the author; the recommended defaults have not been silently selected.
+The final 18-query preflight must first complete an independent audit and author
+review without tuning from its outcomes. A real pilot150 query-local catalog,
+paper runner, query-level analyzer, independent auditor, and a separate
+full-run authority are also missing. Consequently `full_150_run_authorized`
+and `paper_result` remain false. Eleven focused protocol tests pass; the work
+is isolated from the frozen FinBench confirmatory runner and active campaign.
+The compact readiness record is
+`experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
+The complete repository regression now passes 1,202 tests with 36 intentional
+environment or external-artifact skips.

@@ -274,12 +274,16 @@ the primary evidence or writing schedule.
 
 ## Immediate loop
 
-The complete FinBench partition, all three physical families, SF0.01 and SF0.1
-correctness gates, and the SF0.1 independent audit are complete. Development
-campaign job `3793702` is now the only active remote action; do not duplicate
-it. In parallel, the result-blind paper-promotion gate is implemented and
-exposes the remaining author, evidence, and implementation blockers without
-making a measurement call. After the campaign audit, freeze the author-owned
-choices by Sep 12 and implement the answer-independent cross-fit population,
-out-of-sample runner, confirmatory statistics, and independent auditor. The
-36-query development split remains pilot evidence only.
+The complete FinBench partition, correctness gates, development campaign,
+Option-A freeze, author authority, and staged runner are complete. The formal
+22-block confirmatory campaign is active on CWRU; it must not be duplicated,
+cleaned, or rebound to another commit before its final independent audit.
+Intermediate measurements are not paper results.
+
+The parallel semantic path is now guarded by a result-blind GrailQA protocol.
+It freezes the proposed comparison and query-level analysis boundary without
+inspecting the pending 18-query live preflight and without authorizing
+pilot150. After the preflight's independent audit, the author reviews five
+explicit scientific choices; only then may the pilot150 query-local catalog,
+paper runner, analyzer, auditor, and separate execution authority be prepared.
+The earlier 150-query diagnostic remains non-paper evidence.

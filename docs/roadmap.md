@@ -1598,6 +1598,33 @@ generation/repair calls, candidate cardinality, overall metrics, and the
 jointly reachable five-query subset without changing the source tree. The
 rerun plus this independent audit remains the next experiment action.
 
+## M13-E4 Result-Blind GrailQA Semantic Paper Protocol
+
+Goal:
+Prevent engineering preflight outcomes from silently determining the semantic
+paper estimand, comparator, epsilon, failure population, or clarification
+claim. Bind the existing 150-query GrailQA selection and Qwen3-32B inference
+boundary before the final 18-query live result is reviewed.
+
+Acceptance criteria:
+The protocol verifies immutable dataset/model/preflight sources; treats queries
+as inferential units; compares ontology-bounded ranking and model-confidence
+ranking over the same generated and grounded candidates; isolates gold until
+all inference completes; retains every failed attempt without imputation;
+predeclares paired query-level analysis and ablations; exposes every remaining
+author and implementation blocker; makes no external call; and cannot grant
+full-150 execution authority.
+
+Current status:
+**RESULT-BLIND DRAFT IMPLEMENTED; AUTHOR SELECTION AND LIVE GATES PENDING.**
+`grailqa_semantic_paper_protocol.py` and its frozen draft configuration compile
+a deterministic readiness record. Five scientific choices remain explicitly
+unselected. The final 18-query CWRU rerun/audit, its author review, the
+pilot150 query-local catalog, production semantic runner, statistics analyzer,
+independent auditor, and separate execution authority are still required.
+This milestone does not change ranking, prompts, model parameters, catalog
+construction, or the running FinBench campaign.
+
 ## M14 KGQA Evaluation
 
 Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.
