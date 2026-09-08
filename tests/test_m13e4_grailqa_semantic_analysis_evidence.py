@@ -282,6 +282,43 @@ def test_source_run_identity_is_reconstructed(tmp_path: Path) -> None:
     assert "analysis.exact_reconstruction" in audit["failed_check_ids"]
 
 
+def test_independent_auditor_accepts_completed_generation_miss(
+    tmp_path: Path,
+) -> None:
+    paths = _write_package(tmp_path)
+    rows = paths["outcomes"].read_text(encoding="utf-8").splitlines()
+    first = json.loads(rows[0])
+    first["failure_category"] = "generation_miss"
+    first["candidates"] = []
+    rows[0] = json.dumps(first, sort_keys=True)
+    paths["outcomes"].write_text("\n".join(rows) + "\n", encoding="utf-8")
+    assert (
+        producer.main(
+            [
+                "--outcomes",
+                str(paths["outcomes"]),
+                "--protocol",
+                str(ROOT / DEFAULT_PROTOCOL_PATH),
+                "--author-selection",
+                str(paths["selection"]),
+                "--repo-root",
+                str(ROOT),
+                "--source-run-sha256",
+                SOURCE_RUN_SHA256,
+                "--output",
+                str(tmp_path / "analysis-generation-miss.json"),
+            ]
+        )
+        == 0
+    )
+    paths["analysis"] = tmp_path / "analysis-generation-miss.json"
+
+    audit = _audit(paths)
+
+    assert audit["success"] is True
+    assert audit["failed_check_ids"] == []
+
+
 def test_cli_writes_once_and_returns_failure_for_invalid_analysis(
     tmp_path: Path,
 ) -> None:

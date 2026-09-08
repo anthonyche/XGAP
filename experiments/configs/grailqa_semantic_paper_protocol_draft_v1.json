@@ -31,6 +31,11 @@
       "artifact_id": "grailqa-preflight18-spec",
       "path": "experiments/specs/grailqa_semantic_preflight_v2_cwru_qwen3_32b.json",
       "sha256": "416abed165ddfbf0830da6601ea6bb63b7debd1ce1094f6dab9251e7e35e4f0b"
+    },
+    {
+      "artifact_id": "grailqa-paper-run-spec",
+      "path": "experiments/specs/grailqa_semantic_paper_run_cwru_qwen3_32b.json",
+      "sha256": "6faac0138c22c4e5e11da174843c96a58b898f8a40198b4cf2447345dab8986e"
     }
   ],
   "scope": {
@@ -184,15 +189,18 @@
     },
     {
       "requirement_id": "paper_semantic_runner",
-      "status": "missing",
-      "evidence": null
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_run.py",
+        "sha256": "3daaf94ed2e589f14a535c13edebda02fdad1e1179462d90ba33920219b760e2"
+      }
     },
     {
       "requirement_id": "query_level_statistics_analyzer",
       "status": "ready",
       "evidence": {
         "path": "src/xgap/experiments/grailqa_semantic_analysis.py",
-        "sha256": "6f1e7e50fb008bdfa040e9d3b76b0ab15d7ea51ef8197bfacb1b3d066650faf5"
+        "sha256": "65ebf5fe898e0b42d5e728c09577396a51fef88882f4a62a8b791f2be1f9fab1"
       }
     },
     {
@@ -200,7 +208,15 @@
       "status": "ready",
       "evidence": {
         "path": "src/xgap/experiments/grailqa_semantic_analysis_evidence.py",
-        "sha256": "5e119f397dd72499a5e138ec08a547cb56c58587ccf976b70ce538a6b8fdc3a5"
+        "sha256": "af4899602d7f780df681ce9befcc535c5170bf90d78774e1d5a491681a5dcabf"
+      }
+    },
+    {
+      "requirement_id": "independent_semantic_run_evidence_auditor",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_run_evidence.py",
+        "sha256": "45e6c0794565a59fce9467331c5aa401563387861e08319f5d482b4fc99d9fc9"
       }
     }
   ],
@@ -213,5 +229,5 @@
   },
   "automatic_retries": 0,
   "paper_result": false,
-  "freeze_hash": "b2770959bba7763cb2f1ffe9662a42b9a3185000286783e4694874b7e6e1f515"
+  "freeze_hash": "153a4bcf2d6c0dbf76dfdf9086307c4bc77716bfb4aefd5164e1f165f55fd136"
 }

@@ -2764,6 +2764,23 @@ The complete reporting-branch regression passes 1,188 tests with 36 intentional
 environment or external-artifact skips; the frozen formal runner and its
 content-addressed execution request are unchanged.
 
+The admitted campaign has now been rendered once by the isolated reporting
+commit `dc0b90b`. The deterministic JSON/Markdown report has SHA-256
+`ff087278a59d17c2273b23cc7edf06d054f3fba43db9b4134a8e515cac6a43d0`
+and preserves `paper_result=true` from the independently admitted source. Over
+the 32 seen-family query units, XGAP's zero-current-query-profile route had an
+end-to-end geometric-mean latency ratio of 0.3096 versus dual profiling (95%
+CI 0.2509--0.3683; paired randomization p=9.9999e-06), 0.9375 physical-winner
+accuracy, and 0.96875 mean predicted/observed frontier Jaccard. However,
+family-global and fixed route A made the same selections, achieved the same
+0.9375 winner accuracy and regret, and were indistinguishable from XGAP in the
+predeclared Holm comparisons. This result therefore supports an audited
+zero-current-query-profiling efficiency claim in this FinBench population; by
+itself it does not identify an instance-specific family-memory advantage.
+The 16 F3 cold-family queries remain descriptive: their fallback accuracy was
+zero while current-query profiling and fixed route B were perfect. No semantic,
+ontology, general-KGQA, or cold-start inferential claim is admitted.
+
 The independent GrailQA 18-query preflight auditor is isolated on a separate
 branch and brings the complete local regression to 1,191 passes with the same
 36 intentional skips. It does not modify or authorize the running FinBench
@@ -2776,7 +2793,8 @@ frozen 150-query outcome-independent population, public ontology artifacts,
 Qwen3-32B/vLLM bundle, bounded query-local retrieval/prompt contract, common
 candidate-generation boundary, proposed primary comparison, query-level
 statistics, gold isolation, failure handling, and the required ablations.
-Compilation validates six source artifacts and makes zero LLM, backend, or
+Compilation validates seven source artifacts, including the frozen production
+run specification, and makes zero LLM, backend, or
 ontology-service calls.
 
 The draft intentionally remains blocked. Five scientific decisions are still
@@ -2792,18 +2810,36 @@ calls and cannot set `paper_result=true` before an independent audit.
 
 The final 18-query preflight must first complete an independent audit and author
 review without tuning from its outcomes. The independent 150-query analysis
-auditor is now implemented: it does not import the producer analyzer and
+auditor is implemented: it does not import the producer analyzer and
 independently reconstructs candidate admission, both rankings, exact McNemar,
 the fixed 10,000-resample paired bootstrap, Holm adjustment, failure and cost
 accounting, per-query rows, and the final analysis hash. It rejects modified
 ledgers, duplicate or incomplete populations, source-run mismatch, and a
 tampered analysis even when the tampered artifact has a valid replacement
-self-hash. A real pilot150 query-local catalog, paper runner, and a separate
-full-run authority are still missing. Consequently `full_150_run_authorized`
-and `paper_result` remain false. Thirty-six focused protocol/analyzer/auditor
+self-hash.
+
+The authority-gated production runner and a second, independent run auditor are
+now implemented. A non-authorizing request binds the exact 150 IDs, selected
+author decisions, runner commit, query-local catalog, reachability artifacts,
+model bundle, and call limits. A separate exact-run authority is required before
+model startup. The runner writes one durable inference state per query, allows
+at most one repair and two external calls per query, seals all 150 states, and
+only then opens reference interpretations, workload buckets, and reachability
+rows. It emits no native query, calls no backend, performs no automatic retry,
+and retains provider, malformed-output, generation, grounding, semantic, and
+ranking failures as outcomes. The independent run auditor does not import the
+runner and reconstructs the request/authority/seal/ledger identity chain,
+phase order, exact population, call accounting, and source-tree immutability.
+The CWRU wrapper reserves one H100 and suppresses unrelated generic smoke calls
+so the authority-bound ledger accounts for every model request.
+
+A real pilot150 query-local catalog plus its reachability evidence, the five
+explicit author choices, preflight review, and a later exact execution authority
+remain missing. Consequently `full_150_run_authorized` and semantic
+`paper_result` remain false. Forty-four focused protocol/analyzer/runner/auditor
 tests pass; the work is isolated from the frozen FinBench confirmatory runner
 and admitted campaign.
 The compact readiness record is
 `experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
-The complete repository regression now passes 1,227 tests with 36 intentional
+The complete repository regression now passes 1,235 tests with 36 intentional
 environment or external-artifact skips.

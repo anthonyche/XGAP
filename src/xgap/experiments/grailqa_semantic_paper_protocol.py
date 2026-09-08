@@ -41,6 +41,7 @@ _SOURCE_IDS = (
     "qwen3-32b-prompt",
     "qwen3-32b-structured-schema",
     "grailqa-preflight18-spec",
+    "grailqa-paper-run-spec",
 )
 _DECISION_IDS = (
     "primary_reporting_population",
@@ -55,6 +56,7 @@ _REQUIREMENT_IDS = (
     "paper_semantic_runner",
     "query_level_statistics_analyzer",
     "independent_semantic_evidence_auditor",
+    "independent_semantic_run_evidence_auditor",
 )
 
 

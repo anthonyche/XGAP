@@ -71,7 +71,7 @@ def test_result_blind_draft_exposes_real_semantic_blockers() -> None:
         "preflight_question_count": 18,
         "preflight_full_run_permitted": False,
     }
-    assert len(readiness["source_artifacts"]) == 6
+    assert len(readiness["source_artifacts"]) == 7
     assert all(item["verified"] for item in readiness["source_artifacts"])
     assert len(readiness["next_author_decisions"]) == 5
     assert "author_approval.pending" in readiness["blockers"]

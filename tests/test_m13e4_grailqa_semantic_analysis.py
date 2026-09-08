@@ -406,6 +406,26 @@ def test_retrieval_miss_spends_no_provider_call() -> None:
         _analyze(rows)
 
 
+@pytest.mark.parametrize(
+    "failure",
+    (
+        "generation_miss",
+        "entity_grounding_failure",
+        "relation_grounding_failure",
+    ),
+)
+def test_completed_local_failure_may_retain_an_empty_candidate_set(
+    failure: str,
+) -> None:
+    rows = _outcomes()
+    rows[0]["failure_category"] = failure
+    rows[0]["candidates"] = []
+
+    analysis = _analyze(rows)
+
+    assert analysis["failures"]["counts"][failure] == 1
+
+
 def test_cli_binds_exact_ledger_writes_once_and_makes_no_external_calls(
     tmp_path: Path,
 ) -> None:

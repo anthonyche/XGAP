@@ -1616,8 +1616,9 @@ author and implementation blocker; makes no external call; and cannot grant
 full-150 execution authority.
 
 Current status:
-**RESULT-BLIND DRAFT, QUERY-LEVEL ANALYZER, AND INDEPENDENT ANALYSIS AUDITOR
-IMPLEMENTED; AUTHOR SELECTION AND LIVE GATES PENDING.**
+**RESULT-BLIND DRAFT, AUTHORITY-GATED 150-QUERY RUNNER, QUERY-LEVEL ANALYZER,
+AND TWO INDEPENDENT AUDITORS IMPLEMENTED; EXTERNAL CATALOG AND AUTHOR GATES
+PENDING.**
 `grailqa_semantic_paper_protocol.py` and its frozen draft configuration compile
 a deterministic readiness record. The post-inference analyzer now requires
 the exact 150-query ID, split, and Q-bucket population, binds the source ledger,
@@ -1631,12 +1632,23 @@ reconstructs the exact population, shared candidate sets, method rankings,
 paired tests, bootstrap intervals, multiplicity adjustment, failure accounting,
 and complete analysis hash. It rejects ledger, population, protocol,
 source-run, and self-consistently rehashed analysis tampering without importing
-the producer analyzer or making an external call. Five scientific choices
-remain explicitly unselected. The final 18-query CWRU rerun/audit, its author
-review, the pilot150 query-local catalog, production semantic runner, and
-separate execution authority are still required. This milestone does not
-change ranking, prompts, model parameters, catalog construction, or the
-admitted FinBench campaign.
+the producer analyzer or making an external call.
+
+The production semantic runner now separates request construction, explicit
+author authority, inference, delayed evaluation, and later statistical
+analysis. It binds the exact 150-query population and every catalog, model,
+protocol, and authority identity before provider startup; permits at most 300
+external calls; seals all 150 per-query states before opening any gold-derived
+artifact; retains failed queries without imputation; and never executes a graph
+backend or emits native query text. A separate run-evidence auditor independently
+reconstructs the request-to-ledger hash chain and the gold-isolation phase order.
+The CWRU H100 wrapper is ready and excludes unrelated model smoke calls.
+
+Five scientific choices remain explicitly unselected. The final 18-query CWRU
+rerun/audit and author review, a real pilot150 query-local catalog/reachability
+bundle, and a separate exact-run execution authority are still required. This
+milestone does not change ranking, prompts, model parameters, catalog
+construction, or the admitted FinBench campaign.
 
 ## M14 KGQA Evaluation
 

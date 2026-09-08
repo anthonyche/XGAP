@@ -3501,3 +3501,52 @@ recomputed. The auditor makes zero LLM, backend, or ontology-service calls,
 cannot infer any of the five author-owned choices, cannot authorize inference,
 and always remains `paper_result=false` until a later live run and its separate
 authority boundary exist.
+
+## D177 Constrain the admitted FinBench claim to what the baselines identify
+
+The independently admitted FinBench campaign has now been rendered into the
+paper-report projection without rerunning statistics. On the 32 seen-family
+query units, zero-profile family memory is substantially faster end to end than
+current-query dual profiling: the geometric-mean latency ratio is 0.3096 with a
+95% query-level interval of 0.2509--0.3683 and paired randomization
+p=9.9999e-06. It achieves 0.9375 physical-winner accuracy and mean
+predicted/observed frontier Jaccard 0.96875. Those are valid artifact-scoped
+confirmatory observations.
+
+The same campaign also shows that the family-global ablation and fixed route A
+make the same choices, have the same winner accuracy and regret, and are not
+distinguished from XGAP by the predeclared Holm-adjusted comparisons. Therefore
+this experiment identifies the benefit of avoiding current-query profiling in
+this population, but it does not independently identify an instance-specific
+family-memory advantage. The 16 F3 cold-family cases remain descriptive and
+cannot support a cold-start generalization claim. The physical experiment says
+nothing about semantic ambiguity, ontology use, general KGQA, or interaction.
+Paper text and figures must preserve those boundaries rather than presenting
+the significant profile comparison as proof of every XGAP mechanism.
+
+## D178 Require authority and a durable inference seal for the GrailQA run
+
+The GrailQA production path is a state machine, not a direct model-to-analysis
+script. First, a non-authorizing request binds the exact 150 IDs, all five
+author-selected decisions, runner commit, query-local catalog, reachability
+identities, model bundle, and provider-call limits. Second, the author must issue
+a separate decision named `authorize_exact_150_query_semantic_execution` for
+that exact request. The CWRU wrapper refuses to start the model without both
+artifacts.
+
+During execution, the runner writes one immutable inference state for every
+query, allows at most one repair and two external calls per query, and writes a
+content-addressed inference seal only after all 150 states exist. Reference
+interpretations, workload buckets, and gold-derived reachability rows are parsed
+only after that seal. Provider, malformed-output, generation, entity/relation
+grounding, semantic, ranking, and empty-set failures are retained in the outcome
+ledger without retry or imputation. No backend is executed and no native query
+text is emitted.
+
+A separate read-only run auditor deliberately does not import the producer. It
+reconstructs the request/authority/seal/ledger hash chain, exact ID population,
+per-query and aggregate call limits, forbidden-gold-key absence, phase order,
+file inventory, and run-tree immutability. Statistical analysis remains a later
+producer-plus-independent-auditor pair. Implementation readiness does not
+authorize the model run: real pilot150 catalog evidence, preflight review, the
+five author choices, and exact-run authority remain mandatory.

@@ -288,7 +288,16 @@ def _outcome(value: object) -> dict[str, Any]:
         raise GrailQASemanticAnalysisEvidenceError(
             f"{question_id} failed provider emits candidates"
         )
-    if provider["completed"] and not candidates:
+    completed_empty_failures = {
+        "generation_miss",
+        "entity_grounding_failure",
+        "relation_grounding_failure",
+    }
+    if (
+        provider["completed"]
+        and not candidates
+        and failure not in completed_empty_failures
+    ):
         raise GrailQASemanticAnalysisEvidenceError(
             f"{question_id} completed provider emits no candidates"
         )

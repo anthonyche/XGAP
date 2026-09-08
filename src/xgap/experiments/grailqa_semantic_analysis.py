@@ -253,7 +253,16 @@ def _query_outcome(value: object) -> dict[str, Any]:
         raise GrailQASemanticAnalysisError(
             f"{question_id} failed provider call cannot emit candidates"
         )
-    if normalized_provider["completed"] and not candidates:
+    completed_empty_failures = {
+        "generation_miss",
+        "entity_grounding_failure",
+        "relation_grounding_failure",
+    }
+    if (
+        normalized_provider["completed"]
+        and not candidates
+        and failure not in completed_empty_failures
+    ):
         raise GrailQASemanticAnalysisError(
             f"{question_id} completed provider call must emit a nonempty candidate set"
         )
