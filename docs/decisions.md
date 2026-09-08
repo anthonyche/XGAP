@@ -3331,3 +3331,31 @@ runner and independent evidence reconstruction before any output can set
 `paper_result=true`. The compact local readiness record is
 `experiments/artifacts/m15_finbench_confirmatory_analysis_readiness_v1.json`;
 full repository acceptance passes 1,160 tests with 36 intentional skips.
+
+## D170 Admit pre-oracle costs by semantic contract and delay the answer oracle
+
+Confirmatory family-memory training may use successful cost observations before
+the current 48-query answer oracle is opened. This is permitted only through a
+content-addressed selection-admission record that independently replays the
+accepted real SF0.1 correctness audit, binds its external CWRU receipt and
+source archive, and proves that the F1/F2 physical alternatives retain the
+same hard-constraint and semantic plan-family contracts. It is not a claim
+that current-query answers have already been checked. The final confirmatory
+oracle remains authoritative.
+
+Training reduction is block paired. A query contributes a strategy comparison
+only when both physical alternatives completed successfully in the same block;
+at least four shared successful blocks are required and no missing value or
+timeout is imputed. Current-query profile selection may use result-blind costs
+with `exact_answer=null`. All current confirmatory outcomes retain that value
+until the delayed oracle gate verifies that 22 accepted blocks cover the exact
+1,888-run schedule.
+
+Method timeouts are fixed 60-second outcomes, not infrastructure failures.
+Neo4j and Fuseki enforce that deadline server-side while the HTTP transport has
+a 65-second grace. A replacement is possible only for one independently
+audited, zero-measurement infrastructure failure and must explicitly reference
+the failed attempt. Backend/plan failures, partial blocks, and query timeouts
+cannot enter that path. These rules add no execution authority and keep
+`paper_result=false`; the staged coordinator and final campaign auditor must
+still pass before the author is asked to authorize the exact campaign.

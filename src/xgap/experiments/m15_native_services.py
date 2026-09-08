@@ -208,6 +208,8 @@ FINBENCH_FAMILY_CAMPAIGN_SERVICE_RUN_SCHEMA_VERSION = (
 FINBENCH_CONFIRMATORY_BLOCK_SERVICE_RUN_SCHEMA_VERSION = (
     "m15-finbench-native-live-confirmatory-block-service-run-v1"
 )
+FINBENCH_CONFIRMATORY_METHOD_TIMEOUT_SECONDS = 60.0
+FINBENCH_CONFIRMATORY_TRANSPORT_TIMEOUT_SECONDS = 65.0
 FAMILY_RUNTIME_COMPATIBILITY_SCHEMA_VERSION = (
     "m15-f2c5-native-runtime-compatibility-v1"
 )
@@ -321,6 +323,7 @@ class NativeServicePlan:
     neo4j_http_url: str
     fuseki_url: str
     fuseki_dataset: str
+    query_timeout_policy: Mapping[str, Any] | None
     services: tuple[ServiceSpec, ...]
     plan_path: Path
 
@@ -337,6 +340,11 @@ class NativeServicePlan:
             "neo4j_http_url": self.neo4j_http_url,
             "fuseki_url": self.fuseki_url,
             "fuseki_dataset": self.fuseki_dataset,
+            "query_timeout_policy": (
+                dict(self.query_timeout_policy)
+                if self.query_timeout_policy is not None
+                else None
+            ),
             "services": [service.to_dict() for service in self.services],
             "public_ports": False,
             "automatic_retries": 0,
@@ -611,6 +619,7 @@ def _neo4j_configuration(
     http_port: int,
     bolt_port: int,
     resource_profile: Mapping[str, str],
+    query_timeout_seconds: float | None,
 ) -> str:
     neo_state = state_root / "neo4j"
     values = {
@@ -643,7 +652,29 @@ def _neo4j_configuration(
         f"server.http.advertised_address=127.0.0.1:{http_port}",
         "server.https.enabled=false",
     ]
+    if query_timeout_seconds is not None:
+        lines.extend(
+            (
+                f"db.transaction.timeout={int(query_timeout_seconds)}s",
+                "db.transaction.monitor.check.interval=1s",
+            )
+        )
     return "\n".join(str(item) for item in lines) + "\n"
+
+
+def _fuseki_server_configuration(*, query_timeout_seconds: float) -> str:
+    timeout_ms = int(query_timeout_seconds * 1000)
+    return (
+        "PREFIX fuseki: <http://jena.apache.org/fuseki#>\n"
+        "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
+        "PREFIX ja: <http://jena.hpl.hp.com/2005/11/Assembler#>\n"
+        "\n"
+        "[] rdf:type fuseki:Server ;\n"
+        "   ja:context [\n"
+        '       ja:cxtName "arq:queryTimeout" ;\n'
+        f'       ja:cxtValue "{timeout_ms}"\n'
+        "   ] .\n"
+    )
 
 
 def build_native_service_plan(
@@ -659,6 +690,8 @@ def build_native_service_plan(
     fuseki_port: int,
     lock_path: str | Path = DEFAULT_LOCK_PATH,
     neo4j_resource_profile_id: str = "development",
+    query_timeout_seconds: float | None = None,
+    transport_timeout_seconds: float | None = None,
 ) -> NativeServicePlan:
     runtime = Path(runtime_root).resolve()
     evidence = Path(evidence_root).resolve()
@@ -672,6 +705,22 @@ def build_native_service_plan(
     normalized_fs = validate_local_filesystem_type(filesystem_type)
     if neo4j_resource_profile_id not in NEO4J_RESOURCE_PROFILES:
         raise ValueError("unsupported Neo4j resource profile")
+    if query_timeout_seconds is not None:
+        if (
+            not isinstance(query_timeout_seconds, (int, float))
+            or isinstance(query_timeout_seconds, bool)
+            or query_timeout_seconds <= 0
+            or not float(query_timeout_seconds).is_integer()
+        ):
+            raise ValueError("query_timeout_seconds must be a positive whole number")
+        if (
+            not isinstance(transport_timeout_seconds, (int, float))
+            or isinstance(transport_timeout_seconds, bool)
+            or transport_timeout_seconds <= query_timeout_seconds
+        ):
+            raise ValueError("transport timeout must exceed the service query timeout")
+    elif transport_timeout_seconds is not None:
+        raise ValueError("transport timeout requires a service query timeout")
     resource_profile = dict(NEO4J_RESOURCE_PROFILES[neo4j_resource_profile_id])
     staging = _load_staging_manifest(Path(staging_manifest).resolve(), runtime)
     if evidence == runtime or runtime in evidence.parents:
@@ -730,11 +779,39 @@ def build_native_service_plan(
         http_port=neo4j_http_port,
         bolt_port=neo4j_bolt_port,
         resource_profile=resource_profile,
+        query_timeout_seconds=query_timeout_seconds,
     )
     (neo4j_conf / "neo4j.conf").write_text(neo4j_configuration, encoding="utf-8")
     (evidence / "neo4j.conf").write_text(neo4j_configuration, encoding="utf-8")
     fuseki_base = state_root / "fuseki-base"
     fuseki_base.mkdir(mode=0o700)
+    query_timeout_policy: dict[str, Any] | None = None
+    if query_timeout_seconds is not None:
+        fuseki_configuration = _fuseki_server_configuration(
+            query_timeout_seconds=query_timeout_seconds
+        )
+        (fuseki_base / "config.ttl").write_text(
+            fuseki_configuration, encoding="utf-8"
+        )
+        (evidence / "fuseki-config.ttl").write_text(
+            fuseki_configuration, encoding="utf-8"
+        )
+        query_timeout_policy = {
+            "method_timeout_seconds": float(query_timeout_seconds),
+            "transport_timeout_seconds": float(transport_timeout_seconds),
+            "neo4j": {
+                "setting": "db.transaction.timeout",
+                "value": f"{int(query_timeout_seconds)}s",
+                "monitor_check_interval": "1s",
+            },
+            "fuseki": {
+                "setting": "arq:queryTimeout",
+                "value_milliseconds": int(query_timeout_seconds * 1000),
+                "configuration": "FUSEKI_BASE/config.ttl",
+            },
+            "timeout_is_method_outcome": True,
+            "automatic_retries": 0,
+        }
     local_logs = state_root / "service-logs"
     local_logs.mkdir(mode=0o700)
 
@@ -791,6 +868,7 @@ def build_native_service_plan(
         neo4j_http_url=neo4j_url,
         fuseki_url=fuseki_url,
         fuseki_dataset="xgap",
+        query_timeout_policy=query_timeout_policy,
         services=services,
         plan_path=evidence / "service_plan.json",
     )
@@ -1030,7 +1108,11 @@ def _run_fixture_and_query(
                     clients["neo4j"]
                 )
             for client in clients.values():
-                client.timeout_seconds = 60.0
+                client.timeout_seconds = (
+                    FINBENCH_CONFIRMATORY_TRANSPORT_TIMEOUT_SECONDS
+                    if workload_mode == "finbench_confirmatory_block"
+                    else 60.0
+                )
             if workload_mode == "finbench_correctness":
                 correctness = run_m15_live_finbench_correctness(
                     workload_root=finbench_workload,
@@ -1070,6 +1152,7 @@ def _run_fixture_and_query(
                     )
             else:
                 assert finbench_confirmatory_execution_context is not None
+                assert plan.query_timeout_policy is not None
                 from xgap.experiments.m15_live_finbench_confirmatory_block import (
                     run_m15_live_finbench_confirmatory_block,
                 )
@@ -1081,6 +1164,7 @@ def _run_fixture_and_query(
                     clients=clients,
                     loaders=loaders,
                     output_root=run_root,
+                    query_timeout_policy=plan.query_timeout_policy,
                     repo_root=repo_root,
                 )
                 if not block.success:
@@ -2584,6 +2668,16 @@ def run_m15_native_services(
                 neo4j_bolt_port=ports.ports[1],
                 fuseki_port=ports.ports[2],
                 neo4j_resource_profile_id=neo4j_resource_profile_id,
+                query_timeout_seconds=(
+                    FINBENCH_CONFIRMATORY_METHOD_TIMEOUT_SECONDS
+                    if workload_mode == "finbench_confirmatory_block"
+                    else None
+                ),
+                transport_timeout_seconds=(
+                    FINBENCH_CONFIRMATORY_TRANSPORT_TIMEOUT_SECONDS
+                    if workload_mode == "finbench_confirmatory_block"
+                    else None
+                ),
             )
             ports.release(0)
             ports.release(1)

@@ -952,9 +952,18 @@ schedule projection, physical strategy, order, timeout, and retry policy. The
 worker cannot inspect backend internals, emit an unscheduled native query,
 profile outside the profile block, read an oracle, or expand its authority.
 
-Training-memory admission requires an additional semantic distinction before
-formal execution: a plan-family equivalence contract established by compiler
-invariants and development correctness evidence is not the same as observing a
-current confirmatory answer. Selection artifacts must preserve that provenance;
-the current-query oracle remains sealed until every scheduled block has
-completed and is authoritative for the final correctness gate.
+Training-memory admission now makes the required semantic distinction. A
+content-addressed record replays the accepted real SF0.1 correctness evidence,
+binds the common source archive, and verifies unchanged F1/F2 hard constraints
+and physical plan-family contracts. It admits only successful, block-paired
+costs; it does not observe a current confirmatory answer. The current-query
+oracle remains sealed until every scheduled block has completed and is
+authoritative for the final correctness gate.
+
+Block reconstruction is independent and read-only. The sole replacement is
+available only after an audited infrastructure attempt produced zero
+measurements; method timeouts, backend/plan failures, and partial blocks remain
+their declared outcomes. Both native services enforce a 60-second query limit,
+with a 65-second transport grace used only to preserve timeout attribution.
+The next boundary is campaign orchestration plus one final independent audit,
+not a change to the agent environment or tool authority.

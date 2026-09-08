@@ -936,7 +936,17 @@ Each allocation then loads a fresh SF0.1 partition, executes only the resolved
 block order, records timeouts without retry, and leaves answer-oracle fields
 unopened.
 
-No CWRU confirmatory measurement command should be run yet. The per-block
-auditor, result-blind training/profile phase assembler, delayed oracle opener,
-and final campaign audit must first be accepted at one clean runner commit.
-Population Option A and the successful freeze are not execution authority.
+The per-block auditor, result-blind training/profile phase assembler,
+selection-admission record, and delayed oracle opener are now implemented and
+locally tested. A block audit accepts a completed projection or a
+zero-measurement infrastructure failure only. One replacement must point to
+that audited attempt; method timeout, backend/plan failure, and partial
+measurement are never replacement eligible. Selection costs remain
+`exact_answer=null`, and the answer oracle cannot be loaded until all 22 blocks
+and 1,888 scheduled outcomes are present.
+
+No CWRU confirmatory measurement command should be run yet. The remaining gate
+is a deterministic staged coordinator plus a final independent campaign audit,
+followed by one clean full-regression commit. Population Option A and the
+successful freeze are not execution authority; after those gates pass, the
+exact request will be shown to the author for a separate explicit decision.

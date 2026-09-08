@@ -168,6 +168,14 @@ def _suite(
         or suite.get("prediction_count") != 48
         or suite.get("seen_family_prediction_count") != 32
         or suite.get("cold_family_prediction_count") != 16
+        or _SHA256.fullmatch(
+            str(suite.get("selection_admission_sha256"))
+        )
+        is None
+        or suite.get("training_exactness_semantics")
+        != "plan_family_semantic_contract_not_current_query_oracle"
+        or suite.get("current_confirmatory_query_oracle_opened") is not False
+        or suite.get("final_confirmatory_oracle_is_authoritative") is not True
         or suite.get("current_query_profile_calls") != 0
         or suite.get("current_query_measurements_used_for_own_prediction") is not False
         or suite.get("automatic_retries") != 0
@@ -329,6 +337,37 @@ def _measurement(
     }
 
 
+def _selection_time_measurement(
+    raw: Mapping[str, Any],
+    *,
+    expected: Mapping[str, Any],
+    strategy: str,
+    allow_opened_oracle_reconstruction: bool,
+) -> dict[str, Any]:
+    """Normalize profile costs before the final answer oracle is opened."""
+
+    if raw.get("exact_answer") is not None and not (
+        allow_opened_oracle_reconstruction
+        and raw.get("exact_answer") is True
+    ):
+        raise FinBenchConfirmatoryAnalysisError(
+            "profile selection opened the current confirmatory oracle"
+        )
+    admitted = copy.deepcopy(dict(raw))
+    if admitted.get("outcome") == "success":
+        admitted["exact_answer"] = True
+    normalized = _measurement(
+        admitted,
+        expected=expected,
+        strategy=strategy,
+    )
+    normalized["exact_answer"] = None
+    normalized["selection_exactness_semantics"] = (
+        "plan_family_semantic_contract_not_current_query_oracle"
+    )
+    return normalized
+
+
 def _measurement_index(
     raw_measurements: Sequence[Mapping[str, Any]],
 ) -> dict[str, Mapping[str, Any]]:
@@ -370,6 +409,7 @@ def build_finbench_confirmatory_profile_selection_seal(
     *,
     schedule: Mapping[str, Any],
     profile_measurements: Sequence[Mapping[str, Any]],
+    allow_opened_oracle_reconstruction: bool = False,
 ) -> dict[str, Any]:
     """Choose one physical strategy per query from the two frozen profiles."""
 
@@ -381,10 +421,13 @@ def build_finbench_confirmatory_profile_selection_seal(
         raise FinBenchConfirmatoryAnalysisError("profile measurement coverage changed")
     by_query: dict[str, list[dict[str, Any]]] = {}
     for item in expected:
-        normalized = _measurement(
+        normalized = _selection_time_measurement(
             raw[str(item["run_id"])],
             expected=item,
             strategy=str(item["physical_strategy"]),
+            allow_opened_oracle_reconstruction=(
+                allow_opened_oracle_reconstruction
+            ),
         )
         by_query.setdefault(str(item["query_id"]), []).append(normalized)
     selections = []
@@ -426,6 +469,11 @@ def build_finbench_confirmatory_profile_selection_seal(
         "selection_count": len(selections),
         "profile_acquisition_plan_runs": 96,
         "selection_source": "sealed_current_query_dual_profile_costs_only",
+        "selection_exactness_semantics": (
+            "plan_family_semantic_contract_not_current_query_oracle"
+        ),
+        "current_confirmatory_query_oracle_opened": False,
+        "final_confirmatory_oracle_is_authoritative": True,
         "oracle_inputs": [],
         "paper_result": False,
     }
@@ -576,6 +624,7 @@ def build_finbench_confirmatory_measurement_ledger(
     expected_profile_seal = build_finbench_confirmatory_profile_selection_seal(
         schedule=frozen,
         profile_measurements=[raw[identity] for identity in sorted(profile_ids)],
+        allow_opened_oracle_reconstruction=True,
     )
     if profile_seal != expected_profile_seal:
         raise FinBenchConfirmatoryAnalysisError("profile selection seal reconstruction failed")

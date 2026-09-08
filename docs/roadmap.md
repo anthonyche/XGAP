@@ -1613,15 +1613,28 @@ Current status: TODO
   envelope is validated before service startup; one worker executes only that
   schedule projection against native Neo4j and Fuseki with a 60-second query
   timeout and zero automatic retry.
-- **Next implementation gate:** independently reconstruct one block and expose
-  only result-blind training/profile inputs. Selection-time training admission
-  must distinguish a prevalidated physical-plan semantic contract from a
-  current-query answer-oracle observation.
-- **Then:** assemble seven training blocks into leakage-safe cross-fit memory,
-  seal family choices, assemble the profile block, seal profile choices, run
-  paired serving and shadow blocks, and open the answer oracle only after all
-  1,888 scheduled outcomes exist.
+- **Block evidence and phase gates locally ready:** an independent read-only
+  auditor accepts either one complete schedule block or a zero-measurement
+  infrastructure failure. It never treats a method timeout or backend/plan
+  failure as replacement eligible. The phase assembler accepts at most one
+  explicitly linked infrastructure replacement and exposes only result-blind
+  training/profile costs.
+- **Pre-oracle selection contract locally ready:** family-memory training is
+  admitted by compiler-equal physical plan-family contracts plus the accepted
+  real SF0.1 correctness run, never by a current confirmatory answer. Successful
+  paired training costs are reduced within block; incomplete pairs and method
+  timeouts are not imputed. The profile seal likewise uses costs only.
+- **Delayed oracle gate locally ready:** the answer oracle cannot be parsed
+  until all 22 accepted blocks and all 1,888 outcomes reconstruct exactly.
+  Once opened, it remains authoritative and any answer mismatch invalidates the
+  complete campaign.
+- **Next implementation gate:** build the deterministic staged campaign
+  coordinator and final independent campaign auditor. They must assemble seven
+  training blocks, one profile block, seven paired-serving blocks, seven shadow
+  blocks, and the delayed oracle without a manual 22-command loop.
+  Pre-oracle local readiness is frozen in
+  `experiments/artifacts/m15_finbench_confirmatory_preoracle_readiness_v1.json`.
 - **Authorization gate:** create the final execution request only after the
-  runner, block auditor, phase assembler, delayed oracle gate, and campaign
-  auditor share one clean commit. A separate explicit author decision is then
-  required before any confirmatory block is submitted.
+  runner, block auditor, phase assembler, delayed oracle gate, coordinator, and
+  campaign auditor share one clean commit. A separate explicit author decision
+  is then required before any confirmatory block is submitted.

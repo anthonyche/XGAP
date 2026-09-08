@@ -1,0 +1,74 @@
+{
+  "schema_version": "m15-finbench-confirmatory-preoracle-readiness-v1",
+  "artifact_id": "m15-finbench-confirmatory-preoracle-local-readiness-v1",
+  "accepted_external_evidence": {
+    "receipt_path": "experiments/artifacts/m15_finbench_sf0_1_cwru_correctness_3793698_receipt.json",
+    "receipt_file_sha256": "0b1ed5d4f2886a5f5682a98633f923dd7c4bee82434b66f585d8db62e616aadb",
+    "producer_commit": "bc57a9de57a52529f24f2cc11408a9b83aa56dcf",
+    "slurm_job_id": "3793698",
+    "independent_audit_check_count": 368
+  },
+  "implementation": {
+    "selection_admission": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_selection_admission.py",
+      "file_sha256": "47ea67450e8807cace14645653d4b7fc5d1138d2912c7f950f2dca07e04125bf"
+    },
+    "execution_authority": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_execution.py",
+      "file_sha256": "4484011897f9f30480630eddb75cfc0b60a0835f239bfc6c6b16cb4ab3650251"
+    },
+    "live_block_runner": {
+      "path": "src/xgap/experiments/m15_live_finbench_confirmatory_block.py",
+      "file_sha256": "a36035aaab1635c10070c311a214f3ccde7e537385b99e1b3a38ac18e34139bc"
+    },
+    "block_evidence": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_block_evidence.py",
+      "file_sha256": "d8b68cbebe081dbd09d0c22ff39e2128662aa2e2b18348e1faede340c9538051"
+    },
+    "phase_assembly": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_phase.py",
+      "file_sha256": "0e21170e3f88a7186db7bcf8f64e95d5e05a0fd00f0dc9c3a70ee7e56110e0ff"
+    },
+    "delayed_oracle": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_oracle.py",
+      "file_sha256": "d4d29091c53ea0896817976f9b9b73346639ba78318cd271020f99ecd9f26996"
+    }
+  },
+  "acceptance": {
+    "focused_tests": {
+      "command": "pytest -q tests/test_m15_finbench_confirmatory_selection_admission.py tests/test_m15_finbench_confirmatory_analysis.py tests/test_m15_native_services.py tests/test_fuseki_http_errors.py",
+      "passed": 50,
+      "failed": 0
+    },
+    "full_tests": {
+      "command": "pytest -q",
+      "passed": 1176,
+      "skipped": 36,
+      "failed": 0,
+      "elapsed_seconds": 438.08
+    },
+    "git_diff_check_passed": true,
+    "compileall_passed": true
+  },
+  "scientific_boundary": {
+    "measurement_block_count": 22,
+    "total_plan_runs": 1888,
+    "maximum_backend_calls": 3776,
+    "query_instance_is_inferential_unit": true,
+    "repetitions_are_independent_units": false,
+    "method_timeout_seconds": 60,
+    "transport_timeout_seconds": 65,
+    "automatic_retries": 0,
+    "infrastructure_replacement_limit": 1,
+    "replacement_requires_zero_measurements": true,
+    "missing_measurements": "no_imputation",
+    "current_confirmatory_query_oracle_opened": false,
+    "final_confirmatory_oracle_is_authoritative": true
+  },
+  "remaining_gate": {
+    "deterministic_staged_campaign_coordinator": false,
+    "final_independent_campaign_auditor": false,
+    "confirmatory_execution_authorized": false
+  },
+  "paper_result": false
+}

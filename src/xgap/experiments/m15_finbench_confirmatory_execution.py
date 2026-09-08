@@ -32,6 +32,9 @@ from xgap.experiments.m15_finbench_confirmatory_freeze_evidence import (
 from xgap.experiments.m15_finbench_confirmatory_freeze_job import (
     FINBENCH_CONFIRMATORY_FREEZE_MANIFEST_SCHEMA_VERSION,
 )
+from xgap.experiments.m15_finbench_confirmatory_selection_admission import (
+    validate_finbench_confirmatory_selection_admission,
+)
 
 
 FINBENCH_CONFIRMATORY_EXECUTION_REQUEST_SCHEMA_VERSION = (
@@ -48,6 +51,7 @@ FINBENCH_CONFIRMATORY_BLOCK_EXECUTION_CONTEXT_SCHEMA_VERSION = (
 )
 
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
+_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$")
 _EXPECTED_COUNTS = {
     "seen_family_query_count": 32,
@@ -146,6 +150,7 @@ def build_finbench_confirmatory_execution_request(
     *,
     freeze_manifest: Mapping[str, Any],
     freeze_audit: Mapping[str, Any],
+    selection_admission: Mapping[str, Any],
     runner_commit: str,
 ) -> dict[str, Any]:
     """Create a non-authorizing request for the exact confirmatory campaign."""
@@ -157,6 +162,10 @@ def build_finbench_confirmatory_execution_request(
     manifest, audit = _validate_freeze(
         freeze_manifest=freeze_manifest, freeze_audit=freeze_audit
     )
+    admission = validate_finbench_confirmatory_selection_admission(
+        selection_admission,
+        workload_sha256=str(manifest["workload_sha256"]),
+    )
     body: dict[str, Any] = {
         "schema_version": FINBENCH_CONFIRMATORY_EXECUTION_REQUEST_SCHEMA_VERSION,
         "freeze_manifest_sha256": manifest["manifest_sha256"],
@@ -165,6 +174,14 @@ def build_finbench_confirmatory_execution_request(
         "runner_commit": runner_commit,
         "schedule_sha256": manifest["schedule_sha256"],
         "workload_sha256": manifest["workload_sha256"],
+        "selection_admission_sha256": admission[
+            "selection_admission_sha256"
+        ],
+        "selection_exactness_semantics": admission[
+            "training_exactness_semantics"
+        ],
+        "current_confirmatory_query_oracle_opened": False,
+        "final_confirmatory_oracle_is_authoritative": True,
         "author_selection_sha256": manifest["author_selection_sha256"],
         "population_approval_sha256": manifest["population_approval_sha256"],
         "execution_scope": {
@@ -233,6 +250,14 @@ def validate_finbench_confirmatory_execution_request(
         != FINBENCH_CONFIRMATORY_EXECUTION_REQUEST_SCHEMA_VERSION
         or _COMMIT.fullmatch(str(request.get("freeze_producer_commit"))) is None
         or _COMMIT.fullmatch(str(request.get("runner_commit"))) is None
+        or _SHA256.fullmatch(
+            str(request.get("selection_admission_sha256"))
+        )
+        is None
+        or request.get("selection_exactness_semantics")
+        != "plan_family_semantic_contract_not_current_query_oracle"
+        or request.get("current_confirmatory_query_oracle_opened") is not False
+        or request.get("final_confirmatory_oracle_is_authoritative") is not True
         or request.get("execution_scope")
         != {
             "measurement_block_count": 22,
@@ -677,6 +702,7 @@ def build_parser() -> argparse.ArgumentParser:
     request = commands.add_parser("request")
     request.add_argument("--freeze-run", required=True)
     request.add_argument("--freeze-audit", required=True)
+    request.add_argument("--selection-admission", required=True)
     request.add_argument("--runner-commit", required=True)
     request.add_argument("--output", required=True)
 
@@ -712,9 +738,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                 freeze_root / "run_manifest.json", name="freeze manifest"
             )
             audit = _read_json_file(args.freeze_audit, name="freeze audit")
+            admission = _read_json_file(
+                args.selection_admission, name="selection admission"
+            )
             result = build_finbench_confirmatory_execution_request(
                 freeze_manifest=manifest,
                 freeze_audit=audit,
+                selection_admission=admission,
                 runner_commit=args.runner_commit,
             )
             identifier = result["execution_request_sha256"]

@@ -15,8 +15,33 @@ from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport, QueryArtifact
 
 
+_MAX_HTTP_ERROR_BODY_BYTES = 64 * 1024
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _fuseki_http_error_message(error: urllib.error.HTTPError) -> str:
+    """Preserve bounded Fuseki error text so server timeouts stay observable."""
+
+    try:
+        raw = error.read(_MAX_HTTP_ERROR_BODY_BYTES + 1)
+    except (OSError, ValueError):
+        raw = b""
+    truncated = len(raw) > _MAX_HTTP_ERROR_BODY_BYTES
+    text = " ".join(
+        raw[:_MAX_HTTP_ERROR_BODY_BYTES]
+        .decode("utf-8", errors="replace")
+        .split()
+    )
+    if len(text) > 8192:
+        text = text[:8192] + "..."
+        truncated = True
+    suffix = " [response truncated]" if truncated else ""
+    if text:
+        return f"Fuseki HTTP {error.code}: {text}{suffix}"
+    return f"Fuseki HTTP {error.code}: {error.reason}"
 
 
 class FusekiClient:
@@ -108,8 +133,13 @@ class FusekiClient:
             },
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-            body = response.read().decode("utf-8")
+        try:
+            with urllib.request.urlopen(
+                request, timeout=self.timeout_seconds
+            ) as response:
+                body = response.read().decode("utf-8")
+        except urllib.error.HTTPError as exc:
+            raise ValueError(_fuseki_http_error_message(exc)) from exc
         return json.loads(body)
 
     def _rows_from_response(self, response: dict[str, Any]) -> list[dict[str, Any]]:

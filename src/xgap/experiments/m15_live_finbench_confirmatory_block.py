@@ -42,6 +42,22 @@ FINBENCH_CONFIRMATORY_LIVE_BLOCK_SCHEMA_VERSION = (
 FINBENCH_CONFIRMATORY_RAW_MEASUREMENTS_SCHEMA_VERSION = (
     "m15-finbench-confirmatory-raw-measurements-v1"
 )
+_CONFIRMATORY_TIMEOUT_POLICY = {
+    "method_timeout_seconds": 60.0,
+    "transport_timeout_seconds": 65.0,
+    "neo4j": {
+        "setting": "db.transaction.timeout",
+        "value": "60s",
+        "monitor_check_interval": "1s",
+    },
+    "fuseki": {
+        "setting": "arq:queryTimeout",
+        "value_milliseconds": 60_000,
+        "configuration": "FUSEKI_BASE/config.ttl",
+    },
+    "timeout_is_method_outcome": True,
+    "automatic_retries": 0,
+}
 
 
 @dataclass(frozen=True)
@@ -160,6 +176,7 @@ def run_m15_live_finbench_confirmatory_block(
     clients: Mapping[str, BackendClient],
     loaders: Mapping[str, BackendFixtureLoader],
     output_root: str | Path,
+    query_timeout_policy: Mapping[str, Any],
     repo_root: str | Path | None = None,
 ) -> FinBenchConfirmatoryBlockRecord:
     """Run one block attempt and retain raw, result-blind measurements."""
@@ -167,6 +184,9 @@ def run_m15_live_finbench_confirmatory_block(
     context = validate_finbench_confirmatory_block_execution_envelope(
         execution_context
     )
+    timeout_policy = dict(query_timeout_policy)
+    if timeout_policy != _CONFIRMATORY_TIMEOUT_POLICY:
+        raise ValueError("confirmatory query timeout policy changed")
     attempt = context["block_attempt"]
     if set(clients) != {"neo4j", "fuseki"} or set(loaders) != {
         "neo4j",
@@ -235,6 +255,8 @@ def run_m15_live_finbench_confirmatory_block(
         "git": git,
         "source_partition_sha256": partition["partition_sha256"],
         "plan_catalog": plan_catalog,
+        "query_timeout_policy": timeout_policy,
+        "query_timeout_policy_sha256": content_hash(timeout_policy),
         "plan_catalog_sealed_before_fixture_load": True,
         "backend_calls_before_seal": 0,
         "oracle_content_parsed": False,
@@ -338,7 +360,11 @@ def run_m15_live_finbench_confirmatory_block(
         _write_json(destination / "load_reports.json", load_reports)
 
     complete = error is None and len(raw_measurements) == len(attempt["measurements"])
-    replacement_eligible = error is not None and len(raw_measurements) == 0
+    replacement_eligible = (
+        error is not None
+        and failure_category == "infrastructure_failure"
+        and len(raw_measurements) == 0
+    )
     attempt_status = (
         "completed"
         if complete
@@ -385,6 +411,9 @@ def run_m15_live_finbench_confirmatory_block(
         "phase": attempt["phase"],
         "source_partition_sha256": partition["partition_sha256"],
         "preflight_sha256": preflight["preflight_sha256"],
+        "query_timeout_policy_sha256": preflight[
+            "query_timeout_policy_sha256"
+        ],
         "raw_measurements_sha256": raw_body["raw_measurements_sha256"],
         "attempt_record": attempt_record,
         "expected_plan_run_count": len(attempt["measurements"]),

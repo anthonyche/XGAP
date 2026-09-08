@@ -927,11 +927,10 @@ separate cold-start stratum. The frozen primary schedule has 32 seen-family
 inferential queries, 16 cold-family queries, 22 measurement blocks, 1,888 plan
 runs, and at most 3,776 black-box backend calls. A new CPU-only freeze job and
 independent reconstruction auditor bind the accepted population registry to
-this author choice without executing a backend. The live runner, statistics
-analyzer, and final campaign auditor remain pending, so no confirmatory
-campaign is authorized and `paper_result=false` remains mandatory. Full
-repository acceptance passes 1,156 tests with 36 intentional live/external
-skips.
+this author choice without executing a backend. The live block runner and
+statistics analyzer were subsequently implemented; campaign orchestration and
+the final independent campaign auditor remain pending, so no confirmatory
+campaign is authorized and `paper_result=false` remains mandatory.
 
 The confirmatory statistics layer is now locally implemented. Its ledger
 binds every frozen run/slot identity to the physical strategy selected before
@@ -2681,19 +2680,34 @@ its workload SHA-256 is
 The freeze made zero backend, profile, LLM, and ontology calls and does not
 authorize confirmatory execution.
 
-The first execution layer is locally implemented. It separates a
-non-authorizing execution request from explicit author authority, compiles one
-immutable schedule block at a time, and requires the complete request,
+The result-blind execution and evidence layers are locally implemented. They
+separate a non-authorizing execution request from explicit author authority,
+compile one immutable schedule block at a time, and require the complete request,
 authority, schedule, and applicable selection seals to validate before Java or
 either backend starts. The native worker uses fresh job-owned Neo4j and Fuseki
 services, preserves query timeouts as method outcomes, performs no automatic
 retry, retains canonical rows without opening the answer oracle, and refuses a
-forged schedule projection. The targeted confirmatory-population,
-execution/native-service, and remote-control suite passes 63 tests.
-The full repository regression also passes with 1,166 tests and 36 explicit
-environment or external-artifact skips in 433.14 seconds.
+forged schedule projection. A server-enforced 60-second Neo4j/Fuseki query
+deadline uses a 65-second transport grace so a method timeout is recorded
+rather than confused with an infrastructure loss.
 
-This is local runner readiness only. The independent per-block evidence
-auditor, phase assembler, selection-time exactness-admission record, delayed
-oracle opener, and final campaign audit are still required before author
-execution authority may be requested. `paper_result` remains false.
+The independent per-block auditor now reconstructs accepted blocks without
+mutating them. Only a zero-measurement infrastructure failure may receive the
+single linked replacement; query timeout, backend failure, plan failure, and
+partial measurement are not replacement eligible. Result-blind phase assembly
+uses only complete paired training observations and makes no imputation.
+Selection-time admission replays the accepted SF0.1 correctness audit, binds
+the shared archive and unchanged F1/F2 semantic plan-family contracts, and
+keeps every current confirmatory `exact_answer` field unopened. Profile
+selection is cost-only. The delayed oracle gate first requires all 22 accepted
+blocks and all 1,888 outcomes, then opens the sealed oracle once; any mismatch
+invalidates the whole campaign.
+
+This is still local pre-campaign readiness. A deterministic staged coordinator
+and a final independent campaign auditor remain required before author
+execution authority may be requested. No confirmatory measurements have been
+submitted and `paper_result` remains false. Full repository regression passes
+1,176 tests with 36 intentional environment or external-artifact skips. The
+content-addressed implementation inventory and external correctness receipt are
+recorded in
+`experiments/artifacts/m15_finbench_confirmatory_preoracle_readiness_v1.json`.

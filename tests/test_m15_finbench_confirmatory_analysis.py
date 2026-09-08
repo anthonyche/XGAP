@@ -17,6 +17,9 @@ from xgap.experiments.m15_finbench_confirmatory_analysis import (
 from xgap.experiments.m15_finbench_confirmatory_crossfit import (
     FINBENCH_CONFIRMATORY_CROSSFIT_SCHEMA_VERSION,
 )
+from xgap.experiments.m15_finbench_confirmatory_block_evidence import (
+    audit_finbench_confirmatory_block,
+)
 from xgap.experiments.m15_finbench_confirmatory_schedule import (
     FINBENCH_CONFIRMATORY_SCHEDULE_SCHEMA_VERSION,
 )
@@ -34,7 +37,16 @@ from xgap.experiments.m15_finbench_confirmatory_freeze_evidence import (
 from xgap.experiments.m15_finbench_confirmatory_freeze_job import (
     FINBENCH_CONFIRMATORY_FREEZE_MANIFEST_SCHEMA_VERSION,
 )
+from xgap.experiments.m15_finbench_confirmatory_phase import (
+    build_finbench_confirmatory_accepted_block,
+    build_finbench_confirmatory_failed_attempt_bundle,
+    extract_finbench_confirmatory_training_observations,
+)
+from xgap.experiments.m15_finbench_confirmatory_selection_admission import (
+    FINBENCH_CONFIRMATORY_SELECTION_ADMISSION_SCHEMA_VERSION,
+)
 from xgap.experiments import m15_live_finbench_confirmatory_block as live_block
+from xgap.experiments import m15_finbench_confirmatory_oracle as oracle_gate
 from xgap.experiments.m15_fixture_loader import BackendLoadReport
 from xgap.runtime import (
     FederatedExecutionPlan,
@@ -53,6 +65,22 @@ STRATEGIES = {
     FAMILIES[0]: ("graph_first_hash", "control_first_bind"),
     FAMILIES[1]: ("path_first_hash", "control_first_bound_path"),
     FAMILIES[2]: ("aggregate_first_hash", "control_first_bound_aggregate"),
+}
+TIMEOUT_POLICY = {
+    "method_timeout_seconds": 60.0,
+    "transport_timeout_seconds": 65.0,
+    "neo4j": {
+        "setting": "db.transaction.timeout",
+        "value": "60s",
+        "monitor_check_interval": "1s",
+    },
+    "fuseki": {
+        "setting": "arq:queryTimeout",
+        "value_milliseconds": 60000,
+        "configuration": "FUSEKI_BASE/config.ttl",
+    },
+    "timeout_is_method_outcome": True,
+    "automatic_retries": 0,
 }
 
 
@@ -250,6 +278,12 @@ def _fixture() -> tuple[dict, dict, list[dict]]:
         "seen_family_prediction_count": 32,
         "cold_family_prediction_count": 16,
         "predictions": predictions,
+        "selection_admission_sha256": "f" * 64,
+        "training_exactness_semantics": (
+            "plan_family_semantic_contract_not_current_query_oracle"
+        ),
+        "current_confirmatory_query_oracle_opened": False,
+        "final_confirmatory_oracle_is_authoritative": True,
         "current_query_profile_calls": 0,
         "current_query_measurements_used_for_own_prediction": False,
         "automatic_retries": 0,
@@ -302,7 +336,9 @@ def _ledger() -> tuple[dict, dict, dict, list[dict]]:
         item for item in measurements if item["scheduled_identity"] in profile_ids
     ]
     profile = build_finbench_confirmatory_profile_selection_seal(
-        schedule=schedule, profile_measurements=profile_measurements
+        schedule=schedule,
+        profile_measurements=profile_measurements,
+        allow_opened_oracle_reconstruction=True,
     )
     profile_choices = {
         item["query_id"]: item["selected_physical_strategy"]
@@ -385,9 +421,72 @@ def _execution_boundary(schedule: dict) -> tuple[dict, dict, dict, dict]:
         "checks": checks,
         "run_tree_mutated": False,
     }
+    admission = {
+        "schema_version": (
+            FINBENCH_CONFIRMATORY_SELECTION_ADMISSION_SCHEMA_VERSION
+        ),
+        "confirmatory_workload_sha256": schedule["workload_sha256"],
+        "source_archive_sha256": "e" * 64,
+        "admitted_family_ids": list(FAMILIES[:2]),
+        "seen_family_semantic_contract": {
+            FAMILIES[0]: {
+                "physical_strategies": list(STRATEGIES[FAMILIES[0]]),
+                "hard_constraints": [
+                    "person_id",
+                    "inclusive_time_window",
+                    "company_account_ownership",
+                    "destination_account_is_blocked_true",
+                    "transfer_direction",
+                    "sum_amount_by_company_and_account",
+                    "output_schema",
+                ],
+            },
+            FAMILIES[1]: {
+                "physical_strategies": list(STRATEGIES[FAMILIES[1]]),
+                "hard_constraints": [
+                    "start_account_id",
+                    "inclusive_time_window",
+                    "transfer_direction",
+                    "strictly_increasing_transfer_timestamps",
+                    "cycle_free_account_path",
+                    "max_hops_3",
+                    "medium_is_blocked_true",
+                    "output_schema",
+                ],
+            },
+        },
+        "development_correctness_evidence": {
+            "producer_commit": "f" * 40,
+            "correctness_workload_sha256": "1" * 64,
+            "correctness_manifest_sha256": "2" * 64,
+            "correctness_audit_content_sha256": "3" * 64,
+            "correctness_receipt_file_sha256": "4" * 64,
+            "audit_success": True,
+            "audit_failed_check_ids": [],
+            "run_tree_mutated": False,
+            "all_plans_exact": True,
+            "all_physical_pairs_equivalent": True,
+        },
+        "training_cost_outcome_admission": (
+            "successful_contract_bound_runs_only"
+        ),
+        "training_exactness_semantics": (
+            "plan_family_semantic_contract_not_current_query_oracle"
+        ),
+        "current_confirmatory_query_oracle_opened": False,
+        "final_confirmatory_oracle_is_authoritative": True,
+        "current_query_profile_calls": 0,
+        "backend_calls": 0,
+        "llm_calls": 0,
+        "ontology_service_calls": 0,
+        "automatic_retries": 0,
+        "paper_result": False,
+    }
+    admission["selection_admission_sha256"] = content_hash(admission)
     request = build_finbench_confirmatory_execution_request(
         freeze_manifest=manifest,
         freeze_audit=audit,
+        selection_admission=admission,
         runner_commit="d" * 40,
     )
     authority = build_finbench_confirmatory_execution_authority(
@@ -413,6 +512,39 @@ def test_confirmatory_analysis_uses_32_queries_not_repetitions() -> None:
     assert first["offline_training_cost"]["plan_runs"] == 448
     assert first["confirmatory_statistics"] is True
     assert first["paper_result"] is False
+
+
+def test_profile_selection_is_sealed_without_current_answer_oracle() -> None:
+    schedule, _, measurements = _fixture()
+    profile_ids = {
+        item["run_id"] for item in schedule["profile_acquisition_runs"]
+    }
+    preoracle = [
+        {**item, "exact_answer": None}
+        for item in measurements
+        if item["scheduled_identity"] in profile_ids
+    ]
+
+    seal = build_finbench_confirmatory_profile_selection_seal(
+        schedule=schedule,
+        profile_measurements=preoracle,
+    )
+
+    assert seal["selection_count"] == 48
+    assert seal["current_confirmatory_query_oracle_opened"] is False
+    assert seal["final_confirmatory_oracle_is_authoritative"] is True
+    with pytest.raises(
+        FinBenchConfirmatoryAnalysisError,
+        match="opened the current confirmatory oracle",
+    ):
+        build_finbench_confirmatory_profile_selection_seal(
+            schedule=schedule,
+            profile_measurements=[
+                item
+                for item in measurements
+                if item["scheduled_identity"] in profile_ids
+            ],
+        )
 
 
 def test_query_timeout_is_retained_and_bytes_are_not_imputed() -> None:
@@ -441,6 +573,7 @@ def test_query_timeout_is_retained_and_bytes_are_not_imputed() -> None:
         profile_measurements=[
             item for item in changed if item["scheduled_identity"] in profile_ids
         ],
+        allow_opened_oracle_reconstruction=True,
     )
     attempts = copy.deepcopy(source_ledger["infrastructure_attempts"])
     ledger = build_finbench_confirmatory_measurement_ledger(
@@ -459,6 +592,39 @@ def test_query_timeout_is_retained_and_bytes_are_not_imputed() -> None:
     assert result["failure_accounting"]["missing_measurements"] == "no_imputation"
 
 
+def test_delayed_oracle_stays_closed_until_all_blocks_are_sealed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    schedule, _, _ = _fixture()
+    opened = False
+
+    def forbidden_oracle_open(_root: object) -> dict:
+        nonlocal opened
+        opened = True
+        raise AssertionError("answer oracle opened before block completeness")
+
+    monkeypatch.setattr(
+        oracle_gate,
+        "validate_finbench_confirmatory_selection_admission",
+        lambda value, *, workload_sha256: dict(value),
+    )
+    monkeypatch.setattr(
+        oracle_gate, "load_finbench_primary_workload", forbidden_oracle_open
+    )
+
+    with pytest.raises(ValueError, match="does not cover its frozen measurement blocks"):
+        oracle_gate.open_finbench_confirmatory_oracle(
+            workload_root="/sealed/workload",
+            schedule=schedule,
+            selection_admission={"selection_admission_sha256": "f" * 64},
+            accepted_blocks=[],
+            training_phase={},
+            profile_phase={},
+        )
+
+    assert opened is False
+
+
 def test_infrastructure_failure_cannot_replace_a_valid_measurement() -> None:
     ledger, schedule, suite, measurements = _ledger()
     family = build_finbench_confirmatory_family_selection_seal(
@@ -470,6 +636,7 @@ def test_infrastructure_failure_cannot_replace_a_valid_measurement() -> None:
         profile_measurements=[
             item for item in measurements if item["scheduled_identity"] in profile_ids
         ],
+        allow_opened_oracle_reconstruction=True,
     )
     block = schedule["measurement_block_ids"][0]
     with pytest.raises(
@@ -535,6 +702,9 @@ def test_execution_authority_is_separate_from_population_selection() -> None:
         build_finbench_confirmatory_execution_request(
             freeze_manifest=manifest,
             freeze_audit=changed_audit,
+            selection_admission={
+                **request,
+            },
             runner_commit="d" * 40,
         )
     with pytest.raises(FinBenchConfirmatoryExecutionError, match="does not authorize"):
@@ -557,6 +727,7 @@ def test_block_attempt_resolves_only_its_frozen_measurements() -> None:
         profile_measurements=[
             item for item in measurements if item["scheduled_identity"] in profile_ids
         ],
+        allow_opened_oracle_reconstruction=True,
     )
 
     training = compile_finbench_confirmatory_block_attempt(
@@ -804,6 +975,7 @@ def test_live_block_retains_timeout_without_retry_or_oracle(
             "fuseki": Loader("fuseki"),
         },
         output_root=tmp_path / "runs",
+        query_timeout_policy=TIMEOUT_POLICY,
         repo_root=tmp_path,
     )
 
@@ -819,3 +991,228 @@ def test_live_block_retains_timeout_without_retry_or_oracle(
     assert manifest["oracle_content_parsed"] is False
     assert manifest["automatic_retries"] == 0
     assert Scheduler.calls == 64
+    audit = audit_finbench_confirmatory_block(
+        attempt_root=record.run_root,
+        execution_context=execution_context,
+        expected_commit="d" * 40,
+    )
+    assert audit.success is True
+    assert audit.failed_check_ids == ()
+    assert audit.run_tree_mutated is False
+    assert audit.attempt_status == "completed"
+    assert audit.replacement_eligible is False
+    accepted = build_finbench_confirmatory_accepted_block(
+        execution_context=execution_context,
+        raw_measurements=raw,
+        block_audit=audit.to_dict(),
+    )
+    assert accepted["execution_context"] == execution_context
+    assert accepted["raw_measurements"] == raw
+    assert accepted["prior_failed_attempts"] == []
+    assert accepted["accepted_block_sha256"] == content_hash(
+        {
+            key: value
+            for key, value in accepted.items()
+            if key != "accepted_block_sha256"
+        }
+    )
+
+    class FailingLoader(Loader):
+        def load(self, path: Path):
+            return BackendLoadReport(
+                backend_id=self.backend_id,
+                success=False,
+                operations_attempted=1,
+                bytes_sent=path.stat().st_size,
+                elapsed_ms=1.0,
+                error="allocation storage unavailable",
+            )
+
+    failed = live_block.run_m15_live_finbench_confirmatory_block(
+        execution_context=execution_context,
+        workload_root=tmp_path / "workload",
+        partition_root=partition_root,
+        clients={"neo4j": object(), "fuseki": object()},
+        loaders={
+            "neo4j": FailingLoader("neo4j"),
+            "fuseki": FailingLoader("fuseki"),
+        },
+        output_root=tmp_path / "failed-runs",
+        query_timeout_policy=TIMEOUT_POLICY,
+        repo_root=tmp_path,
+    )
+    assert failed.success is False
+    assert failed.replacement_eligible is True
+    failed_raw = json.loads(
+        (failed.run_root / "raw_measurements.json").read_text()
+    )
+    failed_audit = audit_finbench_confirmatory_block(
+        attempt_root=failed.run_root,
+        execution_context=execution_context,
+        expected_commit="d" * 40,
+    )
+    assert failed_audit.success is True
+    assert failed_audit.attempt_status == "infrastructure_failed"
+    assert failed_audit.replacement_eligible is True
+    failed_bundle = build_finbench_confirmatory_failed_attempt_bundle(
+        execution_context=execution_context,
+        raw_measurements=failed_raw,
+        block_audit=failed_audit.to_dict(),
+    )
+
+    replacement_attempt = compile_finbench_confirmatory_block_attempt(
+        schedule=schedule,
+        execution_request=request,
+        execution_authority=authority,
+        measurement_block_id="crossfit_training_measurement-block-01",
+        attempt_index=2,
+        replacement_of_attempt_id=attempt["attempt_id"],
+    )
+    replacement_context = build_finbench_confirmatory_block_execution_envelope(
+        block_attempt=replacement_attempt,
+        schedule=schedule,
+        execution_request=request,
+        execution_authority=authority,
+    )
+    Scheduler.calls = 0
+    replacement = live_block.run_m15_live_finbench_confirmatory_block(
+        execution_context=replacement_context,
+        workload_root=tmp_path / "workload",
+        partition_root=partition_root,
+        clients={"neo4j": object(), "fuseki": object()},
+        loaders={"neo4j": Loader("neo4j"), "fuseki": Loader("fuseki")},
+        output_root=tmp_path / "replacement-runs",
+        query_timeout_policy=TIMEOUT_POLICY,
+        repo_root=tmp_path,
+    )
+    replacement_raw = json.loads(
+        (replacement.run_root / "raw_measurements.json").read_text()
+    )
+    replacement_audit = audit_finbench_confirmatory_block(
+        attempt_root=replacement.run_root,
+        execution_context=replacement_context,
+        expected_commit="d" * 40,
+    )
+    accepted_replacement = build_finbench_confirmatory_accepted_block(
+        execution_context=replacement_context,
+        raw_measurements=replacement_raw,
+        block_audit=replacement_audit.to_dict(),
+        prior_failed_attempts=[failed_bundle],
+    )
+    assert accepted_replacement["prior_failed_attempts"] == [failed_bundle]
+
+    with pytest.raises(ValueError, match="one prior infrastructure failure"):
+        build_finbench_confirmatory_accepted_block(
+            execution_context=replacement_context,
+            raw_measurements=replacement_raw,
+            block_audit=replacement_audit.to_dict(),
+        )
+
+    class BackendFailureResult(Result):
+        def __init__(self):
+            super().__init__(timeout=False)
+            self.success = False
+
+        def to_dict(self):
+            body = super().to_dict()
+            body["success"] = False
+            body["node_results"] = [
+                {"status": "error", "error": "invalid physical plan"}
+            ]
+            return body
+
+    class BackendFailureScheduler:
+        def __init__(self, _tool):
+            pass
+
+        def execute(self, _plan, *, goal_id: str):
+            del goal_id
+            return BackendFailureResult()
+
+    monkeypatch.setattr(
+        live_block, "FederatedScheduler", BackendFailureScheduler
+    )
+    rejected = live_block.run_m15_live_finbench_confirmatory_block(
+        execution_context=execution_context,
+        workload_root=tmp_path / "workload",
+        partition_root=partition_root,
+        clients={"neo4j": object(), "fuseki": object()},
+        loaders={"neo4j": Loader("neo4j"), "fuseki": Loader("fuseki")},
+        output_root=tmp_path / "backend-failure-runs",
+        query_timeout_policy=TIMEOUT_POLICY,
+        repo_root=tmp_path,
+    )
+    rejected_attempt = json.loads(
+        (rejected.run_root / "attempt_record.json").read_text()
+    )
+    assert rejected.success is False
+    assert rejected.replacement_eligible is False
+    assert rejected_attempt == {
+        "attempt_id": attempt["attempt_id"],
+        "measurement_block_id": attempt["measurement_block_id"],
+        "attempt_index": 1,
+        "status": "partial_measurement_failure",
+        "valid_measurement_count": 0,
+        "replacement_of_attempt_id": None,
+        "failure_category": "backend_or_plan_failure",
+    }
+    rejected_audit = audit_finbench_confirmatory_block(
+        attempt_root=rejected.run_root,
+        execution_context=execution_context,
+        expected_commit="d" * 40,
+    )
+    assert rejected_audit.success is False
+    assert "attempt.accepted_status" in rejected_audit.failed_check_ids
+
+
+def test_training_extraction_drops_unpaired_timeout_without_imputation() -> None:
+    blocks = []
+    for block_index in range(1, 8):
+        expected = []
+        measured = []
+        for position, strategy in enumerate(STRATEGIES[FAMILIES[0]], start=1):
+            identity = f"train:{block_index}:q01:{strategy}"
+            expected.append(
+                {
+                    "scheduled_identity": identity,
+                    "query_id": "q01",
+                    "family_id": FAMILIES[0],
+                    "physical_strategy": strategy,
+                    "order_position": position,
+                }
+            )
+            timeout = block_index == 2 and position == 1
+            measured.append(
+                {
+                    "scheduled_identity": identity,
+                    "outcome": "query_timeout" if timeout else "success",
+                    "elapsed_ms": 60_000.0 if timeout else 5.0,
+                    "total_bytes_moved": None if timeout else 100,
+                    "total_remote_calls": 1 if timeout else 2,
+                }
+            )
+        blocks.append(
+            {
+                "block_id": (
+                    f"crossfit_training_measurement-block-{block_index:02d}"
+                ),
+                "attempt": {"measurements": expected},
+                "measurements": measured,
+            }
+        )
+
+    observations, summary = extract_finbench_confirmatory_training_observations(
+        blocks
+    )
+
+    assert len(observations) == 2
+    assert {len(item["repetitions"]) for item in observations} == {6}
+    assert all(
+        repetition["exact_answer"] is None
+        for item in observations
+        for repetition in item["repetitions"]
+    )
+    assert summary["query_timeout_count"] == 1
+    assert summary["dropped_unpaired_plan_outcomes"] == 2
+    assert summary["minimum_paired_successful_blocks_per_query"] == 6
+    assert summary["missing_measurements"] == "no_imputation"

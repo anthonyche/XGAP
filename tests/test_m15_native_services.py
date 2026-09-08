@@ -181,6 +181,7 @@ def test_service_plan_uses_loopback_dynamic_ports_and_local_state(
     assert "dbms.security.auth_enabled=false" in config
     assert "server.default_listen_address=127.0.0.1" in config
     assert "server.http.listen_address=127.0.0.1:17474" in config
+    assert "db.transaction.timeout" not in config
     assert str(runtime / "xgap-service-state" / "neo4j" / "data") in config
     serialized = json.loads(plan.plan_path.read_text(encoding="utf-8"))
     assert serialized["runtime_lock_sha256"]
@@ -190,6 +191,7 @@ def test_service_plan_uses_loopback_dynamic_ports_and_local_state(
     assert serialized["public_ports"] is False
     assert serialized["automatic_retries"] == 0
     assert serialized["credentials_persisted"] is False
+    assert serialized["query_timeout_policy"] is None
     assert serialized["neo4j_resource_profile"] == {
         "profile_id": "development",
         "heap_initial_size": "256m",
@@ -222,6 +224,75 @@ def test_service_plan_uses_explicit_finbench_scale_resource_profile(
     assert "server.memory.heap.initial_size=1g" in config
     assert "server.memory.heap.max_size=2g" in config
     assert "server.memory.pagecache.size=1g" in config
+
+
+def test_confirmatory_service_plan_enforces_server_side_query_timeouts(
+    tmp_path: Path,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    evidence = tmp_path / "evidence"
+    plan = build_native_service_plan(
+        runtime_root=runtime,
+        staging_manifest=staging,
+        evidence_root=evidence,
+        filesystem_type="xfs",
+        allocation_id="12345",
+        java=JavaEvidence("/opt/java17/bin/java", 17, "openjdk 17.0.6"),
+        neo4j_http_port=17474,
+        neo4j_bolt_port=17687,
+        fuseki_port=13030,
+        lock_path=REPO_ROOT / "services" / "m15-native-runtime.lock.json",
+        query_timeout_seconds=60.0,
+        transport_timeout_seconds=65.0,
+    )
+
+    neo4j_config = (evidence / "neo4j.conf").read_text(encoding="utf-8")
+    assert "db.transaction.timeout=60s" in neo4j_config
+    assert "db.transaction.monitor.check.interval=1s" in neo4j_config
+    fuseki_config = (evidence / "fuseki-config.ttl").read_text(
+        encoding="utf-8"
+    )
+    assert 'ja:cxtName "arq:queryTimeout"' in fuseki_config
+    assert 'ja:cxtValue "60000"' in fuseki_config
+    assert fuseki_config == (
+        runtime / "xgap-service-state/fuseki-base/config.ttl"
+    ).read_text(encoding="utf-8")
+    assert plan.query_timeout_policy == {
+        "method_timeout_seconds": 60.0,
+        "transport_timeout_seconds": 65.0,
+        "neo4j": {
+            "setting": "db.transaction.timeout",
+            "value": "60s",
+            "monitor_check_interval": "1s",
+        },
+        "fuseki": {
+            "setting": "arq:queryTimeout",
+            "value_milliseconds": 60000,
+            "configuration": "FUSEKI_BASE/config.ttl",
+        },
+        "timeout_is_method_outcome": True,
+        "automatic_retries": 0,
+    }
+
+
+def test_service_plan_rejects_transport_timeout_without_server_enforcement(
+    tmp_path: Path,
+) -> None:
+    runtime, staging = _staged_runtime(tmp_path)
+    with pytest.raises(ValueError, match="requires a service query timeout"):
+        build_native_service_plan(
+            runtime_root=runtime,
+            staging_manifest=staging,
+            evidence_root=tmp_path / "evidence",
+            filesystem_type="xfs",
+            allocation_id="12345",
+            java=JavaEvidence("/opt/java17/bin/java", 17, "openjdk 17.0.6"),
+            neo4j_http_port=17474,
+            neo4j_bolt_port=17687,
+            fuseki_port=13030,
+            lock_path=REPO_ROOT / "services" / "m15-native-runtime.lock.json",
+            transport_timeout_seconds=65.0,
+        )
 
 
 def test_family_runtime_compatibility_is_stable_and_allocation_scoped(
@@ -2495,6 +2566,72 @@ def test_confirmatory_block_rejects_missing_context_before_java(
             finbench_workload=tmp_path / "frozen-workload",
             finbench_partition=tmp_path / "partition",
         )
+
+
+def test_confirmatory_native_boundary_uses_transport_grace_over_server_timeout(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    timeout_policy = {
+        "method_timeout_seconds": 60.0,
+        "transport_timeout_seconds": 65.0,
+        "neo4j": {
+            "setting": "db.transaction.timeout",
+            "value": "60s",
+            "monitor_check_interval": "1s",
+        },
+        "fuseki": {
+            "setting": "arq:queryTimeout",
+            "value_milliseconds": 60000,
+            "configuration": "FUSEKI_BASE/config.ttl",
+        },
+        "timeout_is_method_outcome": True,
+        "automatic_retries": 0,
+    }
+    observed: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        native_services,
+        "load_finbench_source_partition",
+        lambda _path: {},
+    )
+
+    def fake_block(**kwargs):
+        observed["timeouts"] = {
+            key: value.timeout_seconds for key, value in kwargs["clients"].items()
+        }
+        observed["policy"] = kwargs["query_timeout_policy"]
+        return SimpleNamespace(success=True, error=None)
+
+    import xgap.experiments.m15_live_finbench_confirmatory_block as live_block
+
+    monkeypatch.setattr(
+        live_block,
+        "run_m15_live_finbench_confirmatory_block",
+        fake_block,
+    )
+    plan = SimpleNamespace(
+        neo4j_http_url="http://127.0.0.1:17474",
+        fuseki_url="http://127.0.0.1:13030",
+        fuseki_dataset="xgap",
+        query_timeout_policy=timeout_policy,
+        services=[],
+    )
+
+    native_services._run_fixture_and_query(
+        plan=plan,
+        run_root=tmp_path / "native-confirmatory-run",
+        repo_root=REPO_ROOT,
+        workload_mode="finbench_confirmatory_block",
+        finbench_workload=tmp_path / "workload",
+        finbench_partition=tmp_path / "partition",
+        finbench_confirmatory_execution_context={"sealed": True},
+    )
+
+    assert observed == {
+        "timeouts": {"neo4j": 65.0, "fuseki": 65.0},
+        "policy": timeout_policy,
+    }
 
 
 def test_slurm_wrapper_records_and_cleans_allocation_local_runtime() -> None:

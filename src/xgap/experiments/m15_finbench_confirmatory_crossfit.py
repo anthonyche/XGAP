@@ -11,6 +11,8 @@ profiles a current query.
 from __future__ import annotations
 
 import copy
+import math
+import statistics
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -18,6 +20,9 @@ from typing import Any, Mapping, Sequence
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.m15_finbench_confirmatory_workload import (
     FINBENCH_CONFIRMATORY_WORKLOAD_GENERATOR_VERSION,
+)
+from xgap.experiments.m15_finbench_confirmatory_selection_admission import (
+    validate_finbench_confirmatory_selection_admission,
 )
 from xgap.experiments.m15_finbench_family_memory import (
     DEFAULT_POLICY_PATH,
@@ -52,6 +57,16 @@ _RAW_OBSERVATION_FIELDS = {
     "family_id",
     "physical_strategy",
     "repetitions",
+}
+_RAW_REPETITION_FIELDS = {
+    "repetition_id",
+    "block_index",
+    "order_position",
+    "elapsed_ms",
+    "total_bytes_moved",
+    "total_remote_calls",
+    "execution_success",
+    "exact_answer",
 }
 
 
@@ -169,6 +184,7 @@ def _observations(
     *,
     contract: Mapping[str, Any],
     policy: Mapping[str, Any],
+    selection_admission: Mapping[str, Any] | None,
 ) -> list[dict[str, Any]]:
     instances = contract["instances"]
     families = contract["families"]
@@ -207,15 +223,25 @@ def _observations(
             raise FinBenchConfirmatoryCrossfitError(
                 "unknown, duplicate, cold-family, or mislabeled observation"
             )
-        try:
-            repetitions, median_elapsed, median_bytes = _validate_repetitions(
-                raw["repetitions"],
-                query_id=query_id,
-                strategy=strategy,
-                minimum=policy["minimum_repetitions_per_plan"],
+        if selection_admission is None:
+            try:
+                repetitions, median_elapsed, median_bytes = _validate_repetitions(
+                    raw["repetitions"],
+                    query_id=query_id,
+                    strategy=strategy,
+                    minimum=policy["minimum_repetitions_per_plan"],
+                )
+            except FinBenchFamilyMemoryError as exc:
+                raise FinBenchConfirmatoryCrossfitError(str(exc)) from exc
+        else:
+            repetitions, median_elapsed, median_bytes = (
+                _validate_preoracle_repetitions(
+                    raw["repetitions"],
+                    query_id=query_id,
+                    strategy=strategy,
+                    minimum=policy["minimum_repetitions_per_plan"],
+                )
             )
-        except FinBenchFamilyMemoryError as exc:
-            raise FinBenchConfirmatoryCrossfitError(str(exc)) from exc
         for repetition in repetitions:
             repetition_id = str(repetition["repetition_id"])
             if repetition_id in repetition_ids:
@@ -260,12 +286,78 @@ def _observations(
     )
 
 
+def _validate_preoracle_repetitions(
+    repetitions: object,
+    *,
+    query_id: str,
+    strategy: str,
+    minimum: int,
+) -> tuple[list[dict[str, Any]], float, float]:
+    """Admit only observed costs whose answer content remains unopened."""
+
+    if not isinstance(repetitions, list) or not (
+        minimum <= len(repetitions) <= 7
+    ):
+        raise FinBenchConfirmatoryCrossfitError(
+            "pre-oracle training repetitions are incomplete"
+        )
+    normalized: list[dict[str, Any]] = []
+    repetition_ids: set[str] = set()
+    block_ids: set[int] = set()
+    for raw in repetitions:
+        if not isinstance(raw, Mapping) or set(raw) != _RAW_REPETITION_FIELDS:
+            raise FinBenchConfirmatoryCrossfitError(
+                "pre-oracle training repetition fields changed"
+            )
+        item = copy.deepcopy(dict(raw))
+        repetition_id = _safe_id(item["repetition_id"], name="repetition_id")
+        block = item["block_index"]
+        position = item["order_position"]
+        elapsed = item["elapsed_ms"]
+        moved = item["total_bytes_moved"]
+        if (
+            repetition_id in repetition_ids
+            or isinstance(block, bool)
+            or not isinstance(block, int)
+            or block not in range(1, 8)
+            or block in block_ids
+            or position not in {1, 2}
+            or item["execution_success"] is not True
+            or item["exact_answer"] is not None
+            or item["total_remote_calls"] != 2
+            or isinstance(elapsed, bool)
+            or not isinstance(elapsed, (int, float))
+            or not math.isfinite(float(elapsed))
+            or float(elapsed) < 0
+            or isinstance(moved, bool)
+            or not isinstance(moved, int)
+            or moved < 0
+        ):
+            raise FinBenchConfirmatoryCrossfitError(
+                f"inadmissible pre-oracle repetition for {query_id}/{strategy}"
+            )
+        repetition_ids.add(repetition_id)
+        block_ids.add(block)
+        normalized.append(item)
+    normalized.sort(key=lambda item: (item["block_index"], item["repetition_id"]))
+    return (
+        normalized,
+        float(statistics.median(item["elapsed_ms"] for item in normalized)),
+        float(
+            statistics.median(
+                item["total_bytes_moved"] for item in normalized
+            )
+        ),
+    )
+
+
 def build_finbench_confirmatory_crossfit_predictions(
     *,
     workload_root: str | Path,
     raw_observations: Sequence[Mapping[str, Any]],
     measurement_source_id: str,
     policy: Mapping[str, Any] | str | Path = DEFAULT_POLICY_PATH,
+    selection_admission: Mapping[str, Any] | None = None,
 ) -> FinBenchConfirmatoryCrossfitSuite:
     """Freeze four fold memories and out-of-sample predictions."""
 
@@ -275,8 +367,23 @@ def build_finbench_confirmatory_crossfit_predictions(
         raise FinBenchConfirmatoryCrossfitError(str(exc)) from exc
     source_id = _safe_id(measurement_source_id, name="measurement_source_id")
     contract = _contract(workload_root)
+    admission = (
+        validate_finbench_confirmatory_selection_admission(
+            selection_admission,
+            workload_sha256=str(contract["manifest"]["workload_sha256"]),
+        )
+        if selection_admission is not None
+        else None
+    )
+    if len(contract["instances"]) == 48 and admission is None:
+        raise FinBenchConfirmatoryCrossfitError(
+            "formal pre-oracle cross-fit requires selection admission"
+        )
     observations = _observations(
-        raw_observations, contract=contract, policy=selected_policy
+        raw_observations,
+        contract=contract,
+        policy=selected_policy,
+        selection_admission=admission,
     )
     instances = contract["instances"]
     families = contract["families"]
@@ -413,6 +520,18 @@ def build_finbench_confirmatory_crossfit_predictions(
             "population_approval_sha256"
         ],
         "measurement_source_id": source_id,
+        "selection_admission_sha256": (
+            admission["selection_admission_sha256"]
+            if admission is not None
+            else None
+        ),
+        "training_exactness_semantics": (
+            admission["training_exactness_semantics"]
+            if admission is not None
+            else "observed_development_query_oracle"
+        ),
+        "current_confirmatory_query_oracle_opened": False,
+        "final_confirmatory_oracle_is_authoritative": True,
         "raw_observation_suite_sha256": content_hash(observations),
         "fold_count": 4,
         "fold_memories": fold_memories,
