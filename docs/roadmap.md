@@ -1659,11 +1659,13 @@ Current status: TODO
 - **Independent admission recovery:** all 22 measurement blocks, 1,888 plan
   runs, serving/shadow phases, and delayed-oracle statistics completed. The
   first final audit alone was OOM-killed at its exact 8 GiB allocation and
-  wrote no admission artifact. Do not rerun measurements. Replay only the
-  read-only auditor at frozen commit `cf622cb` with 32 GiB and a distinct v2
-  output. Until that audit passes, `paper_result=false` remains authoritative.
-  The memory-bounded future auditor passes 1,189 tests with 36 intentional
-  skips and remains isolated from the frozen campaign.
+  wrote no admission artifact. The 32 GiB v2 replay then exposed a common JSON
+  round-trip false negative in all 22 persisted block audits: tuple plan-catalog
+  projections do not compare equal to their JSON list form. Final result,
+  oracle, statistics, and submission reconstruction still passed. Do not rerun
+  measurements. Run the corrected code from a separate later-auditor checkout
+  against the original clean `cf622cb` evidence checkout and write a distinct
+  v3 output. Until that audit passes, `paper_result=false` remains authoritative.
 - **Paper reporting locally ready:** after—and only after—the final campaign
   audit admits the run, a read-only presentation layer projects the frozen
   analysis into RQ-P1/P2/P3 JSON and Markdown tables. It preserves the

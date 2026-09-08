@@ -2753,10 +2753,20 @@ campaign tree. It produced no final or partial audit file. This is an
 audit-only infrastructure incident; no measurement rerun or replacement is
 allowed.
 
-An audit-only recovery is pending at the same frozen runner commit with 32 GiB
-and a new output path. Separately, the future auditor implementation now
-retains bounded diagnostics for large-object checks and requests
-32 GiB by default. Neither change modifies the frozen workload, schedule,
-authority, measurements, oracle, statistics, or current claim boundary. The
-future-auditor branch passes the complete repository regression with 1,189
-tests and 36 intentional environment or external-artifact skips.
+The 32 GiB replay reconstructed the campaign and wrote a 1.53 GiB diagnostic
+audit, but did not admit it. All final result, oracle, statistics, hash, and
+submission checks passed; exactly 44 checks failed as 22 paired block-audit and
+accepted-block comparisons. The cause is now reproduced: nonempty plan-catalog
+projections were tuples in memory and lists after JSON persistence. This is an
+auditor canonicalization defect, not a measurement or answer discrepancy.
+
+The later-auditor implementation now uses JSON-native list projections,
+retains bounded diagnostics for large-object checks, and requests 32 GiB by
+default. A dedicated Slurm entry point runs this code from a clean auditor
+worktree while continuing to verify the original clean `cf622cb` evidence
+checkout. Neither change modifies the frozen workload, schedule, authority,
+measurements, oracle, statistics, or claim boundary. A distinct v3 independent
+audit remains pending, and `paper_result=false` remains authoritative. The
+future-auditor branch passes the complete repository regression with 1,190
+tests and 36 intentional environment or external-artifact skips, including
+the nonempty block JSON round-trip regression.

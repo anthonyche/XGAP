@@ -1001,6 +1001,13 @@ def test_live_block_retains_timeout_without_retry_or_oracle(
     assert audit.run_tree_mutated is False
     assert audit.attempt_status == "completed"
     assert audit.replacement_eligible is False
+    persisted_audit = json.loads(json.dumps(audit.to_dict()))
+    rebuilt_audit = audit_finbench_confirmatory_block(
+        attempt_root=record.run_root,
+        execution_context=execution_context,
+        expected_commit="d" * 40,
+    ).to_dict()
+    assert rebuilt_audit == persisted_audit
     accepted = build_finbench_confirmatory_accepted_block(
         execution_context=execution_context,
         raw_measurements=raw,

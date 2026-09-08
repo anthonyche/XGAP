@@ -268,23 +268,26 @@ def audit_finbench_confirmatory_block(
     check("preflight.oracle", False, preflight.get("oracle_content_parsed"))
     catalog = preflight.get("plan_catalog")
     catalog_values = catalog if isinstance(catalog, list) else []
+    # Use JSON-native arrays here.  The audit is persisted and later
+    # reconstructed by the campaign auditor; tuples serialize as arrays but
+    # do not compare equal to the arrays read back from JSON.
     catalog_projection = [
-        (
+        [
             item.get("scheduled_identity"),
             item.get("query_id"),
             item.get("family_id"),
             item.get("physical_strategy"),
-        )
+        ]
         for item in catalog_values
         if isinstance(item, Mapping)
     ]
     expected_projection = [
-        (
+        [
             item["scheduled_identity"],
             item["query_id"],
             item["family_id"],
             item["physical_strategy"],
-        )
+        ]
         for item in expected_measurements
     ]
     check("preflight.plan_catalog", expected_projection, catalog_projection)

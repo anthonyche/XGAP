@@ -3424,9 +3424,26 @@ does not consume the predeclared measurement-block infrastructure replacement
 because it executes no query plan and makes no backend call. Future auditor
 runs also request 32 GiB by default.
 
+That first audit-only replay completed reconstruction but correctly refused
+admission: every persisted per-block audit compared unequal to its in-memory
+reconstruction even though the final campaign result, oracle, statistics,
+hashes, and submission contract reconstructed exactly. The common cause was a
+JSON round-trip bug: the block auditor recorded plan-catalog projections as
+Python tuples, which serialize as JSON arrays and read back as lists. The
+resulting 44 paired failures are false-negative representation mismatches, not
+measurement differences. The 1.53 GiB v2 output is retained as diagnostic
+evidence and is not an admission certificate.
+
 To remove the avoidable multiplier, the auditor still compares complete
 reconstructed objects but stores only bounded type/count/hash diagnostics for
 container-valued checks. Per-block audit state is reduced to the
 success predicate after its full reconstruction check. Failed check IDs,
 sealed identities, campaign immutability, and the sole authority of the final
 independent audit are unchanged.
+
+The corrected independent replay uses JSON-native list projections. Its code
+runs from a distinct clean later-auditor checkout while `repo_root` continues
+to point at the exact clean `cf622cb` evidence checkout. This separation makes
+the auditor version explicit without rewriting the producer identity. The
+later audit must use a new output path and remains pending; no result may be
+promoted before it passes.

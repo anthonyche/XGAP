@@ -366,6 +366,22 @@ def test_campaign_audit_checks_do_not_retain_large_equal_payloads() -> None:
     assert "measurements" not in compact
 
 
+def test_later_auditor_keeps_code_and_frozen_evidence_checkouts_separate() -> None:
+    script = (
+        Path(__file__).parents[1]
+        / "scripts/slurm/run_m15_finbench_confirmatory_campaign_later_audit.sbatch"
+    ).read_text(encoding="utf-8")
+
+    assert "#SBATCH --mem=32G" in script
+    assert "XGAP_AUDITOR_REPO_ROOT" in script
+    assert "XGAP_EVIDENCE_REPO_ROOT" in script
+    assert "XGAP_CONFIRMATORY_AUDITOR_COMMIT" in script
+    assert 'PYTHONPATH="$AUDITOR_ROOT/src"' in script
+    assert '--repo-root "$EVIDENCE_ROOT"' in script
+    assert 'git -C "$AUDITOR_ROOT" rev-parse HEAD' in script
+    assert 'git -C "$EVIDENCE_ROOT" rev-parse HEAD' in script
+
+
 def test_only_audited_zero_measurement_failure_can_mint_attempt_two(
     tmp_path: Path, monkeypatch
 ) -> None:
