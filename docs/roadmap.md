@@ -1616,8 +1616,8 @@ author and implementation blocker; makes no external call; and cannot grant
 full-150 execution authority.
 
 Current status:
-**RESULT-BLIND DRAFT AND QUERY-LEVEL ANALYZER IMPLEMENTED; AUTHOR SELECTION
-AND LIVE GATES PENDING.**
+**RESULT-BLIND DRAFT, QUERY-LEVEL ANALYZER, AND INDEPENDENT ANALYSIS AUDITOR
+IMPLEMENTED; AUTHOR SELECTION AND LIVE GATES PENDING.**
 `grailqa_semantic_paper_protocol.py` and its frozen draft configuration compile
 a deterministic readiness record. The post-inference analyzer now requires
 the exact 150-query ID, split, and Q-bucket population, binds the source ledger,
@@ -1626,12 +1626,17 @@ rank-1 with comparator rank-1 over the same generated/validated/grounded
 candidate list. Full-frontier recall and cardinality remain secondary; they do
 not enlarge XGAP's primary correctness event. Provider and grounding failures
 remain visible without imputation, and no analyzer call reaches a model,
-backend, or ontology service. Five scientific choices remain explicitly
-unselected. The final 18-query CWRU rerun/audit, its author review, the
-pilot150 query-local catalog, production semantic runner, independent auditor,
-and separate execution authority are still required. This milestone does not
+backend, or ontology service. A separate read-only auditor independently
+reconstructs the exact population, shared candidate sets, method rankings,
+paired tests, bootstrap intervals, multiplicity adjustment, failure accounting,
+and complete analysis hash. It rejects ledger, population, protocol,
+source-run, and self-consistently rehashed analysis tampering without importing
+the producer analyzer or making an external call. Five scientific choices
+remain explicitly unselected. The final 18-query CWRU rerun/audit, its author
+review, the pilot150 query-local catalog, production semantic runner, and
+separate execution authority are still required. This milestone does not
 change ranking, prompts, model parameters, catalog construction, or the
-running FinBench campaign.
+admitted FinBench campaign.
 
 ## M14 KGQA Evaluation
 
@@ -1689,8 +1694,14 @@ Current status: TODO
 - **Execution submitted:** the author separately authorized exact request
   `4b83e273...de2a5` with authority `8809ef2d...e4a5`, and the frozen
   `cf622cb` runner submitted the seven-stage CWRU dependency graph on
-  2026-09-08. The final independent audit remains the admission gate; no
-  individual job completion or intermediate measurement is a paper result.
+  2026-09-08. All 22 measurement blocks and finalization completed. The first
+  two audit executions exposed auditor-only memory and tuple/list comparison
+  defects; neither changed the campaign tree or reran a measurement.
+- **Confirmatory result admitted:** the repaired independent auditor at commit
+  `04ab347` completed as CWRU job `3795042`, reconstructed 167/167 checks,
+  reported no source-tree mutation, and admitted campaign result
+  `258ca17c...4235` with audit `6085c977...4a5`. This artifact-scoped admission
+  sets `paper_result=true` for the FinBench physical experiment only.
 - **Paper reporting locally ready:** after—and only after—the final campaign
   audit admits the run, a read-only presentation layer projects the frozen
   analysis into RQ-P1/P2/P3 JSON and Markdown tables. It preserves the

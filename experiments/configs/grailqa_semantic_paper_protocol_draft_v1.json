@@ -197,8 +197,11 @@
     },
     {
       "requirement_id": "independent_semantic_evidence_auditor",
-      "status": "missing",
-      "evidence": null
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_analysis_evidence.py",
+        "sha256": "5e119f397dd72499a5e138ec08a547cb56c58587ccf976b70ce538a6b8fdc3a5"
+      }
     }
   ],
   "claim_boundary": {
@@ -210,5 +213,5 @@
   },
   "automatic_retries": 0,
   "paper_result": false,
-  "freeze_hash": "c36c8a7a79cc0096b8dc5b14707fb6406454d5871ab45a40d9541fd621cb0948"
+  "freeze_hash": "b2770959bba7763cb2f1ffe9662a42b9a3185000286783e4694874b7e6e1f515"
 }

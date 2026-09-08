@@ -3478,3 +3478,26 @@ This implementation resolves an engineering blocker, not any of the five
 author-owned scientific choices. It makes zero model, backend, or ontology-
 service calls, cannot authorize the 150-query run, requires a later independent
 reconstruction auditor, and remains `paper_result=false`.
+
+## D176 Reconstruct the semantic analysis outside the producer
+
+The GrailQA paper analysis is accepted only when a separate read-only auditor
+reconstructs it from the frozen row-level outcome ledger. The auditor does not
+import or invoke `grailqa_semantic_analysis`; it separately validates the exact
+150 unique query IDs, 120/30 split, 83/56/11 Q-bucket distribution, provider
+and repair accounting, candidate schema, hard constraints, source-run identity,
+protocol identity, and author-selection identity. It then independently
+recomputes grounded candidates, the matched-cardinality XGAP and comparator
+rankings, exact McNemar statistic, fixed-seed 10,000-resample paired bootstrap,
+Holm-adjusted secondary tests, failure and cost summaries, and every per-query
+record before comparing the complete reconstructed analysis hash.
+
+The audit is deliberately compact: a mismatch records hashes and named checks,
+not a second in-memory copy of a potentially large diagnostic diff. It snapshots
+all inputs before and after reconstruction and fails if any changed. Tests prove
+that it rejects source-ledger mutation, duplicate populations, source-run drift,
+symbolic-link evidence, and a modified analysis whose own self-hash was
+recomputed. The auditor makes zero LLM, backend, or ontology-service calls,
+cannot infer any of the five author-owned choices, cannot authorize inference,
+and always remains `paper_result=false` until a later live run and its separate
+authority boundary exist.

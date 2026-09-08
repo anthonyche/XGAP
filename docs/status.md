@@ -2732,10 +2732,21 @@ for runner commit `cf622cbc024e3aa945213df68e177d2cc1eb7d8a` on
 2026-09-08. The staged campaign was then submitted as training/profile/
 selection/serving/shadow/finalize/audit jobs
 `3794919`/`3794920`/`3794921`/`3794922`/`3794923`/`3794924`/`3794925`.
-Measurements and the final independent audit are pending; `paper_result`
-remains false until that audit admits the complete run. Full repository
-regression before submission passed 1,181 tests with 36 intentional environment
-or external-artifact skips. The final content-addressed local readiness record is
+All 22 measurement blocks and finalization completed successfully. The first
+audit exhausted its original memory request, and the second revealed an
+auditor-only tuple/list comparison defect; neither failure changed the frozen
+campaign tree or reran measurements. The repaired independent auditor at
+commit `04ab347a9afcc4d25a1b8dd88d4056df72cde086` completed as CWRU job
+`3795042`, used about 2.7 GB MaxRSS, passed 167/167 checks, and reported no
+run-tree mutation. It admitted source campaign result
+`258ca17c055126d6e95ff5f201e3eb743c3adc11ce92047f624217e179d34235`;
+the audit SHA-256 is
+`6085c977f6cf98fb42d2290ba2bab2cd10d8677675fdef6630452edcb53f64a5`.
+Accordingly `paper_result=true` now applies to this exact FinBench physical
+confirmatory artifact, not to the semantic track or the paper as a whole.
+Full repository regression before submission passed 1,181 tests with 36
+intentional environment or external-artifact skips. The final content-addressed
+local readiness record is
 `experiments/artifacts/m15_finbench_confirmatory_campaign_readiness_v1.json`;
 the earlier pre-oracle inventory remains in
 `experiments/artifacts/m15_finbench_confirmatory_preoracle_readiness_v1.json`.
@@ -2780,12 +2791,19 @@ are diagnostic. The analyzer makes zero model, backend, and ontology-service
 calls and cannot set `paper_result=true` before an independent audit.
 
 The final 18-query preflight must first complete an independent audit and author
-review without tuning from its outcomes. A real pilot150 query-local catalog,
-paper runner, independent auditor, and a separate full-run authority are still
-missing. Consequently `full_150_run_authorized` and `paper_result` remain
-false. Twenty-nine focused protocol/analyzer tests pass; the work is isolated
-from the frozen FinBench confirmatory runner and active campaign.
+review without tuning from its outcomes. The independent 150-query analysis
+auditor is now implemented: it does not import the producer analyzer and
+independently reconstructs candidate admission, both rankings, exact McNemar,
+the fixed 10,000-resample paired bootstrap, Holm adjustment, failure and cost
+accounting, per-query rows, and the final analysis hash. It rejects modified
+ledgers, duplicate or incomplete populations, source-run mismatch, and a
+tampered analysis even when the tampered artifact has a valid replacement
+self-hash. A real pilot150 query-local catalog, paper runner, and a separate
+full-run authority are still missing. Consequently `full_150_run_authorized`
+and `paper_result` remain false. Thirty-six focused protocol/analyzer/auditor
+tests pass; the work is isolated from the frozen FinBench confirmatory runner
+and admitted campaign.
 The compact readiness record is
 `experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
-The complete repository regression now passes 1,220 tests with 36 intentional
+The complete repository regression now passes 1,227 tests with 36 intentional
 environment or external-artifact skips.

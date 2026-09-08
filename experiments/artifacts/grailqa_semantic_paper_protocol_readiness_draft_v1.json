@@ -58,7 +58,6 @@
     "author_decision.primary_epsilon.unselected",
     "author_decision.primary_reporting_population.unselected",
     "execution_authority.full_150.missing",
-    "implementation.independent_semantic_evidence_auditor.missing",
     "implementation.paper_semantic_runner.missing",
     "implementation.pilot150_query_local_catalog.pending_live_evidence",
     "preflight18.author_review.pending"
@@ -115,9 +114,12 @@
       "status": "ready"
     },
     {
-      "evidence": null,
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_analysis_evidence.py",
+        "sha256": "5e119f397dd72499a5e138ec08a547cb56c58587ccf976b70ce538a6b8fdc3a5"
+      },
       "requirement_id": "independent_semantic_evidence_auditor",
-      "status": "missing"
+      "status": "ready"
     }
   ],
   "next_author_decisions": [
@@ -166,8 +168,8 @@
   ],
   "paper_result": false,
   "protocol_id": "m13e4-grailqa-sigmod2027-semantic-draft-v1",
-  "protocol_sha256": "d83ff4af967dd0a51344d21c21c57c186c386ea62880eb7de2f0ced1cc601887",
-  "readiness_sha256": "28916e0df2c09d33574586b947a29f0f7b54f1280782dead229f7f231dd2e063",
+  "protocol_sha256": "0741d37d29059511986e4ef6b1dcc31371dbcf7c460269bf84599801d4e274cc",
+  "readiness_sha256": "67721df716646a355abafccd0468b602add668237311db86ea2e922ccfc9ca3e",
   "schema_version": "m13e4-grailqa-semantic-paper-readiness-v1",
   "source_artifacts": [
     {
