@@ -1617,8 +1617,8 @@ full-150 execution authority.
 
 Current status:
 **RESULT-BLIND DRAFT, AUTHORITY-GATED 150-QUERY RUNNER, QUERY-LEVEL ANALYZER,
-AND TWO INDEPENDENT AUDITORS IMPLEMENTED; EXTERNAL CATALOG AND AUTHOR GATES
-PENDING.**
+AND THREE INDEPENDENT AUDITORS IMPLEMENTED; TWO LIVE GATES SUBMITTED, AUTHOR
+CHOICES AND EXACT-RUN AUTHORITY PENDING.**
 `grailqa_semantic_paper_protocol.py` and its frozen draft configuration compile
 a deterministic readiness record. The post-inference analyzer now requires
 the exact 150-query ID, split, and Q-bucket population, binds the source ledger,
@@ -1644,9 +1644,20 @@ backend or emits native query text. A separate run-evidence auditor independentl
 reconstructs the request-to-ledger hash chain and the gold-isolation phase order.
 The CWRU H100 wrapper is ready and excludes unrelated model smoke calls.
 
-Five scientific choices remain explicitly unselected. The final 18-query CWRU
-rerun/audit and author review, a real pilot150 query-local catalog/reachability
-bundle, and a separate exact-run execution authority are still required. This
+The pilot150 catalog now also has a producer-independent, read-only auditor.
+It binds the exact 150 question-only inputs, pinned Freebase source-manifest
+identity, every catalog content hash, SQLite integrity and JSONL equivalence,
+Top-50 per-query candidate isolation, lexical evidence, reachability hash chain,
+and the prompt gate. It makes no external call, does not rescan the 32 GB source,
+does not modify the catalog, and cannot authorize model execution. CWRU jobs
+`3795066` (pilot150 catalog) and `3795067` (final 18-query H100 preflight) were
+submitted at commit `52b1b256b577313e42ccf2d8d24d02d537781e22`; their
+outcomes are not yet recorded here.
+
+Five scientific choices remain explicitly unselected. The submitted final
+18-query CWRU rerun still requires independent audit and author review, and the
+submitted pilot150 query-local catalog still requires independent audit. A
+separate exact-run execution authority remains mandatory. This
 milestone does not change ranking, prompts, model parameters, catalog
 construction, or the admitted FinBench campaign.
 

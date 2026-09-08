@@ -2833,13 +2833,20 @@ phase order, exact population, call accounting, and source-tree immutability.
 The CWRU wrapper reserves one H100 and suppresses unrelated generic smoke calls
 so the authority-bound ledger accounts for every model request.
 
-A real pilot150 query-local catalog plus its reachability evidence, the five
-explicit author choices, preflight review, and a later exact execution authority
-remain missing. Consequently `full_150_run_authorized` and semantic
-`paper_result` remain false. Forty-four focused protocol/analyzer/runner/auditor
-tests pass; the work is isolated from the frozen FinBench confirmatory runner
-and admitted campaign.
+A real pilot150 query-local catalog plus its reachability evidence and the final
+18-query H100 preflight are now submitted as CWRU jobs `3795066` and `3795067`
+at exact commit `52b1b256b577313e42ccf2d8d24d02d537781e22`. Their outcomes are
+not yet admitted. The catalog has a new independent read-only auditor and CWRU
+wrapper that reconstruct the exact population, source inventory, file and
+SQLite identities, query isolation, reachability evidence, and prompt gate
+without importing the producer or rescanning Freebase.
+
+The five explicit author choices, successful independent audits of both live
+gates, author preflight review, and a later exact execution authority remain
+missing. Consequently `full_150_run_authorized` and semantic `paper_result`
+remain false. The work remains isolated from the frozen FinBench confirmatory
+runner and admitted campaign.
 The compact readiness record is
 `experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
-The complete repository regression now passes 1,235 tests with 36 intentional
+The complete repository regression now passes 1,240 tests with 36 intentional
 environment or external-artifact skips.

@@ -3550,3 +3550,23 @@ file inventory, and run-tree immutability. Statistical analysis remains a later
 producer-plus-independent-auditor pair. Implementation readiness does not
 authorize the model run: real pilot150 catalog evidence, preflight review, the
 five author choices, and exact-run authority remain mandatory.
+
+## D179 Independently reconstruct the pilot150 query-local catalog
+
+The 150-query semantic run may not rely only on the catalog producer's own
+validation. A separate read-only auditor must bind the exact frozen pilot IDs
+and question-only file, the pinned Freebase source-manifest identity, every
+declared content hash, the independently recomputed catalog identity, SQLite
+integrity, JSONL/SQLite equality, per-query Top-50 candidate isolation, exact
+normalized lexical evidence, and the complete reachability artifact hash chain.
+It must also require the frozen relation-endpoint contract and a passing
+20-percent joint prompt-reachability engineering gate.
+
+This audit deliberately reads only the small source inventory manifest and
+records zero Freebase bytes rescanned. The original builder remains responsible
+for its verified 964-shard, 32,476,432,840-byte scan; the independent auditor
+checks that identity rather than creating an unplanned second 32 GB pass. The
+audit writes outside the immutable catalog tree, snapshots it before and after,
+makes no model, backend, or ontology-service call, and always leaves
+`paper_result=false`. Passing it is necessary but not sufficient for the later
+150-query execution authority.
