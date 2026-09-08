@@ -2770,13 +2770,22 @@ ontology-service calls.
 
 The draft intentionally remains blocked. Five scientific decisions are still
 owned by the author; the recommended defaults have not been silently selected.
+The query-level analyzer is now implemented and binds the exact 150-query ID,
+split, Q-bucket, ledger, protocol, and author-selection identities. Its primary
+comparison is cardinality matched: XGAP frontier rank-1 versus comparator
+rank-1 over one shared generated/validated/grounded candidate set. Candidate
+Recall@3 and the complete frontier remain secondary, provider failures remain
+incorrect under the recommended all-query estimand, and completer-only results
+are diagnostic. The analyzer makes zero model, backend, and ontology-service
+calls and cannot set `paper_result=true` before an independent audit.
+
 The final 18-query preflight must first complete an independent audit and author
 review without tuning from its outcomes. A real pilot150 query-local catalog,
-paper runner, query-level analyzer, independent auditor, and a separate
-full-run authority are also missing. Consequently `full_150_run_authorized`
-and `paper_result` remain false. Eleven focused protocol tests pass; the work
-is isolated from the frozen FinBench confirmatory runner and active campaign.
+paper runner, independent auditor, and a separate full-run authority are still
+missing. Consequently `full_150_run_authorized` and `paper_result` remain
+false. Twenty-nine focused protocol/analyzer tests pass; the work is isolated
+from the frozen FinBench confirmatory runner and active campaign.
 The compact readiness record is
 `experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
-The complete repository regression now passes 1,202 tests with 36 intentional
+The complete repository regression now passes 1,220 tests with 36 intentional
 environment or external-artifact skips.

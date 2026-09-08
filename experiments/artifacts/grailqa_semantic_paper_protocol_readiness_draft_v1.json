@@ -61,7 +61,6 @@
     "implementation.independent_semantic_evidence_auditor.missing",
     "implementation.paper_semantic_runner.missing",
     "implementation.pilot150_query_local_catalog.pending_live_evidence",
-    "implementation.query_level_statistics_analyzer.missing",
     "preflight18.author_review.pending"
   ],
   "bound_artifacts": {
@@ -108,9 +107,12 @@
       "status": "missing"
     },
     {
-      "evidence": null,
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_analysis.py",
+        "sha256": "6f1e7e50fb008bdfa040e9d3b76b0ab15d7ea51ef8197bfacb1b3d066650faf5"
+      },
       "requirement_id": "query_level_statistics_analyzer",
-      "status": "missing"
+      "status": "ready"
     },
     {
       "evidence": null,
@@ -164,8 +166,8 @@
   ],
   "paper_result": false,
   "protocol_id": "m13e4-grailqa-sigmod2027-semantic-draft-v1",
-  "protocol_sha256": "8ab1d5703446fd2f92dd253b773dbb8d2791ec49db109bf55ab4ca4c536aec83",
-  "readiness_sha256": "0e3132eceab19a51db52337e4b7fab7f1a326a605099fc245476b8063bfb7da1",
+  "protocol_sha256": "d83ff4af967dd0a51344d21c21c57c186c386ea62880eb7de2f0ced1cc601887",
+  "readiness_sha256": "28916e0df2c09d33574586b947a29f0f7b54f1280782dead229f7f231dd2e063",
   "schema_version": "m13e4-grailqa-semantic-paper-readiness-v1",
   "source_artifacts": [
     {

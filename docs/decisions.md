@@ -3453,3 +3453,28 @@ Five scientific choices remain author-owned. Even after their approval, the
 paper runner, analyzer, auditor, and a separate full-run authority remain
 mandatory. The draft therefore stays `paper_result=false` and makes zero LLM,
 backend, or ontology-service calls.
+
+## D175 Match primary return cardinality in the GrailQA semantic analysis
+
+The primary paired correctness event compares exactly one candidate from each
+method over the same generated, validated, and grounded candidate list. XGAP's
+primary candidate is rank 1 after semantic admission, epsilon filtering,
+semantic-equivalence merging, and the fixed candidate cap. The comparator's
+primary candidate is its declared rank 1 over that same shared list. A correct
+candidate anywhere else in the XGAP frontier does not make the primary XGAP
+outcome correct. Candidate Recall@3, full-frontier cardinality, and the
+gold-simulated clarification upper bound remain secondary diagnostics.
+
+The analyzer requires exactly the frozen 150 unique query IDs together with
+the predeclared 120/30 split and 83/56/11 Q-bucket distribution. It content-
+binds the outcome ledger, protocol, author selection, and source run; treats
+the query as the inferential unit; uses exact paired McNemar and the fixed
+10,000-resample paired query bootstrap; preserves failures without imputation;
+and reports completer-only results as diagnostic. Invalid provider/repair call
+accounting, cardinality, grounding, hard-constraint, population, or schema
+state fails closed.
+
+This implementation resolves an engineering blocker, not any of the five
+author-owned scientific choices. It makes zero model, backend, or ontology-
+service calls, cannot authorize the 150-query run, requires a later independent
+reconstruction auditor, and remains `paper_result=false`.
