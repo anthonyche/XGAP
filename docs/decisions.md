@@ -3570,3 +3570,27 @@ audit writes outside the immutable catalog tree, snapshots it before and after,
 makes no model, backend, or ontology-service call, and always leaves
 `paper_result=false`. Passing it is necessary but not sufficient for the later
 150-query execution authority.
+
+## D180 Treat ignored GrailQA bodies as an explicit runtime prerequisite
+
+The compact GrailQA manifests are versioned, but the dataset bodies they bind
+are intentionally ignored by Git. A clean checkout therefore proves source
+identity, not runtime availability. The failed CWRU pilot150 catalog job
+`3795066` demonstrated this distinction: it stopped before scanning Freebase
+because `datasets/grailqa_pilot_v1/inference_questions.jsonl` was absent even
+though the protocol and repository tests were green.
+
+The local-catalog Slurm wrapper must now run frozen-artifact verification
+before opening the 32 GB Freebase source. Missing bytes fail with an actionable
+preparation command rather than a downstream Python traceback. A separate
+CPU-only preparation job downloads or rebuilds the pinned public GrailQA,
+ontology, and query-independent catalog artifacts, verifies every frozen hash,
+and emits a content-addressed runtime receipt. It starts no Qwen process,
+backend, or ontology service and performs no Freebase parquet scan.
+
+Manual transfer remains permitted when the transferred directories pass the
+same frozen-spec verification. The recovered local backup has been checked
+against all five declared pilot hashes and the expected catalog identity.
+Neither transfer nor preparation authorizes the pilot150 catalog, the semantic
+model run, or a paper claim; those retain their independent audit and
+author-authority boundaries.

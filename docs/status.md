@@ -2836,10 +2836,23 @@ so the authority-bound ledger accounts for every model request.
 A real pilot150 query-local catalog plus its reachability evidence and the final
 18-query H100 preflight are now submitted as CWRU jobs `3795066` and `3795067`
 at exact commit `52b1b256b577313e42ccf2d8d24d02d537781e22`. Their outcomes are
-not yet admitted. The catalog has a new independent read-only auditor and CWRU
+not yet admitted. Job `3795066` failed before scanning Freebase because the
+Git-ignored frozen `inference_questions.jsonl` body was absent from the server
+checkout; it created no pilot150 catalog. Job `3795067` remains an independent
+queued H100 preflight and does not need to be cancelled. The catalog has a new
+independent read-only auditor and CWRU
 wrapper that reconstruct the exact population, source inventory, file and
 SQLite identities, query isolation, reachability evidence, and prompt gate
 without importing the producer or rescanning Freebase.
+
+The deployment boundary is now explicit. A CPU-only Slurm preparation wrapper
+installs and frozen-spec verifies the ignored GrailQA/ontology/catalog bodies
+and emits a runtime artifact receipt without scanning Freebase or starting a
+model/backend. The catalog wrapper verifies those bytes before construction
+and fails with an actionable preparation message if they are absent. A local
+backup containing the complete two dataset directories was independently
+checked: all five pilot hashes and the catalog identity match the frozen spec,
+so it may be transferred directly and then verified on CWRU.
 
 The five explicit author choices, successful independent audits of both live
 gates, author preflight review, and a later exact execution authority remain
@@ -2848,5 +2861,7 @@ remain false. The work remains isolated from the frozen FinBench confirmatory
 runner and admitted campaign.
 The compact readiness record is
 `experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v1.json`.
-The complete repository regression now passes 1,240 tests with 36 intentional
-environment or external-artifact skips.
+The complete repository regression now passes 1,241 tests with 36 intentional
+environment or external-artifact skips. The artifact-deployment repair adds a
+non-skipped wrapper regression; its focused catalog/evidence suite passes 18
+tests.

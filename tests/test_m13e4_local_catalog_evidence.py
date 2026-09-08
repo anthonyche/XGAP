@@ -24,6 +24,24 @@ BUILDER_COMMIT = "1" * 40
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_grailqa_artifact_preparation_wrapper_is_cpu_only_and_verifies_twice() -> None:
+    wrapper = (
+        ROOT / "scripts/slurm/prepare_grailqa_m13d_artifacts.sbatch"
+    ).read_text(encoding="utf-8")
+
+    assert "#SBATCH --cpus-per-task=8" in wrapper
+    assert "#SBATCH --mem=32G" in wrapper
+    assert "fetch_grailqa_m13d_artifacts.sh" in wrapper
+    assert "--verify-only" in wrapper
+    assert "artifact_receipt.json" in wrapper
+    assert "validate_frozen_artifacts" in wrapper
+    assert "freebase_parquet_bytes_scanned" in wrapper
+    assert '"paper_result": False' in wrapper
+    assert "#SBATCH --gres" not in wrapper
+    assert "vllm" not in wrapper.casefold()
+    assert "DASHSCOPE" not in wrapper
+
+
 def test_catalog_audit_slurm_wrapper_is_cpu_only_and_fail_closed() -> None:
     wrapper = (
         ROOT / "scripts/slurm/audit_grailqa_local_catalog.sbatch"

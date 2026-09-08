@@ -1652,7 +1652,18 @@ and the prompt gate. It makes no external call, does not rescan the 32 GB source
 does not modify the catalog, and cannot authorize model execution. CWRU jobs
 `3795066` (pilot150 catalog) and `3795067` (final 18-query H100 preflight) were
 submitted at commit `52b1b256b577313e42ccf2d8d24d02d537781e22`; their
-outcomes are not yet recorded here.
+outcomes are not yet admitted here. The catalog job stopped before its Freebase
+scan because the Git-ignored frozen GrailQA question body was not installed;
+it left no pilot150 catalog. The preflight job remains separately queued.
+
+The catalog wrapper now enforces frozen runtime-artifact verification before
+starting its 32 GB scan. A CPU-only preparation job can download/rebuild and
+verify the ignored GrailQA, ontology, and query-independent catalog bodies and
+write a runtime receipt. Alternatively, the exact-hash-matching recovered
+local directories may be transferred into the checkout and verified there.
+This closes a deployment/test-skip gap but does not authorize either live gate.
+The complete post-repair regression passes 1,241 tests with 36 intentional
+environment or external-artifact skips.
 
 Five scientific choices remain explicitly unselected. The submitted final
 18-query CWRU rerun still requires independent audit and author review, and the
