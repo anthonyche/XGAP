@@ -2729,3 +2729,16 @@ the earlier pre-oracle inventory remains in
 `experiments/artifacts/m15_finbench_confirmatory_preoracle_readiness_v1.json`.
 The exact non-authorizing request must bind the eventual clean pushed commit
 before it is shown to the author for a separate execution decision.
+
+The post-campaign paper-report layer is also locally implemented on a branch
+separate from the frozen runner. It accepts only a successful campaign result
+whose final independent audit has `confirmatory_result_admitted=true`, checks
+the source result/oracle/analysis hash chain, and projects the already-computed
+RQ-P1, RQ-P2, and RQ-P3 values into deterministic JSON and Markdown tables. It
+does not rerun statistics, treat repetitions as independent samples, promote
+the F3 cold-start stratum to family memory, or infer semantic/ontology claims
+from the physical FinBench experiment. Seven focused tests cover admission,
+claim-boundary drift, deterministic rendering, and source-tree immutability.
+The complete reporting-branch regression passes 1,188 tests with 36 intentional
+environment or external-artifact skips; the frozen formal runner and its
+content-addressed execution request are unchanged.

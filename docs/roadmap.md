@@ -1653,3 +1653,13 @@ Current status: TODO
   non-authorizing execution request. A separate explicit author decision is
   required before the staged submission helper may be invoked; choosing Option
   A and accepting the freeze did not grant execution authority.
+- **Paper reporting locally ready:** after—and only after—the final campaign
+  audit admits the run, a read-only presentation layer projects the frozen
+  analysis into RQ-P1/P2/P3 JSON and Markdown tables. It preserves the
+  query-level inferential unit, labels F3 as descriptive cold start, reports
+  offline training separately, and refuses semantic/ontology or general-KGQA
+  claims from this physical experiment.
+- **Reporting regression accepted:** seven focused report tests and the full
+  1,188-test repository regression pass with 36 intentional skips. This work is
+  isolated from the frozen `cf622cb` runner and does not grant execution
+  authority.

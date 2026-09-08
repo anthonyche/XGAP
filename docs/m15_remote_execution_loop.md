@@ -970,3 +970,17 @@ Population Option A and the successful freeze are not execution authority.
 The exact clean pushed commit must be bound into a new non-authorizing request
 and inspected first; only a separate explicit author decision may create the
 authority record and permit the submission helper to run.
+
+After a successful campaign, do not manually copy values from the oracle JSON
+into a paper table. The confirmatory report command consumes the immutable
+campaign root plus its successful final audit and writes outputs outside that
+tree. It verifies the full result/oracle/analysis/audit hash chain, then emits
+deterministic JSON and Markdown for RQ-P1/P2/P3. An invalidated, unaudited, or
+mutated campaign is rejected. The presentation layer performs no backend call,
+does not recompute inferential statistics, and cannot broaden the FinBench
+physical claim to semantic or ontology effectiveness.
+
+The reporting implementation is frozen separately from the formal runner. Its
+full local regression passes 1,188 tests with 36 intentional skips; neither the
+report code nor its readiness record changes the already generated execution
+request or authorizes submission.

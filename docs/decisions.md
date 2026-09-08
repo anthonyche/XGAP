@@ -3384,3 +3384,24 @@ dependency contract; only its successful admission of a successful campaign
 may emit `paper_result=true`. This implementation does not itself authorize a
 remote run. The exact execution request and a later explicit author authority
 record remain mandatory inputs to initialization.
+
+## D172 Separate inferential analysis from paper presentation
+
+The delayed oracle owns all confirmatory statistics. The paper-report layer may
+only project those immutable values after the final independent campaign audit
+has admitted the source result; it may not rerun, tune, filter, or replace an
+analysis. Its JSON and Markdown outputs bind the campaign result, oracle,
+analysis, audit, runner commit, and complete source-tree digest.
+
+The primary RQ-P1 table keeps 32 seen-family queries as the inferential units
+and explicitly states the direction of the family-memory/profile latency ratio
+and paired difference. RQ-P2 reports method-level winner accuracy, latency and
+byte regret, end-to-end latency, prediction error, frontier overlap, and the
+predeclared Holm-adjusted comparisons. RQ-P3 keeps the 16 held-out F3 queries
+descriptive, never labels their fallback as family memory, and performs no
+inferential test. Offline training and failure accounting remain separate.
+
+Admission of this FinBench report supports the heterogeneous physical-plan
+optimization comparison only. It cannot support the semantic-ambiguity,
+ontology, or general KGQA claims, which require their separate GrailQA and
+external-validation evidence.
