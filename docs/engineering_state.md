@@ -11,7 +11,40 @@ Updated: 2026-09-09. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
   preserving prior scientific choices and accepted/raw experiment artifacts.
 - No subordinate agents requested or spawned in this task.
 
+## User schedule and stopping condition
+
+User confirmed on 2026-09-09 (Asia/Shanghai): complete one verifiable milestone
+before midnight, deliver an implementation report, then pause to conserve
+tokens and resume at **2026-09-10 10:00 +08:00**. The existing `xgap` heartbeat
+has been updated to the next 10:00 daily slot, replacing hourly overnight
+wakeups. Its first morning run is instructed to restore the hourly cadence.
+The local machine clock is CST +0800. Local execution needs this Mac and the
+Codex app available at that time.
+
+The agent cannot directly push to ChatGPT mobile or verify phone delivery.
+Do not claim a phone push occurred. The app's Goal is still active: the goal
+tools expose no pause operation, and CUA explicitly prohibits controlling the
+Codex app itself. No alternate UI/database workaround is permitted. At the
+milestone handoff ask the user to click the Goal progress row's pause control.
+Do not mark the broad system goal complete or blocked to imitate a pause.
+After the handoff, do not start another engineering milestone before the
+scheduled morning recovery unless the user explicitly changes this instruction.
+
 ## Current milestone
+
+D198 adds read-only admission of the complete retained inline provider history:
+all materializations, typed/grounded feedback, exact repair payloads, token
+receipt and transport order, raw/consumed responses, invocation copies and
+query state seals. This is a provider evidence component, **not whole-run
+admission**, semantic accuracy, recomputed token counts, or server identity.
+See `docs/report/grailqa_inline_evidence_v1.md`.
+Focused regression: **215 passed in 3.13 seconds** (41 new tests).
+Harness + all 19 acceptance examples pass. Full offline regression: **2587
+passed, 37 skipped in 596.33 seconds**. D198 local software acceptance is complete.
+Evidence: `experiments/artifacts/d198_inline_evidence_local_20260909.json`;
+full log: `/tmp/xgap-inline-evidence-20260909/full-regression.log`.
+The final handoff is `docs/report/xgap_implementation_report_20260909_evening.md`.
+No further development milestone should begin before the scheduled morning recovery.
 
 D197 / H3 software acceptance is complete: inline slot annotations are
 materialized into the existing guarded semantic pipeline, with original/derived
@@ -36,7 +69,7 @@ Full regression: **2503 passed, 37 skipped in 604.92 seconds**.
 The harness check and all 19 acceptance examples also pass.
 The new live Fuseki test is explicitly gated and not yet measured.
 
-Current full regression log: `/tmp/xgap-inline-20260909/full-regression-final.log`.
+Current full regression log: `/tmp/xgap-inline-evidence-20260909/full-regression.log`.
 Python with pytest 9.0.2 / RDFLib 7.1.4:
 `/tmp/xgap-directed-tests.qU2YfW/venv/bin/python`.
 
@@ -45,7 +78,7 @@ Python with pytest 9.0.2 / RDFLib 7.1.4:
 OnDemand is open in Chrome at
 `https://ondemand-pioneer.case.edu/pun/sys/shell/ssh/pioneer.case.edu`.
 The visible last scheduler record reports 3796988 RUNNING on compt303,
-8 CPUs, 48 GiB, elapsed 01:48:43, four-hour limit. This is an observed
+8 CPUs, 48 GiB, elapsed 02:53:15, four-hour limit. This is an observed
 snapshot, not a completion claim. Its log is
 `/home/hxc859/XGAP-m15-465e2e2/slurm-xgap-grailqa-catalog-compare-3796988.out`;
 this task has not yet retrieved the log contents.
@@ -56,12 +89,14 @@ some special characters; do not send compound or state-changing commands
 through that route until exact input is verified. Read-only attempts produced
 two harmless `scontrol` syntax errors, not a change to the running job.
 
-Subsequent browser discovery exposed the Chrome extension. Its live tab list
-shows the OnDemand file page redirected to `login.case.edu/cas/login`; claiming
-the existing shell tab timed out. A request to the user to restore CWRU login
-is pending. Local engineering continues; do not treat stale native app screen
-snapshots as fresh scheduler observations. The failed log-read attempt and
-browser timeout are preserved as unavailable evidence, with no new job.
+The user restored CWRU login on 2026-09-09. The file page shows the logged-in
+account and the repository directory; the target log was listed as 232 bytes,
+last modified 16:36:13 CST. Claiming the browser tab still timed out, native
+paste timed out, and the opened raw-log page did not return readable content.
+Native terminal input remained unverified. No new scheduler command was
+successfully executed by this task and no terminal job result was obtained.
+Login restoration is resolved; browser/terminal interaction remains unreliable.
+Do not treat retained screen text as a newly executed scheduler observation.
 
 ## Next actions
 
@@ -69,12 +104,13 @@ browser timeout are preserved as unavailable evidence, with no new job.
    indexed but not all paragraphs have been reviewed. All three known source
    PDFs have now been read in full, with selected figures/formulas checked;
    proof verification and experiment reproduction are separate. Markdown
-   progress is 55 full / 8 selected sections / 18 detailed reviews pending.
+   progress is 63 full / 7 selected sections / 11 detailed reviews pending.
 2. Observe 3796988 completion and its coverage gains/losses using bounded
    read-only logs/artifacts. Do not equate scheduler completion with success.
-3. Prepare the independent result-verification/admission gate for the new
-   materialized-response contract; current replay checks only parsing/grounding
-   and successful final source links. Keep the new inline bundle/spec separate.
+3. Extend D198's provider evidence component to independent whole-run admission
+   for the new materialized-response contract: producer/spec/population,
+   catalog/retrieval, environment/lifecycle, tokenizer parity, metrics and gold
+   isolation still need their complete evidence chain. Keep the new inline bundle/spec separate.
    Establish vLLM schema compatibility and actual request fit with the existing
    bounded probes after selecting the catalog from CPU evidence. Do not launch
    another GPU experiment or change the active server checkout prematurely.
@@ -83,10 +119,10 @@ browser timeout are preserved as unavailable evidence, with no new job.
 
 ## Continuation
 
-Existing automation `xgap` was updated, not duplicated, to an hourly heartbeat
-on this task. It continues one bounded engineering/experiment cycle at a time,
-and stays quiet when there is no meaningful change. Local continuation needs
-the computer and Codex app running. This goal remains in progress.
+Existing automation `xgap` was updated, not duplicated, from hourly to the next
+10:00 morning recovery. After that recovery it should return to hourly bounded
+cycles and stay quiet without meaningful change. The broad goal remains in
+progress, with the user-requested overnight pause taking precedence.
 
 ## Persistent rules
 

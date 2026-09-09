@@ -4145,3 +4145,21 @@ Before a real comparison, restore the existing CWRU session, inspect catalog
 job 3796988 without duplicating it, select and freeze one catalog, and establish
 actual vLLM schema/request-fit and result-verification gates. Do not conflate
 catalog changes with the interface effect or advance to full150.
+
+## D198 Recompute the complete inline provider history before admitting evidence
+
+Add a separate read-only provider evidence gate. Reconstruct every inline
+materialization, deterministic validation/grounding feedback, and repair body
+from retained original responses and inference context. Check all call, token
+receipt, transport, invocation, ledger, and consumed-response bindings; preserve
+valid failure evidence. Rehashing a changed derived body or omitting an earlier
+failed response cannot satisfy this gate. Use the explicitly selected bundle
+without ambient environment overrides, and perform no external calls.
+
+The new gate admits only the retained provider subset. It cannot admit a
+frozen scientific population or a complete experiment, recompute semantic
+metrics/token counts, prove remote server identity, or establish NL accuracy.
+Initial token refusals retain zero-call evidence but lack a reconstructable
+full request. Their limitation is explicit. The whole-run admission gate
+remains a separate next step; old protocols, artifacts and launch defaults
+are unchanged. See `docs/report/grailqa_inline_evidence_v1.md`.

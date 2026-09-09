@@ -490,7 +490,8 @@
         "## Oracle and evidence boundary",
         "## Entry points"
       ],
-      "review_status": "selected_sections_reviewed"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full text reviewed during D198; historical fragment estimates and controlled mechanism acceptance do not establish present model accuracy or public-data answer execution."
     },
     {
       "path": "docs/m15_e5_interpretation_relaxation_gate.md",
@@ -602,7 +603,8 @@
         "## Accelerated execution schedule",
         "## Immediate loop"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full text reviewed during D198. Preserve accepted Option C research direction; schedule and campaign-active statements are historical and superseded by current admitted evidence, not by local software acceptance."
     },
     {
       "path": "docs/m15_remote_execution_loop.md",
@@ -997,7 +999,8 @@
         "## Explicitly rejected extensions",
         "## Implementation consequence"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full text reviewed during D198; historical fragment estimates and controlled mechanism acceptance do not establish present model accuracy or public-data answer execution."
     },
     {
       "path": "docs/report/grailqa_freebase_catalog_v2_reachability.md",
@@ -1098,7 +1101,8 @@
         "## Ambiguity",
         "## Scope"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full text reviewed during D198. Historical model/catalog/status and resume instructions remain historical; current guarded protocol and engineering state take precedence."
     },
     {
       "path": "docs/report/grailqa_output_contract_revision_v1.md",
@@ -1231,7 +1235,8 @@
         "## Frozen Spec And Outputs",
         "## Local Orchestration Validation"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full text reviewed during D198. Historical model/catalog/status and resume instructions remain historical; current guarded protocol and engineering state take precedence."
     },
     {
       "path": "docs/report/grailqa_semantic_pilot_server_runbook.md",
@@ -1252,7 +1257,8 @@
         "## 10. Verify Completion",
         "## 11. Return Results"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full text reviewed during D198. Historical model/catalog/status and resume instructions remain historical; current guarded protocol and engineering state take precedence."
     },
     {
       "path": "docs/report/grailqa_semantic_preflight_v2_runbook.md",
@@ -1269,7 +1275,8 @@
         "## 4. Run The Independent Audit",
         "## 5. Author Review And Admission Boundary"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full text reviewed during D198. Historical model/catalog/status and resume instructions remain historical; current guarded protocol and engineering state take precedence."
     },
     {
       "path": "docs/report/grailqa_server_tokenization_v1.md",
@@ -1303,7 +1310,8 @@
         "## Physical Planning",
         "## Reproduction"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full text reviewed during D198. Historical model/catalog/status and resume instructions remain historical; current guarded protocol and engineering state take precedence."
     },
     {
       "path": "docs/report/kqapro_artifact_audit.md",
@@ -1968,8 +1976,8 @@
   ],
   "hash_note": "Hashes and sizes capture the entry snapshot; review_status records progress. Later engineering updates to status/roadmap/decisions are not silently substituted for the entry snapshot.",
   "review_counts": {
-    "full_text_reviewed": 55,
-    "selected_sections_reviewed": 8,
-    "indexed_pending_detailed_review": 18
+    "full_text_reviewed": 63,
+    "selected_sections_reviewed": 7,
+    "indexed_pending_detailed_review": 11
   }
 }

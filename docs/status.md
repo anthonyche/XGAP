@@ -8,6 +8,15 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+D198 independently recomputes the retained inline provider history, including
+failed structures, typed feedback and exact repairs. It cross-checks transport,
+token-receipt, invocation and consumed-response evidence without external calls.
+Focused regression: **215 passed**. Full regression: **2587 passed, 37 skipped
+in 596.33 seconds**; harness and all 19 acceptance examples pass. This component
+does not admit the whole experiment or verify semantic metrics/server identity.
+See [provider evidence gate](report/grailqa_inline_evidence_v1.md) and the
+[evening implementation report](report/xgap_implementation_report_20260909_evening.md).
+
 D197 adds an explicitly selected inline grounding interface to the existing
 guarded inference pipeline. It preserves model semantic choices, generates
 mechanical component references, retains valid siblings, and stores original
@@ -27,10 +36,12 @@ execution, and the two-dataset EQ1–EQ5 matrix. The document inventory covers
 81 existing Markdown documents plus three source PDFs; detailed historical reading
 continues explicitly rather than claiming every indexed paragraph was read.
 
-The current task has an hourly continuation attached to it. The last scheduler
-snapshot of existing CPU job 3796988 was RUNNING; its present state is unknown.
-No duplicate job has been submitted. The OnDemand file
-session subsequently expired; user login restoration is pending for fresh logs.
+The user requested a pause after tonight's milestone and recovery at 10:00
+Beijing time on September 10. The existing heartbeat now targets that morning
+slot and will restore hourly continuation after recovery. Login is restored;
+browser control and raw-log retrieval remain unreliable. The visible old
+scheduler snapshot of 3796988 was RUNNING, not a fresh status query. Its terminal
+result remains unavailable and no duplicate job has been submitted.
 
 ## Current Mainline Milestone
 

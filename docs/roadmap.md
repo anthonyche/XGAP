@@ -9,14 +9,18 @@ answer execution, H5 shared EQ1–EQ5 experiments, and H6 scale/UI work. These
 are implementation checkpoints under the existing M15 research direction.
 They do not replace frozen scientific populations or historical milestones.
 
-H2/D196 and H3/D197 have passed local software acceptance. H3 uses a separately
+H2/D196, H3/D197 and the D198 provider evidence component have passed local
+software acceptance. D198 recomputes the complete retained response/repair
+history; whole-run population, environment, tokenizer and metric admission
+remain the next evidence gate. Full regression is **2587 passed / 37 skipped**,
+with the harness and all 19 acceptance examples passing. H3 uses a separately
 versioned full AST with inline slot choices, preserving semantics while removing
-duplicated component-reference serialization. Full regression is 2546 passed /
-37 skipped; real interface effectiveness, schema acceptance and request fit
+duplicated component-reference serialization. Real interface effectiveness, schema acceptance and request fit
 remain pending. See [engineering_state.md](engineering_state.md) for exact
 evidence and the next independent result-verification gate. H0 continues through
-unread historical text. H1 needs fresh logs for catalog job 3796988 after CWRU
-login restoration. These gates precede the new bounded interface comparison
+unread historical text. H1 needs fresh logs for catalog job 3796988; CWRU login
+has been restored, but browser control still has not returned its result.
+These gates precede the new bounded interface comparison
 and H4's inference-owned data/real-answer admission.
 
 ## Current Mainline: M15 Agentic Federated Core
