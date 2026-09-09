@@ -2967,3 +2967,32 @@ pass. The uploaded ledgers retain their audited hashes, and independent code
 review found no weakened grounding or semantic guards. This is engineering
 acceptance only: no new model/backend calls, no recovered live candidate claim,
 and no grant for the 150-query run.
+
+### GrailQA output-contract clarification draft (2026-09-09)
+
+A separate inactive bundle and 18-query spec now clarify complete top-level
+anchors, optional candidate realizations, and structural component references.
+Only the provider system-prompt payload changes. Original instructions are
+retained; schema bytes, model/budgets, question identities/order, retrieval,
+metrics, normalization, and grounding are unchanged. The proposed and preserved
+file identities are recorded in
+`experiments/artifacts/grailqa_output_contract_revision_draft_v1.json`.
+
+The existing shell defaults and paper draft v2 still bind the old prompt.
+No model/backend call, server submission, author receipt, scientific choice,
+or source-evidence change occurs. This draft does not fix the separate
+catalog/retrieval limitation or establish any new semantic accuracy. Actual
+new-request tokenization is not measured: the pinned Qwen tokenizer is absent
+from the inspected local cache. Context-reservation arithmetic passes but
+does not establish request fit.
+
+Review and next-gate details are in
+`docs/report/grailqa_output_contract_revision_v1.md`. The next live action
+requires explicit contract review and a separately scoped development-run
+authorization; full-150 execution remains unauthorized.
+
+Offline acceptance: **1,309 passed, 36 skipped** in the collected full suite
+(517.66 seconds), plus a final **61-test** focused contract run. The latter
+includes 53 grounding tests added after full-suite collection, not counted in
+1,309. Both offline boundary examples pass. The final focused run also verifies
+the exact proposed/preserved file identities. No live improvement is inferred.

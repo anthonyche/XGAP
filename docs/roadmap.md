@@ -1736,6 +1736,20 @@ under v2. The next live gate remains a separately versioned and reviewed output
 contract followed by an explicitly scoped small validation run; the negative
 18-query result is not replaced by these offline tests.
 
+An inactive output-contract draft now supplies a separately hashed model bundle
+and 18-query spec. It explicitly distinguishes complete top-level anchors from
+optional candidate realizations and documents actual structural component
+paths. Old prompt/schema/spec/protocol bytes, all scientific settings, runtime
+validators, and shell defaults are unchanged. The review record and synthetic
+grounding tests prepare the next gate; they do not authorize it or demonstrate
+model accuracy. Before any fresh inference, review the exact contract, check
+actual token lengths with the pinned server tokenizer, and obtain scoped
+development-run authority. No pilot150 catalog rebuild follows automatically
+from a system-prompt-only revision.
+Offline acceptance is 1,309 passed / 36 skipped in the full collected suite and
+61 passed in the final focused contract run (including 53 grounding cases
+added after that full-suite collection); both boundary examples pass.
+
 ## M14 KGQA Evaluation
 
 Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.

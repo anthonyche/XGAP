@@ -1,0 +1,73 @@
+{
+  "schema_version": "m13e1-grailqa-semantic-preflight-v2",
+  "experiment_id": "grailqa_semantic_preflight_output_contract_v1_cwru_qwen3_32b",
+  "run_id_prefix": "grailqa-semantic-preflight-output-contract-v1",
+  "research_scope": "interpretation reachability and contract validity only",
+  "pilot_root": "datasets/grailqa_pilot_v1",
+  "catalog_root": "datasets/grailqa_inference_catalog_v2",
+  "reachability_root": "datasets/grailqa_reachability_v2",
+  "model_bundle_root": "models/qwen3_32b_vllm_cwru_grailqa_contract_v1",
+  "model_bundle_hash": "07f3fd0547ff2ed1a3ce1bbbded1d3c83af150ad4d3cfc9be1cef578eb729c13",
+  "question_ids": [
+    "2100226013000",
+    "2102933007000",
+    "2100270004000",
+    "2103421006000",
+    "3206065001000",
+    "2100855004000",
+    "2100164007000",
+    "2101116003000",
+    "2100840007000",
+    "2101661019000",
+    "3200799010000",
+    "3205285001000",
+    "3205274004000",
+    "3203168013000",
+    "3203374006000",
+    "3201275011000",
+    "3203284000000",
+    "4301690002000"
+  ],
+  "selection": {
+    "seed": 13031,
+    "size": 18,
+    "policy": "seeded round-robin within proportional Q quotas over path length, first relation domain, and frozen M13-D component reachability count",
+    "model_outcomes_used": false,
+    "reachable_only_selection": false,
+    "q_distribution": {
+      "13": 10,
+      "19": 7,
+      "25": 1
+    },
+    "path_length_distribution": {
+      "1": 10,
+      "2": 7,
+      "3": 1
+    },
+    "relation_domain_count": 17
+  },
+  "minimum_joint_prompt_reachability": 0.2,
+  "gate_classification": "engineering_safeguard_not_paper_metric",
+  "retrieval_k": 20,
+  "prompt_candidates_per_slot": 4,
+  "relation_slot_bound": 3,
+  "candidate_cap": 3,
+  "epsilon_values": [
+    0.0,
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "provider": "vllm_openai_compatible",
+  "model": "Qwen/Qwen3-32B",
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "backend_execution": false,
+  "gold_exposed_to_inference": false,
+  "full_150_run_permitted": false,
+  "deployment_contract": "experiments/environments/cwru_pioneer_qwen3_32b_vllm.json",
+  "deployment_contract_hash": "636d1095bd0919a9e427d2d30aeb627c860bf68a54f6c0dbba5a9e590e885deb",
+  "freeze_hash": "a4dee64d522108b8ae27f91fa2425dbfa125ba40e43dfc1a717844d08efae50a"
+}

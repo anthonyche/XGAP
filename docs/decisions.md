@@ -3707,3 +3707,32 @@ Current defaults may select that new implementation-bound draft, but old
 selection/review/request/authority receipts do not migrate automatically.
 This mechanical implementation rebind is distinct from a future prompt or
 grounding-policy revision and never authorizes a model run.
+
+## D185 Clarify the GrailQA output contract in an inactive, separately hashed draft
+
+The complete top-level anchor inventory and optional per-candidate realizations
+are distinct existing rules. Every supplied query slot needs an anchor even
+when a candidate does not use that optional hop. Every actual relation leaf
+must still map to its corresponding hop in structural traversal order.
+`component_ref` names the actual pattern component, not a variable or label
+field. Query anchors and candidate realized terms remain separate semantic
+inputs; clarifying syntax must not force their equality.
+
+A new `qwen3_32b_vllm_cwru_grailqa_contract_v1` bundle appends these instructions
+without replacing the original prompt. Its schema bytes, model, sampling,
+candidate limits, token/time budgets, repair bound, and deployment contract
+remain unchanged. A separately identified preflight spec preserves all 18
+queries and every scientific field. The existing grounder, normalization,
+relation-endpoint exception, and downstream relation-label consistency checks
+are not modified. Synthetic offline cases exercise the real parser/grounder;
+they are not model-generation or benchmark evidence.
+
+The review record pins both proposed and preserved files. Existing preflight
+and paper shell defaults and paper protocol v2 are unchanged, so an old receipt
+or invocation cannot silently activate the new prompt. The proposal grants no
+execution authority and does not choose the five paper decisions. Actual input
+token lengths remain unmeasured locally; fixed context-reservation arithmetic
+is not a substitute for checking the pinned tokenizer/chat-template output.
+Any fresh small run needs explicit interface review and exact execution scope.
+Neither the original negative preflight nor admitted FinBench evidence is
+rewritten or reclassified.
