@@ -174,6 +174,7 @@ def _provider(
         seed_supported=config.seed_supported,
         max_repair_calls=config.max_repair_calls,
         extra_parameters=config.extra_parameters,
+        response_contract=config.metadata.get("response_contract"),
     )
     kwargs: dict[str, Any] = {
         "config": provider_config,

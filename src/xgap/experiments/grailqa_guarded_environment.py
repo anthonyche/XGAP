@@ -154,6 +154,7 @@ def validate_guarded_environment(
         "structured_schema": model.structured_schema, "prompt_hash": model.prompt.prompt_hash,
         "seed": config.seed, "seed_supported": config.seed_supported,
         "max_repair_calls": config.max_repair_calls, "extra_parameters": config.extra_parameters,
+        "response_contract": config.metadata.get("response_contract"),
     }.items():
         equal(getattr(provider_config, key, None), expected, f"effective_provider_{key}")
 

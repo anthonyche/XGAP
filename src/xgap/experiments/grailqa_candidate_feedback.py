@@ -53,8 +53,9 @@ def _issue(code: str, error: object) -> dict[str, Any]:
 class GroundedCandidateFeedback:
     """Single-request callback; journal every assessed response before repair."""
 
-    def __init__(self, record: Callable[[Mapping[str, Any]], None]) -> None:
+    def __init__(self, record: Callable[[Mapping[str, Any]], None], *, materialized_inline: bool = False) -> None:
         self._record = record
+        self._materialized_inline = materialized_inline
         self._view: PromptSchemaView | None = None
         self._request_hash: str | None = None
         self.records: list[dict[str, Any]] = []
@@ -95,6 +96,9 @@ class GroundedCandidateFeedback:
             "no_valid_candidate": report["valid_candidate_count"] == 0,
             "feedback_detail_character_limit": MAX_DETAIL_CHARACTERS,
             "gold_used": False, "lowering_consulted": False,
+            **({"source_response_representation": "materialized_inline",
+                "source_identity_link": "invocation.response_materializations.materialized_response_sha256"}
+               if self._materialized_inline else {}),
         }
         try:
             self._record(deepcopy(event))
@@ -108,7 +112,9 @@ class GroundedCandidateFeedback:
             feedback = {key: event[key] for key in ("shared_issue", "candidate_issues")}
             raise CandidateContractFeedback(
                 "No typed, prompt-grounded candidate. Repair the contract using only the supplied "
-                "prompt IDs and actual AST component paths; do not invent identities or alter "
+                + ("prompt IDs and inline slot annotations on actual AST components; "
+                   if self._materialized_inline else "prompt IDs and actual AST component paths; ")
+                + "do not invent identities or alter "
                 "question constraints. Diagnostics: " + json.dumps(feedback, ensure_ascii=True, sort_keys=True)
             )
 

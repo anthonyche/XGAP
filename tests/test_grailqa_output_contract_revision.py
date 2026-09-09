@@ -149,10 +149,11 @@ def test_review_record_binds_exact_sources_but_cannot_grant_authority() -> None:
             if item["path"] in {
                 "src/xgap/experiments/grailqa_semantic_pilot.py",
                 "src/xgap/experiments/grailqa_preflight.py",
+                "src/xgap/llm/openai_compatible.py",
             }:
-                # D192 adds an explicit opt-in grounding policy later. This
-                # historical prompt-only review still binds the original code,
-                # not the later implementation; never rewrite its old hashes.
+                # D192 adds opt-in grounding; D197 adds an opt-in wire adapter.
+                # This historical prompt-only review still binds its original
+                # code, not later implementations; never rewrite its old hashes.
                 data = subprocess.check_output([
                     "git", "show", f"{review['base_implementation_commit']}:{item['path']}",
                 ], cwd=ROOT)

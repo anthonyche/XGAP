@@ -101,7 +101,9 @@
         "## GPC-Lite Pattern Layer",
         "## Current Execution Boundary"
       ],
-      "review_status": "selected_sections_reviewed"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/backend_environment.md",
@@ -401,7 +403,9 @@
         "### Modes And Freeze Boundary",
         "### Server Pilot Order"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/m15_agentic_federated_core.md",
@@ -419,7 +423,9 @@
         "## M15-F — Paper experiment surface and optional UI",
         "### Confirmatory execution authority and block isolation"
       ],
-      "review_status": "selected_sections_reviewed"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/m15_e2b_live_resolution_gate.md",
@@ -434,7 +440,9 @@
         "## CWRU execution",
         "## Required evidence"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/m15_e3_semantic_intake.md",
@@ -535,7 +543,9 @@
         "## Milestones after the decision",
         "## Current gate"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Historical protocol/design read in full during D197. Later accepted measurements remain separate; no new population, predictor, cold-start or external-run decision made."
     },
     {
       "path": "docs/m15_f2c14b_multi_family_design_gate.md",
@@ -565,7 +575,9 @@
         "## Required follow-on decisions",
         "## Acceptance gate for F2C14B"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Historical protocol/design read in full during D197. Later accepted measurements remain separate; no new population, predictor, cold-start or external-run decision made."
     },
     {
       "path": "docs/m15_paper_experiment_acceleration_plan.md",
@@ -736,7 +748,9 @@
         "## Commands Run",
         "## Result Summary"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed during D197; historical M5 scope retained."
     },
     {
       "path": "docs/quantified_pattern_semantics.md",
@@ -792,7 +806,9 @@
         "## 18. Claim Boundary",
         "## 19. M6 Acceptance Invariants"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Read all 19 sections during D197; focused branch filtering is distinct from returning scalar COUNT answers and from full QGP."
     },
     {
       "path": "docs/report/cwru_vllm_experiment_backend.md",
@@ -897,7 +913,9 @@
         "## 11. Recommendation",
         "## Machine-Readable Artifacts"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/report/grailqa_artifact_audit_v2.md",
@@ -916,7 +934,9 @@
         "## Reference Ambiguity",
         "## Boundary"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/report/grailqa_candidate_feedback_v1.md",
@@ -997,7 +1017,9 @@
         "## Gate",
         "## Scope"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/report/grailqa_guarded_development_entrypoint_v1.md",
@@ -1126,7 +1148,9 @@
         "## Fallacy Scan",
         "## Reproducibility"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/report/grailqa_request_token_guard_v1.md",
@@ -1156,7 +1180,9 @@
         "## Source-backed diagnostic, not a new experiment",
         "## Acceptance and remaining gates"
       ],
-      "review_status": "selected_sections_reviewed"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/report/grailqa_semantic_deviation_postmortem.md",
@@ -1186,7 +1212,9 @@
         "## 4. Request And Separately Authorize One Exact Run",
         "## 5. Submit Once And Let The Independent Finalizer Run"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/report/grailqa_semantic_pilot_preparation.md",
@@ -1363,7 +1391,9 @@
         "## 17. Minimal recommended fixes",
         "## 18. Explicit things that should NOT be changed"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Full contents reviewed in bounded, untruncated reads during D197. Entry hashes remain the original inventory snapshot."
     },
     {
       "path": "docs/report/report_1.md",
@@ -1532,7 +1562,9 @@
         "## Commands Run",
         "## Result Summary"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Historical M4.5 audit read in full during D197; no current implementation or benchmark scope inferred from historical statements."
     },
     {
       "path": "docs/status.md",
@@ -1646,7 +1678,9 @@
         "## Non-Goals",
         "## Acceptance Criteria"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Historical sprint scope read in full during D197; not activated as a new implementation request."
     },
     {
       "path": "prompts/sprints/M_11_ontology_bounded_physical_planning.md",
@@ -1662,7 +1696,9 @@
         "## Hard Rules",
         "## Verification"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Historical sprint scope read in full during D197; not activated as a new implementation request."
     },
     {
       "path": "prompts/sprints/M_12_A_experiment_contract_dataset_bundle.md",
@@ -1672,7 +1708,9 @@
       "headings": [
         "# M12-A Experiment Artifact Contract + Dataset Bundle"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Historical sprint scope read in full during D197; not activated as a new implementation request."
     },
     {
       "path": "prompts/sprints/M_12_B_live_llm_runtime_alignment.md",
@@ -1686,7 +1724,9 @@
         "## Forbidden Scope",
         "## Acceptance"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Historical sprint scope read in full during D197; not activated as a new implementation request."
     },
     {
       "path": "prompts/sprints/M_2_5_logical_plan_infrastructure.md",
@@ -1702,7 +1742,9 @@
         "## Implementation requirements",
         "## Tests"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "13dd4ba",
+      "review_note": "Historical sprint scope read in full during D197; not activated as a new implementation request."
     },
     {
       "path": "prompts/sprints/M_3_recursive_algebra.md",
@@ -1903,28 +1945,31 @@
       "path": "/Users/anthonyche/.codex/.chatgpt-projects/g-p-69389565eee8819189ea7b1c36bbe152/sources/Towards_Agentic_Graph_Query_Planning_under_Ambiguity_VLDB_workshop_Camera_Ready_.pdf",
       "sha256": "6340c46d5fbd0323ef6d1ce65d7162041c154a089056a468f768e10c8b6cc4ce",
       "structural_verdict": "PASS",
-      "review_status": "text_extracted_selected_sections_reviewed",
-      "extraction_path": "/tmp/xgap-review-20260909/Towards_Agentic_Graph_Query_Planning_under_Ambiguity_VLDB_workshop_Camera_Ready_.txt"
+      "review_status": "full_text_and_figures_reviewed",
+      "extraction_path": "/tmp/xgap-review-20260909/Towards_Agentic_Graph_Query_Planning_under_Ambiguity_VLDB_workshop_Camera_Ready_.txt",
+      "review_note": "All extracted text lines 1–419 and both figures on rendered pages 1 and 3 reviewed during D197; original PDF unchanged."
     },
     {
       "path": "/Users/anthonyche/.codex/.chatgpt-projects/g-p-69389565eee8819189ea7b1c36bbe152/sources/OntoXGAP_whitepaper.pdf",
       "sha256": "cf0c4e06910909284bccc88bcceafc3699ed67b4e7976eeef632e7236197f36c",
       "structural_verdict": "PASS",
-      "review_status": "text_extracted_selected_sections_reviewed",
-      "extraction_path": "/tmp/xgap-review-20260909/OntoXGAP_whitepaper.txt"
+      "review_status": "full_text_reviewed",
+      "extraction_path": "/tmp/xgap-review-20260909/OntoXGAP_whitepaper.txt",
+      "review_note": "All extracted text lines 1–488 reviewed during D197, with rendered formulas/definitions on pages 6–8 checked; original PDF unchanged."
     },
     {
       "path": "/Users/anthonyche/.codex/.chatgpt-projects/g-p-69389565eee8819189ea7b1c36bbe152/sources/p1195-ma.pdf",
       "sha256": "23de8cf19e4ecf2dd126086074ff021d1b60c517d85f2c1f30e67d0b228441d4",
       "structural_verdict": "PASS",
-      "review_status": "text_extracted_selected_sections_reviewed",
-      "extraction_path": "/tmp/xgap-review-20260909/p1195-ma.txt"
+      "review_status": "full_text_reviewed",
+      "extraction_path": "/tmp/xgap-review-20260909/p1195-ma.txt",
+      "review_note": "All extracted text lines 1–1752 read during D197, with rendered experiment figures and Table 3 on pages 11–12 checked. Full-version proofs and independent experimental reproduction are not verified; not all diagrams were visually inspected."
     }
   ],
   "hash_note": "Hashes and sizes capture the entry snapshot; review_status records progress. Later engineering updates to status/roadmap/decisions are not silently substituted for the entry snapshot.",
   "review_counts": {
-    "full_text_reviewed": 34,
-    "selected_sections_reviewed": 11,
-    "indexed_pending_detailed_review": 36
+    "full_text_reviewed": 55,
+    "selected_sections_reviewed": 8,
+    "indexed_pending_detailed_review": 18
   }
 }

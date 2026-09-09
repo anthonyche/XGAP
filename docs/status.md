@@ -8,13 +8,18 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
-D196 completes explicit RDF resource encoding, typed Fuseki SELECT results,
-directed runtime propagation, and explicit answer projection. Independent
-RDFLib + local HTTP execution passes the reverse-path/answer contract, with
-153 focused tests passing and one live Fuseki gate skipped. Full regression:
-**2503 passed, 37 skipped in 604.92 seconds**; the harness check and all 19
-acceptance examples pass. This is not real GrailQA answer correctness or a new
-paper result. Existing raw/accepted runs and frozen experiment inputs are unchanged.
+D197 adds an explicitly selected inline grounding interface to the existing
+guarded inference pipeline. It preserves model semantic choices, generates
+mechanical component references, retains valid siblings, and stores original
+wire content separately from recomputable materializations. Focused regression:
+**297 passed**. Final full regression: **2546 passed, 37 skipped in 608.62
+seconds**; the harness check and all 19 acceptance examples pass. A historical
+source-binding test was corrected without rewriting the old review or hashes.
+Real Qwen effectiveness, request fit and backend answers remain unmeasured.
+
+D196's separately selected typed RDF/resource encoding and answer projection
+remain locally accepted, including independent RDFLib + HTTP execution.
+Existing raw/accepted runs and frozen experiment inputs are unchanged.
 
 The [design review and milestones](report/xgap_engineering_review_20260909.md)
 prioritize catalog reachability, a simpler candidate interface, actual answer
@@ -22,9 +27,9 @@ execution, and the two-dataset EQ1–EQ5 matrix. The document inventory covers
 81 existing Markdown documents plus three source PDFs; detailed historical reading
 continues explicitly rather than claiming every indexed paragraph was read.
 
-The current task has an hourly continuation attached to it. Existing CPU job
-3796988 is still observed running; no duplicate job has been submitted.
-That scheduler snapshot is the last available observation. The OnDemand file
+The current task has an hourly continuation attached to it. The last scheduler
+snapshot of existing CPU job 3796988 was RUNNING; its present state is unknown.
+No duplicate job has been submitted. The OnDemand file
 session subsequently expired; user login restoration is pending for fresh logs.
 
 ## Current Mainline Milestone

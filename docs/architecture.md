@@ -4,6 +4,13 @@ XGAP is a cost-aware agentic federated graph-query system over heterogeneous
 black-box engines. Its mainline architecture is specified in
 [`docs/agentic_architecture.md`](agentic_architecture.md).
 
+For current implementation and measured acceptance, use
+[engineering_state.md](engineering_state.md) and
+[the M15 core record](m15_agentic_federated_core.md). The M0–M13 sections below
+describe each layer at its historical milestone; statements such as “future”
+or “outside the current execution boundary” in those sections do not supersede
+later M15 two-engine measurements or the separately selected D195–D197 work.
+
 The agentic pipeline is:
 
 ```text
@@ -629,7 +636,7 @@ M6 does not support regular-path quantification, arbitrary conjunctive
 patterns, cyclic patterns, full GPC, general assignments, bag/null
 semantics, or multiple focus outputs.
 
-## Current Execution Boundary
+## Legacy M0–M13 Execution Boundary
 
 M0-M6 reference semantics are executable, the M7 backend infrastructure
 harness can run already-authored native smoke queries, and the M11 controlled

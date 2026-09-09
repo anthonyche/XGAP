@@ -19,6 +19,9 @@ from xgap.experiments.runtime_alignment import (
     parse_grounded_planner_response,
 )
 from xgap.llm.schemas import PlannerRequest
+from xgap.llm.inline_grounding import (
+    SCHEMA_CONTRACT_KEY, materialize_inline_response, validate_response_contract,
+)
 
 
 class PreflightReplaySourceError(ValueError):
@@ -81,6 +84,10 @@ def _reconstruct_request(
     if len(users) != 1:
         raise PreflightReplaySourceError(f"{task_id}: expected one initial user payload")
     user = _object(json.loads(users[0]["content"]), "recorded user payload")
+    contract = validate_response_contract(response.get("generation_parameters", {}).get("response_contract"))
+    schema = _object(user.get("structured_output_schema", {}), "recorded response schema")
+    if schema.get(SCHEMA_CONTRACT_KEY) != contract:
+        raise PreflightReplaySourceError("Recorded wire schema/materialization contract mismatch")
     value = _object(user.get("prompt_schema_view"), "recorded prompt view")
     view = PromptSchemaView(
         task_id=value["task_id"],
@@ -132,6 +139,37 @@ def _replay_response(
         }
     if response.get("validation_status") != "schema_valid" or not isinstance(raw, Mapping):
         raise PreflightReplaySourceError("Structured response/provider status mismatch")
+    contract = validate_response_contract(response.get("generation_parameters", {}).get("response_contract"))
+    receipts = response.get("response_materializations", [])
+    if contract is not None:
+        # Recompute the transformation from preserved model bytes. Never trust
+        # a recorded derived body merely because its own hash is consistent.
+        if not isinstance(receipts, list) or not receipts:
+            raise PreflightReplaySourceError("Inline response lacks its materialization receipt")
+        receipt = _object(receipts[-1], "materialization receipt")
+        effective = materialize_inline_response(raw, entity_identity_property=contract["entity_identity_property"])
+        hashes = response.get("assembled_request_hashes")
+        raw_responses = response.get("raw_responses")
+        if not isinstance(hashes, list) or not hashes or not isinstance(raw_responses, list) or not raw_responses:
+            raise PreflightReplaySourceError("Inline response lacks source call evidence")
+        try:
+            last_wire = raw_responses[-1]["choices"][0]["message"]["content"]
+            last_wire = json.loads(last_wire) if isinstance(last_wire, str) else last_wire
+        except (KeyError, IndexError, TypeError, ValueError) as error:
+            raise PreflightReplaySourceError("Inline source response is malformed") from error
+        if (receipt.get("status") != "materialized" or receipt.get("contract") != contract
+                or type(receipt.get("call_index")) is not int or receipt["call_index"] != len(hashes)
+                or receipt.get("request_payload_sha256") != hashes[-1]
+                or receipt.get("source_response_sha256") != content_hash(raw)
+                or last_wire != raw
+                or receipt.get("materialized_response_sha256") != content_hash(effective)
+                or receipt.get("materialized_response") != effective):
+            raise PreflightReplaySourceError("Inline materialization does not reproduce its source evidence")
+        raw = effective
+        result["response_contract"] = contract
+        result["materialization_recomputed"] = True
+    elif receipts:
+        raise PreflightReplaySourceError("Undeclared response materialization")
     stage = "normalized_parser_rejected"
     try:
         parsed = parse_normalized_planner_response(raw, request)

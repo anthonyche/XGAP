@@ -277,7 +277,9 @@ class GuardedSemanticPilotProvider:
         if self._repair_policy == TYPED_GROUNDING_ONCE:
             if base.config.max_repair_calls != 1 or base.response_parser is not parse_normalized_planner_response:
                 raise ValueError("Typed grounding feedback requires the normalized parser and one shared repair.")
-            self._feedback = GroundedCandidateFeedback(journal.append)
+            self._feedback = GroundedCandidateFeedback(
+                journal.append, materialized_inline=base.config.response_contract is not None,
+            )
             previous_validator = base.response_validator
             feedback = self._feedback
 

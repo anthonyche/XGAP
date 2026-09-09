@@ -1,5 +1,11 @@
 # M15 Agentic Federated Core
 
+Current checkout, active observations and next engineering actions are in
+[engineering_state.md](engineering_state.md). The sections below retain
+milestone-specific acceptance and historical intermediate gates. Later
+accepted measurements supersede earlier “pending” statements only for the
+same declared scope; local tests do not supersede an unmeasured live gate.
+
 ## Goal
 
 Build an executable, experiment-first agentic federation layer on top of the

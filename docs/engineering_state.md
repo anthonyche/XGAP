@@ -13,14 +13,30 @@ Updated: 2026-09-09. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
 ## Current milestone
 
-D196 / H2: preserve RDF term and resource identity through explicitly selected
+D197 / H3 software acceptance is complete: inline slot annotations are
+materialized into the existing guarded semantic pipeline, with original/derived
+response evidence and deterministic replay. See
+`docs/report/grailqa_inline_grounding_v1.md` and
+`experiments/artifacts/d197_inline_grounding_local_20260909.json`.
+Focused regression: **297 passed in 2.28 seconds**. Final full regression:
+**2546 passed, 37 skipped in 608.62 seconds**. The harness check and all 19
+acceptance examples pass. Actual Qwen schema acceptance, token fit and semantic
+effectiveness remain unmeasured; H3's empirical comparison is still open.
+
+The first full attempt was 2545 passed / 1 failed / 37 skipped. A historical
+review test compared its frozen provider hash to later source. The test now
+reads the original source from that review's declared commit, preserving every
+old artifact/hash. The full suite was rerun after this test-only correction.
+Do not repeat successful acceptance without a new code change or concern.
+
+Prior completed milestone, commit `13dd4ba`: D196 / H2 preserves RDF term and resource identity through explicitly selected
 native compilation, HTTP execution, runtime fragment wiring, and answer projection.
 Implementation and 153 focused tests pass (one live gate skipped).
 Full regression: **2503 passed, 37 skipped in 604.92 seconds**.
 The harness check and all 19 acceptance examples also pass.
 The new live Fuseki test is explicitly gated and not yet measured.
 
-Full regression log: `/tmp/xgap-review-20260909/full-regression.log`.
+Current full regression log: `/tmp/xgap-inline-20260909/full-regression-final.log`.
 Python with pytest 9.0.2 / RDFLib 7.1.4:
 `/tmp/xgap-directed-tests.qU2YfW/venv/bin/python`.
 
@@ -50,11 +66,18 @@ browser timeout are preserved as unavailable evidence, with no new job.
 ## Next actions
 
 1. Continue the document reading inventory; long historical material is
-   indexed but not all paragraphs have been reviewed. See review report.
+   indexed but not all paragraphs have been reviewed. All three known source
+   PDFs have now been read in full, with selected figures/formulas checked;
+   proof verification and experiment reproduction are separate. Markdown
+   progress is 55 full / 8 selected sections / 18 detailed reviews pending.
 2. Observe 3796988 completion and its coverage gains/losses using bounded
    read-only logs/artifacts. Do not equate scheduler completion with success.
-3. Make H3 a separately versioned interpretation-sketch interface with
-   deterministic mechanical references, preserving strict semantic validation.
+3. Prepare the independent result-verification/admission gate for the new
+   materialized-response contract; current replay checks only parsing/grounding
+   and successful final source links. Keep the new inline bundle/spec separate.
+   Establish vLLM schema compatibility and actual request fit with the existing
+   bounded probes after selecting the catalog from CPU evidence. Do not launch
+   another GPU experiment or change the active server checkout prematurely.
 4. Prepare a real two-engine answer admission over inference-owned data.
    Current typed-row results are not full GrailQA execution or accuracy.
 

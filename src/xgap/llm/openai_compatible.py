@@ -15,6 +15,9 @@ from typing import Any, Callable, Mapping, Protocol, Sequence
 from xgap.experiments.hashing import content_hash
 from xgap.llm.parser import PlannerSchemaError, parse_planner_response
 from xgap.llm.schemas import PlannerRequest, PlannerResponse
+from xgap.llm.inline_grounding import (
+    SCHEMA_CONTRACT_KEY, materialize_inline_response, validate_response_contract,
+)
 
 
 class LiveFailureCategory(str, Enum):
@@ -50,6 +53,7 @@ class OpenAICompatibleProviderConfig:
     seed_supported: bool = False
     max_repair_calls: int = 1
     extra_parameters: Mapping[str, Any] = field(default_factory=dict)
+    response_contract: Mapping[str, str] | None = None
 
     def __post_init__(self) -> None:
         if not all((self.provider_id, self.base_url, self.api_key_env, self.model)):
@@ -80,6 +84,10 @@ class OpenAICompatibleProviderConfig:
             raise ValueError(f"Provider extras cannot override bounded fields: {sorted(overlap)}")
         object.__setattr__(self, "structured_schema", dict(self.structured_schema))
         object.__setattr__(self, "extra_parameters", dict(self.extra_parameters))
+        contract = validate_response_contract(self.response_contract)
+        if self.structured_schema.get(SCHEMA_CONTRACT_KEY) != contract:
+            raise ValueError("Response contract differs from the selected wire schema.")
+        object.__setattr__(self, "response_contract", contract)
 
     @property
     def chat_completions_url(self) -> str:
@@ -103,6 +111,7 @@ class OpenAICompatibleProviderConfig:
             "seed_supported": self.seed_supported,
             "max_repair_calls": self.max_repair_calls,
             "extra_parameters": redact_secrets(self.extra_parameters),
+            **({"response_contract": dict(self.response_contract)} if self.response_contract else {}),
         }
 
 
@@ -207,6 +216,7 @@ class LiveInvocationArtifact:
     request_timeout_seconds: float
     assembled_requests: tuple[Mapping[str, Any], ...]
     schema_version: str = "m12-live-invocation-v2"
+    response_materializations: tuple[Mapping[str, Any], ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
         return redact_secrets(
@@ -242,6 +252,8 @@ class LiveInvocationArtifact:
                 "assembled_request_hashes": [
                     content_hash(item) for item in self.assembled_requests
                 ],
+                **({"response_materializations": [dict(item) for item in self.response_materializations]}
+                   if self.response_materializations else {}),
             }
         )
 
@@ -368,6 +380,7 @@ class OpenAICompatibleStructuredCandidateProvider:
         assembled_requests: list[Mapping[str, Any]] = []
         request_ids: list[str] = []
         usages: list[dict[str, int | None]] = []
+        materializations: list[Mapping[str, Any]] = []
         started = time.perf_counter()
         generation_calls = 0
         repair_calls = 0
@@ -400,6 +413,7 @@ class OpenAICompatibleStructuredCandidateProvider:
                     provider_request_ids=tuple(request_ids),
                     usages=usages,
                     assembled_requests=tuple(assembled_requests),
+                    response_materializations=tuple(materializations),
                 )
                 self.last_invocation = artifact
                 raise LiveProviderError(error.category, safe_error, artifact) from error
@@ -414,10 +428,36 @@ class OpenAICompatibleStructuredCandidateProvider:
                 _validate_candidate_array_bounds(
                     structured, self.config.structured_schema
                 )
-                self.response_parser(structured, request)
-                _validate_grounded_shape(structured)
+                effective = structured
+                if self.config.response_contract is not None:
+                    receipt = {
+                        "schema_version": "xgap-response-materialization-v1",
+                        "call_index": len(assembled_requests),
+                        "contract": dict(self.config.response_contract),
+                        "source_response_sha256": content_hash(structured),
+                        "request_sha256": content_hash(request.to_dict()),
+                        "request_payload_sha256": content_hash(current_payload),
+                    }
+                    try:
+                        effective = materialize_inline_response(
+                            structured,
+                            entity_identity_property=self.config.response_contract["entity_identity_property"],
+                        )
+                    except ValueError:
+                        materializations.append({**receipt, "status": "invalid_inline_structure"})
+                        raise
+                    materializations.append({
+                        **receipt, "status": "materialized",
+                        "materialized_response_sha256": content_hash(effective),
+                        "materialized_response": effective,
+                    })
+                self.response_parser(effective, request)
+                _validate_grounded_shape(effective)
                 if self.response_validator is not None:
-                    self.response_validator(structured, request)
+                    self.response_validator(effective, request)
+                if (self.config.response_contract is not None
+                        and content_hash(effective) != materializations[-1]["materialized_response_sha256"]):
+                    raise RuntimeError("Response validator mutated the materialized model choices.")
             except (ValueError, KeyError, TypeError, PlannerSchemaError) as error:
                 last_error = str(error)
                 if repair_calls >= self.config.max_repair_calls:
@@ -440,6 +480,7 @@ class OpenAICompatibleStructuredCandidateProvider:
                         provider_request_ids=tuple(request_ids),
                         usages=usages,
                         assembled_requests=tuple(assembled_requests),
+                        response_materializations=tuple(materializations),
                     )
                     self.last_invocation = artifact
                     raise LiveProviderError(category, last_error, artifact) from error
@@ -461,9 +502,10 @@ class OpenAICompatibleStructuredCandidateProvider:
                 provider_request_ids=tuple(request_ids),
                 usages=usages,
                 assembled_requests=tuple(assembled_requests),
+                response_materializations=tuple(materializations),
             )
             self.last_invocation = artifact
-            return structured
+            return effective
 
     def _response_format(self) -> dict[str, Any]:
         if self.config.structured_output_mode == "json_schema":
@@ -520,6 +562,7 @@ class OpenAICompatibleStructuredCandidateProvider:
         provider_request_ids: tuple[str, ...] = (),
         usages: list[dict[str, int | None]] | None = None,
         assembled_requests: tuple[Mapping[str, Any], ...] = (),
+        response_materializations: tuple[Mapping[str, Any], ...] = (),
     ) -> LiveInvocationArtifact:
         schema_view = request.metadata.get("prompt_schema_view", {})
         usage_values = usages or []
@@ -546,6 +589,7 @@ class OpenAICompatibleStructuredCandidateProvider:
             request_url=self.config.chat_completions_url,
             request_timeout_seconds=self.config.timeout_seconds,
             assembled_requests=assembled_requests,
+            response_materializations=response_materializations,
         )
 
 

@@ -4104,3 +4104,44 @@ This is local executable identity/answer infrastructure. Real Fuseki has a new
 read-only opt-in VALUES test; actual dataset loading, Neo4j identity parity,
 GrailQA full answers and general semantic-DAG compilation remain separate
 milestones. No live run or research-result admission follows from these tests.
+
+## D197 Materialize inline grounding choices without changing semantic trees
+
+Add an explicitly selected `inline_grounding_v1` wire contract. The model
+continues to supply the full PathPatternQuery tree and shared query anchors;
+slot selections attach to their actual node, edge, property or condition.
+Program code generates structural component paths, copies existing term IDs,
+and collects identity literals already present. It never guesses a missing
+anchor or semantic choice. Preserve expression association, direction,
+conditions, selectors/restrictors and endpoint focus; do not flatten paths or
+redefine the frozen interpretation equivalence relation.
+
+Keep semantic defects candidate-local so an invalid sibling cannot discard
+a valid candidate or spend an unnecessary repair. Malformed wire structures
+still fail the shared response boundary. The existing canonical grounder,
+typed validator and at-most-one repair remain authoritative. Retain original
+wire content in the invocation, persist separately hashed materializations and
+their call/source/payload links, and recompute successful materializations
+during read-only replay. Reject validator mutation as an internal failure.
+This replay is a parsing/grounding diagnostic, not full protocol admission.
+
+Select this behavior only through matching model metadata and schema
+annotation. Add a separate Qwen3-32B bundle and 18-question development spec;
+old identities/defaults and all scientific inputs remain unchanged. Differences
+in the actual request are confined to the system prompt and wire schema.
+No live model/backend run is part of local acceptance. The hypothesis that
+serialization simplification improves candidate validity remains unmeasured;
+it does not resolve query-anchor self-alignment or establish NL correctness.
+
+The 297-test focused regression covers original/derived evidence, shared repair
+and token limits, invalid siblings, actual guarded inference/evaluation,
+schema validity, source-bound replay and unchanged old bundle/spec identities.
+The historical prompt-only review test reads the evolved provider source from
+its original declared commit; it does not replace the review's frozen hashes.
+Full regression and all acceptance examples are recorded in
+`docs/engineering_state.md` and
+`experiments/artifacts/d197_inline_grounding_local_20260909.json`.
+Before a real comparison, restore the existing CWRU session, inspect catalog
+job 3796988 without duplicating it, select and freeze one catalog, and establish
+actual vLLM schema/request-fit and result-verification gates. Do not conflate
+catalog changes with the interface effect or advance to full150.
