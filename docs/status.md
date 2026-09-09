@@ -3212,3 +3212,56 @@ examples, CLI help, shell syntax and whitespace checks also pass. Shared
 record ASTs are unchanged; no frozen spec, prompt, ranking policy or data was
 edited. The full Freebase reconstruction and coverage comparison still require
 a new user-submitted CWRU CPU job; skipped/live behavior remains unverified.
+
+### GrailQA guarded development18 reported outcome and canonical grounding (2026-09-09)
+
+The user subsequently reported GPU job `3796877` completed at `8bcf919`, exit
+`0:0`, elapsed 22m43s. Its supplied status/metrics report protocol completion,
+18 attempted provider calls, 18 completed tokenization probes, one local token
+refusal, and no server-tokenization refusal. Provider success is 17/18;
+the legacy candidate-bearing query rate is 1/18 (three candidate rows, only one
+finite semantic score). Candidate recall and normalized interpretation accuracy
+remain zero. Do not call all three rows valid or equate a zero finite deviation
+with reference correctness. On the five jointly reachable questions, recall
+and the candidate-bearing rate are both zero and provider success is 4/5.
+
+The same 13-question information-availability boundary remains: eight missing
+from the query-local catalog, four not retrieved, one not prompt-visible.
+These aggregate records are user-supplied development observations, not a new
+independent audit. Subsequent uploaded query states and guard diagnostics
+identify 49 raw candidates: legacy replay gives 16 grounding-rejected queries,
+one provider failure and one grounding-passed query. Its sole finite-score
+candidate declares `base.type_ontology.abstract` for a source actually labeled
+`base.ovguide.spanish_cuisine_dishes`; it is a validation defect, not semantic
+success. The one token refusal occurs on repair, after an initial generation
+used 4,800 input / 4,096 output tokens and ended with `finish_reason=length`.
+This is not paper/full150 readiness.
+The completed GPU no longer requires holding its checkout for that job. The
+verified CPU-only class-identity repair at `e39b98e` can be manually submitted
+with a fresh output; it does not claim a real coverage gain yet.
+
+Separately, D192 adds an opt-in canonical AST grounding policy and matching
+development spec. It validates actual labels/properties/entity literals,
+isolates parsed candidate-local grounding failures, and prevents rejected rows
+from counting as valid candidates or recall. Shared-envelope failures remain
+fail-closed, original query/candidate denominators are retained, and spec/state
+policy mismatches are rejected. Legacy behavior is the default; old scientific
+inputs, prompts, budgets, lowerer, raw evidence and FinBench admission remain
+unchanged. M5 IN-path lowering, catalog enrichment/retrieval and cross-dataset
+EQ1–EQ5 obligations remain incomplete. See the
+[implementation and CPU handoff](report/grailqa_canonical_grounding_v1.md).
+
+Read-only replay with the new policy validates three grounded candidates
+across two questions after isolating siblings, rejects all three mismatched
+declarations in the formerly candidate-bearing question, and preserves one
+grounded IN candidate's explicit unsupported-lowering outcome. No references
+were opened and no model call occurred: these counts are not new accuracy,
+semantic-admissibility or paper results. See the
+[bounded diagnostic](../experiments/artifacts/grailqa_guarded_3796877_offline_diagnostic_20260909.json).
+
+Focused acceptance passes 101 candidate/inference/lifecycle tests and 55
+shell-handoff/historical-contract tests. Full offline regression passes
+**2214 tests, 36 skipped, 593.96 seconds**. Three offline examples, CLI help,
+shell syntax and whitespace checks pass; skipped/live behavior remains
+unverified. No remote job was submitted and no new GPU accuracy result is
+claimed by this repair.

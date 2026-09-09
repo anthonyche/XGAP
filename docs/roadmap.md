@@ -1893,3 +1893,28 @@ Current status: TODO
   failed run. Keep queued/running GPU `3796877` on its original `8bcf919`
   checkout; only a later explicit CPU submission uses the repair and a fresh
   output. No full150 or new model execution is authorized by this code repair.
+- Subsequent user output reports GPU `3796877` completed: provider success
+  17/18, candidate-bearing queries 1/18, but zero reference matches and zero
+  candidate-bearing questions among the five jointly reachable questions.
+  The 8 catalog / 4 retrieval / 1 prompt-visibility exclusions remain. Preserve
+  this negative development result; inspect query-state/guard diagnostics and
+  manually run only the verified CPU repair next. No GPU rerun is implied.
+- D192 implements a separately frozen opt-in canonical AST grounding policy:
+  actual terms/identity literals must agree with visible grounded declarations;
+  parsed candidate-local failures are isolated and rejected rows excluded from
+  validity/recall metrics without dropping failed questions. Legacy defaults,
+  model/prompt/budgets and historical evidence remain unchanged. This is a
+  correctness repair, not measured accuracy improvement. The M5 OUT-only
+  lowerer is still a separate semantic/execution capability gap, and real
+  catalog coverage remains unmeasured. New GPU comparison/full150 admission
+  is not opened by the code change. See
+  `docs/report/grailqa_canonical_grounding_v1.md`.
+- The subsequently uploaded original records reproduce 16 legacy grounding
+  failures, one truncated generation / denied repair, and one false-valid
+  class-declaration packet. New-policy offline replay preserves three validated
+  grounded siblings across two queries while removing the false-valid packet;
+  one IN candidate still fails the old lowerer. No reference evaluation or new
+  model call occurred, so this is a diagnosis, not a new recall or paper result.
+- D192 offline acceptance passes 2214 tests with 36 skipped (593.96 seconds),
+  three offline examples and CLI/shell checks. The live coverage comparison and
+  independent admission of any new GPU result remain open.

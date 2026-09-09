@@ -15,6 +15,9 @@ from typing import Any, Mapping, Sequence
 from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.cwru_vllm import load_run_environment
 from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
+from xgap.experiments.grailqa_candidate_grounding import (
+    LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, validate_grounding_policy,
+)
 from xgap.experiments.grailqa_local_catalog import validate_local_catalog
 from xgap.experiments.grailqa_reachability import prompt_reachability_gate
 from xgap.experiments.grailqa_semantic_pilot import (
@@ -447,6 +450,8 @@ def run_preflight(
     repo = Path(repo_root).resolve()
     output = Path(output_root).resolve()
     spec = GrailQAPreflightSpec.load(spec_path)
+    if validate_grounding_policy(spec.data.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY)) != LEGACY_GROUNDING_POLICY:
+        raise ValueError("Canonical grounding requires the explicitly guarded development runner.")
     readiness = preflight_readiness(spec, repo, require_credentials=True)
     output.mkdir(parents=True, exist_ok=False)
     _write_json(output / "readiness.json", readiness)
@@ -570,7 +575,31 @@ def _evaluate_preflight(
     spec: GrailQAPreflightSpec,
     repo: Path,
     readiness: Mapping[str, Any],
+    *,
+    grounding_policy: str = LEGACY_GROUNDING_POLICY,
 ) -> dict[str, Any]:
+    validate_grounding_policy(grounding_policy)
+    strict = grounding_policy == STRICT_GROUNDING_POLICY
+    if (
+        validate_grounding_policy(spec.data.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY)) != grounding_policy
+        or any(state.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY) != grounding_policy for state in states)
+    ):
+        raise ValueError("Canonical grounding evaluation requires matching spec and state policies.")
+    original_states = states
+    rejected_candidates: list[dict[str, Any]] = []
+    if strict:
+        # Retain all generated rows in query_states and a separate rejection
+        # ledger. Invalid siblings must not count as recall or structured success.
+        filtered_states = []
+        for state in states:
+            accepted = []
+            for row in state.get("candidates", ()):
+                if row.get("validation", {}).get("ok") is True and row.get("grounded") is True:
+                    accepted.append(row)
+                else:
+                    rejected_candidates.append(dict(row))
+            filtered_states.append({**state, "candidates": accepted})
+        states = filtered_states
     pilot = repo / str(spec.data["pilot_root"])
     references = {
         str(item["question_id"]): item
@@ -585,7 +614,7 @@ def _evaluate_preflight(
     semantic_rows: list[dict[str, Any]] = []
     failures: list[dict[str, Any]] = []
     by_question_match: dict[str, bool] = {}
-    for state in states:
+    for state, original in zip(states, original_states):
         question_id = str(state["question"]["question_id"])
         reference = references[question_id]["pattern_query"]
         matches = False
@@ -607,12 +636,18 @@ def _evaluate_preflight(
         by_question_match[question_id] = matches
         semantic_rows.extend(state.get("semantic_scores", ()))
         old_failure = state.get("failure")
+        shared_grounding_failure = bool(
+            strict and not original.get("candidates") and old_failure
+            and old_failure.get("category") in {"entity_grounding_failure", "relation_grounding_failure"}
+        )
         category = classify_first_failure(
             reachability_row=reachability.get(question_id),
             malformed_output=bool(old_failure and old_failure.get("category") == "malformed_output"),
-            generated_candidates=len(state.get("candidates", ())),
-            type_check_ok=not bool(old_failure and old_failure.get("category") == "type_check_failure"),
-            grounding_ok=not bool(
+            generated_candidates=(original["returned_candidate_count"] if strict else len(original.get("candidates", ()))),
+            type_check_ok=(shared_grounding_failure or any(
+                item.get("validation", {}).get("ok") is True for item in original.get("candidates", ())
+            ) if strict else not bool(old_failure and old_failure.get("category") == "type_check_failure")),
+            grounding_ok=bool(state.get("candidates")) if strict else not bool(
                 old_failure
                 and old_failure.get("category")
                 in {"entity_grounding_failure", "relation_grounding_failure"}
@@ -684,12 +719,26 @@ def _evaluate_preflight(
             for name in STAGE_AWARE_FAILURE_TAXONOMY
         },
     }
+    if strict:
+        metrics.update(
+            schema_version="grailqa-canonical-grounding-preflight-metrics-v1",
+            candidate_grounding_policy=grounding_policy,
+            generated_candidate_count=sum(state["returned_candidate_count"] for state in original_states),
+            validated_grounded_candidate_count=len(candidate_rows),
+            rejected_candidate_count=len(rejected_candidates),
+            unassessed_candidate_count=sum(
+                state["returned_candidate_count"] - len(state.get("candidates", ())) for state in original_states
+            ),
+            component_accuracy_scope="validated_grounded_candidates_only",
+            candidate_recall_denominator="all_questions_including_failures",
+        )
     return {
         "candidates": candidate_rows,
         "components": component_rows,
         "semantic": semantic_rows,
         "failures": failures,
         "metrics": metrics,
+        **({"rejected_candidates": rejected_candidates} if strict else {}),
     }
 
 

@@ -13,6 +13,7 @@ from unittest.mock import Mock
 import pytest
 
 from xgap.experiments.bundles import ModelBundle
+from xgap.experiments.grailqa_candidate_grounding import LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY
 from xgap.experiments.grailqa_guarded_provider import GuardedSemanticPilotProvider, QueryEventJournal
 from xgap.experiments.grailqa_semantic_pilot import _infer_one
 from xgap.experiments.hashing import content_hash
@@ -28,9 +29,10 @@ ENDPOINT_FIXTURES = runpy.run_path(str(ROOT / "tests/test_m13e3b4_relation_endpo
 CWRU_FIXTURES = runpy.run_path(str(ROOT / "tests/test_m13e2_cwru_vllm.py"))
 
 
-@pytest.mark.parametrize("scenario", ["grounded", "missing-optional-anchor", "token-refusal"])
+@pytest.mark.parametrize("grounding_policy", [LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY])
+@pytest.mark.parametrize("scenario", ["grounded", "missing-optional-anchor", "token-refusal", "bad-sibling"])
 def test_actual_inference_preserves_grounding_and_local_refusal_boundaries(
-    monkeypatch, tmp_path, scenario,
+    monkeypatch, tmp_path, scenario, grounding_policy,
 ) -> None:
     ontology = OntologyGraph(
         ontology_id="fixture", version="v1", classes=("type.source", "type.target"),
@@ -54,6 +56,11 @@ def test_actual_inference_preserves_grounding_and_local_refusal_boundaries(
     del candidate["pattern_query"]["restrictor"]
     if scenario != "missing-optional-anchor":
         raw["query_slots"].append({"slot_id": "relation-hop-2", "query_anchor_id": "r.connected"})
+    if scenario == "bad-sibling":
+        bad = copy.deepcopy(candidate)
+        bad["candidate_id"] = "bad-sibling"
+        bad["grounding"]["slot_realizations"][0]["component_ref"] = "s.label"
+        raw["candidates"].append(bad)
     envelope = CWRU_FIXTURES["_provider_response"]()
     envelope["choices"][0]["message"]["content"] = json.dumps(raw)
     before = copy.deepcopy(envelope)
@@ -90,6 +97,7 @@ def test_actual_inference_preserves_grounding_and_local_refusal_boundaries(
             catalog=catalog, provider=provider, semantic=semantic,
             retrieval_k=20, candidate_cap=3, prompt_candidates_per_slot=4,
             response_parser=parse_normalized_planner_response,
+            grounding_policy=grounding_policy,
         )
 
     catalog.retrieve.assert_called_once_with("q1", "Find the connected target.", top_k=20)
@@ -132,6 +140,16 @@ def test_actual_inference_preserves_grounding_and_local_refusal_boundaries(
             assert state["candidates"][0]["pattern_query"]["selector"]["kind"] == "ALL"
             assert len(state["structured_response"]["query_slots"]) == 3
             assert len(state["structured_response"]["candidates"][0]["grounding"]["slot_realizations"]) == 2
+        elif scenario == "bad-sibling":
+            if grounding_policy == STRICT_GROUNDING_POLICY:
+                assert state["failure"] is None
+                assert len(state["candidates"]) == 2
+                assert len(state["semantic_scores"]) == 1
+                assert state["candidates"][0]["grounded"] is True
+                assert state["candidates"][1]["grounding_failure"]["code"] == "slot_grounding"
+            else:
+                assert state["candidates"] == []
+                assert state["failure"]["category"] == "relation_grounding_failure"
         else:
             assert state["candidates"] == []
             assert state["failure"]["category"] == "relation_grounding_failure"

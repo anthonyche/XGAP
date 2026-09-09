@@ -3916,3 +3916,38 @@ contract interventions. Preserve the failed CPU output and the in-flight GPU
 producer. Verified code may be pushed under the existing authority, but no
 automatic server retry, checkout switch, experiment expansion or admission
 follows from that push.
+
+## D192 Version canonical AST grounding without changing historical results
+
+The GrailQA canonical-ID path needs an explicit additional check: declaring a
+visible class for `source` cannot make a different or absent AST label correct.
+Compare actual typed AST class/relation/property terms to slot realizations;
+check all additional schema terms against the visible prompt, preserving the
+existing exact endpoint-role-derived type exception. Entity-identity literals
+in endpoint/edge properties and nested AND/OR/NOT conditions must be visible,
+declared nonempty IDs. Do not rewrite the candidate or force legitimate
+ontology relaxation back to its query anchor. Native mapping grounding remains
+the separate unchanged M12 boundary.
+
+Use a separately frozen development spec and the opt-in
+`grailqa_canonical_ast_grounding_v1` policy. Legacy remains the default. Invalid
+shared anchors, envelope IDs and candidate cardinality fail the whole response;
+grounding failures within a parsed candidate do not discard valid siblings.
+Provider JSON/AST parsing and existing bounded schema repair are unchanged;
+this is not partial acceptance of malformed provider JSON and adds no calls.
+
+Preserve every generated row and rejection. Only validated, grounded candidates
+enter the new candidate/component/semantic metrics. Keep all questions,
+including refusals, in recall/coverage denominators; report generated, rejected
+and unassessed counts. Bind the policy in the spec, query states, metrics and
+launch lifecycle, and refuse mixed policies before evaluation reference reads.
+The two migrated source modules in D185's historical prompt-only review are
+verified at its recorded base commit; do not rewrite that record's hashes.
+All other byte-pinned model/protocol/grammar artifacts remain unchanged.
+
+This milestone does not separate semantic validity from the old M5 OUT-only
+lowering capability: IN paths still have that explicit limitation. Nor does
+it repair catalog/retrieval coverage, add public aliases, change prompts,
+increase budgets, authorize full150, or establish model quality. The next
+live step is the separately verified CPU-only catalog comparison; new GPU
+execution and independent result admission remain separate boundaries.

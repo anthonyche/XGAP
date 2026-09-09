@@ -4,6 +4,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 
 import pytest
 
@@ -145,7 +146,19 @@ def test_review_record_binds_exact_sources_but_cannot_grant_authority() -> None:
     })
     for field in ("preserved_files", "proposed_files"):
         for item in review[field]:
-            assert hashlib.sha256((ROOT / item["path"]).read_bytes()).hexdigest() == item["sha256"]
+            if item["path"] in {
+                "src/xgap/experiments/grailqa_semantic_pilot.py",
+                "src/xgap/experiments/grailqa_preflight.py",
+            }:
+                # D192 adds an explicit opt-in grounding policy later. This
+                # historical prompt-only review still binds the original code,
+                # not the later implementation; never rewrite its old hashes.
+                data = subprocess.check_output([
+                    "git", "show", f"{review['base_implementation_commit']}:{item['path']}",
+                ], cwd=ROOT)
+            else:
+                data = (ROOT / item["path"]).read_bytes()
+            assert hashlib.sha256(data).hexdigest() == item["sha256"]
     assert review["old_model_bundle_hash"] == ModelBundle.load(ROOT / OLD_MODEL).bundle_hash
     assert review["proposed_model_bundle_hash"] == ModelBundle.load(ROOT / NEW_MODEL).bundle_hash
     assert review["review_status"] == "awaiting_author_review_and_exact_live_scope"

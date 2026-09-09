@@ -61,6 +61,10 @@ def shell(tmp_path):
     _write(serving / "bin/vllm", "#!/bin/sh\nexit 97\n", True)
     interpreter_body = '''import hashlib, json, os, sys, types
 from pathlib import Path
+# Exercise the real policy validator, while retaining the explicit doubles
+# below for heavyweight readiness/environment process boundaries.
+sys.path.insert(0, os.environ["TEST_SOURCE_ROOT"])
+from xgap.experiments import grailqa_candidate_grounding
 def record(stage, **fields):
     with open(os.environ["TEST_LOG"], "a") as h:
         h.write(json.dumps({"stage": stage, **fields}) + "\\n")
@@ -154,6 +158,7 @@ os.execvp(sys.argv[2], sys.argv[2:])
         "VLLM_ENV": str(serving), "SLURM_JOB_ID": "1234", "TEST_HEAD": COMMIT,
         "TEST_LOG": str(tmp_path / "calls.jsonl"), "TEST_FORBIDDEN": str(tmp_path / "forbidden"),
         "TEST_DRIFT_FILE": str(tmp_path / "drift"),
+        "TEST_SOURCE_ROOT": str(ROOT / "src"),
     })
     result = SimpleNamespace(tmp=tmp_path, repo=repo, spec=spec, contract=contract, control=control,
                              serving=serving, snapshot=snapshot, env=env,
@@ -206,6 +211,25 @@ def test_exact_guarded_handoff_and_interpreter_separation(shell):
     assert _records(shell).index(wrapper) > next(i for i,x in enumerate(_records(shell)) if x["stage"] == "readiness")
     assert all(p.read_bytes() == data for p,data in preserved.items())
     assert not Path(shell.env["TEST_FORBIDDEN"]).exists()
+
+
+def test_explicit_canonical_policy_is_bound_in_both_launch_phases(shell):
+    policy = "grailqa_canonical_ast_grounding_v1"
+    _freeze(shell, candidate_grounding_policy=policy)
+    result = _run(shell)
+    assert result.returncode == 0, result.stderr
+    binding = json.loads((shell.output / "guarded_launch_binding.json").read_text())
+    assert binding["candidate_grounding_policy"] == policy
+    assert len(_records(shell, "wrapper")) == len(_records(shell, "inference")) == 1
+
+
+@pytest.mark.parametrize("policy", [None, "typo", {}, True])
+def test_invalid_grounding_policy_never_starts_the_model(shell, policy):
+    _freeze(shell, candidate_grounding_policy=policy)
+    result = _run(shell)
+    assert result.returncode != 0
+    assert "Unknown GrailQA candidate grounding policy" in result.stderr
+    _no_live_handoff(shell)
 
 
 def test_relative_explicit_inputs_anchor_before_cd(shell):

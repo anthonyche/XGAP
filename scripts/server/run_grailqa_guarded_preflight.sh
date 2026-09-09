@@ -61,6 +61,7 @@ from pathlib import Path
 import sys
 
 from xgap.experiments.cwru_vllm import CWRUVLLMContract, verify_preflight_token_budget
+from xgap.experiments.grailqa_candidate_grounding import LEGACY_GROUNDING_POLICY, validate_grounding_policy
 from xgap.experiments.grailqa_preflight import GrailQAPreflightSpec, preflight_readiness
 
 def require(value, message):
@@ -88,6 +89,7 @@ def repository_input(raw):
 # its later environment capture or the guarded runner identity binding.
 spec_path = repository_input(os.environ["XGAP_GRAILQA_GUARDED_SPEC"])
 spec = GrailQAPreflightSpec.load(spec_path)
+grounding_policy = validate_grounding_policy(spec.data.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY))
 require(spec.path == spec_path, "Loaded spec source mismatch.")
 require(spec.data["freeze_hash"] == os.environ["XGAP_GRAILQA_GUARDED_SPEC_SHA256"], "Spec acknowledgement mismatch.")
 require(len(spec.question_ids) == 18, "Only the explicitly frozen 18-query development scope is supported.")
@@ -117,6 +119,8 @@ binding = {
     "contract_hash": contract.contract_hash, "paper_result": False,
     "automatic_retries": 0, "author_receipt_created": False,
 }
+if grounding_policy != LEGACY_GROUNDING_POLICY:
+    binding["candidate_grounding_policy"] = grounding_policy
 if phase == "prelaunch":
     require(not root.exists(), "Run output already exists; no automatic resume.")
     readiness = preflight_readiness(spec, repo, require_credentials=False)

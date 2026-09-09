@@ -15,6 +15,7 @@ import pytest
 
 import xgap.experiments.grailqa_guarded_preflight as runner
 from xgap.experiments.bundles import ModelBundle
+from xgap.experiments.grailqa_candidate_grounding import LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY
 from xgap.experiments.cwru_vllm import CWRUVLLMContract, RUN_ENVIRONMENT_SCHEMA_VERSION
 from xgap.experiments.grailqa_guarded_provider import QueryEventJournal
 from xgap.experiments.hashing import content_hash
@@ -39,6 +40,17 @@ def _rows(path: Path):
 def _freeze(path: Path, data) -> None:
     data["freeze_hash"] = content_hash({key: value for key, value in data.items() if key != "freeze_hash"})
     _json(path, data)
+
+
+def test_new_spec_changes_only_identity_and_explicit_grounding_policy():
+    from xgap.experiments.grailqa_preflight import GrailQAPreflightSpec
+
+    old = GrailQAPreflightSpec.load(ROOT / SPEC)
+    new = GrailQAPreflightSpec.load(ROOT / "experiments/specs/grailqa_semantic_preflight_canonical_grounding_v1_cwru_qwen3_32b.json")
+    changed = {key for key in old.data.keys() | new.data.keys() if old.data.get(key) != new.data.get(key)}
+    assert changed == {"experiment_id", "run_id_prefix", "freeze_hash", "candidate_grounding_policy"}
+    assert new.data["candidate_grounding_policy"] == STRICT_GROUNDING_POLICY
+    assert new.data["full_150_run_permitted"] is False
 
 
 @pytest.fixture
@@ -167,17 +179,20 @@ def case(monkeypatch, tmp_path):
             "failure": {"question_id": qid, "category": "synthetic_no_valid_candidate"},
         }
 
-    def evaluate(states, loaded_spec, actual_repo, actual_readiness):
+    def evaluate(states, loaded_spec, actual_repo, actual_readiness, **kwargs):
         assert len(states) == len(_rows(output / "query_states.jsonl")) == 15
         assert len(state.completed) == 15
         assert _rows(output / "query_events.jsonl")[-1]["event"] == "inference_complete"
         assert actual_repo == repo
         assert loaded_spec.data == spec_data
         assert actual_readiness == readiness.return_value
+        policy = spec_data.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY)
+        assert kwargs == ({"grounding_policy": policy} if policy != LEGACY_GROUNDING_POLICY else {})
         return {
             "candidates": [], "components": [], "semantic": [],
             "failures": [item["failure"] for item in states],
             "metrics": {"question_count": 15, "candidate_bearing_query_count": 0},
+            **({"rejected_candidates": []} if policy != LEGACY_GROUNDING_POLICY else {}),
         }
 
     state.infer = Mock(side_effect=infer)
@@ -192,6 +207,32 @@ def case(monkeypatch, tmp_path):
         "allow_unverified_serving_tokenizer": True,
     }
     return state
+
+
+def test_explicit_policy_is_bound_before_sends_and_reaches_inference_evaluation(case):
+    case.spec["candidate_grounding_policy"] = STRICT_GROUNDING_POLICY
+    _freeze(case.spec_path, case.spec)
+    runner.run_guarded_preflight(**{**case.kwargs, "execute_development_spec_sha256": case.spec["freeze_hash"]})
+    assert all(call.kwargs["grounding_policy"] == STRICT_GROUNDING_POLICY for call in case.infer.call_args_list)
+    for name in ("run_manifest.json", "run_status.json"):
+        result = json.loads((case.output / name).read_text())
+        assert result["candidate_grounding_policy"] == STRICT_GROUNDING_POLICY
+        assert result["schema_version"] == "grailqa-guarded-canonical-grounding-preflight-v1"
+        assert result["paper_result"] is False
+    assert (case.output / "rejected_candidates.jsonl").read_text() == ""
+    assert len(case.transport_calls) == 2  # Unchanged fixture sends; no grounding repair.
+
+
+@pytest.mark.parametrize("value", [None, "typo", {}, True])
+def test_unknown_frozen_grounding_policy_is_not_silently_ignored(case, value):
+    case.spec["candidate_grounding_policy"] = value
+    _freeze(case.spec_path, case.spec)
+    with pytest.raises(ValueError, match="grounding policy"):
+        runner.run_guarded_preflight(**{**case.kwargs, "execute_development_spec_sha256": case.spec["freeze_hash"]})
+    case.base_factory.assert_not_called()
+    case.tokenizer.assert_not_called()
+    case.readiness.assert_not_called()
+    assert not case.output.exists()
 
 
 def test_runner_completes_protocol_with_zero_valid_candidates_and_sequential_evidence(case) -> None:
