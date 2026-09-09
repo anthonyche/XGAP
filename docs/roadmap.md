@@ -1876,3 +1876,13 @@ Current status: TODO
   backfill. Next is an isolated source-backed construction/coverage comparison,
   not automatic full150 or a claim that RAG is repaired. See
   `docs/report/grailqa_eligible_catalog_v2.md`.
+- A separate CPU build-and-compare handoff now measures v1/v2 coverage using
+  both actual retrievers on the complete development18 population. Inputs are
+  bound before scanning; references open only after both retrievals are sealed.
+  Reports retain all-stage denominators, gains and regressions, changed entity
+  IDs and separately labeled construction resources. Old catalogs/admissions
+  are read-only. In parallel, the existing explicit GPU handoff tests the new
+  output contract against the **old** catalog. The user authorized pushing
+  verified code, not agent-submitted CWRU jobs. Real coverage and model outcomes
+  still need these user-submitted measurements; full150 remains out of scope.
+  See `docs/report/grailqa_parallel_repair_handoff_20260909.md`.

@@ -3863,3 +3863,33 @@ Full-source construction resources and v1/v2 coverage still need separate
 measurement. Public schema-label enrichment, retrieval/packing changes, actual
 Qwen contract validation, and both datasets' missing original EQ1–EQ5 work
 remain independent obligations; this repair grants no new external execution.
+
+## D190 Measure catalog coverage independently of the output-contract repair
+
+Make the next development handoff two independent measurements. Keep the old
+preflight18 catalog for the revised output-contract GPU run; construct the
+eligibility-first catalog separately on CPU from the complete same frozen
+source. Do not change the model output contract and candidate population in
+one purported isolated comparison. User submission remains explicit; pushing
+verified code is not a remote job submission or full150 authority.
+
+Validate small source/question/ontology/anchor bindings before the expensive
+build. Compare the complete identical question population with both actual
+catalog retrievers. Persist both retrievals and seal their inference-only
+inputs before reading or hashing references. Evaluate query-local component
+coverage with full denominators and report regressions alongside gains, not
+only recovered examples. Construction resource records remain original
+observations, not an independently paired performance benchmark.
+
+After opening selected evaluation references, parse and type-check their
+controlled query structure before extracting requirements. An invalid
+operator must not turn into an empty relation requirement and a false coverage
+gain; do not modify the historical extractor or repair the reference itself.
+
+Preserve old catalogs and runs. New outputs are fresh, symlink/overlap checked
+and non-overwriting; failures remain visible with no automatic retry. Require
+successful completion and absence of a failure marker. The new comparison
+does not create old reachability admission files or license v2 model execution.
+Coverage is not answer accuracy and offline backfill is not measured GrailQA
+effectiveness. Both development outputs remain non-paper; existing FinBench
+physical admission and missing cross-dataset EQ1–EQ5 obligations are unchanged.

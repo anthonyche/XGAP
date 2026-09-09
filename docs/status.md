@@ -3141,3 +3141,38 @@ does not carry to v2; `paper_result=false` remains explicit. The
 [implementation and next boundary](report/grailqa_eligible_catalog_v2.md)
 preserves the separate output-contract, public-schema enrichment and retrieval
 work, and both datasets' still-missing original EQ1–EQ5 experiments.
+
+### GrailQA paired catalog comparison and parallel repair handoff (2026-09-09)
+
+The CPU comparison now has an end-to-end CWRU entrypoint: precheck frozen small
+inputs and old18 catalog, build only a new eligibility-first18 catalog using
+the full frozen source, then compare both real retrievers. Source, question
+file/text/order, ontology/schema and anchor bindings are required. Both
+retrievals are durably sealed before reference content is hashed or read.
+Reports include all-query catalog/retrieval/prompt coverage, component/joint
+counts, gains and losses, MID changes and original construction resources.
+
+The separate output-contract-only GPU18 entry remains on the old catalog so
+the two interventions can be interpreted independently. No new model run or
+full-source build has occurred locally. No old run/catalog/admission is changed,
+no v2 historical readiness receipt is fabricated, and both new outputs remain
+`paper_result=false`. User authority covers verification and pushing the
+existing branch; server submission remains with the user. Full150 and the
+missing FinBench-semantic/GrailQA-physical study cells are not declared ready.
+
+The [two-job handoff](report/grailqa_parallel_repair_handoff_20260909.md)
+documents the runnable entries, fixed inputs, fresh output paths, failure
+handling, decision outputs and remaining live measurements. Offline acceptance:
+**110 new tests passed** (56 comparison, 54 handoff); the final full repository
+regression is **2,115 passed, 36 skipped in 590.20 seconds**. Three offline
+LLM/goal-loop examples, CLI help, shell syntax and staged whitespace checks
+also pass. Skipped behavior remains unverified. Only documentation changed
+after the final full-suite collection; no production or test code changed.
+
+A read-only replay of the supplied original request/response files still has
+18 queries and 47 raw candidates: 17 grounding rejections and one provider
+failure, with zero external calls. It preserves the original hashes and does
+not convert malformed historical output into accepted candidates. The output
+contract therefore still needs a new real model run; a parser/validator test
+is not that result. The historical preflight18 catalog had 900 assignments,
+so actual eligibility backfill is not assumed to explain its eight misses.
