@@ -1,5 +1,11 @@
 # GrailQA guarded development entrypoint and next experiment sequence
 
+This records the v1 milestone. The subsequent
+[per-request server-tokenization milestone](grailqa_server_tokenization_v1.md)
+adds an explicit measured-comparison mode and separate CWRU handoff; statements
+below about v1's only mode and absent launcher are historical, not the current
+feature inventory. Neither milestone has a new live semantic result.
+
 ## Material Passport
 
 - Origin Skill: academic-research-suite / experiment-agent

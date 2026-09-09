@@ -182,12 +182,21 @@ def snapshot(tmp_path, monkeypatch):
     return path, tokenizer, seen
 
 
-def test_local_template_receives_exact_messages_once_and_no_truncation(snapshot):
+@pytest.mark.parametrize("method,expected", [
+    ("count_payload_tokens", 4), ("payload_token_ids", (1, 2, 3, 4)),
+])
+@pytest.mark.parametrize("repair", [False, True])
+def test_local_template_receives_exact_messages_once_and_no_truncation(snapshot, method, expected, repair):
     path, tokenizer, loaded = snapshot
     counter = LocalPinnedChatTokenizer(path, REVISION)
     request = payload()
+    if repair:
+        request["messages"].extend([
+            {"role": "assistant", "content": '{"synthetic": "invalid"}'},
+            {"role": "user", "content": "Repair the synthetic response."},
+        ])
     original = copy.deepcopy(request)
-    assert counter.count_payload_tokens(request) == 4
+    assert getattr(counter, method)(request) == expected
     assert loaded == [path]
     assert tokenizer.calls == [(original["messages"], {
         "tokenize": True, "add_generation_prompt": True, "truncation": False,
@@ -202,6 +211,43 @@ def test_local_template_receives_exact_messages_once_and_no_truncation(snapshot)
     assert content_hash(identity) == expected_hash
     identity["library_versions"].clear()
     assert counter.identity["library_versions"]
+
+
+def test_token_ids_preserve_order_duplicates_zero_and_detach_from_owned_list(snapshot, monkeypatch):
+    path, tokenizer, _ = snapshot
+    tokens = [3, 0, 3, 1]
+    monkeypatch.setattr(tokenizer, "apply_chat_template", lambda *args, **kwargs: tokens)
+    counter = LocalPinnedChatTokenizer(path, REVISION)
+    original_identity = counter.identity
+    first = counter.payload_token_ids(payload())
+    assert type(first) is tuple
+    assert first == (3, 0, 3, 1)
+    with pytest.raises(TypeError):
+        first[0] = 1
+    tokens[:] = [1, 3, 0, 3]
+    second = counter.payload_token_ids(payload())
+    assert first == (3, 0, 3, 1)
+    assert second == (1, 3, 0, 3)
+    assert len(first) == len(second) == counter.count_payload_tokens(payload())
+    assert first != second
+    assert counter.identity == original_identity
+
+
+def test_count_delegates_once_to_public_token_ids(snapshot, monkeypatch):
+    path, tokenizer, _ = snapshot
+    counter = LocalPinnedChatTokenizer(path, REVISION)
+    request = payload()
+    calls = []
+
+    def token_ids(actual):
+        calls.append(actual)
+        return (7, 0, 7)
+
+    monkeypatch.setattr(counter, "payload_token_ids", token_ids)
+    assert counter.count_payload_tokens(request) == 3
+    assert calls == [request]
+    assert calls[0] is request
+    assert not tokenizer.calls
 
 
 def test_loader_forces_offline_no_remote_code(snapshot, monkeypatch):
@@ -224,7 +270,8 @@ def test_loader_forces_offline_no_remote_code(snapshot, monkeypatch):
 
 
 @pytest.mark.parametrize("change", ["file", "template", "version", "new_file", "removed_file", "config"])
-def test_identity_drift_rejected_before_tokenization(snapshot, monkeypatch, change):
+@pytest.mark.parametrize("method", ["count_payload_tokens", "payload_token_ids"])
+def test_identity_drift_rejected_before_tokenization(snapshot, monkeypatch, change, method):
     path, tokenizer, _ = snapshot
     counter = LocalPinnedChatTokenizer(path, REVISION)
     if change == "file":
@@ -240,8 +287,31 @@ def test_identity_drift_rejected_before_tokenization(snapshot, monkeypatch, chan
     else:
         (path / "tokenizer_config.json").unlink()
     with pytest.raises(TokenizerUnavailable):
-        counter.count_payload_tokens(payload())
+        getattr(counter, method)(payload())
     assert not tokenizer.calls
+
+
+@pytest.mark.parametrize("change", ["file", "template", "version"])
+@pytest.mark.parametrize("method", ["count_payload_tokens", "payload_token_ids"])
+def test_identity_drift_during_tokenization_rejects_rendered_ids(snapshot, monkeypatch, change, method):
+    path, tokenizer, _ = snapshot
+    counter = LocalPinnedChatTokenizer(path, REVISION)
+    render = tokenizer.apply_chat_template
+
+    def change_while_rendering(*args, **kwargs):
+        result = render(*args, **kwargs)
+        if change == "file":
+            (path / "tokenizer.json").write_text('{"changed": true}')
+        elif change == "template":
+            tokenizer.template = "other"
+        else:
+            monkeypatch.setattr(module, "_versions", lambda: {"transformers": "other", "tokenizers": "test"})
+        return result
+
+    monkeypatch.setattr(tokenizer, "apply_chat_template", change_while_rendering)
+    with pytest.raises(TokenizerUnavailable, match="identity changed"):
+        getattr(counter, method)(payload())
+    assert len(tokenizer.calls) == 1
 
 
 def test_ordinary_hf_blob_symlink_allowed_but_escape_rejected(snapshot, tmp_path):
@@ -290,12 +360,13 @@ def test_unknown_loading_footprint_rejected(snapshot, attribute, value):
         LocalPinnedChatTokenizer(path, REVISION)
 
 
-@pytest.mark.parametrize("tokens", [[], [[1]], [True], [-1], "123", (1, 2)])
-def test_non_tokenizer_sequence_cannot_be_a_measurement(snapshot, monkeypatch, tokens):
+@pytest.mark.parametrize("tokens", [[], [[1]], [True], [-1], [1.0], [None], "123", (1, 2), None])
+@pytest.mark.parametrize("method", ["count_payload_tokens", "payload_token_ids"])
+def test_non_tokenizer_sequence_cannot_be_a_measurement(snapshot, monkeypatch, tokens, method):
     path, tokenizer, _ = snapshot
     monkeypatch.setattr(tokenizer, "apply_chat_template", lambda *args, **kwargs: tokens)
     with pytest.raises(TokenizerUnavailable):
-        LocalPinnedChatTokenizer(path, REVISION).count_payload_tokens(payload())
+        getattr(LocalPinnedChatTokenizer(path, REVISION), method)(payload())
 
 
 def test_real_optional_tokenizer_local_roundtrip_without_download(tmp_path):
@@ -318,6 +389,10 @@ def test_real_optional_tokenizer_local_roundtrip_without_download(tmp_path):
     request = payload()
     request["messages"] = [{"role": "system", "content": "Hello"}, {"role": "user", "content": "World"}]
     # Five known token IDs from the actual local tokenizer, not a fake count.
-    assert counter.count_payload_tokens(request) == 5
+    identity = counter.identity
+    token_ids = counter.payload_token_ids(request)
+    assert token_ids == (1, 4, 2, 5, 3)
+    assert counter.count_payload_tokens(request) == len(token_ids) == 5
     assert guard(counter).check(request, call_kind="generation")["input_tokens"] == 5
     assert counter.identity["remote_serving_parity_verified"] is False
+    assert counter.identity == identity

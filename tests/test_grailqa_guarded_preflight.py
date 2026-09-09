@@ -129,7 +129,8 @@ def case(monkeypatch, tmp_path):
             state.transport_calls.append(copy.deepcopy(kwargs))
             return CWRU_FIXTURES["_provider_response"]()
 
-    def build_provider(model, **kwargs):
+    def build_provider(model, *, transport_override, **kwargs):
+        assert isinstance(transport_override, runner.LoopbackInferenceTransport)
         return build_openai_compatible_provider(model, OfflineTransport(), **kwargs)
 
     state.base_factory = Mock(side_effect=build_provider)
@@ -222,7 +223,7 @@ def test_runner_completes_protocol_with_zero_valid_candidates_and_sequential_evi
     manifest = json.loads((case.output / "run_manifest.json").read_text())
     status = json.loads((case.output / "run_status.json").read_text())
     assert (case.output / "run_manifest.json").read_bytes() == case.manifest_snapshots[0]
-    assert manifest["schema_version"] == "grailqa-guarded-development-preflight-v1"
+    assert manifest["schema_version"] == "grailqa-guarded-development-preflight-v2"
     assert manifest["maximum_provider_calls"] == 30
     assert manifest["maximum_schema_repair_calls_per_query"] == 1
     assert manifest["claim_boundary"]["completion_means_protocol_completed_not_semantic_success"] is True

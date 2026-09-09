@@ -3791,3 +3791,36 @@ remain evaluation-only after all inference. The old parser/grounder/metric
 behavior, query population, budgets and one-schema-repair limit are unchanged.
 Provider latency already includes its guard/journaling work; initialization and
 whole-inference timing are reported separately without double counting.
+
+## D188 Compare server preprocessing per request and account for the extra probes
+
+An explicitly selected development mode compares the pinned local tokenizer's
+ordered token IDs against the running job-local vLLM tokenization endpoint
+before generation and each actual bounded repair. Local budget refusal causes
+neither probe nor inference. A mismatched sequence, context limit or local
+identity, unavailable endpoint or unsafe response refuses inference without
+retry. Tokenizer identity is rechecked after the network wait. The probe is a
+real extra external action: preserve its attempt/result/error receipts and
+cost even when no model generation follows. Provider elapsed time already
+includes its guard; separate probe timing must not be added twice. Startup
+health polling is outside the per-query inference-plus-probe call total.
+
+This observes exact payload preprocessing at probe time, not model weights,
+process identity or atomic immunity to restart before inference. Keep global
+serving-parity claims false and keep the distinct explicit unverified mode.
+Neither mode supplies author authority. All new outputs remain non-paper;
+old scientific selections, prompts, specs, audits and evidence do not migrate.
+
+Only the new development runner receives inference and probe transports that
+reject proxies and redirects on exact numeric loopback routes. The public
+literal `local` placeholder is not treated as a secret on those routes; actual
+credential values keep their protections without short-key heuristics.
+New launchers require explicit spec/hash/runner and frozen serving interpreter,
+validate before model startup, recheck after capture, and exclusively create a
+fresh output. They neither alter old launchers nor auto-submit a run.
+
+Persistence failure remains a failed run even if a completion-event or final
+status prefix is readable. A separate best-effort exclusive failure marker
+preserves this distinction without overwriting prior status. Successful CLI
+exit, complete final status and absence of a failure marker are required;
+global storage failure leaves completion unknown, never implicitly successful.

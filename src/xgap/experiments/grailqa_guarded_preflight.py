@@ -1,8 +1,8 @@
 """Explicit, journaled GrailQA development preflight with per-send token checks.
 
-This entrypoint does not replace an existing preflight or paper runner. Local
-tokenizer identity is not serving parity: the only supported execution mode
-requires an explicit development-only acknowledgement of that limitation.
+This entrypoint does not replace an existing preflight or paper runner. A
+separately selected mode checks each payload against the serving tokenization
+endpoint before inference. That observation is not global service attestation.
 """
 
 from __future__ import annotations
@@ -23,11 +23,13 @@ from xgap.experiments.grailqa_guarded_environment import validate_guarded_enviro
 from xgap.experiments.grailqa_guarded_provider import (
     GuardedSemanticPilotProvider, QueryEventJournal,
 )
+from xgap.experiments.grailqa_loopback_inference import LoopbackInferenceTransport
 from xgap.experiments.grailqa_preflight import (
     GrailQAPreflightSpec, _evaluate_preflight, build_preflight_run_manifest,
     preflight_readiness,
 )
 from xgap.experiments.grailqa_request_tokens import _check_output, _questions
+from xgap.experiments.grailqa_server_tokenization import ServerTokenizationGuard
 from xgap.experiments.grailqa_semantic_pilot import _infer_one
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.interpretation_contract import parse_normalized_planner_response
@@ -36,15 +38,18 @@ from xgap.experiments.semantic import DirectionalOntologyDeviation, SemanticDevi
 from xgap.llm.token_budget import ChatTokenBudgetGuard, LocalPinnedChatTokenizer
 
 
-SCHEMA_VERSION = "grailqa-guarded-development-preflight-v1"
+SCHEMA_VERSION = "grailqa-guarded-development-preflight-v2"
+TOKENIZER_PROBE_TIMEOUT_SECONDS = 60.0
 CLAIM_BOUNDARY = {
     "development_preflight_only": True,
     "backend_execution": False,
     "full_150_run_authorized": False,
     "paper_result": False,
     "remote_serving_parity_verified": False,
+    "server_tokenization_equality_is_payload_scoped_not_process_attestation": True,
     "execution_acknowledgement_is_not_authority_receipt": True,
     "completion_means_protocol_completed_not_semantic_success": True,
+    "completion_requires_successful_cli_and_status_without_failure_marker": True,
     "local_token_refusals_reported_separately_from_legacy_failure_taxonomy": True,
     "reference_content_opened_only_after_all_inference": True,
 }
@@ -58,6 +63,7 @@ def _safe_failure_reason(error: BaseException) -> str:
         return "environment_" + binding.group(1)
     return {
         "Serving tokenizer parity is unverified; explicit development-only acknowledgement is required.": "serving_parity_acknowledgement_missing",
+        "Choose exactly one explicit serving-tokenization mode.": "serving_tokenization_mode_ambiguous",
         "Execution acknowledgement does not match this frozen spec.": "development_spec_acknowledgement_mismatch",
         "Only a non-backend, gold-free development preflight is supported.": "development_scope_mismatch",
         "Preflight readiness failed before any provider call.": "preflight_readiness_failed",
@@ -111,6 +117,7 @@ def run_guarded_preflight(
     tokenizer_revision: str, expected_runner_commit: str,
     execute_development_spec_sha256: str,
     allow_unverified_serving_tokenizer: bool = False,
+    verify_server_tokenization: bool = False,
 ) -> dict[str, Any]:
     """Execute only an explicitly selected, bounded development specification.
 
@@ -119,11 +126,18 @@ def run_guarded_preflight(
     progress. Fatal accounting or persistence errors stop without automatic
     retry/resume. Ordinary query failures remain outcomes, not dropped rows.
     """
-    if allow_unverified_serving_tokenizer is not True:
+    if type(allow_unverified_serving_tokenizer) is not bool or type(verify_server_tokenization) is not bool \
+            or (allow_unverified_serving_tokenizer and verify_server_tokenization):
+        raise ValueError("Choose exactly one explicit serving-tokenization mode.")
+    if not allow_unverified_serving_tokenizer and not verify_server_tokenization:
         raise ValueError(
             "Serving tokenizer parity is unverified; explicit development-only "
             "acknowledgement is required."
         )
+    tokenizer_mode = (
+        "per_request_server_tokenization" if verify_server_tokenization
+        else "explicit_development_unverified"
+    )
     repo = Path(repo_root).resolve()
     spec = GrailQAPreflightSpec.load(repo / spec_path)
     if execute_development_spec_sha256 != spec.data["freeze_hash"]:
@@ -148,7 +162,8 @@ def run_guarded_preflight(
     model = ModelBundle.load(repo / str(spec.data["model_bundle_root"]))
     contract = CWRUVLLMContract.load(repo / str(spec.data["deployment_contract"]))
     base_provider = build_openai_compatible_provider(
-        model, response_parser=parse_normalized_planner_response,
+        model, transport_override=LoopbackInferenceTransport(),
+        response_parser=parse_normalized_planner_response,
     )
     environment = load_run_environment(environment_path)
     binding = validate_guarded_environment(
@@ -199,13 +214,20 @@ def run_guarded_preflight(
             environment_binding_sha256=content_hash(binding),
             tokenizer_identity_record_sha256=content_hash(counter.identity),
             execution_acknowledgement_spec_sha256=execute_development_spec_sha256,
-            serving_tokenizer_mode="explicit_development_unverified",
+            serving_tokenizer_mode=tokenizer_mode,
             automatic_retries=0, maximum_provider_calls=2 * len(questions),
+            maximum_tokenizer_probe_calls=2 * len(questions) if verify_server_tokenization else 0,
+            maximum_total_external_calls=(4 if verify_server_tokenization else 2) * len(questions),
+            tokenizer_probe_timeout_seconds=TOKENIZER_PROBE_TIMEOUT_SECONDS if verify_server_tokenization else None,
             maximum_schema_repair_calls_per_query=1, paper_result=False,
             tokenizer_initialization_seconds=tokenizer_initialization_seconds,
             cost_boundary={
+                "total_external_attempted_calls_scope": "per_query_inference_plus_tokenizer_probes_only",
+                "service_startup_health_checks_included": False,
                 "llm_latency_includes_token_checks": True,
                 "llm_latency_includes_check_journaling": True,
+                "llm_latency_includes_server_tokenization_probes": verify_server_tokenization,
+                "server_tokenization_probe_costs_reported_separately_do_not_add_twice": True,
                 "inference_wall_includes_all_query_journaling": True,
                 "tokenizer_initialization_reported_separately": True,
                 "backend_execution": False,
@@ -217,9 +239,19 @@ def run_guarded_preflight(
             for index, question in enumerate(questions, start=1):
                 qid = str(question["question_id"])
                 journal.append({"event": "query_started", "question_id": qid, "query_index": index})
+                query_guard = guard
+                if verify_server_tokenization:
+                    query_guard = ServerTokenizationGuard(
+                        guard, counter, journal, qid,
+                        base_url=base_provider.config.base_url,
+                        api_key=os.environ.get(base_provider.config.api_key_env, ""),
+                        timeout_seconds=TOKENIZER_PROBE_TIMEOUT_SECONDS,
+                        context_limit=contract.data["serving"]["max_model_len"],
+                        maximum_calls=2,
+                    )
                 # Retrieval misses never inherit the previous query's checks.
                 provider = GuardedSemanticPilotProvider(
-                    model, guard, journal, qid, base_provider=base_provider,
+                    model, query_guard, journal, qid, base_provider=base_provider,
                 )
                 state = _infer_one(
                     question=question, catalog=catalog, provider=provider, semantic=semantic,
@@ -235,11 +267,27 @@ def run_guarded_preflight(
                     invocation.generation_calls + invocation.repair_calls if invocation else 0
                 )
                 query_checks = [{"question_id": qid, **row} for row in provider.token_check_records]
+                probe_diagnostic = query_guard.diagnostics if verify_server_tokenization else {
+                    "tokenizer_probe_attempted_calls": 0,
+                    "tokenizer_probe_completed_results": 0,
+                    "tokenizer_probe_error_count": 0,
+                    "tokenizer_probe_latency_seconds": 0.0,
+                    "tokenizer_probe_receipts": [],
+                    "remote_serving_parity_verified": False,
+                }
+                failed_checks = [row for row in query_checks if row["passed"] is False]
                 diagnostic = {
                     "question_id": qid, "provider_invoked": invocation is not None,
                     "actual_attempted_provider_calls": actual_calls,
                     "token_check_count": len(query_checks),
-                    "local_token_refusal": any(row["passed"] is False for row in query_checks),
+                    "guard_refusal": bool(failed_checks),
+                    "local_token_refusal": any(
+                        not str(row["reason"]).startswith("server_tokenization_") for row in failed_checks
+                    ),
+                    "server_tokenization_refusal": any(
+                        str(row["reason"]).startswith("server_tokenization_") for row in failed_checks
+                    ),
+                    "server_tokenization": probe_diagnostic,
                     "details": provider.guard_diagnostics,
                 }
                 state_journal.append(state)
@@ -270,6 +318,13 @@ def run_guarded_preflight(
             _write_json(output / "metrics.json", evaluated["metrics"])
             _write_jsonl(output / "token_checks.jsonl", checks)
             _write_jsonl(output / "guard_diagnostics.jsonl", diagnostics)
+            _write_jsonl(output / "server_tokenization_checks.jsonl", (
+                row for diagnostic in diagnostics
+                for row in diagnostic["server_tokenization"]["tokenizer_probe_receipts"]
+            ))
+            # This marks inference/evaluation lifecycle completion, not final
+            # status publication. Readers also require a successful CLI exit,
+            # completed run_status.json, and absence of run_failure.json.
             journal.append({"event": "run_completed", "question_count": len(states)})
         status = {
             "schema_version": SCHEMA_VERSION, "status": "completed",
@@ -277,6 +332,17 @@ def run_guarded_preflight(
             "question_count": len(states),
             "actual_attempted_provider_calls": sum(row["actual_attempted_provider_calls"] for row in diagnostics),
             "local_token_refusal_query_count": sum(row["local_token_refusal"] for row in diagnostics),
+            "guard_refusal_query_count": sum(row["guard_refusal"] for row in diagnostics),
+            "server_tokenization_refusal_query_count": sum(row["server_tokenization_refusal"] for row in diagnostics),
+            "serving_tokenizer_mode": tokenizer_mode,
+            **{key: sum(row["server_tokenization"][key] for row in diagnostics) for key in (
+                "tokenizer_probe_attempted_calls", "tokenizer_probe_completed_results",
+                "tokenizer_probe_error_count", "tokenizer_probe_latency_seconds",
+            )},
+            "total_external_attempted_calls": sum(
+                row["actual_attempted_provider_calls"] + row["server_tokenization"]["tokenizer_probe_attempted_calls"]
+                for row in diagnostics
+            ),
             "token_check_count": len(checks),
             "inference_wall_seconds": inference_wall_seconds,
             "tokenizer_initialization_seconds": tokenizer_initialization_seconds,
@@ -291,6 +357,7 @@ def run_guarded_preflight(
             "started_at": started_at, "ended_at": datetime.now(timezone.utc).isoformat(),
             "completed_inference_query_count": len(states),
             "actual_attempted_provider_calls": None,
+            "tokenizer_probe_attempted_calls": None, "total_external_attempted_calls": None,
             "call_accounting_complete": False, "error_type": type(error).__name__,
             "reason": _safe_failure_reason(error),
             "automatic_resume": False, "claim_boundary": dict(CLAIM_BOUNDARY),
@@ -300,6 +367,14 @@ def run_guarded_preflight(
             _write_json(output / "run_status.json", failure)
         except (OSError, ValueError):
             pass  # The partial journal is evidence, not a successful status.
+        # A failed completed-status write may already have created that file,
+        # even with apparently complete JSON bytes. Never overwrite it or retry
+        # a send: publish an independent failure marker where possible. A disk
+        # failure that also prevents this marker leaves the outcome unknown.
+        try:
+            _write_json(output / "run_failure.json", failure)
+        except (OSError, ValueError):
+            pass
         raise
     return {"status": "completed", "output_root": str(output), "metrics": evaluated["metrics"], "paper_result": False}
 
@@ -315,9 +390,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             help=("Exact canonical freeze_hash field of the development spec, not its file-byte SHA-256."
                   if name == "execute-development-spec-sha256" else None),
         )
-    parser.add_argument(
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument(
         "--allow-unverified-serving-tokenizer", action="store_true",
         help="Acknowledge development-only, unverified serving tokenizer parity; not an execution-authority receipt.",
+    )
+    modes.add_argument(
+        "--verify-server-tokenization", action="store_true",
+        help="Compare every locally fitting request's ordered token IDs with loopback /tokenize before inference; extra calls are charged separately, not an execution-authority receipt.",
     )
     args = parser.parse_args(argv)
     try:
@@ -328,6 +408,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             expected_runner_commit=args.expected_runner_commit,
             execute_development_spec_sha256=args.execute_development_spec_sha256,
             allow_unverified_serving_tokenizer=args.allow_unverified_serving_tokenizer,
+            verify_server_tokenization=args.verify_server_tokenization,
         )
     except (Exception, KeyboardInterrupt) as error:
         # Never echo an exception containing arbitrary provider response text.

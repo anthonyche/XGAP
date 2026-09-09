@@ -15,6 +15,7 @@ from pathlib import Path
 import re
 from threading import Lock
 from typing import Any, Literal, Mapping
+from urllib.parse import urlsplit
 
 from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.grailqa_semantic_pilot import GenerationResult
@@ -88,6 +89,28 @@ class CredentialPersistenceError(RuntimeError):
     """The current supplied credential must not enter persisted request text."""
 
 
+def _credential_value_for_payload_check(api_key: str, url: str) -> str:
+    """Exclude only the public placeholder of the unauthenticated local service.
+
+    The frozen CWRU launcher does not configure server authentication. Its
+    literal ``local`` client placeholder is not a secret. Never use a length
+    heuristic or exempt it on a non-loopback endpoint.
+    """
+    try:
+        parts = urlsplit(url)
+        if (
+            api_key == "local" and parts.scheme == "http"
+            and type(parts.port) is int and 1 <= parts.port <= 65535
+            and parts.netloc == f"127.0.0.1:{parts.port}"
+            and parts.path in {"/tokenize", "/v1/chat/completions"}
+            and not parts.query and not parts.fragment
+        ):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    return api_key
+
+
 def _contains_known_credential(value: object, credential: str) -> bool:
     """Detect only this known credential, not arbitrary secrets or PII."""
     if isinstance(value, str):
@@ -129,12 +152,19 @@ class _JournaledGuard:
         self.guard, self.journal, self.question_id = guard, journal, question_id
         self.records: list[dict[str, Any]] = []
         self.journal_failed = False
+        self.failure_phase: str | None = None
 
     def check(
         self, payload: Mapping[str, Any], *, call_kind: Literal["generation", "repair"],
     ) -> dict[str, Any]:
         payload_sha256 = content_hash(payload)
-        record = self.guard.check(payload, call_kind=call_kind)
+        try:
+            record = self.guard.check(payload, call_kind=call_kind)
+        except BaseException:
+            if getattr(self.guard, "journal_failed", False) or self.journal.failed:
+                self.journal_failed = True
+                self.failure_phase = "tokenizer_probe"
+            raise
         record = json.loads(json.dumps(record, allow_nan=False))
         if (
             not isinstance(record, dict) or set(record) - _CHECK_FIELDS
@@ -160,6 +190,7 @@ class _JournaledGuard:
             self.journal.append(event)
         except Exception:
             self.journal_failed = True
+            self.failure_phase = "token_check"
             raise
         self.records.append(deepcopy(record))
         return record
@@ -185,7 +216,8 @@ class _JournaledTransport:
     def post_json(
         self, *, url: str, api_key: str, payload: Mapping[str, Any], timeout_seconds: float,
     ) -> Mapping[str, Any]:
-        if _contains_known_credential(payload, api_key):
+        credential = _credential_value_for_payload_check(api_key, url)
+        if _contains_known_credential(payload, credential):
             # Not a ProviderTransportError: no send occurred, and the legacy
             # provider must not persist its assembled but unsafe request.
             raise CredentialPersistenceError("Outgoing request contains the current credential.")
@@ -205,7 +237,7 @@ class _JournaledTransport:
                 "event": "transport_error", **binding, "error_type": type(error).__name__,
             })
             raise
-        if _contains_known_credential(response, api_key):
+        if _contains_known_credential(response, credential):
             self._append("response_credential_echo_rejected", {
                 "event": "response_credential_echo_rejected", **binding,
             })
@@ -303,16 +335,19 @@ class GuardedSemanticPilotProvider:
         finally:
             invocation = self.last_invocation
             records = self.token_check_records
-            local_denial = (
+            guard_denial = (
                 provider_error is not None
                 and type(provider_error.__cause__) is TokenBudgetGuardDenied
                 and bool(records) and records[-1]["passed"] is False
                 and invocation is not None
                 and invocation.generation_calls + invocation.repair_calls == len(records) - 1
             )
+            server_denial = guard_denial and str(records[-1]["reason"]).startswith("server_tokenization_")
             self._diagnostics = {
-                "local_guard_denial": local_denial,
-                "denied_call_kind": records[-1]["call_kind"] if local_denial else None,
+                "guard_denial": guard_denial,
+                "local_guard_denial": guard_denial and not server_denial,
+                "server_tokenization_guard_denial": server_denial,
+                "denied_call_kind": records[-1]["call_kind"] if guard_denial else None,
                 "token_check_count": len(records),
                 "invocation_available": invocation is not None,
                 "generation_calls": invocation.generation_calls if invocation else None,
@@ -324,8 +359,9 @@ class GuardedSemanticPilotProvider:
                 "journal_failed_before_send": (
                     self._guard.journal_failed or self._transport.failure_phase == "transport_attempt"
                 ),
+                "before_send_scope": "inference_transport_only_not_tokenizer_probe",
                 "journal_failure_phase": (
-                    "token_check" if self._guard.journal_failed else self._transport.failure_phase
+                    self._guard.failure_phase if self._guard.journal_failed else self._transport.failure_phase
                 ),
             }
             # A failed pre-send journal write must propagate. Do not attempt a

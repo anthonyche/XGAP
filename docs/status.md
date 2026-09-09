@@ -3069,3 +3069,39 @@ was **1,615 passed, 36 skipped in 510.28 seconds**. Both offline LLM-boundary
 examples, CLI help checks, shell syntax and whitespace checks passed. Synthetic
 inference tests exercise normalization, grounding and semantic scoring but do
 not establish live GrailQA effectiveness; skipped tests remain unverified.
+
+### GrailQA per-request server-tokenization comparison and explicit handoff (2026-09-09)
+
+The separate guarded development runner now exposes an explicit mode that
+compares ordered local token IDs with the running job-local vLLM `/tokenize`
+response before generation and actual bounded repair. Local budgets are checked
+first; mismatch, context drift or endpoint failure refuses inference. Actual
+probe attempts and latency are separately journaled and charged even when no
+model request follows. Local identity is revalidated after the probe. Matching
+means payload preprocessing at that moment, not model/process attestation;
+global serving parity remains unverified and `paper_result=false` is unchanged.
+
+New inference/probe transports refuse redirects and proxies. Public loopback
+`local` placeholders no longer falsely trigger secret detection; genuine
+credential protections remain. A separate failure marker disambiguates failed
+final-status publication without overwriting evidence. The new 18-query Slurm
+handoff validates explicit repo-contained spec/contract, exact clean runner,
+cache and serving interpreter before startup, rechecks after capture, preserves
+prior runs and skips the generic extra inference smoke. Old entrypoints and
+frozen scientific defaults remain unchanged. No remote job, model request,
+backend query, installation, download or new execution authority was created.
+
+The [next repair and experiment plan](report/xgap_next_experiment_repair_plan_20260909.md)
+prioritizes output-contract development18, then separately diagnosed coverage
+repair, then both primary datasets' missing original EQ1–EQ5 comparisons. It
+explicitly retains schema-only/LLM-only, centralized migration/pipeline, and
+ontology/capability robustness controls; existing physical-memory results do
+not replace those obligations. A new semantic result and complete cross-dataset
+study remain unmeasured, not implied by software success.
+
+Focused verification: **340 passed**. Both offline boundary examples, shell
+syntax and CLI help checks pass. Full repository regression: **1,853 passed,
+36 skipped in 524.53 seconds**; skipped behavior remains unverified. Only
+docstring indentation and documentation changed after collection, not executable
+behavior or tests. Details and the remaining live gate are in
+`docs/report/grailqa_server_tokenization_v1.md`.

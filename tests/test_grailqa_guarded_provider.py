@@ -358,6 +358,50 @@ def test_post_generation_grounding_error_cannot_erase_provider_journal(tmp_path,
     case.journal.close()
 
 
+@pytest.mark.parametrize("url", [
+    "http://127.0.0.1:8000/tokenize",
+    "http://127.0.0.1:8000/v1/chat/completions",
+])
+def test_public_loopback_placeholder_is_not_a_secret(url):
+    assert bridge._credential_value_for_payload_check("local", url) == ""
+    assert bridge._credential_value_for_payload_check("real-secret", url) == "real-secret"
+    assert bridge._credential_value_for_payload_check("x", url) == "x"
+
+
+@pytest.mark.parametrize("url", [
+    "http://example.test:8000/tokenize", "http://localhost:8000/tokenize",
+    "https://127.0.0.1:8000/tokenize", "http://127.0.0.1/tokenize",
+    "http://127.0.0.1:8000/other", "http://127.0.0.1:8000/tokenize?key=value",
+    "http://127.0.0.1:8000/tokenize#fragment", "http://user@127.0.0.1:8000/tokenize",
+    "http://127.0.0.1:invalid/tokenize", "http://127.0.0.1:0/tokenize",
+])
+def test_placeholder_exception_never_widens_to_other_endpoints(url):
+    assert bridge._credential_value_for_payload_check("local", url) == "local"
+
+
+def test_public_loopback_placeholder_allows_ordinary_local_catalog_text(tmp_path, monkeypatch):
+    response = _valid()
+    response["id"] = "local-response"
+    case = _setup(tmp_path, monkeypatch, [True], [response])
+    monkeypatch.setenv("XGAP_TEST_API_KEY", "local")
+    base = compatible.OpenAICompatibleStructuredCandidateProvider(
+        replace(case.base.config, base_url="http://127.0.0.1:8000/v1"),
+        "Use the local catalog.", case.transport,
+        response_parser=parse_normalized_planner_response,
+    )
+    case.provider = bridge.GuardedSemanticPilotProvider(
+        SimpleNamespace(), case.guard, case.journal, "task-1", base_provider=base,
+    )
+    result = case.provider.generate(case.request, None)
+    assert result.api_call_completed is True
+    assert len(case.transport.calls) == 1
+    assert case.transport.calls[0]["api_key"] == "local"
+    assert "Use the local catalog." in case.journal.path.read_text()
+    assert "local-response" in case.journal.path.read_text()
+    _invocation_event(case)
+    case.journal.close()
+
+
 def test_captures_effective_config_and_default_normalized_parser_before_wrapping(tmp_path, monkeypatch):
     case = _setup(tmp_path, monkeypatch, [True], [_valid()])
     built = []

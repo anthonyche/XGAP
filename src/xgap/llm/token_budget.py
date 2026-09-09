@@ -155,6 +155,10 @@ class LocalPinnedChatTokenizer:
         return copy.deepcopy(self._identity)
 
     def count_payload_tokens(self, payload: Mapping[str, Any]) -> int:
+        return len(self.payload_token_ids(payload))
+
+    def payload_token_ids(self, payload: Mapping[str, Any]) -> tuple[int, ...]:
+        """Return the exact ordered local IDs, without asserting serving parity."""
         self._verify_identity()
         messages, template_kwargs = _text_chat_inputs(payload)
         # Schema text already present in messages is counted exactly once.
@@ -168,7 +172,7 @@ class LocalPinnedChatTokenizer:
             type(token) is not int or token < 0 for token in tokens
         ):
             raise TokenizerUnavailable("Tokenizer did not return a flat token ID sequence.")
-        return len(tokens)
+        return tuple(tokens)
 
 
 def _text_chat_inputs(payload: Mapping[str, Any]) -> tuple[list[dict[str, str]], dict[str, Any]]:

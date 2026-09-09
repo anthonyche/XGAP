@@ -1857,3 +1857,11 @@ Current status: TODO
   an isolated catalog/retrieval/packing intervention if needed, then the full
   cross-dataset protocols and comparisons. See
   `docs/report/grailqa_guarded_development_entrypoint_v1.md`.
+- The next guarded-runner revision now includes an explicit per-request
+  server-tokenization mode and a separate strict-only CWRU handoff. Ordered
+  token IDs and context limits are compared before each generation/actual
+  repair, with extra calls charged separately. Both new transports refuse
+  proxies/redirects. This implements a measurement path, not evidence that the
+  real Qwen payloads have passed it; global model/process parity remains
+  unverified. No new remote run or full150 authorization occurs. See
+  `docs/report/grailqa_server_tokenization_v1.md` for acceptance and next gates.
