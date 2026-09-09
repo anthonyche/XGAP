@@ -1950,3 +1950,13 @@ Current status: TODO
   36 skipped (595.67 seconds)**, plus three offline examples and CLI/shell
   checks. This closes the bounded feedback implementation, not the live
   candidate-quality, directed-execution or complete-system gates.
+- D195 adds an opt-in typed fixed OUT/IN row compiler and runtime fragment
+  adapter without changing M5, legacy compiler defaults or frozen GrailQA
+  execution. Independent RDFLib execution checks 1–4-hop direction combinations,
+  positional filters, repeated edges and literal safety. All four uploaded
+  typed/grounded candidates compile to Cypher, including the previously blocked
+  mixed-direction candidate; this is not actual Cypher or answer evidence.
+  Finish native engine/data-mapping/answer correctness admission, then remaining
+  target structures and the full semantic-to-federated runtime connection. Do
+  not treat two compiler languages as two equivalent complete physical plans.
+  See `docs/report/directed_native_rows_v1.md` for current acceptance and limits.

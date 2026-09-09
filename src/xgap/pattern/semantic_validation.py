@@ -35,6 +35,10 @@ NUMERIC_CONDITIONS = PROPERTY_CONDITIONS[2:]
 
 def type_check_semantic_path_pattern(query: PathPatternQuery) -> dict[str, PatternVarType]:
     """Check the typed intent without consulting a compiler/backend or gold."""
+    # Check reference kinds before the legacy checker dereferences .position.
+    # The legacy API stays unchanged; this stricter opt-in profile reports a
+    # typed error instead of an AttributeError for an edge in NodeNotEquals.
+    _condition(query.condition, _fixed_edge_count(query.expr))
     schema = type_check_path_pattern(query)
     for value, name in ((query.max_depth, "max_depth"), (query.selector.k, "selector.k")):
         if value is not None:
@@ -42,7 +46,6 @@ def type_check_semantic_path_pattern(query: PathPatternQuery) -> dict[str, Patte
     _properties(query.source.properties)
     _properties(query.target.properties)
     _regex(query.expr)
-    _condition(query.condition, _fixed_edge_count(query.expr))
     return schema
 
 

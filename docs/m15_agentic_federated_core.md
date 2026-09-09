@@ -48,6 +48,11 @@ Implemented locally:
 
 - per-backend `SemanticFragment` compilation through the existing M9 Cypher
   and SPARQL compilers;
+- an additional explicitly selected directed-row fragment compiler for fixed
+  OUT/IN Rel/Seq paths, preserving positional conditions and producing ordinary
+  runtime RemoteQuery artifacts; its independent RDFLib checks are not live
+  Neo4j/Fuseki admission or general semantic-DAG compiler coverage (see
+  [D195](report/directed_native_rows_v1.md));
 - typed `RemoteQuery`, `Align`, `Exchange`, `CoordinatorJoin`, `Merge`, and
   coordinator `Project` runtime nodes;
 - validated finite execution DAGs with remote-call and parallelism budgets;

@@ -4024,3 +4024,45 @@ remain separately gated. See `docs/report/grailqa_candidate_feedback_v1.md`.
 Acceptance: 334 focused tests and the full offline suite (2360 passed,
 36 skipped, 595.67 seconds), three offline examples, guarded CLI help and
 shell/diff checks pass. No new GPU/backend run occurred during validation.
+
+## D195 Compile typed fixed directed native rows without redefining M5
+
+Add an explicit `typed_fixed_directed_rows_v1` compiler for fixed Rel/Seq
+OUT/IN paths, ALL row selection and conjunctive scalar/identity/length
+conditions. Preserve positional source/target/intermediate bindings by
+orienting each native edge, never by swapping only final answer columns,
+rewriting the semantic query, or reversing the stored dataset. M5 lowering,
+legacy compiler entrypoints and the path-algebra vocabulary remain unchanged.
+Keep recursive restrictor behavior distinct from fixed-path constraints:
+bare Rel/Seq does not acquire implicit SIMPLE/TRAIL restrictions. Explicit
+node inequalities from the canonical normalizer remain binding.
+
+Cypher emits separate MATCH clauses so a fixed walk may reuse a relationship;
+SPARQL emits explicit oriented triples with a mandatory dataset-owned mapping.
+Neither output is represented as PathSet. RDF predicate columns do not provide
+cross-backend edge identity. Scalar encodings, dataset identity, native engine
+version and final-answer normalization remain execution-admission obligations.
+Unsupported features and missing capabilities return explicit failures, not
+approximations or fabricated empty rows.
+
+Expose the compiler through the existing runtime fragment/plugin/scheduler
+contracts, without switching a frozen GrailQA runner to backend execution.
+Bind pattern/profile/mapping identities and require exact output columns.
+Independent RDFLib execution tests compare all 1–4-hop directions to an
+input-triple traversal oracle and cover conditions, repeated edges and safe
+literal handling. Preserve supplementary Unicode rather than JSON surrogate
+escapes. The stricter opt-in semantic validator checks reference kinds before
+legacy NodeNotEquals handling; do not alter the legacy API.
+
+Read-only compilation of the four previously grounded uploaded candidates
+succeeds, including the OUT/IN/OUT candidate. This is compilation evidence,
+not a new model result, loaded Freebase mapping or executed answer. Required
+real-engine admission, broader target structures and original two-dataset
+EQ1–EQ5 remain open. Acceptance and limitations are recorded in
+`docs/report/directed_native_rows_v1.md`; no CWRU action or new authority is
+created by this local milestone.
+
+Acceptance: 301 focused tests and the full offline suite (2479 passed,
+36 skipped, 617.48 seconds), three existing offline examples, formatting and
+diff checks pass. RDFLib 7.1.4 is a test-only optional dependency; absence
+produces explicit skips, not fabricated independent-engine acceptance.

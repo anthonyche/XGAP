@@ -3327,3 +3327,26 @@ D194 focused acceptance passes **334 tests**. Full offline acceptance passes
 **2360 tests, 36 skipped, in 595.67 seconds**. Three offline examples, guarded
 CLI help, shell syntax and `git diff --check` pass. No new server experiment
 was submitted as part of validation; live effect remains unmeasured.
+
+### Typed fixed directed native compilation (2026-09-09)
+
+D195 adds an explicitly selected fixed Rel/Seq OUT/IN compiler for Cypher and
+mapped SPARQL, plus the existing-runtime fragment adapter. Traversal positions,
+explicit inequalities and conditions remain intact; old M5 lowering and all
+frozen GrailQA inputs/entrypoints remain unchanged. This closes a local
+compilation gap, not general semantic-DAG execution or real-backend admission.
+
+The focused compiler/semantic/grounding/runtime gate passes **301 tests**,
+including actual emitted-SPARQL execution with the optional RDFLib 7.1.4 test
+engine. Full offline acceptance passes **2479 tests, 36 skipped, in 617.48
+seconds**; three offline examples, formatting and diff checks pass. Read-only replay verifies the
+same 18 source request identities and compiles all four previously grounded
+candidates, including the formerly blocked OUT/IN/OUT candidate; no model or
+backend call or reference-answer evaluation was performed. Source bytes and
+old result records are unchanged.
+
+Dataset-owned identity/literal mappings, real Neo4j/Fuseki verification,
+answer projection/normalization and the remaining query structures are still
+required. This does not enable the semantic-only GrailQA runner's backend
+execution or admit full150. CPU catalog job **3796988** has no newly supplied
+terminal evidence. See [D195 report](report/directed_native_rows_v1.md).

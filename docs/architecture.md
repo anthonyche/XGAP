@@ -24,6 +24,16 @@ Its deterministic path-query core is aligned with the path algebra from
 "Path-based Algebraic Foundations of Graph Query Languages". XGAP does
 not rename or replace the path-algebra operators.
 
+An explicit `compile_directed_rows` entrypoint also consumes the typed
+PathPatternQuery directly for fixed Rel/Seq OUT/IN fragments. Its
+`DirectedRowFragmentCompiler` adapter produces the ordinary runtime RemoteQuery
+contract without claiming that M5 has gained reverse-path lowering. It emits
+native row bindings with traversal-position columns, not PathSet, and leaves
+dataset identity and answer normalization explicit. This local extension does
+not enable backend execution in a frozen semantic-only experiment. Independent
+SPARQL-engine checks and the still-required real-backend boundary are documented
+in [the directed-row report](report/directed_native_rows_v1.md).
+
 Semantic query/dataflow operators, agent/control actions, and federated runtime
 operators live above this algebra in separate typed namespaces. For example,
 `ResolveEntity` is an agent action and semantic `Traverse` may carry a

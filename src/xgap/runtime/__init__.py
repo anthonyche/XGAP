@@ -30,6 +30,7 @@ from xgap.runtime.fragments import (
     FragmentCompilationError,
     SemanticFragment,
 )
+from xgap.runtime.directed_fragments import DirectedRowFragmentCompiler
 from xgap.runtime.tool import FEDERATED_EXECUTION_TOOL, FederatedExecutionTool
 from xgap.runtime.planning import (
     FederatedPlanCandidate,
@@ -47,6 +48,7 @@ __all__ = [
     "AdaptiveFederatedRun",
     "FEDERATED_EXECUTION_TOOL",
     "CompiledBackendFragment",
+    "DirectedRowFragmentCompiler",
     "ExistingM9FragmentCompiler",
     "FederatedExecutionPlan",
     "FederatedExecutionTool",
