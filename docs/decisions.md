@@ -3824,3 +3824,42 @@ status prefix is readable. A separate best-effort exclusive failure marker
 preserves this distinction without overwriting prior status. Successful CLI
 exit, complete final status and absence of a failure marker are required;
 global storage failure leaves completion unknown, never implicitly successful.
+
+## D189 Apply materialization eligibility before query-local entity Top-K
+
+The query-local selector must rank eligible entities, not let high-scoring
+alias-only hits consume the quota and delete them afterward. A separately
+identified `canonical_eligible_topk_v2` builder therefore completes a disk-backed
+name/alias scan, records each query/MID's best lexical hit and English canonical
+eligibility, then joins and takes Top-K. Preserve lexical scoring, candidate
+bounds, per-query isolation, ontology and grounding. Break only otherwise exact
+name/alias ties deterministically in favor of the name. This synthetic defect
+does not establish the cause of the real preflight's catalog misses.
+
+Canonical eligibility and second-pass materialization must agree with the
+existing final SQLite integrity predicate: ordinary-space-only or empty NAMEs
+do not qualify, but a valid NAME for the same MID does. Do not rewrite labels,
+extend whitespace rules, promote aliases to canonical names, invent a missing
+identity or silently shrink on a cross-pass metadata failure. Completeness of
+the input source remains a separately verified prerequisite.
+
+Preserve v1 and every frozen launcher by default. V2 requires explicit fresh
+output, distinct CLI workload/artifact names, and no force, reuse or automatic
+retry. Check raw paths before symlink resolution. Publish a validated private
+copy into an exclusively claimed directory, manifest last; retain incomplete
+output on failure, never remove unrelated or historical data. This does not
+promise an atomic whole-tree rename or power-loss durability.
+
+Bind deterministic diagnostics, selection/anchor policy and semantic exports
+into v2 catalog identity. Keep measured timing/resources outside deterministic
+content. Since SQLite byte hashes are not the portable semantic identity,
+reconcile its runtime data with the canonical exported views and selection
+records; one semantic hash must not conceal divergent runtime labels. A local
+consistency validator is not proof of source-wide Top-K completeness, recall,
+model effectiveness or historical paper admission. V2 stays development-only.
+
+SQLite cache and buffered-row bounds are not an overall memory or disk quota.
+Full-source construction resources and v1/v2 coverage still need separate
+measurement. Public schema-label enrichment, retrieval/packing changes, actual
+Qwen contract validation, and both datasets' missing original EQ1–EQ5 work
+remain independent obligations; this repair grants no new external execution.

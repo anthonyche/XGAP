@@ -1865,3 +1865,14 @@ Current status: TODO
   real Qwen payloads have passed it; global model/process parity remains
   unverified. No new remote run or full150 authorization occurs. See
   `docs/report/grailqa_server_tokenization_v1.md` for acceptance and next gates.
+- An explicit eligibility-before-Top-K local catalog version now repairs
+  alias-only candidates displacing materializable alternatives. It preserves
+  score/bounds/ontology, aligns empty canonical-name handling with final SQLite
+  integrity, spools candidates to disk, and uses a fresh non-overwriting output.
+  Deterministic selection evidence is separate from resource measurements;
+  runtime database/export consistency is checked. V1, frozen launcher defaults
+  and old admissions remain unchanged. Full-source resources and actual
+  development18 coverage gains are unmeasured, not inferred from synthetic
+  backfill. Next is an isolated source-backed construction/coverage comparison,
+  not automatic full150 or a claim that RAG is repaired. See
+  `docs/report/grailqa_eligible_catalog_v2.md`.

@@ -3105,3 +3105,39 @@ syntax and CLI help checks pass. Full repository regression: **1,853 passed,
 docstring indentation and documentation changed after collection, not executable
 behavior or tests. Details and the remaining live gate are in
 `docs/report/grailqa_server_tokenization_v1.md`.
+
+### GrailQA eligibility-before-Top-K development catalog (2026-09-09)
+
+An explicit, independent v2 builder now completes a disk-backed eligibility
+scan before selecting each question's Top-K MIDs. A synthetic alias-only
+high-score hit no longer removes a lower-scoring canonical entity from the
+final catalog. Usable canonical-name eligibility matches the existing final
+SQLite rule, including same-MID empty/valid NAME coexistence. Metadata loss on
+the second pass is an explicit failure, not silent shrinking. Original scores,
+anchor extraction, Top-50 / retrieval Top-20 / prompt Top-4 defaults, ontology,
+grounder and historical default entrypoints are unchanged.
+
+V2 has an explicit selection policy, distinct catalog/artifact identity and
+fresh-only CLI output; it refuses force, old audit/run modes and symlinked output
+paths. Manifest-last publication preserves partial failures and unrelated data.
+The validator now reconciles semantic SQL projections with canonical JSONL,
+every published count and candidate label/anchor/score evidence, not just each
+file's own hash. SQLite semantic divergence cannot silently retain the same
+catalog identity at this validation boundary. Resource measurements are kept
+apart from deterministic diagnostics; the 16 MiB SQLite page cache and 4,096-row
+write buffer are not a whole-process memory ceiling or disk quota.
+
+Focused acceptance is **177 passed**, including independent exhaustive/random
+selection checks, actual materialization/retrieval, old wiring/audit regression,
+semantic-view tamper rejection and interrupted publication. Both offline
+boundary examples, CLI help and whitespace checks pass. Full repository
+regression is **2,005 passed, 36 skipped in 550.18 seconds**. Skipped behavior
+remains unverified; only documentation changed after the full run began.
+
+No full-source build, Qwen/model/backend call, remote job or new execution
+authority was created. Whether this repair changes the real18 coverage and its
+full-source resource cost are unmeasured. Old catalog/preflight/paper admission
+does not carry to v2; `paper_result=false` remains explicit. The
+[implementation and next boundary](report/grailqa_eligible_catalog_v2.md)
+preserves the separate output-contract, public-schema enrichment and retrieval
+work, and both datasets' still-missing original EQ1–EQ5 experiments.
