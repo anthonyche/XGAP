@@ -43,6 +43,8 @@ from xgap.backends.mapping import (
 from xgap.compilers import cypher, sparql
 from xgap.compilers.errors import UnsupportedCompilationError
 from xgap.compilers.features import BoundCondition, default_profile
+from xgap.compilers.rdf_encoding import RdfRowEncoding
+from xgap.backends.rdf_terms import RDF_TERMS_V1
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.pattern.ast import (
     Direction,
@@ -338,6 +340,7 @@ def _sparql(
     shape: DirectedShape,
     profile: BackendCapabilityProfile,
     backend_mapping: Mapping[str, Any] | RdfBackendMapping | None,
+    rdf_encoding: RdfRowEncoding | None = None,
 ) -> tuple[str, dict[str, Any]]:
     if backend_mapping is None:
         raise _fail(
@@ -385,6 +388,37 @@ def _sparql(
             )
             continue
         if type(item) in PROPERTY_CONDITIONS:
+            if (
+                rdf_encoding is not None
+                and item.property_name == rdf_encoding.identity_property
+            ):
+                if type(item) not in (
+                    PropertyEquals,
+                    PropertyNotEquals,
+                ) or not isinstance(item.ref, NodeRef):
+                    raise _fail(
+                        profile,
+                        "rdf_identity",
+                        "Resource identity supports node equality/inequality only.",
+                    )
+                try:
+                    iri = rdf_encoding.resource_iri(item.value)
+                except ValueError as error:
+                    raise _fail(profile, "rdf_identity", str(error)) from error
+                node = sparql._node_var(bound, item.ref)
+                comparison = f"sameTerm({node}, <{iri}>)"
+                if type(item) is PropertyNotEquals:
+                    # A literal or an unmapped resource has no logical ID.
+                    # Negating sameTerm alone would incorrectly admit it.
+                    namespace = _literal(rdf_encoding.resource_namespace)
+                    body.append(
+                        f"FILTER(isIRI({node}) && STRSTARTS(STR({node}), {namespace}) "
+                        f"&& REGEX(SUBSTR(STR({node}), {len(rdf_encoding.resource_namespace) + 1}), "
+                        f'"^[A-Za-z0-9_][A-Za-z0-9_.-]*$") && !{comparison})'
+                    )
+                else:
+                    body.append(f"FILTER({comparison})")
+                continue
             predicate = sparql._mapped_iri(
                 item.property_name, "properties", mapping, used, profile.backend_id
             )
@@ -396,6 +430,17 @@ def _sparql(
             if type(item) in NUMERIC_CONDITIONS:
                 body.append(f"FILTER(isNumeric({variable}))")
             counter += 1
+        elif (
+            isinstance(item, LabelEquals)
+            and isinstance(item.ref, NodeRef)
+            and rdf_encoding is not None
+        ):
+            term = sparql._mapped_iri(
+                item.value, "node_labels", mapping, used, profile.backend_id
+            )
+            body.append(
+                f"{sparql._node_var(bound, item.ref)} <{rdf_encoding.class_predicate_iri}> {term} ."
+            )
         else:
             clauses, counter = sparql._condition_to_sparql(
                 bound, counter, profile.backend_id, mapping, used
@@ -424,12 +469,22 @@ def _sparql(
     text = "SELECT DISTINCT " + " ".join("?" + name for name in columns) + " WHERE {\n"
     text += "\n".join("  " + line for line in body) + "\n}"
     return text, {
+        **(
+            {
+                "rdf_row_encoding_sha256": rdf_encoding.identity,
+                "rdf_row_encoding_id": rdf_encoding.encoding_id,
+                "rdf_result_encoding": RDF_TERMS_V1,
+                "expected_result_columns": list(columns),
+            }
+            if rdf_encoding is not None
+            else {}
+        ),
         "backend_mapping": {
             "mapping_id": mapping.mapping_id,
             "version": mapping.version,
             "mapping_hash": mapping.mapping_hash,
             "relevant_mapped_iris": [used[key].to_dict() for key in sorted(used)],
-        }
+        },
     }
 
 
@@ -440,6 +495,7 @@ def compile_directed_rows(
     profile: BackendCapabilityProfile | None = None,
     backend_mapping: Mapping[str, Any] | RdfBackendMapping | None = None,
     artifact_id: str = "typed-directed-rows",
+    rdf_encoding: RdfRowEncoding | None = None,
 ) -> QueryArtifact:
     """Compile one explicitly opted-in typed fragment; no network or fallback."""
     profile = profile or default_profile(backend_id)
@@ -455,10 +511,18 @@ def compile_directed_rows(
     shape = _shape(query, profile)
     required = _required(shape, profile)
     language = profile.language.lower()
+    if rdf_encoding is not None and (
+        not isinstance(rdf_encoding, RdfRowEncoding) or language != "sparql"
+    ):
+        raise _fail(
+            profile,
+            "rdf_encoding",
+            "Explicit RDF encoding requires an RDF target and a typed encoding.",
+        )
     text, extra = (
         _cypher(shape, profile)
         if language == "cypher"
-        else _sparql(shape, profile, backend_mapping)
+        else _sparql(shape, profile, backend_mapping, rdf_encoding)
     )
     source = _identity(query)
     source_hash = hashlib.sha256(

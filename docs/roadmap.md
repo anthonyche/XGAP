@@ -1,5 +1,21 @@
 # XGAP Roadmap
 
+## Current engineering milestones — 2026-09-09
+
+The [engineering review](report/xgap_engineering_review_20260909.md) orders
+H0 documentation/state reconciliation, H1 remote execution closure, H2 typed
+resource/answer contracts, H3 simplified interpretation output, H4 target-data
+answer execution, H5 shared EQ1–EQ5 experiments, and H6 scale/UI work. These
+are implementation checkpoints under the existing M15 research direction.
+They do not replace frozen scientific populations or historical milestones.
+
+H2/D196 is implemented and passes focused independent-engine/HTTP checks;
+full local acceptance and live prerequisites are tracked in
+[engineering_state.md](engineering_state.md). H0 remains in progress until
+all indexed historical documents receive detailed review. H1 currently observes
+the existing catalog job 3796988. Live model/backend effects and unavailable
+external artifacts remain explicitly distinct from local software acceptance.
+
 ## Current Mainline: M15 Agentic Federated Core
 
 The M0-M14 milestones below record the original ambiguity-aware planning and

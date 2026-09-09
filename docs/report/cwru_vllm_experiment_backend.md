@@ -18,7 +18,7 @@ The frozen deployment condition is:
 | Environment | `/home/hxc859/venvs/xgap-vllm` |
 | Python / torch / CUDA / vLLM | 3.11.5 / 2.9.0+cu128 / 12.8 / 0.11.1 |
 | Model | `Qwen/Qwen3-32B` dense |
-| Serving | bfloat16, max length 8192, memory utilization 0.90 |
+| Serving | bfloat16, max length 12288, memory utilization 0.90 |
 | Endpoint | `http://127.0.0.1:8000/v1` |
 | Thinking | request-local `enable_thinking=false` |
 | Structured output | unchanged M13-E1 JSON Schema |
@@ -26,6 +26,11 @@ The frozen deployment condition is:
 The machine-readable contract is
 `experiments/environments/cwru_pioneer_qwen3_32b_vllm.json`. Qwen3-30B-A3B
 and system-library changes are outside this milestone.
+
+Documentation reconciliation on 2026-09-09: the current committed deployment
+contract and runbook serve 12,288 context tokens, reserving 8,192 input plus
+4,096 output. The earlier 8,192 serving value in this table was stale. This
+correction changes no deployment, model bundle, token budget, or recorded run.
 
 The one-H100 environment (approximately 95.8 GiB VRAM) was manually validated
 before this repository integration: model loading, `/v1/models`,

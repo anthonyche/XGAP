@@ -26,9 +26,13 @@ The repository contains:
   hash join, merge, failure propagation, and runtime metrics;
 - per-backend fragment compilation through the existing M9 compilers.
 
-The coordinator is verified locally with split backend fixtures. Live
-Neo4j-plus-Fuseki validation is the remaining M15-B gate. Ontology and LLM use
-are deliberately not required for that gate.
+The coordinator has recorded live Neo4j-plus-Fuseki validation and a FinBench
+physical campaign. The active work connects open semantic intake to actual
+target-data answers; those earlier results do not establish that end-to-end
+path. See [`docs/engineering_state.md`](docs/engineering_state.md) for the
+current milestone, remote job, verification results and next actions, and
+[`docs/report/xgap_engineering_review_20260909.md`](docs/report/xgap_engineering_review_20260909.md)
+for the design review and ordered engineering plan.
 
 ## Architecture
 

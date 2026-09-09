@@ -1,5 +1,7 @@
 # XGAP Design Decisions
 
+Current engineering loop and evidence: [engineering_state.md](engineering_state.md).
+
 ## D1 Logical algebra alignment
 
 XGAP's path-algebra vocabulary aligns with the path algebra from
@@ -4066,3 +4068,39 @@ Acceptance: 301 focused tests and the full offline suite (2479 passed,
 36 skipped, 617.48 seconds), three existing offline examples, formatting and
 diff checks pass. RDFLib 7.1.4 is a test-only optional dependency; absence
 produces explicit skips, not fabricated independent-engine acceptance.
+
+## D196 Preserve resource and RDF-term identity through the answer boundary
+
+The resumed worktree contained an unfinished RDF representation/client draft.
+Complete it as a separately selected dataset encoding, without changing legacy
+compiler/client defaults, frozen protocols, or audited algebra semantics.
+`RdfRowEncoding` declares the class-membership predicate, logical identity
+property and resource namespace. Identity equality compiles to RDF term
+equality; inequality requires a mapped resource with a valid canonical local
+identifier, so literals and foreign resources do not acquire an invented ID.
+The encoding is content-hashed alongside the existing mapping/profile/pattern.
+
+Explicit encoded directed artifacts request `rdf_terms_v1` responses and exact
+SELECT columns through the ordinary runtime fragment adapter. Fuseki preserves
+URI/literal/datatype/language information. Malformed SELECT envelopes and
+unscoped blank-node federation are explicit execution errors, not empty
+answers. Blank-node labels cannot be joined across result objects until their
+scope is represented. The old string-valued client mode remains unchanged.
+
+Answer projection requires an explicit column; property-graph node answers
+also require a declared identity mapping. Failed or untyped RDF executions
+cannot be normalized to successful empty answers. Exact comparison uses RDF
+term sets, retaining numeric lexical differences; it is not a GrailQA official
+value-equivalence metric or arbitrary answer serializer.
+
+An independent RDFLib engine executes compiled Freebase-style reverse paths
+behind a local HTTP server through the actual Fuseki client, then projects and
+checks answers. Tests include misleading literal IDs, custom type predicates,
+mapped identity inequality, Unicode, incomplete responses, real empty results,
+and coordinator joins. Focused acceptance is 153 passed / 1 gated live skip;
+final full regression and existing examples are recorded in engineering_state.
+
+This is local executable identity/answer infrastructure. Real Fuseki has a new
+read-only opt-in VALUES test; actual dataset loading, Neo4j identity parity,
+GrailQA full answers and general semantic-DAG compilation remain separate
+milestones. No live run or research-result admission follows from these tests.

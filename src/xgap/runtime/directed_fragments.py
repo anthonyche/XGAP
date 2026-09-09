@@ -5,6 +5,7 @@ from typing import Any, Mapping
 
 from xgap.backends.capabilities import BackendCapabilityProfile
 from xgap.compilers.directed import PROFILE, compile_directed_rows
+from xgap.compilers.rdf_encoding import RdfRowEncoding
 from xgap.runtime.fragments import (
     CompiledBackendFragment,
     FragmentCompilationError,
@@ -18,6 +19,7 @@ class DirectedRowFragmentCompiler:
         default_factory=dict
     )
     backend_mappings: Mapping[str, Mapping[str, Any]] = field(default_factory=dict)
+    rdf_encodings: Mapping[str, RdfRowEncoding] = field(default_factory=dict)
 
     def compile(self, fragment: SemanticFragment) -> CompiledBackendFragment:
         artifact = compile_directed_rows(
@@ -26,6 +28,7 @@ class DirectedRowFragmentCompiler:
             profile=self.backend_profiles.get(fragment.backend_id),
             backend_mapping=self.backend_mappings.get(fragment.backend_id),
             artifact_id=f"directed-{fragment.fragment_id}-{fragment.backend_id}",
+            rdf_encoding=self.rdf_encodings.get(fragment.backend_id),
         )
         columns = tuple(artifact.parameters["output_columns"])
         if fragment.output_schema and fragment.output_schema != columns:
