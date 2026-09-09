@@ -124,3 +124,9 @@ See [research-question/dataset coverage](research_question_dataset_coverage_v1.m
 for the recorded FinBench evidence and the missing semantic/physical cells.
 Do not infer new scientific selections, paper admission, or execution authority
 from this engineering implementation.
+
+The subsequent [guarded development entrypoint](grailqa_guarded_development_entrypoint_v1.md)
+adds explicit record bindings and durable per-query/per-send journals without
+changing the old entrypoints. It still cannot certify serving tokenizer parity
+and defaults to refusing execution. No new model result or author approval is
+implied by that integration.

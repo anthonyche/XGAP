@@ -3036,3 +3036,36 @@ also passed. Both offline boundary examples pass. After the full run started,
 tokenizer identity was additionally made to record the installed Jinja2 version;
 the final **57-test** tokenizer suite passed with that identity field. These
 are software checks, not new model measurements or experiment admission.
+
+### GrailQA guarded development entrypoint (2026-09-09)
+
+A separate `grailqa_guarded_preflight` entrypoint now composes the local token
+guard with the unchanged normalized inference, grounding and evaluation path.
+It validates current runner/job/host and frozen environment/provider bindings
+before sending, uses a new bridge per query, durably journals token checks
+before transport, and preserves responses before any repair or downstream
+grounding. Completed query states are persisted incrementally. Fatal errors
+leave an incomplete run and unknown total calls rather than fabricated zero
+calls, automatic retry or overwritten prior evidence.
+
+Record binding is not proof of the actual serving tokenizer/template. Execution
+defaults to refusal; an explicit, unselected development-only unverified-parity
+mode is exposed separately, with an exact spec-freeze acknowledgement. Neither
+input is a scientific author receipt or authority to run150. The new manifest
+and diagnostics remain `paper_result=false` and cannot borrow an old audit's
+admission. Old entrypoints, frozen prompts/specs, grounder and metrics remain
+unchanged. The offline CWRU helper requires explicit paths and one existing
+tokenizer/interpreter; it does not download, install, start services or submit.
+
+Actual Qwen request lengths and serving parity remain unavailable locally.
+There has been no new model/backend measurement or remote submission. The
+[implementation and experiment sequence](report/grailqa_guarded_development_entrypoint_v1.md)
+separates output-contract testing from the later retrieval/visibility repair,
+and retains both primary datasets' missing EQ1–EQ5 work. The existing FinBench
+paper admission is unchanged; this integration is not a new semantic result.
+
+Offline acceptance: **150 new focused tests passed**; full repository regression
+was **1,615 passed, 36 skipped in 510.28 seconds**. Both offline LLM-boundary
+examples, CLI help checks, shell syntax and whitespace checks passed. Synthetic
+inference tests exercise normalization, grounding and semantic scoring but do
+not establish live GrailQA effectiveness; skipped tests remain unverified.

@@ -1844,3 +1844,16 @@ Current status: TODO
   workshop's modeling/generation/plan questions, the whitepaper's EQ1–EQ5,
   and the existing physical RQ-P1/P2/P3. Do not narrow the research objective
   to already passing experiments or silently equate their numbering.
+- A new guarded development entrypoint composes the token guard with unchanged
+  inference/grounding, validates runner/deployment records, and persists
+  query/check/transport/invocation evidence incrementally. Old entrypoints and
+  frozen defaults remain untouched. An incomplete journal is not a complete
+  call ledger or a reason to resume automatically.
+- Serving tokenizer parity remains a separate unmet prerequisite. The new
+  entrypoint refuses execution by default; its explicit unverified-parity
+  development option is not selected or authorized and does not certify
+  parity. All outputs remain non-paper. The next sequence is exact server
+  request measurement, separately authorized output-contract development18,
+  an isolated catalog/retrieval/packing intervention if needed, then the full
+  cross-dataset protocols and comparisons. See
+  `docs/report/grailqa_guarded_development_entrypoint_v1.md`.

@@ -3763,3 +3763,31 @@ separate from readiness, server parity, scientific effectiveness and authority.
 Old implementations, shell defaults, model/spec/review artifacts, and audited
 results are not rewritten. A future reviewed live integration must explicitly
 bind the adapter and record its checks; this implementation does not activate it.
+
+## D187 Isolate guarded development execution and journal before transmission
+
+The request guard integrates through a new explicit GrailQA development
+entrypoint, not a silent replacement of frozen preflight/paper behavior. Each
+query gets a fresh adapter. Token checks are durable before transport;
+transport returns and complete provider invocations are retained before
+downstream grounding/evaluation. A fatal accounting or journal error stops the
+run, preserves the partial evidence, and leaves incomplete totals unknown.
+Local refusals remain distinct from transmitted failures and legacy semantic
+failure classifications. Neither a completed protocol nor a successful
+artifact audit implies a positive semantic result.
+
+Current runner/job/host and frozen spec/model/prompt/endpoint/budget records
+must bind before transmission. The explicit local tokenizer snapshot must
+belong to the recorded model, but matching records cannot prove actual serving
+tokenizer/template parity. Execution therefore defaults to refusal. A separate
+explicit development-only unverified-parity acknowledgement is available as
+an engineering interface, not a selected scientific mode, an authority receipt,
+or a substitute for the still-missing parity evidence. No existing author
+receipt is migrated and no new run is authorized. All outputs retain
+`paper_result=false` and `remote_serving_parity_verified=false`.
+
+The initial manifest is immutable, final status is separate, and references
+remain evaluation-only after all inference. The old parser/grounder/metric
+behavior, query population, budgets and one-schema-repair limit are unchanged.
+Provider latency already includes its guard/journaling work; initialization and
+whole-inference timing are reported separately without double counting.
