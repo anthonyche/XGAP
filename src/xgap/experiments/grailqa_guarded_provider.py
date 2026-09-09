@@ -18,6 +18,10 @@ from typing import Any, Literal, Mapping
 from urllib.parse import urlsplit
 
 from xgap.experiments.bundles import ModelBundle
+from xgap.experiments.grailqa_candidate_feedback import (
+    SCHEMA_ONLY, TYPED_GROUNDING_ONCE, GroundedCandidateFeedback, validate_repair_policy,
+)
+from xgap.experiments.grailqa_candidate_grounding import LEGACY_GROUNDING_POLICY
 from xgap.experiments.grailqa_semantic_pilot import GenerationResult
 from xgap.experiments.hashing import content_hash
 from xgap.experiments.interpretation_contract import parse_normalized_planner_response
@@ -260,12 +264,29 @@ class GuardedSemanticPilotProvider:
         self, model_bundle: ModelBundle, guard: TokenBudgetGuard,
         journal: QueryEventJournal, question_id: str, *,
         base_provider: OpenAICompatibleStructuredCandidateProvider | None = None,
+        candidate_repair_policy: str = SCHEMA_ONLY,
+        grounding_policy: str = LEGACY_GROUNDING_POLICY,
     ) -> None:
         if not isinstance(question_id, str) or not question_id:
             raise ValueError("A nonempty question ID is required.")
         base = base_provider if base_provider is not None else build_openai_compatible_provider(
             model_bundle, response_parser=parse_normalized_planner_response,
         )
+        self._repair_policy = validate_repair_policy(candidate_repair_policy, grounding_policy)
+        self._feedback: GroundedCandidateFeedback | None = None
+        if self._repair_policy == TYPED_GROUNDING_ONCE:
+            if base.config.max_repair_calls != 1 or base.response_parser is not parse_normalized_planner_response:
+                raise ValueError("Typed grounding feedback requires the normalized parser and one shared repair.")
+            self._feedback = GroundedCandidateFeedback(journal.append)
+            previous_validator = base.response_validator
+            feedback = self._feedback
+
+            def validate_response(raw: Mapping[str, Any], request: PlannerRequest) -> None:
+                if previous_validator is not None:
+                    previous_validator(raw, request)
+                feedback(raw, request)
+
+            base = replace(base, response_validator=validate_response)
         # The bounded provider intentionally does not expose its private config.
         # Capture the effective environment-resolved identity before wrapping.
         self._effective_config = deepcopy(base.config.safe_dict())
@@ -306,7 +327,6 @@ class GuardedSemanticPilotProvider:
         return deepcopy(self._diagnostics)
 
     def generate(self, request: PlannerRequest, prompt_view: PromptSchemaView) -> GenerationResult:
-        del prompt_view  # The frozen request already contains the exact view.
         with self._lock:
             if self._used:
                 raise TokenBudgetProviderStateError("Use a new provider instance for each question.")
@@ -315,6 +335,8 @@ class GuardedSemanticPilotProvider:
             self._used = True
         provider_error: LiveProviderError | None = None
         try:
+            if self._feedback is not None:
+                self._feedback.bind(request, prompt_view)
             response = self._provider.generate_candidates(request)
             invocation = self.last_invocation
             if invocation is None:
@@ -364,9 +386,17 @@ class GuardedSemanticPilotProvider:
                     self._guard.failure_phase if self._guard.journal_failed else self._transport.failure_phase
                 ),
             }
+            feedback_journal_failed = self._feedback is not None and self._feedback.journal_failed
+            if self._feedback is not None:
+                self._diagnostics.update(
+                    candidate_repair_policy=self._repair_policy,
+                    candidate_feedback=deepcopy(self._feedback.records),
+                )
+            if feedback_journal_failed:
+                self._diagnostics["journal_failure_phase"] = "candidate_contract_feedback"
             # A failed pre-send journal write must propagate. Do not attempt a
             # second write to the failed journal or manufacture zero-call success.
-            if not self._guard.journal_failed and self._transport.failure_phase is None:
+            if not self._guard.journal_failed and self._transport.failure_phase is None and not feedback_journal_failed:
                 if invocation is not None:
                     self._journal.append({
                         "event": "provider_invocation", "question_id": self._question_id,

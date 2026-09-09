@@ -18,6 +18,7 @@ from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
 from xgap.experiments.grailqa_candidate_grounding import (
     LEGACY_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY, validate_grounding_policy,
 )
+from xgap.experiments.grailqa_candidate_feedback import SCHEMA_ONLY, validate_repair_policy
 from xgap.experiments.grailqa_local_catalog import validate_local_catalog
 from xgap.experiments.grailqa_reachability import prompt_reachability_gate
 from xgap.experiments.grailqa_semantic_pilot import (
@@ -585,6 +586,9 @@ def _evaluate_preflight(
         or any(state.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY) != grounding_policy for state in states)
     ):
         raise ValueError("Canonical grounding evaluation requires matching spec and state policies.")
+    repair_policy = validate_repair_policy(spec.data.get("candidate_repair_policy", SCHEMA_ONLY), grounding_policy)
+    if any(state.get("candidate_repair_policy", SCHEMA_ONLY) != repair_policy for state in states):
+        raise ValueError("Candidate repair evaluation requires matching spec and state policies.")
     original_states = states
     rejected_candidates: list[dict[str, Any]] = []
     if strict:
@@ -732,6 +736,8 @@ def _evaluate_preflight(
             component_accuracy_scope="validated_grounded_candidates_only",
             candidate_recall_denominator="all_questions_including_failures",
         )
+    if repair_policy != SCHEMA_ONLY:
+        metrics["candidate_repair_policy"] = repair_policy
     capability_rows = []
     if grounding_policy == SEMANTIC_GROUNDING_POLICY:
         capability_rows = [

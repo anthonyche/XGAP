@@ -3991,3 +3991,36 @@ explicit interpreter dependency check before any new manual submission.
 Offline acceptance: 2318 passed, 36 skipped (598.46 seconds), three examples,
 guarded CLI help and CPU handoff syntax pass. This publishes the separated
 contract, not a new live result or authority to widen the experiment.
+
+## D194 Opt-in typed/grounded feedback shares the existing single repair
+
+A schema-valid response can still contain no valid grounded candidate. Make
+contract-error feedback a separately frozen opt-in policy; do not silently
+change the historical provider/default or use answer recall as a repair trigger.
+Assess only the exact prompt-bound canonical candidates and D193 typed
+semantics. If any candidate passes, retain it and its siblings without repair.
+IN/lowering unavailability, semantic-score thresholds, ranking and gold cannot
+trigger repair. A wholly invalid response may use the already configured one
+repair, shared with parser/schema repair, never a third model attempt.
+
+Persist feedback before any corresponding repair send. Keep original raw
+responses and full assembled repair payloads; bound diagnostic strings only
+with explicit truncation. Apply the existing token/server checks to the full
+payload, charge actual attempts and preserve guard refusals. Journal failures,
+internal assessment errors and transport failures are not repairable model
+outcomes. Retain existing extra provider validators. Freeze/bind the policy
+through prelaunch, inference, outcome and evaluation records; reject mixed
+policies before reference reads. Do not change hard semantics, model/prompt,
+catalog, budgets or historical accepted evidence.
+
+Read-only uploaded-response diagnosis identifies 15/17 structured envelopes
+without a valid candidate and two with four valid candidates. This is a
+trigger diagnosis with zero new calls, not measured repair success or answer
+accuracy. CPU job 3796988 was manually submitted at e39b98e after the user
+installed/import-verified PyArrow 25.0.1 in the exact xgap-core interpreter;
+its completion and coverage result remain unavailable. New GPU/full150 runs
+remain separately gated. See `docs/report/grailqa_candidate_feedback_v1.md`.
+
+Acceptance: 334 focused tests and the full offline suite (2360 passed,
+36 skipped, 595.67 seconds), three offline examples, guarded CLI help and
+shell/diff checks pass. No new GPU/backend run occurred during validation.

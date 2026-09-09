@@ -1933,3 +1933,20 @@ Current status: TODO
 - D193 offline acceptance passes **2318 tests with 36 skipped** (598.46
   seconds), three offline examples, guarded CLI help and CPU handoff syntax.
   These validate the local contracts, not new model quality or live execution.
+- D194 adds separately frozen typed/grounded feedback for wholly invalid
+  responses, sharing the existing one-repair budget with parser repair. Valid
+  siblings remain, unsupported lowering is not a trigger, and gold stays out.
+  Full payload/token limits and durable pre-send accounting remain enforced;
+  mixed policies fail closed. Source-only diagnosis finds 15/17 structured
+  envelopes eligible for feedback, not evidence that a new model run succeeds.
+  See `docs/report/grailqa_candidate_feedback_v1.md`.
+- The user import-verified PyArrow 25.0.1 and submitted CPU comparison
+  **3796988** at **e39b98e**, subsequently reported still running. Await its terminal evidence and audited coverage
+  comparison without automatic resubmission or modifying old catalogs.
+  Subsequent GPU scope, actual directed execution and the full original
+  cross-dataset EQ1–EQ5 matrix remain open; code publication grants no extra
+  experiment authority.
+- D194 local acceptance: **334 focused tests; 2360 full-suite tests passed,
+  36 skipped (595.67 seconds)**, plus three offline examples and CLI/shell
+  checks. This closes the bounded feedback implementation, not the live
+  candidate-quality, directed-execution or complete-system gates.

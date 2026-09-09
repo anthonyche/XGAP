@@ -18,6 +18,7 @@ from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.grailqa_candidate_grounding import (
     LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY, guarded_result_schema,
 )
+from xgap.experiments.grailqa_candidate_feedback import SCHEMA_ONLY, TYPED_GROUNDING_ONCE
 from xgap.experiments.cwru_vllm import CWRUVLLMContract, RUN_ENVIRONMENT_SCHEMA_VERSION
 from xgap.experiments.grailqa_guarded_provider import QueryEventJournal
 from xgap.experiments.hashing import content_hash
@@ -64,6 +65,17 @@ def test_semantic_capability_spec_is_separate_and_preserves_scientific_inputs():
     assert changed == {"experiment_id", "run_id_prefix", "freeze_hash", "candidate_grounding_policy"}
     assert new.data["candidate_grounding_policy"] == SEMANTIC_GROUNDING_POLICY
     assert new.data["backend_execution"] is new.data["full_150_run_permitted"] is False
+
+
+def test_feedback_spec_changes_only_explicit_trigger_and_identity():
+    from xgap.experiments.grailqa_preflight import GrailQAPreflightSpec
+
+    previous = GrailQAPreflightSpec.load(ROOT / "experiments/specs/grailqa_semantic_preflight_semantic_capability_v1_cwru_qwen3_32b.json")
+    new = GrailQAPreflightSpec.load(ROOT / "experiments/specs/grailqa_semantic_preflight_contract_feedback_v1_cwru_qwen3_32b.json")
+    changed = {key for key in previous.data.keys() | new.data.keys() if previous.data.get(key) != new.data.get(key)}
+    assert changed == {"experiment_id", "run_id_prefix", "freeze_hash", "candidate_repair_policy"}
+    assert new.data["candidate_repair_policy"] == TYPED_GROUNDING_ONCE
+    assert new.data["full_150_run_permitted"] is False
 
 
 @pytest.fixture
@@ -182,7 +194,12 @@ def case(monkeypatch, tmp_path):
         if index in {0, 2}:
             request = CWRU_FIXTURES["_planner_request"]()
             request = replace(request, metadata={**request.metadata, "task_id": qid})
-            result = provider.generate(request, None)
+            view = None
+            if spec_data.get("candidate_repair_policy") == TYPED_GROUNDING_ONCE:
+                fixtures = runpy.run_path(str(ROOT / "tests/test_m13e3b4_relation_endpoint_grounding.py"))
+                view = replace(fixtures["_prompt_view"](), task_id=qid)
+                request = replace(request, metadata={**request.metadata, "prompt_schema_view": view.to_dict()})
+            result = provider.generate(request, view)
         return {
             "question": question, "retrieval": {"question_id": qid, "synthetic": True},
             "request_records": list(result.request_records) if result else [],
@@ -240,6 +257,55 @@ def test_explicit_policy_is_bound_before_sends_and_reaches_inference_evaluation(
     else:
         assert not (case.output / "candidate_capabilities.jsonl").exists()
     assert len(case.transport_calls) == 2  # Unchanged fixture sends; no grounding repair.
+
+
+def test_feedback_policy_and_records_survive_complete_runner_lifecycle(case):
+    case.spec.update(candidate_grounding_policy=SEMANTIC_GROUNDING_POLICY,
+                     candidate_repair_policy=TYPED_GROUNDING_ONCE)
+    _freeze(case.spec_path, case.spec)
+    runner.run_guarded_preflight(**{**case.kwargs, "execute_development_spec_sha256": case.spec["freeze_hash"]})
+    assert len(case.transport_calls) == 4  # Two all-invalid synthetic envelopes; one repair each.
+    states = _rows(case.output / "query_states.jsonl")
+    assert all(state["candidate_repair_policy"] == TYPED_GROUNDING_ONCE for state in states)
+    for name in ("run_manifest.json", "run_status.json"):
+        value = json.loads((case.output / name).read_text())
+        assert value["candidate_repair_policy"] == TYPED_GROUNDING_ONCE
+        assert value["schema_version"] == "grailqa-guarded-contract-feedback-preflight-v1"
+        assert value["paper_result"] is False
+    events = _rows(case.output / "query_events.jsonl")
+    feedback_rows = [event for event in events if event["event"] == "candidate_contract_feedback"]
+    assert len(feedback_rows) == 4
+    assert feedback_rows == _rows(case.output / "candidate_feedback.jsonl")
+    assert all(row["no_valid_candidate"] for row in feedback_rows)
+    manifest = json.loads((case.output / "run_manifest.json").read_text())
+    assert manifest["maximum_provider_calls"] == 30
+    assert manifest["maximum_combined_repair_calls_per_query"] == 1
+
+
+def test_feedback_policy_is_preserved_on_fatal_incomplete_run(case):
+    case.spec.update(candidate_grounding_policy=SEMANTIC_GROUNDING_POLICY,
+                     candidate_repair_policy=TYPED_GROUNDING_ONCE)
+    _freeze(case.spec_path, case.spec)
+    case.fatal_index = 1
+    with pytest.raises(RuntimeError, match="synthetic-sensitive"):
+        runner.run_guarded_preflight(**{**case.kwargs, "execute_development_spec_sha256": case.spec["freeze_hash"]})
+    status = json.loads((case.output / "run_failure.json").read_text())
+    assert status["candidate_repair_policy"] == TYPED_GROUNDING_ONCE
+    assert status["status"] == "incomplete" and status["actual_attempted_provider_calls"] is None
+    assert status["paper_result"] is False
+    assert not (case.output / "metrics.json").exists()
+    assert len(case.transport_calls) == 2
+
+
+@pytest.mark.parametrize("policy", [None, "typo", {}, True, TYPED_GROUNDING_ONCE])
+def test_invalid_or_mixed_repair_policy_stops_before_readiness(case, policy):
+    case.spec["candidate_repair_policy"] = policy
+    _freeze(case.spec_path, case.spec)
+    with pytest.raises(ValueError):
+        runner.run_guarded_preflight(**{**case.kwargs, "execute_development_spec_sha256": case.spec["freeze_hash"]})
+    case.base_factory.assert_not_called()
+    case.readiness.assert_not_called()
+    assert not case.output.exists()
 
 
 @pytest.mark.parametrize("value", [None, "typo", {}, True])

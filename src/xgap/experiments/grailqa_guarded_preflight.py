@@ -22,6 +22,7 @@ from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
 from xgap.experiments.grailqa_candidate_grounding import (
     LEGACY_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY, guarded_result_schema, validate_grounding_policy,
 )
+from xgap.experiments.grailqa_candidate_feedback import SCHEMA_ONLY, validate_repair_policy
 from xgap.experiments.grailqa_guarded_environment import validate_guarded_environment
 from xgap.experiments.grailqa_guarded_provider import (
     GuardedSemanticPilotProvider, QueryEventJournal,
@@ -148,6 +149,13 @@ def run_guarded_preflight(
     grounding_policy = validate_grounding_policy(
         spec.data.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY)
     )
+    repair_policy = validate_repair_policy(
+        spec.data.get("candidate_repair_policy", SCHEMA_ONLY), grounding_policy,
+    )
+    feedback_binding = ({
+        "candidate_repair_policy": repair_policy,
+        "schema_version": "grailqa-guarded-contract-feedback-preflight-v1",
+    } if repair_policy != SCHEMA_ONLY else {})
     if any(spec.data.get(key) is not False for key in (
         "backend_execution", "gold_exposed_to_inference", "full_150_run_permitted",
     )):
@@ -242,6 +250,10 @@ def run_guarded_preflight(
         if grounding_policy != LEGACY_GROUNDING_POLICY:
             manifest["candidate_grounding_policy"] = grounding_policy
             manifest["schema_version"] = guarded_result_schema(grounding_policy)
+        manifest.update(feedback_binding)
+        if feedback_binding:
+            manifest["maximum_combined_repair_calls_per_query"] = 1
+            manifest["candidate_repair_trigger"] = "no_typed_prompt_grounded_candidate"
         _write_json(output / "run_manifest.json", manifest)
         with QueryEventJournal(output / "query_events.jsonl") as journal, \
                 QueryEventJournal(output / "query_states.jsonl") as state_journal:
@@ -261,6 +273,8 @@ def run_guarded_preflight(
                 # Retrieval misses never inherit the previous query's checks.
                 provider = GuardedSemanticPilotProvider(
                     model, query_guard, journal, qid, base_provider=base_provider,
+                    **({"candidate_repair_policy": repair_policy, "grounding_policy": grounding_policy}
+                       if feedback_binding else {}),
                 )
                 state = _infer_one(
                     question=question, catalog=catalog, provider=provider, semantic=semantic,
@@ -270,6 +284,8 @@ def run_guarded_preflight(
                     response_parser=parse_normalized_planner_response,
                     grounding_policy=grounding_policy,
                 )
+                if feedback_binding:
+                    state["candidate_repair_policy"] = repair_policy
                 if str(state["question"]["question_id"]) != qid:
                     raise ValueError("Inference state belongs to a different question.")
                 invocation = provider.last_invocation
@@ -320,6 +336,10 @@ def run_guarded_preflight(
                 _write_jsonl(output / "rejected_candidates.jsonl", evaluated["rejected_candidates"])
             if grounding_policy == SEMANTIC_GROUNDING_POLICY:
                 _write_jsonl(output / "candidate_capabilities.jsonl", evaluated["candidate_capabilities"])
+            if feedback_binding:
+                _write_jsonl(output / "candidate_feedback.jsonl", (
+                    event for row in diagnostics for event in row["details"].get("candidate_feedback", ())
+                ))
             _write_jsonl(output / "retrieval.jsonl", (state["retrieval"] for state in states))
             _write_jsonl(output / "llm_requests.jsonl", (
                 row for state in states for row in state.get("request_records", ())
@@ -368,6 +388,7 @@ def run_guarded_preflight(
         if grounding_policy != LEGACY_GROUNDING_POLICY:
             status["candidate_grounding_policy"] = grounding_policy
             status["schema_version"] = guarded_result_schema(grounding_policy)
+        status.update(feedback_binding)
         _write_json(output / "run_status.json", status)
     except BaseException as error:
         # A crash can follow a send but precede its final receipt. Do not invent
@@ -386,6 +407,7 @@ def run_guarded_preflight(
         if grounding_policy != LEGACY_GROUNDING_POLICY:
             failure["candidate_grounding_policy"] = grounding_policy
             failure["schema_version"] = guarded_result_schema(grounding_policy)
+        failure.update(feedback_binding)
         try:
             _write_json(output / "run_status.json", failure)
         except (OSError, ValueError):

@@ -62,6 +62,7 @@ import sys
 
 from xgap.experiments.cwru_vllm import CWRUVLLMContract, verify_preflight_token_budget
 from xgap.experiments.grailqa_candidate_grounding import LEGACY_GROUNDING_POLICY, validate_grounding_policy
+from xgap.experiments.grailqa_candidate_feedback import SCHEMA_ONLY, validate_repair_policy
 from xgap.experiments.grailqa_preflight import GrailQAPreflightSpec, preflight_readiness
 
 def require(value, message):
@@ -90,6 +91,7 @@ def repository_input(raw):
 spec_path = repository_input(os.environ["XGAP_GRAILQA_GUARDED_SPEC"])
 spec = GrailQAPreflightSpec.load(spec_path)
 grounding_policy = validate_grounding_policy(spec.data.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY))
+repair_policy = validate_repair_policy(spec.data.get("candidate_repair_policy", SCHEMA_ONLY), grounding_policy)
 require(spec.path == spec_path, "Loaded spec source mismatch.")
 require(spec.data["freeze_hash"] == os.environ["XGAP_GRAILQA_GUARDED_SPEC_SHA256"], "Spec acknowledgement mismatch.")
 require(len(spec.question_ids) == 18, "Only the explicitly frozen 18-query development scope is supported.")
@@ -121,6 +123,8 @@ binding = {
 }
 if grounding_policy != LEGACY_GROUNDING_POLICY:
     binding["candidate_grounding_policy"] = grounding_policy
+if repair_policy != SCHEMA_ONLY:
+    binding["candidate_repair_policy"] = repair_policy
 if phase == "prelaunch":
     require(not root.exists(), "Run output already exists; no automatic resume.")
     readiness = preflight_readiness(spec, repo, require_credentials=False)

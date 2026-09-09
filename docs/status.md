@@ -3298,3 +3298,32 @@ measure candidate-selection quality. The previous record-class entrypoint
 error was passed. Preserve the run and install/verify the declared `parquet`
 dependency with that exact interpreter before a new manual CPU submission.
 No additional server job has been submitted by the agent.
+
+### GrailQA bounded candidate-contract feedback (2026-09-09)
+
+D194 adds the opt-in `typed_grounding_one_repair_v1` policy to the guarded
+18-query development runner. Only a response with no typed, prompt-grounded
+candidate can use the existing single repair; parser repair shares that same
+budget. Valid siblings and valid-but-unexecutable IN paths do not trigger
+quality retries. The policy is frozen and bound through prelaunch, inference,
+evaluation and failure records. Full repair payloads still face the unchanged
+token guards; durable feedback precedes any repair send. Gold, answer scoring,
+lowering availability and new backend calls are excluded. Legacy defaults and
+all old model/spec/result artifacts remain unchanged.
+
+Source-bound, read-only replay diagnoses 15 of 17 structured envelopes as
+having no valid candidate; two contain four typed, grounded candidates. This
+does not measure new repair success, accuracy or prompt-coverage improvement.
+See [the implementation boundary](report/grailqa_candidate_feedback_v1.md).
+
+The user has now installed/import-verified PyArrow **25.0.1** in the selected
+xgap-core interpreter and submitted CPU-only job **3796988**, still at
+**e39b98e**, subsequently reported still running by the user. Its terminal result and old/new coverage comparison are pending
+external evidence. No server checkout was changed or job submitted by the
+agent. Original EQ1–EQ5 on both datasets and real directed execution remain
+required; no new GPU/full150 authority or paper-quality claim is inferred.
+
+D194 focused acceptance passes **334 tests**. Full offline acceptance passes
+**2360 tests, 36 skipped, in 595.67 seconds**. Three offline examples, guarded
+CLI help, shell syntax and `git diff --check` pass. No new server experiment
+was submitted as part of validation; live effect remains unmeasured.

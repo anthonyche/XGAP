@@ -223,6 +223,25 @@ def test_explicit_canonical_policy_is_bound_in_both_launch_phases(shell, policy)
     assert len(_records(shell, "wrapper")) == len(_records(shell, "inference")) == 1
 
 
+def test_explicit_feedback_policy_is_bound_in_both_launch_phases(shell):
+    _freeze(shell, candidate_grounding_policy="grailqa_canonical_semantic_grounding_v2",
+            candidate_repair_policy="typed_grounding_one_repair_v1")
+    result = _run(shell)
+    assert result.returncode == 0, result.stderr
+    binding = json.loads((shell.output / "guarded_launch_binding.json").read_text())
+    assert binding["candidate_repair_policy"] == "typed_grounding_one_repair_v1"
+    assert len(_records(shell, "wrapper")) == len(_records(shell, "inference")) == 1
+
+
+@pytest.mark.parametrize("policy", [None, "typo", {}, True, "typed_grounding_one_repair_v1"])
+def test_invalid_or_mixed_feedback_policy_never_starts_the_model(shell, policy):
+    _freeze(shell, candidate_repair_policy=policy)  # Legacy grounding cannot opt in.
+    result = _run(shell)
+    assert result.returncode != 0
+    assert "repair policy" in result.stderr or "semantic grounding" in result.stderr
+    _no_live_handoff(shell)
+
+
 @pytest.mark.parametrize("policy", [None, "typo", {}, True])
 def test_invalid_grounding_policy_never_starts_the_model(shell, policy):
     _freeze(shell, candidate_grounding_policy=policy)
