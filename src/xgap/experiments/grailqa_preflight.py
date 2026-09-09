@@ -16,7 +16,7 @@ from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.cwru_vllm import load_run_environment
 from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
 from xgap.experiments.grailqa_candidate_grounding import (
-    LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, validate_grounding_policy,
+    LEGACY_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY, validate_grounding_policy,
 )
 from xgap.experiments.grailqa_local_catalog import validate_local_catalog
 from xgap.experiments.grailqa_reachability import prompt_reachability_gate
@@ -579,7 +579,7 @@ def _evaluate_preflight(
     grounding_policy: str = LEGACY_GROUNDING_POLICY,
 ) -> dict[str, Any]:
     validate_grounding_policy(grounding_policy)
-    strict = grounding_policy == STRICT_GROUNDING_POLICY
+    strict = grounding_policy != LEGACY_GROUNDING_POLICY
     if (
         validate_grounding_policy(spec.data.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY)) != grounding_policy
         or any(state.get("candidate_grounding_policy", LEGACY_GROUNDING_POLICY) != grounding_policy for state in states)
@@ -732,6 +732,32 @@ def _evaluate_preflight(
             component_accuracy_scope="validated_grounded_candidates_only",
             candidate_recall_denominator="all_questions_including_failures",
         )
+    capability_rows = []
+    if grounding_policy == SEMANTIC_GROUNDING_POLICY:
+        capability_rows = [
+            {"question_id": state["question"]["question_id"],
+             "candidate_id": row["candidate_id"],
+             "semantic_valid": row["validation"]["ok"],
+             "grounded": row["grounded"],
+             "semantic_admissible": row["semantic_admissible"],
+             "logical_lowering": row["logical_lowering"]}
+            for state in original_states for row in state.get("candidates", ())
+        ]
+        accepted = [row for state in states for row in state.get("candidates", ())]
+        metrics.update(
+            schema_version="grailqa-semantic-capability-preflight-metrics-v1",
+            structured_valid_scope="typed_semantics_and_grounding_not_execution",
+            logical_lowering_scope="validated_grounded_candidates_not_backend_execution",
+            logical_lowering_status_counts={
+                status: sum(row["logical_lowering"]["status"] == status for row in accepted)
+                for status in ("available", "unavailable", "error", "not_assessed")
+            },
+            logical_lowering_available_query_rate=(
+                sum(any(row["logical_lowering"]["available"] for row in state.get("candidates", ()))
+                    for state in states) / len(states) if states else 0.0
+            ),
+            backend_execution_verified=False,
+        )
     return {
         "candidates": candidate_rows,
         "components": component_rows,
@@ -739,6 +765,7 @@ def _evaluate_preflight(
         "failures": failures,
         "metrics": metrics,
         **({"rejected_candidates": rejected_candidates} if strict else {}),
+        **({"candidate_capabilities": capability_rows} if grounding_policy == SEMANTIC_GROUNDING_POLICY else {}),
     }
 
 

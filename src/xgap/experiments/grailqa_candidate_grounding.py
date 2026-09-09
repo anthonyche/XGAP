@@ -22,15 +22,23 @@ from xgap.llm.schemas import PlannerResponse
 
 LEGACY_GROUNDING_POLICY = "legacy_grounding_v1"
 STRICT_GROUNDING_POLICY = "grailqa_canonical_ast_grounding_v1"
+SEMANTIC_GROUNDING_POLICY = "grailqa_canonical_semantic_grounding_v2"
 ENTITY_PROPERTY = "type.object.id"
 
 
 def validate_grounding_policy(value: object) -> str:
     if not isinstance(value, str) or value not in (
-        LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY,
+        LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY,
     ):
         raise ValueError("Unknown GrailQA candidate grounding policy.")
     return value
+
+
+def guarded_result_schema(policy: str) -> str:
+    validate_grounding_policy(policy)
+    return ("grailqa-guarded-semantic-capability-preflight-v1"
+            if policy == SEMANTIC_GROUNDING_POLICY
+            else "grailqa-guarded-canonical-grounding-preflight-v1")
 
 
 @dataclass(frozen=True)

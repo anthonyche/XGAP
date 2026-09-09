@@ -15,7 +15,9 @@ import pytest
 
 import xgap.experiments.grailqa_guarded_preflight as runner
 from xgap.experiments.bundles import ModelBundle
-from xgap.experiments.grailqa_candidate_grounding import LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY
+from xgap.experiments.grailqa_candidate_grounding import (
+    LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY, guarded_result_schema,
+)
 from xgap.experiments.cwru_vllm import CWRUVLLMContract, RUN_ENVIRONMENT_SCHEMA_VERSION
 from xgap.experiments.grailqa_guarded_provider import QueryEventJournal
 from xgap.experiments.hashing import content_hash
@@ -51,6 +53,17 @@ def test_new_spec_changes_only_identity_and_explicit_grounding_policy():
     assert changed == {"experiment_id", "run_id_prefix", "freeze_hash", "candidate_grounding_policy"}
     assert new.data["candidate_grounding_policy"] == STRICT_GROUNDING_POLICY
     assert new.data["full_150_run_permitted"] is False
+
+
+def test_semantic_capability_spec_is_separate_and_preserves_scientific_inputs():
+    from xgap.experiments.grailqa_preflight import GrailQAPreflightSpec
+
+    previous = GrailQAPreflightSpec.load(ROOT / "experiments/specs/grailqa_semantic_preflight_canonical_grounding_v1_cwru_qwen3_32b.json")
+    new = GrailQAPreflightSpec.load(ROOT / "experiments/specs/grailqa_semantic_preflight_semantic_capability_v1_cwru_qwen3_32b.json")
+    changed = {key for key in previous.data.keys() | new.data.keys() if previous.data.get(key) != new.data.get(key)}
+    assert changed == {"experiment_id", "run_id_prefix", "freeze_hash", "candidate_grounding_policy"}
+    assert new.data["candidate_grounding_policy"] == SEMANTIC_GROUNDING_POLICY
+    assert new.data["backend_execution"] is new.data["full_150_run_permitted"] is False
 
 
 @pytest.fixture
@@ -193,6 +206,7 @@ def case(monkeypatch, tmp_path):
             "failures": [item["failure"] for item in states],
             "metrics": {"question_count": 15, "candidate_bearing_query_count": 0},
             **({"rejected_candidates": []} if policy != LEGACY_GROUNDING_POLICY else {}),
+            **({"candidate_capabilities": []} if policy == SEMANTIC_GROUNDING_POLICY else {}),
         }
 
     state.infer = Mock(side_effect=infer)
@@ -209,17 +223,22 @@ def case(monkeypatch, tmp_path):
     return state
 
 
-def test_explicit_policy_is_bound_before_sends_and_reaches_inference_evaluation(case):
-    case.spec["candidate_grounding_policy"] = STRICT_GROUNDING_POLICY
+@pytest.mark.parametrize("policy", [STRICT_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY])
+def test_explicit_policy_is_bound_before_sends_and_reaches_inference_evaluation(case, policy):
+    case.spec["candidate_grounding_policy"] = policy
     _freeze(case.spec_path, case.spec)
     runner.run_guarded_preflight(**{**case.kwargs, "execute_development_spec_sha256": case.spec["freeze_hash"]})
-    assert all(call.kwargs["grounding_policy"] == STRICT_GROUNDING_POLICY for call in case.infer.call_args_list)
+    assert all(call.kwargs["grounding_policy"] == policy for call in case.infer.call_args_list)
     for name in ("run_manifest.json", "run_status.json"):
         result = json.loads((case.output / name).read_text())
-        assert result["candidate_grounding_policy"] == STRICT_GROUNDING_POLICY
-        assert result["schema_version"] == "grailqa-guarded-canonical-grounding-preflight-v1"
+        assert result["candidate_grounding_policy"] == policy
+        assert result["schema_version"] == guarded_result_schema(policy)
         assert result["paper_result"] is False
     assert (case.output / "rejected_candidates.jsonl").read_text() == ""
+    if policy == SEMANTIC_GROUNDING_POLICY:
+        assert (case.output / "candidate_capabilities.jsonl").read_text() == ""
+    else:
+        assert not (case.output / "candidate_capabilities.jsonl").exists()
     assert len(case.transport_calls) == 2  # Unchanged fixture sends; no grounding repair.
 
 

@@ -20,7 +20,7 @@ from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.cwru_vllm import CWRUVLLMContract, load_run_environment
 from xgap.experiments.grailqa_catalog_v2 import GrailQAInferenceCatalogV2
 from xgap.experiments.grailqa_candidate_grounding import (
-    LEGACY_GROUNDING_POLICY, validate_grounding_policy,
+    LEGACY_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY, guarded_result_schema, validate_grounding_policy,
 )
 from xgap.experiments.grailqa_guarded_environment import validate_guarded_environment
 from xgap.experiments.grailqa_guarded_provider import (
@@ -241,7 +241,7 @@ def run_guarded_preflight(
         )
         if grounding_policy != LEGACY_GROUNDING_POLICY:
             manifest["candidate_grounding_policy"] = grounding_policy
-            manifest["schema_version"] = "grailqa-guarded-canonical-grounding-preflight-v1"
+            manifest["schema_version"] = guarded_result_schema(grounding_policy)
         _write_json(output / "run_manifest.json", manifest)
         with QueryEventJournal(output / "query_events.jsonl") as journal, \
                 QueryEventJournal(output / "query_states.jsonl") as state_journal:
@@ -318,6 +318,8 @@ def run_guarded_preflight(
             )
             if grounding_policy != LEGACY_GROUNDING_POLICY:
                 _write_jsonl(output / "rejected_candidates.jsonl", evaluated["rejected_candidates"])
+            if grounding_policy == SEMANTIC_GROUNDING_POLICY:
+                _write_jsonl(output / "candidate_capabilities.jsonl", evaluated["candidate_capabilities"])
             _write_jsonl(output / "retrieval.jsonl", (state["retrieval"] for state in states))
             _write_jsonl(output / "llm_requests.jsonl", (
                 row for state in states for row in state.get("request_records", ())
@@ -365,7 +367,7 @@ def run_guarded_preflight(
         }
         if grounding_policy != LEGACY_GROUNDING_POLICY:
             status["candidate_grounding_policy"] = grounding_policy
-            status["schema_version"] = "grailqa-guarded-canonical-grounding-preflight-v1"
+            status["schema_version"] = guarded_result_schema(grounding_policy)
         _write_json(output / "run_status.json", status)
     except BaseException as error:
         # A crash can follow a send but precede its final receipt. Do not invent
@@ -383,7 +385,7 @@ def run_guarded_preflight(
         }
         if grounding_policy != LEGACY_GROUNDING_POLICY:
             failure["candidate_grounding_policy"] = grounding_policy
-            failure["schema_version"] = "grailqa-guarded-canonical-grounding-preflight-v1"
+            failure["schema_version"] = guarded_result_schema(grounding_policy)
         try:
             _write_json(output / "run_status.json", failure)
         except (OSError, ValueError):

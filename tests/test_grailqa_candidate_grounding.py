@@ -13,7 +13,7 @@ from unittest.mock import Mock
 import pytest
 
 from xgap.experiments.grailqa_candidate_grounding import (
-    LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, ground_canonical_candidates,
+    LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY, ground_canonical_candidates,
 )
 from xgap.experiments.grailqa_preflight import GrailQAPreflightSpec, _evaluate_preflight
 from xgap.experiments.grailqa_semantic_pilot import GenerationResult, _infer_one
@@ -256,7 +256,8 @@ def test_good_sibling_counts_once_and_all_question_denominators_remain(case, tmp
     _assert_metrics(case, tmp_path, state, good["pattern_query"], 0.5, 1)
 
 
-def _assert_metrics(case, tmp_path, state, reference, expected, accepted, *, rejected=1, unassessed=0):
+def _assert_metrics(case, tmp_path, state, reference, expected, accepted, *, rejected=1, unassessed=0,
+                    policy=STRICT_GROUNDING_POLICY):
     # q2 contributes a failure, never silently disappears from the denominator.
     other = {**copy.deepcopy(state), "question": {"question_id": "q2"}, "candidates": [],
              "semantic_scores": [], "failure": {"category": "malformed_output"}, "api_call_completed": False,
@@ -268,11 +269,11 @@ def _assert_metrics(case, tmp_path, state, reference, expected, accepted, *, rej
         "question_id": qid, "deployed_prompt": {"joint": {"reachable": True}},
     }) + "\n" for qid in ("q1", "q2")))
     spec = GrailQAPreflightSpec(tmp_path / "spec.json", {
-        "pilot_root": ".", "candidate_grounding_policy": STRICT_GROUNDING_POLICY, "epsilon_values": [0, 1],
+        "pilot_root": ".", "candidate_grounding_policy": policy, "epsilon_values": [0, 1],
     })
     result = _evaluate_preflight([state, other], spec, tmp_path, {
         "reachability_rows_path": str(reachability),
-    }, grounding_policy=STRICT_GROUNDING_POLICY)
+    }, grounding_policy=policy)
     metrics = result["metrics"]
     assert metrics["query_count"] == 2
     assert metrics["candidate_recall"] == metrics["structured_valid_rate"] == expected
@@ -283,6 +284,65 @@ def _assert_metrics(case, tmp_path, state, reference, expected, accepted, *, rej
     assert metrics["generated_candidate_count"] == accepted + rejected + unassessed
     assert metrics["unassessed_candidate_count"] == unassessed
     return result
+
+
+def test_semantic_policy_keeps_in_candidate_without_claiming_execution(case, tmp_path):
+    raw = case.raw["candidates"][0]
+    raw["pattern_query"]["expr"]["edge"]["direction"] = "IN"
+    raw["pattern_query"]["target"]["label"] = "type.source"
+    before = copy.deepcopy(case.raw)
+    state = _infer(case, SEMANTIC_GROUNDING_POLICY)
+    row, = state["candidates"]
+    assert row["validation"]["ok"] and row["grounded"] and row["semantic_admissible"]
+    assert row["validation"]["formatted_plan"] is None
+    assert row["logical_lowering"]["status"] == "unavailable"
+    assert not row["logical_lowering"]["available"]
+    assert not row["logical_lowering"]["backend_execution_verified"]
+    result = _assert_metrics(case, tmp_path, state, raw["pattern_query"], 0.5, 1,
+                             rejected=0, policy=SEMANTIC_GROUNDING_POLICY)
+    assert result["metrics"]["logical_lowering_status_counts"] == {
+        "available": 0, "unavailable": 1, "error": 0, "not_assessed": 0,
+    }
+    assert result["metrics"]["logical_lowering_available_query_rate"] == 0
+    assert len(result["candidate_capabilities"]) == 1
+    assert case.raw == before
+
+
+def test_semantic_policy_checks_conditions_before_scoring_and_isolates_siblings(case, tmp_path):
+    good = case.raw["candidates"][0]
+    bad = copy.deepcopy(good)
+    bad["candidate_id"] = "out-of-range"
+    bad["pattern_query"]["condition"] = {
+        "kind": "property_equals", "ref": {"kind": "node", "position": 3}, "property": "p.score", "value": 4,
+    }
+    case.raw["candidates"].append(bad)
+    state = _infer(case, SEMANTIC_GROUNDING_POLICY)
+    assert [row["candidate_id"] for row in state["semantic_scores"]] == [good["candidate_id"]]
+    assert state["candidates"][1]["logical_lowering"]["status"] == "not_assessed"
+    result = _assert_metrics(case, tmp_path, state, good["pattern_query"], 0.5, 1,
+                            policy=SEMANTIC_GROUNDING_POLICY)
+    assert len(result["candidate_capabilities"]) == 2
+    assert result["metrics"]["logical_lowering_status_counts"]["available"] == 1
+    assert result["metrics"]["logical_lowering_available_query_rate"] == 0.5
+
+
+def test_semantic_policy_never_undoes_canonical_grounding_rejection(case):
+    case.raw["candidates"][0]["pattern_query"]["source"]["label"] = "type.other"
+    state = _infer(case, SEMANTIC_GROUNDING_POLICY)
+    assert state["candidates"][0]["validation"]["ok"]
+    assert not state["candidates"][0]["grounded"]
+    assert state["semantic_scores"] == []
+
+
+@pytest.mark.parametrize("spec_policy,state_policy", [
+    (STRICT_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY),
+    (SEMANTIC_GROUNDING_POLICY, STRICT_GROUNDING_POLICY),
+])
+def test_semantic_and_canonical_v1_policies_cannot_be_mixed(tmp_path, spec_policy, state_policy):
+    spec = GrailQAPreflightSpec(tmp_path / "missing", {"candidate_grounding_policy": spec_policy})
+    with pytest.raises(ValueError, match="matching spec and state"):
+        _evaluate_preflight([{"candidate_grounding_policy": state_policy}], spec, tmp_path, {},
+                            grounding_policy=SEMANTIC_GROUNDING_POLICY)
 
 
 def test_shared_anchor_failure_is_unassessed_not_a_false_type_or_recall_result(case, tmp_path):

@@ -3951,3 +3951,43 @@ it repair catalog/retrieval coverage, add public aliases, change prompts,
 increase budgets, authorize full150, or establish model quality. The next
 live step is the separately verified CPU-only catalog comparison; new GPU
 execution and independent result admission remain separate boundaries.
+
+## D193 Separate typed interpretation validity from logical execution capability
+
+An IN path failing the M5 lowerer is not, by itself, a malformed semantic
+interpretation. Add a closed typed path-validation profile above the unchanged
+M5 algebra/lowerer, and a separate logical-capability assessment. Do not remove
+directions, manufacture a plan, or treat a caught lowerer failure as success.
+Known unsupported directions/regex nodes are enumerated by component location;
+unexpected lowering failures are errors rather than invented capability facts.
+Every report distinguishes logical availability from unverified backend
+execution. Existing M10 validation and D192 defaults remain unchanged.
+
+Semantic validation must still enforce variable types, selectors, recursion
+budgets, finite constants and recursively all condition-reference bounds.
+Numeric condition references require a fixed-length path under this profile;
+first/last endpoints remain meaningful on variable-length paths. This is a
+bounded contract, not an expansion to full GPC or a claim of nonempty/correct
+answers. The GrailQA canonical grounding boundary remains additional and strict.
+
+Expose the separation only through the separately frozen
+`grailqa_canonical_semantic_grounding_v2` development policy. Preserve every
+candidate's capability outcome and retain failed questions in metric
+denominators. Typed/grounded validity, ontology admissibility, logical-plan
+availability and actual backend execution are separate claims. Keep the
+existing no-backend/18-query budget, all old scientific inputs, and historical
+evidence intact; no new GPU/full150 execution follows from code publication.
+
+Read-only replay of job 3796877 identifies four typed, grounded candidates,
+three with available M5 plans and one unavailable IN path. That is neither
+new model evidence nor measured answer accuracy. Real directed execution,
+catalog/retrieval coverage, provider quality and the original cross-dataset
+EQ1–EQ5 comparisons remain required. CPU comparison 3796968 at e39b98e was
+reported FAILED (`1:0`, 3m18s): the selected xgap-core interpreter lacks
+PyArrow, before Parquet record iteration. This is an environment prerequisite
+failure, not evidence of retrieval quality. Preserve the run and require an
+explicit interpreter dependency check before any new manual submission.
+
+Offline acceptance: 2318 passed, 36 skipped (598.46 seconds), three examples,
+guarded CLI help and CPU handoff syntax pass. This publishes the separated
+contract, not a new live result or authority to widen the experiment.

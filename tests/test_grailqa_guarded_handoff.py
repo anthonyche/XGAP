@@ -213,8 +213,8 @@ def test_exact_guarded_handoff_and_interpreter_separation(shell):
     assert not Path(shell.env["TEST_FORBIDDEN"]).exists()
 
 
-def test_explicit_canonical_policy_is_bound_in_both_launch_phases(shell):
-    policy = "grailqa_canonical_ast_grounding_v1"
+@pytest.mark.parametrize("policy", ["grailqa_canonical_ast_grounding_v1", "grailqa_canonical_semantic_grounding_v2"])
+def test_explicit_canonical_policy_is_bound_in_both_launch_phases(shell, policy):
     _freeze(shell, candidate_grounding_policy=policy)
     result = _run(shell)
     assert result.returncode == 0, result.stderr

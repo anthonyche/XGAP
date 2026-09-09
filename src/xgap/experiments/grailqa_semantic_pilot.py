@@ -18,9 +18,10 @@ from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence
 
 from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.grailqa_candidate_grounding import (
-    LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY,
+    LEGACY_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY,
     ground_canonical_candidates, validate_grounding_policy,
 )
+from xgap.llm.candidate_assessment import assess_candidate
 from xgap.experiments.grailqa_catalog import (
     GrailQAInferenceCatalog,
     RetrievalResult,
@@ -666,7 +667,11 @@ def _infer_one(
         response_parser=response_parser, grounding_policy=grounding_policy,
     )
     if grounding_policy != LEGACY_GROUNDING_POLICY:
-        state["schema_version"] = "grailqa-canonical-grounding-query-state-v1"
+        state["schema_version"] = (
+            "grailqa-semantic-capability-query-state-v1"
+            if grounding_policy == SEMANTIC_GROUNDING_POLICY
+            else "grailqa-canonical-grounding-query-state-v1"
+        )
         state["candidate_grounding_policy"] = grounding_policy
         raw = state.get("structured_response")
         candidates = raw.get("candidates") if isinstance(raw, Mapping) else None
@@ -748,7 +753,7 @@ def _infer_one_impl(
         )
     grounding_failures = {}
     try:
-        if grounding_policy == STRICT_GROUNDING_POLICY:
+        if grounding_policy != LEGACY_GROUNDING_POLICY:
             batch = ground_canonical_candidates(generation.structured_response, parsed, view)
             grounded = batch.grounded
             grounding_failures = batch.failures
@@ -769,7 +774,8 @@ def _infer_one_impl(
     semantic_rows: list[dict[str, Any]] = []
     first_candidate_failure: tuple[str, str] | None = None
     for candidate in parsed.candidates:
-        validation = validate_candidate(candidate)
+        assessment = assess_candidate(candidate) if grounding_policy == SEMANTIC_GROUNDING_POLICY else None
+        validation = assessment.semantic_validation if assessment is not None else validate_candidate(candidate)
         row = {
             "question_id": question["question_id"],
             "candidate_id": candidate.candidate_id,
@@ -780,6 +786,8 @@ def _infer_one_impl(
             "grounded": False,
             "semantic_admissible": False,
         }
+        if assessment is not None:
+            row["logical_lowering"] = assessment.logical_lowering.to_dict()
         grounding_issue = grounding_failures.get(candidate.candidate_id)
         if grounding_issue is not None:
             row["grounding_failure"] = grounding_issue.to_dict()

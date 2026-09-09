@@ -13,7 +13,7 @@ from unittest.mock import Mock
 import pytest
 
 from xgap.experiments.bundles import ModelBundle
-from xgap.experiments.grailqa_candidate_grounding import LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY
+from xgap.experiments.grailqa_candidate_grounding import LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY
 from xgap.experiments.grailqa_guarded_provider import GuardedSemanticPilotProvider, QueryEventJournal
 from xgap.experiments.grailqa_semantic_pilot import _infer_one
 from xgap.experiments.hashing import content_hash
@@ -29,7 +29,7 @@ ENDPOINT_FIXTURES = runpy.run_path(str(ROOT / "tests/test_m13e3b4_relation_endpo
 CWRU_FIXTURES = runpy.run_path(str(ROOT / "tests/test_m13e2_cwru_vllm.py"))
 
 
-@pytest.mark.parametrize("grounding_policy", [LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY])
+@pytest.mark.parametrize("grounding_policy", [LEGACY_GROUNDING_POLICY, STRICT_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY])
 @pytest.mark.parametrize("scenario", ["grounded", "missing-optional-anchor", "token-refusal", "bad-sibling"])
 def test_actual_inference_preserves_grounding_and_local_refusal_boundaries(
     monkeypatch, tmp_path, scenario, grounding_policy,
@@ -141,7 +141,7 @@ def test_actual_inference_preserves_grounding_and_local_refusal_boundaries(
             assert len(state["structured_response"]["query_slots"]) == 3
             assert len(state["structured_response"]["candidates"][0]["grounding"]["slot_realizations"]) == 2
         elif scenario == "bad-sibling":
-            if grounding_policy == STRICT_GROUNDING_POLICY:
+            if grounding_policy != LEGACY_GROUNDING_POLICY:
                 assert state["failure"] is None
                 assert len(state["candidates"]) == 2
                 assert len(state["semantic_scores"]) == 1

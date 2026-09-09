@@ -1918,3 +1918,18 @@ Current status: TODO
 - D192 offline acceptance passes 2214 tests with 36 skipped (593.96 seconds),
   three offline examples and CLI/shell checks. The live coverage comparison and
   independent admission of any new GPU result remain open.
+- D193 implements separate typed semantic validity and M5 logical capability
+  records, with complete recursive condition bounds, under a new explicit
+  development policy. Known IN/undirected/optional/bounded capabilities remain
+  unavailable for execution. Four uploaded grounded candidates pass the typed
+  contract, of which three have M5 plans and one is an unavailable IN path;
+  no answer accuracy or model improvement was measured. Original EQ1–EQ5 and
+  real directed execution obligations are not narrowed. User-submitted CPU
+  comparison 3796968 at e39b98e failed before Parquet iteration because the
+  selected interpreter lacks PyArrow. Repair and verify that environment
+  prerequisite before a new manual CPU submission; preserve old evidence.
+  No source-backed coverage result is yet available from this comparison. See
+  `docs/report/grailqa_semantic_capability_boundary_v1.md`.
+- D193 offline acceptance passes **2318 tests with 36 skipped** (598.46
+  seconds), three offline examples, guarded CLI help and CPU handoff syntax.
+  These validate the local contracts, not new model quality or live execution.

@@ -3265,3 +3265,36 @@ shell-handoff/historical-contract tests. Full offline regression passes
 shell syntax and whitespace checks pass; skipped/live behavior remains
 unverified. No remote job was submitted and no new GPU accuracy result is
 claimed by this repair.
+
+### GrailQA semantic/capability separation (2026-09-09)
+
+D193 adds a backend-independent typed path-validation profile and an explicit
+logical-lowering assessment. Complete recursive condition/reference checks
+prevent the separation from accepting invalid scalar/path references. A
+separately frozen `grailqa_canonical_semantic_grounding_v2` development policy
+retains D192 grounding and scores semantically valid candidates independently
+of their clearly recorded logical capability. IN/undirected/optional/bounded
+features remain **unimplemented for M5 execution**, not silently approximated.
+Logical availability is not native compilation or backend execution admission.
+Old validator APIs, D192 behavior, specs, model/prompt/budgets and all accepted
+FinBench evidence are unchanged.
+
+Uploaded-record replay verifies 18 request identities and finds four typed,
+grounded candidates: three M5 plans available, one IN path unavailable. No
+reference content, new model call, backend execution or accuracy evaluation was
+used. This does not fix the remaining 13 catalog/retrieval/prompt exclusions or
+establish GrailQA quality. See
+[the scope and acceptance report](report/grailqa_semantic_capability_boundary_v1.md).
+
+Focused acceptance passes 204 candidate/inference/lifecycle tests and 56
+shell/historical-contract tests. Full offline acceptance passes **2318 tests,
+36 skipped, in 598.46 seconds**. Three offline examples, guarded CLI help,
+CPU handoff shell syntax, and `git diff --check` pass; live/skipped behavior is
+not inferred to pass.
+User-submitted CPU catalog comparison **3796968** at **e39b98e** was reported
+FAILED (`1:0`, 3m18s). The supplied traceback identifies missing PyArrow in the
+selected xgap-core interpreter, before Parquet record iteration; it does not
+measure candidate-selection quality. The previous record-class entrypoint
+error was passed. Preserve the run and install/verify the declared `parquet`
+dependency with that exact interpreter before a new manual CPU submission.
+No additional server job has been submitted by the agent.
