@@ -3736,3 +3736,30 @@ is not a substitute for checking the pinned tokenizer/chat-template output.
 Any fresh small run needs explicit interface review and exact execution scope.
 Neither the original negative preflight nor admitted FinBench evidence is
 rewritten or reclassified.
+
+## D186 Measure assembled requests and distinguish refused from attempted calls
+
+Context reservations are not token measurements. A separate opt-in boundary
+must count the complete text messages with an explicitly pinned, local chat
+tokenizer/template before any generation or repair is transmitted. Preserve
+the model, output reservation and input/context limits; unavailable counting,
+changed tokenizer identity, unsupported rendering parameters, and oversized
+requests fail explicitly. Do not truncate, approximate, download a fallback,
+or enlarge an experimental budget. A local count alone cannot certify parity
+with the actual vLLM service.
+
+The frozen provider records requests before transport, so the independent
+adapter must keep actual delegate attempts separate from token-check receipts.
+Only its exact typed local refusal may remove the one unsent trailing request
+from the public call ledger, after exact prefix/count reconciliation. Sent
+transport failures remain charged, and raw responses, usage and elapsed time
+are preserved. Refusing a repair does not erase the first call or create another
+repair. Concurrent/reentrant invocation is rejected rather than mixing ledgers.
+
+An offline inventory assembles the original full question population using the
+existing catalog/view/request builders and requires no credentials or model
+call. Missing inputs retain explicit unavailable rows. Token-fit success stays
+separate from readiness, server parity, scientific effectiveness and authority.
+Old implementations, shell defaults, model/spec/review artifacts, and audited
+results are not rewritten. A future reviewed live integration must explicitly
+bind the adapter and record its checks; this implementation does not activate it.

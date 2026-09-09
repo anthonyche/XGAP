@@ -1824,3 +1824,23 @@ Current status: TODO
   1,188-test repository regression pass with 36 intentional skips. This work is
   isolated from the frozen `cf622cb` runner and does not grant execution
   authority.
+
+## Current GrailQA repair and cross-dataset coverage follow-through
+
+- Output-contract clarification remains an inactive, separately hashed draft;
+  it has not produced a new model result.
+- Exact local generation-request inventory and an opt-in per-send generation/
+  repair token guard are implemented. Over-budget requests are not truncated,
+  and unsent requests are not counted as model attempts. Existing live defaults
+  remain unchanged.
+- Actual Qwen/tokenizer/template parity and the 18-query token inventory still
+  require the pinned server artifacts; a local synthetic tokenizer test is not
+  their substitute. Fresh development inference retains the separate review
+  and exact-scope authorization boundary.
+- Track the full RQ × dataset × baseline × metric coverage in
+  `docs/report/research_question_dataset_coverage_v1.md`. FinBench semantic
+  comparisons and GrailQA physical/family-memory comparisons remain missing,
+  not not-applicable. Original-source reconciliation now separates the
+  workshop's modeling/generation/plan questions, the whitepaper's EQ1–EQ5,
+  and the existing physical RQ-P1/P2/P3. Do not narrow the research objective
+  to already passing experiments or silently equate their numbering.

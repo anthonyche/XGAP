@@ -2996,3 +2996,43 @@ Offline acceptance: **1,309 passed, 36 skipped** in the collected full suite
 includes 53 grounding tests added after full-suite collection, not counted in
 1,309. Both offline boundary examples pass. The final focused run also verifies
 the exact proposed/preserved file identities. No live improvement is inferred.
+
+### GrailQA exact request-token boundary and cross-dataset inventory (2026-09-09)
+
+The missing request-length prerequisite now has an executable offline path:
+`grailqa_request_tokens` assembles all frozen generation payloads with the
+existing inference-only builder and records exact local chat-template counts,
+or explicit unavailable rows. The separately opt-in `TokenBudgetedCandidateProvider`
+checks both generation and actual repair payloads before transmission. Its
+actual-attempt ledger excludes unsent refusals without erasing sent failures,
+responses, usage or elapsed time. It does not change frozen limits or truncate.
+
+Tokenizer provenance includes the exact cache revision, supported loading
+files including optional `config.json`, effective chat template and library
+versions. Only existing local fast tokenizers with a recognized loading
+footprint are accepted. No model weights/downloads or remote code are used.
+The current local Qwen cache is absent; a real tiny local tokenizer test is
+software integration evidence, not a measurement of Qwen/GrailQA requests.
+Server tokenizer/template parity and all actual 18-query lengths are still
+unverified. No model/backend call or remote submission occurred, and no old
+entrypoint silently activates the new adapter or output-contract draft.
+
+The [implementation and usage boundary](report/grailqa_request_token_guard_v1.md)
+records the remaining server measurement and explicit live-integration work.
+The [RQ/dataset coverage inventory](report/research_question_dataset_coverage_v1.md)
+separately records admitted FinBench physical results, missing FinBench semantic
+experiments, missing GrailQA physical experiments, and incomplete semantic
+evaluation. Missing cross-dataset cells are not treated as not applicable.
+Read-only original-source reconciliation distinguishes the workshop's three
+research questions, the whitepaper's EQ1–EQ5 evaluation questions, and the
+existing experiment identifiers. The inventory now marks original-question
+coverage gaps for both primary datasets. Physical RQ-P2/P3 are not substituted
+for original global questions. Final submission numbering, new scientific
+choices and deadline decisions were not inferred.
+
+Offline acceptance: **1,465 passed, 36 skipped** in the collected full suite
+(514.22 seconds); the **164-test** focused contract/grounding/token-boundary run
+also passed. Both offline boundary examples pass. After the full run started,
+tokenizer identity was additionally made to record the installed Jinja2 version;
+the final **57-test** tokenizer suite passed with that identity field. These
+are software checks, not new model measurements or experiment admission.
