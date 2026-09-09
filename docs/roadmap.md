@@ -1886,3 +1886,10 @@ Current status: TODO
   verified code, not agent-submitted CWRU jobs. Real coverage and model outcomes
   still need these user-submitted measurements; full150 remains out of scope.
   See `docs/report/grailqa_parallel_repair_handoff_20260909.md`.
+- CPU job `3796878` exposed a module-entrypoint class-identity defect before
+  scanning, not a measured coverage failure. Share the unchanged question and
+  candidate record classes between the CLI builder and selector; retain strict
+  input checks and add a real `python -m ... build` regression. Preserve the
+  failed run. Keep queued/running GPU `3796877` on its original `8bcf919`
+  checkout; only a later explicit CPU submission uses the repair and a fresh
+  output. No full150 or new model execution is authorized by this code repair.

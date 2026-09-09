@@ -20,8 +20,10 @@ from xgap.experiments.freebase_sources import (
     ALIAS_PREDICATE, NAME_PREDICATE, ParquetTripleRecord,
 )
 from xgap.experiments.grailqa_local_catalog import (
-    InferenceQuestion, LocalCandidateMatch, _MID, _existing_lexical_score,
-    extract_query_anchors,
+    _MID, _existing_lexical_score, extract_query_anchors,
+)
+from xgap.experiments.grailqa_local_catalog_types import (
+    InferenceQuestion, LocalCandidateMatch,
 )
 from xgap.experiments.grailqa_catalog import normalized_label
 

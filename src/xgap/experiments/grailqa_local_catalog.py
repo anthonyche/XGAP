@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import datetime, timezone
-import hashlib
 import json
 import os
 from pathlib import Path, PurePath
@@ -30,6 +29,10 @@ from xgap.experiments.freebase_sources import (
     verify_parquet_source_manifest,
 )
 from xgap.experiments.grailqa_catalog import normalized_label, sha256_file
+from xgap.experiments.grailqa_local_catalog_types import (
+    InferenceQuestion,
+    LocalCandidateMatch,
+)
 from xgap.experiments.grailqa_catalog_v2 import (
     CATALOG_V2_SCHEMA_VERSION,
     GrailQAInferenceCatalogV2,
@@ -135,40 +138,6 @@ _STOPWORDS = frozenset(
         "with",
     }
 )
-
-
-@dataclass(frozen=True)
-class InferenceQuestion:
-    question_id: str
-    text: str
-
-    @property
-    def question_hash(self) -> str:
-        return hashlib.sha256(self.text.encode("utf-8")).hexdigest()
-
-
-@dataclass(frozen=True)
-class LocalCandidateMatch:
-    question_id: str
-    entity_id: str
-    matched_label: str
-    normalized_label: str
-    match_type: str
-    score: float
-    source_shard: str
-    rank: int = 0
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "question_id": self.question_id,
-            "entity_id": self.entity_id,
-            "matched_label": self.matched_label,
-            "normalized_label": self.normalized_label,
-            "match_type": self.match_type,
-            "lexical_score": self.score,
-            "source_shard": str(self.source_shard),
-            "rank": self.rank,
-        }
 
 
 def extract_query_anchors(

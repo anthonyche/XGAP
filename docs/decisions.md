@@ -3893,3 +3893,26 @@ does not create old reachability admission files or license v2 model execution.
 Coverage is not answer accuracy and offline backfill is not measured GrailQA
 effectiveness. Both development outputs remain non-paper; existing FinBench
 physical admission and missing cross-dataset EQ1–EQ5 obligations are unchanged.
+
+## D191 Share catalog record identity across module and import entrypoints
+
+CWRU CPU job `3796878` showed that importing the builder in unit tests does
+not cover executing it with `python -m`. Records defined in an executable
+module acquire a second class identity when a collaborating selector imports
+that same module canonically. Valid inference questions were rejected before
+the full-source scan. This is a code-boundary defect, not grounds to edit the
+frozen input data or loosen the validator.
+
+Define `InferenceQuestion` and `LocalCandidateMatch` in a shared non-entrypoint
+module. Preserve the old import names through re-exports, field definitions,
+serialization and question hashes. Keep strict record, field and budget checks;
+do not use duck typing, class-name comparisons or `sys.modules` aliases to
+mask the defect. Exercise the actual module CLI with a tiny offline source,
+real materialization/retrieval, malformed-input refusal and a frozen-version
+red reproduction. Frozen scientific inputs and old evidence do not migrate.
+
+Keep this repair separate from schema ranking, semantic validation and model
+contract interventions. Preserve the failed CPU output and the in-flight GPU
+producer. Verified code may be pushed under the existing authority, but no
+automatic server retry, checkout switch, experiment expansion or admission
+follows from that push.

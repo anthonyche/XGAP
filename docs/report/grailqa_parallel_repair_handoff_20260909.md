@@ -1,5 +1,28 @@
 # GrailQA two-job development repair handoff
 
+## CPU entrypoint correction after job 3796878
+
+At release `8bcf919`, CPU job `3796878` passed the launcher prerequisite checks
+but failed before source verification/scanning. The eligible selector rejected
+valid question records because the module CLI and a canonical import created
+two different copies of the same class. Shared record definitions fix this
+without changing question contents, strict validation, selection or output
+identity. An actual module-CLI regression covers the previously missed path.
+
+Keep `runs/cwru-grailqa-catalog-comparison-3796878` and its Slurm log. Do not
+rerun in that directory, rebuild the old catalog, or resubmit the GPU run.
+GPU `3796877` belongs to the original `8bcf919` checkout: wait until it is
+terminal before updating that checkout. The next CPU-only submission uses
+the exact verified repair commit and its own new job directory. This failure
+produced no v1/v2 coverage measurement; the original negative findings remain.
+
+Repair verification: the same real module-entrypoint test fails with the
+reported error on isolated `8bcf919` sources and passes with shared records.
+All 14 new tests and 262 related tests pass; the complete offline suite passes
+**2,129 tests, 36 skipped in 589.64 seconds**. Three offline examples, CLI help,
+shell syntax and whitespace checks pass. No live model or full-source coverage
+result is supplied by these tests.
+
 ## Release scope
 
 This is a runnable repair package, not a new experimental result. The user
@@ -141,14 +164,15 @@ duration, GPU queue delay and complete cross-dataset readiness are not inferred
 from local tests. This package removes manual reconstruction of the next two
 jobs; it does not supply missing measurements.
 
-## Verification
+## Verification of the original 8bcf919 handoff
 
-The final full repository regression passes **2,115 tests**, with **36 skipped**,
+That release's full repository regression passed **2,115 tests**, with **36 skipped**,
 in **590.20 seconds**. The new modules pass **110 focused tests** (56 comparison,
 54 handoff). Three offline examples (`llm_boundary_demo.py`,
 `m15_goal_loop_demo.py`, `m15_llm_resolution_provider_demo.py`), both CLI help
 checks, shell syntax and staged whitespace checks also pass. Skipped behavior
-remains unverified. No production or test code changed after final collection.
+remains unverified. At that release, no production or test code changed after
+final collection; the later module-entrypoint correction is recorded above.
 
 Comparison tests exercise actual tiny catalog builds, SQL retrieval, full
 denominators, reference access ordering, invalid-reference rejection and

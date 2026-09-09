@@ -3167,7 +3167,8 @@ handling, decision outputs and remaining live measurements. Offline acceptance:
 regression is **2,115 passed, 36 skipped in 590.20 seconds**. Three offline
 LLM/goal-loop examples, CLI help, shell syntax and staged whitespace checks
 also pass. Skipped behavior remains unverified. Only documentation changed
-after the final full-suite collection; no production or test code changed.
+after that release's final full-suite collection; its production and test code
+were unchanged until the subsequent module-entrypoint repair recorded below.
 
 A read-only replay of the supplied original request/response files still has
 18 queries and 47 raw candidates: 17 grounding rejections and one provider
@@ -3176,3 +3177,38 @@ not convert malformed historical output into accepted candidates. The output
 contract therefore still needs a new real model run; a parser/validator test
 is not that result. The historical preflight18 catalog had 900 assignments,
 so actual eligibility backfill is not assumed to explain its eight misses.
+
+### GrailQA CPU module-entrypoint repair (2026-09-09)
+
+User-submitted CPU comparison job `3796878` failed at producer `8bcf919` after
+18 seconds, before source verification/scanning. Its log reaches the eligible
+selector's question validator and reports a nonempty-ID/text error. The actual
+defect is class identity: `python -m ...grailqa_local_catalog` creates the
+records in `__main__`, then the selector imports a second copy of that builder
+under its canonical module name. Strict `isinstance` rejects the first copy's
+otherwise valid questions. The preceding launcher prerequisite checks passed;
+this failure is not evidence of a corrupt question file or catalog coverage.
+
+Move the two unchanged record definitions into a shared non-entrypoint module
+and retain the builder's existing import names as re-exports. The selector
+imports the shared records directly. Strict type/field/bounds checks remain;
+selection, serialized fields, hashes, frozen inputs and experiment policy do
+not change. Add an actual subprocess module-entrypoint regression, rather than
+relying solely on tests importing and calling the builder as a function.
+
+Preserve the failed run and its log. The separately submitted GPU job
+`3796877` was subsequently reported running (elapsed 7m06s) by the user and
+still belongs to `8bcf919`;
+do not change its checkout while queued/running. A manual CPU-only submission
+from the verified repair commit must use a fresh job-owned directory. This
+repair does not establish v2 coverage, model success or paper admission.
+
+Acceptance: the identical real module-CLI test reproduces the reported failure
+against an isolated `8bcf919` source copy and succeeds against the repair, with
+real tiny-source SQLite materialization and retrieval. All **14 new regression
+tests pass**, as do **262 related tests**. Full offline acceptance is
+**2,129 passed, 36 skipped in 589.64 seconds**. Three offline LLM/goal-loop
+examples, CLI help, shell syntax and whitespace checks also pass. Shared
+record ASTs are unchanged; no frozen spec, prompt, ranking policy or data was
+edited. The full Freebase reconstruction and coverage comparison still require
+a new user-submitted CWRU CPU job; skipped/live behavior remains unverified.
