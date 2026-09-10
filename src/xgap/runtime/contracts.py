@@ -24,6 +24,7 @@ class RuntimeNodeKind(str, Enum):
     COORDINATOR_SEMI_JOIN = "coordinator_semi_join"
     COORDINATOR_GROUP_AGGREGATE = "coordinator_group_aggregate"
     COORDINATOR_SORT_LIMIT = "coordinator_sort_limit"
+    COORDINATOR_PATH_SELECT = "coordinator_path_select"
     MERGE = "merge"
     PROJECT = "project"
 
@@ -43,6 +44,7 @@ _ARITY: dict[RuntimeNodeKind, tuple[int, int | None]] = {
     RuntimeNodeKind.COORDINATOR_SEMI_JOIN: (2, 2),
     RuntimeNodeKind.COORDINATOR_GROUP_AGGREGATE: (1, 1),
     RuntimeNodeKind.COORDINATOR_SORT_LIMIT: (1, 1),
+    RuntimeNodeKind.COORDINATOR_PATH_SELECT: (1, 1),
     RuntimeNodeKind.MERGE: (1, None),
     RuntimeNodeKind.PROJECT: (1, 1),
 }

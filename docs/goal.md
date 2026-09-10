@@ -92,11 +92,13 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
   （IN 缺口保留）；独立目标查询在真实 Neo4j/Fuseki 上 36/36 匹配；生产编译器与
   运行时的第一条联邦 slice 返回 Alice→Cara。Full regression 2,963 passed /
   38 skipped，24 个 harness/example 入口通过。完整 backbone 尚未完成。
-- T1 正在进行：显式 RDF 边身份表示/生产编译支持已验证，8 题在真实 Neo4j/Fuseki
-  上 16/16 完整路径匹配，原联邦 slice 继续通过；focused 185 passed / 1 skipped，
-  兼容性 99 passed。旧普通 RDF 行为与 toy gold 未改变。下一步补齐 node-only/Union、
-  递归/selector 等生产执行覆盖；IN 原生行已验证，M5 logical lowerer 缺口仍保留。
-  本步没有重复全仓库回归，不宣称完整 T1/backbone 完成。
+- T1 正在进行：18 题均已通过生产编译、真实单后端执行和 coordinator selector，
+  Neo4j/Fuseki 共 36/36 完整路径匹配，原两后端联邦 slice 继续通过。节点、Union、
+  有界递归与 selector 已接入这条执行链，focused 266 passed / 1 skipped；因修改了
+  共享代数函数与 scheduler，本轮已完成一次 broad acceptance：3,006 passed / 38
+  skipped，24 个 harness/example 入口通过。此有界路径执行步骤已验收。
+  旧普通 RDF 行为与 toy gold 未改变。M5 IN logical/reference 缺口、一般语义/联邦
+  计划集成及更广的递归/条件支持仍待完成，不宣称完整 T1/backbone 完成。
 - D205：受控 provider＋真实 Neo4j/Fuseki 已验证受支持查询的答案；不是真实 LLM
   自然语言准确率。
 - D207：GPU 启动健康检查软件已验收；最新真实 GPU 启动仍失败，无新模型答案。

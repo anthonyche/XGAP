@@ -404,7 +404,7 @@ def _sparql(
             continue
         if isinstance(item, LengthEquals):
             body.append(
-                "FILTER(true)" if item.value == shape.edge_count else "FILTER(false)"
+                "FILTER(1 = 1)" if item.value == shape.edge_count else "FILTER(1 = 0)"
             )
             continue
         if type(item) in PROPERTY_CONDITIONS:

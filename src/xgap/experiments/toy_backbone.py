@@ -16,6 +16,7 @@ from xgap.compilers import compile_cypher, compile_sparql
 from xgap.compilers.directed import compile_directed_rows
 from xgap.compilers.rdf_encoding import RdfEdgeEncoding
 from xgap.backends.rdf_terms import RdfTerm
+from xgap.runtime.bounded_paths import compile_bounded_path_plan
 from xgap.llm.parser import parse_path_pattern_query
 from xgap.pattern.ast import Rel
 from xgap.pattern.lowering import lower_path_pattern
@@ -35,6 +36,22 @@ def toy_rdf_edge_encoding(mapping: dict) -> RdfEdgeEncoding:
     ns = mapping["backends"]["fuseki"]["namespace"]
     return RdfEdgeEncoding("backbone-toy-edges-v1", ns + "Edge", ns + "source",
                            ns + "target", ns + "label", "logical_string")
+
+
+def execute_bounded_toy_case(case: dict, mapping: dict, *, client: Any) -> dict:
+    ns = mapping["backends"]["fuseki"]["namespace"]
+    plan = compile_bounded_path_plan(parse_path_pattern_query(case["gold_path_pattern_query"]),
+        backend_id=client.backend_id, backend_mapping=mapping,
+        rdf_edge_encoding=toy_rdf_edge_encoding(mapping), rdf_node_classes=(ns + "Person",),
+        resource_namespace=ns, identity_property="id", plan_id="bounded-toy-" + case["id"])
+    registry = BackendPluginRegistry()
+    registry.register(NativeBackendPlugin(client.backend_id, client))
+    result = FederatedScheduler(BackendInvokeTool(registry)).execute(plan)
+    actual = sorted("/".join(row["path"]) for row in result.final_rows) if result.success else None
+    return {"query_id": case["id"], "backend": client.backend_id,
+        "success": result.success and actual == case["expected_paths"],
+        "actual_paths": actual, "expected_paths": case["expected_paths"],
+        "plan": plan.to_dict(), "runtime": result.to_dict()}
 
 
 def execute_directed_toy_case(case: dict, mapping: dict, *, client: Any) -> dict:

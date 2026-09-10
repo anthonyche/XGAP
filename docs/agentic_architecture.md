@@ -232,12 +232,19 @@ The coordinator-level runtime vocabulary includes:
 - `Exchange`
 - `CoordinatorJoin`
 - `CoordinatorSemiJoin`
+- `CoordinatorPathSelect`
 - `Merge`
 - `Project`
 
 This is called a federated execution plan rather than a database-internal
 physical plan. Each `RemoteQuery` invokes a backend interface; the selected
 backend remains responsible for its internal physical optimization.
+
+`CoordinatorPathSelect` normalizes explicit native path identities and executes
+the existing SolutionSpace selector algebra. Bounded native path expansion and
+this coordinator stage form one executable plan; selector work and candidate
+transfer remain part of runtime cost. It does not add an algebra operator or
+claim backend-native selector execution.
 
 Adaptive execution may first run an ancestor-closed common prefix. Before any
 probe call, every prefix node must be structurally identical in every candidate

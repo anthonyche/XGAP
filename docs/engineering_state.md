@@ -28,6 +28,37 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+T1 bounded-path native gate PASSED: all **18 frozen queries on both real
+engines (36/36)** produce the exact complete gold paths through production
+native expansion and the coordinator selector. The original two-engine T18
+slice remains correct. Native session 91427 exited 0; both services stopped
+normally, no retry. Raw root `/Users/anthonyche/xgap-data/t1-bounded-native-20260910`.
+Focused final session 25002: **266 passed / 1 skipped in 10.97s**. Initial local
+failures (boolean FILTER in an RDFLib union, and old validation ordering) are
+preserved; gold fixtures are unchanged. Measured source and fixture hashes match.
+
+Broad acceptance COMPLETED in original session **11810**, exit 0: **3,006
+passed / 38 skipped in 669.07s**, log `/tmp/xgap-t1-bounded-acceptance.log`.
+The harness and 20 script examples passed; the three newer examples passed
+separately in session32275 exit0. All24 harness/example entrypoints passed.
+The acceptance shell now includes those three for future runs; only this wiring
+and documents/receipts changed after the measured production code. Do not
+repeat these accepted checks without a new source change or concern.
+
+Native expansion supports Rel/Seq/Alt and a root finite Plus/Star, with explicit
+branch/edge budgets. Coordinator selectors reuse the existing SolutionSpace
+functions; they are timed runtime work. The M5 IN lowerer gap, nested/unbounded
+native recursion, general partitioning and Interpretation/catalog/replay remain
+open; all 18 fixture executions do not prove the entire system complete.
+
+The next concrete integration boundary is SemanticGraphProgram. Its typed
+Traverse/Join/Project DAG currently does not automatically invoke the new path
+planner; runtime/planning.py selects among caller-supplied candidates. Connect
+that boundary and orientation-aware logical/reference support next, preserving
+all gold cases and the existing two-engine slice. T1 is still in progress.
+
+## Earlier T1 RDF identity step
+
 T1 is IN PROGRESS. Its RDF edge-identity step is verified: an explicit reified
 edge encoding preserves parallel-edge resource IDs and supports edge-property
 filters through the production directed compiler/fragment adapter. Original

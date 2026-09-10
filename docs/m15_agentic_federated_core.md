@@ -54,6 +54,12 @@ Implemented locally:
 
 - per-backend `SemanticFragment` compilation through the existing M9 Cypher
   and SPARQL compilers;
+- a bounded typed-path planner using native Rel/Seq/Alt and root finite
+  recursive expansion plus coordinator selector execution. All eighteen toy
+  queries have real two-engine evidence (one complete plan per engine), with
+  an additional actual federated slice. This does not yet integrate every
+  semantic DAG into general federated partitioning; see
+  [T1 coverage](report/toy_backbone_t1_bounded_paths.md);
 - an additional explicitly selected directed-row fragment compiler for fixed
   OUT/IN Rel/Seq paths, preserving positional conditions and producing ordinary
   runtime RemoteQuery artifacts; its independent RDFLib checks are not live

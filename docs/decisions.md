@@ -4495,3 +4495,22 @@ parallel edges. The original two-engine slice remains correct. Focused185/skip1
 and compatibility99 pass; harness/toy example pass. This is a partial T1 repair,
 so daily targeted checks and the tiny native slice apply; full operator coverage
 and the later broad T1 acceptance remain open. See the T1 RDF report.
+
+## T1 Bounded native candidates and coordinator path selection
+
+Compile Rel/Seq/Alt and root finite Plus/Star to native identity-preserving
+candidate rows. Push identity restrictions and safe filters into native branches;
+keep SHORTEST-sensitive length filters above shortest selection. A runtime
+CoordinatorPathSelect normalizes explicitly declared identities and reuses the
+same GroupBy/OrderBy/Projection functions as the reference evaluator. This is
+physical placement of existing semantics, not a new logical algebra operator.
+It is observable coordinator work and does not claim native selector pushdown.
+
+All 18 frozen toy queries now execute correctly on each real engine (36/36),
+plus the separate two-engine T18 slice. Extra local checks cover selector
+variants, Star/shortest ordering, child-repetition depth and duplicate Union.
+Focused266/skip1 pass. Broad acceptance completed after the final production
+source change: 3,006 pass / 38 skip in669.07s; all24 harness/examples pass.
+Original local failures remain recorded; no gold or historical result changes.
+Bounded expansion, coordinator materialization and the remaining M5 IN/general
+planner gaps are explicit in the T1 bounded-path coverage report.

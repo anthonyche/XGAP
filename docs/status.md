@@ -2,6 +2,16 @@
 
 ## Active engineering loop — 2026-09-10
 
+T1 bounded native gate: **36/36 exact complete answers**, all eighteen frozen
+toy queries on each real backend, plus the original two-engine slice. Native
+candidates now cover zero paths/Union and finite recursive modes; coordinator
+selectors call the shared SolutionSpace semantics. Focused **266 pass / 1 skip**.
+Broad acceptance passed in session11810: **3,006 pass / 38 skip in 669.07s**;
+all24 harness/example entrypoints also passed. The bounded-path step is accepted.
+See [the coverage report](report/toy_backbone_t1_bounded_paths.md). T1 and the
+whole system remain unfinished; IN logical/reference coverage and general
+semantic/federated planning still need integration. Toy gold is unchanged.
+
 T1 RDF identity progress: **16/16 production-compiled native executions** match
 complete gold paths (8 cases on both engines), with the two-engine slice still
 correct. Explicit reified edge resources now preserve parallel edges; ordinary

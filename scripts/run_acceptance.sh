@@ -88,3 +88,7 @@ fi
 if [ -f examples/m15_resolution_execution_bridge_demo.py ]; then
   "$PYTHON" examples/m15_resolution_execution_bridge_demo.py
 fi
+
+"$PYTHON" examples/freebase_typed_fact_demo.py
+"$PYTHON" examples/grounded_candidate_execution_demo.py
+"$PYTHON" examples/freebase_question_demo.py

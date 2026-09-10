@@ -361,6 +361,10 @@ class FederatedScheduler:
             elif node.kind is RuntimeNodeKind.COORDINATOR_SORT_LIMIT:
                 rows = self._sort_limit(node, inputs[0])
                 bytes_moved = 0
+            elif node.kind is RuntimeNodeKind.COORDINATOR_PATH_SELECT:
+                from xgap.runtime.path_selection import select_native_paths
+                rows = select_native_paths(inputs[0], node.parameters)
+                bytes_moved = 0
             elif node.kind is RuntimeNodeKind.MERGE:
                 rows = _deduplicate(row for group in inputs for row in group)
                 bytes_moved = 0

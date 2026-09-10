@@ -22,7 +22,7 @@ from xgap.experiments.m15_native_services import (
     stop_service, wait_for_service_health,
 )
 from xgap.experiments.toy_backbone import (
-    DEFAULT_FIXTURE, DIRECTED_TOY_QUERY_IDS, execute_directed_toy_case,
+    DEFAULT_FIXTURE, DIRECTED_TOY_QUERY_IDS, execute_directed_toy_case, execute_bounded_toy_case,
     execute_vertical_slice, load_fixture,
 )
 from xgap.infrastructure.descriptors import BackendDescriptor
@@ -35,8 +35,11 @@ def main(argv=None):
     parser.add_argument("--output", required=True)
     parser.add_argument("--java", required=True)
     parser.add_argument("--execute", action="store_true")
-    parser.add_argument("--compiled-directed", action="store_true",
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--compiled-directed", action="store_true",
         help="Run the production-compiled fixed-path cases instead of independent reference targets")
+    selection.add_argument("--compiled-bounded", action="store_true",
+        help="Run all toy queries through bounded native compilation and coordinator selectors")
     args = parser.parse_args(argv)
     if not args.execute:
         parser.error("Fresh owned native execution requires --execute")
@@ -58,9 +61,13 @@ def main(argv=None):
     files = [p for p in DEFAULT_FIXTURE.rglob("*") if p.is_file()]
     source_files = [REPO / relative for relative in (
         "src/xgap/experiments/toy_backbone.py", "src/xgap/compilers/directed.py",
-        "src/xgap/compilers/rdf_encoding.py", "src/xgap/runtime/directed_fragments.py")]
+        "src/xgap/compilers/rdf_encoding.py", "src/xgap/runtime/directed_fragments.py",
+        "src/xgap/compilers/bounded_paths.py", "src/xgap/runtime/bounded_paths.py",
+        "src/xgap/runtime/path_selection.py", "src/xgap/runtime/contracts.py",
+        "src/xgap/runtime/scheduler.py", "src/xgap/algebra/evaluator.py")]
     source_files.append(Path(__file__))
-    record = {"success": False, "scope": ("T1 compiled directed paths" if args.compiled_directed
+    record = {"success": False, "scope": ("T1 bounded path execution" if args.compiled_bounded else
+                                           "T1 compiled directed paths" if args.compiled_directed
                                            else "T0 tiny native development fixture"),
         "live_llm": False, "paper_result": False, "java": java.to_dict(),
         "nodes": len(data["nodes"]), "edges": len(data["edges"]), "query_ids": [c["id"] for c in cases],
@@ -131,7 +138,8 @@ def main(argv=None):
         save()
         if not loaded_rdf.success:
             raise RuntimeError("Tiny Fuseki load failed; no retry")
-        record["phase"] = "compiled-directed" if args.compiled_directed else "independent-targets"
+        record["phase"] = ("compiled-bounded" if args.compiled_bounded else
+                           "compiled-directed" if args.compiled_directed else "independent-targets")
         selected = [case for case in cases if not args.compiled_directed
                     or case["id"] in DIRECTED_TOY_QUERY_IDS]
         for case in selected:
@@ -139,8 +147,9 @@ def main(argv=None):
                 item = {"query_id": case["id"], "backend": backend, "status": "started", "success": False}
                 record["targets"].append(item)
                 save()
-                if args.compiled_directed:
-                    item.update(execute_directed_toy_case(case, mapping, client=client), status="completed")
+                if args.compiled_directed or args.compiled_bounded:
+                    execute_case = execute_bounded_toy_case if args.compiled_bounded else execute_directed_toy_case
+                    item.update(execute_case(case, mapping, client=client), status="completed")
                     save()
                     if not item["success"]:
                         raise RuntimeError(f"Compiled target failed: {case['id']} / {backend}; retained without retry")

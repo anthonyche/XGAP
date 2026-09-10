@@ -549,6 +549,15 @@ duplicate output rows are removed.
 `CoordinatorSemiJoin(left, right, left_on, right_on)` returns each distinct
 left row whose key occurs in the right input; it never adds right-side fields.
 
+`CoordinatorPathSelect(input, identity_encoding, selector)` reconstructs
+complete paths from declared native position bindings and applies the existing
+GroupBy/OrderBy/Projection semantics. For a bounded recursive SHORTEST stage it
+first keeps all tied shortest positive paths per endpoint pair, preserving
+Star's separate zero paths, then applies deferred length filters and selectors.
+Its output is JSON rows containing alternating-ID `path` arrays. Missing or
+incompatible identities are errors, not empty answers. This is a physical
+adapter over existing path/SolutionSpace values, not a new path-algebra operator.
+
 `Align`, `Merge`, and coordinator `Project` retain the M15-B semantics. Any
 error causes all transitive descendants to be marked skipped. A plan validates
 its DAG, maximum remote calls, and parallelism before execution.

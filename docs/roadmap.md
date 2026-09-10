@@ -2,13 +2,15 @@
 
 ## Current engineering milestones — 2026-09-10
 
-T1 is in progress. Explicit identity-preserving RDF compilation now passes
-8 fixed-path fixtures on each actual Neo4j/Fuseki backend (16/16), retaining the
-working two-engine slice and unchanged toy gold. Next implement node-only/Union
-and bounded recursive/selector compilation and execution; keep the distinct
-M5 IN logical-representation gap visible. See [T1 evidence](report/toy_backbone_t1_rdf_identity.md).
-The T0 fixture/slice milestone and its broad regression remain historical accepted
-evidence, not a claim that the complete backbone is finished.
+T1 bounded path execution now passes all eighteen frozen queries on each real
+engine (36/36), plus the two-engine slice. Native expansion handles node-only,
+Union and root finite recursion; coordinator selector placement reuses the
+existing algebra. Focused266/skip1; broad acceptance **3,006 pass / 38 skip in 669.07s**,
+all24 harness/example entrypoints pass. This bounded-path step is accepted.
+See the [operator-by-layer coverage](report/toy_backbone_t1_bounded_paths.md).
+Next: orientation-aware logical/reference support and general semantic/federated
+plan integration. Nested/unbounded native recursion and broader condition shapes
+remain explicit gaps. This is not complete T1 or whole-system acceptance.
 
 **Toy-first supersedes the earlier development queue.** Follow
 [the active Goal](goal.md): T0 small graph and complete query fixtures; T1

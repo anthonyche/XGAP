@@ -46,6 +46,12 @@ operators live above this algebra in separate typed namespaces. For example,
 `ResolveEntity` is an agent action and semantic `Traverse` may carry a
 `PathPatternQuery`; neither is a new path-algebra operator.
 
+The bounded path planner now expands Rel/Seq/Alt and root finite Plus/Star into
+native candidates, then runs the existing SolutionSpace selector semantics in
+the coordinator. `compile_bounded_path_plan` emits both stages explicitly and
+requires dataset identity/domain mappings. See [T1 coverage](report/toy_backbone_t1_bounded_paths.md)
+for the all-eighteen toy execution evidence and remaining logical/scale limits.
+
 M15-E3's deterministic intake compiler is likewise a frontend compilation
 step, not an operator. It may instantiate only the semantic DAG, holes, and
 constraints declared by its versioned template. Its artifact catalog,
