@@ -2,6 +2,13 @@
 
 ## Current engineering milestones — 2026-09-10
 
+T0 tiny fixtures and first actual compiled federated slice are verified; the
+single broad regression passes 2,963 tests / 38 skips in 657.90s. The fixture gives a concrete T1
+target: plain RDF compilation loses parallel-edge identities. Add explicit
+identity-preserving representation support without changing gold fixtures or
+legacy semantics, then address IN logical representation, Union/recursive and
+selector compilation. See [T0 evidence](report/toy_backbone_t0_v1.md).
+
 **Toy-first supersedes the earlier development queue.** Follow
 [the active Goal](goal.md): T0 small graph and complete query fixtures; T1
 deterministic backbone/design-gap closure; T2 isolated interpretation, offline
@@ -13,16 +20,15 @@ focused passes / 1 skip and is reusable, not fully accepted. Its former proposal
 was to measure both existing complete strategies
 on three declared fixed-meaning first-shard queries with a common boundary,
 balanced order and independent source-answer verification. No data reload or
-catalog/model change. Complete focused/native/full/examples acceptance and
-report whatever timing direction is observed; this development diagnostic does
+catalog/model change. That native campaign is deferred; do not execute it to
+close the older plan. This development diagnostic does
 not replace the full EQ1–EQ5 matrix. See
 [the protocol](report/freebase_cpu_paired_comparison_v1.md).
 
 The [system/experiment assessment](report/xgap_system_experiment_assessment_20260910.md)
-sets the next priorities: CPU supported-fragment correctness and physical
-comparisons independent of the LLM, eight catalog/four retrieval/one prompt
-exclusion diagnosis without another unchanged rebuild, and actual generated
-anchored answers once both model and fact coverage are available. The 18-query
+records earlier results and priorities, now superseded for daily development by
+the toy-first Goal. Its eight catalog/four retrieval/one prompt exclusions and
+missing large-data measurements remain later integration/evaluation issues. The 18-query
 remote interface experiment is semantic-only; success cannot substitute for
 native answers. Preserve all EQ1–EQ5 cells on both selected primary datasets.
 The report's time windows are conditional engineering estimates, not scientific

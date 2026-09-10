@@ -4453,3 +4453,29 @@ reuse it on toy cases when useful. Do not run the displaced campaign or repeat
 regression merely to close it. The next milestone is T0 in [the Goal](goal.md).
 The app Goal remains active; its tool has no objective-edit operation. The
 required Goal file and existing heartbeat preserve the new instructions.
+
+## T0 Freeze a tiny complete test chain before closing compiler gaps
+
+Use the user-authorized five-node/eight-edge toy graph and eighteen explicit
+NL/gold-pattern/logical-plan/native-target/result fixtures. Gold paths are
+independent authored expectations; reference targets preserve unique edge IDs.
+Do not generate expected answers from XGAP's current output. A successful
+independent native target is fixture evidence, not production compiler support.
+The existing production compilers and runtime separately execute T18 as a
+two-engine path/property-filter slice. Real services use fresh tiny stores and
+no benchmark/model/catalog data.
+
+The measured 17/18 reference result and 36/36 independent native targets expose
+rather than erase the IN lowerer gap. Actual compiled plain-RDF queries collapse
+parallel edges: predicate identity is not multigraph edge identity. T1 should
+first add explicit identity-preserving RDF representation/capability support
+without changing the toy gold data or legacy simple-RDF semantics. Broader
+Union/recursive/selector and logical-direction gaps remain required. No new
+lower-level algebra operator is authorized or needed by this first encoding
+repair. See [T0 report](report/toy_backbone_t0_v1.md).
+
+T0 acceptance completed: 76 focused passes, 36/36 native reference targets,
+the actual two-engine compiled slice, 24/24 harness/examples and full regression
+2,963 passed / 38 skipped in 657.90s. Native services stopped normally. This
+accepts the T0 fixtures/slice, not full native semantics, interpretation or the
+overall Goal. T1 continues from the unchanged eighteen query expectations.

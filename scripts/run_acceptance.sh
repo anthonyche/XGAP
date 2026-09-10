@@ -11,6 +11,8 @@ export PYTHONPATH="$REPO_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 "$PYTHON" scripts/check_harness.py
 "$PYTHON" -m pytest
 
+"$PYTHON" examples/toy_backbone_demo.py
+
 if [ -f examples/core_algebra_demo.py ]; then
   "$PYTHON" examples/core_algebra_demo.py
 fi

@@ -28,9 +28,31 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+T0 is COMPLETE for fixtures and first compiled true-backend slice. Original
+broad regression session **63579** exited 0: **2,963 passed / 38 skipped in
+657.90s**, log `/tmp/xgap-t0-full.log`. No executable source changed after the
+full launch; do not rerun accepted checks without a new concern. Focused: **76 passed in
+7.73s**, session 76238 exit 0. Harness and 23 examples: **24/24 pass**, session
+81517 exit 0. Five nodes/eight edges/eighteen complete gold-chain fixtures are
+in `datasets/backbone_toy_v1`. Reference logical/answer checks pass 17/18; IN
+remains a recorded old-lowerer gap. Independent RDF targets pass 18/18.
+Native session 80488 completed exit 0: 36/36 independently authored target
+queries pass on real tiny Neo4j/Fuseki stores, and the production-compiled
+two-engine T18 slice returns `a/e4/c` with two calls. Both services stopped
+normally without escalation. Raw root: `/Users/anthonyche/xgap-data/t0-native-20260910`.
+
+An actual compiled RDF probe reproduces parallel-edge loss: T03 expects three
+paths but gets two bindings; T02 8→7, T05 6→4, T15 2→1, T16 5→3. The plain
+predicate is bound as an edge ID. T1 should first make representation/capability
+explicit and support identity-preserving reified RDF compilation, keeping the
+fixture and legacy plain-RDF behavior. Do not remove the parallel edge or use
+expected answers to reconstruct lost paths. Broader IN/Union/recursive/selector
+gaps remain. See `docs/report/toy_backbone_t0_v1.md`.
+
 **Latest user direction: toy-first development.** Read `docs/goal.md` before
-implementation. T0 (minimal graph + 16–18 core query fixtures + first complete
-deterministic vertical slice) is next. Separate Interpretation from deterministic
+implementation. T0 (minimal graph + 18 core query fixtures + first complete
+deterministic vertical slice) is accepted; T1 edge-identity support is next.
+Separate Interpretation from deterministic
 planning. Runtime must never build a GrailQA catalog; offline build/freeze and
 runtime lookup are separate. Add failure replay. Module tests and toy E2E drive
 development; GrailQA-mini follows for integration, large datasets for final
@@ -39,8 +61,9 @@ so the new instructions are persisted in the required Goal file and heartbeat.
 
 D208 is **deferred before native measurement** by this user direction. Its
 runner is implemented at `7e09a56`; final focused session 22986 exited 0 with
-**112 passed / 1 skipped in 1.81s**. Full regression/native acceptance have not
-run and no milestone completion is claimed. Reuse the runner for toy tests if
+**112 passed / 1 skipped in 1.81s**. The later T0 broad suite also covers this
+software, but its native campaign has not run and no D208 campaign completion
+is claimed. Reuse the runner for toy tests if
 useful; do not run the displaced campaign merely to close it. Former scope:
 
 D208 proposed a fixed-semantics CPU comparison over the three existing
