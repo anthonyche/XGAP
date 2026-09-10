@@ -2,6 +2,15 @@
 
 ## Current engineering milestones — 2026-09-10
 
+T1 semantic requirement admission is closing the blanket-rejection gap.
+Eight reused tiny chains retain16 of28 placements by their explicit native/
+coordinator requirements; all16 native answers and the old slice pass.
+Focused120/daily300 pass; broad91696 exited0:3145 passed/38 skipped in667.51s,
+all24 harness/example entrypoints passed. This step is accepted. See
+[the capability report](report/toy_backbone_t1_capabilities.md). After this
+milestone pause until2026-09-11 10:00 +08:00 per the user's new instruction;
+then continue remaining path/typed semantics and T2 catalog/runtime/replay.
+
 Latest T1 orientation gate: original18 logical/reference answers now pass with
 an explicit versioned T15 logical expectation; original gold files stay frozen.
 Reverse is a separately specified XGAP extension, retaining Edges(G), identities

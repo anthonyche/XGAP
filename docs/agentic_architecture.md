@@ -2,6 +2,12 @@
 
 ## System objective
 
+Current deterministic capability admission connects semantic requirement names
+to the requesting operator's actual compiled runtime nodes before any native
+observation/dispatch. It preserves native compiler checks, rejects missing or
+misplaced requirements, and does not confuse static support with live health.
+See [semantic capability admission](decisions/semantic_capabilities_v1.md).
+
 XGAP is a cost-aware agentic federated graph-query system over heterogeneous
 black-box engines. Given a user goal and a partially bound semantic graph
 program, XGAP jointly chooses:

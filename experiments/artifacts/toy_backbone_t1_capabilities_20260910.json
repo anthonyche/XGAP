@@ -1,0 +1,1062 @@
+{
+  "milestone": "T1 semantic capability admission",
+  "status": "accepted",
+  "date": "2026-09-10",
+  "base_commit": "2f978b8bda53776f3781547cf0e0090f2c562bc3",
+  "raw_result": "/Users/anthonyche/xgap-data/t1-capabilities-native-20260910/result.json",
+  "raw_result_sha256": "46b369509da01c9c96a807d7bba2e13bb78f69d454849c58eb48f59fa31e44d6",
+  "paper_result": false,
+  "live_llm": false,
+  "nodes": 5,
+  "edges": 8,
+  "source_sha256": {
+    "src/xgap/experiments/toy_backbone.py": "341ed4fa3f16770b46e7b58634a7dca7c75de5d61f4f0bf821a98a90f3d09e4a",
+    "src/xgap/compilers/directed.py": "c51078ad7cd6c4160716e7171be77267510d146b49b616974745136d74da81ea",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/compilers/bounded_paths.py": "d16b0f2eec6d33791863091403307fc676e1f944704d3f4915273d642d7d1c04",
+    "src/xgap/runtime/bounded_paths.py": "0fbb4e803aba5bd13b569c60345f6cc66b983bb35ee21b580bf0b9fa9e12ce37",
+    "src/xgap/runtime/path_selection.py": "bbb646b7d0fd02548cbe2d20a4e284f9ec915bd12b465abba237fea07ac43368",
+    "src/xgap/runtime/contracts.py": "556bd32b8be7fe930c91ae94c0d78560f30616d3029346049f7ef201341e9891",
+    "src/xgap/runtime/scheduler.py": "4cdcafd8e24d86fa466c1460a6dd0d8fa1b551ac270d9cafa1bc7521984f3a90",
+    "src/xgap/algebra/evaluator.py": "f178b30fc9067ca1fbc26ebeaedb6a16f704c9a7ab45d91f131b378d84cb61e7",
+    "scripts/run_toy_backbone_native.py": "7acfba01f9343a36c29db582059215785afe04fddf17d41c9fcb19f78c237363",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/compilers/node_match.py": "1996dacd5ed3ff268752317e07ca9b3321c69d34417667f5b59efd20ecc33517",
+    "src/xgap/runtime/semantic_compiler.py": "b5cb2480f4d237ec07e203a985a55221c090b47e3b43475ca501086994df94db",
+    "src/xgap/runtime/row_operations.py": "99671d516930bd20a6bce4efdb10643b5fe779c185c4247bdb9ad0a2ff544458",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/runtime/semantic_capabilities.py": "b652d9c0066555ad1143b1f32f3a1a20800558e15ddc620942e9c147771c0461",
+    "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+    "src/xgap/runtime/planning.py": "e9fda1770e9dc3caa0781893d171f1201cb94fca4076dc540ffa6615618aa0cb",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/experiments/toy_planning.py": "cdf28fc8c9d761647b94cdc15c44685b5c956aaa4004fa91af4d928465c256c8",
+    "src/xgap/experiments/toy_capabilities.py": "218f7d15b1ba86a490fdfa94c409e65c4dcf4629a7298d6960ac45385fa5989f"
+  },
+  "fixture_hash_checks": {
+    "fixture_sha256": true,
+    "semantic_fixture_sha256": true,
+    "capability_fixture_sha256": true
+  },
+  "fixture_sha256": {
+    "load.cypher": "2892f0d12746501a208cbf1fbd6e9c494892790149ef373659d4653521d3875d",
+    "load.ttl": "9732faf79aa80559b5e2d737177599421061bd787d006226ec7438db69904c24",
+    "queries.json": "535616a42a1e3bfd857b9385d74fbe176f931f59a54d26798c20511000e31f89",
+    "README.md": "b2f55b283799f5d8507374c0db95b9263dd85733bbacd40e30d9b43efabbd171",
+    "mapping.json": "651d44578283f4f2e5a5f016380c5b784a2dcdda2bf5b27491d6a947c168eb2d",
+    "graph.json": "b72a0a97d3dbf8919c3303ffd2b9c6121659f4e19d6059b72cd55a75f4f7f82e",
+    "targets/T05.rq": "e87318bcc0b3d672d65c4aae9e505603c29ba8976e106e9dd8d7af09ae4dd7d5",
+    "targets/T15.rq": "1db62fe203183958305b2a9e0fbba8efca2de8d1e3e9e42a9fe1059b654f52f3",
+    "targets/T01.rq": "a00b5bd4917e76a1c15f8f865c347c195f83d02b072c9576a04bebd33d47a0f0",
+    "targets/T11.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744",
+    "targets/T06.cypher": "afeaa20cc69e0897cfd688f9237f27266cba612bfa63c597bf71b5f821d15875",
+    "targets/T18.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+    "targets/T14.cypher": "0e514c6476c01fb70d28090456cc28521821a29d79e1892f7b1e0809b5eec5a0",
+    "targets/T08.cypher": "6c5253698a126ada92f72732069cd6a5979b7192580a9e33aa4776f30023d75f",
+    "targets/T10.rq": "3f9a4681586298ec4d9297c2d81627999b8af15238979b9ea5bee54a88a6c57b",
+    "targets/T16.cypher": "61960fc15e0d8fb9fb71165f7f6b3c65380d53413289914e8e8a4be948cd5490",
+    "targets/T04.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+    "targets/T04.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+    "targets/T14.rq": "033de848d509b48fd6c1d66f1c751e515a3fd77a1abdbc784a7baacbf43bc757",
+    "targets/T12.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+    "targets/T10.cypher": "e1b26267c63ce1a677a7a851a28df92fba3745cb5c20a24d8744238c01e36d4f",
+    "targets/T02.cypher": "d86bc59390e1fff6bb779265d51ee77a7d583542eb039be09c2dbde1cffb4fc5",
+    "targets/T07.cypher": "07d23b2b6b08ab61e95a2c8ea4094a4324434a17e05516375f91931f535b5f81",
+    "targets/T09.rq": "73e9ac1bd8dfa90e8582a1985df374269282fedddcb4ad8d760f78d9997598c3",
+    "targets/T15.cypher": "7f0703bdb9c1bc1847d4b52e09293b79727bfadc9ba1e492a9831877bad75a0d",
+    "targets/T17.cypher": "bfda0b91e68e9cf8e342b66fad4b92a00f0b4f1c1596fcaee9550a3752576352",
+    "targets/T09.cypher": "245dd0a9f89b1fb5dbf8fe716606d0e0256df10f836317faeba17cbf5edfadb9",
+    "targets/T08.rq": "044340291081f454b6e889b65b434771e9d900f4884a435cb27bea79036ab888",
+    "targets/T05.cypher": "3ec22f5c5ed0908fce931b5c057ad4d8802676f978fe68b368b085ca28564660",
+    "targets/T18.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+    "targets/T03.rq": "67eabd839fda760f33e256957d3ab8329677a13a03c2d19635388dc77e54193b",
+    "targets/T13.rq": "c9ffd69f3126b145f896857bd5a6d01c11bdd1ef14b42f09cd64314686fd6d37",
+    "targets/T07.rq": "7a94f0c71ba0313126c0db8905b54f223bd3c6efa30037152fc536c07c56e15d",
+    "targets/T01.cypher": "e049929f9ec5d2f31f00eb5438c91bcb0655597a0dc8960c3edb323bbdb0207e",
+    "targets/T17.rq": "92f269b29867f27ed67c12495bec6aced2a06e1c9109440c8d9a34d197cb6d64",
+    "targets/T13.cypher": "bc3f51702531287a7e5709402958aebf972c2fca3227cdf53e1174ae0dff52ce",
+    "targets/T06.rq": "a71c2a539116458ede6ed456c61003a92aecd0984e59b80e18da413275653867",
+    "targets/T16.rq": "ac91a127dc7c1e35aadf2f443adbe502c7dc024f563e24b2d8c45068998d7963",
+    "targets/T11.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+    "targets/T03.cypher": "6614e75e6687d07d2daa85b71b80c35d85f5509f6fbaea2bb360eaac878bb048",
+    "targets/T02.rq": "ab050b118a1f6533502a985d7ed74c2eb6e80c610c39e52240d2cc4bbf169181",
+    "targets/T12.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744"
+  },
+  "semantic_fixture_sha256": {
+    "README.md": "cdc1d423c20e9e04dd4d80ebedda7d821713c919061dc41078a2dcb03a48b56c",
+    "cases.json": "8d6a910e0dd67c57b9ea5ae7c103c69897c07c0bf7fa579e11e24d1f31f2bd8d",
+    "targets/S02.cypher": "ff8c9f5a55139eecae503fdeef00982d5262965a0a3371251e5e1049d6071a94",
+    "targets/S08.cypher": "4200e2e403c99ff221a3e9ef74dd33ca62ce72e35fc917637a078867ab27affb",
+    "targets/S04.cypher": "c12e80a162dd0b1d74b05cc1a3193295d19d843ae56a7824d9240e176468caea",
+    "targets/S04.rq": "6275fcfcc368a00a51a3e6326153fde122bc3ab68d238df82baa4a1c12c5a595",
+    "targets/S05.rq": "cb27b6ce923cae76be8b1b978f3678677d09692a28081d7252382f42320c6c9d",
+    "targets/S01.rq": "335289ca39a3ceaef052cb9e718f45f4f4c1d183491828efa17c92b6263f2ee3",
+    "targets/S06.cypher": "317679fce1d0f8a8e9fb3becb3f1cdbcf16fc876262306c0a96b0cc24e6d06d8",
+    "targets/S06.rq": "dc35c4596829549b39c24e4d7a002eed14d1426f9406122863ffd327fbcdb203",
+    "targets/S03.cypher": "50dc8cc6539492dbe2aec3aef5757e0bc5b70d69eb0dfed783a4bad692834c90",
+    "targets/S02.rq": "9696decbd913133872a8ee562cc6d70b98e30342e9ea9a33050c9bdd559879a1",
+    "targets/S03.rq": "b3dcba2552df1608b088bb4e00a76b1de5450c3059c303c44503d074dbb57e23",
+    "targets/S07.rq": "29b76fd477c4ff4d4c013976d8de37422bbd20c09a4f5d45fd2d478ff3a379bc",
+    "targets/S01.cypher": "4200e2e403c99ff221a3e9ef74dd33ca62ce72e35fc917637a078867ab27affb",
+    "targets/S05.cypher": "c05f7e227b4031ad807a5d70931b8d7c8e54f80971ec56d149310a6823baa847",
+    "targets/S08.rq": "335289ca39a3ceaef052cb9e718f45f4f4c1d183491828efa17c92b6263f2ee3",
+    "targets/S07.cypher": "e1ef06e7ebcf1618ed8ffd1a6fbe3bf5fd601c8df002454c3d24d9e5c4bc6bfb"
+  },
+  "capability_fixture_sha256": {
+    "README.md": "ff70a79156ec777558e6f1699b6e4033941de6e494d3f95f95569f10c1b31373",
+    "cases.json": "c57f964d0de992a3bcb9fbe5e148d4d8104a5b4fb39bc9b1e641314f052b043c"
+  },
+  "native": {
+    "session": 34608,
+    "exit_code": 0,
+    "query_passed": 8,
+    "candidate_passed": 16,
+    "expected_rejections": 12,
+    "cases": [
+      {
+        "query_id": "C01",
+        "success": true,
+        "expected_placements": [
+          {
+            "paths": "neo4j",
+            "people": "fuseki"
+          }
+        ],
+        "candidate_checks": [
+          {
+            "plan_id": "capabilities-C01/3abb42220cb91fa4b21d",
+            "source_bindings": {
+              "paths": "neo4j",
+              "people": "fuseki"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/c",
+                "edge": "https://xgap.test/toy/e4"
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 0
+          }
+        ],
+        "rejected_placements": [
+          {
+            "source_bindings": {
+              "paths": "fuseki",
+              "people": "fuseki"
+            },
+            "reason": "Operator 'paths' has unsatisfied capabilities ['native.cypher', 'property_graph.read']; compiled operator provides ['coordinator.path_select', 'native.sparql', 'rdf_graph.read']"
+          },
+          {
+            "source_bindings": {
+              "paths": "fuseki",
+              "people": "neo4j"
+            },
+            "reason": "Operator 'paths' has unsatisfied capabilities ['native.cypher', 'property_graph.read']; compiled operator provides ['coordinator.path_select', 'native.sparql', 'rdf_graph.read']"
+          },
+          {
+            "source_bindings": {
+              "paths": "neo4j",
+              "people": "neo4j"
+            },
+            "reason": "Operator 'people' has unsatisfied capabilities ['native.sparql', 'rdf_graph.read']; compiled operator provides ['native.cypher', 'property_graph.read']"
+          }
+        ],
+        "selected_placement": {
+          "paths": "neo4j",
+          "people": "fuseki"
+        },
+        "capability_admission": {
+          "version": 1,
+          "operators": {
+            "paths": {
+              "required": [
+                "native.cypher",
+                "property_graph.read",
+                "coordinator.path_select"
+              ],
+              "witnesses": {
+                "coordinator.path_select": [
+                  "paths/paths"
+                ],
+                "native.cypher": [
+                  "paths/candidates"
+                ],
+                "property_graph.read": [
+                  "paths/candidates"
+                ]
+              }
+            },
+            "people": {
+              "required": [
+                "native.sparql",
+                "rdf_graph.read"
+              ],
+              "witnesses": {
+                "native.sparql": [
+                  "people/native"
+                ],
+                "rdf_graph.read": [
+                  "people/native"
+                ]
+              }
+            },
+            "join": {
+              "required": [
+                "coordinator.join"
+              ],
+              "witnesses": {
+                "coordinator.join": [
+                  "join/join"
+                ]
+              }
+            },
+            "answer": {
+              "required": [
+                "coordinator.project"
+              ],
+              "witnesses": {
+                "coordinator.project": [
+                  "answer/project"
+                ]
+              }
+            }
+          }
+        },
+        "observation_calls": 2,
+        "serving_calls": 2,
+        "validation_only_extra_remote_calls": 0
+      },
+      {
+        "query_id": "C02",
+        "success": true,
+        "expected_placements": [
+          {
+            "paths": "neo4j",
+            "people": "neo4j"
+          },
+          {
+            "paths": "neo4j",
+            "people": "fuseki"
+          },
+          {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          {
+            "paths": "fuseki",
+            "people": "fuseki"
+          }
+        ],
+        "candidate_checks": [
+          {
+            "plan_id": "capabilities-C02/82e6f2a2235b4d0a9aae",
+            "source_bindings": {
+              "paths": "fuseki",
+              "people": "fuseki"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/b",
+                "n": 2
+              },
+              {
+                "person": "https://xgap.test/toy/c",
+                "n": 2
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 0
+          },
+          {
+            "plan_id": "capabilities-C02/658eb5c7ca3b143886a3",
+            "source_bindings": {
+              "paths": "fuseki",
+              "people": "neo4j"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/b",
+                "n": 2
+              },
+              {
+                "person": "https://xgap.test/toy/c",
+                "n": 2
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 2
+          },
+          {
+            "plan_id": "capabilities-C02/14ad67922334016f992c",
+            "source_bindings": {
+              "paths": "neo4j",
+              "people": "fuseki"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/b",
+                "n": 2
+              },
+              {
+                "person": "https://xgap.test/toy/c",
+                "n": 2
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 2
+          },
+          {
+            "plan_id": "capabilities-C02/ea599f2df35187345859",
+            "source_bindings": {
+              "paths": "neo4j",
+              "people": "neo4j"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/b",
+                "n": 2
+              },
+              {
+                "person": "https://xgap.test/toy/c",
+                "n": 2
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 2
+          }
+        ],
+        "rejected_placements": [],
+        "selected_placement": {
+          "paths": "fuseki",
+          "people": "fuseki"
+        },
+        "capability_admission": {
+          "version": 1,
+          "operators": {
+            "eligible": {
+              "required": [
+                "coordinator.filter"
+              ],
+              "witnesses": {
+                "coordinator.filter": [
+                  "eligible/filter"
+                ]
+              }
+            },
+            "count": {
+              "required": [
+                "coordinator.aggregate"
+              ],
+              "witnesses": {
+                "coordinator.aggregate": [
+                  "count/aggregate"
+                ]
+              }
+            },
+            "rank": {
+              "required": [
+                "coordinator.order_limit"
+              ],
+              "witnesses": {
+                "coordinator.order_limit": [
+                  "rank/order"
+                ]
+              }
+            }
+          }
+        },
+        "observation_calls": 4,
+        "serving_calls": 2,
+        "validation_only_extra_remote_calls": 6
+      },
+      {
+        "query_id": "C03",
+        "success": true,
+        "expected_placements": [
+          {
+            "anchor": "fuseki",
+            "paths": "neo4j"
+          },
+          {
+            "anchor": "fuseki",
+            "paths": "fuseki"
+          }
+        ],
+        "candidate_checks": [
+          {
+            "plan_id": "capabilities-C03/21a5c3c8b35c12f1484e",
+            "source_bindings": {
+              "anchor": "fuseki",
+              "paths": "fuseki"
+            },
+            "actual_rows": [
+              {
+                "path": [
+                  "b",
+                  "e2",
+                  "c"
+                ]
+              },
+              {
+                "path": [
+                  "b",
+                  "e8",
+                  "d"
+                ]
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 0
+          },
+          {
+            "plan_id": "capabilities-C03/92223a889d319c1cdc7c",
+            "source_bindings": {
+              "anchor": "fuseki",
+              "paths": "neo4j"
+            },
+            "actual_rows": [
+              {
+                "path": [
+                  "b",
+                  "e2",
+                  "c"
+                ]
+              },
+              {
+                "path": [
+                  "b",
+                  "e8",
+                  "d"
+                ]
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 2
+          }
+        ],
+        "rejected_placements": [
+          {
+            "source_bindings": {
+              "anchor": "neo4j",
+              "paths": "fuseki"
+            },
+            "reason": "Operator 'anchor' has unsatisfied capabilities ['native.sparql']; compiled operator provides ['native.cypher', 'property_graph.read']"
+          },
+          {
+            "source_bindings": {
+              "anchor": "neo4j",
+              "paths": "neo4j"
+            },
+            "reason": "Operator 'anchor' has unsatisfied capabilities ['native.sparql']; compiled operator provides ['native.cypher', 'property_graph.read']"
+          }
+        ],
+        "selected_placement": {
+          "anchor": "fuseki",
+          "paths": "fuseki"
+        },
+        "capability_admission": {
+          "version": 1,
+          "operators": {
+            "anchor": {
+              "required": [
+                "native.sparql"
+              ],
+              "witnesses": {
+                "native.sparql": [
+                  "anchor/native"
+                ]
+              }
+            },
+            "paths": {
+              "required": [
+                "coordinator.semi_join",
+                "coordinator.path_select",
+                "coordinator.project"
+              ],
+              "witnesses": {
+                "coordinator.path_select": [
+                  "paths/paths"
+                ],
+                "coordinator.project": [
+                  "paths/anchor",
+                  "paths/result"
+                ],
+                "coordinator.semi_join": [
+                  "paths/bound"
+                ]
+              }
+            }
+          }
+        },
+        "observation_calls": 3,
+        "serving_calls": 2,
+        "validation_only_extra_remote_calls": 2
+      },
+      {
+        "query_id": "C04",
+        "success": true,
+        "expected_placements": [
+          {
+            "people": "neo4j"
+          },
+          {
+            "people": "fuseki"
+          }
+        ],
+        "candidate_checks": [
+          {
+            "plan_id": "capabilities-C04/cd7478d2068203d92429",
+            "source_bindings": {
+              "people": "fuseki"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/d"
+              },
+              {
+                "person": "https://xgap.test/toy/b"
+              },
+              {
+                "person": "https://xgap.test/toy/c"
+              },
+              {
+                "person": "https://xgap.test/toy/z"
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 0
+          },
+          {
+            "plan_id": "capabilities-C04/852d309d4e5d77efc53f",
+            "source_bindings": {
+              "people": "neo4j"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/d"
+              },
+              {
+                "person": "https://xgap.test/toy/b"
+              },
+              {
+                "person": "https://xgap.test/toy/c"
+              },
+              {
+                "person": "https://xgap.test/toy/z"
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 1
+          }
+        ],
+        "rejected_placements": [],
+        "selected_placement": {
+          "people": "fuseki"
+        },
+        "capability_admission": {
+          "version": 1,
+          "operators": {
+            "young": {
+              "required": [
+                "coordinator.filter"
+              ],
+              "witnesses": {
+                "coordinator.filter": [
+                  "young/filter"
+                ]
+              }
+            },
+            "old": {
+              "required": [
+                "coordinator.filter"
+              ],
+              "witnesses": {
+                "coordinator.filter": [
+                  "old/filter"
+                ]
+              }
+            },
+            "union": {
+              "required": [
+                "coordinator.union"
+              ],
+              "witnesses": {
+                "coordinator.union": [
+                  "union/union"
+                ]
+              }
+            },
+            "answer": {
+              "required": [
+                "coordinator.project"
+              ],
+              "witnesses": {
+                "coordinator.project": [
+                  "answer/project"
+                ]
+              }
+            }
+          }
+        },
+        "observation_calls": 2,
+        "serving_calls": 1,
+        "validation_only_extra_remote_calls": 1
+      },
+      {
+        "query_id": "C05",
+        "success": true,
+        "expected_placements": [
+          {
+            "people": "fuseki"
+          }
+        ],
+        "candidate_checks": [
+          {
+            "plan_id": "capabilities-C05/7b96a923b4ecb97f6612",
+            "source_bindings": {
+              "people": "fuseki"
+            },
+            "actual_rows": [
+              {
+                "n": 0
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 0
+          }
+        ],
+        "rejected_placements": [
+          {
+            "source_bindings": {
+              "people": "neo4j"
+            },
+            "reason": "Operator 'people' has unsatisfied capabilities ['rdf_graph.read']; compiled operator provides ['native.cypher', 'property_graph.read']"
+          }
+        ],
+        "selected_placement": {
+          "people": "fuseki"
+        },
+        "capability_admission": {
+          "version": 1,
+          "operators": {
+            "people": {
+              "required": [
+                "rdf_graph.read"
+              ],
+              "witnesses": {
+                "rdf_graph.read": [
+                  "people/native"
+                ]
+              }
+            },
+            "count": {
+              "required": [
+                "coordinator.aggregate"
+              ],
+              "witnesses": {
+                "coordinator.aggregate": [
+                  "count/aggregate"
+                ]
+              }
+            }
+          }
+        },
+        "observation_calls": 1,
+        "serving_calls": 1,
+        "validation_only_extra_remote_calls": 0
+      },
+      {
+        "query_id": "C06",
+        "success": true,
+        "expected_placements": [
+          {
+            "left": "neo4j",
+            "external": "fuseki"
+          }
+        ],
+        "candidate_checks": [
+          {
+            "plan_id": "capabilities-C06/3d599774148567de2198",
+            "source_bindings": {
+              "external": "fuseki",
+              "left": "neo4j"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/a"
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 0
+          }
+        ],
+        "rejected_placements": [
+          {
+            "source_bindings": {
+              "external": "fuseki",
+              "left": "fuseki"
+            },
+            "reason": "Operator 'left' has unsatisfied capabilities ['property_graph.read']; compiled operator provides ['native.sparql', 'rdf_graph.read']"
+          },
+          {
+            "source_bindings": {
+              "external": "neo4j",
+              "left": "fuseki"
+            },
+            "reason": "Operator 'left' has unsatisfied capabilities ['property_graph.read']; compiled operator provides ['native.sparql', 'rdf_graph.read']"
+          },
+          {
+            "source_bindings": {
+              "external": "neo4j",
+              "left": "neo4j"
+            },
+            "reason": "Operator 'external' has unsatisfied capabilities ['rdf_graph.read']; compiled operator provides ['native.cypher', 'property_graph.read']"
+          }
+        ],
+        "selected_placement": {
+          "external": "fuseki",
+          "left": "neo4j"
+        },
+        "capability_admission": {
+          "version": 1,
+          "operators": {
+            "left": {
+              "required": [
+                "property_graph.read"
+              ],
+              "witnesses": {
+                "property_graph.read": [
+                  "left/native"
+                ]
+              }
+            },
+            "external": {
+              "required": [
+                "rdf_graph.read"
+              ],
+              "witnesses": {
+                "rdf_graph.read": [
+                  "external/native"
+                ]
+              }
+            },
+            "aligned": {
+              "required": [
+                "coordinator.align"
+              ],
+              "witnesses": {
+                "coordinator.align": [
+                  "aligned/align"
+                ]
+              }
+            },
+            "join": {
+              "required": [
+                "equality_join"
+              ],
+              "witnesses": {
+                "equality_join": [
+                  "join/join"
+                ]
+              }
+            }
+          }
+        },
+        "observation_calls": 2,
+        "serving_calls": 2,
+        "validation_only_extra_remote_calls": 0
+      },
+      {
+        "query_id": "C07",
+        "success": true,
+        "expected_placements": [
+          {
+            "left": "neo4j",
+            "right": "neo4j"
+          },
+          {
+            "left": "neo4j",
+            "right": "fuseki"
+          },
+          {
+            "left": "fuseki",
+            "right": "neo4j"
+          },
+          {
+            "left": "fuseki",
+            "right": "fuseki"
+          }
+        ],
+        "candidate_checks": [
+          {
+            "plan_id": "capabilities-C07/e6b27466b116d60f5327",
+            "source_bindings": {
+              "left": "fuseki",
+              "right": "fuseki"
+            },
+            "actual_rows": [
+              {
+                "left_age": 30,
+                "right_age": 30
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 0
+          },
+          {
+            "plan_id": "capabilities-C07/099431d02f3be5bdf570",
+            "source_bindings": {
+              "left": "fuseki",
+              "right": "neo4j"
+            },
+            "actual_rows": [
+              {
+                "left_age": 30,
+                "right_age": 30
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 2
+          },
+          {
+            "plan_id": "capabilities-C07/804176200b5a14d7e6c1",
+            "source_bindings": {
+              "left": "neo4j",
+              "right": "fuseki"
+            },
+            "actual_rows": [
+              {
+                "left_age": 30,
+                "right_age": 30
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 2
+          },
+          {
+            "plan_id": "capabilities-C07/f23c0c31201b85ec1581",
+            "source_bindings": {
+              "left": "neo4j",
+              "right": "neo4j"
+            },
+            "actual_rows": [
+              {
+                "left_age": 30,
+                "right_age": 30
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 2
+          }
+        ],
+        "rejected_placements": [],
+        "selected_placement": {
+          "left": "fuseki",
+          "right": "fuseki"
+        },
+        "capability_admission": {
+          "version": 1,
+          "operators": {
+            "join": {
+              "required": [
+                "coordinator.join",
+                "equality_join"
+              ],
+              "witnesses": {
+                "coordinator.join": [
+                  "join/join"
+                ],
+                "equality_join": [
+                  "join/join"
+                ]
+              }
+            }
+          }
+        },
+        "observation_calls": 4,
+        "serving_calls": 2,
+        "validation_only_extra_remote_calls": 6
+      },
+      {
+        "query_id": "C08",
+        "success": true,
+        "expected_placements": [
+          {
+            "paths": "fuseki",
+            "people": "neo4j"
+          }
+        ],
+        "candidate_checks": [
+          {
+            "plan_id": "capabilities-C08/c8d6ad59604901056267",
+            "source_bindings": {
+              "paths": "fuseki",
+              "people": "neo4j"
+            },
+            "actual_rows": [
+              {
+                "person": "https://xgap.test/toy/c",
+                "edge": "https://xgap.test/toy/e4"
+              }
+            ],
+            "success": true,
+            "additional_remote_calls": 0
+          }
+        ],
+        "rejected_placements": [
+          {
+            "source_bindings": {
+              "paths": "fuseki",
+              "people": "fuseki"
+            },
+            "reason": "Operator 'people' has unsatisfied capabilities ['native.cypher']; compiled operator provides ['native.sparql', 'rdf_graph.read']"
+          },
+          {
+            "source_bindings": {
+              "paths": "neo4j",
+              "people": "fuseki"
+            },
+            "reason": "Operator 'paths' has unsatisfied capabilities ['native.sparql']; compiled operator provides ['coordinator.path_select', 'native.cypher', 'property_graph.read']"
+          },
+          {
+            "source_bindings": {
+              "paths": "neo4j",
+              "people": "neo4j"
+            },
+            "reason": "Operator 'paths' has unsatisfied capabilities ['native.sparql']; compiled operator provides ['coordinator.path_select', 'native.cypher', 'property_graph.read']"
+          }
+        ],
+        "selected_placement": {
+          "paths": "fuseki",
+          "people": "neo4j"
+        },
+        "capability_admission": {
+          "version": 1,
+          "operators": {
+            "paths": {
+              "required": [
+                "native.sparql"
+              ],
+              "witnesses": {
+                "native.sparql": [
+                  "paths/candidates"
+                ]
+              }
+            },
+            "people": {
+              "required": [
+                "native.cypher"
+              ],
+              "witnesses": {
+                "native.cypher": [
+                  "people/native"
+                ]
+              }
+            },
+            "join": {
+              "required": [
+                "coordinator.join"
+              ],
+              "witnesses": {
+                "coordinator.join": [
+                  "join/join"
+                ]
+              }
+            }
+          }
+        },
+        "observation_calls": 2,
+        "serving_calls": 2,
+        "validation_only_extra_remote_calls": 0
+      }
+    ],
+    "shutdown": [
+      {
+        "service_id": "fuseki",
+        "pid": 15625,
+        "initial_exit_code": null,
+        "final_exit_code": 143,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      },
+      {
+        "service_id": "neo4j",
+        "pid": 15551,
+        "initial_exit_code": null,
+        "final_exit_code": 0,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      }
+    ],
+    "original_slice_passed": true,
+    "automatic_retries": 0,
+    "observation_calls": 20,
+    "serving_calls": 14,
+    "validation_only_extra_calls": 15,
+    "original_slice_calls": 2
+  },
+  "focused": {
+    "session": 8138,
+    "exit_code": 0,
+    "passed": 120,
+    "seconds": 3.51,
+    "log": "/tmp/xgap-t1-capabilities-focused.log"
+  },
+  "daily": {
+    "session": 47096,
+    "exit_code": 0,
+    "passed": 300,
+    "seconds": 13.51,
+    "demo_queries": 18,
+    "log": "/tmp/xgap-t1-capabilities-fast.log"
+  },
+  "acceptance": {
+    "session": 91696,
+    "status": "completed",
+    "log": "/tmp/xgap-t1-capabilities-acceptance.log",
+    "exit_code": 0,
+    "passed": 3145,
+    "skipped": 38,
+    "seconds": 667.51,
+    "harness_and_examples": [
+      "scripts/check_harness.py",
+      "examples/toy_backbone_demo.py",
+      "examples/core_algebra_demo.py",
+      "examples/plan_print_demo.py",
+      "examples/recursive_demo.py",
+      "examples/solution_space_demo.py",
+      "examples/semantic_audit_demo.py",
+      "examples/lowering_demo.py",
+      "examples/pattern_lowering_audit_demo.py",
+      "examples/quantified_pattern_demo.py",
+      "examples/compiler_mvp_demo.py",
+      "examples/llm_boundary_demo.py",
+      "examples/m11_physical_planner_demo.py",
+      "examples/m11_exhaustive_oracle_demo.py",
+      "examples/m12_experiment_contract_demo.py",
+      "examples/m12c_calibration_demo.py",
+      "examples/m12d_experiment_matrix_demo.py",
+      "examples/m15_goal_loop_demo.py",
+      "examples/m15_federated_vertical_slice_demo.py",
+      "examples/m15_semantic_intake_demo.py",
+      "examples/m15_resolution_execution_bridge_demo.py",
+      "examples/freebase_typed_fact_demo.py",
+      "examples/grounded_candidate_execution_demo.py",
+      "examples/freebase_question_demo.py"
+    ]
+  },
+  "schedule": {
+    "pause_after_milestone": true,
+    "resume_at": "2026-09-11T10:00:00+08:00",
+    "automation_id": "xgap"
+  },
+  "all_handles_terminal": true,
+  "source_hashes_match_at_acceptance": true
+}

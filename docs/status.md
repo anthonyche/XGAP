@@ -2,6 +2,15 @@
 
 ## Active engineering loop — 2026-09-10
 
+T1 capability admission now links nonempty semantic requirements to actual
+owned native/coordinator nodes. Native8/8 query goals,16/16 admitted placement
+answers,12 expected rejections and the retained two-engine slice pass. Existing
+compiler profile limits still apply; no capability is borrowed from another
+operator. Focused120/daily300 pass; broad91696 exited0:3145 passed/38 skipped
+in667.51s and all24 harness/example entrypoints passed. This step is accepted.
+See [the capability report](report/toy_backbone_t1_capabilities.md).
+User requests a pause after this milestone until2026-09-11 10:00 +08:00.
+
 Latest T1 orientation gate: original18 logical/reference answers now pass with
 an explicit versioned T15 logical expectation; original gold files stay frozen.
 Reverse is a separately specified XGAP extension, retaining Edges(G), identities

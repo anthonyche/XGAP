@@ -20,6 +20,7 @@ from xgap.runtime.bounded_paths import compile_bounded_path_plan
 from xgap.runtime.contracts import FederatedExecutionPlan, RuntimeNode, RuntimeNodeKind as R
 from xgap.runtime.row_operations import condition_fields
 from xgap.runtime.scheduler import FederatedScheduler
+from xgap.runtime.semantic_capabilities import admit_semantic_capabilities
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S, SemanticProgramError, SemanticValueKind as V
 
 
@@ -108,8 +109,6 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
         predicates = [dict(c.predicate) for c in op.constraints]
         if predicates and op.kind not in (S.MATCH, S.TRAVERSE, S.FILTER):
             raise SemanticProgramError("Place executable constraints on Match, Traverse or Filter")
-        if op.required_capabilities:
-            raise SemanticProgramError("Additional capability requirements need explicit admission before compilation")
         p = dict(op.parameters)
         if set(p) - supported_params[op.kind]:
             raise SemanticProgramError(f"Unknown {op.kind.value} parameters: {sorted(set(p) - supported_params[op.kind])}")
@@ -239,10 +238,12 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
         raise SemanticProgramError("Semantic program contains unreachable operators")
     if set(source_bindings) != {op.operator_id for op in program.operators if op.kind in (S.MATCH, S.TRAVERSE)}:
         raise SemanticProgramError("Source bindings must exactly cover Match/Traverse operators")
+    admission = admit_semantic_capabilities(program, nodes, backends)
     serialized = json.dumps(program.to_dict(), sort_keys=True, separators=(",", ":"), allow_nan=False)
     return FederatedExecutionPlan(program.program_id, tuple(nodes), tuple(outputs[r] for r in program.roots),
         max_remote_calls, max_parallelism, {"compiler": "semantic_dag_v1",
         "semantic_program_sha256": hashlib.sha256(serialized.encode()).hexdigest(),
         "source_bindings": dict(source_bindings), "operator_outputs": outputs,
+        **({"capability_admission": admission} if admission else {}),
         "schemas": {key: {"kind": s.kind.value, "fields": sorted(s.fields),
                           "path_namespace": s.path_namespace} for key, s in schemas.items()}})

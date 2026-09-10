@@ -52,6 +52,12 @@ Required work:
 
 Implemented locally:
 
+- semantic native/read/coordinator requirement admission against actual owned
+  runtime nodes, replacing blanket rejection of nonempty requirements while
+  retaining native compiler limits. Tiny real execution passes8/8 programs and
+  all16 admitted placements, rejects12 expected placements and keeps the old
+  two-engine slice correct. Full acceptance3145/38 plus24 harness/examples passes; see
+  [the capability gate](report/toy_backbone_t1_capabilities.md);
 - a typed binding/control connection from the existing resolver and GoalLoop to
   semantic candidate planning and native execution. Registered values change
   actual identity/schema/source/scalar meaning; named typed constraints are

@@ -2,6 +2,12 @@
 
 Current engineering loop and evidence: [engineering_state.md](engineering_state.md).
 
+The toy-first T1 capability step binds required native/read/coordinator names
+to runtime nodes owned by the requesting semantic operator, after pure native
+compilation and before any observations or execution. See
+[semantic capability admission v1](decisions/semantic_capabilities_v1.md).
+This does not change the path algebra or admit arbitrary domain requirements.
+
 ## D1 Logical algebra alignment
 
 XGAP's path-algebra vocabulary aligns with the path algebra from

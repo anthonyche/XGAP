@@ -13,6 +13,13 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
 服务器操作、外部 artifacts 或实质研究方向决策需要用户介入；此次 toy-first
 方向调整已获明确授权，不重复确认。
 
+## 本次暂停与恢复
+
+用户于 2026-09-10 晚明确要求：完成当前 T1 capability milestone 后暂停开发，
+北京时间 **2026-09-11 10:00** 恢复。期间不启动新 milestone、实验或无意义轮询。
+现有 xgap 定时任务已调整到下一次上午 10 点，恢复时还原此前每小时持续节奏。
+这是用户指定的暂停，总体目标仍未完成，不标记 complete 或 blocked。
+
 ## 开发原则
 
 1. **Development dataset 可以是自己构建的极小 toy graph。** 用于快速测
@@ -110,7 +117,13 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
   编译答案、18/18 独立对照和旧 slice 正确；focused212/最终fast272 pass。
   完整回归原 session96124 已exit0：3,117 pass/38 skip，24 个 harness/example
   入口通过；此方向步骤已验收。见 [方向报告](report/toy_backbone_t1_orientation.md)。
-- **立即下一步**：继续同一 toy graph 的语义 capability 准入与剩余 path/typed
+- **T1 capability 准入已验收。** 非空要求现在对应
+  当前操作实际生成的 native/coordinator 节点。八个已有完整链的显式 overlay
+  保留 16 个位置、按预期排除 12 个；真实 8/8 查询、16/16 候选答案和旧 slice
+  正确。Focused120/daily300 pass，完整回归原 session91696 已 exit0：
+  3,145 passed/38 skipped，24 个 harness/example 入口通过。见
+  [本轮报告](report/toy_backbone_t1_capabilities.md)。
+- **恢复后下一步**：继续同一 toy graph 的剩余 path/typed
   semantics，并推进 T2 Interpretation、offline catalog freeze/runtime-only lookup、
   failure replay，再进入 T3。详细 evidence 见
   [当前工程状态](engineering_state.md) 和 [方向闭合报告](report/toy_backbone_t1_orientation.md)。

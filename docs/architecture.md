@@ -1,5 +1,13 @@
 # XGAP Architecture
 
+The toy-first semantic compiler now admits explicit native/read/coordinator
+requirements using runtime nodes owned by the requesting semantic operator,
+after native compilation and before observation or execution. Requirements
+cannot borrow another operator's capability; native profile/encoding/shape
+checks remain necessary. This static admission is separate from live health
+and arbitrary domain-specific semantic admission. See
+[the capability decision](decisions/semantic_capabilities_v1.md).
+
 XGAP is a cost-aware agentic federated graph-query system over heterogeneous
 black-box engines. Its mainline architecture is specified in
 [`docs/agentic_architecture.md`](agentic_architecture.md).

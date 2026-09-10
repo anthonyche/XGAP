@@ -165,6 +165,10 @@ class SemanticOperator:
                 f"operator '{self.operator_id}' kind '{self.kind.value}' expects "
                 f"{expected} inputs, got {len(self.input_ids)}"
             )
+        if isinstance(self.required_capabilities, str) or any(
+            not isinstance(name, str) or not name.strip() for name in self.required_capabilities
+        ):
+            raise SemanticProgramError("Capability requirements must be nonempty strings")
         if len(set(self.required_capabilities)) != len(self.required_capabilities):
             raise SemanticProgramError(
                 f"operator '{self.operator_id}' has duplicate capability requirements"

@@ -32,6 +32,8 @@ from xgap.experiments.toy_planning import execute_planned_semantic_case
 from xgap.experiments.toy_binding import (FIXTURE as BINDING_FIXTURE, load_binding_cases,
     execute_binding_case, reference_artifact, reference_rows)
 from xgap.experiments.toy_orientation import FIXTURE as ORIENTATION_FIXTURE, load_orientation_cases
+from xgap.experiments.toy_capabilities import (FIXTURE as CAPABILITY_FIXTURE,
+    load_capability_cases, execute_capability_case)
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 
@@ -55,6 +57,8 @@ def main(argv=None):
         help="Resolve frozen toy semantic slots, bind constraints, plan and execute with GoalLoop")
     selection.add_argument("--orientation", action="store_true",
         help="Check mixed/undirected/recursive orientation witnesses against independent native targets")
+    selection.add_argument("--capability-semantic", action="store_true",
+        help="Admit declared semantic capabilities before observing and executing placements")
     args = parser.parse_args(argv)
     if not args.execute:
         parser.error("Fresh owned native execution requires --execute")
@@ -86,12 +90,12 @@ def main(argv=None):
             "src/xgap/algebra/ops.py", "src/xgap/algebra/validation.py",
             "src/xgap/pattern/lowering.py", "src/xgap/compilers/features.py",
             "src/xgap/experiments/toy_orientation.py"))
-    if args.semantic_dag or args.planned_semantic or args.agentic_semantic:
+    if args.semantic_dag or args.planned_semantic or args.agentic_semantic or args.capability_semantic:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/experiments/toy_semantic.py", "src/xgap/compilers/node_match.py",
             "src/xgap/runtime/semantic_compiler.py", "src/xgap/runtime/row_operations.py",
-            "src/xgap/semantic/program.py"))
-    if args.planned_semantic or args.agentic_semantic:
+            "src/xgap/semantic/program.py", "src/xgap/runtime/semantic_capabilities.py"))
+    if args.planned_semantic or args.agentic_semantic or args.capability_semantic:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
             "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
@@ -102,7 +106,10 @@ def main(argv=None):
             "src/xgap/agent/resolution.py", "src/xgap/agent/loop.py",
             "src/xgap/tools/artifact_resolution.py", "src/xgap/tools/resolution.py",
             "src/xgap/experiments/toy_binding.py"))
-    record = {"success": False, "scope": ("T1 logical and native path orientation" if args.orientation else
+    if args.capability_semantic:
+        source_files.append(REPO / "src/xgap/experiments/toy_capabilities.py")
+    record = {"success": False, "scope": ("T1 semantic capability admission" if args.capability_semantic else
+                                           "T1 logical and native path orientation" if args.orientation else
                                            "T1 semantic binding and bounded agent execution" if args.agentic_semantic else
                                            "T1 semantic candidate planning" if args.planned_semantic else
                                            "T1 semantic DAG execution" if args.semantic_dag else
@@ -114,11 +121,16 @@ def main(argv=None):
         "fixture_sha256": {str(p.relative_to(DEFAULT_FIXTURE)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
         "source_sha256": {str(p.relative_to(REPO)): hashlib.sha256(p.read_bytes()).hexdigest() for p in source_files},
         "health": [], "loads": [], "targets": [], "shutdown": [], "automatic_retries": 0}
-    if args.semantic_dag or args.planned_semantic:
+    if args.semantic_dag or args.planned_semantic or args.capability_semantic:
         record.update(semantic_cases=[], semantic_reference_targets=[], planned_cases=[],
             semantic_fixture_sha256={str(p.relative_to(SEMANTIC_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in SEMANTIC_FIXTURE.rglob("*") if p.is_file()})
+    if args.capability_semantic:
+        record.update(query_ids=[c["id"] for c in load_capability_cases()],
+            capability_fixture_sha256={str(p.relative_to(CAPABILITY_FIXTURE)):
+                hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in CAPABILITY_FIXTURE.rglob("*") if p.is_file()})
     if args.agentic_semantic:
         record.update(binding_cases=[], binding_reference_targets=[],
             binding_fixture_sha256={str(p.relative_to(BINDING_FIXTURE)):
@@ -200,7 +212,7 @@ def main(argv=None):
                            "compiled-directed" if args.compiled_directed else "independent-targets")
         selected = [case for case in cases if not args.compiled_directed
                     or case["id"] in DIRECTED_TOY_QUERY_IDS]
-        if args.planned_semantic or args.agentic_semantic:
+        if args.planned_semantic or args.agentic_semantic or args.capability_semantic:
             selected = []  # Changed planning boundary uses the composition cases below.
         if args.orientation:
             selected = load_orientation_cases()
@@ -269,13 +281,15 @@ def main(argv=None):
                 save()
                 if not reference["success"]:
                     raise RuntimeError(f"Independent semantic reference failed: {case['id']}; no retry")
-        if args.planned_semantic:
-            for case in load_semantic_cases():
-                record["phase"] = "planned-semantic-" + case["id"]
+        if args.planned_semantic or args.capability_semantic:
+            planning_cases = load_capability_cases() if args.capability_semantic else load_semantic_cases()
+            execute_planning = execute_capability_case if args.capability_semantic else execute_planned_semantic_case
+            for case in planning_cases:
+                record["phase"] = ("capability-semantic-" if args.capability_semantic else "planned-semantic-") + case["id"]
                 item = {"query_id": case["id"], "status": "started", "success": False}
                 record["planned_cases"].append(item)
                 save()
-                item.update(execute_planned_semantic_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf}),
+                item.update(execute_planning(case, mapping, clients={"neo4j": neo, "fuseki": rdf}),
                             status="completed")
                 save()
                 if not item["success"]:

@@ -13,6 +13,16 @@ Updated: 2026-09-10. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
 ## User schedule and stopping condition
 
+**New instruction, 2026-09-10 evening:** complete the current capability
+milestone, then stop development until **2026-09-11 10:00 +08:00**. Do not start
+the next milestone tonight. The existing xgap heartbeat was updated through
+the app tool to next run at10:00 local time (daily10:00 cadence); upon that
+scheduled recovery restore its previous hourly cadence and continue toy-first.
+Before the recovery time, do not run work or poll terminal handles to fill the
+pause. The overall Goal remains unfinished; do not mark it complete/blocked.
+
+Historical schedule:
+
 The user-requested overnight pause ended at **2026-09-10 10:00 +08:00**.
 Work resumed at 10:03 and the existing `xgap` heartbeat was restored to ACTIVE
 hourly cadence. D198 had completed at commit `65ad96c` before the pause.
@@ -27,6 +37,33 @@ Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
+
+T1 semantic capability admission is ACCEPTED on top of2f978b8. The prior
+goal turn made progress: orientation code and the consolidated report were
+committed/pushed; this turn changes the executable admission boundary.
+Pure compilation now resolves requested native/read/coordinator capabilities
+to runtime nodes owned by that semantic operator. Existing native profile and
+shape checks still apply. Unknown or misplaced requirements cannot borrow a
+child's capability or silently disappear. Eight explicit overlays reuse the
+original complete semantic chains:16 of28 placements admitted,12 rejected.
+Focused gate120 passed/3.51s, original session8138 exit0.
+
+Daily47096 is terminal exit0:300 passed/13.51s plus18 demo answers. Native34608
+is terminal exit0:8/8 queries,16/16 admitted placement answers and old slice
+correct;12 disallowed placements retained as rejected.20 observations+14 serving
+calls;15 alternative-validation calls and2 old-slice calls separate. Both owned
+services stopped normally, no kill/retry, source hashes match.
+Broad91696 is terminal exit0:3145 passed/38 skipped/667.51s, all24 harness/example
+entrypoints passed. All current test/native handles are terminal. No production
+source changed after broad launch. Do not repeat accepted checks without new evidence.
+Logs `/tmp/xgap-t1-capabilities-{fast,native,acceptance}.log`.
+Native output `/Users/anthonyche/xgap-data/t1-capabilities-native-20260910`.
+Decision `docs/decisions/semantic_capabilities_v1.md`; native and broad acceptance
+passed. Report `docs/report/toy_backbone_t1_capabilities.md`. Stop after commit/push
+per the new user pause; resume at2026-09-11 10:00 +08:00. This is not a blocker.
+The graph and original gold remain unchanged. Overall Goal stays active.
+
+## Accepted orientation predecessor
 
 T1 orientation/reference closure is ACCEPTED on top of07e0c7a.
 Separate semantic decision: `docs/decisions/path_orientation_v1.md`.
