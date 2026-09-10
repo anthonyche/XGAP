@@ -23,6 +23,8 @@ from xgap.experiments.runtime_alignment import (
 )
 from xgap.experiments.semantic import DirectionalOntologyDeviation, OntologyGraph, SemanticDeviationConfig
 from xgap.llm.schemas import PlannerRequest
+from xgap.llm.parser import parse_path_pattern_query
+from xgap.compilers import compile_cypher, UnsupportedCompilationError
 
 
 FIXTURES = runpy.run_path(str(Path(__file__).with_name("test_m13e3b4_relation_endpoint_grounding.py")))
@@ -228,15 +230,16 @@ def test_unknown_policy_fails_before_any_retrieval_or_provider():
     assert catalog.mock_calls == provider.mock_calls == []
 
 
-def test_capability_limits_are_not_disguised_as_grounding_success(case):
-    # This repair does not pretend that the M5 lowerer supports IN. It is an
-    # independent capability gap, retained for the next admission milestone.
+def test_logical_direction_support_does_not_claim_backend_admission(case):
+    # IN now has an explicit logical plan; the older M9 target remains unsupported.
     candidate = case.raw["candidates"][0]
     candidate["pattern_query"]["expr"]["edge"]["direction"] = "IN"
     candidate["pattern_query"]["target"]["label"] = "type.source"
     state = _infer(case)
-    assert state["candidates"][0]["validation"]["stage"] == "lowering"
-    assert state["semantic_scores"] == []
+    validation=state["candidates"][0]["validation"]
+    assert validation["stage"] == "validated" and "Reverse" in validation["formatted_plan"]
+    with pytest.raises(UnsupportedCompilationError,match="Reverse"):
+        compile_cypher(parse_path_pattern_query(candidate["pattern_query"]))
 
 
 def test_rejected_exact_reference_cannot_inflate_recall_or_structured_rate(case, tmp_path):
@@ -295,15 +298,15 @@ def test_semantic_policy_keeps_in_candidate_without_claiming_execution(case, tmp
     row, = state["candidates"]
     assert row["validation"]["ok"] and row["grounded"] and row["semantic_admissible"]
     assert row["validation"]["formatted_plan"] is None
-    assert row["logical_lowering"]["status"] == "unavailable"
-    assert not row["logical_lowering"]["available"]
+    assert row["logical_lowering"]["status"] == "available"
+    assert row["logical_lowering"]["available"]
     assert not row["logical_lowering"]["backend_execution_verified"]
     result = _assert_metrics(case, tmp_path, state, raw["pattern_query"], 0.5, 1,
                              rejected=0, policy=SEMANTIC_GROUNDING_POLICY)
     assert result["metrics"]["logical_lowering_status_counts"] == {
-        "available": 0, "unavailable": 1, "error": 0, "not_assessed": 0,
+        "available": 1, "unavailable": 0, "error": 0, "not_assessed": 0,
     }
-    assert result["metrics"]["logical_lowering_available_query_rate"] == 0
+    assert result["metrics"]["logical_lowering_available_query_rate"] == 0.5
     assert len(result["candidate_capabilities"]) == 1
     assert case.raw == before
 

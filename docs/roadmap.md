@@ -2,6 +2,17 @@
 
 ## Current engineering milestones — 2026-09-10
 
+Latest T1 orientation gate: original18 logical/reference answers now pass with
+an explicit versioned T15 logical expectation; original gold files stay frozen.
+Reverse is a separately specified XGAP extension, retaining Edges(G), identities
+and recursive modes. Native18/18 executions and18/18 independent targets on9 new
+orientation cases pass, with the original two-engine slice. Focused212/fast180
+pass; final broad session96124 exited0:3,117 pass/38 skip in662.26s, all24
+harness/example entrypoints pass. The expanded daily gate passes272 in12.56s.
+This orientation step is accepted. See
+[the orientation report](report/toy_backbone_t1_orientation.md). The whole system
+Goal remains unfinished. Earlier milestones below retain historical next steps.
+
 Latest T1 semantic binding/control native gate passes:5/5 controlled programs,
 18/18 placement candidate answers,10/10 independent native references and the
 old two-engine slice. Typed identity/schema/source/scalar bindings and named

@@ -16,14 +16,15 @@ from xgap.compilers.directed import (
 )
 from xgap.compilers.features import BoundCondition, default_profile
 from xgap.infrastructure.runtime import QueryArtifact
-from xgap.pattern.ast import Alt, EdgePattern, PathMode, Plus, Rel, Selector, SelectorKind, Seq, Star
+from xgap.pattern.ast import Alt, Direction, EdgePattern, PathMode, Plus, Rel, Selector, SelectorKind, Seq, Star
 from xgap.pattern.semantic_validation import type_check_semantic_path_pattern
 
 
 def _alternatives(expr, limit):
     if isinstance(expr, Rel):
-        return [(expr.edge,)]
-    if isinstance(expr, Alt):
+        result = ([(replace(expr.edge, direction=direction),) for direction in (Direction.OUT, Direction.IN)]
+                  if expr.edge.direction is Direction.UNDIRECTED else [(expr.edge,)])
+    elif isinstance(expr, Alt):
         result = _alternatives(expr.left, limit) + _alternatives(expr.right, limit)
     elif isinstance(expr, Seq):
         left, right = _alternatives(expr.left, limit), _alternatives(expr.right, limit)

@@ -119,7 +119,8 @@ def test_mixed_siblings_and_in_capability_reconstructed(tmp_path, monkeypatch):
     result = audit(case, state, events)
     assert len(result.candidates) == 3
     assert result.candidates[1]["grounded"] is False
-    assert result.candidates[2]["logical_lowering"]["available"] is False
+    assert result.candidates[2]["logical_lowering"]["available"] is True
+    assert result.candidates[2]["logical_lowering"]["backend_execution_verified"] is False
     assert len(case.calls) == 1
 
 

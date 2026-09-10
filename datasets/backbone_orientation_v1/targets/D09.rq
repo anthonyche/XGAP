@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT ?path WHERE { VALUES ?n0 {t:z} ?n0 t:id ?path . }

@@ -76,6 +76,26 @@ Implemented.
 
 Returns a `PathSet` containing one one-length `Path` for every edge in graph `G`. Each path has the form `source, edge, target`.
 
+## Reverse(P) — XGAP orientation extension
+
+`ReverseOp` consumes and returns a PathSet. It reverses each alternating
+traversal sequence without changing graph storage, edge identity or properties.
+A reversed one-edge path is `stored target, edge, stored source`. Zero-length
+paths stay unchanged. This explicit XGAP extension does not redefine Edges(G)
+or claim an additional operator in the original paper algebra. See
+[the versioned semantic decision](decisions/path_orientation_v1.md).
+
+Reversal is involutive and preserves lengths; it distributes over Union and
+reverses the input order of Join. Node/edge position references outside Reverse
+refer to the resulting traversal sequence. It accepts PathSet only; it does not
+reverse SolutionSpace ranks or BindingRelation rows.
+
+IN relations lower to Reverse of the corresponding filtered OUT relation.
+UNDIRECTED relations lower to the Union of both orientations. Self-loop paths
+deduplicate, parallel edge IDs remain distinct, and existing recursive modes
+apply unchanged to the resulting sequences. Traversing one edge in opposite
+directions repeats that edge identity and therefore violates TRAIL.
+
 ## Selection
 
 Evaluates a child operator and keeps only paths that satisfy a scalar

@@ -12,6 +12,7 @@ from xgap.experiments.toy_backbone import (
 )
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import ExecutionReport
+from xgap.experiments.toy_orientation import logical_expectations
 
 
 DATA, CASES, MAPPING = load_fixture()
@@ -27,15 +28,9 @@ def test_tiny_population_preserves_parallel_edges_cycles_and_isolated_node():
 
 @pytest.mark.parametrize("case", CASES, ids=lambda c: c["id"])
 def test_gold_to_logical_plan_and_complete_reference_paths(case):
-    row = check_reference(case, property_graph(DATA))
-    if case["id"] == "T15":
-        # T0 documents the gap, not a claim that IN is implemented by this lowerer.
-        assert not row["reference_passed"] and "only OUT" in row["gap"]
-        assert case["expected_paths"] == ["b/e1/a", "b/e7/a"]
-        assert compile_diagnostics(case, MAPPING)["directed_cypher"]["available"]
-    else:
-        assert row["logical_plan_passed"], row
-        assert row["reference_passed"], row
+    row = check_reference(case, property_graph(DATA), expected_logical_plan=logical_expectations().get(case["id"]))
+    assert row["logical_plan_passed"], row
+    assert row["reference_passed"], row
 
 
 def test_all_independent_sparql_targets_match_authored_answers():

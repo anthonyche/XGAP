@@ -168,10 +168,11 @@ def test_empty_relation_label_and_unsupported_regex_nodes_are_rejected() -> None
         lower_regex(Bounded(Rel(EdgePattern(label="Knows")), 1, 2), RecursiveMode.TRAIL)
 
 
-def test_in_and_undirected_directions_are_rejected_by_lowering() -> None:
+def test_in_and_undirected_directions_have_valid_orientation_plans() -> None:
     for direction in (Direction.IN, Direction.UNDIRECTED):
-        with pytest.raises(LoweringError):
-            lower_path_pattern(pattern_query(expr=Rel(EdgePattern(label="Knows", direction=direction))))
+        plan = lower_path_pattern(pattern_query(expr=Rel(EdgePattern(label="Knows", direction=direction))))
+        validate_plan(plan)
+        assert "Reverse" in format_plan(plan)
 
 
 def test_descriptor_lowering_filters_source_and_target() -> None:

@@ -22,6 +22,7 @@ from xgap.algebra.ops import (
     ProjectionOp,
     RecursiveMode,
     RecursiveOp,
+    ReverseOp,
     SelectionOp,
     UnionOp,
 )
@@ -152,8 +153,6 @@ def lower_to_logical_plan(query: PathPatternQuery) -> AlgebraOp:
 
 
 def _lower_rel(edge: EdgePattern) -> AlgebraOp:
-    if edge.direction is not Direction.OUT:
-        raise LoweringError(f"M5 lowering supports only OUT edges, got {edge.direction.name}.")
     conditions: list[Condition] = []
     if edge.label is not None:
         if not edge.label:
@@ -165,9 +164,14 @@ def _lower_rel(edge: EdgePattern) -> AlgebraOp:
         conditions.append(PropertyEquals(EdgeRef(1), name, value))
 
     condition = _and_conditions(conditions)
-    if condition is None:
-        return EdgesOp()
-    return SelectionOp(condition, EdgesOp())
+    forward = EdgesOp() if condition is None else SelectionOp(condition, EdgesOp())
+    if edge.direction is Direction.OUT:
+        return forward
+    if edge.direction is Direction.IN:
+        return ReverseOp(forward)
+    if edge.direction is Direction.UNDIRECTED:
+        return UnionOp(forward, ReverseOp(forward))
+    raise LoweringError("Unknown edge direction")
 
 
 def _node_descriptor_condition(pattern: NodePattern, ref: NodeRef) -> Condition | None:

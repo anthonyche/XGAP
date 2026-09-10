@@ -2,6 +2,12 @@
 > Historical scope note: this document records the M5.5 audit boundary.
 > Later milestones do not retroactively change the audited M5 contract.
 
+Historical M5 audit below. As of the T1 orientation extension, IN and
+UNDIRECTED lower through explicit Reverse/Union and have independent logical
+and native checks; old rejection statements describe the pre-extension scope.
+See [the versioned decision](decisions/path_orientation_v1.md) and
+[current report](report/toy_backbone_t1_orientation.md). Original gold is retained.
+
 ## Scope
 
 This audit checks the M5 GPC-Lite pattern layer and deterministic lowering pipeline:

@@ -245,6 +245,12 @@ This is called a federated execution plan rather than a database-internal
 physical plan. Each `RemoteQuery` invokes a backend interface; the selected
 backend remains responsible for its internal physical optimization.
 
+The explicit XGAP Reverse(PathSet) extension preserves directed graph storage
+and all existing operator definitions while giving IN a logical reference plan.
+UNDIRECTED lowers to Union of both orientations; bounded native expansion reuses
+OUT/IN compilers and existing deduplication/selectors. It is a path-orientation
+extension, not an agent action. See [the semantic decision](decisions/path_orientation_v1.md).
+
 `CoordinatorPathSelect` normalizes explicit native path identities and executes
 the existing SolutionSpace selector algebra. Bounded native path expansion and
 this coordinator stage form one executable plan; selector work and candidate

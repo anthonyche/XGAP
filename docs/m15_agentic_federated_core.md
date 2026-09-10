@@ -52,6 +52,19 @@ Required work:
 
 Implemented locally:
 
+- a typed binding/control connection from the existing resolver and GoalLoop to
+  semantic candidate planning and native execution. Registered values change
+  actual identity/schema/source/scalar meaning; named typed constraints are
+  conjoined with existing conditions before backend dispatch. Native5/5 query
+  goals and18/18 placement answers pass; broad3098/38. This is controlled
+  Interpretation evidence, not live NL quality; see
+  [the binding gate](report/toy_backbone_t1_semantic_binding.md);
+- a separately specified XGAP Reverse(PathSet) extension for IN logical reference
+  and Union-based undirected semantics. Stored edge identities and Edges(G)
+  remain unchanged. Bounded native direction expansion passes18/18 executions
+  and18/18 independent targets on9 new tiny cases; final full acceptance passes
+  3117/38 and all24 harness/example entrypoints.
+  See [the orientation gate](report/toy_backbone_t1_orientation.md);
 - automatic finite placement enumeration from typed programs and declared
   equivalent source replicas, unique registered native observations, existing
   cost selection and selected-plan execution. Tiny native validation passes8/8

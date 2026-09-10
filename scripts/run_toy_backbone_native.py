@@ -31,6 +31,7 @@ from xgap.experiments.toy_semantic import (
 from xgap.experiments.toy_planning import execute_planned_semantic_case
 from xgap.experiments.toy_binding import (FIXTURE as BINDING_FIXTURE, load_binding_cases,
     execute_binding_case, reference_artifact, reference_rows)
+from xgap.experiments.toy_orientation import FIXTURE as ORIENTATION_FIXTURE, load_orientation_cases
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 
@@ -52,6 +53,8 @@ def main(argv=None):
         help="Generate placements, collect native observations, select and execute semantic DAGs")
     selection.add_argument("--agentic-semantic", action="store_true",
         help="Resolve frozen toy semantic slots, bind constraints, plan and execute with GoalLoop")
+    selection.add_argument("--orientation", action="store_true",
+        help="Check mixed/undirected/recursive orientation witnesses against independent native targets")
     args = parser.parse_args(argv)
     if not args.execute:
         parser.error("Fresh owned native execution requires --execute")
@@ -78,6 +81,11 @@ def main(argv=None):
         "src/xgap/runtime/path_selection.py", "src/xgap/runtime/contracts.py",
         "src/xgap/runtime/scheduler.py", "src/xgap/algebra/evaluator.py")]
     source_files.append(Path(__file__))
+    if args.orientation:
+        source_files.extend(REPO / relative for relative in (
+            "src/xgap/algebra/ops.py", "src/xgap/algebra/validation.py",
+            "src/xgap/pattern/lowering.py", "src/xgap/compilers/features.py",
+            "src/xgap/experiments/toy_orientation.py"))
     if args.semantic_dag or args.planned_semantic or args.agentic_semantic:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/experiments/toy_semantic.py", "src/xgap/compilers/node_match.py",
@@ -94,7 +102,8 @@ def main(argv=None):
             "src/xgap/agent/resolution.py", "src/xgap/agent/loop.py",
             "src/xgap/tools/artifact_resolution.py", "src/xgap/tools/resolution.py",
             "src/xgap/experiments/toy_binding.py"))
-    record = {"success": False, "scope": ("T1 semantic binding and bounded agent execution" if args.agentic_semantic else
+    record = {"success": False, "scope": ("T1 logical and native path orientation" if args.orientation else
+                                           "T1 semantic binding and bounded agent execution" if args.agentic_semantic else
                                            "T1 semantic candidate planning" if args.planned_semantic else
                                            "T1 semantic DAG execution" if args.semantic_dag else
                                            "T1 bounded path execution" if args.compiled_bounded else
@@ -115,6 +124,12 @@ def main(argv=None):
             binding_fixture_sha256={str(p.relative_to(BINDING_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in BINDING_FIXTURE.rglob("*") if p.is_file()})
+    if args.orientation:
+        record.update(orientation_reference_targets=[],
+            query_ids=[c["id"] for c in load_orientation_cases()],
+            orientation_fixture_sha256={str(p.relative_to(ORIENTATION_FIXTURE)):
+                hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in ORIENTATION_FIXTURE.rglob("*") if p.is_file()})
 
     def save():
         (root / "result.json").write_text(json.dumps(record, indent=2) + "\n")
@@ -179,13 +194,16 @@ def main(argv=None):
         save()
         if not loaded_rdf.success:
             raise RuntimeError("Tiny Fuseki load failed; no retry")
-        record["phase"] = ("semantic-dag" if args.semantic_dag else
+        record["phase"] = ("orientation" if args.orientation else
+                           "semantic-dag" if args.semantic_dag else
                            "compiled-bounded" if args.compiled_bounded else
                            "compiled-directed" if args.compiled_directed else "independent-targets")
         selected = [case for case in cases if not args.compiled_directed
                     or case["id"] in DIRECTED_TOY_QUERY_IDS]
         if args.planned_semantic or args.agentic_semantic:
             selected = []  # Changed planning boundary uses the composition cases below.
+        if args.orientation:
+            selected = load_orientation_cases()
         for case in selected:
             for backend, client in (("neo4j", neo), ("fuseki", rdf)):
                 item = {"query_id": case["id"], "backend": backend, "status": "started", "success": False}
@@ -198,12 +216,24 @@ def main(argv=None):
                     if not item["success"]:
                         raise RuntimeError(f"Semantic path failed: {case['id']} / {backend}; no retry")
                     continue
-                if args.compiled_directed or args.compiled_bounded:
-                    execute_case = execute_bounded_toy_case if args.compiled_bounded else execute_directed_toy_case
+                if args.compiled_directed or args.compiled_bounded or args.orientation:
+                    execute_case = execute_bounded_toy_case if args.compiled_bounded or args.orientation else execute_directed_toy_case
                     item.update(execute_case(case, mapping, client=client), status="completed")
                     save()
                     if not item["success"]:
                         raise RuntimeError(f"Compiled target failed: {case['id']} / {backend}; retained without retry")
+                    if args.orientation:
+                        target = ORIENTATION_FIXTURE / case["reference_target_queries"][backend]
+                        result = client.execute(QueryArtifact(case["id"] + "-reference-" + backend,
+                            "cypher" if backend == "neo4j" else "sparql", target.read_text(), kind="native"))
+                        actual = sorted({row["path"] for row in result.rows}) if result.success else None
+                        reference = {"query_id": case["id"], "backend": backend,
+                            "execution": result.to_dict(), "actual_paths": actual,
+                            "success": result.success and actual == case["expected_paths"]}
+                        record["orientation_reference_targets"].append(reference)
+                        save()
+                        if not reference["success"]:
+                            raise RuntimeError(f"Independent orientation reference failed: {case['id']} / {backend}; no retry")
                     continue
                 language = "cypher" if backend == "neo4j" else "sparql"
                 target = DEFAULT_FIXTURE / case["reference_target_queries"][backend]
@@ -299,6 +329,7 @@ def main(argv=None):
         "planned_cases_passed": sum(x["success"] for x in record.get("planned_cases", [])),
         "binding_cases_passed": sum(x["success"] for x in record.get("binding_cases", [])),
         "binding_references_passed": sum(x["success"] for x in record.get("binding_reference_targets", [])),
+        "orientation_references_passed": sum(x["success"] for x in record.get("orientation_reference_targets", [])),
         "compiled_slice_passed": record.get("vertical_slice", {}).get("success"), "output": str(root)}))
     return 0 if record["success"] else 1
 

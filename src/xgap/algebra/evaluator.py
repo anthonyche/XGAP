@@ -29,6 +29,7 @@ from xgap.algebra.ops import (
     QuantifiedCheckOp,
     RecursiveMode,
     RecursiveOp,
+    ReverseOp,
     SelectionOp,
     UnionOp,
 )
@@ -43,6 +44,8 @@ def evaluate(op: object, graph: PropertyGraph) -> EvaluationResult:
         return graph.nodes_as_paths()
     if isinstance(op, EdgesOp):
         return graph.edges_as_paths()
+    if isinstance(op, ReverseOp):
+        return PathSet(Path(tuple(reversed(path.sequence))) for path in evaluate_pathset(op.child, graph))
     if isinstance(op, SelectionOp):
         child_paths = evaluate_pathset(op.child, graph)
         return PathSet(path for path in child_paths if op.condition.evaluate(path, graph))

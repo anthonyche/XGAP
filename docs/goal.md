@@ -90,7 +90,8 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
 
 - **T0 已验收，图与 gold 保持冻结。** 5 节点、8 边、18 道完整 path gold chain；
   新增 8 个语义组合 fixtures。真实 Neo4j/Fuseki 路径执行 36/36、语义组合 8/8
-  和原两后端 vertical slice 已通过。M5 IN logical/reference 仍只有 17/18 覆盖。
+  和原两后端 vertical slice 已通过。历史 M5 IN 缺口在本轮方向扩展中闭合，
+  当前显式版本化逻辑预期与答案均 18/18；原始 gold 文件仍保持冻结。
 - **T1 的规划连接步骤已验收。** 从一份语义和显式逻辑数据源副本声明自动生成候选，
   复用唯一源观测，经既有代价选择器选型，再执行选中计划。真实 gate 8/8 程序、
   28/28 候选答案正确；106 项 focused 通过。Broad acceptance 原 session6473
@@ -104,10 +105,15 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
   正确；新模块29 pass、兼容57 pass。Broad acceptance 原 session11079 已
   exit0：3,098 pass/38 skip、24 个 harness/example 入口通过，此连接步骤已
   验收。真实模型理解仍未验收；原 graph/gold 均不变。
-- **立即下一步**：在同一 toy graph 上修复 M5 IN logical/reference 缺口，按
-  设计补剩余 path/typed semantics。随后 T2 Interpretation、offline catalog freeze/runtime-only lookup、
+- **T1 方向扩展通过真实 gate。** 独立设计 Reverse 保留 Edges(G)、边身份和
+  递归规则，支持 IN 逻辑参考与有界 UNDIRECTED 原生展开。九题双后端 18/18
+  编译答案、18/18 独立对照和旧 slice 正确；focused212/最终fast272 pass。
+  完整回归原 session96124 已exit0：3,117 pass/38 skip，24 个 harness/example
+  入口通过；此方向步骤已验收。见 [方向报告](report/toy_backbone_t1_orientation.md)。
+- **立即下一步**：继续同一 toy graph 的语义 capability 准入与剩余 path/typed
+  semantics，并推进 T2 Interpretation、offline catalog freeze/runtime-only lookup、
   failure replay，再进入 T3。详细 evidence 见
-  [当前工程状态](engineering_state.md) 和 [绑定闭环报告](report/toy_backbone_t1_semantic_binding.md)。
+  [当前工程状态](engineering_state.md) 和 [方向闭合报告](report/toy_backbone_t1_orientation.md)。
 - D205 的 provider＋真实后端是受控接口结果，不是真实 LLM 准确率。D207 GPU
   健康检查软件已验收，但最新真实部署仍未产生模型答案；GPU 不阻塞 toy 工程。
 - D208 大 shard CPU 测量已在启动前延期，保留 runner，native campaign 未执行。

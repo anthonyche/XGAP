@@ -31,6 +31,15 @@ Its deterministic path-query core is aligned with the path algebra from
 "Path-based Algebraic Foundations of Graph Query Languages". XGAP does
 not rename or replace the path-algebra operators.
 
+The XGAP `ReverseOp` orientation extension now connects IN to logical reference
+execution while retaining the existing directed Edges(G) source. UNDIRECTED
+uses Union of both orientations, with shared PathSet identity/recursion rules.
+The bounded native compiler expands those orientations within its branch budget;
+older M9 still rejects unsupported Reverse. See the independent
+[semantic decision](decisions/path_orientation_v1.md) and
+[orientation gate](report/toy_backbone_t1_orientation.md). The historical D195
+wording below describes the earlier native-only boundary.
+
 An explicit `compile_directed_rows` entrypoint also consumes the typed
 PathPatternQuery directly for fixed Rel/Seq OUT/IN fragments. Its
 `DirectedRowFragmentCompiler` adapter produces the ordinary runtime RemoteQuery

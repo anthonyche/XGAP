@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 from xgap.llm.schemas import CandidateValidationReport, PlannerCandidate
 from xgap.llm.validation import validate_candidate
-from xgap.pattern.ast import Alt, Bounded, Direction, OptionalExpr, Plus, Rel, Seq, Star
+from xgap.pattern.ast import Alt, Bounded, OptionalExpr, Plus, Rel, Seq, Star
 from xgap.pattern.semantic_validation import PROFILE, type_check_semantic_path_pattern
 
 
@@ -33,7 +33,7 @@ class LogicalLoweringAssessment:
     def to_dict(self):
         return {
             "schema_version": "logical_lowering_assessment_v1",
-            "profile": "m5_path_algebra_lowerer",
+            "profile": "m5_path_algebra_orientation_v1",
             "status": self.status,
             "available": self.status == "available",
             "issues": [item.to_dict() for item in self.issues],
@@ -79,8 +79,7 @@ def assess_candidate(candidate: PlannerCandidate) -> CandidateAssessment:
 
 def _missing_capabilities(expr, path):
     if isinstance(expr, Rel):
-        if expr.edge.direction is not Direction.OUT:
-            yield LoweringIssue(f"direction_{expr.edge.direction.name.lower()}_unsupported", f"{path}.edge")
+        return  # All typed directions now lower through the explicit orientation extension.
     elif isinstance(expr, (Seq, Alt)):
         yield from _missing_capabilities(expr.left, f"{path}.left")
         yield from _missing_capabilities(expr.right, f"{path}.right")

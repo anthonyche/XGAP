@@ -276,8 +276,7 @@ def test_direction_audit() -> None:
     for direction in (Direction.IN, Direction.UNDIRECTED):
         pattern = query(expr=Rel(EdgePattern(label="Knows", direction=direction)))
         assert type_check_path_pattern(pattern) == {}
-        with pytest.raises(LoweringError, match="supports only OUT"):
-            lower_path_pattern(pattern)
+        validate_plan(lower_path_pattern(pattern))
 
 
 def test_regex_lowering_canonical_shapes() -> None:

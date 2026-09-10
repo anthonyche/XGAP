@@ -49,7 +49,6 @@ from xgap.pattern.ast import (
     Star,
     Var,
 )
-from xgap.pattern.lowering import LoweringError
 from xgap.pattern.semantic_validation import type_check_semantic_path_pattern
 from xgap.pattern.typecheck import PatternTypeError
 from xgap.runtime import (
@@ -486,7 +485,7 @@ def test_legacy_direction_boundary_does_not_silently_change(mapping):
         lambda value: compile_cypher(value),
         lambda value: compile_sparql(value, backend_mapping=mapping),
     ):
-        with pytest.raises(LoweringError, match="only OUT"):
+        with pytest.raises(UnsupportedCompilationError, match="Reverse"):
             compile_legacy(query(IN))
 
 

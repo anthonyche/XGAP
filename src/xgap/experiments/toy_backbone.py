@@ -122,14 +122,15 @@ def property_graph(data: dict) -> PropertyGraph:
     return graph
 
 
-def check_reference(case: dict, graph: PropertyGraph) -> dict[str, Any]:
+def check_reference(case: dict, graph: PropertyGraph, *, expected_logical_plan: str | None = None) -> dict[str, Any]:
     """Compare real parsing/lowering/evaluation with independent frozen expectations."""
     row: dict[str, Any] = {"query_id": case["id"], "reference_passed": False, "logical_plan_passed": False}
     try:
         pattern = parse_path_pattern_query(case["gold_path_pattern_query"])
         plan = lower_path_pattern(pattern)
         row["logical_plan"] = format_plan(plan)
-        row["logical_plan_passed"] = row["logical_plan"] == case["expected_logical_plan"]
+        row["logical_plan_passed"] = row["logical_plan"] == (
+            case["expected_logical_plan"] if expected_logical_plan is None else expected_logical_plan)
         row["actual_paths"] = ["/".join(path.sequence) for path in evaluate(plan, graph)]
         row["reference_passed"] = row["actual_paths"] == case["expected_paths"]
     except (ValueError, TypeError, NotImplementedError) as error:
@@ -220,13 +221,14 @@ def execute_vertical_slice(case: dict, mapping: dict, *, neo4j: Any, fuseki: Any
         "plan": plan.to_dict(), "runtime": result.to_dict(), "live_llm": False, "paper_result": False}
 
 
-def run_offline(root: str | Path = DEFAULT_FIXTURE) -> dict:
+def run_offline(root: str | Path = DEFAULT_FIXTURE, *, logical_expectations: dict | None = None) -> dict:
     data, cases, mapping = load_fixture(root)
     graph = property_graph(data)
-    reference = [check_reference(case, graph) for case in cases]
+    reference = [check_reference(case, graph, expected_logical_plan=(logical_expectations or {}).get(case["id"])) for case in cases]
     targets = check_sparql_targets(root)
     return {"fixture": str(root), "node_count": len(data["nodes"]), "edge_count": len(data["edges"]),
         "query_count": len(cases), "reference": reference, "sparql_reference_targets": targets,
+        "logical_expectations_override": logical_expectations or {},
         "compiler_diagnostics": {case["id"]: compile_diagnostics(case, mapping) for case in cases},
         "reference_passed": sum(row["reference_passed"] for row in reference),
         "logical_plan_passed": sum(row["logical_plan_passed"] for row in reference),
@@ -238,11 +240,13 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fixture", default=str(DEFAULT_FIXTURE))
     parser.add_argument("--output", required=True)
+    parser.add_argument("--logical-expectations", help="Explicit versioned logical-plan gold overlay; original fixture stays frozen")
     args = parser.parse_args(argv)
     target = Path(args.output)
     if target.exists():
         parser.error("Output already exists; preserve previous evidence")
-    result = run_offline(args.fixture)
+    result = run_offline(args.fixture, logical_expectations=(json.loads(Path(args.logical_expectations).read_text())
+                         if args.logical_expectations else None))
     target.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({key: result[key] for key in ("query_count", "reference_passed", "logical_plan_passed", "sparql_targets_passed", "full_backbone_complete")}))
     # A coverage report may contain genuine gaps; its creation is not T1 acceptance.

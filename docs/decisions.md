@@ -4584,3 +4584,24 @@ pass. This binding/control connection is accepted. The first
 reference-adapter failure is retained and locally replayed before a corrected
 native run. This closes a concrete semantic-to-runtime connection, not arbitrary
 NL interpretation, general source discovery, T2/T3 or the complete system Goal.
+
+## T1 Close logical orientation without changing Edges(G)
+
+Adopt the separately specified XGAP Reverse(PathSet) extension in
+[the orientation decision](decisions/path_orientation_v1.md). Preserve graph
+storage and identities, explicit OUT semantics, existing recursive modes and
+all original gold files. IN lowers through Reverse; UNDIRECTED through Union
+of both orientations. The native bounded compiler expands those choices within
+the existing branch budget. M9 explicitly rejects Reverse until its own backend
+profile supports it. A versioned manual T15 logical expectation replaces only
+the old semantic placeholder in the opted-in development harness.
+
+Nine new complete direction chains, reversal laws and real dual-engine targets
+exercise mixed directions, self-loops, parallel-edge identity, reciprocal TRAIL
+versus WALK and zero paths. Native18/18 compiled and18/18 independent targets
+plus retained slice pass. Focused212 and final fast272 pass; final broad
+session96124 exit0:3117/38, all24 harness/example entries pass. Initial broad
+exposed stale logical capability declarations; candidate assessment now uses an
+explicit orientation profile while retaining backend_execution_verified=false.
+That consistency check is in the daily fast gate. This step is accepted; the
+complete system Goal remains open, with no model or paper claim.

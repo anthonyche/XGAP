@@ -1,0 +1,3 @@
+{
+  "T15": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"b\"]\n      Reverse\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges"
+}

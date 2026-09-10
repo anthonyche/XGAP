@@ -28,6 +28,56 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+T1 orientation/reference closure is ACCEPTED on top of07e0c7a.
+Separate semantic decision: `docs/decisions/path_orientation_v1.md`.
+Add explicit XGAP Reverse(PathSet), preserving Edges(G) and stored identities;
+IN lowers through Reverse, UNDIRECTED through Union of both orientations.
+The bounded native compiler expands undirected branches inside existing budgets.
+M9 explicitly rejects Reverse instead of silently treating it as OUT.
+
+The original graph and all original gold files stay frozen. A new orientation
+fixture contains9 complete chains and18 independent targets; a separately
+versioned T15 logical expectation replaces the old semantic placeholder only
+when the development harness explicitly opts in. Original18 logical/reference
+checks now pass in that current harness. New tests include Reverse laws for all
+five recursive modes, identity/loop/parallel-edge witnesses and rejection of
+non-PathSet inputs. Initial focused collection failed because a test imported
+GroupKey from a namespace that does not export it; corrected tests passed212
+in9.35s (session11123 exit0). Final fast gate180 pass/12.10s (58672 exit0), with
+all18 demo answers and logical expectations correct. No actual query failure
+was observed in these local checks.
+
+Native session67522 completed exit0:18/18 production-compiled executions and
+18/18 independent native targets pass, plus the original two-engine slice. Both
+owned services stopped normally without kill escalation or retry. Raw root
+`/Users/anthonyche/xgap-data/t1-orientation-native-20260910`, log
+`/tmp/xgap-t1-orientation-native.log`. Recorded source/fixture hashes match. The
+explicit-overlay offline CLI also passed18/18 logical plans, reference answers
+and independent SPARQL targets (session63085 exit0); output
+`/tmp/xgap-t1-orientation-logical.json`. First broad session61777 has exited1:
+3 failed/3114 passed/38 skipped in670.13s. It exposed the separate candidate
+assessment scanner still declaring IN/UNDIRECTED logically unavailable. The
+scanner now uses profile m5_path_algebra_orientation_v1 and reports actual
+logical support; backend_execution_verified remains false. Updated old tests
+retain genuine M9 unavailability instead of equating it with logical support.
+Capability consumers now pass261/skip20 in3.18s (session14689 exit0). Related
+local stale-assertion failures are preserved in capability replay logs. Native
+query source remains unchanged and its successful gate is not repeated. A final
+broad acceptance has COMPLETED in original session96124, exit0: **3,117 pass /
+38 skip in662.26s**, all24 harness/example entrypoints pass. Log
+`/tmp/xgap-t1-orientation-acceptance-final.log`. Daily harness wiring then added
+the candidate-assessment module; fast session97917 exited0 with272 pass/12.56s
+and all18 logical/reference demo answers correct. No production source changed
+after final broad launch. All native/test handles in this step are terminal;
+do not poll or repeat accepted checks without new evidence.
+Original18 path programs and older binding/planning steps remain accepted.
+This orientation step is accepted. Broader semantic capability admission
+(required_capabilities), remaining path/typed semantics and T2 catalog/runtime
+freeze/replay remain next. Overall T1/T2/T3 and the system Goal remain unfinished.
+See `docs/report/toy_backbone_t1_orientation.md` and the durable receipt.
+
+## Accepted binding/control predecessor
+
 T1 semantic binding/control native gate PASSED: **5/5** controlled programs,
 **18/18** placement candidate answers, **10/10** independent Cypher/SPARQL
 references and the original T18 two-engine slice. Corrected native session90516

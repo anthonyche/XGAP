@@ -57,6 +57,22 @@ class EdgesOp(AlgebraOp):
 
 
 @dataclass(frozen=True)
+class ReverseOp(AlgebraOp):
+    """XGAP orientation extension; reverse traversal sequences, not stored edges."""
+
+    child: AlgebraOp
+
+    def output_kind(self) -> OutputKind:
+        return OutputKind.PATH_SET
+
+    def children(self) -> tuple[AlgebraOp, ...]:
+        return (self.child,)
+
+    def operator_name(self) -> str:
+        return "Reverse"
+
+
+@dataclass(frozen=True)
 class SelectionOp(AlgebraOp):
     condition: Condition
     child: AlgebraOp
