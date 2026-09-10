@@ -1,6 +1,6 @@
 # XGAP current engineering loop
 
-Updated: 2026-09-09. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
+Updated: 2026-09-10. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
 ## Workspace and scope
 
@@ -13,24 +13,33 @@ Updated: 2026-09-09. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
 ## User schedule and stopping condition
 
-User confirmed on 2026-09-09 (Asia/Shanghai): complete one verifiable milestone
-before midnight, deliver an implementation report, then pause to conserve
-tokens and resume at **2026-09-10 10:00 +08:00**. The existing `xgap` heartbeat
-has been updated to the next 10:00 daily slot, replacing hourly overnight
-wakeups. Its first morning run is instructed to restore the hourly cadence.
-The local machine clock is CST +0800. Local execution needs this Mac and the
-Codex app available at that time.
+The user-requested overnight pause ended at **2026-09-10 10:00 +08:00**.
+Work resumed at 10:03 and the existing `xgap` heartbeat was restored to ACTIVE
+hourly cadence. D198 had completed at commit `65ad96c` before the pause.
+Do not treat the old overnight stopping instruction as a current pause.
+Local scheduled execution needs this Mac and the Codex app available.
 
 The agent cannot directly push to ChatGPT mobile or verify phone delivery.
 Do not claim a phone push occurred. The app's Goal is still active: the goal
 tools expose no pause operation, and CUA explicitly prohibits controlling the
 Codex app itself. No alternate UI/database workaround is permitted. At the
-milestone handoff ask the user to click the Goal progress row's pause control.
+next explicitly requested pause, the user can click the Goal progress row's pause control.
 Do not mark the broad system goal complete or blocked to imitate a pause.
-After the handoff, do not start another engineering milestone before the
-scheduled morning recovery unless the user explicitly changes this instruction.
+The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
+
+D199 / H1 catalog comparison observation is complete. Job **3796988** finished
+successfully; the actual report has **zero coverage gains and zero losses** in
+all 15 stage/component cells. Both catalogs retain joint availability 10/18,
+Top-20 joint retrieval 6/18, and deployed-prompt joint reachability 5/18.
+All 18 entity ID lists, including order, are identical at all three stages.
+Launch/log/status/report identities agree; all 15 counts were reconstructed
+from the report's per-query rows. This is a real development observation,
+not a fresh whole-run/source audit. The full report was read in the browser
+session; only a compact derived receipt is durable locally. See
+`docs/report/grailqa_catalog_comparison_3796988.md` and its linked receipt.
+No executable source changed or full regression was repeated in this observation.
 
 D198 adds read-only admission of the complete retained inline provider history:
 all materializations, typed/grounded feedback, exact repair payloads, token
@@ -44,7 +53,7 @@ passed, 37 skipped in 596.33 seconds**. D198 local software acceptance is comple
 Evidence: `experiments/artifacts/d198_inline_evidence_local_20260909.json`;
 full log: `/tmp/xgap-inline-evidence-20260909/full-regression.log`.
 The final handoff is `docs/report/xgap_implementation_report_20260909_evening.md`.
-No further development milestone should begin before the scheduled morning recovery.
+The scheduled recovery has now occurred.
 
 D197 / H3 software acceptance is complete: inline slot annotations are
 materialized into the existing guarded semantic pipeline, with original/derived
@@ -77,25 +86,26 @@ Python with pytest 9.0.2 / RDFLib 7.1.4:
 
 OnDemand is open in Chrome at
 `https://ondemand-pioneer.case.edu/pun/sys/shell/ssh/pioneer.case.edu`.
-The visible last scheduler record reports 3796988 RUNNING on compt303,
-8 CPUs, 48 GiB, elapsed 02:53:15, four-hour limit. This is an observed
-snapshot, not a completion claim. Its log is
+The user returned a fresh scheduler record for **3796988: COMPLETED, 0:0,
+03:56:26**, start `2026-09-09T04:35:55`, end `2026-09-09T08:32:21` in the
+scheduler's unverified time zone. This record was also read in the terminal.
+Its log is
 `/home/hxc859/XGAP-m15-465e2e2/slurm-xgap-grailqa-catalog-compare-3796988.out`;
-this task has not yet retrieved the log contents.
-The job belongs to the previous e39b98e CPU catalog comparison. Keep its
-checkout and outputs intact. No new remote job has been submitted by this task.
+the final five-line log was read through the portal editor and reports CLI
+success with the same comparison hash as the status and report.
+The job belongs to the previous e39b98e CPU catalog comparison and is terminal.
+Keep its outputs intact. No new remote job has been submitted by this task.
 There is no local SSH config. Native browser input can be delayed and drops
 some special characters; do not send compound or state-changing commands
 through that route until exact input is verified. Read-only attempts produced
 two harmless `scontrol` syntax errors, not a change to the running job.
 
-The user restored CWRU login on 2026-09-09. The file page shows the logged-in
-account and the repository directory; the target log was listed as 232 bytes,
-last modified 16:36:13 CST. Claiming the browser tab still timed out, native
-paste timed out, and the opened raw-log page did not return readable content.
-Native terminal input remained unverified. No new scheduler command was
-successfully executed by this task and no terminal job result was obtained.
-Login restoration is resolved; browser/terminal interaction remains unreliable.
+The restored login now works through a fresh extension-backed file tab. Raw
+file links return Chrome `ERR_BLOCKED_BY_CLIENT`; the portal's ordinary Edit
+view exposes file contents. Read/select/copy only, never Save. Its Save button
+remained disabled after copying. Use a separate task tab, because the user may
+navigate the shared tab during other work. Native foreground terminal input
+remains unverified; do not type into a user-changing window or infer execution.
 Do not treat retained screen text as a newly executed scheduler observation.
 
 ## Next actions
@@ -105,24 +115,26 @@ Do not treat retained screen text as a newly executed scheduler observation.
    PDFs have now been read in full, with selected figures/formulas checked;
    proof verification and experiment reproduction are separate. Markdown
    progress is 63 full / 7 selected sections / 11 detailed reviews pending.
-2. Observe 3796988 completion and its coverage gains/losses using bounded
-   read-only logs/artifacts. Do not equate scheduler completion with success.
+2. Preserve the 3796988 negative comparison. Do not repeat this rebuild or a
+   GPU comparison of unchanged candidate sets. For inline-interface development,
+   keep the old v1 catalog fixed; diagnose entity mention/alias/selection-rank
+   exclusions separately from retrieval/prompt truncation, without gold-fed data.
 3. Extend D198's provider evidence component to independent whole-run admission
    for the new materialized-response contract: producer/spec/population,
    catalog/retrieval, environment/lifecycle, tokenizer parity, metrics and gold
    isolation still need their complete evidence chain. Keep the new inline bundle/spec separate.
    Establish vLLM schema compatibility and actual request fit with the existing
-   bounded probes after selecting the catalog from CPU evidence. Do not launch
-   another GPU experiment or change the active server checkout prematurely.
+   bounded probes while holding the v1 catalog fixed. No running job was found
+   for this completed comparison; retain exact producer checkouts and use the
+   existing staging/run authority before any new bounded experiment.
 4. Prepare a real two-engine answer admission over inference-owned data.
    Current typed-row results are not full GrailQA execution or accuracy.
 
 ## Continuation
 
-Existing automation `xgap` was updated, not duplicated, from hourly to the next
-10:00 morning recovery. After that recovery it should return to hourly bounded
-cycles and stay quiet without meaningful change. The broad goal remains in
-progress, with the user-requested overnight pause taking precedence.
+Existing automation `xgap` was updated, not duplicated, and has returned to
+hourly bounded cycles. Stay quiet without meaningful change. The broad goal
+remains in progress; the overnight pause is complete.
 
 ## Persistent rules
 

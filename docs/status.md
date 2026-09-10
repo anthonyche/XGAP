@@ -1,6 +1,6 @@
 # XGAP Status
 
-## Active engineering loop — 2026-09-09
+## Active engineering loop — 2026-09-10
 
 Use [engineering_state.md](engineering_state.md) for the current checkout,
 active job, verification results and next actions. The remaining sections
@@ -36,12 +36,17 @@ execution, and the two-dataset EQ1–EQ5 matrix. The document inventory covers
 81 existing Markdown documents plus three source PDFs; detailed historical reading
 continues explicitly rather than claiming every indexed paragraph was read.
 
-The user requested a pause after tonight's milestone and recovery at 10:00
-Beijing time on September 10. The existing heartbeat now targets that morning
-slot and will restore hourly continuation after recovery. Login is restored;
-browser control and raw-log retrieval remain unreliable. The visible old
-scheduler snapshot of 3796988 was RUNNING, not a fresh status query. Its terminal
-result remains unavailable and no duplicate job has been submitted.
+Work resumed on September 10 at 10:03 Beijing time and the existing heartbeat
+is hourly again. D199 closes the observation of catalog job **3796988**:
+COMPLETED, `0:0`, `03:56:26`; launch, log, status and comparison identities agree.
+All 15 coverage cells are unchanged, as are all entity lists and their order.
+Joint catalog/retrieval/prompt counts remain **10/18, 6/18, 5/18**. The report's
+per-query rows reproduce all counts, but its full source/hash/retrieval chain
+has not been independently reaudited. This is a preserved negative development
+result, not an accuracy gain or paper admission. See
+[comparison observation](report/grailqa_catalog_comparison_3796988.md).
+The ordinary portal text editor now permits read-only content observation in
+an independent browser tab. No remote file was saved or new job submitted.
 
 ## Current Mainline Milestone
 

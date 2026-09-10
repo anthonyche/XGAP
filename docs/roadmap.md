@@ -1,6 +1,6 @@
 # XGAP Roadmap
 
-## Current engineering milestones — 2026-09-09
+## Current engineering milestones — 2026-09-10
 
 The [engineering review](report/xgap_engineering_review_20260909.md) orders
 H0 documentation/state reconciliation, H1 remote execution closure, H2 typed
@@ -18,10 +18,15 @@ versioned full AST with inline slot choices, preserving semantics while removing
 duplicated component-reference serialization. Real interface effectiveness, schema acceptance and request fit
 remain pending. See [engineering_state.md](engineering_state.md) for exact
 evidence and the next independent result-verification gate. H0 continues through
-unread historical text. H1 needs fresh logs for catalog job 3796988; CWRU login
-has been restored, but browser control still has not returned its result.
-These gates precede the new bounded interface comparison
-and H4's inference-owned data/real-answer admission.
+unread historical text. H1/D199 has now retrieved the terminal state, launch,
+log and comparison for 3796988 through OnDemand. The 18-question eligibility
+repair comparison has zero coverage gains/losses and unchanged entity lists;
+all 15 cells were recomputed from report rows. Preserve this negative result
+and hold v1 fixed for the new interface comparison. The compact observation
+is not a whole-source audit. See
+[the result and next diagnosis](report/grailqa_catalog_comparison_3796988.md).
+Whole-run inline admission and actual schema/token fit remain before the new
+bounded model comparison and H4's inference-owned data/real-answer admission.
 
 ## Current Mainline: M15 Agentic Federated Core
 

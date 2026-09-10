@@ -4163,3 +4163,27 @@ Initial token refusals retain zero-call evidence but lack a reconstructable
 full request. Their limitation is explicit. The whole-run admission gate
 remains a separate next step; old protocols, artifacts and launch defaults
 are unchanged. See `docs/report/grailqa_inline_evidence_v1.md`.
+
+## D199 Preserve the real catalog comparison's zero-gain result
+
+The completed CWRU job 3796988 compares eligibility-first entity selection with
+the preserved v1 catalog on the same 18 questions. Launch/log/status/report
+identities agree. All 15 stage/component coverage cells have zero gains and
+losses, and per-query entity IDs/order are unchanged at catalog, retrieval and
+prompt stages. Recomputing from the report rows gives joint counts 10/18,
+6/18 and 5/18 respectively. The same 8/4/1 information-stage losses remain.
+
+Do not repeat this intervention as if its coverage benefit were still unknown,
+promote catalog v2 as an observed improvement, or combine it with the inline
+output change and attribute a future effect to either one. Hold the preserved
+v1 catalog fixed for that development comparison. Diagnose mention/alias and
+ranking exclusions separately; evaluation-derived missing MIDs never become
+inference input or execution-fact selection rules.
+
+This is a bounded real development observation. It reads the complete report
+through the authenticated portal and preserves a compact per-query receipt,
+but does not independently replay retrieval, recompute every source hash,
+rescan Freebase, or provide complete local raw-file custody. Construction
+resource differences are unpaired observations, not speedup evidence. No new
+model/backend call, code change or paper authority follows from the receipt.
+See `docs/report/grailqa_catalog_comparison_3796988.md`.
