@@ -8,6 +8,23 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+The user's latest system/research questions are answered in the
+[September 10 assessment](report/xgap_system_experiment_assessment_20260910.md).
+The system is a real supported-fragment prototype, not complete except for an
+LLM. Prioritize fixed-semantics CPU correctness and physical comparisons,
+stage-specific catalog failure diagnosis and reusable linking artifacts; model
+availability must not block those tracks. Preserve both primary datasets and
+all EQ1–EQ5 obligations, the FinBench fixed-route tie/cold-family negative result,
+and the full 18-query denominator. No new performance/accuracy run is claimed.
+
+D207 implements a per-device minimal CUDA health operation for explicit GPU
+profiles and stops readiness when the owned model server exits. Focused checks
+pass 51 tests and all 23 harness/example entrypoints pass; broad regression
+passes **2,922 tests / 38 skips in 673.86s** (original session 60312, exit 0).
+No corrected deployment has been submitted. Its preparation must exclude gput069 and disable
+requeue, preserving the failed D206 attempt. See
+[startup correction](report/cwru_startup_health_v1.md).
+
 D206 completed the user-authorized alternate GPU deployment. A separate
 dual-L40S pipeline profile preserves Qwen3-32B BF16, the original 18 questions
 and inference settings. All CUDA-visible devices are checked before loading;

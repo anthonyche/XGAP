@@ -28,14 +28,35 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
-D207 is the current corrective launcher milestone after D206's actual hardware
-failure. Scope: per-device minimal CUDA allocation/kernel/synchronization before
+D207 software acceptance is complete after D206's actual hardware failure.
+Scope: per-device minimal CUDA allocation/kernel/synchronization before
 model load, and immediate readiness failure when the owned server process has
 exited. Allowed changes are GPU/startup/readiness adapters, their tests and
 records. No frozen model/catalog/spec, semantic metric, query algebra or running
 checkout changes. Acceptance: controlled second-device ECC aborts before daemon
 launch; healthy/legacy launch behavior and exact model checks remain; dead server
 fails without waiting the full readiness budget; focused/full/examples pass.
+
+Actual D207 acceptance: focused **51 passed in 20.58s**; original full session
+60312 exited 0 with **2,922 passed / 38 skipped in 673.86s**; harness and all
+22 examples pass (23 entrypoints). No source edits followed the full-suite
+launch; only reporting records were completed. Seven controlled submission-helper
+fixtures pass but are not Slurm observations. No corrected package has been
+built/uploaded and no D207 job has been submitted. Do not rerun passed tests
+without a new source change or concern. Receipt:
+`experiments/artifacts/d207_startup_health_acceptance_20260910.json`.
+
+Latest user priority: explain system maturity, GrailQA failures, test design,
+actual results, baselines and research story. The delivered source-inspected
+assessment is `docs/report/xgap_system_experiment_assessment_20260910.md`.
+Next milestone scope should prioritize fixed-semantics CPU correctness/physical
+comparisons and an 8+4+1 stage-specific failure diagnosis, independently of LLM
+availability. Freeze that bounded implementation scope and acceptance before
+editing its code. Preserve FinBench/GrailQA and every EQ1–EQ5 requirement;
+do not reframe the research around only successful tests. Reuse existing entity
+linking/index/data artifacts when verified; do not repeat unchanged 964-shard
+scans or inject evaluation entities into inference/data deployment. Time windows
+in the report are conditional estimates, not guaranteed effect/completion dates.
 
 D206 software/resource transition succeeded but actual model startup FAILED.
 **No active experiment is currently established.** Original 3799513 is CANCELLED;
@@ -54,7 +75,7 @@ SBATCH_EXCLUDE environment attempt still selected gput069 and is not valid
 exclusion evidence. Use the explicit command option. Test-only prospective IDs
 3799704/3799707 are not real submitted jobs. H100 remains preferred when available.
 
-Final targeted: 105 passed in 7.17s; first focused: 245 passed/one fixture
+D206 final targeted: 105 passed in 7.17s; first focused: 245 passed/one fixture
 failure, retained. Broad regression session **51749** completed exit 0:
 **2,908 passed / 38 skipped in 661.11s**, log `/tmp/xgap-d206-full.log`.
 Examples/harness session **94699** completed exit 0, all 23 entrypoints passed.
@@ -73,9 +94,10 @@ works. Other terminal tabs have concurrent user input: do not type there.
 Use short chunks and verify the complete command before Enter. Never touch
 credential inputs. Current browser IDs may change; inspect inventory if stale.
 
-Next: finish D207 software acceptance, preserve D206 failed artifacts, then
-prepare a distinct reviewed deployment with explicit node exclusion and fresh
-submission evidence. No automatic retry of the old failed external action.
+Preserve D206 failed artifacts. A later distinct deployment requires explicit
+node exclusion, exact-source transfer verification and fresh submission
+evidence. It must not displace the independent CPU/result priorities above.
+No automatic retry of the old failed external action.
 The old helper performed no retry; Slurm reported its default Requeue=1 with
 zero observed restarts. Do not conflate these settings.
 Report: `docs/report/cwru_gpu_fallback_v1.md`; receipt:
@@ -104,9 +126,10 @@ or SIGKILL. This is not a live Qwen run, accuracy result or speedup evidence.
 Report: `docs/report/freebase_question_execution_v1.md`; durable receipt:
 `experiments/artifacts/d205_native_question_execution_20260910.json`.
 
-Next: obtain real model-generated anchored answers on inference-owned facts,
-then compare physical plans with the same interpretation. The queued D204
-semantic-only run remains independent and frozen. Document inventory is now
+Next: compare physical plans with the same fixed interpretation on CPU and
+obtain real model-generated anchored answers on inference-owned facts when a
+model is available. The historical D204 semantic-only run is terminal; its
+question/model inputs remain frozen. Document inventory at this checkpoint was
 74 full / 7 selected / 0 pending Markdown, plus three reviewed PDFs.
 
 ## D204 historical H100 observation and continuing GPU policy
@@ -114,7 +137,7 @@ semantic-only run remains independent and frozen. Document inventory is now
 The user completed the original authenticated checkout and submitted H100
 job **3799513** once with exact runner `6b32b97`. It remained PENDING / Resources
 and was subsequently cancelled while pending by the authorized D206 transition.
-The active replacement is **3799649** above. Original source, package and
+Its replacement **3799649 FAILED**, as recorded above. Original source, package and
 submission evidence remain unchanged under `/home/hxc859/XGAP-inline18-6b32b97`
 and `/home/hxc859/xgap-inline18-6b32b97`. Do not run its submission or audit
 helper for the replacement. Its old offline ZIP is uploaded/hash-verified but

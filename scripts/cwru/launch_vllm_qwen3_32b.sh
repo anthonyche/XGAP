@@ -25,7 +25,7 @@ echo "Checking frozen Python, torch, CUDA, and vLLM versions."
 PYTHONPATH=src python -m xgap.experiments.cwru_vllm verify-environment \
   --contract "$XGAP_CWRU_CONTRACT"
 
-# An opt-in profile validates every allocated CUDA device before loading the
+# An opt-in profile validates and exercises every CUDA device before loading the
 # unchanged model. Legacy contracts emit no additional arguments.
 XGAP_GPU_ARGUMENTS="$(PYTHONPATH=src python -m xgap.experiments.cwru_gpu_profile \
   --contract "$XGAP_CWRU_CONTRACT" --verify-allocation)"

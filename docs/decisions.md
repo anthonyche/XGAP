@@ -4388,3 +4388,31 @@ on each allocated device before loading weights, and stop readiness when the
 owned process exits. Keep the bad-node observation and exclude gput069 explicitly
 in a separately prepared deployment. Do not infer health from capacity or
 rewrite the failed outcome as successful GPU compatibility.
+
+## D207 Separate GPU inventory from executable startup health
+
+An allocated GPU can report the expected model/capacity and still fail its
+first CUDA operation. Exercise a minimal BF16 allocation/write/synchronization
+per explicit-profile device before loading weights, and preserve any failing
+device/error. Observe the owned server PID during bounded readiness, including
+Linux dead/zombie state, while retaining exact served-model matching. These
+checks do not prove future hardware health or inference correctness.
+
+Preserve the ECC-failed 3799649 output and exclude gput069 with an explicit
+Slurm option in a fresh, separately validated deployment. Disable scheduler
+requeue and permit only one submission attempt. A finite 1,800-second cold
+startup allowance is separate from unchanged question/model budgets; an
+already-dead daemon fails immediately. This is a diagnosed implementation and
+node-selection correction, not an automatic retry of the old failed helper.
+
+D207 software acceptance is complete: focused 51 tests, full 2,922 passed /
+38 skipped (673.86s), and all 23 harness/example entrypoints. No corrected
+remote deployment or actual healthy CUDA result is inferred.
+
+The September 10 user assessment prioritizes independent CPU execution/results
+and stage-specific catalog diagnosis alongside model availability. Preserve
+the original two-dataset EQ1–EQ5 scope, fixed-semantics versus NL experiment
+distinction, fixed-route comparisons, cold-family failures and all denominators.
+This orders engineering work; it does not rewrite frozen scientific protocols
+or claim a new result. See the
+[assessment](report/xgap_system_experiment_assessment_20260910.md).

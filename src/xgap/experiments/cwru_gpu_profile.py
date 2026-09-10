@@ -88,6 +88,27 @@ def collect_visible_gpus(profile: GPUProfile) -> dict[str, Any]:
     return visible_gpu_record(profile, devices, job_id=os.environ.get("SLURM_JOB_ID", ""))
 
 
+def verify_cuda_health(record: Mapping[str, Any]) -> None:
+    """Exercise one BF16 value per validated device before loading any weights.
+
+    Capacity/architecture queries do not surface every CUDA/ECC failure. This
+    small operation is a startup check, not a guarantee of future device health.
+    """
+    import torch
+
+    for device in record["devices"]:
+        index = device["cuda_index"]
+        try:
+            value = torch.empty(1, dtype=torch.bfloat16, device=f"cuda:{index}")
+            try:
+                value.fill_(0)
+                torch.cuda.synchronize(index)
+            finally:
+                del value
+        except RuntimeError as error:
+            raise ValueError(f"CUDA startup health check failed on device {index}: {error}") from error
+
+
 def validate_recorded_profile(contract: Mapping[str, Any], environment: Mapping[str, Any]) -> None:
     profile = profile_for(contract)
     if profile is None:
@@ -112,7 +133,8 @@ def main(argv=None) -> int:
     if profile is not None:
         if not args.verify_allocation:
             parser.error("Explicit GPU profile requires --verify-allocation before launch")
-        collect_visible_gpus(profile)
+        record = collect_visible_gpus(profile)
+        verify_cuda_health(record)
         # Only fixed allowlisted tokens are emitted, one argument per line.
         for value in ("--tensor-parallel-size", str(profile.tensor_parallel_size),
                       "--pipeline-parallel-size", str(profile.pipeline_parallel_size),

@@ -74,22 +74,29 @@ def test_recorded_profile_binds_each_device_parallelism_and_job():
     with pytest.raises(ValueError): validate_recorded_profile(contract,environment)
 
 
-@pytest.mark.parametrize('mode', ['l40s','wrong','legacy'])
+@pytest.mark.parametrize('mode', ['l40s','wrong','ecc','legacy'])
 def test_actual_launcher_checks_cuda_before_starting_and_passes_parallel_args(tmp_path,mode):
-    valid = mode != 'wrong'
+    valid = mode not in {'wrong','ecc'}
     repo=tmp_path/'repo'; scripts=repo/'scripts/cwru'; scripts.mkdir(parents=True)
     for name in ('common.sh','launch_vllm_qwen3_32b.sh'):
         shutil.copyfile(ROOT/'scripts/cwru'/name,scripts/name)
     src=repo/'src';src.mkdir();(src/'xgap').symlink_to(ROOT/'src/xgap',target_is_directory=True)
     observed=devices()
-    if not valid: observed[1]['model']='NVIDIA V100'
-    (src/'torch.py').write_text('from types import SimpleNamespace\nDATA='+repr(observed)+'''\nclass cuda:
+    if mode == 'wrong': observed[1]['model']='NVIDIA V100'
+    (src/'torch.py').write_text('from types import SimpleNamespace\nDATA='+repr(observed)+'\nFAIL_ECC='+repr(mode=='ecc')+'''\nbfloat16 = 'bfloat16'
+def empty(count, *, dtype, device):
+ assert count == 1 and dtype == bfloat16
+ return SimpleNamespace(fill_=lambda value: None)
+class cuda:
  @staticmethod
  def device_count(): return len(DATA)
  @staticmethod
  def get_device_properties(i):
   d=DATA[i]
   return SimpleNamespace(name=d['model'],total_memory=d['memory_mib']*1024*1024,major=d['compute_major'],minor=d['compute_minor'])
+ @staticmethod
+ def synchronize(i):
+  if FAIL_ECC and i == 1: raise RuntimeError('CUDA error: uncorrectable ECC error encountered')
 ''')
     envdir=tmp_path/'venv';bins=envdir/'bin';bins.mkdir(parents=True)
     python=bins/'python'
@@ -130,6 +137,9 @@ time.sleep(30)
                 assert args[args.index(flag)+1]==value
         else:
             assert process.returncode!=0 and not argv.exists()
+            if mode == 'ecc':
+                assert 'health check failed on device 1' in stderr
+                assert 'uncorrectable ECC error' in stderr
     finally:
         try: os.killpg(process.pid,signal.SIGTERM)
         except ProcessLookupError: pass

@@ -2,6 +2,23 @@
 
 ## Current engineering milestones — 2026-09-10
 
+The [system/experiment assessment](report/xgap_system_experiment_assessment_20260910.md)
+sets the next priorities: CPU supported-fragment correctness and physical
+comparisons independent of the LLM, eight catalog/four retrieval/one prompt
+exclusion diagnosis without another unchanged rebuild, and actual generated
+anchored answers once both model and fact coverage are available. The 18-query
+remote interface experiment is semantic-only; success cannot substitute for
+native answers. Preserve all EQ1–EQ5 cells on both selected primary datasets.
+The report's time windows are conditional engineering estimates, not scientific
+effect promises or permission to omit unsuccessful cells.
+
+D207 corrects the actual D206 startup failure boundary: exercise a tiny CUDA
+operation on every explicit-profile device before loading weights, detect an
+exited owned server during readiness, and prepare a separate deployment with
+explicit bad-node exclusion. Focused 51 checks and all 23 entrypoints pass;
+broad validation passed 2,922 tests / 38 skips in 673.86s. No corrected remote
+submission has occurred. See [D207](report/cwru_startup_health_v1.md).
+
 D206 addresses GPU queue availability through a separately recorded dual-L40S
 deployment with pipeline parallelism, preserving the full BF16 model and fixed
 18-question inference settings. Software acceptance passes 2,908 tests / 38

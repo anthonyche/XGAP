@@ -62,7 +62,25 @@ class CWRUVLLMContract:
 
 
 class VLLMReadinessError(RuntimeError):
-    """Raised when the bounded local vLLM readiness check times out."""
+    """Raised when bounded vLLM readiness fails or its owned server exits."""
+
+
+def server_process_alive(pid: int) -> bool:
+    """Observe the owned launcher PID; never send it a terminating signal."""
+    if type(pid) is not int or pid <= 0:
+        raise ValueError("Server PID must be a positive integer.")
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    # Linux retains unreaped dead processes, for which kill(pid, 0) succeeds.
+    if sys.platform.startswith("linux"):
+        try:
+            state = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()[0]
+        except FileNotFoundError:
+            return False
+        return state not in {"Z", "X"}
+    return True
 
 
 def wait_for_vllm_model(
@@ -75,6 +93,7 @@ def wait_for_vllm_model(
     fetch_json: Callable[[str, str, float], Mapping[str, Any]] | None = None,
     monotonic: Callable[[], float] | None = None,
     sleep: Callable[[float], None] | None = None,
+    process_is_alive: Callable[[], bool] | None = None,
 ) -> dict[str, Any]:
     """Poll the OpenAI-compatible models endpoint for one exact served model."""
 
@@ -89,6 +108,8 @@ def wait_for_vllm_model(
     last_error = "model was not returned"
     last_models: tuple[str, ...] = ()
     while True:
+        if process_is_alive is not None and not process_is_alive():
+            raise VLLMReadinessError("Owned vLLM server process exited before readiness.")
         attempts += 1
         try:
             response = fetch(url, api_key, min(10.0, timeout_seconds))
@@ -566,6 +587,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     ready.add_argument("--api-key", required=True)
     ready.add_argument("--timeout", type=float, default=900.0)
     ready.add_argument("--interval", type=float, default=5.0)
+    ready.add_argument("--server-pid", type=int)
 
     smoke = subparsers.add_parser("smoke")
     smoke.add_argument("--base-url", required=True)
@@ -605,6 +627,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             api_key=args.api_key,
             timeout_seconds=args.timeout,
             interval_seconds=args.interval,
+            process_is_alive=(
+                None if args.server_pid is None
+                else lambda: server_process_alive(args.server_pid)
+            ),
         )
     elif args.command == "smoke":
         result = run_structured_output_smoke(
