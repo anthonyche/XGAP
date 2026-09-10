@@ -4309,5 +4309,9 @@ checks its bundle hash and replaces only the clone source; it retains original
 prelaunch checks, exclusive output creation and the single-submission guard.
 Do not alter browser permissions, overwrite conflicting checkouts, repeat
 authentication attempts, or claim a job before an actual submission response.
-Transfer/submission remain pending. See
+The user later enabled file upload; the offline ZIP was transferred and its
+hash verified on Pioneer. Concurrently the user's original HTTPS launch
+authenticated, cloned and checked out exact 6b32b97. The original helper
+subsequently submitted job 3799513 once; latest authoritative
+state is PENDING / Resources. The actual experiment result remains pending. See
 [D204 deployment evidence](report/grailqa_inline18_remote_execution_20260910.md).

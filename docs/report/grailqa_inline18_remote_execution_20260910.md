@@ -1,6 +1,10 @@
 # D204: resume the frozen inline18 run through the restored portal
 
-Status: IN PROGRESS; offline code transport verified locally, remote transfer pending. The D203 candidate/native-answer slice is complete at
+Status: IN PROGRESS; original launch submitted Slurm job **3799513** once.
+Latest authoritative state: **PENDING / Resources**. Input catalog, model
+revision and frozen spec were pinned before submission. The offline source
+package is separately uploaded and hash-verified, but was never executed.
+The D203 candidate/native-answer slice is complete at
 882a54e; the broader system goal remains active.
 
 ## Frozen scope before deployment
@@ -9,13 +13,12 @@ Use the previously delivered, unchanged inline18 release to obtain actual
 Qwen3-32B model results. A new OnDemand terminal became available this turn.
 Read-only `squeue` returned no jobs; `sacct` since September 9 lists only the
 preserved 3796877/3796878/3796968/3796988 jobs. The inline18 package and isolated
-checkout do not yet exist on the server.
+checkout did not exist at that initial observation.
 
-The Chrome extension's file chooser rejected local file access. Do not change
-browser permissions or retry that upload. Publish the identical, already
-reviewed 6,237-byte package as a repository artifact and let the authorized
-remote shell download it from an exact Git commit. This uses no browser access
-to local files. Verify its existing SHA-256 before extraction or execution.
+The Chrome extension initially rejected local file access. The original
+6,237-byte package was published as an immutable repository artifact; a proposed
+server download was not attempted after GitHub authentication failures became
+visible. The offline remedy and later restored upload are recorded below.
 
 Allowed changes: this immutable handoff artifact and execution observations in
 status/roadmap/engineering documentation. No production query/provider code,
@@ -85,14 +88,58 @@ or model call was involved. The original ZIP remains identical and the harness
 check passes. Production query/provider code is unchanged, so the already passed
 D203 full regression was not repeated for transport packaging.
 
-The browser extension needs user-enabled file-URL access for agent file upload;
-that setting was not changed automatically. A question asking whether the user
-has enabled it is pending. If available, transfer this offline ZIP and continue
-the single submission; otherwise the one remaining transfer step is a manual
-upload. Do not repeat the failed HTTPS clone or request a GitHub password.
+The user explicitly confirmed file-URL permission was enabled. After browser
+reconnection, the agent uploaded the offline ZIP through the OnDemand file
+chooser to `/home/hxc859` and verified its SHA-256 in a separate hpc6 terminal:
+`5e85c79352c25cb7f056df346fbc0c42d4470eb3058bf0291b36ce16a5340a61`.
+No settings were changed by the agent. The package has not been extracted or
+executed: a fresh prelaunch conflict check found the target checkout now existed.
+
+The user concurrently completed GitHub authentication in the original hpc5
+terminal. Its clone and detached checkout succeeded, and a separate `rev-parse`
+confirmed exact commit `6b32b973d4fd1a979b714570d3edcd2e684c1b07`.
+At the latest observation, the original launch had not returned to a prompt;
+its Python process (PID 1378524 on hpc5) was alive after 4:05 elapsed with 10.2%
+CPU. Input pins and a Slurm submission had not yet been observed. The initial
+agent-owned queue check was empty. Preserve this original running helper and
+follow its outputs; do not execute either helper again, modify the checkout,
+or interpret a completed clone as an actual model run. The offline ZIP is now
+an intact fallback artifact, not the active launch route.
 
 While transfer was pending, the two remaining old research reports were fully
 read. `report_1.md` is an M6-era snapshot whose global absence claims are
 historical. `kqapro_artifact_audit.md` reports an M13-B/M9-specific restricted
 fragment; newer directed support does not retroactively validate KQA mappings,
 execution or its old coverage counts. Keep the FinBench/GrailQA research plan.
+
+## Actual submission and current experiment gate
+
+The original helper completed input pinning at **2026-09-10T06:39:19.642365Z**
+and recorded its single submission intent at **06:39:33.966284Z**. The user
+terminal reports job **3799513**, `submission.stdout` contains that ID and
+`submission_exit_code.txt` is 0. The agent did not invoke another helper or
+`sbatch`. This supersedes the earlier prelaunch-process observation.
+
+Observed `squeue` and `scontrol` state: PENDING, reason Resources, 0 restarts.
+Resources are one H100 (`gpu2h100` feature), 8 CPUs, 64 GiB and a four-hour
+limit. Slurm's server-local submit time is 2026-09-10T02:39:34, corresponding
+to 14:39:34 Beijing. Its projected start is a scheduler estimate, not evidence
+of execution. Keep the exact job ID and do not resubmit while queued.
+
+Pinned inputs read from the actual remote record:
+
+- Runner: `6b32b973d4fd1a979b714570d3edcd2e684c1b07`.
+- Catalog: `fa07c25b60558f81faef4116c768115d6e9419015f5e3e455f927f62820308e8`.
+- Catalog manifest: `fbe88846f8088d24df3d046980580e16ec3e716a6de952d83226645fcf52176c`.
+- Spec: `0d3e89524b3422f7d8816e383b7ea7483265f61f531586a8a80a516edfa223e7`, original 18 question IDs.
+- Cached Qwen revision: `9216db5781bf21249d130ec9da846c4624c16137`.
+- Tokenizer identity: `30ddfe60f09d8f868d925fbb8a416966cfb36b7d8b930c4a19c9eb1192ab9960`.
+- `automatic_retries=0`, `backend_execution=false`, `paper_result=false`.
+
+Remote submission artifacts stay in `/home/hxc859/xgap-inline18-6b32b97`.
+Slurm stdout/stderr:
+`/home/hxc859/XGAP-inline18-6b32b97/slurm-xgap-grailqa-guarded-3799513.out`.
+After COMPLETED 0:0, run the original
+`/home/hxc859/xgap-inline18-6b32b97/audit.sh` once and retrieve its actual
+outcomes. A failure requires diagnosis and preserved evidence, not resubmission.
+There is no fresh model-quality or answer result while this job is pending.

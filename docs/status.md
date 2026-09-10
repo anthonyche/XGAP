@@ -8,12 +8,14 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
-D204 restored usable OnDemand observation/control and identified the pending
-live-run deployment failure: the user's three HTTPS clones stopped at GitHub
-authentication before Slurm submission. A 3.3 MB offline Git package now
-reproduces the exact frozen 6b32b97 checkout without server GitHub credentials.
-Its real independent clone/tree and helper syntax checks pass. Transfer awaits
-browser file permission or manual upload; no new model run is claimed. See
+D204 restored usable OnDemand observation/control. After user-enabled upload
+permission, the 3.3 MB offline source package was uploaded and its SHA-256
+verified on Pioneer. Concurrently the user's original HTTPS launch succeeded
+at authentication, cloning and checkout of exact 6b32b97. The original helper
+has submitted job **3799513** once after pinning the
+frozen inputs. Latest state: **PENDING / Resources**. Follow that exact job,
+leaving the offline package unexecuted to avoid duplication.
+No new model result is claimed. See
 [remote deployment state](report/grailqa_inline18_remote_execution_20260910.md).
 
 D203 connects controlled grounded planner responses to actual native answers,

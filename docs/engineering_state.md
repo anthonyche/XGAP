@@ -20,53 +20,57 @@ Do not treat the old overnight stopping instruction as a current pause.
 Local scheduled execution needs this Mac and the Codex app available.
 
 The agent cannot directly push to ChatGPT mobile or verify phone delivery.
-Do not claim a phone push occurred. The app's Goal is still active: the goal
-tools expose no pause operation, and CUA explicitly prohibits controlling the
-Codex app itself. No alternate UI/database workaround is permitted. At the
+Do not claim a phone push occurred. The system objective remains unfinished.
+The goal-status tool unexpectedly reports blocked on the latest read; the
+existing hourly heartbeat remains ACTIVE and authorized work is progressing.
+Do not claim the app Goal row is active or mark the objective complete. The
+goal tools expose no resume or pause operation, and CUA explicitly prohibits
+controlling the Codex app itself. No alternate UI/database workaround is permitted. At the
 next explicitly requested pause, the user can click the Goal progress row's pause control.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
-D204 is in progress: actual frozen inline18 deployment through the restored
-OnDemand portal. The initial read-only Slurm checks showed no running job and
-only the known 3796877/3796878/3796968/3796988 terminal jobs. The user then
-uploaded the original ZIP and made three observed launch attempts; each stopped
-at GitHub HTTPS authentication, before input pinning or sbatch. No new job ID
-was obtained. Do not repeat HTTPS authentication, type credentials, or infer a
-running job from the extracted package. The final observed shared terminal
-returned to a prompt; user activity means read fresh state before any input.
+D204 is in progress: frozen inline18 deployment through the restored OnDemand
+portal. The user confirmed Chrome file-URL permission enabled. The agent
+uploaded the already verified offline ZIP to `/home/hxc859` and independently
+checked its server SHA-256:
+`5e85c79352c25cb7f056df346fbc0c42d4470eb3058bf0291b36ce16a5340a61`.
+Local artifact: `/Users/anthonyche/Developer/XGAP-deliverables/xgap-inline18-offline-6b32b97.zip`
+(3,261,891 bytes). Independent real bundle clone, exact commit/tree and helper
+syntax were already checked; do not regenerate it.
 
-Remote UI is now readable/operable: Chrome browser 1, original user terminal
-tab 366873264 (hpc5), file tab 366873233 (/home/hxc859). Re-inventory if stale.
-For the terminal, the iframe's `log` role is actionable; its snapshot textbox
-does not resolve. Inspect partially typed commands after any UI timeout, and
-never press Enter before confirming the complete text. The extension denied
-file-chooser setFiles because file-URL permission is absent. Do not bypass or
-change that permission; the user was asked whether it is now enabled.
+ACTIVE REMOTE JOB: **3799513**, submitted once by the user's original
+`~/xgap-inline18-6b32b97/submit.sh` after successful HTTPS authentication and
+exact checkout at `/home/hxc859/XGAP-inline18-6b32b97`. Submission exit is 0.
+Prelaunch pins captured 2026-09-10T06:39:19.642365Z; single submission intent
+06:39:33.966284Z. Latest `squeue`/`scontrol`: **PENDING / Resources**, 0 restarts,
+1 H100, 8 CPUs, 64 GiB, four hours. Follow this exact job, never resubmit.
+Original catalog fa07c25b…308e8, spec 0d3e8952…223e7 and model/tokenizer revision
+9216db5781bf21249d130ec9da846c4624c16137 are pinned. Backend execution is false.
+Do not execute the offline helper, overwrite this checkout or start another
+launch. The uploaded offline ZIP was neither extracted nor executed.
 
-The exact old ZIP was published at transport commit
-47cc44f8dc50dd2c8525a0aa76c96f8b03622421. An anonymous server download was NOT
-attempted after authentication failures became visible. Instead, an offline
-Git bundle package is fully prepared and locally verified:
-`/Users/anthonyche/Developer/XGAP-deliverables/xgap-inline18-offline-6b32b97.zip`
-(3,261,891 bytes, SHA-256
-`5e85c79352c25cb7f056df346fbc0c42d4470eb3058bf0291b36ce16a5340a61`).
-It contains a self-contained source bundle at exact 6b32b973…1b07, checked by
-an independent real clone, detached checkout and clean-tree verification.
-The helper only verifies/clones local bundle bytes instead of HTTPS; all
-frozen experiment/model/catalog settings and the one-submission guard remain.
-The original package and a conflicting target checkout are never overwritten.
+Browser control recovered after the extension restarted: Chrome browser 3,
+user terminal tab 366873264 (hpc5), file tab 366873233 (/home/hxc859). A separate
+agent-owned terminal is connected to hpc6; inspect current browser inventory
+and tabs if stale. The iframe's `log` role supports short typed input. Clipboard
+paste did not reach the shell and was not used for an action. After any input
+timeout/lag, read the complete command before Enter. The agent does not handle
+passwords. A cluster-internal BatchMode SSH read-only process query to hpc5
+succeeded; the remote SSH client reported adding its host key to known hosts.
 
-Next: transfer this existing offline ZIP once file upload is available (or the
-user manually uploads it), inspect that no prior submission exists, then run
-its helper once and observe the resulting job. All failures and any uncertain
-submission must be retained; never resubmit. See
-`docs/report/grailqa_inline18_remote_execution_20260910.md`. No new production
-query/provider code was changed; existing D203 regression is not repeated.
-The two pending historical research reports were fully read; inventory now
-66 full / 7 selected / 8 pending Markdown documents, plus the three prior PDFs.
+Next: follow exact job 3799513 through state/logs, then preserve raw model
+outputs and run the existing whole-run gate after COMPLETED 0:0. Original
+submission records: `/home/hxc859/xgap-inline18-6b32b97`. Job log:
+`/home/hxc859/XGAP-inline18-6b32b97/slurm-xgap-grailqa-guarded-3799513.out`.
+Use original `audit.sh` once after success; do not run a second experiment or
+change its protocol. See `docs/report/grailqa_inline18_remote_execution_20260910.md`.
+No production query/provider code changed; do not repeat D203's passed full
+regression. Document inventory remains 66 full / 7 selected / 8 pending
+Markdown, plus three previously reviewed PDFs. Quiet while queue unchanged;
+independent next engineering work can continue under the existing goal.
 
 ## D203 accepted predecessor
 

@@ -71,12 +71,13 @@ See [D203](report/grounded_candidate_execution_v1.md). H4 remains open for
 real generated anchored answers on inference-owned facts. Hold catalog v1
 fixed and obtain the pending inline18 job result before altering its protocol.
 
-D204 is actively restoring that real run. The portal is now operable, but
-observed launch attempts failed at GitHub HTTPS authentication before any job
-submission. A verified self-contained offline Git package keeps the exact
-original release/model/catalog/18-question settings and removes that credential
-dependency. Transfer and one actual Slurm submission remain pending; this is
-deployment progress, not model evidence or another production test milestone.
+D204 is actively restoring that real run. The offline package is now uploaded
+and hash-verified on Pioneer. Concurrently the user's original HTTPS launch
+authenticated successfully, checked out exact 6b32b97 and submitted job
+**3799513** once after input pinning. Latest state: **PENDING / Resources**.
+Follow that job and retain the offline package without executing it. Original release,
+model, catalog and 18-question settings remain fixed. This is deployment
+progress, not model evidence or another production test milestone.
 
 ## Current Mainline: M15 Agentic Federated Core
 
