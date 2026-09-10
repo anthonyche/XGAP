@@ -4187,3 +4187,31 @@ rescan Freebase, or provide complete local raw-file custody. Construction
 resource differences are unpaired observations, not speedup evidence. No new
 model/backend call, code change or paper authority follows from the receipt.
 See `docs/report/grailqa_catalog_comparison_3796988.md`.
+
+## D200 Reconstruct a complete guarded development observation, then run it
+
+Complete the D198 component with explicit source/catalog/tokenizer inputs,
+fresh retrieval and prompt reconstruction, pure typed candidate validation,
+independent local token counts, ordered probe/transport/query lifecycle and
+metric reconstruction. Open reference content only after inference history is
+reconstructed. Missing or changed inputs fail closed; ordinary model failures
+remain valid evidence and all 18 questions remain in the denominator.
+
+Actual offline runner integration exposed a prelaunch comparison bug: JSON
+integer temperature/top_p values 0/1 were rejected against normalized float
+values 0.0/1.0. Accept numeric equivalence for these two continuous fields,
+while rejecting booleans, strings and different values. Frozen spec/model
+bytes, call budgets, semantic definitions and populations do not change.
+
+Local acceptance: 184 focused passes; 2700 passed, 37 skipped in 625.92s for
+the full suite; harness and 19 acceptance examples pass. Tests use synthetic
+external transports, and cannot establish live schema acceptance, model
+effectiveness, serving-process identity or answer correctness. Actual remote
+admission remains pending. See the D200 report and acceptance receipt.
+
+The September 10 user discussion requires a priority correction: catalog is
+a grounding adapter, and its current batch scanner does not perform a 3-hop
+fact traversal. The unchanged v2 result closes that intervention. Hold v1
+fixed and advance real inline18 execution and the graph-answer bridge. Any
+future metadata indexing or recall change needs a separate bounded diagnosis;
+do not substitute recurring scans or more audit infrastructure for answers.

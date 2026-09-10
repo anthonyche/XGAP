@@ -25,8 +25,16 @@ all 15 cells were recomputed from report rows. Preserve this negative result
 and hold v1 fixed for the new interface comparison. The compact observation
 is not a whole-source audit. See
 [the result and next diagnosis](report/grailqa_catalog_comparison_3796988.md).
-Whole-run inline admission and actual schema/token fit remain before the new
-bounded model comparison and H4's inference-owned data/real-answer admission.
+D200 has now completed the whole-run reconstruction software: 184 focused
+passes, **2700 passed / 37 skipped in 625.92s**, harness and 19 examples pass.
+The gate is exercised against actual offline-runner output and independently
+reconstructs semantics, token accounting and all-question metrics. A narrow
+prelaunch numeric-representation bug was fixed without changing frozen values.
+No new real model result has been admitted. Next: the fixed-v1 bounded inline18
+run, actual schema/token fit, and H4's inference-owned data/real answers.
+Do not start another catalog scan or open-ended audit milestone. The latest
+OnDemand control timeout requires a usable transfer/terminal route, while
+answer-execution implementation can proceed independently.
 
 ## Current Mainline: M15 Agentic Federated Core
 

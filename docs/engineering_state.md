@@ -29,6 +29,41 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+D200 local software acceptance is complete: read-only reconstruction of the
+guarded inline development run, including source/context, provider, semantic,
+token/lifecycle and evaluation layers. See
+`docs/report/grailqa_guarded_whole_run_evidence_v1.md`. D199 fixes v1 as the
+control catalog; no actual new model run has been measured or admitted.
+
+The implementation reconstructs complete actual offline-runner fixtures and
+passes **184 focused tests in 17.39s**. Full regression completed in its
+original exec session 59949: **2700 passed, 37 skipped in 625.92s**. Do not
+restart it. The harness and all 19 acceptance examples pass. Receipt:
+`experiments/artifacts/d200_guarded_whole_evidence_local_20260910.json`.
+The narrow environment fix accepts numeric JSON 0/1 versus the bundle's
+normalized floats while rejecting booleans; frozen specs are intact.
+
+User steering (September 10): explain XGAP versus graph-guided RAG, identify
+which pipeline stage the catalog serves, and stop treating catalog work as the
+whole system. After D200 acceptance, prioritize the fixed-v1 real inline18
+experiment and actual federated answers. Metadata-index reuse and entity
+coverage diagnosis remain separate, bounded work; do not repeat the same scan.
+
+During the full suite, dedicated OnDemand shell tabs 366873210 (hpc5) and
+366873213 (hpc7) appeared, but browser control timed out before any server
+command was sent. No job was submitted or remote file written. CUA resets can
+renumber browsers: most recent inventory was Chrome browser 1 and in-app
+browser 2, not their earlier IDs. The new terminal tabs lack providerTabId in
+the latest inventory; do not assume they are controllable. The user-owned
+366872568 terminal still has a providerTabId and hpc8 title, but avoid typing
+into it while the user is active. The earlier file-editor route remains a
+separate read-only fallback. Native foreground typing remains unsuitable.
+The subsequent read of existing file tab 366873192 also timed out before
+returning any page content. This is a browser-control failure, not evidence of
+expired authentication. No new remote action has been attempted. Prepare the
+exact-commit runnable handoff and continue independent answer-execution work;
+do not keep creating tabs or repeat unchanged catalog/audit work.
+
 D199 / H1 catalog comparison observation is complete. Job **3796988** finished
 successfully; the actual report has **zero coverage gains and zero losses** in
 all 15 stage/component cells. Both catalogs retain joint availability 10/18,

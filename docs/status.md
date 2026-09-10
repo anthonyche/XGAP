@@ -8,6 +8,19 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+D200 completes local software acceptance of whole guarded inline development
+run reconstruction. It independently rebuilds catalog retrieval, prompts,
+typed candidate outcomes, token counts, ordered call ledgers and metrics from
+retained evidence; references are first opened after inference reconstruction.
+Actual offline-runner fixtures and 38 resealed corruptions exercise the gate.
+The same integration exposed and fixed numeric JSON 0/1 versus normalized
+float comparison at prelaunch, without changing frozen sampling values.
+Focused: **184 passed**. Full: **2700 passed, 37 skipped in 625.92s**; harness
+and all 19 examples pass. This is software acceptance, not a new live/model or
+answer result. See [whole-run reconstruction](report/grailqa_guarded_whole_run_evidence_v1.md).
+Next priority is the fixed-v1 real inline18 experiment and actual federated
+answers. Do not replace that work with another catalog rebuild or audit layer.
+
 D198 independently recomputes the retained inline provider history, including
 failed structures, typed feedback and exact repairs. It cross-checks transport,
 token-receipt, invocation and consumed-response evidence without external calls.

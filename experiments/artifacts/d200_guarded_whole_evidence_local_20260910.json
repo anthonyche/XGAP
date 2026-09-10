@@ -1,0 +1,152 @@
+{
+  "schema": "xgap_local_acceptance_v1",
+  "date": "2026-09-10",
+  "milestone": "D200",
+  "base_commit": "b129c306099e95bec651ff148156a8361bd16d88",
+  "claim_scope": "Local software acceptance of complete guarded development18 evidence reconstruction. Offline actual-runner fixtures use synthetic external transports. No actual live run admitted, serving-process identity, model-quality gain, backend-answer result or paper claim.",
+  "focused": {
+    "passed": 184,
+    "seconds": 17.39,
+    "exit_code": 0,
+    "new_tests": 113,
+    "paths": [
+      "tests/test_grailqa_guarded_reconstruction.py",
+      "tests/test_grailqa_guarded_token_evidence.py",
+      "tests/test_grailqa_guarded_whole_evidence.py",
+      "tests/test_grailqa_guarded_environment.py"
+    ]
+  },
+  "full_suite": {
+    "command": "PYTHONPATH=src /tmp/xgap-directed-tests.qU2YfW/venv/bin/python -m pytest -q",
+    "passed": 2700,
+    "skipped": 37,
+    "seconds": 625.92,
+    "exit_code": 0
+  },
+  "examples": [
+    {
+      "entrypoint": "scripts/check_harness.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.022
+    },
+    {
+      "entrypoint": "examples/core_algebra_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.058
+    },
+    {
+      "entrypoint": "examples/plan_print_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.044
+    },
+    {
+      "entrypoint": "examples/recursive_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.042
+    },
+    {
+      "entrypoint": "examples/solution_space_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.051
+    },
+    {
+      "entrypoint": "examples/semantic_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.047
+    },
+    {
+      "entrypoint": "examples/lowering_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.052
+    },
+    {
+      "entrypoint": "examples/pattern_lowering_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.052
+    },
+    {
+      "entrypoint": "examples/quantified_pattern_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064
+    },
+    {
+      "entrypoint": "examples/compiler_mvp_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.087
+    },
+    {
+      "entrypoint": "examples/llm_boundary_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.143
+    },
+    {
+      "entrypoint": "examples/m11_physical_planner_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.16
+    },
+    {
+      "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.156
+    },
+    {
+      "entrypoint": "examples/m12_experiment_contract_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.249
+    },
+    {
+      "entrypoint": "examples/m12c_calibration_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.202
+    },
+    {
+      "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 6.333
+    },
+    {
+      "entrypoint": "examples/m15_goal_loop_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.061
+    },
+    {
+      "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.097
+    },
+    {
+      "entrypoint": "examples/m15_semantic_intake_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.061
+    },
+    {
+      "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.495
+    }
+  ],
+  "source_sha256": {
+    "src/xgap/experiments/grailqa_guarded_accounting.py": "07b2f48cc39818a57697f089cb23dc0ed8747d2e2cf7f4e05306956b91a22cf9",
+    "src/xgap/experiments/grailqa_guarded_environment.py": "4e46006748e42607636eb304396e9220a6999f72a54023f195ebf364180cfea2",
+    "src/xgap/experiments/grailqa_guarded_evaluation.py": "a1c93cc0fa9d0f04ff8883f805c886dd2b0ac6f1943c21f7378f38d4199796ae",
+    "src/xgap/experiments/grailqa_guarded_evidence.py": "9cc1380adc5061e7dffe2c694f1025ffab90bb5a5566ccc6f17f81535efc975c",
+    "src/xgap/experiments/grailqa_guarded_reconstruction.py": "b1c9d989c3ab188f39a12ece915961288bfb3e6ce6a01a69aa65ae778ea1aa59",
+    "src/xgap/experiments/grailqa_guarded_run_inputs.py": "cea886f2525be04b01a6c6b5cffacfcafcab7575dbd757a1c26a95fa2682692b",
+    "src/xgap/experiments/grailqa_guarded_token_evidence.py": "a27d2022e803a7b083c0eba5c069f667c0f13de650c1ff6fc60f99279317f588",
+    "tests/test_grailqa_guarded_environment.py": "9690bfd36047177ec31ba8c0b8dd4299b7cd6e3639c7aaa6fa6f44f7e257e652",
+    "tests/test_grailqa_guarded_reconstruction.py": "e929499b173f8c1609d10f3991bff8f563824362984dba459745ec2ff6ec8c19",
+    "tests/test_grailqa_guarded_token_evidence.py": "8b03ec7fdbb5c355a2d1f70e1cb5fb91594db0ee4b4de61422b1eded6e8869e5",
+    "tests/test_grailqa_guarded_whole_evidence.py": "25efe696edb39dd8b842ce9ae0befd5eee6e3e27b3573b0ea1049ff0d6e42ddb"
+  },
+  "log_sha256": {
+    "/tmp/xgap-d200-focused-all.log": "4e99d335a72245facb8640ae968852595ed11a09c756ceaba489c7a1232a3507",
+    "/tmp/xgap-d200-full.log": "86caef9f35b537a606057e87db55cd3bfe56b0e65cc2e972bd348105e6aaae04",
+    "/tmp/xgap-d200-examples.log": "0d01bf459e41f7a5f1b01ad6ee16a1449599a4aaddbf66323bc1590071af4251",
+    "/tmp/xgap-d200-examples.json": "11aa95a6be31d15b996b52adfda4df036e5334025c93a9b09fa9b78247b35ea7"
+  },
+  "live_model_run": false,
+  "actual_whole_run_admitted": false,
+  "remote_jobs_submitted": 0,
+  "paper_result": false,
+  "next_action": "Hold preserved v1 catalog fixed, run bounded inline18 on real Qwen service, and advance inference-owned target-data answer execution. Do not repeat unchanged catalog scans."
+}

@@ -132,8 +132,13 @@ def validate_guarded_environment(
     equal(spec.data.get("model"), contract.model, "spec_served_model")
     equal(spec.data.get("provider"), config.provider, "spec_provider")
     equal(spec.data.get("candidate_cap"), config.candidate_count, "spec_candidate_cap")
-    equal(spec.data.get("temperature"), config.temperature, "spec_temperature")
-    equal(spec.data.get("top_p"), config.top_p, "spec_top_p")
+    # Frozen JSON may encode 0/1 as integers; ModelBundle normalizes these
+    # continuous sampling parameters to floats. Preserve numeric equivalence
+    # here without allowing JSON booleans to impersonate numeric values.
+    for key in ("temperature", "top_p"):
+        value = spec.data.get(key)
+        require(type(value) in (int, float), f"spec_{key}_numeric")
+        equal(float(value), getattr(config, key), f"spec_{key}")
     equal(spec.data.get("backend_execution"), False, "no_backend_execution")
     equal(spec.data.get("full_150_run_permitted"), False, "development_population_only")
     require(serving.get("host") == "127.0.0.1" and type(serving.get("port")) is int, "frozen_loopback")

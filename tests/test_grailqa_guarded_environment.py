@@ -113,6 +113,29 @@ def test_matching_records_are_not_remote_parity_or_authority(bound):
     json.dumps(result, allow_nan=False)
 
 
+@pytest.mark.parametrize("key,value,valid", [
+    ("temperature", 0, True), ("temperature", 0.0, True),
+    ("top_p", 1, True), ("top_p", 1.0, True),
+    ("temperature", False, False), ("top_p", True, False),
+    ("temperature", "0", False), ("top_p", 0.5, False),
+])
+def test_sampling_numeric_representation_preserves_value_not_boolean(bound, key, value, valid):
+    environment, kwargs, _ = bound
+    spec = kwargs["spec"]
+    data = copy.deepcopy(spec.data)
+    data[key] = value
+    data["freeze_hash"] = content_hash({k: v for k, v in data.items() if k != "freeze_hash"})
+    spec.path.write_text(json.dumps(data))
+    kwargs["spec"] = GrailQAPreflightSpec.load(spec.path)
+    environment["experiment"]["spec_sha256"] = hashlib.sha256(spec.path.read_bytes()).hexdigest()
+    environment["experiment"]["spec_freeze_hash"] = data["freeze_hash"]
+    if valid:
+        assert guarded.validate_guarded_environment(environment, **kwargs)["success"]
+    else:
+        with pytest.raises(ValueError, match="spec_" + key):
+            guarded.validate_guarded_environment(environment, **kwargs)
+
+
 @pytest.mark.parametrize("path,value", [
     (("schema_version",), "wrong"), (("secrets_persisted",), True),
     (("git", "commit"), "c" * 40), (("git", "clean"), False),
