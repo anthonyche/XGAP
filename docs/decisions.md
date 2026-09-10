@@ -4243,3 +4243,29 @@ Real date/gYear semantics, Neo4j/Fuseki dataset mappings, loads and generated
 federated answers remain H4 work. Reuse completed snapshots. No old catalog,
 frozen inference inputs, path-algebra semantics or scientific population was
 changed. See `docs/report/freebase_typed_fact_snapshot_v1.md`.
+
+## D202 Execute typed fact queries with explicit resource/literal placement
+
+Preserve the complete RDF snapshot in Fuseki. Mirror every URI-object fact in
+Neo4j using absolute IRI resource identities and a relationship predicate
+property; MERGE gives RDF set semantics. Keep literal values in RDF form rather
+than coercing multivalued or typed terms into scalar property-graph fields.
+This declared overlap permits a full-Fuseki correctness baseline for federation.
+
+Use the existing directed compiler and coordinator bound-query node. Add an
+explicit finite SPARQL IRI VALUES profile to the Fuseki client so downstream
+bindings actually constrain native execution. Reject invalid identifiers,
+excess binding bytes/counts and result-overflow sentinels. Unbound existing
+queries keep their previous behavior; no logical algebra operator is added.
+
+The real local gate uses the locked Neo4j/Fuseki products on installed Java 21,
+without changing CWRU's Java-17 allocation contract. All 3,247,670 first-shard
+occurrences were loaded; native distinct counts and 103 entity/name answers
+match independent source checks. Both owned services stopped normally. This is
+a typed query on a partial source, not a real model prediction or a controlled
+performance experiment. Additional book/person queries reuse the same database
+state and agree with independent source evaluation at 6/202 English-name pairs.
+Full regression passes 2,782 tests with 38 skipped in 596.81s; focused validation,
+harness and all 19 acceptance examples also pass. Preserve the first
+prelaunch help-validator failure and the numbered successful diagnostic.
+See `docs/report/freebase_native_answer_bridge_v1.md` for actual evidence.

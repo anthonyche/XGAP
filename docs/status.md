@@ -8,6 +8,18 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+D202 now returns actual Freebase-backed federated answers locally: the complete
+retained first shard was loaded into Fuseki and a Neo4j resource-edge mirror;
+103 typed entity/English-name pairs match the full-Fuseki query and independent
+source evaluation. Distinct native graph counts also match the source. The new
+bounded SPARQL IRI VALUES binding closes the effective cross-backend parameter
+boundary. This is a typed partial-source development query, not NL accuracy or
+performance evidence. Further book/person queries return 6/202 English-name
+pairs with the same three-way agreement, reusing the loaded data. Both services
+stopped normally. Focused 241/2, harness plus 19 examples, and broad regression
+**2,782 passed / 38 skipped in 596.81s** all pass. See
+[native fact answers](report/freebase_native_answer_bridge_v1.md).
+
 D201 adds the typed fact-data path required for answers. It exports complete
 selected Parquet shards into reusable N-Triples parts, preserving URI versus
 literal, lexical value, datatype and language under finite budgets. The actual

@@ -1371,7 +1371,8 @@
         "### Appropriate future work",
         "## Implementation and test evidence"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Full historical lowering report reviewed during D202. Its M5/M9 scope and variable-annotation limitations remain relevant; global absence claims predate the later M15 semantic/runtime layers and D195 directed compiler."
     },
     {
       "path": "docs/report/m12b_llm_boundary_audit.md",
@@ -1976,8 +1977,8 @@
   ],
   "hash_note": "Hashes and sizes capture the entry snapshot; review_status records progress. Later engineering updates to status/roadmap/decisions are not silently substituted for the entry snapshot.",
   "review_counts": {
-    "full_text_reviewed": 63,
+    "full_text_reviewed": 64,
     "selected_sections_reviewed": 7,
-    "indexed_pending_detailed_review": 11
+    "indexed_pending_detailed_review": 10
   }
 }

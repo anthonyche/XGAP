@@ -46,6 +46,17 @@ pass. See [D201](report/freebase_typed_fact_snapshot_v1.md). H4 remains open for
 real backend loading, dataset-owned mapping and generated federated answers;
 preserved date terms alone do not provide date-aware query semantics.
 
+D202 closes that native data/typed-answer slice locally: all first-shard facts
+load into the actual locked Fuseki and a Neo4j URI-resource-edge mirror. The
+existing coordinator now binds resource IRIs into a declared SPARQL VALUES
+column. Actual federated and single-Fuseki answers agree with independent source
+evaluation at 103 entity/name pairs; additional book/person queries agree at
+6/202 English-name pairs without reloading data. Distinct graph counts agree.
+Focused 241/2, harness/examples and full **2,782 passed / 38 skipped** all pass. See
+[D202](report/freebase_native_answer_bridge_v1.md). Next: connect accepted
+inference candidates to these executable mappings and obtain real end-to-end
+model answers, retaining explicit partial-source and semantic-capability limits.
+
 ## Current Mainline: M15 Agentic Federated Core
 
 The M0-M14 milestones below record the original ambiguity-aware planning and

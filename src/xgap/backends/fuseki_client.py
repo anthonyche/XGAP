@@ -114,7 +114,9 @@ class FusekiClient:
                 or len(set(expected)) != len(expected)
             ):
                 raise ValueError("Invalid expected RDF result columns")
-            response = self._post_query(artifact.text)
+            from xgap.backends.sparql_bindings import bind_sparql_iris
+
+            response = self._post_query(bind_sparql_iris(artifact.text, artifact.parameters))
             rows = (
                 parse_select_results(
                     response,

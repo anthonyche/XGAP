@@ -29,6 +29,59 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+D202 has completed **local software and real Freebase answer acceptance**. See
+`docs/report/freebase_native_answer_bridge_v1.md`. The exact Neo4j 5.26.30 and
+Fuseki 5.6.0 archives ran on installed Java 21.0.10 in an explicitly local
+development environment. No CWRU gate or Java-17 contract changed. The full
+D201 first-shard snapshot was loaded once: 3,247,670 occurrences became
+3,233,752 distinct Fuseki facts and 541,675 Neo4j resource edges; independent
+Arrow grouping confirms both distinct counts (13,918 input duplicates).
+
+The typed query for English names of `type.property` resources returned
+**103 identical entity/name pairs** from the actual federated plan, full-Fuseki
+baseline and independent Arrow source evaluation. The new opt-in SPARQL IRI
+VALUES boundary makes coordinator bindings effective in Fuseki. This is a
+typed development query on a partial source, not NL/GrailQA accuracy.
+One observation: federated 204.83 ms / two calls versus baseline 16.76 ms /
+one call, different timing boundaries and baseline-after-federation cache
+order; no speedup claim. Actual output rows encode as 9,044 + 17,924 bytes.
+
+Focused: **241 passed / 2 skipped**; 30 new offline tests plus a live-gated test.
+Harness + 19 existing acceptance examples pass. Full regression completed in
+original session 43688: **2,782 passed / 38 skipped in 596.81s**, log
+`/tmp/xgap-d202-full.log`. Do not restart any of these successful checks.
+Native session 37809 completed exit 0, both services stopped without SIGKILL.
+Source-query session 90335, distinct-count session 80344 and example session
+64526 all completed successfully. No backend or source-build process remains.
+Native output/data: `/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2`.
+Source answer: `/Users/anthonyche/xgap-data/d202-source-query-20260910.json`.
+Archives: `/Users/anthonyche/xgap-data/native-cache` (now present and verified).
+The earlier local attempt 68937 failed before service startup because of the
+Fuseki help CLI's explicit TerminationException/exit 1; its output is retained.
+The corrected help validator passed in diagnostic2; no download/load retry.
+
+Two additional declared book/person queries reused the same databases without
+loading data again. Actual resource-match/final-name counts are 7/6 books and
+2,234/202 people; all answers equal the full-Fuseki baseline and independent
+Arrow source evaluation. The English-name requirement is enforced within this
+partial source. Native session 37587 and source-reference session 87038 both
+completed; services again shut down normally. No running handle remains.
+Outputs: `/Users/anthonyche/xgap-data/d202-domain-queries-20260910`.
+Durable receipt/all three answer sets:
+`experiments/artifacts/d202_native_freebase_answers_20260910.json`.
+Producer source hashes in that receipt remained unchanged through acceptance.
+The local D201 commit 61923b6 was also verified at the remote branch head before
+D202 began. The document inventory now records 64 full / 7 selected / 10 pending
+Markdown reviews; the historical logical-lowering report was fully read while
+the regression ran. Do not claim all indexed historical text is fully reviewed.
+
+Next after D202 acceptance: inference-candidate-to-execution lowering and
+actual end-to-end model answers. Preserve the existing typed data/mappings,
+do not repeat passed exports/loads or substitute catalog/audit work. The
+existing fixed-v1 inline18 CWRU package still awaits a returned job ID.
+
+## D201 accepted predecessor
+
 D201 local software and one-shard data acceptance is complete: typed Freebase fact snapshots and executable answer
 integration. Scope/acceptance: `docs/report/freebase_typed_fact_snapshot_v1.md`.
 The fact reader/exporter, tests and `examples/freebase_typed_fact_demo.py`
@@ -76,13 +129,13 @@ values, plus 91,515 strings and 2,603,948 language literals. Verification took
 57.79s alongside the full regression; no model/backend was called. Do not
 rerun either the export or successful independent verification.
 
-Next: connect typed fact data to actual backend loading, dataset-owned term
+At D201 completion the next gate was: connect typed fact data to actual backend loading, dataset-owned term
 mapping, generated query execution and cross-backend answers. Date/gYear/
 gYearMonth terms are preserved but require their own comparison semantics;
 the successful compiled query test uses integer years. Do not promote that
 fixture into a claim of date-aware real Freebase answers. The inline18 CWRU
 package still has no returned job ID, and no remote submission was attempted.
-Local Java inventory shows Temurin 25 and Homebrew OpenJDK/21, but no known
+The D201 Java inventory showed Temurin 25 and Homebrew OpenJDK/21, but no known
 Java 17 installation. The accepted native lock requires Java 17, Neo4j 5.26.30
 and Fuseki 5.6.0. Read the actual lock and locate/retrieve exact local runtimes
 before trying a separate local service experiment; never fabricate a Slurm
