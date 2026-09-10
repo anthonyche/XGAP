@@ -57,8 +57,16 @@ row operators into a federated execution DAG. Source placement and backend
 identity/domain mappings are explicit inputs. Shared ancestors compile once;
 Match uses Nodes/Selection native compilation and Traverse calls the bounded
 path planner. It does not perform semantic-hole resolution or automatic source
-optimization. Existing candidate cost selection remains a separate integration
-boundary. See [the semantic DAG gate](report/toy_backbone_t1_semantic_dag.md).
+optimization itself. The separate planning entrypoints below connect candidate
+generation and cost selection. See [the semantic DAG gate](report/toy_backbone_t1_semantic_dag.md).
+
+That selection boundary now has a separate `enumerate_semantic_plans` and
+`run_semantic_plans` connection: one typed program plus logical source/snapshot
+replica declarations produces finite placement candidates, deduplicated registered
+observations, explicit exchanges, existing cost selection and selected execution.
+The direct compiler still takes explicit placement. This does not infer source
+completeness, discover arbitrary sources or split Traverse internals; see
+[the candidate planning gate](report/toy_backbone_t1_candidate_planning.md).
 
 M15-E3's deterministic intake compiler is likewise a frontend compilation
 step, not an operator. It may instantiate only the semantic DAG, holes, and

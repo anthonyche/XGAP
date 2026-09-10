@@ -28,6 +28,40 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+T1 candidate planning native gate PASSED: original session55823 exit0, **8/8**
+programs selected and executed correctly; **28/28** complete placement candidates
+match frozen gold. Original two-engine slice passes. Raw root:
+`/Users/anthonyche/xgap-data/t1-planning-native-20260910`. Owned services stopped
+normally, no retry. Planning/serving used28 observations+14 executions=42 calls;
+validation-only alternatives added38 calls; the old slice adds2. These are tiny
+correctness measurements, not a calibrated optimizer/performance claim.
+
+Focused final session21349 exit0: **106 passed in2.68s**, log
+`/tmp/xgap-t1-planning-focused-final.log`. First two local runs exposed invalid
+test replica mapping IDs, uncaught compiler-capability exceptions and RDFLib
+parser concurrency. The latter exposed a production scheduler exception-accounting
+gap now repaired and independently tested. No remote failure/retry occurred.
+Initial/focused/focused2 logs remain. A misnamed focused3 test command ran no tests.
+
+Broad shared-runtime acceptance COMPLETED in original session **6473**, exit0:
+**3,069 passed / 38 skipped in657.30s**, all24 harness/example entrypoints pass.
+Log `/tmp/xgap-t1-planning-acceptance.log`. Production source is unchanged after
+launch; source and frozen fixture hashes match the native run. All current
+acceptance/native processes are terminal. Do not poll or repeat accepted checks
+without a new source change or concern. This candidate-planning step is accepted. See
+`docs/report/toy_backbone_t1_candidate_planning.md` and its durable receipt.
+
+The new source declaration requires complete equivalent replicas of one logical
+snapshot; availability does not establish equivalence. Source roles remain
+explicit, internal Traverse splitting is not implemented. A missing snapshot
+profiles every unique fragment once; a compatible snapshot may be supplied.
+Native observations and all serving calls are charged. Linear coordinator
+estimates remain proxies. Current mainline still needs IN logical/reference
+closure and integration with semantic admission/control, followed by T2/T3.
+Do not build catalogs, wait for GPUs or launch large data to test these gaps.
+
+## Accepted semantic DAG predecessor
+
 T1 semantic DAG native gate PASSED. Native session92465 exited0: **36/36**
 original path queries through typed semantic programs, **8/8** new compositions,
 **8/8** independent Cypher references and the original federated slice. Six new

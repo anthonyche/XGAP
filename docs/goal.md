@@ -88,33 +88,27 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
 
 ## 当前进度与被替代的工作
 
-- T1 新增语义 DAG 编译入口：Match/Traverse/Filter/Project/Join/Union/Aggregate/
-  OrderLimit/Align 可以组合执行。真实后端上原路径程序 36/36、新组合 8/8、独立
-  Cypher 目标 8/8，原联邦 slice 继续通过；focused 137 passed。Broad
-  acceptance 原 session42090 已 exit0：3,049 passed / 38 skipped，24 个
-  harness/example 入口通过；此语义组合执行步骤已验收，完整 T1 仍在进行。
-  后端 placement 仍显式提供；候选生成、代价选型与语义准入/control 的通用连接
-  仍是下一项系统缺口。详见 [最新开发总结](report/xgap_development_summary_20260910.md)。
-- T0 已验收：5 节点、8 边、18 题完整 gold chain；参考 lowerer/求值器匹配 17/18
-  （IN 缺口保留）；独立目标查询在真实 Neo4j/Fuseki 上 36/36 匹配；生产编译器与
-  运行时的第一条联邦 slice 返回 Alice→Cara。Full regression 2,963 passed /
-  38 skipped，24 个 harness/example 入口通过。完整 backbone 尚未完成。
-- T1 正在进行：18 题均已通过生产编译、真实单后端执行和 coordinator selector，
-  Neo4j/Fuseki 共 36/36 完整路径匹配，原两后端联邦 slice 继续通过。节点、Union、
-  有界递归与 selector 已接入这条执行链，focused 266 passed / 1 skipped；因修改了
-  共享代数函数与 scheduler，本轮已完成一次 broad acceptance：3,006 passed / 38
-  skipped，24 个 harness/example 入口通过。此有界路径执行步骤已验收。
-  旧普通 RDF 行为与 toy gold 未改变。M5 IN logical/reference 缺口、一般语义/联邦
-  计划集成及更广的递归/条件支持仍待完成，不宣称完整 T1/backbone 完成。
-- D205：受控 provider＋真实 Neo4j/Fuseki 已验证受支持查询的答案；不是真实 LLM
-  自然语言准确率。
-- D207：GPU 启动健康检查软件已验收；最新真实 GPU 启动仍失败，无新模型答案。
-- D208：CPU 配对测量入口已在 `7e09a56` 实现，focused **112 passed / 1 skipped**；
-  后来的 T0 全回归也覆盖该软件，native 验收仍未执行。**新的三百万行 shard 测量没有启动**。按本次用户指令，
-  原大 shard 开发实验在执行前延期；保留代码，合适时用于 toy 测试，再按相应
-  milestone 验收，不为“收尾”单独消耗一轮 full regression 或真实大图实验。
-- catalog 8＋4＋1 诊断和 GPU 分配不再排在日常开发首位；已知问题保留，后续按
-  集成需要处理。立即下一步是 T1 的候选规划/语义连接与剩余 logical/reference 缺口。
+- **T0 已验收，图与 gold 保持冻结。** 5 节点、8 边、18 道完整 path gold chain；
+  新增 8 个语义组合 fixtures。真实 Neo4j/Fuseki 路径执行 36/36、语义组合 8/8
+  和原两后端 vertical slice 已通过。M5 IN logical/reference 仍只有 17/18 覆盖。
+- **T1 的规划连接步骤已验收。** 从一份语义和显式逻辑数据源副本声明自动生成候选，
+  复用唯一源观测，经既有代价选择器选型，再执行选中计划。真实 gate 8/8 程序、
+  28/28 候选答案正确；106 项 focused 通过。Broad acceptance 原 session6473
+  已 exit0：3,069 pass/38 skip，24 个 harness/example 入口通过。此规划连接步骤
+  已验收，完整 T1 仍在进行。
+  新入口不是任意 source discovery 或 Traverse 内部自动跨库切分；没有 snapshot
+  时会 profile 所有唯一源片段，其代价已计入，不宣称规模优势。
+- **立即下一步**：在同一 toy graph 上修复 M5 IN logical/reference 缺口，连接
+  unresolved semantic admission/control 与新规划入口；按设计补剩余 path/typed
+  semantics。随后 T2 Interpretation、offline catalog freeze/runtime-only lookup、
+  failure replay，再进入 T3。详细 evidence 见
+  [当前工程状态](engineering_state.md) 和 [规划闭环报告](report/toy_backbone_t1_candidate_planning.md)。
+- D205 的 provider＋真实后端是受控接口结果，不是真实 LLM 准确率。D207 GPU
+  健康检查软件已验收，但最新真实部署仍未产生模型答案；GPU 不阻塞 toy 工程。
+- D208 大 shard CPU 测量已在启动前延期，保留 runner，native campaign 未执行。
+  catalog 8＋4＋1 与 GPU 历史诊断保留在报告，不再占据日常开发首位。
+- 历史完整数据、负结果、FinBench/GrailQA 与 EQ1–EQ5 最终评价义务均保留。
+  新 toy 进展不能替代正式效果；完整系统 Goal 仍未完成。
 
 ## Goal 工具状态
 

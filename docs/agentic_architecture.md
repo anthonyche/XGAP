@@ -255,9 +255,18 @@ The semantic DAG compiler connects these runtime stages for an explicit typed
 profile. Source placement is supplied separately from meaning; entity keys are
 namespace-qualified, shared ancestors execute once, and the existing scheduler
 accounts for every stage. Binding-driven Traverse currently filters native
-candidates at the coordinator. Automatic placement, interpretation/admission
+candidates at the coordinator. General source discovery, interpretation/admission
 and broader typed aggregate semantics remain separate unfinished work; see
 [the current gate](report/toy_backbone_t1_semantic_dag.md).
+
+The candidate-planning connection now enumerates placements among explicitly
+declared complete source replicas of a frozen logical snapshot. It deduplicates
+observation queries, collects them through registered tools if a compatible
+snapshot was not supplied, uses the existing cost selector and dispatches the
+winner. Planning and serving calls are accounted separately; failures do not
+trigger a retry or fallback. This supplies bounded declared-source placement,
+while general source discovery, control for unresolved meanings and calibration
+remain open. See [the planning gate](report/toy_backbone_t1_candidate_planning.md).
 
 Adaptive execution may first run an ancestor-closed common prefix. Before any
 probe call, every prefix node must be structurally identical in every candidate

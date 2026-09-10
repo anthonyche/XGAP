@@ -562,7 +562,8 @@ class FederatedPlanSelector:
             reduction = FederatedPlanSelector._fraction(
                 node, "group_reduction_fraction", 1.0
             )
-            rows = source.row_count * reduction
+            rows = (1.0 if node.parameters.get("allow_global") and not node.parameters.get("group_by")
+                    else source.row_count * reduction)
             duration = source.row_count * snapshot.coordinator_row_ms
             return (
                 _NodeEstimate(ready_ms + duration, rows, source.row_width_bytes),
@@ -591,6 +592,16 @@ class FederatedPlanSelector:
             duration = rows * snapshot.coordinator_row_ms
             return _NodeEstimate(ready_ms + duration, rows, width), 0.0, 0, None
         source = inputs[0]
+        if node.kind in {
+            RuntimeNodeKind.COORDINATOR_FILTER, RuntimeNodeKind.COORDINATOR_PATH_SELECT,
+            RuntimeNodeKind.COORDINATOR_ROW_PROJECT, RuntimeNodeKind.NORMALIZE_NODE_BINDINGS,
+        }:
+            # Defaults preserve input cardinality/width; these are explicit
+            # conservative proxy assumptions, not measured selectivity.
+            rows = source.row_count * FederatedPlanSelector._fraction(node, "output_row_fraction", 1.0)
+            width = source.row_width_bytes * FederatedPlanSelector._fraction(node, "width_fraction", 1.0)
+            return (_NodeEstimate(ready_ms + source.row_count * snapshot.coordinator_row_ms, rows, width),
+                    0.0, 0, None)
         if node.kind is RuntimeNodeKind.PROJECT:
             width_fraction = FederatedPlanSelector._fraction(
                 node,

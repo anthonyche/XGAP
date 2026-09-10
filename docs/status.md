@@ -2,6 +2,16 @@
 
 ## Active engineering loop — 2026-09-10
 
+T1 now generates equivalent source-placement candidates, acquires unique
+native observations and selects/executes through the existing cost/runtime
+interfaces. Native8/8 programs and28/28 candidate answers pass; old slice passes.
+Focused106 pass in2.68s. Broad acceptance passed in session6473, exit0:
+3,069 pass/38 skip in657.30s, all24 harness/example entrypoints pass. This
+candidate-planning step is accepted. See
+[the planning connection report](report/toy_backbone_t1_candidate_planning.md).
+IN logical/reference and semantic admission/control remain the next connections;
+full T1/T2/T3 are incomplete. All older paragraphs below are predecessor records.
+
 T1 semantic DAG native gate now passes: original 18 path programs on each real
 engine **36/36**, eight composed cases **8/8** (six use both backends), eight
 independent Cypher references **8/8**, and the retained original federated slice.

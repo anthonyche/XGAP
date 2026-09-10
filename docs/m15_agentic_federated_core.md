@@ -52,6 +52,12 @@ Required work:
 
 Implemented locally:
 
+- automatic finite placement enumeration from typed programs and declared
+  equivalent source replicas, unique registered native observations, existing
+  cost selection and selected-plan execution. Tiny native validation passes8/8
+  programs and28/28 complete candidate answers. General source discovery,
+  internal Traverse partitioning and calibrated optimization remain open; see
+  [the planning connection](report/toy_backbone_t1_candidate_planning.md);
 - semantic-DAG compilation for Match, Traverse, Filter, Project, Join, Union,
   Aggregate, OrderLimit and Align with explicit source placements. Real tiny
   execution verifies all eighteen path programs on each engine plus eight

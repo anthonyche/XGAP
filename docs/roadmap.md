@@ -2,6 +2,17 @@
 
 ## Current engineering milestones — 2026-09-10
 
+T1 candidate-generation/selection/execution now has a native gate:8/8 programs,
+28/28 placement candidates and the retained two-engine slice match gold.
+Focused106 pass; broad acceptance passed in original session6473, exit0:
+3,069 pass/38 skip in657.30s; all24 harness/example entrypoints pass. This
+candidate-planning step is accepted. Next use the
+same tiny graph for M5 IN logical/reference closure and semantic admission/control
+integration; T2 interpretation/catalog/replay and T3 evaluation remain open.
+Declared replica placement is not general source discovery or arbitrary physical
+rewriting. See [the current gate](report/toy_backbone_t1_candidate_planning.md).
+The paragraphs below retain preceding milestone evidence and historical queues.
+
 T1 semantic DAG integration has passed its native gate: 36/36 path-program
 executions, 8/8 composed cases, 8/8 independent Cypher targets and the retained
 two-engine slice. Focused137 pass. Broad shared-runtime acceptance passed

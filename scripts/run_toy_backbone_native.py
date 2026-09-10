@@ -28,6 +28,7 @@ from xgap.experiments.toy_backbone import (
 from xgap.experiments.toy_semantic import (
     FIXTURE as SEMANTIC_FIXTURE, execute_semantic_case, load_semantic_cases, wrap_path_case,
 )
+from xgap.experiments.toy_planning import execute_planned_semantic_case
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 
@@ -45,6 +46,8 @@ def main(argv=None):
         help="Run all toy queries through bounded native compilation and coordinator selectors")
     selection.add_argument("--semantic-dag", action="store_true",
         help="Compile the typed semantic programs and composed two-backend DAGs")
+    selection.add_argument("--planned-semantic", action="store_true",
+        help="Generate placements, collect native observations, select and execute semantic DAGs")
     args = parser.parse_args(argv)
     if not args.execute:
         parser.error("Fresh owned native execution requires --execute")
@@ -71,12 +74,18 @@ def main(argv=None):
         "src/xgap/runtime/path_selection.py", "src/xgap/runtime/contracts.py",
         "src/xgap/runtime/scheduler.py", "src/xgap/algebra/evaluator.py")]
     source_files.append(Path(__file__))
-    if args.semantic_dag:
+    if args.semantic_dag or args.planned_semantic:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/experiments/toy_semantic.py", "src/xgap/compilers/node_match.py",
             "src/xgap/runtime/semantic_compiler.py", "src/xgap/runtime/row_operations.py",
             "src/xgap/semantic/program.py"))
-    record = {"success": False, "scope": ("T1 semantic DAG execution" if args.semantic_dag else
+    if args.planned_semantic:
+        source_files.extend(REPO / relative for relative in (
+            "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
+            "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
+            "src/xgap/tools/backends.py", "src/xgap/experiments/toy_planning.py"))
+    record = {"success": False, "scope": ("T1 semantic candidate planning" if args.planned_semantic else
+                                           "T1 semantic DAG execution" if args.semantic_dag else
                                            "T1 bounded path execution" if args.compiled_bounded else
                                            "T1 compiled directed paths" if args.compiled_directed
                                            else "T0 tiny native development fixture"),
@@ -85,8 +94,8 @@ def main(argv=None):
         "fixture_sha256": {str(p.relative_to(DEFAULT_FIXTURE)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
         "source_sha256": {str(p.relative_to(REPO)): hashlib.sha256(p.read_bytes()).hexdigest() for p in source_files},
         "health": [], "loads": [], "targets": [], "shutdown": [], "automatic_retries": 0}
-    if args.semantic_dag:
-        record.update(semantic_cases=[], semantic_reference_targets=[],
+    if args.semantic_dag or args.planned_semantic:
+        record.update(semantic_cases=[], semantic_reference_targets=[], planned_cases=[],
             semantic_fixture_sha256={str(p.relative_to(SEMANTIC_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in SEMANTIC_FIXTURE.rglob("*") if p.is_file()})
@@ -159,6 +168,8 @@ def main(argv=None):
                            "compiled-directed" if args.compiled_directed else "independent-targets")
         selected = [case for case in cases if not args.compiled_directed
                     or case["id"] in DIRECTED_TOY_QUERY_IDS]
+        if args.planned_semantic:
+            selected = []  # Changed planning boundary uses the composition cases below.
         for case in selected:
             for backend, client in (("neo4j", neo), ("fuseki", rdf)):
                 item = {"query_id": case["id"], "backend": backend, "status": "started", "success": False}
@@ -212,6 +223,17 @@ def main(argv=None):
                 save()
                 if not reference["success"]:
                     raise RuntimeError(f"Independent semantic reference failed: {case['id']}; no retry")
+        if args.planned_semantic:
+            for case in load_semantic_cases():
+                record["phase"] = "planned-semantic-" + case["id"]
+                item = {"query_id": case["id"], "status": "started", "success": False}
+                record["planned_cases"].append(item)
+                save()
+                item.update(execute_planned_semantic_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf}),
+                            status="completed")
+                save()
+                if not item["success"]:
+                    raise RuntimeError(f"Semantic planning failed: {case['id']}; no retry")
         record["phase"] = "compiled-federated-slice"
         save()
         record["vertical_slice"] = execute_vertical_slice(cases[-1], mapping, neo4j=neo, fuseki=rdf)
@@ -234,6 +256,7 @@ def main(argv=None):
         "targets_passed": sum(x["success"] for x in record["targets"]),
         "semantic_compositions_passed": sum(x["success"] for x in record.get("semantic_cases", [])),
         "semantic_references_passed": sum(x["success"] for x in record.get("semantic_reference_targets", [])),
+        "planned_cases_passed": sum(x["success"] for x in record.get("planned_cases", [])),
         "compiled_slice_passed": record.get("vertical_slice", {}).get("success"), "output": str(root)}))
     return 0 if record["success"] else 1
 

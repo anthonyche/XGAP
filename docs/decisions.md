@@ -4534,3 +4534,25 @@ Broad shared-runtime acceptance passed in original session42090, exit0:
 accepts the semantic composition step and closes an execution adapter boundary, not automatic candidate/source planning,
 all semantic holes/capability admission, broader recursive semantics or T1/T2/T3.
 No benchmark build or GPU dependency is introduced. See the semantic DAG report.
+
+## T1 Generate equivalent placements from declared logical sources
+
+Connect the semantic compiler to the existing cost selector instead of requiring
+callers to hand-author candidate plans. A source declaration names one logical
+snapshot and its complete equivalent replicas; never infer equivalence from
+availability. Enumerate within finite budgets, record unsupported placements,
+key native observations by source version/backend/artifact, and acquire each
+unique observation once. Explicit Exchange stages count result movement. A
+supplied compatible snapshot can avoid acquisition; otherwise profile costs
+belong to the current query. Coordinator estimates remain an explicit linear
+proxy, not measured cardinalities or a calibrated optimizer.
+
+Native8/8 programs and28/28 candidate answers pass on unchanged toy fixtures;
+42 planning/serving calls and38 additional validation calls are separately
+recorded. The old two-engine slice remains correct. Focused106 pass; broad
+acceptance passed in original session6473, exit0:3,069 pass/38 skip in657.30s,
+all24 harness/example entrypoints pass. This candidate-planning step is accepted. A test-adapter parser race also
+exposed uncaught backend plugin exceptions: the scheduler now records the failed
+attempt and skips dependents, without retry. General semantic admission/control,
+IN logical/reference coverage and later T2/T3 are still unfinished. See the
+candidate-planning report for evidence and limitations.

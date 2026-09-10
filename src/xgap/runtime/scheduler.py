@@ -223,19 +223,23 @@ class FederatedScheduler:
                         "empty_binding_short_circuit": True,
                     },
                 )
-        result = self._backend_tool.invoke(
-            {
-                "backend_id": backend_id,
-                "operation": "execute",
-                "payload": {"artifact": prepared_artifact},
-            },
-            ToolContext(
-                goal_id=goal_id,
-                step=0,
-                call_id=f"remote:{node.node_id}",
-                metadata={"runtime_node_id": node.node_id},
-            ),
-        )
+        try:
+            result = self._backend_tool.invoke(
+                {
+                    "backend_id": backend_id,
+                    "operation": "execute",
+                    "payload": {"artifact": prepared_artifact},
+                },
+                ToolContext(
+                    goal_id=goal_id,
+                    step=0,
+                    call_id=f"remote:{node.node_id}",
+                    metadata={"runtime_node_id": node.node_id},
+                ),
+            )
+        except Exception as error:
+            return self._error(node, f"{type(error).__name__}: {error}", started,
+                               input_bytes=input_bytes, remote_calls=1)
         if result.status is not ToolStatus.SUCCESS:
             return self._error(
                 node,
