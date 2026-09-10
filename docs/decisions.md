@@ -4428,3 +4428,28 @@ Stop after any failure or mismatch, retain unrun counts, and never call JSON
 row sizes network traffic. This is not an unseen GrailQA or paper population;
 the exposed queries cannot establish a general speedup. No frozen protocol,
 catalog, data or semantic behavior changes.
+
+## User direction: toy-first backbone development (2026-09-10)
+
+The user explicitly replaces the benchmark-centered development workflow with
+an extremely small toy graph and roughly 16–18 core-operator query fixtures.
+Each fixture carries NL, gold semantic/path form, expected logical plan, target
+queries and typed results. Separate Interpretation and deterministic planning,
+allow the first stage to skip the LLM, and always maintain a complete tiny
+vertical slice alongside isolated module tests. Close design/implementation
+gaps before spending development cycles on GrailQA-specific failures.
+
+GrailQA catalog construction is offline preprocessing, frozen/versioned after
+success and completely absent from runtime. Add minimal failure replay instead
+of repeating expensive external actions. Toy E2E tests system composition;
+module tests local correctness; GrailQA-mini real integration; full GrailQA and
+other large datasets final evaluation/baselines. Existing final research
+questions and historical failures remain intact. This is an explicit authorized
+development decision, not a request for another approval.
+
+D208's three-million-row native measurement is deferred before execution. Its
+runner at 7e09a56 has 112 focused passes / 1 skip, but no full/native acceptance;
+reuse it on toy cases when useful. Do not run the displaced campaign or repeat
+regression merely to close it. The next milestone is T0 in [the Goal](goal.md).
+The app Goal remains active; its tool has no objective-edit operation. The
+required Goal file and existing heartbeat preserve the new instructions.

@@ -2,7 +2,16 @@
 
 ## Active engineering loop — 2026-09-10
 
-D208 is implementing a fixed-semantics CPU paired comparison on the retained
+The user's latest development direction is authoritative in
+[the active Goal](goal.md): tiny toy graph, 16–18 gold-chain queries, separate
+Interpretation/deterministic planning tests, continuous vertical slice, offline
+frozen catalog, and failure replay. Large benchmarks are final evaluation, not
+the development environment. T0 fixture/backbone work is next.
+
+D208's runner has **112 focused passes / 1 skip**, but native/full acceptance
+has not run. Its large-shard measurement is deferred before execution; preserve
+and reuse the code on toy cases as useful. The earlier proposal was a
+fixed-semantics CPU paired comparison on the retained
 first-shard stores, independent of LLM availability. Three exposed development
 queries and both complete strategies are predeclared; warmup and measurement
 are separate, AB/BA order is balanced, and answer/call/time failures are retained.

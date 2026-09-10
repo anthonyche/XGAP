@@ -28,7 +28,22 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
-D208 is in progress: a fixed-semantics CPU comparison over the three existing
+**Latest user direction: toy-first development.** Read `docs/goal.md` before
+implementation. T0 (minimal graph + 16–18 core query fixtures + first complete
+deterministic vertical slice) is next. Separate Interpretation from deterministic
+planning. Runtime must never build a GrailQA catalog; offline build/freeze and
+runtime lookup are separate. Add failure replay. Module tests and toy E2E drive
+development; GrailQA-mini follows for integration, large datasets for final
+evaluation. The app Goal remains ACTIVE; its tool cannot edit objective text,
+so the new instructions are persisted in the required Goal file and heartbeat.
+
+D208 is **deferred before native measurement** by this user direction. Its
+runner is implemented at `7e09a56`; final focused session 22986 exited 0 with
+**112 passed / 1 skipped in 1.81s**. Full regression/native acceptance have not
+run and no milestone completion is claimed. Reuse the runner for toy tests if
+useful; do not run the displaced campaign merely to close it. Former scope:
+
+D208 proposed a fixed-semantics CPU comparison over the three existing
 first-shard type/name queries. Reuse both native stores, compile the existing
 Neo4j→Fuseki and full-Fuseki plans, and use the same scheduler/normalization
 timing boundary. Freeze 2 warmup + 8 measurement rounds with paired alternating
@@ -71,10 +86,10 @@ without a new source change or concern. Receipt:
 Latest user priority: explain system maturity, GrailQA failures, test design,
 actual results, baselines and research story. The delivered source-inspected
 assessment is `docs/report/xgap_system_experiment_assessment_20260910.md`.
-Next milestone scope should prioritize fixed-semantics CPU correctness/physical
-comparisons and an 8+4+1 stage-specific failure diagnosis, independently of LLM
-availability. Freeze that bounded implementation scope and acceptance before
-editing its code. Preserve FinBench/GrailQA and every EQ1–EQ5 requirement;
+This assessment's development priorities are superseded by `docs/goal.md`:
+the toy backbone comes first; the large-shard campaign and 8+4+1 diagnosis no
+longer head the queue. Preserve FinBench/GrailQA final evaluation and every
+EQ1–EQ5 requirement;
 do not reframe the research around only successful tests. Reuse existing entity
 linking/index/data artifacts when verified; do not repeat unchanged 964-shard
 scans or inject evaluation entities into inference/data deployment. Time windows

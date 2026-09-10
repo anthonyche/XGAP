@@ -2,7 +2,15 @@
 
 ## Current engineering milestones — 2026-09-10
 
-D208 puts the CPU route into practice: measure both existing complete strategies
+**Toy-first supersedes the earlier development queue.** Follow
+[the active Goal](goal.md): T0 small graph and complete query fixtures; T1
+deterministic backbone/design-gap closure; T2 isolated interpretation, offline
+catalog freeze and failure replay; T3 GrailQA-mini integration then full final
+evaluation. Do not prioritize benchmark-specific bugs over system closure.
+
+D208 native measurement is deferred before execution. Its runner has 112
+focused passes / 1 skip and is reusable, not fully accepted. Its former proposal
+was to measure both existing complete strategies
 on three declared fixed-meaning first-shard queries with a common boundary,
 balanced order and independent source-answer verification. No data reload or
 catalog/model change. Complete focused/native/full/examples acceptance and

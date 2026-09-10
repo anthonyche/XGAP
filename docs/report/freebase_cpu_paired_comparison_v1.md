@@ -1,6 +1,16 @@
 # D208: fixed-semantics CPU paired comparison
 
-Status: implementation and validation in progress; no new measurements yet.
+Status: runner implemented at `7e09a56`; focused acceptance **112 passed /
+1 skipped in 1.81s**, session 22986 exited 0. No new native measurement and no
+broad regression. The user's subsequent toy-first direction defers the
+large-shard campaign below **before execution**, not completed or failed. Reuse
+the runner on toy cases when useful. `docs/goal.md` supersedes its former queue
+priority. Do not run the displaced campaign/full regression merely to close it.
+
+The first focused run retained 44 passes, one failed exception-attempt-count
+test and one skip. The runner now increments backend attempts before dispatch,
+so an exception without an ExecutionReport is still counted. The separate final
+focused run passes; no live backend failure was involved.
 
 The September 10 user assessment requires genuine execution experiments to
 continue without an LLM. This milestone compares the existing Neo4j→Fuseki

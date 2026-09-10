@@ -14,6 +14,8 @@ deterministic execution core.
 
 Before changing code, read:
 
+0. `docs/goal.md` — current user-directed priorities; its toy-first addendum
+   supersedes conflicting historical development priorities
 1. `docs/agentic_architecture.md`
 2. `docs/m15_agentic_federated_core.md`
 3. `docs/architecture.md`
@@ -93,6 +95,14 @@ decision, reference-evaluator behavior, validation, and tests.
   milestone explicitly migrates them.
 
 ## Milestone protocol
+
+Development is toy-first. Maintain separate Interpretation and deterministic
+planning chains and an always-working tiny vertical slice. GrailQA catalog
+building is explicit offline preprocessing; freeze its output and keep building
+out of runtime. Use failure replay instead of repeating expensive external
+failures. Module tests do not depend on GrailQA success. GrailQA-mini is a later
+real-integration gate; full large datasets are for final evaluation. See
+`docs/goal.md` for the user-authorized fixture chain and acceptance ladder.
 
 For every milestone:
 
