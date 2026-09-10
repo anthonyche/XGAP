@@ -42,6 +42,16 @@ restart it. The harness and all 19 acceptance examples pass. Receipt:
 `experiments/artifacts/d200_guarded_whole_evidence_local_20260910.json`.
 The narrow environment fix accepts numeric JSON 0/1 versus the bundle's
 normalized floats while rejecting booleans; frozen specs are intact.
+Accepted producer **6b32b973d4fd1a979b714570d3edcd2e684c1b07** is committed
+and successfully pushed to the existing remote branch. The working tree was
+clean after the commit. No source changed after the successful full suite.
+
+The exact-commit remote operator package and one-step instructions are in
+`docs/report/grailqa_inline18_cwru_handoff_20260910.md`. The local ZIP is ready,
+but has not been uploaded or executed. It fixes v1, preserves prelaunch catalog
+and tokenizer pins, submits once to an isolated checkout, then supports a
+separate post-completion D200 reconstruction. Server-side upload/start has been
+requested because both browser control and the one SSH route are unavailable.
 
 User steering (September 10): explain XGAP versus graph-guided RAG, identify
 which pipeline stage the catalog serves, and stop treating catalog work as the
@@ -63,6 +73,18 @@ returning any page content. This is a browser-control failure, not evidence of
 expired authentication. No new remote action has been attempted. Prepare the
 exact-commit runnable handoff and continue independent answer-execution work;
 do not keep creating tabs or repeat unchanged catalog/audit work.
+The alternate provider-ID lookup returned tab-not-found. A single strict,
+noninteractive SSH connection to Pioneer port 22 timed out before any remote
+command ran. No authentication setting was changed or credential requested.
+
+Concrete next answer-chain gap: `freebase_sources.parquet_row_to_triple`
+intentionally drops plain/datatype-bearing literals for catalog compatibility.
+It cannot serve unchanged as the fact reader for dates/numeric filters. Build
+the target-data path with full RDF term identity and independent answer checks;
+do not change the old catalog parser, derive facts from gold, or substitute
+another catalog/audit cycle. The D200 and handoff turn is progress: full
+acceptance completed, source committed/pushed, exact runnable package prepared,
+and the remaining remote-control and typed-fact gaps were directly observed.
 
 D199 / H1 catalog comparison observation is complete. Job **3796988** finished
 successfully; the actual report has **zero coverage gains and zero losses** in
