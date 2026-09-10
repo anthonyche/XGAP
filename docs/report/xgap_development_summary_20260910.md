@@ -2,49 +2,48 @@
 
 2026-09-10。本报告区分当前工程实测与已记录的历史实验，不把测试条数当研究结果。
 
-最新方向语义更新：M5 IN 的逻辑参考缺口已闭合；原18题在显式版本化的逻辑
-预期下全部正确，原始 gold 保留。新增9个方向用例在真实双后端执行18/18、
-独立目标18/18通过，旧联邦slice正确。反转保持边身份，自环去重，TRAIL
-会区分“重复同一边”和“使用两条平行边”。Focused212/最终fast272通过；完整
-验收3,117 pass/38 skip、24个 harness/example 入口通过，此方向步骤已验收。参见 [方向闭合报告](toy_backbone_t1_orientation.md)。
-
-最新开发更新：候选 ID 已接到实际查询条件与 agent 控制。真实 Neo4j/Fuseki
-上新增 5/5 绑定查询、18/18 候选答案、10/10 独立原生对照和旧联邦 slice 通过。
-换实体或年龄门槛会正确改变答案，歧义/无效约束在派发前停止。29 项新模块
-与57项兼容边界通过；完整验收3,098 pass/38 skip、24个 harness/example
-入口通过，此连接步骤已验收。仍不代表真实 LLM 准确率或完整系统完成。详见 [语义绑定闭环报告](toy_backbone_t1_semantic_binding.md)。
-下文按日期保留以前的结果；旧的“尚未连接”条目以最新报告为准。
-
-后续开发更新：候选生成→观测→代价选择→执行已通过真实 toy gate，8/8 程序与
-28/28 候选答案正确；完整回归 3,069 pass/38 skip、24 个 harness/example 入口
-通过，此后续步骤已验收。参见
-[最新规划闭环记录](toy_backbone_t1_candidate_planning.md)。下文保留前一轮总结。
+当前代码里程碑：`8b6f06c0b0ba28e6de86fb617cf32d8f429a9465`。
+本文汇总已验收的 toy backbone、规划、绑定和方向步骤；各步骤的原始结果与
+失败记录仍保留在对应报告和 artifact 中。
 
 ## 可以汇报的进展
 
 **无需 LLM 的确定性 backbone 已有真实执行闭环；整个 agentic system 尚未完成。**
-本轮把开发重心从 GrailQA 移回极小 toy graph，实际修复了 RDF 平行边身份丢失，
-补齐有界路径原生执行与 selector，并接通了语义 DAG 到组合执行计划的入口。
+开发重心已从 GrailQA 移回极小 toy graph。实际修复了 RDF 平行边身份丢失，
+补齐有界路径原生执行与 selector，接通语义 DAG、受控语义绑定、候选生成、
+观测、代价选择与真实执行，并闭合 IN 逻辑参考和有界 UNDIRECTED 执行。
 
 | 当前证据 | 结果 | 说明什么 |
 |---|---|---|
 | 自建最小数据 | 5 节点、8 边、18 道完整 gold-chain 问题 | 可以人工检查，并在秒级局部测试中定位问题 |
 | 确定性路径执行 | 18 题分别在真实 Neo4j/Fuseki 执行，36/36 完整答案正确；本轮经语义 DAG 入口再次成立 | 受测方向、身份、过滤、连接、Union、有界递归和 selector 可以实际工作 |
 | 通用语义 DAG 组合 | 新增 8/8 用例正确，其中 6 个实际调用两个引擎；另有 8/8 独立 Cypher 目标通过 | Match/Traverse/Filter/Project/Join/Union/Aggregate/OrderLimit/Align 能组合成执行计划 |
+| 候选规划与执行 | 8/8 程序、28/28 placement 候选答案正确 | 能在显式声明的完整等价源副本间生成、观察、选择并执行候选；尚非任意源发现或最优性证明 |
+| 语义绑定与 agent 控制 | 5/5 受控查询、18/18 候选答案、10/10 独立原生对照正确 | 实体与结构化约束会进入实际查询；歧义及不支持的约束阻止派发 |
+| 方向语义闭合 | 原 18/18 逻辑与参考答案正确；新增 9 题双后端 18/18 执行、18/18 独立目标正确 | IN 和有界 UNDIRECTED 保留边身份，正确区分自环、平行边及重复使用同一边 |
 | 始终保留的联邦 slice | Neo4j 路径＋Fuseki 属性过滤＋coordinator join 得到 Alice→Cara | 组合开发没有破坏已贯通的真实最小链路 |
-| 当前局部回归 | 137 项相关测试通过；完整回归 3,049 passed / 38 skipped，24 个 harness/example 入口通过 | 是软件验证，不能解释为真实数据准确率 |
+| 当前回归 | 日常 gate 272 passed，约 12.6 秒；完整回归 3,117 passed / 38 skipped，24 个 harness/example 入口通过 | 是软件验证；跳过项未被视为通过，测试数不能解释为真实数据准确率 |
 
 例如，两条不同 a→b 边在计数时都被保留；没有匹配实体时 count 返回 0；同一
 Match 被两个分支复用时只发出一次远程调用；交换两个后端的职责后答案不变。
-这些是具体系统能力的证据。详见 [本轮覆盖报告](toy_backbone_t1_semantic_dag.md)。
+再如 Bob 经无向路径最多两步回到自身：WALK 有 6 条完整路径，TRAIL 只剩
+2 条使用不同平行边的路径，ACYCLIC 为 0；两后端均与独立预期相同。换绑定实体
+或年龄门槛也会正确改变答案。这些是具体系统能力的证据。各组用例有重叠，
+不能把表中通过次数相加当作独立 benchmark 样本量。详见
+[语义组合](toy_backbone_t1_semantic_dag.md)、
+[规划闭环](toy_backbone_t1_candidate_planning.md)、
+[绑定闭环](toy_backbone_t1_semantic_binding.md) 和
+[方向闭合](toy_backbone_t1_orientation.md) 报告。
 
 ## 还缺什么，为什么不等 GPU
 
-1. **规划闭环**：新入口会构造计划，但 source placement 仍由显式配置给出。
-   需要把候选生成、能力准入、已有代价选择和 agent 控制接到同一入口；不能把
-   “会编译执行”写成“已经自动生成最优联邦计划”。
-2. **语义覆盖**：旧 M5 IN 逻辑/参考链仍有缺口；原生有界递归不等于嵌套/无界
-   递归，广泛条件与 typed aggregate/order 仍需按设计逐项验收。
+1. **规划与能力范围**：候选生成、代价选择和 agent 控制已连接；额外语义
+   required_capabilities 的准入仍须接到实际可用能力。现有 placement 候选要求
+   显式声明完整等价源副本；任意源发现、Traverse 内部自动跨库切分尚未实现。
+   无可复用观测时仍 profile 所有唯一片段，代价模型是 proxy，未证明性能最优。
+2. **语义覆盖**：IN 逻辑/参考缺口已闭合；Optional/Bounded 的逻辑表达、
+   嵌套/无界原生递归、广泛 typed aggregate/order 仍需按设计逐项验收。
+   已支持的有限 profile 不能代表任意程序支持，显式拒绝也不等于功能完成。
 3. **Interpretation**：有 provider 接口与受控响应到真实答案的证据，尚无这套新
    backbone 上的真实模型 NL 准确率。固定 provider 可以先验收接口、约束落实与
    错误处理；模型质量等可用服务单独测量，不阻塞确定性工程。
@@ -86,6 +85,6 @@ milestone 边界做 broad regression。GrailQA catalog 只允许显式离线 bui
 做本地 replay。GrailQA-mini 负责之后的真实集成，Full GrailQA 和其他大数据集
 只负责最终评价、baseline 与消融。
 
-下一步按 T1 剩余规划/语义连接→T2 interpretation/catalog/replay→T3 真实小
+下一步按 T1 剩余能力准入/语义覆盖→T2 interpretation/catalog/replay→T3 真实小
 集成和最终评价推进。总体 Goal 保持 active。应用工具没有编辑活动 Goal 正文
 的接口，权威 Goal 文件和持续执行规则承接这些新指令，未伪造完成或重建目标。
