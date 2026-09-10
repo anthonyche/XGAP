@@ -28,22 +28,43 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
-D206 is implementing the authorized GPU fallback. The new explicit dual-L40S
-pipeline-parallel contract/spec keeps Qwen3-32B BF16, context and all 18-query
-semantic settings unchanged. It checks every CUDA-visible device before model
-load and records actual device/parallelism metadata. Legacy H100 records and
-spec remain unchanged. Latest observed candidate gput069 has two free L40S GPUs
-and sufficient CPU/host RAM; this is not reserved. The current H100 scheduling
-estimate is 2026-09-10 21:29 Beijing, not a confirmed start.
+D206 completed software acceptance and the authorized GPU fallback transition.
+**Active job: 3799649, RUNNING on gput069, two L40S GPUs**, started
+2026-09-10 04:17:42 Eastern / **16:17:42 Beijing**. It was submitted once at
+04:17:39, only after the helper confirmed cancellation of pending H100 3799513.
+Do not run either submission helper again. Token/GPU/runtime checks pass and
+the pinned model service is starting; no inference result is claimed yet.
+The separate dual-L40S pipeline contract preserves Qwen3-32B BF16, context,
+all 18 questions and semantic settings. Legacy H100 behavior is unchanged.
+Actual allocation is two GPUs, eight CPUs, 64 GiB and four hours. Observed
+device capacity is 46,068 MiB each. The earlier H100 estimate of 21:29 Beijing
+was never an actual start. H100 remains preferred for future allocations.
 
-Focused final: 105 passed in 7.17s; first focused: 245 passed/one test-fixture
-failure, retained. Broad regression is running in session **51749**, log
-`/tmp/xgap-d206-full.log`; examples/harness session **94699** completed exit 0,
-all 23 entrypoints passed. Continue the original full-test handle, never restart
-solely after an observation timeout. Next: finish tests,
-prepare a complete isolated offline transfer and prelaunch pins, recheck the
-original job, then transition only if it is still pending. Preserve one runnable
-experiment. Report: `docs/report/cwru_gpu_fallback_v1.md`.
+Final targeted: 105 passed in 7.17s; first focused: 245 passed/one fixture
+failure, retained. Broad regression session **51749** completed exit 0:
+**2,908 passed / 38 skipped in 661.11s**, log `/tmp/xgap-d206-full.log`.
+Examples/harness session **94699** completed exit 0, all 23 entrypoints passed.
+Do not repeat successful validation without a new code change or concern.
+Producer `ada34316f11778f41d4b69560bc4d47e27d77d4e` is pushed. The v2 archive
+was uploaded and its server hash verified:
+`45d4cb60127996ff277e8406018089baad5e8db9350cc98591945ccbab9dba69`.
+Remote package: `/home/hxc859/xgap-inline18-l40s-ada3431`; exact producer checkout:
+`/home/hxc859/XGAP-inline18-l40s-ada3431`. Input pins were verified before the
+single transition. Log: `slurm-xgap-grailqa-l40s-3799649.out`; run root:
+`runs/cwru-grailqa-guarded-3799649` within that checkout.
+
+After CUA reset Chrome browser ID is 2 (same extension/profile). Independent
+agent-owned hpc7 terminal tab 366873317 handles this job; file tab 366873233
+works. Other terminal tabs have concurrent user input: do not type there.
+Use short chunks and verify the complete command before Enter. Never touch
+credential inputs. Current browser IDs may change; inspect inventory if stale.
+
+Next: follow model startup and real 18-question output, then run the alternate
+package's `audit.sh` once only after COMPLETED 0:0. Preserve failures and
+diagnose; no automatic rerun. The helper performs no retry; Slurm reports its
+default Requeue=1 with zero observed restarts. Do not conflate these settings.
+Report: `docs/report/cwru_gpu_fallback_v1.md`; receipt:
+`experiments/artifacts/d206_gpu_fallback_20260910.json`.
 
 ## D205 accepted predecessor
 
@@ -71,59 +92,29 @@ Report: `docs/report/freebase_question_execution_v1.md`; durable receipt:
 Next: obtain real model-generated anchored answers on inference-owned facts,
 then compare physical plans with the same interpretation. The queued D204
 semantic-only run remains independent and frozen. Document inventory is now
-69 full / 7 selected / 5 pending Markdown, plus three reviewed PDFs.
+74 full / 7 selected / 0 pending Markdown, plus three reviewed PDFs.
 
-## D204 active remote observation and GPU policy
+## D204 historical H100 observation and continuing GPU policy
 
-D204 is in progress: frozen inline18 deployment through the restored OnDemand
-portal. The user confirmed Chrome file-URL permission enabled. The agent
-uploaded the already verified offline ZIP to `/home/hxc859` and independently
-checked its server SHA-256:
-`5e85c79352c25cb7f056df346fbc0c42d4470eb3058bf0291b36ce16a5340a61`.
-Local artifact: `/Users/anthonyche/Developer/XGAP-deliverables/xgap-inline18-offline-6b32b97.zip`
-(3,261,891 bytes). Independent real bundle clone, exact commit/tree and helper
-syntax were already checked; do not regenerate it.
+The user completed the original authenticated checkout and submitted H100
+job **3799513** once with exact runner `6b32b97`. It remained PENDING / Resources
+and was subsequently cancelled while pending by the authorized D206 transition.
+The active replacement is **3799649** above. Original source, package and
+submission evidence remain unchanged under `/home/hxc859/XGAP-inline18-6b32b97`
+and `/home/hxc859/xgap-inline18-6b32b97`. Do not run its submission or audit
+helper for the replacement. Its old offline ZIP is uploaded/hash-verified but
+was never extracted or executed. Historical details are preserved in
+`docs/report/grailqa_inline18_remote_execution_20260910.md`.
 
-ACTIVE REMOTE JOB: **3799513**, submitted once by the user's original
-`~/xgap-inline18-6b32b97/submit.sh` after successful HTTPS authentication and
-exact checkout at `/home/hxc859/XGAP-inline18-6b32b97`. Submission exit is 0.
-Prelaunch pins captured 2026-09-10T06:39:19.642365Z; single submission intent
-06:39:33.966284Z. Latest `squeue`/`scontrol`: **PENDING / Resources**, 0 restarts,
-1 H100, 8 CPUs, 64 GiB, four hours. September 10 afternoon `sacct` confirms
-PENDING, 00:00:00, Start/End Unknown. Follow this exact job; no duplicate launch.
-Original catalog fa07c25b…308e8, spec 0d3e8952…223e7 and model/tokenizer revision
-9216db5781bf21249d130ec9da846c4624c16137 are pinned. Backend execution is false.
-Do not execute the offline helper, overwrite this checkout or start another
-launch. The uploaded offline ZIP was neither extracted nor executed.
-
-The user explicitly authorizes alternate GPUs when H100 resources are
-unavailable. Prefer H100; verify alternate hardware and model/precision fit,
-record an explicit deployment profile/override, and preserve a single active
-experiment. Do not silently shrink or quantize the frozen Qwen3-32B model or
-claim another GPU matches the H100 contract. The observed dgxt001 node has all
-8 GPUs allocated; no compatible free alternate was confirmed. Live `sinfo`
-host-memory values do not establish GPU VRAM. No job change was made this turn.
-
-Browser control recovered after the extension restarted: Chrome browser 3,
-user terminal tab 366873264 (hpc5), file tab 366873233 (/home/hxc859).
-The user is now using the previous hpc6 terminal 366873292: do not type there.
-A new independent hpc7 monitoring terminal is tab 366873297, marked Handoff.
-Inspect current browser inventory and terminal input if stale; never append
-commands to concurrent user input or copy credentials into records. The iframe's
-`log` role supports short typed input. Clipboard
-paste did not reach the shell and was not used for an action. After any input
-timeout/lag, read the complete command before Enter. The agent does not handle
-passwords. A cluster-internal BatchMode SSH read-only process query to hpc5
-succeeded; the remote SSH client reported adding its host key to known hosts.
-
-Next: follow exact job 3799513 through state/logs, then preserve raw model
-outputs and run the existing whole-run gate after COMPLETED 0:0. Original
-submission records: `/home/hxc859/xgap-inline18-6b32b97`. Job log:
-`/home/hxc859/XGAP-inline18-6b32b97/slurm-xgap-grailqa-guarded-3799513.out`.
-Use original `audit.sh` once after success; do not run a second experiment or
-change its protocol. See `docs/report/grailqa_inline18_remote_execution_20260910.md`.
-D204 itself changes no production query/provider code. Quiet while the queue
-is unchanged; independent engineering work continues under the existing goal.
+Catalog fa07c25b…308e8, original 18 question IDs and cached Qwen/tokenizer
+revision 9216db5781bf21249d130ec9da846c4624c16137 remain fixed. D206 changes the
+explicit deployment contract/spec identity, not inference settings. Backend
+execution remains false and paper admission remains false for this run.
+The user explicitly authorizes compatible GPU fallback when H100 is unavailable.
+Preserve full BF16 model, actual hardware identity and one runnable experiment.
+Do not silently quantize/shrink, claim hardware equivalence, or automatically
+retry a failed external action. 3796988 showed no catalog-coverage gain; keep
+v1 fixed and do not run another catalog scan to delay answer engineering.
 
 ## D203 accepted predecessor
 

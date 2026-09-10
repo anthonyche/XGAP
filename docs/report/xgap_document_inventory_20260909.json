@@ -1840,7 +1840,8 @@
         "## Acceptance Criteria",
         "## Final Report"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Fully read during D206 model startup. Historical M5.5 path/lowering audit: preserve deterministic validation and existing operator semantics; historical future-feature exclusions do not prohibit accepted later milestones."
     },
     {
       "path": "prompts/sprints/M_5_GPC_Lite_Pattern_AST_and_Lowering.md",
@@ -1876,7 +1877,8 @@
         "## Acceptance Criteria",
         "## Final Report"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Fully read during D206 model startup. Historical path AST/lowering and focused quantified sibling pipeline: preserve deterministic typed lowering, exact distinct-child quantifier semantics, path-wise bounds and explicit unsupported features. Historical milestone exclusions do not override accepted later extensions."
     },
     {
       "path": "prompts/sprints/M_6_quantified_pattern_semantics.md",
@@ -1884,7 +1886,8 @@
       "bytes": 22742,
       "word_count": 2933,
       "headings": [],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "review_note": "Fully read during D206 model startup. Historical path AST/lowering and focused quantified sibling pipeline: preserve deterministic typed lowering, exact distinct-child quantifier semantics, path-wise bounds and explicit unsupported features. Historical milestone exclusions do not override accepted later extensions."
     },
     {
       "path": "prompts/sprints/M_8_backend_capability_profile_compiler_boundary_preflight.md",
@@ -1911,7 +1914,9 @@
         "## Documentation Updates",
         "## Acceptance Criteria"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "ada3431",
+      "review_note": "Fully read during D206 while remote staging ran. Historical capability/compiler scope; preserve deterministic typed boundaries and explicit unsupported outcomes, without imposing old sprint exclusions on later milestones."
     },
     {
       "path": "prompts/sprints/M_9_minimal_compilers.md",
@@ -1938,7 +1943,9 @@
         "## Documentation Updates",
         "## Acceptance Criteria"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "ada3431",
+      "review_note": "Fully read during D206 while remote staging ran. Historical capability/compiler scope; preserve deterministic typed boundaries and explicit unsupported outcomes, without imposing old sprint exclusions on later milestones."
     },
     {
       "path": "prompts/templates/sprint_template.md",
@@ -1985,8 +1992,8 @@
   ],
   "hash_note": "Hashes and sizes capture the entry snapshot; review_status records progress. Later engineering updates to status/roadmap/decisions are not silently substituted for the entry snapshot.",
   "review_counts": {
-    "full_text_reviewed": 69,
+    "full_text_reviewed": 74,
     "selected_sections_reviewed": 7,
-    "indexed_pending_detailed_review": 5
+    "indexed_pending_detailed_review": 0
   }
 }

@@ -8,11 +8,16 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
-D206 is preparing the user-authorized alternate GPU deployment. A separate
+D206 completed the user-authorized alternate GPU deployment. A separate
 dual-L40S pipeline profile preserves Qwen3-32B BF16, the original 18 questions
 and inference settings. All CUDA-visible devices are checked before loading;
 legacy H100 behavior remains supported. Targeted checks pass 105 tests; broad
-regression and actual alternate allocation remain pending. See
+regression passes **2,908 tests / 38 skips in 661.11s**, and harness plus all
+22 examples pass. The server hash and prelaunch pins match. Pending H100 job
+3799513 was cancelled before one alternate submission; **3799649 is RUNNING**
+on gput069 with two L40S GPUs, starting September 10 at **16:17:42 Beijing**.
+Runtime checks pass and model startup is in progress; actual inference and
+whole-run acceptance remain pending. See
 [GPU fallback scope](report/cwru_gpu_fallback_v1.md).
 
 D205 completes the bounded question-to-native-answer software entry and explicit
@@ -31,12 +36,12 @@ permission, the 3.3 MB offline source package was uploaded and its SHA-256
 verified on Pioneer. Concurrently the user's original HTTPS launch succeeded
 at authentication, cloning and checkout of exact 6b32b97. The original helper
 has submitted job **3799513** once after pinning the
-frozen inputs. Latest state: **PENDING / Resources**. Follow that exact job,
-leaving the offline package unexecuted to avoid duplication.
+frozen inputs. This original H100 job was later cancelled while still pending
+under D206; follow replacement **3799649**, leaving the old offline package
+unexecuted and preserving original submission evidence.
 The user authorizes compatible alternate GPUs when H100 is unavailable, with
-H100 preferred. The checked DGX node has all 8 GPUs allocated; no compatible
-free alternate or job change is established. Record actual hardware/profile
-for any future fallback and preserve model/precision and the single-run guard.
+H100 preferred. D206 records the actual dual-L40S deployment and single-run
+transition. Preserve model/precision and hardware-specific result identity.
 No new model result is claimed. See
 [remote deployment state](report/grailqa_inline18_remote_execution_20260910.md).
 

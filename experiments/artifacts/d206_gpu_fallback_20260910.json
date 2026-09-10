@@ -1,0 +1,254 @@
+{
+  "archive": "/Users/anthonyche/Developer/XGAP-deliverables/xgap-inline18-l40s-ada3431-v2.zip",
+  "bytes": 3464379,
+  "sha256": "45d4cb60127996ff277e8406018089baad5e8db9350cc98591945ccbab9dba69",
+  "verification": {
+    "producer_commit": "ada34316f11778f41d4b69560bc4d47e27d77d4e",
+    "tree": "c87714fa81c8cbd9014f6d09fcb1762be8ebc041",
+    "source_bundle_sha256": "9a9d5b3c1950e59b42f9a0091ebeeb02690704eba9520d168f2b17d2e604d0f3",
+    "real_bundle_clone_verified": true,
+    "shell_and_embedded_python_syntax_verified": true,
+    "remote_execution_verified": false,
+    "files": {
+      "probe.sh": "b13367a65ab427e29b44dcff917e89aa1391a4d4f6d971d78fe8c603bd231f0f",
+      "source.bundle": "9a9d5b3c1950e59b42f9a0091ebeeb02690704eba9520d168f2b17d2e604d0f3",
+      "stage.sh": "f300ca803bcaca172a9303c595f3f553550946c85d49f4d8b912e56064b79cae",
+      "switch.py": "43a8f69e984285796c7b860cf8410e3d611e34d7adf14b455f30a1da7a4a55e4",
+      "README.md": "a2bfae98fb005f22811e4f3a62bf34ff9f6bd88bd8ef37a9e8512a96063ef816",
+      "audit.sh": "30e765d784fd0af51d6e76a34d73219dd3819e971bae9c5b5746fc5e96982fb6",
+      "switch.sh": "6589f69326590bf1872d5d2726ce83a3ca4c0afda70b545013b0689c307098e1"
+    },
+    "package_revision": 2,
+    "transition_checks": {
+      "controlled_process_stubs": true,
+      "real_slurm": false,
+      "cases": [
+        {
+          "case": "normal",
+          "passed": true,
+          "mutation_attempt_count": 2
+        },
+        {
+          "case": "original_running",
+          "passed": true,
+          "mutation_attempt_count": 0
+        },
+        {
+          "case": "cancel_unconfirmed",
+          "passed": true,
+          "mutation_attempt_count": 1
+        },
+        {
+          "case": "submission_uncertain",
+          "passed": true,
+          "mutation_attempt_count": 2
+        }
+      ]
+    }
+  },
+  "validation": {
+    "full": {
+      "passed": 2908,
+      "skipped": 38,
+      "seconds": 661.11,
+      "session_id": 51749,
+      "exit_code": 0,
+      "log_sha256": "a1d809898ba76f1a9408cdb12a56d2efcb1a0dc5e92e31605a97af7dca53672b"
+    },
+    "focused_final": {
+      "passed": 105,
+      "seconds": 7.17
+    },
+    "first_focused": {
+      "passed": 245,
+      "failed": 1,
+      "seconds": 76.16
+    },
+    "entrypoints": [
+      {
+        "entrypoint": "scripts/check_harness.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.025
+      },
+      {
+        "entrypoint": "examples/core_algebra_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.042
+      },
+      {
+        "entrypoint": "examples/plan_print_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.044
+      },
+      {
+        "entrypoint": "examples/recursive_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.05
+      },
+      {
+        "entrypoint": "examples/solution_space_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.044
+      },
+      {
+        "entrypoint": "examples/semantic_audit_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.047
+      },
+      {
+        "entrypoint": "examples/lowering_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.051
+      },
+      {
+        "entrypoint": "examples/pattern_lowering_audit_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.053
+      },
+      {
+        "entrypoint": "examples/quantified_pattern_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.06
+      },
+      {
+        "entrypoint": "examples/compiler_mvp_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.069
+      },
+      {
+        "entrypoint": "examples/llm_boundary_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.115
+      },
+      {
+        "entrypoint": "examples/m11_physical_planner_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.157
+      },
+      {
+        "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.143
+      },
+      {
+        "entrypoint": "examples/m12_experiment_contract_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.244
+      },
+      {
+        "entrypoint": "examples/m12c_calibration_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.205
+      },
+      {
+        "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 6.142
+      },
+      {
+        "entrypoint": "examples/m15_goal_loop_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.062
+      },
+      {
+        "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.099
+      },
+      {
+        "entrypoint": "examples/m15_semantic_intake_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.064
+      },
+      {
+        "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 2.467
+      },
+      {
+        "entrypoint": "examples/freebase_typed_fact_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.616
+      },
+      {
+        "entrypoint": "examples/grounded_candidate_execution_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.184
+      },
+      {
+        "entrypoint": "examples/freebase_question_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.337
+      }
+    ]
+  },
+  "upload_observed": true,
+  "remote_sha256_verified": true,
+  "remote_submission": {
+    "predecessor_job": "3799513",
+    "predecessor_terminal_state": "CANCELLED",
+    "helper_invocations": 1,
+    "alternate_job_id": "3799649",
+    "helper_stdout": "Submitted alternate job 3799649 after confirmed cancellation of pending 3799513",
+    "test_only_prospective_id_not_submitted": "3799639",
+    "state_observed": "RUNNING",
+    "node": "gput069",
+    "gpu_count": 2,
+    "cpu_count": 8,
+    "host_memory": "64G",
+    "time_limit": "04:00:00",
+    "submit_time_server_eastern": "2026-09-10T04:17:39",
+    "start_time_server_eastern": "2026-09-10T04:17:42",
+    "start_time_beijing": "2026-09-10T16:17:42+08:00",
+    "restarts": 0,
+    "slurm_requeue": 1,
+    "helper_automatic_retries": 0,
+    "feature": "gpul40s",
+    "log": "/home/hxc859/XGAP-inline18-l40s-ada3431/slurm-xgap-grailqa-l40s-3799649.out",
+    "run_root": "/home/hxc859/XGAP-inline18-l40s-ada3431/runs/cwru-grailqa-guarded-3799649",
+    "runtime_check": {
+      "status": "pass",
+      "python": "3.11.5",
+      "torch": "2.9.0+cu128",
+      "cuda_runtime": "12.8",
+      "vllm": "0.11.1"
+    },
+    "nvidia_smi_devices": [
+      {
+        "index": 0,
+        "name": "NVIDIA L40S",
+        "memory_mib": 46068,
+        "volatile_uncorrectable_ecc": 0
+      },
+      {
+        "index": 1,
+        "name": "NVIDIA L40S",
+        "memory_mib": 46068,
+        "volatile_uncorrectable_ecc": 3
+      }
+    ],
+    "model_revision": "9216db5781bf21249d130ec9da846c4624c16137",
+    "startup_pid": 1137999,
+    "model_readiness_verified": false,
+    "inference_result_admitted": false,
+    "paper_result": false,
+    "evidence_source": "Actual OnDemand terminal output; transition receipts remain in remote package.",
+    "startup_observations": [
+      {
+        "time_server_eastern": "2026-09-10T04:24:04",
+        "phase": "API process logs vLLM 0.11.1 and offline fixed model snapshot"
+      },
+      {
+        "time_server_eastern": "2026-09-10T04:26:29",
+        "phase": "V1 engine initializing; BF16, TP1, PP2, quantization=None"
+      },
+      {
+        "phase": "Actual process tree contains engine 1138234 and two worker processes 1138400/1138401"
+      }
+    ]
+  },
+  "remote_staging_complete": true,
+  "remote_repo": "/home/hxc859/XGAP-inline18-l40s-ada3431",
+  "remote_package": "/home/hxc859/xgap-inline18-l40s-ada3431",
+  "original_job_changed": true
+}

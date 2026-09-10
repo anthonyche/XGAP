@@ -4,9 +4,11 @@
 
 D206 addresses GPU queue availability through a separately recorded dual-L40S
 deployment with pipeline parallelism, preserving the full BF16 model and fixed
-18-question inference settings. The original H100 job remains pending while
-software checks and an isolated handoff are prepared. Do not dispatch duplicate
-experiments. See [D206](report/cwru_gpu_fallback_v1.md).
+18-question inference settings. Software acceptance passes 2,908 tests / 38
+skips and 23 harness/example entrypoints. After verified staging, pending H100
+job 3799513 was cancelled and alternate **3799649** submitted once; it started
+on gput069 at **16:17:42 Beijing**. Obtain actual model outputs and whole-run
+acceptance next; do not dispatch duplicates. See [D206](report/cwru_gpu_fallback_v1.md).
 
 The [engineering review](report/xgap_engineering_review_20260909.md) orders
 H0 documentation/state reconciliation, H1 remote execution closure, H2 typed

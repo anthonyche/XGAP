@@ -4372,3 +4372,12 @@ job, verify termination and submit the alternate once. If the original has
 started, follow it. Do not retry ambiguous external actions or run duplicate
 experiments. Current implementation/validation and remote evidence are recorded
 in [D206](report/cwru_gpu_fallback_v1.md).
+
+Acceptance update on September 10: producer `ada3431` passed 2,908 tests /
+38 skips and all 23 harness/example entrypoints. The uploaded source bundle,
+server archive hash and prelaunch pins were verified before one real resource
+transition. Original 3799513 was cancelled while pending; replacement 3799649
+started three seconds after submission on gput069 with two L40S GPUs at
+16:17:42 Beijing. This establishes allocation and launch, not model readiness,
+inference quality or performance. Keep the replacement hardware identity and
+post-completion whole-run acceptance separate from the cancelled H100 attempt.

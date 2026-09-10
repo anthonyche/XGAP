@@ -1,12 +1,15 @@
 # D206: explicit GPU fallback for the frozen Qwen3-32B interface
 
-Status: implementation and focused checks pass; broad regression and actual
-alternate allocation are pending. H100 remains the preferred resource.
+Status: software acceptance and the single-job resource transition complete.
+Alternate job **3799649 is RUNNING** on gput069, with two L40S GPUs. It started
+at **2026-09-10 04:17:42 Eastern / 16:17:42 Beijing**, three seconds after
+submission. Actual model output and whole-run acceptance remain pending.
+H100 remains the preferred resource for future eligible allocations.
 
 ## Goal and scope
 
 The user authorizes compatible alternate GPUs when H100 is unavailable. Job
-3799513 is still pending, with the scheduler currently estimating a September
+3799513 was pending, with the scheduler then estimating a September
 10 start at 09:29 Eastern / 21:29 Beijing. That estimate is not an actual start
 or a promise. The latest live node observations show gput069 with two of four
 L40S GPUs allocated, 24 of 48 CPUs allocated, and 176 GiB of host RAM allocated
@@ -72,25 +75,57 @@ and rejection before launch, not GPU inference. Both original and L40S profiles
 also exercise the full offline 18-question runner and independent whole-run
 reconstruction, including retained failures and corrupted records.
 
-Broad regression is running in original session 51749, log
-`/tmp/xgap-d206-full.log`. Harness and all 22 examples passed, 23/23 entrypoints;
-session 94699 exited 0. Continue the original full-test session; do not restart
-because an observation yields no output.
+Broad regression completed in original session 51749, exit 0: **2,908 passed /
+38 skipped in 661.11s**, log `/tmp/xgap-d206-full.log`. Harness and all 22
+examples passed, 23/23 entrypoints; session 94699 exited 0. Do not repeat these
+successful checks without a new code change or unresolved concern.
+
+The accepted producer `ada34316f11778f41d4b69560bc4d47e27d77d4e` is pushed.
+An independently cloned exact bundle and operator package are retained at
+`/Users/anthonyche/Developer/XGAP-deliverables/xgap-inline18-l40s-ada3431-v2.zip`.
+Archive size is 3,464,379 bytes; SHA-256 is
+`45d4cb60127996ff277e8406018089baad5e8db9350cc98591945ccbab9dba69`.
+The v2 helper checks cancellation through the user's queue rather than relying
+on an individual cancelled ID remaining queryable. The original v1 local ZIP
+is retained and was not uploaded. Four process-boundary fixtures cover success,
+an original already running, cancellation unconfirmed, and submission timeout;
+each preserves exactly the allowed number/order of mutation attempts. These
+fixtures make no real Slurm call. The v2 package was uploaded to `/home/hxc859`;
+its actual server SHA-256 matches. The isolated checkout is exactly `ada3431`,
+and catalog/tokenizer pins were completed before submission. See the
+[receipt](../../experiments/artifacts/d206_gpu_fallback_20260910.json).
 
 ## Remote transition
 
-Prepare and verify the complete new checkout and prelaunch pins before changing
-3799513. Recheck its actual state and alternate resources at the transition.
-If the original has started, follow it rather than dispatching a duplicate.
-If it remains pending, preserve its scheduler evidence and cancel only the
-pending original, confirm it is terminal, then submit the alternate once.
-Any ambiguous cancellation/submission response must be inspected, never retried.
-Existing packages, source and submission evidence remain intact.
+The first `sbatch --test-only` accepted gput069 and estimated an immediate
+start; its displayed prospective ID 3799639 is **not a submitted job**.
+The switch helper was invoked once after exact terminal-input verification.
+It checked unchanged inference pins, repeated the resource precheck, observed
+3799513 still PENDING, saved its scheduler state, cancelled only the pending
+original and confirmed cancellation before submitting the alternate once.
+The returned real job ID is **3799649**. The original checkout, package and
+submission artifacts remain intact. No experiment ran on the cancelled H100
+allocation and no duplicate experiment was launched.
+
+Actual `scontrol` reports RUNNING, zero restarts, gput069, two GPUs, eight CPUs,
+64 GiB and a four-hour limit. Submission was 04:17:39 Eastern and start was
+04:17:42. Slurm reports its default `Requeue=1`; the XGAP helper itself performs
+no automatic retry and has an exclusive submission-intent guard. Retain both
+facts rather than describing the scheduler setting as disabled.
+
+The job log passes the 12,288-token budget and frozen runtime checks: Python
+3.11.5, torch 2.9.0+cu128, CUDA 12.8, vLLM 0.11.1. It observes two NVIDIA L40S
+devices with 46,068 MiB each and starts the pinned Qwen3-32B service. This is
+actual allocation/startup evidence, not yet inference or scientific acceptance.
 
 The new L40S entrypoint is
 `scripts/slurm/run_grailqa_guarded_l40s.sbatch`; the ordinary guarded handoff,
 model/tokenizer pinning and post-completion audit remain applicable to the new
-specification. Actual submission/start/inference acceptance remains pending.
+specification. Output root is
+`/home/hxc859/XGAP-inline18-l40s-ada3431/runs/cwru-grailqa-guarded-3799649`;
+Slurm log is `slurm-xgap-grailqa-l40s-3799649.out` in that checkout.
+After COMPLETED 0:0, run the alternate package's `audit.sh` once. On failure,
+retain evidence and diagnose rather than rerunning the switch or experiment.
 
 ## Primary implementation evidence
 
