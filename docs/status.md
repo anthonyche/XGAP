@@ -2,6 +2,19 @@
 
 ## Active engineering loop — 2026-09-10
 
+T1 semantic DAG native gate now passes: original 18 path programs on each real
+engine **36/36**, eight composed cases **8/8** (six use both backends), eight
+independent Cypher references **8/8**, and the retained original federated slice.
+Match/Traverse/Filter/Project/Join/Union/Aggregate/OrderLimit/Align compile from
+one typed DAG with explicit placement; shared ancestors execute once. Focused
+**137 passed in 9.80s**. Broad shared-runtime acceptance passed in original
+session42090, exit0: **3,049 passed / 38 skipped in657.66s**, all24 harness/example
+entrypoints passed. This semantic composition step is accepted. See
+[the semantic DAG report](report/toy_backbone_t1_semantic_dag.md) and
+[the current Chinese summary](report/xgap_development_summary_20260910.md).
+Automatic source/candidate planning and remaining logical coverage are still
+open; the compiler alone does not complete T1 or the whole Goal.
+
 T1 bounded native gate: **36/36 exact complete answers**, all eighteen frozen
 toy queries on each real backend, plus the original two-engine slice. Native
 candidates now cover zero paths/Union and finite recursive modes; coordinator

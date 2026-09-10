@@ -52,6 +52,14 @@ the coordinator. `compile_bounded_path_plan` emits both stages explicitly and
 requires dataset identity/domain mappings. See [T1 coverage](report/toy_backbone_t1_bounded_paths.md)
 for the all-eighteen toy execution evidence and remaining logical/scale limits.
 
+`compile_semantic_program` now composes Match/Traverse and the existing semantic
+row operators into a federated execution DAG. Source placement and backend
+identity/domain mappings are explicit inputs. Shared ancestors compile once;
+Match uses Nodes/Selection native compilation and Traverse calls the bounded
+path planner. It does not perform semantic-hole resolution or automatic source
+optimization. Existing candidate cost selection remains a separate integration
+boundary. See [the semantic DAG gate](report/toy_backbone_t1_semantic_dag.md).
+
 M15-E3's deterministic intake compiler is likewise a frontend compilation
 step, not an operator. It may instantiate only the semantic DAG, holes, and
 constraints declared by its versioned template. Its artifact catalog,

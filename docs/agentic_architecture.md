@@ -233,6 +233,11 @@ The coordinator-level runtime vocabulary includes:
 - `CoordinatorJoin`
 - `CoordinatorSemiJoin`
 - `CoordinatorPathSelect`
+- `CoordinatorFilter`
+- `CoordinatorRowProject`
+- `NormalizeNodeBindings`
+- `CoordinatorGroupAggregate`
+- `CoordinatorSortLimit`
 - `Merge`
 - `Project`
 
@@ -245,6 +250,14 @@ the existing SolutionSpace selector algebra. Bounded native path expansion and
 this coordinator stage form one executable plan; selector work and candidate
 transfer remain part of runtime cost. It does not add an algebra operator or
 claim backend-native selector execution.
+
+The semantic DAG compiler connects these runtime stages for an explicit typed
+profile. Source placement is supplied separately from meaning; entity keys are
+namespace-qualified, shared ancestors execute once, and the existing scheduler
+accounts for every stage. Binding-driven Traverse currently filters native
+candidates at the coordinator. Automatic placement, interpretation/admission
+and broader typed aggregate semantics remain separate unfinished work; see
+[the current gate](report/toy_backbone_t1_semantic_dag.md).
 
 Adaptive execution may first run an ancestor-closed common prefix. Before any
 probe call, every prefix node must be structurally identical in every candidate

@@ -1,0 +1,162 @@
+"""Small row adapters for executable semantic DAGs; no native text evaluation."""
+
+import json
+import math
+from numbers import Real
+from decimal import Decimal, InvalidOperation
+
+from xgap.backends.rdf_terms import RdfTerm, XSD_STRING
+from xgap.compilers.rdf_encoding import RdfRowEncoding
+
+
+def distinct_rows(rows, *, preserve_order=False):
+    unique = {json.dumps(row, sort_keys=True, separators=(",", ":")): row for row in rows}
+    return tuple(unique.values()) if preserve_order else tuple(unique[key] for key in sorted(unique))
+
+
+def condition_fields(condition):
+    if not isinstance(condition, dict):
+        raise ValueError("Row filter requires a structured condition")
+    op = condition.get("op")
+    if op in ("and", "or"):
+        if set(condition) != {"op", "args"} or not isinstance(condition["args"], list) or not condition["args"]:
+            raise ValueError("Boolean row filters require a nonempty args list")
+        return set().union(*(condition_fields(c) for c in condition["args"]))
+    if op == "not":
+        if set(condition) != {"op", "arg"}:
+            raise ValueError("not requires one arg")
+        return condition_fields(condition["arg"])
+    keys = {"op", "field"} if op in ("is_null", "is_not_null") else {"op", "field", "value"}
+    if (op not in ("eq", "ne", "lt", "le", "gt", "ge", "is_null", "is_not_null")
+            or set(condition) != keys or not isinstance(condition.get("field"), str)):
+        raise ValueError("Invalid row comparison")
+    if "value" in condition:
+        value = condition["value"]
+        if value is not None and type(value) not in (str, bool, int, float):
+            raise ValueError("Row comparison constants must be scalar")
+        if isinstance(value, float) and not math.isfinite(value):
+            raise ValueError("Row comparison constants must be finite")
+    return {condition["field"]}
+
+
+def _matches(row, c):
+    op = c["op"]
+    if op == "and":
+        return all(_matches(row, a) for a in c["args"])
+    if op == "or":
+        return any(_matches(row, a) for a in c["args"])
+    if op == "not":
+        return not _matches(row, c["arg"])
+    left = row[c["field"]]
+    if op == "is_null":
+        return left is None
+    if op == "is_not_null":
+        return left is not None
+    right = c["value"]
+    if left is None or right is None:
+        return False
+    numbers = [_number(x) for x in (left, right)]
+    numeric = all(x is not None for x in numbers)
+    if numeric:
+        left, right = numbers
+    if op in ("eq", "ne"):
+        equal = (numeric or type(left) is type(right)) and left == right
+        return equal if op == "eq" else not equal
+    if not numeric:
+        return False
+    return {"lt": left < right, "le": left <= right, "gt": left > right, "ge": left >= right}[op]
+
+
+def _number(value):
+    if isinstance(value, Real) and not isinstance(value, bool):
+        result = Decimal(str(value))
+    elif isinstance(value, dict) and value.get("type") in ("literal", "typed-literal"):
+        term = RdfTerm.from_binding(value)
+        if term.datatype not in {"http://www.w3.org/2001/XMLSchema#" + t
+                                for t in ("decimal", "integer", "double", "float")}:
+            return None
+        try:
+            result = Decimal(term.value)
+        except InvalidOperation as error:
+            raise ValueError("Invalid RDF numeric lexical form") from error
+    else:
+        return None
+    if not result.is_finite():
+        raise ValueError("Row numeric values must be finite")
+    return result
+
+
+def filter_rows(rows, condition):
+    fields = condition_fields(condition)
+    if any(not fields <= row.keys() for row in rows):
+        raise ValueError("Row filter references a missing field")
+    return tuple(dict(row) for row in rows if _matches(row, condition))
+
+
+def project_rows(rows, projections, *, namespace=None):
+    output = []
+    encoding = RdfRowEncoding("semantic-path-identity", "urn:xgap:class", "id", namespace) if namespace else None
+    for row in rows:
+        projected = {}
+        for name, spec in projections.items():
+            kind = spec["kind"]
+            if kind == "field":
+                value = row[spec["field"]]
+            elif kind == "path_length":
+                value = (len(row["path"]) - 1) // 2
+            elif kind in ("path_node", "path_edge"):
+                path = row["path"]
+                position = spec["position"]
+                if kind == "path_node":
+                    index = 0 if position == "first" else len(path) - 1 if position == "last" else 2 * (position - 1)
+                else:
+                    index = 2 * position - 1
+                if index < 0 or index >= len(path) or encoding is None:
+                    raise ValueError("Path projection has no position or identity encoding")
+                value = encoding.resource_iri(path[index])
+            else:
+                raise ValueError("Unsupported semantic row projection")
+            projected[name] = value
+        output.append(projected)
+    return distinct_rows(output, preserve_order=True)
+
+
+def _rdf_scalar(value):
+    if value is None:
+        return None
+    term = RdfTerm.from_binding(value)
+    if term.kind != "literal":
+        return term.to_binding()
+    local = term.datatype.removeprefix("http://www.w3.org/2001/XMLSchema#")
+    if term.datatype == XSD_STRING:
+        return term.value
+    if local in ("integer", "int", "long", "short", "byte", "nonNegativeInteger", "positiveInteger"):
+        return int(term.value)
+    if local in ("double", "float"):
+        value = float(term.value)
+        if not math.isfinite(value):
+            raise ValueError("Native scalar must be finite")
+        return value
+    if local == "boolean":
+        if term.value not in ("true", "false", "1", "0"):
+            raise ValueError("Invalid RDF boolean")
+        return term.value in ("true", "1")
+    return term.to_binding()  # Keep language/date/other RDF types, never erase the tag.
+
+
+def normalize_node_bindings(rows, parameters):
+    ids = RdfRowEncoding("semantic-node-identity", "urn:xgap:class",
+                         parameters["identity_property"], parameters["resource_namespace"])
+    result = []
+    for row in rows:
+        if parameters["language"] == "sparql":
+            term = RdfTerm.from_binding(row["entity"])
+            if term.kind != "uri":
+                raise ValueError("Matched nodes require global resource identity")
+            entity = term.value
+            values = {field: _rdf_scalar(row.get(field)) for field in parameters["scalar_fields"]}
+        else:
+            entity = ids.resource_iri(row["entity"][ids.identity_property])
+            values = {field: row.get(field) for field in parameters["scalar_fields"]}
+        result.append({parameters["entity_field"]: entity, **values})
+    return distinct_rows(result)

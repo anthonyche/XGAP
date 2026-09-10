@@ -4514,3 +4514,23 @@ source change: 3,006 pass / 38 skip in669.07s; all24 harness/examples pass.
 Original local failures remain recorded; no gold or historical result changes.
 Bounded expansion, coordinator materialization and the remaining M5 IN/general
 planner gaps are explicit in the T1 bounded-path coverage report.
+
+## T1 Compile composed semantic DAGs with explicit placement
+
+Connect the existing nine semantic operator kinds to native node/path sources
+and coordinator row operations. Do not force Match/row aggregation into a path
+query or use per-query native templates. Source bindings remain distinct from
+meaning, and full entity namespaces preserve cross-source identity. Compile
+shared ancestors once, rename right-side join collisions deterministically,
+retain ordering through projection and support empty global row count via an
+explicit runtime flag without changing the legacy default aggregate guard.
+
+The original tiny graph and eighteen gold chains remain frozen. Eight new
+independent composition fixtures include input-bound traversal, fan-out,
+aggregation and a placement swap. Native36/36 path programs,8/8 compositions,
+8/8 reference targets and the old two-engine slice pass; focused137 pass.
+Broad shared-runtime acceptance passed in original session42090, exit0:
+3,049 pass / 38 skip in657.66s, all24 harness/example entrypoints pass. This
+accepts the semantic composition step and closes an execution adapter boundary, not automatic candidate/source planning,
+all semantic holes/capability admission, broader recursive semantics or T1/T2/T3.
+No benchmark build or GPU dependency is introduced. See the semantic DAG report.

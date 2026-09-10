@@ -52,6 +52,13 @@ Required work:
 
 Implemented locally:
 
+- semantic-DAG compilation for Match, Traverse, Filter, Project, Join, Union,
+  Aggregate, OrderLimit and Align with explicit source placements. Real tiny
+  execution verifies all eighteen path programs on each engine plus eight
+  compositions (six actually federated). The compiler constructs the DAG but
+  does not yet connect automatic candidate generation/source selection or all
+  semantic admission/control requirements; see
+  [the T1 semantic gate](report/toy_backbone_t1_semantic_dag.md);
 - per-backend `SemanticFragment` compilation through the existing M9 Cypher
   and SPARQL compilers;
 - a bounded typed-path planner using native Rel/Seq/Alt and root finite

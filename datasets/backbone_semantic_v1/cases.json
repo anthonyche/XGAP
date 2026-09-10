@@ -1,0 +1,1235 @@
+[
+  {
+    "id": "S01",
+    "nl": "查询 Alice 认识且年龄至少30岁的人，保留边身份。",
+    "program": {
+      "program_id": "S01",
+      "operators": [
+        {
+          "operator_id": "paths",
+          "kind": "traverse",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "path_var": null,
+              "source": {
+                "properties": {
+                  "id": "a"
+                }
+              },
+              "expr": {
+                "kind": "rel",
+                "edge": {
+                  "label": "KNOWS",
+                  "direction": "OUT",
+                  "properties": {}
+                }
+              },
+              "target": {},
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "WALK",
+              "condition": null,
+              "max_depth": null
+            }
+          }
+        },
+        {
+          "operator_id": "reached",
+          "kind": "project",
+          "input_ids": [
+            "paths"
+          ],
+          "input_kinds": [
+            "path_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "path_node",
+                "position": "last"
+              },
+              "edge": {
+                "kind": "path_edge",
+                "position": 1
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {}
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "condition": {
+              "op": "ge",
+              "field": "age",
+              "value": 30
+            }
+          }
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "reached",
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "join"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              },
+              "edge": {
+                "kind": "field",
+                "field": "edge"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "source_bindings": {
+      "paths": "neo4j",
+      "people": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/c",
+        "edge": "https://xgap.test/toy/e4"
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 2,
+    "expected_logical_operators": [
+      "traverse",
+      "project",
+      "match",
+      "filter",
+      "join",
+      "project"
+    ],
+    "expected_native_sources": {
+      "paths": "typed bounded path candidates",
+      "people": "Nodes plus node descriptor and declared scalar projection"
+    },
+    "reference_target_queries": {
+      "neo4j": "targets/S01.cypher",
+      "fuseki": "targets/S01.rq"
+    },
+    "expected_runtime_operators": {
+      "paths": [
+        "remote_query",
+        "coordinator_path_select"
+      ],
+      "reached": [
+        "coordinator_row_project"
+      ],
+      "people": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "eligible": [
+        "coordinator_filter"
+      ],
+      "join": [
+        "coordinator_row_project",
+        "coordinator_join"
+      ],
+      "answer": [
+        "coordinator_row_project"
+      ]
+    }
+  },
+  {
+    "id": "S02",
+    "nl": "在至少20岁的人中，按入边数量降序、ID升序列出前两人；平行边分别计数。",
+    "program": {
+      "program_id": "S02",
+      "operators": [
+        {
+          "operator_id": "paths",
+          "kind": "traverse",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "path_var": null,
+              "source": {
+                "properties": {}
+              },
+              "expr": {
+                "kind": "rel",
+                "edge": {
+                  "label": "KNOWS",
+                  "direction": "OUT",
+                  "properties": {}
+                }
+              },
+              "target": {},
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "WALK",
+              "condition": null,
+              "max_depth": null
+            }
+          }
+        },
+        {
+          "operator_id": "reached",
+          "kind": "project",
+          "input_ids": [
+            "paths"
+          ],
+          "input_kinds": [
+            "path_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "path_node",
+                "position": "last"
+              },
+              "edge": {
+                "kind": "path_edge",
+                "position": 1
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {}
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "condition": {
+              "op": "ge",
+              "field": "age",
+              "value": 20
+            }
+          }
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "reached",
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "count",
+          "kind": "aggregate",
+          "input_ids": [
+            "join"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [
+              "person"
+            ],
+            "aggregations": {
+              "n": {
+                "op": "count"
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "rank",
+          "kind": "order_limit",
+          "input_ids": [
+            "count"
+          ],
+          "input_kinds": [
+            "grouped_bindings"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "order_by": [
+              {
+                "field": "n",
+                "direction": "desc"
+              },
+              {
+                "field": "person",
+                "direction": "asc"
+              }
+            ],
+            "limit": 2
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "rank"
+          ],
+          "input_kinds": [
+            "grouped_bindings"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              },
+              "n": {
+                "kind": "field",
+                "field": "n"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "source_bindings": {
+      "paths": "neo4j",
+      "people": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/b",
+        "n": 2
+      },
+      {
+        "person": "https://xgap.test/toy/c",
+        "n": 2
+      }
+    ],
+    "ordered": true,
+    "expected_remote_calls": 2,
+    "expected_logical_operators": [
+      "traverse",
+      "project",
+      "match",
+      "filter",
+      "join",
+      "aggregate",
+      "order_limit",
+      "project"
+    ],
+    "expected_native_sources": {
+      "paths": "typed bounded path candidates",
+      "people": "Nodes plus node descriptor and declared scalar projection"
+    },
+    "reference_target_queries": {
+      "neo4j": "targets/S02.cypher",
+      "fuseki": "targets/S02.rq"
+    },
+    "expected_runtime_operators": {
+      "paths": [
+        "remote_query",
+        "coordinator_path_select"
+      ],
+      "reached": [
+        "coordinator_row_project"
+      ],
+      "people": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "eligible": [
+        "coordinator_filter"
+      ],
+      "join": [
+        "coordinator_row_project",
+        "coordinator_join"
+      ],
+      "count": [
+        "coordinator_group_aggregate"
+      ],
+      "rank": [
+        "coordinator_sort_limit"
+      ],
+      "answer": [
+        "coordinator_row_project"
+      ]
+    }
+  },
+  {
+    "id": "S03",
+    "nl": "先找到 Bob，再从查询返回的绑定出发遍历一条 KNOWS 边。",
+    "program": {
+      "program_id": "S03",
+      "operators": [
+        {
+          "operator_id": "anchor",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {
+                "id": "b"
+              }
+            },
+            "entity_field": "person",
+            "properties": {}
+          }
+        },
+        {
+          "operator_id": "paths",
+          "kind": "traverse",
+          "input_ids": [
+            "anchor"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "path_var": null,
+              "source": {
+                "properties": {}
+              },
+              "expr": {
+                "kind": "rel",
+                "edge": {
+                  "label": "KNOWS",
+                  "direction": "OUT",
+                  "properties": {}
+                }
+              },
+              "target": {},
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "WALK",
+              "condition": null,
+              "max_depth": null
+            },
+            "anchor_field": "person",
+            "anchor_position": "first"
+          }
+        }
+      ],
+      "roots": [
+        "paths"
+      ]
+    },
+    "source_bindings": {
+      "anchor": "fuseki",
+      "paths": "neo4j"
+    },
+    "expected_rows": [
+      {
+        "path": [
+          "b",
+          "e2",
+          "c"
+        ]
+      },
+      {
+        "path": [
+          "b",
+          "e8",
+          "d"
+        ]
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 2,
+    "expected_logical_operators": [
+      "match",
+      "traverse"
+    ],
+    "expected_native_sources": {
+      "anchor": "Nodes plus node descriptor and declared scalar projection",
+      "paths": "typed bounded path candidates"
+    },
+    "reference_target_queries": {
+      "neo4j": "targets/S03.cypher",
+      "fuseki": "targets/S03.rq"
+    },
+    "expected_runtime_operators": {
+      "anchor": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "paths": [
+        "remote_query",
+        "coordinator_path_select",
+        "coordinator_row_project",
+        "coordinator_semi_join",
+        "project"
+      ]
+    }
+  },
+  {
+    "id": "S04",
+    "nl": "扫描一次人员，合并年龄小于25和年龄至少40的人员。",
+    "program": {
+      "program_id": "S04",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {}
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "young",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "condition": {
+              "op": "lt",
+              "field": "age",
+              "value": 25
+            }
+          }
+        },
+        {
+          "operator_id": "old",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "condition": {
+              "op": "ge",
+              "field": "age",
+              "value": 40
+            }
+          }
+        },
+        {
+          "operator_id": "union",
+          "kind": "union",
+          "input_ids": [
+            "young",
+            "old"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {}
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "union"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/b"
+      },
+      {
+        "person": "https://xgap.test/toy/c"
+      },
+      {
+        "person": "https://xgap.test/toy/d"
+      },
+      {
+        "person": "https://xgap.test/toy/z"
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "expected_logical_operators": [
+      "match",
+      "filter",
+      "filter",
+      "union",
+      "project"
+    ],
+    "expected_native_sources": {
+      "people": "Nodes plus node descriptor and declared scalar projection"
+    },
+    "reference_target_queries": {
+      "neo4j": "targets/S04.cypher",
+      "fuseki": "targets/S04.rq"
+    },
+    "expected_runtime_operators": {
+      "people": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "young": [
+        "coordinator_filter"
+      ],
+      "old": [
+        "coordinator_filter"
+      ],
+      "union": [
+        "merge"
+      ],
+      "answer": [
+        "coordinator_row_project"
+      ]
+    }
+  },
+  {
+    "id": "S05",
+    "nl": "统计一个不存在的人员ID的匹配数量，空输入应返回0。",
+    "program": {
+      "program_id": "S05",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {
+                "id": "missing"
+              }
+            },
+            "entity_field": "person",
+            "properties": {}
+          }
+        },
+        {
+          "operator_id": "count",
+          "kind": "aggregate",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "n": {
+                "op": "count"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "count"
+      ]
+    },
+    "source_bindings": {
+      "people": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "n": 0
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "expected_logical_operators": [
+      "match",
+      "aggregate"
+    ],
+    "expected_native_sources": {
+      "people": "Nodes plus node descriptor and declared scalar projection"
+    },
+    "reference_target_queries": {
+      "neo4j": "targets/S05.cypher",
+      "fuseki": "targets/S05.rq"
+    },
+    "expected_runtime_operators": {
+      "people": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "count": [
+        "coordinator_group_aggregate"
+      ]
+    }
+  },
+  {
+    "id": "S06",
+    "nl": "按显式测试键映射 b→a 对齐后连接两个来源；测试映射操作，不声明真实实体等价。",
+    "program": {
+      "program_id": "S06",
+      "operators": [
+        {
+          "operator_id": "left",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {
+                "id": "a"
+              }
+            },
+            "entity_field": "person",
+            "properties": {}
+          }
+        },
+        {
+          "operator_id": "external",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {
+                "id": "b"
+              }
+            },
+            "entity_field": "person",
+            "properties": {}
+          }
+        },
+        {
+          "operator_id": "aligned",
+          "kind": "align",
+          "input_ids": [
+            "external"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "field": "person",
+            "mapping": {
+              "https://xgap.test/toy/b": "https://xgap.test/toy/a"
+            },
+            "on_missing": "error"
+          }
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "left",
+            "aligned"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        }
+      ],
+      "roots": [
+        "join"
+      ]
+    },
+    "source_bindings": {
+      "left": "neo4j",
+      "external": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/a"
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 2,
+    "expected_logical_operators": [
+      "match",
+      "match",
+      "align",
+      "join"
+    ],
+    "expected_native_sources": {
+      "left": "Nodes plus node descriptor and declared scalar projection",
+      "external": "Nodes plus node descriptor and declared scalar projection"
+    },
+    "reference_target_queries": {
+      "neo4j": "targets/S06.cypher",
+      "fuseki": "targets/S06.rq"
+    },
+    "expected_runtime_operators": {
+      "left": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "external": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "aligned": [
+        "align"
+      ],
+      "join": [
+        "coordinator_row_project",
+        "coordinator_join"
+      ]
+    }
+  },
+  {
+    "id": "S07",
+    "nl": "连接同一人的两个来源，分别返回两边年龄，值相同时右侧字段仍存在。",
+    "program": {
+      "program_id": "S07",
+      "operators": [
+        {
+          "operator_id": "left",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {
+                "id": "a"
+              }
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "right",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {
+                "id": "a"
+              }
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "left",
+            "right"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "join"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "left_age": {
+                "kind": "field",
+                "field": "age"
+              },
+              "right_age": {
+                "kind": "field",
+                "field": "right_age"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "source_bindings": {
+      "left": "neo4j",
+      "right": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "left_age": 30,
+        "right_age": 30
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 2,
+    "expected_logical_operators": [
+      "match",
+      "match",
+      "join",
+      "project"
+    ],
+    "expected_native_sources": {
+      "left": "Nodes plus node descriptor and declared scalar projection",
+      "right": "Nodes plus node descriptor and declared scalar projection"
+    },
+    "reference_target_queries": {
+      "neo4j": "targets/S07.cypher",
+      "fuseki": "targets/S07.rq"
+    },
+    "expected_runtime_operators": {
+      "left": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "right": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "join": [
+        "coordinator_row_project",
+        "coordinator_join"
+      ],
+      "answer": [
+        "coordinator_row_project"
+      ]
+    }
+  },
+  {
+    "id": "S08",
+    "nl": "保持 S01 语义不变，交换图路径和人员属性的后端位置。",
+    "program": {
+      "program_id": "S08",
+      "operators": [
+        {
+          "operator_id": "paths",
+          "kind": "traverse",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "path_var": null,
+              "source": {
+                "properties": {
+                  "id": "a"
+                }
+              },
+              "expr": {
+                "kind": "rel",
+                "edge": {
+                  "label": "KNOWS",
+                  "direction": "OUT",
+                  "properties": {}
+                }
+              },
+              "target": {},
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "WALK",
+              "condition": null,
+              "max_depth": null
+            }
+          }
+        },
+        {
+          "operator_id": "reached",
+          "kind": "project",
+          "input_ids": [
+            "paths"
+          ],
+          "input_kinds": [
+            "path_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "path_node",
+                "position": "last"
+              },
+              "edge": {
+                "kind": "path_edge",
+                "position": 1
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": "Person",
+              "properties": {}
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "condition": {
+              "op": "ge",
+              "field": "age",
+              "value": 30
+            }
+          }
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "reached",
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "join"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              },
+              "edge": {
+                "kind": "field",
+                "field": "edge"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "source_bindings": {
+      "paths": "fuseki",
+      "people": "neo4j"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/c",
+        "edge": "https://xgap.test/toy/e4"
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 2,
+    "expected_logical_operators": [
+      "traverse",
+      "project",
+      "match",
+      "filter",
+      "join",
+      "project"
+    ],
+    "expected_native_sources": {
+      "paths": "typed bounded path candidates",
+      "people": "Nodes plus node descriptor and declared scalar projection"
+    },
+    "reference_target_queries": {
+      "neo4j": "targets/S08.cypher",
+      "fuseki": "targets/S08.rq"
+    },
+    "expected_runtime_operators": {
+      "paths": [
+        "remote_query",
+        "coordinator_path_select"
+      ],
+      "reached": [
+        "coordinator_row_project"
+      ],
+      "people": [
+        "remote_query",
+        "normalize_node_bindings"
+      ],
+      "eligible": [
+        "coordinator_filter"
+      ],
+      "join": [
+        "coordinator_row_project",
+        "coordinator_join"
+      ],
+      "answer": [
+        "coordinator_row_project"
+      ]
+    }
+  }
+]

@@ -28,6 +28,29 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+T1 semantic DAG native gate PASSED. Native session92465 exited0: **36/36**
+original path queries through typed semantic programs, **8/8** new compositions,
+**8/8** independent Cypher references and the original federated slice. Six new
+cases actually use both engines, two intentionally test one-source behavior.
+Both owned services stopped normally without retry. Raw root:
+`/Users/anthonyche/xgap-data/t1-semantic-native-20260910`.
+Focused log `/tmp/xgap-t1-semantic-focused.log`: **137 pass in9.80s**, process
+already terminal; original focused session ID was not retained in the continuation.
+Initial session78925 passed35 tests. No focused/native failure in this step.
+
+Shared-runtime broad acceptance COMPLETED in original session **42090**, exit0:
+**3,049 passed / 38 skipped in657.66s**, plus all24 harness/example entrypoints.
+Log `/tmp/xgap-t1-semantic-acceptance.log`. All current native/test processes are
+terminal; do not poll or repeat them without a new source change or concern.
+No production source changed after launch. The semantic composition step is accepted. The compiler now composes all nine
+semantic operator kinds in an explicit profile with declared source placement;
+this is not automatic optimal planning or arbitrary-program support. See
+`docs/report/toy_backbone_t1_semantic_dag.md`. Next connect candidate generation,
+existing cost selection and admission/control, and reconcile IN reference
+lowering, preserving the tiny slice. T1/T2/T3 and the overall Goal remain open.
+
+## Accepted bounded-path predecessor
+
 T1 bounded-path native gate PASSED: all **18 frozen queries on both real
 engines (36/36)** produce the exact complete gold paths through production
 native expansion and the coordinator selector. The original two-engine T18
@@ -51,11 +74,10 @@ functions; they are timed runtime work. The M5 IN lowerer gap, nested/unbounded
 native recursion, general partitioning and Interpretation/catalog/replay remain
 open; all 18 fixture executions do not prove the entire system complete.
 
-The next concrete integration boundary is SemanticGraphProgram. Its typed
-Traverse/Join/Project DAG currently does not automatically invoke the new path
-planner; runtime/planning.py selects among caller-supplied candidates. Connect
-that boundary and orientation-aware logical/reference support next, preserving
-all gold cases and the existing two-engine slice. T1 is still in progress.
+That former next boundary is now covered by the semantic DAG compiler above
+for its explicit profile. runtime/planning.py still selects among caller-supplied
+candidates; automatic candidate generation and source choice remain next, alongside
+orientation-aware logical/reference support. T1 is still in progress.
 
 ## Earlier T1 RDF identity step
 

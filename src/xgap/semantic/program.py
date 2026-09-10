@@ -179,6 +179,27 @@ class SemanticGraphProgram:
     holes: tuple[SemanticHole, ...] = ()
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> "SemanticGraphProgram":
+        """Load the existing serialized typed DAG; this does not resolve holes."""
+        if set(data) - {"program_id", "operators", "roots", "holes", "metadata"}:
+            raise SemanticProgramError("Unknown semantic program fields")
+        operators = []
+        for raw in data["operators"]:
+            if set(raw) - {"operator_id", "kind", "input_ids", "input_kinds", "output_kind",
+                           "parameters", "constraints", "required_capabilities"}:
+                raise SemanticProgramError("Unknown semantic operator fields")
+            constraints = tuple(SemanticConstraint(c["constraint_id"], c["expression"],
+                ConstraintPolicy(c.get("policy", "hard"))) for c in raw.get("constraints", ()))
+            operators.append(SemanticOperator(raw["operator_id"], SemanticOperatorKind(raw["kind"]),
+                tuple(raw.get("input_ids", ())), tuple(SemanticValueKind(k) for k in raw.get("input_kinds", ())),
+                SemanticValueKind(raw["output_kind"]), dict(raw.get("parameters", {})), constraints,
+                tuple(raw.get("required_capabilities", ()))))
+        holes = tuple(SemanticHole(h["hole_id"], SemanticHoleKind(h["kind"]), h["mention"],
+            h.get("required", True), tuple(h.get("candidates", ()))) for h in data.get("holes", ()))
+        return cls(data["program_id"], tuple(operators), tuple(data["roots"]), holes,
+                   dict(data.get("metadata", {})))
+
     def __post_init__(self) -> None:
         if not self.program_id.strip():
             raise SemanticProgramError("program_id must be nonempty")

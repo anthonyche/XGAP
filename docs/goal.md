@@ -88,6 +88,13 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
 
 ## 当前进度与被替代的工作
 
+- T1 新增语义 DAG 编译入口：Match/Traverse/Filter/Project/Join/Union/Aggregate/
+  OrderLimit/Align 可以组合执行。真实后端上原路径程序 36/36、新组合 8/8、独立
+  Cypher 目标 8/8，原联邦 slice 继续通过；focused 137 passed。Broad
+  acceptance 原 session42090 已 exit0：3,049 passed / 38 skipped，24 个
+  harness/example 入口通过；此语义组合执行步骤已验收，完整 T1 仍在进行。
+  后端 placement 仍显式提供；候选生成、代价选型与语义准入/control 的通用连接
+  仍是下一项系统缺口。详见 [最新开发总结](report/xgap_development_summary_20260910.md)。
 - T0 已验收：5 节点、8 边、18 题完整 gold chain；参考 lowerer/求值器匹配 17/18
   （IN 缺口保留）；独立目标查询在真实 Neo4j/Fuseki 上 36/36 匹配；生产编译器与
   运行时的第一条联邦 slice 返回 Alice→Cara。Full regression 2,963 passed /
@@ -107,7 +114,7 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
   原大 shard 开发实验在执行前延期；保留代码，合适时用于 toy 测试，再按相应
   milestone 验收，不为“收尾”单独消耗一轮 full regression 或真实大图实验。
 - catalog 8＋4＋1 诊断和 GPU 分配不再排在日常开发首位；已知问题保留，后续按
-  集成需要处理。立即下一步是 T1 的剩余核心算子闭环。
+  集成需要处理。立即下一步是 T1 的候选规划/语义连接与剩余 logical/reference 缺口。
 
 ## Goal 工具状态
 

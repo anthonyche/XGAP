@@ -365,6 +365,19 @@ class FederatedScheduler:
                 from xgap.runtime.path_selection import select_native_paths
                 rows = select_native_paths(inputs[0], node.parameters)
                 bytes_moved = 0
+            elif node.kind is RuntimeNodeKind.COORDINATOR_FILTER:
+                from xgap.runtime.row_operations import filter_rows
+                rows = filter_rows(inputs[0], node.parameters["condition"])
+                bytes_moved = 0
+            elif node.kind is RuntimeNodeKind.COORDINATOR_ROW_PROJECT:
+                from xgap.runtime.row_operations import project_rows
+                rows = project_rows(inputs[0], node.parameters["projections"],
+                                    namespace=node.parameters.get("resource_namespace"))
+                bytes_moved = 0
+            elif node.kind is RuntimeNodeKind.NORMALIZE_NODE_BINDINGS:
+                from xgap.runtime.row_operations import normalize_node_bindings
+                rows = normalize_node_bindings(inputs[0], node.parameters)
+                bytes_moved = 0
             elif node.kind is RuntimeNodeKind.MERGE:
                 rows = _deduplicate(row for group in inputs for row in group)
                 bytes_moved = 0
@@ -505,7 +518,7 @@ class FederatedScheduler:
         aggregations = node.parameters.get("aggregations")
         if (
             not isinstance(group_by, (list, tuple))
-            or not group_by
+            or (not group_by and not node.parameters.get("allow_global", False))
             or any(not isinstance(field, str) or not field for field in group_by)
             or len(set(group_by)) != len(group_by)
         ):
@@ -545,6 +558,9 @@ class FederatedScheduler:
             key = json.dumps(values, sort_keys=True, separators=(",", ":"), default=str)
             groups.setdefault(key, (values, []))[1].append(row)
 
+        if not group_by and not groups:
+            groups["[]"] = ((), [])
+
         output: list[JsonRow] = []
         for key in sorted(groups):
             values, members = groups[key]
@@ -559,6 +575,9 @@ class FederatedScheduler:
                         f"aggregate field '{source_field}' is missing"
                     )
                 raw_values = [member[source_field] for member in members]
+                if not raw_values and operation in {"min", "max"}:
+                    aggregated[output_field] = None
+                    continue
                 if operation == "sum":
                     try:
                         decimals = [Decimal(str(value)) for value in raw_values]

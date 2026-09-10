@@ -2,6 +2,16 @@
 
 ## Current engineering milestones — 2026-09-10
 
+T1 semantic DAG integration has passed its native gate: 36/36 path-program
+executions, 8/8 composed cases, 8/8 independent Cypher targets and the retained
+two-engine slice. Focused137 pass. Broad shared-runtime acceptance passed
+in original session42090, exit0: **3,049 pass / 38 skip in657.66s**, all24
+harness/example entrypoints pass. This semantic composition step is accepted. See [the new coverage report](report/toy_backbone_t1_semantic_dag.md).
+Next connect this explicit-placement compiler to candidate generation, existing
+cost selection and semantic admission/control, and close M5 IN logical/reference
+coverage. Do not keep adding query-specific templates or chase GrailQA failures.
+The previous bounded-path step below remains accepted historical evidence.
+
 T1 bounded path execution now passes all eighteen frozen queries on each real
 engine (36/36), plus the two-engine slice. Native expansion handles node-only,
 Union and root finite recursion; coordinator selector placement reuses the
