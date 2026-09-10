@@ -2,8 +2,8 @@
 
 Status: original launch submitted Slurm job **3799513** once, then D206
 cancelled it while still PENDING to perform the user-authorized GPU fallback.
-Replacement **3799649 is RUNNING** on two L40S GPUs as of September 10 at
-16:17:42 Beijing. See [current deployment](cwru_gpu_fallback_v1.md); the
+Replacement **3799649 started** on two L40S GPUs at September 10
+16:17:42 Beijing, then FAILED / 1:0 after a CUDA uncorrectable ECC error. See [current deployment](cwru_gpu_fallback_v1.md); the
 observations below preserve the original launch history. Input catalog, model
 revision and frozen spec were pinned before submission. The offline source
 package is separately uploaded and hash-verified, but was never executed.
@@ -143,6 +143,6 @@ Remote submission artifacts stay in `/home/hxc859/xgap-inline18-6b32b97`.
 Slurm stdout/stderr:
 `/home/hxc859/XGAP-inline18-6b32b97/slurm-xgap-grailqa-guarded-3799513.out`.
 The original job was cancelled while pending and has no model result to audit.
-Follow replacement 3799649 and use its separate
-`/home/hxc859/xgap-inline18-l40s-ada3431/audit.sh` once after COMPLETED 0:0.
+Replacement 3799649 also failed during startup and is not eligible for its
+success-only audit. Preserve both attempts; see D206 for current diagnosis.
 A failure requires diagnosis and preserved evidence, not resubmission.

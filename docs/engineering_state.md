@@ -28,17 +28,31 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
-D206 completed software acceptance and the authorized GPU fallback transition.
-**Active job: 3799649, RUNNING on gput069, two L40S GPUs**, started
-2026-09-10 04:17:42 Eastern / **16:17:42 Beijing**. It was submitted once at
-04:17:39, only after the helper confirmed cancellation of pending H100 3799513.
-Do not run either submission helper again. Token/GPU/runtime checks pass and
-the pinned model service is starting; no inference result is claimed yet.
-The separate dual-L40S pipeline contract preserves Qwen3-32B BF16, context,
-all 18 questions and semantic settings. Legacy H100 behavior is unchanged.
-Actual allocation is two GPUs, eight CPUs, 64 GiB and four hours. Observed
-device capacity is 46,068 MiB each. The earlier H100 estimate of 21:29 Beijing
-was never an actual start. H100 remains preferred for future allocations.
+D207 is the current corrective launcher milestone after D206's actual hardware
+failure. Scope: per-device minimal CUDA allocation/kernel/synchronization before
+model load, and immediate readiness failure when the owned server process has
+exited. Allowed changes are GPU/startup/readiness adapters, their tests and
+records. No frozen model/catalog/spec, semantic metric, query algebra or running
+checkout changes. Acceptance: controlled second-device ECC aborts before daemon
+launch; healthy/legacy launch behavior and exact model checks remain; dead server
+fails without waiting the full readiness budget; focused/full/examples pass.
+
+D206 software/resource transition succeeded but actual model startup FAILED.
+**No active experiment is currently established.** Original 3799513 is CANCELLED;
+replacement **3799649 is FAILED / 1:0**. It started on gput069 at 16:17:42 Beijing
+and finalized at 16:34:57 with six retained artifacts. The worker's first root
+error at 16:29:11 is CUDA uncorrectable ECC; initial GPU 1 reported three volatile
+uncorrectable ECC events. GPU capacity/type checks did not establish health.
+No question inference output was obtained. Both final Slurm states were read.
+The run cleaned up normally with no remaining GPU processes. Do not run its
+success-only audit or either old submit/switch helper again.
+
+Exclude gput069 until recovery is established. A read-only explicit
+`sbatch --test-only --exclude=gput069` for two L40S estimated gput070 at
+17:30:23 Beijing; this is not a reservation or submission. A preceding
+SBATCH_EXCLUDE environment attempt still selected gput069 and is not valid
+exclusion evidence. Use the explicit command option. Test-only prospective IDs
+3799704/3799707 are not real submitted jobs. H100 remains preferred when available.
 
 Final targeted: 105 passed in 7.17s; first focused: 245 passed/one fixture
 failure, retained. Broad regression session **51749** completed exit 0:
@@ -59,10 +73,11 @@ works. Other terminal tabs have concurrent user input: do not type there.
 Use short chunks and verify the complete command before Enter. Never touch
 credential inputs. Current browser IDs may change; inspect inventory if stale.
 
-Next: follow model startup and real 18-question output, then run the alternate
-package's `audit.sh` once only after COMPLETED 0:0. Preserve failures and
-diagnose; no automatic rerun. The helper performs no retry; Slurm reports its
-default Requeue=1 with zero observed restarts. Do not conflate these settings.
+Next: finish D207 software acceptance, preserve D206 failed artifacts, then
+prepare a distinct reviewed deployment with explicit node exclusion and fresh
+submission evidence. No automatic retry of the old failed external action.
+The old helper performed no retry; Slurm reported its default Requeue=1 with
+zero observed restarts. Do not conflate these settings.
 Report: `docs/report/cwru_gpu_fallback_v1.md`; receipt:
 `experiments/artifacts/d206_gpu_fallback_20260910.json`.
 

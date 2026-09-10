@@ -1,9 +1,11 @@
 # D206: explicit GPU fallback for the frozen Qwen3-32B interface
 
-Status: software acceptance and the single-job resource transition complete.
-Alternate job **3799649 is RUNNING** on gput069, with two L40S GPUs. It started
+Status: software acceptance and the single-job resource transition complete;
+actual model startup **FAILED with a CUDA uncorrectable ECC error** on gput069.
+Alternate job **3799649 is FAILED / 1:0**. It started
 at **2026-09-10 04:17:42 Eastern / 16:17:42 Beijing**, three seconds after
-submission. Actual model output and whole-run acceptance remain pending.
+submission. It finalized at 08:34:57.970159 UTC / 16:34:57 Beijing with six
+retained artifacts and exit code 1. No question inference result was obtained.
 H100 remains the preferred resource for future eligible allocations.
 
 ## Goal and scope
@@ -107,7 +109,7 @@ The returned real job ID is **3799649**. The original checkout, package and
 submission artifacts remain intact. No experiment ran on the cancelled H100
 allocation and no duplicate experiment was launched.
 
-Actual `scontrol` reports RUNNING, zero restarts, gput069, two GPUs, eight CPUs,
+The initial `scontrol` reported RUNNING, zero restarts, gput069, two GPUs, eight CPUs,
 64 GiB and a four-hour limit. Submission was 04:17:39 Eastern and start was
 04:17:42. Slurm reports its default `Requeue=1`; the XGAP helper itself performs
 no automatic retry and has an exclusive submission-intent guard. Retain both
@@ -116,7 +118,23 @@ facts rather than describing the scheduler setting as disabled.
 The job log passes the 12,288-token budget and frozen runtime checks: Python
 3.11.5, torch 2.9.0+cu128, CUDA 12.8, vLLM 0.11.1. It observes two NVIDIA L40S
 devices with 46,068 MiB each and starts the pinned Qwen3-32B service. This is
-actual allocation/startup evidence, not yet inference or scientific acceptance.
+actual allocation/startup evidence, not inference or scientific acceptance.
+
+At 04:29:11 Eastern the worker logged
+`torch.AcceleratorError: CUDA error: uncorrectable ECC error encountered`.
+The initial GPU-1 `nvidia-smi` observation had already shown three volatile
+uncorrectable ECC events; checking device model/capacity/architecture did not
+establish device health. The API process subsequently reported engine core
+initialization failure. The readiness gate failed and normal cleanup recorded
+no remaining GPU processes and finalized exit 1. Final `sacct` confirms original
+3799513 CANCELLED and replacement 3799649 FAILED / 1:0; extern completed 0:0.
+Do not run the success-only audit or hide this startup failure from the record.
+
+Next resource selection must explicitly exclude gput069 until device recovery
+is established. A minimal allocation/kernel/synchronize probe on each selected
+CUDA device and earlier dead-process detection are warranted launcher fixes;
+these are not implemented or tested by D206. Hardware failure does not show a
+catalog, hop, model-quality or pipeline-parallel algorithm failure.
 
 The new L40S entrypoint is
 `scripts/slurm/run_grailqa_guarded_l40s.sbatch`; the ordinary guarded handoff,
@@ -124,8 +142,8 @@ model/tokenizer pinning and post-completion audit remain applicable to the new
 specification. Output root is
 `/home/hxc859/XGAP-inline18-l40s-ada3431/runs/cwru-grailqa-guarded-3799649`;
 Slurm log is `slurm-xgap-grailqa-l40s-3799649.out` in that checkout.
-After COMPLETED 0:0, run the alternate package's `audit.sh` once. On failure,
-retain evidence and diagnose rather than rerunning the switch or experiment.
+This failed run is not eligible for the alternate package's `audit.sh`.
+Retain evidence and diagnose rather than rerunning the existing switch helper.
 
 ## Primary implementation evidence
 

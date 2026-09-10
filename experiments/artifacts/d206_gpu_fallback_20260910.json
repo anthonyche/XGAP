@@ -245,10 +245,29 @@
       {
         "phase": "Actual process tree contains engine 1138234 and two worker processes 1138400/1138401"
       }
-    ]
+    ],
+    "final_state": "FAILED",
+    "exit_code": "1:0",
+    "finalized_at": "2026-09-10T08:34:57.970159+00:00",
+    "failure": {
+      "first_error_time_server_eastern": "2026-09-10T04:29:11",
+      "message": "torch.AcceleratorError: CUDA error: uncorrectable ECC error encountered",
+      "phase": "model_engine_initialization",
+      "run_artifact_count": 6,
+      "run_exit_code": 1,
+      "remaining_gpu_processes_observed": false
+    }
   },
   "remote_staging_complete": true,
   "remote_repo": "/home/hxc859/XGAP-inline18-l40s-ada3431",
   "remote_package": "/home/hxc859/xgap-inline18-l40s-ada3431",
-  "original_job_changed": true
+  "original_job_changed": true,
+  "later_read_only_probe": {
+    "explicit_exclude": "gput069",
+    "estimated_node": "gput070",
+    "estimated_start_beijing": "2026-09-10T17:30:23+08:00",
+    "prospective_test_only_id_not_submitted": "3799707",
+    "environment_exclusion_attempt_was_ineffective": true,
+    "not_a_reservation": true
+  }
 }

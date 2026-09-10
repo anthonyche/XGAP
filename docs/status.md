@@ -14,10 +14,12 @@ and inference settings. All CUDA-visible devices are checked before loading;
 legacy H100 behavior remains supported. Targeted checks pass 105 tests; broad
 regression passes **2,908 tests / 38 skips in 661.11s**, and harness plus all
 22 examples pass. The server hash and prelaunch pins match. Pending H100 job
-3799513 was cancelled before one alternate submission; **3799649 is RUNNING**
+3799513 was cancelled before one alternate submission; **3799649 ultimately FAILED / 1:0**
 on gput069 with two L40S GPUs, starting September 10 at **16:17:42 Beijing**.
-Runtime checks pass and model startup is in progress; actual inference and
-whole-run acceptance remain pending. See
+Runtime checks passed, but a CUDA uncorrectable ECC error stopped the model
+worker. Normal cleanup finalized at 16:34:57; no question result exists. D207
+adds per-device health execution and earlier dead-server failure before a new
+reviewed deployment. Exclude gput069 until recovery. See
 [GPU fallback scope](report/cwru_gpu_fallback_v1.md).
 
 D205 completes the bounded question-to-native-answer software entry and explicit

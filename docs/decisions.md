@@ -4381,3 +4381,10 @@ started three seconds after submission on gput069 with two L40S GPUs at
 16:17:42 Beijing. This establishes allocation and launch, not model readiness,
 inference quality or performance. Keep the replacement hardware identity and
 post-completion whole-run acceptance separate from the cancelled H100 attempt.
+
+D206 terminal observation: 3799649 FAILED / 1:0 with an uncorrectable CUDA ECC
+error; no inference was obtained. D207 must probe an actual tiny CUDA operation
+on each allocated device before loading weights, and stop readiness when the
+owned process exits. Keep the bad-node observation and exclude gput069 explicitly
+in a separately prepared deployment. Do not infer health from capacity or
+rewrite the failed outcome as successful GPU compatibility.
