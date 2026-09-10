@@ -80,6 +80,10 @@ class ExecutionRequirements:
         for position, identity in self.required_bindings:
             if type(position) is not int or position <= 0 or not isinstance(identity, str) or not identity:
                 raise ValueError("Required entity bindings must be explicit positions and IDs")
+        bindings = tuple((position, identity) for position, identity in self.required_bindings)
+        if len({position for position, _ in bindings}) != len(bindings):
+            raise ValueError("A goal cannot declare duplicate or conflicting bindings at one position")
+        object.__setattr__(self, "required_bindings", bindings)
 
     def to_dict(self) -> dict[str, Any]:
         return {"require_entity_anchor": self.require_entity_anchor, "answer_position": self.answer_position,

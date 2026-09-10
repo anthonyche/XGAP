@@ -8,6 +8,17 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+D205 completes the bounded question-to-native-answer software entry and explicit
+development CLI. It preserves generation/grounding evidence, refuses unresolved
+identity/interpretation ambiguity, and separates optional baseline verification
+from serving. Three controlled HTTP-provider/native cases return the expected
+release with 1/2/3 backend calls; no live model accuracy or speedup is claimed.
+The failed scalar fixture and corrected diagnostic are retained; all services
+stopped normally. Focused: 178 passed; full: **2,849 passed / 38 skipped in
+627.60s**; harness and 22 examples pass. See
+[question entry and actual observations](report/freebase_question_execution_v1.md).
+Next: fresh model-generated anchored answers on inference-owned execution facts.
+
 D204 restored usable OnDemand observation/control. After user-enabled upload
 permission, the 3.3 MB offline source package was uploaded and its SHA-256
 verified on Pioneer. Concurrently the user's original HTTPS launch succeeded
@@ -15,6 +26,10 @@ at authentication, cloning and checkout of exact 6b32b97. The original helper
 has submitted job **3799513** once after pinning the
 frozen inputs. Latest state: **PENDING / Resources**. Follow that exact job,
 leaving the offline package unexecuted to avoid duplication.
+The user authorizes compatible alternate GPUs when H100 is unavailable, with
+H100 preferred. The checked DGX node has all 8 GPUs allocated; no compatible
+free alternate or job change is established. Record actual hardware/profile
+for any future fallback and preserve model/precision and the single-run guard.
 No new model result is claimed. See
 [remote deployment state](report/grailqa_inline18_remote_execution_20260910.md).
 

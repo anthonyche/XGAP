@@ -1770,7 +1770,9 @@
         "## Implementation requirements",
         "## Tests"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "28dbdf8",
+      "review_note": "Fully read during D205. Historical sprint scope; retain audited recursion, SIMPLE closing-cycle, depth and solution-space semantics. Not a new implementation request."
     },
     {
       "path": "prompts/sprints/M_4_5_semantic_audit.md",
@@ -1787,7 +1789,9 @@
         "## Acceptance Criteria",
         "## Report:"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "28dbdf8",
+      "review_note": "Fully read during D205. Historical sprint scope; retain audited recursion, SIMPLE closing-cycle, depth and solution-space semantics. Not a new implementation request."
     },
     {
       "path": "prompts/sprints/M_4_solution_space_operators.md",
@@ -1804,7 +1808,9 @@
         "## Acceptance Criteria",
         "## Final Report"
       ],
-      "review_status": "indexed_pending_detailed_review"
+      "review_status": "full_text_reviewed",
+      "reviewed_revision": "28dbdf8",
+      "review_note": "Fully read during D205. Historical sprint scope; retain audited recursion, SIMPLE closing-cycle, depth and solution-space semantics. Not a new implementation request."
     },
     {
       "path": "prompts/sprints/M_5_5_pattern_lowering_audit.md",
@@ -1979,8 +1985,8 @@
   ],
   "hash_note": "Hashes and sizes capture the entry snapshot; review_status records progress. Later engineering updates to status/roadmap/decisions are not silently substituted for the entry snapshot.",
   "review_counts": {
-    "full_text_reviewed": 66,
+    "full_text_reviewed": 69,
     "selected_sections_reviewed": 7,
-    "indexed_pending_detailed_review": 8
+    "indexed_pending_detailed_review": 5
   }
 }

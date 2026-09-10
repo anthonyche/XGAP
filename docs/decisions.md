@@ -4315,3 +4315,39 @@ authenticated, cloned and checked out exact 6b32b97. The original helper
 subsequently submitted job 3799513 once; latest authoritative
 state is PENDING / Resources. The actual experiment result remains pending. See
 [D204 deployment evidence](report/grailqa_inline18_remote_execution_20260910.md).
+
+## D205 Preserve question intent through one bounded native execution entry
+
+Connect existing retrieval, exact prompt context, guarded generation, candidate
+preparation and native execution behind one explicit development API/CLI.
+Expose the caller's execution requirements in the actual generated request;
+do not infer positional identities from reference data. Ambiguous catalog
+identities require confirmed bindings before generation; distinct structural
+programs require clarification. A valid unsupported sibling cannot be silently
+discarded to select a conveniently executable interpretation. Identical
+structural candidates execute once. Keep all original evidence and failures.
+
+Serving defaults to native execution without the full-Fuseki comparison.
+Historical direct candidate callers retain verification by default. Record
+execution and optional verification separately, preserving completed answers
+when verification fails. Normalize JSON goal bindings into immutable tuples,
+reject duplicate/conflicting positions, and keep finite candidate/row/binding/
+backend/time budgets. Deadline checks are between stages, not cancellation of
+an in-flight external request. Preserve the provider's existing shared repair
+budget; do not add automatic external retries.
+
+Actual controlled HTTP responses run through the provider and retained native
+databases, producing the expected release in three successful modes at 1/2/3
+backend calls. A bad scalar fixture is retained alongside its separately
+corrected diagnostic. Both native runs stop normally. This establishes software
+and controlled native acceptance, not live-model accuracy, global completeness
+or performance improvement. Focused 178 passes; broad regression **2,849 passed
+/ 38 skipped in 627.60s**; harness plus 22 examples pass. See
+[D205 report](report/freebase_question_execution_v1.md).
+
+User steering also authorizes compatible alternate GPUs when H100 is unavailable.
+H100 remains the preferred request. Record actual deployment hardware and any
+serving-profile change; preserve frozen model identity/precision and only one
+active experiment. The current 3799513 remains pending; the observed DGX node
+has all 8 GPUs allocated, so no resource switch was made. Hardware fallback
+must not be represented as satisfying the original H100 contract unchanged.

@@ -21,16 +21,40 @@ Local scheduled execution needs this Mac and the Codex app available.
 
 The agent cannot directly push to ChatGPT mobile or verify phone delivery.
 Do not claim a phone push occurred. The system objective remains unfinished.
-The goal-status tool unexpectedly reports blocked on the latest read; the
-existing hourly heartbeat remains ACTIVE and authorized work is progressing.
-Do not claim the app Goal row is active or mark the objective complete. The
-goal tools expose no resume or pause operation, and CUA explicitly prohibits
-controlling the Codex app itself. No alternate UI/database workaround is permitted. At the
-next explicitly requested pause, the user can click the Goal progress row's pause control.
+The goal-status tool reports ACTIVE on September 10 at 07:32 UTC; the existing
+hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
+
+D205 is COMPLETE for software and controlled native acceptance. The new
+`freebase_question` API and explicit module CLI connect question/catalog input,
+the guarded provider, exact grounded candidate preparation and native answers.
+Identity/interpretation ambiguity remains explicit; finite row/call/time budgets
+are enforced at their documented boundaries. Serving can omit full-Fuseki
+verification, while optional verification retains separate outcomes and costs.
+JSON positional goal bindings are immutable and reject conflicting positions.
+No old model, catalog, spec, remote runner or algebra changed.
+
+Full regression: **2,849 passed / 38 skipped in 627.60s**, original session
+99584 exited 0. Focused: 178 passed in 2.29s. Harness and 22 examples pass,
+23/23 entrypoints. Do not repeat successful checks without a new concern.
+Three successful controlled HTTP-provider/native cases return the same expected
+release with 1/2/3 backend calls for resource serving, explicit verification,
+and scalar serving. The first scalar diagnostic used an invalid fixture key
+and failed before backend calls; a separate scalar-only corrected diagnostic
+passed. Preserve both traces. All owned services stopped normally, no reload
+or SIGKILL. This is not a live Qwen run, accuracy result or speedup evidence.
+Report: `docs/report/freebase_question_execution_v1.md`; durable receipt:
+`experiments/artifacts/d205_native_question_execution_20260910.json`.
+
+Next: obtain real model-generated anchored answers on inference-owned facts,
+then compare physical plans with the same interpretation. The queued D204
+semantic-only run remains independent and frozen. Document inventory is now
+69 full / 7 selected / 5 pending Markdown, plus three reviewed PDFs.
+
+## D204 active remote observation and GPU policy
 
 D204 is in progress: frozen inline18 deployment through the restored OnDemand
 portal. The user confirmed Chrome file-URL permission enabled. The agent
@@ -46,16 +70,28 @@ ACTIVE REMOTE JOB: **3799513**, submitted once by the user's original
 exact checkout at `/home/hxc859/XGAP-inline18-6b32b97`. Submission exit is 0.
 Prelaunch pins captured 2026-09-10T06:39:19.642365Z; single submission intent
 06:39:33.966284Z. Latest `squeue`/`scontrol`: **PENDING / Resources**, 0 restarts,
-1 H100, 8 CPUs, 64 GiB, four hours. Follow this exact job, never resubmit.
+1 H100, 8 CPUs, 64 GiB, four hours. September 10 afternoon `sacct` confirms
+PENDING, 00:00:00, Start/End Unknown. Follow this exact job; no duplicate launch.
 Original catalog fa07c25b…308e8, spec 0d3e8952…223e7 and model/tokenizer revision
 9216db5781bf21249d130ec9da846c4624c16137 are pinned. Backend execution is false.
 Do not execute the offline helper, overwrite this checkout or start another
 launch. The uploaded offline ZIP was neither extracted nor executed.
 
+The user explicitly authorizes alternate GPUs when H100 resources are
+unavailable. Prefer H100; verify alternate hardware and model/precision fit,
+record an explicit deployment profile/override, and preserve a single active
+experiment. Do not silently shrink or quantize the frozen Qwen3-32B model or
+claim another GPU matches the H100 contract. The observed dgxt001 node has all
+8 GPUs allocated; no compatible free alternate was confirmed. Live `sinfo`
+host-memory values do not establish GPU VRAM. No job change was made this turn.
+
 Browser control recovered after the extension restarted: Chrome browser 3,
-user terminal tab 366873264 (hpc5), file tab 366873233 (/home/hxc859). A separate
-agent-owned terminal is connected to hpc6; inspect current browser inventory
-and tabs if stale. The iframe's `log` role supports short typed input. Clipboard
+user terminal tab 366873264 (hpc5), file tab 366873233 (/home/hxc859).
+The user is now using the previous hpc6 terminal 366873292: do not type there.
+A new independent hpc7 monitoring terminal is tab 366873297, marked Handoff.
+Inspect current browser inventory and terminal input if stale; never append
+commands to concurrent user input or copy credentials into records. The iframe's
+`log` role supports short typed input. Clipboard
 paste did not reach the shell and was not used for an action. After any input
 timeout/lag, read the complete command before Enter. The agent does not handle
 passwords. A cluster-internal BatchMode SSH read-only process query to hpc5
@@ -67,10 +103,8 @@ submission records: `/home/hxc859/xgap-inline18-6b32b97`. Job log:
 `/home/hxc859/XGAP-inline18-6b32b97/slurm-xgap-grailqa-guarded-3799513.out`.
 Use original `audit.sh` once after success; do not run a second experiment or
 change its protocol. See `docs/report/grailqa_inline18_remote_execution_20260910.md`.
-No production query/provider code changed; do not repeat D203's passed full
-regression. Document inventory remains 66 full / 7 selected / 8 pending
-Markdown, plus three previously reviewed PDFs. Quiet while queue unchanged;
-independent next engineering work can continue under the existing goal.
+D204 itself changes no production query/provider code. Quiet while the queue
+is unchanged; independent engineering work continues under the existing goal.
 
 ## D203 accepted predecessor
 
@@ -112,7 +146,8 @@ normally, no SIGKILL: session 25261 and 9851, roots
 79649/76062 finished. No native data reload or catalog construction occurred.
 No test/example/native process remains from this milestone.
 Next: real generated anchored answers; the original fixed-v1 CWRU inline18
-handoff still awaits a user-returned job ID. An optional new anchor feedback
+handoff subsequently became job 3799513 (see current D204 state above).
+An optional new anchor feedback
 profile is not part of D203 and must not silently alter that pending protocol.
 
 ## D202 accepted predecessor

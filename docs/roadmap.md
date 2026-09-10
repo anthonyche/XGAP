@@ -79,6 +79,17 @@ Follow that job and retain the offline package without executing it. Original re
 model, catalog and 18-question settings remain fixed. This is deployment
 progress, not model evidence or another production test milestone.
 
+D205 adds the bounded question/catalog/provider/native execution entry and an
+explicit CLI, with ambiguity and failure outcomes, finite budgets, immutable
+positional goals and optional baseline verification. Actual guarded-provider
+HTTP fixtures reach native answers in three modes (1/2/3 backend calls).
+Focused 178 passes, full **2,849 passed / 38 skipped in 627.60s**, harness and
+22 examples pass. See [D205](report/freebase_question_execution_v1.md).
+This closes software orchestration and controlled native acceptance, while H4
+still needs fresh model-generated correct answers. Follow 3799513 independently;
+H100 is preferred, with user-authorized compatible GPU fallback when resources
+are unavailable. Preserve hardware evidence and avoid duplicate experiments.
+
 ## Current Mainline: M15 Agentic Federated Core
 
 The M0-M14 milestones below record the original ambiguity-aware planning and

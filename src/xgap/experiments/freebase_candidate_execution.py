@@ -7,6 +7,7 @@ gold data, repair model choices, or change a frozen benchmark protocol.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+import time
 from typing import Any, Mapping
 
 from xgap.backends.rdf_terms import RdfTerm, RDF_TERMS_V1
@@ -129,32 +130,61 @@ class _CheckedClient:
             return replace(report, success=False, rows=[], error=str(error))
 
 
-def execute_candidate(program: CompiledCandidateExecution, *, neo4j: Any, fuseki: Any) -> dict[str, Any]:
+def execute_candidate(program: CompiledCandidateExecution, *, neo4j: Any, fuseki: Any,
+                      verify_baseline: bool = True) -> dict[str, Any]:
+    """Execute once; the legacy default also verifies against full Fuseki.
+
+    Serving callers may explicitly omit the baseline. Returned execution and
+    verification statuses remain separate; baseline failure cannot erase an
+    already obtained answer or make it independently verified.
+    """
+    if type(verify_baseline) is not bool:
+        raise ValueError("Baseline verification must be explicitly boolean")
     if neo4j.backend_id != "neo4j" or fuseki.backend_id != "fuseki":
         raise ValueError("Dataset mapping requires the declared Neo4j and Fuseki plugins")
     clients = [_CheckedClient(c, program.max_rows) for c in (neo4j, fuseki)]
     registry = BackendPluginRegistry()
     for client in clients:
         registry.register(NativeBackendPlugin(client.backend_id, client))
+    started = time.perf_counter()
     result = FederatedScheduler(BackendInvokeTool(registry)).execute(program.plan)
     evidence = {"input_pattern_sha256": program.input_pattern_sha256, "mapping": program.mapping.to_dict(),
                 "plan": program.plan.to_dict(), "federated": result.to_dict(), "success": False,
-                "federated_executions": [r.to_dict() for c in clients for r in c.reports], "paper_result": False}
+                "federated_executions": [r.to_dict() for c in clients for r in c.reports], "paper_result": False,
+                "execution_success": False, "baseline_requested": verify_baseline,
+                "verification_status": "not_run", "execution_wall_seconds": time.perf_counter()-started,
+                "baseline_wall_seconds": 0.0, "baseline_remote_calls": 0}
     if not result.success:
-        return evidence
-    baseline = clients[1].execute(program.baseline)
-    evidence["baseline_artifact"] = program.baseline.to_dict()
-    evidence["baseline"] = baseline.to_dict()
-    if not baseline.success:
         return evidence
     try:
         projection = AnswerProjection("answer")
         actual = projection.project_rows(result.root_rows["answer"])
-        expected = projection.project_execution(baseline)
-        evidence["answers_equal"] = exact_answer_match(actual, expected)
         evidence["answer_count"] = len(actual)
         evidence["answers"] = [term.to_binding() for term in actual]
+        evidence["execution_success"] = True
+        if not verify_baseline:
+            evidence["success"] = True
+            return evidence
+        started = time.perf_counter()
+        evidence.update(baseline_artifact=program.baseline.to_dict(), baseline_remote_calls=1)
+        try:
+            baseline = clients[1].execute(program.baseline)
+        except Exception as error:
+            evidence.update(verification_status="failed", baseline_error_type=type(error).__name__)
+            return evidence
+        finally:
+            evidence["baseline_wall_seconds"] = time.perf_counter()-started
+        evidence.update(baseline_artifact=program.baseline.to_dict(), baseline=baseline.to_dict(),
+                        baseline_wall_seconds=time.perf_counter()-started, baseline_remote_calls=1)
+        if not baseline.success:
+            evidence["verification_status"] = "failed"
+            return evidence
+        expected = projection.project_execution(baseline)
+        evidence["answers_equal"] = exact_answer_match(actual, expected)
+        evidence["verification_status"] = "matched" if evidence["answers_equal"] else "mismatch"
         evidence["success"] = evidence["answers_equal"]
     except (KeyError, TypeError, ValueError) as error:
         evidence["error"] = str(error)
+        if evidence["execution_success"]:
+            evidence["verification_status"] = "failed"
     return evidence
