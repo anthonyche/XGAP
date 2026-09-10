@@ -29,6 +29,65 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+D201 local software and one-shard data acceptance is complete: typed Freebase fact snapshots and executable answer
+integration. Scope/acceptance: `docs/report/freebase_typed_fact_snapshot_v1.md`.
+The fact reader/exporter, tests and `examples/freebase_typed_fact_demo.py`
+preserve all six archival columns and RDF term identity,
+consume complete selected shards under finite budgets, and emit reusable
+N-Triples parts. Old catalog/source behavior and frozen model inputs are intact.
+Focused validation: **203 passed, 1 live skip in 4.47s**, including 52 new tests
+and an actual Parquet → exported parts → HTTP loader → RDFLib engine → compiled
+numeric-filter query → typed answer integration. The new offline demo passes;
+its data is synthetic. Full regression completed in original session 67395:
+**2752 passed, 37 skipped in 609.22s**. Harness and all 19 acceptance examples
+also pass. Logs: `/tmp/xgap-d201-full.log`, `/tmp/xgap-d201-focused.log`,
+`/tmp/xgap-d201-examples.log`. No running test/export/verification handle remains
+from D201. Do not restart any of these successful checks without a new reason.
+Durable receipt: `experiments/artifacts/d201_typed_fact_snapshot_20260910.json`.
+
+The first frozen archival shard was downloaded once and verified at its original
+SHA-256 `f1b21a5869da41938818a3f0f2ef2ead92fd5df978c2d5bf6fbaad31d3f650b1`:
+14,984,726 bytes, 3,247,670 rows, five row groups. It was selected as the first
+inventory entry before inspecting its contents, without questions/references.
+Actual export completed successfully in original session 15621; do not rerun.
+Log: `/tmp/xgap-d201-real-shard.log`. It emitted **3,247,670 occurrences,
+420,940,219 bytes in 13 parts, in 98.57s**, with 125,272,064 bytes peak process
+RSS (macOS observation). Kinds: 541,677 URI objects, 2,603,948 language literals
+and 102,045 other typed/string literals. These are one local partial-source
+construction observation, not comparative performance or query quality.
+Source/output/plan receipts are under
+`/private/var/folders/78/2hb19nqj0jv_l0vgmp084ht80000gn/T/xgap-d201-source-b2ymubis`.
+The build uses all rows of this one shard, 16,384-row batches, 32 MiB parts and
+a 1 GiB output ceiling. This is a partial source-data experiment, not a model,
+real-backend answer, complete-Freebase or paper measurement. The source download
+and completed demo must not be repeated just because this task continues.
+Independent verification v1 completed all 13 parts/counts but failed its final
+ordered term digest. The first language-literal diagnosis showed a verifier
+representation bug: RDFLib's language literals expose `.datatype=None`, which
+the ad-hoc verifier wrongly treated as xsd:string instead of implicit
+rdf:langString. Source values, language and exported data agree. The failed
+script/log and diagnosis are retained; neither exporter nor source was changed.
+Corrected `verify_export_v2.py` completed successfully in session 35115; log
+`/tmp/xgap-d201-independent-source-v2.log` and `independent_verification_v2.json`
+were inspected. All 3,247,670 ordered terms agree at digest
+`96aca67e31c1254387580000abfd21ef5dd163b84553f3eb6e04dfe9c4c66c78`.
+Actual literals include 1,681 xsd:date, 6,089 xsd:gYear and 2,760 xsd:gYearMonth
+values, plus 91,515 strings and 2,603,948 language literals. Verification took
+57.79s alongside the full regression; no model/backend was called. Do not
+rerun either the export or successful independent verification.
+
+Next: connect typed fact data to actual backend loading, dataset-owned term
+mapping, generated query execution and cross-backend answers. Date/gYear/
+gYearMonth terms are preserved but require their own comparison semantics;
+the successful compiled query test uses integer years. Do not promote that
+fixture into a claim of date-aware real Freebase answers. The inline18 CWRU
+package still has no returned job ID, and no remote submission was attempted.
+Local Java inventory shows Temurin 25 and Homebrew OpenJDK/21, but no known
+Java 17 installation. The accepted native lock requires Java 17, Neo4j 5.26.30
+and Fuseki 5.6.0. Read the actual lock and locate/retrieve exact local runtimes
+before trying a separate local service experiment; never fabricate a Slurm
+allocation or label a local run as CWRU. No service was started in D201.
+
 D200 local software acceptance is complete: read-only reconstruction of the
 guarded inline development run, including source/context, provider, semantic,
 token/lifecycle and evaluation layers. See

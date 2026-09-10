@@ -4215,3 +4215,31 @@ fact traversal. The unchanged v2 result closes that intervention. Hold v1
 fixed and advance real inline18 execution and the graph-answer bridge. Any
 future metadata indexing or recall change needs a separate bounded diagnosis;
 do not substitute recurring scans or more audit infrastructure for answers.
+
+## D201 Separate typed fact ingestion from catalog metadata extraction
+
+The historical archival adapter intentionally filters predicates and drops
+ordinary/datatype-bearing literals. Keep that compatibility behavior intact.
+Add a separate six-column typed reader and finite-budget N-Triples exporter
+for all facts in explicit source-manifest shard selections. There is no
+question, gold/reference, entity-candidate, predicate filter or hop-expansion
+input. Preserve lexical/datatype/language/resource identity and duplicate
+occurrences; invalid terms and exceeded budgets fail with retained partial
+output, never a silently truncated complete snapshot.
+
+The first frozen shard was selected before data inspection, downloaded once
+and verified against its original 14,984,726-byte identity. All 3,247,670 rows
+were exported to 13 parts / 420,940,219 bytes. Independent Arrow source and
+RDFLib N-Triples term streams agree, including 10,530 date/year literals. The
+initial independent checker mishandled RDFLib's implicit language datatype;
+its failed trace and corrected v2 are preserved without changing the exporter
+or rebuilding data. Construction and verification are separate local
+observations, not comparative performance or question-answer measurements.
+
+Local acceptance: 203 focused passes/one live skip; 2752 full passes/37 skips
+in 609.22s; harness, 19 acceptance examples and a new offline demo pass. The
+actual HTTP/compiled-query integration uses synthetic data and integer years.
+Real date/gYear semantics, Neo4j/Fuseki dataset mappings, loads and generated
+federated answers remain H4 work. Reuse completed snapshots. No old catalog,
+frozen inference inputs, path-algebra semantics or scientific population was
+changed. See `docs/report/freebase_typed_fact_snapshot_v1.md`.

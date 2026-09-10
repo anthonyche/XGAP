@@ -36,6 +36,16 @@ Do not start another catalog scan or open-ended audit milestone. The latest
 OnDemand control timeout requires a usable transfer/terminal route, while
 answer-execution implementation can proceed independently.
 
+D201 completes the H4 typed fact-data step locally: full six-column Parquet
+reading, bounded reusable N-Triples parts and actual compiled-query integration
+through the HTTP/RDF engine boundary. A real one-shard experiment preserved
+3,247,670 ordered RDF facts, including date/year datatypes, independently
+checked against the original Arrow data. Full regression: **2752 passed /
+37 skipped in 609.22s**; focused tests, harness, 19 examples and the new demo
+pass. See [D201](report/freebase_typed_fact_snapshot_v1.md). H4 remains open for
+real backend loading, dataset-owned mapping and generated federated answers;
+preserved date terms alone do not provide date-aware query semantics.
+
 ## Current Mainline: M15 Agentic Federated Core
 
 The M0-M14 milestones below record the original ambiguity-aware planning and

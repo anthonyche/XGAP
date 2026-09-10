@@ -8,6 +8,22 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+D201 adds the typed fact-data path required for answers. It exports complete
+selected Parquet shards into reusable N-Triples parts, preserving URI versus
+literal, lexical value, datatype and language under finite budgets. The actual
+first frozen shard's **3,247,670 rows** became 13 parts / 420,940,219 bytes;
+an independent Arrow-versus-RDFLib check matches every ordered RDF term. This
+includes 10,530 date/year literals that the historical catalog adapter does
+not retain. It is one-shard data validation, not an answer-quality result.
+The separate synthetic integration loads exported parts through HTTP and
+executes emitted institution/path/year-filter queries with exact typed answers.
+Focused: **203 passed, 1 live skip**. Full: **2752 passed, 37 skipped in 609.22s**;
+harness, 19 acceptance examples and the new offline demo pass. See
+[typed facts and observed results](report/freebase_typed_fact_snapshot_v1.md).
+Actual Neo4j/Fuseki target-data answers and the pending real inline18 run remain
+the next priorities. The old catalog parser, model inputs and legacy results
+are unchanged.
+
 D200 completes local software acceptance of whole guarded inline development
 run reconstruction. It independently rebuilds catalog retrieval, prompts,
 typed candidate outcomes, token counts, ordered call ledgers and metrics from
