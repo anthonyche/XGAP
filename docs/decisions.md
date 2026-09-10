@@ -4351,3 +4351,24 @@ serving-profile change; preserve frozen model identity/precision and only one
 active experiment. The current 3799513 remains pending; the observed DGX node
 has all 8 GPUs allocated, so no resource switch was made. Hardware fallback
 must not be represented as satisfying the original H100 contract unchanged.
+
+## D206 Treat a GPU fallback as an explicit deployment change
+
+H100 remains the first choice, but the user authorizes compatible alternative
+resources when unavailable. Use two L40S GPUs with pipeline parallelism for the
+same BF16 Qwen3-32B weights/context instead of silently quantizing or shrinking
+the model. Create an independent environment contract/spec and output identity;
+preserve every original semantic experiment setting and raw H100 observation.
+
+Validate every CUDA-visible device before launch and retain per-device capacity,
+architecture, model and job identity. Record tensor/pipeline parallel sizes in
+the environment and require the explicit profile during whole-run reading.
+Legacy unprofiled contracts keep the H100 rule. Compatible configuration is not
+proof of actual startup, model accuracy, equal latency or numerical equivalence.
+
+Prepare and check the whole transfer before replacing the pending allocation.
+Confirm the original is still pending, preserve state, cancel only that pending
+job, verify termination and submit the alternate once. If the original has
+started, follow it. Do not retry ambiguous external actions or run duplicate
+experiments. Current implementation/validation and remote evidence are recorded
+in [D206](report/cwru_gpu_fallback_v1.md).

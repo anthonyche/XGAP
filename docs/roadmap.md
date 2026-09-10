@@ -2,6 +2,12 @@
 
 ## Current engineering milestones — 2026-09-10
 
+D206 addresses GPU queue availability through a separately recorded dual-L40S
+deployment with pipeline parallelism, preserving the full BF16 model and fixed
+18-question inference settings. The original H100 job remains pending while
+software checks and an isolated handoff are prepared. Do not dispatch duplicate
+experiments. See [D206](report/cwru_gpu_fallback_v1.md).
+
 The [engineering review](report/xgap_engineering_review_20260909.md) orders
 H0 documentation/state reconciliation, H1 remote execution closure, H2 typed
 resource/answer contracts, H3 simplified interpretation output, H4 target-data

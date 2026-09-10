@@ -318,6 +318,10 @@ def collect_run_environment(
     git_status = _command(("git", "status", "--porcelain"), cwd=repo, allow_failure=True)
     gpu = _gpu_metadata()
     serving = _mapping(contract.data["serving"], "serving")
+    from xgap.experiments.cwru_gpu_profile import collect_visible_gpus, profile_for
+    gpu_profile = profile_for(contract.data)
+    if gpu_profile is not None:
+        gpu = collect_visible_gpus(gpu_profile)
     record = {
         "schema_version": RUN_ENVIRONMENT_SCHEMA_VERSION,
         "captured_at": datetime.now(timezone.utc).isoformat(),
@@ -369,6 +373,9 @@ def collect_run_environment(
         },
         "secrets_persisted": False,
     }
+    if gpu_profile is not None:
+        record["model"].update(tensor_parallel_size=gpu_profile.tensor_parallel_size,
+                               pipeline_parallel_size=gpu_profile.pipeline_parallel_size)
     _assert_no_credential_values(record)
     return record
 

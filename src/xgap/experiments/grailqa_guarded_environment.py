@@ -17,6 +17,7 @@ from typing import Any, Mapping
 
 from xgap.experiments.bundles import ModelBundle
 from xgap.experiments.cwru_vllm import CWRUVLLMContract, RUN_ENVIRONMENT_SCHEMA_VERSION
+from xgap.experiments.cwru_gpu_profile import validate_recorded_profile
 from xgap.experiments.grailqa_preflight import GrailQAPreflightSpec
 from xgap.experiments.hashing import content_hash
 from xgap.llm.openai_compatible import OpenAICompatibleProviderConfig
@@ -178,6 +179,7 @@ def validate_guarded_environment(
     }.items():
         equal(recorded_provider.get(key), expected, f"recorded_provider_{key}")
     recorded_runtime = mapping(environment.get("runtime"), "environment_runtime")
+    validate_recorded_profile(contract.data, environment)
     runtime = mapping(contract.data.get("runtime"), "contract_runtime")
     for key in ("python", "torch", "cuda_runtime", "vllm"):
         require(isinstance(runtime.get(key), str) and bool(runtime[key]), f"frozen_runtime_{key}")

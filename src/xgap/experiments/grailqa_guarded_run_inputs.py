@@ -18,6 +18,7 @@ import subprocess
 from typing import Any, Mapping
 
 from xgap.experiments.cwru_vllm import RUN_ENVIRONMENT_SCHEMA_VERSION
+from xgap.experiments.cwru_gpu_profile import profile_for, validate_recorded_profile
 from xgap.experiments.grailqa_candidate_feedback import TYPED_GROUNDING_ONCE
 from xgap.experiments.grailqa_candidate_grounding import SEMANTIC_GROUNDING_POLICY
 from xgap.experiments.grailqa_inline_evidence import _require, _same
@@ -221,7 +222,10 @@ def bind_environment_records(*, environment, binding, launch, spec, model, contr
     for key, value in contract.data["runtime"].items():
         _same(environment["runtime"][key], value, "recorded runtime: " + key)
     _same(environment["gpu"]["status"], "available", "recorded GPU availability")
-    _require("H100" in environment["gpu"]["model"], "recorded H100 model")
+    if profile_for(contract.data) is None:
+        _require("H100" in environment["gpu"]["model"], "recorded H100 model")
+    else:
+        validate_recorded_profile(contract.data, environment)
     expected_snapshot = str(Path(shared["hf_home"]) / "hub" / ("models--" + contract.model.replace("/", "--")) / "snapshots" / revision)
     _same(tokenizer_identity["snapshot_path"], expected_snapshot, "tokenizer model cache binding")
     _same(tokenizer_identity["snapshot_revision"], revision, "tokenizer revision binding")

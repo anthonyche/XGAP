@@ -8,6 +8,13 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+D206 is preparing the user-authorized alternate GPU deployment. A separate
+dual-L40S pipeline profile preserves Qwen3-32B BF16, the original 18 questions
+and inference settings. All CUDA-visible devices are checked before loading;
+legacy H100 behavior remains supported. Targeted checks pass 105 tests; broad
+regression and actual alternate allocation remain pending. See
+[GPU fallback scope](report/cwru_gpu_fallback_v1.md).
+
 D205 completes the bounded question-to-native-answer software entry and explicit
 development CLI. It preserves generation/grounding evidence, refuses unresolved
 identity/interpretation ambiguity, and separates optional baseline verification

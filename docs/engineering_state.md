@@ -28,6 +28,25 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+D206 is implementing the authorized GPU fallback. The new explicit dual-L40S
+pipeline-parallel contract/spec keeps Qwen3-32B BF16, context and all 18-query
+semantic settings unchanged. It checks every CUDA-visible device before model
+load and records actual device/parallelism metadata. Legacy H100 records and
+spec remain unchanged. Latest observed candidate gput069 has two free L40S GPUs
+and sufficient CPU/host RAM; this is not reserved. The current H100 scheduling
+estimate is 2026-09-10 21:29 Beijing, not a confirmed start.
+
+Focused final: 105 passed in 7.17s; first focused: 245 passed/one test-fixture
+failure, retained. Broad regression is running in session **51749**, log
+`/tmp/xgap-d206-full.log`; examples/harness session **94699** completed exit 0,
+all 23 entrypoints passed. Continue the original full-test handle, never restart
+solely after an observation timeout. Next: finish tests,
+prepare a complete isolated offline transfer and prelaunch pins, recheck the
+original job, then transition only if it is still pending. Preserve one runnable
+experiment. Report: `docs/report/cwru_gpu_fallback_v1.md`.
+
+## D205 accepted predecessor
+
 D205 is COMPLETE for software and controlled native acceptance. The new
 `freebase_question` API and explicit module CLI connect question/catalog input,
 the guarded provider, exact grounded candidate preparation and native answers.

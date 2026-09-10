@@ -25,6 +25,17 @@ echo "Checking frozen Python, torch, CUDA, and vLLM versions."
 PYTHONPATH=src python -m xgap.experiments.cwru_vllm verify-environment \
   --contract "$XGAP_CWRU_CONTRACT"
 
+# An opt-in profile validates every allocated CUDA device before loading the
+# unchanged model. Legacy contracts emit no additional arguments.
+XGAP_GPU_ARGUMENTS="$(PYTHONPATH=src python -m xgap.experiments.cwru_gpu_profile \
+  --contract "$XGAP_CWRU_CONTRACT" --verify-allocation)"
+XGAP_PARALLEL_ARGS=()
+if [[ -n "$XGAP_GPU_ARGUMENTS" ]]; then
+  while IFS= read -r XGAP_GPU_ARGUMENT; do
+    XGAP_PARALLEL_ARGS+=("$XGAP_GPU_ARGUMENT")
+  done <<< "$XGAP_GPU_ARGUMENTS"
+fi
+
 if [[ -f "$XGAP_VLLM_PID_FILE" ]]; then
   previous_pid="$(tr -d '[:space:]' < "$XGAP_VLLM_PID_FILE")"
   if [[ -n "$previous_pid" ]] && kill -0 "$previous_pid" 2>/dev/null; then
@@ -55,6 +66,7 @@ echo "Starting $XGAP_LLM_MODEL revision $XGAP_RESOLVED_MODEL_REVISION on 127.0.0
   --gpu-memory-utilization 0.90 \
   --max-model-len 12288 \
   --generation-config vllm \
+  ${XGAP_PARALLEL_ARGS[@]+"${XGAP_PARALLEL_ARGS[@]}"} \
   >"$XGAP_VLLM_LOG" 2>&1 &
 XGAP_VLLM_PID=$!
 export XGAP_VLLM_PID

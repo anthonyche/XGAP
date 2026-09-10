@@ -44,8 +44,8 @@ def freeze(data, key):
     data[key] = content_hash({k: v for k, v in data.items() if k != key})
 
 
-@pytest.fixture(scope="module")
-def recorded(tmp_path_factory):
+@pytest.fixture(scope="module", params=[None, "l40s-pipeline2-v1"])
+def recorded(tmp_path_factory, request):
     home = tmp_path_factory.mktemp("guarded-actual-runner").resolve()
     repo = home / "repo"
     repo.mkdir()
@@ -63,6 +63,14 @@ def recorded(tmp_path_factory):
             (repo / name).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, repo / name)
         contract_data = read_json(ROOT / spec_data["deployment_contract"])
+        if request.param is not None:
+            from xgap.experiments.cwru_gpu_profile import PROFILES, visible_gpu_record
+            contract_data = read_json(ROOT / "experiments/environments/cwru_pioneer_qwen3_32b_l40s_pipeline2_v1.json")
+            profile = PROFILES[request.param]
+            gpu_record = visible_gpu_record(profile, [
+                {"cuda_index":i,"model":"NVIDIA L40S","memory_mib":46068,"compute_major":8,"compute_minor":9}
+                for i in range(2)], job_id="98765")
+            patch.setattr("xgap.experiments.cwru_gpu_profile.collect_visible_gpus", lambda p: deepcopy(gpu_record))
         contract_data["shared_paths"]["hf_home"] = str(home / "hf-cache")
         freeze(contract_data, "contract_hash")
         write_json(repo / spec_data["deployment_contract"], contract_data)
