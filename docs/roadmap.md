@@ -2,12 +2,13 @@
 
 ## Current engineering milestones — 2026-09-10
 
-T0 tiny fixtures and first actual compiled federated slice are verified; the
-single broad regression passes 2,963 tests / 38 skips in 657.90s. The fixture gives a concrete T1
-target: plain RDF compilation loses parallel-edge identities. Add explicit
-identity-preserving representation support without changing gold fixtures or
-legacy semantics, then address IN logical representation, Union/recursive and
-selector compilation. See [T0 evidence](report/toy_backbone_t0_v1.md).
+T1 is in progress. Explicit identity-preserving RDF compilation now passes
+8 fixed-path fixtures on each actual Neo4j/Fuseki backend (16/16), retaining the
+working two-engine slice and unchanged toy gold. Next implement node-only/Union
+and bounded recursive/selector compilation and execution; keep the distinct
+M5 IN logical-representation gap visible. See [T1 evidence](report/toy_backbone_t1_rdf_identity.md).
+The T0 fixture/slice milestone and its broad regression remain historical accepted
+evidence, not a claim that the complete backbone is finished.
 
 **Toy-first supersedes the earlier development queue.** Follow
 [the active Goal](goal.md): T0 small graph and complete query fixtures; T1

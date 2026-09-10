@@ -28,6 +28,25 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+T1 is IN PROGRESS. Its RDF edge-identity step is verified: an explicit reified
+edge encoding preserves parallel-edge resource IDs and supports edge-property
+filters through the production directed compiler/fragment adapter. Original
+native session 60008 exited 0 with **16/16 compiled paths correct** (8 fixtures
+on each real Neo4j/Fuseki backend); the two-backend T18 slice remains correct.
+Both owned services stopped normally. Raw root:
+`/Users/anthonyche/xgap-data/t1-rdf-native-20260910`.
+Focused checks: **185 passed / 1 skipped in 9.82s** (session 62974); separate
+Freebase/M9 compatibility: **99 passed in 2.63s** (49131). Harness and toy example
+pass. Measured source/fixture hashes are unchanged; all gold files remain frozen.
+No new broad regression was run for this partial T1 step. Daily targeted tests
+plus the live tiny slice follow the user's latest development rules.
+Next: node-only/Union and bounded recursion/selectors through production native
+compilation, with an operator-by-layer coverage table. IN native rows are now
+verified; the M5 IN lowerer gap remains distinct. Full T1/T2/T3 are unfinished.
+See `docs/report/toy_backbone_t1_rdf_identity.md` and its durable receipt.
+
+## Accepted T0 predecessor
+
 T0 is COMPLETE for fixtures and first compiled true-backend slice. Original
 broad regression session **63579** exited 0: **2,963 passed / 38 skipped in
 657.90s**, log `/tmp/xgap-t0-full.log`. No executable source changed after the
@@ -43,15 +62,14 @@ normally without escalation. Raw root: `/Users/anthonyche/xgap-data/t0-native-20
 
 An actual compiled RDF probe reproduces parallel-edge loss: T03 expects three
 paths but gets two bindings; T02 8→7, T05 6→4, T15 2→1, T16 5→3. The plain
-predicate is bound as an edge ID. T1 should first make representation/capability
-explicit and support identity-preserving reified RDF compilation, keeping the
-fixture and legacy plain-RDF behavior. Do not remove the parallel edge or use
+predicate is bound as an edge ID. This motivated the explicit representation support now verified in T1;
+the fixture and legacy plain-RDF behavior remain unchanged. Do not remove the parallel edge or use
 expected answers to reconstruct lost paths. Broader IN/Union/recursive/selector
 gaps remain. See `docs/report/toy_backbone_t0_v1.md`.
 
 **Latest user direction: toy-first development.** Read `docs/goal.md` before
 implementation. T0 (minimal graph + 18 core query fixtures + first complete
-deterministic vertical slice) is accepted; T1 edge-identity support is next.
+deterministic vertical slice) is accepted; T1 full operator coverage is next.
 Separate Interpretation from deterministic
 planning. Runtime must never build a GrailQA catalog; offline build/freeze and
 runtime lookup are separate. Add failure replay. Module tests and toy E2E drive

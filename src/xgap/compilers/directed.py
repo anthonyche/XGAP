@@ -43,7 +43,7 @@ from xgap.backends.mapping import (
 from xgap.compilers import cypher, sparql
 from xgap.compilers.errors import UnsupportedCompilationError
 from xgap.compilers.features import BoundCondition, default_profile
-from xgap.compilers.rdf_encoding import RdfRowEncoding
+from xgap.compilers.rdf_encoding import RdfEdgeEncoding, RdfRowEncoding
 from xgap.backends.rdf_terms import RDF_TERMS_V1
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.pattern.ast import (
@@ -244,7 +244,8 @@ def _literal(value: object) -> str:
 
 
 def _required(
-    shape: DirectedShape, profile: BackendCapabilityProfile
+    shape: DirectedShape, profile: BackendCapabilityProfile,
+    rdf_edge_encoding: RdfEdgeEncoding | None = None,
 ) -> tuple[str, ...]:
     language = profile.language.lower()
     features = {
@@ -269,7 +270,8 @@ def _required(
             features.add("graph_model.node_identity_predicates")
         elif type(item) in PROPERTY_CONDITIONS:
             features.add("graph_model.scalar_property_predicates")
-            if language == "sparql" and isinstance(item.ref, EdgeRef):
+            if (language == "sparql" and isinstance(item.ref, EdgeRef)
+                    and rdf_edge_encoding is None):
                 raise _fail(
                     profile,
                     "graph_model.edge_properties",
@@ -341,6 +343,7 @@ def _sparql(
     profile: BackendCapabilityProfile,
     backend_mapping: Mapping[str, Any] | RdfBackendMapping | None,
     rdf_encoding: RdfRowEncoding | None = None,
+    rdf_edge_encoding: RdfEdgeEncoding | None = None,
 ) -> tuple[str, dict[str, Any]]:
     if backend_mapping is None:
         raise _fail(
@@ -370,6 +373,23 @@ def _sparql(
             if edge.direction is Direction.OUT
             else (index + 1, index)
         )
+        if rdf_edge_encoding is not None:
+            encoding = rdf_edge_encoding
+            variable = f"?e{index + 1}"
+            body.extend((
+                f"{variable} <{encoding.class_predicate_iri}> <{encoding.edge_class_iri}> .",
+                f"{variable} <{encoding.source_predicate_iri}> ?n{left} .",
+                f"{variable} <{encoding.target_predicate_iri}> ?n{right} .",
+            ))
+            if index in labels:
+                term = (
+                    _literal(labels[index])
+                    if encoding.label_encoding == "logical_string"
+                    else sparql._mapped_iri(labels[index], "edge_labels", mapping,
+                                            used, profile.backend_id)
+                )
+                body.append(f"{variable} <{encoding.label_predicate_iri}> {term} .")
+            continue
         predicate = f"?e{index + 1}"
         if index in labels:
             predicate = sparql._mapped_iri(
@@ -391,6 +411,7 @@ def _sparql(
             if (
                 rdf_encoding is not None
                 and item.property_name == rdf_encoding.identity_property
+                and isinstance(item.ref, NodeRef)
             ):
                 if type(item) not in (
                     PropertyEquals,
@@ -423,7 +444,10 @@ def _sparql(
                 item.property_name, "properties", mapping, used, profile.backend_id
             )
             variable = f"?v{counter}"
-            body.append(f"{sparql._node_var(bound, item.ref)} {predicate} {variable} .")
+            subject = (sparql._node_var(bound, item.ref)
+                       if isinstance(item.ref, NodeRef)
+                       else f"?e{bound.edge_index(item.ref) + 1}")
+            body.append(f"{subject} {predicate} {variable} .")
             body.append(
                 f"FILTER({variable} {_OPERATORS[type(item)]} {_literal(item.value)})"
             )
@@ -469,16 +493,22 @@ def _sparql(
     text = "SELECT DISTINCT " + " ".join("?" + name for name in columns) + " WHERE {\n"
     text += "\n".join("  " + line for line in body) + "\n}"
     return text, {
+        **({
+            "rdf_edge_encoding_id": rdf_edge_encoding.encoding_id,
+            "rdf_edge_encoding_sha256": rdf_edge_encoding.identity,
+            "rdf_edge_identity": "resource_iri",
+        } if rdf_edge_encoding is not None else {}),
         **(
             {
                 "rdf_row_encoding_sha256": rdf_encoding.identity,
                 "rdf_row_encoding_id": rdf_encoding.encoding_id,
-                "rdf_result_encoding": RDF_TERMS_V1,
-                "expected_result_columns": list(columns),
             }
             if rdf_encoding is not None
             else {}
         ),
+        **({"rdf_result_encoding": RDF_TERMS_V1,
+            "expected_result_columns": list(columns)}
+           if rdf_encoding is not None or rdf_edge_encoding is not None else {}),
         "backend_mapping": {
             "mapping_id": mapping.mapping_id,
             "version": mapping.version,
@@ -496,6 +526,7 @@ def compile_directed_rows(
     backend_mapping: Mapping[str, Any] | RdfBackendMapping | None = None,
     artifact_id: str = "typed-directed-rows",
     rdf_encoding: RdfRowEncoding | None = None,
+    rdf_edge_encoding: RdfEdgeEncoding | None = None,
 ) -> QueryArtifact:
     """Compile one explicitly opted-in typed fragment; no network or fallback."""
     profile = profile or default_profile(backend_id)
@@ -509,7 +540,6 @@ def compile_directed_rows(
             "Backend identity/language does not match the requested target.",
         )
     shape = _shape(query, profile)
-    required = _required(shape, profile)
     language = profile.language.lower()
     if rdf_encoding is not None and (
         not isinstance(rdf_encoding, RdfRowEncoding) or language != "sparql"
@@ -519,10 +549,16 @@ def compile_directed_rows(
             "rdf_encoding",
             "Explicit RDF encoding requires an RDF target and a typed encoding.",
         )
+    if rdf_edge_encoding is not None and (
+        not isinstance(rdf_edge_encoding, RdfEdgeEncoding) or language != "sparql"
+    ):
+        raise _fail(profile, "rdf_edge_encoding",
+                    "Explicit RDF edge encoding requires an RDF target and a typed encoding.")
+    required = _required(shape, profile, rdf_edge_encoding)
     text, extra = (
         _cypher(shape, profile)
         if language == "cypher"
-        else _sparql(shape, profile, backend_mapping, rdf_encoding)
+        else _sparql(shape, profile, backend_mapping, rdf_encoding, rdf_edge_encoding)
     )
     source = _identity(query)
     source_hash = hashlib.sha256(
@@ -556,7 +592,9 @@ def compile_directed_rows(
                 "Fixed Rel/Seq descriptor/concatenation semantics; no implicit variable assignments or uniqueness.",
                 "Restrictions on fixed paths must be explicit conditions; recursive nodes and non-ALL selectors are rejected.",
                 "Positions follow traversal, not stored edge orientation; no legacy M5 lowering is performed.",
-                "RDF edge columns denote predicate IRIs; no cross-backend edge-identity equality is claimed.",
+                ("RDF edge columns denote stable edge-resource IRIs; source, target and label must be functional on each resource. Cross-backend equality requires explicit identity alignment."
+                 if rdf_edge_encoding is not None else
+                 "RDF edge columns denote predicate IRIs; no cross-backend edge-identity equality is claimed."),
                 "Node properties use dataset-owned scalar encodings; entity IDs are not guessed as RDF IRIs.",
                 "Mapped scalar properties must be functional and type-consistent, with finite numeric data.",
                 "Cypher numeric type predicates require Neo4j 5.10+; target version needs deployment verification.",

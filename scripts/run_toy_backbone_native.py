@@ -21,7 +21,10 @@ from xgap.experiments.m15_native_services import (
     _fuseki_server_configuration, inspect_java_runtime, start_service,
     stop_service, wait_for_service_health,
 )
-from xgap.experiments.toy_backbone import DEFAULT_FIXTURE, execute_vertical_slice, load_fixture
+from xgap.experiments.toy_backbone import (
+    DEFAULT_FIXTURE, DIRECTED_TOY_QUERY_IDS, execute_directed_toy_case,
+    execute_vertical_slice, load_fixture,
+)
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 
@@ -32,6 +35,8 @@ def main(argv=None):
     parser.add_argument("--output", required=True)
     parser.add_argument("--java", required=True)
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--compiled-directed", action="store_true",
+        help="Run the production-compiled fixed-path cases instead of independent reference targets")
     args = parser.parse_args(argv)
     if not args.execute:
         parser.error("Fresh owned native execution requires --execute")
@@ -51,8 +56,12 @@ def main(argv=None):
     conf = state / "neo4j-conf"
     shutil.copytree(products["neo4j"] / "conf", conf)
     files = [p for p in DEFAULT_FIXTURE.rglob("*") if p.is_file()]
-    source_files = [REPO / "src/xgap/experiments/toy_backbone.py", Path(__file__)]
-    record = {"success": False, "scope": "T0 tiny native development fixture",
+    source_files = [REPO / relative for relative in (
+        "src/xgap/experiments/toy_backbone.py", "src/xgap/compilers/directed.py",
+        "src/xgap/compilers/rdf_encoding.py", "src/xgap/runtime/directed_fragments.py")]
+    source_files.append(Path(__file__))
+    record = {"success": False, "scope": ("T1 compiled directed paths" if args.compiled_directed
+                                           else "T0 tiny native development fixture"),
         "live_llm": False, "paper_result": False, "java": java.to_dict(),
         "nodes": len(data["nodes"]), "edges": len(data["edges"]), "query_ids": [c["id"] for c in cases],
         "fixture_sha256": {str(p.relative_to(DEFAULT_FIXTURE)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
@@ -122,12 +131,20 @@ def main(argv=None):
         save()
         if not loaded_rdf.success:
             raise RuntimeError("Tiny Fuseki load failed; no retry")
-        record["phase"] = "independent-targets"
-        for case in cases:
+        record["phase"] = "compiled-directed" if args.compiled_directed else "independent-targets"
+        selected = [case for case in cases if not args.compiled_directed
+                    or case["id"] in DIRECTED_TOY_QUERY_IDS]
+        for case in selected:
             for backend, client in (("neo4j", neo), ("fuseki", rdf)):
                 item = {"query_id": case["id"], "backend": backend, "status": "started", "success": False}
                 record["targets"].append(item)
                 save()
+                if args.compiled_directed:
+                    item.update(execute_directed_toy_case(case, mapping, client=client), status="completed")
+                    save()
+                    if not item["success"]:
+                        raise RuntimeError(f"Compiled target failed: {case['id']} / {backend}; retained without retry")
+                    continue
                 language = "cypher" if backend == "neo4j" else "sparql"
                 target = DEFAULT_FIXTURE / case["reference_target_queries"][backend]
                 result = client.execute(QueryArtifact(case["id"] + "-reference-" + backend, language, target.read_text(), kind="native"))

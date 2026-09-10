@@ -14,17 +14,66 @@ from xgap.algebra.ops import NodesOp, SelectionOp
 from xgap.algebra.pretty import format_plan
 from xgap.compilers import compile_cypher, compile_sparql
 from xgap.compilers.directed import compile_directed_rows
+from xgap.compilers.rdf_encoding import RdfEdgeEncoding
+from xgap.backends.rdf_terms import RdfTerm
 from xgap.llm.parser import parse_path_pattern_query
 from xgap.pattern.ast import Rel
 from xgap.pattern.lowering import lower_path_pattern
 from xgap.runtime import (
-    ExistingM9FragmentCompiler, FederatedExecutionPlan, FederatedScheduler,
+    DirectedRowFragmentCompiler, ExistingM9FragmentCompiler, FederatedExecutionPlan, FederatedScheduler,
     RuntimeNode, RuntimeNodeKind, SemanticFragment,
 )
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPlugin
 
 
 DEFAULT_FIXTURE = Path(__file__).resolve().parents[3] / "datasets/backbone_toy_v1"
+DIRECTED_TOY_QUERY_IDS = ("T02", "T03", "T04", "T05", "T15", "T16", "T17", "T18")
+
+
+def toy_rdf_edge_encoding(mapping: dict) -> RdfEdgeEncoding:
+    """Explicitly describe the frozen fixture, never infer it from answers."""
+    ns = mapping["backends"]["fuseki"]["namespace"]
+    return RdfEdgeEncoding("backbone-toy-edges-v1", ns + "Edge", ns + "source",
+                           ns + "target", ns + "label", "logical_string")
+
+
+def execute_directed_toy_case(case: dict, mapping: dict, *, client: Any) -> dict:
+    """Production directed compiler → runtime → client, then toy ID comparison.
+
+    The compiler and runtime return actual entity bindings. Only this fixture's
+    comparison adapter converts its declared IRI/property IDs to path strings.
+    """
+    compiler = DirectedRowFragmentCompiler(backend_mappings={"fuseki": mapping},
+        rdf_edge_encodings={"fuseki": toy_rdf_edge_encoding(mapping)})
+    fragment = compiler.compile(SemanticFragment(case["id"], client.backend_id,
+        parse_path_pattern_query(case["gold_path_pattern_query"]), ("traverse",)))
+    registry = BackendPluginRegistry()
+    registry.register(NativeBackendPlugin(client.backend_id, client))
+    plan = FederatedExecutionPlan("directed-toy-" + case["id"],
+        (fragment.to_runtime_node(),), (fragment.fragment_id,), max_remote_calls=1)
+    result = FederatedScheduler(BackendInvokeTool(registry)).execute(plan)
+    actual = None
+    if result.success:
+        count = len(fragment.artifact.parameters["directions"])
+        columns = ["n0"]
+        for i in range(1, count + 1):
+            columns.extend((f"e{i}", f"n{i}"))
+        ns = mapping["backends"]["fuseki"]["namespace"]
+
+        def identifier(value):
+            if client.backend_id == "fuseki":
+                term = RdfTerm.from_binding(value)
+                if term.kind != "uri" or not term.value.startswith(ns):
+                    raise ValueError("Toy paths require resources in the declared fixture namespace")
+                return term.value[len(ns):]
+            return value["id"]
+
+        actual = sorted({"/".join(identifier(row[col]) for col in columns)
+                         for row in result.final_rows})
+    return {"query_id": case["id"], "backend": client.backend_id,
+        "success": result.success and actual == case["expected_paths"],
+        "actual_paths": actual, "expected_paths": case["expected_paths"],
+        "artifact": fragment.artifact.to_dict(), "runtime": result.to_dict()}
 
 
 def load_fixture(root: str | Path = DEFAULT_FIXTURE) -> tuple[dict, list[dict], dict]:

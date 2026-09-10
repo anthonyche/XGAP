@@ -9,6 +9,40 @@ from xgap.backends.rdf_terms import validate_iri
 
 
 @dataclass(frozen=True)
+class RdfEdgeEncoding:
+    """Dataset-owned reified edges: one resource per property-graph edge.
+
+    Source, target and label are functional on each edge resource. Resource
+    IRIs, rather than predicate IRIs, are returned in the edge columns. The
+    dataset must supply stable IRIs; no identity is synthesized by the compiler.
+    """
+
+    encoding_id: str
+    edge_class_iri: str
+    source_predicate_iri: str
+    target_predicate_iri: str
+    label_predicate_iri: str
+    label_encoding: str = "mapped_iri"
+    class_predicate_iri: str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.encoding_id, str) or not self.encoding_id.strip():
+            raise ValueError("RDF edge encoding requires identity.")
+        for value in (self.edge_class_iri, self.source_predicate_iri,
+                      self.target_predicate_iri, self.label_predicate_iri,
+                      self.class_predicate_iri):
+            validate_iri(value)
+        if self.label_encoding not in ("mapped_iri", "logical_string"):
+            raise ValueError("RDF edge labels require mapped_iri or logical_string encoding.")
+
+    @property
+    def identity(self) -> str:
+        return hashlib.sha256(
+            json.dumps(asdict(self), sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+
+
+@dataclass(frozen=True)
 class RdfRowEncoding:
     encoding_id: str
     class_predicate_iri: str

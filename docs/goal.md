@@ -92,9 +92,11 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
   （IN 缺口保留）；独立目标查询在真实 Neo4j/Fuseki 上 36/36 匹配；生产编译器与
   运行时的第一条联邦 slice 返回 Alice→Cara。Full regression 2,963 passed /
   38 skipped，24 个 harness/example 入口通过。完整 backbone 尚未完成。
-- T1 首先修复已在 toy 上复现的 RDF 边身份能力缺口：普通谓词绑定无法保存平行边。
-  增加显式保留边身份的表示/编译支持，保持旧普通 RDF 行为和 toy gold 不变；之后
-  继续 IN logical representation、Union/递归/selector 等缺口。
+- T1 正在进行：显式 RDF 边身份表示/生产编译支持已验证，8 题在真实 Neo4j/Fuseki
+  上 16/16 完整路径匹配，原联邦 slice 继续通过；focused 185 passed / 1 skipped，
+  兼容性 99 passed。旧普通 RDF 行为与 toy gold 未改变。下一步补齐 node-only/Union、
+  递归/selector 等生产执行覆盖；IN 原生行已验证，M5 logical lowerer 缺口仍保留。
+  本步没有重复全仓库回归，不宣称完整 T1/backbone 完成。
 - D205：受控 provider＋真实 Neo4j/Fuseki 已验证受支持查询的答案；不是真实 LLM
   自然语言准确率。
 - D207：GPU 启动健康检查软件已验收；最新真实 GPU 启动仍失败，无新模型答案。
@@ -103,7 +105,7 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
   原大 shard 开发实验在执行前延期；保留代码，合适时用于 toy 测试，再按相应
   milestone 验收，不为“收尾”单独消耗一轮 full regression 或真实大图实验。
 - catalog 8＋4＋1 诊断和 GPU 分配不再排在日常开发首位；已知问题保留，后续按
-  集成需要处理。立即下一步是 T1 的 RDF 边身份支持。
+  集成需要处理。立即下一步是 T1 的剩余核心算子闭环。
 
 ## Goal 工具状态
 

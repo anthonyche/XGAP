@@ -2,6 +2,15 @@
 
 ## Active engineering loop — 2026-09-10
 
+T1 RDF identity progress: **16/16 production-compiled native executions** match
+complete gold paths (8 cases on both engines), with the two-engine slice still
+correct. Explicit reified edge resources now preserve parallel edges; ordinary
+RDF defaults and all toy gold files are unchanged. Focused 185 pass / 1 skip,
+compatibility 99 pass; harness/toy example pass. T1 remains incomplete; next
+are node-only/Union and recursive/selector native coverage. See the
+[T1 RDF report](report/toy_backbone_t1_rdf_identity.md). No new broad regression
+or real-model evaluation is claimed for this partial T1 step.
+
 T0 now has 5 nodes, 8 edges and 18 inspectable gold-chain fixtures. Existing
 reference lowering/evaluation matches 17/18; IN remains a gap. Independent
 targets pass 18/18 in RDFLib and 36/36 on real Neo4j/Fuseki. The production-
@@ -9,15 +18,14 @@ compiled T18 federated slice returns Alice→Cara with two backend calls, withou
 LLM/catalog/large data. Owned services stopped normally. Focused 76 checks and
 all 24 harness/example entrypoints pass; broad acceptance is **2,963 passed /
 38 skipped in 657.90s**, original session 63579 exit 0. T0 is accepted. Actual
-directed SPARQL probes reproduce loss of parallel-edge identity, the next T1
-repair. This is T0 fixture/slice evidence, not full operator completion. See
+directed SPARQL probes reproduce loss of parallel-edge identity, now repaired by T1 explicit encoding support. This is T0 fixture/slice evidence, not full operator completion. See
 [T0 report](report/toy_backbone_t0_v1.md).
 
 The user's latest development direction is authoritative in
 [the active Goal](goal.md): tiny toy graph, 16–18 gold-chain queries, separate
 Interpretation/deterministic planning tests, continuous vertical slice, offline
 frozen catalog, and failure replay. Large benchmarks are final evaluation, not
-the development environment. T1 identity-preserving RDF compilation is next.
+the development environment. T1 remaining native operator coverage is next.
 
 D208's runner has **112 focused passes / 1 skip** and is covered by the later
 T0 full suite, but native acceptance has not run. Its large-shard measurement is deferred before execution; preserve

@@ -4479,3 +4479,19 @@ the actual two-engine compiled slice, 24/24 harness/examples and full regression
 2,963 passed / 38 skipped in 657.90s. Native services stopped normally. This
 accepts the T0 fixtures/slice, not full native semantics, interpretation or the
 overall Goal. T1 continues from the unchanged eighteen query expectations.
+
+## T1 Explicit RDF edge resources preserve path identity
+
+Extend the existing directed compiler and fragment adapter with a dataset-owned
+RdfEdgeEncoding rather than pretending predicate IRIs identify multigraph edges.
+Use one stable resource per edge, explicit source/target/class/label predicates,
+and a declared logical-string or mapped-IRI label representation. Edge-property
+conditions bind that resource; node identity mapping remains separate. No new
+algebra operator, implicit conversion, native retry or benchmark rebuild.
+
+On unchanged toy gold, eight fixed-path cases execute correctly through the
+production compiler, scheduler and each real backend (16/16), including IN and
+parallel edges. The original two-engine slice remains correct. Focused185/skip1
+and compatibility99 pass; harness/toy example pass. This is a partial T1 repair,
+so daily targeted checks and the tiny native slice apply; full operator coverage
+and the later broad T1 acceptance remain open. See the T1 RDF report.
