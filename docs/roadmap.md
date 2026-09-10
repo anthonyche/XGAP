@@ -71,6 +71,13 @@ See [D203](report/grounded_candidate_execution_v1.md). H4 remains open for
 real generated anchored answers on inference-owned facts. Hold catalog v1
 fixed and obtain the pending inline18 job result before altering its protocol.
 
+D204 is actively restoring that real run. The portal is now operable, but
+observed launch attempts failed at GitHub HTTPS authentication before any job
+submission. A verified self-contained offline Git package keeps the exact
+original release/model/catalog/18-question settings and removes that credential
+dependency. Transfer and one actual Slurm submission remain pending; this is
+deployment progress, not model evidence or another production test milestone.
+
 ## Current Mainline: M15 Agentic Federated Core
 
 The M0-M14 milestones below record the original ambiguity-aware planning and

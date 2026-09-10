@@ -8,6 +8,14 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+D204 restored usable OnDemand observation/control and identified the pending
+live-run deployment failure: the user's three HTTPS clones stopped at GitHub
+authentication before Slurm submission. A 3.3 MB offline Git package now
+reproduces the exact frozen 6b32b97 checkout without server GitHub credentials.
+Its real independent clone/tree and helper syntax checks pass. Transfer awaits
+browser file permission or manual upload; no new model run is claimed. See
+[remote deployment state](report/grailqa_inline18_remote_execution_20260910.md).
+
 D203 connects controlled grounded planner responses to actual native answers,
 preserving entity identity, OUT/IN paths, classes, explicit inequalities and
 declared scalar constraints. Five positive/empty native cases agree with both

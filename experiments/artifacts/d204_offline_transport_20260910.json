@@ -1,0 +1,61 @@
+{
+  "schema_version": "d204-offline-transport-v1",
+  "offline_zip": {
+    "path": "/Users/anthonyche/Developer/XGAP-deliverables/xgap-inline18-offline-6b32b97.zip",
+    "bytes": 3261891,
+    "sha256": "5e85c79352c25cb7f056df346fbc0c42d4470eb3058bf0291b36ce16a5340a61"
+  },
+  "source": {
+    "commit": "6b32b973d4fd1a979b714570d3edcd2e684c1b07",
+    "bundle_sha256": "3c9ca1aaa4919a303177743e953be9d006d7b44368da27d070918aea6476d3e0",
+    "bundle_bytes": 3275670,
+    "verified_checkout_tree": "19d8ed717a277f48785993a14a783e733ccad1dc",
+    "self_contained_bundle": true,
+    "network_calls": 0
+  },
+  "files": {
+    "files": {
+      "source-verification.json": {
+        "sha256": "b665b216e339c807bb0aa43d00024ec63804a02ba8e5d02ed75e9fe4724ac7c8",
+        "bytes": 300
+      },
+      "source.bundle": {
+        "sha256": "3c9ca1aaa4919a303177743e953be9d006d7b44368da27d070918aea6476d3e0",
+        "bytes": 3275670
+      },
+      "submit.sh": {
+        "sha256": "b3c1b0e9f56a7f3cf462efdac1e522f506f924faac1be0aedd719516740a64fe",
+        "bytes": 6830
+      },
+      "README.md": {
+        "sha256": "a4ace49071af6ce0990f3f034c5945ba984f3c07119ab5d244e979c8f32fc1e6",
+        "bytes": 1330
+      },
+      "audit.sh": {
+        "sha256": "69fb06d8a02eb47736d079fcaa0f19311912f842fbbc005a54590bee8c9a22b9",
+        "bytes": 2772
+      }
+    },
+    "original_package_sha256": "fe56a9323d93f2f8a386b637f2511359a825d5b2502d30b9884b1f5df46525cc",
+    "changes": [
+      "source transport: HTTPS to verified local Git bundle"
+    ],
+    "experiment_changed": false,
+    "slurm_submissions_so_far": 0
+  },
+  "transport_validation": {
+    "real_independent_clone": true,
+    "exact_commit_tree_and_clean_checkout": true,
+    "bash_syntax_both_helpers": true,
+    "harness": true,
+    "production_code_changed": false
+  },
+  "remote": {
+    "original_zip_uploaded_by_user": true,
+    "observed_https_auth_failures": 3,
+    "agent_password_handling": false,
+    "new_slurm_job_id": null,
+    "offline_zip_transfer": "pending",
+    "extension_file_url_permission": "user_confirmation_pending"
+  }
+}

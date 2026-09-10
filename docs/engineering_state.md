@@ -29,6 +29,47 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+D204 is in progress: actual frozen inline18 deployment through the restored
+OnDemand portal. The initial read-only Slurm checks showed no running job and
+only the known 3796877/3796878/3796968/3796988 terminal jobs. The user then
+uploaded the original ZIP and made three observed launch attempts; each stopped
+at GitHub HTTPS authentication, before input pinning or sbatch. No new job ID
+was obtained. Do not repeat HTTPS authentication, type credentials, or infer a
+running job from the extracted package. The final observed shared terminal
+returned to a prompt; user activity means read fresh state before any input.
+
+Remote UI is now readable/operable: Chrome browser 1, original user terminal
+tab 366873264 (hpc5), file tab 366873233 (/home/hxc859). Re-inventory if stale.
+For the terminal, the iframe's `log` role is actionable; its snapshot textbox
+does not resolve. Inspect partially typed commands after any UI timeout, and
+never press Enter before confirming the complete text. The extension denied
+file-chooser setFiles because file-URL permission is absent. Do not bypass or
+change that permission; the user was asked whether it is now enabled.
+
+The exact old ZIP was published at transport commit
+47cc44f8dc50dd2c8525a0aa76c96f8b03622421. An anonymous server download was NOT
+attempted after authentication failures became visible. Instead, an offline
+Git bundle package is fully prepared and locally verified:
+`/Users/anthonyche/Developer/XGAP-deliverables/xgap-inline18-offline-6b32b97.zip`
+(3,261,891 bytes, SHA-256
+`5e85c79352c25cb7f056df346fbc0c42d4470eb3058bf0291b36ce16a5340a61`).
+It contains a self-contained source bundle at exact 6b32b973…1b07, checked by
+an independent real clone, detached checkout and clean-tree verification.
+The helper only verifies/clones local bundle bytes instead of HTTPS; all
+frozen experiment/model/catalog settings and the one-submission guard remain.
+The original package and a conflicting target checkout are never overwritten.
+
+Next: transfer this existing offline ZIP once file upload is available (or the
+user manually uploads it), inspect that no prior submission exists, then run
+its helper once and observe the resulting job. All failures and any uncertain
+submission must be retained; never resubmit. See
+`docs/report/grailqa_inline18_remote_execution_20260910.md`. No new production
+query/provider code was changed; existing D203 regression is not repeated.
+The two pending historical research reports were fully read; inventory now
+66 full / 7 selected / 8 pending Markdown documents, plus the three prior PDFs.
+
+## D203 accepted predecessor
+
 D203 controlled software/native acceptance is complete. Broad regression ended
 in original session 39813: **2,827 passed / 38 skipped in 643.80s**, exit 0
 (`/tmp/xgap-d203-full.log`). Do not repeat passed tests or native queries without

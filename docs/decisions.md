@@ -4297,3 +4297,17 @@ not a new model accuracy or speed result. No new algebra, catalog rebuild,
 frozen protocol change or automatic external retry occurred. Focused validation
 and harness/examples pass; broad regression passes **2,827 tests with 38 skipped
 in 643.80s**. See the [D203 report](report/grounded_candidate_execution_v1.md).
+
+## D204 Preserve the frozen experiment across an offline source transfer
+
+The restored OnDemand session exposed GitHub HTTPS authentication failure
+before the pending inline18 experiment could be submitted. Keep the original
+6b32b97 runner, model, catalog and experiment unchanged. A self-contained Git
+bundle, independently cloned and checked against the exact commit/tree,
+provides the same source without server GitHub credentials. The new package
+checks its bundle hash and replaces only the clone source; it retains original
+prelaunch checks, exclusive output creation and the single-submission guard.
+Do not alter browser permissions, overwrite conflicting checkouts, repeat
+authentication attempts, or claim a job before an actual submission response.
+Transfer/submission remain pending. See
+[D204 deployment evidence](report/grailqa_inline18_remote_execution_20260910.md).
