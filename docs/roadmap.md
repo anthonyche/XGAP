@@ -2,6 +2,14 @@
 
 ## Current engineering milestones — 2026-09-10
 
+D208 puts the CPU route into practice: measure both existing complete strategies
+on three declared fixed-meaning first-shard queries with a common boundary,
+balanced order and independent source-answer verification. No data reload or
+catalog/model change. Complete focused/native/full/examples acceptance and
+report whatever timing direction is observed; this development diagnostic does
+not replace the full EQ1–EQ5 matrix. See
+[the protocol](report/freebase_cpu_paired_comparison_v1.md).
+
 The [system/experiment assessment](report/xgap_system_experiment_assessment_20260910.md)
 sets the next priorities: CPU supported-fragment correctness and physical
 comparisons independent of the LLM, eight catalog/four retrieval/one prompt

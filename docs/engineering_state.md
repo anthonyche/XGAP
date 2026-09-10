@@ -28,6 +28,28 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+D208 is in progress: a fixed-semantics CPU comparison over the three existing
+first-shard type/name queries. Reuse both native stores, compile the existing
+Neo4j→Fuseki and full-Fuseki plans, and use the same scheduler/normalization
+timing boundary. Freeze 2 warmup + 8 measurement rounds with paired alternating
+AB/BA order and rotated query order (60 executions). Retain failures and stop
+without retry. Verify actual answers against existing independent Arrow results
+after timing. Allowed: experiment runner, tests and records; forbidden: changes
+to semantics, catalog, data, LLM inputs or historical results. This is a local
+development diagnostic, not GrailQA accuracy or a formal new benchmark. See
+`docs/report/freebase_cpu_paired_comparison_v1.md` for the frozen scope.
+
+The first focused run found a measurement bug: an exception before a backend
+report escaped the runtime and left the attempt count unknown. A small observed
+client now increments before dispatch, retaining actual attempt counts even on
+that exception. Preserve `/tmp/xgap-d208-focused.log` (44 pass / 1 fail / 1 skip)
+and the separate final focused log. No real backend failed in that test.
+CUA inventory observation timed out and reset its kernel in this cycle; no
+remote mutation was made, and no fresh scheduler state is inferred. CPU work
+does not depend on that observation route.
+
+## D207 accepted predecessor
+
 D207 software acceptance is complete after D206's actual hardware failure.
 Scope: per-device minimal CUDA allocation/kernel/synchronization before
 model load, and immediate readiness failure when the owned server process has

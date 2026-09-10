@@ -2,6 +2,13 @@
 
 ## Active engineering loop — 2026-09-10
 
+D208 is implementing a fixed-semantics CPU paired comparison on the retained
+first-shard stores, independent of LLM availability. Three exposed development
+queries and both complete strategies are predeclared; warmup and measurement
+are separate, AB/BA order is balanced, and answer/call/time failures are retained.
+No new measured result or performance advantage is claimed yet. See
+[CPU protocol](report/freebase_cpu_paired_comparison_v1.md).
+
 Use [engineering_state.md](engineering_state.md) for the current checkout,
 active job, verification results and next actions. The remaining sections
 preserve historical milestone evidence and are not all current blockers.

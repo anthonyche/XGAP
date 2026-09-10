@@ -4416,3 +4416,15 @@ distinction, fixed-route comparisons, cold-family failures and all denominators.
 This orders engineering work; it does not rewrite frozen scientific protocols
 or claim a new result. See the
 [assessment](report/xgap_system_experiment_assessment_20260910.md).
+
+## D208 Separate fixed-semantics CPU comparisons from model availability
+
+Use the retained first-shard stores and the existing three type/name queries
+for a descriptive paired comparison. Both strategies run through the same
+scheduler and typed answer normalization. Predeclare two warmups and eight
+measurement rounds, alternating AB/BA per query and rotating query order.
+Compilation, recording and independent verification stay outside both timings.
+Stop after any failure or mismatch, retain unrun counts, and never call JSON
+row sizes network traffic. This is not an unseen GrailQA or paper population;
+the exposed queries cannot establish a general speedup. No frozen protocol,
+catalog, data or semantic behavior changes.
