@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT ?person ?age WHERE { VALUES ?person {t:a} ?person a t:Person ; t:age ?age . FILTER(?age >= 30) }

@@ -22,7 +22,8 @@ from xgap.agent.contracts import (
 )
 from xgap.agent.environment import AgentEnvironment
 from xgap.agent.memory import MemoryStore
-from xgap.semantic import ConstraintPolicy, SemanticGraphProgram, SemanticHole
+from xgap.semantic import SemanticGraphProgram, SemanticHole
+from xgap.semantic.program import hard_constraints_sha256
 from xgap.tools import ToolRegistry, ToolStatus
 from xgap.tools.resolution import (
     SEMANTIC_CATALOG_LOOKUP_TOOL,
@@ -68,27 +69,6 @@ class _HoleState:
     candidate_ids: tuple[str, ...]
     authoritative: bool
     sources: tuple[str, ...]
-
-
-def hard_constraints_sha256(program: SemanticGraphProgram) -> str:
-    """Hash only immutable semantic constraints and their operator owners."""
-
-    payload = [
-        {
-            "operator_id": operator.operator_id,
-            "constraint": constraint.to_dict(),
-        }
-        for operator in program.operators
-        for constraint in operator.constraints
-        if constraint.policy is ConstraintPolicy.HARD
-    ]
-    encoded = json.dumps(
-        payload,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=True,
-    ).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
 
 
 @dataclass(frozen=True)

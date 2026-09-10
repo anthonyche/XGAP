@@ -29,6 +29,8 @@ from xgap.experiments.toy_semantic import (
     FIXTURE as SEMANTIC_FIXTURE, execute_semantic_case, load_semantic_cases, wrap_path_case,
 )
 from xgap.experiments.toy_planning import execute_planned_semantic_case
+from xgap.experiments.toy_binding import (FIXTURE as BINDING_FIXTURE, load_binding_cases,
+    execute_binding_case, reference_artifact, reference_rows)
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 
@@ -48,6 +50,8 @@ def main(argv=None):
         help="Compile the typed semantic programs and composed two-backend DAGs")
     selection.add_argument("--planned-semantic", action="store_true",
         help="Generate placements, collect native observations, select and execute semantic DAGs")
+    selection.add_argument("--agentic-semantic", action="store_true",
+        help="Resolve frozen toy semantic slots, bind constraints, plan and execute with GoalLoop")
     args = parser.parse_args(argv)
     if not args.execute:
         parser.error("Fresh owned native execution requires --execute")
@@ -74,17 +78,24 @@ def main(argv=None):
         "src/xgap/runtime/path_selection.py", "src/xgap/runtime/contracts.py",
         "src/xgap/runtime/scheduler.py", "src/xgap/algebra/evaluator.py")]
     source_files.append(Path(__file__))
-    if args.semantic_dag or args.planned_semantic:
+    if args.semantic_dag or args.planned_semantic or args.agentic_semantic:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/experiments/toy_semantic.py", "src/xgap/compilers/node_match.py",
             "src/xgap/runtime/semantic_compiler.py", "src/xgap/runtime/row_operations.py",
             "src/xgap/semantic/program.py"))
-    if args.planned_semantic:
+    if args.planned_semantic or args.agentic_semantic:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
             "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
             "src/xgap/tools/backends.py", "src/xgap/experiments/toy_planning.py"))
-    record = {"success": False, "scope": ("T1 semantic candidate planning" if args.planned_semantic else
+    if args.agentic_semantic:
+        source_files.extend(REPO / relative for relative in (
+            "src/xgap/semantic/binding.py", "src/xgap/agent/semantic_execution.py",
+            "src/xgap/agent/resolution.py", "src/xgap/agent/loop.py",
+            "src/xgap/tools/artifact_resolution.py", "src/xgap/tools/resolution.py",
+            "src/xgap/experiments/toy_binding.py"))
+    record = {"success": False, "scope": ("T1 semantic binding and bounded agent execution" if args.agentic_semantic else
+                                           "T1 semantic candidate planning" if args.planned_semantic else
                                            "T1 semantic DAG execution" if args.semantic_dag else
                                            "T1 bounded path execution" if args.compiled_bounded else
                                            "T1 compiled directed paths" if args.compiled_directed
@@ -99,6 +110,11 @@ def main(argv=None):
             semantic_fixture_sha256={str(p.relative_to(SEMANTIC_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in SEMANTIC_FIXTURE.rglob("*") if p.is_file()})
+    if args.agentic_semantic:
+        record.update(binding_cases=[], binding_reference_targets=[],
+            binding_fixture_sha256={str(p.relative_to(BINDING_FIXTURE)):
+                hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in BINDING_FIXTURE.rglob("*") if p.is_file()})
 
     def save():
         (root / "result.json").write_text(json.dumps(record, indent=2) + "\n")
@@ -168,7 +184,7 @@ def main(argv=None):
                            "compiled-directed" if args.compiled_directed else "independent-targets")
         selected = [case for case in cases if not args.compiled_directed
                     or case["id"] in DIRECTED_TOY_QUERY_IDS]
-        if args.planned_semantic:
+        if args.planned_semantic or args.agentic_semantic:
             selected = []  # Changed planning boundary uses the composition cases below.
         for case in selected:
             for backend, client in (("neo4j", neo), ("fuseki", rdf)):
@@ -234,6 +250,30 @@ def main(argv=None):
                 save()
                 if not item["success"]:
                     raise RuntimeError(f"Semantic planning failed: {case['id']}; no retry")
+        if args.agentic_semantic:
+            for case in load_binding_cases():
+                record["phase"] = "agentic-semantic-" + case["id"]
+                item = {"query_id": case["id"], "status": "started", "success": False}
+                record["binding_cases"].append(item)
+                save()
+                item.update(execute_binding_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf}),
+                            status="completed")
+                save()
+                if not item["success"]:
+                    raise RuntimeError(f"Semantic binding failed: {case['id']}; no retry")
+                for backend, client in (("neo4j", neo), ("fuseki", rdf)):
+                    result = client.execute(reference_artifact(case, backend))
+                    reference = {"query_id": case["id"], "backend": backend,
+                        "execution": result.to_dict(), "success": False}
+                    record["binding_reference_targets"].append(reference)
+                    save()
+                    actual = reference_rows(result, backend)
+                    canonical = lambda rows: sorted(json.dumps(row, sort_keys=True) for row in rows)
+                    reference.update(actual_rows=actual,
+                        success=result.success and canonical(actual) == canonical(case["expected_rows"]))
+                    save()
+                    if not reference["success"]:
+                        raise RuntimeError(f"Independent binding reference failed: {case['id']} / {backend}; no retry")
         record["phase"] = "compiled-federated-slice"
         save()
         record["vertical_slice"] = execute_vertical_slice(cases[-1], mapping, neo4j=neo, fuseki=rdf)
@@ -257,6 +297,8 @@ def main(argv=None):
         "semantic_compositions_passed": sum(x["success"] for x in record.get("semantic_cases", [])),
         "semantic_references_passed": sum(x["success"] for x in record.get("semantic_reference_targets", [])),
         "planned_cases_passed": sum(x["success"] for x in record.get("planned_cases", [])),
+        "binding_cases_passed": sum(x["success"] for x in record.get("binding_cases", [])),
+        "binding_references_passed": sum(x["success"] for x in record.get("binding_reference_targets", [])),
         "compiled_slice_passed": record.get("vertical_slice", {}).get("success"), "output": str(root)}))
     return 0 if record["success"] else 1
 

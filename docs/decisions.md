@@ -4556,3 +4556,31 @@ exposed uncaught backend plugin exceptions: the scheduler now records the failed
 attempt and skips dependents, without retry. General semantic admission/control,
 IN logical/reference coverage and later T2/T3 are still unfinished. See the
 candidate-planning report for evidence and limitations.
+
+## T1 Apply typed semantic bindings before physical planning
+
+Reuse the selective resolution policy and bounded GoalLoop. Candidate IDs must
+map through declared typed values into actual executable slots; resolving a
+mention or recording metadata alone does not constrain a query. Require one
+authoritative entity identity and a positive node descriptor/equality anchor.
+Keep source assignments separate from semantic parameters. Do not let physical
+costs select between ambiguous meanings. This limited binding profile rejects
+entity slots under NOT/OR until their admission semantics are deliberately
+extended; it does not redefine the lower path algebra.
+
+Extend named SemanticConstraint with an optional typed predicate while retaining
+legacy serialization/hashes when absent. On Match/Traverse/Filter, conjoin all
+named predicates with the original conditions. Preserve IDs, policy and original
+constraint hash/provenance. No hard or relaxable constraint is automatically
+removed; opaque text and unsupported owners still fail explicitly.
+
+Five new independently authored tiny cases vary entity, threshold and source,
+include node-only Match and controlled identity clarification. Original graph,
+18 path chains and8 compositions remain frozen. Native5/5 programs,18/18
+candidate answers,10/10 independent targets and the original two-engine slice
+pass. New module29/compatibility57 pass; broad acceptance passed in original
+session11079, exit0:3,098 pass/38 skip in665.34s, all24 harness/example entrypoints
+pass. This binding/control connection is accepted. The first
+reference-adapter failure is retained and locally replayed before a corrected
+native run. This closes a concrete semantic-to-runtime connection, not arbitrary
+NL interpretation, general source discovery, T2/T3 or the complete system Goal.

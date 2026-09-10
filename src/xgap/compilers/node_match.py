@@ -2,7 +2,7 @@
 
 import re
 
-from xgap.algebra.ops import NodesOp
+from xgap.algebra.ops import NodesOp, SelectionOp
 from xgap.backends.mapping import RdfBackendMapping
 from xgap.backends.rdf_terms import RDF_TERMS_V1, validate_iri
 from xgap.compilers import compile_cypher, compile_sparql
@@ -16,7 +16,7 @@ from xgap.pattern.lowering import lower_source_descriptor
 
 def compile_node_match(node: NodePattern, properties: dict[str, str], *, backend_id: str,
                        backend_mapping=None, rdf_node_classes=(), profile=None,
-                       artifact_id="semantic-match") -> QueryArtifact:
+                       artifact_id="semantic-match", condition=None) -> QueryArtifact:
     if any(not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name) or name == "entity"
            for name in properties):
         raise ValueError("Match property aliases must be identifiers distinct from entity")
@@ -26,6 +26,8 @@ def compile_node_match(node: NodePattern, properties: dict[str, str], *, backend
     if profile.backend_id != backend_id:
         raise ValueError("Match backend profile does not match placement")
     plan = lower_source_descriptor(node, NodesOp())
+    if condition is not None:
+        plan = SelectionOp(condition, plan)
     language = profile.language.lower()
     columns = ["entity", *properties]
     if language == "cypher":

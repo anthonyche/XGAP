@@ -11,9 +11,10 @@ import json
 from typing import Any, Mapping
 
 from xgap.compilers.node_match import compile_node_match
+from xgap.algebra.conditions import And
 from xgap.backends.capabilities import BackendCapabilityProfile
 from xgap.compilers.rdf_encoding import RdfEdgeEncoding, RdfRowEncoding
-from xgap.llm.parser import parse_path_pattern_query
+from xgap.llm.parser import parse_path_pattern_query, _parse_condition
 from xgap.pattern.ast import NodePattern
 from xgap.runtime.bounded_paths import compile_bounded_path_plan
 from xgap.runtime.contracts import FederatedExecutionPlan, RuntimeNode, RuntimeNodeKind as R
@@ -102,8 +103,11 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
         if identifier in outputs:
             return
         op = operators[identifier]
-        if op.constraints:
-            raise SemanticProgramError("Opaque constraints must be compiled into typed predicates first")
+        if any(c.predicate is None for c in op.constraints):
+            raise SemanticProgramError("Opaque constraints require explicit typed predicates")
+        predicates = [dict(c.predicate) for c in op.constraints]
+        if predicates and op.kind not in (S.MATCH, S.TRAVERSE, S.FILTER):
+            raise SemanticProgramError("Place executable constraints on Match, Traverse or Filter")
         if op.required_capabilities:
             raise SemanticProgramError("Additional capability requirements need explicit admission before compilation")
         p = dict(op.parameters)
@@ -130,7 +134,8 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
             artifact = compile_node_match(NodePattern(**raw_node), properties, backend_id=backend_id,
                 backend_mapping=backend.backend_mapping, rdf_node_classes=backend.rdf_node_classes,
                 profile=backend.profile,
-                artifact_id=f"{identifier}-match")
+                artifact_id=f"{identifier}-match",
+                condition=And(*(_parse_condition(c) for c in predicates)) if predicates else None)
             remote = add(op, "native", R.REMOTE_QUERY, parameters={"backend_id": backend_id, "artifact": artifact.to_dict()})
             output = add(op, "bindings", R.NORMALIZE_NODE_BINDINGS, (remote,), {
                 "language": artifact.language, "identity_property": backend.identity_property,
@@ -139,6 +144,9 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
             schema = ResultSchema(V.BINDING_SET, frozenset((entity, *properties)))
         elif kind is S.TRAVERSE:
             query = parse_path_pattern_query(p["path_pattern"])
+            if predicates:
+                conditions = ([query.condition] if query.condition is not None else []) + [_parse_condition(c) for c in predicates]
+                query = replace(query, condition=And(*conditions))
             plan = compile_bounded_path_plan(query, **backend.path_options())
             ids = {n.node_id: f"{identifier}/{n.node_id}" for n in plan.nodes}
             nodes.extend(replace(n, node_id=ids[n.node_id], inputs=tuple(ids[i] for i in n.inputs),
@@ -165,6 +173,10 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
         elif kind is S.FILTER:
             if sources[0].kind not in (V.BINDING_SET, V.GROUPED_BINDINGS):
                 raise SemanticProgramError("Project path fields before row Filter")
+            conditions = ([p["condition"]] if "condition" in p else []) + predicates
+            if not conditions:
+                raise SemanticProgramError("Filter requires a condition or a typed constraint")
+            p["condition"] = conditions[0] if len(conditions) == 1 else {"op": "and", "args": conditions}
             _fields(condition_fields(p["condition"]), sources[0].fields)
             output, schema = add(op, "filter", R.COORDINATOR_FILTER, inputs, p), sources[0]
         elif kind is S.UNION:

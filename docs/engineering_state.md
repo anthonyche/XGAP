@@ -28,6 +28,41 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+T1 semantic binding/control native gate PASSED: **5/5** controlled programs,
+**18/18** placement candidate answers, **10/10** independent Cypher/SPARQL
+references and the original T18 two-engine slice. Corrected native session90516
+exit0; owned services stopped normally. Raw root:
+`/Users/anthonyche/xgap-data/t1-binding-native-20260910-corrected`.
+The first native session37831 exit1 after B01's four correct candidates: the
+independent-reference adapter omitted typed RDF result encoding. Preserve that
+failure root without retry. Corrected code first passed local RDF replay.
+
+The new typed binder applies ENTITY/PREDICATE/TYPE/SOURCE/CONSTRAINT slots to
+actual program meaning; entity ambiguity and unsupported/unused constraints
+prevent backend dispatch. Existing GoalLoop resolution, candidate planning,
+cost selection and execution now connect. No LLM or catalog build is required.
+Named typed predicates are conjoined with existing Match/Traverse/Filter
+conditions; opaque constraints and unsupported owners remain explicit gaps.
+Physical costs cannot choose ambiguous meanings. Original gold is unchanged.
+
+New module29 pass/1.06s (session84604), compatibility57 pass/24.02s (48121),
+earlier toy fast gate154 pass/11.18s (81878). Broad acceptance COMPLETED in original
+session11079, exit0: **3,098 pass / 38 skip in665.34s**, all24 harness/example
+entrypoints pass. Log `/tmp/xgap-t1-binding-acceptance.log`. Production source and
+frozen fixture hashes match native measurement. All native/test sessions are
+terminal; do not poll or rerun accepted checks without a new concern. This
+binding/control connection is accepted; the whole system Goal remains active.
+27 observation/serving calls,25 validation-only alternative calls,10 independent
+reference calls and2 old-slice calls are separate. No live LLM/paper result.
+See [the binding report](report/toy_backbone_t1_semantic_binding.md).
+
+Next close M5 IN logical/reference and remaining path/typed semantics, then T2
+Interpretation plus catalog freeze/runtime-only lookup and minimal failure
+replay. This connection does not imply full system acceptance or replace the
+large-data EQ1–EQ5 obligations. Do not wait for GPU or build GrailQA to develop.
+
+## Accepted candidate-planning predecessor
+
 T1 candidate planning native gate PASSED: original session55823 exit0, **8/8**
 programs selected and executed correctly; **28/28** complete placement candidates
 match frozen gold. Original two-engine slice passes. Raw root:

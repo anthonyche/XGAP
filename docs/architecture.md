@@ -68,6 +68,16 @@ The direct compiler still takes explicit placement. This does not infer source
 completeness, discover arbitrary sources or split Traverse internals; see
 [the candidate planning gate](report/toy_backbone_t1_candidate_planning.md).
 
+`run_agentic_semantic_query` connects the existing resolver/GoalLoop to this
+planner through `bind_semantic_query`. Typed registered values replace explicit
+slots in actual query meaning and logical-source assignments. Entities require
+one authoritative identity and an enforcing descriptor/predicate. Named
+structured constraints are conjoined with existing Match/Traverse/Filter
+conditions; unsupported or unused requirements stop before database calls.
+Physical costs only compare placements of one bound meaning. The entry accepts
+a prepared semantic template; NL model quality and complete catalog lifecycle
+acceptance remain separate. See [the binding gate](report/toy_backbone_t1_semantic_binding.md).
+
 M15-E3's deterministic intake compiler is likewise a frontend compilation
 step, not an operator. It may instantiate only the semantic DAG, holes, and
 constraints declared by its versioned template. Its artifact catalog,

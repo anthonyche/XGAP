@@ -2,6 +2,17 @@
 
 ## Current engineering milestones — 2026-09-10
 
+Latest T1 semantic binding/control native gate passes:5/5 controlled programs,
+18/18 placement candidate answers,10/10 independent native references and the
+old two-engine slice. Typed identity/schema/source/scalar bindings and named
+executable constraints now connect the existing resolver/GoalLoop to the costed
+semantic planner and real execution. New module29 pass; compatibility57 pass.
+Broad acceptance completed in original session11079, exit0:3,098 pass/38 skip
+in665.34s, all24 harness/example entrypoints pass. This connection is accepted;
+the whole Goal remains unfinished. See [the binding report](report/toy_backbone_t1_semantic_binding.md).
+Next are remaining IN logical/reference and path/typed semantics, then T2/T3.
+All lower entries retain preceding evidence and superseded next-step wording.
+
 T1 candidate-generation/selection/execution now has a native gate:8/8 programs,
 28/28 placement candidates and the retained two-engine slice match gold.
 Focused106 pass; broad acceptance passed in original session6473, exit0:

@@ -98,11 +98,16 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
   已验收，完整 T1 仍在进行。
   新入口不是任意 source discovery 或 Traverse 内部自动跨库切分；没有 snapshot
   时会 profile 所有唯一源片段，其代价已计入，不宣称规模优势。
-- **立即下一步**：在同一 toy graph 上修复 M5 IN logical/reference 缺口，连接
-  unresolved semantic admission/control 与新规划入口；按设计补剩余 path/typed
-  semantics。随后 T2 Interpretation、offline catalog freeze/runtime-only lookup、
+- **T1 语义绑定/控制连接已通过真实 gate。** 唯一候选通过类型化槽位进入实际
+  身份/条件/schema/source，命名结构化约束与原条件取 AND；既有 GoalLoop 接到
+  规划与执行。新增 5/5 查询、18/18 候选答案、10/10 独立原生对照和旧 slice
+  正确；新模块29 pass、兼容57 pass。Broad acceptance 原 session11079 已
+  exit0：3,098 pass/38 skip、24 个 harness/example 入口通过，此连接步骤已
+  验收。真实模型理解仍未验收；原 graph/gold 均不变。
+- **立即下一步**：在同一 toy graph 上修复 M5 IN logical/reference 缺口，按
+  设计补剩余 path/typed semantics。随后 T2 Interpretation、offline catalog freeze/runtime-only lookup、
   failure replay，再进入 T3。详细 evidence 见
-  [当前工程状态](engineering_state.md) 和 [规划闭环报告](report/toy_backbone_t1_candidate_planning.md)。
+  [当前工程状态](engineering_state.md) 和 [绑定闭环报告](report/toy_backbone_t1_semantic_binding.md)。
 - D205 的 provider＋真实后端是受控接口结果，不是真实 LLM 准确率。D207 GPU
   健康检查软件已验收，但最新真实部署仍未产生模型答案；GPU 不阻塞 toy 工程。
 - D208 大 shard CPU 测量已在启动前延期，保留 runner，native campaign 未执行。

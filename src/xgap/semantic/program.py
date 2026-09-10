@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+import hashlib
+import json
 from typing import Any, Mapping
 
 
@@ -52,6 +54,14 @@ class ConstraintPolicy(str, Enum):
     RELAXABLE = "relaxable"
 
 
+def hard_constraints_sha256(program: "SemanticGraphProgram") -> str:
+    """Stable hard-requirement identity shared by resolution and binding."""
+    payload = [{"operator_id": op.operator_id, "constraint": c.to_dict()}
+               for op in program.operators for c in op.constraints if c.policy is ConstraintPolicy.HARD]
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                                     ensure_ascii=True).encode("utf-8")).hexdigest()
+
+
 _ARITY: dict[SemanticOperatorKind, tuple[int, int]] = {
     SemanticOperatorKind.MATCH: (0, 0),
     SemanticOperatorKind.TRAVERSE: (0, 1),
@@ -72,19 +82,27 @@ class SemanticConstraint:
     constraint_id: str
     expression: str
     policy: ConstraintPolicy = ConstraintPolicy.HARD
+    predicate: Mapping[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if not self.constraint_id.strip():
             raise SemanticProgramError("constraint_id must be nonempty")
         if not self.expression.strip():
             raise SemanticProgramError("constraint expression must be nonempty")
+        if self.predicate is not None:
+            if not isinstance(self.predicate, Mapping) or not self.predicate:
+                raise SemanticProgramError("constraint predicate must be a nonempty mapping")
+            json.dumps(self.predicate, allow_nan=False)
 
     def to_dict(self) -> JsonMap:
-        return {
+        result = {
             "constraint_id": self.constraint_id,
             "expression": self.expression,
             "policy": self.policy.value,
         }
+        if self.predicate is not None:
+            result["predicate"] = dict(self.predicate)
+        return result
 
 
 @dataclass(frozen=True)
@@ -190,7 +208,7 @@ class SemanticGraphProgram:
                            "parameters", "constraints", "required_capabilities"}:
                 raise SemanticProgramError("Unknown semantic operator fields")
             constraints = tuple(SemanticConstraint(c["constraint_id"], c["expression"],
-                ConstraintPolicy(c.get("policy", "hard"))) for c in raw.get("constraints", ()))
+                ConstraintPolicy(c.get("policy", "hard")), c.get("predicate")) for c in raw.get("constraints", ()))
             operators.append(SemanticOperator(raw["operator_id"], SemanticOperatorKind(raw["kind"]),
                 tuple(raw.get("input_ids", ())), tuple(SemanticValueKind(k) for k in raw.get("input_kinds", ())),
                 SemanticValueKind(raw["output_kind"]), dict(raw.get("parameters", {})), constraints,

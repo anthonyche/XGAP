@@ -265,8 +265,21 @@ observation queries, collects them through registered tools if a compatible
 snapshot was not supplied, uses the existing cost selector and dispatches the
 winner. Planning and serving calls are accounted separately; failures do not
 trigger a retry or fallback. This supplies bounded declared-source placement,
-while general source discovery, control for unresolved meanings and calibration
-remain open. See [the planning gate](report/toy_backbone_t1_candidate_planning.md).
+while general source discovery and calibration remain open. See
+[the planning gate](report/toy_backbone_t1_candidate_planning.md).
+
+The binding/control connection uses the existing selective resolver and GoalLoop
+to apply registered typed candidate values to explicit semantic slots before
+planning. Entity slots enforce positive node identity; schema and scalar slots
+change compiled meaning; source slots bind logical source declarations. Unused
+required slots, entity ambiguity, unknown values and unsupported constraints
+stop before native work. A physical cost advantage does not resolve competing
+semantic meanings. Named structured constraints on Match/Traverse/Filter compile
+as conjunctions with existing conditions, retaining their policy and original
+constraint provenance. Opaque requirements remain unsupported. This is an
+executable controlled-Interpretation interface, not a model-quality result or
+automatic inference of arbitrary constraints from text. See
+[the binding gate](report/toy_backbone_t1_semantic_binding.md).
 
 Adaptive execution may first run an ancestor-closed common prefix. Before any
 probe call, every prefix node must be structurally identical in every candidate
