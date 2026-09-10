@@ -57,6 +57,20 @@ Focused 241/2, harness/examples and full **2,782 passed / 38 skipped** all pass.
 inference candidates to these executable mappings and obtain real end-to-end
 model answers, retaining explicit partial-source and semantic-capability limits.
 
+D203 implements that candidate-to-execution connection: exact prompt-grounded
+inputs become finite resource/literal plans without dropping hard constraints.
+Correlated path rows preserve positions across backends; reached-data checks
+reject invalid scalar encodings. Five native positive/empty fixtures match
+the full-Fuseki baseline and direct source evaluation. A sixth intentionally
+uses the wrong scalar type and is refused. Historical replay keeps all 18
+questions/49 candidates; four typed/grounded survivors lack actual entity
+anchors, so no historical candidate is dispatched as a named-entity answer.
+Focused regression and harness/examples pass; broad regression is **2,827 passed
+/ 38 skipped in 643.80s**. D203 controlled software/native acceptance is complete.
+See [D203](report/grounded_candidate_execution_v1.md). H4 remains open for
+real generated anchored answers on inference-owned facts. Hold catalog v1
+fixed and obtain the pending inline18 job result before altering its protocol.
+
 ## Current Mainline: M15 Agentic Federated Core
 
 The M0-M14 milestones below record the original ambiguity-aware planning and

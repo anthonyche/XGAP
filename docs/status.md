@@ -8,6 +8,19 @@ preserve historical milestone evidence and are not all current blockers.
 The repository in `/Users/anthonyche/Developer/XGAP` is authoritative; the
 ChatGPT project mirror is an older checkout.
 
+D203 connects controlled grounded planner responses to actual native answers,
+preserving entity identity, OUT/IN paths, classes, explicit inequalities and
+declared scalar constraints. Five positive/empty native cases agree with both
+full-Fuseki execution and independent Arrow source evaluation; a numeric query
+against a string-encoded field fails explicitly. The retained stores were
+reused, then stopped normally. The 18-question historical source retains all
+49 candidates: the four typed/grounded survivors have no actual entity equality
+and are not dispatched under an entity-anchored goal. This is controlled
+execution acceptance, not fresh LLM accuracy. Focused regression: 268/1;
+harness plus 21 examples pass. Full regression: **2,827 passed / 38 skipped in
+643.80s**. See
+[grounded candidate execution](report/grounded_candidate_execution_v1.md).
+
 D202 now returns actual Freebase-backed federated answers locally: the complete
 retained first shard was loaded into Fuseki and a Neo4j resource-edge mirror;
 103 typed entity/English-name pairs match the full-Fuseki query and independent

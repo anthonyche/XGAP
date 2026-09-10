@@ -9,9 +9,14 @@ from xgap.backends.rdf_terms import validate_iri
 
 
 IRI_VALUES_MARKER = "{{XGAP_IRI_VALUES}}"
+IRI_ROWS_MARKER = "{{XGAP_IRI_ROWS}}"
 
 
 def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
+    if "sparql_iri_rows" in parameters:
+        if "sparql_iri_binding" in parameters:
+            raise ValueError("Conflicting SPARQL binding profiles")
+        return _bind_iri_rows(text, parameters)
     spec = parameters.get("sparql_iri_binding")
     if spec is None:
         return text
@@ -37,3 +42,32 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
     if len(clause.encode("utf-8")) > spec["max_bytes"]:
         raise ValueError("SPARQL IRI binding byte budget exceeded")
     return text.replace(IRI_VALUES_MARKER, clause)
+
+
+def _bind_iri_rows(text: str, parameters: Mapping[str, Any]) -> str:
+    spec = parameters["sparql_iri_rows"]
+    if not isinstance(spec, Mapping) or set(spec) != {"parameter", "columns", "max_bindings", "max_bytes"}:
+        raise ValueError("Invalid SPARQL correlated IRI row specification")
+    names = spec["columns"]
+    if (not isinstance(names, list) or not names
+            or any(not isinstance(n, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", n) for n in names)
+            or len(set(names)) != len(names)
+            or not isinstance(spec["parameter"], str) or not spec["parameter"]):
+        raise ValueError("Invalid SPARQL correlated binding columns")
+    for key in ("max_bindings", "max_bytes"):
+        if type(spec[key]) is not int or spec[key] <= 0:
+            raise ValueError("Correlated SPARQL binding budgets must be positive integers")
+    rows = parameters.get(spec["parameter"])
+    if not isinstance(rows, list) or len(rows) > spec["max_bindings"]:
+        raise ValueError("Missing or excessive correlated SPARQL bindings")
+    if text.count(IRI_ROWS_MARKER) != 1:
+        raise ValueError("Correlated SPARQL binding requires one row marker")
+    encoded: set[str] = set()
+    for row in rows:
+        if not isinstance(row, Mapping) or set(row) != set(names):
+            raise ValueError("Correlated SPARQL row columns disagree")
+        encoded.add("(" + " ".join(f"<{validate_iri(row[n])}>" for n in names) + ")")
+    clause = "VALUES (" + " ".join("?"+n for n in names) + ") { " + " ".join(sorted(encoded)) + " }"
+    if len(clause.encode("utf-8")) > spec["max_bytes"]:
+        raise ValueError("Correlated SPARQL binding byte budget exceeded")
+    return text.replace(IRI_ROWS_MARKER, clause)

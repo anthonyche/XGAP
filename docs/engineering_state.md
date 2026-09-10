@@ -29,6 +29,49 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+D203 controlled software/native acceptance is complete. Broad regression ended
+in original session 39813: **2,827 passed / 38 skipped in 643.80s**, exit 0
+(`/tmp/xgap-d203-full.log`). Do not repeat passed tests or native queries without
+a new change or unresolved concern. Report:
+`docs/report/grounded_candidate_execution_v1.md`. The new opt-in preparation
+interface reruns typed/canonical grounding against the exact request/view and
+compiles supported candidates into actual Neo4j/Fuseki programs. Correlated
+URI tuples preserve all path positions; declared functional scalar constraints
+are checked on reached resources before filtering. Missing entity bindings,
+unsupported constructs, invalid/multivalued scalar data and overflow fail
+explicitly. No backend or model call repairs a missing entity automatically.
+
+Actual controlled recording/track/release cases on the retained first shard:
+string track number `"1"` gives one release; `"2"` gives empty; no scalar gives
+the same release. Type-constrained track queries give one `music.release_track`
+and no `book.book`. All five agree with independent full-Fuseki and Arrow
+evaluation. An explicit numeric `1` against the string field fails before
+literal filtering/baseline. The source, stores, frozen catalog, pending inline18
+package and model parameters are unchanged. These are controlled fixtures,
+not real LLM predictions or a comparative performance result.
+
+The historical 3796877 source still hashes to f207a5d4…18. All 18 questions and
+49 raw candidate outcomes are retained: 38 candidate grounding failures,
+7 shared grounding failures, and 4 typed/grounded survivors with no positive
+entity equality. Zero candidates are prepared under the explicit anchored goal.
+This does not replace old semantic metrics or imply Freebase lacks the answers.
+Durable receipts:
+`experiments/artifacts/d203_historical_candidate_execution_20260910.json` and
+`experiments/artifacts/d203_native_candidate_execution_20260910.json`.
+
+Focused: 268 passed / 1 skipped in 2.61s (45 new offline tests). Harness and
+21 examples pass, 22/22 entrypoints. Both owned native runs finished and stopped
+normally, no SIGKILL: session 25261 and 9851, roots
+`/Users/anthonyche/xgap-data/d203-native-candidates-20260910` and
+`/Users/anthonyche/xgap-data/d203-native-types-20260910`. Source/example sessions
+79649/76062 finished. No native data reload or catalog construction occurred.
+No test/example/native process remains from this milestone.
+Next: real generated anchored answers; the original fixed-v1 CWRU inline18
+handoff still awaits a user-returned job ID. An optional new anchor feedback
+profile is not part of D203 and must not silently alter that pending protocol.
+
+## D202 accepted predecessor
+
 D202 has completed **local software and real Freebase answer acceptance**. See
 `docs/report/freebase_native_answer_bridge_v1.md`. The exact Neo4j 5.26.30 and
 Fuseki 5.6.0 archives ran on installed Java 21.0.10 in an explicitly local

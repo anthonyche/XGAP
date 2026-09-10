@@ -281,9 +281,15 @@ class FederatedScheduler:
         rows: tuple[JsonRow, ...],
     ) -> tuple[dict[str, Any], int]:
         bind_field = node.parameters.get("bind_field")
+        bind_fields = node.parameters.get("bind_fields")
         parameter = node.parameters.get("parameter")
         max_bindings = node.parameters.get("max_bindings")
-        if not isinstance(bind_field, str) or not bind_field:
+        if bind_fields is not None:
+            if (bind_field is not None or not isinstance(bind_fields, (list, tuple)) or not bind_fields
+                    or any(not isinstance(f, str) or not f for f in bind_fields)
+                    or len(set(bind_fields)) != len(bind_fields)):
+                raise ValueError("remote_bind_query requires distinct correlated bind_fields without bind_field")
+        elif not isinstance(bind_field, str) or not bind_field:
             raise ValueError("remote_bind_query requires a nonempty bind_field")
         if not isinstance(parameter, str) or not parameter:
             raise ValueError("remote_bind_query requires a nonempty parameter")
@@ -302,6 +308,16 @@ class FederatedScheduler:
             )
         values: dict[str, Any] = {}
         for row in rows:
+            if bind_fields is not None:
+                if any(field not in row for field in bind_fields):
+                    raise ValueError("A correlated bind field is missing")
+                value = {field: row[field] for field in bind_fields}
+                if any(v is None or not isinstance(v, (str, int, float, bool))
+                       or (type(v) is float and not math.isfinite(v)) for v in value.values()):
+                    raise ValueError("Correlated bind values must be finite non-null JSON scalars")
+                key = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+                values[key] = value
+                continue
             if bind_field not in row:
                 raise ValueError(f"bind field '{bind_field}' is missing")
             value = row[bind_field]

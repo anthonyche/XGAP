@@ -4269,3 +4269,31 @@ Full regression passes 2,782 tests with 38 skipped in 596.81s; focused validatio
 harness and all 19 acceptance examples also pass. Preserve the first
 prelaunch help-validator failure and the numbered successful diagnostic.
 See `docs/report/freebase_native_answer_bridge_v1.md` for actual evidence.
+
+## D203 Preserve goal constraints when grounding becomes native execution
+
+Keep candidate grounding and execution-goal admission separate. The existing
+typed/canonical contracts can accept a candidate that declares entity IDs but
+does not use them in its AST. A goal requiring a named-entity anchor now checks
+positive identity equalities at actual node positions; optional exact bindings
+remain explicit caller inputs. Never auto-select a prompt entity or reinterpret
+a global-class query as the answer to an anchored question. Preserve all raw
+candidate outcomes and the old semantic metrics.
+
+Compile the admitted fixed directed path into the existing Freebase resource
+mirror and RDF store. Preserve classes, explicit inequalities, supported scalar
+predicates and answer position. Transfer whole URI path tuples through an
+opt-in correlated runtime/SPARQL binding profile. Do not independently bind
+per-position value sets. Scalar encodings must be declared and checked on every
+reached path; no coercion of multivalued, nonfinite or type-invalid RDF data.
+Do not silently apply implicit restrictors or relax depth/answer budgets.
+
+Five actual native positive/empty fixtures agree with full-Fuseki and independent
+source evaluation; a deliberately numeric constraint on a string field fails.
+All reused databases shut down normally. Historical 3796877 preparation retains
+18 questions/49 candidates and refuses all four remaining typed/grounded
+candidates for absent entity equality. This is a controlled execution milestone,
+not a new model accuracy or speed result. No new algebra, catalog rebuild,
+frozen protocol change or automatic external retry occurred. Focused validation
+and harness/examples pass; broad regression passes **2,827 tests with 38 skipped
+in 643.80s**. See the [D203 report](report/grounded_candidate_execution_v1.md).
