@@ -9,12 +9,13 @@ import threading
 import pytest
 
 from xgap.agent.semantic_execution import BoundSemanticExecutionTool, run_agentic_semantic_query, BIND_PLAN_EXECUTE
+from xgap.agent.semantic_execution import run_frozen_semantic_query
 from xgap.backends.fuseki_client import FusekiClient
 from xgap.backends.mapping import RdfBackendMapping
 from xgap.compilers.features import default_profile
 from xgap.experiments.toy_backbone import DEFAULT_FIXTURE, load_fixture
 from xgap.experiments.toy_binding import (binding_values, load_binding_cases, resolution_tools,
-    reference_artifact, reference_rows)
+    reference_artifact, reference_rows, BUNDLE_FIXTURE)
 from xgap.experiments.toy_semantic import toy_backends
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.runtime.semantic_planning import LogicalSource
@@ -29,7 +30,7 @@ CASES = load_binding_cases()
 _, _, MAPPING = load_fixture()
 
 
-def setup(case, *, fail=False):
+def setup(case, *, fail=False, bindings_override=None):
     rdf = pytest.importorskip("rdflib", minversion="7.1.4")
     calls = []
     lock = threading.Lock()  # Test adapter: the shared SPARQL parser is not reentrant.
@@ -49,7 +50,8 @@ def setup(case, *, fail=False):
     backends = {name: replace(base, backend_id=name, backend_mapping=replace(mapping, backend_id=name),
         profile=replace(default_profile("fuseki"), backend_id=name)) for name in names}
     return BoundSemanticExecutionTool(SemanticGraphProgram.from_dict(case["program"]), case["operator_sources"],
-        binding_values(), {"toy": LogicalSource("toy", "toy-v1", names)}, backends,
+        binding_values() if bindings_override is None else bindings_override,
+        {"toy": LogicalSource("toy", "toy-v1", names)}, backends,
         {name: Client(name) for name in names}, max_candidates=4, max_observation_calls=4), calls
 
 
@@ -58,6 +60,73 @@ def run_case(case, *, clarification=True, fail=False):
     result = run_agentic_semantic_query(tool, case["nl"],
         resolution_tools=resolution_tools(case, include_clarification=clarification))
     return result, calls
+
+
+def run_frozen_case(case, *, root=None, pin=None, fail=False, clarification=True):
+    from xgap.tools.artifact_resolution import ExplicitUserSelectionProvider, explicit_user_clarification_tool
+    tool, calls = setup(case, fail=fail, bindings_override={})
+    reference = json.loads((BUNDLE_FIXTURE / "reference.json").read_text())
+    user = (explicit_user_clarification_tool(ExplicitUserSelectionProvider(case["explicit_user_selection"],
+            source_id="controlled-toy-user-selection"))
+            if clarification and case.get("explicit_user_selection") else None)
+    result = run_frozen_semantic_query(program=tool.program, question=case["nl"],
+        operator_sources=tool.operator_sources, catalog_root=root or BUNDLE_FIXTURE / reference["root"],
+        catalog_hash=pin if pin is not None else reference["bundle_hash"], sources=tool.sources,
+        backends=tool.backends, backend_clients=tool.backend_clients, clarification_tool=user,
+        max_candidates=4, max_observation_calls=4)
+    return result, calls
+
+
+@pytest.mark.parametrize("case", CASES, ids=lambda c:c["id"])
+def test_frozen_catalog_entry_runs_the_same_independent_complete_query(case):
+    result, calls = run_frozen_case(case)
+    assert result["success"], result
+    output = result["state"]["output"]
+    assert output["planning_run"]["execution"]["value"]["final_rows"] == case["expected_rows"]
+    assert {k:v["value"] for k,v in output["bindings"].items()} == case["expected_bindings"]
+    assert output["bound_program"]["metadata"]["resolution_bundle"] == result["resolution_bundle"]
+    assert len(calls) == result["backend_remote_calls"] == 3 * case["expected_remote_calls"]
+    assert result["input_tokens"] == result["output_tokens"] == 0
+
+
+@pytest.mark.parametrize("failure", ["missing", "wrong-version"])
+def test_unprepared_catalog_stops_before_backend_dispatch(tmp_path, failure):
+    result, calls = run_frozen_case(CASES[0], root=tmp_path if failure == "missing" else None,
+                                  pin="0" * 64 if failure == "wrong-version" else None)
+    assert not result["success"] and result["status"] == "catalog_unavailable"
+    assert not calls and result["backend_remote_calls"] == result["resolution_external_calls"] == 0
+    assert not list(tmp_path.iterdir())
+
+
+def test_frozen_entry_preserves_ambiguity_and_one_failed_backend_observation():
+    result, calls = run_frozen_case(CASES[4], clarification=False)
+    assert not result["success"] and result["status"] == "blocked" and not calls
+    result, calls = run_frozen_case(CASES[0], fail=True)
+    assert not result["success"] and result["status"] == "failed"
+    assert len(calls) == 1  # Observed backend failure is terminal; no automatic retry.
+
+
+def test_full_query_survives_deleted_preparation_and_reads_only_pinned_catalog(tmp_path, monkeypatch):
+    import shutil
+    from pathlib import Path
+    from xgap.catalog.build import freeze_resolution_bundle
+    from xgap.experiments.toy_binding import FIXTURE
+    preparation = tmp_path / "preparation"; preparation.mkdir()
+    for name in ("catalog.json", "bindings.json"):
+        shutil.copyfile(FIXTURE / name, preparation / name)
+    root = tmp_path / "frozen"
+    manifest = freeze_resolution_bundle(catalog=preparation / "catalog.json", bindings=preparation / "bindings.json", output=root)
+    shutil.rmtree(preparation)
+    original_open = Path.open
+    def only_frozen_catalog(path, *args, **kwargs):
+        if path.name in ("catalog.json", "bindings.json"):
+            assert path.parent == root, "Query attempted to open unfrozen preparation inputs"
+        return original_open(path, *args, **kwargs)
+    monkeypatch.setattr(Path, "open", only_frozen_catalog)
+    result, calls = run_frozen_case(CASES[0], root=root, pin=manifest["bundle_hash"])
+    assert result["success"], result
+    assert result["state"]["output"]["planning_run"]["execution"]["value"]["final_rows"] == CASES[0]["expected_rows"]
+    assert calls and not preparation.exists()
 
 
 def resolution(program, case):

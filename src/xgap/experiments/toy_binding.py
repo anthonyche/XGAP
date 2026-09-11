@@ -8,7 +8,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from xgap.agent.semantic_execution import BoundSemanticExecutionTool, run_agentic_semantic_query
+from xgap.agent.semantic_execution import run_frozen_semantic_query
 from xgap.experiments.toy_backbone import load_fixture
 from xgap.experiments.toy_semantic import toy_backends
 from xgap.backends.rdf_terms import RDF_TERMS_V1, RdfTerm
@@ -24,6 +24,7 @@ from xgap.tools.artifact_resolution import (ArtifactCatalogProvider, ExplicitUse
 
 
 FIXTURE = Path(__file__).resolve().parents[3] / "datasets/backbone_binding_v1"
+BUNDLE_FIXTURE = Path(__file__).resolve().parents[3] / "datasets/backbone_binding_bundle_v1"
 
 
 def load_binding_cases():
@@ -62,22 +63,28 @@ def resolution_tools(case, *, include_clarification=True):
 def execute_binding_case(case, mapping, *, clients):
     graph, _, _ = load_fixture()
     version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
-    tool = BoundSemanticExecutionTool(SemanticGraphProgram.from_dict(case["program"]),
-        case["operator_sources"], binding_values(),
-        {"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))},
-        toy_backends(mapping), clients, max_candidates=4, max_observation_calls=4)
-    run = run_agentic_semantic_query(tool, case["nl"], resolution_tools=resolution_tools(case))
+    sources = {"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))}
+    backends = toy_backends(mapping)
+    reference = json.loads((BUNDLE_FIXTURE / "reference.json").read_text())
+    clarification = (explicit_user_clarification_tool(ExplicitUserSelectionProvider(
+        case["explicit_user_selection"], source_id="controlled-toy-user-selection"))
+        if case.get("explicit_user_selection") else None)
+    run = run_frozen_semantic_query(program=SemanticGraphProgram.from_dict(case["program"]),
+        question=case["nl"], operator_sources=case["operator_sources"],
+        catalog_root=BUNDLE_FIXTURE / reference["root"], catalog_hash=reference["bundle_hash"],
+        sources=sources, backends=backends, backend_clients=clients, clarification_tool=clarification,
+        max_candidates=4, max_observation_calls=4)
     actual = run["state"]["output"]["planning_run"]["execution"]["value"]["final_rows"] if run["success"] else None
     canonical = lambda rows: sorted(json.dumps(row, sort_keys=True) for row in rows)
     record = {"query_id": case["id"], "success": run["success"] and canonical(actual) == canonical(case["expected_rows"]),
             "actual_rows": actual, "agent_run": run, "live_llm": False, "paper_result": False,
             "candidate_checks": [], "validation_only_extra_remote_calls": 0,
-            "interpretation_source": "hand-authored semantic template and frozen local catalog"}
+            "interpretation_source": "hand-authored template and pinned frozen resolution bundle"}
     if not record["success"]:
         return record
     output = run["state"]["output"]
     space = enumerate_semantic_plans(SemanticGraphProgram.from_dict(output["bound_program"]),
-        operator_sources=output["operator_sources"], sources=tool.sources, backends=tool.backends,
+        operator_sources=output["operator_sources"], sources=sources, backends=backends,
         max_candidates=4, max_observation_calls=4)
     plugins = BackendPluginRegistry()
     for name, catalog in space.observation_catalogs.items():

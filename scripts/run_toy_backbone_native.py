@@ -29,7 +29,7 @@ from xgap.experiments.toy_semantic import (
     FIXTURE as SEMANTIC_FIXTURE, execute_semantic_case, load_semantic_cases, wrap_path_case,
 )
 from xgap.experiments.toy_planning import execute_planned_semantic_case
-from xgap.experiments.toy_binding import (FIXTURE as BINDING_FIXTURE, load_binding_cases,
+from xgap.experiments.toy_binding import (FIXTURE as BINDING_FIXTURE, BUNDLE_FIXTURE, load_binding_cases,
     execute_binding_case, reference_artifact, reference_rows)
 from xgap.experiments.toy_orientation import FIXTURE as ORIENTATION_FIXTURE, load_orientation_cases
 from xgap.experiments.toy_capabilities import (FIXTURE as CAPABILITY_FIXTURE,
@@ -139,7 +139,7 @@ def main(argv=None):
             "src/xgap/semantic/binding.py", "src/xgap/agent/semantic_execution.py",
             "src/xgap/agent/resolution.py", "src/xgap/agent/loop.py",
             "src/xgap/tools/artifact_resolution.py", "src/xgap/tools/resolution.py",
-            "src/xgap/experiments/toy_binding.py"))
+            "src/xgap/experiments/toy_binding.py", "src/xgap/catalog/bundle.py"))
     if args.capability_semantic:
         source_files.append(REPO / "src/xgap/experiments/toy_capabilities.py")
     if args.repetition:
@@ -187,6 +187,9 @@ def main(argv=None):
                 for p in CAPABILITY_FIXTURE.rglob("*") if p.is_file()})
     if args.agentic_semantic:
         record.update(binding_cases=[], binding_reference_targets=[],
+            binding_bundle_sha256={str(p.relative_to(BUNDLE_FIXTURE)):
+                hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in BUNDLE_FIXTURE.rglob("*") if p.is_file()},
             binding_fixture_sha256={str(p.relative_to(BINDING_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in BINDING_FIXTURE.rglob("*") if p.is_file()})

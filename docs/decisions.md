@@ -3,6 +3,11 @@
 User-directed finite support scope and the distinction between Interpretation
 and executable semantics: [bounded system scope v1](decisions/bounded_system_scope_v1.md).
 
+The independently specified first-system language, exclusions, resource limits
+and operator-by-layer evidence are in [bounded query profile v1](bounded_query_profile_v1.md).
+T2's offline catalog/bindings/ontology publication and pinned runtime lookup are
+specified in [frozen resolution bundle v1](decisions/frozen_resolution_bundle_v1.md).
+
 Current binding-row precision, numeric identity, COUNT/DISTINCT and null ordering
 are specified separately from the path algebra in
 [typed binding values v1](decisions/typed_binding_values_v1.md).

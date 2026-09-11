@@ -187,6 +187,13 @@ Interpretation 的 NL→语义表示，与 operator/compiler/runtime 的可表�
 
 ## Goal 工具状态
 
+有限查询契约已具体化为 [bounded query profile v1](bounded_query_profile_v1.md)：
+列出算子、类型/空值、有限路径、显式source/identity、范围外语法及逐层证据。
+查询语言范围、运行资源预算、最终benchmark覆盖率分别报告，不能互相替代。
+当前T2-A将小catalog、typed bindings与可选ontology离线冻结为同一版本；新通用
+agent入口只读调用方固定版本，不扫描原始数据或隐式重建。验收和剩余legacy迁移
+见 [T2-A报告](report/toy_backbone_t2_frozen_resolution.md)。
+
 当前应用 Goal 工具支持创建、读取及完成/阻塞状态更新，不提供活动目标正文编辑。
 现有总体 Goal 保持 **active**，未假装完成或重新创建。本文、AGENTS 必读规则、
 engineering state 与现有 heartbeat 共同持久化新的执行依据；应用中旧 Goal 文本

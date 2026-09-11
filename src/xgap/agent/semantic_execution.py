@@ -111,3 +111,41 @@ def run_agentic_semantic_query(tool: BoundSemanticExecutionTool, question: str, 
         "resolution_external_calls": sum(m.get("external_calls", 0) for m in metrics),
         "input_tokens": sum(m.get("input_tokens", 0) for m in metrics),
         "output_tokens": sum(m.get("output_tokens", 0) for m in metrics)}
+
+
+def run_frozen_semantic_query(*, program: SemanticGraphProgram, question: str,
+        operator_sources, catalog_root, catalog_hash, sources, backends, backend_clients,
+        clarification_tool=None, max_candidates=64, max_observation_calls=128,
+        max_remote_calls=16, snapshot=None, config=SelectiveResolutionConfig()):
+    """Use one pinned prepared bundle for resolution and executable bindings.
+
+    The model-free deterministic API above is unchanged. This entry does not
+    build catalogs, inspect raw datasets or retry missing preparation.
+    """
+    from xgap.catalog.bundle import FrozenResolutionBundle
+    from xgap.tools.artifact_resolution import artifact_catalog_tool, artifact_ontology_tool
+    from xgap.tools.resolution import USER_CLARIFY_TOOL
+
+    if clarification_tool is not None and clarification_tool.spec.name != USER_CLARIFY_TOOL:
+        raise ValueError("Only an explicit user-clarification tool may supplement the frozen bundle")
+    started = time.perf_counter()
+    try:
+        bundle = FrozenResolutionBundle.load(catalog_root, expected_bundle_hash=catalog_hash)
+    except (OSError, ValueError) as error:
+        return {"success": False, "status": "catalog_unavailable", "error": str(error),
+                "expected_bundle_hash": catalog_hash, "backend_remote_calls": 0,
+                "resolution_external_calls": 0, "input_tokens": 0, "output_tokens": 0,
+                "end_to_end_ms": (time.perf_counter() - started) * 1000}
+    registry = ToolRegistry()
+    registry.register(artifact_catalog_tool(bundle.catalog))
+    if bundle.ontology:
+        registry.register(artifact_ontology_tool(bundle.ontology))
+    if clarification_tool is not None:
+        registry.register(clarification_tool)
+    program = replace(program, metadata={**program.metadata, "resolution_bundle": bundle.identity})
+    tool = BoundSemanticExecutionTool(program, operator_sources, bundle.bindings,
+        sources, backends, backend_clients, max_candidates, max_observation_calls,
+        max_remote_calls, snapshot)
+    result = run_agentic_semantic_query(tool, question, resolution_tools=registry, config=config)
+    return {**result, "status": result["state"]["status"], "resolution_bundle": bundle.identity,
+            "end_to_end_ms": (time.perf_counter() - started) * 1000}

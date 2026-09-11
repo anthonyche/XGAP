@@ -43,7 +43,35 @@ hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
-## Current milestone — typed binding values
+## Current milestone — T2-A frozen resolution bundle accepted
+
+Base ffb7b47. Scope and gates were frozen in
+docs/decisions/frozen_resolution_bundle_v1.md before implementation. The offline
+publisher, pinned read-only reader and run_frozen_semantic_query now join the
+existing catalog, executable typed bindings and optional ontology into one
+version. Original gold and algebra are unchanged. The independently defined
+finite language contract is docs/bounded_query_profile_v1.md; do not expand T1
+into all possible query semantics. General replay and legacy GrailQA migration
+remain separate work. No new model call or large dataset build ran.
+
+Focused99761 is terminal exit0:87 passed/2.79s; daily61671 terminal exit0:
+517 passed/27.82s plus18 original demo cases. Native23609 is terminal exit0:
+5 agent programs/18 candidate answers/10 independent targets and old slice
+correct; both owned services stopped normally, all31 native source hashes match.
+Native output: /Users/anthonyche/xgap-data/t2-frozen-resolution-native-20260911.
+Full acceptance2851 is terminal exit0:3362 passed/38 skipped in673.89s,
+all24 harness/example entrypoints passed. All handles are terminal; never repeat
+passed gates without a new change or concern. Log:
+/tmp/xgap-t2-frozen-resolution-acceptance.log. No source/test edits after launch.
+All36 final source hashes and5 frozen fixture hashes match; original tracked
+fixtures are unchanged. Report docs/report/toy_backbone_t2_frozen_resolution.md
+and receipt experiments/artifacts/toy_backbone_t2_frozen_resolution_20260911.json
+are accepted. Commit/push and update the existing xgap heartbeat for this state.
+Next: common Interpretation contract and minimal recorded-provider/tool failure
+replay, followed by legacy catalog dependency migration on tiny fixtures.
+No model or large dataset is a development prerequisite. Overall Goal active.
+
+## Accepted predecessor — typed binding values
 
 Base400f0cf; scoped decision docs/decisions/typed_binding_values_v1.md. Current
 implementation and final native gate are ACCEPTED. Final broad24384 exit0:

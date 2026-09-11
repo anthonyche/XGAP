@@ -1,0 +1,1014 @@
+{
+  "milestone": "T2-A frozen resolution bundle",
+  "base_commit": "ffb7b476f1733d111a9c5604ad16328cc89ef8f5",
+  "status": "accepted",
+  "date": "2026-09-11",
+  "live_llm": false,
+  "paper_result": false,
+  "native": {
+    "path": "/Users/anthonyche/xgap-data/t2-frozen-resolution-native-20260911/result.json",
+    "sha256": "e71a0d9c0a57888c8270c6f77f125bb01362b2d505840062183f3d787e668371",
+    "success": true,
+    "programs": 5,
+    "candidate_answers": 18,
+    "candidate_answers_passed": 18,
+    "reference_answers": 10,
+    "reference_answers_passed": 10,
+    "observation_calls": 18,
+    "serving_calls": 9,
+    "extra_candidate_validation_calls": 25,
+    "resolution_external_calls": 1.0,
+    "old_slice": {
+      "success": true,
+      "actual_paths": [
+        "a/e4/c"
+      ],
+      "expected_paths": [
+        "a/e4/c"
+      ],
+      "plan": {
+        "plan_id": "toy-T18",
+        "nodes": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "m15-fragment-paths-neo4j",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE type(e1) = \"KNOWS\"\n  AND n0.id = \"a\"\nRETURN DISTINCT n0 AS source, n1 AS target, [n0, n1] AS nodes, [e1] AS edges\n}\nRETURN DISTINCT source.id + \"/\" + edges[0].id + \"/\" + target.id AS path, target.id AS target",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "m9_minimal_compiler",
+                  "target_backend_id": "neo4j",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "path_algebra.Edges",
+                    "path_algebra.Selection",
+                    "pattern.PathPatternQuery",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "Neo4j node labels represent XGAP node-label predicates.",
+                    "Neo4j relationship types represent XGAP edge-label predicates.",
+                    "Missing properties and non-numeric values follow Cypher WHERE null-elimination for this fragment."
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "eligible",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "m15-fragment-eligible-fuseki",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?eligible WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 <https://xgap.test/toy/age> ?v0 .\n  FILTER(?v0 >= 30)\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n} ?source <https://xgap.test/toy/id> ?eligible . }",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "m9_minimal_compiler",
+                  "target_backend_id": "fuseki",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                    "RDF type triples represent XGAP node-label predicates.",
+                    "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                  ],
+                  "backend_mapping": {
+                    "mapping_id": "backbone-toy-v1",
+                    "version": "1",
+                    "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                    "relevant_mapped_iris": [
+                      {
+                        "logical_token": "age",
+                        "canonical_term_id": "age",
+                        "kind": "property",
+                        "iri": "https://xgap.test/toy/age"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "join",
+            "kind": "coordinator_join",
+            "inputs": [
+              "paths",
+              "eligible"
+            ],
+            "parameters": {
+              "left_on": "target",
+              "right_on": "eligible"
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "inputs": [
+              "join"
+            ],
+            "parameters": {
+              "fields": [
+                "path"
+              ]
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "answer"
+        ],
+        "max_remote_calls": 2,
+        "max_parallelism": 1,
+        "metadata": {}
+      },
+      "runtime": {
+        "plan_id": "toy-T18",
+        "success": true,
+        "root_rows": {
+          "answer": [
+            {
+              "path": "a/e4/c"
+            }
+          ]
+        },
+        "final_rows": [
+          {
+            "path": "a/e4/c"
+          }
+        ],
+        "node_results": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "status": "success",
+            "rows": [
+              {
+                "path": "a/e1/b",
+                "target": "b"
+              },
+              {
+                "path": "a/e4/c",
+                "target": "c"
+              },
+              {
+                "path": "a/e7/b",
+                "target": "b"
+              }
+            ],
+            "row_count": 3,
+            "elapsed_ms": 62.29012552648783,
+            "input_bytes": 0,
+            "output_bytes": 94,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "neo4j",
+              "tool_metrics": {
+                "elapsed_ms": 62.23312485963106,
+                "row_count": 3.0
+              }
+            }
+          },
+          {
+            "node_id": "eligible",
+            "kind": "remote_query",
+            "status": "success",
+            "rows": [
+              {
+                "eligible": "c"
+              },
+              {
+                "eligible": "a"
+              },
+              {
+                "eligible": "z"
+              }
+            ],
+            "row_count": 3,
+            "elapsed_ms": 8.337167091667652,
+            "input_bytes": 0,
+            "output_bytes": 52,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "fuseki",
+              "tool_metrics": {
+                "elapsed_ms": 8.288582786917686,
+                "row_count": 3.0
+              }
+            }
+          },
+          {
+            "node_id": "join",
+            "kind": "coordinator_join",
+            "status": "success",
+            "rows": [
+              {
+                "path": "a/e4/c",
+                "target": "c",
+                "eligible": "c"
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.05100015550851822,
+            "input_bytes": 146,
+            "output_bytes": 47,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "status": "success",
+            "rows": [
+              {
+                "path": "a/e4/c"
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.01925043761730194,
+            "input_bytes": 47,
+            "output_bytes": 19,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          }
+        ],
+        "elapsed_ms": 70.92929165810347,
+        "total_remote_calls": 2,
+        "total_bytes_moved": 0
+      },
+      "live_llm": false,
+      "paper_result": false
+    },
+    "shutdown": [
+      {
+        "service_id": "fuseki",
+        "pid": 57548,
+        "initial_exit_code": null,
+        "final_exit_code": 143,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      },
+      {
+        "service_id": "neo4j",
+        "pid": 57507,
+        "initial_exit_code": null,
+        "final_exit_code": 0,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      }
+    ],
+    "source_sha256": {
+      "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+      "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+      "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+      "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+      "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+      "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+      "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+      "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+      "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+      "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+      "scripts/run_toy_backbone_native.py": "ef54b116eef4f31b130a1093da757226763a26862f6c327f84da988375db56a6",
+      "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+      "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+      "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+      "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+      "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+      "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+      "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+      "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+      "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+      "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+      "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+      "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+      "src/xgap/semantic/binding.py": "f2f2daf77ed787580619f1e03fbfcfedc49e92162bc786b7001b27452a7d9ec3",
+      "src/xgap/agent/semantic_execution.py": "57d96858b21f318c42b116e39d1e0335b4b00f96b518b90246c7a1d4172b8f3c",
+      "src/xgap/agent/resolution.py": "0ddab00073176c20ca737eafe0b175e1bab9aeba56ba380671405814af425f2c",
+      "src/xgap/agent/loop.py": "cb0aec6d416ed856d94a677233c6d565e0f525cc15e5c73e15998b593699b1f8",
+      "src/xgap/tools/artifact_resolution.py": "18d4da7a14212f35397d39cc7dbccf2e24bceb500865289340cc59c0409c8c58",
+      "src/xgap/tools/resolution.py": "5046f009a3d0b612e3d4425bec33a41de715a158b87858805ae6e6af8bd89127",
+      "src/xgap/experiments/toy_binding.py": "25a6b477c98ec4883db295a4a957dad8925436de5a51d1a04a67ed3ff911fbc3",
+      "src/xgap/catalog/bundle.py": "2d3bc522873b2c508426b4dee92b82d5020a568e69ccc9c92fabef44269cd624"
+    },
+    "binding_bundle_sha256": {
+      "reference.json": "8787fb7fa70850c3bd8c28ed9f149fdb2791476232e72c6ecc6bd59723439a88",
+      "README.md": "697fe32584290e86004cf87ae90852f693f607bfcbfc294665309f1fa761d39b",
+      "snapshot/bindings.json": "af2f3d3f85529061ca9a63d40cd7ae90e87694343ea0955a78fd3adea18d35f1",
+      "snapshot/manifest.json": "107987b99aefb9af3566053e4464d3952bab315da4100c1ea4dac64ea9793d4d",
+      "snapshot/catalog.json": "0e0a512b53b10f6a3eb9a633a68c0c67e7d39880eb9756c5cd9587de34f5530c"
+    }
+  },
+  "accepted_cases": [
+    {
+      "id": "B01",
+      "resolution_bundle": {
+        "schema_version": "xgap-frozen-resolution-bundle-v1",
+        "bundle_hash": "8cfb17e9dd780546f3dedb2accc924055bc8a67d930c385f39882a826b0734bf",
+        "catalog_id": "backbone-binding",
+        "catalog_version": "v1",
+        "ontology_source": null
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e4"
+        }
+      ],
+      "candidate_checks": [
+        {
+          "plan_id": "B01/9097a9925bd6d6e43be9",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "B01/7c040985403f7087a9ab",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "B01/7c759db1896e34de2445",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "B01/5f9f281327ba547c5449",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "bindings": {
+        "person": {
+          "candidate_id": "entity:alice",
+          "kind": "entity",
+          "value": "a",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": true
+        },
+        "predicate": {
+          "candidate_id": "predicate:knows",
+          "kind": "predicate",
+          "value": "KNOWS",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "type": {
+          "candidate_id": "type:person",
+          "kind": "type",
+          "value": "Person",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "age": {
+          "candidate_id": "constraint:30",
+          "kind": "constraint",
+          "value": 30,
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "source": {
+          "candidate_id": "source:toy",
+          "kind": "source",
+          "value": "toy",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        }
+      }
+    },
+    {
+      "id": "B02",
+      "resolution_bundle": {
+        "schema_version": "xgap-frozen-resolution-bundle-v1",
+        "bundle_hash": "8cfb17e9dd780546f3dedb2accc924055bc8a67d930c385f39882a826b0734bf",
+        "catalog_id": "backbone-binding",
+        "catalog_version": "v1",
+        "ontology_source": null
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e2"
+        }
+      ],
+      "candidate_checks": [
+        {
+          "plan_id": "B02/91aeb5d44e1190ae53f1",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e2"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "B02/12382f068c876878cc96",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e2"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "B02/577b47f239df5faaf7f7",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e2"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "B02/f84489aafba8727377cd",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e2"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "bindings": {
+        "person": {
+          "candidate_id": "entity:bob",
+          "kind": "entity",
+          "value": "b",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": true
+        },
+        "predicate": {
+          "candidate_id": "predicate:knows",
+          "kind": "predicate",
+          "value": "KNOWS",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "type": {
+          "candidate_id": "type:person",
+          "kind": "type",
+          "value": "Person",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "age": {
+          "candidate_id": "constraint:30",
+          "kind": "constraint",
+          "value": 30,
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "source": {
+          "candidate_id": "source:toy",
+          "kind": "source",
+          "value": "toy",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        }
+      }
+    },
+    {
+      "id": "B03",
+      "resolution_bundle": {
+        "schema_version": "xgap-frozen-resolution-bundle-v1",
+        "bundle_hash": "8cfb17e9dd780546f3dedb2accc924055bc8a67d930c385f39882a826b0734bf",
+        "catalog_id": "backbone-binding",
+        "catalog_version": "v1",
+        "ontology_source": null
+      },
+      "actual_rows": [],
+      "candidate_checks": [
+        {
+          "plan_id": "B03/65880e8c6138cd3f9c52",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "fuseki"
+          },
+          "actual_rows": [],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "B03/376f6e2f9425b540da42",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "actual_rows": [],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "B03/bf11e8e73be68bc0e2a6",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "fuseki"
+          },
+          "actual_rows": [],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "B03/3629f955539bd22f1c00",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "neo4j"
+          },
+          "actual_rows": [],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "bindings": {
+        "person": {
+          "candidate_id": "entity:alice",
+          "kind": "entity",
+          "value": "a",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": true
+        },
+        "predicate": {
+          "candidate_id": "predicate:knows",
+          "kind": "predicate",
+          "value": "KNOWS",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "type": {
+          "candidate_id": "type:person",
+          "kind": "type",
+          "value": "Person",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "age": {
+          "candidate_id": "constraint:45",
+          "kind": "constraint",
+          "value": 45,
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "source": {
+          "candidate_id": "source:toy",
+          "kind": "source",
+          "value": "toy",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        }
+      }
+    },
+    {
+      "id": "B04",
+      "resolution_bundle": {
+        "schema_version": "xgap-frozen-resolution-bundle-v1",
+        "bundle_hash": "8cfb17e9dd780546f3dedb2accc924055bc8a67d930c385f39882a826b0734bf",
+        "catalog_id": "backbone-binding",
+        "catalog_version": "v1",
+        "ontology_source": null
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/a",
+          "age": 30
+        }
+      ],
+      "candidate_checks": [
+        {
+          "plan_id": "B04/882deb03346f3fcb28e6",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a",
+              "age": 30
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "B04/0bedf99f4d5581c99f0f",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a",
+              "age": 30
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "bindings": {
+        "person": {
+          "candidate_id": "entity:alice",
+          "kind": "entity",
+          "value": "a",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": true
+        },
+        "type": {
+          "candidate_id": "type:person",
+          "kind": "type",
+          "value": "Person",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "age": {
+          "candidate_id": "constraint:30",
+          "kind": "constraint",
+          "value": 30,
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "source": {
+          "candidate_id": "source:toy",
+          "kind": "source",
+          "value": "toy",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        }
+      }
+    },
+    {
+      "id": "B05",
+      "resolution_bundle": {
+        "schema_version": "xgap-frozen-resolution-bundle-v1",
+        "bundle_hash": "8cfb17e9dd780546f3dedb2accc924055bc8a67d930c385f39882a826b0734bf",
+        "catalog_id": "backbone-binding",
+        "catalog_version": "v1",
+        "ontology_source": null
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e2"
+        }
+      ],
+      "candidate_checks": [
+        {
+          "plan_id": "B05/d5ac8d6777e5f4d79d45",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e2"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "B05/d6c361551b12194bbf85",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e2"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "B05/98b64e87030d1ca9a4fa",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e2"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "B05/1db78599e586d7f01e76",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e2"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "bindings": {
+        "person": {
+          "candidate_id": "entity:bob",
+          "kind": "entity",
+          "value": "b",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a",
+            "controlled-toy-user-selection"
+          ],
+          "authoritative": true
+        },
+        "predicate": {
+          "candidate_id": "predicate:knows",
+          "kind": "predicate",
+          "value": "KNOWS",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "type": {
+          "candidate_id": "type:person",
+          "kind": "type",
+          "value": "Person",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "age": {
+          "candidate_id": "constraint:30",
+          "kind": "constraint",
+          "value": 30,
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        },
+        "source": {
+          "candidate_id": "source:toy",
+          "kind": "source",
+          "value": "toy",
+          "sources": [
+            "semantic_program",
+            "catalog:backbone-binding@v1:0e0a512b53b10f6a"
+          ],
+          "authoritative": false
+        }
+      }
+    }
+  ],
+  "final_source_sha256": {
+    "scripts/run_toy_backbone_native.py": "ef54b116eef4f31b130a1093da757226763a26862f6c327f84da988375db56a6",
+    "scripts/run_toy_development.sh": "e4a5d16c6b7984743dc79a6068f507477b10f6f027983c4713b857e9477dc871",
+    "src/xgap/agent/loop.py": "cb0aec6d416ed856d94a677233c6d565e0f525cc15e5c73e15998b593699b1f8",
+    "src/xgap/agent/resolution.py": "0ddab00073176c20ca737eafe0b175e1bab9aeba56ba380671405814af425f2c",
+    "src/xgap/agent/semantic_execution.py": "57d96858b21f318c42b116e39d1e0335b4b00f96b518b90246c7a1d4172b8f3c",
+    "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+    "src/xgap/catalog/__init__.py": "24bc12b09912fc0ed4ebd0d12ae12aeeb217f8d9426489f1de84cf7a4478b99e",
+    "src/xgap/catalog/build.py": "50a18121a658a58ee96ad14fe417d763133d4a53f8d5a0a8fabe33dded597240",
+    "src/xgap/catalog/bundle.py": "2d3bc522873b2c508426b4dee92b82d5020a568e69ccc9c92fabef44269cd624",
+    "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+    "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+    "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+    "src/xgap/experiments/toy_binding.py": "25a6b477c98ec4883db295a4a957dad8925436de5a51d1a04a67ed3ff911fbc3",
+    "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+    "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+    "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+    "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+    "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+    "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+    "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+    "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/semantic/binding.py": "f2f2daf77ed787580619f1e03fbfcfedc49e92162bc786b7001b27452a7d9ec3",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/tools/artifact_resolution.py": "18d4da7a14212f35397d39cc7dbccf2e24bceb500865289340cc59c0409c8c58",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/tools/resolution.py": "5046f009a3d0b612e3d4425bec33a41de715a158b87858805ae6e6af8bd89127",
+    "tests/test_frozen_resolution_bundle.py": "8b839ce5882002f09b354cd9e14326b9bbf2c6c42ddf458de23d73d52584b322",
+    "tests/test_semantic_binding_execution.py": "fe5616a9fd3564aec00284f99526d2330dea06ceba65f30babcaf8bbbd9d81e7"
+  },
+  "final_fixture_sha256": {
+    "datasets/backbone_binding_bundle_v1/README.md": "697fe32584290e86004cf87ae90852f693f607bfcbfc294665309f1fa761d39b",
+    "datasets/backbone_binding_bundle_v1/reference.json": "8787fb7fa70850c3bd8c28ed9f149fdb2791476232e72c6ecc6bd59723439a88",
+    "datasets/backbone_binding_bundle_v1/snapshot/bindings.json": "af2f3d3f85529061ca9a63d40cd7ae90e87694343ea0955a78fd3adea18d35f1",
+    "datasets/backbone_binding_bundle_v1/snapshot/catalog.json": "0e0a512b53b10f6a3eb9a633a68c0c67e7d39880eb9756c5cd9587de34f5530c",
+    "datasets/backbone_binding_bundle_v1/snapshot/manifest.json": "107987b99aefb9af3566053e4464d3952bab315da4100c1ea4dac64ea9793d4d"
+  },
+  "gates": {
+    "focused": {
+      "session": 99761,
+      "exit_code": 0,
+      "passed": 87,
+      "seconds": 2.79
+    },
+    "daily": {
+      "session": 61671,
+      "exit_code": 0,
+      "passed": 517,
+      "seconds": 27.82,
+      "original_demo_cases": 18
+    },
+    "native": {
+      "session": 23609,
+      "exit_code": 0
+    },
+    "broad": {
+      "session": 2851,
+      "status": "passed",
+      "log": "/tmp/xgap-t2-frozen-resolution-acceptance.log",
+      "exit_code": 0,
+      "passed": 3362,
+      "skipped": 38,
+      "seconds": 673.89,
+      "harness_and_example_entrypoints": 24,
+      "log_sha256": "91f0b7bcc31264b6dc28eea5840b41cbe98dc1854c801a5d14f848700346b6a8"
+    }
+  },
+  "failure_checks": [
+    "missing/tampered/incomplete/version mismatch/catalog and binding kind mismatch",
+    "interrupted offline publication never becomes loadable",
+    "existing output is never overwritten",
+    "entity ambiguity retains zero backend calls",
+    "one controlled backend failure is observed once, with no retry"
+  ],
+  "limitations": [
+    "This is a small JSON resolution-catalog lifecycle, not a completed GrailQA SQLite migration",
+    "Typed input remains a controlled semantic template, not measured real-model NL accuracy",
+    "General provider/backend transcript replay, streaming/cancellation and full system evaluation remain pending"
+  ]
+}

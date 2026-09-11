@@ -1,6 +1,29 @@
 # XGAP Status
 
-## Current engineering — typed binding values accepted
+## Current engineering — T2-A frozen resolution bundle accepted
+
+The finite first-system language and exclusions are frozen in
+[bounded query profile v1](bounded_query_profile_v1.md), with independent
+operator-by-layer evidence. Outside-profile language features do not form an
+unlimited T1 backlog; included compiler/runtime failures remain defects.
+
+On base ffb7b47, the explicit offline publisher freezes catalog, typed binding
+values and optional ontology as one version. The new generic agent entry reads
+only a caller-pinned bundle and fails before dispatch on unavailable preparation.
+It never imports a builder. Native5/5 agent goals,18/18 candidate answers,10/10
+independent targets and the old two-engine slice pass. Focused87 and daily517
+plus18 demos pass. Final broad2851 exited0:3362 passed/38 skipped in673.89s, all24
+harness/example entrypoints passed. All handles are terminal; no source/test
+edits after launch. See [T2-A report](report/toy_backbone_t2_frozen_resolution.md).
+
+Next: a common Interpretation contract and minimal recorded failure replay,
+then legacy GrailQA runtime dependency migration on tiny fixtures. This small
+bundle step does not complete all catalog/runtime migration. Real-model/mini,
+source partitioning, streaming/cancellation, cost calibration, UI and final
+baseline/ablation evaluation retain their separate system gates. Overall Goal
+remains active. Historical accepted steps follow.
+
+## Accepted predecessor — typed binding values
 
 On base400f0cf, the shared binding scalar contract now fixes exact integer/RDF
 decimal aggregation, COUNT(field)/DISTINCT, grouping/join equality and nullable

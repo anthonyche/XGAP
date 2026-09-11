@@ -100,14 +100,18 @@ def _load_artifact(
         raise ValueError(f"{name} must be a regular file")
     if artifact_path.stat().st_size > 16 * 1024 * 1024:
         raise ValueError(f"{name} exceeds 16 MiB")
-    digest = _file_sha256(artifact_path)
+    with artifact_path.open("rb") as handle:
+        data = handle.read(16 * 1024 * 1024 + 1)
+    if len(data) > 16 * 1024 * 1024:
+        raise ValueError(f"{name} exceeds 16 MiB")
+    digest = hashlib.sha256(data).hexdigest()
     if expected_sha256 is not None:
         if not _SHA256.fullmatch(expected_sha256):
             raise ValueError("expected_sha256 must be a SHA-256 digest")
         if digest != expected_sha256:
             raise ValueError(f"{name} SHA-256 mismatch")
     try:
-        raw = json.loads(artifact_path.read_text(encoding="utf-8"))
+        raw = json.loads(data.decode("utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise ValueError(f"{name} is not valid JSON") from exc
     return _safe_mapping(raw, name=name), digest
@@ -223,6 +227,10 @@ class ArtifactCatalogProvider:
         self.catalog_version = artifact["catalog_version"]
         self.artifact_sha256 = digest
         self._entries = tuple(entries)
+
+    @property
+    def candidate_kinds(self) -> dict[str, SemanticHoleKind]:
+        return {entry.candidate_id: entry.kind for entry in self._entries}
 
     @property
     def source_id(self) -> str:
@@ -437,6 +445,10 @@ class ArtifactOntologyProvider:
         self._concepts = tuple(concepts)
         self._concept_map = concept_map
         self._relations = tuple(relations)
+
+    @property
+    def candidate_kinds(self) -> dict[str, SemanticHoleKind]:
+        return {concept.candidate_id: concept.kind for concept in self._concepts}
 
     @property
     def source_id(self) -> str:
