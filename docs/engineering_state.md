@@ -1,5 +1,24 @@
 # XGAP current engineering loop
 
+## Latest E2 — real15/15 plan correctness; growing-ledger timing confound recorded
+
+Read [the paid-selection pilot](report/finbench_paid_pilot_20260912.md). Parent
+0f741fb plus fingerprinted core/native driver:12+2 focused checks passed first
+run0.55/0.19s. Native session20774 ran once, exit0,37.27s;9 final+6 acquisition
+exact,30 query calls,0 model calls. All48 IDs/32seen/16heldout retained; selected
+f1-01/f2-01/f3-01 stay integration-exposed,45 not_attempted.23 artifact-only
+checks pass,361 inputs/source hashes unchanged; PIDs66620/66664 verified absent.
+
+Raw /Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/ retains orders,
+plans sealed before dispatch, raw client journals, sealed execution before gold,
+full evaluation and cleanup. Do not repeat this pilot or the14 checks.
+Method wall is unsuitable for formal comparison: each progress update rewrites
+the cumulative full ledger (5.8MB final), and method/cache order is not balanced
+within query. Next persist each new action once plus a small index, measure
+persistence explicitly without subtracting guessed old overhead, and freeze
+original48 repeated balanced blocks. This is a prepared-plan baseline, not P1/A3.
+LINK3/5 and every historical failure remain;3804210 is untouched.
+
 ## Latest LINK — three exact native answers, complete five-question denominator
 
 Read [Match/cohort evidence](report/match_row_link_20260912.md) first. Match named

@@ -1,5 +1,20 @@
 # XGAP Status
 
+## Current E2 — real paid-selection correctness accepted; formal timing needs correction
+
+The one-shot FinBench pilot returned exact answers in all9 final and6 acquisition
+executions across the original3 exposed questions.30 query calls, no model calls;
+all48 IDs/32seen/16heldout retained,45 unattempted.14 new focused checks passed;
+23 post-run artifact checks passed,361 source/input hashes unchanged, owned
+services stopped. [Evidence](report/finbench_paid_pilot_20260912.md).
+
+This is a prepared-plan strong-baseline integration, not ordinary P1/A3 or a
+paper speedup. Rewriting the growing ledger inflates measured wall; next use
+one durable record per action and a small progress/selection index with explicit
+persistence timing, then freeze within-query balanced original48 repeats. Do
+not subtract estimated overhead or rerun this accepted pilot. LINK remains3/5;
+historical next-action statements below are superseded by this entry.
+
 ## Current LINK — complete native cohort, three exact answers out of five
 
 Match row constraints now compile through the existing normalized-row Filter;

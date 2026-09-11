@@ -1,5 +1,17 @@
 # XGAP Design Decisions
 
+## E2: charge complete-plan acquisition and keep pilot timing limitations
+
+The [paid-selection protocol](decisions/finbench_paid_selection_pilot_v1.md)
+requires cost-only selection, a durable winner seal and a fresh final execution.
+The actual three-query pilot returned9 final+6 acquisition exact outcomes with
+30 calls; it does not exercise ordinary P1/A3 or show a speedup. Full-ledger
+rewrites confound method wall. Save each action once and measure persistence
+before the formal balanced original48 comparison; preserve this pilot rather
+than subtracting estimated overhead or rerunning it. Conditional2eta selection
+regret only bounds fresh execution under its stated assumption, not total cost.
+[Evidence](report/finbench_paid_pilot_20260912.md).
+
 ## LINK: explicit Match row semantics and complete failure denominators
 
 [Match row constraints](decisions/match_row_constraints_v1.md) use the existing

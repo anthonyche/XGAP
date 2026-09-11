@@ -1,16 +1,21 @@
 # XGAP Roadmap
 
-## Next E2 gate — real paid acquisition against strong fixed strategies
+## Next E2 gate — lightweight measured persistence and balanced original48 comparison
 
-The recorded five-question LINK now completes with3 exact native answers and2
-Interpretation failures, zero new model calls; Match row conditions are supported
-without rewriting model programs. [Evidence](report/match_row_link_20260912.md).
-Do not require perfect generation before independent physical experiments.
-Next implement the small [FinBench paid-selection pilot](decisions/finbench_paid_selection_pilot_v1.md):
-fixed hash/fixed bind/paid dual-plan acquisition, first original3 integration IDs
-then original48 with preserved failures/exposure. Reuse original artifacts and
-charge acquisition to the current method; do not disguise strategies as replicas
-or claim an unimplemented P1/A3 bridge. Later next-action entries are historical.
+The [real three-question pilot](report/finbench_paid_pilot_20260912.md) is accepted
+for integration:9 final+6 acquisition exact,30 calls,14 new focused checks and
+23 artifact checks, all services stopped. Keep this evidence; do not rerun it.
+The frozen original48, exposure and all unattempted entries remain intact.
+
+Before formal timing, persist each action result once and a small progress and
+selection index; assemble the full ledger after measurement. Measure online
+persistence separately while still charging it. Current growing-ledger wall and
+cache order are confounded; never subtract guessed overhead. Then predeclare
+within-query balanced repeated blocks for the original48 baseline comparison.
+Use only affected tiny accounting tests before the new experiment. Do not
+fabricate the distinct hash/bind DAGs as source replicas or label this P1/A3.
+Real strategy integration/prior costs, effectiveness and scalability remain.
+LINK3/5 is usable without perfect generation; lower next-action entries are historical.
 
 ## Next LINK gate — output projection, using the saved actual model responses
 

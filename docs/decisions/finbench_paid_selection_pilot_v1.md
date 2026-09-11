@@ -43,4 +43,45 @@ Existing inputs: /Users/anthonyche/xgap-data/int3-finbench-20260911/ and the
 original workpack under /Users/anthonyche/xgap-data/int-finbench-workpack-20260911/.
 Acceptance is exact answers in every attempted arm, reconstructable paid costs
 and winner identity, complete failure/unrun accounting, and no relabeling as
-P1/A3 or a formal performance advantage. A concrete implementation still remains.
+P1/A3 or a formal performance advantage. The implementation and one actual pilot
+are now recorded in [the outcome report](../report/finbench_paid_pilot_20260912.md):
+9 final and6 acquisition answers exact,30 query calls, all48 ledger entries kept.
+The accepted scope is correctness/accounting integration. Cumulative full-ledger
+rewrites and cache order preclude formal timing inference; use separately timed
+lightweight durable action records before the next balanced original48 experiment.
+
+## Frozen first integration block
+
+Before any execution, the concrete order was saved to
+`/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/orders.json` with the
+original workload, source partition and archive hashes. The complete IDs are
+`m15-fb-confirmatory-48-f1-01`, `m15-fb-confirmatory-48-f2-01` and
+`m15-fb-confirmatory-48-f3-01`. Their method orders are respectively hash/bind/paid,
+bind/paid/hash and paid/hash/bind. Paid acquisition orders are hash/bind,
+bind/hash and hash/bind. This rotates positions across three different queries;
+it is not within-query counterbalancing and cannot establish a performance gain.
+
+The measurement scope is prepared-plan decision time. Both candidate plans are
+compiled once before dispatch; compilation wall time and plan identities are
+reported as common preparation, separately from each method's wall time. Service
+startup and one complete SF0.1 load are also separate. There is no query warmup;
+earlier methods and paid acquisition can warm caches, explicitly limiting this
+first block to a descriptive integration pilot.
+
+## Algorithm and limited guarantee
+
+Given the two explicit prepared candidates, execute each once, retain each
+observed cost, choose the minimum `(elapsed_ms, logical_exchange_bytes, strategy)`,
+persist that decision, and execute the winner afresh. Pure selection is O(K)
+comparisons and O(K) cost summaries, with K=2 here. Validation, hashing and
+persistence additionally depend on actual input/result size; full black-box
+query execution costs are charged separately and are not a planner Ptime proof.
+
+Conditionally, if both candidates in the same subsequent execution environment
+satisfy |measured_cost_i - next_cost_i| <= eta, minimum measured-cost selection
+has next_cost_chosen <= min_i(next_cost_i) + 2 eta. This follows by applying the
+error bound before and after the measured minimum comparison. It bounds only
+the fresh execution, not total paid cost, which also includes both acquisitions,
+selection and bookkeeping. This pilot does not establish the error assumption;
+different cache states further prevent treating it as a bound against the fixed
+arms. No unconditional speedup, future-cost optimum or P1 scaling claim follows.
