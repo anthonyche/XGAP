@@ -1,5 +1,14 @@
 # XGAP Design Decisions
 
+## LINK: explicit Match row semantics and complete failure denominators
+
+[Match row constraints](decisions/match_row_constraints_v1.md) use the existing
+post-normalization row Filter; never convert typed equality to path equality or
+invent missing fields. The opt-in recorded cohort measures all five outcomes,
+continues known prebackend failures and stops unknown/external failures. It now
+has3 exact native answers/5, with zero new model calls; this is neither perfect
+model quality nor a paper benchmark. [Evidence](report/match_row_link_20260912.md).
+
 ## LINK: output shape is a request obligation, not an evaluation repair
 
 The [optional requested-output contract](decisions/requested_output_contract_v1.md)

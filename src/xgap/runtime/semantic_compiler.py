@@ -133,6 +133,16 @@ def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragm
         properties = p.get("properties", {})
         if not isinstance(entity, str) or not entity or entity in properties:
             raise SemanticProgramError("Match requires a distinct entity output field")
+        schema = ResultSchema(V.BINDING_SET, frozenset((entity, *properties)))
+        path_predicates, row_predicates = [], []
+        for predicate in predicates:
+            if "op" in predicate:
+                if "kind" in predicate:
+                    raise SemanticProgramError("Match predicates cannot mix path and row discriminators")
+                _fields(condition_fields(predicate), schema.fields)
+                row_predicates.append(predicate)
+            else:
+                path_predicates.append(predicate)
         raw_node = p.get("node", {})
         if set(raw_node) - {"label", "properties"}:
             raise SemanticProgramError("Match node descriptors require label/properties")
@@ -140,13 +150,17 @@ def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragm
             backend_mapping=backend.backend_mapping, rdf_node_classes=backend.rdf_node_classes,
             profile=backend.profile,
             artifact_id=f"{identifier}-match",
-            condition=And(*(_parse_condition(c) for c in predicates)) if predicates else None)
+            condition=And(*(_parse_condition(c) for c in path_predicates)) if path_predicates else None)
         remote = add(op, "native", R.REMOTE_QUERY, parameters={"backend_id": backend_id, "artifact": artifact.to_dict()})
         output = add(op, "bindings", R.NORMALIZE_NODE_BINDINGS, (remote,), {
             "language": artifact.language, "identity_property": backend.identity_property,
             "resource_namespace": backend.resource_namespace, "entity_field": entity,
             "scalar_fields": list(properties)})
-        schema = ResultSchema(V.BINDING_SET, frozenset((entity, *properties)))
+        if row_predicates:
+            # Keep binding equality/null/numeric semantics after normalization.
+            condition = (row_predicates[0] if len(row_predicates) == 1
+                         else {"op": "and", "args": row_predicates})
+            output = add(op, "row_filter", R.COORDINATOR_FILTER, (output,), {"condition": condition})
     elif kind is S.TRAVERSE:
         query = parse_path_pattern_query(p["path_pattern"])
         if predicates:

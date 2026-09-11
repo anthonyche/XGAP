@@ -1,5 +1,11 @@
 # Operator Semantics
 
+Match named constraints may explicitly use the binding-row DSL on Match's own
+declared output columns. Such constraints execute after row normalization through
+the existing coordinator Filter; path constraints retain native path semantics.
+This finite composition does not add a path-algebra operator or coerce the two
+comparison rules. See [Match row semantics](decisions/match_row_constraints_v1.md).
+
 The M15 Semantic Graph Program and federated runtime operators are typed
 planning/execution contracts above the logical algebra. `Match`, `Traverse`,
 semantic `Join`, `ResolveEntity`, `RemoteQuery`, and `CoordinatorJoin` do not

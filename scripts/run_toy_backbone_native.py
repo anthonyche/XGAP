@@ -54,6 +54,8 @@ def main(argv=None):
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--interpretation-recordings",
         help="With --agentic-semantic, replay the five recorded model responses; zero new model calls")
+    parser.add_argument("--interpretation-cohort", action="store_true",
+        help="Evaluate all five recordings, retaining local interpretation failures; no extra validation runs")
     parser.add_argument("--request-profile", choices=("legacy-v2", "explicit-output-v1"), default="legacy-v2",
         help="Use the same explicit request profile as the recorded Interpretation")
     parser.add_argument("--static-backend-order", nargs="+", choices=("neo4j", "fuseki"),
@@ -98,6 +100,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.interpretation_recordings and not args.agentic_semantic:
         parser.error("--interpretation-recordings requires --agentic-semantic")
+    if args.interpretation_cohort and (not args.interpretation_recordings or not args.agentic_semantic
+            or args.memory_roundtrip or args.refresh_ablation or args.prefix_ablation or args.static_backend_order):
+        parser.error("--interpretation-cohort requires recorded ordinary agentic execution without ablations")
     if args.request_profile != "legacy-v2" and not args.agentic_semantic:
         parser.error("--request-profile requires --agentic-semantic")
     if args.request_profile != "legacy-v2" and (args.refresh_ablation or args.prefix_ablation):
@@ -153,6 +158,8 @@ def main(argv=None):
         "src/xgap/runtime/path_selection.py", "src/xgap/runtime/contracts.py",
         "src/xgap/runtime/scheduler.py", "src/xgap/algebra/evaluator.py")]
     source_files.append(Path(__file__))
+    if args.interpretation_cohort:
+        source_files.append(REPO / "src/xgap/experiments/toy_recorded_cohort.py")
     if args.orientation:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/algebra/ops.py", "src/xgap/algebra/validation.py",
@@ -246,6 +253,11 @@ def main(argv=None):
             binding_fixture_sha256={str(p.relative_to(BINDING_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in BINDING_FIXTURE.rglob("*") if p.is_file()})
+        if args.interpretation_cohort:
+            record.update(scope="original five recorded Interpretation outcomes on native toy stores",
+                          query_ids=[c["id"] for c in binding_cases],
+                          interpretation_cohort={}, validation_matrix_executed=False,
+                          retained_slice_executed=False)
         if args.refresh_ablation:
             record.update(scope="A1 B04 pre-execution refresh mechanism", refresh_ablation={})
         if args.prefix_ablation:
@@ -465,7 +477,7 @@ def main(argv=None):
             save()
             execute_prefix_ablation(mapping, clients={"neo4j": neo, "fuseki": rdf},
                 record=record["prefix_ablation"], on_update=save)
-        if args.agentic_semantic:
+        if args.agentic_semantic and not args.interpretation_cohort:
             if args.memory_roundtrip or args.refresh_ablation:
                 from xgap.agent.memory import JsonlMemoryStore
                 from xgap.runtime.semantic_memory import SemanticPlanMemory
@@ -625,13 +637,22 @@ def main(argv=None):
                     save()
                     if not reference["success"]:
                         raise RuntimeError(f"Typed independent reference failed: {case['id']}/{backend}; no retry")
-        record["phase"] = "compiled-federated-slice"
-        save()
-        record["vertical_slice"] = execute_vertical_slice(cases[-1], mapping, neo4j=neo, fuseki=rdf)
-        save()
-        if not record["vertical_slice"]["success"]:
-            raise RuntimeError("Compiled two-engine slice did not match the independent expected answer")
-        record["success"] = True
+        if args.interpretation_cohort:
+            from xgap.experiments.toy_recorded_cohort import execute_recorded_binding_cohort
+            record["phase"] = "recorded-interpretation-cohort"
+            execute_recorded_binding_cohort(binding_cases, mapping, clients={"neo4j": neo, "fuseki": rdf},
+                recording_root=args.interpretation_recordings, request_profile=args.request_profile,
+                record=record["interpretation_cohort"], on_update=save)
+            record["binding_cases"] = record["interpretation_cohort"]["queries"]
+            record["success"] = record["interpretation_cohort"]["success"]
+        else:
+            record["phase"] = "compiled-federated-slice"
+            save()
+            record["vertical_slice"] = execute_vertical_slice(cases[-1], mapping, neo4j=neo, fuseki=rdf)
+            save()
+            if not record["vertical_slice"]["success"]:
+                raise RuntimeError("Compiled two-engine slice did not match the independent expected answer")
+            record["success"] = True
         record["phase"] = "completed"
     except Exception as error:
         record["error"] = f"{type(error).__name__}: {error}"

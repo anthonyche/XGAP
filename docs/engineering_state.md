@@ -1,18 +1,19 @@
 # XGAP current engineering loop
 
-## Latest requested-output LINK — implementation accepted, actual meaning incomplete
+## Latest LINK — three exact native answers, complete five-question denominator
 
-Read [requested-output evidence](report/requested_output_link_20260911.md) first.
-Explicit NL-derived output fields, optional semantic admission and v3 profile
-plumbing are implemented. First focused run 23pass/0.45s, then only two native CLI
-parse checks for the ablation/profile review finding. Five distinct new actual
-requests cost 12169 tokens/16.231s, with B01/B04/B05 admitted and B02/B03 rejected.
-No new native run: all five native outcomes not_run, not failed or correct.
-Raw /Users/anthonyche/xgap-data/requested-output-link-20260911/ preserves original
-responses and source hashes. Next saved-program field/predicate diagnosis; do
-not repeat generation or substitute RDFLib replica identity for exact native
-recordings. Earlier external-v2 strict failure, original Qwen0/5 and FinBench6/6
-remain unchanged. External serving works; no new GPU job/health probe is needed.
+Read [Match/cohort evidence](report/match_row_link_20260912.md) first. Match named
+row predicates compile to the existing post-normalization Filter, preserving
+typed semantics and raw constraints.10 compiler+7 cohort checks passed first run;
+do not rerun. One native session55092 exited1 because the cohort is3correct/5,
+not all-correct: B01/B04/B05 exact; B02/B03 Interpretation invalid beforebackend.
+All five terminal; no new model calls.15 query calls=10 observations+5 executions.
+Raw /Users/anthonyche/xgap-data/match-row-link-20260912/ contains source/recording
+hashes, actual rows and cleanup: PIDs62798/62840 stopped and verified absent.
+B01 uses Fuseki paths+Neo4j Match; B04/B05 selected Fuseki. No candidate/reference/
+old-slice reruns. Current interface is usable; model quality remains imperfect.
+Next implement real E2 via finbench_paid_selection_pilot_v1.md, not repeated
+five-question prompt tuning. Historical v2/32B failures and original150/48 stay.
 
 ## Latest external LINK — serving connected; exact output shape remains open
 

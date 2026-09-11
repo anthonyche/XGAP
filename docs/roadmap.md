@@ -1,15 +1,16 @@
 # XGAP Roadmap
 
-## Next LINK gate — executable meaning, using the saved v3 programs
+## Next E2 gate — real paid acquisition against strong fixed strategies
 
-The output contract is now implemented. New actual external generation admits
-3/5; B02/B03 end in an unsupported Filter and filter an age column not produced
-upstream. Five native answers are unmeasured, with no new backend/model retries.
-Diagnose field production and predicate placement offline before more generation;
-do not enter a prompt-tuning loop or change gold. Preserve the independent
-deterministic-planning/real-data experiment track and its deadline.
-[Current evidence](report/requested_output_link_20260911.md). The earlier next
-actions below are historical; no catalog rebuild or GPU wait is required here.
+The recorded five-question LINK now completes with3 exact native answers and2
+Interpretation failures, zero new model calls; Match row conditions are supported
+without rewriting model programs. [Evidence](report/match_row_link_20260912.md).
+Do not require perfect generation before independent physical experiments.
+Next implement the small [FinBench paid-selection pilot](decisions/finbench_paid_selection_pilot_v1.md):
+fixed hash/fixed bind/paid dual-plan acquisition, first original3 integration IDs
+then original48 with preserved failures/exposure. Reuse original artifacts and
+charge acquisition to the current method; do not disguise strategies as replicas
+or claim an unimplemented P1/A3 bridge. Later next-action entries are historical.
 
 ## Next LINK gate — output projection, using the saved actual model responses
 

@@ -1,15 +1,16 @@
 # XGAP Status
 
-## Current LINK — requested output enforced; new actual admission 3/5
+## Current LINK — complete native cohort, three exact answers out of five
 
-The optional request-owned output contract and separate v3 toy profile are
-implemented; 23 focused checks and two review-driven CLI rejection checks pass.
-Five new versioned external calls cost 12169 tokens/16.231s: B01/B04/B05 admitted,
-B02/B03 rejected. Their missing age production is preserved for local diagnosis.
-No new native gate ran because the full admission prerequisite failed; all five
-answers remain unmeasured. This is not 3/5 answer accuracy or a comparison with
-the earlier weaker parser's 5/5. [Current evidence](report/requested_output_link_20260911.md).
-External serving is available; real-model LINK and fair evaluation remain open.
+Match row constraints now compile through the existing normalized-row Filter;
+10 focused compiler and7 cohort checks pass. One actual Neo4j/Fuseki run over
+the five immutable v3 recordings returns exact answers for B01/B04/B05 and retains
+Interpretation failures for B02/B03. Complete denominator5, strict3/5, zero new
+model calls,10 observation+5 execution calls. B01 selected a cross-engine plan;
+B04/B05 selected Fuseki. Services stopped and PIDs are verified absent.
+[Current evidence](report/match_row_link_20260912.md). All-correct quality remains
+false, but real model-to-native correct-answer execution is verified. Next the
+real E2 paid-selection baseline; no repeated prompt tuning or old gate is needed.
 
 ## Current LINK — external model available; native output-contract failure retained
 
