@@ -1,0 +1,199 @@
+{
+  "core": {
+    "replicas": [
+      "neo4j",
+      "fuseki"
+    ],
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "label": "Person",
+          "properties": {
+            "id": "a",
+            "name": "Alice",
+            "age": 30,
+            "score": 1,
+            "note": "open",
+            "flag": true,
+            "floor": -9223372036854775808,
+            "amount": 9007199254740993
+          }
+        },
+        {
+          "id": "b",
+          "label": "Person",
+          "properties": {
+            "id": "b",
+            "name": "Bob",
+            "age": 22,
+            "score": 1.0,
+            "note": "closed",
+            "flag": false,
+            "amount": 2
+          }
+        },
+        {
+          "id": "c",
+          "label": "Person",
+          "properties": {
+            "id": "c",
+            "name": "Cara",
+            "age": 40,
+            "score": true,
+            "flag": 1
+          }
+        },
+        {
+          "id": "d",
+          "label": "Person",
+          "properties": {
+            "id": "d",
+            "name": "Dan",
+            "age": 19,
+            "score": "1",
+            "note": "open",
+            "flag": 0
+          }
+        },
+        {
+          "id": "z",
+          "label": "Person",
+          "properties": {
+            "id": "z",
+            "name": "Zoe",
+            "age": 50
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "a",
+          "target": "b",
+          "label": "KNOWS",
+          "properties": {
+            "weight": 1
+          }
+        },
+        {
+          "id": "e2",
+          "source": "b",
+          "target": "c",
+          "label": "KNOWS",
+          "properties": {
+            "weight": true
+          }
+        },
+        {
+          "id": "e3",
+          "source": "c",
+          "target": "a",
+          "label": "KNOWS",
+          "properties": {
+            "weight": "1"
+          }
+        },
+        {
+          "id": "e4",
+          "source": "a",
+          "target": "c",
+          "label": "KNOWS"
+        },
+        {
+          "id": "e5",
+          "source": "c",
+          "target": "d",
+          "label": "KNOWS",
+          "properties": {
+            "weight": 0
+          }
+        },
+        {
+          "id": "e6",
+          "source": "d",
+          "target": "d",
+          "label": "KNOWS"
+        },
+        {
+          "id": "e7",
+          "source": "a",
+          "target": "b",
+          "label": "KNOWS",
+          "properties": {
+            "weight": 1.0
+          }
+        },
+        {
+          "id": "e8",
+          "source": "b",
+          "target": "d",
+          "label": "KNOWS",
+          "properties": {
+            "weight": false
+          }
+        }
+      ]
+    }
+  },
+  "credit": {
+    "replicas": [
+      "fuseki"
+    ],
+    "graph": {
+      "nodes": [
+        {
+          "id": "a",
+          "label": "Person",
+          "properties": {
+            "id": "a",
+            "credit": {
+              "type": "literal",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "value": "10000000000000000000000.10"
+            }
+          }
+        },
+        {
+          "id": "b",
+          "label": "Person",
+          "properties": {
+            "id": "b",
+            "credit": {
+              "type": "literal",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "value": "0.20"
+            }
+          }
+        },
+        {
+          "id": "c",
+          "label": "Person",
+          "properties": {
+            "id": "c"
+          }
+        },
+        {
+          "id": "d",
+          "label": "Person",
+          "properties": {
+            "id": "d",
+            "credit": {
+              "type": "literal",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "value": "-0.05"
+            }
+          }
+        },
+        {
+          "id": "z",
+          "label": "Person",
+          "properties": {
+            "id": "z"
+          }
+        }
+      ],
+      "edges": []
+    }
+  }
+}

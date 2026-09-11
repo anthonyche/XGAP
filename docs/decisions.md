@@ -1,5 +1,12 @@
 # XGAP Design Decisions
 
+User-directed finite support scope and the distinction between Interpretation
+and executable semantics: [bounded system scope v1](decisions/bounded_system_scope_v1.md).
+
+Current binding-row precision, numeric identity, COUNT/DISTINCT and null ordering
+are specified separately from the path algebra in
+[typed binding values v1](decisions/typed_binding_values_v1.md).
+
 Current finite nested path work is specified in
 [scoped path execution](decisions/scoped_path_execution_v1.md): native
 subexpressions plus existing path operations at the coordinator, with local

@@ -19,6 +19,7 @@ from xgap.pattern.ast import NodePattern
 from xgap.runtime.bounded_paths import compile_bounded_path_plan
 from xgap.runtime.contracts import FederatedExecutionPlan, RuntimeNode, RuntimeNodeKind as R
 from xgap.runtime.row_operations import condition_fields
+from xgap.runtime.scalars import PROFILE as BINDING_VALUE_PROFILE
 from xgap.runtime.scheduler import FederatedScheduler
 from xgap.runtime.semantic_capabilities import admit_semantic_capabilities
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S, SemanticProgramError, SemanticValueKind as V
@@ -206,8 +207,6 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
             for spec in p["aggregations"].values():
                 if spec.get("field") is not None:
                     _fields((spec["field"],), sources[0].fields)
-                if spec.get("op") == "count" and spec.get("field") is not None:
-                    raise SemanticProgramError("This count profile counts rows, not nullable fields")
             params = {**p, "allow_global": True}
             node = RuntimeNode("validate-aggregate", R.COORDINATOR_GROUP_AGGREGATE, ("input",), params)
             FederatedScheduler._group_aggregate(node, ())
@@ -241,7 +240,7 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
     admission = admit_semantic_capabilities(program, nodes, backends)
     serialized = json.dumps(program.to_dict(), sort_keys=True, separators=(",", ":"), allow_nan=False)
     return FederatedExecutionPlan(program.program_id, tuple(nodes), tuple(outputs[r] for r in program.roots),
-        max_remote_calls, max_parallelism, {"compiler": "semantic_dag_v1",
+        max_remote_calls, max_parallelism, {"compiler": "semantic_dag_v1", "binding_value_profile": BINDING_VALUE_PROFILE,
         "semantic_program_sha256": hashlib.sha256(serialized.encode()).hexdigest(),
         "source_bindings": dict(source_bindings), "operator_outputs": outputs,
         **({"capability_admission": admission} if admission else {}),

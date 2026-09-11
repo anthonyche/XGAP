@@ -43,7 +43,41 @@ hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
-## Current milestone — native Boolean conditions
+## Current milestone — typed binding values
+
+Base400f0cf; scoped decision docs/decisions/typed_binding_values_v1.md. Current
+implementation and final native gate are ACCEPTED. Final broad24384 exit0:
+3334 passed/38 skipped/670.66s and all24 harness/example entrypoints passed;
+log /tmp/xgap-t1-typed-binding-acceptance.log. All handles are terminal; do not
+repeat passed gates without a change. No source/test changes after broad launch.
+Focused2033 exit0:208/5.48s; daily7865 exit0:489/26.35s+18 demo; final changed
+reference replay60153 exit0:53/1.19s. Local native Jena ARQ references15/15 pass.
+
+Retained native15 programs/32 candidate answers/27 independent targets and old
+slice pass: V01–V04 from t1-typed-binding-native-final-20260911; V05–V15 from
+t1-typed-binding-native-completion-20260911. Final selected plans15/15 identical
+to recorded native execution; all candidate IDs match current enumeration.
+Native sessions40877/50945/58476 terminated exit1 on reference-query mismatches,
+not runtime answer failure. Completion73125 exit0; all owned service pairs
+stopped normally. No native handles remain active. Current source differs from
+first two native snapshots only in runner query-subset selection; later native
+source hashes match exactly. Do not rerun accepted native cases without a change.
+
+Receipt experiments/artifacts/toy_backbone_t1_typed_bindings_20260911.json is
+accepted; report docs/report/toy_backbone_t1_typed_bindings.md records all
+failures/costs. User asks for realized goals and the
+distance to the full system after submission; report xgap_progress_20260911.md
+is current. Overall Goal stays ACTIVE; the old overnight pause was completed.
+
+Latest user clarification: XGAP need not implement every possible query. First
+freeze a finite independently defined support profile, distinguish Interpretation
+from representability/compiler/runtime correctness, close included gaps and move
+to T2. See docs/decisions/bounded_system_scope_v1.md. Outside-profile forms do
+not become an endless implementation backlog. Existing query guards are not
+performance evidence; proposed3-hop workload settings are not a new enforced
+universal limit. Benchmark choices and full coverage denominators stay fixed.
+
+## Accepted predecessor — native Boolean conditions
 
 On base bafce8e, total AND/OR/NOT is ACCEPTED for modern paths and Match.
 Decision: docs/decisions/native_boolean_conditions_v1.md. Separate overlay has20

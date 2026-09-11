@@ -38,6 +38,8 @@ from xgap.experiments.toy_repetition import FIXTURE as REPETITION_FIXTURE, load_
 from xgap.experiments.toy_scoped import FIXTURE as SCOPED_FIXTURE, load_scoped_cases, execute_scoped_case
 from xgap.experiments.toy_boolean import (FIXTURE as BOOLEAN_FIXTURE, load_boolean_cases,
     load_boolean_matches, execute_boolean_case, boolean_match_reference, boolean_match_reference_rows)
+from xgap.experiments.toy_typed import (FIXTURE as TYPED_FIXTURE, load_typed_fixture,
+    typed_sources, typed_reference, typed_reference_rows, typed_rows_match)
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 
@@ -69,11 +71,20 @@ def main(argv=None):
         help="Run nested scopes through semantic Traverse and candidate planning")
     selection.add_argument("--boolean", action="store_true",
         help="Run scalar Boolean paths, Match, independent targets and normal planning")
+    selection.add_argument("--typed-bindings", action="store_true",
+        help="Run exact typed aggregates, nullable ordering, joins and explicit source placement")
+    parser.add_argument("--typed-query-ids", nargs="+",
+        choices=[c["id"] for c in load_typed_fixture()[1]],
+        help="With --typed-bindings, run only these cases for a bounded failure follow-up")
     parser.add_argument("--scoped-planning-only", action="store_true",
         help="With --scoped, run only the remaining planning checks and retained slice")
     parser.add_argument("--boolean-followup-only", action="store_true",
         help="With --boolean, verify Match, planning and retained slice without repeating path targets")
     args = parser.parse_args(argv)
+    if args.typed_query_ids and not args.typed_bindings:
+        parser.error("--typed-query-ids requires --typed-bindings")
+    typed_cases = [c for c in load_typed_fixture()[1]
+                   if not args.typed_query_ids or c["id"] in args.typed_query_ids]
     if args.boolean_followup_only and not args.boolean:
         parser.error("--boolean-followup-only requires --boolean")
     if args.scoped_planning_only and not args.scoped:
@@ -87,7 +98,9 @@ def main(argv=None):
             parser.error("Prepare the pinned native distributions before running toy tests")
     java = inspect_java_runtime(java_command=args.java, required_major=21)
     data, cases, mapping = load_fixture()
-    load_root = BOOLEAN_FIXTURE if args.boolean else DEFAULT_FIXTURE
+    load_root = TYPED_FIXTURE if args.typed_bindings else BOOLEAN_FIXTURE if args.boolean else DEFAULT_FIXTURE
+    if args.typed_bindings:
+        data, _, mapping = load_typed_fixture()
     if args.boolean:
         data, _, mapping = load_fixture(BOOLEAN_FIXTURE)
     root = Path(args.output).resolve()
@@ -111,12 +124,12 @@ def main(argv=None):
             "src/xgap/algebra/ops.py", "src/xgap/algebra/validation.py",
             "src/xgap/pattern/lowering.py", "src/xgap/compilers/features.py",
             "src/xgap/experiments/toy_orientation.py"))
-    if args.semantic_dag or args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped or args.boolean:
+    if args.semantic_dag or args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped or args.boolean or args.typed_bindings:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/experiments/toy_semantic.py", "src/xgap/compilers/node_match.py",
             "src/xgap/runtime/semantic_compiler.py", "src/xgap/runtime/row_operations.py",
             "src/xgap/semantic/program.py", "src/xgap/runtime/semantic_capabilities.py"))
-    if args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped or args.boolean:
+    if args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped or args.boolean or args.typed_bindings:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
             "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
@@ -141,7 +154,12 @@ def main(argv=None):
     if args.boolean:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/compilers/boolean_conditions.py", "src/xgap/experiments/toy_boolean.py"))
-    record = {"success": False, "scope": ("T1 total scalar Boolean conditions" if args.boolean else
+    if args.typed_bindings:
+        source_files.extend(REPO / relative for relative in (
+            "src/xgap/runtime/scalars.py", "src/xgap/runtime/binding_operations.py",
+            "src/xgap/experiments/toy_typed.py", "src/xgap/compilers/boolean_conditions.py"))
+    record = {"success": False, "scope": ("T1 typed binding values" if args.typed_bindings else
+                                           "T1 total scalar Boolean conditions" if args.boolean else
                                            "T1 finite nested path scopes" if args.scoped else
                                            "T1 optional and finite repetition" if args.repetition else
                                            "T1 semantic capability admission" if args.capability_semantic else
@@ -192,6 +210,13 @@ def main(argv=None):
                        else [c["id"] for c in load_boolean_cases()]),
             boolean_fixture_sha256={str(p.relative_to(BOOLEAN_FIXTURE)): hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in BOOLEAN_FIXTURE.rglob("*") if p.is_file()})
+    if args.typed_bindings:
+        record.update(typed_planned_cases=[], typed_reference_targets=[],
+            query_ids=[c["id"] for c in typed_cases],
+            typed_fixture_sha256={str(p.relative_to(TYPED_FIXTURE)): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in TYPED_FIXTURE.rglob("*") if p.is_file()},
+            logical_sources={name: {"version": source.snapshot_version, "replicas": source.replica_backend_ids}
+                for name, source in typed_sources().items()})
     if args.scoped:
         record.update(scoped_reference_targets=[], scoped_planned_cases=[],
             scoped_planning_only=args.scoped_planning_only,
@@ -281,6 +306,8 @@ def main(argv=None):
             selected = [] if args.scoped_planning_only else load_scoped_cases()
         if args.boolean:
             selected = [] if args.boolean_followup_only else load_boolean_cases()
+        if args.typed_bindings:
+            selected = []
         for case in selected:
             for backend, client in (("neo4j", neo), ("fuseki", rdf)):
                 item = {"query_id": case["id"], "backend": backend, "status": "started", "success": False}
@@ -442,6 +469,31 @@ def main(argv=None):
                 save()
                 if not item["success"]:
                     raise RuntimeError(f"Boolean planning failed: {case['id']}; no retry")
+        if args.typed_bindings:
+            for case in typed_cases:
+                record["phase"] = "typed-planning-" + case["id"]
+                item = {"query_id": case["id"], "success": False, "status": "started"}
+                record["typed_planned_cases"].append(item)
+                save()
+                item.update(execute_planned_semantic_case(case, mapping,
+                    clients={"neo4j": neo, "fuseki": rdf}, logical_sources=typed_sources(),
+                    operator_sources=case["operator_sources"], max_observation_calls=8), status="completed")
+                save()
+                if not item["success"]:
+                    raise RuntimeError(f"Typed planning failed: {case['id']}; no retry")
+                for backend in case["reference_target_queries"]:
+                    record["phase"] = "typed-reference-" + case["id"] + "-" + backend
+                    reference = {"query_id": case["id"], "backend": backend, "success": False}
+                    record["typed_reference_targets"].append(reference)
+                    save()
+                    artifact = typed_reference(case, backend)
+                    execution = {"neo4j": neo, "fuseki": rdf}[backend].execute(artifact)
+                    actual = typed_reference_rows(execution, backend, case["reference_columns"])
+                    reference.update(artifact=artifact.to_dict(), execution=execution.to_dict(),
+                        actual_rows=actual, success=execution.success and typed_rows_match(case, actual))
+                    save()
+                    if not reference["success"]:
+                        raise RuntimeError(f"Typed independent reference failed: {case['id']}/{backend}; no retry")
         record["phase"] = "compiled-federated-slice"
         save()
         record["vertical_slice"] = execute_vertical_slice(cases[-1], mapping, neo4j=neo, fuseki=rdf)
@@ -469,6 +521,8 @@ def main(argv=None):
         "binding_references_passed": sum(x["success"] for x in record.get("binding_reference_targets", [])),
         "orientation_references_passed": sum(x["success"] for x in record.get("orientation_reference_targets", [])),
         "repetition_references_passed": sum(x["success"] for x in record.get("repetition_reference_targets", [])),
+        "typed_planned_passed": sum(x["success"] for x in record.get("typed_planned_cases", [])),
+        "typed_references_passed": sum(x["success"] for x in record.get("typed_reference_targets", [])),
         "boolean_references_passed": sum(x["success"] for x in record.get("boolean_reference_targets", [])),
         "boolean_matches_passed": sum(x["success"] for x in record.get("boolean_matches", [])),
         "boolean_match_references_passed": sum(x["success"] for x in record.get("boolean_match_references", [])),

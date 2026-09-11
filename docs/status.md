@@ -1,5 +1,23 @@
 # XGAP Status
 
+## Current engineering — typed binding values accepted
+
+On base400f0cf, the shared binding scalar contract now fixes exact integer/RDF
+decimal aggregation, COUNT(field)/DISTINCT, grouping/join equality and nullable
+ordering. PathSet/focused-binding algebra is unchanged. Fifteen independent
+programs have native15/15 answers,32/32 candidate answers and27/27 independent
+targets, plus the retained old two-engine slice. Explicit core/credit source
+views avoid claiming a Neo4j arbitrary-precision decimal replica. Focused208,
+daily489+18 demo and final reference replay53 pass. Native15 selected plans
+match current compilation exactly. Final broad session24384 exit0:3334 passed/
+38 skipped in670.66s, all24 harness/example entrypoints passed. This step is
+accepted; all handles are terminal. Earlier reference-query failures remain recorded.
+See [typed binding report](report/toy_backbone_t1_typed_bindings.md) and the
+[user-facing progress report](report/xgap_progress_20260911.md). No source/test
+changes after broad launch. Next freeze the finite support profile per the user
+clarification in decisions/bounded_system_scope_v1.md; close only included gaps,
+then T2 Interpretation/catalog/replay. Full T1/T2/T3 and overall Goal remain unfinished.
+
 ## Current engineering — native Boolean conditions accepted
 
 Modern Match and finite path compilation now implement total AND/OR/NOT,

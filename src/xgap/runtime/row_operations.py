@@ -7,11 +7,11 @@ from decimal import Decimal, InvalidOperation
 
 from xgap.backends.rdf_terms import RdfTerm, XSD_STRING
 from xgap.compilers.rdf_encoding import RdfRowEncoding
+from xgap.runtime.scalars import numeric, value_key, distinct_rows as _typed_distinct
 
 
 def distinct_rows(rows, *, preserve_order=False):
-    unique = {json.dumps(row, sort_keys=True, separators=(",", ":")): row for row in rows}
-    return tuple(unique.values()) if preserve_order else tuple(unique[key] for key in sorted(unique))
+    return _typed_distinct(rows, preserve_order=preserve_order)
 
 
 def condition_fields(condition):
@@ -60,7 +60,7 @@ def _matches(row, c):
     if numeric:
         left, right = numbers
     if op in ("eq", "ne"):
-        equal = (numeric or type(left) is type(right)) and left == right
+        equal = value_key(left) == value_key(right)
         return equal if op == "eq" else not equal
     if not numeric:
         return False
@@ -68,22 +68,8 @@ def _matches(row, c):
 
 
 def _number(value):
-    if isinstance(value, Real) and not isinstance(value, bool):
-        result = Decimal(str(value))
-    elif isinstance(value, dict) and value.get("type") in ("literal", "typed-literal"):
-        term = RdfTerm.from_binding(value)
-        if term.datatype not in {"http://www.w3.org/2001/XMLSchema#" + t
-                                for t in ("decimal", "integer", "double", "float")}:
-            return None
-        try:
-            result = Decimal(term.value)
-        except InvalidOperation as error:
-            raise ValueError("Invalid RDF numeric lexical form") from error
-    else:
-        return None
-    if not result.is_finite():
-        raise ValueError("Row numeric values must be finite")
-    return result
+    number = numeric(value)
+    return number.value if number is not None else None
 
 
 def filter_rows(rows, condition):
@@ -130,13 +116,11 @@ def _rdf_scalar(value):
     local = term.datatype.removeprefix("http://www.w3.org/2001/XMLSchema#")
     if term.datatype == XSD_STRING:
         return term.value
-    if local in ("integer", "int", "long", "short", "byte", "nonNegativeInteger", "positiveInteger"):
-        return int(term.value)
-    if local in ("double", "float"):
-        value = float(term.value)
-        if not math.isfinite(value):
-            raise ValueError("Native scalar must be finite")
-        return value
+    number = numeric(value)  # Validate the declared datatype before erasing its tag.
+    if number is not None and number.kind == "integer":
+        return int(number.value)
+    if number is not None and number.kind == "float":
+        return float(number.value)
     if local == "boolean":
         if term.value not in ("true", "false", "1", "0"):
             raise ValueError("Invalid RDF boolean")

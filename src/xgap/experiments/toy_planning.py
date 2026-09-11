@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+from pathlib import Path
 
 from xgap.experiments.toy_backbone import load_fixture
 from xgap.experiments.toy_semantic import toy_backends
@@ -11,12 +12,18 @@ from xgap.semantic.program import SemanticGraphProgram
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, CatalogBackendPlugin
 
 
-def execute_planned_semantic_case(case, mapping, *, clients, max_observation_calls=4, fixture_root=None):
-    graph, _, _ = load_fixture(fixture_root) if fixture_root is not None else load_fixture()
-    version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
+def execute_planned_semantic_case(case, mapping, *, clients, max_observation_calls=4, fixture_root=None,
+                                  logical_sources=None, operator_sources=None):
+    if (logical_sources is None) != (operator_sources is None):
+        raise ValueError("Explicit logical sources and operator sources must be supplied together")
+    if logical_sources is None:
+        graph = (json.loads((Path(fixture_root) / "graph.json").read_text())
+                 if fixture_root is not None else load_fixture()[0])
+        version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
+        logical_sources = {"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))}
+        operator_sources = {op: "toy" for op in case["source_bindings"]}
     space = enumerate_semantic_plans(SemanticGraphProgram.from_dict(case["program"]),
-        operator_sources={op: "toy" for op in case["source_bindings"]},
-        sources={"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))},
+        operator_sources=operator_sources, sources=logical_sources,
         backends=toy_backends(mapping), max_candidates=4, max_observation_calls=max_observation_calls)
     plugins = BackendPluginRegistry()
     for backend, catalog in space.observation_catalogs.items():

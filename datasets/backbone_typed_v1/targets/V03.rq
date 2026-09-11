@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT (COUNT(*) AS ?people) (COUNT(?score) AS ?present) (COUNT(DISTINCT ?canonical) AS ?unique) WHERE { ?n a t:Person . OPTIONAL { ?n t:score ?score } BIND(IF(isNumeric(?score),xsd:integer(FLOOR(xsd:decimal(?score))),?score) AS ?canonical) }
