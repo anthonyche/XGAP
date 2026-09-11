@@ -1,6 +1,19 @@
 # XGAP Roadmap
 
-## Next gate — real-input, forecast and answer interfaces
+## Next gate — INT-1 storage encoding, then real answer/forecast interfaces
+
+INT-0 recovered seven GrailQA input files against the original150-ID manifest,
+with no reselection/catalog rebuild. The fixed two-query diagnostic identifies
+the concrete missing raw-RDF/Neo4j-mirror adapter to ordinary PathSet Traverse;
+see [the evidence](report/real_input_recovery_20260911.md). Implement this bounded
+representation adapter on tiny graphs, preserving genuine node/edge identity,
+direction, constraints and answer position. Do not rebuild a large graph or
+expand query semantics. [The INT-1 contract](decisions/freebase_resource_path_encoding_v1.md)
+defines the bounded encoding and four tiny acceptance cases; implementation is pending.
+Recover FinBench's original remote workpack separately;
+its existing partition strategies are not replica placement alternatives.
+
+## Accepted A3 and remaining experiment interfaces
 
 A3 one-request predictive stop/acquire is implemented and accepted; see
 [the evidence](report/semantic_acquisition_20260911.md). Fourteen unique new cases,

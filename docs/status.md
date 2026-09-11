@@ -1,5 +1,20 @@
 # XGAP Status
 
+## INT-0 frozen real-input recovery complete; storage adapter identified
+
+Seven required GrailQA pilot files are recovered with exact original bytes/SHA,
+using the original150 IDs and verified public sources. No catalog, fact scan,
+model, backend or regression run. Two fixed real questions now have controlled
+typed wrappers; Fuseki rejects missing edge identity, and compiled canonical
+Cypher does not match the existing RDF mirror loader. No actual answers measured.
+See [INT-0 evidence and remaining implementation](report/real_input_recovery_20260911.md).
+
+Next INT-1 supplies a bounded raw-RDF/mirror PathSet encoding adapter on tiny data.
+Existing fact loaders/answer code are present; real fact artifacts and observations
+remain unavailable locally. FinBench's frozen workpack needs recovery and its
+partition/hash-bind alternatives must not be treated as equivalent replicas.
+Forecast inputs, model LINK and formal E1–E5 remain unfinished.
+
 ## A3 predictive acquisition/stopping through the ordinary entry accepted
 
 A typed finite-outcome policy now compares immediate execution with one nominated

@@ -1,5 +1,16 @@
 # XGAP Design Decisions
 
+## INT-0: restore exact inputs and adapt declared storage semantics
+
+Preserve original GrailQA150 IDs and per-file hashes; restore only necessary
+metadata without selection/catalog rebuilding. Typed reference wrappers remain
+evaluation-only. Canonical query compilation does not establish compatibility
+with the existing raw-RDF/Neo4j mirror encoding. The next adapter must emit real
+PathSet identities, not substitute answer rows or silently rewrite source data.
+Existing fact/answer modules are distinguished from unavailable local artifacts.
+FinBench hash/bind partition alternatives do not meet P1's equivalent-replica
+assumption. See [INT-0 evidence](report/real_input_recovery_20260911.md).
+
 ## A3: predictive net benefit gates one nominated acquisition
 
 [The contract](decisions/semantic_acquisition_v1.md) compares stop(p0) with one

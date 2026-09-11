@@ -23,6 +23,11 @@ Its two-arm tiny native gate passes, but fixed-order actual time favors no-repla
 A3 now implements a finite-forecast, cost-aware one-request stop/acquire rule with
 conditional decision-regret bounds; see [A3 evidence](report/semantic_acquisition_20260911.md).
 Prepared/calibrated real forecasts and real-model/data evaluation remain gaps.
+INT-0 has recovered seven original GrailQA pilot files by exact hash and retained
+two fixed real-input compiler diagnostics. It identifies a missing raw-RDF/mirror
+encoding adapter, not a missing catalog algorithm; see
+[INT-0 evidence](report/real_input_recovery_20260911.md). Next INT-1 addresses that
+representation boundary on tiny data, with no change to formal populations.
 Statements below describing the initial missing implementation are historical
 planning context, not a claim that the replacement is still absent.
 

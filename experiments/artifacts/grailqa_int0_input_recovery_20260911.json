@@ -1,0 +1,854 @@
+{
+  "diagnostic": {
+    "catalog_builds": 0,
+    "formal_population_size": 150,
+    "llm_calls": 0,
+    "native_calls": 0,
+    "paper_result": false,
+    "reference_files_sha256": {
+      "backend_mapping.yaml": "b80b6119d6b8ca14fa559c34632602e8544e19920a89e4ce36b265d0d4ea60b4",
+      "reference_interpretations.jsonl": "908b8acb2fdfa43d334527cf3bb949daabee430db25678fee013105abaa3b3e9"
+    },
+    "rows": [
+      {
+        "actual_answers": null,
+        "answer_accuracy": null,
+        "answer_path_position": 1,
+        "canonical_mapping_compilation": {
+          "fuseki": {
+            "compatible_with_existing_fact_loader": false,
+            "compiled": false,
+            "error": "PathSet compilation requires explicit RDF edge identity",
+            "error_type": "UnsupportedCompilationError"
+          },
+          "neo4j": {
+            "compatible_with_existing_fact_loader": false,
+            "compiled": true,
+            "plan": {
+              "max_parallelism": 4,
+              "max_remote_calls": 16,
+              "metadata": {
+                "binding_value_profile": "typed_binding_values_v1",
+                "compiler": "semantic_dag_v1",
+                "operator_outputs": {
+                  "answer": "answer/project",
+                  "traverse": "traverse/paths"
+                },
+                "schemas": {
+                  "answer": {
+                    "fields": [
+                      "answer"
+                    ],
+                    "kind": "binding_set",
+                    "path_namespace": null
+                  },
+                  "traverse": {
+                    "fields": [
+                      "path"
+                    ],
+                    "kind": "path_set",
+                    "path_namespace": "http://rdf.freebase.com/ns/"
+                  }
+                },
+                "semantic_program_sha256": "a6b2338c9bd5d517b30510298dfc85cae5541f65b7c048014e25e4b08b903b36",
+                "source_bindings": {
+                  "traverse": "neo4j"
+                }
+              },
+              "nodes": [
+                {
+                  "inputs": [],
+                  "kind": "remote_query",
+                  "node_id": "traverse/candidates",
+                  "parameters": {
+                    "artifact": {
+                      "artifact_id": "bounded-paths",
+                      "kind": "compiled",
+                      "language": "cypher",
+                      "parameters": {
+                        "backend_execution_verified": false,
+                        "branch_count": 1,
+                        "branch_edge_counts": [
+                          1
+                        ],
+                        "compiler": "bounded_native_paths_v1",
+                        "output_columns": [
+                          "length",
+                          "n0",
+                          "e1",
+                          "n1"
+                        ],
+                        "path_selection": {
+                          "identity_property": "type.object.id",
+                          "k": null,
+                          "language": "cypher",
+                          "max_edges": 1,
+                          "post_shortest_lengths": [],
+                          "recursive_shortest": false,
+                          "resource_namespace": "http://rdf.freebase.com/ns/",
+                          "selector": "ALL"
+                        },
+                        "required_features": [
+                          "graph_model.directed_edges",
+                          "graph_model.edge_labels",
+                          "graph_model.labeled_property_graph",
+                          "graph_model.node_identity_predicates",
+                          "graph_model.node_labels",
+                          "graph_model.scalar_property_predicates",
+                          "native.cypher",
+                          "result_model.row_bindings"
+                        ],
+                        "result_model": "path_candidates",
+                        "target_backend_id": "neo4j"
+                      },
+                      "source_path": null,
+                      "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE coalesce(n0:`protected_sites.site_listing_category`, false)\n  AND coalesce(n1:`protected_sites.natural_or_cultural_site_designation`, false)\n  AND (coalesce(n1.`type.object.id` = \"m.09qx9m\", false))\n  AND (type(e1) = \"protected_sites.site_listing_category.category_of\")\n  AND coalesce(n0 <> n1, false)\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1"
+                    },
+                    "backend_id": "neo4j"
+                  },
+                  "semantic_operator_ids": [
+                    "traverse"
+                  ]
+                },
+                {
+                  "inputs": [
+                    "traverse/candidates"
+                  ],
+                  "kind": "coordinator_path_select",
+                  "node_id": "traverse/paths",
+                  "parameters": {
+                    "identity_property": "type.object.id",
+                    "k": null,
+                    "language": "cypher",
+                    "max_edges": 1,
+                    "post_shortest_lengths": [],
+                    "recursive_shortest": false,
+                    "resource_namespace": "http://rdf.freebase.com/ns/",
+                    "selector": "ALL"
+                  },
+                  "semantic_operator_ids": [
+                    "traverse"
+                  ]
+                },
+                {
+                  "inputs": [
+                    "traverse/paths"
+                  ],
+                  "kind": "coordinator_row_project",
+                  "node_id": "answer/project",
+                  "parameters": {
+                    "projections": {
+                      "answer": {
+                        "kind": "path_node",
+                        "position": 1
+                      }
+                    },
+                    "resource_namespace": "http://rdf.freebase.com/ns/"
+                  },
+                  "semantic_operator_ids": [
+                    "answer"
+                  ]
+                }
+              ],
+              "plan_id": "int0-controlled-reference-2100061004000",
+              "roots": [
+                "answer/project"
+              ]
+            },
+            "reason": "canonical-label compiler output does not implement rdf-resource-edge-mirror-v1"
+          }
+        },
+        "native_calls": 0,
+        "official_gold_answer_count": 10,
+        "official_sparql": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX : <http://rdf.freebase.com/ns/> \nSELECT (?x0 AS ?value) WHERE {\nSELECT DISTINCT ?x0  WHERE { \n?x0 :type.object.type :protected_sites.site_listing_category . \nVALUES ?x1 { :m.09qx9m } \n?x0 :protected_sites.site_listing_category.category_of ?x1 . \nFILTER ( ?x0 != ?x1  )\n}\n}",
+        "program": {
+          "holes": [],
+          "metadata": {
+            "evaluation_only": true,
+            "interpretation_source": "evaluation_only_controlled_reference",
+            "interpretation_success_measured": false,
+            "question_id": "2100061004000"
+          },
+          "operators": [
+            {
+              "constraints": [],
+              "input_ids": [],
+              "input_kinds": [],
+              "kind": "traverse",
+              "operator_id": "traverse",
+              "output_kind": "path_set",
+              "parameters": {
+                "path_pattern": {
+                  "condition": {
+                    "kind": "node_not_equals",
+                    "left": {
+                      "kind": "node",
+                      "position": 1
+                    },
+                    "right": {
+                      "kind": "node",
+                      "position": 2
+                    }
+                  },
+                  "expr": {
+                    "edge": {
+                      "direction": "OUT",
+                      "label": "protected_sites.site_listing_category.category_of",
+                      "properties": {},
+                      "var": "edge_1"
+                    },
+                    "kind": "rel"
+                  },
+                  "max_depth": null,
+                  "path_var": "path",
+                  "restrictor": "SIMPLE",
+                  "selector": {
+                    "k": null,
+                    "kind": "ALL"
+                  },
+                  "source": {
+                    "label": "protected_sites.site_listing_category",
+                    "properties": {},
+                    "var": "answer"
+                  },
+                  "target": {
+                    "label": "protected_sites.natural_or_cultural_site_designation",
+                    "properties": {
+                      "type.object.id": "m.09qx9m"
+                    },
+                    "var": "anchor"
+                  }
+                }
+              },
+              "required_capabilities": []
+            },
+            {
+              "constraints": [],
+              "input_ids": [
+                "traverse"
+              ],
+              "input_kinds": [
+                "path_set"
+              ],
+              "kind": "project",
+              "operator_id": "answer",
+              "output_kind": "binding_set",
+              "parameters": {
+                "projections": {
+                  "answer": {
+                    "kind": "path_node",
+                    "position": 1
+                  }
+                }
+              },
+              "required_capabilities": []
+            }
+          ],
+          "program_id": "int0-controlled-reference-2100061004000",
+          "roots": [
+            "answer"
+          ]
+        },
+        "question": "national landscape conservation system has which site listing category?",
+        "question_id": "2100061004000",
+        "reference_equivalence_to_official_query": "unverified_additional_anchor_type_constraint",
+        "status": "encoding_adapter_missing"
+      },
+      {
+        "actual_answers": null,
+        "answer_accuracy": null,
+        "answer_path_position": 1,
+        "canonical_mapping_compilation": {
+          "fuseki": {
+            "compatible_with_existing_fact_loader": false,
+            "compiled": false,
+            "error": "PathSet compilation requires explicit RDF edge identity",
+            "error_type": "UnsupportedCompilationError"
+          },
+          "neo4j": {
+            "compatible_with_existing_fact_loader": false,
+            "compiled": true,
+            "plan": {
+              "max_parallelism": 4,
+              "max_remote_calls": 16,
+              "metadata": {
+                "binding_value_profile": "typed_binding_values_v1",
+                "compiler": "semantic_dag_v1",
+                "operator_outputs": {
+                  "answer": "answer/project",
+                  "traverse": "traverse/paths"
+                },
+                "schemas": {
+                  "answer": {
+                    "fields": [
+                      "answer"
+                    ],
+                    "kind": "binding_set",
+                    "path_namespace": null
+                  },
+                  "traverse": {
+                    "fields": [
+                      "path"
+                    ],
+                    "kind": "path_set",
+                    "path_namespace": "http://rdf.freebase.com/ns/"
+                  }
+                },
+                "semantic_program_sha256": "8f2b14672218841d025def45b205df01392f4304fd8f2c039c4eebe45d095c81",
+                "source_bindings": {
+                  "traverse": "neo4j"
+                }
+              },
+              "nodes": [
+                {
+                  "inputs": [],
+                  "kind": "remote_query",
+                  "node_id": "traverse/candidates",
+                  "parameters": {
+                    "artifact": {
+                      "artifact_id": "bounded-paths",
+                      "kind": "compiled",
+                      "language": "cypher",
+                      "parameters": {
+                        "backend_execution_verified": false,
+                        "branch_count": 1,
+                        "branch_edge_counts": [
+                          1
+                        ],
+                        "compiler": "bounded_native_paths_v1",
+                        "output_columns": [
+                          "length",
+                          "n0",
+                          "e1",
+                          "n1"
+                        ],
+                        "path_selection": {
+                          "identity_property": "type.object.id",
+                          "k": null,
+                          "language": "cypher",
+                          "max_edges": 1,
+                          "post_shortest_lengths": [],
+                          "recursive_shortest": false,
+                          "resource_namespace": "http://rdf.freebase.com/ns/",
+                          "selector": "ALL"
+                        },
+                        "required_features": [
+                          "graph_model.directed_edges",
+                          "graph_model.edge_labels",
+                          "graph_model.labeled_property_graph",
+                          "graph_model.node_identity_predicates",
+                          "graph_model.node_labels",
+                          "graph_model.scalar_property_predicates",
+                          "native.cypher",
+                          "result_model.row_bindings"
+                        ],
+                        "result_model": "path_candidates",
+                        "target_backend_id": "neo4j"
+                      },
+                      "source_path": null,
+                      "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE coalesce(n0:`rail.rail_gauge`, false)\n  AND coalesce(n1:`rail.locomotive_class`, false)\n  AND (coalesce(n1.`type.object.id` = \"m.052dz1\", false))\n  AND (type(e1) = \"rail.rail_gauge.locomotive_classes\")\n  AND coalesce(n0 <> n1, false)\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1"
+                    },
+                    "backend_id": "neo4j"
+                  },
+                  "semantic_operator_ids": [
+                    "traverse"
+                  ]
+                },
+                {
+                  "inputs": [
+                    "traverse/candidates"
+                  ],
+                  "kind": "coordinator_path_select",
+                  "node_id": "traverse/paths",
+                  "parameters": {
+                    "identity_property": "type.object.id",
+                    "k": null,
+                    "language": "cypher",
+                    "max_edges": 1,
+                    "post_shortest_lengths": [],
+                    "recursive_shortest": false,
+                    "resource_namespace": "http://rdf.freebase.com/ns/",
+                    "selector": "ALL"
+                  },
+                  "semantic_operator_ids": [
+                    "traverse"
+                  ]
+                },
+                {
+                  "inputs": [
+                    "traverse/paths"
+                  ],
+                  "kind": "coordinator_row_project",
+                  "node_id": "answer/project",
+                  "parameters": {
+                    "projections": {
+                      "answer": {
+                        "kind": "path_node",
+                        "position": 1
+                      }
+                    },
+                    "resource_namespace": "http://rdf.freebase.com/ns/"
+                  },
+                  "semantic_operator_ids": [
+                    "answer"
+                  ]
+                }
+              ],
+              "plan_id": "int0-controlled-reference-2100063002000",
+              "roots": [
+                "answer/project"
+              ]
+            },
+            "reason": "canonical-label compiler output does not implement rdf-resource-edge-mirror-v1"
+          }
+        },
+        "native_calls": 0,
+        "official_gold_answer_count": 1,
+        "official_sparql": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX : <http://rdf.freebase.com/ns/> \nSELECT (?x0 AS ?value) WHERE {\nSELECT DISTINCT ?x0  WHERE { \n?x0 :type.object.type :rail.rail_gauge . \nVALUES ?x1 { :m.052dz1 } \n?x0 :rail.rail_gauge.locomotive_classes ?x1 . \nFILTER ( ?x0 != ?x1  )\n}\n}",
+        "program": {
+          "holes": [],
+          "metadata": {
+            "evaluation_only": true,
+            "interpretation_source": "evaluation_only_controlled_reference",
+            "interpretation_success_measured": false,
+            "question_id": "2100063002000"
+          },
+          "operators": [
+            {
+              "constraints": [],
+              "input_ids": [],
+              "input_kinds": [],
+              "kind": "traverse",
+              "operator_id": "traverse",
+              "output_kind": "path_set",
+              "parameters": {
+                "path_pattern": {
+                  "condition": {
+                    "kind": "node_not_equals",
+                    "left": {
+                      "kind": "node",
+                      "position": 1
+                    },
+                    "right": {
+                      "kind": "node",
+                      "position": 2
+                    }
+                  },
+                  "expr": {
+                    "edge": {
+                      "direction": "OUT",
+                      "label": "rail.rail_gauge.locomotive_classes",
+                      "properties": {},
+                      "var": "edge_1"
+                    },
+                    "kind": "rel"
+                  },
+                  "max_depth": null,
+                  "path_var": "path",
+                  "restrictor": "SIMPLE",
+                  "selector": {
+                    "k": null,
+                    "kind": "ALL"
+                  },
+                  "source": {
+                    "label": "rail.rail_gauge",
+                    "properties": {},
+                    "var": "answer"
+                  },
+                  "target": {
+                    "label": "rail.locomotive_class",
+                    "properties": {
+                      "type.object.id": "m.052dz1"
+                    },
+                    "var": "anchor"
+                  }
+                }
+              },
+              "required_capabilities": []
+            },
+            {
+              "constraints": [],
+              "input_ids": [
+                "traverse"
+              ],
+              "input_kinds": [
+                "path_set"
+              ],
+              "kind": "project",
+              "operator_id": "answer",
+              "output_kind": "binding_set",
+              "parameters": {
+                "projections": {
+                  "answer": {
+                    "kind": "path_node",
+                    "position": 1
+                  }
+                }
+              },
+              "required_capabilities": []
+            }
+          ],
+          "program_id": "int0-controlled-reference-2100063002000",
+          "roots": [
+            "answer"
+          ]
+        },
+        "question": "british rail class 50 is locomotive class for what rail gauges?",
+        "question_id": "2100063002000",
+        "reference_equivalence_to_official_query": "unverified_additional_anchor_type_constraint",
+        "status": "encoding_adapter_missing"
+      }
+    ],
+    "schema_version": "xgap-int0-grailqa-encoding-diagnostic-v1",
+    "selected_question_ids": [
+      "2100061004000",
+      "2100063002000"
+    ],
+    "selection_policy": "first two original frozen IDs, before inspecting outcomes"
+  },
+  "download": {
+    "archive_sha256": "7717dbae47ba4f6aa8b9df0810db8211460116647c0c06bb26a6b198d0aaa992",
+    "attempts": 1,
+    "automatic_retries": 0,
+    "download_bytes": 17636773,
+    "download_elapsed_seconds": 14.749321833252907,
+    "url": "https://dl.orangedox.com/WyaCpL/?dl=1"
+  },
+  "finbench": {
+    "expected_workload_sha256": "63a8ef36bc7576033db93caa2aa486409bc90ecfc699385b61e7d02be4320a5f",
+    "inspected_roots": [
+      "/Users/anthonyche/xgap-data",
+      "/Users/anthonyche/Developer/XGAP-deliverables",
+      "/Users/anthonyche/Downloads",
+      "repository Git objects",
+      "read-only project sources"
+    ],
+    "limitation": "hash/bind strategies operate on partitions, not equivalent replica placement",
+    "local_workpack_found": false,
+    "remote_paths_unverified": [
+      "/home/hxc859/XGAP-m15-465e2e2/runs/cwru-m15-finbench-confirmatory-freeze-3793747",
+      "/home/hxc859/XGAP-m15-465e2e2/runs/cwru-m15-finbench-confirmatory-population-3793727"
+    ]
+  },
+  "goal_complete": false,
+  "implementation_parent": "e041bea1511d257a8eedfd43af9eab3eac605ede",
+  "ontology_downloads": [
+    {
+      "attempts": 1,
+      "automatic_retries": 0,
+      "filename": "domain_dict",
+      "url": "https://raw.githubusercontent.com/dki-lab/GrailQA/bc15df916ca4101f773722151c90ba3f9eff9df5/ontology/domain_dict"
+    },
+    {
+      "attempts": 1,
+      "automatic_retries": 0,
+      "filename": "domain_info",
+      "url": "https://raw.githubusercontent.com/dki-lab/GrailQA/bc15df916ca4101f773722151c90ba3f9eff9df5/ontology/domain_info"
+    },
+    {
+      "attempts": 1,
+      "automatic_retries": 0,
+      "filename": "fb_roles",
+      "url": "https://raw.githubusercontent.com/dki-lab/GrailQA/bc15df916ca4101f773722151c90ba3f9eff9df5/ontology/fb_roles"
+    },
+    {
+      "attempts": 1,
+      "automatic_retries": 0,
+      "filename": "fb_types",
+      "url": "https://raw.githubusercontent.com/dki-lab/GrailQA/bc15df916ca4101f773722151c90ba3f9eff9df5/ontology/fb_types"
+    },
+    {
+      "attempts": 1,
+      "automatic_retries": 0,
+      "filename": "reverse_properties",
+      "url": "https://raw.githubusercontent.com/dki-lab/GrailQA/bc15df916ca4101f773722151c90ba3f9eff9df5/ontology/reverse_properties"
+    }
+  ],
+  "paper_result": false,
+  "research_gate": "INT-0; input recovery and encoding diagnosis, not effectiveness/performance evaluation",
+  "restoration": {
+    "artifacts": {
+      "backend_mapping.yaml": {
+        "bytes": 176201,
+        "matches_original": true,
+        "sha256": "b80b6119d6b8ca14fa559c34632602e8544e19920a89e4ce36b265d0d4ea60b4"
+      },
+      "canonical_logical_plans.jsonl": {
+        "bytes": 107411,
+        "matches_original": true,
+        "sha256": "60b6962fc250578141e442fcb3808ed737a5185785fb37a5d8283054e04742b1"
+      },
+      "gold_answers.jsonl": {
+        "bytes": 288012,
+        "matches_original": true,
+        "sha256": "9bb55509cdc4a2603db9a31ff8587298941f8d2bf8c4ef13f86c75c76dd55c6c"
+      },
+      "gold_logical_forms.jsonl": {
+        "bytes": 100023,
+        "matches_original": true,
+        "sha256": "6ffcc7d13f992024ee8e33875b60f67c310170330e6a78793d5cedde0ec1365e"
+      },
+      "inference_questions.jsonl": {
+        "bytes": 35971,
+        "matches_original": true,
+        "sha256": "34f9c667c975796f11c2fd9688b39cd2ebdbb1fd2dc4f6011d5fc6ba7e6b16a2"
+      },
+      "ontology.yaml": {
+        "bytes": 3790206,
+        "matches_original": true,
+        "sha256": "80d1b42a221327b8704b029b20589dad265cdabe4fa831d9f465dc132523f5d4"
+      },
+      "reference_interpretations.jsonl": {
+        "bytes": 154236,
+        "matches_original": true,
+        "sha256": "908b8acb2fdfa43d334527cf3bb949daabee430db25678fee013105abaa3b3e9"
+      }
+    },
+    "catalog_built": false,
+    "complete_dataset_bundle": false,
+    "elapsed_seconds": 2.7471067924052477,
+    "external_calls": 0,
+    "ontology_source_hashes": {
+      "domain_dict": "ee03db94a225c373f9ef3c543fea65721627698919e8969e4fe9458bea3eefba",
+      "domain_info": "84eb7e1f963344297356431a8634cf659cf7d97b283d801e01ef911b67f4ad1a",
+      "fb_roles": "a418ab62ce2746ed91b72ec3e06563c32aa7bd4ea14364c4e47160d2af7f22f3",
+      "fb_types": "d7ccacde076ddb2f71de450c5670e279ea0ad4e73d274d08af9e237c765fa8ea",
+      "reverse_properties": "8c120e0f7ee074fa528f4732ede588597a9c3df767a59b7c8e02114ed39b35ac"
+    },
+    "original_manifest_sha256": "42b743d719decf65142218ce88eb0a43c91c887a5de6157692e53502be0c0edf",
+    "paper_result": false,
+    "pilot_ids_sha256": "60ef62d9aad5c81eec177c498860f12d9b18f4cfd5ac2f8ad97fb65ad0c0ee81",
+    "question_ids": [
+      "2100061004000",
+      "2100063002000",
+      "2100459009000",
+      "2100728005000",
+      "2100840007000",
+      "2100902019000",
+      "2101116003000",
+      "2101406014000",
+      "2101661019000",
+      "2102164003000",
+      "2102201010000",
+      "2102422008000",
+      "2102448005000",
+      "2102556006000",
+      "2102654002000",
+      "2102669001000",
+      "3200276000000",
+      "3200606000000",
+      "3200983015000",
+      "3201778006000",
+      "3202666000000",
+      "3202880004000",
+      "3203168013000",
+      "3203237002000",
+      "3203284000000",
+      "3203373004000",
+      "3203396001000",
+      "3204744003000",
+      "3205347009000",
+      "4300783003000",
+      "2100085000000",
+      "2100106001000",
+      "2100122015000",
+      "2100164007000",
+      "2100169015000",
+      "2100190006000",
+      "2100226013000",
+      "2100270004000",
+      "2100494016000",
+      "2100509014000",
+      "2100569002000",
+      "2100630007000",
+      "2100640016000",
+      "2100647006000",
+      "2100651012000",
+      "2100714017000",
+      "2100855004000",
+      "2100898014000",
+      "2100911000000",
+      "2100981015000",
+      "2100993020000",
+      "2101176009000",
+      "2101198012000",
+      "2101298001000",
+      "2101347000000",
+      "2101364011000",
+      "2101522011000",
+      "2101538013000",
+      "2101540016000",
+      "2101593011000",
+      "2101602000000",
+      "2101669005000",
+      "2101820006000",
+      "2101927001000",
+      "2101952009000",
+      "2101961001000",
+      "2102015002000",
+      "2102044000000",
+      "2102140012000",
+      "2102160013000",
+      "2102189006000",
+      "2102218007000",
+      "2102255000000",
+      "2102261005000",
+      "2102294016000",
+      "2102343012000",
+      "2102455003000",
+      "2102481004000",
+      "2102555002000",
+      "2102589012000",
+      "2102656002000",
+      "2102710009000",
+      "2102774014000",
+      "2102886002000",
+      "2102898007000",
+      "2102911006000",
+      "2102933007000",
+      "2103017014000",
+      "2103170005000",
+      "2103421006000",
+      "2105548009000",
+      "3200030010000",
+      "3200071007000",
+      "3200149002000",
+      "3200244004000",
+      "3200276002000",
+      "3200512002000",
+      "3200535015000",
+      "3200545003000",
+      "3200683015000",
+      "3200799010000",
+      "3200855003000",
+      "3200914000000",
+      "3201228014000",
+      "3201254007000",
+      "3201275011000",
+      "3201499003000",
+      "3201560002000",
+      "3201736003000",
+      "3201743010000",
+      "3201898000000",
+      "3202321000000",
+      "3203071009000",
+      "3203374006000",
+      "3203799009000",
+      "3203818008000",
+      "3204058015000",
+      "3204090005000",
+      "3204270001000",
+      "3204556006000",
+      "3204610004000",
+      "3204910005000",
+      "3204951004000",
+      "3204977000000",
+      "3205222007000",
+      "3205274004000",
+      "3205285001000",
+      "3205314000000",
+      "3205363009000",
+      "3205499004000",
+      "3205507001000",
+      "3205670003000",
+      "3205736013000",
+      "3205890008000",
+      "3206065001000",
+      "3206100002000",
+      "4300407003000",
+      "4300429012000",
+      "4300783004000",
+      "4300899000000",
+      "4301015001000",
+      "4301251016000",
+      "4301593000000",
+      "4301690002000",
+      "4302432013000",
+      "4303260011000",
+      "4303396015000",
+      "4303482000000",
+      "4304063000000",
+      "4304069003000"
+    ],
+    "schema_version": "xgap-int-input-recovery-v1",
+    "source_selection_changed": false,
+    "sources": {
+      "dev": {
+        "bytes": 15170257,
+        "path": "/tmp/xgap-int0-grailqa/GrailQA_v1.0/grailqa_v1.0_dev.json",
+        "sha256": "55f3c2f937fee12bde3242247f5a06c6d595a898aa291b62fd3c2abf502f748c"
+      },
+      "train": {
+        "bytes": 109669282,
+        "path": "/tmp/xgap-int0-grailqa/GrailQA_v1.0/grailqa_v1.0_train.json",
+        "sha256": "ee4a439b76d9146ed7841d0afada187e1a9f344153f519521dc73957b47e6fb1"
+      }
+    },
+    "status": "verified_partial_input_recovery"
+  },
+  "restoration_script": {
+    "path": "scripts/restore_grailqa_int_inputs.py",
+    "sha256": "5c9b4dd1f4b1eb65a27fdfff82b78169232579dc5375e0fd5877c3a7ecbb6dfb"
+  },
+  "restored_root": "/Users/anthonyche/xgap-data/int0-grailqa-pilot150-20260911",
+  "schema_version": "xgap-int0-input-recovery-evidence-v1",
+  "validation": {
+    "catalog_builds": 0,
+    "data_evaluation_runs": 0,
+    "development_failures": [
+      "initial restoration-script import used wrong existing module; corrected before artifact generation",
+      "initial one-off diagnostic import used nonexistent YAML module; corrected before diagnostic execution"
+    ],
+    "external_automatic_retries": 0,
+    "model_calls": 0,
+    "native_calls": 0,
+    "software_regression_runs": 0
+  },
+  "verified_persistent_source_cache": [
+    {
+      "bytes": 17636773,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/GrailQA_v1.0.zip",
+      "sha256": "7717dbae47ba4f6aa8b9df0810db8211460116647c0c06bb26a6b198d0aaa992"
+    },
+    {
+      "bytes": 15170257,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/GrailQA_v1.0/grailqa_v1.0_dev.json",
+      "sha256": "55f3c2f937fee12bde3242247f5a06c6d595a898aa291b62fd3c2abf502f748c"
+    },
+    {
+      "bytes": 1334071,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/GrailQA_v1.0/grailqa_v1.0_test_public.json",
+      "sha256": "0aeff2748117e8100b33eaa9619b433026df917b3e17eb80c23fc4ef5c7db528"
+    },
+    {
+      "bytes": 109669282,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/GrailQA_v1.0/grailqa_v1.0_train.json",
+      "sha256": "ee4a439b76d9146ed7841d0afada187e1a9f344153f519521dc73957b47e6fb1"
+    },
+    {
+      "bytes": 399709,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/ontology/domain_dict",
+      "sha256": "ee03db94a225c373f9ef3c543fea65721627698919e8969e4fe9458bea3eefba"
+    },
+    {
+      "bytes": 466816,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/ontology/domain_info",
+      "sha256": "84eb7e1f963344297356431a8634cf659cf7d97b283d801e01ef911b67f4ad1a"
+    },
+    {
+      "bytes": 1902418,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/ontology/fb_roles",
+      "sha256": "a418ab62ce2746ed91b72ec3e06563c32aa7bd4ea14364c4e47160d2af7f22f3"
+    },
+    {
+      "bytes": 1363296,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/ontology/fb_types",
+      "sha256": "d7ccacde076ddb2f71de450c5670e279ea0ad4e73d274d08af9e237c765fa8ea"
+    },
+    {
+      "bytes": 911623,
+      "path": "/Users/anthonyche/xgap-data/int0-grailqa-public-20260911/ontology/reverse_properties",
+      "sha256": "8c120e0f7ee074fa528f4732ede588597a9c3df767a59b7c8e02114ed39b35ac"
+    }
+  ]
+}
