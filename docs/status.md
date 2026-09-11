@@ -1,5 +1,16 @@
 # XGAP Status
 
+## Current LINK — requested output enforced; new actual admission 3/5
+
+The optional request-owned output contract and separate v3 toy profile are
+implemented; 23 focused checks and two review-driven CLI rejection checks pass.
+Five new versioned external calls cost 12169 tokens/16.231s: B01/B04/B05 admitted,
+B02/B03 rejected. Their missing age production is preserved for local diagnosis.
+No new native gate ran because the full admission prerequisite failed; all five
+answers remain unmeasured. This is not 3/5 answer accuracy or a comparison with
+the earlier weaker parser's 5/5. [Current evidence](report/requested_output_link_20260911.md).
+External serving is available; real-model LINK and fair evaluation remain open.
+
 ## Current LINK — external model available; native output-contract failure retained
 
 Externalqwen3.8-27b now serves real requests:HTTP/schema probe succeeds, five

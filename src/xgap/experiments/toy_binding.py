@@ -75,7 +75,7 @@ def resolution_tools(case, *, include_clarification=True):
 
 def execute_binding_case(case, mapping, *, clients, interpretation_provider=None, static_backend_order=None,
                          plan_memory=None, validate_candidates=True, refresh_policy=None, prefix_policy=None,
-                         acquisition_policy=None):
+                         acquisition_policy=None, request_profile="legacy-v2"):
     graph, _, _ = load_fixture()
     version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
     sources = {"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))}
@@ -85,6 +85,8 @@ def execute_binding_case(case, mapping, *, clients, interpretation_provider=None
         case["explicit_user_selection"], source_id="controlled-toy-user-selection"))
         if case.get("explicit_user_selection") else None)
     request, provider = interpretation_inputs(case)
+    from xgap.experiments.toy_output_contract import apply_request_profile
+    request = apply_request_profile(request, request_profile)
     provider = interpretation_provider or provider
     run = run_question(request, provider,
         catalog_root=BUNDLE_FIXTURE / reference["root"], catalog_hash=reference["bundle_hash"],

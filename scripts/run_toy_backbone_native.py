@@ -54,6 +54,8 @@ def main(argv=None):
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--interpretation-recordings",
         help="With --agentic-semantic, replay the five recorded model responses; zero new model calls")
+    parser.add_argument("--request-profile", choices=("legacy-v2", "explicit-output-v1"), default="legacy-v2",
+        help="Use the same explicit request profile as the recorded Interpretation")
     parser.add_argument("--static-backend-order", nargs="+", choices=("neo4j", "fuseki"),
         help="With --agentic-semantic, use fixed backend priority without planning observations")
     parser.add_argument("--memory-roundtrip", action="store_true",
@@ -96,6 +98,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.interpretation_recordings and not args.agentic_semantic:
         parser.error("--interpretation-recordings requires --agentic-semantic")
+    if args.request_profile != "legacy-v2" and not args.agentic_semantic:
+        parser.error("--request-profile requires --agentic-semantic")
+    if args.request_profile != "legacy-v2" and (args.refresh_ablation or args.prefix_ablation):
+        parser.error("Explicit Interpretation profiles cannot be combined with mechanism ablations")
     if args.static_backend_order and (not args.agentic_semantic or
             set(args.static_backend_order) != {"neo4j", "fuseki"} or len(args.static_backend_order) != 2):
         parser.error("--static-backend-order requires --agentic-semantic and both backend IDs exactly once")
@@ -171,7 +177,8 @@ def main(argv=None):
             "src/xgap/tools/artifact_resolution.py", "src/xgap/tools/resolution.py",
             "src/xgap/experiments/toy_binding.py", "src/xgap/catalog/bundle.py",
             "src/xgap/agent/question.py", "src/xgap/semantic/intake.py",
-            "src/xgap/semantic/interpretation.py", "src/xgap/semantic/interpretation_replay.py"))
+            "src/xgap/semantic/interpretation.py", "src/xgap/semantic/interpretation_replay.py",
+            "src/xgap/semantic/output_contract.py", "src/xgap/experiments/toy_output_contract.py"))
     if args.capability_semantic:
         source_files.append(REPO / "src/xgap/experiments/toy_capabilities.py")
     if args.refresh_ablation:
@@ -212,7 +219,8 @@ def main(argv=None):
         "nodes": len(data["nodes"]), "edges": len(data["edges"]), "query_ids": [c["id"] for c in cases],
         "fixture_sha256": {str(p.relative_to(DEFAULT_FIXTURE)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
         "source_sha256": {str(p.relative_to(REPO)): hashlib.sha256(p.read_bytes()).hexdigest() for p in source_files},
-        "health": [], "loads": [], "targets": [], "shutdown": [], "automatic_retries": 0}
+        "health": [], "loads": [], "targets": [], "shutdown": [], "automatic_retries": 0,
+        "request_profile": args.request_profile}
     if args.semantic_dag or args.planned_semantic or args.capability_semantic:
         record.update(semantic_cases=[], semantic_reference_targets=[], planned_cases=[],
             semantic_fixture_sha256={str(p.relative_to(SEMANTIC_FIXTURE)):
@@ -480,6 +488,7 @@ def main(argv=None):
                     if args.interpretation_recordings else None)
                 item.update(execute_binding_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf},
                             interpretation_provider=provider,
+                            request_profile=args.request_profile,
                             plan_memory=memory if args.memory_roundtrip or args.refresh_ablation else None,
                             validate_candidates=not args.refresh_ablation,
                             static_backend_order=tuple(args.static_backend_order) if args.static_backend_order else None),
@@ -506,7 +515,8 @@ def main(argv=None):
                         Path(args.interpretation_recordings) / (case["id"] + ".json"))
                         if args.interpretation_recordings else None)
                     warm.update(execute_binding_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf},
-                        interpretation_provider=warm_provider, plan_memory=reloaded, validate_candidates=False),
+                        interpretation_provider=warm_provider, plan_memory=reloaded, validate_candidates=False,
+                        request_profile=args.request_profile),
                         status="completed")
                     if warm_provider is not None:
                         warm_provider.assert_consumed()

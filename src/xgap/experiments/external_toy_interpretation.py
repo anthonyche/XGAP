@@ -121,7 +121,16 @@ class BoundedExternalChatTransport:
         return result
 
 
-def load_external_toy_provider(*, base_url, model, api_key_env="XGAP_EXTERNAL_LLM_API_KEY", disable_thinking=False):
+def _profile_prompt(request_profile):
+    if request_profile == "legacy-v2":
+        return PROMPT_PATH.read_text(encoding="utf-8")
+    if request_profile == "explicit-output-v1":
+        return PROMPT_PATH.with_name("semantic_program_v3.txt").read_text(encoding="utf-8")
+    raise ValueError("Unsupported toy request profile")
+
+
+def load_external_toy_provider(*, base_url, model, api_key_env="XGAP_EXTERNAL_LLM_API_KEY", disable_thinking=False,
+                              request_profile="legacy-v2"):
     """Explicitly select the development byte-budget profile, with no downloads."""
     if (not isinstance(model, str) or model != model.strip() or not model or len(model) > 256
             or any(ord(c) < 32 for c in model)):
@@ -130,9 +139,10 @@ def load_external_toy_provider(*, base_url, model, api_key_env="XGAP_EXTERNAL_LL
         raise ValueError("A credential environment-variable name is required")
     if type(disable_thinking) is not bool:
         raise ValueError("Thinking override must be explicit boolean")
-    prompt = PROMPT_PATH.read_text(encoding="utf-8")
+    prompt = _profile_prompt(request_profile)
+    identity = PROFILE + (":explicit-output-v1" if request_profile == "explicit-output-v1" else "")
     config = OpenAICompatibleProviderConfig(
-        provider_id=PROFILE + ":" + model, base_url=_endpoint(base_url), api_key_env=api_key_env,
+        provider_id=identity + ":" + model, base_url=_endpoint(base_url), api_key_env=api_key_env,
         model=model, temperature=0, top_p=1, max_tokens=OUTPUT_TOKENS, candidate_cap=1,
         timeout_seconds=TIMEOUT_SECONDS, structured_output_mode="json_schema",
         structured_schema=INTERPRETATION_SCHEMA, prompt_hash=content_hash(prompt), max_repair_calls=0,
@@ -140,23 +150,27 @@ def load_external_toy_provider(*, base_url, model, api_key_env="XGAP_EXTERNAL_LL
     return OpenAICompatibleInterpretationProvider(config, prompt, ExternalChatRequestGuard(model), BoundedExternalChatTransport())
 
 
-def external_toy_preflight(provider):
+def external_toy_preflight(provider, *, request_profile="legacy-v2"):
+    if provider.config.prompt_hash != content_hash(_profile_prompt(request_profile)):
+        raise ValueError("Toy request profile does not match the configured prompt")
     checks = [{"query_id": qid, "request_budget": provider.token_guard.check(
         provider.build_request_payload(request), call_kind="generation")}
-        for qid, request in toy_model_requests()]
+        for qid, request in toy_model_requests(request_profile=request_profile)]
     return {"schema_version": PROFILE, "paper_result": False, "external_calls": 0,
             "success": all(c["request_budget"]["passed"] for c in checks),
             "config": provider.config.safe_dict(), "checks": checks,
+            "request_profile": request_profile,
             "live_endpoint_verified": False, "checkpoint_identity_verified": False,
             "exact_input_tokens_verified": False, "context_fit_verified": False,
             "response_byte_limit": RESPONSE_BYTES, "timeout_semantics": "urllib socket timeout, not a wall-clock deadline"}
 
 
-def run_external_toy_requests(provider, output, *, max_requests=1, start_index=0):
-    preflight = external_toy_preflight(provider)
+def run_external_toy_requests(provider, output, *, max_requests=1, start_index=0, request_profile="legacy-v2"):
+    preflight = external_toy_preflight(provider, request_profile=request_profile)
     # The shared runner persists this intent before any call; its guard refuses
     # an oversized actual payload and stops the batch without dispatching it.
-    return run_toy_model_requests(provider, output, max_requests=max_requests, start_index=start_index, run_metadata=preflight)
+    return run_toy_model_requests(provider, output, max_requests=max_requests, start_index=start_index,
+                                  run_metadata=preflight, request_profile=request_profile)
 
 
 def main(argv=None):
@@ -173,16 +187,18 @@ def main(argv=None):
     parser.add_argument("--start-index", type=int, choices=range(5), default=0,
                         help="Zero-based first question; permits continuing with an unattempted suffix")
     parser.add_argument("--disable-thinking", action="store_true", help="Explicitly request the optional chat-template override")
+    parser.add_argument("--request-profile", choices=("legacy-v2", "explicit-output-v1"), default="legacy-v2")
     args = parser.parse_args(argv)
     provider = load_external_toy_provider(base_url=args.base_url, model=args.model,
-        api_key_env=args.api_key_env, disable_thinking=args.disable_thinking)
+        api_key_env=args.api_key_env, disable_thinking=args.disable_thinking, request_profile=args.request_profile)
     if args.execute:
         if not os.environ.get(args.api_key_env):
             parser.error("The named API-key environment variable is unset")
-        report = run_external_toy_requests(provider, args.output, max_requests=args.max_requests, start_index=args.start_index)
+        report = run_external_toy_requests(provider, args.output, max_requests=args.max_requests,
+            start_index=args.start_index, request_profile=args.request_profile)
         success = report["requested_window_success"] and report["requested_window_replay_size_admitted"]
     else:
-        report = external_toy_preflight(provider)
+        report = external_toy_preflight(provider, request_profile=args.request_profile)
         with Path(args.output).open("x", encoding="utf-8") as stream:
             json.dump(report, stream, indent=2, allow_nan=False)
             stream.write("\n")

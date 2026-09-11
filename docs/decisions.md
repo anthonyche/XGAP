@@ -1,5 +1,15 @@
 # XGAP Design Decisions
 
+## LINK: output shape is a request obligation, not an evaluation repair
+
+The [optional requested-output contract](decisions/requested_output_contract_v1.md)
+checks an explicit final Project/Match field set. Tiny v3 derives it only from
+original NL return clauses; no gold-based projection or program rewrite occurs.
+Keep legacy requests unchanged, and require identical profiles for recording and
+replay. Mechanism ablations cannot claim this profile without Interpretation.
+Actual new 3/5 admission is not answer accuracy; failures and unrun outcomes stay
+in the full denominator. [Evidence](report/requested_output_link_20260911.md).
+
 ## LINK: external development budgets and strict answer shape remain distinct
 
 The [external toy contract](decisions/external_toy_interpretation_v1.md) explicitly

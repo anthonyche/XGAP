@@ -1,0 +1,320 @@
+{
+  "schema_version": "xgap-requested-output-link-evidence-v1",
+  "paper_result": false,
+  "parent_commit": "4d5b194a97b9dedc2d67fe3fbbd2bc2ee5a43737",
+  "request_profile": "explicit-output-v1",
+  "model": "qwen3.8-27b",
+  "endpoint": "http://112.95.75.67:9018/v1",
+  "contract_scope": "Exact root output field set for final Project or Match; not lineage/value/whole-NL correctness",
+  "frozen_population": [
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05"
+  ],
+  "tests": {
+    "command": [
+      "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_requested_output_contract.py",
+      "tests/test_question_interpretation.py::test_nl_interpretation_matches_independent_original_meaning"
+    ],
+    "cwd": "/Users/anthonyche/Developer/XGAP",
+    "PYTHONPATH": "src:tests",
+    "started_at": "2026-09-11T15:48:33.792179+00:00",
+    "ended_at": "2026-09-11T15:48:34.702924+00:00",
+    "elapsed_seconds": 0.9106017909944057,
+    "exit_code": 0,
+    "source_hashes_unchanged": true,
+    "evidence_directory": "/Users/anthonyche/xgap-data/requested-output-link-20260911/focused-2jzznk8z"
+  },
+  "pytest_pass_count": 23,
+  "cli_parse_checks": {
+    "checks": [
+      {
+        "command": [
+          "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+          "scripts/run_toy_backbone_native.py",
+          "--runtime-root",
+          "/unopened/runtime",
+          "--output",
+          "/unopened/output",
+          "--java",
+          "/unopened/java",
+          "--agentic-semantic",
+          "--request-profile",
+          "explicit-output-v1",
+          "--refresh-ablation"
+        ],
+        "exit_code": 2,
+        "elapsed_seconds": 0.31703079119324684,
+        "stderr": "usage: run_toy_backbone_native.py [-h] --runtime-root RUNTIME_ROOT --output\n                                  OUTPUT --java JAVA [--execute]\n                                  [--interpretation-recordings INTERPRETATION_RECORDINGS]\n                                  [--request-profile {legacy-v2,explicit-output-v1}]\n                                  [--static-backend-order {neo4j,fuseki} [{neo4j,fuseki} ...]]\n                                  [--memory-roundtrip]\n                                  [--refresh-ablation | --prefix-ablation]\n                                  [--compiled-directed | --compiled-bounded | --semantic-dag | --planned-semantic | --agentic-semantic | --orientation | --capability-semantic | --repetition | --scoped | --boolean | --typed-bindings]\n                                  [--typed-query-ids {V01,V02,V03,V04,V05,V06,V07,V08,V09,V10,V11,V12,V13,V14,V15} [{V01,V02,V03,V04,V05,V06,V07,V08,V09,V10,V11,V12,V13,V14,V15} ...]]\n                                  [--scoped-planning-only]\n                                  [--boolean-followup-only]\nrun_toy_backbone_native.py: error: Explicit Interpretation profiles cannot be combined with mechanism ablations\n",
+        "passed": true
+      },
+      {
+        "command": [
+          "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+          "scripts/run_toy_backbone_native.py",
+          "--runtime-root",
+          "/unopened/runtime",
+          "--output",
+          "/unopened/output",
+          "--java",
+          "/unopened/java",
+          "--agentic-semantic",
+          "--request-profile",
+          "explicit-output-v1",
+          "--prefix-ablation"
+        ],
+        "exit_code": 2,
+        "elapsed_seconds": 0.19298812467604876,
+        "stderr": "usage: run_toy_backbone_native.py [-h] --runtime-root RUNTIME_ROOT --output\n                                  OUTPUT --java JAVA [--execute]\n                                  [--interpretation-recordings INTERPRETATION_RECORDINGS]\n                                  [--request-profile {legacy-v2,explicit-output-v1}]\n                                  [--static-backend-order {neo4j,fuseki} [{neo4j,fuseki} ...]]\n                                  [--memory-roundtrip]\n                                  [--refresh-ablation | --prefix-ablation]\n                                  [--compiled-directed | --compiled-bounded | --semantic-dag | --planned-semantic | --agentic-semantic | --orientation | --capability-semantic | --repetition | --scoped | --boolean | --typed-bindings]\n                                  [--typed-query-ids {V01,V02,V03,V04,V05,V06,V07,V08,V09,V10,V11,V12,V13,V14,V15} [{V01,V02,V03,V04,V05,V06,V07,V08,V09,V10,V11,V12,V13,V14,V15} ...]]\n                                  [--scoped-planning-only]\n                                  [--boolean-followup-only]\nrun_toy_backbone_native.py: error: Explicit Interpretation profiles cannot be combined with mechanism ablations\n",
+        "passed": true
+      }
+    ],
+    "source_sha256": "bb21c59709788d36b726c0d75b26a49f0ae16ca88f5edebd65c4b50d2c56a537",
+    "source_unchanged": true,
+    "external_calls": 0,
+    "backend_calls": 0,
+    "purpose": "Review-discovered request profile receipt mismatch; parse-only rejection of two unsupported flag combinations"
+  },
+  "old_payload_compatibility": {
+    "scope": "old payload compatibility with new NL-derived output contract; model was not asked the new context",
+    "external_calls": 0,
+    "paper_result": false,
+    "records_unchanged": true,
+    "queries": [
+      {
+        "id": "B01",
+        "source_recording": "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/live-all-five/B01.json",
+        "sha256": "cd05b1f79a76f44cc7c4d3661139a303dccdeff19c1258d29256914a8a2c55ed",
+        "requested_output_from_original_nl": {
+          "kind": "binding_set",
+          "fields": [
+            "person",
+            "edge"
+          ]
+        },
+        "accepted_by_new_contract": false,
+        "error": "Semantic root fields do not match requested output fields"
+      },
+      {
+        "id": "B02",
+        "source_recording": "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/live-all-five/B02.json",
+        "sha256": "a59deddf4ae32676a43174f7c61daddf0e6a58b1987d1e7988506e42c3c6aba2",
+        "requested_output_from_original_nl": {
+          "kind": "binding_set",
+          "fields": [
+            "person",
+            "edge"
+          ]
+        },
+        "accepted_by_new_contract": false,
+        "error": "Semantic root fields do not match requested output fields"
+      },
+      {
+        "id": "B03",
+        "source_recording": "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/live-all-five/B03.json",
+        "sha256": "4a1c33ed5fa1c7b2e6f230327eff9281f15e8238fbed4c50b8378571f54be310",
+        "requested_output_from_original_nl": {
+          "kind": "binding_set",
+          "fields": [
+            "person",
+            "edge"
+          ]
+        },
+        "accepted_by_new_contract": false,
+        "error": "Semantic root fields do not match requested output fields"
+      },
+      {
+        "id": "B04",
+        "source_recording": "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/live-all-five/B04.json",
+        "sha256": "735defa392ba34e0f462779d085e0afa2ad163d9210983c8c95564ba24c96859",
+        "requested_output_from_original_nl": {
+          "kind": "binding_set",
+          "fields": [
+            "person",
+            "age"
+          ]
+        },
+        "accepted_by_new_contract": true,
+        "error": null
+      },
+      {
+        "id": "B05",
+        "source_recording": "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/live-all-five/B05.json",
+        "sha256": "095e0c70a48dac33e6ef94709f01fbf88208d9acaee2e730af9935d5ec5526ab",
+        "requested_output_from_original_nl": {
+          "kind": "binding_set",
+          "fields": [
+            "person",
+            "edge"
+          ]
+        },
+        "accepted_by_new_contract": false,
+        "error": "Semantic root fields do not match requested output fields"
+      }
+    ]
+  },
+  "live": {
+    "queries": [
+      {
+        "query_id": "B01",
+        "interpretation_status": "interpreted",
+        "error": null,
+        "input_tokens": 1818,
+        "output_tokens": 782,
+        "elapsed_ms": 4162.378874607384,
+        "recording_sha256": "2fa6aafe8d3e7b4bd517d840d18a99b727d5155cbe201dc3e689d6b69b6dc4dd",
+        "native_status": "not_run"
+      },
+      {
+        "query_id": "B02",
+        "interpretation_status": "interpretation_invalid",
+        "error": "Requested output supports only Project or Match roots",
+        "input_tokens": 1818,
+        "output_tokens": 554,
+        "elapsed_ms": 2942.939625121653,
+        "recording_sha256": "380fb2b6f76a5406ebeecf2872e3c2bf467a199a931ae4524a9fdce54a7e427a",
+        "native_status": "not_run"
+      },
+      {
+        "query_id": "B03",
+        "interpretation_status": "interpretation_invalid",
+        "error": "Requested output supports only Project or Match roots",
+        "input_tokens": 1818,
+        "output_tokens": 554,
+        "elapsed_ms": 2933.000000193715,
+        "recording_sha256": "0f43cb45ee69036f076bdfbcad121297fda63a8a249827fc7ab152a8f26e74b2",
+        "native_status": "not_run"
+      },
+      {
+        "query_id": "B04",
+        "interpretation_status": "interpreted",
+        "error": null,
+        "input_tokens": 1835,
+        "output_tokens": 381,
+        "elapsed_ms": 2110.072875395417,
+        "recording_sha256": "cd622ded08e52e1a529adc20f95b6f84c79de7c105c020cc07a76fd6253dbce0",
+        "native_status": "not_run"
+      },
+      {
+        "query_id": "B05",
+        "interpretation_status": "interpreted",
+        "error": null,
+        "input_tokens": 1827,
+        "output_tokens": 782,
+        "elapsed_ms": 4082.625332288444,
+        "recording_sha256": "d94573e2b472a803c9030d21b1d1112dc2c8f0dfb277ef9bd6468366478c8df7",
+        "native_status": "not_run"
+      }
+    ],
+    "generation_calls": 5,
+    "input_tokens": 9116,
+    "output_tokens": 3053,
+    "interpretation_ms": 16231.016707606614,
+    "admitted_count": 3,
+    "invalid_count": 2,
+    "native_evaluated_count": 0,
+    "native_accuracy": null,
+    "model_retries": 0
+  },
+  "source": {
+    "live_snapshot": "/Users/anthonyche/xgap-data/requested-output-link-20260911/live_source_state.json",
+    "file_count": 345,
+    "unchanged_during_generation": true,
+    "post_generation_changes": {
+      "scripts/run_toy_backbone_native.py": {
+        "generation_sha256": "5a3b2b422efe7a893d2360e9609a2a61f8f666491ac158e9ae73307ac004bbeb",
+        "current_sha256": "bb21c59709788d36b726c0d75b26a49f0ae16ca88f5edebd65c4b50d2c56a537"
+      }
+    },
+    "post_generation_change_reason": "Only native CLI rejects explicit output profile with refresh/prefix mechanism ablations; generation/provider/semantic sources unchanged, parse-only two checks passed"
+  },
+  "native_gate": {
+    "status": "not_run",
+    "reason": "Five-question Interpretation prerequisite failed; no successful-only native subset",
+    "backend_calls": 0,
+    "new_model_calls": 0
+  },
+  "preserved_history": {
+    "legacy_external_v2": "5 parsed; strict native 0 correct/1 evaluated,4 unattempted; extra age column",
+    "original_qwen": "0/5 ordinary chain",
+    "finbench": "6/6 original-three prepared-plan integration; not P1/NL/full48"
+  },
+  "raw_root": "/Users/anthonyche/xgap-data/requested-output-link-20260911",
+  "evidence_files": {
+    "cli_guard_checks.json": {
+      "bytes": 3747,
+      "sha256": "7117fbea45a6e5acb2167d54ac33f1bb5a2516989c66bc4c7400a9e2ae5edd83"
+    },
+    "focused-2jzznk8z/hashes-after.json": {
+      "bytes": 2456,
+      "sha256": "841fa7ba51fa7651cf0b7b70d782b372075eda6fcfb141c8dc10df9fd03112b8"
+    },
+    "focused-2jzznk8z/hashes-before.json": {
+      "bytes": 2456,
+      "sha256": "841fa7ba51fa7651cf0b7b70d782b372075eda6fcfb141c8dc10df9fd03112b8"
+    },
+    "focused-2jzznk8z/receipt.json": {
+      "bytes": 637,
+      "sha256": "d9e545a9939fe8c2cfadcbf207e7a6598760bc3902dc2d3ecddd714128fab639"
+    },
+    "live-five/B01.json": {
+      "bytes": 32759,
+      "sha256": "2fa6aafe8d3e7b4bd517d840d18a99b727d5155cbe201dc3e689d6b69b6dc4dd"
+    },
+    "live-five/B02.json": {
+      "bytes": 29961,
+      "sha256": "380fb2b6f76a5406ebeecf2872e3c2bf467a199a931ae4524a9fdce54a7e427a"
+    },
+    "live-five/B03.json": {
+      "bytes": 29969,
+      "sha256": "0f43cb45ee69036f076bdfbcad121297fda63a8a249827fc7ab152a8f26e74b2"
+    },
+    "live-five/B04.json": {
+      "bytes": 28021,
+      "sha256": "cd622ded08e52e1a529adc20f95b6f84c79de7c105c020cc07a76fd6253dbce0"
+    },
+    "live-five/B05.json": {
+      "bytes": 32894,
+      "sha256": "d94573e2b472a803c9030d21b1d1112dc2c8f0dfb277ef9bd6468366478c8df7"
+    },
+    "live-five/result.json": {
+      "bytes": 176209,
+      "sha256": "7efb97eae51b0f5dc6d2a9538c6cfdecf2c251cffc548494e13cb79de71587a8"
+    },
+    "live_source_state.json": {
+      "bytes": 40547,
+      "sha256": "be751e03bd85551917b5170c0dedb6500eaa0352d4c39e43f4d582285eeed805"
+    },
+    "old_payload_compatibility.json": {
+      "bytes": 2620,
+      "sha256": "fbb23d8a1daaa4c397e5151e98ce2da0705e339b05c05b59f58e593d9c0f4245"
+    },
+    "preflight.json": {
+      "bytes": 4258,
+      "sha256": "9503650b259487ee12590edc360b79c597b0731aacfbc4de61e15d6383803af8"
+    },
+    "local-replay-2a243612d4/not_run_receipt.json": {
+      "bytes": 7437,
+      "sha256": "4fa9307c53ec293923dd934890a7c527bccd59771dd6bf5e73372c7787b324b2"
+    }
+  },
+  "local_replay": {
+    "status": "not_run",
+    "reason": "Exact recorded native replica/version context differs from existing RDFLib helper; no relabeling",
+    "receipt": "/Users/anthonyche/xgap-data/requested-output-link-20260911/local-replay-2a243612d4/not_run_receipt.json",
+    "sha256": "4fa9307c53ec293923dd934890a7c527bccd59771dd6bf5e73372c7787b324b2",
+    "model_calls": 0,
+    "backend_calls": 0
+  },
+  "static_diagnosis": {
+    "B01_B05": "Match carries binding-row op=ge predicate; current path parser requires kind. Expected compile rejection is inference only, not executed failure.",
+    "B02_B03": "Filter root rejected by optional contract. Upstream projects only person/edge, so age is unavailable; people type omitted.",
+    "B04": "Existing path-condition syntax recognized by inspection; binding/result unverified."
+  }
+}

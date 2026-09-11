@@ -6,6 +6,7 @@ import time
 from typing import Any, Mapping, Protocol
 
 from xgap.semantic.intake import DeterministicSemanticIntake, _safe_json_mapping
+from xgap.semantic.output_contract import RequestedOutput
 from xgap.semantic.program import (
     ConstraintPolicy, SemanticGraphProgram, SemanticHoleKind, SemanticOperatorKind,
 )
@@ -32,6 +33,8 @@ class InterpretationRequest:
             raise ValueError("Interpretation response bound must be positive and at most4MiB")
         if not isinstance(self.context, Mapping):
             raise ValueError("Interpretation context must be an object")
+        if "requested_output" in self.context:
+            RequestedOutput.from_dict(self.context["requested_output"])
         for item in self.required_constraints:
             if set(item) != {"operator_id", "constraint"} or item["constraint"].get("policy") != "hard":
                 raise ValueError("Required constraints must name an operator and an explicit hard constraint")
@@ -182,6 +185,8 @@ def parse_interpretation(payload, request):
     if not isinstance(sources, dict):
         raise ValueError("Interpretation source assignments must be an object")
     _validate_executable_references(program, sources, request.context)
+    if "requested_output" in request.context:
+        RequestedOutput.from_dict(request.context["requested_output"]).validate_program(program)
     return program, sources
 
 

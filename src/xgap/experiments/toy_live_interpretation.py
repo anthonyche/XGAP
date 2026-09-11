@@ -42,7 +42,7 @@ def load_qwen_toy_provider(tokenizer_snapshot):
     return OpenAICompatibleInterpretationProvider(config, prompt, guard)
 
 
-def toy_model_requests():
+def toy_model_requests(*, request_profile="legacy-v2"):
     """The same tiny requests and version context used by native run_question."""
     pin = json.loads((BUNDLE_FIXTURE / "reference.json").read_text())
     bundle = FrozenResolutionBundle.load(BUNDLE_FIXTURE / pin["root"], expected_bundle_hash=pin["bundle_hash"])
@@ -51,26 +51,30 @@ def toy_model_requests():
     context = {"resolution_bundle": bundle.identity,
                "sources": {"toy": {"version": version, "replicas": ["neo4j", "fuseki"]}}}
     result = []
+    from xgap.experiments.toy_output_contract import apply_request_profile
     for case in load_binding_cases():
         request, _ = interpretation_inputs(case)
-        result.append((case["id"], replace(request, context={**request.context, "runtime": context})))
+        request = replace(request, context={**request.context, "runtime": context})
+        result.append((case["id"], apply_request_profile(request, request_profile)))
     return result
 
 
-def run_toy_model_requests(provider, output, *, max_requests=5, start_index=0, run_metadata=None):
+def run_toy_model_requests(provider, output, *, max_requests=5, start_index=0, run_metadata=None,
+                           request_profile="legacy-v2"):
     """Record up to five distinct questions; never retry a failed model action."""
     if (type(max_requests) is not int or type(start_index) is not int
             or not 1 <= max_requests <= 5 or not 0 <= start_index < 5
             or start_index + max_requests > 5):
         raise ValueError("Toy execution requires a contiguous window within five requests")
     stop_index = start_index + max_requests
-    requests = toy_model_requests()
+    requests = toy_model_requests(request_profile=request_profile)
     root = Path(output)
     root.mkdir(parents=True, exist_ok=False)
     report = {"schema_version": "xgap-toy-live-interpretation-v1", "paper_result": False,
               "scope": "five tiny Interpretation connectivity requests; no backend execution",
               "provider_id": provider.provider_id, "automatic_retries": 0,
               "max_requests": max_requests, "start_index": start_index,
+              "request_profile": request_profile,
               "queries": [{"query_id": qid, "status": "not_attempted"} for qid, _ in requests]}
     if run_metadata is not None:
         report["run_metadata"] = run_metadata
