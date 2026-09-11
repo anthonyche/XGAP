@@ -2,7 +2,35 @@
 
 Updated: 2026-09-11. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
-## Latest research-directed priority — R0 plan, then P1
+## Current P1 implementation — verified, targeted quality correction next
+
+Ordinary BoundSemanticExecutionTool now uses prepare_semantic_placements;
+source options are compiled independently, with a feasible baseline, exact
+separable selection or two-pass coordinate search and conditional model bounds.
+Memory uses local problem context. See
+[P1 evidence and negative result](report/polynomial_planning_20260911.md).
+
+All current handles are terminal:1650 grid exit0,23560 native exit0,71371 scoped
+exit0. Native5 cold+5 warm/18 candidate answers/10 independent targets+slice,
+38/38 source hashes match and owned services stopped normally. Final22 P1 tests
+and15 scoped cases pass; earlier targeted146pass/1invalid new fixture was corrected
+and covered in final22. No broad suite. Grid15 cells/300 runs/140 oracle checks
+completed;70 exact-branch comparisons equal optimum, all checked bounds valid.
+
+Do not overclaim quality: m4/k8/seed9 variable-row terminal sources have6.3328x
+model regret (U63.936,OPT10.096,LB7.936,ratio certificate8.0565). Exactness
+admission unnecessarily requires row/width invariance when source outputs have
+no downstream consumers. **Next safe action is a deterministic replay of this
+counterexample, then a scoped separability correction and targeted checks**,
+including nonterminal counterexamples. Keep the original negative grid unchanged;
+do not blindly rerun native/broad gates. This is P1 work toward the original RQ,
+not a reason to switch back to GrailQA debugging or extend a general framework.
+
+Source checkpoint is c77c08c plus the accompanying receipt hashes pending the
+current local commit. All remote state remains as last actually observed by the
+user; no new remote action in this step. Full Goal is unfinished.
+
+## Preceding research-directed priority — R0 plan, then P1
 
 The user requires all engineering to serve explicit research questions and
 experiments, with X/Y factors for effectiveness, efficiency and scalability.

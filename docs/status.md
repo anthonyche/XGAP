@@ -1,5 +1,16 @@
 # XGAP Status
 
+## P1 implementation verified; a model-quality counterexample remains
+
+The ordinary entry now uses polynomial local-option preparation and selection,
+with exactness for a checked subcase and conditional model-gap certificates.
+Real-native5 cold+5 warm/18 candidate answers/10 references+slice pass;22 algorithm
+and15 scoped checks pass. Grid15 cells/300 runs/140 oracle comparisons confirms
+the tested bounds, but one heuristic point has6.33x model regret. Its terminal
+source blocks should qualify for exact local minimization; admission is too
+conservative. Next fix this through the preserved minimal replay, not broad or
+large-data reruns. See [P1 report](report/polynomial_planning_20260911.md).
+
 ## Latest priority — explicit RQ, factors, experiments and Ptime planning
 
 The [September11 research experiment plan](research_experiment_plan_20260911.md)

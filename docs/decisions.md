@@ -1,5 +1,14 @@
 # XGAP Design Decisions
 
+## P1 local-option implementation and preserved negative result
+
+The ordinary path now uses local fragments, polynomial preparation, exact
+independent selection/two coordinate passes, and conditional lower-bound
+certificates. The native toy and planned model grid completed; see
+[the report](report/polynomial_planning_20260911.md). A6.33x model-regret case is
+retained and sets the next correction: terminal-source separability admission.
+Bounds remain model-relative, not global actual-runtime or agent-policy guarantees.
+
 ## R0 Research-directed prototype and P1 planning contract
 
 The user's September11 instruction supersedes blanket milestone regression and

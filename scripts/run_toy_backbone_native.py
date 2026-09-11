@@ -149,6 +149,7 @@ def main(argv=None):
             "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
             "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
             "src/xgap/runtime/semantic_memory.py", "src/xgap/agent/memory.py",
+            "src/xgap/runtime/semantic_placement.py",
             "src/xgap/tools/backends.py", "src/xgap/experiments/toy_planning.py"))
     if args.agentic_semantic:
         source_files.extend(REPO / relative for relative in (

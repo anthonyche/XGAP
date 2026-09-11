@@ -29,7 +29,8 @@ def test_cold_warm_and_no_memory_share_the_question_entry_and_gold(case):
     assert c["memory"]["state"] == "miss_stored" and c["memory"]["writes"] == 1
     assert w["memory"]["state"] == "hit" and w["memory"]["writes"] == 0
     assert w["snapshot_reused"] and w["observation_calls"] == 0
-    assert c["candidate_count"] == w["candidate_count"] == a["candidate_count"]
+    assert c["candidate_count"] == w["candidate_count"]
+    assert c["local_option_count"] == w["local_option_count"] == a["local_option_count"]
     assert c["selected_plan"] == w["selected_plan"]
     assert len(warm_calls) == w["execution_calls"] > 0  # Answers are never cached.
     assert len(cold_calls) == len(absent_calls) == len(warm_calls) + c["observation_calls"]

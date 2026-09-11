@@ -11,7 +11,8 @@ from xgap.agent.resolution import SelectiveResolutionConfig, SelectiveSemanticRe
 from xgap.runtime.planning import PlanObservationSnapshot
 from xgap.runtime.semantic_compiler import SemanticBackend
 from xgap.runtime.semantic_memory import SemanticPlanMemory
-from xgap.runtime.semantic_planning import LogicalSource, enumerate_semantic_plans, run_semantic_plans
+from xgap.runtime.semantic_planning import LogicalSource, run_semantic_plans
+from xgap.runtime.semantic_placement import prepare_semantic_placements
 from xgap.semantic.binding import SemanticBindingValue, bind_semantic_query
 from xgap.semantic.program import SemanticGraphProgram
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, CatalogBackendPlugin, ToolRegistry
@@ -29,7 +30,7 @@ class BoundSemanticExecutionTool:
     sources: Mapping[str, LogicalSource]
     backends: Mapping[str, SemanticBackend]
     backend_clients: Mapping[str, Any]
-    max_candidates: int = 64
+    max_candidates: int = 64  # Mainline v2: local-option budget, not Cartesian placements.
     max_observation_calls: int = 128
     max_remote_calls: int = 16
     snapshot: PlanObservationSnapshot | None = None
@@ -50,8 +51,8 @@ class BoundSemanticExecutionTool:
         # Binding/admission run before any backend tool is called.
         bound = bind_semantic_query(self.program, arguments["resolution"],
             binding_values=self.binding_values, operator_sources=self.operator_sources)
-        space = enumerate_semantic_plans(bound.program, operator_sources=bound.operator_sources,
-            sources=self.sources, backends=self.backends, max_candidates=self.max_candidates,
+        space = prepare_semantic_placements(bound.program, operator_sources=bound.operator_sources,
+            sources=self.sources, backends=self.backends, max_local_options=self.max_candidates,
             max_observation_calls=self.max_observation_calls, max_remote_calls=self.max_remote_calls)
         plugins = BackendPluginRegistry()
         for name, catalog in space.observation_catalogs.items():

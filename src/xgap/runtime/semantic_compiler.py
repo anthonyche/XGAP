@@ -9,6 +9,7 @@ from dataclasses import dataclass, replace
 import hashlib
 import json
 from typing import Any, Mapping
+from types import SimpleNamespace
 
 from xgap.compilers.node_match import compile_node_match
 from xgap.algebra.conditions import And
@@ -78,9 +79,92 @@ def _projection_schema(projections, source):
     return ResultSchema(V.BINDING_SET, frozenset(projections))
 
 
+SOURCE_INPUT = "__source_input__"
+
+
+@dataclass(frozen=True)
+class SemanticSourceFragment:
+    nodes: tuple[RuntimeNode, ...]
+    output: str
+    schema: ResultSchema
+
+    @property
+    def remote_calls(self):
+        return sum(n.kind is R.REMOTE_QUERY for n in self.nodes)
+
+
+def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragment:
+    """Compile one local choice; a bound Traverse input stays a symbolic port."""
+    identifier, kind, backend_id = op.operator_id, op.kind, backend.backend_id
+    if kind not in (S.MATCH, S.TRAVERSE):
+        raise SemanticProgramError("Local source options require Match or Traverse")
+    if any(c.predicate is None for c in op.constraints):
+        raise SemanticProgramError("Opaque constraints require explicit typed predicates")
+    p = dict(op.parameters)
+    allowed = ({"node", "entity_field", "properties"} if kind is S.MATCH else
+               {"path_pattern", "anchor_field", "anchor_position"})
+    if set(p) - allowed:
+        raise SemanticProgramError(f"Unknown source parameters: {sorted(set(p) - allowed)}")
+    predicates = [dict(c.predicate) for c in op.constraints]
+    nodes = []
+
+    def add(op, suffix, kind, inputs=(), parameters=None):
+        node_id = f"{op.operator_id}/{suffix}"
+        nodes.append(RuntimeNode(node_id, kind, tuple(inputs), parameters or {}, (op.operator_id,)))
+        return node_id
+
+    if kind is S.MATCH:
+        entity = p.get("entity_field", "entity")
+        properties = p.get("properties", {})
+        if not isinstance(entity, str) or not entity or entity in properties:
+            raise SemanticProgramError("Match requires a distinct entity output field")
+        raw_node = p.get("node", {})
+        if set(raw_node) - {"label", "properties"}:
+            raise SemanticProgramError("Match node descriptors require label/properties")
+        artifact = compile_node_match(NodePattern(**raw_node), properties, backend_id=backend_id,
+            backend_mapping=backend.backend_mapping, rdf_node_classes=backend.rdf_node_classes,
+            profile=backend.profile,
+            artifact_id=f"{identifier}-match",
+            condition=And(*(_parse_condition(c) for c in predicates)) if predicates else None)
+        remote = add(op, "native", R.REMOTE_QUERY, parameters={"backend_id": backend_id, "artifact": artifact.to_dict()})
+        output = add(op, "bindings", R.NORMALIZE_NODE_BINDINGS, (remote,), {
+            "language": artifact.language, "identity_property": backend.identity_property,
+            "resource_namespace": backend.resource_namespace, "entity_field": entity,
+            "scalar_fields": list(properties)})
+        schema = ResultSchema(V.BINDING_SET, frozenset((entity, *properties)))
+    elif kind is S.TRAVERSE:
+        query = parse_path_pattern_query(p["path_pattern"])
+        if predicates:
+            conditions = ([query.condition] if query.condition is not None else []) + [_parse_condition(c) for c in predicates]
+            query = replace(query, condition=And(*conditions))
+        plan = compile_bounded_path_plan(query, **backend.path_options())
+        ids = {n.node_id: f"{identifier}/{n.node_id}" for n in plan.nodes}
+        nodes.extend(replace(n, node_id=ids[n.node_id], inputs=tuple(ids[i] for i in n.inputs),
+                             semantic_operator_ids=(identifier,)) for n in plan.nodes)
+        output = ids[plan.roots[0]]
+        schema = ResultSchema(V.PATH_SET, frozenset(("path",)), backend.resource_namespace)
+        if op.input_ids:
+            if op.input_kinds[0] is not V.BINDING_SET or p.get("anchor_position", "first") not in ("first", "last"):
+                raise SemanticProgramError("Bound Traverse requires endpoint bindings")
+            expanded = add(op, "anchor", R.COORDINATOR_ROW_PROJECT, (output,), {
+                "resource_namespace": backend.resource_namespace, "projections": {
+                    "path": {"kind": "field", "field": "path"},
+                    "anchor": {"kind": "path_node", "position": p.get("anchor_position", "first")}}})
+            matched = add(op, "bound", R.COORDINATOR_SEMI_JOIN, (expanded, SOURCE_INPUT),
+                          {"left_on": "anchor", "right_on": p["anchor_field"]})
+            output = add(op, "result", R.PROJECT, (matched,), {"fields": ["path"]})
+        elif set(p) - {"path_pattern"}:
+            raise SemanticProgramError("Anchor parameters require a Traverse input")
+    if op.output_kind is not schema.kind:
+        raise SemanticProgramError(f"{identifier} declares the wrong output kind for its executable semantics")
+    admit_semantic_capabilities(SimpleNamespace(operators=(op,)), nodes, {backend_id: backend})
+    return SemanticSourceFragment(tuple(nodes), output, schema)
+
+
 def compile_semantic_program(program: SemanticGraphProgram, *,
         source_bindings: Mapping[str, str], backends: Mapping[str, SemanticBackend],
-        max_remote_calls: int = 16, max_parallelism: int = 4) -> FederatedExecutionPlan:
+        max_remote_calls: int = 16, max_parallelism: int = 4,
+        _source_cache: dict | None = None) -> FederatedExecutionPlan:
     """Compile every reachable operator once, preserving fan-out and DAG roots."""
     if not isinstance(program, SemanticGraphProgram):
         raise SemanticProgramError("Compilation requires a typed SemanticGraphProgram")
@@ -123,49 +207,18 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
             if backend_id not in backends or backends[backend_id].backend_id != backend_id:
                 raise SemanticProgramError(f"No declared backend placement for {identifier}")
             backend = backends[backend_id]
-        if kind is S.MATCH:
-            entity = p.get("entity_field", "entity")
-            properties = p.get("properties", {})
-            if not isinstance(entity, str) or not entity or entity in properties:
-                raise SemanticProgramError("Match requires a distinct entity output field")
-            raw_node = p.get("node", {})
-            if set(raw_node) - {"label", "properties"}:
-                raise SemanticProgramError("Match node descriptors require label/properties")
-            artifact = compile_node_match(NodePattern(**raw_node), properties, backend_id=backend_id,
-                backend_mapping=backend.backend_mapping, rdf_node_classes=backend.rdf_node_classes,
-                profile=backend.profile,
-                artifact_id=f"{identifier}-match",
-                condition=And(*(_parse_condition(c) for c in predicates)) if predicates else None)
-            remote = add(op, "native", R.REMOTE_QUERY, parameters={"backend_id": backend_id, "artifact": artifact.to_dict()})
-            output = add(op, "bindings", R.NORMALIZE_NODE_BINDINGS, (remote,), {
-                "language": artifact.language, "identity_property": backend.identity_property,
-                "resource_namespace": backend.resource_namespace, "entity_field": entity,
-                "scalar_fields": list(properties)})
-            schema = ResultSchema(V.BINDING_SET, frozenset((entity, *properties)))
-        elif kind is S.TRAVERSE:
-            query = parse_path_pattern_query(p["path_pattern"])
-            if predicates:
-                conditions = ([query.condition] if query.condition is not None else []) + [_parse_condition(c) for c in predicates]
-                query = replace(query, condition=And(*conditions))
-            plan = compile_bounded_path_plan(query, **backend.path_options())
-            ids = {n.node_id: f"{identifier}/{n.node_id}" for n in plan.nodes}
-            nodes.extend(replace(n, node_id=ids[n.node_id], inputs=tuple(ids[i] for i in n.inputs),
-                                 semantic_operator_ids=(identifier,)) for n in plan.nodes)
-            output = ids[plan.roots[0]]
-            schema = ResultSchema(V.PATH_SET, frozenset(("path",)), backend.resource_namespace)
-            if inputs:
-                if sources[0].kind is not V.BINDING_SET or p.get("anchor_position", "first") not in ("first", "last"):
-                    raise SemanticProgramError("Bound Traverse requires endpoint bindings")
+        if kind in (S.MATCH, S.TRAVERSE):
+            key = (identifier, backend_id)
+            fragment = _source_cache.get(key) if _source_cache is not None else None
+            if fragment is None:
+                fragment = compile_semantic_source(op, backend)
+                if _source_cache is not None:
+                    _source_cache[key] = fragment
+            if kind is S.TRAVERSE and inputs:
                 _fields((p["anchor_field"],), sources[0].fields)
-                expanded = add(op, "anchor", R.COORDINATOR_ROW_PROJECT, (output,), {
-                    "resource_namespace": backend.resource_namespace, "projections": {
-                        "path": {"kind": "field", "field": "path"},
-                        "anchor": {"kind": "path_node", "position": p.get("anchor_position", "first")}}})
-                matched = add(op, "bound", R.COORDINATOR_SEMI_JOIN, (expanded, inputs[0]),
-                              {"left_on": "anchor", "right_on": p["anchor_field"]})
-                output = add(op, "result", R.PROJECT, (matched,), {"fields": ["path"]})
-            elif set(p) - {"path_pattern"}:
-                raise SemanticProgramError("Anchor parameters require a Traverse input")
+            nodes.extend(replace(n, inputs=tuple(inputs[0] if i == SOURCE_INPUT else i for i in n.inputs))
+                         for n in fragment.nodes)
+            output, schema = fragment.output, fragment.schema
         elif kind is S.PROJECT:
             schema = _projection_schema(p["projections"], sources[0])
             output = add(op, "project", R.COORDINATOR_ROW_PROJECT, inputs,

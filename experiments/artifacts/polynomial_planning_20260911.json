@@ -1,0 +1,431 @@
+{
+  "schema": "xgap-polynomial-planning-evidence-v1",
+  "base_commit": "c77c08c",
+  "status": "implementation_verified_search_quality_followup_required",
+  "paper_result": false,
+  "live_llm": false,
+  "large_dataset_runs": 0,
+  "source_sha256": {
+    "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+    "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+    "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+    "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+    "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+    "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+    "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+    "scripts/run_toy_backbone_native.py": "def1b3576a4da8aa5ac72be53692dfbaaa05c87795b62807b2fb517a445a3a37",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+    "src/xgap/runtime/semantic_compiler.py": "a9345ef1b131cffcae174be9a04b05ec0eb58bd4c75ca6b7e8a555775ac4d0c3",
+    "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+    "src/xgap/runtime/semantic_planning.py": "b03b991e443e6f70dc387227558fc1fc8272271b9eef7980c778a9d06293c904",
+    "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/runtime/semantic_memory.py": "5d65891e5299c19960c63fe4961d7e60b2033952f06de680f8d57613c8c32777",
+    "src/xgap/agent/memory.py": "3fc9a374422458ccf6524bb656dfbb62d0eaf42c59a7a4135c6a848f5d292616",
+    "src/xgap/runtime/semantic_placement.py": "dad4cbb4346eb996f2706ac54b28732b01b630db5f58e1b782cedda3ccfc7431",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+    "src/xgap/semantic/binding.py": "f2f2daf77ed787580619f1e03fbfcfedc49e92162bc786b7001b27452a7d9ec3",
+    "src/xgap/agent/semantic_execution.py": "17920731f954c35feee037a230ef14466236a9634dcb514b523ff46cb296ca7c",
+    "src/xgap/agent/resolution.py": "0ddab00073176c20ca737eafe0b175e1bab9aeba56ba380671405814af425f2c",
+    "src/xgap/agent/loop.py": "cb0aec6d416ed856d94a677233c6d565e0f525cc15e5c73e15998b593699b1f8",
+    "src/xgap/tools/artifact_resolution.py": "18d4da7a14212f35397d39cc7dbccf2e24bceb500865289340cc59c0409c8c58",
+    "src/xgap/tools/resolution.py": "5046f009a3d0b612e3d4425bec33a41de715a158b87858805ae6e6af8bd89127",
+    "src/xgap/experiments/toy_binding.py": "25fd25616924d3ffb707f3ca886ea59b94f2228d4519f0fccfe5f0196bcf0514",
+    "src/xgap/catalog/bundle.py": "2d3bc522873b2c508426b4dee92b82d5020a568e69ccc9c92fabef44269cd624",
+    "src/xgap/agent/question.py": "3ccf6a00342d0b4b8086c89bf222f31d7e685d6e472f982d61cc9bd1fbd00cb2",
+    "src/xgap/semantic/intake.py": "0d69b581faba5d01761342b1fab6361ec3c46e8019586c05241f9bb1ff473534",
+    "src/xgap/semantic/interpretation.py": "27d1994d127b45937e667241fae064925c63ab85e7090630ff493b27a5d3e07e",
+    "src/xgap/semantic/interpretation_replay.py": "d451f5aaaf62e19710ffcc042abdbd4ad9165423af73376483c9152a73aa41da",
+    "scripts/run_polynomial_placement_probe.py": "f1b2375e2c7280c3bbe93cddded41afa6fad1005b95ae64b62a50c5fd246110f"
+  },
+  "native": {
+    "path": "/Users/anthonyche/xgap-data/p1-native-20260911/result.json",
+    "sha256": "c8e82456b3f6bb79a719cae53db0f736cde86c62a8c93b3a1d954a4d26addbd8",
+    "session": 23560,
+    "exit_code": 0,
+    "cold_programs": 5,
+    "warm_programs": 5,
+    "independent_native_targets": 10,
+    "candidate_answers": 18,
+    "queries": [
+      {
+        "id": "B01",
+        "algorithm": "coordinate_two_passes",
+        "certificate": {
+          "objective": "estimated_critical_path_ms",
+          "actual_latency_bound": false,
+          "kind": "instance_gap",
+          "lower_bound_ms": 52.18154186820984,
+          "upper_bound_ms": 52.63354186820984,
+          "baseline_ms": 52.63354186820984,
+          "additive_gap_ms": 0.4519999999999982,
+          "ratio_bound": 1.008662066773373,
+          "unavailable_reason": null,
+          "full_local_domain_covered": true,
+          "constant_factor_claim": false
+        },
+        "local_options": 4,
+        "evaluated_plans": 4,
+        "cold_observations": 4,
+        "cold_execution_calls": 2,
+        "warm_observations": 0,
+        "warm_execution_calls": 2,
+        "candidate_answer_checks": 4
+      },
+      {
+        "id": "B02",
+        "algorithm": "coordinate_two_passes",
+        "certificate": {
+          "objective": "estimated_critical_path_ms",
+          "actual_latency_bound": false,
+          "kind": "instance_gap",
+          "lower_bound_ms": 7.76850077086687,
+          "upper_bound_ms": 8.07350077086687,
+          "baseline_ms": 8.07350077086687,
+          "additive_gap_ms": 0.3049999999999997,
+          "ratio_bound": 1.0392611147241948,
+          "unavailable_reason": null,
+          "full_local_domain_covered": true,
+          "constant_factor_claim": false
+        },
+        "local_options": 4,
+        "evaluated_plans": 3,
+        "cold_observations": 4,
+        "cold_execution_calls": 2,
+        "warm_observations": 0,
+        "warm_execution_calls": 2,
+        "candidate_answer_checks": 4
+      },
+      {
+        "id": "B03",
+        "algorithm": "coordinate_two_passes",
+        "certificate": {
+          "objective": "estimated_critical_path_ms",
+          "actual_latency_bound": false,
+          "kind": "instance_gap",
+          "lower_bound_ms": 6.817041844785214,
+          "upper_bound_ms": 7.269041844785215,
+          "baseline_ms": 7.269041844785215,
+          "additive_gap_ms": 0.45200000000000085,
+          "ratio_bound": 1.0663044191735107,
+          "unavailable_reason": null,
+          "full_local_domain_covered": true,
+          "constant_factor_claim": false
+        },
+        "local_options": 4,
+        "evaluated_plans": 3,
+        "cold_observations": 4,
+        "cold_execution_calls": 2,
+        "warm_observations": 0,
+        "warm_execution_calls": 2,
+        "candidate_answer_checks": 4
+      },
+      {
+        "id": "B04",
+        "algorithm": "coordinate_two_passes",
+        "certificate": {
+          "objective": "estimated_critical_path_ms",
+          "actual_latency_bound": false,
+          "kind": "instance_gap",
+          "lower_bound_ms": 8.356416561067103,
+          "upper_bound_ms": 8.453416561067105,
+          "baseline_ms": 8.453416561067105,
+          "additive_gap_ms": 0.09700000000000131,
+          "ratio_bound": 1.0116078464125315,
+          "unavailable_reason": null,
+          "full_local_domain_covered": true,
+          "constant_factor_claim": false
+        },
+        "local_options": 2,
+        "evaluated_plans": 2,
+        "cold_observations": 2,
+        "cold_execution_calls": 1,
+        "warm_observations": 0,
+        "warm_execution_calls": 1,
+        "candidate_answer_checks": 2
+      },
+      {
+        "id": "B05",
+        "algorithm": "coordinate_two_passes",
+        "certificate": {
+          "objective": "estimated_critical_path_ms",
+          "actual_latency_bound": false,
+          "kind": "instance_gap",
+          "lower_bound_ms": 8.068583148956298,
+          "upper_bound_ms": 8.373583148956298,
+          "baseline_ms": 8.373583148956298,
+          "additive_gap_ms": 0.3049999999999997,
+          "ratio_bound": 1.037800936591879,
+          "unavailable_reason": null,
+          "full_local_domain_covered": true,
+          "constant_factor_claim": false
+        },
+        "local_options": 4,
+        "evaluated_plans": 4,
+        "cold_observations": 4,
+        "cold_execution_calls": 2,
+        "warm_observations": 0,
+        "warm_execution_calls": 2,
+        "candidate_answer_checks": 4
+      }
+    ],
+    "shutdown": [
+      {
+        "service_id": "fuseki",
+        "pid": 4445,
+        "initial_exit_code": null,
+        "final_exit_code": 143,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      },
+      {
+        "service_id": "neo4j",
+        "pid": 4344,
+        "initial_exit_code": null,
+        "final_exit_code": 0,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      }
+    ]
+  },
+  "grid": {
+    "path": "/Users/anthonyche/xgap-data/p1-planner-grid-20260911/result.json",
+    "sha256": "72739f992d986560aa837a6f62eb4fc6f4aa87d3ac09c8d9c571ac8a850a94bf",
+    "session": 1650,
+    "exit_code": 0,
+    "cells": 15,
+    "model_runs": 300,
+    "oracle_comparisons": 140,
+    "exact_branch_oracle_comparisons": 70,
+    "max_oracle_model_regret_ratio": 6.332805071315373,
+    "worst_case": {
+      "m": 4,
+      "k": 8,
+      "seed": 9,
+      "variable_row_estimates": true,
+      "selection_ms_with_allocation_tracing": 44.6466663852334,
+      "evaluated_plans": 57,
+      "local_score_evaluations": 0,
+      "algorithm": "coordinate_two_passes",
+      "certificate": {
+        "objective": "estimated_critical_path_ms",
+        "actual_latency_bound": false,
+        "kind": "instance_gap",
+        "lower_bound_ms": 7.936,
+        "upper_bound_ms": 63.936,
+        "baseline_ms": 94.52199999999999,
+        "additive_gap_ms": 56.0,
+        "ratio_bound": 8.056451612903226,
+        "unavailable_reason": null,
+        "full_local_domain_covered": true,
+        "constant_factor_claim": false
+      },
+      "oracle_estimated_ms": 10.096,
+      "observed_model_regret_ratio": 6.332805071315373
+    },
+    "summary": [
+      {
+        "source_operators": 2,
+        "replicas_per_source": 2,
+        "product_domain_upper_bound": 4,
+        "local_options": 4,
+        "max_evaluated_plans": 4,
+        "preparation_ms_with_tracemalloc": 2.8725825250148773,
+        "median_selection_ms_with_tracemalloc": 1.9996659830212593,
+        "peak_traced_polynomial_bytes": 264752
+      },
+      {
+        "source_operators": 2,
+        "replicas_per_source": 4,
+        "product_domain_upper_bound": 16,
+        "local_options": 8,
+        "max_evaluated_plans": 12,
+        "preparation_ms_with_tracemalloc": 5.885666236281395,
+        "median_selection_ms_with_tracemalloc": 3.6418335512280464,
+        "peak_traced_polynomial_bytes": 303444
+      },
+      {
+        "source_operators": 2,
+        "replicas_per_source": 8,
+        "product_domain_upper_bound": 64,
+        "local_options": 16,
+        "max_evaluated_plans": 28,
+        "preparation_ms_with_tracemalloc": 9.7979586571455,
+        "median_selection_ms_with_tracemalloc": 7.221562322229147,
+        "peak_traced_polynomial_bytes": 454249
+      },
+      {
+        "source_operators": 4,
+        "replicas_per_source": 2,
+        "product_domain_upper_bound": 16,
+        "local_options": 8,
+        "max_evaluated_plans": 9,
+        "preparation_ms_with_tracemalloc": 7.864125072956085,
+        "median_selection_ms_with_tracemalloc": 5.642853677272797,
+        "peak_traced_polynomial_bytes": 324435
+      },
+      {
+        "source_operators": 4,
+        "replicas_per_source": 4,
+        "product_domain_upper_bound": 256,
+        "local_options": 16,
+        "max_evaluated_plans": 25,
+        "preparation_ms_with_tracemalloc": 18.770082853734493,
+        "median_selection_ms_with_tracemalloc": 13.060959056019783,
+        "peak_traced_polynomial_bytes": 585287
+      },
+      {
+        "source_operators": 4,
+        "replicas_per_source": 8,
+        "product_domain_upper_bound": 4096,
+        "local_options": 32,
+        "max_evaluated_plans": 57,
+        "preparation_ms_with_tracemalloc": 28.417209163308144,
+        "median_selection_ms_with_tracemalloc": 22.577354218810797,
+        "peak_traced_polynomial_bytes": 829414
+      },
+      {
+        "source_operators": 8,
+        "replicas_per_source": 2,
+        "product_domain_upper_bound": 256,
+        "local_options": 16,
+        "max_evaluated_plans": 17,
+        "preparation_ms_with_tracemalloc": 23.854459635913372,
+        "median_selection_ms_with_tracemalloc": 18.953853752464056,
+        "peak_traced_polynomial_bytes": 592483
+      },
+      {
+        "source_operators": 8,
+        "replicas_per_source": 4,
+        "product_domain_upper_bound": 65536,
+        "local_options": 32,
+        "max_evaluated_plans": 49,
+        "preparation_ms_with_tracemalloc": 43.33758354187012,
+        "median_selection_ms_with_tracemalloc": 39.99735461547971,
+        "peak_traced_polynomial_bytes": 1132073
+      },
+      {
+        "source_operators": 8,
+        "replicas_per_source": 8,
+        "product_domain_upper_bound": 16777216,
+        "local_options": 64,
+        "max_evaluated_plans": 113,
+        "preparation_ms_with_tracemalloc": 90.3792092576623,
+        "median_selection_ms_with_tracemalloc": 78.24833272024989,
+        "peak_traced_polynomial_bytes": 2187860
+      },
+      {
+        "source_operators": 16,
+        "replicas_per_source": 2,
+        "product_domain_upper_bound": 65536,
+        "local_options": 32,
+        "max_evaluated_plans": 33,
+        "preparation_ms_with_tracemalloc": 74.00116696953773,
+        "median_selection_ms_with_tracemalloc": 65.09747914969921,
+        "peak_traced_polynomial_bytes": 1636727
+      },
+      {
+        "source_operators": 16,
+        "replicas_per_source": 4,
+        "product_domain_upper_bound": 4294967296,
+        "local_options": 64,
+        "max_evaluated_plans": 97,
+        "preparation_ms_with_tracemalloc": 144.71475034952164,
+        "median_selection_ms_with_tracemalloc": 146.57060476019979,
+        "peak_traced_polynomial_bytes": 3420097
+      },
+      {
+        "source_operators": 16,
+        "replicas_per_source": 8,
+        "product_domain_upper_bound": 281474976710656,
+        "local_options": 128,
+        "max_evaluated_plans": 225,
+        "preparation_ms_with_tracemalloc": 308.6618324741721,
+        "median_selection_ms_with_tracemalloc": 305.57275004684925,
+        "peak_traced_polynomial_bytes": 6979306
+      },
+      {
+        "source_operators": 32,
+        "replicas_per_source": 2,
+        "product_domain_upper_bound": 4294967296,
+        "local_options": 64,
+        "max_evaluated_plans": 65,
+        "preparation_ms_with_tracemalloc": 275.7183751091361,
+        "median_selection_ms_with_tracemalloc": 267.1228959225118,
+        "peak_traced_polynomial_bytes": 3962767
+      },
+      {
+        "source_operators": 32,
+        "replicas_per_source": 4,
+        "product_domain_upper_bound": 18446744073709551616,
+        "local_options": 128,
+        "max_evaluated_plans": 193,
+        "preparation_ms_with_tracemalloc": 556.7786665633321,
+        "median_selection_ms_with_tracemalloc": 579.2169999331236,
+        "peak_traced_polynomial_bytes": 10704866
+      },
+      {
+        "source_operators": 32,
+        "replicas_per_source": 8,
+        "product_domain_upper_bound": 79228162514264337593543950336,
+        "local_options": 256,
+        "max_evaluated_plans": 449,
+        "preparation_ms_with_tracemalloc": 1146.189541555941,
+        "median_selection_ms_with_tracemalloc": 1243.3961667120457,
+        "peak_traced_polynomial_bytes": 24187992
+      }
+    ]
+  },
+  "focused": [
+    {
+      "session": 13666,
+      "result": "111passed/1failed",
+      "seconds": 5.92,
+      "failure": "stale assertion equating evaluated-plan counts across fresh observations; domain/count distinction corrected",
+      "log": "/tmp/xgap-p1-integration-first.log"
+    },
+    {
+      "session": 4965,
+      "result": "146passed/1failed",
+      "seconds": 6.69,
+      "failure": "new huge-repetition fixture used type instead of the parser kind key; fixture corrected",
+      "log": "/tmp/xgap-p1-focused.log"
+    },
+    {
+      "result": "22passed",
+      "seconds": 0.62,
+      "scope": "final P1 oracle/bound/compact-input/topology tests",
+      "log": "/tmp/xgap-p1-oracle-tests.log"
+    },
+    {
+      "session": 71371,
+      "exit_code": 0,
+      "result": "15passed",
+      "seconds": 5.74,
+      "scope": "scoped semantic DAGs after source-fragment factoring",
+      "log": "/tmp/xgap-p1-scoped.log"
+    }
+  ],
+  "broad_regression_run": false,
+  "next_action": "Replay m4/k8/seed9 variable-row terminal-source instance; loosen separability admission only where output estimates affect no downstream cost. Preserve the negative grid and validate against the same oracle. Do not automatically repeat native or broad suites.",
+  "limitations": [
+    "Model-relative bounds, no bound on actual runtime or joint acquisition-policy optimality",
+    "Topology changes get baseline-only guarantee; no universal constant-factor approximation",
+    "Grid uses independent terminal source blocks and simulated replica configurations, not growing real datasets or actual endpoints",
+    "Tracemalloc affects measured planner times; these are diagnostic CPU numbers",
+    "One heuristic point has6.33x model regret although its8.06x certificate remains valid",
+    "Ordinary-entry selective acquisition/adaptive integration and real-data comparisons remain incomplete"
+  ]
+}

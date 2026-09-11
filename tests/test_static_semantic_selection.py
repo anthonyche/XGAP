@@ -53,7 +53,9 @@ def test_same_meaning_comparison_counts_the_default_acquisition_cost():
     c, s = costed["state"]["output"], static["state"]["output"]
     assert costed["success"] and static["success"]
     assert c["bound_program"] == s["bound_program"]
-    assert c["planning_run"]["candidate_count"] == s["planning_run"]["candidate_count"] == 4
+    assert c["planning_run"]["local_option_count"] == s["planning_run"]["local_option_count"] == 4
+    assert c["planning_run"]["possible_placement_count"] == s["planning_run"]["possible_placement_count"] == 4
+    assert s["planning_run"]["candidate_count"] == 1
     assert c["planning_run"]["observation_calls"] == 4
     assert s["planning_run"]["observation_calls"] == 0
     assert len(cost_calls) == 6 and len(static_calls) == 2

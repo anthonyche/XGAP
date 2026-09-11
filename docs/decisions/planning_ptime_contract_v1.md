@@ -207,3 +207,47 @@ Completion requires source integration and these evidence artifacts. This docume
 does not declare P1 done, general Ptime compilation proved, or the whole research
 prototype complete. Selective-acquisition and full-agent obligations remain in
 the research plan; a correct placement subroutine alone does not finish them.
+
+## Implementation admission and selected checks (P1 in progress)
+
+The new mainline uses `prepare_semantic_placements`; the old enumerator is called
+only by explicit oracle/development validation entrypoints. The ordinary entry's
+legacy keyword `max_candidates` now bounds **local options** (default64), with
+`candidate_budget_unit=local_options` in its output. Direct preparation names it
+`max_local_options`. Actual complete-plan evaluations and the product-domain
+upper bound are separate counters. Existing frozen specialized experiment APIs
+and oracle budgets retain their previous meaning.
+
+Local compilation is factored by operator/backend. Capability failures eliminate
+only that option. Minimum remote-call counts construct a feasible baseline;
+options that cannot fit even with all other minimum-call choices are removed.
+Static priority chooses lexicographically while reserving those remaining minimum
+calls. Full semantic/schema and call-budget validation still runs on assembly.
+The source-fragment cache is private to a prepared immutable problem, not a data
+or answer cache; it must not be reused with another program/backend configuration.
+
+Compiler-input admission precedes local compilation: the explicit path expression
+has expansion-work proxy Rel=1, Seq/Alt=1+left+right, Optional=1+child,
+finite repetition=1+(maximum+1)*child (zero repetitions=1), capped at4096.
+The recurrence uses arithmetic on the encoded bounds, not a loop over the bounds.
+Existing native branch128/edge64 admission remains. This additional declared
+compact-input profile prevents binary repetition counts from hiding an enormous
+lowering loop; it rejects, never clips, an expression. Query execution remains
+output-sensitive and is outside the planner's CPU complexity claim.
+
+Preparation performs at mostK local fragment compilations, one baseline assembly
+and at mostK representative assemblies. Representatives differ at one source and
+collect every local observation without retaining a product-sized candidate list.
+The independent-source branch scores K local fragments and at most2 full plans;
+the two-pass branch scores at most1+2K full plans. Compilation reuses the local
+fragments. Lower-bound construction is polynomial and covers all admitted local
+options; topology changes emit `baseline_only`, not a false global bound.
+
+Selected verification: affected compiler/binding/capability/static/memory tests,
+the small exhaustive bound tests (including zero LB, changed topology and compact
+huge repetition), existing scoped-DAG cases, one five-question cold/warm native
+slice, and the frozen P1 model grid. No broad acceptance suite is required.
+Grid command: `python scripts/run_polynomial_placement_probe.py --output <new-dir>`;
+fixed15(m,k) cells, two row-estimate regimes, ten seeds, oracle onlyk^m≤4096,
+600s default budget. Allocation-traced CPU times are labelled diagnostic and not
+paper latency. The native slice uses existing `--agentic-semantic --memory-roundtrip`.

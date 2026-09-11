@@ -1,5 +1,15 @@
 # XGAP Roadmap
 
+## Immediate P1 follow-up from measured evidence
+
+Polynomial placement is now wired to the ordinary entry and verified on toy
+native execution and the planned model grid. A6.33x regret case on independent
+terminal source blocks identifies an overly conservative separability test.
+Replay m4/k8/seed9 variable-row inputs, correct terminal-source admission with
+counterexamples for downstream-dependent sources, and retain the original
+negative result. Do not repeat the completed native/grid/broad gates without a
+specific affected measurement. See [P1 report](report/polynomial_planning_20260911.md).
+
 ## Authoritative next gate — P1 for the research experiment plan
 
 Follow [RQ/X/Y factors and experiments](research_experiment_plan_20260911.md).

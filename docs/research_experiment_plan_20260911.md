@@ -11,6 +11,12 @@
   engineering, efficiency/effectiveness/scalability, Ptime planning with bounds,
   small-data development, new real results by September 18
 
+**Subsequent execution:** P1 local-option planning is implemented and its first
+model grid/native slice completed. A6.33x heuristic regret case is retained for
+targeted separability repair; see [P1 evidence](report/polynomial_planning_20260911.md).
+Statements below describing the initial missing implementation are historical
+planning context, not a claim that the replacement is still absent.
+
 ## 1. Research question and proposed contribution
 
 **主问题：面对语义尚未完全绑定、统计信息不完整的异构黑盒图源，如何联合决定

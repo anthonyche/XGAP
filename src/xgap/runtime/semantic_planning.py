@@ -55,6 +55,32 @@ class SemanticPlanSpace:
     enumeration_ms: float
 
 
+def _instrument_semantic_plan(plan, identities, equivalence_key):
+    artifacts, requests = {}, {}
+    candidate_id = plan.plan_id + "/" + _hash({"meaning": equivalence_key, "placement": plan.metadata["source_bindings"]})[:20]
+    exchanges = {node.node_id: node.node_id + "/exchange" for node in plan.nodes if node.kind is R.REMOTE_QUERY}
+    nodes = []
+    for node in plan.nodes:
+        if node.kind is R.REMOTE_QUERY:
+            backend = node.parameters["backend_id"]
+            artifact = QueryArtifact.from_dict(node.parameters["artifact"])
+            owner = node.semantic_operator_ids[0]
+            key = _hash({"backend": backend, "source": identities[owner], "artifact": artifact.to_dict()})
+            artifacts.setdefault(backend, {})[key] = artifact
+            requests[key] = PlanObservationRequest("observe-" + key, key, backend,
+                BackendOperation.PROFILE, {"query_id": key})
+            nodes.append(replace(node, parameters={**node.parameters, "observation_key": key}))
+            nodes.append(RuntimeNode(exchanges[node.node_id], R.EXCHANGE, (node.node_id,),
+                                     semantic_operator_ids=node.semantic_operator_ids))
+        else:
+            nodes.append(replace(node, inputs=tuple(exchanges.get(i, i) for i in node.inputs)))
+    metadata = {**plan.metadata, "logical_sources": identities,
+                "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"}
+    plan = replace(plan, plan_id=candidate_id, nodes=tuple(nodes),
+                   roots=tuple(exchanges.get(i, i) for i in plan.roots), metadata=metadata)
+    return FederatedPlanCandidate(plan, equivalence_key), artifacts, requests
+
+
 def enumerate_semantic_plans(program: SemanticGraphProgram, *,
         operator_sources: Mapping[str, str], sources: Mapping[str, LogicalSource],
         backends: Mapping[str, SemanticBackend], max_candidates: int = 64,
@@ -94,28 +120,11 @@ def enumerate_semantic_plans(program: SemanticGraphProgram, *,
         except (ValueError, CompilerError) as error:
             rejected.append({"source_bindings": placement, "reason": str(error)})
             continue
-        candidate_id = program.program_id + "/" + _hash({"meaning": equivalence_key, "placement": placement})[:20]
-        exchanges = {node.node_id: node.node_id + "/exchange" for node in plan.nodes if node.kind is R.REMOTE_QUERY}
-        nodes = []
-        for node in plan.nodes:
-            if node.kind is R.REMOTE_QUERY:
-                backend = node.parameters["backend_id"]
-                artifact = QueryArtifact.from_dict(node.parameters["artifact"])
-                owner = node.semantic_operator_ids[0]
-                key = _hash({"backend": backend, "source": identities[owner], "artifact": artifact.to_dict()})
-                artifacts.setdefault(backend, {})[key] = artifact
-                requests[key] = PlanObservationRequest("observe-" + key, key, backend,
-                    BackendOperation.PROFILE, {"query_id": key})
-                nodes.append(replace(node, parameters={**node.parameters, "observation_key": key}))
-                nodes.append(RuntimeNode(exchanges[node.node_id], R.EXCHANGE, (node.node_id,),
-                                         semantic_operator_ids=node.semantic_operator_ids))
-            else:
-                nodes.append(replace(node, inputs=tuple(exchanges.get(i, i) for i in node.inputs)))
-        metadata = {**plan.metadata, "logical_sources": identities,
-                    "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"}
-        plan = replace(plan, plan_id=candidate_id, nodes=tuple(nodes),
-                       roots=tuple(exchanges.get(i, i) for i in plan.roots), metadata=metadata)
-        candidates.append(FederatedPlanCandidate(plan, equivalence_key))
+        candidate, local_artifacts, local_requests = _instrument_semantic_plan(plan, identities, equivalence_key)
+        candidates.append(candidate)
+        for backend, queries in local_artifacts.items():
+            artifacts.setdefault(backend, {}).update(queries)
+        requests.update(local_requests)
     if not candidates:
         raise SemanticProgramError(f"No executable placement: {rejected}")
     if len(requests) > max_observation_calls:
@@ -177,6 +186,11 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
               "snapshot_reused": snapshot is not None and static_backend_order is None, "automatic_retries": 0}
     record["selection_policy"] = "static_backend_order" if static_backend_order is not None else "costed"
     record.update(memory={"state": "disabled", "reads": 0, "writes": 0}, memory_ms=0.0)
+    polynomial = hasattr(space, "local_option_count")
+    if polynomial:
+        record.update(local_option_count=space.local_option_count,
+            possible_placement_count=space.possible_placement_count,
+            candidate_budget_unit="local_options", search_space_materialized=False)
     try:
         if plan_memory is not None and (snapshot is not None or static_backend_order is not None):
             raise ValueError("Planning memory, an explicit snapshot and static selection are mutually exclusive")
@@ -210,12 +224,18 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
                 finally:
                     record["memory_ms"] += (time.perf_counter() - memory_at) * 1000
         selected_at = time.perf_counter()
-        selection = (select_static_semantic_plan(space.candidates, static_backend_order)
-                     if static_backend_order is not None else
-                     FederatedPlanSelector().select(space.candidates, snapshot).to_dict())
+        if polynomial:
+            selected, selection = (space.static_select(static_backend_order) if static_backend_order is not None
+                                   else space.select(snapshot))
+            plan = selected.plan
+            record["candidate_count"] = selection.get("evaluated_plan_count", 1)
+        else:
+            selection = (select_static_semantic_plan(space.candidates, static_backend_order)
+                         if static_backend_order is not None else
+                         FederatedPlanSelector().select(space.candidates, snapshot).to_dict())
+            plan = next(c.plan for c in space.candidates if c.plan.plan_id == selection["selected_plan_id"])
         record["selection_ms"] = (time.perf_counter() - selected_at) * 1000
         record["selection"] = selection
-        plan = next(c.plan for c in space.candidates if c.plan.plan_id == selection["selected_plan_id"])
         record["selected_plan"] = plan.to_dict()
         result = FederatedExecutionTool(FederatedScheduler(backend_tool)).invoke(
             {"plan": plan.to_dict()}, ToolContext(goal_id, 1, "execute-selected-semantic-plan"))

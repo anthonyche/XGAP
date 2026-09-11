@@ -34,8 +34,11 @@ class SemanticPlanMemory:
             raise ValueError("Planning memory requires one nonempty semantic equivalence class")
         context = {"schema": "semantic-observation-memory-v1", "episode": self.environment_episode,
             "meaning": space.candidates[0].semantic_equivalence_key,
-            "plans": [c.plan.to_dict() for c in sorted(space.candidates, key=lambda c: c.plan.plan_id)],
             "requests": [r.to_dict() for r in space.observation_requests], "cost_model": costs}
+        if hasattr(space, "memory_context"):
+            context["local_placement_problem"] = space.memory_context()
+        else:
+            context["plans"] = [c.plan.to_dict() for c in sorted(space.candidates, key=lambda c: c.plan.plan_id)]
         digest = hashlib.sha256(json.dumps(context, sort_keys=True, separators=(",", ":"),
                                           allow_nan=False).encode()).hexdigest()
         key = "semantic-observation/" + digest
