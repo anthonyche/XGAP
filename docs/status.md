@@ -1,5 +1,18 @@
 # XGAP Status
 
+## Current engineering — T3-B memory integration accepted
+
+The user now explicitly prioritizes a research prototype serving paper results,
+not perfect implementation. Streaming, product UI and arbitrary source discovery
+are not automatic blockers for evaluating the declared experimental scope.
+
+Observation memory is connected through the normal question entry with existing
+memory stores, exact context, finite age and separate historical accounting.
+Focused148 pass; native5 cold+5 warm programs,18 candidate answers,10 independent
+targets and old split-data slice pass. Cold18 observations+9 execution calls;
+warm0+9. No answer caching or speedup claim. Full90283 exited0:3481 passed/38 skipped,691.20s,24 entrypoints. No source
+or test change after launch. See [the report](report/semantic_execution_memory_20260911.md).
+
 Implementation, integration and verification are tracked separately in the
 [September 11 engineering completeness audit](report/engineering_completeness_20260911.md).
 In particular, memory/adaptive/UI modules already exist; their generic-entry

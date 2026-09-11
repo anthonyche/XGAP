@@ -1,5 +1,16 @@
 # XGAP Design Decisions
 
+## T3-B Reuse planning observations in the ordinary question path
+
+[The frozen scope](decisions/semantic_execution_memory_v1.md) connects existing
+MemoryStore to generic semantic execution. Keep exact meaning/artifacts/cost and
+environment compatibility, finite age, no cached answers and no automatic retry.
+Record acquisition provenance once and show historical costs separately on hits.
+Native5 cold+5 warm/18 candidates/10 references+slice and focused148 pass; final
+broad90283 exited0:3481/38,691.20s,24 entrypoints. See [the report](report/semantic_execution_memory_20260911.md).
+The user's research-prototype priority supersedes treating every general system
+extension as a prerequisite for real-data evaluation.
+
 ## T3-A Static physical placement through the same question entry
 
 Freeze [the explicit backend-priority policy](decisions/static_semantic_selection_v1.md)

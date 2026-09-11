@@ -1,5 +1,20 @@
 # XGAP Roadmap
 
+## Current engineering — research-prototype experiment path
+
+Latest user clarification: prioritize what is needed to obtain credible paper
+experiments over perfect or universally complete implementation. Existing bounded
+semantics and truthful failure/denominator accounting stay mandatory; generic
+streaming, product UI and arbitrary source discovery are not new experiment gates.
+
+T3-B integrates optional exact-context observation memory with the common question
+entry and existing stores. Focused148 and native5 cold+5 warm/18 candidates/10
+references+slice pass; final full90283 exited0:3481/38,691.20s,24 entrypoints. Continue the pending
+five-question true-model/tiny-native connection, then use frozen real samples and
+existing comparison runners. Memory/no-memory plumbing does not finish adaptive
+replanning or establish a research advantage. See
+[the memory report](report/semantic_execution_memory_20260911.md).
+
 ## Current engineering — T3-A static baseline accepted
 
 The same-entry no-observation physical placement baseline has focused 115 and

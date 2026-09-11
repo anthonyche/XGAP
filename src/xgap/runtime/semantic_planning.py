@@ -12,6 +12,7 @@ import json
 import math
 import time
 from typing import Mapping
+from uuid import uuid4
 
 from xgap.compilers.errors import CompilerError
 from xgap.infrastructure.runtime import QueryArtifact
@@ -20,6 +21,7 @@ from xgap.runtime.observations import PlanObservationCollector, PlanObservationR
 from xgap.runtime.planning import FederatedPlanCandidate, FederatedPlanSelector, PlanObservationSnapshot
 from xgap.runtime.scheduler import FederatedScheduler
 from xgap.runtime.semantic_compiler import SemanticBackend, compile_semantic_program
+from xgap.runtime.semantic_memory import SemanticPlanMemory
 from xgap.runtime.tool import FederatedExecutionTool
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S, SemanticProgramError
 from xgap.tools.backends import BackendInvokeTool, BackendObservationCatalog, BackendOperation
@@ -157,6 +159,7 @@ def select_static_semantic_plan(candidates, backend_order):
 def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool, *,
         snapshot: PlanObservationSnapshot | None = None,
         static_backend_order: tuple[str, ...] | None = None,
+        plan_memory: SemanticPlanMemory | None = None,
         bandwidth_bytes_per_ms: float = 1000.0, exchange_fixed_ms: float = 0.0,
         coordinator_row_ms: float = 0.01, goal_id: str = "semantic-planning") -> dict:
     """Acquire unique observations if needed, select, then dispatch only the winner.
@@ -173,12 +176,25 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
               "observation_calls": 0, "execution_calls": 0, "selection_ms": 0.0,
               "snapshot_reused": snapshot is not None and static_backend_order is None, "automatic_retries": 0}
     record["selection_policy"] = "static_backend_order" if static_backend_order is not None else "costed"
+    record.update(memory={"state": "disabled", "reads": 0, "writes": 0}, memory_ms=0.0)
     try:
+        if plan_memory is not None and (snapshot is not None or static_backend_order is not None):
+            raise ValueError("Planning memory, an explicit snapshot and static selection are mutually exclusive")
         if static_backend_order is not None and snapshot is not None:
             raise ValueError("Static selection and a cost snapshot are mutually exclusive")
+        if plan_memory is not None:
+            memory_at = time.perf_counter()
+            try:
+                snapshot, record["memory"] = plan_memory.lookup(space,
+                    bandwidth_bytes_per_ms=bandwidth_bytes_per_ms, exchange_fixed_ms=exchange_fixed_ms,
+                    coordinator_row_ms=coordinator_row_ms)
+                record["snapshot_reused"] = snapshot is not None
+            finally:
+                record["memory_ms"] += (time.perf_counter() - memory_at) * 1000
         if snapshot is None and static_backend_order is None:
             collected = PlanObservationCollector(backend_tool).collect(space.observation_requests,
-                snapshot_id="semantic-plan-observations", version=space.candidates[0].semantic_equivalence_key,
+                snapshot_id=record["memory"]["key"] if plan_memory is not None else "semantic-plan-observations",
+                version=uuid4().hex if plan_memory is not None else space.candidates[0].semantic_equivalence_key,
                 bandwidth_bytes_per_ms=bandwidth_bytes_per_ms, exchange_fixed_ms=exchange_fixed_ms,
                 coordinator_row_ms=coordinator_row_ms, goal_id=goal_id)
             record["observation"] = collected.to_dict()
@@ -186,6 +202,13 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
             if not collected.success:
                 raise ValueError(collected.error)
             snapshot = collected.snapshot
+            if plan_memory is not None:
+                memory_at = time.perf_counter()
+                try:
+                    plan_memory.remember(record["memory"]["key"], collected, goal_id=goal_id)
+                    record["memory"].update(state=record["memory"]["state"] + "_stored", writes=1)
+                finally:
+                    record["memory_ms"] += (time.perf_counter() - memory_at) * 1000
         selected_at = time.perf_counter()
         selection = (select_static_semantic_plan(space.candidates, static_backend_order)
                      if static_backend_order is not None else
@@ -200,10 +223,10 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         record["execution_calls"] = int(result.metrics.get("remote_calls", 0))
         record["success"] = result.status is ToolStatus.SUCCESS
         record["error"] = result.error
-    except ValueError as error:
+    except (OSError, ValueError) as error:
         record["error"] = str(error)
     record["total_remote_calls"] = record["observation_calls"] + record["execution_calls"]
-    record["planning_ms"] = space.enumeration_ms + record["selection_ms"] + (
+    record["planning_ms"] = space.enumeration_ms + record["selection_ms"] + record["memory_ms"] + (
         record["observation"]["elapsed_ms"] if record["observation"] else 0)
     record["end_to_end_ms"] = space.enumeration_ms + (time.perf_counter() - started) * 1000
     return record

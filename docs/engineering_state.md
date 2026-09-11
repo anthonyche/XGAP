@@ -50,7 +50,34 @@ hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
-## Current milestone — T3-A static selection accepted
+## Current milestone — T3-B execution memory accepted
+
+User explicitly clarified that XGAP is a research prototype: prioritize paper
+experiments, correctness/reproducibility/fair costs over perfect implementation.
+General streaming/product UI/arbitrary partition discovery are not automatic
+experiment prerequisites. This user direction is persisted in docs/goal.md.
+
+Base8db41fa; scope decisions/semantic_execution_memory_v1.md. Existing MemoryStore
+now joins the common question entry through exact-context observation reuse,
+explicit environment episode and finite age. Historical acquisition calls/time
+stay separate from fresh work. No answer caching, compiler/gold change or new
+general framework. First local test command exited4 before running because of
+a nonexistent filename; corrected96791 passed112/5.53s; final10840 passed148/7.50s.
+Native8381 exit0:5 cold+5 warm programs,18 candidate answers,10 independent targets
+and old slice pass. Native37/37 source hashes match; owned services94034/93927
+stopped normally. Cold18 observations+9 executes; warm0+9, total73 test-query calls
+including validation/references/slice. No latency claim.
+
+Full90283 exited0:3481 passed/38 skipped in691.20s,24 entrypoints. All handles
+are terminal; no source/test edits after launch,39/39 recorded hashes match.
+Do not restart this gate. Log: /tmp/xgap-t3b-memory-acceptance.log. Receipts/report:
+experiments/artifacts/semantic_execution_memory_20260911.json and
+report/semantic_execution_memory_20260911.md. Remote3804011 has no new observation;
+its last actual state wasPENDING/Priority, estimated18:28:27 Beijing. No external
+action or failed-access retry this turn. Prototype and one-week result goal remain
+active; finish current gate then the real model/data experimental path.
+
+## Accepted predecessor — T3-A static selection
 
 User requested an implementation-versus-verification audit while the GPU queues.
 See report/engineering_completeness_20260911.md: deterministic bounded backbone

@@ -73,7 +73,8 @@ def resolution_tools(case, *, include_clarification=True):
     return registry
 
 
-def execute_binding_case(case, mapping, *, clients, interpretation_provider=None, static_backend_order=None):
+def execute_binding_case(case, mapping, *, clients, interpretation_provider=None, static_backend_order=None,
+                         plan_memory=None, validate_candidates=True):
     graph, _, _ = load_fixture()
     version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
     sources = {"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))}
@@ -87,7 +88,8 @@ def execute_binding_case(case, mapping, *, clients, interpretation_provider=None
     run = run_question(request, provider,
         catalog_root=BUNDLE_FIXTURE / reference["root"], catalog_hash=reference["bundle_hash"],
         sources=sources, backends=backends, backend_clients=clients, clarification_tool=clarification,
-        max_candidates=4, max_observation_calls=4, static_backend_order=static_backend_order)
+        max_candidates=4, max_observation_calls=4, static_backend_order=static_backend_order,
+        plan_memory=plan_memory)
     actual = run["state"]["output"]["planning_run"]["execution"]["value"]["final_rows"] if run["success"] else None
     canonical = lambda rows: sorted(json.dumps(row, sort_keys=True) for row in rows)
     record = {"query_id": case["id"], "success": run["success"] and canonical(actual) == canonical(case["expected_rows"]),
@@ -96,7 +98,7 @@ def execute_binding_case(case, mapping, *, clients, interpretation_provider=None
             "paper_result": False,
             "candidate_checks": [], "validation_only_extra_remote_calls": 0,
             "interpretation_source": provider.provider_id}
-    if not record["success"]:
+    if not record["success"] or not validate_candidates:
         return record
     output = run["state"]["output"]
     space = enumerate_semantic_plans(SemanticGraphProgram.from_dict(output["bound_program"]),

@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import signal
 import sys
+import time
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
@@ -55,6 +56,8 @@ def main(argv=None):
         help="With --agentic-semantic, replay the five recorded model responses; zero new model calls")
     parser.add_argument("--static-backend-order", nargs="+", choices=("neo4j", "fuseki"),
         help="With --agentic-semantic, use fixed backend priority without planning observations")
+    parser.add_argument("--memory-roundtrip", action="store_true",
+        help="With --agentic-semantic, execute each question cold then warm after JSONL memory reload")
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--compiled-directed", action="store_true",
         help="Run the production-compiled fixed-path cases instead of independent reference targets")
@@ -91,6 +94,8 @@ def main(argv=None):
     if args.static_backend_order and (not args.agentic_semantic or
             set(args.static_backend_order) != {"neo4j", "fuseki"} or len(args.static_backend_order) != 2):
         parser.error("--static-backend-order requires --agentic-semantic and both backend IDs exactly once")
+    if args.memory_roundtrip and (not args.agentic_semantic or args.static_backend_order):
+        parser.error("--memory-roundtrip requires --agentic-semantic without static selection")
     if args.typed_query_ids and not args.typed_bindings:
         parser.error("--typed-query-ids requires --typed-bindings")
     typed_cases = [c for c in load_typed_fixture()[1]
@@ -143,6 +148,7 @@ def main(argv=None):
         source_files.extend(REPO / relative for relative in (
             "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
             "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
+            "src/xgap/runtime/semantic_memory.py", "src/xgap/agent/memory.py",
             "src/xgap/tools/backends.py", "src/xgap/experiments/toy_planning.py"))
     if args.agentic_semantic:
         source_files.extend(REPO / relative for relative in (
@@ -199,6 +205,7 @@ def main(argv=None):
                 for p in CAPABILITY_FIXTURE.rglob("*") if p.is_file()})
     if args.agentic_semantic:
         record.update(binding_cases=[], binding_reference_targets=[],
+            memory_roundtrip=args.memory_roundtrip,
             static_backend_order=args.static_backend_order,
             binding_query_ids=[c["id"] for c in load_binding_cases()],
             interpretation_mode="recorded_response" if args.interpretation_recordings else "controlled_template",
@@ -419,6 +426,13 @@ def main(argv=None):
                 if not item["success"]:
                     raise RuntimeError(f"Semantic planning failed: {case['id']}; no retry")
         if args.agentic_semantic:
+            if args.memory_roundtrip:
+                from xgap.agent.memory import JsonlMemoryStore
+                from xgap.runtime.semantic_memory import SemanticPlanMemory
+                memory_path = root / "planning_memory.jsonl"
+                memory = SemanticPlanMemory(JsonlMemoryStore(memory_path), str(root.resolve()), 3600)
+                record["binding_warm_cases"] = [{"query_id": c["id"], "status": "not_attempted", "success": False}
+                                                 for c in load_binding_cases()]
             for case_index, case in enumerate(load_binding_cases()):
                 record["phase"] = "agentic-semantic-" + case["id"]
                 if args.interpretation_recordings:
@@ -433,6 +447,7 @@ def main(argv=None):
                     if args.interpretation_recordings else None)
                 item.update(execute_binding_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf},
                             interpretation_provider=provider,
+                            plan_memory=memory if args.memory_roundtrip else None,
                             static_backend_order=tuple(args.static_backend_order) if args.static_backend_order else None),
                             status="completed")
                 if provider is not None:
@@ -440,6 +455,34 @@ def main(argv=None):
                 save()
                 if not item["success"]:
                     raise RuntimeError(f"Semantic binding failed: {case['id']}; no retry")
+                if args.memory_roundtrip:
+                    warm = record["binding_warm_cases"][case_index]
+                    warm["status"] = "started"
+                    record["phase"] = "agentic-semantic-memory-warm-" + case["id"]
+                    save()
+                    reload_at = time.perf_counter()
+                    reloaded = SemanticPlanMemory(JsonlMemoryStore(memory_path), str(root.resolve()), 3600)
+                    warm["memory_store_reload_ms"] = (time.perf_counter() - reload_at) * 1000
+                    warm_provider = (ReplayInterpretationProvider.from_path(
+                        Path(args.interpretation_recordings) / (case["id"] + ".json"))
+                        if args.interpretation_recordings else None)
+                    warm.update(execute_binding_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf},
+                        interpretation_provider=warm_provider, plan_memory=reloaded, validate_candidates=False),
+                        status="completed")
+                    if warm_provider is not None:
+                        warm_provider.assert_consumed()
+                    cold_plan = item["agent_run"]["state"]["output"]["planning_run"]
+                    warm_plan = (warm["agent_run"].get("state", {}).get("output") or {}).get("planning_run", {})
+                    warm["memory_contract_passed"] = (
+                        cold_plan["memory"]["state"] == "miss_stored"
+                        and warm_plan.get("memory", {}).get("state") == "hit"
+                        and warm_plan.get("observation_calls") == 0
+                        and cold_plan["selected_plan"] == warm_plan.get("selected_plan")
+                        and warm_plan["memory"]["historical_acquisition"]["remote_calls"] == cold_plan["observation_calls"])
+                    warm["success"] = warm["success"] and warm["memory_contract_passed"]
+                    save()
+                    if not warm["success"]:
+                        raise RuntimeError(f"Warm semantic execution failed: {case['id']}; no retry")
                 for backend, client in (("neo4j", neo), ("fuseki", rdf)):
                     result = client.execute(reference_artifact(case, backend))
                     reference = {"query_id": case["id"], "backend": backend,
@@ -544,7 +587,7 @@ def main(argv=None):
     except Exception as error:
         record["error"] = f"{type(error).__name__}: {error}"
     finally:
-        for item in record.get("binding_cases", []):
+        for item in [*record.get("binding_cases", []), *record.get("binding_warm_cases", [])]:
             if item["status"] in {"started", "not_attempted"}:
                 item["status"] = "failed" if item["status"] == "started" else "not_attempted_after_failure"
         signal.alarm(0)
@@ -560,6 +603,7 @@ def main(argv=None):
         "semantic_references_passed": sum(x["success"] for x in record.get("semantic_reference_targets", [])),
         "planned_cases_passed": sum(x["success"] for x in record.get("planned_cases", [])),
         "binding_cases_passed": sum(x["success"] for x in record.get("binding_cases", [])),
+        "binding_warm_cases_passed": sum(x["success"] for x in record.get("binding_warm_cases", [])),
         "binding_references_passed": sum(x["success"] for x in record.get("binding_reference_targets", [])),
         "orientation_references_passed": sum(x["success"] for x in record.get("orientation_reference_targets", [])),
         "repetition_references_passed": sum(x["success"] for x in record.get("repetition_reference_targets", [])),
