@@ -1,5 +1,14 @@
 # XGAP Roadmap
 
+## Next LINK gate — output projection, using the saved actual model responses
+
+External serving now works and all5tiny responses pass parsing. First real
+P1/two-engine execution succeeds but strict answer schema fails on an extra age
+column;4native cases remain unattempted. Investigate the explicit output contract
+through local replay, preserving gold/failures before further live attempts.
+[Evidence](report/external_toy_link_20260911.md). No GPU wait, repeated generation,
+catalog rebuild or unchanged successful gate is needed for this diagnosis.
+
 ## Next gate — real coverage, predictions and fair measured comparisons
 
 E1-A inference-owned answers and E1-B independent scoring are implemented with

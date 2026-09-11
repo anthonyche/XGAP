@@ -1,0 +1,161 @@
+{
+  "schema_version": "xgap-external-toy-link-evidence-v1",
+  "paper_result": false,
+  "parent_commit": "c0e32434e05317c15cb6062ee1aa06c9af3e57f6",
+  "source_hashes_match_live_snapshot": true,
+  "source_file_count": 340,
+  "profile": "external development byte cap; exact tokenizer/context fit unverified",
+  "model": "qwen3.8-27b",
+  "endpoint": "http://112.95.75.67:9018/v1",
+  "network_probe": {
+    "models_http_status": 200,
+    "schema_generation_http_status": 200,
+    "generation_calls": 1,
+    "input_tokens": 23,
+    "output_tokens": 7,
+    "elapsed_ms": 174.69916678965092
+  },
+  "toy": {
+    "queries": [
+      {
+        "query_id": "B01",
+        "interpretation_status": "interpreted",
+        "interpretation_ms": 4940.65070990473,
+        "usage": {
+          "external_calls": 1,
+          "token_usage_known": true,
+          "input_tokens": 1652,
+          "output_tokens": 848
+        }
+      },
+      {
+        "query_id": "B02",
+        "interpretation_status": "interpreted",
+        "interpretation_ms": 5575.456207618117,
+        "usage": {
+          "external_calls": 1,
+          "token_usage_known": true,
+          "input_tokens": 1652,
+          "output_tokens": 848
+        }
+      },
+      {
+        "query_id": "B03",
+        "interpretation_status": "interpreted",
+        "interpretation_ms": 4861.203417181969,
+        "usage": {
+          "external_calls": 1,
+          "token_usage_known": true,
+          "input_tokens": 1652,
+          "output_tokens": 848
+        }
+      },
+      {
+        "query_id": "B04",
+        "interpretation_status": "interpreted",
+        "interpretation_ms": 2449.242082424462,
+        "usage": {
+          "external_calls": 1,
+          "token_usage_known": true,
+          "input_tokens": 1669,
+          "output_tokens": 380
+        }
+      },
+      {
+        "query_id": "B05",
+        "interpretation_status": "interpreted",
+        "interpretation_ms": 4952.865041792393,
+        "usage": {
+          "external_calls": 1,
+          "token_usage_known": true,
+          "input_tokens": 1661,
+          "output_tokens": 848
+        }
+      }
+    ],
+    "generation_calls": 5,
+    "input_tokens": 8286,
+    "output_tokens": 3772,
+    "interpretation_ms": 22779.41745892167
+  },
+  "native": {
+    "tool_session": 14277,
+    "exit_code": 1,
+    "strict_gate_success": false,
+    "evaluated": 1,
+    "strict_correct": 0,
+    "unattempted": 4,
+    "first_query": "B01",
+    "agent_execution_success": true,
+    "actual_rows": [
+      {
+        "person": "https://xgap.test/toy/c",
+        "age": 40,
+        "edge": "https://xgap.test/toy/e4"
+      }
+    ],
+    "gold_rows": [
+      {
+        "person": "https://xgap.test/toy/c",
+        "edge": "https://xgap.test/toy/e4"
+      }
+    ],
+    "failure": "extra age column in model-owned final projection; exact answer mismatch",
+    "agent_end_to_end_ms": 402.2502927109599,
+    "planning_algorithm": "coordinate_two_passes",
+    "source_bindings": {
+      "paths": "fuseki",
+      "people": "neo4j"
+    },
+    "observation_calls": 4,
+    "execution_calls": 2,
+    "new_model_calls": 0,
+    "fixture_loads": 2,
+    "shutdown": [
+      {
+        "service_id": "fuseki",
+        "pid": 55973,
+        "initial_exit_code": null,
+        "final_exit_code": 143,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      },
+      {
+        "service_id": "neo4j",
+        "pid": 55921,
+        "initial_exit_code": null,
+        "final_exit_code": 0,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      }
+    ]
+  },
+  "checks": {
+    "first_new": 18,
+    "first_affected_legacy": 1,
+    "first_pytest_seconds": 0.69,
+    "ledger_new": 1,
+    "ledger_pytest_seconds": 0.2,
+    "broad_suite_run": false
+  },
+  "evidence_root": "/Users/anthonyche/xgap-data/external-toy-wiring-20260911",
+  "probe_root": "/Users/anthonyche/xgap-data/external-llm-reconnect-20260911-2321",
+  "source_sha256": {
+    "src/xgap/experiments/external_toy_interpretation.py": "dccef4d02e082d28e9d0d492c2cce239d39302826a55e6868498f62029ee659b",
+    "src/xgap/experiments/toy_live_interpretation.py": "75bd80e1ec7369c5331c1d45358114ba1cc6128435942bb2034bca139491cac0",
+    "scripts/run_external_toy_model.py": "c98bb3a43ee542e6248a86e625ce24f139f491426ce32b71ccc4d6e6fb6ada9a"
+  },
+  "artifact_hashes": {
+    "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/live_source_state.json": "6bb6e6d89794a4d3167e8335a9ae725eb20e6c5f9258b869133b8ba48ec40da8",
+    "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/live-all-five/collection.json": "e426444c732ea1d54ff45518e984283095092fce4db50dffff53fa7dd6f9fb3f",
+    "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/native-five/result.json": "2beff76515a9ee6c380185d5bc7e2bbaeb9af93ee98537baa48417882eb3bd9e",
+    "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/focused-wq3_n2uk/receipt.json": "72570a8362e5d642a4a9963e0d6adb1790789b4b5d9b0c669d63ca6bee67d7d9",
+    "/Users/anthonyche/xgap-data/external-toy-wiring-20260911/ledger-27ge3b6v/receipt.json": "66c09bcbfe57d3ac83cb7fa4186ebfc0aa99b342d26d552a3a98f7fe0de29a56",
+    "/Users/anthonyche/xgap-data/external-llm-reconnect-20260911-2321/models_probe.json": "769bf5046748aa6d40e1f20bb4414ed51fdb44cfac370fca2477362bcae192c1",
+    "/Users/anthonyche/xgap-data/external-llm-reconnect-20260911-2321/structured_generation_probe.json": "f0a8994dcbcc5d05b07e9b08bde46f510a5e1b938f3903d39f7eca852b85b8e1"
+  }
+}

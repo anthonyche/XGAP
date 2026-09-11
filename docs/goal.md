@@ -1,5 +1,11 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+最新LINK：用户提供的外部qwen3.8-27b服务已连通，五题真实生成与解析通过；B01已
+经普通catalog/P1和真实Neo4j+Fuseki执行，但多返回age列，严格答案失败，四题原生
+未运行。复用已保存响应定位输出结构，不改gold、不重复模型/失败原生动作；GPU等待
+已不是这条路线的阻塞。见[外部服务与实际执行证据](report/external_toy_link_20260911.md)。
+外部接线已验收，完整LINK及真实评价尚未完成；3804210保持用户更新的独立作业。
+
 更新：2026-09-11，依据用户明确指令。本文是现有 active Goal 的权威开发补充，
 覆盖旧 roadmap、status、报告和 automation 中冲突的开发优先级；保留所有历史
 结果和已冻结的最终评价协议。当前第一要务是快速完成系统，修复实现与设计不匹配之处。

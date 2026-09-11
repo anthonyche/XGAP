@@ -1,5 +1,14 @@
 # XGAP Design Decisions
 
+## LINK: external development budgets and strict answer shape remain distinct
+
+The [external toy contract](decisions/external_toy_interpretation_v1.md) explicitly
+separates byte-capped development from exact-token preflight. Unknown usage,
+started/recording-failed entries and unattempted IDs remain visible. Real external
+serving and B01 two-engine execution now work, but an extra predicted age column
+fails the original strict gold; preserve this outcome rather than stripping a
+column after seeing gold. [Evidence](report/external_toy_link_20260911.md).
+
 ## E1-B/INT-5: full denominators and source-partial facts stay explicit
 
 The [independent entity scorer](decisions/entity_answer_evaluation_v1.md) evaluates

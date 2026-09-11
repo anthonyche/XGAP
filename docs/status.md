@@ -1,5 +1,16 @@
 # XGAP Status
 
+## Current LINK — external model available; native output-contract failure retained
+
+Externalqwen3.8-27b now serves real requests:HTTP/schema probe succeeds, five
+fixed toy generations pass parsing with12058tokens/22.779s. B01 executes through
+ordinary catalog/P1 and actual Fuseki+Neo4j, but adds an age column absent from
+frozen gold; strict0/1evaluated,4unattempted. Both owned services stopped. External
+wiring and19new+1affected focused checks are accepted; whole LINK is unfinished.
+See [exact evidence and next output-contract work](report/external_toy_link_20260911.md).
+The endpoint is now available; earlier timeout/pending-LLM statements below are
+historical.3804210 stays untouched. No new large-data or broad regression run.
+
 ## Current checkpoint — independent entity scoring and durable real facts
 
 E1-B now scores E1-A answers independently with full-population EM/F1, explicit

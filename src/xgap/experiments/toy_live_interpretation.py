@@ -57,33 +57,78 @@ def toy_model_requests():
     return result
 
 
-def run_toy_model_requests(provider, output):
+def run_toy_model_requests(provider, output, *, max_requests=5, start_index=0, run_metadata=None):
     """Record up to five distinct questions; never retry a failed model action."""
+    if (type(max_requests) is not int or type(start_index) is not int
+            or not 1 <= max_requests <= 5 or not 0 <= start_index < 5
+            or start_index + max_requests > 5):
+        raise ValueError("Toy execution requires a contiguous window within five requests")
+    stop_index = start_index + max_requests
     requests = toy_model_requests()
     root = Path(output)
     root.mkdir(parents=True, exist_ok=False)
     report = {"schema_version": "xgap-toy-live-interpretation-v1", "paper_result": False,
               "scope": "five tiny Interpretation connectivity requests; no backend execution",
               "provider_id": provider.provider_id, "automatic_retries": 0,
+              "max_requests": max_requests, "start_index": start_index,
               "queries": [{"query_id": qid, "status": "not_attempted"} for qid, _ in requests]}
+    if run_metadata is not None:
+        report["run_metadata"] = run_metadata
+    for query in report["queries"][:start_index] + report["queries"][stop_index:]:
+        query["status"] = "not_attempted_after_request_budget"
 
     def save():
         (root / "result.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
 
     save()
-    for index, (qid, request) in enumerate(requests):
+    for index, (qid, request) in enumerate(requests[start_index:stop_index], start=start_index):
+        item = report["queries"][index]
+        item.update(status="started", observed_usage={"external_calls": None,
+            "token_usage_known": False, "input_tokens": None, "output_tokens": None})
+        save()  # An interrupted provider entry is unknown, never "not_attempted".
         journal = RecordingInterpretationProvider(provider)
         result = interpret_question(request, journal)
-        journal.save(root / (qid + ".json"))
-        report["queries"][index].update(status=result["status"], interpretation=result)
+        item.update(status=result["status"], interpretation=result)
+        usage_known = result.get("usage_unavailable") is not True
+        item["observed_usage"] = {
+            "external_calls": result["external_calls"], "token_usage_known": usage_known,
+            "input_tokens": result["input_tokens"] if usage_known else None,
+            "output_tokens": result["output_tokens"] if usage_known else None,
+        }
+        save()  # Preserve the received outcome even if the replay export fails.
+        recording_path = root / (qid + ".json")
+        try:
+            journal.save(recording_path)
+            recording_bytes = recording_path.stat().st_size
+            item["recording"] = {"file": recording_path.name, "bytes": recording_bytes,
+                                 "replay_size_admitted": recording_bytes <= 4_194_304}
+        except (OSError, ValueError, TypeError) as error:
+            item.update(status="recording_failed", recording={"file": recording_path.name,
+                "replay_size_admitted": False, "error_type": type(error).__name__,
+                "error": "Cannot export the received Interpretation recording"})
+            for remaining in report["queries"][index + 1:stop_index]:
+                remaining["status"] = "not_attempted_after_recording_failure"
+            save()
+            break
         save()
         if result.get("failure_category") in {
             "preflight_error", "token_budget", "missing_api_key", "timeout", "provider_error"}:
-            for remaining in report["queries"][index + 1:]:
+            for remaining in report["queries"][index + 1:stop_index]:
                 remaining["status"] = "not_attempted_after_provider_failure"
             break
     report.update(external_calls=sum(q.get("interpretation", {}).get("external_calls", 0)
                                      for q in report["queries"]),
                   success=all(q["status"] == "interpreted" for q in report["queries"]))
+    attempted = [q["observed_usage"] for q in report["queries"] if "observed_usage" in q]
+    report["attempted_usage"] = {
+        "scope": "attempted questions only; unattempted questions have no measured usage",
+        "known_count": sum(u["token_usage_known"] for u in attempted),
+        "unknown_count": sum(not u["token_usage_known"] for u in attempted),
+        **{name: sum(u[name] for u in attempted) if all(u["token_usage_known"] for u in attempted) else None
+           for name in ("input_tokens", "output_tokens")},
+    }
+    report["requested_window_success"] = all(q["status"] == "interpreted" for q in report["queries"][start_index:stop_index])
+    report["requested_window_replay_size_admitted"] = all(
+        q.get("recording", {}).get("replay_size_admitted") is True for q in report["queries"][start_index:stop_index])
     save()
     return report

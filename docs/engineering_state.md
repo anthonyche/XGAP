@@ -1,5 +1,18 @@
 # XGAP current engineering loop
 
+## Latest external LINK — serving connected; exact output shape remains open
+
+Read [external LINK evidence](report/external_toy_link_20260911.md) first. The
+user-authorized retry returned200and a valid schema probe. Explicit external toy
+binding is implemented;18new+1legacy tests passed, then only1new ledger test after
+the recording-failure correction. Five actual responses pass parsing,5calls and
+12058tokens. Native session14277 exited1: B01 agent/P1 execution succeeds with
+Fuseki paths + Neo4j people,4observations+2executions, but exact gold excludes its
+extra age column. Do not silently drop it. B02–B05 were not run natively. Owned
+services stopped successfully. Reuse /Users/anthonyche/xgap-data/external-toy-wiring-20260911/;
+no repeat generation/native failure. Next local projection-contract diagnosis,
+then the remaining actual LINK and fair real-data experiments.3804210 untouched.
+
 ## Current E1-B/INT-5 checkpoint — scoring accepted; existing facts recovered
 
 Parent72aeea7. Independent entity_answer_evaluation.py consumes E1-A runs and
