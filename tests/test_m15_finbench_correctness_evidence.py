@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from xgap.experiments import m15_finbench_correctness_evidence as evidence
 from xgap.experiments.m15_finbench_federation import FEDERATION_SCHEMA_VERSION
 from xgap.experiments.m15_live_finbench_correctness import (
@@ -57,7 +59,7 @@ def _candidate(plan_id: str, strategy: str) -> FederatedPlanCandidate:
     return FederatedPlanCandidate(plan, "workload:q-f1:exact")
 
 
-def _run_tree(tmp_path: Path, monkeypatch) -> Path:
+def _run_tree(tmp_path: Path, monkeypatch, *, archive_mode: bool = False) -> Path:
     root = tmp_path / "run"
     service = root / "native-service-run"
     live = service / "finbench-correctness-run"
@@ -76,7 +78,11 @@ def _run_tree(tmp_path: Path, monkeypatch) -> Path:
         "parameters": {},
     }
     public = {
-        "manifest": {"population_id": "population", "workload_sha256": "b" * 64},
+        "manifest": {
+            "population_id": "population", "workload_sha256": "b" * 64,
+            "source_archive_sha256": "d" * 64,
+            **({} if archive_mode else {"source_partition_sha256": "c" * 64}),
+        },
         "public_instances": {"instances": [instance]},
     }
     oracle = {
@@ -95,7 +101,9 @@ def _run_tree(tmp_path: Path, monkeypatch) -> Path:
             }
         },
     }
-    partition_payload = {"partition_sha256": "c" * 64}
+    partition_payload = {
+        "partition_sha256": "c" * 64, "source_archive": {"sha256": "d" * 64},
+    }
     monkeypatch.setattr(
         evidence, "load_finbench_primary_public_workload", lambda _root: public
     )
@@ -123,6 +131,7 @@ def _run_tree(tmp_path: Path, monkeypatch) -> Path:
         for candidate in candidates
     ]
     catalog = {
+        **({"source_identity_mode": "source_archive", "source_archive_sha256": "d" * 64} if archive_mode else {}),
         "schema_version": PLAN_CATALOG_SCHEMA_VERSION,
         "population_id": "population",
         "workload_sha256": "b" * 64,
@@ -186,6 +195,7 @@ def _run_tree(tmp_path: Path, monkeypatch) -> Path:
     }
     validation["validation_sha256"] = evidence._canonical_sha256(validation)
     manifest = {
+        **({"source_identity_mode": "source_archive", "source_archive_sha256": "d" * 64} if archive_mode else {}),
         "schema_version": LIVE_CORRECTNESS_SCHEMA_VERSION,
         "run_id": "finbench-correctness-run",
         "status": "success",
@@ -245,6 +255,7 @@ def _run_tree(tmp_path: Path, monkeypatch) -> Path:
             "schema_version": FINBENCH_CORRECTNESS_SERVICE_RUN_SCHEMA_VERSION,
             "status": "success",
             "finbench_correctness": {
+                **({"source_identity_mode": "source_archive"} if archive_mode else {}),
                 "workload": str(workload),
                 "partition": str(partition),
                 "query_ids": None,
@@ -269,10 +280,11 @@ def _run_tree(tmp_path: Path, monkeypatch) -> Path:
     return root
 
 
+@pytest.mark.parametrize("archive_mode", [False, True])
 def test_finbench_correctness_audit_reconstructs_clean_run(
-    tmp_path: Path, monkeypatch
+    tmp_path: Path, monkeypatch, archive_mode: bool
 ) -> None:
-    root = _run_tree(tmp_path, monkeypatch)
+    root = _run_tree(tmp_path, monkeypatch, archive_mode=archive_mode)
 
     audit = evidence.audit_m15_finbench_correctness(
         run_root=root, expected_commit=COMMIT
@@ -281,6 +293,63 @@ def test_finbench_correctness_audit_reconstructs_clean_run(
     assert audit.success
     assert audit.failed_check_ids == ()
     assert audit.run_tree_mutated is False
+
+
+@pytest.mark.parametrize(
+    ("case", "failed_check"),
+    [
+        ("mode_mismatch", "reconstruction.success"),
+        ("service_mode_mismatch", "reconstruction.success"),
+        ("unknown_mode", "reconstruction.success"),
+        ("null_mode", "reconstruction.success"),
+        ("missing_archive", "identity.catalog.archive"),
+        ("wrong_archive", "identity.manifest.archive"),
+        ("wrong_partition", "identity.catalog.partition"),
+        ("declared_wrong_pin", "reconstruction.success"),
+    ],
+)
+def test_finbench_correctness_audit_rejects_rehashed_identity_changes(
+    tmp_path: Path, monkeypatch, case: str, failed_check: str
+) -> None:
+    root = _run_tree(tmp_path, monkeypatch, archive_mode=True)
+    live_root = root / "native-service-run/finbench-correctness-run"
+    catalog = json.loads((live_root / "plan_catalog.json").read_text())
+    manifest = json.loads((live_root / "run_manifest.json").read_text())
+    if case == "mode_mismatch":
+        catalog["source_identity_mode"] = "partition"
+    elif case == "service_mode_mismatch":
+        service_path = root / "native-service-run/run_manifest.json"
+        service = json.loads(service_path.read_text())
+        service["finbench_correctness"]["source_identity_mode"] = "partition"
+        _write(service_path, service)
+    elif case in {"unknown_mode", "null_mode"}:
+        catalog["source_identity_mode"] = manifest["source_identity_mode"] = (
+            "archive" if case == "unknown_mode" else None
+        )
+    elif case == "missing_archive":
+        del catalog["source_archive_sha256"]
+    elif case == "wrong_archive":
+        manifest["source_archive_sha256"] = "e" * 64
+    elif case == "wrong_partition":
+        catalog["source_partition_sha256"] = "e" * 64
+    elif case == "declared_wrong_pin":
+        public = evidence.load_finbench_primary_public_workload(None)
+        public["manifest"]["source_partition_sha256"] = "e" * 64
+    catalog["plan_catalog_sha256"] = evidence._canonical_sha256(
+        evidence._without_hash(catalog, "plan_catalog_sha256")
+    )
+    manifest["plan_catalog_sha256"] = catalog["plan_catalog_sha256"]
+    manifest["manifest_sha256"] = evidence._canonical_sha256(
+        evidence._without_hash(manifest, "manifest_sha256")
+    )
+    _write(live_root / "plan_catalog.json", catalog)
+    _write(live_root / "run_manifest.json", manifest)
+
+    audit = evidence.audit_m15_finbench_correctness(run_root=root, expected_commit=COMMIT)
+    assert not audit.success
+    assert failed_check in audit.failed_check_ids
+    assert "catalog.hash" not in audit.failed_check_ids
+    assert "manifest.hash" not in audit.failed_check_ids
 
 
 def test_finbench_correctness_audit_rejects_tampered_answer(

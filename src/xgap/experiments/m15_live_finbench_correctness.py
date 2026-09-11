@@ -18,7 +18,10 @@ from xgap.experiments.m15_finbench_federation import (
     build_finbench_plan_candidates,
     canonicalize_finbench_rows,
 )
-from xgap.experiments.m15_finbench_partition import load_finbench_source_partition
+from xgap.experiments.m15_finbench_partition import (
+    load_finbench_source_partition,
+    validate_finbench_source_identity,
+)
 from xgap.experiments.m15_finbench_workload import (
     load_finbench_primary_public_workload,
     load_finbench_primary_workload,
@@ -142,6 +145,7 @@ def run_m15_live_finbench_correctness(
     run_id: str = "finbench-correctness-run",
     repo_root: str | Path | None = None,
     query_ids: Sequence[str] | None = None,
+    source_identity_mode: str = "partition",
 ) -> FinBenchCorrectnessRecord:
     """Load one split snapshot and validate both plans for each selected query."""
 
@@ -152,10 +156,9 @@ def run_m15_live_finbench_correctness(
     public_workload = load_finbench_primary_public_workload(workload_root)
     partition = load_finbench_source_partition(partition_root)
     manifest = public_workload["manifest"]
-    if manifest.get("source_partition_sha256") != partition.get("partition_sha256"):
-        raise ValueError("FinBench workload and source partition identities differ")
-    if manifest.get("source_archive_sha256") != partition.get("source_archive", {}).get("sha256"):
-        raise ValueError("FinBench workload and source archive identities differ")
+    source_archive_sha256 = validate_finbench_source_identity(
+        manifest, partition, source_identity_mode=source_identity_mode
+    )
     instances = _selected_instances(public_workload["public_instances"], query_ids)
     plan_entries: list[dict[str, Any]] = []
     candidates_by_plan: dict[str, Any] = {}
@@ -182,6 +185,8 @@ def run_m15_live_finbench_correctness(
         "population_id": manifest["population_id"],
         "workload_sha256": manifest["workload_sha256"],
         "source_partition_sha256": partition["partition_sha256"],
+        "source_identity_mode": source_identity_mode,
+        "source_archive_sha256": source_archive_sha256,
         "query_count": len(instances),
         "plan_count": len(plan_entries),
         "plans": plan_entries,
@@ -368,6 +373,8 @@ def run_m15_live_finbench_correctness(
         "population_id": manifest["population_id"],
         "workload_sha256": manifest["workload_sha256"],
         "source_partition_sha256": partition["partition_sha256"],
+        "source_identity_mode": source_identity_mode,
+        "source_archive_sha256": source_archive_sha256,
         "plan_catalog_sha256": plan_catalog["plan_catalog_sha256"],
         "query_ids": [item["query_id"] for item in instances],
         "summary": {

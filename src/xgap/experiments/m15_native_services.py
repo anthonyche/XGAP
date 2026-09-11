@@ -1070,6 +1070,7 @@ def _run_fixture_and_query(
     finbench_workload: str | Path | None = None,
     finbench_partition: str | Path | None = None,
     finbench_query_ids: Sequence[str] | None = None,
+    finbench_source_identity_mode: str = "partition",
     finbench_correctness_run: str | Path | None = None,
     finbench_correctness_audit: str | Path | None = None,
     finbench_campaign_protocol: Mapping[str, Any] | str | Path | None = None,
@@ -1123,6 +1124,7 @@ def _run_fixture_and_query(
                     run_id="finbench-correctness-run",
                     repo_root=repo_root,
                     query_ids=finbench_query_ids,
+                    source_identity_mode=finbench_source_identity_mode,
                 )
                 if not correctness.success:
                     raise RuntimeError(
@@ -1770,6 +1772,7 @@ def run_m15_native_services(
     finbench_workload: str | Path | None = None,
     finbench_partition: str | Path | None = None,
     finbench_query_ids: Sequence[str] | None = None,
+    finbench_source_identity_mode: str = "partition",
     finbench_correctness_run: str | Path | None = None,
     finbench_correctness_audit: str | Path | None = None,
     finbench_campaign_protocol: Mapping[str, Any] | str | Path | None = None,
@@ -1787,6 +1790,15 @@ def run_m15_native_services(
         raise ValueError("run_id contains unsupported characters")
     if workload_mode not in WORKLOAD_MODES:
         raise ValueError(f"unsupported M15 workload mode '{workload_mode}'")
+    if finbench_source_identity_mode not in ("partition", "source_archive"):
+        raise ValueError("unsupported FinBench source identity mode")
+    if (
+        finbench_source_identity_mode == "source_archive"
+        and workload_mode != "finbench_correctness"
+    ):
+        raise ValueError(
+            "source_archive identity mode is accepted only in finbench_correctness"
+        )
     finbench_values = (finbench_workload, finbench_partition)
     finbench_modes = {
         "finbench_correctness",
@@ -2737,6 +2749,11 @@ def run_m15_native_services(
                     finbench_confirmatory_execution_context=(
                         selected_finbench_confirmatory_execution_context
                     ),
+                    **(
+                        {"finbench_source_identity_mode": finbench_source_identity_mode}
+                        if workload_mode == "finbench_correctness"
+                        else {}
+                    ),
                 )
             elif workload_mode in {
                 "resolution_execution_bridge",
@@ -2912,6 +2929,7 @@ def run_m15_native_services(
                 {
                     "workload": str(finbench_workload),
                     "partition": str(finbench_partition),
+                    "source_identity_mode": finbench_source_identity_mode,
                     "query_ids": list(finbench_query_ids)
                     if finbench_query_ids is not None
                     else None,
@@ -3051,6 +3069,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--finbench-workload")
     parser.add_argument("--finbench-partition")
     parser.add_argument("--finbench-query-id", action="append", dest="finbench_query_ids")
+    parser.add_argument(
+        "--finbench-source-identity-mode",
+        choices=("partition", "source_archive"),
+        default="partition",
+        help="source_archive is available only for the FinBench correctness gate",
+    )
     parser.add_argument("--finbench-correctness-run")
     parser.add_argument("--finbench-correctness-audit")
     parser.add_argument("--finbench-campaign-protocol")
@@ -3143,6 +3167,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             finbench_workload=args.finbench_workload,
             finbench_partition=args.finbench_partition,
             finbench_query_ids=args.finbench_query_ids,
+            finbench_source_identity_mode=args.finbench_source_identity_mode,
             finbench_correctness_run=args.finbench_correctness_run,
             finbench_correctness_audit=args.finbench_correctness_audit,
             finbench_campaign_protocol=args.finbench_campaign_protocol,

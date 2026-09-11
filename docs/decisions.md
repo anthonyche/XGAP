@@ -1,5 +1,18 @@
 # XGAP Design Decisions
 
+
+## INT-2: original archive identity is an explicit correctness admission mode
+
+The actual original48 manifest pins source_archive_sha256, not source_partition_sha256.
+Accept it through explicit source_archive mode in the existing correctness entry;
+keep partition mode as default. Both modes validate archive identity and actual
+partition identity; any declared workload partition pin must still match. Record
+mode/archive/actual partition in sealed plans and run manifests, and reconstruct
+admission in the read-only auditor, including native service mode consistency.
+Missing mode in legacy records means partition; unknown/null modes fail. No
+workload/gold/catalog rebuilding and no relaxation of native result checks.
+See [frozen scope, verification and limitations](report/finbench_workpack_intake_20260911.md).
+
 ## A4: exact-request empirical forecasts are prepared offline
 
 [The preparation contract](decisions/semantic_forecast_preparation_v1.md) binds

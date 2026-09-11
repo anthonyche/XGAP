@@ -1,13 +1,24 @@
 # XGAP Status
 
-## FinBench original workpack collected remotely; local verification pending
 
-The user reports successful checked collection on Pioneer:1,076,623-byte archive
-plus collection receipt. Archive identity and evidence limits are saved in the
-[server observation](../experiments/artifacts/finbench_workpack_server_observation_20260911.json).
-Files still need transfer and local inspection. Optional job-status queries did
-not all succeed;3804011's current state remains unknown. This is recovered remote
-artifact availability, not a new dataset experiment. No collection/test retry.
+## INT-2 original FinBench workpack verified; source admission connected
+
+The uploaded archive and receipt are locally verified:21 original files, exact
+bytes/SHA, original48 queries (32seen/16cold), unchanged registry and schedule.
+All48 public queries compile to96 existing physical plans; this is compilation,
+not native answer or performance evidence. Original sealed answers were hashed
+and copied without parsing. The correctness API/native CLI now explicitly accepts
+archive-bound original workpacks and retains any declared partition pin; actual
+partition identity remains recorded and independently audited. See
+[INT-2 evidence and next artifacts](report/finbench_workpack_intake_20260911.md).
+
+The receipt confirms3804011 COMPLETED/0:0 on gput064, elapsed14m28s. Its aggregate
+status flag was false because squeue could not find the ended job. Do not submit
+or query it again; retrieve the original five-question recordings. Real FinBench
+facts remain unavailable locally:one official source download timed out and will
+not be retried automatically. The existing server cache can supply the pinned
+archive. No new native/model/large-data evaluation has been run in this milestone.
+Older unavailable/PENDING statements below are historical, superseded here.
 
 ## A4 offline forecast preparation and bounded recovery tool accepted
 

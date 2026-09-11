@@ -4,6 +4,8 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import pytest
+
 from xgap.experiments import m15_finbench_federation as federation
 from xgap.experiments import m15_live_finbench_correctness as live
 from xgap.experiments.m15_finbench_workload import _templates
@@ -52,8 +54,9 @@ class Client:
         )
 
 
+@pytest.mark.parametrize("source_identity_mode", ["partition", "source_archive"])
 def test_live_gate_seals_plans_before_load_and_opens_oracle_after_execution(
-    tmp_path: Path, monkeypatch
+    tmp_path: Path, monkeypatch, source_identity_mode: str
 ) -> None:
     workload_root = tmp_path / "workload"
     templates = workload_root / "templates"
@@ -85,6 +88,8 @@ def test_live_gate_seals_plans_before_load_and_opens_oracle_after_execution(
         "public_instances": {"instances": [instance]},
         "family_contracts": {},
     }
+    if source_identity_mode == "source_archive":
+        del public["manifest"]["source_partition_sha256"]
     full = {
         **public,
         "sealed_oracles": {
@@ -143,6 +148,7 @@ def test_live_gate_seals_plans_before_load_and_opens_oracle_after_execution(
         loaders=loaders,
         output_root=tmp_path / "runs",
         query_ids=("q-f1",),
+        **({"source_identity_mode": source_identity_mode} if source_identity_mode != "partition" else {}),
     )
 
     assert record.success
@@ -167,3 +173,42 @@ def test_live_gate_seals_plans_before_load_and_opens_oracle_after_execution(
     }
     assert manifest["oracle_boundary"]["content_parsed_after_all_plan_runs"] is True
     assert manifest["paper_result"] is False
+    for sealed_record in (plan_catalog, manifest):
+        assert sealed_record["source_identity_mode"] == source_identity_mode
+        assert sealed_record["source_archive_sha256"] == "c" * 64
+        assert sealed_record["source_partition_sha256"] == "b" * 64
+
+
+@pytest.mark.parametrize(
+    ("mode", "pin", "archive"),
+    [
+        ("partition", "absent", "c" * 64),
+        ("source_archive", "d" * 64, "c" * 64),
+        ("source_archive", None, "c" * 64),
+        ("source_archive", "absent", "d" * 64),
+        (None, "b" * 64, "c" * 64),
+    ],
+)
+def test_live_source_identity_rejected_before_load_or_oracle(
+    tmp_path: Path, monkeypatch, mode, pin, archive
+) -> None:
+    manifest = {"source_archive_sha256": archive}
+    if pin != "absent":
+        manifest["source_partition_sha256"] = pin
+    monkeypatch.setattr(live, "load_finbench_primary_public_workload", lambda _: {"manifest": manifest})
+    monkeypatch.setattr(live, "load_finbench_source_partition", lambda _: {
+        "partition_sha256": "b" * 64, "source_archive": {"sha256": "c" * 64},
+    })
+    def forbidden(*args, **kwargs):
+        pytest.fail("identity failure reached compilation or answer oracle")
+    monkeypatch.setattr(live, "build_finbench_plan_candidates", forbidden)
+    monkeypatch.setattr(live, "load_finbench_primary_workload", forbidden)
+    loaders = {name: Loader(name) for name in ("neo4j", "fuseki")}
+    with pytest.raises(ValueError, match="FinBench"):
+        live.run_m15_live_finbench_correctness(
+            workload_root=tmp_path / "workload", partition_root=tmp_path / "partition",
+            clients={name: Client(name) for name in loaders}, loaders=loaders,
+            output_root=tmp_path / "runs", source_identity_mode=mode,
+        )
+    assert all(not loader.paths for loader in loaders.values())
+    assert not (tmp_path / "runs").exists()

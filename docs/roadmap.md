@@ -1,12 +1,25 @@
 # XGAP Roadmap
 
-## Immediate handoff — receive the successfully collected original FinBench files
 
-User-reported remote collection has succeeded; archive and receipt are ready in
-`/home/hxc859/xgap-int-workpack-2f82e456c191/`. Verify the reported archive SHA and
-inspect the original receipt/workpack on arrival; use status error details before
-deciding any further3804011 query. Do not recollect or regenerate frozen inputs.
-This new evidence supersedes the unavailable-remote-workpack statements below.
+## Next gate — existing source cache and completed model recordings
+
+INT-2 verified the original21-file FinBench workpack and compiled all48 queries
+to96 plans without reading answers. Explicit archive identity now reaches the
+existing native correctness entry and independent auditor; no frozen input rewrite.
+See [INT-2 evidence](report/finbench_workpack_intake_20260911.md).
+
+Retrieve the existing pinned source archive from
+`/home/hxc859/.cache/xgap/finbench-v0.1.0/sf0.1.tar.gz`; the one attempted official
+download timed out, so no automatic retry. Reconstruct/verify source placement
+with the existing loader only after exact archive verification. Use fixed first
+queries f1-01/f2-01/f3-01 from the original48 for a small integration gate before
+formal evaluation; this subset does not replace the original32seen/16cold cohort.
+
+3804011 is confirmed COMPLETED/0:0, not queued. Retrieve its existing bounded
+recordings and use the existing five-question native LINK; job success alone is
+not question success. Keep E1's gold-blind answer projection and actual prior
+forecast/cost preparation as explicit remaining work. No general catalog/product
+expansion, repeated accepted tests, or new model submission.
 
 ## Current next gate — original artifacts and real small integration
 

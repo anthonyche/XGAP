@@ -18,6 +18,7 @@ from xgap.experiments.m15_finbench_federation import (
 from xgap.experiments.m15_finbench_partition import (
     PARTITION_SCHEMA_VERSION,
     load_finbench_source_partition,
+    validate_finbench_source_identity,
 )
 from xgap.experiments.m15_finbench_workload import (
     load_finbench_primary_public_workload,
@@ -279,6 +280,20 @@ def audit_m15_finbench_correctness(
     try:
         public = load_finbench_primary_public_workload(workload_root)
         partition = load_finbench_source_partition(partition_root)
+        # Missing mode is the legacy partition-pinned contract, not an opt-in
+        # to the more permissive archive identity used by original48 workpacks.
+        identity_mode = manifest.get("source_identity_mode", "partition")
+        if catalog.get("source_identity_mode", "partition") != identity_mode:
+            raise ValueError("FinBench catalog and manifest identity modes differ")
+        if service_input.get("source_identity_mode", "partition") != identity_mode:
+            raise ValueError("FinBench service and manifest identity modes differ")
+        archive_sha256 = validate_finbench_source_identity(
+            _mapping(public.get("manifest")), partition,
+            source_identity_mode=identity_mode,
+        )
+        for label, record in (("manifest", manifest), ("catalog", catalog)):
+            if identity_mode == "source_archive" or "source_archive_sha256" in record:
+                check(f"identity.{label}.archive", archive_sha256, record.get("source_archive_sha256"))
         query_ids = manifest.get("query_ids")
         if not isinstance(query_ids, list) or any(
             not isinstance(query_id, str) for query_id in query_ids
@@ -322,6 +337,7 @@ def audit_m15_finbench_correctness(
     check("identity.population", public_manifest.get("population_id"), manifest.get("population_id"))
     check("identity.workload", public_manifest.get("workload_sha256"), manifest.get("workload_sha256"))
     check("identity.partition", partition.get("partition_sha256"), manifest.get("source_partition_sha256"))
+    check("identity.catalog.partition", partition.get("partition_sha256"), catalog.get("source_partition_sha256"))
     check("catalog.query_count", len(_list(manifest.get("query_ids"))), catalog.get("query_count"))
     check("catalog.plan_count", len(expected_entries), catalog.get("plan_count"))
     check("catalog.plans", expected_entries, catalog.get("plans"))

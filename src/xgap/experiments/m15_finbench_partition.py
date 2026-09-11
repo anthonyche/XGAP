@@ -50,6 +50,47 @@ _SCHEMA_IRI = "https://xgap.dev/benchmark/finbench/v0.1.0/schema/"
 _RESOURCE_IRI = "https://xgap.dev/benchmark/finbench/v0.1.0/resource/"
 
 
+def validate_finbench_source_identity(
+    workload_manifest: Mapping[str, Any],
+    partition_manifest: Mapping[str, Any],
+    *,
+    source_identity_mode: str = "partition",
+) -> str:
+    """Bind a frozen workload to a separately validated source partition.
+
+    Original confirmatory workpacks pin the source archive before placement.
+    Explicit archive mode accepts that contract without rewriting the workpack;
+    it never discards a partition pin the workload actually declares. This is
+    metadata admission, not verification of the archive or partition bytes.
+    """
+    if source_identity_mode not in ("partition", "source_archive"):
+        raise ValueError("unsupported FinBench source identity mode")
+
+    def sha256(value: Any, label: str) -> str:
+        if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None:
+            raise ValueError(f"FinBench {label} must be a lowercase SHA-256")
+        return value
+
+    actual_partition = sha256(partition_manifest.get("partition_sha256"), "partition identity")
+    archive = partition_manifest.get("source_archive")
+    actual_archive = sha256(
+        archive.get("sha256") if isinstance(archive, Mapping) else None,
+        "partition source archive identity",
+    )
+    expected_archive = sha256(workload_manifest.get("source_archive_sha256"), "workload source archive identity")
+    if expected_archive != actual_archive:
+        raise ValueError("FinBench workload and source archive identities differ")
+    if "source_partition_sha256" in workload_manifest:
+        expected_partition = sha256(
+            workload_manifest["source_partition_sha256"], "workload partition identity"
+        )
+        if expected_partition != actual_partition:
+            raise ValueError("FinBench workload and source partition identities differ")
+    elif source_identity_mode == "partition":
+        raise ValueError("FinBench partition mode requires a workload partition identity")
+    return actual_archive
+
+
 @dataclass(frozen=True)
 class EntityPlacement:
     table_id: str
