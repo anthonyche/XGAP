@@ -11,6 +11,7 @@ from xgap.agent.resolution import SelectiveResolutionConfig, SelectiveSemanticRe
 from xgap.runtime.planning import PlanObservationSnapshot
 from xgap.runtime.semantic_compiler import SemanticBackend
 from xgap.runtime.semantic_memory import SemanticPlanMemory
+from xgap.runtime.semantic_refresh import SemanticRefreshPolicy
 from xgap.runtime.semantic_planning import LogicalSource, run_semantic_plans
 from xgap.runtime.semantic_placement import prepare_semantic_placements
 from xgap.semantic.binding import SemanticBindingValue, bind_semantic_query
@@ -36,6 +37,7 @@ class BoundSemanticExecutionTool:
     snapshot: PlanObservationSnapshot | None = None
     static_backend_order: tuple[str, ...] | None = None
     plan_memory: SemanticPlanMemory | None = None
+    refresh_policy: SemanticRefreshPolicy | None = None
 
     @property
     def spec(self):
@@ -60,7 +62,8 @@ class BoundSemanticExecutionTool:
                 return ToolResult.unavailable(BIND_PLAN_EXECUTE, f"No client for admitted backend {name}")
             plugins.register(CatalogBackendPlugin(name, self.backend_clients[name], catalog))
         run = run_semantic_plans(space, BackendInvokeTool(plugins), snapshot=self.snapshot,
-            static_backend_order=self.static_backend_order, plan_memory=self.plan_memory, goal_id=context.goal_id)
+            static_backend_order=self.static_backend_order, plan_memory=self.plan_memory,
+            refresh_policy=self.refresh_policy, goal_id=context.goal_id)
         value = {"bound_program": bound.program.to_dict(), "bindings": dict(bound.bindings),
                  "operator_sources": dict(bound.operator_sources), "planning_run": run}
         metrics = {"elapsed_ms": (time.perf_counter() - started) * 1000,
@@ -122,7 +125,7 @@ def run_frozen_semantic_query(*, program: SemanticGraphProgram, question: str,
         operator_sources, catalog_root, catalog_hash, sources, backends, backend_clients,
         clarification_tool=None, max_candidates=64, max_observation_calls=128,
         max_remote_calls=16, snapshot=None, config=SelectiveResolutionConfig(), static_backend_order=None,
-        plan_memory=None):
+        plan_memory=None, refresh_policy=None):
     """Use one pinned prepared bundle for resolution and executable bindings.
 
     The model-free deterministic API above is unchanged. This entry does not
@@ -151,7 +154,7 @@ def run_frozen_semantic_query(*, program: SemanticGraphProgram, question: str,
     program = replace(program, metadata={**program.metadata, "resolution_bundle": bundle.identity})
     tool = BoundSemanticExecutionTool(program, operator_sources, bundle.bindings,
         sources, backends, backend_clients, max_candidates, max_observation_calls,
-        max_remote_calls, snapshot, static_backend_order, plan_memory)
+        max_remote_calls, snapshot, static_backend_order, plan_memory, refresh_policy)
     result = run_agentic_semantic_query(tool, question, resolution_tools=registry, config=config)
     return {**result, "status": result["state"]["status"], "resolution_bundle": bundle.identity,
             "end_to_end_ms": (time.perf_counter() - started) * 1000}

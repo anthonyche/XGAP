@@ -1,5 +1,43 @@
 # XGAP current engineering loop
 
+## Current A1 gate — accepted, residual execution bridge next
+
+Parentd66bd84 plus the accompanying A1 source receipt implements SemanticRefreshPolicy
+and run_semantic_plans ordinary-entry forwarding. Modes refresh_reselect,
+refresh_only,no_refresh require the same complete warm table, choose one initial
+plan key using historical elapsed estimates, keep memory read-only and optionally
+reselect once. History/certificates/current costs retain separate provenance.
+See [A1 evidence](report/semantic_refresh_20260911.md).
+
+All local handles terminal:49192 existing memory/static60pass/4.01s; new refresh
+11pass/0.71s and additional failure-retention1pass/0.16s. Default interpreter first
+had1pass/10skip from unavailable RDFLib; pinned venv verified actual cases.
+Native97715 exit0: B04 cold prep+three arms,2 references and retained slice,
+12 validation query calls excluding setup. Raw
+`/Users/anthonyche/xgap-data/a1-refresh-native-20260911/result.json`;
+40/40 source hashes match; Fuseki10831 andNeo4j10801 stopped normally. No broad,
+large-data or model calls. All three native arms correct, selected Fuseki/Neo4j/
+Neo4j, current calls2/2/1, observed question time28.73/42.10/14.98ms. Synthetic old
+cardinality/latency table is explicit; current native reports unmodified. This is
+not a natural-drift or speedup experiment; no-refresh was fastest.
+
+Next actual integration gap: execution-prefix adaptation over the P1 local-option
+space. Existing AdaptiveFederatedExecutor expects explicit candidates/common
+probe definitions; scheduler initial_results alone does not establish safe reuse
+across changed replica definitions. Freeze executed placements and exact reusable
+node/ancestor identity, define residual feasible-domain/cost and bounds, then use
+existing probe/observation/scheduler primitives. Tiny changed-remaining-placement
+case + no-replan, independent gold and no duplicate prefix calls. Do not rename
+A1 as full runtime adaptation. Acquisition stopping/value policy also remains;
+new LINK/INT/E1–E5 evidence still needed. No additional framework expansion.
+
+Remote3804011 remains only user-observed PENDING, prior ETA18:28 Beijing9/11;
+no new query/submission/browser retry in A1. Full Goal active, September18 deadline,
+toy-first development and no automatic external retries unchanged. Two bounded
+collaborators provided proof/API review and new focused tests; no delegated
+external actions. Root owns source integration and live gate.
+
+
 Updated: 2026-09-11. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
 ## Current P1 implementation — scoped correction accepted

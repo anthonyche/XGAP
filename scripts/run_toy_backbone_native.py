@@ -58,6 +58,8 @@ def main(argv=None):
         help="With --agentic-semantic, use fixed backend priority without planning observations")
     parser.add_argument("--memory-roundtrip", action="store_true",
         help="With --agentic-semantic, execute each question cold then warm after JSONL memory reload")
+    parser.add_argument("--refresh-ablation", action="store_true",
+        help="With --agentic-semantic, run only the B04 warm one-refresh mechanism arms")
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--compiled-directed", action="store_true",
         help="Run the production-compiled fixed-path cases instead of independent reference targets")
@@ -96,6 +98,10 @@ def main(argv=None):
         parser.error("--static-backend-order requires --agentic-semantic and both backend IDs exactly once")
     if args.memory_roundtrip and (not args.agentic_semantic or args.static_backend_order):
         parser.error("--memory-roundtrip requires --agentic-semantic without static selection")
+    if args.refresh_ablation and (not args.agentic_semantic or args.memory_roundtrip
+                                 or args.static_backend_order or args.interpretation_recordings):
+        parser.error("--refresh-ablation requires only --agentic-semantic and controlled interpretation")
+    binding_cases = [c for c in load_binding_cases() if not args.refresh_ablation or c["id"] == "B04"]
     if args.typed_query_ids and not args.typed_bindings:
         parser.error("--typed-query-ids requires --typed-bindings")
     typed_cases = [c for c in load_typed_fixture()[1]
@@ -149,7 +155,7 @@ def main(argv=None):
             "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
             "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
             "src/xgap/runtime/semantic_memory.py", "src/xgap/agent/memory.py",
-            "src/xgap/runtime/semantic_placement.py",
+            "src/xgap/runtime/semantic_placement.py", "src/xgap/runtime/semantic_refresh.py",
             "src/xgap/tools/backends.py", "src/xgap/experiments/toy_planning.py"))
     if args.agentic_semantic:
         source_files.extend(REPO / relative for relative in (
@@ -161,6 +167,8 @@ def main(argv=None):
             "src/xgap/semantic/interpretation.py", "src/xgap/semantic/interpretation_replay.py"))
     if args.capability_semantic:
         source_files.append(REPO / "src/xgap/experiments/toy_capabilities.py")
+    if args.refresh_ablation:
+        source_files.append(REPO / "src/xgap/experiments/toy_refresh.py")
     if args.repetition:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/pattern/lowering.py", "src/xgap/pattern/typecheck.py",
@@ -208,7 +216,7 @@ def main(argv=None):
         record.update(binding_cases=[], binding_reference_targets=[],
             memory_roundtrip=args.memory_roundtrip,
             static_backend_order=args.static_backend_order,
-            binding_query_ids=[c["id"] for c in load_binding_cases()],
+            binding_query_ids=[c["id"] for c in binding_cases],
             interpretation_mode="recorded_response" if args.interpretation_recordings else "controlled_template",
             interpretation_fixture_sha256={str(p.relative_to(INTAKE_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
@@ -219,6 +227,8 @@ def main(argv=None):
             binding_fixture_sha256={str(p.relative_to(BINDING_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in BINDING_FIXTURE.rglob("*") if p.is_file()})
+        if args.refresh_ablation:
+            record.update(scope="A1 B04 pre-execution refresh mechanism", refresh_ablation={})
         if args.interpretation_recordings:
             record["binding_cases"] = [{"query_id": c["id"], "status": "not_attempted", "success": False}
                                        for c in load_binding_cases()]
@@ -427,14 +437,15 @@ def main(argv=None):
                 if not item["success"]:
                     raise RuntimeError(f"Semantic planning failed: {case['id']}; no retry")
         if args.agentic_semantic:
-            if args.memory_roundtrip:
+            if args.memory_roundtrip or args.refresh_ablation:
                 from xgap.agent.memory import JsonlMemoryStore
                 from xgap.runtime.semantic_memory import SemanticPlanMemory
                 memory_path = root / "planning_memory.jsonl"
                 memory = SemanticPlanMemory(JsonlMemoryStore(memory_path), str(root.resolve()), 3600)
-                record["binding_warm_cases"] = [{"query_id": c["id"], "status": "not_attempted", "success": False}
-                                                 for c in load_binding_cases()]
-            for case_index, case in enumerate(load_binding_cases()):
+                if args.memory_roundtrip:
+                    record["binding_warm_cases"] = [{"query_id": c["id"], "status": "not_attempted", "success": False}
+                                                     for c in binding_cases]
+            for case_index, case in enumerate(binding_cases):
                 record["phase"] = "agentic-semantic-" + case["id"]
                 if args.interpretation_recordings:
                     item = record["binding_cases"][case_index]
@@ -448,7 +459,8 @@ def main(argv=None):
                     if args.interpretation_recordings else None)
                 item.update(execute_binding_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf},
                             interpretation_provider=provider,
-                            plan_memory=memory if args.memory_roundtrip else None,
+                            plan_memory=memory if args.memory_roundtrip or args.refresh_ablation else None,
+                            validate_candidates=not args.refresh_ablation,
                             static_backend_order=tuple(args.static_backend_order) if args.static_backend_order else None),
                             status="completed")
                 if provider is not None:
@@ -456,6 +468,11 @@ def main(argv=None):
                 save()
                 if not item["success"]:
                     raise RuntimeError(f"Semantic binding failed: {case['id']}; no retry")
+                if args.refresh_ablation:
+                    from xgap.experiments.toy_refresh import execute_refresh_ablation
+                    record["phase"] = "A1-B04-refresh-arms"
+                    execute_refresh_ablation(case, mapping, clients={"neo4j": neo, "fuseki": rdf},
+                        memory=memory, record=record["refresh_ablation"], on_update=save)
                 if args.memory_roundtrip:
                     warm = record["binding_warm_cases"][case_index]
                     warm["status"] = "started"
@@ -605,6 +622,7 @@ def main(argv=None):
         "planned_cases_passed": sum(x["success"] for x in record.get("planned_cases", [])),
         "binding_cases_passed": sum(x["success"] for x in record.get("binding_cases", [])),
         "binding_warm_cases_passed": sum(x["success"] for x in record.get("binding_warm_cases", [])),
+        "refresh_ablation_passed": record.get("refresh_ablation", {}).get("success"),
         "binding_references_passed": sum(x["success"] for x in record.get("binding_reference_targets", [])),
         "orientation_references_passed": sum(x["success"] for x in record.get("orientation_reference_targets", [])),
         "repetition_references_passed": sum(x["success"] for x in record.get("repetition_reference_targets", [])),

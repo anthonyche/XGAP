@@ -1,5 +1,17 @@
 # XGAP Design Decisions
 
+## A1: warm one-request refresh and optional pre-execution reselection
+
+[The frozen contract](decisions/semantic_refresh_v1.md) is implemented through the
+ordinary query entry. Three arms share history and meaning; memory is read-only,
+current attempts and historical cost are separate, and certificates retain their
+snapshot versions. Twelve new and60 affected existing cases pass; one tiny native
+three-arm sequence, references and retained slice pass. See
+[the evidence](report/semantic_refresh_20260911.md). The single observation favored
+no-refresh in actual total time; retain it without a performance claim. This step
+neither implements execution-prefix adaptation nor proves optimal acquisition.
+
+
 ## P1 terminal-source separability correction accepted
 
 Use all semantic input IDs to distinguish consumed sources from terminal roots.

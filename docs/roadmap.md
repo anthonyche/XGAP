@@ -1,5 +1,22 @@
 # XGAP Roadmap
 
+## Next gate — residual execution planning and cost-aware acquisition
+
+A1 ordinary-entry refresh/reselection is accepted; see
+[the evidence](report/semantic_refresh_20260911.md). Do not repeat its72 targeted
+checks or native gate97715. It showed that no-refresh can be cheaper, so preserve
+that strong baseline and do not turn successful plan switching into a speed claim.
+
+Next close actual execution-prefix adaptation with existing scheduler/probe tools:
+fix already executed source placements, validate reusable node definitions and
+ancestor closure, and specify the remaining feasible domain and residual cost
+before P1 reselection. Avoid explicit joint candidate lists. Include a tiny case
+whose remaining placement changes, a no-replan arm, exact gold, no duplicated
+prefix calls, and failed-prefix termination. A1 is only pre-execution reselection.
+Acquisition stopping/value remains a separate policy obligation. Then proceed to
+frozen real-data/model interfaces needed by E1–E5, preserving the September18 deadline.
+
+
 ## Immediate gate — acquisition and method comparison bridge
 
 P1's terminal-source correction is accepted:29 focused checks,150 changed model

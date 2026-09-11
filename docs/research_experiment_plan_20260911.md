@@ -15,8 +15,10 @@
 model grid/native slice completed. The retained6.33x heuristic regret case was repaired by terminal-source admission;
 150 affected replays and70 reused oracles verify the correction. See
 [P1 correction](report/polynomial_terminal_correction_20260911.md). Ordinary-entry
-selective acquisition/reselection is the next implementation gap; pre-execution
-reselection and execution-prefix adaptation must be distinguished.
+one-request refresh/pre-execution reselection is now accepted at A1; see
+[A1 evidence](report/semantic_refresh_20260911.md). Its single controlled native
+observation favored no-refresh; no performance claim is established. Execution-prefix
+adaptation and acquisition stopping/value policy remain distinct gaps.
 Statements below describing the initial missing implementation are historical
 planning context, not a claim that the replacement is still absent.
 

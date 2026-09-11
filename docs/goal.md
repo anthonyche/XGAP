@@ -17,10 +17,12 @@
 [实现与首个负结果](report/polynomial_planning_20260911.md)。终端source独立性判定
 已修正，P1当前范围验收完成：29项定向检查、150个受影响成本表回放、70个旧oracle
 全部匹配；原6.33倍regret保留并修复为1。见
-[修正与下一步](report/polynomial_terminal_correction_20260911.md)。下一步接通普通入口
-的有界选择性acquisition与pre-execution reselection，用相同历史观测和小图进行
-真实机制消融。执行前重选不能冒充execution-prefix adaptation；后者仍需残余计划/
-复用约束接线。模型LINK和真实数据评价仍待完成。不能把“有有效界”说成“真实延迟近似最优”。
+[修正与下一步](report/polynomial_terminal_correction_20260911.md)。A1已接通普通入口的有界acquisition与
+pre-execution reselection；三种实际行为、小图gold、历史/当前成本和失败处理通过
+定向及真实小图检查，见[A1证据](report/semantic_refresh_20260911.md)。一次观测中
+不刷新最快，不能声称收益已成立。下一步接通execution-prefix adaptation的残余
+计划/复用约束，并补获取信息是否值得的决策；不能把执行前重选当成整个agent完成。
+模型LINK和真实数据评价仍待完成。不能把“有有效界”说成“真实延迟近似最优”。
 
 **最新工程标准（2026-09-11）：XGAP是research prototype，以保证论文实验结果为
 核心要求，不追求完美实现。** 优先正确性、可复现、公平对照、全部失败/样本分母和

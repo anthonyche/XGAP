@@ -22,6 +22,7 @@ from xgap.runtime.planning import FederatedPlanCandidate, FederatedPlanSelector,
 from xgap.runtime.scheduler import FederatedScheduler
 from xgap.runtime.semantic_compiler import SemanticBackend, compile_semantic_program
 from xgap.runtime.semantic_memory import SemanticPlanMemory
+from xgap.runtime.semantic_refresh import SemanticRefreshPolicy
 from xgap.runtime.tool import FederatedExecutionTool
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S, SemanticProgramError
 from xgap.tools.backends import BackendInvokeTool, BackendObservationCatalog, BackendOperation
@@ -165,10 +166,65 @@ def select_static_semantic_plan(candidates, backend_order):
             "snapshot_id": None, "snapshot_version": None, "estimates": None}
 
 
+def _refresh_before_execution(space, backend_tool, policy, snapshot, plan, selection, record, goal_id):
+    """One warm action; preserve partial accounting even when it fails."""
+    detail = record["refresh"]
+    started = time.perf_counter()
+    detail.update(initial_selection=selection, selection_runs=1,
+        history={"source": "plan_memory" if record["memory"]["state"] == "hit" else "explicit_snapshot",
+            "snapshot": snapshot.to_dict(),
+            "historical_acquisition": record["memory"].get("historical_acquisition")})
+    try:
+        request = policy.choose_request(space, plan, snapshot)
+        detail["request"] = request.to_dict()
+        if policy.mode != "no_refresh":
+            collected = PlanObservationCollector(backend_tool).collect((request,),
+                snapshot_id=snapshot.snapshot_id, version=snapshot.version + "/refresh:" + uuid4().hex,
+                bandwidth_bytes_per_ms=snapshot.bandwidth_bytes_per_ms,
+                exchange_fixed_ms=snapshot.exchange_fixed_ms,
+                coordinator_row_ms=snapshot.coordinator_row_ms, goal_id=goal_id)
+            detail["observation"] = collected.to_dict()
+            record["observation_calls"] += collected.attempted_calls
+            if not collected.success:
+                raise ValueError(collected.error)
+            snapshot = snapshot.with_estimates(collected.snapshot.estimates, version=collected.snapshot.version)
+            detail["updated_snapshot"] = snapshot.to_dict()
+            if policy.mode == "refresh_reselect":
+                select_at = time.perf_counter()
+                detail["selection_runs"] += 1
+                try:
+                    chosen, selection = space.select(snapshot)
+                    plan = chosen.plan
+                    detail["post_selection"] = selection
+                    record["candidate_count"] = selection["evaluated_plan_count"]
+                finally:
+                    detail["selection_ms"] += (time.perf_counter() - select_at) * 1000
+        score_at = time.perf_counter()
+        try:
+            # In refresh_only the old selection certificate still belongs to
+            # the historical snapshot. This is a distinct updated-model score.
+            detail["executed_plan_estimate"] = {"snapshot_id": snapshot.snapshot_id,
+                "snapshot_version": snapshot.version,
+                "estimate": FederatedPlanSelector().estimate(plan, snapshot).to_dict()}
+        finally:
+            detail["selection_ms"] += (time.perf_counter() - score_at) * 1000
+        detail["state"] = "ready_to_execute"
+        return plan, selection
+    except (OSError, ValueError):
+        detail["state"] = "failed"
+        raise
+    finally:
+        detail["elapsed_ms"] = (time.perf_counter() - started) * 1000
+        observation_ms = detail["observation"]["elapsed_ms"] if detail["observation"] else 0
+        detail["overhead_ms"] = max(0, detail["elapsed_ms"] - detail["selection_ms"] - observation_ms)
+        record["selection_ms"] += detail["selection_ms"]
+
+
 def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool, *,
         snapshot: PlanObservationSnapshot | None = None,
         static_backend_order: tuple[str, ...] | None = None,
         plan_memory: SemanticPlanMemory | None = None,
+        refresh_policy: SemanticRefreshPolicy | None = None,
         bandwidth_bytes_per_ms: float = 1000.0, exchange_fixed_ms: float = 0.0,
         coordinator_row_ms: float = 0.01, goal_id: str = "semantic-planning") -> dict:
     """Acquire unique observations if needed, select, then dispatch only the winner.
@@ -176,7 +232,9 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
     An explicit static order bypasses observation acquisition and cost selection.
     Observation queries execute data access and are charged separately from the
     selected plan. A supplied snapshot avoids fresh acquisition, not its recorded
-    historical cost. Failed observation/execution never falls back or retries.
+    historical cost. Explicit refresh policies require warm complete history,
+    keep memory read-only and optionally reselect once before execution.
+    Failed observation/execution never falls back or retries.
     """
     started = time.perf_counter()
     record = {"success": False, "error": None, "enumeration_ms": space.enumeration_ms,
@@ -186,12 +244,23 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
               "snapshot_reused": snapshot is not None and static_backend_order is None, "automatic_retries": 0}
     record["selection_policy"] = "static_backend_order" if static_backend_order is not None else "costed"
     record.update(memory={"state": "disabled", "reads": 0, "writes": 0}, memory_ms=0.0)
+    record["refresh"] = None
     polynomial = hasattr(space, "local_option_count")
     if polynomial:
         record.update(local_option_count=space.local_option_count,
             possible_placement_count=space.possible_placement_count,
             candidate_budget_unit="local_options", search_space_materialized=False)
     try:
+        if refresh_policy is not None:
+            if not isinstance(refresh_policy, SemanticRefreshPolicy) or not polynomial:
+                raise ValueError("Semantic refresh requires a typed policy and the polynomial plan space")
+            record["refresh"] = {"policy": refresh_policy.to_dict(), "state": "pending",
+                "history": None, "initial_selection": None, "request": None,
+                "observation": None, "updated_snapshot": None, "post_selection": None,
+                "executed_plan_id": None, "executed_plan_estimate": None,
+                "selection_runs": 0, "elapsed_ms": 0.0, "selection_ms": 0.0, "overhead_ms": 0.0}
+            if static_backend_order is not None:
+                raise ValueError("Static selection and warm refresh policies are mutually exclusive")
         if plan_memory is not None and (snapshot is not None or static_backend_order is not None):
             raise ValueError("Planning memory, an explicit snapshot and static selection are mutually exclusive")
         if static_backend_order is not None and snapshot is not None:
@@ -205,6 +274,10 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
                 record["snapshot_reused"] = snapshot is not None
             finally:
                 record["memory_ms"] += (time.perf_counter() - memory_at) * 1000
+        if refresh_policy is not None:
+            expected = {r.observation_key: r.backend_id for r in space.observation_requests}
+            if snapshot is None or {e.observation_key: e.backend_id for e in snapshot.estimates} != expected:
+                raise ValueError("Warm refresh requires a complete matching historical snapshot; no cold acquisition")
         if snapshot is None and static_backend_order is None:
             collected = PlanObservationCollector(backend_tool).collect(space.observation_requests,
                 snapshot_id=record["memory"]["key"] if plan_memory is not None else "semantic-plan-observations",
@@ -237,16 +310,30 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         record["selection_ms"] = (time.perf_counter() - selected_at) * 1000
         record["selection"] = selection
         record["selected_plan"] = plan.to_dict()
+        if refresh_policy is not None:
+            plan, selection = _refresh_before_execution(space, backend_tool, refresh_policy,
+                snapshot, plan, selection, record, goal_id)
+            record["selection"] = selection
+            record["selected_plan"] = plan.to_dict()
+            record["refresh"]["executed_plan_id"] = plan.plan_id
         result = FederatedExecutionTool(FederatedScheduler(backend_tool)).invoke(
             {"plan": plan.to_dict()}, ToolContext(goal_id, 1, "execute-selected-semantic-plan"))
         record["execution"] = result.to_dict()
         record["execution_calls"] = int(result.metrics.get("remote_calls", 0))
         record["success"] = result.status is ToolStatus.SUCCESS
         record["error"] = result.error
+        if record["refresh"] is not None:
+            record["refresh"]["state"] = "completed" if record["success"] else "execution_failed"
     except (OSError, ValueError) as error:
         record["error"] = str(error)
+        if record["refresh"] is not None:
+            record["refresh"]["state"] = "failed"
     record["total_remote_calls"] = record["observation_calls"] + record["execution_calls"]
     record["planning_ms"] = space.enumeration_ms + record["selection_ms"] + record["memory_ms"] + (
         record["observation"]["elapsed_ms"] if record["observation"] else 0)
+    if record["refresh"] is not None:
+        detail = record["refresh"]
+        record["planning_ms"] += detail["overhead_ms"] + (
+            detail["observation"]["elapsed_ms"] if detail["observation"] else 0)
     record["end_to_end_ms"] = space.enumeration_ms + (time.perf_counter() - started) * 1000
     return record

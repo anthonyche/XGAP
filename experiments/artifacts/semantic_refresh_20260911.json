@@ -1,0 +1,179 @@
+{
+  "schema": "xgap-semantic-refresh-evidence-v1",
+  "parent_commit": "d66bd84a559d905bc6ccf1a3923dffa0b998e4f9",
+  "status": "A1_warm_pre_execution_refresh_accepted",
+  "paper_result": false,
+  "live_llm": false,
+  "large_dataset_runs": 0,
+  "broad_regression_run": false,
+  "source_sha256": {
+    "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+    "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+    "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+    "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+    "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+    "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+    "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+    "scripts/run_toy_backbone_native.py": "07b26757931fe0422c49f9696b858f210fd32cd7fb57c17b353ede8d043e3dbf",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+    "src/xgap/runtime/semantic_compiler.py": "a9345ef1b131cffcae174be9a04b05ec0eb58bd4c75ca6b7e8a555775ac4d0c3",
+    "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+    "src/xgap/runtime/semantic_planning.py": "4493c31fabfa01e102f5b1fc39f8f16971c2f9a9546ce0fa8cb4681c2f244e8c",
+    "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/runtime/semantic_memory.py": "5d65891e5299c19960c63fe4961d7e60b2033952f06de680f8d57613c8c32777",
+    "src/xgap/agent/memory.py": "3fc9a374422458ccf6524bb656dfbb62d0eaf42c59a7a4135c6a848f5d292616",
+    "src/xgap/runtime/semantic_placement.py": "4e6b8b2738e7a0fd9f3a6082bd726d74b0d2571858586f240dfcfda1b958d97b",
+    "src/xgap/runtime/semantic_refresh.py": "17f0d98c08e0ab2b359cfbf8a511d93f46ff54f3763dd5bbef37ba0a9870755c",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+    "src/xgap/semantic/binding.py": "f2f2daf77ed787580619f1e03fbfcfedc49e92162bc786b7001b27452a7d9ec3",
+    "src/xgap/agent/semantic_execution.py": "28304eae7b8acca3b045a9193a908f440e6b11aee8e9e58871d37fa181a73465",
+    "src/xgap/agent/resolution.py": "0ddab00073176c20ca737eafe0b175e1bab9aeba56ba380671405814af425f2c",
+    "src/xgap/agent/loop.py": "cb0aec6d416ed856d94a677233c6d565e0f525cc15e5c73e15998b593699b1f8",
+    "src/xgap/tools/artifact_resolution.py": "18d4da7a14212f35397d39cc7dbccf2e24bceb500865289340cc59c0409c8c58",
+    "src/xgap/tools/resolution.py": "5046f009a3d0b612e3d4425bec33a41de715a158b87858805ae6e6af8bd89127",
+    "src/xgap/experiments/toy_binding.py": "6a83f910e0aaa0d96fefd7476acd752372f451b18f35c1bd2b94bc4db7de7c7b",
+    "src/xgap/catalog/bundle.py": "2d3bc522873b2c508426b4dee92b82d5020a568e69ccc9c92fabef44269cd624",
+    "src/xgap/agent/question.py": "3ccf6a00342d0b4b8086c89bf222f31d7e685d6e472f982d61cc9bd1fbd00cb2",
+    "src/xgap/semantic/intake.py": "0d69b581faba5d01761342b1fab6361ec3c46e8019586c05241f9bb1ff473534",
+    "src/xgap/semantic/interpretation.py": "27d1994d127b45937e667241fae064925c63ab85e7090630ff493b27a5d3e07e",
+    "src/xgap/semantic/interpretation_replay.py": "d451f5aaaf62e19710ffcc042abdbd4ad9165423af73376483c9152a73aa41da",
+    "src/xgap/experiments/toy_refresh.py": "99c8307e9ff15897c96a352c0934aa966b2e5d96cd8cb774edd44d8b943f3402"
+  },
+  "tests": [
+    {
+      "session": 49192,
+      "exit_code": 0,
+      "command": "PYTHONPATH=src python -m pytest -q tests/test_semantic_execution_memory.py tests/test_static_semantic_selection.py",
+      "passed": 60,
+      "seconds": 4.01,
+      "log": "/tmp/xgap-a1-existing.log"
+    },
+    {
+      "command": "PYTHONPATH=src:tests python -m pytest -q tests/test_semantic_refresh.py",
+      "passed": 11,
+      "seconds": 0.71,
+      "interpreter": "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+      "agent": "test_refresh"
+    },
+    {
+      "passed": 1,
+      "seconds": 0.16,
+      "agent": "test_refresh",
+      "scope": "only new correct-answer/wrong-backend failure-retention case; eleven accepted tests not rerun",
+      "selected_test": "tests/test_semantic_refresh.py::test_ablation_retains_correct_answer_as_contract_failure_for_wrong_backend"
+    }
+  ],
+  "initial_environment_attempt": {
+    "result": "1passed/10skipped",
+    "reason": "default interpreter lacked required RDFLib; not accepted as feature verification"
+  },
+  "native": {
+    "path": "/Users/anthonyche/xgap-data/a1-refresh-native-20260911/result.json",
+    "sha256": "8ad37c894e5bb956f34e8744d5b79dd370fca478bd31df8857b1d8755b39382a",
+    "session": 97715,
+    "exit_code": 0,
+    "log": "/tmp/xgap-a1-native.log",
+    "command": "python scripts/run_toy_backbone_native.py --runtime-root /Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime --output /Users/anthonyche/xgap-data/a1-refresh-native-20260911 --java /opt/homebrew/opt/openjdk@21/bin/java --execute --agentic-semantic --refresh-ablation",
+    "cold_preparation_query_calls": 3,
+    "method_query_calls": 5,
+    "independent_reference_calls": 2,
+    "retained_slice_calls": 2,
+    "total_validation_query_calls": 12,
+    "query_call_boundary": "excludes service readiness, data loading and schema/server setup",
+    "source_hashes_verified": 40,
+    "shutdown": [
+      {
+        "service_id": "fuseki",
+        "pid": 10831,
+        "initial_exit_code": null,
+        "final_exit_code": 143,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      },
+      {
+        "service_id": "neo4j",
+        "pid": 10801,
+        "initial_exit_code": null,
+        "final_exit_code": 0,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      }
+    ]
+  },
+  "intervention": {
+    "kind": "synthetic historical cardinality and latency",
+    "old_rows": 0,
+    "old_width_bytes": 1,
+    "old_elapsed_ms": {
+      "neo4j": 0.0,
+      "fuseki": 1e-09
+    },
+    "current_backend_reports_modified": false,
+    "performance_claim": false
+  },
+  "arms": [
+    {
+      "mode": "refresh_reselect",
+      "answer_correct": true,
+      "selected_backend": "fuseki",
+      "current_observation_calls": 1,
+      "current_execution_calls": 1,
+      "selection_runs": 2,
+      "question_end_to_end_ms": 28.734167106449604,
+      "planning_ms": 18.480626866221428,
+      "refresh_stage_ms": 12.701207771897316,
+      "historical_acquisition_calls": 2,
+      "historical_acquisition_ms": 330.4438339546323,
+      "executed_plan_id": "toy-node:d299aecf7ae50bba/83de4ce27de9fde37682",
+      "selection_snapshot_version": "8d4423854fad4772b81dabe27080e287/synthetic-stale-A1/refresh:4b05b0d57d5c414aaaccc27d2355990f",
+      "executed_plan_score_snapshot_version": "8d4423854fad4772b81dabe27080e287/synthetic-stale-A1/refresh:4b05b0d57d5c414aaaccc27d2355990f"
+    },
+    {
+      "mode": "refresh_only",
+      "answer_correct": true,
+      "selected_backend": "neo4j",
+      "current_observation_calls": 1,
+      "current_execution_calls": 1,
+      "selection_runs": 1,
+      "question_end_to_end_ms": 42.10337530821562,
+      "planning_ms": 16.22612588107586,
+      "refresh_stage_ms": 10.565750300884247,
+      "historical_acquisition_calls": 2,
+      "historical_acquisition_ms": 330.4438339546323,
+      "executed_plan_id": "toy-node:d299aecf7ae50bba/527d37fc5792b8f4aca7",
+      "selection_snapshot_version": "8d4423854fad4772b81dabe27080e287/synthetic-stale-A1",
+      "executed_plan_score_snapshot_version": "8d4423854fad4772b81dabe27080e287/synthetic-stale-A1/refresh:b499822baafb4bfeb8d763f35951c708"
+    },
+    {
+      "mode": "no_refresh",
+      "answer_correct": true,
+      "selected_backend": "neo4j",
+      "current_observation_calls": 0,
+      "current_execution_calls": 1,
+      "selection_runs": 1,
+      "question_end_to_end_ms": 14.981040731072426,
+      "planning_ms": 6.509331986308098,
+      "refresh_stage_ms": 0.023540109395980835,
+      "historical_acquisition_calls": 2,
+      "historical_acquisition_ms": 330.4438339546323,
+      "executed_plan_id": "toy-node:d299aecf7ae50bba/527d37fc5792b8f4aca7",
+      "selection_snapshot_version": "8d4423854fad4772b81dabe27080e287/synthetic-stale-A1",
+      "executed_plan_score_snapshot_version": "8d4423854fad4772b81dabe27080e287/synthetic-stale-A1"
+    }
+  ],
+  "limitation": "One B04 toy query, fixed arm order and synthetic old estimates; descriptive latency only, no natural-drift or performance/causal claim. Current backend responses were not altered. No-refresh was faster in this observation.",
+  "remaining": "Ptime ordinary-entry execution-prefix replanning/reuse and acquisition stopping/value policy remain distinct gaps; existing older adaptive modules are not yet connected to the polynomial placement domain. Actual model LINK and real-data integration/evaluation remain pending."
+}

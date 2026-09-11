@@ -1,5 +1,21 @@
 # XGAP Status
 
+## A1 refresh/reselection through the ordinary query entry accepted
+
+Three warm modes now perform one refresh+reselection, refresh without reselection,
+or no refresh. Same meaning/history, read-only memory, exact call accounting and
+snapshot-specific certificates. Twelve new targeted cases and60 affected existing
+checks pass; native B04 three arms plus two independent references and the tiny
+slice pass. Native97715 exit0,40/40 source hashes match and services stopped.
+See [A1 evidence](report/semantic_refresh_20260911.md).
+
+The observed single-query times were28.73/42.10/14.98ms respectively: no-refresh
+was fastest. This controlled old-estimate intervention demonstrates mechanism
+wiring, not performance advantage. Prefix execution/reuse integration and a policy
+for deciding whether acquisition is worth its cost remain incomplete, as do the
+real-model/data evaluation gates. No broad/large-data/model run was added.
+
+
 ## P1 scoped implementation accepted; acquisition bridge next
 
 Terminal-source admission is corrected. The saved6.33x model-regret input now
