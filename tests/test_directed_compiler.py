@@ -384,8 +384,6 @@ def test_non_fixed_directed_expressions_are_explicitly_unavailable(expr):
 @pytest.mark.parametrize(
     "condition",
     [
-        Or(LengthEquals(1)),
-        Not(LengthEquals(1)),
         LabelEquals(NodeRef.first(), None),
         PropertyEquals(NodeRef(3), "name", "x"),
         PropertyEquals(EdgeRef(2), "name", "x"),

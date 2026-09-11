@@ -43,7 +43,49 @@ hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
-## Current milestone
+## Current milestone — native Boolean conditions
+
+On base bafce8e, total AND/OR/NOT is ACCEPTED for modern paths and Match.
+Decision: docs/decisions/native_boolean_conditions_v1.md. Separate overlay has20
+complete path gold chains and4 typed Match programs; old graph/gold stay frozen.
+Report: docs/report/toy_backbone_t1_boolean_conditions.md. Overall Goal ACTIVE.
+
+Focused94086 terminal exit0:296 passed/15.96s. Native18573 terminal exit0:
+40/40 path +40/40 refs,8/8 Match +8/8 refs,3/3 plans/6/6 candidates and old slice.
+Both services stopped normally. Daily27207 terminal exit1:398 pass/1 failure
+(Match lost explicit Nodes capability rejection). Nodes/Selection admission
+restored, replay16709 terminal exit0:71 pass/2.88s. Earlier collection error was
+a wrong import, fixed; local fixture/rejection failures remain in the report.
+
+Follow-up71425 terminal exit0:8/8 Match +8/8 refs,3/3 plans/6/6 candidates,
+old slice pass, normal shutdown. Daily67642 terminal exit0:401 pass/25.98s+18 demo.
+Broad65353 terminal exit2:2 collection errors due to a downstream import of
+_OPERATORS removed during cleanup. Restore the symbol, explicitly preserve the
+old Freebase split adapter's conjunctive scope so it cannot drop new Boolean
+shapes; local dependent replay5669 terminal exit0:140 pass/3.88s. No GrailQA
+build/run. Current compiled40 path +8 Match plans match successful native
+records exactly (48/48 offline comparisons). Native follow-up's only final
+source hash difference is directed.py dependency-symbol restoration, not queries.
+
+Final broad69433 terminal exit0:3246 passed/38 skipped/670.40s, all24
+harness/example entrypoints pass. Log /tmp/xgap-t1-boolean-acceptance-final.log.
+Every Boolean test/native handle is terminal; do not poll/repeat passed gates.
+No source/test edits after final broad launch. All final recorded source and
+fixture hashes rechecked. Receipt experiments/artifacts/toy_backbone_t1_boolean_conditions_20260911.json.
+Broad was restarted only after its terminal collection failure was fixed.
+This Boolean step is accepted; full T1/T2/T3 and overall Goal remain active. Previous goal turn
+committed the requested report; this turn implements and obtains native evidence.
+
+Next typed-binding work has a concrete offline probe (no production edits, no
+external calls): /tmp/xgap-next-typed-binding-observations.json. Current SUM
+accepts numeric strings, converts integer9007199254740993 to9007199254740992.0,
+and rejects a typed RDF decimal; MIN mixes bool/numeric; grouping splits1/1.0;
+sorting None with numeric fails. These observations identify remaining type
+contract/implementation work, not a new accepted milestone. Define the intended
+binding-level scalar/nullable/group/aggregate/order contract before fixing;
+keep audited PathSet Selection semantics unchanged.
+
+## Accepted scoped predecessor
 
 T1 finite nested path scopes is ACCEPTED on base861e043. The previous
 goal turn was progress: finite repetition was implemented, measured, committed

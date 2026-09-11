@@ -11,8 +11,8 @@ from xgap.semantic.program import SemanticGraphProgram
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, CatalogBackendPlugin
 
 
-def execute_planned_semantic_case(case, mapping, *, clients, max_observation_calls=4):
-    graph, _, _ = load_fixture()
+def execute_planned_semantic_case(case, mapping, *, clients, max_observation_calls=4, fixture_root=None):
+    graph, _, _ = load_fixture(fixture_root) if fixture_root is not None else load_fixture()
     version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
     space = enumerate_semantic_plans(SemanticGraphProgram.from_dict(case["program"]),
         operator_sources={op: "toy" for op in case["source_bindings"]},

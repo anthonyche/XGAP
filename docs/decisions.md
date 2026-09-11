@@ -4621,3 +4621,17 @@ exposed stale logical capability declarations; candidate assessment now uses an
 explicit orientation profile while retaining backend_execution_verified=false.
 That consistency check is in the daily fast gate. This step is accepted; the
 complete system Goal remains open, with no model or paper claim.
+
+
+## T1 Native total Boolean conditions
+
+Implement existing AND/OR/NOT in the modern directed/bounded compiler and
+semantic Match; preserve scalar equality, missing-property truth and shortest
+condition placement. Keep legacy M9 limited and original graph/gold immutable.
+The separate property overlay supplies20 complete path chains and4 typed Match
+programs. First native40+40 paths,8+8 Match,3 planning programs/6 candidate answers
+and the old slice pass; a later Match capability-admission omission is repaired.
+Follow-up passes; daily401 pass, final broad3246 pass/38 skip plus24 harness/
+example entrypoints. This Boolean step is accepted; T1/T2/T3 remain open. See
+[the design](decisions/native_boolean_conditions_v1.md) and
+[the report](report/toy_backbone_t1_boolean_conditions.md).

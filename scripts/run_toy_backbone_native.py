@@ -36,6 +36,8 @@ from xgap.experiments.toy_capabilities import (FIXTURE as CAPABILITY_FIXTURE,
     load_capability_cases, execute_capability_case)
 from xgap.experiments.toy_repetition import FIXTURE as REPETITION_FIXTURE, load_repetition_cases
 from xgap.experiments.toy_scoped import FIXTURE as SCOPED_FIXTURE, load_scoped_cases, execute_scoped_case
+from xgap.experiments.toy_boolean import (FIXTURE as BOOLEAN_FIXTURE, load_boolean_cases,
+    load_boolean_matches, execute_boolean_case, boolean_match_reference, boolean_match_reference_rows)
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 
@@ -65,9 +67,15 @@ def main(argv=None):
         help="Check optional and finite repetition against independently authored native targets")
     selection.add_argument("--scoped", action="store_true",
         help="Run nested scopes through semantic Traverse and candidate planning")
+    selection.add_argument("--boolean", action="store_true",
+        help="Run scalar Boolean paths, Match, independent targets and normal planning")
     parser.add_argument("--scoped-planning-only", action="store_true",
         help="With --scoped, run only the remaining planning checks and retained slice")
+    parser.add_argument("--boolean-followup-only", action="store_true",
+        help="With --boolean, verify Match, planning and retained slice without repeating path targets")
     args = parser.parse_args(argv)
+    if args.boolean_followup_only and not args.boolean:
+        parser.error("--boolean-followup-only requires --boolean")
     if args.scoped_planning_only and not args.scoped:
         parser.error("--scoped-planning-only requires --scoped")
     if not args.execute:
@@ -79,6 +87,9 @@ def main(argv=None):
             parser.error("Prepare the pinned native distributions before running toy tests")
     java = inspect_java_runtime(java_command=args.java, required_major=21)
     data, cases, mapping = load_fixture()
+    load_root = BOOLEAN_FIXTURE if args.boolean else DEFAULT_FIXTURE
+    if args.boolean:
+        data, _, mapping = load_fixture(BOOLEAN_FIXTURE)
     root = Path(args.output).resolve()
     root.mkdir(parents=True, exist_ok=False)
     state = root / "state"
@@ -100,12 +111,12 @@ def main(argv=None):
             "src/xgap/algebra/ops.py", "src/xgap/algebra/validation.py",
             "src/xgap/pattern/lowering.py", "src/xgap/compilers/features.py",
             "src/xgap/experiments/toy_orientation.py"))
-    if args.semantic_dag or args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped:
+    if args.semantic_dag or args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped or args.boolean:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/experiments/toy_semantic.py", "src/xgap/compilers/node_match.py",
             "src/xgap/runtime/semantic_compiler.py", "src/xgap/runtime/row_operations.py",
             "src/xgap/semantic/program.py", "src/xgap/runtime/semantic_capabilities.py"))
-    if args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped:
+    if args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped or args.boolean:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
             "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
@@ -122,12 +133,16 @@ def main(argv=None):
         source_files.extend(REPO / relative for relative in (
             "src/xgap/pattern/lowering.py", "src/xgap/pattern/typecheck.py",
             "src/xgap/llm/parser.py", "src/xgap/experiments/toy_repetition.py"))
-    if args.scoped:
+    if args.scoped or args.boolean:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/pattern/lowering.py", "src/xgap/pattern/typecheck.py", "src/xgap/llm/parser.py",
             "src/xgap/runtime/scoped_paths.py", "src/xgap/runtime/path_composition.py",
             "src/xgap/experiments/toy_scoped.py"))
-    record = {"success": False, "scope": ("T1 finite nested path scopes" if args.scoped else
+    if args.boolean:
+        source_files.extend(REPO / relative for relative in (
+            "src/xgap/compilers/boolean_conditions.py", "src/xgap/experiments/toy_boolean.py"))
+    record = {"success": False, "scope": ("T1 total scalar Boolean conditions" if args.boolean else
+                                           "T1 finite nested path scopes" if args.scoped else
                                            "T1 optional and finite repetition" if args.repetition else
                                            "T1 semantic capability admission" if args.capability_semantic else
                                            "T1 logical and native path orientation" if args.orientation else
@@ -170,6 +185,13 @@ def main(argv=None):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in REPETITION_FIXTURE.rglob("*") if p.is_file()})
 
+    if args.boolean:
+        record.update(boolean_reference_targets=[], boolean_matches=[], boolean_match_references=[], boolean_planned_cases=[],
+            boolean_followup_only=args.boolean_followup_only,
+            query_ids=([c["id"] for c in load_boolean_matches()] + ["C04", "C14"] if args.boolean_followup_only
+                       else [c["id"] for c in load_boolean_cases()]),
+            boolean_fixture_sha256={str(p.relative_to(BOOLEAN_FIXTURE)): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in BOOLEAN_FIXTURE.rglob("*") if p.is_file()})
     if args.scoped:
         record.update(scoped_reference_targets=[], scoped_planned_cases=[],
             scoped_planning_only=args.scoped_planning_only,
@@ -232,12 +254,12 @@ def main(argv=None):
         loader.base_url, loader.dataset = rdf_url, "toy"
         record["phase"] = "load-fresh-toy-stores"
         save()
-        loaded = neo.execute(QueryArtifact("toy-create", "cypher", (DEFAULT_FIXTURE / "load.cypher").read_text(), kind="native"))
+        loaded = neo.execute(QueryArtifact("toy-create", "cypher", (load_root / "load.cypher").read_text(), kind="native"))
         record["loads"].append(loaded.to_dict())
         save()
         if not loaded.success:
             raise RuntimeError("Tiny Neo4j load failed; preserve the fresh output without retry")
-        loaded_rdf = loader.load(DEFAULT_FIXTURE / "load.ttl")
+        loaded_rdf = loader.load(load_root / "load.ttl")
         record["loads"].append(loaded_rdf.to_dict())
         save()
         if not loaded_rdf.success:
@@ -257,6 +279,8 @@ def main(argv=None):
             selected = load_repetition_cases()
         if args.scoped:
             selected = [] if args.scoped_planning_only else load_scoped_cases()
+        if args.boolean:
+            selected = [] if args.boolean_followup_only else load_boolean_cases()
         for case in selected:
             for backend, client in (("neo4j", neo), ("fuseki", rdf)):
                 item = {"query_id": case["id"], "backend": backend, "status": "started", "success": False}
@@ -269,23 +293,25 @@ def main(argv=None):
                     if not item["success"]:
                         raise RuntimeError(f"Semantic path failed: {case['id']} / {backend}; no retry")
                     continue
-                if args.compiled_directed or args.compiled_bounded or args.orientation or args.repetition or args.scoped:
+                if args.compiled_directed or args.compiled_bounded or args.orientation or args.repetition or args.scoped or args.boolean:
                     execute_case = execute_bounded_toy_case if args.compiled_bounded or args.orientation or args.repetition else execute_directed_toy_case
                     if args.scoped:
                         execute_case = execute_scoped_case
+                    if args.boolean:
+                        execute_case = execute_boolean_case
                     item.update(execute_case(case, mapping, client=client), status="completed")
                     save()
                     if not item["success"]:
                         raise RuntimeError(f"Compiled target failed: {case['id']} / {backend}; retained without retry")
-                    if args.orientation or args.repetition or args.scoped:
-                        target = (SCOPED_FIXTURE if args.scoped else REPETITION_FIXTURE if args.repetition else ORIENTATION_FIXTURE) / case["reference_target_queries"][backend]
+                    if args.orientation or args.repetition or args.scoped or args.boolean:
+                        target = (BOOLEAN_FIXTURE if args.boolean else SCOPED_FIXTURE if args.scoped else REPETITION_FIXTURE if args.repetition else ORIENTATION_FIXTURE) / case["reference_target_queries"][backend]
                         result = client.execute(QueryArtifact(case["id"] + "-reference-" + backend,
                             "cypher" if backend == "neo4j" else "sparql", target.read_text(), kind="native"))
                         actual = sorted({row["path"] for row in result.rows}) if result.success else None
                         reference = {"query_id": case["id"], "backend": backend,
                             "execution": result.to_dict(), "actual_paths": actual,
                             "success": result.success and actual == case["expected_paths"]}
-                        record["scoped_reference_targets" if args.scoped else "repetition_reference_targets" if args.repetition else "orientation_reference_targets"].append(reference)
+                        record["boolean_reference_targets" if args.boolean else "scoped_reference_targets" if args.scoped else "repetition_reference_targets" if args.repetition else "orientation_reference_targets"].append(reference)
                         save()
                         if not reference["success"]:
                             raise RuntimeError(f"Independent path reference failed: {case['id']} / {backend}; no retry")
@@ -374,6 +400,48 @@ def main(argv=None):
                 save()
                 if not item["success"]:
                     raise RuntimeError(f"Scoped planning failed: {case['id']}; retained without retry")
+        if args.boolean:
+            for case in load_boolean_matches():
+                for backend, client in (("neo4j", neo), ("fuseki", rdf)):
+                    record["phase"] = "boolean-match-" + case["id"] + "-" + backend
+                    item = {"query_id": case["id"], "backend": backend, "success": False, "status": "started"}
+                    record["boolean_matches"].append(item)
+                    save()
+                    item.update(execute_semantic_case(case, mapping, clients={backend: client},
+                        source_bindings={"people": backend}), status="completed")
+                    save()
+                    if not item["success"]:
+                        raise RuntimeError(f"Boolean Match failed: {case['id']} / {backend}; no retry")
+                    execution = client.execute(boolean_match_reference(case, backend))
+                    reference = {"query_id": case["id"], "backend": backend,
+                        "execution": execution.to_dict(), "success": False}
+                    record["boolean_match_references"].append(reference)
+                    save()
+                    actual = boolean_match_reference_rows(execution, backend)
+                    canonical = lambda rows: sorted(json.dumps(r, sort_keys=True) for r in rows)
+                    reference.update(actual_rows=actual, success=execution.success and
+                        canonical(actual) == canonical(case["expected_rows"]))
+                    save()
+                    if not reference["success"]:
+                        raise RuntimeError(f"Independent Boolean Match failed: {case['id']} / {backend}; no retry")
+            boolean_cases = load_boolean_cases()
+            planning_cases = []
+            for case in (boolean_cases[3], boolean_cases[13]):
+                wrapper = wrap_path_case(case, "fuseki")
+                wrapper["expected_remote_calls"] = case["expected_remote_calls"]
+                planning_cases.append(wrapper)
+            planning_cases.append(load_boolean_matches()[0])
+            for case in planning_cases:
+                record["phase"] = "boolean-planning-" + case["id"]
+                item = {"query_id": case["id"], "success": False, "status": "started"}
+                record["boolean_planned_cases"].append(item)
+                save()
+                item.update(execute_planned_semantic_case(case, mapping,
+                    clients={"neo4j": neo, "fuseki": rdf}, fixture_root=BOOLEAN_FIXTURE,
+                    max_observation_calls=2 * case["expected_remote_calls"]), status="completed")
+                save()
+                if not item["success"]:
+                    raise RuntimeError(f"Boolean planning failed: {case['id']}; no retry")
         record["phase"] = "compiled-federated-slice"
         save()
         record["vertical_slice"] = execute_vertical_slice(cases[-1], mapping, neo4j=neo, fuseki=rdf)
@@ -401,6 +469,10 @@ def main(argv=None):
         "binding_references_passed": sum(x["success"] for x in record.get("binding_reference_targets", [])),
         "orientation_references_passed": sum(x["success"] for x in record.get("orientation_reference_targets", [])),
         "repetition_references_passed": sum(x["success"] for x in record.get("repetition_reference_targets", [])),
+        "boolean_references_passed": sum(x["success"] for x in record.get("boolean_reference_targets", [])),
+        "boolean_matches_passed": sum(x["success"] for x in record.get("boolean_matches", [])),
+        "boolean_match_references_passed": sum(x["success"] for x in record.get("boolean_match_references", [])),
+        "boolean_planned_passed": sum(x["success"] for x in record.get("boolean_planned_cases", [])),
         "scoped_references_passed": sum(x["success"] for x in record.get("scoped_reference_targets", [])),
         "scoped_planned_passed": sum(x["success"] for x in record.get("scoped_planned_cases", [])),
         "compiled_slice_passed": record.get("vertical_slice", {}).get("success"), "output": str(root)}))

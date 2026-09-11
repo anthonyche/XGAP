@@ -12,7 +12,7 @@ import re
 from types import MappingProxyType
 from typing import Any, Mapping
 
-from xgap.algebra.conditions import EdgeRef, LabelEquals, LengthEquals, NodeNotEquals, NodeRef, PropertyEquals, PropertyNotEquals
+from xgap.algebra.conditions import Or, Not, EdgeRef, LabelEquals, LengthEquals, NodeNotEquals, NodeRef, PropertyEquals, PropertyNotEquals
 from xgap.backends.rdf_terms import RDF_TERMS_V1
 from xgap.backends.sparql_bindings import IRI_ROWS_MARKER
 from xgap.compilers.directed import _literal, _OPERATORS, _shape, compile_directed_rows
@@ -92,6 +92,11 @@ class ExecutionRequirements:
 
 def check_execution_anchors(query: PathPatternQuery, requirements: ExecutionRequirements) -> tuple[tuple[int, str], ...]:
     shape = _shape(query, default_profile("neo4j"))
+    # This frozen split adapter still partitions conjuncts between engines.
+    # A broader shared shape validator must not let OR/NOT disappear here.
+    if any(isinstance(bound.condition, (Or, Not)) for bound in shape.conditions):
+        raise CandidateExecutionUnavailable("boolean_condition",
+            "This dataset adapter requires conjunctive fixed rows; use the modern native path plan for Boolean conditions")
     if query.restrictor is PathMode.SIMPLE:
         unequal = {frozenset((b.node_index(c.left), b.node_index(c.right))) for b in shape.conditions
                    if isinstance(c := b.condition, NodeNotEquals)}

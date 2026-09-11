@@ -1,5 +1,19 @@
 # XGAP Roadmap
 
+## Current engineering — native Boolean conditions accepted
+
+Modern Match and finite path compilation now implement total AND/OR/NOT,
+missing-property and scalar type semantics, preserving shortest-before-outer
+filter placement. First real Neo4j/Fuseki gate:40/40 paths +40/40 independent
+references,8/8 Match +8/8 references,3/3 planned programs/6/6 candidates and old
+slice correct. A daily test caught a migrated Match capability check; fixed,
+71 local replay tests pass. Follow-up8+8 Match,3/3 plans/6/6 candidates and old
+slice pass; daily401 pass. Dependency replay140 pass and48/48 native-plan
+identity checks pass. Final broad3246 passed/38 skipped/670.40s and all24
+harness/example entries pass. This Boolean step is accepted; all handles are terminal. Full T1/T2/T3 remain incomplete. See
+[the Boolean report](report/toy_backbone_t1_boolean_conditions.md).
+
+
 ## Current engineering milestones — scoped paths accepted
 
 On base861e043, finite nested scopes now compile to native subexpressions and

@@ -118,7 +118,7 @@ def property_graph(data: dict) -> PropertyGraph:
     for node in data["nodes"]:
         graph.add_node(node["id"], node["label"], node["properties"])
     for edge in data["edges"]:
-        graph.add_edge(edge["id"], edge["source"], edge["target"], edge["label"], {"id": edge["id"]})
+        graph.add_edge(edge["id"], edge["source"], edge["target"], edge["label"], {**edge.get("properties", {}), "id": edge["id"]})
     return graph
 
 

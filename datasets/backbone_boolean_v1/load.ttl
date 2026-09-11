@@ -1,0 +1,40 @@
+@prefix t: <https://xgap.test/toy/> .
+t:a a t:Person ; t:id "a" ; t:name "Alice" ; t:age 30 .
+t:b a t:Person ; t:id "b" ; t:name "Bob" ; t:age 22 .
+t:c a t:Person ; t:id "c" ; t:name "Cara" ; t:age 40 .
+t:d a t:Person ; t:id "d" ; t:name "Dan" ; t:age 19 .
+t:z a t:Person ; t:id "z" ; t:name "Zoe" ; t:age 50 .
+t:e1 a t:Edge ; t:id "e1" ; t:source t:a ; t:target t:b ; t:label "KNOWS" .
+t:a t:KNOWS t:b .
+t:e2 a t:Edge ; t:id "e2" ; t:source t:b ; t:target t:c ; t:label "KNOWS" .
+t:b t:KNOWS t:c .
+t:e3 a t:Edge ; t:id "e3" ; t:source t:c ; t:target t:a ; t:label "KNOWS" .
+t:c t:KNOWS t:a .
+t:e4 a t:Edge ; t:id "e4" ; t:source t:a ; t:target t:c ; t:label "KNOWS" .
+t:a t:KNOWS t:c .
+t:e5 a t:Edge ; t:id "e5" ; t:source t:c ; t:target t:d ; t:label "KNOWS" .
+t:c t:KNOWS t:d .
+t:e6 a t:Edge ; t:id "e6" ; t:source t:d ; t:target t:d ; t:label "KNOWS" .
+t:d t:KNOWS t:d .
+t:e7 a t:Edge ; t:id "e7" ; t:source t:a ; t:target t:b ; t:label "KNOWS" .
+t:a t:KNOWS t:b .
+t:e8 a t:Edge ; t:id "e8" ; t:source t:b ; t:target t:d ; t:label "KNOWS" .
+t:b t:KNOWS t:d .
+t:a t:score 1 .
+t:a t:note "open" .
+t:a t:flag true .
+t:b t:score 1.0e0 .
+t:b t:note "closed" .
+t:b t:flag false .
+t:c t:score true .
+t:c t:flag 1 .
+t:d t:score "1" .
+t:d t:note "open" .
+t:d t:flag 0 .
+t:e1 t:weight 1 .
+t:e7 t:weight 1.0e0 .
+t:e2 t:weight true .
+t:e3 t:weight "1" .
+t:e5 t:weight 0 .
+t:e8 t:weight false .
+t:a t:floor -9223372036854775808 .

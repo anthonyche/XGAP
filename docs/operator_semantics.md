@@ -595,3 +595,21 @@ adapter over existing path/SolutionSpace values, not a new path-algebra operator
 `Align`, `Merge`, and coordinator `Project` retain the M15-B semantics. Any
 error causes all transitive descendants to be marked skipped. A plan validates
 its DAG, maximum remote calls, and parallelism before execution.
+
+
+## Modern native Boolean condition placement
+
+The modern fixed/bounded path and semantic Match compilers share the existing
+AND/OR/NOT truth rules. Atomic property equality and inequality are false when
+the property is absent; outer NOT complements that result. Python scalar
+equality retains True=1 and False=0; numeric ordering excludes booleans and
+non-numeric data. RDF properties use explicitly mapped single scalar values.
+Property tests stay local to EXISTS so a missing disjunct does not remove the
+whole row. These rules do not change the audited Selection operator.
+
+Only endpoint predicates commute with local SHORTEST. Standalone length
+conjuncts use the final length filter; Boolean length trees retain their outer
+placement through the finite scoped planner. Original semantic reference
+validation still applies, including the fixed-length numeric-position boundary.
+See [the native Boolean decision](decisions/native_boolean_conditions_v1.md)
+and [its measured report](report/toy_backbone_t1_boolean_conditions.md).

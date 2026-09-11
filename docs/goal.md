@@ -150,6 +150,20 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
 - 历史完整数据、负结果、FinBench/GrailQA 与 EQ1–EQ5 最终评价义务均保留。
   新 toy 进展不能替代正式效果；完整系统 Goal 仍未完成。
 
+## 新验收：原生布尔条件
+
+2026-09-11：现代 Match 与有限路径执行的 AND/OR/NOT 已验收，保留缺失属性、
+既有标量相等和 SHORTEST 外层过滤语义。独立属性 overlay 有20条完整路径链与
+4个类型化Match程序：真实40/40路径＋40/40独立目标、8/8Match＋8/8独立目标、
+3/3规划程序/6/6候选及旧联邦slice正确。补充Match准入gate通过，最终生成计划
+与已执行记录48/48完全一致。日常401通过，完整回归3246通过/38跳过，24个
+harness/example入口通过。历史失败和源码版本边界保留在
+[专项报告](report/toy_backbone_t1_boolean_conditions.md)。
+
+下一项仍按同一toy推进typed聚合/排序与剩余路径覆盖：当前大整数SUM精度、RDF
+数值输入和nullable排序已有最小本地观察，需要明确binding类型约定后修复。
+原始代数不变，T1整体及T2/T3仍未验收；catalog/模型/大benchmark不成为本步前置。
+
 ## Goal 工具状态
 
 当前应用 Goal 工具支持创建、读取及完成/阻塞状态更新，不提供活动目标正文编辑。

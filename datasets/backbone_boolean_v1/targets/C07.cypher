@@ -1,0 +1,3 @@
+MATCH (n:Person)
+WHERE NOT (CASE WHEN n.score IS :: INTEGER NOT NULL OR n.score IS :: FLOAT NOT NULL THEN n.score > 0 ELSE false END)
+RETURN DISTINCT n.id AS path

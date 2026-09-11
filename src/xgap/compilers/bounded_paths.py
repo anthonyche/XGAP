@@ -15,6 +15,7 @@ from xgap.compilers.directed import (
     compile_directed_rows,
 )
 from xgap.compilers.features import BoundCondition, default_profile
+from xgap.compilers.boolean_conditions import condition_leaves
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.pattern.ast import Alt, Bounded, Direction, EdgePattern, OptionalExpr, PathMode, Plus, Rel, Selector, SelectorKind, Seq, Star
 from xgap.pattern.semantic_validation import type_check_semantic_path_pattern
@@ -115,7 +116,10 @@ def _shortest_condition(condition):
         elif isinstance(atom, LengthEquals):
             lengths.append(atom.value)
         else:
-            refs = [getattr(atom, key, None) for key in ("ref", "left", "right")]
+            leaves = tuple(condition_leaves(atom))
+            if any(isinstance(leaf, LengthEquals) for leaf in leaves):
+                raise ValueError("SHORTEST requires compound length predicates after local minimum selection")
+            refs = [getattr(leaf, key, None) for leaf in leaves for key in ("ref", "left", "right")]
             if any(isinstance(ref, EdgeRef) or (isinstance(ref, NodeRef)
                    and ref.position not in ("first", "last")) for ref in refs):
                 raise ValueError("SHORTEST requires endpoint or length predicates in this profile")

@@ -14,6 +14,8 @@ from typing import Any, Mapping
 
 from xgap.algebra.conditions import (
     And,
+    Or,
+    Not,
     Condition,
     EdgeRef,
     LabelEquals,
@@ -41,6 +43,8 @@ from xgap.backends.mapping import (
     RdfBackendMapping,
 )
 from xgap.compilers import cypher, sparql
+from xgap.compilers.boolean_conditions import (condition_leaves, walk_conditions,
+    cypher_condition, sparql_condition, PROFILE as BOOLEAN_PROFILE)
 from xgap.compilers.errors import UnsupportedCompilationError
 from xgap.compilers.features import BoundCondition, default_profile
 from xgap.compilers.rdf_encoding import RdfEdgeEncoding, RdfRowEncoding
@@ -55,7 +59,6 @@ from xgap.pattern.ast import (
     Seq,
 )
 from xgap.pattern.semantic_validation import (
-    NUMERIC_CONDITIONS,
     PROPERTY_CONDITIONS,
     type_check_semantic_path_pattern,
 )
@@ -64,6 +67,7 @@ from xgap.pattern.typecheck import PatternTypeError
 
 PROFILE = "typed_fixed_directed_rows_v1"
 MAX_EDGES = 64
+# Retained for the frozen Freebase candidate adapter, which imports this table.
 _OPERATORS = {
     PropertyEquals: "=",
     PropertyNotEquals: "!=",
@@ -72,7 +76,6 @@ _OPERATORS = {
     PropertyGreaterThan: ">",
     PropertyGreaterThanOrEqual: ">=",
 }
-
 
 @dataclass(frozen=True)
 class DirectedShape:
@@ -179,6 +182,7 @@ def _shape(query: PathPatternQuery, profile: BackendCapabilityProfile) -> Direct
             LabelEquals,
             NodeNotEquals,
             LengthEquals,
+            Or, Not,
             *PROPERTY_CONDITIONS,
         ):
             atoms.append(item)
@@ -186,9 +190,11 @@ def _shape(query: PathPatternQuery, profile: BackendCapabilityProfile) -> Direct
             raise _fail(
                 profile,
                 "condition",
-                f"{type(item).__name__} is outside the conjunctive fixed-row profile.",
+                f"{type(item).__name__} is outside the scalar Boolean fixed-row profile.",
             )
-    for item in atoms:
+    for item in (leaf for condition in atoms for leaf in condition_leaves(condition)):
+        if type(item) not in (LabelEquals, NodeNotEquals, LengthEquals, *PROPERTY_CONDITIONS):
+            raise _fail(profile, "condition", f"{type(item).__name__} is outside the scalar Boolean profile.")
         if type(item) in PROPERTY_CONDITIONS:
             value = item.value
             if value is None or type(value) not in (str, bool, int, float):
@@ -258,8 +264,12 @@ def _required(
             else "graph_model.labeled_property_graph"
         ),
     }
-    for bound in shape.conditions:
-        item = bound.condition
+    for item in (leaf for bound in shape.conditions for leaf in walk_conditions(bound.condition)):
+        if isinstance(item, (Or, Not)):
+            feature = "condition.boolean_or" if isinstance(item, Or) else "condition.boolean_not"
+            declared = profile.feature(feature)
+            if declared is not None:
+                features.add(feature)
         if isinstance(item, LabelEquals):
             features.add(
                 "graph_model.node_labels"
@@ -305,30 +315,7 @@ def _cypher(
             else f"<-[e{index + 1}]-"
         )
         lines.append(f"MATCH (n{index}){middle}(n{index + 1})")
-    filters = []
-    for bound in shape.conditions:
-        item = bound.condition
-        if isinstance(item, LengthEquals):
-            filters.append("true" if item.value == shape.edge_count else "false")
-            continue
-        if type(item) in PROPERTY_CONDITIONS:
-            subject = (
-                cypher._node_var(bound, item.ref)
-                if isinstance(item.ref, NodeRef)
-                else cypher._edge_var(bound, item.ref)
-            )
-            prop = f"{subject}.{cypher._cypher_identifier(item.property_name)}"
-            operator = (
-                "<>" if type(item) is PropertyNotEquals else _OPERATORS[type(item)]
-            )
-            term = f"{prop} {operator} {_literal(item.value)}"
-            if type(item) in NUMERIC_CONDITIONS:
-                term = f"(({prop} IS :: INTEGER NOT NULL OR {prop} IS :: FLOAT NOT NULL) AND {term})"
-        elif isinstance(item, LabelEquals) and isinstance(item.ref, EdgeRef):
-            term = f"type({cypher._edge_var(bound, item.ref)}) = {_literal(item.value)}"
-        else:
-            term = cypher._condition_to_cypher(bound, profile.backend_id)
-        filters.append(term)
+    filters = [cypher_condition(bound, profile.backend_id) for bound in shape.conditions]
     if filters:
         lines.append("WHERE " + "\n  AND ".join(filters))
     terms = ["n0 AS source", f"n{shape.edge_count} AS target"]
@@ -365,7 +352,11 @@ def _sparql(
     except BackendMappingError as error:
         raise _fail(profile, "rdf_mapping.invalid", str(error)) from error
     used: dict[tuple[str, str], MappedNativeTerm] = {}
-    labels = sparql._edge_label_terms(shape.conditions, profile.backend_id)
+    labels = {}
+    for bound in shape.conditions:
+        item = bound.condition
+        if isinstance(item, LabelEquals) and isinstance(item.ref, EdgeRef):
+            labels.setdefault(bound.edge_index(item.ref), item.value)
     body = []
     for index, edge in enumerate(shape.edges):
         left, right = (
@@ -397,79 +388,14 @@ def _sparql(
             )
             body.append(f"BIND({predicate} AS ?e{index + 1})")
         body.append(f"?n{left} {predicate} ?n{right} .")
-    counter = 0
     for bound in shape.conditions:
-        item = bound.condition
-        if isinstance(item, LabelEquals) and isinstance(item.ref, EdgeRef):
-            continue
-        if isinstance(item, LengthEquals):
-            body.append(
-                "FILTER(1 = 1)" if item.value == shape.edge_count else "FILTER(1 = 0)"
-            )
-            continue
-        if type(item) in PROPERTY_CONDITIONS:
-            if (
-                rdf_encoding is not None
-                and item.property_name == rdf_encoding.identity_property
-                and isinstance(item.ref, NodeRef)
-            ):
-                if type(item) not in (
-                    PropertyEquals,
-                    PropertyNotEquals,
-                ) or not isinstance(item.ref, NodeRef):
-                    raise _fail(
-                        profile,
-                        "rdf_identity",
-                        "Resource identity supports node equality/inequality only.",
-                    )
-                try:
-                    iri = rdf_encoding.resource_iri(item.value)
-                except ValueError as error:
-                    raise _fail(profile, "rdf_identity", str(error)) from error
-                node = sparql._node_var(bound, item.ref)
-                comparison = f"sameTerm({node}, <{iri}>)"
-                if type(item) is PropertyNotEquals:
-                    # A literal or an unmapped resource has no logical ID.
-                    # Negating sameTerm alone would incorrectly admit it.
-                    namespace = _literal(rdf_encoding.resource_namespace)
-                    body.append(
-                        f"FILTER(isIRI({node}) && STRSTARTS(STR({node}), {namespace}) "
-                        f"&& REGEX(SUBSTR(STR({node}), {len(rdf_encoding.resource_namespace) + 1}), "
-                        f'"^[A-Za-z0-9_][A-Za-z0-9_.-]*$") && !{comparison})'
-                    )
-                else:
-                    body.append(f"FILTER({comparison})")
-                continue
-            predicate = sparql._mapped_iri(
-                item.property_name, "properties", mapping, used, profile.backend_id
-            )
-            variable = f"?v{counter}"
-            subject = (sparql._node_var(bound, item.ref)
-                       if isinstance(item.ref, NodeRef)
-                       else f"?e{bound.edge_index(item.ref) + 1}")
-            body.append(f"{subject} {predicate} {variable} .")
-            body.append(
-                f"FILTER({variable} {_OPERATORS[type(item)]} {_literal(item.value)})"
-            )
-            if type(item) in NUMERIC_CONDITIONS:
-                body.append(f"FILTER(isNumeric({variable}))")
-            counter += 1
-        elif (
-            isinstance(item, LabelEquals)
-            and isinstance(item.ref, NodeRef)
-            and rdf_encoding is not None
-        ):
-            term = sparql._mapped_iri(
-                item.value, "node_labels", mapping, used, profile.backend_id
-            )
-            body.append(
-                f"{sparql._node_var(bound, item.ref)} <{rdf_encoding.class_predicate_iri}> {term} ."
-            )
-        else:
-            clauses, counter = sparql._condition_to_sparql(
-                bound, counter, profile.backend_id, mapping, used
-            )
-            body.extend(clauses)
+        try:
+            term = sparql_condition(bound, backend_id=profile.backend_id,
+                mapping=mapping, used=used, rdf_encoding=rdf_encoding,
+                rdf_edge_encoding=rdf_edge_encoding)
+        except ValueError as error:
+            raise _fail(profile, "condition.rdf_encoding", str(error)) from error
+        body.append("FILTER(" + term + ")")
     # Validate the expanded term, including compact-prefix expansions, at the
     # native text boundary. No SERVICE/GRAPH/native fragment can be injected.
     for term in used.values():
@@ -572,7 +498,7 @@ def compile_directed_rows(
         kind="compiled",
         text=text,
         parameters={
-            "compiler": PROFILE,
+            "compiler": PROFILE, "condition_profile": BOOLEAN_PROFILE,
             "target_backend_id": backend_id,
             "result_model": "row_bindings",
             "required_features": list(required),

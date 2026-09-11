@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE { ?n a t:Person ; t:id ?path . FILTER NOT EXISTS { ?n a t:Ghost . } }

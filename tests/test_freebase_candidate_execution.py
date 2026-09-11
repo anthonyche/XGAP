@@ -272,3 +272,12 @@ def test_guard_cannot_silently_drop_rows(mode):
         def execute(self, artifact):
             return ExecutionReport("fuseki", artifact.artifact_id,"sparql",True,rows=[] if mode == "lost-row" else [row])
     assert not _CheckedClient(BrokenGuard(),20).execute(artifact).success
+
+
+@pytest.mark.parametrize("kind", ["or", "not"])
+def test_frozen_split_adapter_does_not_drop_new_shared_boolean_shapes(kind):
+    from xgap.algebra.conditions import Or, Not, LengthEquals
+    condition = Or(LengthEquals(1), LengthEquals(2)) if kind == "or" else Not(LengthEquals(1))
+    with pytest.raises(CandidateExecutionUnavailable) as error:
+        compile_(query(condition))
+    assert error.value.code == "boolean_condition"
