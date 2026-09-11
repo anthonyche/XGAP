@@ -1,22 +1,25 @@
 # XGAP current engineering loop
 
-## Current E1-A checkpoint — inferred entity-answer wiring accepted
+## Current E1-B/INT-5 checkpoint — scoring accepted; existing facts recovered
 
-Parent22c20e3; separate inferred_entity_answers.py/model bundle require an explicit
-predicted path-node projection while retaining query anchors, canonical grounding
-and ontology scores. Gold-blind semantic_bound/model_top1 select meaning before
-ordinary INT-4/P1 execution; unsupported selected meanings do not try siblings.
-Full schema validation, explicit entity confirmation and call/row budgets retain
-failures and costs.23 new checks pass first run1.13s, process1.644s, tool d0d6b2
-exit0, all run hashes unchanged. Only controlled HTTP/tiny RDFLib was used; no
-native/model/large-data/old-gate rerun. See [E1-A](report/inferred_entity_answers_20260911.md).
+Parent72aeea7. Independent entity_answer_evaluation.py consumes E1-A runs and
+normalized evaluation references, with exact population/method/terminal/identity
+checks. Full-cohort EM/F1 waits for complete compatible records; failed empty is
+not correct empty, unknown costs remain unknown.18 new checks pass first run0.45s
+(process0.984s,tool ee7bca exit0), hashes unchanged. One controlled E1-A→score
+slice, no old test/native/model rerun. Original150 reference format was checked
+once, with all150 explicitly not_run and no accuracy. See
+[report](report/entity_answer_evaluation_20260911.md).
 
-The legacy150 runner stays semantic-only; this new API has not run a real model.
-Next need real query-independent facts/independent scoring, genuine prior
-forecast/cost preparation and fair E1–E5. Preserve all150/48 and prior failures.
-Job3804210 is PENDING(Resources),0 runtime,no assigned node; user will notify
-changes. Do not repeat scheduler requests or submit the frozen08e4b3b package.
-All later old state/next-action statements are historical; no local handles remain.
+D201's previously overlooked first-shard files still existed. Their24files,
+436,303,952bytes were copied once to
+/Users/anthonyche/xgap-data/int5-freebase-first-shard-20260911/original/;13facts
+parts/parquet/manifests match frozen hashes. Source is query-independent but1/964,
+not full GrailQA. HistoricalD202 load receipts/state exist; current DB usability
+is not verified and no service started. Do not rebuild/recover these same inputs.
+Next adequate real-data coverage, measured inference, actual prior forecast/cost
+and fair E1–E5.3804210 remains user-observed PENDING(Resources), user will notify.
+All later missing-facts/current-state claims are historical; no local handles.
 
 ## Current milestone — real FinBench integration passed; model LINK failure localized
 

@@ -1,5 +1,16 @@
 # XGAP Design Decisions
 
+## E1-B/INT-5: full denominators and source-partial facts stay explicit
+
+The [independent entity scorer](decisions/entity_answer_evaluation_v1.md) evaluates
+sealed E1-A records without selecting/reexecuting. Failed empty, correct empty and
+unrun remain distinct; references/scoring/cost unknowns cannot shrink denominators.
+Original150 remains unrun despite successful reference-format intake. Existing
+D201 first-shard facts are query-independent and now durable/hash-verified, but
+only1/964, not full Freebase. No source rebuild, model or service was needed.
+[E1-B/INT-5 evidence](report/entity_answer_evaluation_20260911.md).
+
+
 ## E1-A: prediction owns answer position before physical planning
 
 The [separate versioned inference contract](decisions/inferred_entity_answers_v1.md)

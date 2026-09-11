@@ -1,18 +1,19 @@
 # XGAP Roadmap
 
-## Next gate — real inputs and measured inference after E1-A wiring
+## Next gate — real coverage, predictions and fair measured comparisons
 
-The separate inference-owned projection API now connects grounded candidates to
-ordinary P1/entity answers;23 focused tiny checks pass. See
-[E1-A](report/inferred_entity_answers_20260911.md). Do not repeat accepted gates or
-modify the legacy150 protocol to fabricate missing predicted answer positions.
-Next prepare query-independent real facts and independent scoring, genuine prior
-forecast/cost inputs and fair frozen E1–E5 comparisons. Model quality remains open.
+E1-A inference-owned answers and E1-B independent scoring are implemented with
+focused evidence. E1-B adds18 first-pass checks, preserving failed/unrun questions
+and unknown costs. Original150 answer format is compatible, but all150 remain
+unrun on the new track; no quality score exists. See
+[E1-B/INT-5](report/entity_answer_evaluation_20260911.md).
 
-User-observed3804210 PENDING(Resources),0 runtime,no assigned node. The user will
-report changes; leave08e4b3b and its job untouched. Preserve old0/5,6/6, all150/48,
-and FinBench integration-exposed IDs. New bundle tokenizer/model validation is
-unmeasured and no new remote package is submitted. Older next steps are historical.
+D201 first-shard facts are now durable and hash-verified. Reuse them only for an
+explicitly source-partial integration; formal GrailQA needs adequate coverage,
+not merely any existing shard. Next actual model LINK outputs, real prior cost/
+forecast preparation and fair frozen E1–E5. Do not repeat accepted gates, copy the
+same inputs again or rewrite original150/48/exposure.3804210 is PENDING(Resources),
+user will report changes; frozen08e4b3b is untouched. Older plans are historical.
 
 ## Next gate — corrected model contract and fair real-data method comparison
 

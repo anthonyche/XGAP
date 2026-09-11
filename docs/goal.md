@@ -21,6 +21,13 @@ prepared-query integration，不是完整48评价或普通P1/LLM实验。实际�
 公平E1–E5仍待完成；ε不保证答案位置正确。原150 runner仍semantic-only，原150/48、
 FinBench integration-exposed标记、模型0/5及真实FinBench6/6保留。08e4b3b包不改。
 
+
+最新E1-B/INT-5：独立实体答案EM/F1与失败/未运行/未知成本记账已接好，18项新增
+检查首次通过；原150参考格式可用但150全部not_run，无准确率结果。找回了既有
+query-independent首shard事实，完整哈希核对并迁到持久INT-5目录，24文件约436MB；
+这仅1/964，不能宣称覆盖GrailQA全库。见[评价与事实证据](report/entity_answer_evaluation_20260911.md)。
+下一步是真实数据覆盖、模型输出、真实prior成本与公平实验，不再重建已保存facts。
+
 ## 总目标
 
 **最新优先级：一切工程由research question和实验计划驱动。** 权威工作计划为

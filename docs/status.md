@@ -1,18 +1,20 @@
 # XGAP Status
 
-## Current checkpoint — inferred entity-answer chain accepted on tiny data
+## Current checkpoint — independent entity scoring and durable real facts
 
-E1-A now preserves a model-predicted answer position through existing grounding,
-semantic/confidence selection and ordinary P1 to typed entity answers.23 new
-checks pass first run in1.13s using controlled HTTP and compiled SPARQL on tiny
-RDFLib. No actual model, native service or old gate ran. Epsilon does not bound
-answer-position correctness. See [E1-A evidence](report/inferred_entity_answers_20260911.md).
+E1-B now scores E1-A answers independently with full-population EM/F1, explicit
+failures/unrun rows and unknown costs.18 new checks pass first run0.45s, including
+one controlled inference→P1→RDFLib→score slice. Original150 reference format intake
+passes with all150 not_run and accuracy unavailable; no model/native run occurred.
+See [E1-B/INT-5 evidence](report/entity_answer_evaluation_20260911.md).
 
-Job3804210 is user-observed PENDING(Resources), elapsed0, no node assigned. The
-user will report changes; no repeat query/submission. Frozen08e4b3b is unchanged.
-Real inference quality/facts/scoring, genuine prior forecast/cost preparation and
-fair E1–E5 remain open. Original model0/5, FinBench6/6, all150/48 IDs and integration
-exposure remain unchanged. Older checkpoint statements below are historical.
+Existing query-independent D201 facts were found and copied to durable INT-5
+storage:24files/436,303,952bytes,13RDF parts and Parquet match frozen hashes. This
+is only1/964shards; full GrailQA coverage and current database usability remain
+unverified. Next real model/fact coverage, prior costs/forecasts and fair E1–E5.
+All150/48, original0/5 and6/6, and FinBench exposure are unchanged.3804210 remains
+PENDING(Resources); user will report changes, no repeat queries/submissions.
+Older checkpoint state/next actions below are historical.
 
 ## Current milestone — real FinBench integration passed; model LINK failure localized
 
