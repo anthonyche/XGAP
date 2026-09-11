@@ -1,0 +1,271 @@
+{
+  "schema": "xgap-acquisition-zero-gain-replay-v1",
+  "parent_commit": "d331631fc8390236af04364c0f7f55c82740fa0e",
+  "kind": "saved local numerical counterexample; no external calls",
+  "paper_result": false,
+  "fixture": "tests/test_semantic_acquisition.py::single_source_fixture(preferred=rdf_0)",
+  "program": {
+    "program_id": "placement-scale",
+    "operators": [
+      {
+        "operator_id": "s0",
+        "kind": "match",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "binding_set",
+        "parameters": {
+          "node": {
+            "label": "Person",
+            "properties": {
+              "name": "Alice"
+            }
+          },
+          "entity_field": "person"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      }
+    ],
+    "roots": [
+      "s0"
+    ],
+    "holes": [],
+    "metadata": {}
+  },
+  "history": {
+    "snapshot_id": "controlled",
+    "version": "v1",
+    "estimates": [
+      {
+        "observation_key": "4d8d8833936c9268cf37ea48d187483d95a65e306b47ebb252004f4f1bdf2972",
+        "backend_id": "rdf_0",
+        "elapsed_ms": 1,
+        "row_count": 5,
+        "row_width_bytes": 40,
+        "output_bytes": 200,
+        "source": "controlled model table",
+        "version": "v1"
+      },
+      {
+        "observation_key": "8de2297b65281f7a191f6a41075f477dd91a2002bff5ecd1ff80a43c474a0180",
+        "backend_id": "rdf_1",
+        "elapsed_ms": 10,
+        "row_count": 5,
+        "row_width_bytes": 40,
+        "output_bytes": 200,
+        "source": "controlled model table",
+        "version": "v1"
+      }
+    ],
+    "bandwidth_bytes_per_ms": 1000,
+    "exchange_fixed_ms": 0,
+    "coordinator_row_ms": 0.1
+  },
+  "policy": {
+    "outcomes": [
+      {
+        "outcome_id": "slow",
+        "probability": 0.5,
+        "elapsed_ms": 1000,
+        "row_count": 5,
+        "row_width_bytes": 40
+      },
+      {
+        "outcome_id": "unchanged",
+        "probability": 0.5,
+        "elapsed_ms": 1,
+        "row_count": 5,
+        "row_width_bytes": 40
+      }
+    ],
+    "expected_acquisition_ms": 494,
+    "expected_reselection_ms": 1,
+    "max_expected_extra_ms": 1000,
+    "source": "synthetic A3 development forecast",
+    "version": "v1",
+    "scope": "stop_vs_one_nominated_request",
+    "request_rule": "largest historical elapsed estimate in initial plan, then observation key",
+    "max_acquisition_calls": 1,
+    "max_reselections": 1,
+    "hard_wall_time_bound": false,
+    "forecast_calibration_claim": false,
+    "global_action_optimality_claim": false
+  },
+  "legacy_gain_ms": 5.684341886080802e-14,
+  "legacy_action": "acquire",
+  "corrected_decision": {
+    "action": "stop",
+    "reason": "optimal_response_cannot_pay",
+    "request": {
+      "call_id": "observe-4d8d8833936c9268cf37ea48d187483d95a65e306b47ebb252004f4f1bdf2972",
+      "observation_key": "4d8d8833936c9268cf37ea48d187483d95a65e306b47ebb252004f4f1bdf2972",
+      "backend_id": "rdf_0",
+      "operation": "profile",
+      "payload": {
+        "query_id": "4d8d8833936c9268cf37ea48d187483d95a65e306b47ebb252004f4f1bdf2972"
+      }
+    },
+    "scenarios": [
+      {
+        "outcome_id": "slow",
+        "probability": 0.5,
+        "estimate": {
+          "observation_key": "4d8d8833936c9268cf37ea48d187483d95a65e306b47ebb252004f4f1bdf2972",
+          "backend_id": "rdf_0",
+          "elapsed_ms": 1000,
+          "row_count": 5,
+          "row_width_bytes": 40,
+          "output_bytes": 200,
+          "source": "synthetic A3 development forecast",
+          "version": "v1/forecast:v1:slow"
+        },
+        "baseline_cost_ms": 1000.7,
+        "response_cost_ms": 10.7,
+        "response_plan_id": "placement-scale/3e462f8ab7201afbf609",
+        "selection": {
+          "semantic_equivalence_key": "f2350c0087eeb4bf6a9a3c09d9f809dbfd407ae27e624dc15682c9a6c7f930c8",
+          "selected_plan_id": "placement-scale/3e462f8ab7201afbf609",
+          "snapshot_id": "controlled",
+          "snapshot_version": "v1/forecast:v1:slow",
+          "estimates": [
+            {
+              "plan_id": "placement-scale/4bf164499f92e8055de6",
+              "predicted_latency_ms": 1000.7,
+              "predicted_transfer_bytes": 200.0,
+              "remote_calls": 1,
+              "observation_keys": [
+                "4d8d8833936c9268cf37ea48d187483d95a65e306b47ebb252004f4f1bdf2972"
+              ],
+              "node_completion_ms": {
+                "s0/native": 1000.0,
+                "s0/native/exchange": 1000.2,
+                "s0/bindings": 1000.7
+              },
+              "node_row_counts": {
+                "s0/native": 5.0,
+                "s0/native/exchange": 5.0,
+                "s0/bindings": 5.0
+              }
+            },
+            {
+              "plan_id": "placement-scale/3e462f8ab7201afbf609",
+              "predicted_latency_ms": 10.7,
+              "predicted_transfer_bytes": 200.0,
+              "remote_calls": 1,
+              "observation_keys": [
+                "8de2297b65281f7a191f6a41075f477dd91a2002bff5ecd1ff80a43c474a0180"
+              ],
+              "node_completion_ms": {
+                "s0/native": 10.0,
+                "s0/native/exchange": 10.2,
+                "s0/bindings": 10.7
+              },
+              "node_row_counts": {
+                "s0/native": 5.0,
+                "s0/native/exchange": 5.0,
+                "s0/bindings": 5.0
+              }
+            }
+          ],
+          "algorithm": "independent_source_minimum",
+          "evaluated_plan_count": 2,
+          "local_score_evaluations": 2,
+          "evaluation_bound": 2,
+          "total_score_evaluation_bound": 4,
+          "certificate": {
+            "objective": "estimated_critical_path_ms",
+            "actual_latency_bound": false,
+            "kind": "exact_separable",
+            "lower_bound_ms": 10.7,
+            "upper_bound_ms": 10.7,
+            "baseline_ms": 1000.7,
+            "additive_gap_ms": 0.0,
+            "ratio_bound": 1.0,
+            "unavailable_reason": null,
+            "full_local_domain_covered": true,
+            "constant_factor_claim": false
+          }
+        },
+        "response_gap_ms": 0.0
+      },
+      {
+        "outcome_id": "unchanged",
+        "probability": 0.5,
+        "estimate": {
+          "observation_key": "4d8d8833936c9268cf37ea48d187483d95a65e306b47ebb252004f4f1bdf2972",
+          "backend_id": "rdf_0",
+          "elapsed_ms": 1,
+          "row_count": 5,
+          "row_width_bytes": 40,
+          "output_bytes": 200,
+          "source": "synthetic A3 development forecast",
+          "version": "v1/forecast:v1:unchanged"
+        },
+        "baseline_cost_ms": 1.7,
+        "response_cost_ms": 1.7,
+        "response_plan_id": "placement-scale/4bf164499f92e8055de6",
+        "selection": {
+          "semantic_equivalence_key": "f2350c0087eeb4bf6a9a3c09d9f809dbfd407ae27e624dc15682c9a6c7f930c8",
+          "selected_plan_id": "placement-scale/4bf164499f92e8055de6",
+          "snapshot_id": "controlled",
+          "snapshot_version": "v1/forecast:v1:unchanged",
+          "estimates": [
+            {
+              "plan_id": "placement-scale/4bf164499f92e8055de6",
+              "predicted_latency_ms": 1.7,
+              "predicted_transfer_bytes": 200.0,
+              "remote_calls": 1,
+              "observation_keys": [
+                "4d8d8833936c9268cf37ea48d187483d95a65e306b47ebb252004f4f1bdf2972"
+              ],
+              "node_completion_ms": {
+                "s0/native": 1.0,
+                "s0/native/exchange": 1.2,
+                "s0/bindings": 1.7
+              },
+              "node_row_counts": {
+                "s0/native": 5.0,
+                "s0/native/exchange": 5.0,
+                "s0/bindings": 5.0
+              }
+            }
+          ],
+          "algorithm": "independent_source_minimum",
+          "evaluated_plan_count": 1,
+          "local_score_evaluations": 2,
+          "evaluation_bound": 2,
+          "total_score_evaluation_bound": 4,
+          "certificate": {
+            "objective": "estimated_critical_path_ms",
+            "actual_latency_bound": false,
+            "kind": "exact_separable",
+            "lower_bound_ms": 1.7,
+            "upper_bound_ms": 1.7,
+            "baseline_ms": 1.7,
+            "additive_gap_ms": 0.0,
+            "ratio_bound": 1.0,
+            "unavailable_reason": null,
+            "full_local_domain_covered": true,
+            "constant_factor_claim": false
+          }
+        },
+        "response_gap_ms": 0.0
+      }
+    ],
+    "initial_plan_id": "placement-scale/4bf164499f92e8055de6",
+    "expected_stop_execution_ms": 501.20000000000005,
+    "expected_response_execution_ms": 6.199999999999999,
+    "expected_extra_ms": 495,
+    "expected_execution_saving_ms": 495.0,
+    "expected_net_gain_ms": 0.0,
+    "optimal_net_gain_upper_ms": 0.0,
+    "decision_regret_bound_ms": 0.0,
+    "expected_policy_total_ms": 501.20000000000005,
+    "forecast_budget_feasible": true,
+    "scenario_selection_runs": 2,
+    "certificate_scope": "conditional discrete forecast; stop or one nominated request",
+    "actual_latency_bound": false
+  },
+  "external_calls": 0,
+  "focused_replay": "PYTHONPATH=src:tests python -m pytest -q tests/test_semantic_acquisition.py -k positive_net_gain"
+}

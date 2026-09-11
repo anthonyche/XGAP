@@ -1,5 +1,20 @@
 # XGAP Status
 
+## A3 predictive acquisition/stopping through the ordinary entry accepted
+
+A typed finite-outcome policy now compares immediate execution with one nominated
+profile followed by P1, including expected acquisition/reselection cost. Actual
+response planning starts from the initial selected plan, as do the forecasts.
+Conditional decision-regret bounds use scenario-specific P1 certificates; missing
+bounds stay unavailable. See [A3 evidence](report/semantic_acquisition_20260911.md).
+
+Fourteen unique new cases and3 affected A1/A2 cases have passing evidence. An
+exact-zero gain counterexample first failed and is preserved/repaired; only the
+affected checks were repeated. B04 acquire/stop and always/never controls retain
+gold/history/accounting, including one-attempt failures. No new native, broad,
+large-data or model run. The bounded decision rule exists; prepared forecasts,
+calibration, real-model LINK and frozen real-data E1–E5 remain unfinished.
+
 ## A2 execution-prefix adaptation through P1 accepted
 
 The ordinary query entry now supports one actual source-prefix execution,

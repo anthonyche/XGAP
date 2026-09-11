@@ -1,0 +1,107 @@
+{
+  "schema": "xgap-semantic-acquisition-evidence-v1",
+  "parent_commit": "d331631fc8390236af04364c0f7f55c82740fa0e",
+  "status": "A3_one_request_predictive_cost_gate_accepted",
+  "research_experiments": [
+    "R-C/E2",
+    "R-C/E3"
+  ],
+  "source_sha256": {
+    "src/xgap/runtime/semantic_acquisition.py": "2f3e0995252224a02a767362a314cc36cc8c7402f25ef23295d50420419597c3",
+    "src/xgap/runtime/semantic_planning.py": "e21533e6f2d0b2dbc3a22350c47b745194127907b1e31bd0ffbf50b4345b7d4b",
+    "src/xgap/runtime/semantic_placement.py": "d73a49c40143e86c7f3f68cd4438851b3ec0201097f7c772b834aef6e701c85b",
+    "src/xgap/runtime/semantic_refresh.py": "17f0d98c08e0ab2b359cfbf8a511d93f46ff54f3763dd5bbef37ba0a9870755c",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/agent/semantic_execution.py": "8ad036b79c6973bc52efa54b8c9ab0a011fb396a262d8016f83deaad0a097ae7",
+    "src/xgap/experiments/toy_binding.py": "b0da87d4c5dec229844284356e96d9277ff7d1d7686fa98a3a8d0760fcdad519",
+    "tests/test_semantic_acquisition.py": "9df5bb2f8823c46adeb92fb0e8f1c0dc7374cde45a0f1a422195074713fdf760"
+  },
+  "paper_result": false,
+  "live_llm": false,
+  "new_native_runs": 0,
+  "large_dataset_runs": 0,
+  "broad_regression_run": false,
+  "scope": "One nominated request and explicit predictive outcomes; native acquisition/execution adapters reused unchanged. Tests use RDFLib with controlled profile latency.",
+  "tests": [
+    {
+      "command": "PYTHONPATH=src:tests python -m pytest -q tests/test_semantic_acquisition.py",
+      "agent": "test_refresh",
+      "initial_passed": 12,
+      "initial_failed": 1,
+      "seconds": 0.61,
+      "exit_code": 1,
+      "failure": "exact-zero expected gain caused spurious acquire from cancellation"
+    },
+    {
+      "scope": "Only four gain/budget parameters plus the nonzero-gap oracle after arithmetic correction",
+      "agent": "test_refresh",
+      "passed": 5,
+      "seconds": 0.2,
+      "exit_code": 0
+    },
+    {
+      "scope": "Only extended same-history B04 controls plus new first-profile-failure accounting",
+      "agent": "test_refresh",
+      "passed": 2,
+      "seconds": 0.56,
+      "exit_code": 0
+    },
+    {
+      "command": "PYTHONPATH=src:tests python -m pytest -q tests/test_semantic_refresh.py::test_b04_question_entry_refresh_arms_share_history_and_gold_without_enumeration tests/test_semantic_refresh.py::test_failed_refresh_keeps_one_attempt_and_read_only_memory tests/test_semantic_prefix.py::test_b04_ordinary_question_reuses_its_only_source_and_keeps_memory_read_only",
+      "passed": 3,
+      "seconds": 0.59,
+      "exit_code": 0,
+      "log": "/tmp/xgap-a3-existing.log"
+    }
+  ],
+  "unique_new_cases_with_passing_evidence": 14,
+  "affected_existing_cases": 3,
+  "interpreter": "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+  "replay": {
+    "path": "experiments/replays/semantic_acquisition_zero_gain_d331631.json",
+    "sha256": "041404b02a38c20bd7fb411267508f47811a294602d35dac3e8efb2aa3e0ec5e",
+    "external_calls": 0,
+    "legacy_net_gain_ms": 5.684341886080802e-14,
+    "corrected_net_gain_ms": 0.0,
+    "corrected_action": "stop"
+  },
+  "asserted_model_table": {
+    "scope": "Values checked by directed synthetic-model tests, not workload measurements",
+    "expected_stop_execution_ms": 501.2,
+    "expected_response_execution_ms": 6.2,
+    "expected_execution_saving_ms": 495,
+    "cases": [
+      {
+        "expected_extra_ms": 2,
+        "expected_budget_ms": 1000,
+        "action": "acquire",
+        "net_gain_ms": 493,
+        "regret_bound_ms": 0
+      },
+      {
+        "expected_extra_ms": 501,
+        "expected_budget_ms": 1000,
+        "action": "stop",
+        "net_gain_ms": -6,
+        "regret_bound_ms": 0
+      },
+      {
+        "expected_extra_ms": 2,
+        "expected_budget_ms": 1,
+        "action": "stop",
+        "net_gain_ms": 493,
+        "regret_bound_ms": 493
+      },
+      {
+        "expected_extra_ms": 495,
+        "expected_budget_ms": 1000,
+        "action": "stop",
+        "net_gain_ms": 0,
+        "regret_bound_ms": 0
+      }
+    ]
+  },
+  "guarantee": "Conditional discrete model; only stop(p0) vs nominated request plus subsequent admitted placement. Positive gain selects acquire. Scenario P1 uses p0 baseline; valid LBs yield a decision-regret bound. Missing LBs remain unavailable. No realized latency or globally best information action claim.",
+  "remaining": "Prepared forecasts and costs without evaluation leakage; real-model LINK, frozen real-data INT and E1-E5/EXT comparisons."
+}

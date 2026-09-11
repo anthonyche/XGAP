@@ -24,6 +24,7 @@ from xgap.runtime.semantic_compiler import SemanticBackend, compile_semantic_pro
 from xgap.runtime.semantic_memory import SemanticPlanMemory
 from xgap.runtime.semantic_refresh import SemanticRefreshPolicy
 from xgap.runtime.semantic_adaptive import SemanticPrefixPolicy, execute_semantic_prefix
+from xgap.runtime.semantic_acquisition import SemanticAcquisitionPolicy
 from xgap.runtime.tool import FederatedExecutionTool
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S, SemanticProgramError
 from xgap.tools.backends import BackendInvokeTool, BackendObservationCatalog, BackendOperation
@@ -167,7 +168,8 @@ def select_static_semantic_plan(candidates, backend_order):
             "snapshot_id": None, "snapshot_version": None, "estimates": None}
 
 
-def _refresh_before_execution(space, backend_tool, policy, snapshot, plan, selection, record, goal_id):
+def _refresh_before_execution(space, backend_tool, policy, snapshot, plan, selection, record, goal_id,
+        response_space=None):
     """One warm action; preserve partial accounting even when it fails."""
     detail = record["refresh"]
     started = time.perf_counter()
@@ -194,7 +196,7 @@ def _refresh_before_execution(space, backend_tool, policy, snapshot, plan, selec
                 select_at = time.perf_counter()
                 detail["selection_runs"] += 1
                 try:
-                    chosen, selection = space.select(snapshot)
+                    chosen, selection = (response_space or space).select(snapshot)
                     plan = chosen.plan
                     detail["post_selection"] = selection
                     record["candidate_count"] = selection["evaluated_plan_count"]
@@ -227,6 +229,7 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         plan_memory: SemanticPlanMemory | None = None,
         refresh_policy: SemanticRefreshPolicy | None = None,
         prefix_policy: SemanticPrefixPolicy | None = None,
+        acquisition_policy: SemanticAcquisitionPolicy | None = None,
         bandwidth_bytes_per_ms: float = 1000.0, exchange_fixed_ms: float = 0.0,
         coordinator_row_ms: float = 0.01, goal_id: str = "semantic-planning") -> dict:
     """Acquire unique observations if needed, select, then dispatch only the winner.
@@ -248,12 +251,24 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
     record.update(memory={"state": "disabled", "reads": 0, "writes": 0}, memory_ms=0.0)
     record["refresh"] = None
     record["prefix"] = None
+    record["acquisition"] = None
     polynomial = hasattr(space, "local_option_count")
     if polynomial:
         record.update(local_option_count=space.local_option_count,
             possible_placement_count=space.possible_placement_count,
             candidate_budget_unit="local_options", search_space_materialized=False)
     try:
+        if acquisition_policy is not None:
+            if not isinstance(acquisition_policy, SemanticAcquisitionPolicy) or not polynomial:
+                raise ValueError("Acquisition requires a typed predictive policy and polynomial plan space")
+            record["acquisition"] = {"policy": acquisition_policy.to_dict(), "state": "pending",
+                "decision": None, "decision_ms": 0.0, "forecast_support_match": None,
+                "actual_latency_bound": False}
+            if any(p is not None for p in (refresh_policy, prefix_policy, static_backend_order)):
+                raise ValueError("Predictive acquisition, explicit refresh, prefix and static policies are mutually exclusive")
+            # Reuse A1's warm admission and execution accounting. The action is
+            # chosen only after the initial feasible plan has been selected.
+            refresh_policy = SemanticRefreshPolicy()
         if prefix_policy is not None:
             if not isinstance(prefix_policy, SemanticPrefixPolicy) or not polynomial:
                 raise ValueError("Semantic prefix execution requires a typed policy and polynomial plan space")
@@ -329,12 +344,27 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         record["selection_ms"] = (time.perf_counter() - selected_at) * 1000
         record["selection"] = selection
         record["selected_plan"] = plan.to_dict()
+        response_space = None
+        if acquisition_policy is not None:
+            decision_at = time.perf_counter()
+            try:
+                decision = acquisition_policy.decide(space, snapshot, selected)
+                record["acquisition"]["decision"] = decision
+                refresh_policy = SemanticRefreshPolicy(
+                    "refresh_reselect" if decision["action"] == "acquire" else "no_refresh")
+                record["refresh"]["policy"] = refresh_policy.to_dict()
+                response_space = replace(space, baseline=selected)
+            finally:
+                record["acquisition"]["decision_ms"] += (time.perf_counter() - decision_at) * 1000
         if refresh_policy is not None:
             plan, selection = _refresh_before_execution(space, backend_tool, refresh_policy,
-                snapshot, plan, selection, record, goal_id)
+                snapshot, plan, selection, record, goal_id, response_space=response_space)
             record["selection"] = selection
             record["selected_plan"] = plan.to_dict()
             record["refresh"]["executed_plan_id"] = plan.plan_id
+            if acquisition_policy is not None and record["refresh"]["observation"] is not None:
+                observed = record["refresh"]["observation"]["snapshot"]["estimates"][0]
+                record["acquisition"]["forecast_support_match"] = acquisition_policy.matches_support(observed)
         if prefix_policy is not None:
             record["prefix"]["selection_runs"] = 1
             result = execute_semantic_prefix(space, backend_tool, prefix_policy,
@@ -348,12 +378,16 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         record["error"] = result.error
         if record["refresh"] is not None:
             record["refresh"]["state"] = "completed" if record["success"] else "execution_failed"
+        if record["acquisition"] is not None:
+            record["acquisition"]["state"] = "completed" if record["success"] else "execution_failed"
     except (OSError, ValueError) as error:
         record["error"] = str(error)
         if record["refresh"] is not None:
             record["refresh"]["state"] = "failed"
         if record["prefix"] is not None:
             record["prefix"]["state"] = "failed"
+        if record["acquisition"] is not None:
+            record["acquisition"]["state"] = "failed"
     record["total_remote_calls"] = record["observation_calls"] + record["execution_calls"]
     record["planning_ms"] = space.enumeration_ms + record["selection_ms"] + record["memory_ms"] + (
         record["observation"]["elapsed_ms"] if record["observation"] else 0)
@@ -363,5 +397,7 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
             detail["observation"]["elapsed_ms"] if detail["observation"] else 0)
     if record["prefix"] is not None:
         record["planning_ms"] += record["prefix"]["planning_ms"]
+    if record["acquisition"] is not None:
+        record["planning_ms"] += record["acquisition"]["decision_ms"]
     record["end_to_end_ms"] = space.enumeration_ms + (time.perf_counter() - started) * 1000
     return record

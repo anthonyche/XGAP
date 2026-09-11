@@ -1,6 +1,22 @@
 # XGAP Roadmap
 
-## Next gate — cost-aware acquisition and real-data interfaces
+## Next gate — real-input, forecast and answer interfaces
+
+A3 one-request predictive stop/acquire is implemented and accepted; see
+[the evidence](report/semantic_acquisition_20260911.md). Fourteen unique new cases,
+three affected checks and the saved zero-gain numerical counterexample cover the
+current risk. No new native/broad/model run was needed. Do not repeat these gates
+or build a general information-policy framework.
+
+Next inspect existing frozen FinBench/GrailQA small-integration artifacts and
+method entrypoints. Connect prepared semantic inputs, source identity/mappings,
+independent answers, and training/preparation-derived forecast/cost inputs without
+evaluation leakage. Keep model interpretation and deterministic planning separate;
+keep all original populations and failed IDs. Finish the pending five-question
+LINK when actual remote artifacts arrive, then INT and frozen E1–E5. The deadline
+remains September18, not completion of a perfect software distribution.
+
+## Historical A2 follow-up — cost-aware acquisition
 
 A2 ordinary-entry execution-prefix/residual planning and exact reuse are accepted;
 see [the evidence](report/semantic_prefix_20260911.md). Ten new+30 affected checks

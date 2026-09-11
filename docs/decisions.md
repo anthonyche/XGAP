@@ -1,5 +1,15 @@
 # XGAP Design Decisions
 
+## A3: predictive net benefit gates one nominated acquisition
+
+[The contract](decisions/semantic_acquisition_v1.md) compares stop(p0) with one
+registered request followed by P1 under explicit finite outcome forecasts and
+expected costs. Every response P1, hypothetical or actual, starts from p0. Acquire
+only for positive predicted gain within budget; ties stop. Valid per-scenario
+certificates bound one-request model decision regret, not actual/global action
+optimality. The exact-zero numerical failure is retained and repaired by paired
+savings summation. See [the evidence](report/semantic_acquisition_20260911.md).
+
 ## A2: one executed source prefix and polynomial residual placement
 
 [The frozen contract](decisions/semantic_prefix_v1.md) fixes completed placements,
