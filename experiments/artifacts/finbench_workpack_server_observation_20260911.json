@@ -1,0 +1,25 @@
+{
+  "schema": "user-reported-server-observation-v1",
+  "observed_at_utc": "2026-09-11T11:48:10Z",
+  "source": "User-pasted Pioneer hpc5 terminal output after checked collector invocation",
+  "collector_source_commit": "025ee0be1f98ea5a7f1043af1b284aeb36a1adb6",
+  "collector_zip_sha256": "1e80404d418ca8b9e3015b4971800af5a6bdca8050bb768d1bf91caad99de49c",
+  "reported_success": true,
+  "remote_output_root": "/home/hxc859/xgap-int-workpack-2f82e456c191",
+  "remote_receipt": "/home/hxc859/xgap-int-workpack-2f82e456c191/collection_receipt.json",
+  "reported_archive": {
+    "path": "finbench-int-workpack.tar.gz",
+    "size_bytes": 1076623,
+    "sha256": "094c0c39465abf03a7df6150efbb97cac5754fee04b18b2fd5d2458481912f78"
+  },
+  "reported_job_status_success": false,
+  "job_status_error_details": null,
+  "job_3804011_current_state": null,
+  "job_3804011_last_user_confirmed_state": "PENDING",
+  "archive_received_locally": false,
+  "archive_bytes_independently_verified_locally": false,
+  "receipt_contents_received_locally": false,
+  "dataset_experiment_performed": false,
+  "paper_result": false,
+  "next_action": "Receive the original archive and collection receipt; verify exact archive bytes/hash, inspect collection and job-status details before integration. Do not repeat collection or infer that status-query failure means job failure."
+}

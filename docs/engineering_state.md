@@ -1,5 +1,24 @@
 # XGAP current engineering loop
 
+## Current external evidence — FinBench workpack collected on Pioneer
+
+Recorded at19:48 Beijing9/11: user-pasted successful checked collector output from hpc5.
+Remote `/home/hxc859/xgap-int-workpack-2f82e456c191/` contains the reported
+`finbench-int-workpack.tar.gz` (1,076,623 bytes,
+SHA094c0c39465abf03a7df6150efbb97cac5754fee04b18b2fd5d2458481912f78)
+and `collection_receipt.json`. Neither file has arrived locally yet; exact bytes
+and receipt contents must be inspected next. `job_status_success=false` is a
+status-query failure, not evidence of job3804011 failure/completion. No repeat
+collection or job submission. See [reported output](../experiments/artifacts/finbench_workpack_server_observation_20260911.json).
+
+Read-only E1 inspection meanwhile confirmed the old150 runner is semantic-only;
+its normalized candidates lack validated answer-position metadata, and reference
+answer positions are evaluation-only. Any later entity-answer bridge must supply
+a gold-blind interpretation/projection contract, ordinary P1 execution and typed
+URI answers before separate scoring. Do not replace that with the literal-lookup
+helper or gold-derived projection. No new implementation/tests were started;
+the now-available original FinBench workpack takes priority.
+
 ## Current A4 gate — accepted; external inputs still pending
 
 Offline empirical preparation, exact profile provenance and current environment

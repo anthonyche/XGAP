@@ -1,5 +1,13 @@
 # XGAP Roadmap
 
+## Immediate handoff — receive the successfully collected original FinBench files
+
+User-reported remote collection has succeeded; archive and receipt are ready in
+`/home/hxc859/xgap-int-workpack-2f82e456c191/`. Verify the reported archive SHA and
+inspect the original receipt/workpack on arrival; use status error details before
+deciding any further3804011 query. Do not recollect or regenerate frozen inputs.
+This new evidence supersedes the unavailable-remote-workpack statements below.
+
 ## Current next gate — original artifacts and real small integration
 
 A4 offline exact-request preparation and ordinary-entry environment binding are

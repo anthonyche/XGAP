@@ -1,5 +1,14 @@
 # XGAP Status
 
+## FinBench original workpack collected remotely; local verification pending
+
+The user reports successful checked collection on Pioneer:1,076,623-byte archive
+plus collection receipt. Archive identity and evidence limits are saved in the
+[server observation](../experiments/artifacts/finbench_workpack_server_observation_20260911.json).
+Files still need transfer and local inspection. Optional job-status queries did
+not all succeed;3804011's current state remains unknown. This is recovered remote
+artifact availability, not a new dataset experiment. No collection/test retry.
+
 ## A4 offline forecast preparation and bounded recovery tool accepted
 
 Prepared empirical forecasts now bind the current environment, P1 context and
