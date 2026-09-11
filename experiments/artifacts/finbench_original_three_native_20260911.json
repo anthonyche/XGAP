@@ -270,5 +270,11 @@
     "Partition hash/bind strategies are not P1 equivalent replicas",
     "E1-E5 fair comparisons/forecast preparation/model LINK still pending"
   ],
-  "paper_result": false
+  "paper_result": false,
+  "integration_exposed_query_ids": [
+    "m15-fb-confirmatory-48-f1-01",
+    "m15-fb-confirmatory-48-f2-01",
+    "m15-fb-confirmatory-48-f3-01"
+  ],
+  "timing_reuse_policy": "Integration observations are not silently relabeled as prior training/preparation or used to tune a cold-family claim; retain exposure labels and the original48 denominator."
 }

@@ -8,9 +8,13 @@ comparison, NL result or proof of a speed advantage.
 
 ## Frozen scope and source identity
 
-Use original f1-01/f2-01/f3-01 from the unchanged48-question workpack. IDs were
+Use original f1-01/f2-01/f3-01 from the unchanged 48-question workpack. IDs were
 fixed before opening answers. f1's empty answer remains in the gate; it was not
-replaced by a more convenient query. The full32seen/16cold formal cohort remains.
+replaced by a more convenient query. The full 32 seen / 16 cold formal cohort remains.
+These three IDs are now explicitly integration-exposed. Preserve that label in
+later evaluation and do not silently
+reclassify these timings as prior training/preparation or tune a cold-family claim
+on them; do not remove the IDs to hide the exposure.
 
 The user-supplied original archive is66,710,298bytes, SHA
 `f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60`.
