@@ -1,5 +1,17 @@
 # XGAP Design Decisions
 
+## T3-A Static physical placement through the same question entry
+
+Freeze [the explicit backend-priority policy](decisions/static_semantic_selection_v1.md)
+before implementation. It uses the normal interpretation, resolution, candidate
+compilation and execution, but acquires no planning observations and reads no
+cost estimates or answers. Default costed selection and specialized frozen
+FinBench protocols remain unchanged. Same-equivalence admission and terminal
+failure without fallback are required. Focused115 and real-native5/18/10+slice
+pass; original final broad75266 exited0:3457/38,680.07s,all24 harness/example
+entrypoints pass. This bounded step is accepted. See
+[the evidence and limitations](report/static_semantic_selection_20260911.md).
+
 ## T2-C One-call model Interpretation on tiny development data
 
 See [the frozen scope](decisions/live_toy_interpretation_v1.md). No new algebra,

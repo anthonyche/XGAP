@@ -1,0 +1,70 @@
+{
+  "schema_version": "xgap-user-supplied-remote-observation-v1",
+  "date": "2026-09-11",
+  "source": "user pasted Pioneer hpc8 terminal output",
+  "producer_commit": "bc2bb67774910225a2e3842da26cb87fa676bf54",
+  "package": "xgap-toy-model-bc2bb67",
+  "checkout": "/home/hxc859/XGAP-toy-model-bc2bb67",
+  "initial_attempt": "stage.sh unavailable before extraction; no job from that attempt",
+  "staging": "offline clone and exact checkout completed",
+  "token_preflight": {
+    "success": true,
+    "external_calls": 0,
+    "output": "/home/hxc859/xgap-toy-model-bc2bb67/token_preflight.json",
+    "raw_checks_not_yet_read": true
+  },
+  "submitted_job_id": "3803984",
+  "submission_profile": "h100",
+  "scope": "five tiny model Interpretation connectivity questions, one hour maximum; no large dataset",
+  "current_job_state": "CANCELLED",
+  "scheduler_status_requested": false,
+  "initial_scheduler_observation": {
+    "squeue_state": "PENDING",
+    "reason": "Priority",
+    "estimated_start_server_local": "2026-09-11T16:54:00-04:00",
+    "estimated_start_asia_shanghai": "2026-09-12T04:54:00+08:00",
+    "sacct_elapsed": "00:00:00",
+    "node_assigned": false
+  },
+  "fallback_estimate": {
+    "server_clock": "2026-09-11T03:46:19-04:00",
+    "profile": "l40s",
+    "test_only_identifier": "3804005",
+    "actual_submission": false,
+    "estimated_node": "gput064",
+    "estimated_start_server_local": "2026-09-11T07:42:27-04:00",
+    "estimated_start_asia_shanghai": "2026-09-11T19:42:27+08:00",
+    "duration": "01:00:00",
+    "excluded_nodes": [
+      "gput069"
+    ],
+    "note": "Estimate, not reservation; hardware health remains unverified"
+  },
+  "resource_switch": {
+    "authorization": "user permits compatible fallback when H100 unavailable",
+    "cancel_command": "scancel --state=PENDING 3803984",
+    "cancel_calls": 1,
+    "immediate_sacct_after_cancel": "PENDING; not treated as confirmation",
+    "confirmed_by": "user scontrol show job 3803984 -o and empty squeue",
+    "confirmed_state": "CANCELLED",
+    "runtime": "00:00:00",
+    "allocated_tres": null,
+    "node_list": "",
+    "end_time_server_local": "2026-09-11T03:49:55-04:00",
+    "next_profile": "l40s-pipeline2-v1",
+    "submission_status": "user executed exact command; sbatch returned 3804011",
+    "new_job_id": "3804011",
+    "new_job_state": "PENDING",
+    "submission_receipt_dir": "/home/hxc859/xgap-toy-model-bc2bb67/l40s-switch-from-3803984",
+    "command_source": "/Users/anthonyche/Developer/XGAP-deliverables/submit-l40s-after-3803984.sh",
+    "requeue_enabled": false,
+    "changes_to_frozen_source_package": false,
+    "new_job_reason": "Priority",
+    "new_job_node_assigned": false,
+    "new_job_estimated_start_server_local": "2026-09-11T06:28:27-04:00",
+    "new_job_estimated_start_asia_shanghai": "2026-09-11T18:28:27+08:00",
+    "command_source_sha256": "5dd0abcb6fc7d11b8bb4c4eb9c65763234c3dd4c48c569f3c0d61296bc64449a"
+  },
+  "model_responses_observed": 0,
+  "automatic_resubmission": false
+}

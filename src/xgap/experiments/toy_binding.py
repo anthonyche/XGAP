@@ -73,7 +73,7 @@ def resolution_tools(case, *, include_clarification=True):
     return registry
 
 
-def execute_binding_case(case, mapping, *, clients, interpretation_provider=None):
+def execute_binding_case(case, mapping, *, clients, interpretation_provider=None, static_backend_order=None):
     graph, _, _ = load_fixture()
     version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
     sources = {"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))}
@@ -87,7 +87,7 @@ def execute_binding_case(case, mapping, *, clients, interpretation_provider=None
     run = run_question(request, provider,
         catalog_root=BUNDLE_FIXTURE / reference["root"], catalog_hash=reference["bundle_hash"],
         sources=sources, backends=backends, backend_clients=clients, clarification_tool=clarification,
-        max_candidates=4, max_observation_calls=4)
+        max_candidates=4, max_observation_calls=4, static_backend_order=static_backend_order)
     actual = run["state"]["output"]["planning_run"]["execution"]["value"]["final_rows"] if run["success"] else None
     canonical = lambda rows: sorted(json.dumps(row, sort_keys=True) for row in rows)
     record = {"query_id": case["id"], "success": run["success"] and canonical(actual) == canonical(case["expected_rows"]),

@@ -50,7 +50,53 @@ hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
-## Current milestone — T2-C model adapter software accepted; live gate pending
+## Current milestone — T3-A static selection accepted
+
+User requested an implementation-versus-verification audit while the GPU queues.
+See report/engineering_completeness_20260911.md: deterministic bounded backbone
+exists and is live-tested; LLM adapter exists but real-model evidence is pending;
+memory/adaptive/UI exist in older paths with generic-entry integration gaps;
+general streaming/query cancellation and broader partition/physical search are
+actual missing capabilities. Do not equate absent paper tests with absent code,
+or call the whole original Goal complete after a five-question gate. Current
+catalog entries inspected read existing artifacts; old-format migration is not
+evidence of per-question catalog rebuilding.
+
+Base 73575c7; scope frozen in decisions/static_semantic_selection_v1.md. Add an
+optional fixed backend order through the ordinary question/bind/compile/execute
+entry. No observations or fabricated snapshot, no semantic/compiler/gold changes.
+The existing costed selector stays default. Focused76409 exit0:115/4.70s.
+Native64202 exit0:5/5 programs,18/18 candidate answers,10/10 independent targets
+and old two-engine slice pass. All recorded source hashes match; owned services
+stopped normally. Selected question executions use0 observation+9 execution calls;
+candidate/reference/slice validation calls remain separately accounted. Tiny
+timings do not establish a speedup. Report: report/static_semantic_selection_20260911.md.
+
+Full75266 exited0:3457 passed/38 skipped in680.07s; all24 harness/example
+entrypoints passed. Log /tmp/xgap-t3a-static-acceptance.log. All handles are
+terminal; no source/test edits after launch, all38 receipt hashes match and
+original frozen fixtures are unchanged. Receipt/docs are accepted. Do not
+repeat passing gates without a new change. Push94922 remains failed128 and
+is not retried. Whole Goal remains active; no current pause.
+
+Actual remote progress supersedes the historical observations below. User staged
+bc2bb67 from the fixed offline package and reported exact-token preflight success,
+zero external calls (raw preflight checks not yet retrieved). Actual H1003803984
+stayed PENDING/Priority with no GPU; one pending-only cancellation was confirmed
+by scontrol CANCELLED,RunTime00:00:00,AllocTRES(null) and empty squeue. The user
+then submitted **L40S3804011** using the explicit pipeline2 contract, one hour,
+no requeue and excluding069. Independent receipt directory:
+/home/hxc859/xgap-toy-model-bc2bb67/l40s-switch-from-3803984.
+Do not rerun submit.sh or remove submission markers. Actual3804011 squeue now
+shows PENDING/Priority, no assigned node, estimated06:28:27 UTC-4=18:28:27 Beijing.
+Actual model responses are still unavailable. Previous L40S test-only3804005
+estimated gput064 at07:42:27 UTC-4=19:42:27 Beijing; this is not a reservation.
+User date03:46:19-04:00 confirms server offset. Model recordings return to local
+native --agentic-semantic --interpretation-recordings before any large dataset.
+No new browser action or retry occurred; user executed all remote mutations.
+Receipt: experiments/artifacts/cwru_toy_model_submission_20260911.json.
+
+## Accepted predecessor — T2-C model adapter software; live gate pending
 
 T2-B committed locally asbea9321afb29c951ff11f7fa7a2de01fa59eaedd.
 Push94922 is terminal128: connection closed by127.0.0.1:1082. Upstream remains
@@ -63,7 +109,8 @@ unknown token usage and failure provenance. Model-only runner has five fixed
 questions with input context identical to the native entry; native harness can
 replay their recordings. Existing graph/gold/catalog and compiler/runtime unchanged.
 New job runs tiny connectivity only, one hour, owned model cleanup; H100 explicit
-health profile and existing L40S fallback. No job submission or actual model call.
+health profile and existing L40S fallback. At this software gate there was no job
+submission or actual model call; later submission observations are above.
 
 Focused35421 exit0:157/7.17s. Focused22612 exit0:114/11.40s. Native65485 exit0:
 5 programs,18 candidate answers,10 independent targets and old slice; source35/35
@@ -81,8 +128,8 @@ is3927051bytes, SHA256ad38ad1118834ca1536ccb7b74f0cb44315b90c038cd33b7bef3d68cee
 Bundle clone/checkout, source bytes, shell syntax and ZIP integrity checks passed;
 see experiments/artifacts/toy_model_delivery_20260911.json. Independent Chrome
 createBrowserTab for the portal also timed out after30s; no upload/submission
-confirmed. Do not repeat failed browser actions. Next request one manual upload,
-stage.sh and submit.sh h100 action; the package offers the authorized L40S option.
+confirmed through the browser. Do not repeat failed browser actions. The manual
+upload/stage/submission has since occurred, as recorded in the current section.
 All local handles are terminal. No source/test change after final acceptance.
 Later documentation-only commits do not change the fixed producer package.
 Do not automatically retry failed Git push or old browser access. Model-only

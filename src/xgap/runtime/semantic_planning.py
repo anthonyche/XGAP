@@ -125,12 +125,43 @@ def enumerate_semantic_plans(program: SemanticGraphProgram, *,
                              catalogs, tuple(rejected), (time.perf_counter() - started) * 1000)
 
 
+def select_static_semantic_plan(candidates, backend_order):
+    """Select a declared equivalent placement without observations or answers."""
+    if (not isinstance(backend_order, tuple) or not backend_order
+            or any(not isinstance(b, str) or not b.strip() for b in backend_order)
+            or len(set(backend_order)) != len(backend_order)):
+        raise ValueError("Static backend priority must be a nonempty tuple of unique backend IDs")
+    if not candidates or len({c.semantic_equivalence_key for c in candidates}) != 1:
+        raise ValueError("Static selection requires one nonempty semantic equivalence class")
+    if len({c.plan.plan_id for c in candidates}) != len(candidates):
+        raise ValueError("Static candidate plan IDs must be unique")
+    placements = [c.plan.metadata.get("source_bindings") for c in candidates]
+    if any(not isinstance(p, Mapping) or not p for p in placements):
+        raise ValueError("Static selection requires explicit compiled source placements")
+    operators = tuple(sorted(placements[0]))
+    if any(set(p) != set(operators) for p in placements):
+        raise ValueError("Static candidates must bind the same source operators")
+    priority = {backend: i for i, backend in enumerate(backend_order)}
+    if any(not isinstance(backend, str) or backend not in priority
+           for placement in placements for backend in placement.values()):
+        raise ValueError("Static priority must cover every admitted backend")
+    selected = min(candidates, key=lambda c: (
+        tuple(priority[c.plan.metadata["source_bindings"][op]] for op in operators), c.plan.plan_id))
+    return {"semantic_equivalence_key": selected.semantic_equivalence_key,
+            "selected_plan_id": selected.plan.plan_id,
+            "selection_rule": "fixed backend priority in sorted source-operator order, then plan ID",
+            "backend_order": list(backend_order), "source_operator_order": list(operators),
+            "snapshot_id": None, "snapshot_version": None, "estimates": None}
+
+
 def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool, *,
         snapshot: PlanObservationSnapshot | None = None,
+        static_backend_order: tuple[str, ...] | None = None,
         bandwidth_bytes_per_ms: float = 1000.0, exchange_fixed_ms: float = 0.0,
         coordinator_row_ms: float = 0.01, goal_id: str = "semantic-planning") -> dict:
     """Acquire unique observations if needed, select, then dispatch only the winner.
 
+    An explicit static order bypasses observation acquisition and cost selection.
     Observation queries execute data access and are charged separately from the
     selected plan. A supplied snapshot avoids fresh acquisition, not its recorded
     historical cost. Failed observation/execution never falls back or retries.
@@ -140,9 +171,12 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
               "candidate_count": len(space.candidates), "rejected_placements": list(space.rejected_placements),
               "observation": None, "selection": None, "execution": None,
               "observation_calls": 0, "execution_calls": 0, "selection_ms": 0.0,
-              "snapshot_reused": snapshot is not None, "automatic_retries": 0}
+              "snapshot_reused": snapshot is not None and static_backend_order is None, "automatic_retries": 0}
+    record["selection_policy"] = "static_backend_order" if static_backend_order is not None else "costed"
     try:
-        if snapshot is None:
+        if static_backend_order is not None and snapshot is not None:
+            raise ValueError("Static selection and a cost snapshot are mutually exclusive")
+        if snapshot is None and static_backend_order is None:
             collected = PlanObservationCollector(backend_tool).collect(space.observation_requests,
                 snapshot_id="semantic-plan-observations", version=space.candidates[0].semantic_equivalence_key,
                 bandwidth_bytes_per_ms=bandwidth_bytes_per_ms, exchange_fixed_ms=exchange_fixed_ms,
@@ -153,10 +187,12 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
                 raise ValueError(collected.error)
             snapshot = collected.snapshot
         selected_at = time.perf_counter()
-        selection = FederatedPlanSelector().select(space.candidates, snapshot)
+        selection = (select_static_semantic_plan(space.candidates, static_backend_order)
+                     if static_backend_order is not None else
+                     FederatedPlanSelector().select(space.candidates, snapshot).to_dict())
         record["selection_ms"] = (time.perf_counter() - selected_at) * 1000
-        record["selection"] = selection.to_dict()
-        plan = next(c.plan for c in space.candidates if c.plan.plan_id == selection.selected_plan_id)
+        record["selection"] = selection
+        plan = next(c.plan for c in space.candidates if c.plan.plan_id == selection["selected_plan_id"])
         record["selected_plan"] = plan.to_dict()
         result = FederatedExecutionTool(FederatedScheduler(backend_tool)).invoke(
             {"plan": plan.to_dict()}, ToolContext(goal_id, 1, "execute-selected-semantic-plan"))

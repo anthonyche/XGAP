@@ -19,7 +19,7 @@ from xgap.tools.artifact_resolution import ExplicitUserSelectionProvider, explic
 CASES = load_binding_cases()
 
 
-def question_run(case, *, provider=None, root=None, request=None):
+def question_run(case, *, provider=None, root=None, request=None, **execution_options):
     default_request, default_provider = interpretation_inputs(case)
     tool, calls = setup(case, bindings_override={})
     pin = json.loads((BUNDLE_FIXTURE / "reference.json").read_text())
@@ -29,7 +29,7 @@ def question_run(case, *, provider=None, root=None, request=None):
     result = run_question(request or default_request, provider or default_provider,
         catalog_root=root or BUNDLE_FIXTURE / pin["root"], catalog_hash=pin["bundle_hash"],
         sources=tool.sources, backends=tool.backends, backend_clients=tool.backend_clients,
-        clarification_tool=user, max_candidates=4, max_observation_calls=4)
+        clarification_tool=user, max_candidates=4, max_observation_calls=4, **execution_options)
     return result, calls
 
 

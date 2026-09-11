@@ -1,0 +1,212 @@
+{
+  "schema_version": "xgap-static-semantic-selection-evidence-v1",
+  "date": "2026-09-11",
+  "base_commit": "73575c7834b5def377ace37df48693229c1d84a8",
+  "status": "accepted_software_and_tiny_native",
+  "paper_result": false,
+  "live_llm": false,
+  "static_backend_order": [
+    "neo4j",
+    "fuseki"
+  ],
+  "native_record": "/Users/anthonyche/xgap-data/t3a-static-native-20260911/result.json",
+  "native_sha256": "e5204ce3888c208bab96cf2f5467938ebfb4fca43694f43a414b3c369c3cbddc",
+  "native_programs": 5,
+  "native_candidate_answers": 18,
+  "independent_native_targets": 10,
+  "old_slice_passed": true,
+  "source_deltas": [],
+  "source_sha256": {
+    "scripts/run_toy_backbone_native.py": "6ba2e6178638e24a7d988a7ad74ca61c96f4bc935fad7ebf2acf83be8ec7e8e4",
+    "scripts/run_toy_development.sh": "3094c80ada22726f6269a84cee86e5673cf446030fd1955d35218f37c8087f5c",
+    "src/xgap/agent/loop.py": "cb0aec6d416ed856d94a677233c6d565e0f525cc15e5c73e15998b593699b1f8",
+    "src/xgap/agent/question.py": "3ccf6a00342d0b4b8086c89bf222f31d7e685d6e472f982d61cc9bd1fbd00cb2",
+    "src/xgap/agent/resolution.py": "0ddab00073176c20ca737eafe0b175e1bab9aeba56ba380671405814af425f2c",
+    "src/xgap/agent/semantic_execution.py": "f808952fd630b5ab847e448a6322d9201dcb36896ff6845bb33e01cbc8765d58",
+    "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+    "src/xgap/catalog/bundle.py": "2d3bc522873b2c508426b4dee92b82d5020a568e69ccc9c92fabef44269cd624",
+    "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+    "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+    "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+    "src/xgap/experiments/toy_binding.py": "3d2e90533543d8edc85a83f58e150eff31264000c2fed304a85fd2d285132f5c",
+    "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+    "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+    "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+    "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+    "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+    "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+    "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+    "src/xgap/runtime/semantic_planning.py": "8d3ebd6747324491f92d84175f769da5b7df357bc1465f8c3cc804bb542825bc",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/semantic/binding.py": "f2f2daf77ed787580619f1e03fbfcfedc49e92162bc786b7001b27452a7d9ec3",
+    "src/xgap/semantic/intake.py": "0d69b581faba5d01761342b1fab6361ec3c46e8019586c05241f9bb1ff473534",
+    "src/xgap/semantic/interpretation.py": "27d1994d127b45937e667241fae064925c63ab85e7090630ff493b27a5d3e07e",
+    "src/xgap/semantic/interpretation_replay.py": "d451f5aaaf62e19710ffcc042abdbd4ad9165423af73376483c9152a73aa41da",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/tools/artifact_resolution.py": "18d4da7a14212f35397d39cc7dbccf2e24bceb500865289340cc59c0409c8c58",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/tools/resolution.py": "5046f009a3d0b612e3d4425bec33a41de715a158b87858805ae6e6af8bd89127",
+    "tests/test_question_interpretation.py": "44378cb283e91aebd9c23941c12995e975245ce69f8a1f4e4900d872f48ac4da",
+    "tests/test_static_semantic_selection.py": "82c7e2aa1abb25806cb4d7a8e147332484c24ab7f794d884a5a33b59d61507bc"
+  },
+  "queries": [
+    {
+      "query_id": "B01",
+      "success": true,
+      "rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e4"
+        }
+      ],
+      "placement": {
+        "paths": "neo4j",
+        "people": "neo4j"
+      },
+      "observation_calls": 0,
+      "execution_calls": 2,
+      "backend_remote_calls": 2,
+      "planning_ms": 23.02525006234646,
+      "end_to_end_ms": 204.7522496432066
+    },
+    {
+      "query_id": "B02",
+      "success": true,
+      "rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e2"
+        }
+      ],
+      "placement": {
+        "paths": "neo4j",
+        "people": "neo4j"
+      },
+      "observation_calls": 0,
+      "execution_calls": 2,
+      "backend_remote_calls": 2,
+      "planning_ms": 22.688958793878555,
+      "end_to_end_ms": 44.93095725774765
+    },
+    {
+      "query_id": "B03",
+      "success": true,
+      "rows": [],
+      "placement": {
+        "paths": "neo4j",
+        "people": "neo4j"
+      },
+      "observation_calls": 0,
+      "execution_calls": 2,
+      "backend_remote_calls": 2,
+      "planning_ms": 22.36620895564556,
+      "end_to_end_ms": 32.645208761096
+    },
+    {
+      "query_id": "B04",
+      "success": true,
+      "rows": [
+        {
+          "person": "https://xgap.test/toy/a",
+          "age": 30
+        }
+      ],
+      "placement": {
+        "people": "neo4j"
+      },
+      "observation_calls": 0,
+      "execution_calls": 1,
+      "backend_remote_calls": 1,
+      "planning_ms": 5.250000394880772,
+      "end_to_end_ms": 97.76329156011343
+    },
+    {
+      "query_id": "B05",
+      "success": true,
+      "rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e2"
+        }
+      ],
+      "placement": {
+        "paths": "neo4j",
+        "people": "neo4j"
+      },
+      "observation_calls": 0,
+      "execution_calls": 2,
+      "backend_remote_calls": 2,
+      "planning_ms": 22.711833007633686,
+      "end_to_end_ms": 33.02720841020346
+    }
+  ],
+  "shutdown": [
+    {
+      "service_id": "fuseki",
+      "pid": 86284,
+      "initial_exit_code": null,
+      "final_exit_code": 143,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    },
+    {
+      "service_id": "neo4j",
+      "pid": 86180,
+      "initial_exit_code": null,
+      "final_exit_code": 0,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    }
+  ],
+  "gates": {
+    "focused": {
+      "session": 76409,
+      "exit_code": 0,
+      "passed": 115,
+      "seconds": 4.7
+    },
+    "native": {
+      "session": 64202,
+      "exit_code": 0
+    },
+    "broad": {
+      "status": "passed",
+      "session": 75266,
+      "log": "/tmp/xgap-t3a-static-acceptance.log",
+      "exit_code": 0,
+      "passed": 3457,
+      "skipped": 38,
+      "seconds": 680.07,
+      "harness_example_entrypoints": 24,
+      "log_sha256": "b5fd68e5f336db5745dc5804a48c9e8f353660c34d97e36620f03fc4f48d28f1"
+    }
+  },
+  "limitations": [
+    "Tiny correctness and cost-accounting evidence, not performance comparison",
+    "Fixed backend priority is a placement baseline, not learned memory or arbitrary join-strategy search",
+    "Frozen real-data evaluation protocols and all denominators remain unchanged"
+  ],
+  "source_and_test_edits_after_broad_launch": false,
+  "frozen_fixture_changes": [],
+  "native_source_hash_count": 35,
+  "call_accounting": {
+    "selected_question_executions": 9,
+    "planning_observations": 0,
+    "candidate_validation_extra": 25,
+    "independent_native_reference_queries": 10,
+    "retained_slice_queries": 2,
+    "excludes_service_and_data_setup": true,
+    "total_test_queries": 46
+  }
+}

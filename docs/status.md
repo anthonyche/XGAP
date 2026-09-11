@@ -1,13 +1,39 @@
 # XGAP Status
 
-## Current engineering — T2-C model adapter software accepted; live gate pending
+Implementation, integration and verification are tracked separately in the
+[September 11 engineering completeness audit](report/engineering_completeness_20260911.md).
+In particular, memory/adaptive/UI modules already exist; their generic-entry
+integration and broader streaming/cancellation are distinct remaining work.
+
+## Current engineering — T3-A static baseline accepted
+
+The normal question entry now supports an explicit fixed backend priority without
+planning observations. It preserves the same interpretation, binding, admitted
+candidate meanings, compiler and executor; default costed selection is unchanged.
+Focused 115 pass; native 5/5 programs, 18/18 candidate answers, 10/10 independent
+targets and the retained split-data slice pass. Selected executions use zero
+planning observations and nine backend calls across five tiny queries. Timings
+are diagnostics only. Final broad session 75266 exited 0: 3457 passed, 38 skipped
+in 680.07 s; all 24 harness/example entrypoints passed. No source/test edits after
+launch; all handles are terminal. See [the T3-A report](report/static_semantic_selection_20260911.md).
+
+Remote producer bc2bb67 remains fixed. User staged it and submitted H100 3803984;
+that job stayed pending and was cancelled before any allocation or runtime.
+Authorized L40S replacement **3804011** has now been submitted with the correct
+pipeline2 contract, one-hour limit, no requeue, and gput069 excluded. Its current state is
+PENDING/Priority, with no assigned node; the actual-job scheduler estimate is
+September 11 **18:28:27 Asia/Shanghai**, not a reservation. Real model responses
+remain unavailable.
+No large data/catalog work ran. September 18 real-result deadline remains active.
+
+## Accepted predecessor — T2-C model adapter software; live gate pending
 
 The one-call model provider joins the existing question/frozen-catalog/planner
 entry, uses exact pinned token preflight and retains safe failures and usage
 availability through recording/replay. Focused157 and114 checks passed; controlled
 records execute5/5 programs,18/18 candidate answers,10/10 independent native
 references and the old slice on real Neo4j/Fuseki. This is interface evidence;
-no real Qwen response or remote job has been obtained. Full32472 exited0:3421 passed/38 skipped in676.02s, all24 harness/example
+no real Qwen response had been obtained at this acceptance. Full32472 exited0:3421 passed/38 skipped in676.02s, all24 harness/example
 entrypoints passed. No source/test change after launch; all handles are terminal.
 
 The prepared remote entry runs only five tiny Interpretation questions, at most
