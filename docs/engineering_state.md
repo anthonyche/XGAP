@@ -75,8 +75,16 @@ Final full32472 exit0:3421 passed/38 skipped in676.02s; all24 harness/example
 entrypoints passed. All handles terminal. No source/test edits after full launch. Receipt
 experiments/artifacts/toy_model_interface_20260911.json and report
 report/toy_model_interface_20260911.md accepted for software, real model pending.
-Next commit locally, prepare/verify small offline bundle and give the
-minimal manual upload/start action because browser getTab remains unavailable.
+Producer commitbc2bb67774910225a2e3842da26cb87fa676bf54 is local and accepted.
+Verified offline package /Users/anthonyche/Developer/XGAP-deliverables/xgap-toy-model-bc2bb67.zip
+is3927051bytes, SHA256ad38ad1118834ca1536ccb7b74f0cb44315b90c038cd33b7bef3d68ceee935e3.
+Bundle clone/checkout, source bytes, shell syntax and ZIP integrity checks passed;
+see experiments/artifacts/toy_model_delivery_20260911.json. Independent Chrome
+createBrowserTab for the portal also timed out after30s; no upload/submission
+confirmed. Do not repeat failed browser actions. Next request one manual upload,
+stage.sh and submit.sh h100 action; the package offers the authorized L40S option.
+All local handles are terminal. No source/test change after final acceptance.
+Later documentation-only commits do not change the fixed producer package.
 Do not automatically retry failed Git push or old browser access. Model-only
 remote responses return to the same native tiny graph before any large-data work.
 
