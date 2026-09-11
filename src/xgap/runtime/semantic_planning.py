@@ -23,6 +23,7 @@ from xgap.runtime.scheduler import FederatedScheduler
 from xgap.runtime.semantic_compiler import SemanticBackend, compile_semantic_program
 from xgap.runtime.semantic_memory import SemanticPlanMemory
 from xgap.runtime.semantic_refresh import SemanticRefreshPolicy
+from xgap.runtime.semantic_adaptive import SemanticPrefixPolicy, execute_semantic_prefix
 from xgap.runtime.tool import FederatedExecutionTool
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S, SemanticProgramError
 from xgap.tools.backends import BackendInvokeTool, BackendObservationCatalog, BackendOperation
@@ -225,6 +226,7 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         static_backend_order: tuple[str, ...] | None = None,
         plan_memory: SemanticPlanMemory | None = None,
         refresh_policy: SemanticRefreshPolicy | None = None,
+        prefix_policy: SemanticPrefixPolicy | None = None,
         bandwidth_bytes_per_ms: float = 1000.0, exchange_fixed_ms: float = 0.0,
         coordinator_row_ms: float = 0.01, goal_id: str = "semantic-planning") -> dict:
     """Acquire unique observations if needed, select, then dispatch only the winner.
@@ -245,12 +247,29 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
     record["selection_policy"] = "static_backend_order" if static_backend_order is not None else "costed"
     record.update(memory={"state": "disabled", "reads": 0, "writes": 0}, memory_ms=0.0)
     record["refresh"] = None
+    record["prefix"] = None
     polynomial = hasattr(space, "local_option_count")
     if polynomial:
         record.update(local_option_count=space.local_option_count,
             possible_placement_count=space.possible_placement_count,
             candidate_budget_unit="local_options", search_space_materialized=False)
     try:
+        if prefix_policy is not None:
+            if not isinstance(prefix_policy, SemanticPrefixPolicy) or not polynomial:
+                raise ValueError("Semantic prefix execution requires a typed policy and polynomial plan space")
+            record["prefix"] = {"policy": prefix_policy.to_dict(), "state": "pending",
+                "source_operator": None, "fixed_source_bindings": None,
+                "history_snapshot": None, "initial_selection": None,
+                "probe_plan": None, "probe_run": None, "updated_snapshot": None,
+                "replan_reasons": [], "selection_after_prefix": None,
+                "residual_domain": None, "residual_initial_estimate": None,
+                "residual_executed_estimate": None, "replan_count": 0, "selection_runs": 0,
+                "reused_node_ids": [], "continuation_run": None,
+                "prefix_remote_calls": 0, "continuation_new_remote_calls": 0,
+                "elapsed_ms": 0.0, "planning_ms": 0.0}
+            if static_backend_order is not None or refresh_policy is not None:
+                raise ValueError("Prefix execution, static selection and refresh policies are mutually exclusive")
+            prefix_policy.eligible(space)
         if refresh_policy is not None:
             if not isinstance(refresh_policy, SemanticRefreshPolicy) or not polynomial:
                 raise ValueError("Semantic refresh requires a typed policy and the polynomial plan space")
@@ -316,8 +335,13 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
             record["selection"] = selection
             record["selected_plan"] = plan.to_dict()
             record["refresh"]["executed_plan_id"] = plan.plan_id
-        result = FederatedExecutionTool(FederatedScheduler(backend_tool)).invoke(
-            {"plan": plan.to_dict()}, ToolContext(goal_id, 1, "execute-selected-semantic-plan"))
+        if prefix_policy is not None:
+            record["prefix"]["selection_runs"] = 1
+            result = execute_semantic_prefix(space, backend_tool, prefix_policy,
+                snapshot, selected, selection, record, goal_id)
+        else:
+            result = FederatedExecutionTool(FederatedScheduler(backend_tool)).invoke(
+                {"plan": plan.to_dict()}, ToolContext(goal_id, 1, "execute-selected-semantic-plan"))
         record["execution"] = result.to_dict()
         record["execution_calls"] = int(result.metrics.get("remote_calls", 0))
         record["success"] = result.status is ToolStatus.SUCCESS
@@ -328,6 +352,8 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         record["error"] = str(error)
         if record["refresh"] is not None:
             record["refresh"]["state"] = "failed"
+        if record["prefix"] is not None:
+            record["prefix"]["state"] = "failed"
     record["total_remote_calls"] = record["observation_calls"] + record["execution_calls"]
     record["planning_ms"] = space.enumeration_ms + record["selection_ms"] + record["memory_ms"] + (
         record["observation"]["elapsed_ms"] if record["observation"] else 0)
@@ -335,5 +361,7 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         detail = record["refresh"]
         record["planning_ms"] += detail["overhead_ms"] + (
             detail["observation"]["elapsed_ms"] if detail["observation"] else 0)
+    if record["prefix"] is not None:
+        record["planning_ms"] += record["prefix"]["planning_ms"]
     record["end_to_end_ms"] = space.enumeration_ms + (time.perf_counter() - started) * 1000
     return record

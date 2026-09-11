@@ -58,8 +58,11 @@ def main(argv=None):
         help="With --agentic-semantic, use fixed backend priority without planning observations")
     parser.add_argument("--memory-roundtrip", action="store_true",
         help="With --agentic-semantic, execute each question cold then warm after JSONL memory reload")
-    parser.add_argument("--refresh-ablation", action="store_true",
+    adaptation = parser.add_mutually_exclusive_group()
+    adaptation.add_argument("--refresh-ablation", action="store_true",
         help="With --agentic-semantic, run only the B04 warm one-refresh mechanism arms")
+    adaptation.add_argument("--prefix-ablation", action="store_true",
+        help="With --agentic-semantic, run only the two-source A2 native prefix mechanism arms")
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--compiled-directed", action="store_true",
         help="Run the production-compiled fixed-path cases instead of independent reference targets")
@@ -101,7 +104,11 @@ def main(argv=None):
     if args.refresh_ablation and (not args.agentic_semantic or args.memory_roundtrip
                                  or args.static_backend_order or args.interpretation_recordings):
         parser.error("--refresh-ablation requires only --agentic-semantic and controlled interpretation")
-    binding_cases = [c for c in load_binding_cases() if not args.refresh_ablation or c["id"] == "B04"]
+    if args.prefix_ablation and (not args.agentic_semantic or args.memory_roundtrip
+                                or args.static_backend_order or args.interpretation_recordings):
+        parser.error("--prefix-ablation requires only --agentic-semantic and fixed semantic input")
+    binding_cases = [] if args.prefix_ablation else [c for c in load_binding_cases()
+        if not args.refresh_ablation or c["id"] == "B04"]
     if args.typed_query_ids and not args.typed_bindings:
         parser.error("--typed-query-ids requires --typed-bindings")
     typed_cases = [c for c in load_typed_fixture()[1]
@@ -169,6 +176,10 @@ def main(argv=None):
         source_files.append(REPO / "src/xgap/experiments/toy_capabilities.py")
     if args.refresh_ablation:
         source_files.append(REPO / "src/xgap/experiments/toy_refresh.py")
+    if args.prefix_ablation:
+        source_files.extend(REPO / relative for relative in (
+            "src/xgap/experiments/toy_prefix.py", "src/xgap/runtime/semantic_adaptive.py",
+            "src/xgap/runtime/adaptive.py"))
     if args.repetition:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/pattern/lowering.py", "src/xgap/pattern/typecheck.py",
@@ -229,6 +240,10 @@ def main(argv=None):
                 for p in BINDING_FIXTURE.rglob("*") if p.is_file()})
         if args.refresh_ablation:
             record.update(scope="A1 B04 pre-execution refresh mechanism", refresh_ablation={})
+        if args.prefix_ablation:
+            record.update(scope="A2 two-source execution-prefix mechanism", prefix_ablation={},
+                query_ids=["A2-prefix"], interpretation_mode="fixed_semantic_program",
+                track="deterministic_planning", interpretation_exercised=False, goal_loop_exercised=False)
         if args.interpretation_recordings:
             record["binding_cases"] = [{"query_id": c["id"], "status": "not_attempted", "success": False}
                                        for c in load_binding_cases()]
@@ -436,6 +451,12 @@ def main(argv=None):
                 save()
                 if not item["success"]:
                     raise RuntimeError(f"Semantic planning failed: {case['id']}; no retry")
+        if args.prefix_ablation:
+            from xgap.experiments.toy_prefix import execute_prefix_ablation
+            record["phase"] = "A2-native-prefix-arms-and-references"
+            save()
+            execute_prefix_ablation(mapping, clients={"neo4j": neo, "fuseki": rdf},
+                record=record["prefix_ablation"], on_update=save)
         if args.agentic_semantic:
             if args.memory_roundtrip or args.refresh_ablation:
                 from xgap.agent.memory import JsonlMemoryStore
@@ -623,6 +644,8 @@ def main(argv=None):
         "binding_cases_passed": sum(x["success"] for x in record.get("binding_cases", [])),
         "binding_warm_cases_passed": sum(x["success"] for x in record.get("binding_warm_cases", [])),
         "refresh_ablation_passed": record.get("refresh_ablation", {}).get("success"),
+        "prefix_ablation_passed": record.get("prefix_ablation", {}).get("success"),
+        "prefix_references_passed": sum(x["success"] for x in record.get("prefix_ablation", {}).get("references", [])),
         "binding_references_passed": sum(x["success"] for x in record.get("binding_reference_targets", [])),
         "orientation_references_passed": sum(x["success"] for x in record.get("orientation_reference_targets", [])),
         "repetition_references_passed": sum(x["success"] for x in record.get("repetition_reference_targets", [])),

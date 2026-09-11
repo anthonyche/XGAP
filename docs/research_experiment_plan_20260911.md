@@ -17,8 +17,10 @@ model grid/native slice completed. The retained6.33x heuristic regret case was r
 [P1 correction](report/polynomial_terminal_correction_20260911.md). Ordinary-entry
 one-request refresh/pre-execution reselection is now accepted at A1; see
 [A1 evidence](report/semantic_refresh_20260911.md). Its single controlled native
-observation favored no-refresh; no performance claim is established. Execution-prefix
-adaptation and acquisition stopping/value policy remain distinct gaps.
+observation favored no-refresh; no performance claim is established. A2 now connects
+execution-prefix adaptation to ordinary P1; see [A2 evidence](report/semantic_prefix_20260911.md).
+Its two-arm tiny native gate passes, but fixed-order actual time favors no-replan.
+Acquisition stopping/value policy and real-model/data evaluation remain gaps.
 Statements below describing the initial missing implementation are historical
 planning context, not a claim that the replacement is still absent.
 
@@ -128,13 +130,13 @@ selection；比较应在匹配的RDF子轨，不能假定它原生规划Cypher�
 | 有界语义、编译、双库执行、独立结果核对 | 已实现并有真实小图证据 | 保留现有profile；不再因一般语言扩展推迟评价 |
 | Interpretation、LLM HTTP、离线catalog与普通query入口 | 已实现并接线；真Qwen验证仍待产物 | 属于缺真实验证；不能说没有LLM功能 |
 | 同入口静态对照与精确上下文观测memory | 7aad1dc已实现/验收；5冷+5热程序正确 | 支持no-memory机制比较；不证明泛化或真实提速 |
-| Ptime placement与可核验解质量保证 | **尚未实现**；现主入口枚举∏k_i | P1必须优先修复，旧枚举保留作小oracle |
-| 选择性获取/执行中replan的普通路径 | 专用模块/runner已存在，普通入口未全部接通 | 若论文full-agent声称此能力，必须实际接线并做对应消融 |
+| Ptime placement与可核验解质量保证 | **P1已实现及验收**；精确子类/两轮heuristic及条件界 | 旧枚举仅作小oracle；模型界不等于实际延迟保证 |
+| 选择性获取/执行中replan的普通路径 | **A1/A2单步刷新与残余重规划已接通、验收** | 固定请求/阈值规则尚未解决获取信息是否值得；须补成本停止规则及真实比较 |
 | 两真实数据集的同语义、同代价比较与答案评估 | 旧专用管线存在，新路径有适配缺口 | INT/E1/E2的具体工程；不重写全项目或重建大catalog |
 | 规模、外部对照、正面收益 | 多数属于缺实验或缺外部接入证据 | 不能用模块测试数量代替 |
 
-因此“只差测试”不准确，但“所有模块都没有”也不准确。当前必做工程是P1、
-研究方法接线、真实输入/评估接线及成本可比性。通用streaming、产品UI、自动发现
+因此“只差测试”不准确，但“所有模块都没有”也不准确。当前必做工程是成本感知
+acquisition/stopping规则、真实输入/评估接线及成本可比性。通用streaming、产品UI、自动发现
 任意分区等保持边界说明，除非具体实验暴露它们成为阻塞，不主动扩项。
 
 ## 7. 一周交付顺序和停止规则

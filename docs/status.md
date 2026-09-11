@@ -1,5 +1,22 @@
 # XGAP Status
 
+## A2 execution-prefix adaptation through P1 accepted
+
+The ordinary query entry now supports one actual source-prefix execution,
+polynomial residual placement and exact result reuse. Completed source placement
+is fixed; only unfinished work may switch. Ten new and30 affected checks pass.
+The native two-source replan/no-replan arms, two independent references and retained
+slice pass:8 validation query calls,42 matching source hashes, gate66672 exit0,
+owned services stopped. See [A2 evidence](report/semantic_prefix_20260911.md).
+
+Under the controlled old table, the remaining model cost changes100.44→4.50ms;
+LB1.44ms gives a valid but loose3.125 ratio certificate. Actual fixed-order arm
+times237.06/53.56ms favor no-replan. This is mechanism acceptance, not performance
+advantage. The native gate is deterministic planning, with no model or large data.
+The outstanding method gap is an explicit cost-aware acquisition/stopping rule;
+real-model LINK, real-data answer integration and frozen E1–E5 are still pending.
+The earlier checkpoints below retain their historical missing-feature statements.
+
 ## A1 refresh/reselection through the ordinary query entry accepted
 
 Three warm modes now perform one refresh+reselection, refresh without reselection,

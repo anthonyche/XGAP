@@ -1,5 +1,16 @@
 # XGAP Design Decisions
 
+## A2: one executed source prefix and polynomial residual placement
+
+[The frozen contract](decisions/semantic_prefix_v1.md) fixes completed placements,
+uses actual completed states at zero future latency/cost, and applies P1 only to
+unfinished placement. Successful complete node definitions must match exactly;
+full-plan budgets and reused call accounting remain intact. Ten new+30 affected
+checks and the native two-arm/reference/slice gate pass. See
+[the evidence](report/semantic_prefix_20260911.md). The current-model LB/UB does
+not imply actual latency or acquisition optimality; no-replan was faster in this
+single controlled observation. Cost-aware stopping and real-data evaluation remain.
+
 ## A1: warm one-request refresh and optional pre-execution reselection
 
 [The frozen contract](decisions/semantic_refresh_v1.md) is implemented through the

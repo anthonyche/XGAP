@@ -1,6 +1,22 @@
 # XGAP Roadmap
 
-## Next gate — residual execution planning and cost-aware acquisition
+## Next gate — cost-aware acquisition and real-data interfaces
+
+A2 ordinary-entry execution-prefix/residual planning and exact reuse are accepted;
+see [the evidence](report/semantic_prefix_20260911.md). Ten new+30 affected checks
+and one tiny native gate66672 pass. Do not repeat these accepted gates. Both A1
+and A2 controlled native observations favor their no-extra-decision arms in actual
+time; retain these results and strong simple baselines.
+
+Next freeze and implement the smallest explicit acquisition/stopping rule needed
+by R-C/E2/E3: its available information, decision objective, cost and action budget,
+Ptime work, and honest guarantee/limitations. Existing one-refresh and one-prefix
+paths are callable; their threshold/order heuristics do not yet establish that
+extra information pays for itself. Test only contrasting tiny decisions and
+accounting. Then finish LINK/INT and the frozen real-data method interfaces,
+preserving the September18 new-results deadline. Avoid general product expansion.
+
+## Historical A1 follow-up — residual execution planning
 
 A1 ordinary-entry refresh/reselection is accepted; see
 [the evidence](report/semantic_refresh_20260911.md). Do not repeat its72 targeted

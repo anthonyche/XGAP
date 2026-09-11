@@ -147,7 +147,7 @@ class PolynomialSemanticPlanSpace:
         return [next(n for n in self.local_nodes[op, b] if n.node_id == node.node_id)
                 for b in self.options[op]]
 
-    def _lower_bound(self, snapshot):
+    def _lower_bound(self, snapshot, selector=None):
         if not self.same_cost_topology:
             return None, "local alternatives change the cost DAG topology/parameters"
         estimates = dict(snapshot.by_key)
@@ -164,7 +164,7 @@ class PolynomialSemanticPlanSpace:
                 row_count=min(e.row_count for e in values),
                 row_width_bytes=min(e.row_width_bytes for e in values))
         relaxed = replace(snapshot, estimates=tuple(estimates.values()))
-        return FederatedPlanSelector().estimate(self.baseline.plan, relaxed).predicted_latency_ms, None
+        return (selector or FederatedPlanSelector()).estimate(self.baseline.plan, relaxed).predicted_latency_ms, None
 
     def _separable(self, snapshot):
         if not self.same_cost_topology:
@@ -188,12 +188,14 @@ class PolynomialSemanticPlanSpace:
                     return False
         return True
 
-    def select(self, snapshot):
+    def select(self, snapshot, *, _selector=None):
         for request in self.observation_requests:
             estimate = snapshot.by_key.get(request.observation_key)
             if estimate is None or estimate.backend_id != request.backend_id:
                 raise ValueError("Polynomial planning needs every admitted local observation")
-        selector = FederatedPlanSelector()
+        # Private residual selector preserves the recurrence except for fixed
+        # completed states; arbitrary alternative cost models are not certified.
+        selector = _selector or FederatedPlanSelector()
         evaluated = {}
 
         def evaluate(candidate):
@@ -212,7 +214,8 @@ class PolynomialSemanticPlanSpace:
                 for b in opts:
                     local_plan = replace(self.baseline.plan, plan_id=f"local:{op}:{b}",
                         nodes=self.local_nodes[op, b], roots=(self.fragments[op, b].output,), metadata={})
-                    scores.append((selector.estimate(local_plan, snapshot).predicted_latency_ms, b))
+                    local_estimate = getattr(selector, "estimate_local", selector.estimate)
+                    scores.append((local_estimate(local_plan, snapshot).predicted_latency_ms, b))
                     local_evaluations += 1
                 placement[op] = min(scores)[1]
             candidate = self.compile(placement)
@@ -233,7 +236,7 @@ class PolynomialSemanticPlanSpace:
                             best = candidate
                     incumbent = best
         upper = evaluate(incumbent).predicted_latency_ms
-        lower, reason = self._lower_bound(snapshot)
+        lower, reason = self._lower_bound(snapshot, selector)
         if exact:
             lower, reason = upper, None
         if lower is not None and lower > upper:

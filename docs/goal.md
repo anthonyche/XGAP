@@ -20,8 +20,11 @@
 [修正与下一步](report/polynomial_terminal_correction_20260911.md)。A1已接通普通入口的有界acquisition与
 pre-execution reselection；三种实际行为、小图gold、历史/当前成本和失败处理通过
 定向及真实小图检查，见[A1证据](report/semantic_refresh_20260911.md)。一次观测中
-不刷新最快，不能声称收益已成立。下一步接通execution-prefix adaptation的残余
-计划/复用约束，并补获取信息是否值得的决策；不能把执行前重选当成整个agent完成。
+不刷新最快，不能声称收益已成立。A2现已接通execution-prefix adaptation的残余
+计划/复用约束：完成的source固定，只重选未完成部分，定向及真实双库小图验收通过；
+见[A2证据](report/semantic_prefix_20260911.md)。该次固定顺序观测中不重规划更快，
+不能把成本模型下降说成实际提速。下一步补获取信息是否值得及何时停止的明确规则；
+不能把单步刷新/残余重选当成整个agent完成。
 模型LINK和真实数据评价仍待完成。不能把“有有效界”说成“真实延迟近似最优”。
 
 **最新工程标准（2026-09-11）：XGAP是research prototype，以保证论文实验结果为
