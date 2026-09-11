@@ -1,0 +1,110 @@
+{
+  "case": {
+    "description": "Identity inequality retains the canonical namespace domain",
+    "gold": {
+      "endpoints": [],
+      "paths": []
+    },
+    "id": "RT05",
+    "program": {
+      "operators": [
+        {
+          "input_ids": [],
+          "input_kinds": [],
+          "kind": "traverse",
+          "operator_id": "paths",
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "condition": {
+                "kind": "property_not_equals",
+                "property": "type.object.id",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "value": "z"
+              },
+              "expr": {
+                "edge": {
+                  "direction": "OUT",
+                  "label": "test.foreign"
+                },
+                "kind": "rel"
+              },
+              "restrictor": "WALK",
+              "selector": {
+                "kind": "ALL"
+              },
+              "source": {},
+              "target": {
+                "properties": {
+                  "type.object.id": "b"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input_ids": [
+            "paths"
+          ],
+          "input_kinds": [
+            "path_set"
+          ],
+          "kind": "project",
+          "operator_id": "endpoints",
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "endpoint": {
+                "kind": "path_node",
+                "position": "last"
+              },
+              "start": {
+                "kind": "path_node",
+                "position": "first"
+              }
+            }
+          }
+        }
+      ],
+      "program_id": "RT05",
+      "roots": [
+        "paths",
+        "endpoints"
+      ]
+    }
+  },
+  "correction": "add same namespace+canonical-ID guards to Neo4j identity inequality only",
+  "discovery": "read-only review before native execution",
+  "existing_sparql_behavior": "logical identity != includes namespace/canonical-ID guards",
+  "native_verified_after_fix": [
+    {
+      "backend_id": "neo4j",
+      "case_id": "RT05",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "fuseki",
+      "case_id": "RT05",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    }
+  ],
+  "old_native_failure_reexecuted": false,
+  "old_neo4j_behavior": "iri <> excluded_identity only; external-namespace row survives and then fails decoding",
+  "paper_result": false,
+  "schema_version": "int1-identity-inequality-domain-counterexample-v1"
+}

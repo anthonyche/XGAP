@@ -28,6 +28,10 @@ two fixed real-input compiler diagnostics. It identifies a missing raw-RDF/mirro
 encoding adapter, not a missing catalog algorithm; see
 [INT-0 evidence](report/real_input_recovery_20260911.md). Next INT-1 addresses that
 representation boundary on tiny data, with no change to formal populations.
+INT-1 is now implemented and accepted: ten tiny native query outcomes match
+independent path/endpoint gold, with no change to P1 or formal populations;
+see [INT-1 evidence](report/resource_triple_encoding_20260911.md). Real fact/load
+artifacts, independent real answers and forecast preparation remain next.
 Statements below describing the initial missing implementation are historical
 planning context, not a claim that the replacement is still absent.
 

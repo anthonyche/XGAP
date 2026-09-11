@@ -73,3 +73,39 @@ class RdfRowEncoding:
         return hashlib.sha256(
             json.dumps(asdict(self), sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()
+
+
+@dataclass(frozen=True)
+class RdfResourceTripleEncoding:
+    """A snapshot's unique URI triples are its directed logical edges.
+
+    The existing resource mirror stores node IRIs and relationship predicates;
+    complete returned triples determine edge identity without changing storage.
+    """
+
+    encoding_id: str
+    snapshot_id: str
+    resource_namespace: str
+    identity_property: str = "type.object.id"
+    class_predicate_iri: str = "http://rdf.freebase.com/ns/type.object.type"
+    max_rows: int = 10000
+
+    def __post_init__(self) -> None:
+        if any(not isinstance(value, str) or not value.strip()
+               for value in (self.encoding_id, self.snapshot_id)):
+            raise ValueError("Resource triple encoding requires encoding and snapshot identities.")
+        if type(self.max_rows) is not int or self.max_rows <= 0:
+            raise ValueError("Resource triple encoding requires a positive row budget.")
+        # Reuse the node identity and IRI validation contract.
+        self.rdf
+
+    @property
+    def rdf(self) -> RdfRowEncoding:
+        return RdfRowEncoding(self.encoding_id, self.class_predicate_iri,
+                              self.identity_property, self.resource_namespace)
+
+    @property
+    def identity(self) -> str:
+        return hashlib.sha256(
+            json.dumps(asdict(self), sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()

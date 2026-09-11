@@ -1,6 +1,16 @@
 # XGAP Roadmap
 
-## Next gate — INT-1 storage encoding, then real answer/forecast interfaces
+## Next gate — frozen real artifacts, independent answers and forecast inputs
+
+INT-1 representation adapter is implemented and accepted; see
+[evidence](report/resource_triple_encoding_20260911.md). Five tiny programs pass
+both native backends, with exact PathSet/endpoint gold and all services stopped.
+Original two real programs compile4/4; this is not actual answer verification.
+Recover the original real fact/load artifacts and FinBench workpack, then connect
+answer/cost preparation. Keep unsupported scalar cases and all formal populations
+visible. Do not add general storage features or repeat accepted native/module gates.
+
+## Historical INT-1 implementation plan
 
 INT-0 recovered seven GrailQA input files against the original150-ID manifest,
 with no reselection/catalog rebuild. The fixed two-query diagnostic identifies

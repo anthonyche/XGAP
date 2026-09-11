@@ -1,5 +1,22 @@
 # XGAP Status
 
+## INT-1 resource encoding connected to ordinary P1/Traverse
+
+The declared raw-RDF/Neo4j mirror adapter is implemented for fixed1–3-hop resource
+paths. Complete path/edge identities, direction, duplicates and endpoint projection
+are verified; unsafe mapping combinations and unsupported operations fail closed.
+28 unique new cases and3 affected existing cases have passing evidence. One tiny
+native five-program/two-engine gate passes,12 calls including loads;334 source
+fingerprints match, owned services stopped. Four original INT-0 target compilations
+pass, with real answers still unmeasured. See
+[INT-1 evidence](report/resource_triple_encoding_20260911.md).
+
+Next recover real fact/load artifacts and FinBench's original workpack; connect
+independent answers and prepared forecasts/cost provenance. The frozen pilot has
+140 non-comparison and10 comparison questions; this is selection metadata, not a
+claim of140 successful queries. Scalar adaptation, reference/gold equivalence,
+model LINK and formal evaluation remain open. Preserve all150/48 denominators.
+
 ## INT-0 frozen real-input recovery complete; storage adapter identified
 
 Seven required GrailQA pilot files are recovered with exact original bytes/SHA,

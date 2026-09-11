@@ -28,8 +28,10 @@ pre-execution reselection；三种实际行为、小图gold、历史/当前成�
 见[A3证据](report/semantic_acquisition_20260911.md)。规则可调用不等于预测已校准或
 实际收益已成立。INT-0已恢复原150题的7个必要输入文件，字节/SHA全部匹配；
 固定两题已定位普通Traverse与既有raw-RDF/Neo4j mirror间的编码适配缺口，
-见[真实输入恢复证据](report/real_input_recovery_20260911.md)。下一步INT-1仅在小图
-补该表示适配，再接独立答案和forecast准备/成本来源；不再重建catalog来解决编码问题。
+见[真实输入恢复证据](report/real_input_recovery_20260911.md)。INT-1表示适配已在小图
+实现并通过双库验收，见[编码接线证据](report/resource_triple_encoding_20260911.md)。
+下一步恢复真实facts/load记录及FinBench原包，接独立答案和forecast准备/成本来源；
+scalar comparison在该新adapter仍显式不支持，保留原10题及150总分母，不扩展catalog。
 不能把单步刷新/残余重选/模型决策当成整个agent完成。
 模型LINK和真实数据评价仍待完成。不能把“有有效界”说成“真实延迟近似最优”。
 

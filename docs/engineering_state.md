@@ -1,5 +1,22 @@
 # XGAP current engineering loop
 
+## Current INT-1 gate — accepted; real artifacts/answers next
+
+See [INT-1 evidence](report/resource_triple_encoding_20260911.md) and current
+status/roadmap. P1/A1/A2/A3 are accepted within their stated bounds; their old
+next-action text below is historical. INT-0 restored7 original GrailQA files;
+INT-1 now connects raw resource triples/Neo4j mirror to ordinary PathSet/P1.
+28 unique new and3 affected checks have passing evidence; native67378 exit0,
+ten query outcomes match independent gold (12 calls including loads),334 source
+hashes match, both owned services stopped. Do not rerun these unchanged gates.
+
+Next actual work: real query-independent facts/load receipts, original FinBench
+workpack and independent answers/forecast inputs. Scalar comparisons are outside
+this new resource adapter (legacy scalar execution code exists); preserve their
+10 frozen pilot IDs and outcomes rather than shrink150. The two fixed real inputs
+compile4/4 but actual answers remain unmeasured. Remote3804011 still has no newer
+confirmed state; the previous user status request remains pending.
+
 ## Current A1 gate — accepted, residual execution bridge next
 
 Parentd66bd84 plus the accompanying A1 source receipt implements SemanticRefreshPolicy

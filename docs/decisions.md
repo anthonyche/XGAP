@@ -1,5 +1,15 @@
 # XGAP Design Decisions
 
+## INT-1: declared URI triples become ordinary PathSet identities
+
+[The encoding contract](decisions/freebase_resource_path_encoding_v1.md) is now
+implemented through SemanticBackend/Traverse/P1. Shared injective stored-triple
+identity preserves direction and RDF set semantics without rewriting facts.
+Only declared fixed resource paths enter this profile; other mappings, unsupported
+conditions and edge-as-node projection cannot silently change meaning. Native
+five-program validation also covers the repaired identity-inequality domain guard.
+See [INT-1 evidence](report/resource_triple_encoding_20260911.md).
+
 ## INT-0: restore exact inputs and adapt declared storage semantics
 
 Preserve original GrailQA150 IDs and per-file hashes; restore only necessary

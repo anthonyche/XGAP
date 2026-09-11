@@ -1,6 +1,8 @@
-# INT-1 planned resource-triple PathSet encoding
+# INT-1 resource-triple PathSet encoding
 
-Status: implementation contract after INT-0; **not yet implemented or tested**.
+Status: implemented and accepted on tiny native stores after INT-0; see
+[evidence](../report/resource_triple_encoding_20260911.md). Real-data answer
+evaluation is not completed by this representation gate.
 Motivation: R-E/E1 independent answers and R-C/E2 same-meaning execution need the
 ordinary semantic planner to compile the existing raw-RDF/Neo4j mirror snapshot.
 This is a representation adapter, not a new semantic operator or a fact rewrite.
@@ -57,7 +59,8 @@ plan is not an implementation of Traverse's PathSet contract.
 ## Ptime and guarantee boundary
 
 With fixed maximum three hops, query/mapping description length L and A explicit
-local backend alternatives, compilation is polynomial (target O(A L)); no joint
+local backend alternatives, compilation is polynomial: O(A L log(L+1)) allowing
+the existing canonical artifact/descriptor key sorting; no joint
 placement enumeration is introduced. Decoding is linear in returned byte volume
 B, plus PathSet sorting/deduplication (O(R log R) path comparisons for R rows),
 with O(B) storage. Explain any validation work beyond these bounds in code review.
@@ -76,9 +79,17 @@ P1's existing objective and conditional solution certificates are unchanged.
 - Literal/blank-node/missing-column/overflow output and unsupported scalar input:
   explicit failure/unavailable with no successful partial answers.
 
-Only affected module cases and one tiny real Neo4j/Fuseki integration slice are
-needed after implementation. Do not repeat A1–A3 or the broad regression suite.
-Then replay both original INT-0 programs; actual GrailQA answers require a frozen,
+The23 decoder cases,5 compiler/interface cases and3 affected existing cases have
+passing evidence. One native five-program gate (the four classes above plus an
+identity-inequality namespace counterexample) passed on both stores,12 calls
+including loads. Both original INT-0 programs now compile on both targets.
+Do not repeat A1–A3 or the broad regression suite. Actual GrailQA answers require a frozen,
 query-independent fact snapshot and its load receipts. The annotated anchor-type
 constraint versus official SPARQL remains an explicit equivalence check. Do not
 claim full GrailQA integration from these two one-source queries.
+
+The declaration supplies canonical term-to-IRI mapping itself and is mutually
+exclusive with other backend mappings/reified edge/node-domain declarations.
+Match sources and path_edge projection remain explicitly unavailable for this
+encoding. Identity inequality preserves its canonical namespace/ID domain on
+both engines; the added Neo4j guard is verified by the native empty-answer case.

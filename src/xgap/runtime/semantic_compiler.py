@@ -14,7 +14,7 @@ from types import SimpleNamespace
 from xgap.compilers.node_match import compile_node_match
 from xgap.algebra.conditions import And
 from xgap.backends.capabilities import BackendCapabilityProfile
-from xgap.compilers.rdf_encoding import RdfEdgeEncoding, RdfRowEncoding
+from xgap.compilers.rdf_encoding import RdfEdgeEncoding, RdfRowEncoding, RdfResourceTripleEncoding
 from xgap.llm.parser import parse_path_pattern_query, _parse_condition
 from xgap.pattern.ast import NodePattern
 from xgap.runtime.bounded_paths import compile_bounded_path_plan
@@ -35,15 +35,25 @@ class SemanticBackend:
     rdf_edge_encoding: RdfEdgeEncoding | None = None
     rdf_node_classes: tuple[str, ...] = ()
     profile: BackendCapabilityProfile | None = None
+    rdf_resource_encoding: RdfResourceTripleEncoding | None = None
 
     def __post_init__(self):
         RdfRowEncoding("semantic-identity", "urn:xgap:class", self.identity_property, self.resource_namespace)
+        if self.rdf_resource_encoding is not None:
+            encoding = self.rdf_resource_encoding
+            if not isinstance(encoding, RdfResourceTripleEncoding):
+                raise ValueError("Resource triple encoding must be explicitly typed")
+            if (self.identity_property, self.resource_namespace) != (encoding.identity_property, encoding.resource_namespace):
+                raise ValueError("Semantic and resource triple identity declarations differ")
+            if self.backend_mapping is not None or self.rdf_edge_encoding is not None or self.rdf_node_classes:
+                raise ValueError("Resource triple encoding cannot be combined with other mapping/edge/node encodings")
 
     def path_options(self):
         return {"backend_id": self.backend_id, "resource_namespace": self.resource_namespace,
                 "identity_property": self.identity_property, "backend_mapping": self.backend_mapping,
                 "rdf_edge_encoding": self.rdf_edge_encoding, "rdf_node_classes": self.rdf_node_classes,
-                "profile": self.profile}
+                "profile": self.profile,
+                **({"rdf_resource_encoding": self.rdf_resource_encoding} if self.rdf_resource_encoding else {})}
 
 
 @dataclass(frozen=True)
@@ -51,6 +61,7 @@ class ResultSchema:
     kind: V
     fields: frozenset[str]
     path_namespace: str | None = None
+    path_edge_projection: bool = True
 
 
 def _fields(required, available):
@@ -70,6 +81,8 @@ def _projection_schema(projections, source):
         elif kind == "path_length" and set(spec) == {"kind"} and source.kind is V.PATH_SET:
             pass
         elif kind in ("path_node", "path_edge") and set(spec) == {"kind", "position"} and source.kind is V.PATH_SET:
+            if kind == "path_edge" and not source.path_edge_projection:
+                raise SemanticProgramError("Resource triple edge identity is not a node IRI projection")
             position = spec["position"]
             if not (type(position) is int and position > 0) and not (
                     kind == "path_node" and position in ("first", "last")):
@@ -114,6 +127,8 @@ def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragm
         return node_id
 
     if kind is S.MATCH:
+        if backend.rdf_resource_encoding is not None:
+            raise SemanticProgramError("Resource triple encoding currently requires Traverse sources")
         entity = p.get("entity_field", "entity")
         properties = p.get("properties", {})
         if not isinstance(entity, str) or not entity or entity in properties:
@@ -142,7 +157,8 @@ def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragm
         nodes.extend(replace(n, node_id=ids[n.node_id], inputs=tuple(ids[i] for i in n.inputs),
                              semantic_operator_ids=(identifier,)) for n in plan.nodes)
         output = ids[plan.roots[0]]
-        schema = ResultSchema(V.PATH_SET, frozenset(("path",)), backend.resource_namespace)
+        schema = ResultSchema(V.PATH_SET, frozenset(("path",)), backend.resource_namespace,
+                              backend.rdf_resource_encoding is None)
         if op.input_ids:
             if op.input_kinds[0] is not V.BINDING_SET or p.get("anchor_position", "first") not in ("first", "last"):
                 raise SemanticProgramError("Bound Traverse requires endpoint bindings")
