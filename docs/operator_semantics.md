@@ -168,6 +168,14 @@ Modes:
 - `SIMPLE`: rejects repeated nodes except that the first node may equal the last node as the closing repeat of a cycle. Without `max_depth`, evaluation terminates by deduplication and frontier exhaustion on finite graphs.
 - `SHORTEST`: returns shortest paths per source-target pair, where shortest means minimum `Path` length. If multiple paths tie for shortest length for the same source-target pair, all tied shortest paths are kept. If `max_depth` is provided, search is bounded by it; otherwise evaluation still terminates on finite graphs.
 
+The higher-level finite Bounded regex reuses this operator with max_depth=1
+over a union of exact child powers: the repetition range is constructed first,
+then mode filtering/shortest selection runs once. Optional is Union(Nodes,child).
+These are lowering compositions, not new algebra operators. A zero-length child
+path inside positive SHORTEST recursion competes with positive cycles; the
+separate Nodes branch for Star/Bounded(min=0) lies outside that competition.
+See [finite repetition semantics](decisions/finite_regex_repetition_v1.md).
+
 ## GroupBy
 
 Implemented.

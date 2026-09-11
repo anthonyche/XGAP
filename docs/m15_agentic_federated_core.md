@@ -52,6 +52,12 @@ Required work:
 
 Implemented locally:
 
+- Optional and finite Bounded logical lowering using existing algebra and native
+  finite expansion with explicit mode scopes. Thirteen independent tiny chains
+  pass26/26 compiled executions and26/26 native target checks, with the old slice.
+  Repetition count, variable edge length and nullable shortest selection are
+  distinguished. Full3180/38 and24 harness/example entrypoints pass; see
+  [the repetition gate](report/toy_backbone_t1_repetition.md);
 - semantic native/read/coordinator requirement admission against actual owned
   runtime nodes, replacing blanket rejection of nonempty requirements while
   retaining native compiler limits. Tiny real execution passes8/8 programs and

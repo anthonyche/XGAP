@@ -33,7 +33,7 @@ class LogicalLoweringAssessment:
     def to_dict(self):
         return {
             "schema_version": "logical_lowering_assessment_v1",
-            "profile": "m5_path_algebra_orientation_v1",
+            "profile": "path_algebra_finite_repetition_v1",
             "status": self.status,
             "available": self.status == "available",
             "issues": [item.to_dict() for item in self.issues],
@@ -63,7 +63,7 @@ def assess_candidate(candidate: PlannerCandidate) -> CandidateAssessment:
         "Typed path-intent checks passed; this is not logical/backend execution admission.",
         metadata={"profile": PROFILE},
     )
-    issues = tuple(_missing_capabilities(candidate.pattern_query.expr, "expr"))
+    issues = tuple(_missing_capabilities(candidate.pattern_query.expr, "expr", candidate.pattern_query.max_depth))
     if issues:
         return CandidateAssessment(validation, LogicalLoweringAssessment("unavailable", issues))
     try:
@@ -77,15 +77,16 @@ def assess_candidate(candidate: PlannerCandidate) -> CandidateAssessment:
     ))
 
 
-def _missing_capabilities(expr, path):
+def _missing_capabilities(expr, path, max_depth=None):
     if isinstance(expr, Rel):
         return  # All typed directions now lower through the explicit orientation extension.
     elif isinstance(expr, (Seq, Alt)):
-        yield from _missing_capabilities(expr.left, f"{path}.left")
-        yield from _missing_capabilities(expr.right, f"{path}.right")
+        yield from _missing_capabilities(expr.left, f"{path}.left", max_depth)
+        yield from _missing_capabilities(expr.right, f"{path}.right", max_depth)
     elif isinstance(expr, (Plus, Star, OptionalExpr, Bounded)):
-        if isinstance(expr, OptionalExpr):
-            yield LoweringIssue("optional_regex_unsupported", path)
-        elif isinstance(expr, Bounded):
-            yield LoweringIssue("bounded_regex_unsupported", path)
-        yield from _missing_capabilities(expr.child, f"{path}.child")
+        if isinstance(expr, Bounded):
+            if expr.max_repeats == 0:
+                return
+            if expr.max_repeats is None and expr.min_repeats >= 2 and max_depth is None:
+                yield LoweringIssue("unbounded_minimum_repetition_unsupported", path)
+        yield from _missing_capabilities(expr.child, f"{path}.child", max_depth)

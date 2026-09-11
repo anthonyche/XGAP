@@ -1,8 +1,8 @@
 """Bounded native path expansion with explicit coordinator selector placement.
 
-Rel/Seq/Alt are compiled compositionally. A root Plus/Star repeats their finite
-alternatives. Nested recursion is not silently flattened: it needs its own
-logical scope. No fixture IDs or expected results participate in compilation.
+Rel/Seq/Alt/Optional are compiled compositionally. Root Plus/Star/Bounded
+repeat finite alternatives. Nested Bounded flattens only under WALK; other
+scoped recursion remains explicit. No fixture IDs or gold enter compilation.
 """
 
 from dataclasses import replace
@@ -16,48 +16,67 @@ from xgap.compilers.directed import (
 )
 from xgap.compilers.features import BoundCondition, default_profile
 from xgap.infrastructure.runtime import QueryArtifact
-from xgap.pattern.ast import Alt, Direction, EdgePattern, PathMode, Plus, Rel, Selector, SelectorKind, Seq, Star
+from xgap.pattern.ast import Alt, Bounded, Direction, EdgePattern, OptionalExpr, PathMode, Plus, Rel, Selector, SelectorKind, Seq, Star
 from xgap.pattern.semantic_validation import type_check_semantic_path_pattern
 
 
-def _alternatives(expr, limit):
+def _alternatives(expr, limit, mode=PathMode.WALK):
     if isinstance(expr, Rel):
         result = ([(replace(expr.edge, direction=direction),) for direction in (Direction.OUT, Direction.IN)]
                   if expr.edge.direction is Direction.UNDIRECTED else [(expr.edge,)])
     elif isinstance(expr, Alt):
-        result = _alternatives(expr.left, limit) + _alternatives(expr.right, limit)
+        result = _alternatives(expr.left, limit, mode) + _alternatives(expr.right, limit, mode)
     elif isinstance(expr, Seq):
-        left, right = _alternatives(expr.left, limit), _alternatives(expr.right, limit)
+        left, right = _alternatives(expr.left, limit, mode), _alternatives(expr.right, limit, mode)
         if len(left) * len(right) > limit:
             raise ValueError("Native branch budget exceeded")
         result = [a + b for a in left for b in right]
+    elif isinstance(expr, OptionalExpr):
+        result = [()] + _alternatives(expr.child, limit, mode)
+    elif isinstance(expr, Bounded) and expr.max_repeats == 0:
+        result = [()]
+    elif isinstance(expr, Bounded) and expr.max_repeats is not None and mode is PathMode.WALK:
+        result = _repeat_alternatives(_alternatives(expr.child, limit, mode),
+                                      expr.min_repeats, expr.max_repeats, limit)
     else:
-        raise ValueError("Native expansion supports Rel/Seq/Alt and root bounded Plus/Star")
+        raise ValueError("Native expansion supports Rel/Seq/Alt/Optional and root bounded repetition; nested scoped recursion is unavailable")
     if len(result) > limit or any(len(branch) > MAX_EDGES for branch in result):
         raise ValueError("Native branch or edge budget exceeded")
     return result
 
 
-def _branches(query, limit):
-    recursive = isinstance(query.expr, (Plus, Star))
-    if not recursive:
-        return _alternatives(query.expr, limit), False
-    depth = query.max_depth
-    if type(depth) is not int or depth <= 0:
-        raise ValueError("Native recursion requires an explicit finite positive max_depth")
-    base = _alternatives(query.expr.child, limit)
-    if query.restrictor is PathMode.SHORTEST and len({len(b) for b in base}) != 1:
-        raise ValueError("SHORTEST native expansion currently requires equal-length child alternatives")
-    result = [()] if isinstance(query.expr, Star) else []
+def _repeat_alternatives(base, minimum, maximum, limit):
+    result = [()] if minimum == 0 else []
     frontier = [()]
-    for _ in range(depth):
-        if len(result) + len(frontier) * len(base) > limit:
+    for depth in range(1, maximum + 1):
+        if len(frontier) * len(base) > limit:
             raise ValueError("Native branch budget exceeded")
         frontier = [a + b for a in frontier for b in base]
         if any(len(branch) > MAX_EDGES for branch in frontier):
             raise ValueError("Native edge budget exceeded")
-        result.extend(frontier)
-    return result, True
+        if depth >= minimum:
+            result.extend(frontier)
+            if len(result) > limit:
+                raise ValueError("Native branch budget exceeded")
+    return result
+
+
+def _branches(query, limit):
+    recursive = isinstance(query.expr, (Plus, Star, Bounded))
+    if not recursive:
+        return _alternatives(query.expr, limit, query.restrictor), False, False
+    minimum = query.expr.min_repeats if isinstance(query.expr, Bounded) else (0 if isinstance(query.expr, Star) else 1)
+    depth = (query.expr.max_repeats if isinstance(query.expr, Bounded)
+             and query.expr.max_repeats is not None else query.max_depth)
+    if type(depth) is not int or depth < minimum or depth < 0:
+        raise ValueError("Native recursion requires an explicit finite positive max_depth")
+    if depth == 0:
+        return [()], True, False
+    base = _alternatives(query.expr.child, limit, query.restrictor)
+    finite_range = isinstance(query.expr, Bounded) and (query.expr.max_repeats is not None or minimum >= 2)
+    if not finite_range and query.restrictor is PathMode.SHORTEST and len({len(b) for b in base}) != 1:
+        raise ValueError("SHORTEST native expansion currently requires equal-length child alternatives")
+    return _repeat_alternatives(base, minimum, depth, limit), True, () in base
 
 
 def _fixed_expr(edges):
@@ -118,7 +137,7 @@ def compile_bounded_paths(query, *, backend_id, backend_mapping=None,
         validate_iri(resource_namespace)
         if not isinstance(identity_property, str) or not identity_property:
             raise ValueError("Native paths require an explicit identity property")
-        branches, recursive = _branches(query, max_branches)
+        branches, recursive, positive_zero = _branches(query, max_branches)
         shortest = recursive and query.restrictor is PathMode.SHORTEST
         condition, lengths = (_shortest_condition(query.condition) if shortest
                               else (query.condition, []))
@@ -193,6 +212,8 @@ def compile_bounded_paths(query, *, backend_id, backend_mapping=None,
         "resource_namespace": resource_namespace, "max_edges": maximum,
         "selector": query.selector.kind.name, "k": query.selector.k,
         "recursive_shortest": shortest, "post_shortest_lengths": lengths}
+    if shortest and positive_zero:
+        selector["shortest_includes_zero"] = True
     return QueryArtifact(artifact_id, language, text, kind="compiled", parameters={
         "compiler": "bounded_native_paths_v1", "result_model": "path_candidates",
         "target_backend_id": backend_id, "output_columns": columns,

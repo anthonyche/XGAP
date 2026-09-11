@@ -1,5 +1,18 @@
 # XGAP Status
 
+## Active engineering loop — 2026-09-11
+
+The overnight pause ended; recovery was checked at10:15 +08:00 and the existing
+xgap heartbeat restored to hourly. T1 Optional/finite Bounded is accepted:
+13 independent chains pass26/26 compiled native executions and26/26 native
+target answers, plus the old two-engine slice. Existing algebra meanings and
+old gold are unchanged. Focused226/interface42/daily335 pass; broad81593 exit0:
+3180 passed/38 skipped/645.66s and all24 harness/example entrypoints pass.
+All current test/native handles are terminal. See
+[the repetition report](report/toy_backbone_t1_repetition.md).
+Nested non-WALK native scopes and broader typed semantics remain next; overall
+T1/T2/T3 and the system Goal remain unfinished. Historical entries follow.
+
 ## Active engineering loop — 2026-09-10
 
 T1 capability admission now links nonempty semantic requirements to actual

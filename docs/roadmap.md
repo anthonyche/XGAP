@@ -1,5 +1,18 @@
 # XGAP Roadmap
 
+## Current engineering milestones — 2026-09-11
+
+After the requested pause, T1 Optional/finite repetition is accepted on the same
+tiny graph:13 complete independent chains,26/26 native compiled and26/26 native
+reference answers, plus the old slice. Nullable positive repetition and a
+separate zero-repetition branch retain different shortest-selection behavior.
+Focused226/interface42/daily335 pass; full3180 passed/38 skipped/645.66s and24
+harness/example entrypoints pass. See
+[the report](report/toy_backbone_t1_repetition.md).
+Continue remaining nested non-WALK/unbounded-minimum scopes and typed semantics,
+then T2 catalog/runtime/replay and T3 integration/evaluation. These later gates
+remain unfinished. Daily development stays on the toy, not large GrailQA runs.
+
 ## Current engineering milestones — 2026-09-10
 
 T1 semantic requirement admission is closing the blanket-rejection gap.

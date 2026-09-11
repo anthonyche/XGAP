@@ -1,5 +1,10 @@
 # XGAP Design Decisions
 
+The T1 Optional/finite repetition extension counts child concatenations, applies
+mode selection after the repetition range and distinguishes nullable-child zero
+paths from the outer zero-repetition branch. It composes existing algebra rather
+than redefining Recursive. See [the scoped decision](decisions/finite_regex_repetition_v1.md).
+
 Current engineering loop and evidence: [engineering_state.md](engineering_state.md).
 
 The toy-first T1 capability step binds required native/read/coordinator names

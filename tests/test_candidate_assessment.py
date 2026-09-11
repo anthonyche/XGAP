@@ -38,7 +38,7 @@ def test_direction_is_not_erased_or_mistaken_for_semantic_error(direction):
     assert report.semantic_validation.ok
     logical = report.logical_lowering.to_dict()
     assert logical["available"] and logical["status"] == "available"
-    assert logical["profile"] == "m5_path_algebra_orientation_v1"
+    assert logical["profile"] == "path_algebra_finite_repetition_v1"
     assert logical["backend_execution_verified"] is False
     assert c == before
     assert logical["issues"] == []
@@ -47,17 +47,16 @@ def test_direction_is_not_erased_or_mistaken_for_semantic_error(direction):
         assert "Reverse" in logical["report"]["formatted_plan"]
 
 
-@pytest.mark.parametrize("wrapper,code", [
-    (OptionalExpr, "optional_regex_unsupported"),
-    (lambda child: Bounded(child, 1, 3), "bounded_regex_unsupported"),
+@pytest.mark.parametrize("wrapper", [
+    OptionalExpr,
+    lambda child: Bounded(child, 1, 3),
 ])
-def test_all_missing_features_are_recorded_in_ast_order(wrapper, code):
+def test_optional_and_finite_bounded_now_have_logical_plans(wrapper):
     expr = wrapper(Rel(EdgePattern(label="R", direction=Direction.IN)))
     report = assess_candidate(candidate(Seq(Rel(EdgePattern()), expr)))
     assert report.semantic_validation.ok
-    assert [item.to_dict() for item in report.logical_lowering.issues] == [
-        {"code": code, "component_ref": "expr.right"},
-    ]
+    assert report.logical_lowering.status == "available"
+    assert report.logical_lowering.issues == ()
 
 
 @pytest.mark.parametrize("condition_class", [LabelEquals, PropertyEquals, PropertyNotEquals,
@@ -118,7 +117,7 @@ def test_malformed_bounds_cannot_be_disguised_as_unavailable(expr):
 def test_semantic_validation_never_calls_lowerer(monkeypatch):
     lower = Mock(side_effect=AssertionError("must not lower"))
     monkeypatch.setattr("xgap.llm.candidate_assessment.validate_candidate", lower)
-    c = candidate(OptionalExpr(Rel(EdgePattern(direction=Direction.IN))))
+    c = candidate(Bounded(Rel(EdgePattern(direction=Direction.IN)), 2, None))
     type_check_semantic_path_pattern(c.pattern_query)
     report = assess_candidate(c)
     assert report.semantic_validation.ok

@@ -1,4 +1,10 @@
 # M5.5 Pattern-Lowering Audit
+
+Current T1 finite-repetition extension additionally lowers Optional as
+Union(Nodes, child), and a finite Bounded range as exact child powers followed
+by one-step Recursive mode selection. It adds no algebra operator. Original
+M5 placeholder statements below remain historical; see
+[the repetition decision](decisions/finite_regex_repetition_v1.md).
 > Historical scope note: this document records the M5.5 audit boundary.
 > Later milestones do not retroactively change the audited M5 contract.
 

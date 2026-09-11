@@ -45,12 +45,14 @@ def select_native_paths(rows, parameters):
 
     if parameters.get("recursive_shortest"):
         best = {}
+        include_zero = parameters.get("shortest_includes_zero", False)
         for path in paths:
-            if len(path) == 0:
+            if len(path) == 0 and not include_zero:
                 continue  # Star is Union(Nodes, Recursive); zero paths do not suppress cycles.
             pair = (path.first(), path.last())
             best[pair] = min(best.get(pair, len(path)), len(path))
-        paths = PathSet(p for p in paths if len(p) == 0 or len(p) == best[(p.first(), p.last())])
+        paths = PathSet(p for p in paths if (len(p) == 0 and not include_zero)
+                        or len(p) == best[(p.first(), p.last())])
     for length in parameters.get("post_shortest_lengths", ()):
         paths = PathSet(p for p in paths if len(p) == length)
 

@@ -1,0 +1,70 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE { { SELECT ?src ?dst (MIN(?length) AS ?minimum) WHERE { {
+VALUES ?n0 {t:d}
+VALUES ?n0 {t:d}
+?n0 a t:Person .
+?n0 t:id ?nid0 .
+BIND(?nid0 AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid0 AS ?dst)
+BIND(0 AS ?length)
+} UNION {
+VALUES ?n0 {t:d}
+VALUES ?n1 {t:d}
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 .
+?e1 t:source ?n0 ; t:target ?n1 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1) AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid1 AS ?dst)
+BIND(1 AS ?length)
+} UNION {
+VALUES ?n0 {t:d}
+VALUES ?n2 {t:d}
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 .
+?e1 t:source ?n0 ; t:target ?n1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 .
+?e2 t:source ?n1 ; t:target ?n2 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+?n2 t:id ?nid2 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1, "/", ?eid2, "/", ?nid2) AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid2 AS ?dst)
+BIND(2 AS ?length)
+} } GROUP BY ?src ?dst } {
+VALUES ?n0 {t:d}
+VALUES ?n0 {t:d}
+?n0 a t:Person .
+?n0 t:id ?nid0 .
+BIND(?nid0 AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid0 AS ?dst)
+BIND(0 AS ?length)
+} UNION {
+VALUES ?n0 {t:d}
+VALUES ?n1 {t:d}
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 .
+?e1 t:source ?n0 ; t:target ?n1 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1) AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid1 AS ?dst)
+BIND(1 AS ?length)
+} UNION {
+VALUES ?n0 {t:d}
+VALUES ?n2 {t:d}
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 .
+?e1 t:source ?n0 ; t:target ?n1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 .
+?e2 t:source ?n1 ; t:target ?n2 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+?n2 t:id ?nid2 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1, "/", ?eid2, "/", ?nid2) AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid2 AS ?dst)
+BIND(2 AS ?length)
+} FILTER(?length = ?minimum) }

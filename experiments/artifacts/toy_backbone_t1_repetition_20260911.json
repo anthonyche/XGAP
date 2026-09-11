@@ -1,0 +1,466 @@
+{
+  "schema_version": "toy_milestone_receipt_v1",
+  "date": "2026-09-11",
+  "milestone": "T1 Optional and finite Bounded repetition",
+  "base_commit": "d9c2858de25512d9d2843741e8c0d395d3e98464",
+  "acceptance": "accepted",
+  "live_llm": false,
+  "paper_result": false,
+  "raw_result": "/Users/anthonyche/xgap-data/t1-repetition-native-20260911/result.json",
+  "raw_result_sha256": "32acd3ca3dffebed221a3b903870c98f08115b07913640ce2c8e267cb31c1afc",
+  "source_sha256": {
+    "src/xgap/experiments/toy_backbone.py": "341ed4fa3f16770b46e7b58634a7dca7c75de5d61f4f0bf821a98a90f3d09e4a",
+    "src/xgap/compilers/directed.py": "c51078ad7cd6c4160716e7171be77267510d146b49b616974745136d74da81ea",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/compilers/bounded_paths.py": "56a1f02aaa3af35faec17167d836e4cacb42e895b3dddfaeaf77b42b794d45ed",
+    "src/xgap/runtime/bounded_paths.py": "0fbb4e803aba5bd13b569c60345f6cc66b983bb35ee21b580bf0b9fa9e12ce37",
+    "src/xgap/runtime/path_selection.py": "f5f3803c5857897553cb62838e0533db8c93718d7556c83daa27fc9a93eaee51",
+    "src/xgap/runtime/contracts.py": "556bd32b8be7fe930c91ae94c0d78560f30616d3029346049f7ef201341e9891",
+    "src/xgap/runtime/scheduler.py": "4cdcafd8e24d86fa466c1460a6dd0d8fa1b551ac270d9cafa1bc7521984f3a90",
+    "src/xgap/algebra/evaluator.py": "f178b30fc9067ca1fbc26ebeaedb6a16f704c9a7ab45d91f131b378d84cb61e7",
+    "scripts/run_toy_backbone_native.py": "58a66a3d18e877393da32a6b5041f99cc4befc87b9b413bb9a941a8adb8f6684",
+    "src/xgap/pattern/lowering.py": "bb17ca1c4af397c23676a2c189fdd3139035520ca12ed661897d836c8aa8f5b9",
+    "src/xgap/pattern/typecheck.py": "0e2031353dc12ef9042bc7f0d1e945fa2a91f83a8bc7cd95e56099e307f8732d",
+    "src/xgap/llm/parser.py": "5501b7eca7464f627f1d453f44304d2d1c4bf4c6db9d349075aef21075e0d9c7",
+    "src/xgap/experiments/toy_repetition.py": "e538ff203eb5aab5393ef35063872c97f1816853d7d596345937901959c883d6"
+  },
+  "fixture_manifest_sha256": {
+    "fixture_sha256": "cca07ab41e946d70455d4fd6a9888d28da0fa5b3b778bcf969578236ac284a79",
+    "repetition_fixture_sha256": "2a15d95c840ae043000a96e4a57bc66ede8162086fab6dcfb38b9a411db7513d"
+  },
+  "fixture_file_counts": {
+    "original": 42,
+    "repetition": 28
+  },
+  "fixture_hashes_match": true,
+  "source_hashes_match": true,
+  "cases": [
+    {
+      "query_id": "R01",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "a",
+        "a/e1/b",
+        "a/e4/c",
+        "a/e7/b"
+      ],
+      "expected_paths": [
+        "a",
+        "a/e1/b",
+        "a/e4/c",
+        "a/e7/b"
+      ]
+    },
+    {
+      "query_id": "R01",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "a",
+        "a/e1/b",
+        "a/e4/c",
+        "a/e7/b"
+      ],
+      "expected_paths": [
+        "a",
+        "a/e1/b",
+        "a/e4/c",
+        "a/e7/b"
+      ]
+    },
+    {
+      "query_id": "R02",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "b/e1/a/e4/c",
+        "b/e2/c",
+        "b/e7/a/e4/c"
+      ],
+      "expected_paths": [
+        "b/e1/a/e4/c",
+        "b/e2/c",
+        "b/e7/a/e4/c"
+      ]
+    },
+    {
+      "query_id": "R02",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "b/e1/a/e4/c",
+        "b/e2/c",
+        "b/e7/a/e4/c"
+      ],
+      "expected_paths": [
+        "b/e1/a/e4/c",
+        "b/e2/c",
+        "b/e7/a/e4/c"
+      ]
+    },
+    {
+      "query_id": "R03",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "z"
+      ],
+      "expected_paths": [
+        "z"
+      ]
+    },
+    {
+      "query_id": "R03",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "z"
+      ],
+      "expected_paths": [
+        "z"
+      ]
+    },
+    {
+      "query_id": "R04",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e7/b/e2/c"
+      ],
+      "expected_paths": [
+        "a/e1/b/e2/c",
+        "a/e7/b/e2/c"
+      ]
+    },
+    {
+      "query_id": "R04",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e7/b/e2/c"
+      ],
+      "expected_paths": [
+        "a/e1/b/e2/c",
+        "a/e7/b/e2/c"
+      ]
+    },
+    {
+      "query_id": "R05",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e4/c",
+        "a/e7/b/e2/c"
+      ],
+      "expected_paths": [
+        "a/e1/b/e2/c",
+        "a/e4/c",
+        "a/e7/b/e2/c"
+      ]
+    },
+    {
+      "query_id": "R05",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e4/c",
+        "a/e7/b/e2/c"
+      ],
+      "expected_paths": [
+        "a/e1/b/e2/c",
+        "a/e4/c",
+        "a/e7/b/e2/c"
+      ]
+    },
+    {
+      "query_id": "R06",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "a/e4/c"
+      ],
+      "expected_paths": [
+        "a/e4/c"
+      ]
+    },
+    {
+      "query_id": "R06",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "a/e4/c"
+      ],
+      "expected_paths": [
+        "a/e4/c"
+      ]
+    },
+    {
+      "query_id": "R07",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [],
+      "expected_paths": []
+    },
+    {
+      "query_id": "R07",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [],
+      "expected_paths": []
+    },
+    {
+      "query_id": "R08",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ]
+    },
+    {
+      "query_id": "R08",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ]
+    },
+    {
+      "query_id": "R09",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "d"
+      ],
+      "expected_paths": [
+        "d"
+      ]
+    },
+    {
+      "query_id": "R09",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "d"
+      ],
+      "expected_paths": [
+        "d"
+      ]
+    },
+    {
+      "query_id": "R10",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "d",
+        "d/e6/d"
+      ],
+      "expected_paths": [
+        "d",
+        "d/e6/d"
+      ]
+    },
+    {
+      "query_id": "R10",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "d",
+        "d/e6/d"
+      ],
+      "expected_paths": [
+        "d",
+        "d/e6/d"
+      ]
+    },
+    {
+      "query_id": "R11",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d"
+      ],
+      "expected_paths": [
+        "d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d"
+      ]
+    },
+    {
+      "query_id": "R11",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d"
+      ],
+      "expected_paths": [
+        "d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d"
+      ]
+    },
+    {
+      "query_id": "R12",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [],
+      "expected_paths": []
+    },
+    {
+      "query_id": "R12",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [],
+      "expected_paths": []
+    },
+    {
+      "query_id": "R13",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ],
+      "expected_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ]
+    },
+    {
+      "query_id": "R13",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "actual_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ],
+      "expected_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ]
+    }
+  ],
+  "native": {
+    "success": true,
+    "compiled_passed": 26,
+    "compiled_total": 26,
+    "independent_targets_passed": 26,
+    "independent_targets_total": 26,
+    "vertical_slice_passed": true,
+    "query_calls": 54,
+    "load_and_health_calls_excluded": true,
+    "services": [
+      {
+        "product": "neo4j",
+        "version": "5.26.30"
+      },
+      {
+        "product": "fuseki",
+        "version": "5.6.0"
+      }
+    ],
+    "shutdown": [
+      {
+        "service_id": "fuseki",
+        "pid": 13727,
+        "initial_exit_code": null,
+        "final_exit_code": 143,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      },
+      {
+        "service_id": "neo4j",
+        "pid": 13587,
+        "initial_exit_code": null,
+        "final_exit_code": 0,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      }
+    ],
+    "automatic_retries": 0
+  },
+  "gates": {
+    "focused": {
+      "session": 2471,
+      "exit_code": 0,
+      "passed": 226,
+      "elapsed_seconds": 4.3
+    },
+    "interface": {
+      "session": 34702,
+      "exit_code": 0,
+      "passed": 42,
+      "elapsed_seconds": 1.89
+    },
+    "daily": {
+      "session": 7181,
+      "exit_code": 0,
+      "passed": 335,
+      "elapsed_seconds": 15.12,
+      "toy_demo_answers": 18
+    },
+    "native": {
+      "session": 50965,
+      "exit_code": 0
+    },
+    "broad": {
+      "session": 81593,
+      "status": "completed",
+      "log": "/tmp/xgap-t1-repetition-acceptance.log",
+      "exit_code": 0,
+      "passed": 3180,
+      "skipped": 38,
+      "elapsed_seconds": 645.66,
+      "harness_example_entrypoints": 24,
+      "log_sha256": "2ea1dea98e9f7a112b7bf7778724053e1589b7830fccbb4824d9ac79ae9f071b"
+    }
+  },
+  "limits": [
+    "Tiny deterministic correctness only; no NL quality or scale result.",
+    "Native nested non-WALK recursion remains unavailable.",
+    "Unbounded minimum >=2 requires explicit finite query depth.",
+    "Existing native 128-branch/64-edge budgets remain.",
+    "Overall T1/T2/T3 and the system Goal remain unfinished."
+  ]
+}

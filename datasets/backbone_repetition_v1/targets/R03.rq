@@ -1,0 +1,10 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE { {
+VALUES ?n0 {t:z}
+?n0 a t:Person .
+?n0 t:id ?nid0 .
+BIND(?nid0 AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid0 AS ?dst)
+BIND(0 AS ?length)
+} }

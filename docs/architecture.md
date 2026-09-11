@@ -63,11 +63,16 @@ operators live above this algebra in separate typed namespaces. For example,
 `ResolveEntity` is an agent action and semantic `Traverse` may carry a
 `PathPatternQuery`; neither is a new path-algebra operator.
 
-The bounded path planner now expands Rel/Seq/Alt and root finite Plus/Star into
+The bounded path planner now expands Rel/Seq/Alt/Optional and root finite
+Plus/Star/Bounded into
 native candidates, then runs the existing SolutionSpace selector semantics in
 the coordinator. `compile_bounded_path_plan` emits both stages explicitly and
 requires dataset identity/domain mappings. See [T1 coverage](report/toy_backbone_t1_bounded_paths.md)
 for the all-eighteen toy execution evidence and remaining logical/scale limits.
+Optional/finite Bounded also have logical reference meanings using existing
+operators; variable-length child powers and zero-length shortest selection are
+specified separately in [finite repetition](decisions/finite_regex_repetition_v1.md).
+Nested finite Bounded expands under WALK only; nested non-WALK retains its gap.
 
 `compile_semantic_program` now composes Match/Traverse and the existing semantic
 row operators into a federated execution DAG. Source placement and backend
@@ -617,7 +622,10 @@ manifests, not downstream query logic, own repository revision, shard identity,
 size, checksum, and schema validation. The archival transport remains
 Freebase; it is not an ontology or knowledge-graph substitution.
 
-Supported regex nodes are `Rel`, `Seq`, `Alt`, `Plus`, and `Star`. Future regex nodes such as `OptionalExpr` and `Bounded` are declared but lower with explicit `LoweringError`.
+At the historical M5 boundary, supported regex nodes were `Rel`, `Seq`, `Alt`,
+`Plus`, and `Star`; `OptionalExpr` and `Bounded` were declared placeholders.
+The later [finite repetition extension](decisions/finite_regex_repetition_v1.md)
+implements Optional and finite Bounded without redefining existing operators.
 
 Selectors lower to the audited extended algebra:
 

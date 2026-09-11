@@ -43,7 +43,7 @@ from xgap.pattern.ast import (
     Seq,
     Star,
 )
-from xgap.pattern.typecheck import type_check_path_pattern
+from xgap.pattern.typecheck import _check_bounded, type_check_path_pattern
 
 
 class LoweringError(ValueError):
@@ -85,9 +85,34 @@ def lower_regex(
             ),
         )
     if isinstance(regex, OptionalExpr):
-        raise LoweringError("OptionalExpr lowering is not implemented in M5.")
+        return UnionOp(NodesOp(), lower_regex(regex.child, restrictor, max_depth))
     if isinstance(regex, Bounded):
-        raise LoweringError("Bounded regex lowering is not implemented in M5.")
+        _check_bounded(regex)
+        minimum, maximum = regex.min_repeats, regex.max_repeats
+        if maximum is None and minimum <= 1:
+            wrapper = Star if minimum == 0 else Plus
+            return lower_regex(wrapper(regex.child), restrictor, max_depth)
+        if maximum is None:
+            maximum = max_depth
+        if maximum is None:
+            raise LoweringError("Bounded lower bound >=2 requires a finite upper bound or max_depth")
+        if type(maximum) is not int:
+            raise LoweringError("Bounded max_depth must be an integer")
+        if maximum < minimum:
+            raise LoweringError("Bounded max_depth must cover its minimum repetition count")
+        if maximum == 0:
+            return NodesOp()
+        child = lower_regex(regex.child, restrictor, max_depth)
+        power, positive = child, None
+        for count in range(1, maximum + 1):
+            if count > 1:
+                power = JoinOp(power, child)
+            if count >= max(1, minimum):
+                positive = power if positive is None else UnionOp(positive, power)
+        # One Recursive step applies the mode to exactly the admitted powers.
+        # It neither adds another repetition nor confuses counts with edge length.
+        selected = RecursiveOp(positive, restrictor, max_depth=1)
+        return UnionOp(NodesOp(), selected) if minimum == 0 else selected
     raise LoweringError(f"Unsupported regex expression {type(regex).__name__}.")
 
 

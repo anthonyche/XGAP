@@ -257,6 +257,13 @@ UNDIRECTED lowers to Union of both orientations; bounded native expansion reuses
 OUT/IN compilers and existing deduplication/selectors. It is a path-orientation
 extension, not an agent action. See [the semantic decision](decisions/path_orientation_v1.md).
 
+Optional and finite Bounded now lower compositionally using existing Nodes,
+Union, Join and a one-step Recursive mode selection. Repetition counts child
+paths, not edges. Zero repetition is separate from nullable positive powers
+when selecting shortest paths. Native finite expansion preserves this distinction;
+nested non-WALK scopes remain unavailable rather than flattened. See
+[finite repetition](decisions/finite_regex_repetition_v1.md).
+
 `CoordinatorPathSelect` normalizes explicit native path identities and executes
 the existing SolutionSpace selector algebra. Bounded native path expansion and
 this coordinator stage form one executable plan; selector work and candidate

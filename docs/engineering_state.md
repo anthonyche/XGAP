@@ -1,6 +1,6 @@
 # XGAP current engineering loop
 
-Updated: 2026-09-10. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
+Updated: 2026-09-11. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
 ## Workspace and scope
 
@@ -12,6 +12,13 @@ Updated: 2026-09-10. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 - No subordinate agents requested or spawned in this task.
 
 ## User schedule and stopping condition
+
+**Recovery verified:2026-09-11 10:15 +08:00**, clean d9c2858 and current time
+checked. The interruptible overnight pause completed; xgap heartbeat restored
+to hourly through the app tool. No current pause remains. The previous turn
+honored the user-scheduled pause; it was not an engineering blocker.
+
+Historical September10 evening instruction:
 
 **New instruction, 2026-09-10 evening:** complete the current capability
 milestone, then stop development until **2026-09-11 10:00 +08:00**. Do not start
@@ -37,6 +44,40 @@ Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
+
+T1 Optional/finite Bounded repetition is ACCEPTED on top ofd9c2858 after
+the September11 morning recovery. See `docs/decisions/finite_regex_repetition_v1.md`.
+Optional=Nodes union child. Finite Bounded unions exact child powers, applies
+the existing Recursive(mode,max_depth=1) to positive powers, and adds Nodes
+outside when minimum=0. No existing algebra definition changed. Native root
+finite ranges and compositional Optional reuse branch budgets/selectors;
+nested non-WALK scopes and unbounded minimum>=2 without a finite query depth
+remain explicit gaps. A nullable child inside positive SHORTEST repetition
+participates in minimum length; a separate zero-repetition Nodes branch does not.
+The selector now records that difference. Parser accepts exactly zero upper
+bound, capability assessment reflects real finite lowering, and old original
+gold files remain frozen. New13 full independent chains have local exact plans,
+answers, independent RDF and semantic-DAG entry checks.
+
+Terminal gates: compatibility92966 exit0,172 passed/2.14s; initialnew8908 exit0,
+22 passed/1.52s; focused2471 exit0,226 passed/4.30s; interface34702 exit0,
+42 passed/1.89s. No failed test/query observed in these runs. New native/daily/
+broad handles:7181(daily) is terminal exit0,335 passed/15.12s plus18 demo;
+50965(native) is terminal exit0,26/26 compiled and26/26 independent answers
+plus the old slice correct. Both services stopped normally, no kill/retry;
+15 source and42 old/28 new fixture hashes match. Broad81593 is terminal exit0:
+3180 passed/38 skipped/645.66s, all24 harness/example entrypoints passed.
+All current test/native handles are terminal; do not poll or repeat passed gates.
+Receipt: experiments/artifacts/toy_backbone_t1_repetition_20260911.json; report:
+docs/report/toy_backbone_t1_repetition.md. Next: same-toy remaining nested path
+scopes/typed semantics, then T2 catalog lifecycle and minimal replay, then T3.
+This finite repetition step is accepted; full T1/T2/T3 remain unfinished.
+Logs `/tmp/xgap-t1-repetition-{fast,native,acceptance}.log`;
+native output `/Users/anthonyche/xgap-data/t1-repetition-native-20260911`.
+Do not relaunch existing work because an observation times out. The overall
+system Goal remains active, and the overnight pause has ended.
+
+## Accepted capability predecessor
 
 T1 semantic capability admission is ACCEPTED on top of2f978b8. The prior
 goal turn made progress: orientation code and the consolidated report were
