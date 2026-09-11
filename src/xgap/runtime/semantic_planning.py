@@ -201,7 +201,9 @@ def _refresh_before_execution(space, backend_tool, policy, snapshot, plan, selec
                     detail["post_selection"] = selection
                     record["candidate_count"] = selection["evaluated_plan_count"]
                 finally:
-                    detail["selection_ms"] += (time.perf_counter() - select_at) * 1000
+                    elapsed = (time.perf_counter() - select_at) * 1000
+                    detail["reselection_ms"] += elapsed
+                    detail["selection_ms"] += elapsed
         score_at = time.perf_counter()
         try:
             # In refresh_only the old selection certificate still belongs to
@@ -210,7 +212,9 @@ def _refresh_before_execution(space, backend_tool, policy, snapshot, plan, selec
                 "snapshot_version": snapshot.version,
                 "estimate": FederatedPlanSelector().estimate(plan, snapshot).to_dict()}
         finally:
-            detail["selection_ms"] += (time.perf_counter() - score_at) * 1000
+            elapsed = (time.perf_counter() - score_at) * 1000
+            detail["scoring_ms"] += elapsed
+            detail["selection_ms"] += elapsed
         detail["state"] = "ready_to_execute"
         return plan, selection
     except (OSError, ValueError):
@@ -230,6 +234,7 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         refresh_policy: SemanticRefreshPolicy | None = None,
         prefix_policy: SemanticPrefixPolicy | None = None,
         acquisition_policy: SemanticAcquisitionPolicy | None = None,
+        environment_episode: str | None = None,
         bandwidth_bytes_per_ms: float = 1000.0, exchange_fixed_ms: float = 0.0,
         coordinator_row_ms: float = 0.01, goal_id: str = "semantic-planning") -> dict:
     """Acquire unique observations if needed, select, then dispatch only the winner.
@@ -258,6 +263,10 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
             possible_placement_count=space.possible_placement_count,
             candidate_budget_unit="local_options", search_space_materialized=False)
     try:
+        if plan_memory is not None:
+            if environment_episode is not None and environment_episode != plan_memory.environment_episode:
+                raise ValueError("Current environment episode disagrees with planning memory")
+            environment_episode = plan_memory.environment_episode
         if acquisition_policy is not None:
             if not isinstance(acquisition_policy, SemanticAcquisitionPolicy) or not polynomial:
                 raise ValueError("Acquisition requires a typed predictive policy and polynomial plan space")
@@ -292,7 +301,8 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
                 "history": None, "initial_selection": None, "request": None,
                 "observation": None, "updated_snapshot": None, "post_selection": None,
                 "executed_plan_id": None, "executed_plan_estimate": None,
-                "selection_runs": 0, "elapsed_ms": 0.0, "selection_ms": 0.0, "overhead_ms": 0.0}
+                "selection_runs": 0, "elapsed_ms": 0.0, "selection_ms": 0.0,
+                "reselection_ms": 0.0, "scoring_ms": 0.0, "overhead_ms": 0.0}
             if static_backend_order is not None:
                 raise ValueError("Static selection and warm refresh policies are mutually exclusive")
         if plan_memory is not None and (snapshot is not None or static_backend_order is not None):
@@ -348,7 +358,8 @@ def run_semantic_plans(space: SemanticPlanSpace, backend_tool: BackendInvokeTool
         if acquisition_policy is not None:
             decision_at = time.perf_counter()
             try:
-                decision = acquisition_policy.decide(space, snapshot, selected)
+                decision = acquisition_policy.decide(space, snapshot, selected,
+                    environment_episode=environment_episode)
                 record["acquisition"]["decision"] = decision
                 refresh_policy = SemanticRefreshPolicy(
                     "refresh_reselect" if decision["action"] == "acquire" else "no_refresh")

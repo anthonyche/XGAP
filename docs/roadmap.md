@@ -1,5 +1,16 @@
 # XGAP Roadmap
 
+## Current next gate — original artifacts and real small integration
+
+A4 offline exact-request preparation and ordinary-entry environment binding are
+implemented and accepted; see [evidence](report/semantic_forecast_preparation_20260911.md).
+Do not repeat its targeted gate or relabel old A1 profiles as training. Use the
+prepared bounded collector for the necessary server artifact handoff, then inspect
+the original FinBench workpack/real fact-load records. Finish the existing five
+question model LINK when actual artifacts arrive. Real prior forecast preparation,
+independent answers and fair cost comparisons remain the R-C/INT critical path;
+no general catalog or product work is added. Preserve September18 and all failures.
+
 ## Next gate — frozen real artifacts, independent answers and forecast inputs
 
 INT-1 representation adapter is implemented and accepted; see

@@ -1,5 +1,15 @@
 # XGAP Design Decisions
 
+## A4: exact-request empirical forecasts are prepared offline
+
+[The preparation contract](decisions/semantic_forecast_preparation_v1.md) binds
+current episode, context, request and original profile provenance; it rejects
+failures, non-prior observations and duplicated raw calls. It retains all costs
+and adds no calibration or family-transfer guarantee. Runtime only consumes a
+prepared policy; actual reselection/scoring remain separately measured. Old A1
+measurements are not silently reclassified or split by subtracting control arms.
+See [A4 evidence](report/semantic_forecast_preparation_20260911.md).
+
 ## INT-1: declared URI triples become ordinary PathSet identities
 
 [The encoding contract](decisions/freebase_resource_path_encoding_v1.md) is now

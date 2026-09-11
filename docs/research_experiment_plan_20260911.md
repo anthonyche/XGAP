@@ -22,7 +22,9 @@ execution-prefix adaptation to ordinary P1; see [A2 evidence](report/semantic_pr
 Its two-arm tiny native gate passes, but fixed-order actual time favors no-replan.
 A3 now implements a finite-forecast, cost-aware one-request stop/acquire rule with
 conditional decision-regret bounds; see [A3 evidence](report/semantic_acquisition_20260911.md).
-Prepared/calibrated real forecasts and real-model/data evaluation remain gaps.
+Offline exact-request empirical preparation and current-environment admission
+are now implemented at A4; see [A4 evidence](report/semantic_forecast_preparation_20260911.md).
+Actual prior forecast sources/calibration and real-model/data evaluation remain gaps.
 INT-0 has recovered seven original GrailQA pilot files by exact hash and retained
 two fixed real-input compiler diagnostics. It identifies a missing raw-RDF/mirror
 encoding adapter, not a missing catalog algorithm; see

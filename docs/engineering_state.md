@@ -1,5 +1,25 @@
 # XGAP current engineering loop
 
+## Current A4 gate — accepted; external inputs still pending
+
+Offline empirical preparation, exact profile provenance and current environment
+binding are implemented through the ordinary query entry. Eighteen unique new
+cases and one affected legacy case have passing evidence. The final 19-case run
+passed18/failed1 in0.64s due only to a new test reading successful output on an
+agent failure; its corrected assertion passes alone in0.40s. Refresh reselection
+and common scoring are separately timed, without changing their total.
+See [A4 evidence](report/semantic_forecast_preparation_20260911.md).
+
+The 21-file/64-MiB original FinBench workpack collector has seven standalone tiny
+tests passing. A checked ZIP and Chinese one-step handoff are in XGAP-deliverables.
+It has not run remotely;3804011 remains last-confirmed PENDING. SSH config absent
+locally and previous browser access failed; no automatic external retry. Real
+facts/load/workpack/model artifacts remain the necessary next external inputs.
+No actual training forecast is frozen: old A1 records lack a declared prior phase
+and pure reselection cost and must not be relabeled. No new native/model/full
+regression or large-data run. Preserve the original150/48 evaluation denominators,
+all failures, September18 deadline and the research-plan acceptance ladder.
+
 ## Current INT-1 gate — accepted; real artifacts/answers next
 
 See [INT-1 evidence](report/resource_triple_encoding_20260911.md) and current

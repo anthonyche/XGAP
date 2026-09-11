@@ -30,7 +30,10 @@ pre-execution reselection；三种实际行为、小图gold、历史/当前成�
 固定两题已定位普通Traverse与既有raw-RDF/Neo4j mirror间的编码适配缺口，
 见[真实输入恢复证据](report/real_input_recovery_20260911.md)。INT-1表示适配已在小图
 实现并通过双库验收，见[编码接线证据](report/resource_triple_encoding_20260911.md)。
-下一步恢复真实facts/load记录及FinBench原包，接独立答案和forecast准备/成本来源；
+A4现已实现离线经验forecast准备和当前环境/原请求来源校验，普通入口与成本切分通过
+定向验收，见[准备接口证据](report/semantic_forecast_preparation_20260911.md)。真实先验
+数据和校准仍缺证据；旧A1数据不重标为training。FinBench有界原包收集工具已备好，
+下一步取回真实facts/load记录及FinBench原包，接独立答案和真实forecast来源；
 scalar comparison在该新adapter仍显式不支持，保留原10题及150总分母，不扩展catalog。
 不能把单步刷新/残余重选/模型决策当成整个agent完成。
 模型LINK和真实数据评价仍待完成。不能把“有有效界”说成“真实延迟近似最优”。

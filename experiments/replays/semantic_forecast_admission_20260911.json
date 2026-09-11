@@ -1,0 +1,24 @@
+{
+  "schema": "targeted-development-failure-replay-v1",
+  "milestone": "A4",
+  "base_commit": "2b8c96b6fcf8ea409b5cab038ebed4f39a19008d",
+  "scope": "review findings in provisional A4 code, not regressions attributed to an accepted prior release",
+  "fixture": "tests/test_semantic_forecast.py::prepare_fixture",
+  "synthetic_forecasts": true,
+  "paper_result": false,
+  "replays": [
+    {"mutation": "same request/context/costs but missing or different current runtime episode", "expected": "zero backend calls, explicit admission failure", "test": "test_prepared_forecast_requires_the_current_environment_episode"},
+    {"mutation": "explicit runtime episode conflicts with current memory episode", "expected": "ordinary agent failure, zero backend calls, unchanged history", "test": "test_prepared_forecast_ordinary_entry_uses_the_current_memory_episode"},
+    {"mutation": "original operation=sample or another query artifact ID/hash, with rederived matching estimate", "expected": "reject preparation", "test": "test_original_response_cannot_disagree_with_declared_request_or_prior_phase"},
+    {"mutation": "original inner observation.success=false or original end timestamp later than declared completion/cutoff", "expected": "reject preparation without filtering the sample", "test": "test_original_response_cannot_disagree_with_declared_request_or_prior_phase"},
+    {"mutation": "duplicate the identical original tool result under a new sample_id", "expected": "reject duplicate; do not increase historical calls/costs or change empirical weights", "test": "test_an_alias_does_not_turn_one_observation_into_two_calls"}
+  ],
+  "test_only_failure": {
+    "initial_result": "18 passed, 1 failed in 0.64s",
+    "reason": "test expected state.output.planning_run on an ordinary agent failure, but successful output correctly remained null",
+    "repair": "assert the recorded state.message instead; implementation unchanged",
+    "affected_only_result": "1 passed in 0.40s"
+  },
+  "external_calls": 0,
+  "automatic_retries": 0
+}

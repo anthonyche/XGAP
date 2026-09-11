@@ -5,6 +5,7 @@ import math
 
 from xgap.runtime.planning import FederatedPlanSelector, RemoteEstimate
 from xgap.runtime.semantic_refresh import SemanticRefreshPolicy
+from xgap.runtime.semantic_forecast import ForecastTarget
 
 
 def _nonnegative(value, name):
@@ -38,6 +39,7 @@ class SemanticAcquisitionPolicy:
     max_expected_extra_ms: float
     source: str
     version: str
+    target: ForecastTarget | None = None
 
     def __post_init__(self):
         if (not isinstance(self.outcomes, tuple) or not self.outcomes
@@ -52,6 +54,8 @@ class SemanticAcquisitionPolicy:
         _nonnegative(self.expected_acquisition_ms + self.expected_reselection_ms, "Expected extra cost")
         if any(not isinstance(v, str) or not v.strip() for v in (self.source, self.version)):
             raise ValueError("Forecast source and version must be explicit")
+        if self.target is not None and not isinstance(self.target, ForecastTarget):
+            raise ValueError("Prepared forecast target must be explicitly typed")
 
     def to_dict(self):
         return {**asdict(self), "scope": "stop_vs_one_nominated_request",
@@ -60,8 +64,10 @@ class SemanticAcquisitionPolicy:
             "hard_wall_time_bound": False, "forecast_calibration_claim": False,
             "global_action_optimality_claim": False}
 
-    def decide(self, space, snapshot, initial):
+    def decide(self, space, snapshot, initial, *, environment_episode=None):
         request = SemanticRefreshPolicy().choose_request(space, initial.plan, snapshot)
+        if self.target is not None:
+            self.target.validate_target(space, snapshot, request, environment_episode)
         original = snapshot.by_key[request.observation_key]
         response_space = replace(space, baseline=initial)
         selector = FederatedPlanSelector()

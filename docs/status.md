@@ -1,5 +1,21 @@
 # XGAP Status
 
+## A4 offline forecast preparation and bounded recovery tool accepted
+
+Prepared empirical forecasts now bind the current environment, P1 context and
+exact registered profile request before rollout/execution. Source identity,
+prior timestamps, failures and duplicate raw observations are checked; original
+receipt authenticity remains an independent intake obligation. Ordinary tiny
+question execution preserves gold/history. Eighteen new cases and one affected
+legacy case have passing evidence; only the failed test assertion was rerun.
+Actual reselection and final scoring now have separate measured cost fields.
+See [A4 evidence and remaining gaps](report/semantic_forecast_preparation_20260911.md).
+
+A 21-file/64-MiB original FinBench workpack collector is ready, with seven tiny
+tests passing. Remote collection has not run. Real preparation/calibration,
+independent real-data answers, model LINK and formal E1–E5 remain pending.
+No new native/model/large-data or broad regression run was added.
+
 ## INT-1 resource encoding connected to ordinary P1/Traverse
 
 The declared raw-RDF/Neo4j mirror adapter is implemented for fixed1–3-hop resource
