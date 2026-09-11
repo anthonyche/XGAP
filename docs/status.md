@@ -1,5 +1,22 @@
 # XGAP Status
 
+## Current engineering — T2-C model adapter software accepted; live gate pending
+
+The one-call model provider joins the existing question/frozen-catalog/planner
+entry, uses exact pinned token preflight and retains safe failures and usage
+availability through recording/replay. Focused157 and114 checks passed; controlled
+records execute5/5 programs,18/18 candidate answers,10/10 independent native
+references and the old slice on real Neo4j/Fuseki. This is interface evidence;
+no real Qwen response or remote job has been obtained. Full32472 exited0:3421 passed/38 skipped in676.02s, all24 harness/example
+entrypoints passed. No source/test change after launch; all handles are terminal.
+
+The prepared remote entry runs only five tiny Interpretation questions, at most
+five model calls within a1h job. H100 preferred; compatible two-L40S fallback
+remains authorized and gput069 excluded. No large dataset/catalog build runs.
+See [the model interface report](report/toy_model_interface_20260911.md) and
+[scope decision](decisions/live_toy_interpretation_v1.md). Latest user restriction
+and September18 deadline remain controlling. Complete system Goal is active.
+
 ## Current engineering — T2-B question entry accepted
 
 The new provider-neutral Interpretation entry preserves executable hard

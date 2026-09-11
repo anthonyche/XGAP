@@ -22,6 +22,8 @@ class RecordingInterpretationProvider:
             response = self.provider.interpret(request)
         except InterpretationFailure as error:
             record["failure"] = {"category": error.category, "message": str(error), "usage": error.usage}
+            if error.provenance:
+                record["failure"]["provenance"] = error.provenance
             raise
         except Exception as error:
             record["failure"] = {"category": type(error).__name__,
@@ -74,6 +76,8 @@ class ReplayInterpretationProvider:
             failure = record["failure"]
             error = InterpretationFailure(failure["category"], failure["message"])
             error.recorded_usage = failure["usage"]
+            error.provenance = {"kind": "replay", "recorded_usage": failure["usage"],
+                                "recorded_provenance": failure.get("provenance", {})}
             raise error
         response = record["response"]
         return InterpretationResponse(json_copy(response["payload"]), provenance={

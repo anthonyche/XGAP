@@ -1,5 +1,11 @@
 # XGAP Design Decisions
 
+## T2-C One-call model Interpretation on tiny development data
+
+See [the frozen scope](decisions/live_toy_interpretation_v1.md). No new algebra,
+large-data execution or implicit catalog preparation. Model failures are saved
+with measured cost and missing-usage flags; repeated external actions are forbidden.
+
 The current provider-neutral question entry and offline response/failure replay
 are scoped in [Interpretation entry v1](decisions/interpretation_entry_replay_v1.md).
 The latest user deadline and development-before-large-data gate are in

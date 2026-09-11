@@ -34,6 +34,7 @@ def run_question(request, provider, *, catalog_root, catalog_hash, sources,
                   "backend_remote_calls": 0, "resolution_external_calls": 0,
                   "input_tokens": 0, "output_tokens": 0}
     return {**result, "interpretation": interpreted,
+            "interpretation_token_usage_complete": not interpreted.get("usage_unavailable", False),
             "interpretation_external_calls": interpreted["external_calls"],
             "input_tokens": result["input_tokens"] + interpreted["input_tokens"],
             "output_tokens": result["output_tokens"] + interpreted["output_tokens"],

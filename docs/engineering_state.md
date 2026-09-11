@@ -50,7 +50,37 @@ hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
-## Current milestone — T2-B Interpretation entry and provider replay accepted
+## Current milestone — T2-C model adapter software accepted; live gate pending
+
+T2-B committed locally asbea9321afb29c951ff11f7fa7a2de01fa59eaedd.
+Push94922 is terminal128: connection closed by127.0.0.1:1082. Upstream remains
+174393d; no retry. All earlier handles are terminal. Never treat the failed
+push as a remote source update. New offline bundle will carry exact local source.
+
+T2-C scope frozen in decisions/live_toy_interpretation_v1.md. New provider and
+prompt/schema use existing transport/token guard, one call/no repair, observable
+unknown token usage and failure provenance. Model-only runner has five fixed
+questions with input context identical to the native entry; native harness can
+replay their recordings. Existing graph/gold/catalog and compiler/runtime unchanged.
+New job runs tiny connectivity only, one hour, owned model cleanup; H100 explicit
+health profile and existing L40S fallback. No job submission or actual model call.
+
+Focused35421 exit0:157/7.17s. Focused22612 exit0:114/11.40s. Native65485 exit0:
+5 programs,18 candidate answers,10 independent targets and old slice; source35/35
+match, services78895/78853 stopped normally. These are controlled template records,
+not Qwen replies. Output /Users/anthonyche/xgap-data/t2c-native-recorded-interpretation-20260911,
+log /tmp/xgap-t2c-native.log. No native rerun needed absent a new change.
+
+Final full32472 exit0:3421 passed/38 skipped in676.02s; all24 harness/example
+entrypoints passed. All handles terminal. No source/test edits after full launch. Receipt
+experiments/artifacts/toy_model_interface_20260911.json and report
+report/toy_model_interface_20260911.md accepted for software, real model pending.
+Next commit locally, prepare/verify small offline bundle and give the
+minimal manual upload/start action because browser getTab remains unavailable.
+Do not automatically retry failed Git push or old browser access. Model-only
+remote responses return to the same native tiny graph before any large-data work.
+
+## Accepted predecessor — T2-B Interpretation entry and provider replay
 
 Previous turn was progress:174393d committed/pushed T2-A, clean HEAD=upstream.
 T2-B scope was frozen in decisions/interpretation_entry_replay_v1.md. New common
@@ -82,8 +112,8 @@ Do not repeat these passed gates without a new change or concern. No source/test
 changes after final full launch. All37 final source hashes match the receipt;
 original tracked fixtures are unchanged. Receipt experiments/artifacts/toy_backbone_t2_interpretation_20260911.json
 and report docs/report/toy_backbone_t2_interpretation.md are accepted.
-Next finalize commit/push and update the xgap checkpoint, then immediately
-implement the real model adapter and small-data remote integration package.
+Local commitbea9321 is retained; push failed as described above. T2-C now continues
+the real model adapter and tiny connectivity package.
 
 Current remote observation: CUA inventory found Chrome Pioneer terminal366873551
 at hpc8, but getTab timed out before reading content or sending any server action.

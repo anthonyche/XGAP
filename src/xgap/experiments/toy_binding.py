@@ -73,7 +73,7 @@ def resolution_tools(case, *, include_clarification=True):
     return registry
 
 
-def execute_binding_case(case, mapping, *, clients):
+def execute_binding_case(case, mapping, *, clients, interpretation_provider=None):
     graph, _, _ = load_fixture()
     version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
     sources = {"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))}
@@ -83,6 +83,7 @@ def execute_binding_case(case, mapping, *, clients):
         case["explicit_user_selection"], source_id="controlled-toy-user-selection"))
         if case.get("explicit_user_selection") else None)
     request, provider = interpretation_inputs(case)
+    provider = interpretation_provider or provider
     run = run_question(request, provider,
         catalog_root=BUNDLE_FIXTURE / reference["root"], catalog_hash=reference["bundle_hash"],
         sources=sources, backends=backends, backend_clients=clients, clarification_tool=clarification,
@@ -90,9 +91,11 @@ def execute_binding_case(case, mapping, *, clients):
     actual = run["state"]["output"]["planning_run"]["execution"]["value"]["final_rows"] if run["success"] else None
     canonical = lambda rows: sorted(json.dumps(row, sort_keys=True) for row in rows)
     record = {"query_id": case["id"], "success": run["success"] and canonical(actual) == canonical(case["expected_rows"]),
-            "actual_rows": actual, "agent_run": run, "live_llm": False, "paper_result": False,
+            "actual_rows": actual, "agent_run": run,
+            "live_llm": run.get("interpretation", {}).get("provenance", {}).get("kind") == "live_chat",
+            "paper_result": False,
             "candidate_checks": [], "validation_only_extra_remote_calls": 0,
-            "interpretation_source": "controlled NL phrase intake and pinned frozen resolution bundle"}
+            "interpretation_source": provider.provider_id}
     if not record["success"]:
         return record
     output = run["state"]["output"]

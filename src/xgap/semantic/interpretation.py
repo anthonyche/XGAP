@@ -64,10 +64,11 @@ class InterpretationResponse:
 class InterpretationFailure(Exception):
     """Safe provider failure; no transport credentials or automatic retry."""
 
-    def __init__(self, category: str, message: str, *, usage=None):
+    def __init__(self, category: str, message: str, *, usage=None, provenance=None):
         super().__init__(message)
         self.category = category
         self.usage = InterpretationResponse({}, **(usage or {})).usage
+        self.provenance = json_copy(provenance or {})
 
 
 class InterpretationProvider(Protocol):
@@ -145,8 +146,10 @@ def interpret_question(request: InterpretationRequest, provider: InterpretationP
     except InterpretationFailure as error:
         report.update(status="provider_failure", failure_category=error.category,
                       error=str(error), **error.usage)
+        if error.provenance:
+            report["provenance"] = error.provenance
         if hasattr(error, "recorded_usage"):
-            report["provenance"] = {"kind": "replay", "recorded_usage": error.recorded_usage}
+            report["provenance"] = {**error.provenance, "kind": "replay", "recorded_usage": error.recorded_usage}
     except Exception as error:
         # Unexpected provider exceptions are observations, never a repair trigger.
         report.update(status="provider_failure", failure_category=type(error).__name__,
@@ -155,11 +158,14 @@ def interpret_question(request: InterpretationRequest, provider: InterpretationP
         try:
             if not isinstance(response, InterpretationResponse):
                 raise ValueError("Provider must return InterpretationResponse")
-            report.update(**response.usage, provenance=json_copy(dict(response.provenance)),
+            report.update(**response.usage)
+            report.update(provenance=json_copy(dict(response.provenance)),
                           raw_response=json_copy(response.payload))
             program, sources = parse_interpretation(response.payload, request)
             report.update(success=True, status="interpreted", program=program.to_dict(), operator_sources=sources)
         except (ValueError, TypeError, KeyError, AttributeError, RecursionError) as error:
             report.update(status="interpretation_invalid", error=str(error))
+    if report.get("provenance", {}).get("usage_reported") is False:
+        report["usage_unavailable"] = True
     report["elapsed_ms"] = (time.perf_counter() - started) * 1000
     return report

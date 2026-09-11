@@ -31,6 +31,7 @@ from xgap.experiments.toy_semantic import (
 from xgap.experiments.toy_planning import execute_planned_semantic_case
 from xgap.experiments.toy_binding import (FIXTURE as BINDING_FIXTURE, BUNDLE_FIXTURE, INTAKE_FIXTURE, load_binding_cases,
     execute_binding_case, reference_artifact, reference_rows)
+from xgap.semantic.interpretation_replay import ReplayInterpretationProvider
 from xgap.experiments.toy_orientation import FIXTURE as ORIENTATION_FIXTURE, load_orientation_cases
 from xgap.experiments.toy_capabilities import (FIXTURE as CAPABILITY_FIXTURE,
     load_capability_cases, execute_capability_case)
@@ -50,6 +51,8 @@ def main(argv=None):
     parser.add_argument("--output", required=True)
     parser.add_argument("--java", required=True)
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--interpretation-recordings",
+        help="With --agentic-semantic, replay the five recorded model responses; zero new model calls")
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--compiled-directed", action="store_true",
         help="Run the production-compiled fixed-path cases instead of independent reference targets")
@@ -81,6 +84,8 @@ def main(argv=None):
     parser.add_argument("--boolean-followup-only", action="store_true",
         help="With --boolean, verify Match, planning and retained slice without repeating path targets")
     args = parser.parse_args(argv)
+    if args.interpretation_recordings and not args.agentic_semantic:
+        parser.error("--interpretation-recordings requires --agentic-semantic")
     if args.typed_query_ids and not args.typed_bindings:
         parser.error("--typed-query-ids requires --typed-bindings")
     typed_cases = [c for c in load_typed_fixture()[1]
@@ -141,7 +146,7 @@ def main(argv=None):
             "src/xgap/tools/artifact_resolution.py", "src/xgap/tools/resolution.py",
             "src/xgap/experiments/toy_binding.py", "src/xgap/catalog/bundle.py",
             "src/xgap/agent/question.py", "src/xgap/semantic/intake.py",
-            "src/xgap/semantic/interpretation.py"))
+            "src/xgap/semantic/interpretation.py", "src/xgap/semantic/interpretation_replay.py"))
     if args.capability_semantic:
         source_files.append(REPO / "src/xgap/experiments/toy_capabilities.py")
     if args.repetition:
@@ -189,6 +194,8 @@ def main(argv=None):
                 for p in CAPABILITY_FIXTURE.rglob("*") if p.is_file()})
     if args.agentic_semantic:
         record.update(binding_cases=[], binding_reference_targets=[],
+            binding_query_ids=[c["id"] for c in load_binding_cases()],
+            interpretation_mode="recorded_response" if args.interpretation_recordings else "controlled_template",
             interpretation_fixture_sha256={str(p.relative_to(INTAKE_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in INTAKE_FIXTURE.rglob("*") if p.is_file()},
@@ -198,6 +205,13 @@ def main(argv=None):
             binding_fixture_sha256={str(p.relative_to(BINDING_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in BINDING_FIXTURE.rglob("*") if p.is_file()})
+        if args.interpretation_recordings:
+            record["binding_cases"] = [{"query_id": c["id"], "status": "not_attempted", "success": False}
+                                       for c in load_binding_cases()]
+            record["interpretation_recording_sha256"] = {
+                p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in (Path(args.interpretation_recordings) / (c["id"] + ".json")
+                          for c in load_binding_cases()) if p.is_file()}
     if args.orientation:
         record.update(orientation_reference_targets=[],
             query_ids=[c["id"] for c in load_orientation_cases()],
@@ -399,13 +413,23 @@ def main(argv=None):
                 if not item["success"]:
                     raise RuntimeError(f"Semantic planning failed: {case['id']}; no retry")
         if args.agentic_semantic:
-            for case in load_binding_cases():
+            for case_index, case in enumerate(load_binding_cases()):
                 record["phase"] = "agentic-semantic-" + case["id"]
-                item = {"query_id": case["id"], "status": "started", "success": False}
-                record["binding_cases"].append(item)
+                if args.interpretation_recordings:
+                    item = record["binding_cases"][case_index]
+                    item["status"] = "started"
+                else:
+                    item = {"query_id": case["id"], "status": "started", "success": False}
+                    record["binding_cases"].append(item)
                 save()
-                item.update(execute_binding_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf}),
+                provider = (ReplayInterpretationProvider.from_path(
+                    Path(args.interpretation_recordings) / (case["id"] + ".json"))
+                    if args.interpretation_recordings else None)
+                item.update(execute_binding_case(case, mapping, clients={"neo4j": neo, "fuseki": rdf},
+                            interpretation_provider=provider),
                             status="completed")
+                if provider is not None:
+                    provider.assert_consumed()
                 save()
                 if not item["success"]:
                     raise RuntimeError(f"Semantic binding failed: {case['id']}; no retry")
@@ -513,6 +537,9 @@ def main(argv=None):
     except Exception as error:
         record["error"] = f"{type(error).__name__}: {error}"
     finally:
+        for item in record.get("binding_cases", []):
+            if item["status"] in {"started", "not_attempted"}:
+                item["status"] = "failed" if item["status"] == "started" else "not_attempted_after_failure"
         signal.alarm(0)
         signal.signal(signal.SIGALRM, previous)
         for service in reversed(running):
