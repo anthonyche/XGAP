@@ -1,5 +1,28 @@
 # XGAP current engineering loop
 
+## Current INT-4 checkpoint — local entity-answer boundary accepted
+
+Parent ed2a7c3; new experiments/resource_entity_answers.py reuses the actual
+BoundSemanticExecutionTool/run_agentic_semantic_query/P1 path for an already
+bound Traverse → explicit Project(answer:path_node) program. Strict snapshot,
+position, leakage and term normalization checks preserve failed agent traces and
+costs. Sixteen new independent tiny RDFLib checks pass first run in0.66s;
+tool623284 exit0, source hashes unchanged. No services/model/catalog/full suite
+were started. Report: [INT-4](report/resource_entity_answers_20260911.md).
+
+This closes prepared-meaning entity-answer conversion only. The legacy150
+candidate format still lacks an inference-owned answer projection; its runner
+remains semantic-only. No gold/reference/default position was introduced. Next
+prepare the new inference-side contract and real fact inputs, actual prior
+forecast/cost sources, and fair E1–E5 inputs. Preserve all original populations.
+
+User supplied v2 submission evidence: source08e4b3b staged, zero-call token
+preflight summary succeeds, requested H100 job3804210 submitted. Actual scheduler
+state/allocation and response contents are unknown. No need to re-upload/re-stage
+or submit again. See experiments/artifacts/cwru_toy_model_v2_submission_20260911.json.
+Old v1 0/5 and FinBench6/6 evidence is unchanged; old pending-handoff text below
+is historical. No running local handles remain after the test process exited.
+
 
 
 ## Current milestone — real FinBench integration passed; model LINK failure localized

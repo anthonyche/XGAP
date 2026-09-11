@@ -1,0 +1,46 @@
+{
+  "schema_version": "xgap-user-observed-submission-v1",
+  "observation_date": "2026-09-11",
+  "evidence_source": "User pasted Pioneer hxc859@hpc5 terminal output in the current task",
+  "source_commit": "08e4b3b13ee7754dfe15c95b0061340a953a6bac",
+  "remote_checkout": "/home/hxc859/XGAP-toy-model-08e4b3b",
+  "package": "xgap-toy-model-08e4b3b.zip",
+  "package_sha256": "e764a2371d65670ec4354dfafd6f98f7eebe68254ad3085fef2391cd451c2e9c",
+  "user_commands": [
+    "unzip -n xgap-toy-model-08e4b3b.zip",
+    "bash xgap-toy-model-08e4b3b/stage.sh && bash xgap-toy-model-08e4b3b/submit.sh h100"
+  ],
+  "observed_source_line": "HEAD is now at 08e4b3b Verify real FinBench integration and reject invalid model references",
+  "observed_preflight_summary": {
+    "success": true,
+    "external_calls": 0,
+    "output": "/home/hxc859/xgap-toy-model-08e4b3b/token_preflight.json"
+  },
+  "preflight_raw_checks_received": false,
+  "submission": {
+    "job_id": "3804210",
+    "requested_profile": "h100",
+    "requested_constraint": "gpu2h100",
+    "requested_gres": "gpu:1",
+    "requested_time_limit": "01:00:00",
+    "requested_no_requeue": true,
+    "excluded_nodes": ["gput069"],
+    "current_scheduler_state": null,
+    "assigned_node": null,
+    "model_results_received": false
+  },
+  "scope": {
+    "query_ids": ["B01", "B02", "B03", "B04", "B05"],
+    "maximum_model_calls": 5,
+    "prompt_version": "semantic_program_v2",
+    "large_dataset": false,
+    "automatic_retries": 0,
+    "paper_result": false
+  },
+  "limitations": [
+    "User output confirms staging, successful zero-call preflight summary and job submission, not job start or completion.",
+    "Requested H100 resources are package configuration, not an observed allocation.",
+    "Raw preflight and new model outputs must be received before quality acceptance.",
+    "Do not repeat submit.sh or the original model job 3804011."
+  ]
+}

@@ -1,5 +1,19 @@
 # XGAP Design Decisions
 
+## INT-4: answer meaning is an explicit semantic projection
+
+The [narrow entity-answer adapter](decisions/resource_entity_answers_v1.md) accepts
+an already bound Traverse → Project(answer:path_node), checks position and shared
+snapshot before execution, and preserves ordinary agent/P1 behavior. It converts
+verified canonical IRI strings to typed RDF terms without forging backend result
+metadata. Failures and all existing costs remain in the agent record. No answer
+position comes from variable names, defaults or evaluation fields. Sixteen tiny
+checks pass; [report](report/resource_entity_answers_20260911.md).
+
+This does not retrofit an inferred projection into the frozen GrailQA150 format.
+Its still-missing inference contract and model quality are separate obligations.
+The submitted08e4b3b model package stays frozen while this local adapter advances.
+
 
 
 ## LINK/INT-3: distinguish real generation, valid meaning and real answer execution

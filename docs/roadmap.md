@@ -1,5 +1,20 @@
 # XGAP Roadmap
 
+## Next gate — inferred answer contract and new model results
+
+INT-4's prepared-meaning → ordinary P1 → typed entity answer boundary is accepted
+with16 focused tiny checks; see [report](report/resource_entity_answers_20260911.md).
+Do not rerun these or the accepted native gates. The frozen150 candidate format
+still has no answer-projection contract. Use a separately versioned inference
+output for that missing meaning, without copying reference positions, silently
+defaulting to last, or changing the old semantic-only result population.
+
+H100 job3804210 has been submitted by the user from08e4b3b after token preflight.
+Await its actual outputs, preserving failures and the prior0/5; no resubmission.
+Proceed with genuinely prior forecast/cost preparation and real fact inputs for
+fair E1–E5. Model correctness and real-data scoring remain open, and all150/48
+IDs and the FinBench three-query integration exposure labels remain unchanged.
+
 
 
 ## Next gate — corrected model contract and fair real-data method comparison

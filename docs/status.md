@@ -1,5 +1,21 @@
 # XGAP Status
 
+## Current checkpoint — typed entity answers accepted; v2 model job submitted
+
+INT-4 now connects an explicit prepared Traverse → Project(answer) meaning through
+ordinary binding/P1/execution to strict typed entity answers. Sixteen new checks
+pass in 0.66s, using independent tiny RDF and actual compiled SPARQL in RDFLib.
+This is local adapter verification, not new native or benchmark evidence. Failed
+execution cannot become an empty answer; source identity, explicit position and
+all original agent costs are retained. See [INT-4](report/resource_entity_answers_20260911.md).
+
+The user confirms fixed08e4b3b staging, a successful zero-call tokenizer preflight
+summary and H100 submission **3804210**. Raw checks, current scheduler state and
+new model results are not yet received. Do not repeat submit or classify the job
+as running/completed. The previous v1 model0/5 and real FinBench6/6 remain unchanged.
+GrailQA150 still needs an inference-owned answer contract and real facts; this
+adapter does not fill its missing answer position from gold or a default.
+
 
 
 ## Current milestone — real FinBench integration passed; model LINK failure localized

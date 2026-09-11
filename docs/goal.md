@@ -13,6 +13,12 @@ prepared-query integration，不是完整48评价或普通P1/LLM实验。实际�
 答案投影和冻结E1–E5，不重复索取已到文件/跑成功门禁。详见
 [INT-3](report/finbench_original_three_native_20260911.md)与[LINK](report/qwen_model_link_failure_20260911.md)。
 
+后续进展（同日晚）：用户已完成08e4b3b部署和零调用token预检，提交H100作业3804210；
+当前调度状态和新模型结果未知，不再要求重复提交。INT-4已将显式Traverse→Project
+接普通P1与类型化实体答案，16项新小图检查通过；见
+[答案接口证据](report/resource_entity_answers_20260911.md)。这只解决执行侧，未替
+GrailQA150推断缺失的答案位置；必须使用推理拥有的显式契约，不能用gold或默认last。
+
 ## 总目标
 
 **最新优先级：一切工程由research question和实验计划驱动。** 权威工作计划为
