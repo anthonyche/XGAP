@@ -148,6 +148,12 @@ Evaluates both children and returns the deduplicated set union of their paths.
 
 ## Join
 
+The federated runtime can place existing path concatenation and Recursive over
+materialized native PathSets in `CoordinatorPathCompose`. It does not evaluate
+against a hidden local graph or add a logical operator. Nested scopes are kept
+before enclosing filters and selectors; see
+[scoped execution](decisions/scoped_path_execution_v1.md).
+
 Implemented.
 
 Evaluates both children and concatenates every pair of paths `p1`, `p2` where `p1.last() == p2.first()`. The shared node appears once in the concatenated path.

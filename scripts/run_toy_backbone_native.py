@@ -35,6 +35,7 @@ from xgap.experiments.toy_orientation import FIXTURE as ORIENTATION_FIXTURE, loa
 from xgap.experiments.toy_capabilities import (FIXTURE as CAPABILITY_FIXTURE,
     load_capability_cases, execute_capability_case)
 from xgap.experiments.toy_repetition import FIXTURE as REPETITION_FIXTURE, load_repetition_cases
+from xgap.experiments.toy_scoped import FIXTURE as SCOPED_FIXTURE, load_scoped_cases, execute_scoped_case
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 
@@ -62,7 +63,13 @@ def main(argv=None):
         help="Admit declared semantic capabilities before observing and executing placements")
     selection.add_argument("--repetition", action="store_true",
         help="Check optional and finite repetition against independently authored native targets")
+    selection.add_argument("--scoped", action="store_true",
+        help="Run nested scopes through semantic Traverse and candidate planning")
+    parser.add_argument("--scoped-planning-only", action="store_true",
+        help="With --scoped, run only the remaining planning checks and retained slice")
     args = parser.parse_args(argv)
+    if args.scoped_planning_only and not args.scoped:
+        parser.error("--scoped-planning-only requires --scoped")
     if not args.execute:
         parser.error("Fresh owned native execution requires --execute")
     products = {"neo4j": Path(args.runtime_root).resolve() / "neo4j-community-5.26.30",
@@ -93,12 +100,12 @@ def main(argv=None):
             "src/xgap/algebra/ops.py", "src/xgap/algebra/validation.py",
             "src/xgap/pattern/lowering.py", "src/xgap/compilers/features.py",
             "src/xgap/experiments/toy_orientation.py"))
-    if args.semantic_dag or args.planned_semantic or args.agentic_semantic or args.capability_semantic:
+    if args.semantic_dag or args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/experiments/toy_semantic.py", "src/xgap/compilers/node_match.py",
             "src/xgap/runtime/semantic_compiler.py", "src/xgap/runtime/row_operations.py",
             "src/xgap/semantic/program.py", "src/xgap/runtime/semantic_capabilities.py"))
-    if args.planned_semantic or args.agentic_semantic or args.capability_semantic:
+    if args.planned_semantic or args.agentic_semantic or args.capability_semantic or args.scoped:
         source_files.extend(REPO / relative for relative in (
             "src/xgap/runtime/semantic_planning.py", "src/xgap/runtime/planning.py",
             "src/xgap/runtime/observations.py", "src/xgap/runtime/tool.py",
@@ -115,7 +122,13 @@ def main(argv=None):
         source_files.extend(REPO / relative for relative in (
             "src/xgap/pattern/lowering.py", "src/xgap/pattern/typecheck.py",
             "src/xgap/llm/parser.py", "src/xgap/experiments/toy_repetition.py"))
-    record = {"success": False, "scope": ("T1 optional and finite repetition" if args.repetition else
+    if args.scoped:
+        source_files.extend(REPO / relative for relative in (
+            "src/xgap/pattern/lowering.py", "src/xgap/pattern/typecheck.py", "src/xgap/llm/parser.py",
+            "src/xgap/runtime/scoped_paths.py", "src/xgap/runtime/path_composition.py",
+            "src/xgap/experiments/toy_scoped.py"))
+    record = {"success": False, "scope": ("T1 finite nested path scopes" if args.scoped else
+                                           "T1 optional and finite repetition" if args.repetition else
                                            "T1 semantic capability admission" if args.capability_semantic else
                                            "T1 logical and native path orientation" if args.orientation else
                                            "T1 semantic binding and bounded agent execution" if args.agentic_semantic else
@@ -156,6 +169,15 @@ def main(argv=None):
             repetition_fixture_sha256={str(p.relative_to(REPETITION_FIXTURE)):
                 hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in REPETITION_FIXTURE.rglob("*") if p.is_file()})
+
+    if args.scoped:
+        record.update(scoped_reference_targets=[], scoped_planned_cases=[],
+            scoped_planning_only=args.scoped_planning_only,
+            query_ids=[c["id"] for c in load_scoped_cases()
+                       if not args.scoped_planning_only or c["id"] in ("N01", "N08", "N13")],
+            scoped_fixture_sha256={str(p.relative_to(SCOPED_FIXTURE)):
+                hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in SCOPED_FIXTURE.rglob("*") if p.is_file()})
 
     def save():
         (root / "result.json").write_text(json.dumps(record, indent=2) + "\n")
@@ -220,7 +242,7 @@ def main(argv=None):
         save()
         if not loaded_rdf.success:
             raise RuntimeError("Tiny Fuseki load failed; no retry")
-        record["phase"] = ("repetition" if args.repetition else
+        record["phase"] = ("scoped" if args.scoped else "repetition" if args.repetition else
                            "orientation" if args.orientation else
                            "semantic-dag" if args.semantic_dag else
                            "compiled-bounded" if args.compiled_bounded else
@@ -233,6 +255,8 @@ def main(argv=None):
             selected = load_orientation_cases()
         if args.repetition:
             selected = load_repetition_cases()
+        if args.scoped:
+            selected = [] if args.scoped_planning_only else load_scoped_cases()
         for case in selected:
             for backend, client in (("neo4j", neo), ("fuseki", rdf)):
                 item = {"query_id": case["id"], "backend": backend, "status": "started", "success": False}
@@ -245,21 +269,23 @@ def main(argv=None):
                     if not item["success"]:
                         raise RuntimeError(f"Semantic path failed: {case['id']} / {backend}; no retry")
                     continue
-                if args.compiled_directed or args.compiled_bounded or args.orientation or args.repetition:
+                if args.compiled_directed or args.compiled_bounded or args.orientation or args.repetition or args.scoped:
                     execute_case = execute_bounded_toy_case if args.compiled_bounded or args.orientation or args.repetition else execute_directed_toy_case
+                    if args.scoped:
+                        execute_case = execute_scoped_case
                     item.update(execute_case(case, mapping, client=client), status="completed")
                     save()
                     if not item["success"]:
                         raise RuntimeError(f"Compiled target failed: {case['id']} / {backend}; retained without retry")
-                    if args.orientation or args.repetition:
-                        target = (REPETITION_FIXTURE if args.repetition else ORIENTATION_FIXTURE) / case["reference_target_queries"][backend]
+                    if args.orientation or args.repetition or args.scoped:
+                        target = (SCOPED_FIXTURE if args.scoped else REPETITION_FIXTURE if args.repetition else ORIENTATION_FIXTURE) / case["reference_target_queries"][backend]
                         result = client.execute(QueryArtifact(case["id"] + "-reference-" + backend,
                             "cypher" if backend == "neo4j" else "sparql", target.read_text(), kind="native"))
                         actual = sorted({row["path"] for row in result.rows}) if result.success else None
                         reference = {"query_id": case["id"], "backend": backend,
                             "execution": result.to_dict(), "actual_paths": actual,
                             "success": result.success and actual == case["expected_paths"]}
-                        record["repetition_reference_targets" if args.repetition else "orientation_reference_targets"].append(reference)
+                        record["scoped_reference_targets" if args.scoped else "repetition_reference_targets" if args.repetition else "orientation_reference_targets"].append(reference)
                         save()
                         if not reference["success"]:
                             raise RuntimeError(f"Independent path reference failed: {case['id']} / {backend}; no retry")
@@ -335,6 +361,19 @@ def main(argv=None):
                     save()
                     if not reference["success"]:
                         raise RuntimeError(f"Independent binding reference failed: {case['id']} / {backend}; no retry")
+        if args.scoped:
+            scoped_cases = load_scoped_cases()
+            for case in (scoped_cases[0], scoped_cases[7], scoped_cases[12]):
+                record["phase"] = "scoped-planning-" + case["id"]
+                wrapper = wrap_path_case(case, "fuseki")
+                wrapper["expected_remote_calls"] = case["expected_remote_calls"]
+                item = execute_planned_semantic_case(wrapper, mapping,
+                    clients={"neo4j": neo, "fuseki": rdf},
+                    max_observation_calls=2 * case["expected_remote_calls"])
+                record["scoped_planned_cases"].append(item)
+                save()
+                if not item["success"]:
+                    raise RuntimeError(f"Scoped planning failed: {case['id']}; retained without retry")
         record["phase"] = "compiled-federated-slice"
         save()
         record["vertical_slice"] = execute_vertical_slice(cases[-1], mapping, neo4j=neo, fuseki=rdf)
@@ -362,6 +401,8 @@ def main(argv=None):
         "binding_references_passed": sum(x["success"] for x in record.get("binding_reference_targets", [])),
         "orientation_references_passed": sum(x["success"] for x in record.get("orientation_reference_targets", [])),
         "repetition_references_passed": sum(x["success"] for x in record.get("repetition_reference_targets", [])),
+        "scoped_references_passed": sum(x["success"] for x in record.get("scoped_reference_targets", [])),
+        "scoped_planned_passed": sum(x["success"] for x in record.get("scoped_planned_cases", [])),
         "compiled_slice_passed": record.get("vertical_slice", {}).get("success"), "output": str(root)}))
     return 0 if record["success"] else 1
 

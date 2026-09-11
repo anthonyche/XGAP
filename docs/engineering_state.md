@@ -45,6 +45,61 @@ The scheduled morning recovery has occurred; normal authorized work continues.
 
 ## Current milestone
 
+T1 finite nested path scopes is ACCEPTED on base861e043. The previous
+goal turn was progress: finite repetition was implemented, measured, committed
+and pushed. Current scope is in docs/decisions/scoped_path_execution_v1.md.
+A new explicit coordinator placement composes supported native subexpressions,
+retaining local path modes/SHORTEST before enclosing filters. Final full-path
+intersection applies the independently compiled WALK candidate conditions, then
+original selector. Existing fast native plans stay available; no graph/gold
+oracle is loaded in runtime. Shared subexpressions execute once. The cost model
+has an explicit uncalibrated Cartesian/power proxy for the new path work.
+
+New15 complete gold chains pass logical/reference/independent RDF and production
+semantic-DAG execution. Focused37631 exited0:155 passed/11.32s. Initial3655
+terminated with115 pass/one obsolete nested-WALK rejection expectation; migrated
+to the still-unsupported one-query non-WALK boundary. Initial1204 terminated with
+16 pass/four test-assertion mistakes (tool-result envelope and branch limit);
+corrected, then the focused gate passed. A local exploratory RDFLib probe used
+a non-thread-safe parser concurrently and failed; the new test client serializes
+that parser only, as existing planning tests do. No live external retry occurred.
+
+Native31786 is terminal exit1 after30/30 semantic/native executions and30/30
+independent targets passed (86 compiled calls +30 reference calls). The subsequent
+planning helper failed locally on missing optional ordered metadata, after its
+N01 run but before checkpointing that run. Both services stopped normally. That
+uncheckpointed planning work is not assigned a fabricated measured cost. The
+comparison now defaults to unordered, consistent with semantic execution; two
+local replay tests cover a match and a mismatch. First replay89075 exit0:22 pass.
+Daily79242 exit0:355 pass/22.16s. Follow-up native64470 exit0:3/3 planning programs,
+6/6 candidate answers and old slice pass;14 observations+7 serving+7 extra candidate
+validation+2 slice calls. This follow-up did not repeat the60 passed targets.
+Daily58497 exit0:357 pass/22.55s. Both native service pairs stopped normally.
+
+Review identified a separate admission issue: replacing the original mode with
+WALK for the superset could conceal invalid input. Original semantic validation
+now runs first; focused51426 exit0:23 passed/7.56s including invalid mode/selector
+replay. Broad62508 was intentionally interrupted for this code change, terminal
+exit2:1263 passed/3 skipped/139.12s, not an acceptance pass or a lost handle.
+
+FINAL gates: native59889 is terminal exit0, planning3/3, candidates6/6 and old
+slice correct, all29 source hashes match; daily59218 is terminal exit0,358
+passed/24.12s plus18 demo. Broad71124 is terminal exit0:3203 passed/38 skipped
+in663.04s, all24 harness/example entrypoints passed. Every test/native handle
+from this milestone is now terminal; do not poll or repeat these gates. Logs:
+/tmp/xgap-t1-scoped-planning-final.log, /tmp/xgap-t1-scoped-daily-final.log,
+/tmp/xgap-t1-scoped-acceptance-final.log. Native output:
+/Users/anthonyche/xgap-data/t1-scoped-planning-final-20260911. The30+30 target
+records remain in t1-scoped-native-20260911; admission-only changes are tested
+separately, never presented as a full target rerun. This scoped step is accepted.
+Report: docs/report/toy_backbone_t1_scoped_paths.md; durable receipt:
+experiments/artifacts/toy_backbone_t1_scoped_paths_20260911.json. Next: remaining
+native condition/typed aggregate-order semantics, then T2 catalog lifecycle and
+minimal replay, then real-model/mini integration and final evaluation. T1 as a
+whole, T2/T3 and the full system Goal remain unfinished.
+
+## Accepted finite repetition predecessor
+
 T1 Optional/finite Bounded repetition is ACCEPTED on top ofd9c2858 after
 the September11 morning recovery. See `docs/decisions/finite_regex_repetition_v1.md`.
 Optional=Nodes union child. Finite Bounded unions exact child powers, applies

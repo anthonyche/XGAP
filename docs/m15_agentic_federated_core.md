@@ -52,6 +52,13 @@ Required work:
 
 Implemented locally:
 
+- finite nested scopes through the normal Traverse compiler/planner: native
+  subexpression PathSets feed explicit coordinator concatenation/Recursive,
+  full-path condition intersection and the original selector. Fifteen native
+  query pairs and independent targets pass, with three two-placement planning
+  cases and the old slice. A local comparison failure and subsequent admission
+  patch are recorded separately; final3203/38 plus24 harness/examples passes. See
+  [the scoped gate](report/toy_backbone_t1_scoped_paths.md);
 - Optional and finite Bounded logical lowering using existing algebra and native
   finite expansion with explicit mode scopes. Thirteen independent tiny chains
   pass26/26 compiled executions and26/26 native target checks, with the old slice.

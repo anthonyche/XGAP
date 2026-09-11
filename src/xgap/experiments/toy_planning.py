@@ -11,13 +11,13 @@ from xgap.semantic.program import SemanticGraphProgram
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, CatalogBackendPlugin
 
 
-def execute_planned_semantic_case(case, mapping, *, clients):
+def execute_planned_semantic_case(case, mapping, *, clients, max_observation_calls=4):
     graph, _, _ = load_fixture()
     version = hashlib.sha256(json.dumps(graph, sort_keys=True).encode()).hexdigest()
     space = enumerate_semantic_plans(SemanticGraphProgram.from_dict(case["program"]),
         operator_sources={op: "toy" for op in case["source_bindings"]},
         sources={"toy": LogicalSource("toy", version, ("neo4j", "fuseki"))},
-        backends=toy_backends(mapping), max_candidates=4, max_observation_calls=4)
+        backends=toy_backends(mapping), max_candidates=4, max_observation_calls=max_observation_calls)
     plugins = BackendPluginRegistry()
     for backend, catalog in space.observation_catalogs.items():
         plugins.register(CatalogBackendPlugin(backend, clients[backend], catalog))
@@ -30,7 +30,7 @@ def execute_planned_semantic_case(case, mapping, *, clients):
         return record
     canonical = lambda rows: sorted(json.dumps(row, sort_keys=True) for row in rows)
     def matches(rows):
-        return (list(rows) == case["expected_rows"] if case["ordered"] else
+        return (list(rows) == case["expected_rows"] if case.get("ordered", False) else
                 canonical(rows) == canonical(case["expected_rows"]))
     selected_rows = run["execution"]["value"]["final_rows"]
     if not matches(selected_rows):

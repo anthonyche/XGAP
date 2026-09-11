@@ -369,6 +369,10 @@ class FederatedScheduler:
                 from xgap.runtime.path_selection import select_native_paths
                 rows = select_native_paths(inputs[0], node.parameters)
                 bytes_moved = 0
+            elif node.kind is RuntimeNodeKind.COORDINATOR_PATH_COMPOSE:
+                from xgap.runtime.path_composition import compose_paths
+                rows = compose_paths(inputs, node.parameters)
+                bytes_moved = 0
             elif node.kind is RuntimeNodeKind.COORDINATOR_FILTER:
                 from xgap.runtime.row_operations import filter_rows
                 rows = filter_rows(inputs[0], node.parameters["condition"])

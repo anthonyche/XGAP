@@ -1,5 +1,22 @@
 # XGAP Roadmap
 
+## Current engineering milestones — scoped paths accepted
+
+On base861e043, finite nested scopes now compile to native subexpressions and
+explicit coordinator concatenation/Recursive, followed by full-path condition
+intersection and the original selector. No algebra meaning changed. Fifteen
+independent complete chains pass local reference/RDF/semantic execution; focused
+155 passed; final focused23 and daily358 passed. Native30/30 programs and30/30
+independent targets passed before a local comparison failure; corrected current
+planning3/3, candidates6/6 and old slice pass. Source/admission differences are
+recorded in the report. Final broad71124 exit0:3203 passed/38 skipped/663.04s,
+all24 harness/example entrypoints passed. All milestone handles are terminal.
+This step is accepted; broader typed/native conditions and T2/T3 remain open.
+See [the scoped execution decision](decisions/scoped_path_execution_v1.md).
+Shared scopes and all generated calls remain accounted; this coordinator
+strategy is not evidence of efficient large-data execution. Earlier accepted
+milestones below retain their measured scope.
+
 ## Current engineering milestones — 2026-09-11
 
 After the requested pause, T1 Optional/finite repetition is accepted on the same

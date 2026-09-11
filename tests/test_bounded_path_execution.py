@@ -95,8 +95,8 @@ def test_bounds_and_nested_scope_fail_before_execution():
         compile_bounded_paths(pattern, backend_id="fuseki", max_branches=2, **OPTIONS)
     with pytest.raises(UnsupportedCompilationError, match="explicit finite"):
         compile_bounded_paths(replace(pattern, restrictor=PathMode.TRAIL, max_depth=None), backend_id="fuseki", **OPTIONS)
-    with pytest.raises(UnsupportedCompilationError, match="root bounded"):
-        compile_bounded_paths(replace(pattern, expr=Plus(pattern.expr)), backend_id="fuseki", **OPTIONS)
+    with pytest.raises(UnsupportedCompilationError, match="nested scoped"):
+        compile_bounded_paths(replace(pattern, expr=Plus(pattern.expr), restrictor=PathMode.TRAIL), backend_id="fuseki", **OPTIONS)
 
 
 def test_missing_native_identity_is_error_not_an_empty_answer():

@@ -546,6 +546,31 @@ class FederatedPlanSelector:
                 0,
                 None,
             )
+        if node.kind is RuntimeNodeKind.COORDINATOR_PATH_COMPOSE:
+            # Explicit Cartesian/power proxy: path concatenation can expand rows,
+            # unlike a unary filter. This is uncalibrated, not a measured bound.
+            operation = node.parameters.get("operation")
+            if operation == "join" and len(inputs) in (1, 2):
+                left, right = inputs[0], inputs[-1]
+                rows = left.row_count * right.row_count
+                work = rows + left.row_count + right.row_count
+                width = left.row_width_bytes + right.row_width_bytes
+            elif operation == "recursive" and len(inputs) == 1:
+                depth = node.parameters.get("max_depth")
+                if type(depth) is not int or depth <= 0:
+                    raise FederatedPlanningError("Scoped path cost requires finite positive depth")
+                source = inputs[0]
+                rows, frontier = 0.0, 1.0
+                for _ in range(depth):
+                    frontier *= source.row_count
+                    rows += frontier
+                work, width = rows, source.row_width_bytes * depth
+            else:
+                raise FederatedPlanningError("Invalid scoped path cost operation/arity")
+            duration = work * snapshot.coordinator_row_ms
+            if not all(math.isfinite(x) for x in (rows, width, duration)):
+                raise FederatedPlanningError("Scoped path cost exceeds finite numeric range")
+            return _NodeEstimate(ready_ms + duration, rows, width), 0.0, 0, None
         if node.kind is RuntimeNodeKind.COORDINATOR_SEMI_JOIN:
             left, right = inputs
             selectivity = FederatedPlanSelector._fraction(node, "semi_join_selectivity", 1.0)

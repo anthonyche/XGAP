@@ -132,7 +132,14 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
   独立目标及旧 slice 正确。Focused226/interface42/daily335 pass；完整回归
   原 session81593 exit0：3,180 passed/38 skipped，24 个 harness/example
   入口通过。旧 gold 不变，见 [有限重复报告](report/toy_backbone_t1_repetition.md)。
-- **下一步**：继续同一 toy graph 的剩余嵌套 path/typed
+- **T1 有限嵌套作用域已验收。** 普通 Traverse
+  入口组合原生子路径与 coordinator 拼接/递归，保留局部最短和外层过滤顺序。
+  15 题双后端 30/30 程序、30/30 独立目标正确；当前规划 3/3 程序、6/6
+  候选和旧 slice 正确。原生首轮的本地比较异常、最小回放、准入补丁与补测
+  边界均见 [嵌套作用域报告](report/toy_backbone_t1_scoped_paths.md)。最终 daily358
+  通过；完整回归原 session71124 exit0：3,203 passed/38 skipped、24 个
+  harness/example 入口通过。完整 T1 与 T2/T3 仍未验收。
+- **下一步**：继续同一 toy graph 的剩余 native/typed
   semantics，并推进 T2 Interpretation、offline catalog freeze/runtime-only lookup、
   failure replay，再进入 T3。详细 evidence 见
   [当前工程状态](engineering_state.md) 和 [方向闭合报告](report/toy_backbone_t1_orientation.md)。

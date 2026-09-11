@@ -4,6 +4,11 @@
 regression gates. See [the acceptance report](../report/toy_backbone_t1_repetition.md).
 Scope/semantics were frozen before implementation.
 
+Later native/coordinator composition retains finite nested non-WALK scopes;
+the single-query flattening limits described below remain historical/native
+strategy limits, not a claim that the normal planner still rejects every such
+query. See [scoped execution](scoped_path_execution_v1.md).
+
 Optional(E) denotes Nodes(G) union E. It does not introduce a new recursive
 restrictor scope: child recursion retains its own mode. In particular, an
 ordinary Seq does not acquire a new TRAIL check because it is optional.

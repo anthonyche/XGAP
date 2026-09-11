@@ -11,6 +11,7 @@ _COORDINATOR = {
     R.COORDINATOR_GROUP_AGGREGATE: ("coordinator.aggregate",),
     R.COORDINATOR_SORT_LIMIT: ("coordinator.order_limit",),
     R.COORDINATOR_PATH_SELECT: ("coordinator.path_select",),
+    R.COORDINATOR_PATH_COMPOSE: ("coordinator.path_compose",),
     R.COORDINATOR_FILTER: ("coordinator.filter",),
     R.COORDINATOR_ROW_PROJECT: ("coordinator.project",),
     R.PROJECT: ("coordinator.project",),

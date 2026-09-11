@@ -72,7 +72,12 @@ for the all-eighteen toy execution evidence and remaining logical/scale limits.
 Optional/finite Bounded also have logical reference meanings using existing
 operators; variable-length child powers and zero-length shortest selection are
 specified separately in [finite repetition](decisions/finite_regex_repetition_v1.md).
-Nested finite Bounded expands under WALK only; nested non-WALK retains its gap.
+The single-query native compiler flattens nested WALK only. The ordinary path
+planner can instead compose supported native subexpressions at explicit
+coordinator stages, retaining finite nested non-WALK scopes, then intersect
+with the enclosing condition candidates and apply the selector. Original
+semantic validation, native mapping/profile and expansion budgets remain
+necessary. See [scoped execution](decisions/scoped_path_execution_v1.md).
 
 `compile_semantic_program` now composes Match/Traverse and the existing semantic
 row operators into a federated execution DAG. Source placement and backend

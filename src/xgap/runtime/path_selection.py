@@ -9,7 +9,7 @@ from xgap.pattern.ast import Selector, SelectorKind
 from xgap.pattern.lowering import apply_selector
 
 
-def select_native_paths(rows, parameters):
+def _decode_native_paths(rows, parameters):
     mode = parameters["language"]
     if mode not in ("cypher", "sparql"):
         raise ValueError("Path selection requires cypher or sparql bindings")
@@ -42,6 +42,25 @@ def select_native_paths(rows, parameters):
         for i in range(1, length + 1):
             sequence.extend((identifier(row[f"e{i}"]), identifier(row[f"n{i}"])))
         paths.add(Path(tuple(sequence)))
+
+    return paths
+
+
+def normalized_pathset(rows):
+    paths = PathSet()
+    for row in rows:
+        sequence = row["path"]
+        if not isinstance(sequence, (list, tuple)) or any(not isinstance(x, str) or not x for x in sequence):
+            raise ValueError("Normalized paths require nonempty string identities")
+        paths.add(Path(tuple(sequence)))
+    return paths
+
+
+def select_native_paths(rows, parameters):
+    paths = (normalized_pathset(rows) if parameters.get("input_model") == "paths"
+             else _decode_native_paths(rows, parameters))
+    if any(len(p) > parameters["max_edges"] for p in paths):
+        raise ValueError("Path exceeds its compiled finite edge bound")
 
     if parameters.get("recursive_shortest"):
         best = {}

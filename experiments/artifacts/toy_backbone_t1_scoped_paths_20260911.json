@@ -1,0 +1,705 @@
+{
+  "schema_version": "toy_milestone_receipt_v1",
+  "date": "2026-09-11",
+  "milestone": "T1 finite nested path scopes",
+  "base_commit": "861e043f1645ab220369b70647a2c160dcbef4d6",
+  "acceptance": "accepted",
+  "live_llm": false,
+  "paper_result": false,
+  "source_sha256": {
+    "src/xgap/experiments/toy_backbone.py": "341ed4fa3f16770b46e7b58634a7dca7c75de5d61f4f0bf821a98a90f3d09e4a",
+    "src/xgap/compilers/directed.py": "c51078ad7cd6c4160716e7171be77267510d146b49b616974745136d74da81ea",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/compilers/bounded_paths.py": "4db897f0c8415277b58c3b6b1aa5958fc6a383724884af76193c3bf710cc2e1b",
+    "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+    "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+    "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+    "src/xgap/runtime/scheduler.py": "96d7c9f44c40ef683c25eadc388674a19b5d5104e9af9d4622f4b16da9338358",
+    "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+    "scripts/run_toy_backbone_native.py": "83c8bb230b997dad1aaaa6957b8f17c5277a844a8894d25a81a2df568aa5942f",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/compilers/node_match.py": "1996dacd5ed3ff268752317e07ca9b3321c69d34417667f5b59efd20ecc33517",
+    "src/xgap/runtime/semantic_compiler.py": "b5cb2480f4d237ec07e203a985a55221c090b47e3b43475ca501086994df94db",
+    "src/xgap/runtime/row_operations.py": "99671d516930bd20a6bce4efdb10643b5fe779c185c4247bdb9ad0a2ff544458",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+    "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+    "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/experiments/toy_planning.py": "12f79633806487b371bc6b00a0d7d370206366f8c5daeda88290cc8d98b1add6",
+    "src/xgap/pattern/lowering.py": "bb17ca1c4af397c23676a2c189fdd3139035520ca12ed661897d836c8aa8f5b9",
+    "src/xgap/pattern/typecheck.py": "0e2031353dc12ef9042bc7f0d1e945fa2a91f83a8bc7cd95e56099e307f8732d",
+    "src/xgap/llm/parser.py": "5501b7eca7464f627f1d453f44304d2d1c4bf4c6db9d349075aef21075e0d9c7",
+    "src/xgap/runtime/scoped_paths.py": "b770cc67b77f8991f3ebafd967e58df41a6e67d6da59e40cbd1fde18fc95ce00",
+    "src/xgap/runtime/path_composition.py": "dbcb75bcc3289f7652f48eca403d050bd180794128735c4d4f8134554b87aa50",
+    "src/xgap/experiments/toy_scoped.py": "da204ef1bcd2e9bbd0080230ec42edf93739155990654154c0de31d974deccd2"
+  },
+  "native_runs": [
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-scoped-native-20260911/result.json",
+      "sha256": "5cff5651bd3842b640c07a66fdf449109e3b82d23ae4c53473fb4e3442036c9b",
+      "session": 31786,
+      "exit_code": 1,
+      "success": false,
+      "error": "KeyError: 'ordered'",
+      "compiled_checks_passed": 30,
+      "compiled_checks_total": 30,
+      "independent_targets_passed": 30,
+      "independent_targets_total": 30,
+      "compiled_query_calls": 86,
+      "planning_checks": [],
+      "old_slice_passed": null,
+      "changed_source_since_run": [
+        "scripts/run_toy_backbone_native.py",
+        "src/xgap/experiments/toy_planning.py",
+        "src/xgap/runtime/scoped_paths.py"
+      ],
+      "fixture_files_checked": 74,
+      "fixture_hashes_match": true,
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 21683,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 21644,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "automatic_retries": 0
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-scoped-planning-native-20260911/result.json",
+      "sha256": "3ce81173ff4cf16d737f80b2e64b1db96212c9694099efcb2b2a67ac564ddfbd",
+      "session": 64470,
+      "exit_code": 0,
+      "success": true,
+      "error": null,
+      "compiled_checks_passed": 0,
+      "compiled_checks_total": 0,
+      "independent_targets_passed": 0,
+      "independent_targets_total": 0,
+      "compiled_query_calls": 0,
+      "planning_checks": [
+        {
+          "query_id": "N01",
+          "success": true,
+          "candidate_passed": 2,
+          "candidate_total": 2,
+          "observation_calls": 6,
+          "serving_calls": 3,
+          "validation_only_calls": 3
+        },
+        {
+          "query_id": "N08",
+          "success": true,
+          "candidate_passed": 2,
+          "candidate_total": 2,
+          "observation_calls": 4,
+          "serving_calls": 2,
+          "validation_only_calls": 2
+        },
+        {
+          "query_id": "N13",
+          "success": true,
+          "candidate_passed": 2,
+          "candidate_total": 2,
+          "observation_calls": 4,
+          "serving_calls": 2,
+          "validation_only_calls": 2
+        }
+      ],
+      "old_slice_passed": true,
+      "changed_source_since_run": [
+        "src/xgap/runtime/scoped_paths.py"
+      ],
+      "fixture_files_checked": 74,
+      "fixture_hashes_match": true,
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 22438,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 22380,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "automatic_retries": 0
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-scoped-planning-final-20260911/result.json",
+      "sha256": "a895ffc3e60aa7e049a4376eef16ed7c8a3e59e7ca169e508d4ab09102b42493",
+      "session": 59889,
+      "exit_code": 0,
+      "success": true,
+      "error": null,
+      "compiled_checks_passed": 0,
+      "compiled_checks_total": 0,
+      "independent_targets_passed": 0,
+      "independent_targets_total": 0,
+      "compiled_query_calls": 0,
+      "planning_checks": [
+        {
+          "query_id": "N01",
+          "success": true,
+          "candidate_passed": 2,
+          "candidate_total": 2,
+          "observation_calls": 6,
+          "serving_calls": 3,
+          "validation_only_calls": 3
+        },
+        {
+          "query_id": "N08",
+          "success": true,
+          "candidate_passed": 2,
+          "candidate_total": 2,
+          "observation_calls": 4,
+          "serving_calls": 2,
+          "validation_only_calls": 2
+        },
+        {
+          "query_id": "N13",
+          "success": true,
+          "candidate_passed": 2,
+          "candidate_total": 2,
+          "observation_calls": 4,
+          "serving_calls": 2,
+          "validation_only_calls": 2
+        }
+      ],
+      "old_slice_passed": true,
+      "changed_source_since_run": [],
+      "fixture_files_checked": 74,
+      "fixture_hashes_match": true,
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 24564,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 24507,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "automatic_retries": 0
+    }
+  ],
+  "case_checks": [
+    {
+      "query_id": "N01",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N01",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N02",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [],
+      "actual_paths": [],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N02",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [],
+      "actual_paths": [],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N03",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N03",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N04",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N04",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N05",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [],
+      "actual_paths": [],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N05",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [],
+      "actual_paths": [],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N06",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d",
+        "d/e6/d"
+      ],
+      "actual_paths": [
+        "d",
+        "d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N06",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d",
+        "d/e6/d"
+      ],
+      "actual_paths": [
+        "d",
+        "d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N07",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N07",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N08",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "a/e4/c"
+      ],
+      "actual_paths": [
+        "a/e4/c"
+      ],
+      "remote_calls": 2
+    },
+    {
+      "query_id": "N08",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "a/e4/c"
+      ],
+      "actual_paths": [
+        "a/e4/c"
+      ],
+      "remote_calls": 2
+    },
+    {
+      "query_id": "N09",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "a/e1/b/e8/d/e8/b",
+        "a/e4/c/e2/b",
+        "a/e4/c/e5/d/e8/b",
+        "a/e7/b/e8/d/e8/b"
+      ],
+      "actual_paths": [
+        "a/e1/b/e8/d/e8/b",
+        "a/e4/c/e2/b",
+        "a/e4/c/e5/d/e8/b",
+        "a/e7/b/e8/d/e8/b"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N09",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "a/e1/b/e8/d/e8/b",
+        "a/e4/c/e2/b",
+        "a/e4/c/e5/d/e8/b",
+        "a/e7/b/e8/d/e8/b"
+      ],
+      "actual_paths": [
+        "a/e1/b/e8/d/e8/b",
+        "a/e4/c/e2/b",
+        "a/e4/c/e5/d/e8/b",
+        "a/e7/b/e8/d/e8/b"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N10",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "a/e1/b/e8/d/e8/b",
+        "a/e4/c/e5/d/e8/b",
+        "a/e7/b/e8/d/e8/b"
+      ],
+      "actual_paths": [
+        "a/e1/b/e8/d/e8/b",
+        "a/e4/c/e5/d/e8/b",
+        "a/e7/b/e8/d/e8/b"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N10",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "a/e1/b/e8/d/e8/b",
+        "a/e4/c/e5/d/e8/b",
+        "a/e7/b/e8/d/e8/b"
+      ],
+      "actual_paths": [
+        "a/e1/b/e8/d/e8/b",
+        "a/e4/c/e5/d/e8/b",
+        "a/e7/b/e8/d/e8/b"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N11",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 4
+    },
+    {
+      "query_id": "N11",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 4
+    },
+    {
+      "query_id": "N12",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d"
+      ],
+      "remote_calls": 4
+    },
+    {
+      "query_id": "N12",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d"
+      ],
+      "remote_calls": 4
+    },
+    {
+      "query_id": "N13",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 2
+    },
+    {
+      "query_id": "N13",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d/e6/d"
+      ],
+      "remote_calls": 2
+    },
+    {
+      "query_id": "N14",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "b/e1/a/e3/c/e5/d",
+        "b/e7/a/e3/c/e5/d"
+      ],
+      "actual_paths": [
+        "b/e1/a/e3/c/e5/d",
+        "b/e7/a/e3/c/e5/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N14",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "b/e1/a/e3/c/e5/d",
+        "b/e7/a/e3/c/e5/d"
+      ],
+      "actual_paths": [
+        "b/e1/a/e3/c/e5/d",
+        "b/e7/a/e3/c/e5/d"
+      ],
+      "remote_calls": 3
+    },
+    {
+      "query_id": "N15",
+      "backend": "neo4j",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d/e6/d"
+      ],
+      "remote_calls": 1
+    },
+    {
+      "query_id": "N15",
+      "backend": "fuseki",
+      "compiled_success": true,
+      "independent_target_success": true,
+      "expected_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d/e6/d"
+      ],
+      "actual_paths": [
+        "d/e6/d",
+        "d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d",
+        "d/e6/d/e6/d/e6/d/e6/d"
+      ],
+      "remote_calls": 1
+    }
+  ],
+  "gates": {
+    "focused": {
+      "session": 37631,
+      "exit_code": 0,
+      "passed": 155,
+      "elapsed_seconds": 11.32
+    },
+    "comparison_replay": {
+      "session": 89075,
+      "exit_code": 0,
+      "passed": 22,
+      "elapsed_seconds": 7.23
+    },
+    "final_admission": {
+      "session": 51426,
+      "exit_code": 0,
+      "passed": 23,
+      "elapsed_seconds": 7.56
+    },
+    "daily": {
+      "session": 59218,
+      "exit_code": 0,
+      "passed": 358,
+      "elapsed_seconds": 24.12,
+      "toy_demo_answers": 18
+    },
+    "interrupted_broad": {
+      "session": 62508,
+      "exit_code": 2,
+      "passed": 1263,
+      "skipped": 3,
+      "elapsed_seconds": 139.12,
+      "reason": "Intentionally interrupted for original-query admission fix; not an acceptance pass"
+    },
+    "final_broad": {
+      "session": 71124,
+      "status": "completed",
+      "log": "/tmp/xgap-t1-scoped-acceptance-final.log",
+      "exit_code": 0,
+      "passed": 3203,
+      "skipped": 38,
+      "elapsed_seconds": 663.04,
+      "harness_example_entrypoints": 24,
+      "log_sha256": "b988005375a827d2af82f84e53129873d9bf8a93f11c14a0b7d6b805f70c9958"
+    }
+  },
+  "limits": [
+    "Tiny finite correctness, not model quality or scale/performance evidence.",
+    "First run failed locally after 30 native programs and 30 independent targets passed; subsequent planning work was not checkpointed.",
+    "Initial uncheckpointed planning cost is unknown; do not report a complete combined-run cost.",
+    "Original-query admission-only fix was separately replayed and measured on final three-program native planning gate; first 60 targets were not rerun.",
+    "Native conjunction/identity/domain profiles and 128-branch/64-edge budgets remain.",
+    "Cartesian/power coordinator cost proxy is uncalibrated; broader typed semantics, non-finite native recursion, T2/T3 remain unfinished."
+  ]
+}

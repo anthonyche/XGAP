@@ -239,6 +239,7 @@ The coordinator-level runtime vocabulary includes:
 - `CoordinatorJoin`
 - `CoordinatorSemiJoin`
 - `CoordinatorPathSelect`
+- `CoordinatorPathCompose`
 - `CoordinatorFilter`
 - `CoordinatorRowProject`
 - `NormalizeNodeBindings`
@@ -261,8 +262,17 @@ Optional and finite Bounded now lower compositionally using existing Nodes,
 Union, Join and a one-step Recursive mode selection. Repetition counts child
 paths, not edges. Zero repetition is separate from nullable positive powers
 when selecting shortest paths. Native finite expansion preserves this distinction;
-nested non-WALK scopes remain unavailable rather than flattened. See
+nested non-WALK scopes now use explicit native/coordinator composition rather
+than being flattened. See
 [finite repetition](decisions/finite_regex_repetition_v1.md).
+
+The scoped path planner composes materialized native subexpression PathSets
+with existing concatenation/Recursive semantics. Union, full-path semi-join and
+selector stages preserve local scopes before applying enclosing native filters.
+Original semantic validation precedes the WALK candidate superset. This
+coordinator placement adds observable work and an explicit uncalibrated row-growth
+cost proxy; it does not change the logical algebra. See
+[scoped execution](decisions/scoped_path_execution_v1.md).
 
 `CoordinatorPathSelect` normalizes explicit native path identities and executes
 the existing SolutionSpace selector algebra. Bounded native path expansion and

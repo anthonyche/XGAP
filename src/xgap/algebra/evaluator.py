@@ -116,7 +116,18 @@ def _join_path_sets(left_paths: PathSet, right_paths: PathSet) -> PathSet:
 
 def _evaluate_recursive(op: RecursiveOp, graph: PropertyGraph) -> PathSet:
     _validate_recursive_depth(op)
-    child_paths = evaluate_pathset(op.child, graph)
+    return recursive_paths(evaluate_pathset(op.child, graph), op.mode, op.max_depth)
+
+
+def join_paths(left: PathSet, right: PathSet) -> PathSet:
+    """Apply existing concatenation to materialized paths, including native inputs."""
+    return _join_path_sets(left, right)
+
+
+def recursive_paths(child_paths: PathSet, mode: RecursiveMode, max_depth: int | None) -> PathSet:
+    """Apply existing Recursive semantics without requiring a graph or logical child."""
+    op = RecursiveOp(NodesOp(), mode, max_depth=max_depth)
+    _validate_recursive_depth(op)
     if op.mode is RecursiveMode.SHORTEST:
         return _evaluate_shortest_recursive(child_paths, op.max_depth)
     return _evaluate_bounded_or_frontier_recursive(child_paths, op.mode, op.max_depth)

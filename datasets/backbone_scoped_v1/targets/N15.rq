@@ -1,0 +1,56 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE { {
+SELECT DISTINCT ?path ?src ?dst ?length WHERE {
+{ SELECT DISTINCT ?path ?src ?dst ?length WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1) AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid1 AS ?dst)
+BIND(1 AS ?length)
+} }
+UNION
+{ SELECT DISTINCT ?path ?src ?dst ?length WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 ; t:source ?n1 ; t:target ?n2 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+?n2 t:id ?nid2 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1, "/", ?eid2, "/", ?nid2) AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid2 AS ?dst)
+BIND(2 AS ?length)
+} }
+UNION
+{ SELECT DISTINCT ?path ?src ?dst ?length WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 ; t:source ?n1 ; t:target ?n2 .
+?e3 a t:Edge ; t:label "KNOWS" ; t:id ?eid3 ; t:source ?n2 ; t:target ?n3 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+?n2 t:id ?nid2 .
+?n3 t:id ?nid3 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1, "/", ?eid2, "/", ?nid2, "/", ?eid3, "/", ?nid3) AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid3 AS ?dst)
+BIND(3 AS ?length)
+} }
+UNION
+{ SELECT DISTINCT ?path ?src ?dst ?length WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 ; t:source ?n1 ; t:target ?n2 .
+?e3 a t:Edge ; t:label "KNOWS" ; t:id ?eid3 ; t:source ?n2 ; t:target ?n3 .
+?e4 a t:Edge ; t:label "KNOWS" ; t:id ?eid4 ; t:source ?n3 ; t:target ?n4 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+?n2 t:id ?nid2 .
+?n3 t:id ?nid3 .
+?n4 t:id ?nid4 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1, "/", ?eid2, "/", ?nid2, "/", ?eid3, "/", ?nid3, "/", ?eid4, "/", ?nid4) AS ?path)
+BIND(?nid0 AS ?src)
+BIND(?nid4 AS ?dst)
+BIND(4 AS ?length)
+} }
+}
+} FILTER(?src = "d" && ?dst = "d") }

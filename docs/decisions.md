@@ -1,5 +1,10 @@
 # XGAP Design Decisions
 
+Current finite nested path work is specified in
+[scoped path execution](decisions/scoped_path_execution_v1.md): native
+subexpressions plus existing path operations at the coordinator, with local
+mode/SHORTEST scopes retained. Acceptance is tracked in engineering_state.md.
+
 The T1 Optional/finite repetition extension counts child concatenations, applies
 mode selection after the repetition range and distinguishes nullable-child zero
 paths from the outer zero-repetition branch. It composes existing algebra rather

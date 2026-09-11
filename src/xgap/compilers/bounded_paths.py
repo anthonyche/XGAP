@@ -20,24 +20,28 @@ from xgap.pattern.ast import Alt, Bounded, Direction, EdgePattern, OptionalExpr,
 from xgap.pattern.semantic_validation import type_check_semantic_path_pattern
 
 
-def _alternatives(expr, limit, mode=PathMode.WALK):
+def _alternatives(expr, limit, mode=PathMode.WALK, max_depth=None):
     if isinstance(expr, Rel):
         result = ([(replace(expr.edge, direction=direction),) for direction in (Direction.OUT, Direction.IN)]
                   if expr.edge.direction is Direction.UNDIRECTED else [(expr.edge,)])
     elif isinstance(expr, Alt):
-        result = _alternatives(expr.left, limit, mode) + _alternatives(expr.right, limit, mode)
+        result = _alternatives(expr.left, limit, mode, max_depth) + _alternatives(expr.right, limit, mode, max_depth)
     elif isinstance(expr, Seq):
-        left, right = _alternatives(expr.left, limit, mode), _alternatives(expr.right, limit, mode)
+        left, right = _alternatives(expr.left, limit, mode, max_depth), _alternatives(expr.right, limit, mode, max_depth)
         if len(left) * len(right) > limit:
             raise ValueError("Native branch budget exceeded")
         result = [a + b for a in left for b in right]
     elif isinstance(expr, OptionalExpr):
-        result = [()] + _alternatives(expr.child, limit, mode)
+        result = [()] + _alternatives(expr.child, limit, mode, max_depth)
     elif isinstance(expr, Bounded) and expr.max_repeats == 0:
         result = [()]
-    elif isinstance(expr, Bounded) and expr.max_repeats is not None and mode is PathMode.WALK:
-        result = _repeat_alternatives(_alternatives(expr.child, limit, mode),
-                                      expr.min_repeats, expr.max_repeats, limit)
+    elif isinstance(expr, (Bounded, Plus, Star)) and mode is PathMode.WALK:
+        minimum = expr.min_repeats if isinstance(expr, Bounded) else (0 if isinstance(expr, Star) else 1)
+        maximum = expr.max_repeats if isinstance(expr, Bounded) and expr.max_repeats is not None else max_depth
+        if type(maximum) is not int or maximum < minimum or maximum < 0:
+            raise ValueError("Native nested recursion requires a finite upper bound or query max_depth")
+        result = _repeat_alternatives(_alternatives(expr.child, limit, mode, max_depth),
+                                      minimum, maximum, limit)
     else:
         raise ValueError("Native expansion supports Rel/Seq/Alt/Optional and root bounded repetition; nested scoped recursion is unavailable")
     if len(result) > limit or any(len(branch) > MAX_EDGES for branch in result):
@@ -64,7 +68,7 @@ def _repeat_alternatives(base, minimum, maximum, limit):
 def _branches(query, limit):
     recursive = isinstance(query.expr, (Plus, Star, Bounded))
     if not recursive:
-        return _alternatives(query.expr, limit, query.restrictor), False, False
+        return _alternatives(query.expr, limit, query.restrictor, query.max_depth), False, False
     minimum = query.expr.min_repeats if isinstance(query.expr, Bounded) else (0 if isinstance(query.expr, Star) else 1)
     depth = (query.expr.max_repeats if isinstance(query.expr, Bounded)
              and query.expr.max_repeats is not None else query.max_depth)
@@ -72,7 +76,7 @@ def _branches(query, limit):
         raise ValueError("Native recursion requires an explicit finite positive max_depth")
     if depth == 0:
         return [()], True, False
-    base = _alternatives(query.expr.child, limit, query.restrictor)
+    base = _alternatives(query.expr.child, limit, query.restrictor, query.max_depth)
     finite_range = isinstance(query.expr, Bounded) and (query.expr.max_repeats is not None or minimum >= 2)
     if not finite_range and query.restrictor is PathMode.SHORTEST and len({len(b) for b in base}) != 1:
         raise ValueError("SHORTEST native expansion currently requires equal-length child alternatives")
