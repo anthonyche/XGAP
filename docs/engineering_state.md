@@ -2,6 +2,30 @@
 
 Updated: 2026-09-11. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
+## Latest research-directed priority — R0 plan, then P1
+
+The user requires all engineering to serve explicit research questions and
+experiments, with X/Y factors for effectiveness, efficiency and scalability.
+See [the experiment plan](research_experiment_plan_20260911.md) and
+[Ptime planning contract](decisions/planning_ptime_contract_v1.md). Current main
+placement generation is exponential when its rejection cap is removed; P1 is an
+actual implementation gap, not merely missing tests. The proposed exact subcase
+and conditional heuristic certificates have not yet replaced that implementation.
+
+T3-B is accepted at7aad1dc:148 focused; real-native5 cold+5 warm programs/18
+candidate answers/10 references+slice; full90283 terminal0:3481/38,691.20s,24
+entrypoints. Do not poll or repeat completed handles. The broad run had finished
+when the latest instruction arrived; no new regression was launched for R0.
+All further gates must follow the experiment plan; a milestone alone no longer
+triggers a broad suite. R0 changes only design/priority documents, not runtime,
+frozen experiment data/protocols, or remote submissions.
+
+Next implement P1 using local alternatives, explicit feasibility, fixed-pass
+search and a checked model-relative bound; keep exhaustive search only as the
+small oracle. Audit separability before adding heuristic complexity. Then connect
+only the acquisition/adaptive and real-data paths needed for actual comparisons.
+Retain the one-week deadline, tiny development, and all final research obligations.
+
 ## Workspace and scope
 
 **2026-09-11 latest user deadline: new real experimental results within one week,
@@ -50,7 +74,7 @@ hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
-## Current milestone — T3-B execution memory accepted
+## Accepted milestone — T3-B execution memory
 
 User explicitly clarified that XGAP is a research prototype: prioritize paper
 experiments, correctness/reproducibility/fair costs over perfect implementation.

@@ -1,10 +1,19 @@
-# XGAP Active Goal — Toy-first Development
+# XGAP Active Goal — Research-directed, Toy-first Development
 
 更新：2026-09-11，依据用户明确指令。本文是现有 active Goal 的权威开发补充，
 覆盖旧 roadmap、status、报告和 automation 中冲突的开发优先级；保留所有历史
 结果和已冻结的最终评价协议。当前第一要务是快速完成系统，修复实现与设计不匹配之处。
 
 ## 总目标
+
+**最新优先级：一切工程由research question和实验计划驱动。** 权威工作计划为
+[RQ、X/Y因素与实验计划](research_experiment_plan_20260911.md)，算法约束为
+[Ptime planning与解质量界](decisions/planning_ptime_contract_v1.md)。先定义问题、
+贡献机制、efficiency/effectiveness/scalability的X因素、Y指标、强对照、消融及
+完整性验收，再实施对应工程。不能把XGAP变成无限建设的通用开源项目。
+算法必须可描述并给出输入规模、目标、伪代码、Ptime复杂度；greedy/heuristic须
+给出有假设的解质量界。候选上限、timeout和经验提速不等于近似保证。当前主入口
+的组合枚举尚不满足可扩展Ptime规划要求，P1是下一项实际工程缺口。
 
 **最新工程标准（2026-09-11）：XGAP是research prototype，以保证论文实验结果为
 核心要求，不追求完美实现。** 优先正确性、可复现、公平对照、全部失败/样本分母和
@@ -80,10 +89,11 @@ LLM interpretation、离线数据/catalog/ontology 准备、可复现实验及�
 8. 构建 **failure replay**：保存最小复现输入、相关版本、model/tool/backend
    observations 和失败边界，用本地确定性回放代替重复高成本运行。回放证据与真实
    外部运行分开；不得静默重试失败的外部动作。
-9. 节约开发时间与 token：日常修改优先 targeted tests＋tiny vertical slice；在
-   milestone 或共享核心边界运行 broad offline suite。无新代码或疑点不反复全量
-   回归；模块测试不以 GrailQA 成功为门槛。不要为抽象完备再添加无当前必要性的
-   guard、审计层或协议框架。
+9. 节约开发时间与 token：每次检查须对应实验阻塞或具体失败风险，只跑相关
+   targeted tests＋tiny vertical slice。**milestone不再自动触发broad suite**；
+   只有共享核心改动、未解决的回归风险或冻结的实验发布计划能说明必要性时才跑。
+   文档修改不跑软件回归；同一成功无新变化不重跑。模块测试不以GrailQA成功为
+   门槛。不为抽象完备添加无当前实验必要性的guard、审计层或协议框架。
 
 ## 测试阶梯
 

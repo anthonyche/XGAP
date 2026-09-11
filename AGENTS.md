@@ -109,9 +109,17 @@ For every milestone:
 1. Freeze the goal, hypotheses, scope, and acceptance gates.
 2. Inspect the relevant code and existing observations.
 3. Implement only the current milestone.
-4. Add offline unit/integration tests.
-5. Add a live-gated test only when real services are required.
-6. Run focused tests, then the broad offline suite and examples.
+4. Identify the research question, experimental factor, measured outcome, and
+   concrete failure risk addressed by the change. Do not add work only to make
+   a general-purpose open-source product more complete.
+5. Select the smallest meaningful module tests and affected tiny vertical slice.
+   Use saved failure replay; use live services only to verify an actual external
+   boundary. Do not repeat an unchanged successful gate.
+6. Run the selected checks. A broad offline suite is **not automatic at each
+   milestone**: justify it by a shared-core change, unresolved regression risk,
+   or the frozen experiment-release plan. Documentation-only changes need no
+   software regression. This supersedes the former blanket rule, following the
+   user's explicit September 11 research-directed testing instruction.
 7. Update `docs/status.md`, `docs/roadmap.md`, and design decisions.
 8. Report changed files, commands, results, limitations, and the next gate.
 
@@ -121,3 +129,12 @@ A milestone is done only when its acceptance behavior exists, tests pass,
 required examples run, status documentation is current, and unavailable
 external evidence remains explicitly unavailable. Documentation or an API
 placeholder alone does not satisfy an executable milestone.
+
+The research prototype is complete only for an explicit paper contract: supported
+semantics, actual method/ablation paths, independent answers, and reproducible
+cost accounting. For each planning algorithm state input size, objective,
+pseudocode, polynomial time/space analysis and solution-quality guarantees with
+assumptions. A timeout/candidate cap is not an approximation bound. Keep exhaustive
+search as a small-instance oracle; do not present exponential placement enumeration
+as the scalable planner. See `docs/research_experiment_plan_20260911.md` and
+`docs/decisions/planning_ptime_contract_v1.md` before the next engineering step.

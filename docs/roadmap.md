@@ -1,5 +1,21 @@
 # XGAP Roadmap
 
+## Authoritative next gate — P1 for the research experiment plan
+
+Follow [RQ/X/Y factors and experiments](research_experiment_plan_20260911.md).
+Before adding general features, close polynomial placement generation and its
+documented solution-quality guarantee under the
+[P1 contract](decisions/planning_ptime_contract_v1.md). Check the independent
+readiness subcase for exact local optimization; coupled cases need honest bounds
+and certificate coverage. These algorithms are designed, not implemented yet.
+Keep the existing enumerator as a small oracle, with no exponential dependency in
+the replacement path. Only then complete method/ablation and real-data wiring
+needed for E1–E5; tiny development and September18 real results remain mandatory.
+
+T3-B accepted7aad1dc. There are no running local acceptance handles. Further tests
+follow the experimental risk plan; neither documentation nor a milestone label
+automatically authorizes another broad regression.
+
 ## Current engineering — research-prototype experiment path
 
 Latest user clarification: prioritize what is needed to obtain credible paper

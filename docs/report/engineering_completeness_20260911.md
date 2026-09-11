@@ -1,5 +1,10 @@
 # XGAP 工程完整性核对：2026-09-11
 
+**后续研究要求补充：** 主入口组合枚举尚不满足可扩展Ptime规划要求，这是实际
+工程缺口；候选上限不是解质量保证。下一步按[算法规格](../decisions/planning_ptime_contract_v1.md)
+和[RQ/实验计划](../research_experiment_plan_20260911.md)完成。T3-B观测memory
+随后已在7aad1dc实现并验收；下表较早的集成缺口须结合该进展阅读。
+
 后续用户明确：XGAP是research prototype，以论文实验结果为核心，不追求完美。
 因此下文的“尚未实现扩展”不自动成为实验版的阻塞项；以拟报告的研究范围判断
 必要性。T3-B随后补充了通用入口的执行观测memory复用（见同日memory报告），

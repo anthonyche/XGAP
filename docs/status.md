@@ -1,5 +1,20 @@
 # XGAP Status
 
+## Latest priority — explicit RQ, factors, experiments and Ptime planning
+
+The [September11 research experiment plan](research_experiment_plan_20260911.md)
+maps effectiveness, efficiency and scalability to factors, outcomes, controls,
+ablations and existing EQ1–EQ5 obligations. The current exponential placement
+enumerator is not a scalable solution-producing Ptime planner. The
+[algorithm contract](decisions/planning_ptime_contract_v1.md) defines an exact
+separable subcase and fixed-pass heuristic with conditional gap certificates;
+implementation/integration is the next P1 gate, not claimed complete.
+
+T3-B is committed at7aad1dc. No new software regression was run for this research
+plan. AGENTS.md now follows the user's direction: tests address explicit experiment
+risks; broad regression is not automatic at a milestone. Remote3804011's last
+observed PENDING state is unchanged here; no server action was taken.
+
 ## Current engineering — T3-B memory integration accepted
 
 The user now explicitly prioritizes a research prototype serving paper results,

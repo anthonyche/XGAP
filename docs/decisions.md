@@ -1,5 +1,16 @@
 # XGAP Design Decisions
 
+## R0 Research-directed prototype and P1 planning contract
+
+The user's September11 instruction supersedes blanket milestone regression and
+general-product completion goals. The [research plan](research_experiment_plan_20260911.md)
+defines RQ, mechanism, factors/outcomes and required comparisons. The
+[Ptime contract](decisions/planning_ptime_contract_v1.md) records the current
+exponential-generation defect, exact separable-case proof, proposed polynomial
+coordinate search and conditional lower-bound certificate. No unproved constant
+approximation, actual-latency guarantee or full-agent optimality is claimed.
+The next source milestone is P1; R0 itself is documentation-only.
+
 ## T3-B Reuse planning observations in the ordinary question path
 
 [The frozen scope](decisions/semantic_execution_memory_v1.md) connects existing
