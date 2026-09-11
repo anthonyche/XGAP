@@ -1,0 +1,2768 @@
+{
+  "schema": "p1-terminal-source-replay-v1",
+  "paper_result": false,
+  "producer_commit": "6ed9cceb29fbf036cbd3cd4d16a891ea5186b261",
+  "parent_grid": {
+    "path": "/Users/anthonyche/xgap-data/p1-planner-grid-20260911/result.json",
+    "sha256": "72739f992d986560aa837a6f62eb4fc6f4aa87d3ac09c8d9c571ac8a850a94bf"
+  },
+  "case": {
+    "m": 4,
+    "k": 8,
+    "seed": 9,
+    "variable_row_estimates": true
+  },
+  "program": {
+    "program_id": "placement-scale",
+    "operators": [
+      {
+        "operator_id": "s0",
+        "kind": "match",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "binding_set",
+        "parameters": {
+          "node": {
+            "label": "Person"
+          },
+          "entity_field": "person"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "s1",
+        "kind": "match",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "binding_set",
+        "parameters": {
+          "node": {
+            "label": "Person"
+          },
+          "entity_field": "person"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "s2",
+        "kind": "match",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "binding_set",
+        "parameters": {
+          "node": {
+            "label": "Person"
+          },
+          "entity_field": "person"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "s3",
+        "kind": "match",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "binding_set",
+        "parameters": {
+          "node": {
+            "label": "Person"
+          },
+          "entity_field": "person"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      }
+    ],
+    "roots": [
+      "s0",
+      "s1",
+      "s2",
+      "s3"
+    ],
+    "holes": [],
+    "metadata": {}
+  },
+  "source": {
+    "source_id": "toy",
+    "snapshot_version": "frozen-toy",
+    "replica_backend_ids": [
+      "rdf_0",
+      "rdf_1",
+      "rdf_2",
+      "rdf_3",
+      "rdf_4",
+      "rdf_5",
+      "rdf_6",
+      "rdf_7"
+    ]
+  },
+  "limits": {
+    "max_remote_calls": 4,
+    "max_observation_calls": 32,
+    "max_parallelism": 4,
+    "max_local_options": 64
+  },
+  "backend_recipe": "toy_backends(load_fixture()[2])[fuseki] aliased to rdf_0..rdf_7; mapping and default Fuseki profiles renamed identically",
+  "fixture_mapping_sha256": "a9a27bf540dcb244d9d287b02c02c550cb3e5df581ca72baae1dfc12d305676a",
+  "snapshot": {
+    "snapshot_id": "grid",
+    "version": "9",
+    "estimates": [
+      {
+        "observation_key": "0178225aa3cf88c4ebde623381c84a25f329ec8e8acc753a4d7b1ca51dd45e70",
+        "backend_id": "rdf_7",
+        "elapsed_ms": 60,
+        "row_count": 40,
+        "row_width_bytes": 48,
+        "output_bytes": 1920,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "130e16ccc899ba35fddcd68e9ed081379a49e46059cac359485ffa02cfb0ba29",
+        "backend_id": "rdf_4",
+        "elapsed_ms": 35,
+        "row_count": 9,
+        "row_width_bytes": 24,
+        "output_bytes": 216,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+        "backend_id": "rdf_0",
+        "elapsed_ms": 87,
+        "row_count": 1,
+        "row_width_bytes": 44,
+        "output_bytes": 44,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "2442291ba0c6c7d9c7f3cf93d135be9a5e0af2cdf61c32cad7320d4c2e0aa41a",
+        "backend_id": "rdf_1",
+        "elapsed_ms": 65,
+        "row_count": 30,
+        "row_width_bytes": 78,
+        "output_bytes": 2340,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "2e1f8fd12cd1d048d56aa1b689d787593d034cd46ece1d1af2107515eb7753d9",
+        "backend_id": "rdf_4",
+        "elapsed_ms": 11,
+        "row_count": 22,
+        "row_width_bytes": 71,
+        "output_bytes": 1562,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "2f22413462b8449bffd8648e2dd2e280b36eb6684384a31aa454f0de880c9c0d",
+        "backend_id": "rdf_5",
+        "elapsed_ms": 79,
+        "row_count": 3,
+        "row_width_bytes": 49,
+        "output_bytes": 147,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "3a2578d5012bcb08f6ab2dfee351093407345ba3dbc76110fb880eea3b32bb42",
+        "backend_id": "rdf_7",
+        "elapsed_ms": 22,
+        "row_count": 29,
+        "row_width_bytes": 55,
+        "output_bytes": 1595,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+        "backend_id": "rdf_5",
+        "elapsed_ms": 21,
+        "row_count": 11,
+        "row_width_bytes": 31,
+        "output_bytes": 341,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+        "backend_id": "rdf_6",
+        "elapsed_ms": 7,
+        "row_count": 8,
+        "row_width_bytes": 17,
+        "output_bytes": 136,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "5a9e9bb95664ffec353bbe7512ecb7bbf894157cbbc06b56d91e3573c11a9acc",
+        "backend_id": "rdf_7",
+        "elapsed_ms": 65,
+        "row_count": 38,
+        "row_width_bytes": 9,
+        "output_bytes": 342,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "5e4d9adf6b9ae940635b7854ea22e22b8fa6920de20b1680efe2a4b1f033b6bd",
+        "backend_id": "rdf_2",
+        "elapsed_ms": 100,
+        "row_count": 25,
+        "row_width_bytes": 14,
+        "output_bytes": 350,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "6497814122ffe9e763b8d971769b5711ec9429305e9755e5537d8848bbeede65",
+        "backend_id": "rdf_1",
+        "elapsed_ms": 38,
+        "row_count": 14,
+        "row_width_bytes": 29,
+        "output_bytes": 406,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "655806121bf1a795fc91de5ad76da3b004de533937297c857dd9b3501fb58d3e",
+        "backend_id": "rdf_4",
+        "elapsed_ms": 93,
+        "row_count": 27,
+        "row_width_bytes": 12,
+        "output_bytes": 324,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "662cae4320d4b1d65fcdb1ca43e493ff1afe7dbc87e9539678ab69778aab7e37",
+        "backend_id": "rdf_5",
+        "elapsed_ms": 99,
+        "row_count": 18,
+        "row_width_bytes": 27,
+        "output_bytes": 486,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "691088c44c212bdc435fa24cd7a30caff8cb0e0f7a01e9c895ba3a753d1c881c",
+        "backend_id": "rdf_2",
+        "elapsed_ms": 51,
+        "row_count": 18,
+        "row_width_bytes": 44,
+        "output_bytes": 792,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+        "backend_id": "rdf_6",
+        "elapsed_ms": 6,
+        "row_count": 13,
+        "row_width_bytes": 1,
+        "output_bytes": 13,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "8c171211ee1c60879c942d87afc7028f051cffd931a5a1686aa6502be6c5a015",
+        "backend_id": "rdf_3",
+        "elapsed_ms": 53,
+        "row_count": 4,
+        "row_width_bytes": 49,
+        "output_bytes": 196,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+        "backend_id": "rdf_0",
+        "elapsed_ms": 63,
+        "row_count": 9,
+        "row_width_bytes": 4,
+        "output_bytes": 36,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "a3443a68b5d737d93bbbc02e2b4f8b29afb65f902c71682f2b6897b210f1a2c1",
+        "backend_id": "rdf_7",
+        "elapsed_ms": 31,
+        "row_count": 28,
+        "row_width_bytes": 15,
+        "output_bytes": 420,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+        "backend_id": "rdf_6",
+        "elapsed_ms": 77,
+        "row_count": 1,
+        "row_width_bytes": 16,
+        "output_bytes": 16,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "a6adeb34ec2486348e5a8d685b69bb92fd27bae85aa1b57dadb8074ac7b42c0a",
+        "backend_id": "rdf_5",
+        "elapsed_ms": 98,
+        "row_count": 38,
+        "row_width_bytes": 26,
+        "output_bytes": 988,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "aad59698fcbf9e6fecac0f11d639a458ee347cea070b5411eee0c22bd79be5e7",
+        "backend_id": "rdf_2",
+        "elapsed_ms": 26,
+        "row_count": 22,
+        "row_width_bytes": 2,
+        "output_bytes": 44,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "b0e63e1f677ea42d26db5c06fe8e38eda481c351af904e9ba3a2d0e240156493",
+        "backend_id": "rdf_1",
+        "elapsed_ms": 11,
+        "row_count": 9,
+        "row_width_bytes": 70,
+        "output_bytes": 630,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "b20c7f04945e7e18e887456fb78d3129744428b0f2c36c8df4f11d61e1e88ea7",
+        "backend_id": "rdf_3",
+        "elapsed_ms": 3,
+        "row_count": 33,
+        "row_width_bytes": 11,
+        "output_bytes": 363,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "b64a62f9122e3461f7cca250537434e550c0ceb54c7f733d55b2cb03485a1e03",
+        "backend_id": "rdf_2",
+        "elapsed_ms": 74,
+        "row_count": 32,
+        "row_width_bytes": 69,
+        "output_bytes": 2208,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "c6d4b5e76433608425260ac5b5f2be017338c8b5d87147d670027aca9c78ad5e",
+        "backend_id": "rdf_1",
+        "elapsed_ms": 26,
+        "row_count": 27,
+        "row_width_bytes": 9,
+        "output_bytes": 243,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "d191c5c795b256961b49f4c08c6465e04e9911e367e9565cd3580c5d56e95b88",
+        "backend_id": "rdf_3",
+        "elapsed_ms": 51,
+        "row_count": 13,
+        "row_width_bytes": 12,
+        "output_bytes": 156,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+        "backend_id": "rdf_0",
+        "elapsed_ms": 90,
+        "row_count": 38,
+        "row_width_bytes": 19,
+        "output_bytes": 722,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "d4a3f69cfb1e2c53ce0fc83ab4ad72c9e8ed1b1ac1f3e5ccddba6e9b432e6e16",
+        "backend_id": "rdf_3",
+        "elapsed_ms": 23,
+        "row_count": 39,
+        "row_width_bytes": 6,
+        "output_bytes": 234,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "d6ccefaf58229c6817940b8a07fcb59a0ba0b35bf3eab09e5bb34fea9342000e",
+        "backend_id": "rdf_6",
+        "elapsed_ms": 7,
+        "row_count": 18,
+        "row_width_bytes": 72,
+        "output_bytes": 1296,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a",
+        "backend_id": "rdf_0",
+        "elapsed_ms": 88,
+        "row_count": 39,
+        "row_width_bytes": 20,
+        "output_bytes": 780,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "observation_key": "dea76d89d121d1e1a2407c7c6bbbead141273a5d1eb5b9c928bbb8400059cb2e",
+        "backend_id": "rdf_4",
+        "elapsed_ms": 96,
+        "row_count": 18,
+        "row_width_bytes": 74,
+        "output_bytes": 1332,
+        "source": "controlled model table",
+        "version": "9"
+      }
+    ],
+    "bandwidth_bytes_per_ms": 1000,
+    "exchange_fixed_ms": 0,
+    "coordinator_row_ms": 0.1
+  },
+  "original_selection": {
+    "semantic_equivalence_key": "e7df783d15ec651d6737b26c10b02de34249cf82bf19bb5b23d1910aa2de0e87",
+    "selected_plan_id": "placement-scale/132d76cb3db8d88c48ec",
+    "snapshot_id": "grid",
+    "snapshot_version": "9",
+    "estimates": [
+      {
+        "plan_id": "placement-scale/6feb8caccf506cf14489",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1582.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/959af9e1e65f6e879a34",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1789.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "c6d4b5e76433608425260ac5b5f2be017338c8b5d87147d670027aca9c78ad5e",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 26.0,
+          "s0/native/exchange": 26.243,
+          "s0/bindings": 28.942999999999998,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 27.0,
+          "s0/native/exchange": 27.0,
+          "s0/bindings": 27.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/f1d806375aad44838c86",
+        "predicted_latency_ms": 102.85,
+        "predicted_transfer_bytes": 1896.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "5e4d9adf6b9ae940635b7854ea22e22b8fa6920de20b1680efe2a4b1f033b6bd",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 100.0,
+          "s0/native/exchange": 100.35,
+          "s0/bindings": 102.85,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 25.0,
+          "s0/native/exchange": 25.0,
+          "s0/bindings": 25.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/851449f4b5a35c1cb115",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1780.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "d4a3f69cfb1e2c53ce0fc83ab4ad72c9e8ed1b1ac1f3e5ccddba6e9b432e6e16",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 23.0,
+          "s0/native/exchange": 23.234,
+          "s0/bindings": 27.134,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 39.0,
+          "s0/native/exchange": 39.0,
+          "s0/bindings": 39.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/c914493687f1fd02ae2f",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 3108.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "2e1f8fd12cd1d048d56aa1b689d787593d034cd46ece1d1af2107515eb7753d9",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 11.0,
+          "s0/native/exchange": 12.562,
+          "s0/bindings": 14.762,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 22.0,
+          "s0/native/exchange": 22.0,
+          "s0/bindings": 22.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/b17c1c1c03eb9506547d",
+        "predicted_latency_ms": 101.286,
+        "predicted_transfer_bytes": 2032.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "662cae4320d4b1d65fcdb1ca43e493ff1afe7dbc87e9539678ab69778aab7e37",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 99.0,
+          "s0/native/exchange": 99.486,
+          "s0/bindings": 101.286,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 18.0,
+          "s0/native/exchange": 18.0,
+          "s0/bindings": 18.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/224419a34622b25a81a0",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 2842.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "d6ccefaf58229c6817940b8a07fcb59a0ba0b35bf3eab09e5bb34fea9342000e",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 7.0,
+          "s0/native/exchange": 8.296,
+          "s0/bindings": 10.096,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 18.0,
+          "s0/native/exchange": 18.0,
+          "s0/bindings": 18.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/e21265fcb72808d9b559",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 3466.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "0178225aa3cf88c4ebde623381c84a25f329ec8e8acc753a4d7b1ca51dd45e70",
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 60.0,
+          "s0/native/exchange": 61.92,
+          "s0/bindings": 65.92,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 40.0,
+          "s0/native/exchange": 40.0,
+          "s0/bindings": 40.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/bc4988e75b5594575176",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 2168.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "b0e63e1f677ea42d26db5c06fe8e38eda481c351af904e9ba3a2d0e240156493",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 11.0,
+          "s1/native/exchange": 11.63,
+          "s1/bindings": 12.530000000000001,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 9.0,
+          "s1/native/exchange": 9.0,
+          "s1/bindings": 9.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/6d8502bb6c5b59e3db1c",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 3746.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "b64a62f9122e3461f7cca250537434e550c0ceb54c7f733d55b2cb03485a1e03",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 74.0,
+          "s1/native/exchange": 76.208,
+          "s1/bindings": 79.408,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 32.0,
+          "s1/native/exchange": 32.0,
+          "s1/bindings": 32.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/fcdb256ddc06fd1e3d5e",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1694.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d191c5c795b256961b49f4c08c6465e04e9911e367e9565cd3580c5d56e95b88",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 51.0,
+          "s1/native/exchange": 51.156,
+          "s1/bindings": 52.455999999999996,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 13.0,
+          "s1/native/exchange": 13.0,
+          "s1/bindings": 13.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/ef3d3091d305d1a2a2fe",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1754.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "130e16ccc899ba35fddcd68e9ed081379a49e46059cac359485ffa02cfb0ba29",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 35.0,
+          "s1/native/exchange": 35.216,
+          "s1/bindings": 36.116,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 9.0,
+          "s1/native/exchange": 9.0,
+          "s1/bindings": 9.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/9ac727eb39639a3dcee1",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1685.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "2f22413462b8449bffd8648e2dd2e280b36eb6684384a31aa454f0de880c9c0d",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 79.0,
+          "s1/native/exchange": 79.147,
+          "s1/bindings": 79.447,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 3.0,
+          "s1/native/exchange": 3.0,
+          "s1/bindings": 3.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/03682390412134ce8b0e",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1674.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/f1922ab630420d7dd856",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1880.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "5a9e9bb95664ffec353bbe7512ecb7bbf894157cbbc06b56d91e3573c11a9acc",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 65.0,
+          "s1/native/exchange": 65.342,
+          "s1/bindings": 69.142,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 38.0,
+          "s1/native/exchange": 38.0,
+          "s1/bindings": 38.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/dc5e4d274bbc9c37cf83",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1208.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "6497814122ffe9e763b8d971769b5711ec9429305e9755e5537d8848bbeede65",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 38.0,
+          "s2/native/exchange": 38.406,
+          "s2/bindings": 39.806,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 14.0,
+          "s2/native/exchange": 14.0,
+          "s2/bindings": 14.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/6b56623778c24dc14ebe",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1594.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "691088c44c212bdc435fa24cd7a30caff8cb0e0f7a01e9c895ba3a753d1c881c",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 51.0,
+          "s2/native/exchange": 51.792,
+          "s2/bindings": 53.592,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 18.0,
+          "s2/native/exchange": 18.0,
+          "s2/bindings": 18.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/8ee361a859aed1e255fe",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1165.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "b20c7f04945e7e18e887456fb78d3129744428b0f2c36c8df4f11d61e1e88ea7",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 3.0,
+          "s2/native/exchange": 3.363,
+          "s2/bindings": 6.663,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 33.0,
+          "s2/native/exchange": 33.0,
+          "s2/bindings": 33.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/bd510f53dc44bbec7d75",
+        "predicted_latency_ms": 99.13199999999999,
+        "predicted_transfer_bytes": 2134.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f",
+          "dea76d89d121d1e1a2407c7c6bbbead141273a5d1eb5b9c928bbb8400059cb2e"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 96.0,
+          "s2/native/exchange": 97.332,
+          "s2/bindings": 99.13199999999999,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 18.0,
+          "s2/native/exchange": 18.0,
+          "s2/bindings": 18.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/e640346dfdf23e8b0153",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1143.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/441cf228353e0315fdce",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 818.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/799e34773c6f26adfb67",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 2397.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "3a2578d5012bcb08f6ab2dfee351093407345ba3dbc76110fb880eea3b32bb42",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 22.0,
+          "s2/native/exchange": 23.595,
+          "s2/bindings": 26.494999999999997,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 29.0,
+          "s2/native/exchange": 29.0,
+          "s2/bindings": 29.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/8ec3869a868c8b3ebc62",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 2436.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "2442291ba0c6c7d9c7f3cf93d135be9a5e0af2cdf61c32cad7320d4c2e0aa41a",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 65.0,
+          "s3/native/exchange": 67.34,
+          "s3/bindings": 70.34
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 30.0,
+          "s3/native/exchange": 30.0,
+          "s3/bindings": 30.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/2402cc111aab9b834ea8",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 140.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "aad59698fcbf9e6fecac0f11d639a458ee347cea070b5411eee0c22bd79be5e7"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 26.0,
+          "s3/native/exchange": 26.044,
+          "s3/bindings": 28.244
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 22.0,
+          "s3/native/exchange": 22.0,
+          "s3/bindings": 22.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/3c2504c98e5372c2d90e",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 292.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "8c171211ee1c60879c942d87afc7028f051cffd931a5a1686aa6502be6c5a015",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 53.0,
+          "s3/native/exchange": 53.196,
+          "s3/bindings": 53.596
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 4.0,
+          "s3/native/exchange": 4.0,
+          "s3/bindings": 4.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/261127466f9fd600bd0f",
+        "predicted_latency_ms": 96.024,
+        "predicted_transfer_bytes": 420.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "655806121bf1a795fc91de5ad76da3b004de533937297c857dd9b3501fb58d3e",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 93.0,
+          "s3/native/exchange": 93.324,
+          "s3/bindings": 96.024
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 27.0,
+          "s3/native/exchange": 27.0,
+          "s3/bindings": 27.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/e84c43791d20cedb54e5",
+        "predicted_latency_ms": 102.788,
+        "predicted_transfer_bytes": 1084.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "a6adeb34ec2486348e5a8d685b69bb92fd27bae85aa1b57dadb8074ac7b42c0a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 98.0,
+          "s3/native/exchange": 98.988,
+          "s3/bindings": 102.788
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/d4911fb01f62631b3dbb",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 109.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/d251b265000c0277458b",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 516.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3443a68b5d737d93bbbc02e2b4f8b29afb65f902c71682f2b6897b210f1a2c1",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 31.0,
+          "s3/native/exchange": 31.42,
+          "s3/bindings": 34.22
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 28.0,
+          "s3/native/exchange": 28.0,
+          "s3/bindings": 28.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/95dd0ba84f6e5e4270d4",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 316.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "c6d4b5e76433608425260ac5b5f2be017338c8b5d87147d670027aca9c78ad5e"
+        ],
+        "node_completion_ms": {
+          "s0/native": 26.0,
+          "s0/native/exchange": 26.243,
+          "s0/bindings": 28.942999999999998,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 27.0,
+          "s0/native/exchange": 27.0,
+          "s0/bindings": 27.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/f9631d998a1d44740ab5",
+        "predicted_latency_ms": 102.85,
+        "predicted_transfer_bytes": 423.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "5e4d9adf6b9ae940635b7854ea22e22b8fa6920de20b1680efe2a4b1f033b6bd",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 100.0,
+          "s0/native/exchange": 100.35,
+          "s0/bindings": 102.85,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 25.0,
+          "s0/native/exchange": 25.0,
+          "s0/bindings": 25.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/6259fc4656e8f3ae6da6",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 307.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "d4a3f69cfb1e2c53ce0fc83ab4ad72c9e8ed1b1ac1f3e5ccddba6e9b432e6e16"
+        ],
+        "node_completion_ms": {
+          "s0/native": 23.0,
+          "s0/native/exchange": 23.234,
+          "s0/bindings": 27.134,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 39.0,
+          "s0/native/exchange": 39.0,
+          "s0/bindings": 39.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/cfdf4fdea68f169d686f",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 1635.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "2e1f8fd12cd1d048d56aa1b689d787593d034cd46ece1d1af2107515eb7753d9",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 11.0,
+          "s0/native/exchange": 12.562,
+          "s0/bindings": 14.762,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 22.0,
+          "s0/native/exchange": 22.0,
+          "s0/bindings": 22.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/c33995e5d83235ed32a0",
+        "predicted_latency_ms": 101.286,
+        "predicted_transfer_bytes": 559.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "662cae4320d4b1d65fcdb1ca43e493ff1afe7dbc87e9539678ab69778aab7e37",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 99.0,
+          "s0/native/exchange": 99.486,
+          "s0/bindings": 101.286,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 18.0,
+          "s0/native/exchange": 18.0,
+          "s0/bindings": 18.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/d13078cd162cb655541e",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 1369.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "d6ccefaf58229c6817940b8a07fcb59a0ba0b35bf3eab09e5bb34fea9342000e"
+        ],
+        "node_completion_ms": {
+          "s0/native": 7.0,
+          "s0/native/exchange": 8.296,
+          "s0/bindings": 10.096,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 18.0,
+          "s0/native/exchange": 18.0,
+          "s0/bindings": 18.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/7474414df2f6ea47b0f3",
+        "predicted_latency_ms": 87.14399999999999,
+        "predicted_transfer_bytes": 1993.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "0178225aa3cf88c4ebde623381c84a25f329ec8e8acc753a4d7b1ca51dd45e70",
+          "1dc7774ad50010638c7fc4c4218703f6751d6ea49f02cd4e981c153b254508cb",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 60.0,
+          "s0/native/exchange": 61.92,
+          "s0/bindings": 65.92,
+          "s1/native": 87.0,
+          "s1/native/exchange": 87.044,
+          "s1/bindings": 87.14399999999999,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 40.0,
+          "s0/native/exchange": 40.0,
+          "s0/bindings": 40.0,
+          "s1/native": 1.0,
+          "s1/native/exchange": 1.0,
+          "s1/bindings": 1.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/d4d73fefa5f0d62b625a",
+        "predicted_latency_ms": 77.116,
+        "predicted_transfer_bytes": 695.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "b0e63e1f677ea42d26db5c06fe8e38eda481c351af904e9ba3a2d0e240156493"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 11.0,
+          "s1/native/exchange": 11.63,
+          "s1/bindings": 12.530000000000001,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 9.0,
+          "s1/native/exchange": 9.0,
+          "s1/bindings": 9.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/7a5f9ed8ad5c973ce480",
+        "predicted_latency_ms": 79.408,
+        "predicted_transfer_bytes": 2273.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "b64a62f9122e3461f7cca250537434e550c0ceb54c7f733d55b2cb03485a1e03"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 74.0,
+          "s1/native/exchange": 76.208,
+          "s1/bindings": 79.408,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 32.0,
+          "s1/native/exchange": 32.0,
+          "s1/bindings": 32.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/2321c15b80fd7a2e6479",
+        "predicted_latency_ms": 77.116,
+        "predicted_transfer_bytes": 221.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d",
+          "d191c5c795b256961b49f4c08c6465e04e9911e367e9565cd3580c5d56e95b88"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 51.0,
+          "s1/native/exchange": 51.156,
+          "s1/bindings": 52.455999999999996,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 13.0,
+          "s1/native/exchange": 13.0,
+          "s1/bindings": 13.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/6d31b399df92f83d9f38",
+        "predicted_latency_ms": 77.116,
+        "predicted_transfer_bytes": 281.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "130e16ccc899ba35fddcd68e9ed081379a49e46059cac359485ffa02cfb0ba29",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 35.0,
+          "s1/native/exchange": 35.216,
+          "s1/bindings": 36.116,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 9.0,
+          "s1/native/exchange": 9.0,
+          "s1/bindings": 9.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/fb34bcf73cba185b8748",
+        "predicted_latency_ms": 79.447,
+        "predicted_transfer_bytes": 212.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "2f22413462b8449bffd8648e2dd2e280b36eb6684384a31aa454f0de880c9c0d",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 79.0,
+          "s1/native/exchange": 79.147,
+          "s1/bindings": 79.447,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 3.0,
+          "s1/native/exchange": 3.0,
+          "s1/bindings": 3.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/7fcafb24aae69bcedcbe",
+        "predicted_latency_ms": 77.116,
+        "predicted_transfer_bytes": 201.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/1cb6dd15240c60785940",
+        "predicted_latency_ms": 77.116,
+        "predicted_transfer_bytes": 407.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "5a9e9bb95664ffec353bbe7512ecb7bbf894157cbbc06b56d91e3573c11a9acc",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3b815f29c66ab3d5569d1bb2aaeeb698965c7efa97b5f0a930aa266bc2bc36d"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 65.0,
+          "s1/native/exchange": 65.342,
+          "s1/bindings": 69.142,
+          "s2/native": 77.0,
+          "s2/native/exchange": 77.016,
+          "s2/bindings": 77.116,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 38.0,
+          "s1/native/exchange": 38.0,
+          "s1/bindings": 38.0,
+          "s2/native": 1.0,
+          "s2/native/exchange": 1.0,
+          "s2/bindings": 1.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/de941104352eb07dfc10",
+        "predicted_latency_ms": 92.68,
+        "predicted_transfer_bytes": 965.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "dd2f9a72928e6f06fe3a2181292578992c58bd930d1c92f74713b8c1e974245a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 88.0,
+          "s2/native/exchange": 88.78,
+          "s2/bindings": 92.68,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 39.0,
+          "s2/native/exchange": 39.0,
+          "s2/bindings": 39.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/1892d7358b4be46559d8",
+        "predicted_latency_ms": 63.936,
+        "predicted_transfer_bytes": 591.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "6497814122ffe9e763b8d971769b5711ec9429305e9755e5537d8848bbeede65",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 38.0,
+          "s2/native/exchange": 38.406,
+          "s2/bindings": 39.806,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 14.0,
+          "s2/native/exchange": 14.0,
+          "s2/bindings": 14.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/1f19f2952b30b057c02b",
+        "predicted_latency_ms": 63.936,
+        "predicted_transfer_bytes": 977.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "691088c44c212bdc435fa24cd7a30caff8cb0e0f7a01e9c895ba3a753d1c881c",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 51.0,
+          "s2/native/exchange": 51.792,
+          "s2/bindings": 53.592,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 18.0,
+          "s2/native/exchange": 18.0,
+          "s2/bindings": 18.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/6f418c0b02e392601e18",
+        "predicted_latency_ms": 63.936,
+        "predicted_transfer_bytes": 548.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "b20c7f04945e7e18e887456fb78d3129744428b0f2c36c8df4f11d61e1e88ea7"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 3.0,
+          "s2/native/exchange": 3.363,
+          "s2/bindings": 6.663,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 33.0,
+          "s2/native/exchange": 33.0,
+          "s2/bindings": 33.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/bb4c6d5b0a72f750f734",
+        "predicted_latency_ms": 99.13199999999999,
+        "predicted_transfer_bytes": 1517.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "dea76d89d121d1e1a2407c7c6bbbead141273a5d1eb5b9c928bbb8400059cb2e"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 96.0,
+          "s2/native/exchange": 97.332,
+          "s2/bindings": 99.13199999999999,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 18.0,
+          "s2/native/exchange": 18.0,
+          "s2/bindings": 18.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/132d76cb3db8d88c48ec",
+        "predicted_latency_ms": 63.936,
+        "predicted_transfer_bytes": 526.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/d3b9711c636576732e94",
+        "predicted_latency_ms": 63.936,
+        "predicted_transfer_bytes": 1780.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "3a2578d5012bcb08f6ab2dfee351093407345ba3dbc76110fb880eea3b32bb42",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "85ad12e1a85d3146f310dd403719c90c95034febba603a2c247c755ac3cb8edf",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 22.0,
+          "s2/native/exchange": 23.595,
+          "s2/bindings": 26.494999999999997,
+          "s3/native": 6.0,
+          "s3/native/exchange": 6.013,
+          "s3/bindings": 7.313
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 29.0,
+          "s2/native/exchange": 29.0,
+          "s2/bindings": 29.0,
+          "s3/native": 13.0,
+          "s3/native/exchange": 13.0,
+          "s3/bindings": 13.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/da80863f175228f18e30",
+        "predicted_latency_ms": 94.52199999999999,
+        "predicted_transfer_bytes": 1235.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "d24c472d665b4269bba2542f2f0fa0022fee5ce5739521fde00220711c8e0b5f"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 90.0,
+          "s3/native/exchange": 90.722,
+          "s3/bindings": 94.52199999999999
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/87ab042697d8ca4b4404",
+        "predicted_latency_ms": 70.34,
+        "predicted_transfer_bytes": 2853.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "2442291ba0c6c7d9c7f3cf93d135be9a5e0af2cdf61c32cad7320d4c2e0aa41a",
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 65.0,
+          "s3/native/exchange": 67.34,
+          "s3/bindings": 70.34
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 30.0,
+          "s3/native/exchange": 30.0,
+          "s3/bindings": 30.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/bdd468ca6e1c940bf2d7",
+        "predicted_latency_ms": 63.936,
+        "predicted_transfer_bytes": 557.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "aad59698fcbf9e6fecac0f11d639a458ee347cea070b5411eee0c22bd79be5e7"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 26.0,
+          "s3/native/exchange": 26.044,
+          "s3/bindings": 28.244
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 22.0,
+          "s3/native/exchange": 22.0,
+          "s3/bindings": 22.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/1220fc1af11ca56dc5b5",
+        "predicted_latency_ms": 63.936,
+        "predicted_transfer_bytes": 709.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "8c171211ee1c60879c942d87afc7028f051cffd931a5a1686aa6502be6c5a015",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 53.0,
+          "s3/native/exchange": 53.196,
+          "s3/bindings": 53.596
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 4.0,
+          "s3/native/exchange": 4.0,
+          "s3/bindings": 4.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/e34ada93d5d496345f48",
+        "predicted_latency_ms": 96.024,
+        "predicted_transfer_bytes": 837.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "655806121bf1a795fc91de5ad76da3b004de533937297c857dd9b3501fb58d3e",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 93.0,
+          "s3/native/exchange": 93.324,
+          "s3/bindings": 96.024
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 27.0,
+          "s3/native/exchange": 27.0,
+          "s3/bindings": 27.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/c6d2794db539402ed7c1",
+        "predicted_latency_ms": 102.788,
+        "predicted_transfer_bytes": 1501.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a6adeb34ec2486348e5a8d685b69bb92fd27bae85aa1b57dadb8074ac7b42c0a"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 98.0,
+          "s3/native/exchange": 98.988,
+          "s3/bindings": 102.788
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 38.0,
+          "s3/native/exchange": 38.0,
+          "s3/bindings": 38.0
+        }
+      },
+      {
+        "plan_id": "placement-scale/a390916e9adda49a29b6",
+        "predicted_latency_ms": 63.936,
+        "predicted_transfer_bytes": 933.0,
+        "remote_calls": 4,
+        "observation_keys": [
+          "49acd7cd04811bcaa1913932b768d444bac05a4293e856cf7b352b249bdde9fb",
+          "55e2f675f65c80426bfb420072f77bd12f6e8568dd04100b41fd0e80b98d5a72",
+          "943042fa18cefe0acaa918db01a9b17b774ac1fb06b45e2d18b96a64f622431a",
+          "a3443a68b5d737d93bbbc02e2b4f8b29afb65f902c71682f2b6897b210f1a2c1"
+        ],
+        "node_completion_ms": {
+          "s0/native": 63.0,
+          "s0/native/exchange": 63.036,
+          "s0/bindings": 63.936,
+          "s1/native": 7.0,
+          "s1/native/exchange": 7.136,
+          "s1/bindings": 7.936,
+          "s2/native": 21.0,
+          "s2/native/exchange": 21.341,
+          "s2/bindings": 22.441000000000003,
+          "s3/native": 31.0,
+          "s3/native/exchange": 31.42,
+          "s3/bindings": 34.22
+        },
+        "node_row_counts": {
+          "s0/native": 9.0,
+          "s0/native/exchange": 9.0,
+          "s0/bindings": 9.0,
+          "s1/native": 8.0,
+          "s1/native/exchange": 8.0,
+          "s1/bindings": 8.0,
+          "s2/native": 11.0,
+          "s2/native/exchange": 11.0,
+          "s2/bindings": 11.0,
+          "s3/native": 28.0,
+          "s3/native/exchange": 28.0,
+          "s3/bindings": 28.0
+        }
+      }
+    ],
+    "algorithm": "coordinate_two_passes",
+    "evaluated_plan_count": 57,
+    "local_score_evaluations": 0,
+    "evaluation_bound": 65,
+    "total_score_evaluation_bound": 65,
+    "certificate": {
+      "objective": "estimated_critical_path_ms",
+      "actual_latency_bound": false,
+      "kind": "instance_gap",
+      "lower_bound_ms": 7.936,
+      "upper_bound_ms": 63.936,
+      "baseline_ms": 94.52199999999999,
+      "additive_gap_ms": 56.0,
+      "ratio_bound": 8.056451612903226,
+      "unavailable_reason": null,
+      "full_local_domain_covered": true,
+      "constant_factor_claim": false
+    }
+  },
+  "frozen_grid_row": {
+    "seed": 9,
+    "variable_row_estimates": true,
+    "selection_ms_with_allocation_tracing": 44.6466663852334,
+    "evaluated_plans": 57,
+    "local_score_evaluations": 0,
+    "algorithm": "coordinate_two_passes",
+    "certificate": {
+      "objective": "estimated_critical_path_ms",
+      "actual_latency_bound": false,
+      "kind": "instance_gap",
+      "lower_bound_ms": 7.936,
+      "upper_bound_ms": 63.936,
+      "baseline_ms": 94.52199999999999,
+      "additive_gap_ms": 56.0,
+      "ratio_bound": 8.056451612903226,
+      "unavailable_reason": null,
+      "full_local_domain_covered": true,
+      "constant_factor_claim": false
+    },
+    "oracle_estimated_ms": 10.096,
+    "observed_model_regret_ratio": 6.332805071315373
+  }
+}

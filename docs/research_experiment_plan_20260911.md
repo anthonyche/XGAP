@@ -12,8 +12,11 @@
   small-data development, new real results by September 18
 
 **Subsequent execution:** P1 local-option planning is implemented and its first
-model grid/native slice completed. A6.33x heuristic regret case is retained for
-targeted separability repair; see [P1 evidence](report/polynomial_planning_20260911.md).
+model grid/native slice completed. The retained6.33x heuristic regret case was repaired by terminal-source admission;
+150 affected replays and70 reused oracles verify the correction. See
+[P1 correction](report/polynomial_terminal_correction_20260911.md). Ordinary-entry
+selective acquisition/reselection is the next implementation gap; pre-execution
+reselection and execution-prefix adaptation must be distinguished.
 Statements below describing the initial missing implementation are historical
 planning context, not a claim that the replacement is still absent.
 

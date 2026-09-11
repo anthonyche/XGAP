@@ -1,9 +1,10 @@
 # P1: polynomial planning and explicit quality guarantees
 
-2026-09-11. Research design and proof obligations, **not an implemented planner
-release**. Current source checkpoint: 7aad1dc. This decision preserves the
-bounded semantic profile and existing experiment populations. It changes the
-next engineering priority, not historical results.
+2026-09-11. Research design and proof obligations, initially frozen at7aad1dc.
+The local-option planner was implemented at6ed9cce; the terminal-source admission
+correction below retains the same objective and optimization domain. This
+decision preserves the bounded semantic profile and experiment populations.
+Implementation evidence does not establish a bound on actual execution latency.
 
 ## Objective and current defect
 
@@ -55,9 +56,12 @@ Assume:
 
 1. Each source operator has one output into a fixed downstream DAG. Choosing its
    backend changes only that source block's ready time d_i(j).
-2. Its output cardinality/width relevant to downstream work and downstream local
-   durations are placement-independent. These are validated model assumptions,
-   not inferred merely from a declaration that replicas are equivalent.
+2. For sources with downstream consumers, output cardinality/width relevant to
+   downstream work and downstream local durations are placement-independent.
+   An unconsumed source's complete local fragment is a root; all its row/width
+   dependent work is included in d_i(j), so its cardinality/width may vary.
+   These are validated model assumptions, not inferred merely from a declaration
+   that replicas are equivalent.
 3. All combinations of independently admitted options remain feasible; there is
    no shared-backend capacity/contending-resource term or placement-coupled join,
    fusion, network edge cost or global execution budget violation.
@@ -80,7 +84,10 @@ do not prove global optimality of all secondary byte/call tie-breakers.
 Time is O(sum_i,j T_local(i,j) + L + K) with a topological DAG pass, plus
 polynomial validation. Space is polynomial in L,K. If local options are explicit,
 the selection step itself is O(K+L). This is **an exact special-case algorithm**,
-not a novel approximation theorem and not yet an implemented replacement.
+not a novel approximation theorem. The implementation may perform additional
+polynomial validation, hashing, and snapshot indexing work; the O(K+L) statement
+describes the selection recurrence over explicit local scores, not every Python
+operation in the implementation.
 
 P1 first checks this assumption set against compiled fragments and model inputs.
 Do not invent a complicated heuristic for cases where this argument suffices.
@@ -251,3 +258,37 @@ Grid command: `python scripts/run_polynomial_placement_probe.py --output <new-di
 fixed15(m,k) cells, two row-estimate regimes, ten seeds, oracle onlyk^m≤4096,
 600s default budget. Allocation-traced CPU times are labelled diagnostic and not
 paper latency. The native slice uses existing `--agentic-semantic --memory-roundtrip`.
+
+### Terminal-source correction and sufficient-condition check
+
+The first grid at6ed9cce required row/width invariance for every source. This was
+sound but unnecessarily excluded independent terminal sources. In the recorded
+m4/k8/seed9 case it sent the query through coordinate search, obtaining63.936ms
+instead of the oracle10.096ms. The negative result stays frozen.
+
+The correction computes `consumed = union(op.input_ids for every semantic op)`.
+It requires remote row/width invariance only within source fragments whose IDs
+are in that set. It retains fixed cost topology, no input-dependent source
+fragments, and feasibility of every independent combination under the call
+budget. Being listed as a root alone is insufficient: a root can also be consumed.
+The existing compiler wires semantic consumers only to each fragment's single
+output, and rejects unreachable operators. Thus unconsumed source outputs are
+global roots, and all variable work in them is included in the local ready time.
+For consumed sources the fixed-downstream max-plus induction above still applies.
+Fan-out introduces no additional coupling in this model, which excludes resource
+contention. Exactness is for primary estimated latency, not all secondary ties.
+
+A minimal realizable plateau has two terminal Match roots and two replicas per
+root. Set bandwidth1000 bytes/ms, fixed exchange0, coordinator cost0.1ms/row.
+The baseline alternative has (remote latency, rows, width)=(10,1,1), yielding
+10.101ms local readiness; the other has (0,2,100), yielding0.4ms. A single
+replacement leaves the maximum10.101ms and increases total bytes, so coordinate
+search retains the baseline. Independent minima replace both and attain0.4ms.
+This is a concrete model counterexample, not evidence of real endpoint latency.
+
+Verification is scoped to terminal/consumed/mixed/root-plus-consumer fixtures,
+the preserved original input, and a changed-branch RDFLib toy execution. Replay
+only the150 variable-row runs of the frozen grid, reusing its70 existing oracle
+values with pinned input and unchanged compiler/cost-model hashes. Replay saved
+native decisions without issuing any backend calls; do not relabel the original
+native answers as a fresh live run. See `scripts/replay_polynomial_terminal_probe.py`.

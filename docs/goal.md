@@ -14,9 +14,13 @@
 算法必须可描述并给出输入规模、目标、伪代码、Ptime复杂度；greedy/heuristic须
 给出有假设的解质量界。候选上限、timeout和经验提速不等于近似保证。当前主入口
 的组合枚举已由P1的局部选项路径替换，见
-[实现与首个负结果](report/polynomial_planning_20260911.md)。P1已通过小图真实执行和
-模型网格检查，但一个6.33倍model regret暴露精确子类判定过于保守；先用保存的
-最小反例修复，再继续必要方法/真实数据接线。不能把“有有效界”说成“已经近似最优”。
+[实现与首个负结果](report/polynomial_planning_20260911.md)。终端source独立性判定
+已修正，P1当前范围验收完成：29项定向检查、150个受影响成本表回放、70个旧oracle
+全部匹配；原6.33倍regret保留并修复为1。见
+[修正与下一步](report/polynomial_terminal_correction_20260911.md)。下一步接通普通入口
+的有界选择性acquisition与pre-execution reselection，用相同历史观测和小图进行
+真实机制消融。执行前重选不能冒充execution-prefix adaptation；后者仍需残余计划/
+复用约束接线。模型LINK和真实数据评价仍待完成。不能把“有有效界”说成“真实延迟近似最优”。
 
 **最新工程标准（2026-09-11）：XGAP是research prototype，以保证论文实验结果为
 核心要求，不追求完美实现。** 优先正确性、可复现、公平对照、全部失败/样本分母和

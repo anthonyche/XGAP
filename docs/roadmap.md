@@ -1,16 +1,22 @@
 # XGAP Roadmap
 
-## Immediate P1 follow-up from measured evidence
+## Immediate gate — acquisition and method comparison bridge
 
-Polynomial placement is now wired to the ordinary entry and verified on toy
-native execution and the planned model grid. A6.33x regret case on independent
-terminal source blocks identifies an overly conservative separability test.
-Replay m4/k8/seed9 variable-row inputs, correct terminal-source admission with
-counterexamples for downstream-dependent sources, and retain the original
-negative result. Do not repeat the completed native/grid/broad gates without a
-specific affected measurement. See [P1 report](report/polynomial_planning_20260911.md).
+P1's terminal-source correction is accepted:29 focused checks,150 changed model
+replays/70 reused oracle matches, and10 identical saved native plans. The original
+negative result is preserved. See [the report](report/polynomial_terminal_correction_20260911.md).
+Do not repeat these completed gates or rebuild a large catalog.
 
-## Authoritative next gate — P1 for the research experiment plan
+Next use existing collection, snapshot merge and P1 selection APIs for one bounded
+warm-snapshot refresh with optional pre-execution reselection. Use identical B04
+history for refresh+reselect, refresh-without-reselect, and no-refresh arms; record
+all calls/time and independent answers, no automatic retry. Freeze J=1 and one
+reselection. This is a narrow E2/E3 mechanism gate, not full execution-prefix
+adaptation. Follow with the residual-plan/reuse contract and only the real-data
+or model interfaces required by the frozen research plan. September18 remains
+the deadline for new real results; development stays on tiny data.
+
+## Historical R0 gate — P1 for the research experiment plan
 
 Follow [RQ/X/Y factors and experiments](research_experiment_plan_20260911.md).
 Before adding general features, close polynomial placement generation and its

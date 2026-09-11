@@ -1,17 +1,23 @@
 # XGAP Status
 
-## P1 implementation verified; a model-quality counterexample remains
+## P1 scoped implementation accepted; acquisition bridge next
 
-The ordinary entry now uses polynomial local-option preparation and selection,
-with exactness for a checked subcase and conditional model-gap certificates.
-Real-native5 cold+5 warm/18 candidate answers/10 references+slice pass;22 algorithm
-and15 scoped checks pass. Grid15 cells/300 runs/140 oracle comparisons confirms
-the tested bounds, but one heuristic point has6.33x model regret. Its terminal
-source blocks should qualify for exact local minimization; admission is too
-conservative. Next fix this through the preserved minimal replay, not broad or
-large-data reruns. See [P1 report](report/polynomial_planning_20260911.md).
+Terminal-source admission is corrected. The saved6.33x model-regret input now
+matches its10.096ms oracle; all70 reused oracle values in the150 affected grid
+runs match. Final29 targeted tests pass, including a changed-branch tiny execution.
+All10 saved native plans remain identical on offline decision replay; B04's
+certificate improves to exact. No new native/model/large-data/broad run. See
+[the correction report](report/polynomial_terminal_correction_20260911.md).
 
-## Latest priority — explicit RQ, factors, experiments and Ptime planning
+The ordinary Ptime placement path is implemented and this scoped gate accepted.
+The next actual gap is selective acquisition/reselection in that same path;
+older adaptive modules exist but require an integration bridge. Start with one
+warm-snapshot refresh and optional pre-execution reselection under the same
+history/cost account across arms; true execution-prefix adaptation remains a
+separate missing connection. Real Qwen LINK and frozen real-data comparisons
+remain unverified. Original results and all failure records are retained.
+
+## Historical R0 priority — explicit RQ, factors, experiments and Ptime planning
 
 The [September11 research experiment plan](research_experiment_plan_20260911.md)
 maps effectiveness, efficiency and scalability to factors, outcomes, controls,

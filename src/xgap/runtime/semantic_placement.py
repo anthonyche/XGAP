@@ -176,8 +176,12 @@ class PolynomialSemanticPlanSpace:
         if sum(max(self.fragments[op, b].remote_calls for b in opts)
                for op, opts in self.options.items()) > self.max_remote_calls:
             return False
+        consumed = {input_id for op in self.program.operators for input_id in op.input_ids}
         for node in self.baseline.plan.nodes:
-            if node.kind is R.REMOTE_QUERY:
+            # Terminal fragments include all their row/width-dependent work in
+            # their local readiness. Only consumed outputs can change downstream
+            # durations. A source may be both a root and another operator's input.
+            if node.kind is R.REMOTE_QUERY and node.semantic_operator_ids[0] in consumed:
                 values = [snapshot.by_key[n.parameters["observation_key"]]
                           for n in self._remote_alternatives(node)]
                 if len({(e.row_count, e.row_width_bytes) for e in values}) != 1:

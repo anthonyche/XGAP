@@ -1,13 +1,15 @@
 # XGAP Design Decisions
 
-## P1 local-option implementation and preserved negative result
+## P1 terminal-source separability correction accepted
 
-The ordinary path now uses local fragments, polynomial preparation, exact
-independent selection/two coordinate passes, and conditional lower-bound
-certificates. The native toy and planned model grid completed; see
-[the report](report/polynomial_planning_20260911.md). A6.33x model-regret case is
-retained and sets the next correction: terminal-source separability admission.
-Bounds remain model-relative, not global actual-runtime or agent-policy guarantees.
+Use all semantic input IDs to distinguish consumed sources from terminal roots.
+Only consumed fragments need row/width invariance; retain all other separability
+conditions. The existing max-plus proof then covers terminal alternatives with
+variable estimates. The preserved6.33x regret input reaches its oracle, with
+focused tests and affected-input replay; see [the report](report/polynomial_terminal_correction_20260911.md).
+Exactness remains model-relative and primary-objective only. No new actual native
+or model result was inferred from offline replay. The next step is a bounded
+ordinary-entry acquisition/reselection bridge, not general framework expansion.
 
 ## R0 Research-directed prototype and P1 planning contract
 

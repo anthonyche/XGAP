@@ -2,33 +2,39 @@
 
 Updated: 2026-09-11. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
-## Current P1 implementation — verified, targeted quality correction next
+## Current P1 implementation — scoped correction accepted
 
-Ordinary BoundSemanticExecutionTool now uses prepare_semantic_placements;
-source options are compiled independently, with a feasible baseline, exact
-separable selection or two-pass coordinate search and conditional model bounds.
-Memory uses local problem context. See
-[P1 evidence and negative result](report/polynomial_planning_20260911.md).
+Parent6ed9cce's terminal-source counterexample is saved explicitly and corrected.
+The ordinary selector requires invariant rows/width only for consumed sources,
+computed from all semantic input IDs. Guards for topology, source dependencies
+and independent budget feasibility remain. Final29 P1 tests pass in0.72s
+(session72605 exit0). Scope and evidence:
+[terminal-source correction](report/polynomial_terminal_correction_20260911.md).
 
-All current handles are terminal:1650 grid exit0,23560 native exit0,71371 scoped
-exit0. Native5 cold+5 warm/18 candidate answers/10 independent targets+slice,
-38/38 source hashes match and owned services stopped normally. Final22 P1 tests
-and15 scoped cases pass; earlier targeted146pass/1invalid new fixture was corrected
-and covered in final22. No broad suite. Grid15 cells/300 runs/140 oracle checks
-completed;70 exact-branch comparisons equal optimum, all checked bounds valid.
+150 affected model runs completed;70 reused oracle values all matched,73 costs
+improved, at most2 full-plan scores plus K local scores. Do not repeat fixed-row
+150 or exhaustive work. Replay74295 exited1 only on an overly strict native
+selection-diagnostic assertion after all model cells passed: B04 is terminal and
+its certificate correctly becomes exact. The final replay reused those cells;
+all10 native plans/primary costs identical,8 selection records identical,2 B04
+certificates improved. No new backend calls. Raw final result is
+`/Users/anthonyche/xgap-data/p1-terminal-replay-20260911-final/result.json`.
+All local handles are terminal. No broad suite or remote action in this step.
 
-Do not overclaim quality: m4/k8/seed9 variable-row terminal sources have6.3328x
-model regret (U63.936,OPT10.096,LB7.936,ratio certificate8.0565). Exactness
-admission unnecessarily requires row/width invariance when source outputs have
-no downstream consumers. **Next safe action is a deterministic replay of this
-counterexample, then a scoped separability correction and targeted checks**,
-including nonterminal counterexamples. Keep the original negative grid unchanged;
-do not blindly rerun native/broad gates. This is P1 work toward the original RQ,
-not a reason to switch back to GrailQA debugging or extend a general framework.
+Next concrete gate: thread a one-request warm-snapshot profile refresh and
+optional pre-execution reselection through run_semantic_plans and the ordinary
+query tool. Reuse PlanObservationCollector.collect, snapshot.with_estimates and
+space.select. Same complete history/B04 gold for refresh+reselect, no-reselect,
+and no-refresh arms; J=1, one reselection, complete current/historical cost,
+terminal failure without retry. This is not execution-prefix adaptation. Older
+adaptive executor exists but requires explicit candidates/identical probe nodes;
+residual feasibility and exact reuse across placements need a separate contract.
 
-Source checkpoint is c77c08c plus the accompanying receipt hashes pending the
-current local commit. All remote state remains as last actually observed by the
-user; no new remote action in this step. Full Goal is unfinished.
+Real-model3804011 still only user-observed PENDING; ETA9/11 18:28 Beijing is an
+estimate, not a live-state check. No poll/resubmit/browser retry performed. Full
+Goal remains unfinished; keep September18 deadline and tiny-data development.
+One read-only collaborator reviewed the proof and next API gap; it made no edits,
+ran no tests and performed no external calls.
 
 ## Preceding research-directed priority — R0 plan, then P1
 
@@ -68,7 +74,7 @@ and large catalog rebuilds. Full system objective is unchanged.
 - The ChatGPT mirror repository is stale; synced `sources/` remain read-only.
 - Goal: complete the agentic federated system through measured milestones,
   preserving prior scientific choices and accepted/raw experiment artifacts.
-- No subordinate agents requested or spawned in this task.
+- Current collaboration: one bounded read-only proof/API review; no delegated edits or external runs.
 
 ## User schedule and stopping condition
 
