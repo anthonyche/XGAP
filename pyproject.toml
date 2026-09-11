@@ -11,6 +11,7 @@ requires-python = ">=3.10"
 [project.optional-dependencies]
 test = ["pytest"]
 test-sparql = ["pytest", "rdflib==7.1.4"]
+entity-answers = ["jsonschema==4.26.0"]
 parquet = ["pyarrow>=15"]
 
 [project.scripts]

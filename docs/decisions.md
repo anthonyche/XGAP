@@ -1,5 +1,18 @@
 # XGAP Design Decisions
 
+## E1-A: prediction owns answer position before physical planning
+
+The [separate versioned inference contract](decisions/inferred_entity_answers_v1.md)
+keeps existing grounded candidates and adds mandatory predicted_projection, full
+schema validation and explicit entity obligations. Meaning selection uses
+ontology scores/confidence, never gold or backend availability. Positions affect
+full meaning; epsilon does not certify them. Selected unsupported meaning fails
+without choosing a sibling. Ordinary INT-4/P1 remains the executor.23 new tiny
+checks pass; [evidence](report/inferred_entity_answers_20260911.md). Legacy150,
+original populations and queued08e4b3b remain unchanged. This closes local wiring,
+not actual model quality or the remaining real-data experimental obligations.
+
+
 ## INT-4: answer meaning is an explicit semantic projection
 
 The [narrow entity-answer adapter](decisions/resource_entity_answers_v1.md) accepts

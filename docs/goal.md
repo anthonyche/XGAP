@@ -13,11 +13,13 @@ prepared-query integration，不是完整48评价或普通P1/LLM实验。实际�
 答案投影和冻结E1–E5，不重复索取已到文件/跑成功门禁。详见
 [INT-3](report/finbench_original_three_native_20260911.md)与[LINK](report/qwen_model_link_failure_20260911.md)。
 
-后续进展（同日晚）：用户已完成08e4b3b部署和零调用token预检，提交H100作业3804210；
-当前调度状态和新模型结果未知，不再要求重复提交。INT-4已将显式Traverse→Project
-接普通P1与类型化实体答案，16项新小图检查通过；见
-[答案接口证据](report/resource_entity_answers_20260911.md)。这只解决执行侧，未替
-GrailQA150推断缺失的答案位置；必须使用推理拥有的显式契约，不能用gold或默认last。
+后续进展（同日晚）：3804210已由用户确认PENDING(Resources)、运行0、未分配节点；
+用户有变化会告知，不重复查询或提交。INT-4执行侧通过16项小图检查；E1-A再用独立
+版本补上推理拥有的答案位置，经过原grounding/语义排序/P1返回类型化实体答案，
+23项新检查首次全部通过。见[推理答案闭环证据](report/inferred_entity_answers_20260911.md)。
+这是controlled HTTP与tiny RDFLib的接口验证，真实模型质量、真实facts/scoring与
+公平E1–E5仍待完成；ε不保证答案位置正确。原150 runner仍semantic-only，原150/48、
+FinBench integration-exposed标记、模型0/5及真实FinBench6/6保留。08e4b3b包不改。
 
 ## 总目标
 

@@ -25,9 +25,14 @@
     "requested_time_limit": "01:00:00",
     "requested_no_requeue": true,
     "excluded_nodes": ["gput069"],
-    "current_scheduler_state": null,
+    "current_scheduler_state": "PENDING",
     "assigned_node": null,
-    "model_results_received": false
+    "model_results_received": false,
+    "scheduler_reason": "Resources",
+    "observed_elapsed": "00:00:00",
+    "observed_exit_code": "0:0",
+    "last_observation_source": "User supplied squeue and sacct output after submission; no assigned node",
+    "user_will_report_changes": true
   },
   "scope": {
     "query_ids": ["B01", "B02", "B03", "B04", "B05"],
@@ -38,9 +43,10 @@
     "paper_result": false
   },
   "limitations": [
-    "User output confirms staging, successful zero-call preflight summary and job submission, not job start or completion.",
+    "User output confirms staging, successful zero-call preflight summary, submission and subsequent PENDING(Resources)/zero runtime; not job start or completion.",
     "Requested H100 resources are package configuration, not an observed allocation.",
     "Raw preflight and new model outputs must be received before quality acceptance.",
-    "Do not repeat submit.sh or the original model job 3804011."
+    "Do not repeat submit.sh or the original model job 3804011.",
+    "The user will report status changes; do not ask for repeated scheduler queries while unchanged."
   ]
 }

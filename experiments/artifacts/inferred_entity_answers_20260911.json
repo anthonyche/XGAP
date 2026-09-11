@@ -1,0 +1,119 @@
+{
+  "schema_version": "xgap-inferred-entity-answer-acceptance-v1",
+  "date": "2026-09-11",
+  "research_gate": "R-E/E1-A inference-owned answer meaning to ordinary execution",
+  "test_run": {
+    "base_commit": "22c20e3cefa625141a80eb3d3a21022b0a604a0a",
+    "command": [
+      "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+      "-m",
+      "pytest",
+      "-vv",
+      "tests/test_inferred_entity_answers.py"
+    ],
+    "environment_override": {
+      "PYTHONPATH": "src:tests"
+    },
+    "source_sha256": {
+      "src/xgap/experiments/inferred_entity_answers.py": "b23d45592e25511daf25d8279a0c82321fa925d61d1e1b3b74ffe5f6d20ac69e",
+      "tests/test_inferred_entity_answers.py": "9173c98cc6d5801768ffff86a6f3e17b20e2d63d2b3cbcbe054fd941b9342b48",
+      "pyproject.toml": "fbc2af92ce5e423b9b0b41ef86db5a8bd224a4b80e7b0ffe551f7635d424e3cc",
+      "docs/decisions/inferred_entity_answers_v1.md": "83f72f107c5c822728b2ede4a08abf7c9b537b7bf20095e3e22c1bdda812d72d",
+      "models/qwen3_32b_vllm_cwru_entity_answers_v1/model_config.json": "a9000ad68f34551011ecd2d1360c209c84d51b207c76e8d530c24c2839e73672",
+      "models/qwen3_32b_vllm_cwru_entity_answers_v1/prompt.json": "ae3a459bd3cbe63fa79174b3b1d3076414d28becf82523e17f39a2ca1a2dd233",
+      "models/qwen3_32b_vllm_cwru_entity_answers_v1/structured_schema.json": "ac2e2458f0c142db5466677ac8c07e7d6e12e8e780c536916d38d0e6e1adbd29"
+    },
+    "started_at": "2026-09-11T13:50:01.453699+00:00",
+    "native_services_started": 0,
+    "actual_model_calls": 0,
+    "large_dataset": false,
+    "exit_code": 0,
+    "wall_seconds": 1.643856375478208,
+    "source_unchanged": true,
+    "passed": 23,
+    "failed": 0,
+    "skipped": 0,
+    "pytest_reported_seconds": 1.13,
+    "tool_chunk_id": "d0d6b2"
+  },
+  "raw_files": {
+    "/Users/anthonyche/xgap-data/e1a-inferred-entity-answers-20260911/pytest.log": {
+      "bytes": 3607,
+      "sha256": "fa6cb85ac6e3d5208e3179c8c86ddd7c55599782c21167b58d86e8d892add96d"
+    },
+    "/Users/anthonyche/xgap-data/e1a-inferred-entity-answers-20260911/test_receipt.json": {
+      "bytes": 1385,
+      "sha256": "7066edfc3a1fba0e0fdb7fb845d5f3211ccc9c455c8b3db908457da507f74f49"
+    },
+    "/Users/anthonyche/xgap-data/entity-answer-model-bundle-20260911/validation_receipt.json": {
+      "bytes": 2454,
+      "sha256": "91fbc257b75da004050ad7a322aac2020d16ab07bfd096a21fee6c503b41368f"
+    }
+  },
+  "model_bundle": {
+    "schema_version": "xgap-entity-answer-model-bundle-check-v1",
+    "success": true,
+    "bundle_root": "/Users/anthonyche/Developer/XGAP/models/qwen3_32b_vllm_cwru_entity_answers_v1",
+    "model_id": "qwen3_32b_vllm_cwru_entity_answers_v1",
+    "response_schema_version": "xgap-grounded-entity-answer-v1",
+    "bundle_hash": "11f5fe07960330fa2c4c9eb86fcb5cc41075c70909066265c9d00fd7ac083ffa",
+    "config_hash": "1266954ac5df85512c91e44bacd891b505aa276fae950ae2bcfa608fab05dcd4",
+    "prompt_hash": "70aef23bce0e0ccf37f4cccc986e30229631e1952342231d71607e5513136d63",
+    "structured_schema_hash": "00e0d0e83f0a0c231fa1ece0f16004ffc3800304f6377393ce41be3cc88a807f",
+    "files": {
+      "model_config.json": {
+        "size_bytes": 1490,
+        "sha256": "a9000ad68f34551011ecd2d1360c209c84d51b207c76e8d530c24c2839e73672"
+      },
+      "prompt.json": {
+        "size_bytes": 5085,
+        "sha256": "ae3a459bd3cbe63fa79174b3b1d3076414d28becf82523e17f39a2ca1a2dd233"
+      },
+      "structured_schema.json": {
+        "size_bytes": 11978,
+        "sha256": "ac2e2458f0c142db5466677ac8c07e7d6e12e8e780c536916d38d0e6e1adbd29"
+      }
+    },
+    "checks": {
+      "ModelBundle_load_and_hash_chain": true,
+      "root_and_per_candidate_required_projection": true,
+      "projection_closed_path_node_first_last_or_1_through_4": true,
+      "original_grounding_and_typed_condition_grammar_preserved": true,
+      "candidate_cap_3": true,
+      "no_inline_response_materializer": true,
+      "original_prompt_is_exact_prefix_and_examples_empty": true,
+      "unchanged_service_environment_and_model_family": true,
+      "token_limits_8192_4096_and_environment_context_12288": true,
+      "timeout_120_seconds_and_no_repair": true,
+      "old_model_files_and_08e4b3b_zip_unchanged": true
+    },
+    "old_model_files": {
+      "model_config.json": "8c673453ff2e543edf29afa4ecbc4839f40f5b3d800b529a8a43b14dbeff38a9",
+      "prompt.json": "89f16a43c2c88c1ebc0e0d1ec551b988c065960fa8148bd0cb34acea6bdee0b1",
+      "structured_schema.json": "1b772e5342db1e1d29b63ade2ba9bf822a1f870ddf073b81e5e20a4e033bc871"
+    },
+    "unchanged_08e4b3b_zip_sha256": "e764a2371d65670ec4354dfafd6f98f7eebe68254ad3085fef2391cd451c2e9c",
+    "model_calls": 0,
+    "backend_calls": 0,
+    "server_actions": 0,
+    "software_regression_tests_run": 0,
+    "schema_check": "JSON structure and exact legacy grammar preservation; no generated model response evaluated",
+    "tokenizer_preflight": "not_run",
+    "model_effectiveness": "unmeasured",
+    "server_package_created": false
+  },
+  "implemented": "Versioned grounded candidates with mandatory model-owned projection, gold-blind semantic/confidence selection, ordinary INT-4/P1 execution and typed entity answers",
+  "limitations": [
+    "Controlled HTTP response and synthetic token counter, not actual model inference or serving-tokenizer parity",
+    "Compiled SPARQL on RDFLib through FusekiClient override, no native service or performance result",
+    "Epsilon measures ontology-slot deviation and does not bound projection correctness or F1",
+    "Selected unsupported meanings fail without sibling fallback; frozen150 runner remains semantic-only",
+    "Fixed1–3-hop resource profile, no cross-source binding payloads; no wire/RSS or in-flight deadline guarantee",
+    "Real query-independent facts, scoring, prior forecast/cost calibration and formal E1–E5 remain open",
+    "No old successful gate, frozen population, oracle or submitted model package changed"
+  ],
+  "remote_submission_receipt": "experiments/artifacts/cwru_toy_model_v2_submission_20260911.json",
+  "paper_result": false,
+  "actual_model_calls": 0,
+  "native_services_started": 0
+}
