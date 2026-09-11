@@ -4,6 +4,15 @@
 覆盖旧 roadmap、status、报告和 automation 中冲突的开发优先级；保留所有历史
 结果和已冻结的最终评价协议。当前第一要务是快速完成系统，修复实现与设计不匹配之处。
 
+
+最新输入与结果（9月11日晚）：原始FinBench source/workpack和3804011五题记录均已
+本地核验。真实SF0.1固定3题/6计划全部exact、107项审计通过，服务已停止；这是
+prepared-query integration，不是完整48评价或普通P1/LLM实验。实际模型5次调用
+产生的程序原样走普通链完成0/5，失败已保存；结构准入已收紧，v2 prompt准备好但
+新生成质量未测。下一步模型v2小验证、真实prior forecast/成本来源、gold-blind
+答案投影和冻结E1–E5，不重复索取已到文件/跑成功门禁。详见
+[INT-3](report/finbench_original_three_native_20260911.md)与[LINK](report/qwen_model_link_failure_20260911.md)。
+
 ## 总目标
 
 **最新优先级：一切工程由research question和实验计划驱动。** 权威工作计划为

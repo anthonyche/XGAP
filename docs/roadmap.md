@@ -1,25 +1,26 @@
 # XGAP Roadmap
 
 
-## Next gate — existing source cache and completed model recordings
 
-INT-2 verified the original21-file FinBench workpack and compiled all48 queries
-to96 plans without reading answers. Explicit archive identity now reaches the
-existing native correctness entry and independent auditor; no frozen input rewrite.
-See [INT-2 evidence](report/finbench_workpack_intake_20260911.md).
+## Next gate — corrected model contract and fair real-data method comparison
 
-Retrieve the existing pinned source archive from
-`/home/hxc859/.cache/xgap/finbench-v0.1.0/sf0.1.tar.gz`; the one attempted official
-download timed out, so no automatic retry. Reconstruct/verify source placement
-with the existing loader only after exact archive verification. Use fixed first
-queries f1-01/f2-01/f3-01 from the original48 for a small integration gate before
-formal evaluation; this subset does not replace the original32seen/16cold cohort.
+INT-3 is accepted:complete real SF0.1 fact partition, fixed original3queries/6plans
+all exact and107/107 independent audit, clean frozen source, owned services stopped.
+See [the evidence](report/finbench_original_three_native_20260911.md). Do not repeat
+this successful integration run or fetch the source/workpack again. Original48
+remains the formal cohort; the fixed three are not a new evaluation population.
 
-3804011 is confirmed COMPLETED/0:0, not queued. Retrieve its existing bounded
-recordings and use the existing five-question native LINK; job success alone is
-not question success. Keep E1's gold-blind answer projection and actual prior
-forecast/cost preparation as explicit remaining work. No general catalog/product
-expansion, repeated accepted tests, or new model submission.
+Model LINK remains open:actual3804011 gives5 complete responses but0/5 ordinary
+execution. The structural admission gap is fixed and originals retained; v2
+prompt is prepared with no per-question solution, but generation quality and pinned
+tokenizer preflight need a fresh bounded diagnostic. See [LINK evidence](report/qwen_model_link_failure_20260911.md).
+No automatic replay of model failures or new large-data development run.
+
+Continue real prior forecast/preparation and same-semantics/cost comparisons; the
+specialized FinBench hash/bind strategies are not P1 equivalent replicas. GrailQA's
+ordinary entity-answer bridge needs gold-blind projection. Freeze missing method
+inputs/budgets before formal E1–E5, preserve every original150/48 ID and failure,
+and report logical exchange bytes separately from any future wire measurement.
 
 ## Current next gate — original artifacts and real small integration
 

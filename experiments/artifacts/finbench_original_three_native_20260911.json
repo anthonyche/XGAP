@@ -1,0 +1,274 @@
+{
+  "schema": "xgap-finbench-original-three-native-integration-v1",
+  "recorded_at": "2026-09-11T13:01:50.349968+00:00",
+  "execution_commit": "9f00414f409dedb01415d6f87cb77ea7dbc2fa60",
+  "worktree": "/Users/anthonyche/Developer/XGAP-int3-9f00414",
+  "git_clean_before": true,
+  "git_clean_after": true,
+  "environment": "local/macOS, Java21, Neo4j5.26.30, Fuseki5.6.0; no Slurm allocation",
+  "source_archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+  "source_partition_sha256": "0ee8b18d3289ddb11fd78308f14584d20f073deaa50f72cfad74b1a379cdab2b",
+  "partition_preparation": {
+    "automatic_retries": 0,
+    "backend_calls": 0,
+    "build_elapsed_seconds": 8.961771667003632,
+    "catalog_built": false,
+    "child_peak_rss_bytes_darwin": 65454080,
+    "command": [
+      "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+      "-m",
+      "xgap.experiments.m15_finbench_partition",
+      "--archive",
+      "/Users/anthonyche/xgap-data/int3-finbench-source-20260911/sf0.1.tar.gz",
+      "--lock",
+      "/Users/anthonyche/Developer/XGAP/experiments/artifacts/m15_finbench_v010_sf0_1_sources.json",
+      "--output-root",
+      "/Users/anthonyche/xgap-data/int3-finbench-20260911/finbench-source-partition",
+      "--batch-size",
+      "2000"
+    ],
+    "cwd": "/Users/anthonyche/Developer/XGAP",
+    "ended_at": "2026-09-11T12:45:41.948064+00:00",
+    "files": {
+      "load_fuseki.ttl": {
+        "sha256": "a7c214186c05b6d4f1a887ee36503e913291a747afc2ffa1661b301ae92879be",
+        "size_bytes": 30972563
+      },
+      "load_neo4j_batches.jsonl": {
+        "sha256": "2d753770fd2c5397ea2de41299793376299f8ff5bf523b6e62378f7a646a8e99",
+        "size_bytes": 96986561
+      },
+      "source_partition_manifest.json": {
+        "sha256": "221121dc5b759ae427345fe3e1413bb6b79eeb2c3489a27a603a6a1d18513cb3",
+        "size_bytes": 11501
+      }
+    },
+    "fuseki_triple_count": 282426,
+    "model_calls": 0,
+    "neo4j_statement_count": 194,
+    "oracle_content_parsed": false,
+    "output_verification_seconds": 0.05930850002914667,
+    "partition_sha256": "0ee8b18d3289ddb11fd78308f14584d20f073deaa50f72cfad74b1a379cdab2b",
+    "returncode": 0,
+    "schema_version": "int3-finbench-offline-partition-build-v1",
+    "source_archive_bytes": 66710298,
+    "source_archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+    "source_table_count": 18,
+    "started_at": "2026-09-11T12:45:32.925728+00:00",
+    "success": true,
+    "timeout_seconds": 180,
+    "total_elapsed_seconds": 9.021109042689204,
+    "total_partition_bytes": 127970625,
+    "total_source_rows": 365181,
+    "workload_regenerated": false
+  },
+  "frozen_population_count": 48,
+  "query_subset_count": 3,
+  "selection": "fixed first original query in each family before answer inspection; no replacement of empty-answer f1",
+  "whole_SF0_1_loaded": true,
+  "ordinary_P1_exercised": false,
+  "interpretation_exercised": false,
+  "new_model_calls": 0,
+  "success": true,
+  "plan_results": [
+    {
+      "query_id": "m15-fb-confirmatory-48-f1-01",
+      "physical_strategy": "graph_first_hash",
+      "success": true,
+      "elapsed_ms": 300.3251673653722,
+      "total_remote_calls": 2,
+      "total_bytes_moved": 37980,
+      "exact": true,
+      "expected_row_count": 0,
+      "actual_row_count": 0
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f1-01",
+      "physical_strategy": "control_first_bind",
+      "success": true,
+      "elapsed_ms": 123.51424992084503,
+      "total_remote_calls": 2,
+      "total_bytes_moved": 37890,
+      "exact": true,
+      "expected_row_count": 0,
+      "actual_row_count": 0
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f2-01",
+      "physical_strategy": "path_first_hash",
+      "success": true,
+      "elapsed_ms": 166.8062498793006,
+      "total_remote_calls": 2,
+      "total_bytes_moved": 25098,
+      "exact": true,
+      "expected_row_count": 1,
+      "actual_row_count": 1
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f2-01",
+      "physical_strategy": "control_first_bound_path",
+      "success": true,
+      "elapsed_ms": 106.8156249821186,
+      "total_remote_calls": 2,
+      "total_bytes_moved": 24928,
+      "exact": true,
+      "expected_row_count": 1,
+      "actual_row_count": 1
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f3-01",
+      "physical_strategy": "aggregate_first_hash",
+      "success": true,
+      "elapsed_ms": 278.3435005694628,
+      "total_remote_calls": 2,
+      "total_bytes_moved": 249974,
+      "exact": true,
+      "expected_row_count": 10,
+      "actual_row_count": 10
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f3-01",
+      "physical_strategy": "control_first_bound_aggregate",
+      "success": true,
+      "elapsed_ms": 127.33533326536417,
+      "total_remote_calls": 2,
+      "total_bytes_moved": 35836,
+      "exact": true,
+      "expected_row_count": 10,
+      "actual_row_count": 10
+    }
+  ],
+  "query_backend_calls": 12,
+  "query_runtime_exchange_bytes": 411706,
+  "exchange_metric_definition": "Sum of EXCHANGE node serialized row bytes using scheduler._encoded_size; not HTTP wire/network packet bytes. Remote output_bytes are separate.",
+  "gate_elapsed_seconds": 38.39767279103398,
+  "live_correctness_including_load_seconds": 15.936170666478574,
+  "sampled_peak_rss_bytes": 1462943744,
+  "load_reports": {
+    "fuseki": {
+      "backend_id": "fuseki",
+      "bytes_sent": 30972563,
+      "elapsed_ms": 1324.849708005786,
+      "error": null,
+      "metadata": {
+        "dataset": "xgap",
+        "endpoint": "http://127.0.0.1:63995/xgap/data?default",
+        "http_status": 200,
+        "strategy": "graph_store_post"
+      },
+      "operations_attempted": 1,
+      "success": true
+    },
+    "neo4j": {
+      "backend_id": "neo4j",
+      "bytes_sent": 96915224,
+      "elapsed_ms": 13226.878208108246,
+      "error": null,
+      "metadata": {
+        "automatic_retries": 0,
+        "batch_count": 194,
+        "format_schema_version": "m15-finbench-neo4j-parameterized-batch-v1",
+        "mutation_semantics": "create_into_empty_job_owned_database",
+        "strategy": "streamed_parameterized_jsonl_batches"
+      },
+      "operations_attempted": 194,
+      "success": true
+    }
+  },
+  "oracle_boundary": {
+    "backend_calls_before_open": 12,
+    "bytes_hashed_for_identity_before_execution": true,
+    "content_parsed": true,
+    "content_parsed_after_all_plan_runs": true,
+    "used_for_selection": false
+  },
+  "oracle_parse_scope": "The entire sealed48 JSON was parsed after all selected six plans; only selected3 answers compared. Independent read-only audit subsequently reparsed it.",
+  "audit": {
+    "success": true,
+    "check_count": 107,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "shutdown": [
+    {
+      "error": null,
+      "escalated_to_kill": false,
+      "final_exit_code": 143,
+      "initial_exit_code": null,
+      "pid": 39263,
+      "service_id": "fuseki",
+      "signal_sent": "SIGTERM",
+      "success": true
+    },
+    {
+      "error": null,
+      "escalated_to_kill": false,
+      "final_exit_code": 0,
+      "initial_exit_code": null,
+      "pid": 39221,
+      "service_id": "neo4j",
+      "signal_sent": "SIGTERM",
+      "success": true
+    }
+  ],
+  "owned_runtime_removed": true,
+  "automatic_retries": 0,
+  "native_command": "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python /Users/anthonyche/xgap-data/int3-finbench-20260911/run_local_gate.py > /Users/anthonyche/xgap-data/int3-finbench-20260911/native-gate.stdout.jsonl 2> /Users/anthonyche/xgap-data/int3-finbench-20260911/native-gate.stderr.txt",
+  "audit_command": "PYTHONPATH=/Users/anthonyche/Developer/XGAP-int3-9f00414/src /tmp/xgap-directed-tests.qU2YfW/venv/bin/python -m xgap.experiments.m15_finbench_correctness_evidence --run-root /Users/anthonyche/xgap-data/int3-finbench-20260911 --expected-commit 9f00414f409dedb01415d6f87cb77ea7dbc2fa60 --output /Users/anthonyche/xgap-data/int3-finbench-20260911-audit.json",
+  "evidence": [
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911/run_local_gate.py",
+      "size_bytes": 17843,
+      "sha256": "f381ec1590069f509e07896360547e109a6fc6a92b15d893b2c25c4363bbd2a3"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911/native_gate_receipt.json",
+      "size_bytes": 9565,
+      "sha256": "8274e6cf3232b9e23d4d9ed5ce4ff3a142e884bdf66c9737224ba910dc67e127"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911/partition_build_receipt.json",
+      "size_bytes": 1960,
+      "sha256": "d8e3b8efc54db5b9624388c753bbb6ac145f8885f456ceddf13e932d5dd497ce"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911/workload_copy_receipt.json",
+      "size_bytes": 2362,
+      "sha256": "8f1d8f7d075d1b4efb337e84dea189c79f99af43dc7cb20c1b9582073aa26f20"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911/native-service-run/finbench-correctness-run/run_manifest.json",
+      "size_bytes": 1758,
+      "sha256": "e4b0c51b7f31df3b9e4a7e87904662ff8267c9b0de02b0dab5333a794c3091e4"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911/native-service-run/finbench-correctness-run/plan_catalog.json",
+      "size_bytes": 33749,
+      "sha256": "798a3979f6be7bb00bfb3cd1e020b9f9688d2af090eeb77b3db7be06dd39292d"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911/native-service-run/finbench-correctness-run/execution_results.json",
+      "size_bytes": 1998147,
+      "sha256": "b73992854ebf6100d1ac81fb8a4f959f6275fd5ab45e6fcfef72c4f7f5389226"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911/native-service-run/finbench-correctness-run/validation.json",
+      "size_bytes": 2611,
+      "sha256": "480152155fdafa7cc1a5b2073304ad741a5598c549cba4a02f8cc587a93b93e5"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/int3-finbench-20260911-audit.json",
+      "size_bytes": 97107,
+      "sha256": "8873bd6f0118b08fe6bab69f5e804d56edbdef821a5593b04bb1f6b012ab3301"
+    }
+  ],
+  "scope_limitations": [
+    "Correctness of three fixed prepared semantic instances, not full48 evaluation or NL accuracy",
+    "Complete SF0.1 fact load, not a toy graph",
+    "Both backends local, not inter-host network experiment",
+    "Fixed order, no balanced repetitions or uncertainty estimate; no speedup conclusion",
+    "Partition hash/bind strategies are not P1 equivalent replicas",
+    "E1-E5 fair comparisons/forecast preparation/model LINK still pending"
+  ],
+  "paper_result": false
+}

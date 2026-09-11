@@ -19,12 +19,12 @@ from xgap.semantic.interpretation_replay import RecordingInterpretationProvider
 
 MODEL = "Qwen/Qwen3-32B"
 REVISION = "9216db5781bf21249d130ec9da846c4624c16137"
-PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts/interpretation/semantic_program_v1.txt"
+PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts/interpretation/semantic_program_v2.txt"
 
 
 def qwen_toy_config():
     prompt = PROMPT_PATH.read_text(encoding="utf-8")
-    config = OpenAICompatibleProviderConfig(provider_id="qwen3-32b-toy-interpretation-v1",
+    config = OpenAICompatibleProviderConfig(provider_id="qwen3-32b-toy-interpretation-v2",
         base_url=os.environ.get("XGAP_LLM_BASE_URL", "http://127.0.0.1:8000/v1"),
         api_key_env="XGAP_LLM_API_KEY", model=MODEL, temperature=0, top_p=1,
         max_tokens=4096, candidate_cap=1, timeout_seconds=120,

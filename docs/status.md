@@ -1,24 +1,29 @@
 # XGAP Status
 
 
-## INT-2 original FinBench workpack verified; source admission connected
 
-The uploaded archive and receipt are locally verified:21 original files, exact
-bytes/SHA, original48 queries (32seen/16cold), unchanged registry and schedule.
-All48 public queries compile to96 existing physical plans; this is compilation,
-not native answer or performance evidence. Original sealed answers were hashed
-and copied without parsing. The correctness API/native CLI now explicitly accepts
-archive-bound original workpacks and retains any declared partition pin; actual
-partition identity remains recorded and independently audited. See
-[INT-2 evidence and next artifacts](report/finbench_workpack_intake_20260911.md).
+## Current milestone — real FinBench integration passed; model LINK failure localized
 
-The receipt confirms3804011 COMPLETED/0:0 on gput064, elapsed14m28s. Its aggregate
-status flag was false because squeue could not find the ended job. Do not submit
-or query it again; retrieve the original five-question recordings. Real FinBench
-facts remain unavailable locally:one official source download timed out and will
-not be retried automatically. The existing server cache can supply the pinned
-archive. No new native/model/large-data evaluation has been run in this milestone.
-Older unavailable/PENDING statements below are historical, superseded here.
+Both supplied archives are verified and available locally. Real FinBench SF0.1
+facts pass the fixed original3-query/6-plan correctness gate and107/107 independent
+audit; whole SF0.1 was loaded, original48 kept, no model or ordinary-P1 experiment.
+All owned services are stopped. See [INT-3 evidence](report/finbench_original_three_native_20260911.md).
+
+Actual Qwen3804011 completed5 calls/10484tokens, but unchanged ordinary-entry replay
+completes0/5, all before backend access. Four reference undeclared source slots;
+B04 first fails scalar resolution and also has invalid source assignment. The
+parser now rejects malformed/undeclared/source-misplaced references before any
+resolution.21focused cases and five original-response admission replays pass;
+these are rejection checks, not repaired answers. Promptv2 is prepared with unchanged
+questions/context/hard requirements; tokenizer preflight and fresh model quality
+are unmeasured. See [LINK failure and correction](report/qwen_model_link_failure_20260911.md).
+
+Next:one bounded v2 model diagnostic after source transfer/preflight, real prior
+forecast/cost preparation, gold-blind GrailQA answer projection and fair frozen
+E1–E5. Do not repeat accepted INT/native/module gates or ask for already recovered
+archives. Runtime exchange bytes are serialized EXCHANGE rows, not wire traffic.
+All old unreceived/PENDING/unknown statements below are historical. Deadline and
+GrailQA150/FinBench32seen+16cold populations remain unchanged.
 
 ## A4 offline forecast preparation and bounded recovery tool accepted
 

@@ -1,0 +1,260 @@
+{
+  "schema": "xgap-qwen-3804011-link-evidence-v1",
+  "recorded_at": "2026-09-11T12:54:23.000360+00:00",
+  "base_commit": "9f00414f409dedb01415d6f87cb77ea7dbc2fa60",
+  "producer_commit": "bc2bb67774910225a2e3842da26cb87fa676bf54",
+  "model": "Qwen/Qwen3-32B",
+  "model_revision": "9216db5781bf21249d130ec9da846c4624c16137",
+  "archive": {
+    "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/xgap-toy-model-3804011-nju9lskc.tar.gz",
+    "size_bytes": 38083,
+    "sha256": "eeb1fa9b3f12e44e5aee57b45d6579cc9e316a8cf57604f4ec80a2cc0691c2e9"
+  },
+  "local_intake": {
+    "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/local_intake.json",
+    "size_bytes": 2606,
+    "sha256": "c507d9c740f2328158097b60fc83d5e404c52b004b31d1e54ec7f0562bf1cc93"
+  },
+  "question_count": 5,
+  "real_model_completed_count": 5,
+  "original_interpreted_count": 5,
+  "original_backbone_success_count": 0,
+  "actual_native_executions": 0,
+  "original_response_repaired": false,
+  "source_data_rebuilt_for_model": false,
+  "new_local_model_calls": 0,
+  "model_input_tokens": 6906,
+  "model_output_tokens": 3578,
+  "total_model_elapsed_ms": 321156.7116230726,
+  "cases": [
+    {
+      "query_id": "B01",
+      "model_usage": {
+        "external_calls": 1,
+        "input_tokens": 1376,
+        "output_tokens": 733
+      },
+      "model_elapsed_ms": 66757.36950337887,
+      "model_finish_reason": "stop",
+      "producer_status": "interpreted",
+      "original_backbone_success": false,
+      "original_backbone_status": "failed",
+      "original_backbone_failure": "SemanticProgramError: Unknown or unbound semantic slot",
+      "original_backend_calls": 0,
+      "reported_resolution_external_calls": 0.0,
+      "corrected_admission_status": "interpretation_invalid",
+      "corrected_admission_failure": "Undeclared executable semantic hole 'source'",
+      "recording": {
+        "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/original/model-recordings/B01.json",
+        "size_bytes": 30505,
+        "sha256": "1189a59b7baf425a82776e90d509242a2c3fc056bb50a036e98cc1cf5ba48d35"
+      }
+    },
+    {
+      "query_id": "B02",
+      "model_usage": {
+        "external_calls": 1,
+        "input_tokens": 1376,
+        "output_tokens": 721
+      },
+      "model_elapsed_ms": 64536.15199029446,
+      "model_finish_reason": "stop",
+      "producer_status": "interpreted",
+      "original_backbone_success": false,
+      "original_backbone_status": "failed",
+      "original_backbone_failure": "SemanticProgramError: Unknown or unbound semantic slot",
+      "original_backend_calls": 0,
+      "reported_resolution_external_calls": 0.0,
+      "corrected_admission_status": "interpretation_invalid",
+      "corrected_admission_failure": "Undeclared executable semantic hole 'source'",
+      "recording": {
+        "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/original/model-recordings/B02.json",
+        "size_bytes": 30269,
+        "sha256": "b45e28cabd57a10d2cbdb7b7c5d3e1bd3c8c96ff70f7d5c1d08285b4d73dd035"
+      }
+    },
+    {
+      "query_id": "B03",
+      "model_usage": {
+        "external_calls": 1,
+        "input_tokens": 1376,
+        "output_tokens": 761
+      },
+      "model_elapsed_ms": 68003.54094803333,
+      "model_finish_reason": "stop",
+      "producer_status": "interpreted",
+      "original_backbone_success": false,
+      "original_backbone_status": "failed",
+      "original_backbone_failure": "SemanticProgramError: Unknown or unbound semantic slot",
+      "original_backend_calls": 0,
+      "reported_resolution_external_calls": 0.0,
+      "corrected_admission_status": "interpretation_invalid",
+      "corrected_admission_failure": "Undeclared executable semantic hole 'source'",
+      "recording": {
+        "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/original/model-recordings/B03.json",
+        "size_bytes": 30823,
+        "sha256": "545a981b9f76938d4548efd07f659c9e474103d70d691b155f6293c3d95320a3"
+      }
+    },
+    {
+      "query_id": "B04",
+      "model_usage": {
+        "external_calls": 1,
+        "input_tokens": 1392,
+        "output_tokens": 611
+      },
+      "model_elapsed_ms": 54645.51346749067,
+      "model_finish_reason": "stop",
+      "producer_status": "interpreted",
+      "original_backbone_success": false,
+      "original_backbone_status": "blocked",
+      "original_backbone_failure": "semantic hole 'age' has no bounded candidates",
+      "original_backend_calls": 0,
+      "reported_resolution_external_calls": 0.0,
+      "corrected_admission_status": "interpretation_invalid",
+      "corrected_admission_failure": "Interpretation source assignments must cover exactly Match/Traverse operators",
+      "recording": {
+        "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/original/model-recordings/B04.json",
+        "size_bytes": 29288,
+        "sha256": "386546ee2d40abf2a25e189e09d47460aa45d0719e14cad2f10b6f4d0304c9d8"
+      }
+    },
+    {
+      "query_id": "B05",
+      "model_usage": {
+        "external_calls": 1,
+        "input_tokens": 1386,
+        "output_tokens": 752
+      },
+      "model_elapsed_ms": 67214.1357138753,
+      "model_finish_reason": "stop",
+      "producer_status": "interpreted",
+      "original_backbone_success": false,
+      "original_backbone_status": "failed",
+      "original_backbone_failure": "SemanticProgramError: Unknown or unbound semantic slot",
+      "original_backend_calls": 0,
+      "reported_resolution_external_calls": 1.0,
+      "corrected_admission_status": "interpretation_invalid",
+      "corrected_admission_failure": "Undeclared executable semantic hole 'source'",
+      "recording": {
+        "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/original/model-recordings/B05.json",
+        "size_bytes": 30806,
+        "sha256": "68f22eae85c0d5f6e167ac0475cbd1622e7b4e59cd8dfaeded1b102349ae4625"
+      }
+    }
+  ],
+  "raw_replay_files": [
+    {
+      "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/replay_failures.py",
+      "size_bytes": 2845,
+      "sha256": "720fe6f5492a156ad8e4244e9c1f6525d1c973cb0d03e57c196f5177212c19e6"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/backbone_failure_replay.json",
+      "size_bytes": 255418,
+      "sha256": "2779c80b1b28e040a5602da5a9a79e451af4b8645fa337d076a7373f406d2db7"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/replay_admission.py",
+      "size_bytes": 1558,
+      "sha256": "9f488d661303380df6305764248614f3fc35c35877dfb370c2b4be224137dbdf"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/admission_replay.json",
+      "size_bytes": 158853,
+      "sha256": "daa7830d74bec3cd56a77c553ccff4de675c5e971f1a79a8e47b12479421a0f1"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/link-model-3804011-20260911/prompt_v2_preparation.json",
+      "size_bytes": 1352,
+      "sha256": "84b2874151cf3c161eb0210f91a851b2a916cadff3448a13eb54b9e913f3da02"
+    }
+  ],
+  "controlled_clarification_note": "B05 reuses the existing authored explicit-selection callback. Its tool metric counts one external call; no new user/network action occurred in local replay. Original accounting is retained.",
+  "admission_verification": {
+    "pytest_command": "PYTHONPATH=src:tests /tmp/xgap-directed-tests.qU2YfW/venv/bin/python -m pytest -q tests/test_interpretation_executable_admission.py 'tests/test_question_interpretation.py::test_nl_interpretation_matches_independent_original_meaning[B01]' 'tests/test_question_interpretation.py::test_nl_interpretation_matches_independent_original_meaning[B04]' 'tests/test_live_question_interpretation.py::test_adapter_runs_question_through_real_planner_and_tiny_rdf[B01]' 'tests/test_live_question_interpretation.py::test_adapter_runs_question_through_real_planner_and_tiny_rdf[B04]'",
+    "passed": 21,
+    "new_cases": 17,
+    "affected_cases": 4,
+    "seconds": 0.5,
+    "tool_chunk": "71fbc8",
+    "original_record_replay_count": 5,
+    "all_originals_invalid_before_resolution": true,
+    "replay_tool_chunk": "a3d3d8",
+    "broad_suite_run": false
+  },
+  "source_fingerprints": [
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/semantic/interpretation.py",
+      "size_bytes": 11090,
+      "sha256": "1bddea4b84153b7a4461d4fafbfb583ab0aad3f0ecf5cf4316b1f18af3f360f3"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/tests/test_interpretation_executable_admission.py",
+      "size_bytes": 5906,
+      "sha256": "225006748a0a9588fd1614d60da4c69896d2c138918f96fc60e951726af01da7"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/experiments/toy_live_interpretation.py",
+      "size_bytes": 4448,
+      "sha256": "f0ab1cad48395da149f4494af6d34a114beee9af73830fadc487bd712b353397"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/prompts/interpretation/semantic_program_v1.txt",
+      "size_bytes": 4735,
+      "sha256": "4fbfe2e74495cbbb299944e4110fedbbfe9ad592197ed88361f6f86707871944"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/prompts/interpretation/semantic_program_v2.txt",
+      "size_bytes": 6067,
+      "sha256": "48ebed8b27e17957620f93b876d9fb65d02ac50a996552275ecc334e138b0981"
+    }
+  ],
+  "next_prompt": {
+    "schema": "xgap-toy-prompt-v2-preparation-v1",
+    "provider_id": "qwen3-32b-toy-interpretation-v2",
+    "prompt_file": "/Users/anthonyche/Developer/XGAP/prompts/interpretation/semantic_program_v2.txt",
+    "prompt_sha256": "e0f266ad48cb3a397c6e4555c12e5a50609017786e7279ee1a4b6f52267bec09",
+    "prompt_file_sha256": "48ebed8b27e17957620f93b876d9fb65d02ac50a996552275ecc334e138b0981",
+    "unchanged_requests": [
+      {
+        "query_id": "B01",
+        "request_unchanged": true,
+        "request_sha256": "1eb7c5e163320ea864ace17a797bff5ed09fe432ce454c12d791e54cb205f54f"
+      },
+      {
+        "query_id": "B02",
+        "request_unchanged": true,
+        "request_sha256": "c0cf196524d5ac7d5b2fb8b672ae8106ce7385c1cde72e1e34793b91ec20fb40"
+      },
+      {
+        "query_id": "B03",
+        "request_unchanged": true,
+        "request_sha256": "2c7cfb682318e24e468324e5ab5bee09b41178455aa87538f21ae8bf65e14d20"
+      },
+      {
+        "query_id": "B04",
+        "request_unchanged": true,
+        "request_sha256": "92b39a097881313e3b648f66dcc22948f469603150b80e5a890abd378d726bb6"
+      },
+      {
+        "query_id": "B05",
+        "request_unchanged": true,
+        "request_sha256": "8cf23fff404ffa5d8a6b59b3627a583c6ae6b76a3340765a5e88e563d5325809"
+      }
+    ],
+    "new_model_calls": 0,
+    "tokenizer_preflight_performed": false,
+    "new_model_quality_measured": false,
+    "paper_result": false
+  },
+  "limitations": [
+    "Five prepared development questions, not held-out natural-language accuracy",
+    "Required structured constraints are part of these inputs",
+    "Transport/JSON admission is not binding, compilation, or answer correctness",
+    "Model v2 quality and tokenizer preflight unmeasured",
+    "Original wrong age-field flow and scalar mention are not repaired",
+    "No colocated NL-to-native latency measured"
+  ],
+  "paper_result": false
+}

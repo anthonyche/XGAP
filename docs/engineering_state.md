@@ -1,30 +1,29 @@
 # XGAP current engineering loop
 
 
-## Current INT-2 gate — verified workpack and explicit source admission
 
-Actual user attachments are now locally verified in
-`/Users/anthonyche/xgap-data/int-finbench-workpack-20260911/`:21 files, unchanged
-original48 IDs/registry/schedule and per-file SHA. Public-only48→96 compilation
-passes with no oracle parsing/backend/model call. The old small correctness
-entry wrongly required a partition pin absent from the original archive-bound
-workpack. An explicit source_archive mode now reaches API/native CLI and audit;
-partition mode remains default and declared pins cannot be silently discarded.
-See [INT-2 evidence](report/finbench_workpack_intake_20260911.md).
+## Current milestone — real FinBench integration passed; model LINK failure localized
 
-3804011 is COMPLETED/0:0/gput064/14m28s per the supplied sacct receipt. squeue's
-missing-ended-job error explains job_status_success=false. No new status query,
-resubmission or re-finalization. Five-question result content is still unavailable.
-Source facts are not in the recovered workpack. Official source archive download
-failed once by connection timeout; preserved receipt/no retry. Next required user
-handoff is the existing server source-cache archive plus completed model artifacts.
+Both supplied archives are verified and available locally. Real FinBench SF0.1
+facts pass the fixed original3-query/6-plan correctness gate and107/107 independent
+audit; whole SF0.1 was loaded, original48 kept, no model or ordinary-P1 experiment.
+All owned services are stopped. See [INT-3 evidence](report/finbench_original_three_native_20260911.md).
 
-Frozen populations, September18 deadline and research scope remain. This is not
-new real answer/performance evidence. P1/A1–A4/INT-0/INT-1 accepted gates stay
-accepted; do not fill waiting time with duplicate tests. E1's old150 runner is
-semantic-only and lacks gold-blind answer position:later connect ordinary P1 and
-typed entity answers without using reference projection for inference. Earlier
-PENDING/unreceived descriptions below are historical.
+Actual Qwen3804011 completed5 calls/10484tokens, but unchanged ordinary-entry replay
+completes0/5, all before backend access. Four reference undeclared source slots;
+B04 first fails scalar resolution and also has invalid source assignment. The
+parser now rejects malformed/undeclared/source-misplaced references before any
+resolution.21focused cases and five original-response admission replays pass;
+these are rejection checks, not repaired answers. Promptv2 is prepared with unchanged
+questions/context/hard requirements; tokenizer preflight and fresh model quality
+are unmeasured. See [LINK failure and correction](report/qwen_model_link_failure_20260911.md).
+
+Next:one bounded v2 model diagnostic after source transfer/preflight, real prior
+forecast/cost preparation, gold-blind GrailQA answer projection and fair frozen
+E1–E5. Do not repeat accepted INT/native/module gates or ask for already recovered
+archives. Runtime exchange bytes are serialized EXCHANGE rows, not wire traffic.
+All old unreceived/PENDING/unknown statements below are historical. Deadline and
+GrailQA150/FinBench32seen+16cold populations remain unchanged.
 
 ## Current A4 gate — accepted; external inputs still pending
 

@@ -6,7 +6,9 @@ import time
 from typing import Any, Mapping, Protocol
 
 from xgap.semantic.intake import DeterministicSemanticIntake, _safe_json_mapping
-from xgap.semantic.program import ConstraintPolicy, SemanticGraphProgram
+from xgap.semantic.program import (
+    ConstraintPolicy, SemanticGraphProgram, SemanticHoleKind, SemanticOperatorKind,
+)
 
 
 SCHEMA = "xgap-semantic-interpretation-v1"
@@ -102,6 +104,53 @@ class TemplateInterpretationProvider:
                         "phrase_matches": [m.to_dict() for m in result.phrase_matches]})
 
 
+def _validate_executable_references(program, sources, context):
+    """Check declared slots and logical sources without resolving or repairing them."""
+    holes = {hole.hole_id: hole for hole in program.holes}
+
+    def reference(value, *, source=False):
+        hole_id = value.get("$hole")
+        if set(value) != {"$hole"} or not isinstance(hole_id, str) or not hole_id.strip():
+            raise ValueError("Executable semantic hole references must contain only a nonempty $hole identifier")
+        if hole_id not in holes:
+            raise ValueError(f"Undeclared executable semantic hole '{hole_id}'")
+        if source != (holes[hole_id].kind is SemanticHoleKind.SOURCE):
+            raise ValueError("Source holes bind logical sources only")
+
+    def walk(value):
+        if isinstance(value, Mapping):
+            if "$hole" in value:
+                reference(value)
+            else:
+                for child in value.values():
+                    walk(child)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                walk(child)
+
+    for operator in program.operators:
+        walk(operator.parameters)
+        for constraint in operator.constraints:
+            walk(constraint.predicate)
+
+    expected = {operator.operator_id for operator in program.operators
+                if operator.kind in (SemanticOperatorKind.MATCH, SemanticOperatorKind.TRAVERSE)}
+    if set(sources) != expected:
+        raise ValueError("Interpretation source assignments must cover exactly Match/Traverse operators")
+    runtime = context.get("runtime")
+    available = runtime.get("sources") if isinstance(runtime, Mapping) else None
+    if isinstance(runtime, Mapping) and "sources" in runtime and not isinstance(available, Mapping):
+        raise ValueError("Runtime logical sources must be an object")
+    for value in sources.values():
+        if isinstance(value, str) and value.strip():
+            if available is not None and value not in available:
+                raise ValueError(f"Unknown runtime logical source '{value}'")
+        elif isinstance(value, Mapping) and "$hole" in value:
+            reference(value, source=True)
+        else:
+            raise ValueError("Source assignments require a nonempty logical source or declared SOURCE hole")
+
+
 def parse_interpretation(payload, request):
     """Structural admission is independent from NL meaning/answer evaluation."""
     encoded = json.dumps(payload, allow_nan=False).encode()
@@ -132,6 +181,7 @@ def parse_interpretation(payload, request):
     sources = payload["operator_sources"]
     if not isinstance(sources, dict):
         raise ValueError("Interpretation source assignments must be an object")
+    _validate_executable_references(program, sources, request.context)
     return program, sources
 
 

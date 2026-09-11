@@ -1,6 +1,21 @@
 # XGAP Design Decisions
 
 
+
+## LINK/INT-3: distinguish real generation, valid meaning and real answer execution
+
+The original model5/5 generation result produces0/5 ordinary-query completions.
+Keep the raw failures. Tighten provider-neutral executable-reference/source
+admission without repairing responses, changing gold or rebuilding catalog.
+Promptv2 is a separate unmeasured diagnostic revision; its unchanged request
+bodies and originalv1 remain available. See [LINK evidence](report/qwen_model_link_failure_20260911.md).
+
+Use actual local service identities for the fixed3-instance FinBench gate, not
+invented Slurm metadata. Complete SF0.1 facts plus6exact results/107audit checks
+establish this real integration boundary only. Preserve the empty f1 result,
+original48 population and fixed-order limitations. Runtime EXCHANGE serialized
+row bytes are not HTTP wire traffic. See [INT-3 evidence](report/finbench_original_three_native_20260911.md).
+
 ## INT-2: original archive identity is an explicit correctness admission mode
 
 The actual original48 manifest pins source_archive_sha256, not source_partition_sha256.
