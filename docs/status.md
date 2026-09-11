@@ -1,5 +1,24 @@
 # XGAP Status
 
+## Current engineering — T2-B question entry accepted
+
+The new provider-neutral Interpretation entry preserves executable hard
+constraints, keeps entity confirmation at catalog/clarification, and connects
+controlled NL intake to the same frozen-catalog/planner/native execution chain.
+Provider response/failure recordings replay locally without new external calls.
+Native5/5 programs,18/18 candidates,10/10 independent targets and old slice pass;
+final focused77 pass. Final full58858 exited0:3394 passed/38 skipped in674.23s,
+all24 harness/example entrypoints pass. All handles are terminal; no source/test
+edits after final full launch. See
+[the T2-B report](report/toy_backbone_t2_interpretation.md) for source boundaries.
+
+Latest user priority is [real experimental results bySeptember18](experiment_delivery_20260918.md).
+Quick development remains on tiny data. Before it passes, remote work is ONLY
+model health/tiny full-chain integration, never large dataset execution. After
+this interface acceptance, connect the real model on the same toy immediately;
+defer general replay expansion, UI and large catalog rebuilding. Then run frozen
+real samples with full denominators and comparable methods. Overall Goal active.
+
 ## Current engineering — T2-A frozen resolution bundle accepted
 
 The finite first-system language and exclusions are frozen in

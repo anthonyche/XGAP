@@ -1,0 +1,119 @@
+{
+  "schema_version": "m15-e3-semantic-intake-template-v1",
+  "template_id": "toy-node",
+  "template_version": "1",
+  "holes": [
+    {
+      "hole_id": "person",
+      "kind": "entity",
+      "phrases": [
+        "Alice",
+        "Bob",
+        "Alex"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "type",
+      "kind": "type",
+      "phrases": [
+        "people"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "age",
+      "kind": "constraint",
+      "phrases": [
+        "30",
+        "45"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "source",
+      "kind": "source",
+      "phrases": [
+        "toy graph"
+      ],
+      "required": true
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_id": "resolved person identity",
+      "expression": "resolved person identity",
+      "policy": "hard",
+      "predicate": {
+        "kind": "property_equals",
+        "ref": {
+          "kind": "node",
+          "position": "first"
+        },
+        "property": "id",
+        "value": {
+          "$hole": "person"
+        }
+      },
+      "operator_id": "people",
+      "phrases": [
+        "返回"
+      ],
+      "required": true
+    },
+    {
+      "constraint_id": "minimum person age",
+      "expression": "minimum person age",
+      "policy": "hard",
+      "predicate": {
+        "kind": "property_gte",
+        "ref": {
+          "kind": "node",
+          "position": "first"
+        },
+        "property": "age",
+        "value": {
+          "$hole": "age"
+        }
+      },
+      "operator_id": "people",
+      "phrases": [
+        "年龄至少"
+      ],
+      "required": true
+    }
+  ],
+  "operators": [
+    {
+      "operator_id": "people",
+      "kind": "match",
+      "input_ids": [],
+      "input_kinds": [],
+      "output_kind": "binding_set",
+      "parameters": {
+        "node": {
+          "label": {
+            "$hole": "type"
+          }
+        },
+        "entity_field": "person",
+        "properties": {
+          "age": "age"
+        }
+      },
+      "required_capabilities": [],
+      "hole_ids": [
+        "person",
+        "type",
+        "age",
+        "source"
+      ]
+    }
+  ],
+  "roots": [
+    "people"
+  ],
+  "metadata": {
+    "development_only": true
+  }
+}

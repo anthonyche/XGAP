@@ -4,6 +4,13 @@ Updated: 2026-09-11. Owner: task 01a085a5-3722-78e2-aab8-c19ef093c36d.
 
 ## Workspace and scope
 
+**2026-09-11 latest user deadline: new real experimental results within one week,
+by2026-09-18; internal report target12:00 Asia/Shanghai.** Prioritize actual
+model+real-data+Neo4j/Fuseki experiment and retained comparison denominators.
+Do not substitute toy/replay or old FinBench results. Finish current interface
+work, then move directly to the experiment path; defer UI/nonessential extension
+and large catalog rebuilds. Full system objective is unchanged.
+
 - Authoritative working repository: `/Users/anthonyche/Developer/XGAP`.
 - Branch at entry: `codex/m13e4-grailqa-semantic-paper-protocol`; base `a91aed6`.
 - The ChatGPT mirror repository is stale; synced `sources/` remain read-only.
@@ -43,7 +50,59 @@ hourly heartbeat remains ACTIVE. The earlier blocked observation is superseded.
 Do not mark the broad system goal complete or blocked to imitate a pause.
 The scheduled morning recovery has occurred; normal authorized work continues.
 
-## Current milestone — T2-A frozen resolution bundle accepted
+## Current milestone — T2-B Interpretation entry and provider replay accepted
+
+Previous turn was progress:174393d committed/pushed T2-A, clean HEAD=upstream.
+T2-B scope was frozen in decisions/interpretation_entry_replay_v1.md. New common
+provider-neutral question entry validates typed programs and explicit hard
+constraints before the pinned catalog/execution chain. Existing deterministic
+intake now carries optional executable predicates; the adapter moves legacy
+hole ownership out of executable parameters. Two tiny input templates retain
+all old gold. Provider response/failure journals support zero-external replay;
+general backend replay is deferred, not claimed complete.
+
+First focused43107 terminal1:67 pass/5 failures from ownership parameters;
+fixed by the adapter. Focused36774 terminal0:72/2.37s; expanded3432 terminal0:
+74/2.39s; final84886 terminal0:75/2.39s. Native71146 terminal0:5/5 programs,
+18/18 candidates,10/10 independent targets and old slice pass; all34 native
+source hashes match and both services stopped normally. Daily81728 terminal0:
+546/30.01s+18 demos; the later strict JSON identity case is in final focused/full.
+Logs
+/tmp/xgap-t2-interpretation-native.log and /tmp/xgap-t2-interpretation-daily.log.
+Native output /Users/anthonyche/xgap-data/t2-interpretation-native-20260911.
+Full85404 was deliberately stopped for an observed provider entity-authority gap;
+terminal exit2:2504 passed/37 skipped/575.35s. New Interpretation rejects preset
+entity candidates and passes a defensive request copy. Final focused49491 exit0:
+77 passed/2.32s. Final full58858 is terminal exit0:3394 passed/38 skipped
+in674.23s, all24 harness/example entrypoints passed. All test/native handles
+are terminal. Log /tmp/xgap-t2-interpretation-acceptance-final.log. Native programs5/5 still match
+current Interpretation exactly; the sole native source delta is the two admission
+checks, verified by reconstructing the old bytes/hash. Other33 native hashes match.
+Do not repeat these passed gates without a new change or concern. No source/test
+changes after final full launch. All37 final source hashes match the receipt;
+original tracked fixtures are unchanged. Receipt experiments/artifacts/toy_backbone_t2_interpretation_20260911.json
+and report docs/report/toy_backbone_t2_interpretation.md are accepted.
+Next finalize commit/push and update the xgap checkpoint, then immediately
+implement the real model adapter and small-data remote integration package.
+
+Current remote observation: CUA inventory found Chrome Pioneer terminal366873551
+at hpc8, but getTab timed out before reading content or sending any server action.
+This is not proof of expired login. The user returned two empty squeue outputs: no active/queued jobs. Their subsequent
+sinfo shows gput072 H100 mixed/planned, gput073 allocated; L40S063/065/068 mixed,
+069/070/071 mixed/planned,067 drained. CPU/GRES capacity is not idle GPU proof.
+User returned both sbatch --test-only estimates,8CPU/64GiB/4h:
+H1001: test identifier3803924,2026-09-11T06:26:34,gput072; L40S2 excluding069:
+test identifier3803925,2026-09-11T04:13:07,gput064. These are scheduler-local
+estimates (timezone unverified), not submitted/reserved jobs or GPU health proof.
+The L40S estimate is2h13m27s earlier. No new job submission occurred.
+Latest user gate: BEFORE quick-development acceptance, remote runs are ONLY
+small-data model-health/full-chain connection tests; NO large dataset run.
+Next remote package must test the tiny chain, not launch the old GrailQA18 run. The deadline and mandatory tiny
+development are persisted in docs/goal.md, experiment_delivery_20260918.md and the existing
+hourly heartbeat. Next use existing frozen real experiment protocols, not another
+general-purpose framework milestone. Overall Goal remains active.
+
+## Accepted predecessor — T2-A frozen resolution bundle
 
 Base ffb7b47. Scope and gates were frozen in
 docs/decisions/frozen_resolution_bundle_v1.md before implementation. The offline

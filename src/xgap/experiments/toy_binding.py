@@ -8,7 +8,9 @@ import hashlib
 import json
 from pathlib import Path
 
-from xgap.agent.semantic_execution import run_frozen_semantic_query
+from xgap.agent.question import run_question
+from xgap.semantic.intake import DeterministicSemanticIntake
+from xgap.semantic.interpretation import InterpretationRequest, TemplateInterpretationProvider
 from xgap.experiments.toy_backbone import load_fixture
 from xgap.experiments.toy_semantic import toy_backends
 from xgap.backends.rdf_terms import RDF_TERMS_V1, RdfTerm
@@ -25,6 +27,17 @@ from xgap.tools.artifact_resolution import (ArtifactCatalogProvider, ExplicitUse
 
 FIXTURE = Path(__file__).resolve().parents[3] / "datasets/backbone_binding_v1"
 BUNDLE_FIXTURE = Path(__file__).resolve().parents[3] / "datasets/backbone_binding_bundle_v1"
+INTAKE_FIXTURE = Path(__file__).resolve().parents[3] / "datasets/backbone_interpretation_v1"
+
+
+def interpretation_inputs(case):
+    manifest = json.loads((INTAKE_FIXTURE / "manifest.json").read_text())
+    spec = manifest["node" if case["id"] == "B04" else "path"]
+    intake = DeterministicSemanticIntake.from_path(INTAKE_FIXTURE / spec["file"], expected_sha256=spec["sha256"])
+    # Explicit caller requirements come from the prepared input, not expected answers.
+    required = intake.required_hard_constraints
+    return InterpretationRequest(case["nl"], {"query_profile": "bounded-core-v1"}, required), \
+        TemplateInterpretationProvider(intake, spec["operator_sources"])
 
 
 def load_binding_cases():
@@ -69,8 +82,8 @@ def execute_binding_case(case, mapping, *, clients):
     clarification = (explicit_user_clarification_tool(ExplicitUserSelectionProvider(
         case["explicit_user_selection"], source_id="controlled-toy-user-selection"))
         if case.get("explicit_user_selection") else None)
-    run = run_frozen_semantic_query(program=SemanticGraphProgram.from_dict(case["program"]),
-        question=case["nl"], operator_sources=case["operator_sources"],
+    request, provider = interpretation_inputs(case)
+    run = run_question(request, provider,
         catalog_root=BUNDLE_FIXTURE / reference["root"], catalog_hash=reference["bundle_hash"],
         sources=sources, backends=backends, backend_clients=clients, clarification_tool=clarification,
         max_candidates=4, max_observation_calls=4)
@@ -79,7 +92,7 @@ def execute_binding_case(case, mapping, *, clients):
     record = {"query_id": case["id"], "success": run["success"] and canonical(actual) == canonical(case["expected_rows"]),
             "actual_rows": actual, "agent_run": run, "live_llm": False, "paper_result": False,
             "candidate_checks": [], "validation_only_extra_remote_calls": 0,
-            "interpretation_source": "hand-authored template and pinned frozen resolution bundle"}
+            "interpretation_source": "controlled NL phrase intake and pinned frozen resolution bundle"}
     if not record["success"]:
         return record
     output = run["state"]["output"]

@@ -1,0 +1,23 @@
+{
+  "path": {
+    "file": "path.json",
+    "sha256": "0728b64d2a106184526303ffca1625e33919d1f1231d047426412a1787db8a01",
+    "operator_sources": {
+      "paths": {
+        "$hole": "source"
+      },
+      "people": {
+        "$hole": "source"
+      }
+    }
+  },
+  "node": {
+    "file": "node.json",
+    "sha256": "e8c70c376f35d55dcb99a69c28b90ea0b56a2bafd882f535ef5d3970cb25b617",
+    "operator_sources": {
+      "people": {
+        "$hole": "source"
+      }
+    }
+  }
+}

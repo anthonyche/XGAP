@@ -1,5 +1,10 @@
 # XGAP Design Decisions
 
+The current provider-neutral question entry and offline response/failure replay
+are scoped in [Interpretation entry v1](decisions/interpretation_entry_replay_v1.md).
+The latest user deadline and development-before-large-data gate are in
+[September18 delivery plan](experiment_delivery_20260918.md).
+
 User-directed finite support scope and the distinction between Interpretation
 and executable semantics: [bounded system scope v1](decisions/bounded_system_scope_v1.md).
 

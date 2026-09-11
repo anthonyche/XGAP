@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-11",
+  "provenance": "User-supplied terminal output from hxc859@hpc8; not independently executed by this agent",
+  "queue": {
+    "squeue_outputs": 2,
+    "active_or_queued_jobs": 0
+  },
+  "test_only": true,
+  "actual_submissions": 0,
+  "allocation": {
+    "cpus": 8,
+    "memory": "64G",
+    "time_limit": "04:00:00"
+  },
+  "estimates": [
+    {
+      "profile": "H1001",
+      "constraint": "gpu2h100",
+      "test_identifier": "3803924",
+      "scheduler_local_start": "2026-09-11T06:26:34",
+      "node": "gput072"
+    },
+    {
+      "profile": "L40S2",
+      "constraint": "gpul40s",
+      "exclude": "gput069",
+      "test_identifier": "3803925",
+      "scheduler_local_start": "2026-09-11T04:13:07",
+      "node": "gput064"
+    }
+  ],
+  "timezone": "Scheduler local timezone not verified by this output",
+  "health_verified": false,
+  "next_remote_scope": "Tiny data connection/model-health only until quick-development acceptance; no large dataset run"
+}

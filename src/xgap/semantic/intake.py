@@ -182,6 +182,7 @@ class _ConstraintTemplate:
     policy: ConstraintPolicy
     phrases: tuple[str, ...]
     required: bool
+    predicate: Mapping[str, Any] | None = None
 
 
 def _match_declared_phrase(
@@ -283,7 +284,7 @@ class DeterministicSemanticIntake:
             raise SemanticIntakeError("constraints must be an array")
         constraints: list[_ConstraintTemplate] = []
         for raw in raw_constraints:
-            if not isinstance(raw, Mapping) or set(raw) != {
+            if not isinstance(raw, Mapping) or set(raw) - {"predicate"} != {
                 "constraint_id",
                 "operator_id",
                 "expression",
@@ -312,6 +313,8 @@ class DeterministicSemanticIntake:
                         name=f"{raw['constraint_id']}.phrases",
                     ),
                     required=raw["required"],
+                    predicate=(_safe_json_mapping(raw["predicate"], name="constraint predicate")
+                               if "predicate" in raw else None),
                 )
             )
         if len({item.constraint_id for item in constraints}) != len(constraints):
@@ -388,16 +391,26 @@ class DeterministicSemanticIntake:
             raise SemanticIntakeError("semantic intake artifact must be a regular file")
         if artifact_path.stat().st_size > 4 * 1024 * 1024:
             raise SemanticIntakeError("semantic intake artifact exceeds 4 MiB")
-        digest = _file_sha256(artifact_path)
+        with artifact_path.open("rb") as stream:
+            data = stream.read(4 * 1024 * 1024 + 1)
+        if len(data) > 4 * 1024 * 1024:
+            raise SemanticIntakeError("semantic intake artifact exceeds 4 MiB")
+        digest = hashlib.sha256(data).hexdigest()
         if expected_sha256 is not None and digest != expected_sha256:
             raise SemanticIntakeError("semantic intake artifact SHA-256 mismatch")
         try:
-            payload = json.loads(artifact_path.read_text(encoding="utf-8"))
+            payload = json.loads(data.decode("utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError) as exc:
             raise SemanticIntakeError("semantic intake artifact is not valid JSON") from exc
         if not isinstance(payload, Mapping):
             raise SemanticIntakeError("semantic intake artifact must contain an object")
         return cls(payload, artifact_sha256=digest)
+
+    @property
+    def required_hard_constraints(self):
+        return tuple({"operator_id": c.operator_id, "constraint": SemanticConstraint(
+            c.constraint_id, c.expression, c.policy, c.predicate).to_dict()}
+            for c in self._constraints if c.required and c.policy is ConstraintPolicy.HARD)
 
     def compile(self, question: str) -> DeterministicIntakeResult:
         if not isinstance(question, str) or not question.strip():
@@ -449,6 +462,7 @@ class DeterministicSemanticIntake:
                     constraint_id=template.constraint_id,
                     expression=template.expression,
                     policy=template.policy,
+                    predicate=template.predicate,
                 )
             )
             phrase_matches.append(
