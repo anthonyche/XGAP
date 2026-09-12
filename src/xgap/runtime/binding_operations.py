@@ -106,8 +106,8 @@ def sort_rows(parameters: Mapping[str, Any], rows: tuple[dict, ...]) -> tuple[di
     order_by, limit = parameters.get("order_by"), parameters.get("limit")
     if not isinstance(order_by, (list, tuple)) or not order_by:
         raise ValueError("coordinator_sort_limit requires a nonempty order_by list")
-    if type(limit) is not int or limit <= 0:
-        raise ValueError("coordinator_sort_limit requires a positive integer limit")
+    if "limit" not in parameters or limit is not None and (type(limit) is not int or limit <= 0):
+        raise ValueError("coordinator_sort_limit requires a positive integer limit or explicit null for all rows")
     ordering = []
     for spec in order_by:
         if not isinstance(spec, Mapping) or set(spec) - {"field", "direction", "nulls"}:

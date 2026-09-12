@@ -12,7 +12,7 @@ import math
 from xgap.semantic.program import SemanticProgramError
 
 
-PARAMETER_CONTRACT = "xgap-semantic-parameters-v1"
+PARAMETER_CONTRACT = "xgap-semantic-parameters-v2"
 _TEXT = {"type": "string", "minLength": 1}
 _NULL = {"type": "null"}
 _POSITIVE = {"type": "integer", "minimum": 1}
@@ -74,7 +74,9 @@ _DEFS["path_condition"] = _alternatives(
     _tagged("kind", "not", {"condition": _ref("path_condition")}),
 )
 _DEFS["row_condition"] = _alternatives(
-    *(_tagged("op", op, {"field": _TEXT, "value": _ref("scalar")}) for op in ("eq", "ne", "lt", "le", "gt", "ge")),
+    *(_tagged("op", op, {"field": _TEXT, rhs: _ref("scalar") if rhs == "value" else _TEXT,
+        "value_type": {"const": "timestamp_ms"}}, ("field", rhs))
+      for op in ("eq", "ne", "lt", "le", "gt", "ge") for rhs in ("value", "right_field")),
     *(_tagged("op", op, {"field": _TEXT}) for op in ("is_null", "is_not_null")),
     *(_tagged("op", op, {"args": _array(_ref("row_condition"), 1)}) for op in ("and", "or")),
     _tagged("op", "not", {"arg": _ref("row_condition")}),
@@ -87,6 +89,7 @@ _DEFS["path_pattern"] = _object({
     "condition": _alternatives(_ref("path_condition"), _NULL), "max_depth": _alternatives(_POSITIVE, _NULL),
 }, ("source", "expr", "target", "selector"))
 _DEFS["projection"] = _alternatives(
+    _tagged("kind", "literal", {"value": _ref("scalar")}),
     _tagged("kind", "field", {"field": _TEXT}), _tagged("kind", "path_length", {}),
     _tagged("kind", "path_node", {"position": _alternatives(_POSITIVE, {"enum": ["first", "last"]})}),
     _tagged("kind", "path_edge", {"position": _POSITIVE}),
@@ -97,7 +100,11 @@ _DEFS["aggregation"] = _alternatives(
       for op in ("sum", "min", "max")),
 )
 _PARAMETERS = {
-    "match": _object({"node": _ref("match_node"), "entity_field": _TEXT, "properties": _dictionary(_TEXT)}),
+    "match": _alternatives(
+        _object({"node": _ref("match_node"), "entity_field": _TEXT, "properties": _dictionary(_TEXT)}),
+        _object({"edge": _ref("match_node"), "source": _ref("match_node"), "target": _ref("match_node"),
+            "entity_field": _TEXT, "source_field": _TEXT, "target_field": _TEXT,
+            "properties": _dictionary(_TEXT)}, ("edge",))),
     "traverse": _object({"path_pattern": _ref("path_pattern"), "anchor_field": _TEXT,
         "anchor_position": {"enum": ["first", "last"]}}, ("path_pattern",)),
     "project": _object({"projections": _dictionary(_ref("projection"), 1)}, ("projections",)),
@@ -108,7 +115,7 @@ _PARAMETERS = {
         "aggregations": _dictionary(_ref("aggregation"), 1)}, ("group_by", "aggregations")),
     "order_limit": _object({"order_by": _array(_object({"field": _TEXT,
         "direction": {"enum": ["asc", "desc"]}, "nulls": {"enum": ["first", "last"]}}, ("field",)), 1),
-        "limit": _alternatives(_POSITIVE, _ref("hole"))}, ("order_by", "limit")),
+        "limit": _alternatives(_POSITIVE, _NULL, _ref("hole"))}, ("order_by", "limit")),
     "align": _object({"field": _TEXT, "output_field": _TEXT, "mapping": _dictionary(_ref("scalar")),
         "on_missing": {"enum": ["error", "drop", "keep"]}}, ("field",)),
 }

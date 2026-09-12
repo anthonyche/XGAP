@@ -84,7 +84,7 @@ def extract_work_features(plan, statistics):
             descriptor = raw_artifact.get("parameters", {}) if isinstance(raw_artifact, dict) else {}
             compiler = descriptor.get("compiler") if isinstance(descriptor, dict) else None
             family = ("match" if compiler == "semantic_node_match_v1" else
-                      "path" if compiler in {"bounded_native_paths_v1", "resource_triple_paths_v1"} else None)
+                      "path" if compiler in {"bounded_native_paths_v1", "resource_triple_paths_v1", "semantic_edge_match_v1"} else None)
             columns = descriptor.get("output_columns") if isinstance(descriptor, dict) else None
             if (source is None or source.total_rows is None or source.mean_row_bytes is None or family is None
                     or not isinstance(columns, list) or not columns
@@ -224,6 +224,11 @@ class FrozenWorkEstimator:
             "current_query_observation_calls": 0, "fit_calls": 0, "quality_bound": None,
             "monotonicity_scope": "componentwise represented work only; not actual runtime",
             "extrapolation_policy": "unseen categories unavailable; nonnegative numeric extrapolation uncalibrated"}
+        if any(n.kind in REMOTE and n.parameters["artifact"]["parameters"].get("compiler") == "semantic_edge_match_v1"
+               for n in plan.nodes):
+            provenance["workload_lowering_extension"] = {
+                "profile": "edge_match_as_one_edge_path_v1", "calibrated": False,
+                "weights_changed": False, "feature_dimensions_changed": False}
         outside = ()
         status, estimate, residual = "unavailable_missing_features", None, None
         if not f.unknown_fields:

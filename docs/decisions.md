@@ -1,5 +1,13 @@
 ## FinBench representation and next ordinary-core gap
 
+## Financial binding semantics and ordinary deterministic integration
+
+[New bounded semantics](decisions/financial_binding_semantics_v1.md) expose edge properties, field/time
+comparison, finite literals and explicit unbounded-result ordering through the existing operator vocabulary.
+[Three tiny native financial programs pass](report/financial_binding_20260912.md). New edge-bind work
+lacks frozen training support; preserve unavailable estimates and add only independent tiny coverage.
+Financial NL and real evaluation remain open; do not resume baseline optimization.
+
 The [same-facts contract](decisions/finbench_same_facts_rdf_v1.md) preserves entity
 and parallel-edge identity across native/RDF representations. Three independent
 tiny answers also pass actual Fuseki; [scope/evidence](report/finbench_rdf_tiny_20260912.md).

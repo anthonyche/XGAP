@@ -143,6 +143,8 @@ def _entity_lineage(operators, schemas):
         result = False
         if op.kind is S.MATCH:
             result = field == p.get("entity_field", "entity")
+            if "edge" in p:
+                result = result or field in (p.get("source_field", "source"), p.get("target_field", "target"))
         elif op.kind in (S.FILTER, S.ORDER_LIMIT):
             result = is_entity(op.input_ids[0], field)
         elif op.kind is S.AGGREGATE and field in p["group_by"]:
@@ -181,9 +183,13 @@ def _target_match(identifier, field, operators, consumers, roots):
             raise _NotAdmitted("Target Match/Project/Filter chain is shared or a separate answer root")
         chain.append(identifier)
         if op.kind is S.MATCH:
-            if field != op.parameters.get("entity_field", "entity"):
+            identities = {op.parameters.get("entity_field", "entity"): "entity"}
+            if "edge" in op.parameters:
+                identities.update({op.parameters.get("source_field", "source"): "source",
+                    op.parameters.get("target_field", "target"): "target"})
+            if field not in identities:
                 raise _NotAdmitted("Target join key is not the Match entity identity")
-            return op, tuple(chain)
+            return op, tuple(chain), identities[field]
         if op.kind is S.PROJECT:
             spec = op.parameters["projections"].get(field, {})
             if spec.get("kind") != "field":
@@ -194,9 +200,12 @@ def _target_match(identifier, field, operators, consumers, roots):
         identifier = op.input_ids[0]
 
 
-def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes):
-    if artifact.parameters.get("compiler") != "semantic_node_match_v1":
+def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes, identity_column="entity"):
+    compiler = artifact.parameters.get("compiler")
+    if compiler not in ("semantic_node_match_v1", "semantic_edge_match_v1"):
         raise _NotAdmitted("Target native artifact was not produced by the Match compiler")
+    if identity_column not in ({"entity", "source", "target"} if compiler == "semantic_edge_match_v1" else {"entity"}):
+        raise _NotAdmitted("Target native identity column is unavailable")
     profile = backend.profile or default_profile(backend.backend_id)
     language = artifact.language.lower()
     expected = {"cypher": ("neo4j", "labeled_property_graph"), "sparql": ("fuseki", "rdf_graph")}
@@ -214,17 +223,20 @@ def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes)
     if language == "sparql":
         text = ("SELECT DISTINCT " + " ".join("?" + c for c in columns) + " WHERE {\n"
                 + IRI_VALUES_MARKER + "\n{\n" + artifact.text + "\n}\n}")
-        parameters["sparql_iri_binding"] = {"parameter": parameter, "variable": "entity",
+        parameters["sparql_iri_binding"] = {"parameter": parameter, "variable": identity_column,
             "max_bindings": max_bindings, "max_bytes": max_binding_bytes}
     else:
         names = ", ".join(_cypher_identifier(c) for c in columns)
+        native_identity = "entity" if identity_column == "entity" else _cypher_identifier(identity_column)
         text = ("CALL {\n" + artifact.text + "\n}\nWITH " + names
-                + "\nWHERE ($" + namespace_parameter + " + entity."
+                + "\nWHERE ($" + namespace_parameter + " + " + native_identity + "."
                 + _cypher_identifier(backend.identity_property) + ") IN $" + parameter
                 + "\nRETURN DISTINCT " + names)
         parameters[namespace_parameter] = backend.resource_namespace
     parameters.update(physical_strategy_profile=STRATEGY_PROFILE,
                       bound_entity_parameter=parameter)
+    if compiler == "semantic_edge_match_v1":
+        parameters["bound_identity_column"] = identity_column
     return replace(artifact, artifact_id=artifact.artifact_id + "-entity-bind",
                    text=text, parameters=parameters), parameter
 
@@ -288,12 +300,13 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
             try:
                 if not is_entity(driver_id, driver_field):
                     raise _NotAdmitted("Driving join key has no canonical entity-IRI lineage")
-                target, chain = _target_match(target_id, target_field, operators, consumers, set(program.roots))
+                target, chain, identity_column = _target_match(target_id, target_field, operators, consumers, set(program.roots))
                 backend = backends[source_bindings[target.operator_id]]
                 remote_id = target.operator_id + "/native"
                 remote = next(n for n in baseline.nodes if n.node_id == remote_id)
                 artifact, parameter = _bound_match_artifact(QueryArtifact.from_dict(remote.parameters["artifact"]),
-                    backend, max_bindings=max_bindings, max_binding_bytes=max_binding_bytes)
+                    backend, max_bindings=max_bindings, max_binding_bytes=max_binding_bytes,
+                    identity_column=identity_column)
                 bound = replace(remote, kind=R.REMOTE_BIND_QUERY,
                     inputs=(baseline.metadata["operator_outputs"][driver_id],), parameters={
                         **dict(remote.parameters), "artifact": artifact.to_dict(), "bind_field": driver_field,

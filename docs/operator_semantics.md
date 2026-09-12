@@ -1,5 +1,10 @@
 # Operator Semantics
 
+Semantic edge Match now composes Selection(Edges(G)) with binding projection; it does not add
+an algebra operator. Explicit row field/time comparisons, finite literals and no-limit ordering
+are specified in [financial binding semantics](decisions/financial_binding_semantics_v1.md).
+Legacy path numeric predicates retain their truth conditions.
+
 Match named constraints may explicitly use the binding-row DSL on Match's own
 declared output columns. Such constraints execute after row normalization through
 the existing coordinator Filter; path constraints retain native path semantics.

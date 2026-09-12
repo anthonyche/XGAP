@@ -2,6 +2,8 @@
 
 import json
 import math
+import re
+from datetime import datetime
 from numbers import Real
 from decimal import Decimal, InvalidOperation
 
@@ -26,7 +28,13 @@ def condition_fields(condition):
         if set(condition) != {"op", "arg"}:
             raise ValueError("not requires one arg")
         return condition_fields(condition["arg"])
-    keys = {"op", "field"} if op in ("is_null", "is_not_null") else {"op", "field", "value"}
+    unary = op in ("is_null", "is_not_null")
+    rhs = "right_field" if "right_field" in condition else "value"
+    keys = {"op", "field"} if unary else {"op", "field", rhs}
+    if "value_type" in condition:
+        if unary or condition["value_type"] != "timestamp_ms":
+            raise ValueError("Unsupported row comparison value_type")
+        keys.add("value_type")
     if (op not in ("eq", "ne", "lt", "le", "gt", "ge", "is_null", "is_not_null")
             or set(condition) != keys or not isinstance(condition.get("field"), str)):
         raise ValueError("Invalid row comparison")
@@ -36,7 +44,19 @@ def condition_fields(condition):
             raise ValueError("Row comparison constants must be scalar")
         if isinstance(value, float) and not math.isfinite(value):
             raise ValueError("Row comparison constants must be finite")
-    return {condition["field"]}
+    if rhs == "right_field" and (not isinstance(condition[rhs], str) or not condition[rhs]):
+        raise ValueError("Row comparison right_field must name a field")
+    return {condition["field"], condition[rhs]} if rhs == "right_field" else {condition["field"]}
+
+
+def _timestamp(value):
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}", value):
+        return None
+    try:
+        datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
+    except ValueError:
+        return None
+    return value
 
 
 def _matches(row, c):
@@ -52,9 +72,15 @@ def _matches(row, c):
         return left is None
     if op == "is_not_null":
         return left is not None
-    right = c["value"]
+    right = row[c["right_field"]] if "right_field" in c else c["value"]
     if left is None or right is None:
         return False
+    if c.get("value_type") == "timestamp_ms":
+        left, right = _timestamp(left), _timestamp(right)
+        if left is None or right is None:
+            return False
+        return {"eq": left == right, "ne": left != right, "lt": left < right,
+                "le": left <= right, "gt": left > right, "ge": left >= right}[op]
     numbers = [_number(x) for x in (left, right)]
     numeric = all(x is not None for x in numbers)
     if numeric:
@@ -88,6 +114,8 @@ def project_rows(rows, projections, *, namespace=None):
             kind = spec["kind"]
             if kind == "field":
                 value = row[spec["field"]]
+            elif kind == "literal":
+                value = spec["value"]
             elif kind == "path_length":
                 value = (len(row["path"]) - 1) // 2
             elif kind in ("path_node", "path_edge"):
@@ -132,15 +160,19 @@ def normalize_node_bindings(rows, parameters):
     ids = RdfRowEncoding("semantic-node-identity", "urn:xgap:class",
                          parameters["identity_property"], parameters["resource_namespace"])
     result = []
+    identities = parameters.get("identity_fields", {"entity": parameters["entity_field"]})
     for row in rows:
+        normalized = {}
         if parameters["language"] == "sparql":
-            term = RdfTerm.from_binding(row["entity"])
-            if term.kind != "uri":
-                raise ValueError("Matched nodes require global resource identity")
-            entity = term.value
+            for source, target in identities.items():
+                term = RdfTerm.from_binding(row[source])
+                if term.kind != "uri":
+                    raise ValueError("Matched nodes/edges require global resource identity")
+                normalized[target] = term.value
             values = {field: _rdf_scalar(row.get(field)) for field in parameters["scalar_fields"]}
         else:
-            entity = ids.resource_iri(row["entity"][ids.identity_property])
+            normalized = {target: ids.resource_iri(row[source][ids.identity_property])
+                          for source, target in identities.items()}
             values = {field: row.get(field) for field in parameters["scalar_fields"]}
-        result.append({parameters["entity_field"]: entity, **values})
+        result.append({**normalized, **values})
     return distinct_rows(result)

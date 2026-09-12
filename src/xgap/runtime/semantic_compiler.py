@@ -8,15 +8,17 @@ executes a backend, calls an LLM, or builds a catalog.
 from dataclasses import dataclass, replace
 import hashlib
 import json
+import math
 from typing import Any, Mapping
 from types import SimpleNamespace
 
 from xgap.compilers.node_match import compile_node_match
+from xgap.compilers.edge_match import compile_edge_match
 from xgap.algebra.conditions import And
 from xgap.backends.capabilities import BackendCapabilityProfile
 from xgap.compilers.rdf_encoding import RdfEdgeEncoding, RdfRowEncoding, RdfResourceTripleEncoding
 from xgap.llm.parser import parse_path_pattern_query, _parse_condition
-from xgap.pattern.ast import NodePattern
+from xgap.pattern.ast import NodePattern, EdgePattern
 from xgap.runtime.bounded_paths import compile_bounded_path_plan
 from xgap.runtime.contracts import FederatedExecutionPlan, RuntimeNode, RuntimeNodeKind as R
 from xgap.runtime.row_operations import condition_fields
@@ -78,6 +80,11 @@ def _projection_schema(projections, source):
         kind = spec.get("kind")
         if kind == "field" and set(spec) == {"kind", "field"}:
             _fields((spec["field"],), source.fields)
+        elif kind == "literal" and set(spec) == {"kind", "value"}:
+            value = spec["value"]
+            if value is not None and (type(value) not in (str, bool, int, float)
+                    or type(value) is float and not math.isfinite(value)):
+                raise SemanticProgramError("Project literal requires a finite scalar")
         elif kind == "path_length" and set(spec) == {"kind"} and source.kind is V.PATH_SET:
             pass
         elif kind in ("path_node", "path_edge") and set(spec) == {"kind", "position"} and source.kind is V.PATH_SET:
@@ -114,7 +121,7 @@ def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragm
     if any(c.predicate is None for c in op.constraints):
         raise SemanticProgramError("Opaque constraints require explicit typed predicates")
     p = dict(op.parameters)
-    allowed = ({"node", "entity_field", "properties"} if kind is S.MATCH else
+    allowed = ({"node", "edge", "source", "target", "source_field", "target_field", "entity_field", "properties"} if kind is S.MATCH else
                {"path_pattern", "anchor_field", "anchor_position"})
     if set(p) - allowed:
         raise SemanticProgramError(f"Unknown source parameters: {sorted(set(p) - allowed)}")
@@ -131,9 +138,16 @@ def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragm
             raise SemanticProgramError("Resource triple encoding currently requires Traverse sources")
         entity = p.get("entity_field", "entity")
         properties = p.get("properties", {})
-        if not isinstance(entity, str) or not entity or entity in properties:
-            raise SemanticProgramError("Match requires a distinct entity output field")
-        schema = ResultSchema(V.BINDING_SET, frozenset((entity, *properties)))
+        edge_form = "edge" in p
+        if edge_form and "node" in p or not edge_form and set(p) & {"source", "target", "source_field", "target_field"}:
+            raise SemanticProgramError("Node and edge Match parameters are mutually exclusive")
+        identities = {"entity": entity}
+        if edge_form:
+            identities.update(source=p.get("source_field", "source"), target=p.get("target_field", "target"))
+        if (any(not isinstance(f, str) or not f or f in properties for f in identities.values())
+                or len(set(identities.values())) != len(identities)):
+            raise SemanticProgramError("Match requires distinct identity output fields")
+        schema = ResultSchema(V.BINDING_SET, frozenset((*identities.values(), *properties)))
         path_predicates, row_predicates = [], []
         for predicate in predicates:
             if "op" in predicate:
@@ -143,18 +157,24 @@ def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragm
                 row_predicates.append(predicate)
             else:
                 path_predicates.append(predicate)
-        raw_node = p.get("node", {})
-        if set(raw_node) - {"label", "properties"}:
-            raise SemanticProgramError("Match node descriptors require label/properties")
-        artifact = compile_node_match(NodePattern(**raw_node), properties, backend_id=backend_id,
-            backend_mapping=backend.backend_mapping, rdf_node_classes=backend.rdf_node_classes,
-            profile=backend.profile,
-            artifact_id=f"{identifier}-match",
+        for descriptor in ("node", "edge", "source", "target"):
+            if descriptor in p and (not isinstance(p[descriptor], dict) or set(p[descriptor]) - {"label", "properties"}):
+                raise SemanticProgramError("Match descriptors require label/properties")
+        options = dict(backend_id=backend_id, backend_mapping=backend.backend_mapping,
+            profile=backend.profile, artifact_id=f"{identifier}-match",
             condition=And(*(_parse_condition(c) for c in path_predicates)) if path_predicates else None)
+        if edge_form:
+            artifact = compile_edge_match(EdgePattern(**p["edge"]), properties,
+                source=NodePattern(**p.get("source", {})), target=NodePattern(**p.get("target", {})),
+                rdf_edge_encoding=backend.rdf_edge_encoding, **options)
+        else:
+            artifact = compile_node_match(NodePattern(**p.get("node", {})), properties,
+                rdf_node_classes=backend.rdf_node_classes, **options)
         remote = add(op, "native", R.REMOTE_QUERY, parameters={"backend_id": backend_id, "artifact": artifact.to_dict()})
         output = add(op, "bindings", R.NORMALIZE_NODE_BINDINGS, (remote,), {
             "language": artifact.language, "identity_property": backend.identity_property,
             "resource_namespace": backend.resource_namespace, "entity_field": entity,
+            **({"identity_fields": identities} if edge_form else {}),
             "scalar_fields": list(properties)})
         if row_predicates:
             # Keep binding equality/null/numeric semantics after normalization.
@@ -204,7 +224,7 @@ def compile_semantic_program(program: SemanticGraphProgram, *,
     nodes, outputs, schemas = [], {}, {}
     supported_params = {
         S.TRAVERSE: {"path_pattern", "anchor_field", "anchor_position"},
-        S.MATCH: {"node", "entity_field", "properties"}, S.PROJECT: {"projections"},
+        S.MATCH: {"node", "edge", "source", "target", "source_field", "target_field", "entity_field", "properties"}, S.PROJECT: {"projections"},
         S.FILTER: {"condition"}, S.JOIN: {"left_on", "right_on", "right_prefix"},
         S.UNION: set(), S.AGGREGATE: {"group_by", "aggregations"},
         S.ORDER_LIMIT: {"order_by", "limit"}, S.ALIGN: {"field", "output_field", "mapping", "on_missing"},

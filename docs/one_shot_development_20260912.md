@@ -1,4 +1,11 @@
 > Latest: [FinBench representation tiny gate](report/finbench_rdf_tiny_20260912.md)
+
+最新金融core进展：三类gold语义程序已通过普通Ptime规划和单个选中计划，在必要拆分的
+Neo4j/Fuseki小图上答案全对（16次源查询，0模型/训练/baseline）。边属性、字段/时间比较
+已实现；金融NL尚未验收。每题3个边bind计划因旧训练缺类别而明确不可估计，下一步
+只补独立小图的该工作覆盖及Neo4j边bind边界，再接金融NL/profile。
+[实现、实际证据与边界](report/financial_binding_20260912.md)。
+
 > passes three actual Fuseki queries, with zero model/baseline/large-data calls.
 > Next is ordinary-core edge-property access and field/timestamp comparisons,
 > followed by three gold financial semantic programs; no template substitution.

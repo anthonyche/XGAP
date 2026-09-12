@@ -3,12 +3,12 @@
 ## Subsequent scope clarification: financial queries
 
 The accepted bounded-core evidence below does not prove ordinary-entry support for
-the historical FinBench templates. Later input integration identified missing
-edge-attribute access and field/timestamp comparison in that entry. The three
-same-facts RDF reference queries pass a tiny native representation gate; financial
-NL-to-semantic-program-to-one-shot execution remains required. See
-[the current evidence](finbench_rdf_tiny_20260912.md). Do not call the whole system
-or financial evaluation complete from the earlier small-profile audit.
+the historical FinBench templates. Subsequent integration added edge Match and
+field/timestamp comparisons: three financial gold programs now pass ordinary
+estimated planning and selected execution on split native Neo4j/Fuseki tiny data.
+See [the current evidence](financial_binding_20260912.md). Financial NL-only input,
+new edge-bind training coverage and real evaluation remain required. Do not call
+the whole system complete from the earlier small-profile audit.
 
 ## Original bounded-core assessment
 

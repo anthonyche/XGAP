@@ -1,5 +1,11 @@
 # XGAP Status
 
+最新金融core进展：三类gold语义程序已通过普通Ptime规划和单个选中计划，在必要拆分的
+Neo4j/Fuseki小图上答案全对（16次源查询，0模型/训练/baseline）。边属性、字段/时间比较
+已实现；金融NL尚未验收。每题3个边bind计划因旧训练缺类别而明确不可估计，下一步
+只补独立小图的该工作覆盖及Neo4j边bind边界，再接金融NL/profile。
+[实现、实际证据与边界](report/financial_binding_20260912.md)。
+
 最新XGAP输入进展：FinBench同事实离线映射已实现；8实体/16关系小图上的三类查询
 在真实Fuseki各执行一次，独立答案均exact。没有LLM、baseline、训练或大数据调用。
 这不是金融NL/分布式联邦完成；下一步补普通core的边属性访问和字段/时间比较。

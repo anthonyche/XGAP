@@ -599,11 +599,11 @@ class FederatedPlanSelector:
         if node.kind is RuntimeNodeKind.COORDINATOR_SORT_LIMIT:
             source = inputs[0]
             limit = node.parameters.get("limit")
-            if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
+            if "limit" not in node.parameters or limit is not None and (type(limit) is not int or limit <= 0):
                 raise FederatedPlanningError(
                     f"runtime node '{node.node_id}' limit must be a positive integer"
                 )
-            rows = min(source.row_count, float(limit))
+            rows = source.row_count if limit is None else min(source.row_count, float(limit))
             duration = source.row_count * snapshot.coordinator_row_ms
             return (
                 _NodeEstimate(ready_ms + duration, rows, source.row_width_bytes),

@@ -72,7 +72,8 @@ def bind_semantic_query(program: SemanticGraphProgram, resolution: Mapping[str, 
                 if source != (binding.kind is H.SOURCE):
                     raise SemanticProgramError("Source holes bind logical sources only")
                 if binding.kind is H.ENTITY:
-                    descriptor = (kind is S.MATCH and path == ("parameters", "node", "properties", binding.identity_property)) or (
+                    descriptor = (kind is S.MATCH and len(path) == 4 and path[0] == "parameters"
+                        and path[1] in ("node", "source", "target") and path[2:] == ("properties", binding.identity_property)) or (
                         kind is S.TRAVERSE and len(path) == 5 and path[:2] == ("parameters", "path_pattern")
                         and path[2] in ("source", "target") and path[3:] == ("properties", binding.identity_property))
                     identity_predicate = (path[-1:] == ("value",) and isinstance(parent, Mapping)
