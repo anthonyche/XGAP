@@ -48,3 +48,22 @@ An explicit v2 syntax option now adds generic aggregation/order/identity/source
 rules. It leaves v1 as the default, changes no runtime semantics, and has new wire
 budget checks only. The next actual v2 boundary must preserve the original failure
 and exposure; no runtime repair or automatic version fallback is introduced.
+
+The separately executed v2 request at22da7ef also failed local admission: a row
+condition used conditions rather than args. It corrected several earlier shapes
+but still had entity-hole placement/property-map errors. Preserve the full v2
+response and its exposure. It made one model call and zero final source queries.
+
+Next integration change is explicit syntax v3: retain the compatible envelope
+wire, and append the complete local typed schema generated from
+candidate_interpretation_schema. This removes the missing-contract boundary
+instead of relaxing the parser or repairing a response. Generic examples explain
+row-vs-path conditions, alias-to-property direction and entity identity predicates.
+No gold query/source assignment is supplied. Full typed-wire HTTP500 and JSON-object
+empty-response historical failures remain; neither old request is retried.
+Two new checks pass: unchanged v2 rejection and exact generated local schema with
+unchanged envelope/budgets for both modes. Authorize one separate v3 development
+boundary under the existing integration scope, preserving every prior failure.
+Do not claim semantic accuracy from syntactic admission or run further versions
+automatically after this action. The overall paper goal and evaluation population
+remain unchanged.

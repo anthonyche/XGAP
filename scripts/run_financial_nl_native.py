@@ -29,7 +29,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-root', required=True, type=Path)
     parser.add_argument('--read-key', action='store_true', help='Read model credential with terminal echo disabled; never store it')
-    parser.add_argument('--syntax-profile', choices=('v1','v2'), default='v1')
+    parser.add_argument('--syntax-profile', choices=('v1','v2','v3'), default='v1')
     parser.add_argument('--java', default='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home/bin/java')
     parser.add_argument('--runtime-root', type=Path, default=Path('/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime'))
     args = parser.parse_args()

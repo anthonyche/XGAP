@@ -15,13 +15,22 @@ def load_financial_provider(*, mode="performance", disable_thinking=False, synta
     from xgap.experiments.hashing import content_hash
     from xgap.experiments.one_shot_toy import load_one_shot_toy_provider
     from xgap.llm.candidate_interpretation import OpenAICompatibleCandidateInterpretationProvider
-    if syntax_profile not in ("v1", "v2"):
+    if syntax_profile not in ("v1", "v2", "v3"):
         raise ValueError("Unsupported financial syntax profile")
     base = load_one_shot_toy_provider(mode=mode, wire_profile="envelope-schema-v1",
         disable_thinking=disable_thinking)
     appendix = (Path(__file__).resolve().parents[3]/"prompts/interpretation/financial_binding_v1.txt").read_text()
-    if syntax_profile == "v2":
+    if syntax_profile in ("v2", "v3"):
         appendix += "\n" + (Path(__file__).resolve().parents[3]/"prompts/interpretation/financial_binding_v2.txt").read_text()
+    if syntax_profile == "v3":
+        import json
+        from xgap.llm.candidate_interpretation import candidate_interpretation_schema
+        appendix += "\n" + (Path(__file__).resolve().parents[3]/"prompts/interpretation/financial_binding_v3.txt").read_text()
+        # Generated from the exact runtime admission contract, never a manually
+        # maintained subset. Envelope wire compatibility remains unchanged.
+        appendix += "\nBEGIN LOCAL RESPONSE SPECIFICATION\n" + json.dumps(
+            candidate_interpretation_schema(base.config.candidate_cap), sort_keys=True,
+            ensure_ascii=True, allow_nan=False, separators=(",", ":")) + "\nEND LOCAL RESPONSE SPECIFICATION\n"
     prompt = base.system_prompt + "\n" + appendix
     config = replace(base.config, provider_id=base.provider_id + ":financial-binding-" + syntax_profile, prompt_hash=content_hash(prompt))
     return OpenAICompatibleCandidateInterpretationProvider(config, prompt, base.token_guard, base.transport)
