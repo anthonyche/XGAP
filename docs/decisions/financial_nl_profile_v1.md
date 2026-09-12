@@ -62,8 +62,13 @@ row-vs-path conditions, alias-to-property direction and entity identity predicat
 No gold query/source assignment is supplied. Full typed-wire HTTP500 and JSON-object
 empty-response historical failures remain; neither old request is retried.
 Two new checks pass: unchanged v2 rejection and exact generated local schema with
-unchanged envelope/budgets for both modes. Authorize one separate v3 development
+unchanged envelope/budgets for both modes. The next gate is one separate v3 development
 boundary under the existing integration scope, preserving every prior failure.
 Do not claim semantic accuracy from syntactic admission or run further versions
 automatically after this action. The overall paper goal and evaluation population
 remain unchanged.
+
+V3 has now run: parameter admission and catalog entity binding passed, but source
+compilation rejected colliding identity/property output columns. No final query.
+The next step is the [compact intent lowerer](compact_financial_interpretation_v1.md),
+not more live prompt tuning. All three original responses remain preserved.

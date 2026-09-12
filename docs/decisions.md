@@ -1,3 +1,12 @@
+## Move deterministic dataflow construction out of model generation
+
+Financial v2 failed parameter admission; v3 reached catalog grounding but source compilation
+rejected identity/property output alias collision. All raw failures and costs remain in
+[the financial report](report/financial_nl_20260912.md). Next implement the
+[compact graph-intent compiler](decisions/compact_financial_interpretation_v1.md) into the same
+semantic/one-shot core; it is a plan, not existing functionality. No more per-question live
+prompt tuning, estimator training or baseline repair. Keep both modes and Ptime one-plan behavior.
+
 ## Financial NL profile and preserved first Interpretation failure
 
 The offline financial profile now freezes source schema,45 catalog entries, both modes and the

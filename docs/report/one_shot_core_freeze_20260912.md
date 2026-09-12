@@ -11,9 +11,11 @@ native endpoint-bind plans now pass, with old28 observations reused and a new
 32-sample model frozen; all six candidates per financial family are estimable.
 [Coverage evidence](edge_bind_training_20260912.md) does not establish ranking or
 speedup. Financial NL-only profile publication is now implemented; the first real
-request failed Interpretation before grounding/execution. Its failure is preserved,
-and an explicit v2 syntax prompt has offline checks but no native model acceptance
-yet. [Financial NL evidence](financial_nl_20260912.md). Financial NL success and
+request failed Interpretation before grounding/execution. V2 also failed parameter
+admission; v3 passed syntax and entity grounding but failed source compilation on
+identity/property alias collision. All failures are preserved. Next implement a
+compact intent lowerer to derive the existing DAG deterministically; it is not
+implemented yet. [Financial NL evidence](financial_nl_20260912.md). Financial NL success and
 real evaluation remain required. Do not call the whole system complete from the
 earlier small-profile audit.
 

@@ -1,4 +1,10 @@
-# 金融 NL 输入已接入；首个真实请求在 Interpretation 阶段失败
+# 金融 NL 输入已接入；三次开发调用均未得到最终答案
+
+最新：v2仍因row-condition字段错误未准入；v3通过参数准入和Alice catalog绑定，随后
+因`m_company`把identity与business属性输出设为同一列而无法编译。静态查看还发现未
+读取列、额外公司blocked条件及源分配错误。三份响应均保留，不能称金融NL成功。
+下一步改为[紧凑图意图的确定性编译](../decisions/compact_financial_interpretation_v1.md)，
+不继续逐题堆提示词。该编译尚未实现，下文首轮证据仍保留。
 
 本轮完成了金融小图的可复用 source schema、45项冻结 catalog、双模式 profile，以及
 普通逐请求运行/评分接口接入。一次真实 Qwen 请求返回了16个operator的程序，但它未
@@ -62,3 +68,36 @@ source；身份列与business ID同名冲突；Alice没有entity hole；公司�
 不自动fallback、不用gold替代响应、不做多候选实际试跑或估计器再训练。新prompt目前
 只有本地接口证据，尚无实际模型成功证据。金融NL验收后再冻结真实样本、独立reference、
 金额精度和运行预算；Sep14 17:00核心与Sep18真实结果目标不变。
+
+## 后续实际边界：v2与完整契约v3
+
+| 配置/代码 | 实际终态 | 模型input/output tokens | 在线core ms | 最终源查询 |
+|---|---|---:|---:|---:|
+| v1 | 参数拒绝：聚合写进Project | 3212 / 1970 | 10308.143 | 0 |
+| v2，22da7ef | 参数拒绝：row Filter的conditions应为args | 4065 / 1869 | 9745.346 | 0 |
+| v3，74c4db6 | 参数准入、1次catalog命中；source编译拒绝身份列冲突 | 10131 / 1997 | 10689.965 | 0 |
+
+这是同一曝光开发题的三种分别固定配置，每次1模型调用，无运行期自动fallback/retry。
+不是三个独立测试题或prompt准确率比较。每份失败EM/F1均0，全部成本保留。
+v2已使用edge Match与独立Aggregate/OrderLimit，但条件键错误，且entity hole放在
+personName、部分属性映射写反。v3从同一代码自动生成完整local参数schema附入prompt，
+wire仍为原envelope；未重试旧typed-wire HTTP500或JSON-object空响应请求。
+
+v3实际成功绑定Alice→person_31，明确authoritative=false。直接source编译的首个
+错误是`Match requires distinct identity output fields`。a_isBlocked/c_isBlocked与
+c_id/a_id未被读取、公司多加blocked条件等来自进一步静态查看，不是额外执行失败。
+它没有实际发出control查询，也未选择或执行任何最终计划。
+
+[v2收据](/Users/anthonyche/xgap-data/financial-nl-native-20260912-v2/receipt.json)；
+[v3收据](/Users/anthonyche/xgap-data/financial-nl-native-20260912-v3/receipt.json)；
+[v3静态诊断](/Users/anthonyche/xgap-data/financial-nl-native-20260912-v3/static_diagnosis.json)。
+v2原录制SHA为`c9c99903fd796709daf0fa4a9871674fbc7b67d246d8f4dfbee5f1a336254566`，
+v3为`5fa9d9e8e351afc3d6aeb67ee1ae54fefcc46078bc0c194ab6ec2ea2e79df550`。
+v2/v3离线准备38.683/43.375ms，启动7295.127/7291.516ms，装载977.129/963.976ms。
+各自13Neo装载+1RDF装载、health单列；0新训练/fit/baseline/probe。
+v2 Neo38055/Fuseki38100及v3 Neo38814/Fuseki38855均terminal，无SIGKILL。
+
+两项新增检查首次通过0.21s：v2原失败仍被拒绝；v3生成schema与local契约完全一致，
+两模式envelope/预算保持。未重复旧成功检查。结果说明结构契约能让该次响应推进到
+grounding，但不能保证字段数据流或NL含义。下一步让LLM表达有界图模式，编译器负责
+中间列、属性读取和身份Join；保留SGP入口、现有operator和所有失败，不修补原响应。
