@@ -1,3 +1,12 @@
+## Financial NL profile and preserved first Interpretation failure
+
+The offline financial profile now freezes source schema,45 catalog entries, both modes and the
+existing32-sample deployment. One actual NL request failed parameter admission, with1 model call
+and0 final queries. Four new checks pass; an explicit v2 generic syntax option is implemented but
+its actual model boundary remains next. Do not replace the original response with a gold program,
+retrain, optimize baselines or repeat old gates. [Decision](decisions/financial_nl_profile_v1.md);
+[actual costs, static diagnosis and limits](report/financial_nl_20260912.md).
+
 ## FinBench representation and next ordinary-core gap
 
 ## Independent edge-bind coverage with per-sample snapshots

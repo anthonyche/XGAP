@@ -1,0 +1,7 @@
+{
+  "schema_version": "xgap-one-shot-evaluation-request-v1",
+  "question_id": "FINANCIAL-NL-01",
+  "question": "Find transfers sent directly from accounts owned by Alice to blocked accounts owned by companies, between 2020-01-01 00:00:00.000 and 2020-01-04 00:00:00.000 inclusive. Sum the transfer amounts for each destination account and its owning company, counting parallel transfers separately. Return all rows with company_id and account_id as their business IDs and total_amount as the sum. Sort by total_amount descending, then company_id and account_id ascending.",
+  "population": "financial-tiny-integration",
+  "exposure": "development_exposed: same tiny facts and task family as deterministic gate; no held-out accuracy claim"
+}

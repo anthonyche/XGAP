@@ -10,8 +10,12 @@ See [the deterministic evidence](financial_binding_20260912.md). Four independen
 native endpoint-bind plans now pass, with old28 observations reused and a new
 32-sample model frozen; all six candidates per financial family are estimable.
 [Coverage evidence](edge_bind_training_20260912.md) does not establish ranking or
-speedup. Financial NL-only input and real evaluation remain required. Do not call
-the whole system complete from the earlier small-profile audit.
+speedup. Financial NL-only profile publication is now implemented; the first real
+request failed Interpretation before grounding/execution. Its failure is preserved,
+and an explicit v2 syntax prompt has offline checks but no native model acceptance
+yet. [Financial NL evidence](financial_nl_20260912.md). Financial NL success and
+real evaluation remain required. Do not call the whole system complete from the
+earlier small-profile audit.
 
 ## Original bounded-core assessment
 

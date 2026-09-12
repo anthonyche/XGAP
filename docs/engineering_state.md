@@ -1,11 +1,13 @@
 # XGAP current engineering loop
 
-当前金融core：三类gold程序的普通确定性双库链路已通过；新边bind的4个独立小图
-训练计划也已全部实际执行正确（8次源查询）。旧28观测只从文件复用，按各自snapshot
-fit一次并另存新32样本模型，原模型不变。F1/F2/F3各6/6合法计划现在都可估计，未重跑
-金融查询。下一步冻结金融source schema/catalog/profile并做一次普通NL-only请求。
-[新模型及证据](report/edge_bind_training_20260912.md)；[金融确定性证据](report/financial_binding_20260912.md)。
-语义/类别覆盖不代表排名或提速优势。toy-first、baseline不优化与Sep14/Sep18目标保持。
+当前金融NL：schema、45项冻结catalog和双模式profile已实现。首个普通NL真实请求
+在Interpretation阶段失败：非法聚合投影，1模型调用3212/1970 tokens，0最终源查询。
+原响应完整保留；静态诊断还发现属性读取/源/身份和排序问题。新增显式v2通用语法指导，
+4项新风险检查通过；v2尚未实际调用。下一步用v2完成一次必要真实NL边界，不自动retry。
+[本轮实现、失败及成本](report/financial_nl_20260912.md)。三类确定性双库程序和4个端点bind
+训练成功仍接受；32样本模型保持冻结，各金融family的6个计划均可估计，不再训练或重跑。
+[模型覆盖](report/edge_bind_training_20260912.md)。这些不是排名/提速优势；baseline仅如实运行。
+Sep14 17:00核心、Sep18真实结果目标保持，整体Goal仍active。
 
 前序输入证据：FinBench同事实离线映射已实现；8实体/16关系小图上的三类查询
 在真实Fuseki各执行一次，独立答案均exact。该轮没有LLM、baseline、训练或大数据调用。

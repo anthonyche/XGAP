@@ -8,18 +8,22 @@ from xgap.semantic.program import SemanticGraphProgram
 from xgap.semantic.parameter_contract import validate_program_parameters
 
 
-def load_financial_provider(*, mode="performance", disable_thinking=False):
+def load_financial_provider(*, mode="performance", disable_thinking=False, syntax_profile="v1"):
     """Ordinary provider plus generic syntax only; no gold program dependency."""
     from dataclasses import replace
     from pathlib import Path
     from xgap.experiments.hashing import content_hash
     from xgap.experiments.one_shot_toy import load_one_shot_toy_provider
     from xgap.llm.candidate_interpretation import OpenAICompatibleCandidateInterpretationProvider
+    if syntax_profile not in ("v1", "v2"):
+        raise ValueError("Unsupported financial syntax profile")
     base = load_one_shot_toy_provider(mode=mode, wire_profile="envelope-schema-v1",
         disable_thinking=disable_thinking)
     appendix = (Path(__file__).resolve().parents[3]/"prompts/interpretation/financial_binding_v1.txt").read_text()
+    if syntax_profile == "v2":
+        appendix += "\n" + (Path(__file__).resolve().parents[3]/"prompts/interpretation/financial_binding_v2.txt").read_text()
     prompt = base.system_prompt + "\n" + appendix
-    config = replace(base.config, provider_id=base.provider_id + ":financial-binding-v1", prompt_hash=content_hash(prompt))
+    config = replace(base.config, provider_id=base.provider_id + ":financial-binding-" + syntax_profile, prompt_hash=content_hash(prompt))
     return OpenAICompatibleCandidateInterpretationProvider(config, prompt, base.token_guard, base.transport)
 
 
