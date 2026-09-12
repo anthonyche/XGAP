@@ -17,6 +17,13 @@ The [one-shot contract](decisions/one_shot_modes_v1.md) governs this work.
 
 ## Current milestone / ownership
 
+V2 continuation accepted at a2c1908: independent 28-plan tiny collection, frozen
+nonnegative model and one exact excluded cross-backend deterministic request.
+Current next boundary is split-source data plus unaided NL-only interpretation;
+reuse accepted evidence and do not repeat its training/checks. See
+[the result](report/work_estimator_native_20260912.md).
+
+
 At 41a3cca the first guided real B01 precision answer is accepted: one model call,
 one selected plan, two Fuseki calls, independent gold exact. Current-query probes
 and new training/fit are zero. This succeeds ahead of the ordinary mechanical

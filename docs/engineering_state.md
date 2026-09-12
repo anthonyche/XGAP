@@ -1,17 +1,29 @@
 # XGAP current engineering loop
 
-## Current: v2 workload estimator prepared for one tiny native collection
+## Current: v2 estimator and excluded cross-backend deterministic request accepted
 
-The backend/workload features and fixed-sweep nonnegative fitter are implemented.
-Five new-risk cases passed once (0.54 s); the owned training CLI passed its first
-zero-call preflight. The 28-plan manifest is frozen with B01–B05 and WORK-HOLDOUT-01
-excluded. Next run this new collection once, then fit/freeze and execute the one
-excluded deterministic request through the ordinary performance entry. No LLM
-or candidate-probing calls, no rerun of the old four training plans or B01 gate.
-See [contract](decisions/runtime_work_estimator_v2.md). Workload proxies are not
-selectivity/cardinality estimates; actual calibration is still pending.
+Checkpoint a2c1908 completed the declared 28-plan independent tiny collection
+(46 backend calls, two separate warmups), offline nonnegative fit/freeze, and one
+excluded ordinary performance request. The answer is independently exact, with
+one selected coordinator plan, Path on Neo4j and Match on Fuseki, two final calls,
+zero LLM/observation/online-fit calls. Predicted execution 9.524 ms versus actual
+18.695 ms is one within-family excluded point, not a ranking or speedup result.
+Five new checks passed; all 434 input fingerprints and the previous model match.
+Owned services stopped. [Evidence](report/work_estimator_native_20260912.md).
 
-## Current milestone: first guided external one-shot answer accepted
+Do not repeat these 28 training executions, five checks or the accepted request.
+Reuse the new model only with its admitted source/snapshot identities. Work proxies
+remain coarse; missing selectivity and category coverage are explicit. Historical
+v1 and B01 evidence stay intact. V2 model path:
+`/Users/anthonyche/xgap-data/work-estimator-v2-native-20260912-a2c1908/frozen_work_estimator.json`.
+
+Next core gate: a tiny split-source fixture requiring contributions from both
+Neo4j and Fuseki, plus an ordinary NL-only request without predeclared operator
+IDs/structured constraints. Real cross-backend mechanics have now passed, but
+current data are replicas and this gate's semantic input was declared. Keep those
+limits visible. No new comparative/big-data campaigns before core acceptance.
+
+## Earlier milestone: first guided external one-shot answer accepted
 
 The code is committed through 41a3cca. Both modes share the controlled ordinary
 entry; B01 precision now completes one actual external request and one selected
@@ -20,7 +32,7 @@ both use Fuseki. No current-query observations, training or automatic retry were
 used. Retain this accepted slice and all prior failed attempts; do not rerun the
 64 accepted targeted checks. [Evidence](report/one_shot_native_20260912.md).
 
-The next bounded tasks are, in order:
+The earlier bounded task list was (superseded by the latest checkpoint above):
 
 1. Represent operator/backend/workload associations in estimator features, then add
    independent tiny training coverage for physical strategies, placements and runtime

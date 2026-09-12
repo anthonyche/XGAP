@@ -8,6 +8,11 @@ categories are explicit, and out-of-range numeric predictions retain uncertainty
 The old log-ridge model and records keep their identity. This repairs representation
 and numerical behavior; it is not evidence of useful ranking or speedup.
 
+The first 28-plan independent tiny collection and excluded ordinary cross-backend
+request now pass with one selected plan and exact answer; [actual evidence](report/work_estimator_native_20260912.md).
+Its declared semantic input and replicated data scope remain distinct from the
+pending split-source / NL-only gate.
+
 # XGAP Design Decisions
 
 ## E2: freeze within-query balance and retain the negative paid-cost baseline

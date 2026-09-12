@@ -109,10 +109,14 @@ The existing expansion<=4096 and64-operator profile precedes lowering. Native
 query execution and LLM inference are bounded external actions, not claimed to
 have the planner's Ptime complexity.
 
-Frozen ridge regression currently uses typed DAG/parallelism/dependency/source
-size features. Training is real fitting, but first integration checks use analytic
-toy labels; arbitrary predicate selectivity and real transfer/generalization are
-not established. Source ID and snapshot version must match the model. Precision
+The initial frozen ridge model used typed DAG/parallelism/dependency/source size
+features and analytic integration labels; that historical version stays readable.
+The subsequent [workload estimator v2](runtime_work_estimator_v2.md) associates
+operators/work with backends and fits nonnegative costs offline. Its 28-plan tiny
+native collection and excluded ordinary cross-backend request are now verified;
+see [evidence](../report/work_estimator_native_20260912.md). Work proxies do not
+estimate arbitrary predicate selectivity, and neither version has a calibrated
+generalization guarantee. Source ID and snapshot version must match the model. Precision
 uses K3/catalog64/ontology fallback/quality_penalty1000ms; performance uses K1/
 catalog8/no ontology/quality_penalty0ms. Unknown quality staysnull with a declared
 0.5 ranking fallback. These are initial settings, not empirically optimized ones.

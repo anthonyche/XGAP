@@ -1,13 +1,18 @@
 # XGAP Status
 
-## New work: backend-aware nonnegative estimator ready for native verification
+## Latest: workload estimator and real cross-backend deterministic chain accepted
 
-V2 now distinguishes swapped Path/Match backend assignments and cannot decrease
-predicted cost under componentwise increased represented work. Unseen categories
-are unavailable; numeric extrapolation remains uncalibrated and visible. Old v1
-models remain unchanged/loadable. Five new checks and zero-call native preflight
-passed. The separate 28-plan tiny collection and one excluded deterministic
-request are prepared, not yet measured. [Contract](decisions/runtime_work_estimator_v2.md).
+V2 backend/workload features, bounded nonnegative offline fitting and versioned
+loading are implemented. Five new-risk checks passed. One 28-plan tiny collection
+completed with 46 backend calls, followed by one excluded ordinary performance
+request: exact answer, one selected plan, one Neo4j and one Fuseki query, no LLM,
+current-query observations or online fit. All 434 inputs and the old model match;
+owned services stopped. [Full evidence](report/work_estimator_native_20260912.md).
+
+The new selected estimate was 9.524 ms; scheduler runtime was 18.695 ms. This is
+one within-family excluded point, not useful-ranking or efficiency evidence.
+Next: required split-source data and unaided NL-only input. No accepted gate is
+rerun; the full research/evaluation goal remains active.
 
 ## Current: first guided real one-shot answer accepted
 

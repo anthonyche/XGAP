@@ -1,12 +1,12 @@
 # XGAP Roadmap
 
-## Active continuation: workload estimator v2
+## Workload estimator v2 and first excluded cross-backend request accepted
 
-The approved one-shot core now advances from the first guided answer to backend/
-workload-aware frozen estimates. V2 code and five new-risk checks are accepted;
-one 28-plan independent tiny collection plus one excluded ordinary deterministic
-request is next. No new comparative evaluation or big-data development.
-See [contract](decisions/runtime_work_estimator_v2.md) and engineering_state.md.
+The five new-risk checks and one 28-plan independent tiny collection passed.
+A frozen model selected one cross-backend plan for an excluded deterministic
+request; its independent answer is exact. Source data remain replicated and no
+live interpretation was tested here. Next is split-source data plus NL-only input.
+[Evidence](report/work_estimator_native_20260912.md). No comparative campaign yet.
 
 ## First slice delivered; remaining core gates
 
