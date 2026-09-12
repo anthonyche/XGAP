@@ -12,6 +12,7 @@ import time
 from xgap.agent.question import run_question
 from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned, native_clients
 from xgap.experiments.one_shot_toy import _DurableRecordingProvider
+from xgap.experiments.row_normalization import normalize_rows
 from xgap.infrastructure.runtime import QueryArtifact, ExecutionReport
 from xgap.semantic.interpretation_replay import ReplayInterpretationProvider
 
@@ -204,18 +205,31 @@ def evaluate_record(receipt_path, *, receipt_sha256, reference_path, reference_s
             or not isinstance(reference.get("rows"), list)):
         raise ValueError("Reference identity/normalized-row contract mismatch")
     success = bool(receipt["success"] and core and core["success"])
-    expected = [_canonical(row) for row in reference["rows"]]
-    actual = [_canonical(row) for row in core["answer_rows"]] if success else []
+    normalization = reference.get('normalization')
+    expected_rows = normalize_rows(reference['rows'], normalization) if normalization is not None else reference['rows']
+    expected = [_canonical(row) for row in expected_rows]
+    comparison_error = None
+    try:
+        actual_rows = core['answer_rows'] if success else []
+        if normalization is not None: actual_rows = normalize_rows(actual_rows, normalization)
+        actual = [_canonical(row) for row in actual_rows]
+    except (ValueError, TypeError) as error:
+        if normalization is None: raise  # Preserve the existing legacy contract.
+        comparison_error, actual = str(error), []
     bag_a, bag_e = Counter(actual), Counter(expected)
     overlap = sum((bag_a & bag_e).values())
-    exact = success and (actual==expected if reference["ordered"] else bag_a==bag_e)
+    comparable = success and comparison_error is None
+    exact = comparable and (actual==expected if reference["ordered"] else bag_a==bag_e)
     score = {"schema_version":"xgap-one-shot-row-evaluation-v1", "dataset":receipt["dataset"],
         "question_id":receipt["question_id"],"mode":receipt["mode"],"execution_kind":receipt["execution_kind"],
         "population":receipt["population"],"exposure":receipt["exposure"],"execution_success":success,
         "answer_em":float(exact),"answer_row_multiset_f1":(2*overlap/(len(actual)+len(expected))
-            if actual or expected else 1.0) if success else 0.0,
+            if actual or expected else 1.0) if comparable else 0.0,
         "status":receipt["status"],"receipt_sha256":receipt_sha256,"reference_sha256":reference_sha256,
         "equivalence_scope":"explicitly normalized JSON rows; multiset F1, order-aware EM when declared",
         "paper_result":False}
+    if normalization is not None:
+        score.update(normalization=normalization, comparison_error=comparison_error,
+            equivalence_scope='declared value normalization; original row order and multiplicity retained')
     write_once(output, score)
     return score
