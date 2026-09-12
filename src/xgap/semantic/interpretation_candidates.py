@@ -137,6 +137,8 @@ def interpret_candidate_question(request, provider, *, candidate_cap):
             report.update(status="interpretation_invalid", error=str(error))
     if report.get("provenance", {}).get("usage_reported") is False:
         report["usage_unavailable"] = True
+    if report.get("provenance", {}).get("external_call_count_complete") is False:
+        report["external_call_count_complete"] = False
     report["token_usage_complete"] = not report.get("usage_unavailable", False)
     report["elapsed_ms"] = (time.perf_counter() - started) * 1000
     return report

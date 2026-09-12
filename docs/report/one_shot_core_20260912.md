@@ -66,3 +66,12 @@ scope, then freeze the common evaluation interface and discuss external SOTA and
 The old FinBench paid-selection negative result, LINK3/5, all original populations
 and remote3804210 are unchanged. TheSep14 17:00 core andSep18 real-evaluation targets
 remain in force; no claim that the entire system or paper experiments are done.
+
+## Subsequent preparation checkpoint
+
+The endpoint one-shot helper and owned tiny native driver are prepared after
+checkpoint54144e9.5 new harness-risk cases pass (4factory/recording cases plus
+1unknown-use/failed-persistence case); no old gate rerun. The native driver's
+first default preflight passed with0model/backend/process/fit calls. Four declared
+independent Match training plans will supply actual elapsed labels only on
+explicit execution; no real training/model/native result exists at this checkpoint.

@@ -1,5 +1,25 @@
 # XGAP Status
 
+## New-profile external gate is prepared (not yet executed)
+
+Checkpoint54144e9 contains the accepted first ordinary slice. The mode-matched
+external provider, one-question durable recording/replay and endpoint CLI are
+now prepared;5 additional new harness-risk cases pass. Default operation is
+zero-call preflight. Original B01/B04 request text is separate from post-seal
+gold access; execution success and answer exactness are separate fields.
+
+The owned tiny native gate also passes its first zero-call preflight: four
+independent generic Match plans compile; source snapshot/catalog/request budget
+match. It reuses cached Neo4j5.26.30/Fuseki5.6.0 and Java21. With explicit execution
+it will measure those four training plans once, freeze/reload the model, invoke
+one B01 model request and execute at most one final selected plan. Preparation,
+training and online/post-return costs are separate. This will be a new-profile
+integration gate, not a benchmark campaign or estimator-quality experiment.
+
+No native/model action has yet occurred for these new harnesses. Do not repeat
+accepted module checks or preflight; next review/freeze code and perform this
+single new external gate, preserving terminal failures and stopping owned services.
+
 ## Current checkpoint: first ordinary one-shot slice accepted on tiny data
 
 The new precision/performance entry now connects top-K, frozen grounding, real
