@@ -46,3 +46,10 @@ generic source.properties identity-hole syntax and source-schema awareness; it
 does not change structural admission or auto-repair responses. Its failure replay
 and separately authored syntax checks pass. This same tiny question is now
 development-exposed; preserve the failed attempt before any new versioned run.
+
+The6833e19 request now passes with one real model call and one exact final plan,
+using both required stores. All six new checks and455 input fingerprints pass;
+owned processes are stopped. See [actual evidence](../report/one_shot_split_20260912.md).
+This gate is accepted and should not be rerun. Core-evidence/evaluation-interface
+freeze is next; actual ranking/regret remains unmeasured and does not justify a
+new calibration campaign before the approved experiment-plan discussion.

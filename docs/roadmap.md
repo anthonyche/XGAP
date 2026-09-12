@@ -1,5 +1,12 @@
 # XGAP Roadmap
 
+Current gate accepted: the versioned ordinary NL prompt completes a real required
+Neo4j/Fuseki answer with one model call and one final plan, at6833e19. Prior failure
+remains; six new checks and455 unchanged input fingerprints are recorded. Next
+freeze bounded-core evidence and a dataset-independent evaluation interface around
+the ordinary API, then discuss16–20figures/SOTA. No extra fitting or repeated
+native successes. [Evidence](report/one_shot_split_20260912.md).
+
 The first actual split request failed Interpretation before grounding/execution.
 The unmodified response is preserved, and two focused checks cover a new explicit
 generic identity-syntax prompt. Next is its actual tiny request; no model retry

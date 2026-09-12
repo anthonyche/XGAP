@@ -1,5 +1,19 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 当前进展：真实拆分数据的普通NL-only闭环已验收
+
+6833e19以原始自然语言和可复用source schema完成1次模型解释、4次catalog lookup、
+2个合法计划的估计选择和1次最终执行。Neo4j提供人员属性、Fuseki提供关系，分别查询
+1次，得到独立预期的Mira/r2。没有预置operator IDs、结构化约束/output或gold程序，
+零当前题probe、零训练/fit。6项新增局部检查通过，455份输入与原模型不变，服务已停。
+首次实际解释失败保留；此题已development-exposed，不作为独立准确率或提速结论。
+[实际证据](report/one_shot_split_20260912.md)。这条核心链已通过，禁止再次重跑它。
+
+下一步核对有界核心的验收清单，并把普通入口的冻结数据集配置、请求与结果记录接口
+统一到评价协议，摆脱当前tiny专用运行封装；只补实际缺口与新风险replay。之后讨论
+16–20图和外部SOTA，不提前开展新比较/消融/规模实验。9月14日17:00核心验收与
+9月18日真实实验目标不变；完整研究Goal仍active。
+
 ## 用户补充：估计器以选对计划为目标，不要求精确回归时间
 
 cost estimator可以预测相对快慢、偏好或可比较的排序分数；准确预测毫秒值不是核心
@@ -9,7 +23,7 @@ cost estimator可以预测相对快慢、偏好或可比较的排序分数；准
 重复训练或重跑已通过门禁。纯排序输出接入时需显式声明单位、跨解释可比性和质量
 权衡规则，不把无量纲分数当毫秒，也不沿用未经满足假设的2η时间regret界。
 见[更新后的选择契约](decisions/one_shot_modes_v1.md#selection-oriented-estimation--user-update)。
-下一步仍是真正拆分的小图与普通NL-only闭环，日期和一次执行约束不变。
+拆分小图与普通NL-only闭环现已通过；日期和一次执行约束不变。
 
 ## 最新推进：估计器v2与真实跨库确定性链已验收
 

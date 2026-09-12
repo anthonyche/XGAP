@@ -1,5 +1,9 @@
 # Necessary split-source NL-only integration
 
+Latest outcome: the explicit identity-syntax profile at6833e19 passes the actual
+NL-only gate. The first failure below is retained. This is a development-exposed
+vertical slice, not an accuracy estimate, ranking result or paper benchmark.
+
 The new gate uses four Neo4j-only profiles and three Fuseki-only relationships
 plus identity stubs. Its request contains original NL and reusable source schemas,
 with no prepared operator IDs, hard-constraint structure, output contract or gold
@@ -46,3 +50,53 @@ not a repaired model result. A new actual request under this version remains the
 next gate; do not rerun the four accepted checks or collect more estimator labels.
 Any later success on this same question is development-exposed and does not erase
 the first failure or constitute independent model-accuracy evidence.
+
+## Actual identity-syntax request: 6833e19
+
+The original NL and frozen source schemas produced one actual interpretation,
+four catalog lookups and two estimated legal plans. The selected coordinator plan
+queried Fuseki once for two outgoing relationships and Neo4j once for four person
+profiles. Age filtering and the identity join returned only Mira (`split/c`) and
+edge `split/r2`, exactly matching the independent expected rows read after sealing.
+The predicted Nora identity stayed non-authoritative. All explicit runtime
+source/snapshot checks passed with the same deployed weights; no response repair,
+candidate probing, training, fitting or alternate execution occurred.
+
+| Measurement | Observed value |
+|---|---:|
+| Model calls / input / output tokens | 1 / 2500 / 815 |
+| Catalog lookups | 4 |
+| Legal estimated plans / executed final plans | 2 / 1 |
+| Neo4j / Fuseki query calls | 1 / 1 |
+| Planning | 25.274 ms |
+| Selected scheduler execution | 171.800 ms |
+| End-to-end ordinary entry | 4524.522 ms |
+| Logical exchange bytes | 748; not wire bytes |
+| Separate service setup / source load | 7411.980 / 190.734 ms |
+| Offline deployment preparation and reload | 4.917 ms; zero fitting |
+
+The model ranked coordinator ahead of bind (scores currently expressed as12.880
+and24.195ms). Only coordinator was executed, so actual ordering and selection
+regret are unknown. One numeric work feature is outside the training range;
+deployment transfer is explicitly uncalibrated. Accurate millisecond regression
+is not a core requirement, and this observation triggers no extra fitting or
+candidate timing. Later independent offline evaluation will measure selection.
+
+All455 input fingerprints, model parent bytes and the result seal were audited
+with no errors. Owned Neo4j13503 and Fuseki13537 stopped without SIGKILL; an
+independent process check found neither present. No service/request remains live.
+The two real development attempts total2 model calls,4661 input/1616 output tokens,
+one Interpretation failure and one exact answer; do not present this sequence as
+two independent questions or silently drop the first attempt.
+
+[Successful-gate evidence](../../experiments/artifacts/one_shot_split_native_20260912.json).
+Full artifacts: `/Users/anthonyche/xgap-data/one-shot-split-native-20260912-6833e19`.
+The generic prompt hash is
+`d7891fc7cbccadcc480976f8b3518e97ed2407eca723ecdd839b267ba938d385`.
+
+The necessary split-source ordinary NL chain is now accepted. Next reconcile the
+bounded core requirements with existing evidence and freeze a dataset-independent
+evaluation input/output contract around the common entry. The current real runner
+is still a tiny-specific harness; this limitation is separate from the generic
+`run_question` API. Use new-risk checks/replay only, not another successful native
+run. Discuss the16–20-figure protocol and external SOTA before new campaigns.

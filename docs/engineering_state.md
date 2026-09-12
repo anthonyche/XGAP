@@ -1,13 +1,33 @@
 # XGAP current engineering loop
 
+## Current: required split-source NL-only answer accepted at6833e19
+
+The original NL plus frozen source schema produced one real model interpretation,
+four catalog lookups and two estimated physical candidates. One selected coordinator
+plan queried both required sources: Neo4j profiles and Fuseki relations. The single
+Mira/r2 row is independently exact. One model call2500/815 tokens, two final calls,
+no current-query probes/training/fit. Six new focused checks passed;455 fingerprints
+and the trained parent match. Owned13503/13537 stopped; no live request remains.
+The first failed model attempt at20a96e7 remains. [Evidence](report/one_shot_split_20260912.md).
+
+Do not rerun this answer, its six checks, or the original v2 training collection.
+Next audit bounded core coverage against existing evidence and freeze the common
+dataset/request/result evaluation interface. `run_question` is generic, while
+current actual model drivers remain tiny-specific. Prepare a reusable frozen
+deployment/source/schema/catalog input with durable per-request output; use local
+replay/new-risk checks rather than another native/model run for a wrapper change.
+Then discuss16–20figures/external SOTA before campaigns. Both mode mechanics and
+guided precision have prior evidence; the new actual NL-only gate is performance.
+Do not generalize this tiny success to model accuracy, estimator ranking or speedup.
+
 User update: relative speed/preference is sufficient for the estimator; accurate
 ms regression is not a core gate. Current v2 still outputs ms; do not claim a
-rank-only adapter exists. Preserve it and continue the split-source/NL-only gate,
+rank-only adapter exists. Preserve it and continue the evaluation-interface gate,
 without repeating training to lower time error. Future relative outputs require
 explicit cross-interpretation/quality scoring and conditional bounds; see the
 [selection contract](decisions/one_shot_modes_v1.md#selection-oriented-estimation--user-update).
 
-## Current: v2 estimator and excluded cross-backend deterministic request accepted
+## Earlier: v2 estimator and excluded cross-backend deterministic request accepted
 
 Checkpoint a2c1908 completed the declared 28-plan independent tiny collection
 (46 backend calls, two separate warmups), offline nonnegative fit/freeze, and one

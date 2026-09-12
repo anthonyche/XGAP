@@ -2,6 +2,10 @@
 
 ## Necessary split sources with explicit frozen model deployment
 
+Actual acceptance now recorded at6833e19: one original NL request, four catalog
+lookups, one estimated-selected plan and two required source queries return an
+independently exact answer. The first failure remains. [Evidence](report/one_shot_split_20260912.md).
+
 [The new tiny gate](decisions/one_shot_split_source_v1.md) supplies NL and reusable
 source schemas without a prepared semantic program. Its separate model deployment
 embeds the unchanged trained parent, binds current serving statistics, and records

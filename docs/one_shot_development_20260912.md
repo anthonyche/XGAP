@@ -24,11 +24,13 @@ evaluation will assess ordering and plan-selection regret, with offline referenc
 
 ## Current milestone / ownership
 
-V2 continuation accepted at a2c1908: independent 28-plan tiny collection, frozen
-nonnegative model and one exact excluded cross-backend deterministic request.
-Current next boundary is split-source data plus unaided NL-only interpretation;
-reuse accepted evidence and do not repeat its training/checks. See
-[the result](report/work_estimator_native_20260912.md).
+Required split-source NL-only request accepted at6833e19: one actual model call,
+four catalog lookups, two estimated strategies, one final plan and two backend
+queries yield the independent exact answer. The failed20a96e7 response remains;
+six new checks passed, with no extra training. See [the result](report/one_shot_split_20260912.md).
+Next audit bounded core coverage and freeze the reusable dataset/request/result
+evaluation interface, then discuss16–20figures/SOTA before campaigns. Do not repeat
+accepted checks, training or native successes. TheSep14/Sep18 targets remain.
 
 
 At 41a3cca the first guided real B01 precision answer is accepted: one model call,
