@@ -1,11 +1,18 @@
 # XGAP Roadmap
 
-Current gate accepted: the versioned ordinary NL prompt completes a real required
-Neo4j/Fuseki answer with one model call and one final plan, at6833e19. Prior failure
-remains; six new checks and455 unchanged input fingerprints are recorded. Next
-freeze bounded-core evidence and a dataset-independent evaluation interface around
-the ordinary API, then discuss16–20figures/SOTA. No extra fitting or repeated
-native successes. [Evidence](report/one_shot_split_20260912.md).
+Current: the bounded core and reusable evaluation interface are ready for
+experiment-plan discussion. Existing actual split-source NL-only evidence is
+preserved. The new frozen profile, durable records, exact replay and post-seal
+scoring pass nine unique new-risk cases and one zero-call CLI preflight. No new
+model/native/training or comparative executions. [Audit and limits](report/one_shot_core_freeze_20260912.md).
+
+Next propose16–20figures with RQ/X/Y and verified external methods, then discuss
+and freeze the evaluation protocol before campaigns. Relative estimator ranking
+is sufficient; retain v2 without extra calibration. The complete research Goal
+remains active under Sep14 17:00/Sep18 targets. Historical next steps below are
+superseded by this checkpoint.
+
+## Historical checkpoints
 
 The first actual split request failed Interpretation before grounding/execution.
 The unmodified response is preserved, and two focused checks cover a new explicit

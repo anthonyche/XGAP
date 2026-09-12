@@ -1,5 +1,16 @@
 > Current authority (2026-09-12): the user approved [one-shot two-mode integration](decisions/one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.
 
+## Reusable one-shot evaluation interface and bounded core freeze
+
+The [interface contract](decisions/one_shot_evaluation_interface_v1.md) freezes
+caller-provided dataset/source/schema/catalog/model/mode identities. The shared
+ordinary entry executes once; replay requires exact original model/prompt/request
+and actual backend artifacts. Gold scoring follows a sealed result. Nine new-risk
+cases and zero-call CLI preflight pass; no new live runs. The [core audit](report/one_shot_core_freeze_20260912.md)
+now supports moving to16–20-figure/external-method discussion, with remaining
+benchmark protocol and performance claims explicitly unmeasured. Older next-step
+statements below are historical. Relative ranking remains a valid estimator goal.
+
 ## Necessary split sources with explicit frozen model deployment
 
 Actual acceptance now recorded at6833e19: one original NL request, four catalog

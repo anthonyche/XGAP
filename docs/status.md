@@ -1,12 +1,18 @@
 # XGAP Status
 
-Latest:6833e19 passes the actual split-source NL-only gate. One model call2500/815
-tokens, four catalog lookups, two estimated strategies and one selected execution
-with one actual query per store return the exact Mira/r2 answer. Zero new training
-or probes;455 inputs/parent unchanged, owned services stopped. Six new checks pass.
-The original20a96e7 failure is retained; this is development integration evidence,
-not ranking/accuracy/speedup. Next is core-evidence audit and a reusable evaluation
-input/output contract; no repeated successful native gate. [Report](report/one_shot_split_20260912.md).
+Current: the bounded core and reusable evaluation interface are ready for
+experiment-plan discussion. Existing actual split-source NL-only evidence is
+preserved. The new frozen profile, durable records, exact replay and post-seal
+scoring pass nine unique new-risk cases and one zero-call CLI preflight. No new
+model/native/training or comparative executions. [Audit and limits](report/one_shot_core_freeze_20260912.md).
+
+Next propose16–20figures with RQ/X/Y and verified external methods, then discuss
+and freeze the evaluation protocol before campaigns. Relative estimator ranking
+is sufficient; retain v2 without extra calibration. The complete research Goal
+remains active under Sep14 17:00/Sep18 targets. Historical next steps below are
+superseded by this checkpoint.
+
+## Historical checkpoints
 
 First split NL-only attempt (20a96e7) reached the actual model but failed typed
 admission: illegal source.condition and missing entity-hole identity. One model

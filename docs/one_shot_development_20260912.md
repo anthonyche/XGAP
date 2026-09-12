@@ -24,14 +24,21 @@ evaluation will assess ordering and plan-selection regret, with offline referenc
 
 ## Current milestone / ownership
 
-Required split-source NL-only request accepted at6833e19: one actual model call,
-four catalog lookups, two estimated strategies, one final plan and two backend
-queries yield the independent exact answer. The failed20a96e7 response remains;
-six new checks passed, with no extra training. See [the result](report/one_shot_split_20260912.md).
-Next audit bounded core coverage and freeze the reusable dataset/request/result
-evaluation interface, then discuss16–20figures/SOTA before campaigns. Do not repeat
-accepted checks, training or native successes. TheSep14/Sep18 targets remain.
+The [bounded-core audit](report/one_shot_core_freeze_20260912.md) is complete. Actual
+split-source ordinary NL-only evidence remains accepted. The reusable frozen
+profile/request/result interface and independent post-seal scorer are implemented;
+nine unique new-risk cases pass plus one zero-call CLI preflight. No new model or
+backend runs, fitting or accepted-gate repetitions occurred for this wrapper.
 
+The implementation can now support experiment-plan discussion. Next prepare the
+16–20figures with explicit RQ/X/Y/population/costs and primary-source-verified
+external methods; freeze this protocol with the user before evaluation campaigns.
+Benchmark-specific profiles/references/adapters and cohort aggregation are still
+required. Current estimator v2 is retained: relative ranking is a sufficient goal,
+accurate time regression and rank-only implementation are not completion gates.
+TheSep14/Sep18 targets remain; the overall Goal remains active.
+
+## Earlier milestone / ownership history
 
 At 41a3cca the first guided real B01 precision answer is accepted: one model call,
 one selected plan, two Fuseki calls, independent gold exact. Current-query probes

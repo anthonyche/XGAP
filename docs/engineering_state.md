@@ -1,31 +1,29 @@
 # XGAP current engineering loop
 
-## Current: required split-source NL-only answer accepted at6833e19
+## Current: bounded core and reusable record interface ready for experiment discussion
 
-The original NL plus frozen source schema produced one real model interpretation,
-four catalog lookups and two estimated physical candidates. One selected coordinator
-plan queried both required sources: Neo4j profiles and Fuseki relations. The single
-Mira/r2 row is independently exact. One model call2500/815 tokens, two final calls,
-no current-query probes/training/fit. Six new focused checks passed;455 fingerprints
-and the trained parent match. Owned13503/13537 stopped; no live request remains.
-The first failed model attempt at20a96e7 remains. [Evidence](report/one_shot_split_20260912.md).
+The [requirement-to-evidence audit](report/one_shot_core_freeze_20260912.md) separates
+implemented functionality, controlled/replayed checks, actual native evidence and
+unmeasured research claims. The ordinary split-source NL-only actual answer remains
+accepted at6833e19/f0d88d3. Do not repeat it, its six checks or28-plan training.
 
-Do not rerun this answer, its six checks, or the original v2 training collection.
-Next audit bounded core coverage against existing evidence and freeze the common
-dataset/request/result evaluation interface. `run_question` is generic, while
-current actual model drivers remain tiny-specific. Prepare a reusable frozen
-deployment/source/schema/catalog input with durable per-request output; use local
-replay/new-risk checks rather than another native/model run for a wrapper change.
-Then discuss16–20figures/external SOTA before campaigns. Both mode mechanics and
-guided precision have prior evidence; the new actual NL-only gate is performance.
-Do not generalize this tiny success to model accuracy, estimator ranking or speedup.
+The new generic profile/record/scoring CLI has nine unique new-risk cases passing
+and one zero-call CLI preflight. It reuses the accepted model/provider and saved
+success/failure without new model/database executions. Source/mode/file/prompt
+identity drift fails explicitly; known usage survives a failed result seal. New
+replay records are engineering evidence and must not enter live timing aggregates.
 
-User update: relative speed/preference is sufficient for the estimator; accurate
-ms regression is not a core gate. Current v2 still outputs ms; do not claim a
-rank-only adapter exists. Preserve it and continue the evaluation-interface gate,
-without repeating training to lower time error. Future relative outputs require
-explicit cross-interpretation/quality scoring and conditional bounds; see the
-[selection contract](decisions/one_shot_modes_v1.md#selection-oriented-estimation--user-update).
+Next prepare the16–20-figure discussion proposal with RQ/X/Y, efficiency,
+effectiveness, scalability, Pareto and external comparable methods. Verify primary
+sources and actual available method implementations, then freeze the protocol with
+the user before campaigns. Dataset profiles/references, external adapters and
+cohort aggregation remain evaluation work. The bounded core is ready; overall
+research Goal is not complete. Sep14 17:00/Sep18 targets and remote3804210 ownership
+are unchanged. No native/model process was started in this interface milestone.
+
+Estimator priority remains relative plan selection, not precise ms regression.
+The existing v2 returns ms; no rank-only adapter or ranking benefit is claimed.
+Do not fit or collect more labels just to reduce time error.
 
 ## Earlier: v2 estimator and excluded cross-backend deterministic request accepted
 
