@@ -1,35 +1,29 @@
 # XGAP Status
 
-## Latest: typed admission fixed; new provider attempt returned HTTP 500
+## Current: first guided real one-shot answer accepted
 
-Subsequent explicit JSON-object attempt (f6cb7d5) returned `{}` with 7,380 input
-and 3 output tokens; admission rejected it with no planning/final/backend work.
-Training/fit remain zero on model reuse. Next is the explicitly selected original
-outer-envelope wire plus the new nesting prompt and unchanged typed admission.
-See the report for the three distinct attempts; no new answer is claimed.
+At 41a3cca, B01 precision completed through the ordinary entry with one external
+LLM request, frozen grounding, estimated selection and one final entity-bind plan.
+Both query calls used Fuseki; the one returned row matches independent gold.
+The model's 2,150 input / 847 output tokens and all actual stages are recorded;
+core online latency was 4,583.866 ms. This is one guided tiny integration result,
+not NL-only accuracy, cross-store execution or a performance advantage.
 
-Five new structural-risk checks passed. The separate bc4103c native request
-reused the frozen estimator with zero new training/fit, but the provider returned
-HTTP 500 before any interpretation. One attempt, unknown tokens, zero final plans
-and online backend calls. All 432 inputs and the model are unchanged; owned
-services stopped. The cause of HTTP 500 is unverified. Next is an explicit wire
-compatibility profile with the same typed local admission and no automatic retry.
-See [retained evidence](report/one_shot_native_20260912.md). Real one-shot answer
-acceptance is still open; no new performance result is claimed.
+The 3 placements / 6 admitted physical plans were scored without current-query
+execution observations. Only the selected plan ran. Four earlier independent
+training measurements were reused: zero new training/fit. The estimate (0.0054 ms)
+severely underpredicts the approximately 78.93 ms actual scheduler runtime; the
+Match-only training lacks strategy coverage. No calibration claim is supported.
 
-## Earlier: real tiny training completed; first model format failure retained
+All 432 fingerprints and the frozen model match. Owned services stopped; the
+three earlier failures remain. See [actual evidence and limitations](report/one_shot_native_20260912.md).
+64 targeted new-risk cases have passed across this implementation; they are tests,
+not benchmark questions. Do not repeat these successful gates.
 
-The single b008775 native attempt completed4 independent training plans on real
-Neo4j/Fuseki and froze the measured model. One external B01 request returned one
-candidate (2077input/920output tokens), but misplaced parameter/path fields failed
-binding before planning:0final/0onlinebackend. All4 catalog lookups succeeded.
-See [actual evidence](report/one_shot_native_20260912.md); no answer or performance
-advantage is claimed.430input fingerprints unchanged, owned1150/1193 stopped.
-
-Next: finite typed v2 parameter/wire contract plus local failed-response replay;
-retain the original failure. Reuse the accepted frozen model and its historical
-one-time costs for any later new-protocol tiny gate, rather than redoing training.
-No current-request retry, broad regression, ablation or large benchmark campaign.
+Next: estimator features that associate operators/workload with their backend,
+independent tiny training with representative strategies and explicit extrapolation handling; a necessary Neo4j–Fuseki cross-store slice;
+and an NL-only/performance request without prepared operator IDs/constraints.
+No new baseline/ablation/scale campaign until these core boundaries are accepted.
 
 ## Historical preparation checkpoint (superseded by the actual attempt above)
 

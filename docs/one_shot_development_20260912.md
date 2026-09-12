@@ -17,7 +17,15 @@ The [one-shot contract](decisions/one_shot_modes_v1.md) governs this work.
 
 ## Current milestone / ownership
 
-M1 in progress. Parent checkpoint 793cc1d3e94b98bd669bd93af8346b3583c88a65.
+At 41a3cca the first guided real B01 precision answer is accepted: one model call,
+one selected plan, two Fuseki calls, independent gold exact. Current-query probes
+and new training/fit are zero. This succeeds ahead of the ordinary mechanical
+target, but core acceptance is still open for operator/backend-aware estimator
+features and independent training coverage, necessary cross-store execution,
+and an unaided NL-only/performance request. The actual cost prediction is severely
+low and cannot support a performance claim. [Latest evidence](report/one_shot_native_20260912.md).
+
+Initial implementation checkpoint was 793cc1d3e94b98bd669bd93af8346b3583c88a65.
 Root owns Goal/docs, mode contract, ordinary request orchestration, joint selection
 and final integration. Parallel bounded tasks own candidate interpretation,
 physical-strategy compilation, and the frozen runtime estimator respectively.

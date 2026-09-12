@@ -1,9 +1,61 @@
-# First new-profile native attempt — retained Interpretation failure
+# One-shot native integration — first guided answer and retained failures
 
-2026-09-12; code checkpointb008775. This was one small integration attempt, not
-an evaluation campaign. Original raw outputs remain unchanged at
-`/Users/anthonyche/xgap-data/one-shot-native-20260912-b008775/`.
-[Machine-readable checkpoint](../../experiments/artifacts/one_shot_native_20260912.json).
+2026-09-12. Four small, separately configured integration attempts are retained;
+they are not an evaluation campaign or a four-question accuracy sample. Each
+attempt made one external request, with no automatic retry. Raw outputs remain
+under `/Users/anthonyche/xgap-data/one-shot-native-20260912-<checkpoint>/`.
+
+| Checkpoint | Explicit wire/local configuration | Actual outcome |
+|---|---|---|
+| b008775 | Original outer schema, original admission/prompt | Misnested parameters; binding rejected before planning. Four independent training queries completed and the model was frozen. |
+| bc4103c | Typed wire schema and typed local admission | HTTP 500; token use unknown. No interpretation or final query. |
+| f6cb7d5 | JSON object, full typed schema in prompt, typed admission | Response `{}` rejected; no final query. |
+| 41a3cca | Original envelope wire, corrected nesting prompt, typed admission | One selected bind plan, two Fuseki queries, exact independent answer. |
+
+The last three attempts reused the same frozen model with zero new training/fit.
+
+## Latest accepted milestone
+
+The fourth explicitly configured attempt, 41a3cca with envelope-schema-v1,
+completed the first guided real B01 precision answer. One model request used
+2,150 input and 847 output tokens. One interpretation was admitted; three source
+placements yielded six admitted physical plans (construction bound nine). They
+were scored using the frozen estimator, with no current-query execution observations.
+Only the selected left-to-right entity-bind plan ran: two Fuseki queries returned
+one row, exactly matching the independent gold after the result was sealed.
+
+The answer is person `https://xgap.test/toy/c`, edge `https://xgap.test/toy/e4`.
+Core online time was 4,583.866 ms: interpretation 4,454.744 ms, catalog loading
+0.387 ms, grounding 0.733 ms, planning 48.665 ms and final execution wrapper
+79.173 ms. The scheduler itself took 78.932 ms. These are a single development
+observation, not averages or speedups. Both chosen source assignments were Fuseki;
+Neo4j was available and loaded but did not receive a final query in this attempt.
+
+There was zero current-query probing, zero new training and zero fitting. The
+earlier frozen model was reused unchanged. Current service setup (6,948.644 ms),
+fixture loading (262.314 ms) and model reload (0.525 ms) are separate from the
+online core. Whole owned lifecycle 23,518.708 ms includes cleanup. All 432 input
+fingerprints match; owned PIDs 5516/5551 stopped without SIGKILL, and a subsequent
+process check found neither present. [Accepted checkpoint and hashes](../../experiments/artifacts/one_shot_native_envelope_20260912.json).
+
+The selected runtime prediction was only 0.005412 ms, severely below the observed
+78.932 ms. Twelve features are outside the four Match-only training examples'
+range, including bind/join/path/project shapes. Larger filtered training plans
+happened to have shorter labels; log-ridge learned negative node/dependency
+coefficients, which made a larger DAG's extrapolated cost unrealistically small.
+Moreover, swapping Path and Match between the two backends can yield identical
+current feature vectors. More samples alone cannot fix that representation gap.
+This verifies that selection uses the estimator; it does not verify useful cost
+prediction, ranking or an efficiency advantage.
+
+Next: represent operator/backend/workload associations, add independent tiny
+training coverage and explicit extrapolation handling; verify a necessary
+Neo4j–Fuseki cross-store slice; and add an NL-only/performance input boundary.
+Do not fit this B01 observation into its own future estimator or rerun accepted
+tests. The 64 new targeted risk cases across this implementation are engineering
+tests, not 64 benchmark questions. No new baseline/ablation/scale campaign ran.
+
+## Input scope and historical attempts
 
 Input scope: these tiny gates use the ordinary request entry with B01's original
 NL text, frozen runtime context, declared output fields and prepared hard request
@@ -12,7 +64,7 @@ query is supplied to inference. This checks the configured boundary; it does not
 yet verify an unaided NL-only request with no prepared constraint declarations.
 That input profile remains an explicit core-acceptance item before evaluation.
 
-## Actual outcome
+## First attempt: parameter-format failure
 
 The external qwen3.8-27b served alias handled **one request**, with2,077 input and
 920 output tokens. Precision permitted up to3 candidates; the response supplied

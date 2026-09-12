@@ -1,33 +1,37 @@
 # XGAP current engineering loop
 
-## Latest: typed admission accepted; explicit provider compatibility adapter next
+## Current milestone: first guided external one-shot answer accepted
 
-The explicit JSON-object attempt returned `{}` and was rejected before planning;
-no new training/fit/final/backend calls. Next implement envelope-schema-v1 with
-the previously functioning outer format, current nesting prompt and unchanged
-typed local admission. Distinguish wire/local hashes; preserve all three attempts.
+The code is committed through 41a3cca. Both modes share the controlled ordinary
+entry; B01 precision now completes one actual external request and one selected
+entity-bind execution with the exact independent answer. Two final query calls
+both use Fuseki. No current-query observations, training or automatic retry were
+used. Retain this accepted slice and all prior failed attempts; do not rerun the
+64 accepted targeted checks. [Evidence](report/one_shot_native_20260912.md).
 
-The five new parameter checks passed once. The bc4103c real request reused the
-accepted model with zero current training/fit but returned HTTP 500 before an
-interpretation. One attempted request, unknown tokens, zero final/online backend
-calls. All 432 fingerprints and the model match; owned services stopped. The
-cause of HTTP 500 is unverified. Implement an explicitly selected JSON-object
-wire profile using the same typed local admission, independent request identity,
-bounded request and no fallback/retry. See [evidence](report/one_shot_native_20260912.md).
+The next bounded tasks are, in order:
 
-## Earlier: real tiny training completed; first model format failure retained
+1. Represent operator/backend/workload associations in estimator features, then add
+   independent tiny training coverage for physical strategies, placements and runtime
+   shapes, with visible extrapolation behavior. More samples alone cannot distinguish
+   swapped backend assignments that currently produce identical feature vectors.
+   The four Match-only samples gave an unusably low selected estimate (0.0054 ms
+   versus about 78.93 ms actual); do not train on the accepted B01 request.
+2. Maintain a separate tiny two-source fixture where Neo4j and Fuseki each supply
+   a necessary subquery. The current replicated fixture permits all-Fuseki execution
+   and therefore does not verify cross-store behavior in the new ordinary entry.
+3. Verify one NL-only/performance request without prepared operator IDs/structured
+   constraints. The accepted B01 gate has declared hard request/output inputs;
+   preserve that exposure boundary and do not call it unaided interpretation.
 
-The single b008775 native attempt completed4 independent training plans on real
-Neo4j/Fuseki and froze the measured model. One external B01 request returned one
-candidate (2077input/920output tokens), but misplaced parameter/path fields failed
-binding before planning:0final/0onlinebackend. All4 catalog lookups succeeded.
-See [actual evidence](report/one_shot_native_20260912.md); no answer or performance
-advantage is claimed.430input fingerprints unchanged, owned1150/1193 stopped.
+Each task needs only its new-risk checks and one necessary tiny slice. Use the
+explicit envelope-schema-v1 provider profile (wire/local schemas remain separate)
+for the established endpoint; do not retry the previous HTTP500/empty-object
+requests or silently change profile after failure. Catalog and measured training
+stay offline/frozen, with separate costs. No large-data or comparative campaigns.
 
-Next: finite typed v2 parameter/wire contract plus local failed-response replay;
-retain the original failure. Reuse the accepted frozen model and its historical
-one-time costs for any later new-protocol tiny gate, rather than redoing training.
-No current-request retry, broad regression, ablation or large benchmark campaign.
+Goal remains active under the approved Sep14 17:00 / Sep18 targets. Remote3804210
+remains user-managed. Credentials stay out of files and automation prompts.
 
 ## Historical preparation checkpoint (superseded by the actual attempts above)
 
