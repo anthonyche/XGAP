@@ -1,8 +1,10 @@
 # Compact graph intent lowered to the existing semantic DAG
 
 Status: compact schema and deterministic lowering implemented; nine distinct new
-local correctness/boundary checks accepted. Provider/ordinary-entry wiring and the
-actual compact NL-to-answer boundary remain next. See
+local correctness/boundary checks accepted. Provider/ordinary-entry wiring is now
+implemented with six new checks, including frozen-estimator compatibility of all
+three generated financial domains. The actual compact NL-to-answer boundary is
+next and remains unverified. See
 [evidence](../report/compact_lowering_20260912.md). This
 corrects implementation within the approved one-shot goal; the research question,
 two modes, estimator, physical domain and evaluation population remain unchanged.
@@ -15,7 +17,7 @@ reads, intermediate aliases, identity joins and grouped schemas. V3 passes synta
 and catalog grounding but cannot compile because identity/property columns collide;
 downstream fields were never read. More per-question prompt tuning is not next.
 
-The compact profile will declare semantic variables, typed nodes/edges, named
+The compact profile declares semantic variables, typed nodes/edges, named
 entity mentions, field predicates, projection, aggregation/distinct intent and
 order. Fields refer to a variable and stored property, not an intermediate column.
 A deterministic compiler allocates columns, derives property reads, enforces joins
@@ -98,6 +100,18 @@ fit/probe/repair, one final plan. Record raw compact response and deterministic
 lowering; charge lowering to online cost.
 
 ## Implementation and acceptance
+
+Provider wiring uses explicit `compact-graph-schema-v1` in the existing frozen
+profile. The single response retains its raw compact envelope and per-candidate
+lowering diagnostics. A failed lowerer emits an invalid candidate with no program;
+valid siblings still face the ordinary full-SGP admission/output/identity checks.
+Duplicate IDs stay duplicates and are rejected by that admission. An invalid or
+over-cap envelope fails as a whole; neither the pool nor an individual query is
+truncated/repaired. Lowering duration is online provider work. Legacy operator-ID
+hard constraints cannot be mapped by compact-v1 and are rejected before dispatch.
+The existing recorded response/replay protocol retains both raw and lowered forms.
+Publication freezes both modes and uses no question/reference data. Native testing
+chooses the new profile explicitly; it is never an automatic compatibility retry.
 
 Allowed: compact schema/provider adapter, deterministic lowerer, small independent
 intent/answer fixtures and targeted tests, financial publisher/runner integration,

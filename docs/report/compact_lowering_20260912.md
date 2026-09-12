@@ -58,6 +58,16 @@ remain unchanged; they are not repaired by these deterministic fixtures.
 
 ## Next bounded step
 
+Subsequent wiring checkpoint: the explicit compact provider, frozen profile and
+native-runner option are implemented. Six new checks in `test_compact_provider.py`
+passed in0.59s: independent candidate failure with durable raw/lowered recording
+and no-network replay; envelope budget/hard-constraint rejection; exact mode
+configuration reconstruction; and all three lowered financial domains compiling
+and receiving estimates from the existing frozen deployment. These checks made
+zero real model/backend calls or fitting calls. The actual compact model boundary
+is now prepared, not yet executed. The first paragraph below records its planned
+scope and remains the acceptance requirement.
+
 Add an explicit compact provider profile and wire it into the existing frozen
 profile/record interface. Retain raw compact candidates and deterministic lowering
 provenance, admit invalid candidates independently, charge lowering online, and

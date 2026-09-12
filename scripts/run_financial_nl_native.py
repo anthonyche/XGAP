@@ -30,23 +30,27 @@ def main():
     parser.add_argument('--output-root', required=True, type=Path)
     parser.add_argument('--read-key', action='store_true', help='Read model credential with terminal echo disabled; never store it')
     parser.add_argument('--syntax-profile', choices=('v1','v2','v3'), default='v1')
+    parser.add_argument('--interpretation-profile', choices=('semantic-dag-v1','compact-graph-v1'), default='semantic-dag-v1')
     parser.add_argument('--java', default='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home/bin/java')
     parser.add_argument('--runtime-root', type=Path, default=Path('/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime'))
     args = parser.parse_args()
+    if args.interpretation_profile == 'compact-graph-v1' and args.syntax_profile != 'v1':
+        parser.error('Legacy syntax options cannot be combined with compact interpretation')
     key = getpass.getpass('LLM credential: ') if args.read_key else os.environ.get('XGAP_EXTERNAL_LLM_API_KEY')
     if not key: raise ValueError('Configured model credential is unset; no external action')
     root = args.output_root.resolve(); root.mkdir(parents=True, exist_ok=False)
     receipt = {'schema_version':'xgap-financial-nl-native-v1', 'success':False, 'phase':'preparation',
         'question_id':QUERY_ID, 'maximum_model_calls':1, 'maximum_final_executions':1,
         'fit_calls':0, 'training_calls':0, 'baseline_calls':0, 'probe_calls':0, 'retries':0,
-        'paper_result':False, 'loads':[], 'shutdown':[]}
+        'paper_result':False, 'loads':[], 'shutdown':[], 'interpretation_profile':args.interpretation_profile}
     running, ports = [], None
     try:
         with deadline(240):
             ports = LoopbackPortReservations.acquire(3); np,bp,fp = ports.ports
             nu,fu = f'http://127.0.0.1:{np}',f'http://127.0.0.1:{fp}'
             at = time.perf_counter()
-            pin = publish_profile(root/'profile', endpoints={'neo4j':nu, 'fuseki':fu}, syntax_profile=args.syntax_profile)
+            pin = publish_profile(root/'profile', endpoints={'neo4j':nu, 'fuseki':fu}, syntax_profile=args.syntax_profile,
+                interpretation_profile=args.interpretation_profile)
             # Reference is not read by publication or inference; its hash is sealed below
             # with the authored fixture before dispatch, independently of any result.
             reference_hash = sha(FIXTURE/'reference.json')
@@ -54,6 +58,10 @@ def main():
             sealed = [Path(__file__), REPO/'src/xgap/experiments/financial_nl_profile.py',
                 FIXTURE/'request.json', FIXTURE/'reference.json', root/'profile/profile.json',
                 root/'profile'/NEO4J_BATCH_FILENAME, root/'profile/control.ttl']
+            if args.interpretation_profile == 'compact-graph-v1':
+                sealed += [REPO/'src/xgap'/name for name in ('semantic/compact_query.py', 'semantic/compact_lowering.py',
+                    'llm/compact_interpretation.py', 'experiments/compact_profile.py', 'experiments/one_shot_profile.py')]
+                sealed.append(REPO/'prompts/interpretation/compact_graph_v1.txt')
             write_once(root/'input_seal.json', {'files':{str(p):sha(p) for p in sealed},
                 'reference_consumption':'hash before dispatch; scoring after terminal record only'})
             receipt['offline_preparation_ms'] = (time.perf_counter()-at)*1000

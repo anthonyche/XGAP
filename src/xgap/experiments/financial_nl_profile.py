@@ -106,9 +106,15 @@ def schema_and_catalog(manifest, files):
     return schema, catalog, bindings, mapping
 
 
-def publish_profile(output, *, endpoints, input_root=INPUT_ROOT, deployment=DEPLOYMENT, syntax_profile="v1"):
+def publish_profile(output, *, endpoints, input_root=INPUT_ROOT, deployment=DEPLOYMENT, syntax_profile="v1",
+                    interpretation_profile="semantic-dag-v1"):
     """Publish before inference; endpoints are caller-owned and no service is touched."""
     at = time.perf_counter()
+    if interpretation_profile not in ('semantic-dag-v1', 'compact-graph-v1'):
+        raise ValueError('Unknown financial interpretation profile')
+    compact = interpretation_profile == 'compact-graph-v1'
+    if compact and syntax_profile != 'v1':
+        raise ValueError('Legacy SGP syntax options do not apply to the compact profile')
     manifest, files = verified_inputs(input_root)
     model_bytes = read_pinned(deployment, DEPLOYMENT_HASH)
     model = frozen_estimator_from_dict(json.loads(model_bytes))
@@ -122,18 +128,23 @@ def publish_profile(output, *, endpoints, input_root=INPUT_ROOT, deployment=DEPL
     frozen = freeze_resolution_bundle(catalog=root/'catalog-input.json', bindings=root/'bindings-input.json', output=root/'catalog')
     modes = {}
     for mode in ('precision', 'performance'):
-        provider = load_financial_provider(mode=mode, disable_thinking=True, syntax_profile=syntax_profile)
+        if compact:
+            from xgap.experiments.compact_profile import load_compact_graph_provider
+            provider = load_compact_graph_provider(mode=mode)
+        else:
+            provider = load_financial_provider(mode=mode, disable_thinking=True, syntax_profile=syntax_profile)
         path = root/(mode+'.txt'); path.write_text(provider.system_prompt)
         c = provider.config
         modes[mode] = {'policy': asdict(OneShotPolicy.for_mode(mode)), 'provider': {
             'provider_id': c.provider_id, 'base_url': c.base_url, 'model': c.model, 'api_key_env': c.api_key_env,
-            'wire_profile': 'envelope-schema-v1', 'prompt': {'path': path.name, 'sha256': sha(path)},
+            'wire_profile': c.safe_dict()['wire_profile'], 'prompt': {'path': path.name, 'sha256': sha(path)},
             'temperature': c.temperature, 'top_p': c.top_p, 'max_tokens': c.max_tokens,
             'timeout_seconds': c.timeout_seconds, 'disable_thinking': True}}
     common = {'resource_namespace': mapping['resource_namespace'], 'identity_property': 'xgap_id'}
     backends = {'neo4j': common, 'fuseki': {**common, 'backend_mapping': mapping['backend_mapping'],
         'rdf_edge_encoding': mapping['rdf_edge_encoding'], 'rdf_node_classes': mapping['rdf_node_classes']}}
-    doc = {'schema_version': SCHEMA, 'profile_id': PROFILE if syntax_profile=='v1' else PROFILE+':binding-'+syntax_profile,
+    profile_id = PROFILE+':compact-graph-v1' if compact else PROFILE if syntax_profile=='v1' else PROFILE+':binding-'+syntax_profile
+    doc = {'schema_version': SCHEMA, 'profile_id': profile_id,
         'dataset': DATASET, 'source_schema': schema,
         'sources': {s.source_id: {'version': s.snapshot_version, 'replicas': [s.backend_id]} for s in model.statistics.entries},
         'backends': {b: {'semantic': s, 'client': {'engine': b, 'url': endpoints[b],
