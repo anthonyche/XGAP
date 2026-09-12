@@ -26,7 +26,7 @@ from xgap.experiments.toy_live_interpretation import PROMPT_PATH
 from xgap.experiments.toy_output_contract import apply_request_profile
 from xgap.experiments.toy_semantic import toy_backends
 from xgap.llm.candidate_interpretation import (
-    OpenAICompatibleCandidateInterpretationProvider, WIRE_PROFILES,
+    CandidateInterpretationProviderConfig, OpenAICompatibleCandidateInterpretationProvider, WIRE_PROFILES,
     candidate_interpretation_schema, candidate_output_mode, candidate_wire_profile,
 )
 from xgap.planning.runtime_estimator import FrozenRuntimeEstimator
@@ -113,9 +113,13 @@ def load_one_shot_toy_provider(*, mode="precision", base_url=BASE_URL, model=MOD
     identifier = PROFILE + ":" + mode + ":" + model
     if wire_profile != "json-schema-v1":
         identifier += ":" + wire_profile
+    schema_profile = WIRE_PROFILES[wire_profile][1]
     config = replace(legacy.config, provider_id=identifier, structured_output_mode=output_mode,
         max_tokens=output, candidate_cap=policy.candidate_cap,
-        structured_schema=candidate_interpretation_schema(policy.candidate_cap), prompt_hash=content_hash(prompt))
+        structured_schema=candidate_interpretation_schema(policy.candidate_cap, schema_profile=schema_profile),
+        prompt_hash=content_hash(prompt))
+    if schema_profile != "typed-v1":
+        config = CandidateInterpretationProviderConfig(**vars(config), schema_profile=schema_profile)
     return OpenAICompatibleCandidateInterpretationProvider(config, prompt, guard, legacy.transport)
 
 
@@ -166,7 +170,8 @@ def one_shot_toy_preflight(provider, *, estimator_path, query_id="B01", mode="pr
         raise ValueError("Estimator statistics do not identify the exact original tiny graph and two backends")
     if query_id in estimator.to_dict()["training_provenance"]["training_query_ids"]:
         raise ValueError("Current question cannot occur in the estimator training IDs")
-    wire_profile = candidate_wire_profile(provider.config.structured_output_mode)
+    wire_profile = candidate_wire_profile(provider.config.structured_output_mode,
+        getattr(provider.config, "schema_profile", "typed-v1"))
     if (provider.config.candidate_cap != inputs["policy"].candidate_cap
             or provider.config.prompt_hash != content_hash(one_shot_toy_prompt(
                 wire_profile=wire_profile, candidate_cap=inputs["policy"].candidate_cap))):

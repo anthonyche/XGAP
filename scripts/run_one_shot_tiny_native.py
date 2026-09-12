@@ -424,7 +424,7 @@ def main(argv=None):
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--estimator", help="Reuse an accepted frozen tiny estimator; skip all collection and fit")
     parser.add_argument("--mode", choices=("precision", "performance"), default="precision")
-    parser.add_argument("--wire-profile", choices=("json-schema-v1", "json-object-v1"), default="json-schema-v1",
+    parser.add_argument("--wire-profile", choices=("json-schema-v1", "json-object-v1", "envelope-schema-v1"), default="json-schema-v1",
                         help="Explicit provider wire profile; never changed automatically after a failure")
     parser.add_argument("--base-url", default=BASE_URL)
     parser.add_argument("--model", default=MODEL)

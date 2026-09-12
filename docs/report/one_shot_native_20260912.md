@@ -129,3 +129,31 @@ token use. The precision wire is 35,239 bytes, with the same typed-schema hash a
 new prompt hash `33045f3fa519c04397fe879c92dd0775c6e52fd756c79871823ac9dd6e6f973d`.
 The prepared native CLI accepts this explicit profile and the reused estimator.
 This checkpoint alone does not establish real endpoint compatibility or success.
+
+## JSON-object attempt: response received, empty object rejected
+
+At f6cb7d5 the service returned a response to the explicit JSON-object request:
+7,380 input tokens, 3 output tokens and payload `{}`. The unchanged admission
+rejected the missing envelope as `interpretation_invalid`. There were no admitted
+candidates, planning calls or final queries. The successful HTTP response does
+not imply a usable interpretation. Core failure latency was 658.695 ms.
+
+The existing model was again reused with zero new training or fit. All 432 input
+fingerprints and the model hash match. Owned PIDs 4722 and 4754 stopped without
+SIGKILL; an independent process check found neither present. The original result
+and [third checkpoint](../../experiments/artifacts/one_shot_native_json_object_20260912.json)
+remain immutable; no automatic request retry occurred.
+
+The next explicit profile retains the original bounded envelope schema that
+previously elicited candidates, the new precise nesting prompt, and the stricter
+local typed admission. Wire enforcement and local admission will have distinct
+hashes. This is an interface integration step, not an accuracy comparison among
+prompts, and no parameter checker or hard constraint will be weakened.
+
+That envelope profile is now implemented. Three new targeted checks passed once
+(0.25 seconds, tool chunk f73650). The precision request is 12,734 bytes; wire
+schema hash exactly matches b008775
+(`31415283e165b204a1b3cec38f069e9ea4773585a3ebb6a30f553bd282d1099f`),
+while the local typed schema and nesting prompt retain their bc4103c hashes.
+The candidate-specific config records both hashes and `schema_profile=envelope-v1`;
+the previous two profiles and default are unchanged. Real acceptance is pending.

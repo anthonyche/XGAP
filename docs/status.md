@@ -2,6 +2,12 @@
 
 ## Latest: typed admission fixed; new provider attempt returned HTTP 500
 
+Subsequent explicit JSON-object attempt (f6cb7d5) returned `{}` with 7,380 input
+and 3 output tokens; admission rejected it with no planning/final/backend work.
+Training/fit remain zero on model reuse. Next is the explicitly selected original
+outer-envelope wire plus the new nesting prompt and unchanged typed admission.
+See the report for the three distinct attempts; no new answer is claimed.
+
 Five new structural-risk checks passed. The separate bc4103c native request
 reused the frozen estimator with zero new training/fit, but the provider returned
 HTTP 500 before any interpretation. One attempt, unknown tokens, zero final plans

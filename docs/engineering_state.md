@@ -2,6 +2,11 @@
 
 ## Latest: typed admission accepted; explicit provider compatibility adapter next
 
+The explicit JSON-object attempt returned `{}` and was rejected before planning;
+no new training/fit/final/backend calls. Next implement envelope-schema-v1 with
+the previously functioning outer format, current nesting prompt and unchanged
+typed local admission. Distinguish wire/local hashes; preserve all three attempts.
+
 The five new parameter checks passed once. The bc4103c real request reused the
 accepted model with zero current training/fit but returned HTTP 500 before an
 interpretation. One attempted request, unknown tokens, zero final/online backend
