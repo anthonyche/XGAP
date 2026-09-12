@@ -1,0 +1,65 @@
+{
+  "schema_version": "xgap-split-nl-evidence-v1",
+  "implementation_commit": "20a96e79de7e03e30adf38dddd4ee724cd46be3a",
+  "attempt": "original-prompt",
+  "evidence_root": "/Users/anthonyche/xgap-data/one-shot-split-native-20260912-20a96e7",
+  "success": false,
+  "status": "no_admissible_interpretation",
+  "model_calls": 1,
+  "input_tokens": 2161,
+  "output_tokens": 801,
+  "backend_calls": 0,
+  "final_plan_executions": 0,
+  "error": "program.operators[0](traverse_knows).parameters.path_pattern.source: unknown fields ['condition']",
+  "training_calls": 0,
+  "fit_calls": 0,
+  "input_unchanged": true,
+  "input_count": 454,
+  "owned_processes_terminal": true,
+  "shutdown": [
+    {
+      "service_id": "fuseki",
+      "pid": 12813,
+      "initial_exit_code": null,
+      "final_exit_code": 143,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    },
+    {
+      "service_id": "neo4j",
+      "pid": 12778,
+      "initial_exit_code": null,
+      "final_exit_code": 0,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    }
+  ],
+  "deployment_sha256": "a2c547d33531e0043a496e98b421232e083badfb8988d1c3bdce1f47dac7872a",
+  "parent_model_sha256": "33badbbe8e8ecea1e69c5318902a809219a96d5d4a775e36fd06750070eee177",
+  "files": {
+    "manifest.json": "b1edadc49a03d5fff1d0bf1218054f83d20d9f7b673ba45eec86b596baf0f5d9",
+    "interpretation.json": "501f7817b9c77ee03e918421a384f6c19a58b8bd5d4f3aadce4842ebee00f17e",
+    "result.json": "1fb92c5e1ac0796492f09d5151542d5b219ec7a78996c6493f66bdcd8c9a1b52",
+    "evaluation.json": "985b9cce5260a4fe58e4f08aea8d985f0d8729bc43194a282b188ff6f066537d",
+    "receipt.json": "088c88c2e7f4da673bfd55cff02abf964f5875299fb0dcf5d0a89dd5b8afaf1c",
+    "frozen_deployment.json": "8f81638e94b82534cf781058b426529048d12c6a4be7ca9e6678955d743b39b3"
+  },
+  "paper_result": false,
+  "next_scope": "Explicit generic NL identity prompt; unchanged failure replay, no automatic repair or retry",
+  "local_preparation_failures": [
+    {
+      "chunk": "575ebb",
+      "cause": "Case-normalized duplicate catalog aliases rejected before publication; corrected unique aliases",
+      "external_calls": 0
+    },
+    {
+      "chunk": "02caed",
+      "cause": "Secure runpy launcher missing scripts import path; failed before harness/artifact creation",
+      "external_calls": 0
+    }
+  ]
+}

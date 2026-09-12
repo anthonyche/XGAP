@@ -39,3 +39,10 @@ final plan. Preserve failure responses for local replay. Record all setup/load,
 catalog/statistics/deployment costs separately from online work. Fresh owned local
 services must terminate. A failed model interpretation is evidence, not silently
 repaired or counted as a correct answer.
+
+The first actual model response at20a96e7 failed before grounding on an illegal
+source.condition field. The explicit nl-only-identity-v1 prompt revision provides
+generic source.properties identity-hole syntax and source-schema awareness; it
+does not change structural admission or auto-repair responses. Its failure replay
+and separately authored syntax checks pass. This same tiny question is now
+development-exposed; preserve the failed attempt before any new versioned run.

@@ -1,5 +1,10 @@
 # XGAP Roadmap
 
+The first actual split request failed Interpretation before grounding/execution.
+The unmodified response is preserved, and two focused checks cover a new explicit
+generic identity-syntax prompt. Next is its actual tiny request; no model retry
+loop or response repair. [Evidence](report/one_shot_split_20260912.md).
+
 The split-source deployment/input implementation and four new checks are ready;
 zero-call native preflight passed. Next perform its one necessary NL-only/model
 boundary, preserving terminal failures and using zero new training. Do not rerun

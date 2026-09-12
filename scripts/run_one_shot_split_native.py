@@ -26,8 +26,8 @@ from xgap.experiments.m15_fixture_loader import FusekiGraphStoreFixtureLoader
 from xgap.experiments.m15_native_services import (LoopbackPortReservations, ServiceSpec,
     _fuseki_server_configuration, _neo4j_configuration, inspect_java_runtime,
     start_service, stop_service, wait_for_service_health)
-from xgap.experiments.one_shot_split import FIXTURE, QUERY_ID, PROFILE, split_inputs, prepare_split_deployment
-from xgap.experiments.one_shot_toy import load_one_shot_toy_provider, _DurableRecordingProvider
+from xgap.experiments.one_shot_split import FIXTURE, QUERY_ID, PROFILE, split_inputs, prepare_split_deployment, load_split_provider
+from xgap.experiments.one_shot_toy import _DurableRecordingProvider
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.planning.runtime_work_estimator import load_frozen_estimator
@@ -61,8 +61,7 @@ def run(args):
 
     try:
         request, statistics, inputs, manifest = split_inputs(mode=args.mode)
-        provider = load_one_shot_toy_provider(mode=args.mode, wire_profile="envelope-schema-v1",
-            disable_thinking=args.disable_thinking)
+        provider = load_split_provider(mode=args.mode, disable_thinking=args.disable_thinking)
         budget = provider.token_guard.check(provider.build_request_payload(request), call_kind="generation")
         if not budget["passed"]:
             raise ValueError("Split request exceeds the bounded model profile")

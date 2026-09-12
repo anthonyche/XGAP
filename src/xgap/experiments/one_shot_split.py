@@ -11,6 +11,9 @@ from pathlib import Path
 from xgap.agent.one_shot_policy import OneShotPolicy
 from xgap.catalog.bundle import FrozenResolutionBundle
 from xgap.experiments.toy_semantic import toy_backends
+from xgap.experiments.one_shot_toy import load_one_shot_toy_provider
+from xgap.experiments.hashing import content_hash
+from xgap.llm.candidate_interpretation import OpenAICompatibleCandidateInterpretationProvider
 from xgap.planning.runtime_estimator import FrozenSourceStatistics, SourceStatistics, _hash
 from xgap.planning.runtime_work_deployment import FrozenWorkDeployment
 from xgap.planning.runtime_work_estimator import FrozenWorkEstimator, load_frozen_estimator
@@ -21,6 +24,16 @@ from xgap.semantic.interpretation import InterpretationRequest
 FIXTURE = Path(__file__).resolve().parents[3] / "datasets/one_shot_split_v1"
 QUERY_ID = "SPLIT-NL-01"
 PROFILE = "xgap-one-shot-split-nl-v1"
+
+
+def load_split_provider(*, mode="performance", disable_thinking=False):
+    base = load_one_shot_toy_provider(mode=mode, wire_profile="envelope-schema-v1",
+        disable_thinking=disable_thinking)
+    appendix = (FIXTURE.parents[1] / "prompts/interpretation/nl_only_identity_v1.txt").read_text()
+    prompt = base.system_prompt + "\n" + appendix
+    config = replace(base.config, provider_id=base.provider_id + ":nl-only-identity-v1",
+        prompt_hash=content_hash(prompt))
+    return OpenAICompatibleCandidateInterpretationProvider(config, prompt, base.token_guard, base.transport)
 
 
 def split_inputs(*, fixture=FIXTURE, mode="performance"):

@@ -1,5 +1,11 @@
 # XGAP Status
 
+First split NL-only attempt (20a96e7) reached the actual model but failed typed
+admission: illegal source.condition and missing entity-hole identity. One model
+call (2161/801 tokens), zero query execution/training/fit. All454 inputs unchanged;
+owned services stopped. A versioned generic identity-syntax prompt and two new
+replay/syntax checks now pass; its actual request remains next. [Evidence](report/one_shot_split_20260912.md).
+
 Split-source/NL-only gate prepared: explicit frozen deployment preserves v2 parent
 weights/training identity and pins new serving statistics. Four new checks passed
 (0.42s), and zero-call native preflight passed. Four profiles live only in Neo4j;
