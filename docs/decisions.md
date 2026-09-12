@@ -1,5 +1,14 @@
 > Current authority (2026-09-12): the user approved [one-shot two-mode integration](decisions/one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.
 
+## Proposed evaluation protocol: explicit external comparison conditions
+
+The [18-figure draft](research_experiment_proposal_20260912.md) separates ordinary
+NL, fixed-semantics RDF federation and author-model KBQA tracks. A shared-front-end
+plus FedUP/FedX is explicitly a composed baseline; those engines are not assigned
+NL/Cypher capabilities they do not implement. Public2026 KBQA-R1 evidence updates
+the external roster. Dataset priority and exact cohorts are discussion choices,
+not silently adopted replacements. No campaign is authorized by this draft.
+
 ## Reusable one-shot evaluation interface and bounded core freeze
 
 The [interface contract](decisions/one_shot_evaluation_interface_v1.md) freezes

@@ -30,9 +30,10 @@ profile/request/result interface and independent post-seal scorer are implemente
 nine unique new-risk cases pass plus one zero-call CLI preflight. No new model or
 backend runs, fitting or accepted-gate repetitions occurred for this wrapper.
 
-The implementation can now support experiment-plan discussion. Next prepare the
-16–20figures with explicit RQ/X/Y/population/costs and primary-source-verified
-external methods; freeze this protocol with the user before evaluation campaigns.
+The implementation can now support experiment-plan discussion. The [18-figure
+draft](research_experiment_proposal_20260912.md) is prepared with RQ/X/Y/population/
+costs and primary-source-verified external candidates. Discuss its dataset priority
+and freeze the protocol with the user before evaluation campaigns.
 Benchmark-specific profiles/references/adapters and cohort aggregation are still
 required. Current estimator v2 is retained: relative ranking is a sufficient goal,
 accurate time regression and rank-only implementation are not completion gates.

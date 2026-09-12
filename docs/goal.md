@@ -9,11 +9,16 @@
 [核心逐项验收及边界](report/one_shot_core_freeze_20260912.md)。
 
 有界research backbone已实现并有集成证据；正式实验、外部对照与精度/提速结论尚未
-完成。下一步准备并与用户讨论16–20张图：每图明确RQ/X/Y、population、成本口径和
-同图可比外部方法，冻结数据/划分/reference及执行协议后开展评价。先核实SOTA原始
-论文与实现，不以内部消融充当外部baseline。此时不扩展通用语义、不重训模型、不
-重跑已通过门禁或提前做新比较/消融/规模扫描。9月14日17:00核心目标与9月18日真实
-实验deadline不变；整体Goal仍active。下方旧阶段的“下一步”仅作历史，以上为当前权威。
+完成。[18图讨论稿](research_experiment_proposal_20260912.md)及
+[外部方法核实表](report/external_comparators_20260912.md)现已完成，逐图明确RQ/X/Y、
+population、成本与可比外部方法。机器清单是discussion_draft，execution_authorized=false。
+本轮仅核实公开文档与本地artifact状态，零新模型/数据库/训练/实验运行，无代码回归。
+
+建议优先FinBench原生与同事实RDF的FedUP/FedX，提前有界FedShop外部验证；GrailQA
+及KBQA-R1/o1保留为待完整KB/模型条件的对照轨，不取消原目标。该优先级调整提交
+用户讨论；尚未批准，不启动比较/消融/规模campaign。可继续不依赖该决定的只读
+artifact/适配可行性核实，不重复失败下载或已通过核心门禁。核心Sep14 17:00和真实
+结果Sep18目标不变，整体Goal仍active。下方旧阶段安排仅作历史。
 
 ## 用户补充：估计器以选对计划为目标，不要求精确回归时间
 

@@ -1,16 +1,17 @@
 # XGAP Status
 
-Current: the bounded core and reusable evaluation interface are ready for
-experiment-plan discussion. Existing actual split-source NL-only evidence is
-preserved. The new frozen profile, durable records, exact replay and post-seal
-scoring pass nine unique new-risk cases and one zero-call CLI preflight. No new
-model/native/training or comparative executions. [Audit and limits](report/one_shot_core_freeze_20260912.md).
+Current: the bounded core/record interface remains accepted at0f4206e. The
+[18-figure proposal](research_experiment_proposal_20260912.md) now binds each RQ to
+X/Y, population, comparable methods, shared run records and acceptance conditions.
+[External evidence](report/external_comparators_20260912.md) distinguishes verified
+papers/repos from locally unimplemented comparators.18 rows/links were checked;
+zero new model/native/training/benchmark calls and no repeated software tests.
 
-Next propose16–20figures with RQ/X/Y and verified external methods, then discuss
-and freeze the evaluation protocol before campaigns. Relative estimator ranking
-is sufficient; retain v2 without extra calibration. The complete research Goal
-remains active under Sep14 17:00/Sep18 targets. Historical next steps below are
-superseded by this checkpoint.
+Discuss the proposed FinBench/RDF/FedShop priority while retaining GrailQA and its
+missing full-KB/KBQA-model requirements. The machine manifest is an unapproved
+discussion draft, not permission to launch campaigns. Preserve original populations,
+exposure and negative results. Relative ranking remains sufficient for the estimator;
+no additional calibration or core expansion. Sep14 17:00/Sep18 targets remain.
 
 ## Historical checkpoints
 

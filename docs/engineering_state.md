@@ -13,13 +13,21 @@ success/failure without new model/database executions. Source/mode/file/prompt
 identity drift fails explicitly; known usage survives a failed result seal. New
 replay records are engineering evidence and must not enter live timing aggregates.
 
-Next prepare the16–20-figure discussion proposal with RQ/X/Y, efficiency,
-effectiveness, scalability, Pareto and external comparable methods. Verify primary
-sources and actual available method implementations, then freeze the protocol with
-the user before campaigns. Dataset profiles/references, external adapters and
-cohort aggregation remain evaluation work. The bounded core is ready; overall
-research Goal is not complete. Sep14 17:00/Sep18 targets and remote3804210 ownership
-are unchanged. No native/model process was started in this interface milestone.
+The [18-figure discussion proposal](research_experiment_proposal_20260912.md) and
+[external comparator evidence](report/external_comparators_20260912.md) are now
+prepared. All18 RQ/X/Y/comparator rows and local links passed document consistency
+checks. No software tests, model/native runs or fitting were repeated. FedUP/FedX
+are appropriate RDF comparators; KBQA-R1 has2026 paper/model-card evidence but is
+not locally deployed. Four direct repository metadata calls failed URLError; no
+commit SHA is verified, no automatic retry occurred, and no process remains live.
+
+Pending material decision: prioritize FinBench native plus matched-RDF FedUP/FedX,
+elevate bounded FedShop, retain GrailQA/KBQA-R1 obligations without making full
+Freebase readiness block the first tracks. This is a draft, not campaign approval.
+Do not silently change populations or remove unready cells. While awaiting the
+decision, read-only external adapter/artifact feasibility work remains useful;
+no campaigns, new training or broad regression. The core is ready, overall research
+Goal not complete. Sep14 17:00/Sep18 and remote3804210 ownership remain unchanged.
 
 Estimator priority remains relative plan selection, not precise ms regression.
 The existing v2 returns ms; no rank-only adapter or ranking benefit is claimed.
