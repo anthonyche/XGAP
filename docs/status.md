@@ -1,13 +1,14 @@
 # XGAP Status
 
-当前金融NL：v1/v2/v3三次曝光开发调用均未得到最终答案。v2为条件字段错误；v3已通过
-参数准入和Alice catalog绑定，但被身份/属性输出列冲突拒绝，静态还有未读字段和语义
-错误。各次1模型调用、0最终源查询，原失败及成本保留。新增两项检查通过，无重复旧门禁。
-[全部结果](report/financial_nl_20260912.md)。停止继续逐题提示词调优；下一步实现
-[紧凑图意图到现有DAG的确定性编译](decisions/compact_financial_interpretation_v1.md)：
-LLM表达变量/关系/过滤/聚合/输出，编译器管理中间列、属性读取和身份Join。该接口尚未实现。
-保留原SGP入口、三类确定性成功、32样本冻结模型及各6/6计划估计覆盖，不再训练或跑baseline。
-两模式、Ptime选择与一次最终执行不变；Sep14 17:00核心、Sep18真实结果目标保持，Goal active。
+紧凑图意图schema与确定性编译器已实现：自动分配中间列、派生属性读取、强制共享
+变量相等，保留平行边并支持显式去重。三类独立金融intent在分开的本地RDF事实上均
+得到预期答案，九项不同的新风险检查通过；ACYCLIC沿用“节点不重复”的原代数含义。
+[本轮证据及边界](report/compact_lowering_20260912.md)；[契约](decisions/compact_financial_interpretation_v1.md)。
+本轮零模型/native服务/baseline/训练调用。紧凑provider与普通NL入口接线仍待完成，
+下一步完成该接线、检查既有预算/冻结模型兼容性，再做一次必要tiny真实NL边界。
+金融NL v1/v2/v3仍均未得最终答案，[失败与成本](report/financial_nl_20260912.md)原样保留。
+不继续逐题prompt调优、不重跑旧门禁、不替baseline修结果。两模式、Ptime选择与一次
+最终执行不变；Sep14 17:00核心、Sep18真实结果目标保持，Goal active。
 
 前序输入证据：FinBench同事实离线映射已实现；8实体/16关系小图上的三类查询
 在真实Fuseki各执行一次，独立答案均exact。该轮没有LLM、baseline、训练或大数据调用。

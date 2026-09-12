@@ -13,9 +13,9 @@ native endpoint-bind plans now pass, with old28 observations reused and a new
 speedup. Financial NL-only profile publication is now implemented; the first real
 request failed Interpretation before grounding/execution. V2 also failed parameter
 admission; v3 passed syntax and entity grounding but failed source compilation on
-identity/property alias collision. All failures are preserved. Next implement a
-compact intent lowerer to derive the existing DAG deterministically; it is not
-implemented yet. [Financial NL evidence](financial_nl_20260912.md). Financial NL success and
+identity/property alias collision. All failures are preserved. The compact schema/lowerer now passes nine distinct local checks, including all
+three independent financial meanings on split RDF facts. Its provider and ordinary
+NL wiring remain next; see [the exact scope](compact_lowering_20260912.md). [Financial NL evidence](financial_nl_20260912.md). Financial NL success and
 real evaluation remain required. Do not call the whole system complete from the
 earlier small-profile audit.
 

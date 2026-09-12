@@ -1,6 +1,9 @@
 # Compact graph intent lowered to the existing semantic DAG
 
-Status: next implementation milestone, not implemented or accepted yet. This
+Status: compact schema and deterministic lowering implemented; nine distinct new
+local correctness/boundary checks accepted. Provider/ordinary-entry wiring and the
+actual compact NL-to-answer boundary remain next. See
+[evidence](../report/compact_lowering_20260912.md). This
 corrects implementation within the approved one-shot goal; the research question,
 two modes, estimator, physical domain and evaluation population remain unchanged.
 The legacy full-SGP interface remains available under its existing profile.
@@ -39,12 +42,55 @@ latter through existing finite union/join/filter semantics. No unbounded paths o
 arbitrary optional nesting. Freeze the exact compact schema and independent meaning
 before tests; this plan alone does not prove coverage or completion.
 
-For q declared graph/field/filter items and s explicit source alternatives, column
-assignment, coverage checks and join assembly must be polynomial in q+s. One path
-bounded by B<=3 multiplies work by fixed B, not a product of many path choices.
-A simple implementation may use O(B*(q*s+q^2)) assembly plus existing fragment
-validation; audit actual code before claiming a tighter bound. Existing64-operator
-and runtime work budgets remain. This is not a query-execution time guarantee.
+Let q count declared graph/field/filter items, S be the total explicit source
+schema size and s the source count. One path with maximum B<=3 expands at most
+B(B+1)/2 edge reads, not a product of independent path choices. With
+U=O((q+B^2)*s) intermediate read units and F=O(q+B^2) columns, coverage scans cost
+O((q+B^2)*S); the straightforward connected-unit scan and natural-join assembly
+cost O(U^2*F*log(F+1)), a conservative bound including field sorting. Generated
+DAG size/space is O(U*F+B^2). Existing parameter/program validation and downstream
+fragment compilation are additional polynomial passes over this expanded DAG.
+The existing64-operator limit rejects larger programs; it is an admission limit,
+not a quality bound. These are lowering bounds, not execution-time guarantees.
+
+## Frozen compact-v1 meaning (before test execution)
+
+`compact_query.py` defines the shared finite wire/local schema. All query fields
+are required: `nodes`, `edges`, nullable `path`, conjunctive `where`, `select`,
+nullable `deduplicate_by`, `order_by`, nullable `limit`. Bounds are8 nodes,
+12 explicit edges,32 predicates,16 output aliases, one homogeneous typed path
+of1..3 hops,64KiB JSON, at most8 candidates and64 lowered operators. Unsupported
+forms fail without clipping or repair. A top-K limit requires declared ordering.
+
+Each node has a unique variable, type and optional named entity mention. An edge
+has a unique variable, type, source and target node variables. References are
+`{var, property}`; null property means canonical identity, never a model-authored
+resolved ID. Technical identity literals are rejected; ordinary stored business-ID
+properties remain legal. Output names are user-facing aliases; generated internal
+columns cannot collide with them. Named mentions become normal entity holes.
+
+Predicates compare property/identity references or literals via eq/ne/lt/le/gt/ge;
+timestamp comparisons use the existing explicit millisecond contract. Required
+node-property reads union all declaring providers, grouped by identical coverage;
+explicit edges union all matching relation providers and reject partial required
+attribute coverage. Every shared variable/field is an equality at joins. This
+v1 profile assumes the frozen node properties are single-valued; conflicting values
+across sources remain separate tuples, not silently overwritten authoritative data.
+
+Path time windows apply to every edge, with individually declared inclusive bounds
+and optional strictly increasing timestamps. ACYCLIC prohibits repeated nodes;
+WALK permits them. The existing algebra's SIMPLE allows a closing endpoint repeat
+and is not redefined or exposed by compact-v1. The result is DISTINCT(source,target,length) reachability,
+without path identity or all-path bag output. Parallel-edge identities survive
+ordinary patterns and only disappear at explicit projection/deduplication.
+
+Before aggregation, nonnull `deduplicate_by` keeps DISTINCT tuples of the listed
+node/edge identities plus scalar fields required by select. Every selected field
+must belong to a retained variable. It does not pick an arbitrary value per key.
+Nonaggregate selections are grouping fields; sum/count/min/max have an explicit
+distinct flag, and only count may have a null field. Final projection is set-valued
+under existing semantics. All ordering is on selected aliases. This covers the
+three accepted financial meanings but is not unrestricted SQL/SPARQL semantics.
 
 Compiled candidates enter existing top-K grounding and estimated selection;
 P(1+2J) physical domain/guarantees stay unchanged. One model response, no online
