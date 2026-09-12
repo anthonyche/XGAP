@@ -1,3 +1,5 @@
+> Current authority (2026-09-12): the user approved [one-shot two-mode integration](decisions/one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.
+
 # XGAP Design Decisions
 
 ## E2: freeze within-query balance and retain the negative paid-cost baseline

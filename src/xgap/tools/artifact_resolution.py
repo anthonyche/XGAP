@@ -300,6 +300,51 @@ class ArtifactCatalogProvider:
             },
         )
 
+    def resolve_bounded(
+        self,
+        request: ResolutionCandidateRequest,
+        context: ToolContext,
+    ) -> ResolutionCandidateResponse:
+        """Explicit candidate truncation for the opt-in one-shot query path.
+
+        Stable artifact order is a deterministic ranking policy, not a quality
+        model. Stop after observing cap+1 matches; nonmatching entries still
+        require scanning. An incomplete scan reports only a count lower bound.
+        The legacy ``resolve`` retains its original no-truncation behavior.
+        """
+        del context
+        if type(request.max_candidates) is not int or not 1 <= request.max_candidates <= 256:
+            raise ValueError("Bounded catalog candidate cap must be from one to 256")
+        started = time.monotonic()
+        mention = normalize_semantic_mention(request.mention)
+        matches, visited = [], 0
+        for entry in self._entries:
+            visited += 1
+            if entry.kind is request.hole_kind and mention in entry.normalized_labels:
+                matches.append(entry)
+                if len(matches) > request.max_candidates:
+                    break
+        complete = visited == len(self._entries)
+        truncated = len(matches) > request.max_candidates
+        returned = matches[:request.max_candidates]
+        authoritative = (complete and not truncated and request.hole_kind is SemanticHoleKind.ENTITY
+            and len(matches) == 1 and mention in {
+                normalize_semantic_mention(item) for item in matches[0].authoritative_mentions})
+        return ResolutionCandidateResponse(hole_id=request.hole_id,
+            candidate_ids=tuple(item.candidate_id for item in returned), source_id=self.source_id,
+            authoritative=authoritative, external_calls=0,
+            latency_ms=(time.monotonic() - started) * 1000.0,
+            metadata={"schema_version": CATALOG_SCHEMA_VERSION, "catalog_id": self.catalog_id,
+                "catalog_version": self.catalog_version, "artifact_sha256": self.artifact_sha256,
+                "match_policy": "exact_normalized_mention_v1", "normalized_mention": mention,
+                "ranking_policy": "artifact_entry_order_v1", "entries_visited": visited,
+                "scan_complete": complete, "matched_candidate_count": len(matches) if complete else None,
+                "matched_candidate_count_lower_bound": len(matches),
+                "returned_candidate_count": len(returned), "max_candidates": request.max_candidates,
+                "truncated": truncated, "candidate_set_truncated": truncated,
+                "matches": [{"candidate_id": item.candidate_id, "canonical_label": item.canonical_label,
+                             "provenance": dict(item.provenance)} for item in returned]})
+
 
 @dataclass(frozen=True)
 class _OntologyConcept:

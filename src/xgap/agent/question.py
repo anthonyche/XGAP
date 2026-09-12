@@ -10,7 +10,21 @@ from xgap.semantic.program import SemanticGraphProgram
 
 
 def run_question(request, provider, *, catalog_root, catalog_hash, sources,
-                 backends, backend_clients, **execution_options):
+                 backends, backend_clients, mode=None, one_shot_policy=None,
+                 estimator=None, **execution_options):
+    # Explicit v2 profiles share this ordinary entry; frozen v1 recordings keep
+    # their original strict single-interpretation contract when no profile is set.
+    if mode is not None or one_shot_policy is not None or estimator is not None:
+        from xgap.agent.one_shot_policy import OneShotPolicy
+        from xgap.agent.one_shot_question import run_one_shot_question
+        if execution_options:
+            raise ValueError("One-shot uses its typed policy; legacy probing/clarification options are incompatible")
+        policy = one_shot_policy or OneShotPolicy.for_mode(mode or "precision")
+        if mode is not None and policy.mode != mode:
+            raise ValueError("Mode and one-shot policy disagree")
+        return run_one_shot_question(request, provider, policy=policy, estimator=estimator,
+            catalog_root=catalog_root, catalog_hash=catalog_hash, sources=sources,
+            backends=backends, backend_clients=backend_clients)
     started = time.perf_counter()
     try:
         bundle = FrozenResolutionBundle.load(catalog_root, expected_bundle_hash=catalog_hash)

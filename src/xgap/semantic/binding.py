@@ -31,7 +31,10 @@ class BoundSemanticQuery:
 
 
 def bind_semantic_query(program: SemanticGraphProgram, resolution: Mapping[str, Any], *,
-        binding_values: Mapping[str, SemanticBindingValue], operator_sources: Mapping[str, Any]) -> BoundSemanticQuery:
+        binding_values: Mapping[str, SemanticBindingValue], operator_sources: Mapping[str, Any],
+        allow_predicted_entities: bool = False) -> BoundSemanticQuery:
+    if type(allow_predicted_entities) is not bool:
+        raise SemanticProgramError("allow_predicted_entities must be explicit boolean")
     if resolution.get("program_id") != program.program_id or resolution.get("hard_constraints_sha256") != hard_constraints_sha256(program):
         raise SemanticProgramError("Resolution does not belong to this program and its hard constraints")
     if resolution.get("hard_constraints_preserved") is not True:
@@ -45,7 +48,9 @@ def bind_semantic_query(program: SemanticGraphProgram, resolution: Mapping[str, 
                 raise SemanticProgramError(f"Missing resolution for {hole.hole_id}")
             continue
         ids = item.get("candidate_ids", ())
-        if len(ids) != 1 or (hole.kind is H.ENTITY and item.get("authoritative") is not True):
+        predicted = (allow_predicted_entities and item.get("authoritative") is False
+                     and item.get("selection_policy") == "predicted_catalog_choice")
+        if len(ids) != 1 or (hole.kind is H.ENTITY and item.get("authoritative") is not True and not predicted):
             raise SemanticProgramError("One binding is required; entity identity must be authoritative")
         binding = binding_values.get(ids[0])
         if binding is None or binding.kind is not hole.kind:
@@ -54,6 +59,8 @@ def bind_semantic_query(program: SemanticGraphProgram, resolution: Mapping[str, 
         trace[hole.hole_id] = {"candidate_id": ids[0], "kind": binding.kind.value,
             "value": binding.value, "sources": item.get("sources", []),
             "authoritative": item.get("authoritative", False)}
+        if "selection_policy" in item:
+            trace[hole.hole_id]["selection_policy"] = item["selection_policy"]
 
     def bind(value, *, kind=None, path=(), parent=None, source=False, conjunctive=True):
         if isinstance(value, Mapping):

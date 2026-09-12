@@ -1,5 +1,28 @@
 # XGAP Status
 
+## Current checkpoint: first ordinary one-shot slice accepted on tiny data
+
+The new precision/performance entry now connects top-K, frozen grounding, real
+physical strategies, fitted frozen estimates and one final execution.48 new
+risk checks have passing terminal results; no broad suite or new comparison was
+run. Ordinary B01 returns the independent answer in both controlled-mode slices,
+without observation calls. See [evidence and limits](report/one_shot_core_20260912.md).
+Live new-profile LLM+Neo4j/Fuseki and real estimator calibration are still pending;
+this is engineering evidence, not a new paper result or complete-system claim.
+
+## Current: approved one-shot two-mode integration is in progress
+
+User explicitly resumed development on2026-09-12. The old pause below is historical.
+The [approved contract](decisions/one_shot_modes_v1.md) and
+[48-hour plan](one_shot_development_20260912.md) now govern execution. M1 updates
+contracts and begins parallel top-K, real strategy and frozen-estimator adapters;
+ordinary-entry integration is not yet accepted. Core target Sep14 17:00 Beijing;
+real evaluation remains due Sep18. Only tiny affected checks and necessary external
+integration are allowed until the coherent core is accepted. Existing measured
+results and remote3804210 remain unchanged.
+
+## Historical checkpoints (do not execute their superseded next actions)
+
 ## Current E2 — original48 complete; paid acquisition costs more; user pause
 
 All864 final and576 acquisition plans are exact across48 queries,6 blocks and

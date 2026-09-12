@@ -1,5 +1,32 @@
 # XGAP current engineering loop
 
+## Accepted first slice; next new-profile tiny external boundary
+
+Root and three bounded tasks implemented the shared entry, modes, candidate pool,
+predicted grounding, true strategy neighborhood and frozen ridge adapter.48 new
+checks now have passing terminal results (10candidate+9grounding+8strategy+
+10estimator+11ordinary-entry). Root10 first0.61s, then only1 new cap check0.24s;
+no live/native/large benchmark call. [Detailed evidence](report/one_shot_core_20260912.md).
+Prior tests are accepted; do not rerun them absent new risk. The next bounded work
+prepares a mode-matched provider/frozen model for one ordinary tiny real external
+gate. Current model labels are analytic toy and do not prove real accuracy or
+latency prediction. Keep source/version identities exact and all one-time costs.
+
+## Current execution — user-approved resumption on2026-09-12
+
+M1 of [48-hour core integration](one_shot_development_20260912.md) is active.
+Start checkpoint793cc1d, initially clean. Root owns mode/ordinary entry and docs;
+three parallel bounded implementation tasks own top-K interpretation, executable
+physical strategies and frozen RuntimePlan estimator. No new native/model run or
+comparison has been performed for this milestone yet. Record first focused tests
+and integration results here as they occur; do not infer acceptance from code.
+
+New authority: [one-shot modes v1](decisions/one_shot_modes_v1.md). Existing
+FinBench raw evidence and all old gates remain accepted and unchanged. No need
+to rerun them. The prior discussion pause below is superseded by explicit approval.
+
+## Historical execution checkpoints
+
 ## Latest E2 — full original48 completed; paused for user discussion
 
 Read [balanced result](report/finbench_paid_balanced_20260912.md). Parent9d8cf2e

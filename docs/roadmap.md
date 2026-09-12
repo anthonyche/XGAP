@@ -1,5 +1,26 @@
 # XGAP Roadmap
 
+## First slice delivered; remaining core gates
+
+The [new ordinary tiny slice](report/one_shot_core_20260912.md) passes. Next: usable
+mode-matched external provider/configuration, actual small Neo4j/Fuseki snapshot
+and frozen model connection; one new external gate; necessary research-facing
+estimator/information limits and evaluation interface freeze. No new performance
+campaign before coherent core acceptance. Sep14 17:00 target remains unchanged.
+
+## Current: approved 48-hour one-shot core, then experiment-plan discussion
+
+Follow [the dated schedule](one_shot_development_20260912.md), ending Sep14 17:00
+Beijing. Sequence: common two-mode contract -> bounded interpretation and real
+physical strategies -> frozen cost estimator and joint selection -> one final
+execution from ordinary NL entry -> affected tiny/native acceptance -> evaluation
+interface freeze. No new comparisons/ablations/scalability sweeps before this gate.
+The [current decision](decisions/one_shot_modes_v1.md) supersedes older planning
+priorities. Preserve historical results; external SOTA and16–20 figures will be
+specified after core acceptance, ahead of the Sep18 real-evaluation deadline.
+
+## Historical roadmap entries
+
 ## Paused after balanced original48 result — discuss the next R-C gate
 
 The [balanced real comparison](report/finbench_paid_balanced_20260912.md) completed:

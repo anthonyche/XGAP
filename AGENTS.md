@@ -58,6 +58,18 @@ decision, reference-evaluator behavior, validation, and tests.
 `PathPatternQuery` is a reusable path sub-IR, commonly carried by semantic
 `Traverse`; it is not the entire interpretation or agent plan.
 
+## Current user-approved profile (2026-09-12)
+
+Read `docs/decisions/one_shot_modes_v1.md` and
+`docs/one_shot_development_20260912.md` for the current bounded milestone.
+The explicit precision/performance one-shot profile may select uncertain meanings
+or truncate retrieval coverage, with provenance, without mandatory clarification.
+This does not make predicted identity authoritative or relax an explicit hard
+request constraint. Legacy strict APIs keep their behavior. Runtime reads frozen
+catalog/statistics/estimator artifacts, selects by estimates and executes one final
+plan; no default current-question candidate probing. Do not run new ablations,
+comparisons or scale sweeps until the ordinary core integration is accepted.
+
 ## Agent invariants
 
 - Every run starts from an explicit goal and success criteria.

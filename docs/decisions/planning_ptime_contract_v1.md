@@ -1,3 +1,5 @@
+> Current authority (2026-09-12): the user approved [one-shot two-mode integration](one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.
+
 # P1: polynomial planning and explicit quality guarantees
 
 2026-09-11. Research design and proof obligations, initially frozen at7aad1dc.
