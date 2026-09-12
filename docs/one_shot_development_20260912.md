@@ -45,3 +45,19 @@ including the two controlled modes with independent B01 answers. This advances
 the ordinary-entry mechanical gate ahead of the24-hour target; actual external
 LLM/Neo4j/Fuseki verification remains outstanding. Keep the dated remaining gates
 and do not substitute these checks for real model or performance evidence.
+
+## First actual native attempt
+
+Checkpoint b008775 started and loaded both actual stores, completed four
+independent tiny training measurements, and froze/reloaded the fitted estimator.
+The one external B01 request returned a malformed parameter structure; binding
+rejected it before planning or final execution. All four catalog resolutions
+succeeded. See the retained [failure report](report/one_shot_native_20260912.md).
+The real NL-to-answer gate is open; this failure is not a backend answer error.
+
+The next change shares typed parameters between the candidate wire schema and
+admission. Replay the saved failure locally and retain its original status.
+The native harness now supports reuse of the accepted frozen estimator; a new
+protocol gate must use it, with zero new training/fit calls. Historical training
+costs remain separate from current reload and query costs. Do not repeat accepted
+module gates or the four training executions.

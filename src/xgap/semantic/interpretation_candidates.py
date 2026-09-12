@@ -16,6 +16,7 @@ from xgap.semantic.interpretation import (
     InterpretationFailure, InterpretationResponse, SCHEMA as SINGLE_SCHEMA,
     json_copy, parse_interpretation,
 )
+from xgap.semantic.parameter_contract import PARAMETER_CONTRACT, validate_program_parameters
 
 
 SCHEMA = "xgap-semantic-interpretation-candidates-v2"
@@ -55,7 +56,8 @@ def parse_interpretation_candidates(payload, request, *, candidate_cap):
     records = []
     for index, raw in enumerate(candidates):
         record = {"candidate_index": index, "candidate_id": None, "status": "invalid",
-                  "quality_proxy": None, "quality_proxy_calibrated": False}
+                  "quality_proxy": None, "quality_proxy_calibrated": False,
+                  "parameter_contract_version": PARAMETER_CONTRACT}
         try:
             item = json_copy(raw)
             record["raw_candidate"] = item
@@ -72,6 +74,7 @@ def parse_interpretation_candidates(payload, request, *, candidate_cap):
             if quality is not None and (type(quality) not in (int, float)
                     or not math.isfinite(quality) or not 0 <= quality <= 1):
                 raise ValueError("Quality proxy must be finite in [0,1] or null; it is not calibrated")
+            validate_program_parameters(item["program"])
             program, sources = parse_interpretation({"schema_version": SINGLE_SCHEMA,
                 "program": item["program"], "operator_sources": item["operator_sources"]}, request)
             record.update(status="admitted", quality_proxy=quality,
@@ -96,6 +99,7 @@ def interpret_candidate_question(request, provider, *, candidate_cap):
     validate_candidate_cap(candidate_cap)
     started = time.perf_counter()
     report = {"schema_version": SCHEMA, "provider_id": provider.provider_id,
+              "parameter_contract_version": PARAMETER_CONTRACT,
               "request": request.to_dict(), "candidate_cap": candidate_cap,
               "success": False, "external_calls": 0, "input_tokens": 0,
               "output_tokens": 0, "candidates": [], "admitted_count": 0,

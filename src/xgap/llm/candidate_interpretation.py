@@ -12,6 +12,7 @@ import math
 from xgap.experiments.hashing import content_hash
 from xgap.llm.interpretation import INTERPRETATION_SCHEMA, OpenAICompatibleInterpretationProvider
 from xgap.semantic.interpretation_candidates import SCHEMA, validate_candidate_cap
+from xgap.semantic.parameter_contract import PARAMETER_CONTRACT, typed_operator_schema
 
 
 def candidate_interpretation_schema(candidate_cap):
@@ -23,7 +24,10 @@ def candidate_interpretation_schema(candidate_cap):
                   {"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]},
               "program": deepcopy(single["program"]),
               "operator_sources": deepcopy(single["operator_sources"])}
-    return {"type": "object", "required": ["schema_version", "candidates"],
+    operators = fields["program"]["properties"]["operators"]
+    operators["items"], definitions = typed_operator_schema(operators["items"])
+    return {"type": "object", "title": PARAMETER_CONTRACT, "$defs": definitions,
+        "required": ["schema_version", "candidates"],
         "additionalProperties": False, "properties": {
             "schema_version": {"type": "string", "const": SCHEMA},
             "candidates": {"type": "array", "minItems": 1, "maxItems": candidate_cap,

@@ -37,7 +37,7 @@ from xgap.semantic.interpretation_replay import (
 )
 
 
-PROFILE = "xgap-one-shot-toy-development-v1"
+PROFILE = "xgap-one-shot-toy-development-v2"
 MODEL = "qwen3.8-27b"
 BASE_URL = "http://112.95.75.67:9018/v1"
 # Original request text only. Reading the old cases file before inference would
@@ -78,7 +78,12 @@ def one_shot_toy_prompt():
         "cap when extra interpretations are not justified. Do not duplicate candidates.\n"
         "Interpret every candidate independently using the following same contract.\n"
         "Never produce native queries, physical plans, answers or invented/resolved entity IDs.\n"
-        "Never alter a required hard constraint. Respect context.one_shot_profile budgets.\n\n" + body)
+        "Never alter a required hard constraint. Respect context.one_shot_profile budgets.\n"
+        "Follow the typed response schema exactly. constraints and required_capabilities\n"
+        "are siblings of parameters, never fields inside parameters. In path_pattern,\n"
+        "target, selector, restrictor, condition and max_depth are siblings of expr.\n"
+        "A rel expr contains only kind and edge. Misnested or extra fields are rejected\n"
+        "without repair; do not duplicate fields at multiple levels.\n\n" + body)
 
 
 def load_one_shot_toy_provider(*, mode="precision", base_url=BASE_URL, model=MODEL,

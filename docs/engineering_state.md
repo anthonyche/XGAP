@@ -1,5 +1,19 @@
 # XGAP current engineering loop
 
+## Current: real tiny training completed; one new-model format failure retained
+
+The single b008775 native attempt completed4 independent training plans on real
+Neo4j/Fuseki and froze the measured model. One external B01 request returned one
+candidate (2077input/920output tokens), but misplaced parameter/path fields failed
+binding before planning:0final/0onlinebackend. All4 catalog lookups succeeded.
+See [actual evidence](report/one_shot_native_20260912.md); no answer or performance
+advantage is claimed.430input fingerprints unchanged, owned1150/1193 stopped.
+
+Next: finite typed v2 parameter/wire contract plus local failed-response replay;
+retain the original failure. Reuse the accepted frozen model and its historical
+one-time costs for any later new-protocol tiny gate, rather than redoing training.
+No current-request retry, broad regression, ablation or large benchmark campaign.
+
 ## New-profile external gate is prepared (not yet executed)
 
 Checkpoint54144e9 contains the accepted first ordinary slice. The mode-matched

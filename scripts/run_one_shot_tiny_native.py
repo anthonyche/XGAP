@@ -1,8 +1,9 @@
 """One new tiny NL request, with separate measured offline training and owned stores.
 
 The default is a local, zero-call preflight. --execute starts fresh loopback
-Neo4j/Fuseki stores, loads the existing five-node fixture, measures four declared
-training plans once, freezes/reloads a ridge estimator, and runs only B01 once.
+Neo4j/Fuseki stores and loads the existing five-node fixture. --estimator reuses
+an accepted frozen model without training or fit; otherwise four declared
+training plans are measured once and a ridge estimator frozen. Only B01 runs.
 There are no benchmark loops, candidate probes, model retries or fallback runs.
 """
 
@@ -32,7 +33,8 @@ from xgap.experiments.m15_native_services import (
     wait_for_service_health,
 )
 from xgap.experiments.one_shot_toy import (
-    BASE_URL, MODEL, load_one_shot_toy_provider, one_shot_toy_inputs, run_one_shot_toy,
+    BASE_URL, MODEL, load_one_shot_toy_provider, one_shot_toy_inputs,
+    one_shot_toy_preflight, run_one_shot_toy,
 )
 from xgap.experiments.toy_backbone import DEFAULT_FIXTURE
 from xgap.experiments.toy_binding import BUNDLE_FIXTURE, FIXTURE as BINDING_FIXTURE, INTAKE_FIXTURE
@@ -76,7 +78,7 @@ def _write_once(path, value, costs, category):
     return _file(path)
 
 
-def _fingerprints(products, java):
+def _fingerprints(products, java, estimator_path=None):
     paths = set((REPO / "src/xgap").rglob("*.py"))
     paths.add(Path(__file__).resolve())
     for directory in (DEFAULT_FIXTURE, BUNDLE_FIXTURE, BINDING_FIXTURE, INTAKE_FIXTURE,
@@ -84,6 +86,8 @@ def _fingerprints(products, java):
         paths.update(p for p in directory.rglob("*") if p.is_file())
     paths.update((products["neo4j"] / "bin/neo4j", products["fuseki"] / "fuseki-server",
                   REPO / "services/m15-native-runtime.lock.json", Path(java).resolve()))
+    if estimator_path is not None:
+        paths.add(Path(estimator_path).resolve())
     return {str(p.resolve()): _file(p) for p in sorted(paths)}
 
 
@@ -124,8 +128,17 @@ def prepare(args):
         SourceStatistics(backend, "toy", version, len(records), mean_bytes,
             "graph.json#sha256=" + graph_file["sha256"] + ";logical-node-and-edge-records")
         for backend in ("neo4j", "fuseki")))
-    training = []
-    for backend in ("neo4j", "fuseki"):
+    training, reused = [], None
+    if args.estimator:
+        checked, _, _, frozen = one_shot_toy_preflight(provider,
+            estimator_path=args.estimator, query_id=QUERY_ID, mode=args.mode)
+        if not checked["success"] or frozen.statistics.to_dict() != statistics.to_dict():
+            raise ValueError("Reused estimator does not match the exact original tiny source statistics")
+        reused = {"estimator_file": _file(args.estimator), "model_sha256": frozen.model_sha256,
+            "training_provenance": frozen.to_dict()["training_provenance"],
+            "cost_scope": "historical one-time collection/fit; not incurred again by this gate",
+            "planned_current_training_calls": 0, "planned_current_fit_calls": 0}
+    for backend in (() if args.estimator else ("neo4j", "fuseki")):
         for filtered in (False, True):
             qid = "OS-TRAIN-" + backend + ("-match-age35" if filtered else "-match-entities")
             program = _training_program(qid, filtered)
@@ -146,12 +159,15 @@ def prepare(args):
         "statistics": statistics.to_dict(), "statistics_scope":
             "Logical nodes+edges and mean JSON record size of the replicated fixture; not result cardinality or wire bytes",
         "training": [{**item, "plan": item["plan"].to_dict()} for item in training],
-        "training_calls_maximum": 4, "final_plan_executions_maximum": 1,
+        "training_calls_maximum": len(training), "final_plan_executions_maximum": 1,
+        "estimator_mode": "reuse_frozen" if args.estimator else "collect_and_fit",
+        "reused_estimator": reused,
         "model_requests_maximum": 1, "current_query_probe_calls": 0, "automatic_retries": 0,
         "excluded_query_ids": list(EXCLUDED_IDS), "paper_result": False,
         "live_endpoint_verified": False, "loaded_backend_facts_verified": False,
         "model_created": False, "java_version_checked": False,
-        "limitations": ["Four separate tiny training executions only; not a calibrated model",
+        "limitations": [("Reuses historical independent tiny training; no current training or fit"
+                         if args.estimator else "Four separate tiny training executions only; not a calibrated model"),
             "No join/bind training coverage; B01 may extrapolate outside training features",
             "Shared local caches evolve during loading/training/query; no performance comparison",
             "Gold is used only by the independent evaluator after the one-shot result is sealed"]}
@@ -176,11 +192,12 @@ def run(args):
     try:
         prepare_at = time.perf_counter()
         preflight, products, provider, statistics, training = prepare(args)
+        record["estimator_mode"] = preflight["estimator_mode"]
         record["offline"]["input_preparation_ms"] = (time.perf_counter() - prepare_at) * 1000
         record["training"] = [{"query_id": item["query_id"], "status": "not_attempted",
             "elapsed_ms": None, "remote_calls": None} for item in training]
         record["preflight"] = _write_once(root / "preflight.json", preflight, costs, "preflight_ms")
-        initial_inputs = _fingerprints(products, args.java)
+        initial_inputs = _fingerprints(products, args.java, args.estimator)
         _write_once(root / "input_fingerprints.json", initial_inputs, costs, "preflight_ms")
         if not args.execute:
             record.update(success=True, status="preflight_passed", input_unchanged=True)
@@ -194,8 +211,9 @@ def run(args):
             signal.signal(signum, expired)
         signal.alarm(300)
         _write_once(root / "execution_intent.json", {"started_at": _now(),
-            "preflight_sha256": record["preflight"]["sha256"], "maximum_training_plans": 4,
+            "preflight_sha256": record["preflight"]["sha256"], "maximum_training_plans": len(training),
             "training_query_ids": [item["query_id"] for item in training],
+            "estimator_mode": preflight["estimator_mode"], "reused_estimator": preflight["reused_estimator"],
             "current_query_id": QUERY_ID, "maximum_model_requests": 1,
             "maximum_final_plan_executions": 1, "maximum_current_query_probes": 0,
             "work_seconds": 300, "cleanup_seconds_per_service": 30,
@@ -259,56 +277,73 @@ def run(args):
             if not loaded.success:
                 raise RuntimeError("Original tiny fixture load failed; no retry")
         record["offline"]["fixture_load_ms"] = (time.perf_counter() - load_at) * 1000
-        _write_once(root / "source_statistics.json", statistics.to_dict(), costs, "offline_training_ms")
+        _write_once(root / "source_statistics.json", statistics.to_dict(), costs, "offline_statistics_ms")
 
-        registry = BackendPluginRegistry()
-        for client in (neo, rdf):
-            registry.register(NativeBackendPlugin(client.backend_id, client))
-        scheduler = FederatedScheduler(BackendInvokeTool(registry))
-        training_at = time.perf_counter()
-        samples = []
-        for index, item in enumerate(training):
-            prefix = f"training-{index + 1:02d}"
-            record["phase"] = prefix
-            observed = record["training"][index]
-            observed["status"] = "started"
-            _write_once(root / (prefix + "-intent.json"), {"query_id": item["query_id"],
-                "split_role": "training", "status": "started", "plan": item["plan"].to_dict()}, costs, "offline_training_ms")
-            result = scheduler.execute(item["plan"], goal_id=item["query_id"])
-            measurement = _write_once(root / (prefix + "-measurement.json"), {
-                "query_id": item["query_id"], "split_role": "training", "runtime_result": result.to_dict(),
-                "label_field": "runtime_result.elapsed_ms", "label_scope": "actual complete scheduler execution only",
-                "gold_used": False, "automatic_retries": 0}, costs, "offline_training_ms")
-            observed.update(status="completed" if result.success else "failed", measurement=measurement,
-                success=result.success, elapsed_ms=result.elapsed_ms, remote_calls=result.total_remote_calls)
-            if not result.success:
-                raise RuntimeError("Independent tiny training execution failed; no retry or query request")
-            samples.append(RuntimeTrainingSample(prefix, item["query_id"], item["plan"],
-                result.elapsed_ms, measurement["sha256"]))
-        collection_ms = (time.perf_counter() - training_at) * 1000
-        collection_calls = sum(item["remote_calls"] for item in record["training"])
-        collection = _write_once(root / "training_collection.json", {"training": record["training"],
-            "excluded_query_ids": list(EXCLUDED_IDS), "collection_elapsed_ms": collection_ms,
-            "collection_remote_calls": collection_calls, "source_statistics_sha256": statistics.sha256,
-            "kind": "measured_training_on_original_tiny_graph", "paper_result": False}, costs, "offline_training_ms")
-        fit_at = time.perf_counter()
-        record["phase"] = "offline_fit_and_freeze"
-        estimator = fit_runtime_estimator(samples, statistics=statistics,
-            training_id="one-shot-independent-tiny-match-v1", model_version="tiny-measured-ridge-v1",
-            training_kind="measured_training", excluded_query_ids=EXCLUDED_IDS,
-            collection_ref="training_collection.json#sha256=" + collection["sha256"],
-            collection_elapsed_ms=collection_ms, collection_remote_calls=collection_calls)
-        fit_ms = (time.perf_counter() - fit_at) * 1000
-        estimator_path = root / "frozen_estimator.json"
-        serialized = _write_once(estimator_path, estimator.to_dict(), costs, "offline_model_freeze_ms")
-        load_at = time.perf_counter()
-        reloaded = FrozenRuntimeEstimator.load(estimator_path)
-        if reloaded.to_dict() != estimator.to_dict():
-            raise RuntimeError("Frozen estimator did not round-trip")
-        record["offline"].update(training_collection_ms=collection_ms, training_remote_calls=collection_calls,
-            fit_ms=fit_ms, estimator_reload_ms=(time.perf_counter() - load_at) * 1000,
-            estimator_file=serialized, estimator_model_sha256=reloaded.model_sha256)
-        _write_once(root / "offline_receipt.json", record["offline"], costs, "offline_model_freeze_ms")
+        if args.estimator:
+            record["phase"] = "reload_accepted_estimator"
+            estimator_path = Path(args.estimator).resolve()
+            reuse = preflight["reused_estimator"]
+            load_at = time.perf_counter()
+            reloaded = FrozenRuntimeEstimator.load(estimator_path)
+            if (_file(estimator_path) != reuse["estimator_file"]
+                    or reloaded.model_sha256 != reuse["model_sha256"]):
+                raise RuntimeError("Accepted estimator changed after preflight")
+            record["offline"].update(estimator_mode="reuse_frozen", training_reused=True,
+                training_collection_ms=0.0, training_remote_calls=0, fit_ms=0.0, fit_calls=0,
+                estimator_reload_ms=(time.perf_counter() - load_at) * 1000,
+                estimator_file=reuse["estimator_file"], estimator_model_sha256=reloaded.model_sha256)
+            record["historical_estimator_preparation"] = reuse
+            _write_once(root / "reused_estimator_receipt.json", reuse, costs, "offline_model_reuse_ms")
+        else:
+            registry = BackendPluginRegistry()
+            for client in (neo, rdf):
+                registry.register(NativeBackendPlugin(client.backend_id, client))
+            scheduler = FederatedScheduler(BackendInvokeTool(registry))
+            training_at = time.perf_counter()
+            samples = []
+            for index, item in enumerate(training):
+                prefix = f"training-{index + 1:02d}"
+                record["phase"] = prefix
+                observed = record["training"][index]
+                observed["status"] = "started"
+                _write_once(root / (prefix + "-intent.json"), {"query_id": item["query_id"],
+                    "split_role": "training", "status": "started", "plan": item["plan"].to_dict()}, costs, "offline_training_ms")
+                result = scheduler.execute(item["plan"], goal_id=item["query_id"])
+                measurement = _write_once(root / (prefix + "-measurement.json"), {
+                    "query_id": item["query_id"], "split_role": "training", "runtime_result": result.to_dict(),
+                    "label_field": "runtime_result.elapsed_ms", "label_scope": "actual complete scheduler execution only",
+                    "gold_used": False, "automatic_retries": 0}, costs, "offline_training_ms")
+                observed.update(status="completed" if result.success else "failed", measurement=measurement,
+                    success=result.success, elapsed_ms=result.elapsed_ms, remote_calls=result.total_remote_calls)
+                if not result.success:
+                    raise RuntimeError("Independent tiny training execution failed; no retry or query request")
+                samples.append(RuntimeTrainingSample(prefix, item["query_id"], item["plan"],
+                    result.elapsed_ms, measurement["sha256"]))
+            collection_ms = (time.perf_counter() - training_at) * 1000
+            collection_calls = sum(item["remote_calls"] for item in record["training"])
+            collection = _write_once(root / "training_collection.json", {"training": record["training"],
+                "excluded_query_ids": list(EXCLUDED_IDS), "collection_elapsed_ms": collection_ms,
+                "collection_remote_calls": collection_calls, "source_statistics_sha256": statistics.sha256,
+                "kind": "measured_training_on_original_tiny_graph", "paper_result": False}, costs, "offline_training_ms")
+            fit_at = time.perf_counter()
+            record["phase"] = "offline_fit_and_freeze"
+            estimator = fit_runtime_estimator(samples, statistics=statistics,
+                training_id="one-shot-independent-tiny-match-v1", model_version="tiny-measured-ridge-v1",
+                training_kind="measured_training", excluded_query_ids=EXCLUDED_IDS,
+                collection_ref="training_collection.json#sha256=" + collection["sha256"],
+                collection_elapsed_ms=collection_ms, collection_remote_calls=collection_calls)
+            fit_ms = (time.perf_counter() - fit_at) * 1000
+            estimator_path = root / "frozen_estimator.json"
+            serialized = _write_once(estimator_path, estimator.to_dict(), costs, "offline_model_freeze_ms")
+            load_at = time.perf_counter()
+            reloaded = FrozenRuntimeEstimator.load(estimator_path)
+            if reloaded.to_dict() != estimator.to_dict():
+                raise RuntimeError("Frozen estimator did not round-trip")
+            record["offline"].update(training_collection_ms=collection_ms, training_remote_calls=collection_calls,
+                fit_ms=fit_ms, estimator_reload_ms=(time.perf_counter() - load_at) * 1000,
+                estimator_file=serialized, estimator_model_sha256=reloaded.model_sha256)
+        _write_once(root / "offline_receipt.json", record["offline"], costs,
+                    "offline_model_reuse_ms" if args.estimator else "offline_model_freeze_ms")
 
         online_at = time.perf_counter()
         record.update(status="one_shot_started", phase="one_shot", external_model_calls=None,
@@ -364,7 +399,7 @@ def run(args):
             if ports is not None:
                 ports.close()
             if initial_inputs is not None:
-                after = _fingerprints(products, args.java)
+                after = _fingerprints(products, args.java, args.estimator)
                 record["input_unchanged"] = after == initial_inputs
                 _write_once(root / "input_fingerprints_after.json", after, costs, "post_return_ms")
                 if not record["input_unchanged"]:
@@ -386,6 +421,7 @@ def main(argv=None):
     parser.add_argument("--java", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--estimator", help="Reuse an accepted frozen tiny estimator; skip all collection and fit")
     parser.add_argument("--mode", choices=("precision", "performance"), default="precision")
     parser.add_argument("--base-url", default=BASE_URL)
     parser.add_argument("--model", default=MODEL)

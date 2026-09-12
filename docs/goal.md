@@ -1,5 +1,12 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 最新实际检查点：小图真实训练完成，新解释格式失败已定位
+
+一次真实尝试完成Neo4j/Fuseki四条独立训练查询并冻结模型；外部LLM一条B01响应在参数
+层级上出错，尚未进入planning/final execution。四次catalog查询全部成功。
+[结果与成本](report/one_shot_native_20260912.md)。当前修复v2参数/wire结构契约并本地
+重放失败，不重复模型请求或成功训练；新入口真实NL→答案验收仍待完成。批准目标继续。
+
 ## 9月12日首个执行检查点
 
 新one-shot普通入口已完成受控小图闭环，两模式都返回独立预期答案；解释、grounding、

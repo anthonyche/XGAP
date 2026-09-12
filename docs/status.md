@@ -1,6 +1,20 @@
 # XGAP Status
 
-## New-profile external gate is prepared (not yet executed)
+## Current: real tiny training completed; one new-model format failure retained
+
+The single b008775 native attempt completed4 independent training plans on real
+Neo4j/Fuseki and froze the measured model. One external B01 request returned one
+candidate (2077input/920output tokens), but misplaced parameter/path fields failed
+binding before planning:0final/0onlinebackend. All4 catalog lookups succeeded.
+See [actual evidence](report/one_shot_native_20260912.md); no answer or performance
+advantage is claimed.430input fingerprints unchanged, owned1150/1193 stopped.
+
+Next: finite typed v2 parameter/wire contract plus local failed-response replay;
+retain the original failure. Reuse the accepted frozen model and its historical
+one-time costs for any later new-protocol tiny gate, rather than redoing training.
+No current-request retry, broad regression, ablation or large benchmark campaign.
+
+## Historical preparation checkpoint (superseded by the actual attempt above)
 
 Checkpoint54144e9 contains the accepted first ordinary slice. The mode-matched
 external provider, one-question durable recording/replay and endpoint CLI are
@@ -16,11 +30,11 @@ one B01 model request and execute at most one final selected plan. Preparation,
 training and online/post-return costs are separate. This will be a new-profile
 integration gate, not a benchmark campaign or estimator-quality experiment.
 
-No native/model action has yet occurred for these new harnesses. Do not repeat
+At this preparation checkpoint no native/model action had yet occurred. Do not repeat
 accepted module checks or preflight; next review/freeze code and perform this
 single new external gate, preserving terminal failures and stopping owned services.
 
-## Current checkpoint: first ordinary one-shot slice accepted on tiny data
+## Earlier checkpoint: first ordinary one-shot slice accepted on tiny data
 
 The new precision/performance entry now connects top-K, frozen grounding, real
 physical strategies, fitted frozen estimates and one final execution.48 new
