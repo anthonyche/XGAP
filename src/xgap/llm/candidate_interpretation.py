@@ -15,6 +15,23 @@ from xgap.semantic.interpretation_candidates import SCHEMA, validate_candidate_c
 from xgap.semantic.parameter_contract import PARAMETER_CONTRACT, typed_operator_schema
 
 
+WIRE_PROFILES = {"json-schema-v1": "json_schema", "json-object-v1": "json_object"}
+
+
+def candidate_output_mode(wire_profile):
+    """Choose the wire format before dispatch; this is never an error fallback."""
+    if wire_profile not in WIRE_PROFILES:
+        raise ValueError("Unsupported candidate wire profile")
+    return WIRE_PROFILES[wire_profile]
+
+
+def candidate_wire_profile(structured_output_mode):
+    for profile, mode in WIRE_PROFILES.items():
+        if mode == structured_output_mode:
+            return profile
+    raise ValueError("Unsupported candidate structured output mode")
+
+
 def candidate_interpretation_schema(candidate_cap):
     """Build the response schema for one explicitly bounded candidate pool."""
     validate_candidate_cap(candidate_cap)
@@ -43,8 +60,9 @@ class OpenAICompatibleCandidateInterpretationProvider(OpenAICompatibleInterpreta
         validate_candidate_cap(self.config.candidate_cap)
         if not self.system_prompt.strip() or self.config.prompt_hash != content_hash(self.system_prompt):
             raise ValueError("Candidate Interpretation prompt must match its pinned hash")
-        if self.config.structured_output_mode != "json_schema" or self.config.max_repair_calls != 0:
-            raise ValueError("Candidate Interpretation requires JSON schema and zero repairs")
+        candidate_wire_profile(self.config.structured_output_mode)
+        if self.config.max_repair_calls != 0:
+            raise ValueError("Candidate Interpretation requires zero repairs")
         expected = candidate_interpretation_schema(self.config.candidate_cap)
         if content_hash(self.config.structured_schema) != content_hash(expected):
             raise ValueError("Candidate Interpretation schema does not match its bounded pool")
@@ -59,5 +77,8 @@ class OpenAICompatibleCandidateInterpretationProvider(OpenAICompatibleInterpreta
         wire_request = {**request.to_dict(), "schema_version": SCHEMA,
                         "candidate_cap": self.config.candidate_cap}
         payload["messages"][1]["content"] = json.dumps(wire_request, ensure_ascii=False)
-        payload["response_format"]["json_schema"]["name"] = "xgap_semantic_candidates"
+        if self.config.structured_output_mode == "json_object":
+            payload["response_format"] = {"type": "json_object"}
+        else:
+            payload["response_format"]["json_schema"]["name"] = "xgap_semantic_candidates"
         return payload

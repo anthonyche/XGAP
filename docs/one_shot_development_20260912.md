@@ -61,3 +61,15 @@ The native harness now supports reuse of the accepted frozen estimator; a new
 protocol gate must use it, with zero new training/fit calls. Historical training
 costs remain separate from current reload and query costs. Do not repeat accepted
 module gates or the four training executions.
+
+The typed contract and five new checks are now accepted. A separate bc4103c
+native attempt reused the model with zero training/fit but received HTTP 500
+before interpretation. The real answer gate remains open. The next task is an
+explicit provider wire compatibility profile retaining identical local admission;
+HTTP 500 alone does not identify the root cause. No automatic request fallback.
+
+Input-profile acceptance also distinguishes the current guided request (original
+NL plus declared output fields/prepared hard constraints) from unaided NL-only
+Interpretation. After this boundary works, verify one small ordinary NL-only
+request without prepared operator IDs/constraints; preserve the guided gate's
+scope and do not treat it as an independent model-accuracy evaluation.

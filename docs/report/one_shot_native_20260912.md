@@ -5,6 +5,13 @@ an evaluation campaign. Original raw outputs remain unchanged at
 `/Users/anthonyche/xgap-data/one-shot-native-20260912-b008775/`.
 [Machine-readable checkpoint](../../experiments/artifacts/one_shot_native_20260912.json).
 
+Input scope: these tiny gates use the ordinary request entry with B01's original
+NL text, frozen runtime context, declared output fields and prepared hard request
+constraints (including operator IDs). No gold rows, full gold program or native
+query is supplied to inference. This checks the configured boundary; it does not
+yet verify an unaided NL-only request with no prepared constraint declarations.
+That input profile remains an explicit core-acceptance item before evaluation.
+
 ## Actual outcome
 
 The external qwen3.8-27b served alias handled **one request**, with2,077 input and
@@ -84,5 +91,41 @@ skips training-plan construction, collection and fit; and separates historical
 cost provenance from current reload/loading costs. An independent read-only
 review found no blocking defect. No previously accepted gate was rerun.
 
-Next is one separately recorded request using this new protocol and the existing
-frozen estimator. That request is not yet evidence of a successful final answer.
+## New typed-protocol attempt: HTTP 500 before interpretation
+
+The separately recorded bc4103c attempt reused the frozen estimator successfully:
+zero new training queries, zero fits, and the original model hash unchanged.
+Both tiny stores loaded, but the one external request returned HTTP 500 with an
+empty `InternalServerError` message. No interpretation, planning or final query
+execution followed. This is one request attempt, not a completed model generation;
+input/output token counts are unknown, not zero. Core failure latency was
+152.452 ms, not successful-query latency. Current service setup (7,421.087 ms),
+fixture loading (261.073 ms) and model reload (0.599 ms) are separate costs.
+
+The 432 input fingerprints match; owned Neo4j PID 3795 and Fuseki PID 3845 stopped
+without SIGKILL. Original artifacts are retained at
+`/Users/anthonyche/xgap-data/one-shot-native-20260912-bc4103c/` and summarized in
+[the second attempt checkpoint](../../experiments/artifacts/one_shot_native_typed_20260912.json).
+
+HTTP 500 alone does not establish that the service rejects recursive structured
+schemas. The next bounded engineering step is an explicitly chosen compatible
+wire profile with identical local typed admission; it must have a separate
+request identity, no automatic fallback/retry and no weakening of hard binding.
+The old failed request is not replayed against the provider. Real NL-to-answer
+acceptance remains open.
+
+## Explicit compatibility profile prepared
+
+`json-object-v1` is now an explicit pre-dispatch choice. It places the identical
+typed schema in fixed prompt text and asks the service for one JSON object;
+local typed admission, hard-constraint checks and one-call behavior are unchanged.
+`json-schema-v1` remains the default, with its previous prompt identity intact.
+There is no automatic profile switch after a failure.
+
+Three new controlled checks passed once (0.29 seconds, tool chunk 1d2863): wire
+identity and complete request budget; independent admission of good/bad siblings
+including fabricated entity authority; and HTTP failure with one call and unknown
+token use. The precision wire is 35,239 bytes, with the same typed-schema hash and
+new prompt hash `33045f3fa519c04397fe879c92dd0775c6e52fd756c79871823ac9dd6e6f973d`.
+The prepared native CLI accepts this explicit profile and the reused estimator.
+This checkpoint alone does not establish real endpoint compatibility or success.

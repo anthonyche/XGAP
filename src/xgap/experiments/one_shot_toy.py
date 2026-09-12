@@ -26,7 +26,8 @@ from xgap.experiments.toy_live_interpretation import PROMPT_PATH
 from xgap.experiments.toy_output_contract import apply_request_profile
 from xgap.experiments.toy_semantic import toy_backends
 from xgap.llm.candidate_interpretation import (
-    OpenAICompatibleCandidateInterpretationProvider, candidate_interpretation_schema,
+    OpenAICompatibleCandidateInterpretationProvider, WIRE_PROFILES,
+    candidate_interpretation_schema, candidate_output_mode, candidate_wire_profile,
 )
 from xgap.planning.runtime_estimator import FrozenRuntimeEstimator
 from xgap.runtime.semantic_planning import LogicalSource
@@ -60,7 +61,8 @@ class OneShotChatRequestGuard(ExternalChatRequestGuard):
             raise ValueError("One-shot development request/output reservation exceeds its profile")
 
 
-def one_shot_toy_prompt():
+def one_shot_toy_prompt(*, wire_profile="json-schema-v1", candidate_cap=3):
+    candidate_output_mode(wire_profile)
     base = PROMPT_PATH.with_name("semantic_program_v3.txt").read_text(encoding="utf-8")
     marker = "The program has program_id, operators, roots, holes, metadata."
     if marker not in base:
@@ -70,7 +72,7 @@ def one_shot_toy_prompt():
                         "owns that decision. Do not replace an ambiguous original mention yourself.",
                         "question is ambiguous; subsequent frozen-catalog grounding owns the identity\n"
                         "prediction. Do not replace an ambiguous original mention yourself.")
-    return (f"Interpret the question as one to candidate_cap bounded alternative semantic programs.\n"
+    prompt = (f"Interpret the question as one to candidate_cap bounded alternative semantic programs.\n"
         f"Return only {{schema_version: \"{SCHEMA}\", candidates: [...]}} as valid JSON.\n"
         "Each candidate has candidate_id, quality_proxy, program and operator_sources.\n"
         "Candidate IDs are unique. quality_proxy is an uncalibrated preference in [0,1],\n"
@@ -84,18 +86,34 @@ def one_shot_toy_prompt():
         "target, selector, restrictor, condition and max_depth are siblings of expr.\n"
         "A rel expr contains only kind and edge. Misnested or extra fields are rejected\n"
         "without repair; do not duplicate fields at multiple levels.\n\n" + body)
+    if wire_profile == "json-object-v1":
+        # Schema is inert model guidance in this explicitly chosen compatibility
+        # format, not a server-side grammar. Local typed admission is unchanged.
+        schema = json.dumps(candidate_interpretation_schema(candidate_cap), ensure_ascii=True,
+                            allow_nan=False, sort_keys=True, separators=(",", ":"))
+        prompt += ("\nWire profile: json-object-v1. Return one JSON object only.\n"
+                   "The following JSON Schema is the unchanged local admission specification.\n"
+                   "It is supplied as text guidance; all returned candidates are validated locally.\n"
+                   "This wire choice permits no retry, repair, identity invention or schema relaxation.\n"
+                   "BEGIN LOCAL RESPONSE SPECIFICATION\n" + schema +
+                   "\nEND LOCAL RESPONSE SPECIFICATION\n")
+    return prompt
 
 
 def load_one_shot_toy_provider(*, mode="precision", base_url=BASE_URL, model=MODEL,
                                api_key_env="XGAP_EXTERNAL_LLM_API_KEY", disable_thinking=False,
-                               output_tokens=None):
+                               output_tokens=None, wire_profile="json-schema-v1"):
+    output_mode = candidate_output_mode(wire_profile)
     policy = OneShotPolicy.for_mode(mode)
     legacy = load_external_toy_provider(base_url=base_url, model=model, api_key_env=api_key_env,
         disable_thinking=disable_thinking, request_profile="explicit-output-v1")
     output = output_tokens if output_tokens is not None else (6144 if mode == "precision" else 4096)
     guard = OneShotChatRequestGuard(model, output_limit=output)
-    prompt = one_shot_toy_prompt()
-    config = replace(legacy.config, provider_id=PROFILE + ":" + mode + ":" + model,
+    prompt = one_shot_toy_prompt(wire_profile=wire_profile, candidate_cap=policy.candidate_cap)
+    identifier = PROFILE + ":" + mode + ":" + model
+    if wire_profile != "json-schema-v1":
+        identifier += ":" + wire_profile
+    config = replace(legacy.config, provider_id=identifier, structured_output_mode=output_mode,
         max_tokens=output, candidate_cap=policy.candidate_cap,
         structured_schema=candidate_interpretation_schema(policy.candidate_cap), prompt_hash=content_hash(prompt))
     return OpenAICompatibleCandidateInterpretationProvider(config, prompt, guard, legacy.transport)
@@ -148,12 +166,15 @@ def one_shot_toy_preflight(provider, *, estimator_path, query_id="B01", mode="pr
         raise ValueError("Estimator statistics do not identify the exact original tiny graph and two backends")
     if query_id in estimator.to_dict()["training_provenance"]["training_query_ids"]:
         raise ValueError("Current question cannot occur in the estimator training IDs")
+    wire_profile = candidate_wire_profile(provider.config.structured_output_mode)
     if (provider.config.candidate_cap != inputs["policy"].candidate_cap
-            or provider.config.prompt_hash != content_hash(one_shot_toy_prompt())):
+            or provider.config.prompt_hash != content_hash(one_shot_toy_prompt(
+                wire_profile=wire_profile, candidate_cap=inputs["policy"].candidate_cap))):
         raise ValueError("Provider prompt/candidate cap differs from the requested one-shot mode")
     check = provider.token_guard.check(provider.build_request_payload(request), call_kind="generation")
     report = {"schema_version": PROFILE, "success": check["passed"], "operation": "preflight",
-        "query_id": query_id, "mode": mode, "external_calls": 0, "backend_calls": 0,
+        "query_id": query_id, "mode": mode, "wire_profile": wire_profile,
+        "external_calls": 0, "backend_calls": 0,
         "paper_result": False, "gold_used_for_inference": False, "config": provider.config.safe_dict(),
         "request": request.to_dict(), "request_budget": check, "policy": inputs["policy"].to_dict(),
         "estimator_file": {"file": Path(estimator_path).name, "bytes": len(data),
@@ -292,6 +313,8 @@ def main(argv=None):
     parser.add_argument("--api-key-env", default="XGAP_EXTERNAL_LLM_API_KEY")
     parser.add_argument("--disable-thinking", action="store_true")
     parser.add_argument("--output-tokens", type=int, choices=(4096, 6144))
+    parser.add_argument("--wire-profile", choices=tuple(WIRE_PROFILES), default="json-schema-v1",
+                        help="Explicit pre-dispatch format; no automatic fallback")
     parser.add_argument("--neo4j-url", help="Already loaded loopback tiny Neo4j root URL")
     parser.add_argument("--fuseki-url", help="Already loaded loopback Fuseki root URL, dataset /toy")
     parser.add_argument("--evaluate", action="store_true")
@@ -316,6 +339,7 @@ def main(argv=None):
         receipt = run_one_shot_toy(estimator_path=args.estimator, output=args.output,
             query_id=args.query_id, mode=args.mode, execute=args.execute, backend_clients=clients,
             evaluate=args.evaluate, base_url=args.base_url, model=args.model, api_key_env=args.api_key_env,
-            disable_thinking=args.disable_thinking, output_tokens=args.output_tokens)
+            disable_thinking=args.disable_thinking, output_tokens=args.output_tokens,
+            wire_profile=args.wire_profile)
     print(json.dumps({key: receipt.get(key) for key in ("success", "operation", "status", "external_calls", "backend_calls")}))
     return 0 if receipt["success"] else 1

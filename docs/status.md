@@ -1,6 +1,17 @@
 # XGAP Status
 
-## Current: real tiny training completed; one new-model format failure retained
+## Latest: typed admission fixed; new provider attempt returned HTTP 500
+
+Five new structural-risk checks passed. The separate bc4103c native request
+reused the frozen estimator with zero new training/fit, but the provider returned
+HTTP 500 before any interpretation. One attempt, unknown tokens, zero final plans
+and online backend calls. All 432 inputs and the model are unchanged; owned
+services stopped. The cause of HTTP 500 is unverified. Next is an explicit wire
+compatibility profile with the same typed local admission and no automatic retry.
+See [retained evidence](report/one_shot_native_20260912.md). Real one-shot answer
+acceptance is still open; no new performance result is claimed.
+
+## Earlier: real tiny training completed; first model format failure retained
 
 The single b008775 native attempt completed4 independent training plans on real
 Neo4j/Fuseki and froze the measured model. One external B01 request returned one

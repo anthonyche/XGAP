@@ -114,7 +114,8 @@ def prepare(args):
             raise ValueError("Prepared executable is missing or not executable: " + str(path))
     request, inputs = one_shot_toy_inputs(QUERY_ID, args.mode)
     provider = load_one_shot_toy_provider(mode=args.mode, base_url=args.base_url, model=args.model,
-        api_key_env=args.api_key_env, disable_thinking=args.disable_thinking, output_tokens=args.output_tokens)
+        api_key_env=args.api_key_env, disable_thinking=args.disable_thinking, output_tokens=args.output_tokens,
+        wire_profile=args.wire_profile)
     check = provider.token_guard.check(provider.build_request_payload(request), call_kind="generation")
     if not check["passed"]:
         raise ValueError("One-shot request exceeds the prepared development budget")
@@ -423,6 +424,8 @@ def main(argv=None):
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--estimator", help="Reuse an accepted frozen tiny estimator; skip all collection and fit")
     parser.add_argument("--mode", choices=("precision", "performance"), default="precision")
+    parser.add_argument("--wire-profile", choices=("json-schema-v1", "json-object-v1"), default="json-schema-v1",
+                        help="Explicit provider wire profile; never changed automatically after a failure")
     parser.add_argument("--base-url", default=BASE_URL)
     parser.add_argument("--model", default=MODEL)
     parser.add_argument("--api-key-env", default="XGAP_EXTERNAL_LLM_API_KEY")

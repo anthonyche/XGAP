@@ -1,6 +1,16 @@
 # XGAP current engineering loop
 
-## Current: real tiny training completed; one new-model format failure retained
+## Latest: typed admission accepted; explicit provider compatibility adapter next
+
+The five new parameter checks passed once. The bc4103c real request reused the
+accepted model with zero current training/fit but returned HTTP 500 before an
+interpretation. One attempted request, unknown tokens, zero final/online backend
+calls. All 432 fingerprints and the model match; owned services stopped. The
+cause of HTTP 500 is unverified. Implement an explicitly selected JSON-object
+wire profile using the same typed local admission, independent request identity,
+bounded request and no fallback/retry. See [evidence](report/one_shot_native_20260912.md).
+
+## Earlier: real tiny training completed; first model format failure retained
 
 The single b008775 native attempt completed4 independent training plans on real
 Neo4j/Fuseki and froze the measured model. One external B01 request returned one
@@ -14,7 +24,7 @@ retain the original failure. Reuse the accepted frozen model and its historical
 one-time costs for any later new-protocol tiny gate, rather than redoing training.
 No current-request retry, broad regression, ablation or large benchmark campaign.
 
-## New-profile external gate is prepared (not yet executed)
+## Historical preparation checkpoint (superseded by the actual attempts above)
 
 Checkpoint54144e9 contains the accepted first ordinary slice. The mode-matched
 external provider, one-question durable recording/replay and endpoint CLI are
