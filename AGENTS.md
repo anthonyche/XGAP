@@ -72,6 +72,19 @@ comparisons or scale sweeps until the ordinary core integration is accepted.
 
 ## Agent invariants
 
+### Baseline fidelity — user instruction, 2026-09-12
+
+Do not optimize baseline results. Use pinned author implementations and declared
+configurations. Fix only necessary environment/transport integration, without
+changing their algorithms, semantic capabilities, answer logic or outcome-driven
+tuning. Never add missing aggregation/order semantics, repair answers, switch
+engines per query, or rerun until success to improve a baseline's score. Preserve
+unsupported forms, wrong answers, failures and native internal retries with full
+costs. Our adapter defects are separate from native method limitations. Do not
+deliberately handicap baselines or claim a planner advantage from unsupported
+semantics. The attempted FedUP outer-algebra extension is withdrawn and excluded
+from evaluation; do not resume it. See `docs/decisions/baseline_fidelity_v1.md`.
+
 - Every run starts from an explicit goal and success criteria.
 - Every tool is registered, typed, and allowlisted for the goal.
 - Step, tool-call, time, and resource budgets must be finite where applicable.

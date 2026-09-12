@@ -10,6 +10,15 @@
 - Code checkpoint: 0f4206e；有界核心与通用记录接口已实现并有验收证据
 - Execution authorization: 用户已回复“按建议优先级推进（推荐）”；进入协议细化与薄适配。正式campaign须先满足具体版本/数据/预算门槛，不重复请求既有优先级授权。
 
+## baseline执行原则（用户已明确）
+
+baseline能运行并如实记录即满足接入门槛，不要求全部正确。保留固定原实现的错误、
+不支持和内部重试成本；不修算法、补语义或按结果调参。FedUP/FedX现在已运行；
+FedUP的降序/聚合限制保留，[见实测](report/external_federation_tiny_20260912.md)。
+已撤回的FedUP外层Jena补全不属于方法清单，不进入任何图。用户批准的population
+与优先级不变，不因baseline失败删除题目。共同支持范围的执行效率与整题能力差异
+分开解释，不把缺语义造成的失败当作XGAP planner提速证据。
+
 ## 研究问题与贡献边界
 
 **研究问题：面对自然语言语义不确定、数据分布在异构图源的请求，能否用有界信息
@@ -184,4 +193,4 @@ Freebase恢复上。UI只需能查看请求、选中计划、答案和成本记�
 外部引擎调用记录、同计时边界的聚合/watchdog；遇到新边界故障用tiny与replay修复。
 FedShop含相同谓词分布在多源的情况，必须保守考虑所有匹配源，不能预塞gold RSA；
 source联合导致超过64 operators/候选预算的输入应报告unsupported，而非隐藏截断。
-这些具体接入工作尚未实现，不宣称“现在只剩按按钮跑实验”。
+外部方法入口、共同源HTTP计量和tiny故障记录已实现；FinBench同事实映射、XGAP普通NL/reference与新组预算仍需完成。baseline不因错误答案继续修复。

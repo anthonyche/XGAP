@@ -1,3 +1,12 @@
+## Baseline fidelity — user clarification
+
+External baselines need to run and report faithfully; wrong answers/unsupported
+operators are outcomes, not tasks to repair. Native FedUP/FedX now run; preserve
+FedUP descending-order/aggregation failures. The attempted outer-Jena semantic
+extension is withdrawn. [Binding principle](decisions/baseline_fidelity_v1.md) and
+[actual evidence](report/external_federation_tiny_20260912.md). Continue XGAP input
+and evaluation preparation, with no baseline optimization.
+
 > Current authority (2026-09-12): the user approved [one-shot two-mode integration](decisions/one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.
 
 ## Proposed evaluation protocol: explicit external comparison conditions

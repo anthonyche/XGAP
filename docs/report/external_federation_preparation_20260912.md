@@ -1,3 +1,7 @@
+> Subsequent actual boundary evidence: [tiny execution report](external_federation_tiny_20260912.md).
+> Both original baselines now run; FedUP limitations are retained, not repaired.
+> The following sections describe the earlier build-only checkpoint.
+
 # 外部联邦对照：已批准优先级后的首个接入检查点
 
 用户已回复“按建议优先级推进（推荐）”：先FinBench原生与同事实RDF的FedUP/FedX，

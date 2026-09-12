@@ -237,7 +237,11 @@
     "accurate_ms_regression_required": false,
     "ranking_adapter_implemented": false,
     "external_results_must_be_reproduced": true,
-    "large_data_development": false
+    "large_data_development": false,
+    "baseline_results_optimization": false,
+    "baseline_semantic_repairs": false,
+    "baseline_readiness": "runnable_with_auditable_outcomes_not_all_answers_correct",
+    "new_live_runs_scope": "formal evaluation campaign; tiny integration activity recorded separately"
   },
   "unresolved_decisions": [
     "Freeze exact samples, independent references, resource budgets and external versions within the approved priority; no repeated approval required for routine preparation"
@@ -252,5 +256,9 @@
     "result": "all four local API reads failed URLError; no automatic retries; no verified SHA",
     "tool_chunk": "e59a88"
   },
-  "campaign_ready": false
+  "campaign_ready": false,
+  "baseline_operational_evidence": "docs/report/external_federation_tiny_20260912.md",
+  "withdrawn_methods": [
+    "fedup_jena_outer_v1"
+  ]
 }

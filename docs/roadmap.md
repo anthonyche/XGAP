@@ -1,8 +1,9 @@
 # XGAP Roadmap
 
-最新接入：用户批准优先级后，FedUP源码commit已锁定并获取，FedX薄适配Java21构建/帮助检查通过。
-零模型/数据库查询；FedX线程/批量已按上游匹配；外部方法tiny结果与共同计量尚未验收。
-[接入证据及下一门槛](report/external_federation_preparation_20260912.md)。
+最新原则：baseline只要能运行并如实记录，不替它修算法、补语义或优化成绩。
+FedUP/FedX已在双源9事实tiny图运行；FedUP排序错误、聚合失败保留，不是待修复门禁。
+外层Jena补全尝试已撤出；后续工作回到XGAP的FinBench输入/reference与正式评价准备。
+[接入结果与成本](report/external_federation_tiny_20260912.md)；[baseline原则](decisions/baseline_fidelity_v1.md)。
 
 Current: the bounded core/record interface remains accepted at0f4206e. The
 [18-figure proposal](research_experiment_proposal_20260912.md) now binds each RQ to

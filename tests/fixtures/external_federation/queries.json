@@ -1,0 +1,8 @@
+[
+  {"id":"cross_ordered", "ordered":true, "expected_terminal":"answer", "query":"PREFIX ex: <http://example.org/fin/> SELECT ?account ?status WHERE { ex:alice ex:transfer ?account . ?account ex:status ?status } ORDER BY DESC(?account)"},
+  {"id":"duplicate_bag", "ordered":false, "expected_terminal":"answer", "query":"PREFIX ex: <http://example.org/fin/> SELECT ?status WHERE { ex:alice ex:transfer ?account . ?account ex:status ?status }"},
+  {"id":"empty", "ordered":false, "expected_terminal":"answer", "query":"PREFIX ex: <http://example.org/fin/> SELECT ?account WHERE { ex:alice ex:transfer ?account . ?account ex:status \"blocked\" }"},
+  {"id":"aggregate_rank", "ordered":true, "expected_terminal":"answer", "query":"PREFIX ex: <http://example.org/fin/> SELECT ?status (COUNT(?account) AS ?count) (SUM(IF(?account = ex:bob, 1, 2)) AS ?weight) WHERE { ex:alice ex:transfer ?account . ?account ex:status ?status } GROUP BY ?status ORDER BY DESC(?count) LIMIT 1"},
+  {"id":"invalid", "ordered":false, "expected_terminal":"error", "query":"SELECT ?account WHERE { ?account"},
+  {"id":"source_failure", "ordered":false, "expected_terminal":"error", "fail_source":"/b/sparql", "query":"PREFIX ex: <http://example.org/fin/> SELECT ?account ?alert WHERE { ex:alice ex:watch ?account . ?account ex:alert ?alert }"}
+]

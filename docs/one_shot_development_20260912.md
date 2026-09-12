@@ -1,3 +1,8 @@
+> Current external gate: native FedUP/FedX are runnable with auditable results.
+> Per user clarification, no baseline repairs/semantic extensions/tuning for better
+> scores. Keep wrong/unsupported outcomes; next is XGAP FinBench input/reference
+> integration. See [the evidence](report/external_federation_tiny_20260912.md).
+
 # Approved 48-hour core integration plan
 
 Authority: user approval and instruction to update Goal/docs and execute,
