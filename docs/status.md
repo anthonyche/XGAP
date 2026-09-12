@@ -1,5 +1,21 @@
 # XGAP Status
 
+## Current E2 — original48 complete; paid acquisition costs more; user pause
+
+All864 final and576 acquisition plans are exact across48 queries,6 blocks and
+three prepared-plan methods.2880 query calls,0 model calls, no failed/unrun slots.
+Original32 paid/hash=3.262 [3.188,3.334], paid/bind=2.601 [2.550,2.652]; intervals
+are conditional97.5% query-bootstrap intervals. Heldout16 is descriptive1.846/4.650.
+This is a negative total-cost baseline result, not ordinary P1/A3 or scalability.
+[Current report](report/finbench_paid_balanced_20260912.md).
+
+Once-only action persistence and measured online journal costs are implemented;
+12 focused checks first pass, one native run95.585s,362 input/source snapshots
+unchanged, owned services stopped. Original32/16 and three integration-exposed
+IDs remain. Historical pilot and LINK3/5 remain unchanged. User requested a pause
+for discussion after these results; heartbeat is PAUSED and no next experiment
+is authorized to proceed until resumed. Lower next-action statements are historical.
+
 ## Current E2 — real paid-selection correctness accepted; formal timing needs correction
 
 The one-shot FinBench pilot returned exact answers in all9 final and6 acquisition

@@ -1,5 +1,21 @@
 # XGAP Design Decisions
 
+## E2: freeze within-query balance and retain the negative paid-cost baseline
+
+The [new frozen protocol](decisions/finbench_paid_balanced_v1.md) covers all original
+48 queries in six balanced method permutations and opposite acquisition orders
+at each paid position. Once-only raw outcomes plus small durable indexes retain
+failure replay and charge online persistence; complete ledger seals are separate.
+All864 final+576 acquisition executions are exact. Original32 paid/hash3.262 and
+paid/bind2.601 show no total-cost benefit for this full-plan acquisition baseline.
+[Result and limits](report/finbench_paid_balanced_20260912.md).
+
+Do not subtract guessed overhead from the old pilot, relabel exposed queries,
+use current observations as free priors, or claim the different hash/bind DAGs
+are P1 source replicas. Conditional2eta next-execution regret is not a bound on
+paid total cost. User requested a pause after the round to discuss improvements;
+future strategy integration requires resumption, not automatic continuation.
+
 ## E2: charge complete-plan acquisition and keep pilot timing limitations
 
 The [paid-selection protocol](decisions/finbench_paid_selection_pilot_v1.md)

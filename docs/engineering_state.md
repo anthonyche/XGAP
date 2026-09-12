@@ -1,5 +1,26 @@
 # XGAP current engineering loop
 
+## Latest E2 — full original48 completed; paused for user discussion
+
+Read [balanced result](report/finbench_paid_balanced_20260912.md). Parent9d8cf2e
+plus fingerprinted native/journal changes:12 focused checks first pass0.66s;
+one native session91544 exit0,95.585s.864 final+576 acquisition exact,2880 query
+calls,0 model calls; six method-permutation blocks, original32seen/16heldout and
+three exposed IDs retained. Online persistence measured and charged; full seals
+separately13.814s.362 source/input fingerprints unchanged. PID73063/PID73129 stopped
+and independently absent; owned state removed. No live native process remains.
+
+Raw /Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/ includes frozen
+orders,96 prepared plans,sealed six-block outcomes,once post-seal evaluation,
+analysis and audits. First analyzer run exit0 in7.540s.102 artifact-only checks
+pass. Primary paid/hash3.262 [3.188,3.334], paid/bind2.601 [2.550,2.652]; no total
+cost benefit. Heldout16 descriptive1.846/4.650. Not P1/A3, LLM or scalability.
+
+USER PAUSE: after this round, report and discuss improvements; heartbeat is paused.
+Do not start the proposed real strategy/P1/A3/forecast work or rerun accepted gates.
+LINK remains3/5; GrailQA150 remainsnot_run;3804210 untouched pending user updates.
+Historical next-step entries below are superseded by this checkpoint and pause.
+
 ## Latest E2 — real15/15 plan correctness; growing-ledger timing confound recorded
 
 Read [the paid-selection pilot](report/finbench_paid_pilot_20260912.md). Parent

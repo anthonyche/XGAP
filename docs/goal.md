@@ -1,5 +1,18 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 9月12日本轮完成；按用户要求暂停，先讨论下一步
+
+用户明确要求：获得本轮结果后暂停开发和实验，先汇报进度、结果与改进策略。
+现有 heartbeat 已暂停；不要执行下方历史“下一步”或旧时间恢复计划，等待用户恢复。
+
+原 FinBench48 × 六轮 × 三个 prepared-plan 方法的864次最终执行、576次采集全部
+exact，2880查询调用，零模型调用。原32题 paid/hash=3.262、paid/bind=2.601；
+原16题仅描述为1.846/4.650。完整试跑选优没有降低总成本，不能称P1/A3已有提速。
+[本轮报告](report/finbench_paid_balanced_20260912.md)保留所有人口、曝光、成本与范围。
+日志热路径修复和12项新增风险检查已验收；一次native95.585s，双库服务已停止。
+尚缺真实策略空间接入P1/A3、实际prior/forecast成本与校准、E1/E3–E5及外部对照证据。
+小图优先与9月18日真实实验deadline不变；当前仅收尾报告，不启动这些后续工作。
+
 当前权威更新（9月12日）：真实FinBench三题成本集成已完成。fixed hash、fixed bind、
 付费双计划选择共9次最终答案和6次采集答案全部exact，30次查询调用、零模型调用；
 原48题及32seen/16heldout完整保留，三题均integration-exposed，其余45未测。

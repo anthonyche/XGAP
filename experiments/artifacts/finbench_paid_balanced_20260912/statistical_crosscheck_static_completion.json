@@ -1,0 +1,90 @@
+{
+  "analysis_sha256": "2d62926917382b1431f05837da45d8b0169a3526a74562e77f82d9d35aec87b4",
+  "analyzer_source_sha256": "ce3f25dfd7e2f295b2f79ad5f6b85133ddcb8371cf4367845a76e7a9eb064bc6",
+  "automatic_retries": 0,
+  "backend_calls": 0,
+  "bootstrap_resamples_executed": 0,
+  "checked_count": 8,
+  "checks": [
+    {
+      "name": "original_failure_receipt_preserved",
+      "passed": true
+    },
+    {
+      "name": "prior_numerical_agreement_already_verified",
+      "passed": true
+    },
+    {
+      "details": {
+        "RESAMPLES": 10000,
+        "SEED": 2026091212
+      },
+      "name": "tuple_assigned_bootstrap_constants",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_percentiles_source_and_metadata",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_paired_query_unit",
+      "passed": true
+    },
+    {
+      "name": "six_repeats_reduced_before_resampling",
+      "passed": true
+    },
+    {
+      "name": "two_fixed_seen_family_strata",
+      "passed": true
+    },
+    {
+      "name": "linear_percentile_interpolation",
+      "passed": true
+    }
+  ],
+  "elapsed_seconds": 0.028074541,
+  "finished_at": "2026-09-12T04:23:47.812166+00:00",
+  "limitations": [
+    "Bootstrap endpoint values are reported from the completed analysis, not recomputed; this source review confirms query unit, fixed-family strata, seed, repetition count and 1.25/98.75 percentile levels.",
+    "The original statistical-crosscheck receipt remains failed with its AST-reader error; its 14 passing numerical checks are retained and explicitly referenced.",
+    "This completes the bounded crosscheck only; no new engineering or experiment is started."
+  ],
+  "model_calls": 0,
+  "numerical_agreement_provenance": "The preserved first receipt passed all 144 query/method medians and both original32 per-query ratio/geometric-mean checks before its static AST constant-reader failed. This supplement completes only that source review.",
+  "original_failure_preserved": true,
+  "original_oracle_content_read": false,
+  "original_receipt": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/statistical_crosscheck.json",
+  "original_receipt_sha256": "26e7df5fb6796b907bc6c49fb2bac153e0bd0003846a6d18b6ea7af40ad229d1",
+  "passed_count": 8,
+  "point_estimates_recomputed_here": false,
+  "prior_numerical_checks_passed": 14,
+  "reported_point_estimates": [
+    {
+      "comparison": "paid_selection/fixed_hash",
+      "complete_positive_pairs": 32,
+      "gmean_ratio": 3.262467426143871,
+      "percentile_interval_97_5": [
+        3.1883208924310793,
+        3.334390354440679
+      ],
+      "population": "original32_seen",
+      "query_denominator": 32
+    },
+    {
+      "comparison": "paid_selection/fixed_bind",
+      "complete_positive_pairs": 32,
+      "gmean_ratio": 2.6012774960834606,
+      "percentile_interval_97_5": [
+        2.549968036451219,
+        2.652161203801462
+      ],
+      "population": "original32_seen",
+      "query_denominator": 32
+    }
+  ],
+  "schema_version": "xgap-finbench-balanced-statistical-static-completion-v1",
+  "six_raw_block_files_read": 0,
+  "software_tests_run": 0,
+  "success": true
+}

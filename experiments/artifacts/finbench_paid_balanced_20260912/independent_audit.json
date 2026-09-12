@@ -1,0 +1,496 @@
+{
+  "artifact_root": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912",
+  "artifact_sha256": {
+    "block-01/measurement_sealed.json": "3af8eaf3ba5f14dd91ce2e745dabf6940321f833af1e5a4c05804d5bffb93f67",
+    "block-02/measurement_sealed.json": "e9549c5b126957628b48fe1a892c0cb55883cadbca704fb314bb259e2c7c0769",
+    "block-03/measurement_sealed.json": "aabb9d9a3942d39203accd7d58662f16243f13c71579e6c4c9aba646d292f8e2",
+    "block-04/measurement_sealed.json": "5f448191cdc111c3fe0c96751e39b9b81ac02995f296f2df0b44b3cd93c50408",
+    "block-05/measurement_sealed.json": "e0c69b3e561ed440cce1a19113ec8fc3246288b71d6c8a99f538bbf6ff672450",
+    "block-06/measurement_sealed.json": "bd0fbe2d685ea10ea2eba739d23ddbc04e2cf64ab9fece1dc759d276efba78e3",
+    "orders.json": "b6f0d3dcb981b1f2c66a49fb8c601ce73dfec453f2a39911e3ef256d3912380e"
+  },
+  "automatic_retries": 0,
+  "backend_calls": 0,
+  "checked_count": 102,
+  "checks": [
+    {
+      "details": "b6f0d3dcb981b1f2c66a49fb8c601ce73dfec453f2a39911e3ef256d3912380e",
+      "name": "frozen_order_expected_sha",
+      "passed": true
+    },
+    {
+      "name": "native_order_byte_identity",
+      "passed": true
+    },
+    {
+      "name": "public_population_hash_and_original48",
+      "passed": true
+    },
+    {
+      "name": "prepared_orders_pins_and_prebackend_seal",
+      "passed": true
+    },
+    {
+      "name": "prepared_and_campaign_file_hashes",
+      "passed": true
+    },
+    {
+      "name": "source_before_after362_identical",
+      "passed": true
+    },
+    {
+      "name": "before_after_pin_frozen_orders",
+      "passed": true
+    },
+    {
+      "name": "original_exposure_and_family_split",
+      "passed": true
+    },
+    {
+      "name": "six_block_schedule_population",
+      "passed": true
+    },
+    {
+      "name": "within_query_method_and_acquisition_balance",
+      "passed": true
+    },
+    {
+      "name": "single96_candidate_preparation",
+      "passed": true
+    },
+    {
+      "name": "all6blocks_recorded_and_sealed",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:file_and_core_seal",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:oracle_isolation",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:full_population_split_exposure",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:frozen_orders_and_same_prepared_plans",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:runtime_and_no_retries",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:240_unique_actions_two_calls",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:all_method_and_action_cost_sums",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:288_paid_choice_sequence_cost_only_fresh_final",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:block_cost_totals",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:journal_monotone_complete_index",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:durable_two_acquisitions_then_choice_then_dispatch",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:postseal_evaluation_population_and_counts",
+      "passed": true
+    },
+    {
+      "name": "balanced-00:sealing_cost_separate",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:file_and_core_seal",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:oracle_isolation",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:full_population_split_exposure",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:frozen_orders_and_same_prepared_plans",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:runtime_and_no_retries",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:240_unique_actions_two_calls",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:all_method_and_action_cost_sums",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:288_paid_choice_sequence_cost_only_fresh_final",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:block_cost_totals",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:journal_monotone_complete_index",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:durable_two_acquisitions_then_choice_then_dispatch",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:postseal_evaluation_population_and_counts",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:sealing_cost_separate",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:file_and_core_seal",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:oracle_isolation",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:full_population_split_exposure",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:frozen_orders_and_same_prepared_plans",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:runtime_and_no_retries",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:240_unique_actions_two_calls",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:all_method_and_action_cost_sums",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:288_paid_choice_sequence_cost_only_fresh_final",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:block_cost_totals",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:journal_monotone_complete_index",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:durable_two_acquisitions_then_choice_then_dispatch",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:postseal_evaluation_population_and_counts",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:sealing_cost_separate",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:file_and_core_seal",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:oracle_isolation",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:full_population_split_exposure",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:frozen_orders_and_same_prepared_plans",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:runtime_and_no_retries",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:240_unique_actions_two_calls",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:all_method_and_action_cost_sums",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:288_paid_choice_sequence_cost_only_fresh_final",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:block_cost_totals",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:journal_monotone_complete_index",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:durable_two_acquisitions_then_choice_then_dispatch",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:postseal_evaluation_population_and_counts",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:sealing_cost_separate",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:file_and_core_seal",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:oracle_isolation",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:full_population_split_exposure",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:frozen_orders_and_same_prepared_plans",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:runtime_and_no_retries",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:240_unique_actions_two_calls",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:all_method_and_action_cost_sums",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:288_paid_choice_sequence_cost_only_fresh_final",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:block_cost_totals",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:journal_monotone_complete_index",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:durable_two_acquisitions_then_choice_then_dispatch",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:postseal_evaluation_population_and_counts",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:sealing_cost_separate",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:file_and_core_seal",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:oracle_isolation",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:full_population_split_exposure",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:frozen_orders_and_same_prepared_plans",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:runtime_and_no_retries",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:240_unique_actions_two_calls",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:all_method_and_action_cost_sums",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:288_paid_choice_sequence_cost_only_fresh_final",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:block_cost_totals",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:journal_monotone_complete_index",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:durable_two_acquisitions_then_choice_then_dispatch",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:postseal_evaluation_population_and_counts",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:sealing_cost_separate",
+      "passed": true
+    },
+    {
+      "name": "campaign_all_cost_sums",
+      "passed": true
+    },
+    {
+      "name": "paid_methods288_all_audited",
+      "passed": true
+    },
+    {
+      "details": {
+        "all": 1634,
+        "fixture_load": 194,
+        "query": 1440
+      },
+      "name": "neo4j:client_index_exact_once_success",
+      "passed": true
+    },
+    {
+      "details": {
+        "all": 1440,
+        "fixture_load": 0,
+        "query": 1440
+      },
+      "name": "fuseki:client_index_exact_once_success",
+      "passed": true
+    },
+    {
+      "name": "native_result_and_finite_budgets",
+      "passed": true
+    },
+    {
+      "name": "single_whole_source_setup",
+      "passed": true
+    },
+    {
+      "name": "native_zero_models_downloads_retries",
+      "passed": true
+    },
+    {
+      "name": "evaluation_totals_and_once_only_record",
+      "passed": true
+    },
+    {
+      "name": "execution_seals_precede_evaluation_file",
+      "passed": true
+    },
+    {
+      "name": "owned_shutdown_confirmed",
+      "passed": true
+    },
+    {
+      "details": {
+        "command": [
+          "ps",
+          "-p",
+          "73063,73129",
+          "-o",
+          "pid=,comm="
+        ],
+        "returncode": 1,
+        "stderr": "",
+        "stdout": ""
+      },
+      "name": "owned_pids_currently_absent",
+      "passed": true
+    },
+    {
+      "name": "owned_state_removed",
+      "passed": true
+    }
+  ],
+  "claims": {
+    "blocks": 6,
+    "complete_population": 48,
+    "independent_queries": 48,
+    "integration_exposed_queries": 3,
+    "native_seconds": 95.58473958447576,
+    "original_heldout_family": 16,
+    "original_seen_family": 32,
+    "paid_methods": 288,
+    "reported_exact_acquisition_answers": 576,
+    "reported_exact_final_answers": 864,
+    "services_stopped": true,
+    "source_input_fingerprints_identical": 362
+  },
+  "client_counts": {
+    "fuseki": {
+      "all": 1440,
+      "fixture_load": 0,
+      "query": 1440
+    },
+    "neo4j": {
+      "all": 1634,
+      "fixture_load": 194,
+      "query": 1440
+    }
+  },
+  "elapsed_seconds": 4.8719155,
+  "finished_at": "2026-09-12T04:15:47.299638+00:00",
+  "limitations": [
+    "Artifact consistency audit, not a new execution or independent re-evaluation of original oracle answers; exactness is checked against the sealed evaluator records.",
+    "Individual journal result/selection file hashes and detailed persistence statistics are delegated to the separate analysis audit; this audit checks the durable event index and complete core execution seals.",
+    "The 362 before/after fingerprints are compared as recorded; the full frozen source tree and original oracle are not read or rehashed again.",
+    "Six blocks share progressively warm mixed cache state; original heldout-family labels do not denote cold cache.",
+    "These prepared full-strategy baselines do not exercise ordinary P1/A3, model interpretation, or graph-size scalability."
+  ],
+  "model_calls": 0,
+  "observed_totals": {
+    "logical_bytes": 86790920,
+    "plan_runs": 1440,
+    "query_calls": 2880
+  },
+  "original_oracle_content_read": false,
+  "passed_count": 102,
+  "schema_version": "xgap-finbench-balanced-independent-artifact-audit-v1",
+  "service_starts": 0,
+  "software_tests_run": 0,
+  "started_at": "2026-09-12T04:15:42.427804+00:00",
+  "success": true
+}

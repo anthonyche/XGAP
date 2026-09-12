@@ -1,5 +1,22 @@
 # XGAP Roadmap
 
+## Paused after balanced original48 result — discuss the next R-C gate
+
+The [balanced real comparison](report/finbench_paid_balanced_20260912.md) completed:
+864 final+576 acquisition exact,2880 calls. Full-plan acquisition costs3.262x hash
+and2.601x bind on original32 query-median pairs. Preserve this negative baseline;
+lightweight journal/12 focused checks and all48 native execution are accepted.
+Do not rerun the pilot, this campaign, successful gates or unchanged bootstrap.
+
+User requested a pause to review progress and choose improvements. Proposed next
+work, only after resumption: bridge real physical strategy choices to existing
+P1/A3 with exact request identity and charged, admissible priors; verify on tiny
+data, then freeze the corresponding real comparison and necessary ablations.
+Hash/bind DAGs cannot be treated as equivalent source replicas. Current outcomes
+cannot silently become free training priors. E1 effectiveness, E3 mechanisms,
+E4 scales and E5 robustness remain separate evidence gaps. Historical plans below
+do not override the pause or authorize new experiments.
+
 ## Next E2 gate — lightweight measured persistence and balanced original48 comparison
 
 The [real three-question pilot](report/finbench_paid_pilot_20260912.md) is accepted

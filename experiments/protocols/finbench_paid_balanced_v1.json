@@ -1,0 +1,3076 @@
+{
+  "schema_version": "xgap-finbench-paid-selection-balanced-v1",
+  "protocol_id": "finbench-paid-balanced-20260912-v1",
+  "query_ids": [
+    "m15-fb-confirmatory-48-f1-01",
+    "m15-fb-confirmatory-48-f1-02",
+    "m15-fb-confirmatory-48-f1-03",
+    "m15-fb-confirmatory-48-f1-04",
+    "m15-fb-confirmatory-48-f1-05",
+    "m15-fb-confirmatory-48-f1-06",
+    "m15-fb-confirmatory-48-f1-07",
+    "m15-fb-confirmatory-48-f1-08",
+    "m15-fb-confirmatory-48-f1-09",
+    "m15-fb-confirmatory-48-f1-10",
+    "m15-fb-confirmatory-48-f1-11",
+    "m15-fb-confirmatory-48-f1-12",
+    "m15-fb-confirmatory-48-f1-13",
+    "m15-fb-confirmatory-48-f1-14",
+    "m15-fb-confirmatory-48-f1-15",
+    "m15-fb-confirmatory-48-f1-16",
+    "m15-fb-confirmatory-48-f2-01",
+    "m15-fb-confirmatory-48-f2-02",
+    "m15-fb-confirmatory-48-f2-03",
+    "m15-fb-confirmatory-48-f2-04",
+    "m15-fb-confirmatory-48-f2-05",
+    "m15-fb-confirmatory-48-f2-06",
+    "m15-fb-confirmatory-48-f2-07",
+    "m15-fb-confirmatory-48-f2-08",
+    "m15-fb-confirmatory-48-f2-09",
+    "m15-fb-confirmatory-48-f2-10",
+    "m15-fb-confirmatory-48-f2-11",
+    "m15-fb-confirmatory-48-f2-12",
+    "m15-fb-confirmatory-48-f2-13",
+    "m15-fb-confirmatory-48-f2-14",
+    "m15-fb-confirmatory-48-f2-15",
+    "m15-fb-confirmatory-48-f2-16",
+    "m15-fb-confirmatory-48-f3-01",
+    "m15-fb-confirmatory-48-f3-02",
+    "m15-fb-confirmatory-48-f3-03",
+    "m15-fb-confirmatory-48-f3-04",
+    "m15-fb-confirmatory-48-f3-05",
+    "m15-fb-confirmatory-48-f3-06",
+    "m15-fb-confirmatory-48-f3-07",
+    "m15-fb-confirmatory-48-f3-08",
+    "m15-fb-confirmatory-48-f3-09",
+    "m15-fb-confirmatory-48-f3-10",
+    "m15-fb-confirmatory-48-f3-11",
+    "m15-fb-confirmatory-48-f3-12",
+    "m15-fb-confirmatory-48-f3-13",
+    "m15-fb-confirmatory-48-f3-14",
+    "m15-fb-confirmatory-48-f3-15",
+    "m15-fb-confirmatory-48-f3-16"
+  ],
+  "blocks": [
+    {
+      "block_id": "balanced-00",
+      "query_ids": [
+        "m15-fb-confirmatory-48-f3-15",
+        "m15-fb-confirmatory-48-f1-15",
+        "m15-fb-confirmatory-48-f2-10",
+        "m15-fb-confirmatory-48-f2-16",
+        "m15-fb-confirmatory-48-f1-04",
+        "m15-fb-confirmatory-48-f1-08",
+        "m15-fb-confirmatory-48-f2-06",
+        "m15-fb-confirmatory-48-f1-13",
+        "m15-fb-confirmatory-48-f2-11",
+        "m15-fb-confirmatory-48-f3-07",
+        "m15-fb-confirmatory-48-f2-12",
+        "m15-fb-confirmatory-48-f1-03",
+        "m15-fb-confirmatory-48-f2-08",
+        "m15-fb-confirmatory-48-f1-11",
+        "m15-fb-confirmatory-48-f1-16",
+        "m15-fb-confirmatory-48-f3-11",
+        "m15-fb-confirmatory-48-f3-06",
+        "m15-fb-confirmatory-48-f2-04",
+        "m15-fb-confirmatory-48-f3-04",
+        "m15-fb-confirmatory-48-f1-06",
+        "m15-fb-confirmatory-48-f3-09",
+        "m15-fb-confirmatory-48-f3-10",
+        "m15-fb-confirmatory-48-f3-16",
+        "m15-fb-confirmatory-48-f1-02",
+        "m15-fb-confirmatory-48-f3-03",
+        "m15-fb-confirmatory-48-f1-10",
+        "m15-fb-confirmatory-48-f2-07",
+        "m15-fb-confirmatory-48-f3-12",
+        "m15-fb-confirmatory-48-f3-02",
+        "m15-fb-confirmatory-48-f2-03",
+        "m15-fb-confirmatory-48-f3-13",
+        "m15-fb-confirmatory-48-f1-01",
+        "m15-fb-confirmatory-48-f2-02",
+        "m15-fb-confirmatory-48-f2-14",
+        "m15-fb-confirmatory-48-f1-07",
+        "m15-fb-confirmatory-48-f3-01",
+        "m15-fb-confirmatory-48-f1-12",
+        "m15-fb-confirmatory-48-f2-09",
+        "m15-fb-confirmatory-48-f2-01",
+        "m15-fb-confirmatory-48-f1-09",
+        "m15-fb-confirmatory-48-f3-05",
+        "m15-fb-confirmatory-48-f2-05",
+        "m15-fb-confirmatory-48-f2-13",
+        "m15-fb-confirmatory-48-f1-05",
+        "m15-fb-confirmatory-48-f2-15",
+        "m15-fb-confirmatory-48-f3-14",
+        "m15-fb-confirmatory-48-f1-14",
+        "m15-fb-confirmatory-48-f3-08"
+      ],
+      "method_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ]
+      },
+      "acquisition_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ]
+      }
+    },
+    {
+      "block_id": "balanced-01",
+      "query_ids": [
+        "m15-fb-confirmatory-48-f3-06",
+        "m15-fb-confirmatory-48-f3-02",
+        "m15-fb-confirmatory-48-f1-15",
+        "m15-fb-confirmatory-48-f2-08",
+        "m15-fb-confirmatory-48-f2-13",
+        "m15-fb-confirmatory-48-f1-13",
+        "m15-fb-confirmatory-48-f3-08",
+        "m15-fb-confirmatory-48-f3-07",
+        "m15-fb-confirmatory-48-f1-03",
+        "m15-fb-confirmatory-48-f2-09",
+        "m15-fb-confirmatory-48-f3-10",
+        "m15-fb-confirmatory-48-f2-03",
+        "m15-fb-confirmatory-48-f2-14",
+        "m15-fb-confirmatory-48-f2-07",
+        "m15-fb-confirmatory-48-f2-02",
+        "m15-fb-confirmatory-48-f1-12",
+        "m15-fb-confirmatory-48-f3-13",
+        "m15-fb-confirmatory-48-f3-12",
+        "m15-fb-confirmatory-48-f1-11",
+        "m15-fb-confirmatory-48-f1-01",
+        "m15-fb-confirmatory-48-f3-04",
+        "m15-fb-confirmatory-48-f2-12",
+        "m15-fb-confirmatory-48-f2-16",
+        "m15-fb-confirmatory-48-f1-06",
+        "m15-fb-confirmatory-48-f3-05",
+        "m15-fb-confirmatory-48-f2-01",
+        "m15-fb-confirmatory-48-f3-11",
+        "m15-fb-confirmatory-48-f3-01",
+        "m15-fb-confirmatory-48-f2-15",
+        "m15-fb-confirmatory-48-f3-09",
+        "m15-fb-confirmatory-48-f3-14",
+        "m15-fb-confirmatory-48-f1-02",
+        "m15-fb-confirmatory-48-f2-04",
+        "m15-fb-confirmatory-48-f1-08",
+        "m15-fb-confirmatory-48-f1-04",
+        "m15-fb-confirmatory-48-f3-15",
+        "m15-fb-confirmatory-48-f3-16",
+        "m15-fb-confirmatory-48-f1-05",
+        "m15-fb-confirmatory-48-f1-09",
+        "m15-fb-confirmatory-48-f2-05",
+        "m15-fb-confirmatory-48-f2-10",
+        "m15-fb-confirmatory-48-f2-06",
+        "m15-fb-confirmatory-48-f2-11",
+        "m15-fb-confirmatory-48-f3-03",
+        "m15-fb-confirmatory-48-f1-16",
+        "m15-fb-confirmatory-48-f1-14",
+        "m15-fb-confirmatory-48-f1-07",
+        "m15-fb-confirmatory-48-f1-10"
+      ],
+      "method_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ]
+      },
+      "acquisition_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ]
+      }
+    },
+    {
+      "block_id": "balanced-02",
+      "query_ids": [
+        "m15-fb-confirmatory-48-f1-10",
+        "m15-fb-confirmatory-48-f1-05",
+        "m15-fb-confirmatory-48-f1-07",
+        "m15-fb-confirmatory-48-f1-02",
+        "m15-fb-confirmatory-48-f3-01",
+        "m15-fb-confirmatory-48-f1-16",
+        "m15-fb-confirmatory-48-f3-08",
+        "m15-fb-confirmatory-48-f3-16",
+        "m15-fb-confirmatory-48-f2-06",
+        "m15-fb-confirmatory-48-f2-03",
+        "m15-fb-confirmatory-48-f1-01",
+        "m15-fb-confirmatory-48-f3-06",
+        "m15-fb-confirmatory-48-f1-06",
+        "m15-fb-confirmatory-48-f3-11",
+        "m15-fb-confirmatory-48-f2-13",
+        "m15-fb-confirmatory-48-f3-13",
+        "m15-fb-confirmatory-48-f1-14",
+        "m15-fb-confirmatory-48-f3-09",
+        "m15-fb-confirmatory-48-f3-14",
+        "m15-fb-confirmatory-48-f3-07",
+        "m15-fb-confirmatory-48-f3-02",
+        "m15-fb-confirmatory-48-f3-10",
+        "m15-fb-confirmatory-48-f1-11",
+        "m15-fb-confirmatory-48-f2-08",
+        "m15-fb-confirmatory-48-f3-12",
+        "m15-fb-confirmatory-48-f2-10",
+        "m15-fb-confirmatory-48-f2-07",
+        "m15-fb-confirmatory-48-f1-09",
+        "m15-fb-confirmatory-48-f2-11",
+        "m15-fb-confirmatory-48-f2-04",
+        "m15-fb-confirmatory-48-f2-12",
+        "m15-fb-confirmatory-48-f2-01",
+        "m15-fb-confirmatory-48-f1-12",
+        "m15-fb-confirmatory-48-f3-05",
+        "m15-fb-confirmatory-48-f1-04",
+        "m15-fb-confirmatory-48-f2-02",
+        "m15-fb-confirmatory-48-f1-08",
+        "m15-fb-confirmatory-48-f3-15",
+        "m15-fb-confirmatory-48-f1-13",
+        "m15-fb-confirmatory-48-f2-15",
+        "m15-fb-confirmatory-48-f2-14",
+        "m15-fb-confirmatory-48-f3-04",
+        "m15-fb-confirmatory-48-f1-15",
+        "m15-fb-confirmatory-48-f2-09",
+        "m15-fb-confirmatory-48-f2-05",
+        "m15-fb-confirmatory-48-f3-03",
+        "m15-fb-confirmatory-48-f1-03",
+        "m15-fb-confirmatory-48-f2-16"
+      ],
+      "method_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ]
+      },
+      "acquisition_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ]
+      }
+    },
+    {
+      "block_id": "balanced-03",
+      "query_ids": [
+        "m15-fb-confirmatory-48-f2-09",
+        "m15-fb-confirmatory-48-f1-16",
+        "m15-fb-confirmatory-48-f3-10",
+        "m15-fb-confirmatory-48-f1-03",
+        "m15-fb-confirmatory-48-f3-15",
+        "m15-fb-confirmatory-48-f2-01",
+        "m15-fb-confirmatory-48-f3-14",
+        "m15-fb-confirmatory-48-f2-04",
+        "m15-fb-confirmatory-48-f1-12",
+        "m15-fb-confirmatory-48-f2-06",
+        "m15-fb-confirmatory-48-f3-16",
+        "m15-fb-confirmatory-48-f3-11",
+        "m15-fb-confirmatory-48-f1-14",
+        "m15-fb-confirmatory-48-f3-06",
+        "m15-fb-confirmatory-48-f1-08",
+        "m15-fb-confirmatory-48-f3-02",
+        "m15-fb-confirmatory-48-f2-10",
+        "m15-fb-confirmatory-48-f1-07",
+        "m15-fb-confirmatory-48-f3-04",
+        "m15-fb-confirmatory-48-f3-13",
+        "m15-fb-confirmatory-48-f1-05",
+        "m15-fb-confirmatory-48-f3-03",
+        "m15-fb-confirmatory-48-f1-09",
+        "m15-fb-confirmatory-48-f2-16",
+        "m15-fb-confirmatory-48-f2-15",
+        "m15-fb-confirmatory-48-f3-05",
+        "m15-fb-confirmatory-48-f1-11",
+        "m15-fb-confirmatory-48-f2-11",
+        "m15-fb-confirmatory-48-f2-05",
+        "m15-fb-confirmatory-48-f2-02",
+        "m15-fb-confirmatory-48-f1-04",
+        "m15-fb-confirmatory-48-f3-01",
+        "m15-fb-confirmatory-48-f3-07",
+        "m15-fb-confirmatory-48-f3-08",
+        "m15-fb-confirmatory-48-f2-03",
+        "m15-fb-confirmatory-48-f1-01",
+        "m15-fb-confirmatory-48-f2-07",
+        "m15-fb-confirmatory-48-f1-02",
+        "m15-fb-confirmatory-48-f2-12",
+        "m15-fb-confirmatory-48-f2-08",
+        "m15-fb-confirmatory-48-f1-13",
+        "m15-fb-confirmatory-48-f1-10",
+        "m15-fb-confirmatory-48-f1-15",
+        "m15-fb-confirmatory-48-f3-12",
+        "m15-fb-confirmatory-48-f1-06",
+        "m15-fb-confirmatory-48-f3-09",
+        "m15-fb-confirmatory-48-f2-14",
+        "m15-fb-confirmatory-48-f2-13"
+      ],
+      "method_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ]
+      },
+      "acquisition_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ]
+      }
+    },
+    {
+      "block_id": "balanced-04",
+      "query_ids": [
+        "m15-fb-confirmatory-48-f1-13",
+        "m15-fb-confirmatory-48-f3-09",
+        "m15-fb-confirmatory-48-f2-14",
+        "m15-fb-confirmatory-48-f3-06",
+        "m15-fb-confirmatory-48-f1-11",
+        "m15-fb-confirmatory-48-f3-08",
+        "m15-fb-confirmatory-48-f2-16",
+        "m15-fb-confirmatory-48-f1-02",
+        "m15-fb-confirmatory-48-f1-10",
+        "m15-fb-confirmatory-48-f2-08",
+        "m15-fb-confirmatory-48-f1-03",
+        "m15-fb-confirmatory-48-f1-06",
+        "m15-fb-confirmatory-48-f3-04",
+        "m15-fb-confirmatory-48-f2-04",
+        "m15-fb-confirmatory-48-f2-13",
+        "m15-fb-confirmatory-48-f2-09",
+        "m15-fb-confirmatory-48-f2-12",
+        "m15-fb-confirmatory-48-f1-14",
+        "m15-fb-confirmatory-48-f2-11",
+        "m15-fb-confirmatory-48-f2-02",
+        "m15-fb-confirmatory-48-f2-03",
+        "m15-fb-confirmatory-48-f1-09",
+        "m15-fb-confirmatory-48-f2-05",
+        "m15-fb-confirmatory-48-f3-05",
+        "m15-fb-confirmatory-48-f3-15",
+        "m15-fb-confirmatory-48-f3-12",
+        "m15-fb-confirmatory-48-f2-15",
+        "m15-fb-confirmatory-48-f3-14",
+        "m15-fb-confirmatory-48-f1-12",
+        "m15-fb-confirmatory-48-f2-06",
+        "m15-fb-confirmatory-48-f1-08",
+        "m15-fb-confirmatory-48-f1-04",
+        "m15-fb-confirmatory-48-f3-11",
+        "m15-fb-confirmatory-48-f3-07",
+        "m15-fb-confirmatory-48-f1-16",
+        "m15-fb-confirmatory-48-f3-03",
+        "m15-fb-confirmatory-48-f2-01",
+        "m15-fb-confirmatory-48-f1-01",
+        "m15-fb-confirmatory-48-f3-01",
+        "m15-fb-confirmatory-48-f2-10",
+        "m15-fb-confirmatory-48-f1-15",
+        "m15-fb-confirmatory-48-f1-05",
+        "m15-fb-confirmatory-48-f1-07",
+        "m15-fb-confirmatory-48-f3-13",
+        "m15-fb-confirmatory-48-f2-07",
+        "m15-fb-confirmatory-48-f3-16",
+        "m15-fb-confirmatory-48-f3-02",
+        "m15-fb-confirmatory-48-f3-10"
+      ],
+      "method_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ]
+      },
+      "acquisition_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ]
+      }
+    },
+    {
+      "block_id": "balanced-05",
+      "query_ids": [
+        "m15-fb-confirmatory-48-f2-08",
+        "m15-fb-confirmatory-48-f3-02",
+        "m15-fb-confirmatory-48-f3-14",
+        "m15-fb-confirmatory-48-f1-14",
+        "m15-fb-confirmatory-48-f2-01",
+        "m15-fb-confirmatory-48-f1-03",
+        "m15-fb-confirmatory-48-f2-04",
+        "m15-fb-confirmatory-48-f2-15",
+        "m15-fb-confirmatory-48-f2-14",
+        "m15-fb-confirmatory-48-f2-02",
+        "m15-fb-confirmatory-48-f2-16",
+        "m15-fb-confirmatory-48-f3-13",
+        "m15-fb-confirmatory-48-f2-12",
+        "m15-fb-confirmatory-48-f2-06",
+        "m15-fb-confirmatory-48-f1-16",
+        "m15-fb-confirmatory-48-f2-09",
+        "m15-fb-confirmatory-48-f3-08",
+        "m15-fb-confirmatory-48-f3-05",
+        "m15-fb-confirmatory-48-f1-11",
+        "m15-fb-confirmatory-48-f3-07",
+        "m15-fb-confirmatory-48-f2-13",
+        "m15-fb-confirmatory-48-f3-01",
+        "m15-fb-confirmatory-48-f1-09",
+        "m15-fb-confirmatory-48-f2-05",
+        "m15-fb-confirmatory-48-f1-15",
+        "m15-fb-confirmatory-48-f1-05",
+        "m15-fb-confirmatory-48-f2-07",
+        "m15-fb-confirmatory-48-f1-10",
+        "m15-fb-confirmatory-48-f3-06",
+        "m15-fb-confirmatory-48-f1-06",
+        "m15-fb-confirmatory-48-f3-03",
+        "m15-fb-confirmatory-48-f1-13",
+        "m15-fb-confirmatory-48-f3-10",
+        "m15-fb-confirmatory-48-f3-11",
+        "m15-fb-confirmatory-48-f1-12",
+        "m15-fb-confirmatory-48-f1-02",
+        "m15-fb-confirmatory-48-f1-07",
+        "m15-fb-confirmatory-48-f1-01",
+        "m15-fb-confirmatory-48-f1-04",
+        "m15-fb-confirmatory-48-f3-16",
+        "m15-fb-confirmatory-48-f3-09",
+        "m15-fb-confirmatory-48-f1-08",
+        "m15-fb-confirmatory-48-f3-04",
+        "m15-fb-confirmatory-48-f2-11",
+        "m15-fb-confirmatory-48-f3-15",
+        "m15-fb-confirmatory-48-f2-03",
+        "m15-fb-confirmatory-48-f3-12",
+        "m15-fb-confirmatory-48-f2-10"
+      ],
+      "method_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "paid_selection",
+          "fixed_bind",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "fixed_hash",
+          "fixed_bind",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "fixed_hash",
+          "paid_selection",
+          "fixed_bind"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "fixed_bind",
+          "fixed_hash",
+          "paid_selection"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "fixed_bind",
+          "paid_selection",
+          "fixed_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "paid_selection",
+          "fixed_hash",
+          "fixed_bind"
+        ]
+      },
+      "acquisition_orders": {
+        "m15-fb-confirmatory-48-f1-01": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-02": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-03": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-04": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-05": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-06": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-07": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-08": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-09": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-10": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-11": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-12": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-13": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-14": [
+          "control_first_bind",
+          "graph_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f1-15": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f1-16": [
+          "graph_first_hash",
+          "control_first_bind"
+        ],
+        "m15-fb-confirmatory-48-f2-01": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-02": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-03": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-04": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-05": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-06": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-07": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-08": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-09": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-10": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-11": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-12": [
+          "path_first_hash",
+          "control_first_bound_path"
+        ],
+        "m15-fb-confirmatory-48-f2-13": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-14": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-15": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f2-16": [
+          "control_first_bound_path",
+          "path_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-01": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-02": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-03": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-04": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-05": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-06": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-07": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-08": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-09": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-10": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-11": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-12": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-13": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-14": [
+          "aggregate_first_hash",
+          "control_first_bound_aggregate"
+        ],
+        "m15-fb-confirmatory-48-f3-15": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ],
+        "m15-fb-confirmatory-48-f3-16": [
+          "control_first_bound_aggregate",
+          "aggregate_first_hash"
+        ]
+      }
+    }
+  ],
+  "random_seed": 2026091201,
+  "method_permutation_order": [
+    [
+      "fixed_hash",
+      "fixed_bind",
+      "paid_selection"
+    ],
+    [
+      "fixed_hash",
+      "paid_selection",
+      "fixed_bind"
+    ],
+    [
+      "fixed_bind",
+      "fixed_hash",
+      "paid_selection"
+    ],
+    [
+      "fixed_bind",
+      "paid_selection",
+      "fixed_hash"
+    ],
+    [
+      "paid_selection",
+      "fixed_hash",
+      "fixed_bind"
+    ],
+    [
+      "paid_selection",
+      "fixed_bind",
+      "fixed_hash"
+    ]
+  ],
+  "acquisition_direction_bits": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    1
+  ],
+  "workload_sha256": "63a8ef36bc7576033db93caa2aa486409bc90ecfc699385b61e7d02be4320a5f",
+  "source_partition_sha256": "0ee8b18d3289ddb11fd78308f14584d20f073deaa50f72cfad74b1a379cdab2b",
+  "source_archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+  "public_instances_file_sha256": "e49302d6cce2122c0a75181ce33fbcbb9fdf2465f072a8be508b9cbad7285542",
+  "maximum_plan_runs": 1440,
+  "maximum_query_calls": 2880,
+  "fixed_population_size": 48,
+  "integration_exposed_ids": [
+    "m15-fb-confirmatory-48-f1-01",
+    "m15-fb-confirmatory-48-f2-01",
+    "m15-fb-confirmatory-48-f3-01"
+  ],
+  "new_model_calls": 0,
+  "automatic_retries": 0,
+  "work_deadline_seconds": 800,
+  "cleanup_reserve_seconds": 100,
+  "native_plus_coordinator_rss_limit_bytes": 6442450944,
+  "cache_policy": "One fresh source load, no query warmup or cache flush; six blocks share evolving native caches. Every query covers all six method permutations and both acquisition directions at every paid-method position. This is a mixed-cache sequence, not isolated cold or controlled warm latency.",
+  "timing_scope": "Prepared-plan method wall including both paid acquisition runs, selection, fresh final execution and online durable journal work. Shared validation/compilation/load, post-method summaries and block sealing separately recorded.",
+  "failure_policy": "Stop all remaining actions/blocks on the first external failure, unknown cost, durability failure or finite budget; preserve all 48 x 6 x 3 slots. No retry or failed-answer substitution.",
+  "analysis_plan": {
+    "primary_population": "original32 seen-family queries; keep two exposed IDs annotated",
+    "secondary_populations": [
+      "original16 heldout-family queries, descriptive",
+      "predeclared30 unexposed seen-family queries, sensitivity only"
+    ],
+    "unit": "query; six repeated method runs aggregated to median wall per query/method",
+    "primary_comparisons": [
+      "paid_selection/fixed_hash",
+      "paid_selection/fixed_bind"
+    ],
+    "primary_estimator": "geometric mean of per-query median-wall ratios; smaller favors paid selection",
+    "intervals": "97.5% percentile query-bootstrap interval per comparison (Bonferroni for two), stratified within the two fixed seen families; conditional on this workload, no unseen-family generalization",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 2026091212,
+    "cold_family": "descriptive ratios/completion only, no transfer claim",
+    "other_outcomes": [
+      "full completion/exactness/failure table",
+      "per-method calls/logical bytes",
+      "persistence included/excluded ms",
+      "scheduler-time decomposition",
+      "per-query paid choice and acquisition cost"
+    ],
+    "failures": "No ratios for incomplete six-repeat pairs; retain all population denominators and report matched coverage. No population speedup claim if missing pairs."
+  }
+}
