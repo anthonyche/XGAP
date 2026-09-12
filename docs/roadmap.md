@@ -1,5 +1,11 @@
 # XGAP Roadmap
 
+Estimator priority update: choose useful legal plans using relative speed/ranking
+or numeric estimates; ms calibration is optional. Reuse v2 and complete split-source
+NL-only integration first. Later evaluation emphasizes ranking and selection regret
+with independent offline references. Do not start a calibration campaign or extend
+the approved dates for this change. See the [contract](decisions/one_shot_modes_v1.md#selection-oriented-estimation--user-update).
+
 ## Workload estimator v2 and first excluded cross-backend request accepted
 
 The five new-risk checks and one 28-plan independent tiny collection passed.

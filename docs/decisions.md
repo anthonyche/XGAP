@@ -1,5 +1,14 @@
 > Current authority (2026-09-12): the user approved [one-shot two-mode integration](decisions/one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.
 
+## User update: relative speed prediction is a valid estimator objective
+
+Precise runtime regression is optional; selection quality is the primary target.
+The [updated contract](decisions/one_shot_modes_v1.md#selection-oriented-estimation--user-update)
+admits relative scores/preferences, distinguishes them from the currently implemented
+ms adapter, and requires explicit cross-interpretation quality/cost semantics.
+Ranking alone provides no unconditional numeric time-regret bound. Keep v2 and its
+evidence; do not repeat fitting or accepted gates to reduce regression error.
+
 ## Runtime workload estimator v2: separate wire-independent frozen cost model
 
 [The v2 contract](decisions/runtime_work_estimator_v2.md) associates Match/Path and

@@ -6,6 +6,13 @@ Authority: user approval and instruction to update Goal/docs and execute,
 targets, not claims that performance advantages or all experiments are complete.
 The [one-shot contract](decisions/one_shot_modes_v1.md) governs this work.
 
+Estimator acceptance update from the user: useful relative plan ranking is an
+allowed target; precise runtime regression is optional. Retain the accepted v2
+implementation and prioritize the split-source/NL-only boundary, not lower fitting
+error. Any future rank-only output needs explicit units and joint quality-selection
+semantics. This adds no training, regression run or deadline extension. Later
+evaluation will assess ordering and plan-selection regret, with offline references.
+
 | Beijing time | Milestone and acceptance |
 |---|---|
 | Sep12 17:00–21:00 | Freeze semantics/modes/one-shot/strategy/cost contracts; update authority; begin implementations. |

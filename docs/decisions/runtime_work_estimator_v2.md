@@ -6,6 +6,16 @@ historical v1 estimator. Scope: runtime-plan features, a separately versioned
 frozen model, loading at the ordinary entry, and independent tiny preparation.
 Old source/data/gold/model files and the accepted B01 execution stay unchanged.
 
+User clarification: this is one implemented surrogate, not a requirement that
+XGAP accurately regress milliseconds. Relative ordering/preference is sufficient
+as an estimator objective under the [selection contract](one_shot_modes_v1.md#selection-oriented-estimation--user-update).
+Observed numerical underprediction alone does not establish wrong selection;
+the previous feature aliasing and unsupported extrapolation motivated bounded
+engineering fixes, not a mandate to optimize time error before core completion.
+Keep the frozen model and its measurements intact. Do not rerun fitting or native
+gates merely to improve residuals; rank-only integration, if needed, requires an
+explicit output/selection contract rather than relabeling an arbitrary score as ms.
+
 The current feature vector aliases two placements that swap Path and Match
 between Neo4j/Fuseki. Four Match-only labels also cause unconstrained log-ridge
 to extrapolate an eleven-node bind plan to 0.0054 ms. The new risk checks must

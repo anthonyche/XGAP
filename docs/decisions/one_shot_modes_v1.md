@@ -63,8 +63,46 @@ Missing features/costs are explicit, not zero observations. Historical held-out
 results do not silently become training data. Runtime never fits on the current
 question or runs alternatives to obtain its estimate.
 
+### Selection-oriented estimation — user update
+
+The user explicitly permits relative speed prediction instead of accurate runtime
+regression. The estimator's primary purpose is useful plan selection. Admissible
+designs include runtime estimates, dimensionless ranking scores and pairwise
+preferences. Millisecond calibration is not a core-completion gate. The current
+implemented v2 adapter still returns `estimated_ms`; rank-only/pairwise adapters
+are permitted designs, not functionality already implemented by this document.
+Keep v2 usable while completing the split-source/NL-only boundary; do not collect
+more training or repeat accepted runs solely to reduce regression error.
+
+A future relative-output adapter must version its output kind, direction, support
+and tie/unknown handling. The selection rule must remain deterministic and Ptime.
+Pairwise predictions may cycle, so an explicit bounded aggregation rule is needed;
+arbitrary preferences do not imply a consistent optimal ordering. Scores compared
+across interpretations must share a declared scale or reference domain. Local
+ordinal ranks from different candidate sets are not directly comparable. A pure
+rank must not silently enter `estimated_ms`, an ms-weighted quality penalty,
+latency budget or latency Pareto plot. Joint quality/cost selection needs a declared
+dimensionless objective or another explicit policy when milliseconds are absent.
+
+Later evaluation prioritizes tie-aware top-choice accuracy, pairwise ordering
+accuracy and selection regret against an independently measured best plan in the
+declared candidate domain. Report additive latency regret and, when the reference
+cost is positive, selected/reference cost; include planning overhead in separate
+total-online-cost comparisons. Runtime regression error is an optional diagnostic.
+The reference measurements belong to a frozen offline evaluation protocol, never
+ordinary online acquisition. No extra comparison campaign is started by this update.
+
+Pure relative predictions imply no numeric actual-time regret bound without extra
+assumptions. Even one wrong ordering can have arbitrarily high cost regret. Perfect
+ordering would select a true domain minimum, but is not assumed. The following
+2η/2δ statements apply only to numerical objectives satisfying their stated uniform
+error assumptions; they are not requirements for, or automatic guarantees of, a
+ranking model. Polynomial computation bounds remain separate from quality bounds.
+
 For each admitted interpretation i, choose p_i minimizing estimated execution cost
-within its admitted physical candidate domain. Joint ranking uses a configured
+within its admitted physical candidate domain under the implemented ms profile.
+A future relative profile instead chooses its preferred legal candidate under
+the declared ranking rule. Joint ranking uses a configured
 cost/quality objective (e.g. estimated cost + lambda*(1-quality_proxy), with finite
 lambda and documented unknown-quality handling). Both modes share this selector;
 their information budgets and quality preferences differ. A model confidence is

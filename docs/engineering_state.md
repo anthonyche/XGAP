@@ -1,5 +1,12 @@
 # XGAP current engineering loop
 
+User update: relative speed/preference is sufficient for the estimator; accurate
+ms regression is not a core gate. Current v2 still outputs ms; do not claim a
+rank-only adapter exists. Preserve it and continue the split-source/NL-only gate,
+without repeating training to lower time error. Future relative outputs require
+explicit cross-interpretation/quality scoring and conditional bounds; see the
+[selection contract](decisions/one_shot_modes_v1.md#selection-oriented-estimation--user-update).
+
 ## Current: v2 estimator and excluded cross-backend deterministic request accepted
 
 Checkpoint a2c1908 completed the declared 28-plan independent tiny collection

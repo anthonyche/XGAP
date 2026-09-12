@@ -1,5 +1,11 @@
 # XGAP Status
 
+User-approved estimator scope update: relative plan speed/ranking is sufficient;
+precise ms regression is optional. Goal and selection contracts now reflect this.
+The implemented v2 model and evidence are unchanged; no new training, tests or
+native executions accompany this documentation update. Next is still the required
+split-source/NL-only gate, followed by core acceptance and experiment-plan discussion.
+
 ## Latest: workload estimator and real cross-backend deterministic chain accepted
 
 V2 backend/workload features, bounded nonnegative offline fitting and versioned
