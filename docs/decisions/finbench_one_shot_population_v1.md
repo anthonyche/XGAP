@@ -5,7 +5,7 @@
 - Origin Skill: academic-research-suite / experiment-agent
 - Origin Mode: plan, followed by authorized offline ETL
 - Origin Date:2026-09-12, Asia/Shanghai
-- Verification Status: five new tiny checks passed; real-population preparation remains next
+- Verification Status: five new tiny checks passed; actual120-group build and artifact audit passed
 - Version Label: finbench-v010-sf01-one-shot-120-v1
 
 This concretizes the already approved FinBench/native+matched-RDF priority and
@@ -110,3 +110,14 @@ exclusions, numeric normalization preserving order/bags, failed or malformed ans
 against empty references, and120 controlled output groups with selection sealed
 before reference evaluation and gold kept outside requests. No old suite, model or
 native gate was repeated. The controlled120-file-group test is not the real cohort.
+
+## Actual preparation accepted; pause gate
+
+Execution at49aaff0 produced120 real-source groups,24/48/48, in5400.266ms with
+zero model/backend/fit/method calls. All361 pinned files and split/exclusion
+invariants passed the artifact audit. Evaluation references are33 empty/15
+nonempty; all40 direct-transfer references are empty. Preserve this outcome and
+report empty/nonempty and family strata; do not resample for better results.
+See [the milestone report](../report/finbench_one_shot_population_20260912.md).
+The user requests a pause after this milestone until2026-09-13 12:00 Asia/Shanghai.
+No next-stage engineering or campaign before that time.

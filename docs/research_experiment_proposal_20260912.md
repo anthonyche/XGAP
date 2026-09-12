@@ -1,5 +1,11 @@
 # XGAP：18图实验计划（优先级已批准）
 
+实际120组输入已冻结并核验：[本轮报告](report/finbench_one_shot_population_20260912.md)。
+24/48/48划分成立，但评价组33/48为空，直接转账40题全空；总体EM须伴随分组结果，
+不能据此宣称非空召回能力。business-ID锚点不测名字歧义；三模板共享不测未见模板。
+正式方法尚未执行，campaign_ready=false；不修改冻结分母。本轮完成后按用户要求
+暂停到北京时间2026-09-13中午12:00，再继续下方未完成准备。
+
 ## Material Passport
 
 - Origin Skill: academic-research-suite / experiment-agent

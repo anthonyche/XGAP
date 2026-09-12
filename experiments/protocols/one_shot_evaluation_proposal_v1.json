@@ -271,5 +271,30 @@
     "native_query_calls": 9,
     "answer_em": 1.0,
     "scope": "development integration only; not formal quality or efficiency evaluation"
+  },
+  "finbench_population_evidence": {
+    "code_commit": "49aaff0",
+    "population_id": "finbench-v010-sf01-one-shot-120-v1",
+    "report": "docs/report/finbench_one_shot_population_20260912.md",
+    "audit": "experiments/artifacts/finbench_one_shot_population_20260912.json",
+    "manifest_path": "/Users/anthonyche/xgap-data/finbench-one-shot-population-20260912-v1/manifest.json",
+    "manifest_sha256": "181c1426752fbed9a287ba76b50a05834bfe910c07789eeac145a3c3fd520fba",
+    "split_counts": {
+      "development": 24,
+      "estimator_training": 48,
+      "evaluation": 48
+    },
+    "evaluation_empty": 33,
+    "evaluation_nonempty": 15,
+    "direct_transfer_all_40_empty": true,
+    "method_runs": 0,
+    "preserve_frozen_denominator": true
+  },
+  "execution_gate": {
+    "reason": "user_pause_after_current_milestone",
+    "resume_not_before": "2026-09-13T12:00:00+08:00",
+    "resume_timezone": "Asia/Shanghai",
+    "goal_complete": false,
+    "campaign_ready": false
   }
 }
