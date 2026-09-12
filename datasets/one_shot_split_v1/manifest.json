@@ -1,0 +1,23 @@
+{
+  "schema_version": "xgap-one-shot-split-fixture-v1",
+  "query_id": "SPLIT-NL-01",
+  "inference_files": {
+    "catalog/bindings.json": "cb53edb9148806377a5d90749663c88a9eefb4ebb1c18d061c880cc6086fd228",
+    "catalog/catalog.json": "ce0b480cf8a587fcec16a448d912336b0e0f9876ec79468561f7e11c7922a169",
+    "catalog/manifest.json": "b13b6ff40d168dcfa9de670402105e308ec426f4679fb5edec86c35ccd390daf",
+    "load.cypher": "0467d76641bec517e703defeab2eb28f5c34c21ab037047ff715938ba54ef2c0",
+    "load.ttl": "1fafb0fab4c9662abb334a95ec82e3629613a59c72c79d62e8c57c8bfa6e15a7",
+    "mapping.json": "5abf8cfeb707bd9a13f499f39701d31db0b1ff6d77531ee930578775f89b8f94",
+    "profiles.json": "cc12992af24a3191a3036f135c32e27bdbf5907685daa46cf0c9c8bd829d24ed",
+    "question.txt": "e8e3c27a87f8c3fc879e6e076d949ea133ef0dfa64f5966c9579f215199e8ed8",
+    "relations.json": "cf2faa9c59aa4c74c1941511872251753bfcb6cfa779dcf195b8b400eafb2bde",
+    "source_schema.json": "0bd8e2cc612853f7982352bffee38228d7453f80371c39b7f080ed687e71c562",
+    "statistics.json": "2acc281c0c1eb214b0595ae12f6804942954dea83e70d7fc4b4aaab15044ff80"
+  },
+  "catalog_bundle_hash": "effc03f30b27a7a607380bc63bbac78a325182b83100a4ea147079eff58aa20a",
+  "scope": "NL-only original request plus offline schema, no predeclared semantic operators; necessary split sources",
+  "expected_model_calls_maximum": 1,
+  "expected_final_plan_executions_maximum": 1,
+  "training_calls": 0,
+  "fit_calls": 0
+}

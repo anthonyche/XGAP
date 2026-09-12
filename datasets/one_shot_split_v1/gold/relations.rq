@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/split/>
+SELECT ?person ?edge WHERE { ?edge a t:Edge ; t:source t:a ; t:target ?person ; t:label "KNOWS" . }

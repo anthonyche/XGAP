@@ -1,0 +1,174 @@
+{
+  "program": {
+    "program_id": "SPLIT-NL-01-gold",
+    "operators": [
+      {
+        "operator_id": "walk",
+        "kind": "traverse",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "path_set",
+        "parameters": {
+          "path_pattern": {
+            "path_var": null,
+            "source": {
+              "properties": {
+                "id": "a"
+              }
+            },
+            "target": {},
+            "expr": {
+              "kind": "rel",
+              "edge": {
+                "label": "KNOWS",
+                "direction": "OUT",
+                "properties": {}
+              }
+            },
+            "selector": {
+              "kind": "ALL",
+              "k": null
+            },
+            "restrictor": "WALK",
+            "condition": null,
+            "max_depth": null
+          }
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "reached",
+        "kind": "project",
+        "input_ids": [
+          "walk"
+        ],
+        "input_kinds": [
+          "path_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "projections": {
+            "person": {
+              "kind": "path_node",
+              "position": "last"
+            },
+            "edge": {
+              "kind": "path_edge",
+              "position": 1
+            }
+          }
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "profiles",
+        "kind": "match",
+        "input_ids": [],
+        "input_kinds": [],
+        "output_kind": "binding_set",
+        "parameters": {
+          "node": {
+            "label": "Person",
+            "properties": {}
+          },
+          "entity_field": "person",
+          "properties": {
+            "age": "age"
+          }
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "adult",
+        "kind": "filter",
+        "input_ids": [
+          "profiles"
+        ],
+        "input_kinds": [
+          "binding_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "condition": {
+            "op": "ge",
+            "field": "age",
+            "value": 30
+          }
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "join",
+        "kind": "join",
+        "input_ids": [
+          "reached",
+          "adult"
+        ],
+        "input_kinds": [
+          "binding_set",
+          "binding_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "left_on": "person",
+          "right_on": "person"
+        },
+        "constraints": [],
+        "required_capabilities": []
+      },
+      {
+        "operator_id": "answer",
+        "kind": "project",
+        "input_ids": [
+          "join"
+        ],
+        "input_kinds": [
+          "binding_set"
+        ],
+        "output_kind": "binding_set",
+        "parameters": {
+          "projections": {
+            "person": {
+              "kind": "field",
+              "field": "person"
+            },
+            "edge": {
+              "kind": "field",
+              "field": "edge"
+            }
+          }
+        },
+        "constraints": [],
+        "required_capabilities": []
+      }
+    ],
+    "roots": [
+      "answer"
+    ],
+    "holes": [],
+    "metadata": {}
+  },
+  "operator_sources": {
+    "walk": "relations",
+    "profiles": "profiles"
+  },
+  "expected_logical_flow": [
+    "directed KNOWS from a",
+    "project target identity and edge",
+    "Person ages >=30",
+    "identity join",
+    "project person and edge"
+  ],
+  "expected_physical_families": [
+    "coordinator",
+    "entity_bind/join/left_to_right"
+  ],
+  "required_source_placement": {
+    "walk": "fuseki",
+    "profiles": "neo4j"
+  }
+}

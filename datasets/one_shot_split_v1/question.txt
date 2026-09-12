@@ -1,0 +1,1 @@
+Find people whom Nora knows directly and whose age is at least 30. Return person and edge.

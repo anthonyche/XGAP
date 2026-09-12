@@ -14,6 +14,7 @@ from xgap.catalog.bundle import FrozenResolutionBundle
 from xgap.compilers.errors import CompilerError
 from xgap.planning.runtime_estimator import FrozenRuntimeEstimator
 from xgap.planning.runtime_work_estimator import FrozenWorkEstimator
+from xgap.planning.runtime_work_deployment import FrozenWorkDeployment
 from xgap.runtime.one_shot_planning import prepare_one_shot_domain
 from xgap.runtime.scheduler import FederatedScheduler
 from xgap.runtime.tool import FederatedExecutionTool
@@ -42,7 +43,7 @@ def _frontier(items):
 
 
 def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
-                          estimator: FrozenRuntimeEstimator | FrozenWorkEstimator, catalog_root, catalog_hash,
+                          estimator: FrozenRuntimeEstimator | FrozenWorkEstimator | FrozenWorkDeployment, catalog_root, catalog_hash,
                           sources, backends, backend_clients):
     started = time.perf_counter()
     report = {"schema_version": "xgap-one-shot-answer-v1", "success": False,
@@ -63,7 +64,7 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
             "post_return_persistence_included": False, "backend_wire_bytes": None}
         return report
 
-    if not isinstance(policy, OneShotPolicy) or not isinstance(estimator, (FrozenRuntimeEstimator, FrozenWorkEstimator)):
+    if not isinstance(policy, OneShotPolicy) or not isinstance(estimator, (FrozenRuntimeEstimator, FrozenWorkEstimator, FrozenWorkDeployment)):
         report.update(status="configuration_unavailable",
                       error="One-shot requires a typed policy and a prepared frozen runtime estimator")
         return finish()
@@ -76,6 +77,8 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
     estimator_artifact = estimator.to_dict()
     report["estimator"] = {key: estimator_artifact[key] for key in (
         "model_version", "model_sha256", "feature_schema_sha256", "training_provenance")}
+    if "deployment_provenance" in estimator_artifact:
+        report["estimator"]["deployment_provenance"] = estimator_artifact["deployment_provenance"]
     load_at = time.perf_counter()
     try:
         bundle = FrozenResolutionBundle.load(catalog_root, expected_bundle_hash=catalog_hash)

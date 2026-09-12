@@ -208,13 +208,17 @@ class FrozenWorkEstimator:
         return result
 
     def predict(self, plan):
+        return self._predict_with_statistics(plan, self.statistics)
+
+    def _predict_with_statistics(self, plan, statistics):
+        """Shared scorer; explicit offline deployment owns alternative statistics."""
         started = time.perf_counter()
-        f = extract_work_features(plan, self.statistics)
+        f = extract_work_features(plan, statistics)
         p = json.loads(self.training_provenance_json)
         provenance = {"model_version": self.model_version, "model_sha256": self.model_sha256,
             "training_id": p["training_id"], "training_kind": p["training_kind"],
             "training_samples_sha256": p["training_samples_sha256"],
-            "source_statistics_sha256": self.statistics.sha256, "feature_schema_sha256": f.schema_sha256,
+            "source_statistics_sha256": statistics.sha256, "feature_schema_sha256": f.schema_sha256,
             "training_query_overlap": (plan.metadata["query_id"] in p["training_query_ids"]
                 if isinstance(plan.metadata.get("query_id"), str) else None),
             "current_query_observation_calls": 0, "fit_calls": 0, "quality_bound": None,
@@ -315,6 +319,9 @@ def fit_work_estimator(samples, *, statistics, training_id, model_version, train
 
 
 def frozen_estimator_from_dict(data):
+    from xgap.planning.runtime_work_deployment import DEPLOYMENT_SCHEMA, FrozenWorkDeployment
+    if data.get("schema_version") == DEPLOYMENT_SCHEMA:
+        return FrozenWorkDeployment.from_dict(data)
     if data.get("schema_version") == MODEL_SCHEMA:
         return FrozenWorkEstimator.from_dict(data)
     return FrozenRuntimeEstimator.from_dict(data)

@@ -1,0 +1,44 @@
+{
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Entity",
+      "properties": {}
+    },
+    {
+      "id": "b",
+      "label": "Entity",
+      "properties": {}
+    },
+    {
+      "id": "c",
+      "label": "Entity",
+      "properties": {}
+    },
+    {
+      "id": "d",
+      "label": "Entity",
+      "properties": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "r1",
+      "source": "a",
+      "target": "b",
+      "label": "KNOWS"
+    },
+    {
+      "id": "r2",
+      "source": "a",
+      "target": "c",
+      "label": "KNOWS"
+    },
+    {
+      "id": "r3",
+      "source": "d",
+      "target": "c",
+      "label": "KNOWS"
+    }
+  ]
+}

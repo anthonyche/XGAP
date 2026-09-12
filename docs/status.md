@@ -1,5 +1,11 @@
 # XGAP Status
 
+Split-source/NL-only gate prepared: explicit frozen deployment preserves v2 parent
+weights/training identity and pins new serving statistics. Four new checks passed
+(0.42s), and zero-call native preflight passed. Four profiles live only in Neo4j;
+three relationships plus identity stubs live only in Fuseki. Real model/execution
+for this new gate remains unmeasured. [Contract](decisions/one_shot_split_source_v1.md).
+
 User-approved estimator scope update: relative plan speed/ranking is sufficient;
 precise ms regression is optional. Goal and selection contracts now reflect this.
 The implemented v2 model and evidence are unchanged; no new training, tests or

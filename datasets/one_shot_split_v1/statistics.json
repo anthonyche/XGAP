@@ -1,0 +1,22 @@
+{
+  "statistics_id": "split-logical-source-records",
+  "version": "v1",
+  "entries": [
+    {
+      "backend_id": "fuseki",
+      "source_id": "relations",
+      "snapshot_version": "647bfdbed1cd0deb7b51dbafce95446170c0046c24e0b49548b78d0e6ece6777",
+      "total_rows": 7,
+      "mean_row_bytes": 47.285714285714285,
+      "provenance_ref": "fixture:relations.json#sha256=cf2faa9c59aa4c74c1941511872251753bfcb6cfa779dcf195b8b400eafb2bde;logical-records"
+    },
+    {
+      "backend_id": "neo4j",
+      "source_id": "profiles",
+      "snapshot_version": "5e71276daac8580b0552ff6029bfa8d87d5e19d1668fe43af240f31285154c1d",
+      "total_rows": 4,
+      "mean_row_bytes": 65.0,
+      "provenance_ref": "fixture:profiles.json#sha256=cc12992af24a3191a3036f135c32e27bdbf5907685daa46cf0c9c8bd829d24ed;logical-records"
+    }
+  ]
+}

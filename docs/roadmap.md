@@ -1,5 +1,10 @@
 # XGAP Roadmap
 
+The split-source deployment/input implementation and four new checks are ready;
+zero-call native preflight passed. Next perform its one necessary NL-only/model
+boundary, preserving terminal failures and using zero new training. Do not rerun
+the accepted checks. [Contract](decisions/one_shot_split_source_v1.md).
+
 Estimator priority update: choose useful legal plans using relative speed/ranking
 or numeric estimates; ms calibration is optional. Reuse v2 and complete split-source
 NL-only integration first. Later evaluation emphasizes ranking and selection regret

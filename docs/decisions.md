@@ -1,5 +1,13 @@
 > Current authority (2026-09-12): the user approved [one-shot two-mode integration](decisions/one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.
 
+## Necessary split sources with explicit frozen model deployment
+
+[The new tiny gate](decisions/one_shot_split_source_v1.md) supplies NL and reusable
+source schemas without a prepared semantic program. Its separate model deployment
+embeds the unchanged trained parent, binds current serving statistics, and records
+uncalibrated transfer. Training and runtime identities are not conflated. Four
+focused checks and zero-call preflight pass; actual NL-only evidence is pending.
+
 ## User update: relative speed prediction is a valid estimator objective
 
 Precise runtime regression is optional; selection quality is the primary target.

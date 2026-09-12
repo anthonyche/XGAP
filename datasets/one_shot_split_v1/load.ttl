@@ -1,0 +1,11 @@
+@prefix t: <https://xgap.test/split/> .
+t:a a t:Entity ; t:id "a" .
+t:b a t:Entity ; t:id "b" .
+t:c a t:Entity ; t:id "c" .
+t:d a t:Entity ; t:id "d" .
+t:r1 a t:Edge ; t:id "r1" ; t:source t:a ; t:target t:b ; t:label "KNOWS" .
+t:a t:KNOWS t:b .
+t:r2 a t:Edge ; t:id "r2" ; t:source t:a ; t:target t:c ; t:label "KNOWS" .
+t:a t:KNOWS t:c .
+t:r3 a t:Edge ; t:id "r3" ; t:source t:d ; t:target t:c ; t:label "KNOWS" .
+t:d t:KNOWS t:c .
