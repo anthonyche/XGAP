@@ -1,19 +1,9 @@
-> Latest: [FinBench representation tiny gate](report/finbench_rdf_tiny_20260912.md)
-
-最新金融core进展：三类gold语义程序已通过普通Ptime规划和单个选中计划，在必要拆分的
-Neo4j/Fuseki小图上答案全对（16次源查询，0模型/训练/baseline）。边属性、字段/时间比较
-已实现；金融NL尚未验收。每题3个边bind计划因旧训练缺类别而明确不可估计，下一步
-只补独立小图的该工作覆盖及Neo4j边bind边界，再接金融NL/profile。
-[实现、实际证据与边界](report/financial_binding_20260912.md)。
-
-> passes three actual Fuseki queries, with zero model/baseline/large-data calls.
-> Next is ordinary-core edge-property access and field/timestamp comparisons,
-> followed by three gold financial semantic programs; no template substitution.
-
-> Current external gate: native FedUP/FedX are runnable with auditable results.
-> Per user clarification, no baseline repairs/semantic extensions/tuning for better
-> scores. Keep wrong/unsupported outcomes; next is XGAP FinBench input/reference
-> integration. See [the evidence](report/external_federation_tiny_20260912.md).
+当前金融core：三类gold程序的普通确定性双库链路已通过；新边bind的4个独立小图
+训练计划也已全部实际执行正确（8次源查询）。旧28观测只从文件复用，按各自snapshot
+fit一次并另存新32样本模型，原模型不变。F1/F2/F3各6/6合法计划现在都可估计，未重跑
+金融查询。下一步冻结金融source schema/catalog/profile并做一次普通NL-only请求。
+[新模型及证据](report/edge_bind_training_20260912.md)；[金融确定性证据](report/financial_binding_20260912.md)。
+语义/类别覆盖不代表排名或提速优势。toy-first、baseline不优化与Sep14/Sep18目标保持。
 
 # Approved 48-hour core integration plan
 

@@ -6,8 +6,11 @@ The accepted bounded-core evidence below does not prove ordinary-entry support f
 the historical FinBench templates. Subsequent integration added edge Match and
 field/timestamp comparisons: three financial gold programs now pass ordinary
 estimated planning and selected execution on split native Neo4j/Fuseki tiny data.
-See [the current evidence](financial_binding_20260912.md). Financial NL-only input,
-new edge-bind training coverage and real evaluation remain required. Do not call
+See [the deterministic evidence](financial_binding_20260912.md). Four independent
+native endpoint-bind plans now pass, with old28 observations reused and a new
+32-sample model frozen; all six candidates per financial family are estimable.
+[Coverage evidence](edge_bind_training_20260912.md) does not establish ranking or
+speedup. Financial NL-only input and real evaluation remain required. Do not call
 the whole system complete from the earlier small-profile audit.
 
 ## Original bounded-core assessment

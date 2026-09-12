@@ -1,15 +1,16 @@
 # XGAP Status
 
-最新金融core进展：三类gold语义程序已通过普通Ptime规划和单个选中计划，在必要拆分的
-Neo4j/Fuseki小图上答案全对（16次源查询，0模型/训练/baseline）。边属性、字段/时间比较
-已实现；金融NL尚未验收。每题3个边bind计划因旧训练缺类别而明确不可估计，下一步
-只补独立小图的该工作覆盖及Neo4j边bind边界，再接金融NL/profile。
-[实现、实际证据与边界](report/financial_binding_20260912.md)。
+当前金融core：三类gold程序的普通确定性双库链路已通过；新边bind的4个独立小图
+训练计划也已全部实际执行正确（8次源查询）。旧28观测只从文件复用，按各自snapshot
+fit一次并另存新32样本模型，原模型不变。F1/F2/F3各6/6合法计划现在都可估计，未重跑
+金融查询。下一步冻结金融source schema/catalog/profile并做一次普通NL-only请求。
+[新模型及证据](report/edge_bind_training_20260912.md)；[金融确定性证据](report/financial_binding_20260912.md)。
+语义/类别覆盖不代表排名或提速优势。toy-first、baseline不优化与Sep14/Sep18目标保持。
 
-最新XGAP输入进展：FinBench同事实离线映射已实现；8实体/16关系小图上的三类查询
-在真实Fuseki各执行一次，独立答案均exact。没有LLM、baseline、训练或大数据调用。
-这不是金融NL/分布式联邦完成；下一步补普通core的边属性访问和字段/时间比较。
-[结果及缺口](report/finbench_rdf_tiny_20260912.md)；[表示契约](decisions/finbench_same_facts_rdf_v1.md)。
+前序输入证据：FinBench同事实离线映射已实现；8实体/16关系小图上的三类查询
+在真实Fuseki各执行一次，独立答案均exact。该轮没有LLM、baseline、训练或大数据调用。
+当时缺失的边属性访问和字段/时间比较现已实现并完成上方确定性双库验证；金融NL待验收。
+[前序结果](report/finbench_rdf_tiny_20260912.md)；[表示契约](decisions/finbench_same_facts_rdf_v1.md)。
 
 最新原则：baseline只要能运行并如实记录，不替它修算法、补语义或优化成绩。
 FedUP/FedX已在双源9事实tiny图运行；FedUP排序错误、聚合失败保留，不是待修复门禁。

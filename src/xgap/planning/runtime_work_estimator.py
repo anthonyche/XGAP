@@ -175,6 +175,17 @@ class FrozenWorkEstimator:
             raise ValueError("invalid work model training provenance")
         if set(p["training_query_ids"]) & set(p["excluded_query_ids"]):
             raise ValueError("work model mixes training and excluded queries")
+        if "training_statistics_profile" in p:
+            assignments = p.get("sample_source_statistics", {})
+            artifacts = p.get("training_statistics_artifacts", {})
+            if (p["training_statistics_profile"] != "per-sample-frozen-statistics-v1"
+                    or set(assignments) != set(p["training_observation_ids"])
+                    or set(artifacts) != set(assignments.values())):
+                raise ValueError("Invalid per-sample training statistics provenance")
+            for digest, raw in artifacts.items():
+                stat = FrozenSourceStatistics.from_dict(raw)
+                if stat.sha256 != digest or feature_names(stat) != self.feature_names:
+                    raise ValueError("Training statistics artifact differs from its hash/schema")
 
     def to_dict(self):
         body = {"schema_version": MODEL_SCHEMA, "model_version": self.model_version,
@@ -251,7 +262,7 @@ class FrozenWorkEstimator:
 
 def fit_work_estimator(samples, *, statistics, training_id, model_version, training_kind,
         excluded_query_ids, collection_ref, collection_elapsed_ms, collection_remote_calls,
-        ridge=1e-4, fit_sweeps=128):
+        ridge=1e-4, fit_sweeps=128, sample_statistics=None):
     """Fixed budget offline fitting; no backend, inference, answer, or held-out labels."""
     started = time.perf_counter()
     for value, name in ((training_id, "training_id"), (model_version, "model_version"), (collection_ref, "collection_ref")):
@@ -274,7 +285,25 @@ def fit_work_estimator(samples, *, statistics, training_id, model_version, train
         _number(collection_elapsed_ms, "collection_elapsed_ms")
     if collection_remote_calls is not None and (type(collection_remote_calls) is not int or collection_remote_calls < 0):
         raise ValueError("collection calls must be nonnegative or unknown")
-    fs = [extract_work_features(s.plan, statistics) for s in samples]
+    if sample_statistics is None:
+        training_statistics = {s.observation_id: statistics for s in samples}
+    else:
+        if (not isinstance(sample_statistics, dict)
+                or set(sample_statistics) != {s.observation_id for s in samples}
+                or any(not isinstance(v, FrozenSourceStatistics) or feature_names(v) != feature_names(statistics)
+                       for v in sample_statistics.values())):
+            raise ValueError("Per-sample statistics must exactly cover samples with the same feature schema")
+        training_statistics = sample_statistics
+        for sample in samples:
+            stat = training_statistics[sample.observation_id]
+            by_backend = {s.backend_id: s for s in stat.entries}
+            identities = sample.plan.metadata.get("source_identities", {})
+            used = {n.parameters.get("backend_id") for n in sample.plan.nodes if n.kind in REMOTE}
+            if any(b not in by_backend or identities.get(b) != {
+                    "source_id": by_backend[b].source_id, "snapshot_version": by_backend[b].snapshot_version}
+                    for b in used):
+                raise ValueError("Per-sample statistics disagree with the plan's source identities")
+    fs = [extract_work_features(s.plan, training_statistics[s.observation_id]) for s in samples]
     if any(f.unknown_fields for f in fs):
         raise ValueError("cannot fit unknown workload features")
     rows = [f.values for f in fs]
@@ -305,6 +334,9 @@ def fit_work_estimator(samples, *, statistics, training_id, model_version, train
         "measurement_sha256": s.measurement_sha256, "plan_sha256": _hash(s.plan.to_dict()),
         "features": f.to_dict(), "observed_latency_ms": s.observed_latency_ms,
         "split_role": s.split_role} for s, f in zip(samples, fs)]
+    if sample_statistics is not None:
+        for record in evidence:
+            record["source_statistics_sha256"] = training_statistics[record["observation_id"]].sha256
     p = {"training_id": training_id, "training_kind": training_kind, "split_role": "training",
         "sample_count": len(samples), "training_query_ids": sorted({s.query_id for s in samples}),
         "training_observation_ids": [s.observation_id for s in samples],
@@ -318,6 +350,11 @@ def fit_work_estimator(samples, *, statistics, training_id, model_version, train
             "cost_scope": "one-time independent collection and fit"},
         "independence_boundary": "caller-declared split; hashes bind records, not independence",
         "uncertainty_boundary": "training residuals only; no calibrated generalization or error guarantee"}
+    if sample_statistics is not None:
+        p["training_statistics_profile"] = "per-sample-frozen-statistics-v1"
+        p["sample_source_statistics"] = {s.observation_id: training_statistics[s.observation_id].sha256 for s in samples}
+        p["training_statistics_artifacts"] = {v.sha256: v.to_dict() for v in training_statistics.values()}
+        p["primary_statistics_scope"] = "default serving contract; training samples retain their own snapshots"
     return FrozenWorkEstimator(model_version, statistics, fs[0].names, fs[0].schema_sha256,
         coefficients, scales, tuple(min(r[j] for r in rows) for j in range(dimension)),
         tuple(max(r[j] for r in rows) for j in range(dimension)), log_rmse, _json(p))

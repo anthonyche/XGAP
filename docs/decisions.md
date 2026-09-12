@@ -1,18 +1,27 @@
 ## FinBench representation and next ordinary-core gap
 
+## Independent edge-bind coverage with per-sample snapshots
+
+[Four fixed new plans](decisions/edge_bind_training_v1.md) have actual Neo4j/Fuseki evidence.
+The old28 labels were verified and reused, never rerun. A32-sample artifact retains both training
+snapshots and recognizes all18 existing financial candidates, with zero financial execution.
+[Evidence and cost boundaries](report/edge_bind_training_20260912.md). Financial NL is next;
+do not repeat accepted training or tune the model against these financial queries.
+
 ## Financial binding semantics and ordinary deterministic integration
 
 [New bounded semantics](decisions/financial_binding_semantics_v1.md) expose edge properties, field/time
 comparison, finite literals and explicit unbounded-result ordering through the existing operator vocabulary.
-[Three tiny native financial programs pass](report/financial_binding_20260912.md). New edge-bind work
-lacks frozen training support; preserve unavailable estimates and add only independent tiny coverage.
+[Three tiny native financial programs pass](report/financial_binding_20260912.md). The originally missing
+edge-bind training support is now supplied by the independent coverage recorded above.
 Financial NL and real evaluation remain open; do not resume baseline optimization.
 
 The [same-facts contract](decisions/finbench_same_facts_rdf_v1.md) preserves entity
 and parallel-edge identity across native/RDF representations. Three independent
 tiny answers also pass actual Fuseki; [scope/evidence](report/finbench_rdf_tiny_20260912.md).
-Ordinary financial one-shot still needs edge attributes and field/time comparisons;
-prepared historical templates are not evidence that this new entry supports them.
+Ordinary financial edge attributes and field/time comparisons are now implemented;
+the new NL entry still needs actual financial evidence. Prepared historical templates
+are not evidence that the NL entry supports them.
 
 ## Baseline fidelity — user clarification
 
