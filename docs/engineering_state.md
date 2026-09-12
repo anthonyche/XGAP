@@ -1,5 +1,16 @@
 # XGAP current engineering loop
 
+## Current: v2 workload estimator prepared for one tiny native collection
+
+The backend/workload features and fixed-sweep nonnegative fitter are implemented.
+Five new-risk cases passed once (0.54 s); the owned training CLI passed its first
+zero-call preflight. The 28-plan manifest is frozen with B01–B05 and WORK-HOLDOUT-01
+excluded. Next run this new collection once, then fit/freeze and execute the one
+excluded deterministic request through the ordinary performance entry. No LLM
+or candidate-probing calls, no rerun of the old four training plans or B01 gate.
+See [contract](decisions/runtime_work_estimator_v2.md). Workload proxies are not
+selectivity/cardinality estimates; actual calibration is still pending.
+
 ## Current milestone: first guided external one-shot answer accepted
 
 The code is committed through 41a3cca. Both modes share the controlled ordinary

@@ -1,5 +1,14 @@
 # XGAP Status
 
+## New work: backend-aware nonnegative estimator ready for native verification
+
+V2 now distinguishes swapped Path/Match backend assignments and cannot decrease
+predicted cost under componentwise increased represented work. Unseen categories
+are unavailable; numeric extrapolation remains uncalibrated and visible. Old v1
+models remain unchanged/loadable. Five new checks and zero-call native preflight
+passed. The separate 28-plan tiny collection and one excluded deterministic
+request are prepared, not yet measured. [Contract](decisions/runtime_work_estimator_v2.md).
+
 ## Current: first guided real one-shot answer accepted
 
 At 41a3cca, B01 precision completed through the ordinary entry with one external

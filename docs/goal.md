@@ -1,5 +1,12 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 本轮继续：估计器v2进入真实小图采集门禁
+
+后端/工作类型关联特征、非负离线拟合与版本化加载已实现；5项新增检查和零调用
+预检通过。下一步仅执行已冻结的28个独立训练计划及1个排除在训练之外的新请求，
+全程零LLM调用。旧4条训练、B01成功及其余64项检查不重跑。跨库必要子查询与
+无预置结构约束的NL-only仍是后续核心验收项。见[v2契约](decisions/runtime_work_estimator_v2.md)。
+
 ## 最新里程碑：首个带显式约束的真实 one-shot 答案已通过
 
 用户批准的Goal继续active。41a3cca以一次外部LLM请求完成B01解释、冻结catalog

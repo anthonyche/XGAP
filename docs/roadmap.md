@@ -1,5 +1,13 @@
 # XGAP Roadmap
 
+## Active continuation: workload estimator v2
+
+The approved one-shot core now advances from the first guided answer to backend/
+workload-aware frozen estimates. V2 code and five new-risk checks are accepted;
+one 28-plan independent tiny collection plus one excluded ordinary deterministic
+request is next. No new comparative evaluation or big-data development.
+See [contract](decisions/runtime_work_estimator_v2.md) and engineering_state.md.
+
 ## First slice delivered; remaining core gates
 
 The [new ordinary tiny slice](report/one_shot_core_20260912.md) passes. Next: usable

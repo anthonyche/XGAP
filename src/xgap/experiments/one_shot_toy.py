@@ -29,7 +29,7 @@ from xgap.llm.candidate_interpretation import (
     CandidateInterpretationProviderConfig, OpenAICompatibleCandidateInterpretationProvider, WIRE_PROFILES,
     candidate_interpretation_schema, candidate_output_mode, candidate_wire_profile,
 )
-from xgap.planning.runtime_estimator import FrozenRuntimeEstimator
+from xgap.planning.runtime_work_estimator import frozen_estimator_from_dict
 from xgap.runtime.semantic_planning import LogicalSource
 from xgap.semantic.interpretation import InterpretationFailure, InterpretationRequest
 from xgap.semantic.interpretation_candidates import SCHEMA, interpret_candidate_question
@@ -162,7 +162,7 @@ def one_shot_toy_preflight(provider, *, estimator_path, query_id="B01", mode="pr
     data = Path(estimator_path).read_bytes()
     if len(data) > 8 * 1024 * 1024:
         raise ValueError("Frozen toy estimator exceeds 8 MiB")
-    estimator = FrozenRuntimeEstimator.from_dict(json.loads(data))
+    estimator = frozen_estimator_from_dict(json.loads(data))
     version = inputs["sources"]["toy"].snapshot_version
     entries = estimator.statistics.entries
     if (set(item.backend_id for item in entries) != {"neo4j", "fuseki"}

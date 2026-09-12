@@ -44,6 +44,7 @@ from xgap.planning.runtime_estimator import (
     FrozenRuntimeEstimator, FrozenSourceStatistics, SourceStatistics,
     RuntimeTrainingSample, fit_runtime_estimator,
 )
+from xgap.planning.runtime_work_estimator import load_frozen_estimator
 from xgap.runtime.physical_strategies import prepare_physical_strategies
 from xgap.runtime.scheduler import FederatedScheduler
 from xgap.semantic.program import SemanticGraphProgram
@@ -285,7 +286,7 @@ def run(args):
             estimator_path = Path(args.estimator).resolve()
             reuse = preflight["reused_estimator"]
             load_at = time.perf_counter()
-            reloaded = FrozenRuntimeEstimator.load(estimator_path)
+            reloaded = load_frozen_estimator(estimator_path)
             if (_file(estimator_path) != reuse["estimator_file"]
                     or reloaded.model_sha256 != reuse["model_sha256"]):
                 raise RuntimeError("Accepted estimator changed after preflight")

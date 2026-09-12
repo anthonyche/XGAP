@@ -1,5 +1,13 @@
 > Current authority (2026-09-12): the user approved [one-shot two-mode integration](decisions/one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.
 
+## Runtime workload estimator v2: separate wire-independent frozen cost model
+
+[The v2 contract](decisions/runtime_work_estimator_v2.md) associates Match/Path and
+full/bind work with their backend and fits nonnegative costs offline. Unseen
+categories are explicit, and out-of-range numeric predictions retain uncertainty.
+The old log-ridge model and records keep their identity. This repairs representation
+and numerical behavior; it is not evidence of useful ranking or speedup.
+
 # XGAP Design Decisions
 
 ## E2: freeze within-query balance and retain the negative paid-cost baseline
