@@ -3,8 +3,9 @@
 Status: compact schema and deterministic lowering implemented; nine distinct new
 local correctness/boundary checks accepted. Provider/ordinary-entry wiring is now
 implemented with six new checks, including frozen-estimator compatibility of all
-three generated financial domains. The actual compact NL-to-answer boundary is
-next and remains unverified. See
+three generated financial domains. One actual compact financial NL-to-answer request now
+passes in performance mode; [actual evidence](../report/compact_financial_nl_20260912.md).
+This is a development boundary, not held-out quality or speedup evidence. See
 [evidence](../report/compact_lowering_20260912.md). This
 corrects implementation within the approved one-shot goal; the research question,
 two modes, estimator, physical domain and evaluation population remain unchanged.

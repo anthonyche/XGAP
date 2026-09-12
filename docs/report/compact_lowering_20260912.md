@@ -1,5 +1,9 @@
 # Compact financial intent lowering — 2026-09-12
 
+Subsequent03314a9 milestone: provider/ordinary-entry integration and one actual
+financial NL answer are now accepted; [scope and measured costs](compact_financial_nl_20260912.md).
+The paragraphs below preserve the preceding lowering and wiring checkpoints.
+
 The compact query schema and deterministic compiler are implemented. Three
 independently authored financial intents now lower to existing semantic operators
 and execute to their independent expected answers on separate saved graph/control

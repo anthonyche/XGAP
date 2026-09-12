@@ -1,12 +1,13 @@
-紧凑图意图schema与确定性编译器已实现：自动分配中间列、派生属性读取、强制共享
-变量相等，保留平行边并支持显式去重。三类独立金融intent在分开的本地RDF事实上均
-得到预期答案，九项不同的新风险检查通过；ACYCLIC沿用“节点不重复”的原代数含义。
-[本轮证据及边界](report/compact_lowering_20260912.md)；[契约](decisions/compact_financial_interpretation_v1.md)。
-本轮零模型/native服务/baseline/训练调用。紧凑provider与普通NL入口接线仍待完成，
-下一步完成该接线、检查既有预算/冻结模型兼容性，再做一次必要tiny真实NL边界。
-金融NL v1/v2/v3仍均未得最终答案，[失败与成本](report/financial_nl_20260912.md)原样保留。
-不继续逐题prompt调优、不重跑旧门禁、不替baseline修结果。两模式、Ptime选择与一次
-最终执行不变；Sep14 17:00核心、Sep18真实结果目标保持，Goal active。
+金融普通NL真实链路已在03314a9通过：一次qwen3.8-27b调用（1928输入/550输出token），
+紧凑意图确定性编译、冻结catalog预测绑定、六个合法计划按估计选一个，执行Neo4j6次+
+Fuseki3次，答案账户2=66、账户3=9，与独立reference完全一致。核心在线3374.613ms；
+零probe/训练/fit/retry/baseline调用，服务已停止、输入封存未变。[完整证据](report/compact_financial_nl_20260912.md)。
+六项新provider/录制/模式/模型兼容检查通过；未重复此前九项lowerer检查或旧成功门禁。
+该结果是一个曝光开发题的performance集成证据，不是完整金融NL准确率或baseline提速。
+路径/风险排名有独立小图和冻结估计证据，实际compact模型质量待正式评价。旧v1/v2/v3
+[失败与成本](report/financial_nl_20260912.md)原样保留，不调prompt修该题，不替baseline修结果。
+下一步冻结批准的真实FinBench/RDF样本、独立reference、数值等价和预算/split契约，
+补必要共同输入适配后执行主评价；消融在后。Sep14 17:00核心、Sep18真实结果目标不变，Goal active。
 
 # Approved 48-hour core integration plan
 

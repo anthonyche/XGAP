@@ -260,5 +260,16 @@
   "baseline_operational_evidence": "docs/report/external_federation_tiny_20260912.md",
   "withdrawn_methods": [
     "fedup_jena_outer_v1"
-  ]
+  ],
+  "ordinary_financial_core_evidence": {
+    "code_checkpoint": "03314a9",
+    "report": "docs/report/compact_financial_nl_20260912.md",
+    "mode": "performance",
+    "unique_exposed_questions": 1,
+    "actual_model_calls": 1,
+    "final_plan_executions": 1,
+    "native_query_calls": 9,
+    "answer_em": 1.0,
+    "scope": "development integration only; not formal quality or efficiency evaluation"
+  }
 }

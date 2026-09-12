@@ -15,8 +15,9 @@ request failed Interpretation before grounding/execution. V2 also failed paramet
 admission; v3 passed syntax and entity grounding but failed source compilation on
 identity/property alias collision. All failures are preserved. The compact schema/lowerer now passes nine distinct local checks, including all
 three independent financial meanings on split RDF facts. Its provider and ordinary
-NL wiring remain next; see [the exact scope](compact_lowering_20260912.md). [Financial NL evidence](financial_nl_20260912.md). Financial NL success and
-real evaluation remain required. Do not call the whole system complete from the
+NL wiring now pass six new checks and one actual financial performance request
+returns the exact independent answer; see [the actual scope](compact_financial_nl_20260912.md). [Financial NL evidence](financial_nl_20260912.md). Broader financial NL effectiveness and
+real evaluation remain unmeasured. Do not call the whole system complete from the
 earlier small-profile audit.
 
 ## Original bounded-core assessment

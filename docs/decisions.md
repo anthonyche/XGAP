@@ -5,8 +5,16 @@ rejected identity/property output alias collision. All raw failures and costs re
 [the financial report](report/financial_nl_20260912.md). The
 [compact graph-intent compiler](decisions/compact_financial_interpretation_v1.md) now passes
 nine distinct local checks and all three independently authored financial meanings.
-Its provider/ordinary-entry integration remains next; [scope and evidence](report/compact_lowering_20260912.md). No more per-question live
+Its provider/ordinary-entry integration and first actual financial NL answer are now accepted below; [lowering evidence](report/compact_lowering_20260912.md). No more per-question live
 prompt tuning, estimator training or baseline repair. Keep both modes and Ptime one-plan behavior.
+
+## Actual compact financial NL acceptance
+
+At03314a9, one actual compact interpretation reached an independently correct
+financial answer through frozen grounding/estimation and one selected native plan.
+Six new integration checks pass; zero new fitting/probing/baseline work. Preserve
+all earlier failures and restrict this claim to one exposed performance request.
+[Measured scope and next evaluation preparation](report/compact_financial_nl_20260912.md).
 
 ## Financial NL profile and preserved first Interpretation failure
 

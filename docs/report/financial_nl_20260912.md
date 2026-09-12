@@ -1,5 +1,10 @@
 # 金融 NL 输入已接入；三次开发调用均未得到最终答案
 
+Subsequent03314a9 compact-profile request succeeded through one model call and one
+selected native execution. [Separate evidence](compact_financial_nl_20260912.md).
+The v1/v2/v3 failed requests below remain unchanged and share the same exposed
+development question; they are not independent accuracy samples.
+
 最新：v2仍因row-condition字段错误未准入；v3通过参数准入和Alice catalog绑定，随后
 因`m_company`把identity与business属性输出设为同一列而无法编译。静态查看还发现未
 读取列、额外公司blocked条件及源分配错误。三份响应均保留，不能称金融NL成功。
