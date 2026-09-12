@@ -1,5 +1,17 @@
 # Bounded core and evaluation interface freeze — 2026-09-12
 
+## Subsequent scope clarification: financial queries
+
+The accepted bounded-core evidence below does not prove ordinary-entry support for
+the historical FinBench templates. Later input integration identified missing
+edge-attribute access and field/timestamp comparison in that entry. The three
+same-facts RDF reference queries pass a tiny native representation gate; financial
+NL-to-semantic-program-to-one-shot execution remains required. See
+[the current evidence](finbench_rdf_tiny_20260912.md). Do not call the whole system
+or financial evaluation complete from the earlier small-profile audit.
+
+## Original bounded-core assessment
+
 The approved bounded research backbone is implemented and has controlled and
 tiny native integration evidence. The reusable per-request evaluation interface
 is now implemented and checked offline. This is sufficient to move to experiment

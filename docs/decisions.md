@@ -1,3 +1,11 @@
+## FinBench representation and next ordinary-core gap
+
+The [same-facts contract](decisions/finbench_same_facts_rdf_v1.md) preserves entity
+and parallel-edge identity across native/RDF representations. Three independent
+tiny answers also pass actual Fuseki; [scope/evidence](report/finbench_rdf_tiny_20260912.md).
+Ordinary financial one-shot still needs edge attributes and field/time comparisons;
+prepared historical templates are not evidence that this new entry supports them.
+
 ## Baseline fidelity — user clarification
 
 External baselines need to run and report faithfully; wrong answers/unsupported

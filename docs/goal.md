@@ -1,5 +1,10 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+最新XGAP输入进展：FinBench同事实离线映射已实现；8实体/16关系小图上的三类查询
+在真实Fuseki各执行一次，独立答案均exact。没有LLM、baseline、训练或大数据调用。
+这不是金融NL/分布式联邦完成；下一步补普通core的边属性访问和字段/时间比较。
+[结果及缺口](report/finbench_rdf_tiny_20260912.md)；[表示契约](decisions/finbench_same_facts_rdf_v1.md)。
+
 最新原则：baseline只要能运行并如实记录，不替它修算法、补语义或优化成绩。
 FedUP/FedX已在双源9事实tiny图运行；FedUP排序错误、聚合失败保留，不是待修复门禁。
 外层Jena补全尝试已撤出；后续工作回到XGAP的FinBench输入/reference与正式评价准备。

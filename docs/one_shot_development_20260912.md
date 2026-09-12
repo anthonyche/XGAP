@@ -1,3 +1,8 @@
+> Latest: [FinBench representation tiny gate](report/finbench_rdf_tiny_20260912.md)
+> passes three actual Fuseki queries, with zero model/baseline/large-data calls.
+> Next is ordinary-core edge-property access and field/timestamp comparisons,
+> followed by three gold financial semantic programs; no template substitution.
+
 > Current external gate: native FedUP/FedX are runnable with auditable results.
 > Per user clarification, no baseline repairs/semantic extensions/tuning for better
 > scores. Keep wrong/unsupported outcomes; next is XGAP FinBench input/reference
