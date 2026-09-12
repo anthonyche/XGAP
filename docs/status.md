@@ -1,5 +1,9 @@
 # XGAP Status
 
+最新接入：用户批准优先级后，FedUP源码commit已锁定并获取，FedX薄适配Java21构建/帮助检查通过。
+零模型/数据库查询；FedX线程/批量已按上游匹配；外部方法tiny结果与共同计量尚未验收。
+[接入证据及下一门槛](report/external_federation_preparation_20260912.md)。
+
 Current: the bounded core/record interface remains accepted at0f4206e. The
 [18-figure proposal](research_experiment_proposal_20260912.md) now binds each RQ to
 X/Y, population, comparable methods, shared run records and acceptance conditions.
@@ -7,11 +11,12 @@ X/Y, population, comparable methods, shared run records and acceptance condition
 papers/repos from locally unimplemented comparators.18 rows/links were checked;
 zero new model/native/training/benchmark calls and no repeated software tests.
 
-Discuss the proposed FinBench/RDF/FedShop priority while retaining GrailQA and its
-missing full-KB/KBQA-model requirements. The machine manifest is an unapproved
-discussion draft, not permission to launch campaigns. Preserve original populations,
-exposure and negative results. Relative ranking remains sufficient for the estimator;
-no additional calibration or core expansion. Sep14 17:00/Sep18 targets remain.
+The user has approved FinBench native plus matched-RDF FedUP/FedX first, bounded
+FedShop next, retaining GrailQA/KBQA-R1 without blocking the first tracks. No repeat
+approval is needed. Freeze exact artifacts/samples/references/budgets and finish
+thin adapters/tiny gates before campaigns. The protocol is priority-approved but
+not yet campaign-ready. Preserve exposures and negative results; relative ranking
+remains sufficient. Sep14 17:00/Sep18 targets remain.
 
 ## Historical checkpoints
 

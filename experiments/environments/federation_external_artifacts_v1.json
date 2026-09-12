@@ -1,0 +1,116 @@
+{
+  "schema_version": "xgap-external-federation-artifact-lock-v1",
+  "date": "2026-09-12",
+  "status": "fedx_build_verified_native_gate_pending",
+  "priority_authorization": "user approved recommended priority",
+  "fedup": {
+    "repository": "https://github.com/GDD-Nantes/fedup",
+    "commit": "4c1a3aa8137a3940f7f8255397cb8fec717c8afa",
+    "source_root": "/Users/anthonyche/xgap-data/external-sources/fedup-4c1a3aa-system-proxy",
+    "clean": true,
+    "pom": {
+      "path": "/Users/anthonyche/xgap-data/external-sources/fedup-4c1a3aa-system-proxy/pom.xml",
+      "bytes": 5236,
+      "sha256": "b55f51b804b1654cc4755b044fb52cd5e55355f5dd8c39de50db017ad0fcc52f"
+    },
+    "version_from_pom": "0.1.2",
+    "cli_version_annotation": "0.1.0",
+    "rdf4j": "5.1.2",
+    "jena": "5.5.0",
+    "source_receipt": {
+      "path": "/Users/anthonyche/xgap-data/fedup-source-intake-20260912/receipt.json",
+      "bytes": 741,
+      "sha256": "e617fd5f2d6450e9eb22ccbdc9ca216a23211a26bce3664a09de091ebfad5978"
+    },
+    "built": false,
+    "published_execution_settings": {
+      "bound_join_block_size": 10,
+      "join_workers": 10,
+      "union_workers": 10,
+      "internal_max_query_time": 2147483647
+    }
+  },
+  "fedx_adapter": {
+    "rdf4j": "5.1.2",
+    "java_home": "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home",
+    "maven": "3.9.12",
+    "source_files": [
+      {
+        "path": "/Users/anthonyche/Developer/XGAP/experiments/external/fedx/pom.xml",
+        "bytes": 1900,
+        "sha256": "bfc551d7884b892bdd3916a7ba71e7fe2e66e1e20021fc572c56c0479f00f060"
+      },
+      {
+        "path": "/Users/anthonyche/Developer/XGAP/experiments/external/fedx/src/main/java/org/xgap/experiments/FedXEndpoint.java",
+        "bytes": 7149,
+        "sha256": "832c9fc77a80f0be350ebb77fbebdc978af1a82afe68cd1d3e23a9fa1f03b39a"
+      },
+      {
+        "path": "/Users/anthonyche/Developer/XGAP/experiments/external/fedx/README.md",
+        "bytes": 2137,
+        "sha256": "e3091e6c40f4e3cdaeaa0088ad395c466933197e6a063295b35333d3d7e10407"
+      }
+    ],
+    "jar": {
+      "path": "/Users/anthonyche/xgap-data/fedx-adapter-build-20260912-matched/fedx-endpoint-adapter-matched.jar",
+      "bytes": 30725161,
+      "sha256": "2e12c2630a94e017401ca8287b20ab90c0550a6607d19030a843a7d42d5f1290"
+    },
+    "build_receipt": {
+      "path": "/Users/anthonyche/xgap-data/fedx-adapter-build-20260912-matched/receipt.json",
+      "bytes": 633,
+      "sha256": "3dbd7c2b02c3a34ced79d06f7506976237cbaef831992d344b87a0e5319835e0"
+    },
+    "build_seconds": 5.067016834,
+    "help_exit_code": 0,
+    "top_level_concurrency": 1,
+    "execution_settings": {
+      "bound_join_block_size": 10,
+      "join_workers": 10,
+      "union_workers": 10,
+      "debug_query_plan": false,
+      "outer_common_deadline_still_required": true
+    },
+    "native_query_gate": "not_run",
+    "first_build_jar": {
+      "path": "/Users/anthonyche/xgap-data/fedx-adapter-build-20260912-system-proxy/fedx-endpoint-adapter-v1.jar",
+      "bytes": 30724855,
+      "sha256": "c1efab4fd7d5f2d6876b22f8a09fc8f11a902d88c5b077314d183cdb9cc4f0b2"
+    },
+    "first_build_receipt": {
+      "path": "/Users/anthonyche/xgap-data/fedx-adapter-build-20260912-system-proxy/receipt.json",
+      "bytes": 710,
+      "sha256": "5e2aed24554ec306bcbf9d580de34bfe7f2d668f695334d78821281e767c5971"
+    },
+    "offline_rebuild": true,
+    "standalone_result_parsers": [
+      "SPARQL JSON",
+      "SPARQL XML"
+    ]
+  },
+  "offline_environment": {
+    "uses_existing_system_proxy": true,
+    "system_proxy_modified": false,
+    "global_git_or_maven_config_modified": false,
+    "isolated_maven_cache": "/Users/anthonyche/xgap-data/external-maven-repository"
+  },
+  "preserved_failures": {
+    "public_commit_API": "four URLError results, tool e59a88",
+    "direct_fedup_fetch": "45 second timeout, tool 5e8777; partial original directory retained",
+    "direct_fedx_build": {
+      "path": "/Users/anthonyche/xgap-data/fedx-adapter-build-20260912-v1/receipt.json",
+      "bytes": 193,
+      "sha256": "54d1452450d282a3ccabf1ed501d040afc6b751ab4f406b00fa6210f0eadd3ab"
+    }
+  },
+  "new_model_calls": 0,
+  "new_backend_queries": 0,
+  "paper_result": false,
+  "required_next_gates": [
+    "Common outer deadline and backend accounting",
+    "Build unchanged FedUP and offline summary",
+    "Tiny two-endpoint results with preserved multiplicity and failures",
+    "Common HTTP backend call and byte accounting",
+    "Frozen FinBench same-facts RDF/input/gold contracts"
+  ]
+}

@@ -2,12 +2,13 @@
 
 核实日期：2026-09-12。范围是当前实验方案的定向检索，不是完整系统综述，也不证明
 名单覆盖截至今天的所有SOTA。以下来源是论文作者、会议、项目官方实现或官方文档。
-本轮没有安装外部引擎、下载模型/数据、训练或执行查询。
+提案阶段只做来源核实；用户批准后已获取FedUP源码并构建FedX薄适配，见下方更新。
+没有下载模型/大数据、训练或执行查询。
 
 | 外部方法 | 已核实的事实及直接来源 | 对XGAP实验的适用性判断 | 当前本地状态 |
 |---|---|---|---|
-| FedUP | WWW2024工作，官方提供SPARQL联邦计划、summary构建与FedX/Jena执行路径；运行期source selection可能发ASK。[官方实现](https://github.com/GDD-Nantes/fedup) | 主要现代联邦对照。固定RDF源和相同查询；summary属离线一次性成本，运行期ASK不能免费。它不原生接受Cypher或NL。 | 未发现XGAP适配器；未安装/执行；版本SHA待锁定。 |
-| FedX / RDF4J | 官方文档提供SPARQL endpoint federation和查询执行配置。[官方文档](https://rdf4j.org/documentation/programming/federation/) | 成熟而强的联邦对照；与FedUP固定相同RDF4J/FedX执行版本，可分辨上层规划与执行差异。不是以年份称其最新SOTA。 | 未发现XGAP适配器；未执行；版本待锁定。 |
+| FedUP | WWW2024工作，官方提供SPARQL联邦计划、summary构建与FedX/Jena执行路径；运行期source selection可能发ASK。[官方实现](https://github.com/GDD-Nantes/fedup) | 主要现代联邦对照。固定RDF源和相同查询；summary属离线一次性成本，运行期ASK不能免费。它不原生接受Cypher或NL。 | 后续已锁定commit并获取源码；未构建/查询，见接入记录。 |
+| FedX / RDF4J | 官方文档提供SPARQL endpoint federation和查询执行配置。[官方文档](https://rdf4j.org/documentation/programming/federation/) | 成熟而强的联邦对照；与FedUP固定相同RDF4J/FedX执行版本，可分辨上层规划与执行差异。不是以年份称其最新SOTA。 | 后续薄适配已编译，固定5.1.2；未执行查询，见接入记录。 |
 | Comunica | 官方支持多源SPARQL查询。[联邦文档](https://comunica.dev/docs/query/advanced/federation/) | 可增加独立实现对照；优先级在FedUP/FedX之后。不要以它替换失败的既定方法后隐藏失败。 | 文档可读，未集成。 |
 | KBQA-R1 | 作者论文v4于2026-06-22更新；ICML2026目录列出该题名。作者提供GrailQA/WebQSP权重入口和Freebase执行要求。[论文](https://arxiv.org/abs/2512.10999v4)、[会议目录](https://icml.cc/Downloads/2026)、[代码](https://github.com/sunxin000/KBQA-R1)、[权重卡](https://huggingface.co/unixin/kbqa-r1) | 应优先纳入当前KBQA前沿候选；使用作者权重的系统比较须披露训练与模型差异。把它改用现有Qwen不能称官方复现。 | 权重页面存在；未下载/核验/部署。不能由“LLM HTTP已可用”推断此模型已可服务。 |
 | KBQA-o1 | ICML2025论文描述MCTS与策略/奖励模型的agentic KBQA。[会议论文](https://proceedings.mlr.press/v267/luo25d.html)、[官方代码](https://github.com/LHRLAB/KBQA-o1) | 有价值的搜索型对照；真实使用的模型、训练产物、工具调用与总时间均须计入/披露。不能直接搬其论文整榜F1与XGAP小样本相比。 | 未复现。代码文档含训练步骤；现成可用checkpoint尚未核实。本周不自动启动其完整训练流程。 |
@@ -15,7 +16,9 @@
 这些“适用性判断”是我们的实验设计推论，不是上述来源已经证明XGAP可胜过它们。
 KBQA-R1会议目录可读，单独poster页抓取失败；论文版本及作者仓库共同支撑其身份，
 不把poster抓取失败推断成论文不存在。四个仓库的公开commit API本地请求均URLError，
-因此不填写猜测SHA、不自动重试；网页可读不等于本地下载/构建路径已经可用。
+首次提案阶段因此未填写猜测SHA。用户批准后的Git读取固定了FedUP commit，显式使用
+系统已有代理后源码获取和FedX构建成功；原失败保留，详见
+[后续接入证据](external_federation_preparation_20260912.md)。网页可读与实际构建是不同证据。
 
 ## 数据artifact与可比性
 

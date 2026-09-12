@@ -1,5 +1,9 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+最新接入：用户批准优先级后，FedUP源码commit已锁定并获取，FedX薄适配Java21构建/帮助检查通过。
+零模型/数据库查询；FedX线程/批量已按上游匹配；外部方法tiny结果与共同计量尚未验收。
+[接入证据及下一门槛](report/external_federation_preparation_20260912.md)。
+
 ## 当前进展：有界核心与通用评价入口已达到实验方案讨论门槛
 
 普通NL-only真实拆分链已验收：一次模型解释、估计选出一个计划，Neo4j与Fuseki各
@@ -11,13 +15,13 @@
 有界research backbone已实现并有集成证据；正式实验、外部对照与精度/提速结论尚未
 完成。[18图讨论稿](research_experiment_proposal_20260912.md)及
 [外部方法核实表](report/external_comparators_20260912.md)现已完成，逐图明确RQ/X/Y、
-population、成本与可比外部方法。机器清单是discussion_draft，execution_authorized=false。
+population、成本与可比外部方法。用户已批准建议优先级；机器清单进入priority_approved_protocol_finalization，campaign_ready=false。
 本轮仅核实公开文档与本地artifact状态，零新模型/数据库/训练/实验运行，无代码回归。
 
 建议优先FinBench原生与同事实RDF的FedUP/FedX，提前有界FedShop外部验证；GrailQA
-及KBQA-R1/o1保留为待完整KB/模型条件的对照轨，不取消原目标。该优先级调整提交
-用户讨论；尚未批准，不启动比较/消融/规模campaign。可继续不依赖该决定的只读
-artifact/适配可行性核实，不重复失败下载或已通过核心门禁。核心Sep14 17:00和真实
+及KBQA-R1/o1保留为待完整KB/模型条件的对照轨，不取消原目标。该优先级调整已由
+用户批准，不再重复确认。现在锁定FedUP/FedX版本、薄适配及真实数据/reference/预算；
+正式campaign先满足这些具体门槛。继续tiny开发，不重复失败下载或已通过核心门禁。核心Sep14 17:00和真实
 结果Sep18目标不变，整体Goal仍active。下方旧阶段安排仅作历史。
 
 ## 用户补充：估计器以选对计划为目标，不要求精确回归时间

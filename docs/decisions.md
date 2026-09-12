@@ -6,8 +6,10 @@ The [18-figure draft](research_experiment_proposal_20260912.md) separates ordina
 NL, fixed-semantics RDF federation and author-model KBQA tracks. A shared-front-end
 plus FedUP/FedX is explicitly a composed baseline; those engines are not assigned
 NL/Cypher capabilities they do not implement. Public2026 KBQA-R1 evidence updates
-the external roster. Dataset priority and exact cohorts are discussion choices,
-not silently adopted replacements. No campaign is authorized by this draft.
+the external roster. The user approved the recommended dataset priority in the async reply. Exact
+cohorts, artifacts and budgets are finalized next; campaign readiness remains false
+until those concrete gates pass. This does not cancel GrailQA or authorize invented
+external results.
 
 ## Reusable one-shot evaluation interface and bounded core freeze
 

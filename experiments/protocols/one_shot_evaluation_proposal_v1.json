@@ -1,8 +1,14 @@
 {
   "schema_version": "xgap-experiment-figure-proposal-v1",
-  "status": "discussion_draft",
-  "execution_authorized": false,
-  "author_decision": null,
+  "status": "priority_approved_protocol_finalization",
+  "execution_authorized": true,
+  "author_decision": {
+    "source": "user_async_reply",
+    "date": "2026-09-12",
+    "question_item": "request_user_input_async/call_rd9S4OvahHj02yDKXvtZ9RNW/0",
+    "answer": "按建议优先级推进（推荐）",
+    "scope": "FinBench native and matched RDF FedUP/FedX first, bounded FedShop next; retain GrailQA/KBQA-R1 without blocking first tracks"
+  },
   "date": "2026-09-12",
   "code_checkpoint": "0f4206e",
   "figure_count": 18,
@@ -234,8 +240,7 @@
     "large_data_development": false
   },
   "unresolved_decisions": [
-    "Prioritize FinBench plus RDF/FedUP/FedX and elevate bounded FedShop while retaining GrailQA requirements",
-    "Freeze exact new NL populations, independent references and external artifact versions before execution"
+    "Freeze exact samples, independent references, resource budgets and external versions within the approved priority; no repeated approval required for routine preparation"
   ],
   "external_commit_metadata_check": {
     "repositories": [
@@ -246,5 +251,6 @@
     ],
     "result": "all four local API reads failed URLError; no automatic retries; no verified SHA",
     "tool_chunk": "e59a88"
-  }
+  },
+  "campaign_ready": false
 }

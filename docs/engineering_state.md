@@ -1,5 +1,9 @@
 # XGAP current engineering loop
 
+最新接入：用户批准优先级后，FedUP源码commit已锁定并获取，FedX薄适配Java21构建/帮助检查通过。
+零模型/数据库查询；FedX线程/批量已按上游匹配；外部方法tiny结果与共同计量尚未验收。
+[接入证据及下一门槛](report/external_federation_preparation_20260912.md)。
+
 ## Current: bounded core and reusable record interface ready for experiment discussion
 
 The [requirement-to-evidence audit](report/one_shot_core_freeze_20260912.md) separates
@@ -21,13 +25,14 @@ are appropriate RDF comparators; KBQA-R1 has2026 paper/model-card evidence but i
 not locally deployed. Four direct repository metadata calls failed URLError; no
 commit SHA is verified, no automatic retry occurred, and no process remains live.
 
-Pending material decision: prioritize FinBench native plus matched-RDF FedUP/FedX,
-elevate bounded FedShop, retain GrailQA/KBQA-R1 obligations without making full
-Freebase readiness block the first tracks. This is a draft, not campaign approval.
-Do not silently change populations or remove unready cells. While awaiting the
-decision, read-only external adapter/artifact feasibility work remains useful;
-no campaigns, new training or broad regression. The core is ready, overall research
-Goal not complete. Sep14 17:00/Sep18 and remote3804210 ownership remain unchanged.
+User approved the recommended priority in the async reply: FinBench native plus
+matched-RDF FedUP/FedX first, then bounded FedShop; retain GrailQA/KBQA-R1 without
+blocking the first tracks. Do not ask for this approval again. The manifest now
+records priority_approved_protocol_finalization, authorization true, campaign_ready
+false. Next pin the external implementation/dependencies and build the thin adapter,
+then freeze dataset/reference/sample/budget manifests and pass necessary tiny
+boundaries before formal runs. Core tests and native successes remain accepted.
+Sep14 17:00/Sep18 and remote3804210 ownership are unchanged.
 
 Estimator priority remains relative plan selection, not precise ms regression.
 The existing v2 returns ms; no rank-only adapter or ranking benefit is claimed.

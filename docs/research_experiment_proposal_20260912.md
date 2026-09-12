@@ -1,14 +1,14 @@
-# XGAP：18图实验讨论稿
+# XGAP：18图实验计划（优先级已批准）
 
 ## Material Passport
 
 - Origin Skill: academic-research-suite / experiment-agent
 - Origin Mode: plan
 - Origin Date: 2026-09-12, Asia/Shanghai
-- Verification Status: UNVERIFIED — 实验设计待讨论，尚未执行；外部来源核实范围另表记录
+- Verification Status: UNVERIFIED — 优先级已批准，正式实验尚未执行；外部来源/构建核实另表记录
 - Version Label: xgap_one_shot_experiment_proposal_v1
 - Code checkpoint: 0f4206e；有界核心与通用记录接口已实现并有验收证据
-- Execution authorization: 本文不启动campaign；先由用户讨论确定实质研究选择
+- Execution authorization: 用户已回复“按建议优先级推进（推荐）”；进入协议细化与薄适配。正式campaign须先满足具体版本/数据/预算门槛，不重复请求既有优先级授权。
 
 ## 研究问题与贡献边界
 
@@ -104,7 +104,7 @@ KB=相同完整KB范围的问答；机制=最终评价时的内部诊断/消融�
 | 17 联合选择还是先定解释 | 消融；NL机制轨 | 联合选择 vs 同K3先取最高质量解释再规划 | 配对answer F1与总在线成本差 | 完整精度模式与单机制变体，明确不是外部SOTA；成对连线/差值图 | 主结果后消融包；保持同候选/grounding/估计器，改变选择规则；replay部分不报新LLM时延 |
 | 18 估计器与信息各贡献多少 | 消融；NL机制轨 | 分别仅替换估计器为min-call、catalog64降8、关闭ontology | answer质量、在线成本、无法规划率 | 完整模式和每次只改一项的三个变体；相对完整方法的差值森林图，分数据集 | 主结果后消融包；K/硬语义不变；未实际接通的机制不生成假消融；正负差值都保留 |
 
-[可机读的18图清单](../experiments/protocols/one_shot_evaluation_proposal_v1.json)，当前执行许可为false。
+[可机读的18图清单](../experiments/protocols/one_shot_evaluation_proposal_v1.json)，优先级已获授权，campaign_ready=false，具体运行条件尚待冻结。
 
 ## 计量与统计规则
 
@@ -173,14 +173,14 @@ KB=相同完整KB范围的问答；机制=最终评价时的内部诊断/消融�
 deadline保持不变，本方案建议用已有事实轨先确保真实结果，不将所有工作押在完整
 Freebase恢复上。UI只需能查看请求、选中计划、答案和成本记录，不扩展成产品项目。
 
-## 当前需讨论的决定与下一步工程
+## 已批准的优先级与下一步工程
 
-建议批准“FinBench原生 + 同事实RDF的FedUP/FedX”为第一批真实结果，提升有界FedShop
+用户已批准按建议推进：“FinBench原生 + 同事实RDF的FedUP/FedX”为第一批真实结果，提升有界FedShop
 外部验证的优先级；GrailQA + KBQA-R1保留为完整KB条件下的KBQA对照轨，不作为前两轨
-启动前置条件。这是优先级提案，不是取消任何原目标。精确样本/资源清单将在接入前
+启动前置条件。这一优先级已批准，不取消任何原目标。精确样本/资源清单将在接入前
 冻结，任何语义范围缩减或条件轨替代都显式记录并交用户决定。
 
-批准后只做论文需要的薄适配：保守source映射与语义等价检查、独立gold规范化、
+现在只做论文需要的薄适配：保守source映射与语义等价检查、独立gold规范化、
 外部引擎调用记录、同计时边界的聚合/watchdog；遇到新边界故障用tiny与replay修复。
 FedShop含相同谓词分布在多源的情况，必须保守考虑所有匹配源，不能预塞gold RSA；
 source联合导致超过64 operators/候选预算的输入应报告unsupported，而非隐藏截断。

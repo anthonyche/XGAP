@@ -32,8 +32,9 @@ backend runs, fitting or accepted-gate repetitions occurred for this wrapper.
 
 The implementation can now support experiment-plan discussion. The [18-figure
 draft](research_experiment_proposal_20260912.md) is prepared with RQ/X/Y/population/
-costs and primary-source-verified external candidates. Discuss its dataset priority
-and freeze the protocol with the user before evaluation campaigns.
+costs and primary-source-verified external candidates. The user approved its dataset priority.
+Freeze concrete samples/artifacts/budgets and finish thin adapters before campaigns;
+do not repeat the priority approval question.
 Benchmark-specific profiles/references/adapters and cohort aggregation are still
 required. Current estimator v2 is retained: relative ranking is a sufficient goal,
 accurate time regression and rank-only implementation are not completion gates.
