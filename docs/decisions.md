@@ -1,3 +1,8 @@
+## 首批真实结果及回收修正 — 2026-09-13
+
+[5组结果](report/finbench_rdf_first_five_20260913.md)已记录；当前XGAP更慢，全部已处理gold为空，不能外推质量。
+[harness修正规则](decisions/fedup_campaign_host_v1.md)记录连接复用和退出竞态；题目/作者算法/原始结果不变，不重跑旧intent。
+
 ## 磁盘服务与平衡调度 — 2026-09-13
 
 [冻结契约](decisions/rdf_campaign_serving_v1.md)与[真实离线/新边界证据](report/rdf_campaign_preparation_20260913.md)已归档。
