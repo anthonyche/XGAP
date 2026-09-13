@@ -2,10 +2,10 @@
 
 ## 2026-09-13 最新执行状态
 
-以 [Goal 当前执行](goal.md) 为准。Native身份投影与时间词法修复已验收，真实固定语义
-已有非空正确答案；普通NL下一缺口是实体名称/业务ID/变量角色约定。两份最新报告：
-[native工程与结果](report/native_projection_timestamp_20260913.md)、
-[第二组NL失败](report/finbench_nl_second_group_20260913.md)。旧暂停已解除；下方为历史。
+以[Goal当前执行](goal.md)为准。名称/ID/变量三条真实tiny one-shot均exact，prompt-v2
+保持原compiler和grounding；[证据](report/compact_roles_20260913.md)。真实NL下一组
+暴露去重/聚合表达缺口；[保留的四方法失败与新fixed四题](report/finbench_nl_third_group_20260913.md)。
+下一步tiny澄清有界语义并版本化，不按正式题修答案或反复调prompt。旧暂停解除；下方为历史。
 
 ## 当前执行：共同固定语义入口已验收，先修正 RDF 表示重叠
 

@@ -1,0 +1,5 @@
+group_index,question_id,family,status,answer_em,expected_rows,actual_rows,online_ms,planning_ms,source_calls,source_bytes,method_peak_rss_bytes,source_peak_rss_bytes,model_calls,final_plan_attempts,estimated_candidates,implementation
+12,FBNS-3-71c4b4b263e2825b,f3_aggregate_risk_ranking,returned,1.0,0,0,18152.378167025745,49.43491704761982,5,31190659,921403392,1119731712,0,1,6,4509c15 (time semantics08eb4f0; original prompt unused)
+13,FBNS-2-565ac00a98c9b0cb,f2_temporal_path_control,returned,1.0,0,0,29915.87616596371,56.87208380550146,6,54128387,1788919808,1044299776,0,1,6,4509c15 (time semantics08eb4f0; original prompt unused)
+14,FBNS-2-33858ee1bd9deb0b,f2_temporal_path_control,returned,1.0,0,0,28863.24704159051,57.92612489312887,6,54128650,1677672448,1256783872,0,1,6,4509c15 (time semantics08eb4f0; original prompt unused)
+15,FBNS-1-8e4d870fe6e0eb66,f1_direct_transfer_control,returned,1.0,0,0,16712.68529072404,51.335666328668594,5,25516371,1047134208,1096548352,0,1,6,4509c15 (time semantics08eb4f0; original prompt unused)

@@ -1,5 +1,36 @@
 # XGAP Status
 
+## 当前执行：名称/ID/变量入口3题通过；真实NL下一缺口为去重与聚合约定
+
+4509c15发布独立prompt-v2和只派生prompt的冻结配置，原v1、wire/compiler/grounding/
+planner/估计器/预算/数据不变。3项新检查首次通过0.35秒；真实冻结8节点16边小图上
+名称、业务ID、普通变量三个新NL请求各1次模型、1个估计选中的最终计划，答案全exact。
+名称Alice查catalog1次，其他0次；源调用3/10/3，完整2.341/3.524/1.451秒，合计
+6404输入/895输出token。无重装/fit/baseline/probe/retry，控制器和服务终态。
+[小图证据与准确范围](report/compact_roles_20260913.md)。
+
+新native/RDF全量profile及原冻结stores/FedUP summary的关联已离线封存，零新load/
+catalog/训练/summary工作。RDF NL新journal引用原8个失败结果，保留全48题、方法顺序、
+版本及曝光，从未运行group2继续；旧题没有重提。该组四方法各1次模型后均在compact
+lowering拒绝：company/account去重键没有保留SUM所需transfer身份。普通变量都已正确
+填entity:null，名称问题这次未出现。最终计划0、源0、分数0、约8.24–8.82秒/方法。
+不是baseline原生失败或catalog问题，未修模型回答。[真实新失败及含义](report/finbench_nl_third_group_20260913.md)。
+
+另完成native fixed未运行groups12–15，时间v2语义下4个正确空答案，零模型，单计划，
+16.713–29.916秒，方法峰值0.921–1.789GB低于原2GiB。原wrong/censored结果保留；
+这批全空，仍不证明时间修复后的真实非空效果或提速。所有句柄49874/52689/86785/5140
+已确认exit0，全部服务终态。Native fixed下一group16；RDF fixed下一group5；RDF NL
+prompt-v2新root下一group3，已含旧8次失败引用；native NL仍未启动。
+
+下一门：先在独立tiny parallel-transfer/multiple-witness例子上澄清有界逻辑语言的
+去重/聚合约定，再实现必要版本化lowering。不要继续盲目加prompt或大数据模型重跑；
+不能将v1无效回答静默补键/丢约束。真实策略估计排序、完整NL、FedShop/scale及最终
+批准图表仍未完成。保留120=24/48/48、评价33空15非空、所有首次失败与版本边界；
+baseline只忠实运行原作者方法，不帮它优化。Sep14 17:00核心/接口、Sep18真实论文
+结果目标不变，Goal active；旧暂停解除，不轮询3804210。
+
+## 以下为前序记录；执行状态以上方为准
+
 ## 当前执行：真实非空答案已取得，时间格式缺陷修复，NL 实体角色是下一瓶颈
 
 626bb84精简native身份投影；同一tiny答案/5次调用的源传输13,800→4,907字节

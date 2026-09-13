@@ -1,5 +1,11 @@
 ## 首批真实结果及回收修正 — 2026-09-13
 
+2026-09-13: [Compact entity roles v2](decisions/compact_entity_roles_v2.md) is accepted
+in4509c15: three new checks and three actual one-shot tiny requests pass. The
+subsequent real group exposes a distinct witness-deduplication/aggregation boundary;
+see [the retained failures and new fixed results](report/finbench_nl_third_group_20260913.md).
+No old question, catalog or baseline algorithm was repaired or rerun.
+
 2026-09-13: [Millisecond lexical compatibility](decisions/financial_timestamp_v2.md)
 fixes omitted fractional zeros in coordinator and shared-NL predicates. Four new
 checks, including saved failure and a tiny estimated slice, pass in 1.32s; the
