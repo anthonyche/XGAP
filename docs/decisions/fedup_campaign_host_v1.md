@@ -70,3 +70,35 @@ healthy session, replaces a failed one, keeps identical fixed input across metho
 and does not read NL gold. After these and the new real host boundary, dispatch the
 first frozen fixed-semantics evaluation group once. This begins the approved real
 evaluation, not development debugging on a large dataset.
+
+## First real group and transport correction epoch
+
+The first group remains immutable: XGAP returned the correct empty answer in53.112s
+(planning23ms, execution45.248s,112.486MB source responses); FedX encountered local
+EADDRNOTAVAIL after8198 observed requests; subsequent retirement raised PermissionError
+and left the dead session attached, so FedUP never submitted its method query.
+This is not evidence of native baseline inferiority. The original retirement stack
+was not captured, so its precise operation is unknown. The state-retention defect
+is independently replayed and fixed without reproducing the full-data failure.
+
+The campaign observer now uses HTTP/1.1 and retains at most16 idle upstream
+connections per source for1second; it neither caches responses nor retries stale
+connections. This removes transport-forced connection churn. Active method request
+semantics, native batching and query count are unchanged. Every logical request
+still has its own ledger; new/reused upstream connection counters are explicit.
+Local address/file-descriptor exhaustion is classified as harness transport resource
+failure. The legacy observer keeps its old HTTP/1.0 default.
+
+Cleanup detaches the session before any fallible operation and halts dispatch if
+quiescence or retirement recording is uncertain. Canonical outcomes already sealed
+remain scoreable even if later controller cleanup fails. New focused replay checks:
+20 HTTP calls use1 upstream connection, stale connection fails without retry,
+saved PermissionError prevents reuse, and an append-only correction epoch cannot
+change input pins or redispatch prior intents. The first three checks pass0.55s;
+the epoch check passes0.33s. No baseline or full-data query was rerun for this fix.
+
+An explicit documented harness epoch may change implementation only while preserving
+schedule/source/summary pins, all prior intents and outcomes. It is append-only;
+future dispatch skips the three original cells. Disclose epochs and do not silently
+pool their timing. This is an integration correction, not a new workload, altered
+baseline or retry to replace the first result.

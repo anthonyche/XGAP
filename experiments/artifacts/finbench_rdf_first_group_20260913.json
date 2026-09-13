@@ -1,0 +1,186 @@
+{
+  "audit": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/first-group-audit/audit.json",
+    "sha256": "8082ed3189acd39677eb6c87d52f8bdf4940630e708f02bc571373b8adb771e4",
+    "bytes": 6480
+  },
+  "schema_version": "xgap-first-real-fixed-group-audit-v1",
+  "question_id": "FBNS-2-a0baa0e6711f9de3",
+  "family": "f2_temporal_path_control",
+  "source_commit": "50f105d",
+  "completed_groups": 1,
+  "total_evaluation_groups": 48,
+  "model_calls": 0,
+  "actual_top_level_method_queries": {
+    "xgap-rdf": 1,
+    "fedx": 1,
+    "fedup": 0
+  },
+  "rows": [
+    {
+      "method": "xgap-rdf",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/receipt.json",
+        "sha256": "ddb8b9ea0e5f439d1bab8adf35b058db1127e50b904184e016cf95720142593c",
+        "bytes": 7192
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/score.json",
+        "sha256": "408302ac78e4c5af99e2dea83e47be660278dd07da682aaf2a7d091b390a7dae",
+        "bytes": 1099
+      },
+      "raw_status": "returned",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "common_online_ms": 53112.221624702215,
+      "source_requests": 6,
+      "source_response_bytes": 112485527,
+      "observed_failure_categories": {},
+      "classification": "correct_empty_answer"
+    },
+    {
+      "method": "fedx",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-1/execution/receipt.json",
+        "sha256": "e223d5a4c9f1f7fcdb3fc0a956750de807cbcb627573f26007921a2e11a31e42",
+        "bytes": 4848
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/first-group-audit/fedx-reconciled-score.json",
+        "sha256": "e90e1d5f7d631a52ca2e9036a10f93991058860b471f9a7d68d7bbe9e4355d54",
+        "bytes": 1114
+      },
+      "raw_status": "upstream_source_failure",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "common_online_ms": 13438.555500470102,
+      "source_requests": 8198,
+      "source_response_bytes": 24780652,
+      "observed_failure_categories": {
+        "source_transport": 10
+      },
+      "classification": "harness_local_port_exhaustion_no_native_answer"
+    },
+    {
+      "method": "fedup",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-2/execution/receipt.json",
+        "sha256": "ba5b78c9e831f60ec3d480876bc2288a70cb1f93d15b47d6b78e6b2915a69654",
+        "bytes": 1146
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-2/execution/score.json",
+        "sha256": "cb5005bfdb1e625c11f78c3679512f0cc9183aad5b064ac40d9c4a59e8638b61",
+        "bytes": 1110
+      },
+      "raw_status": "supervisor_failed",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "common_online_ms": 0.761125236749649,
+      "source_requests": 0,
+      "source_response_bytes": 0,
+      "observed_failure_categories": {},
+      "classification": "harness_dead_session_no_method_query"
+    }
+  ],
+  "source_errors": [
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8191-result.json",
+        "sha256": "bf867aa3ac5c4d947b8b3d798de28661c9bb84bf3e36e233ae5ddaec10223aba",
+        "bytes": 1531
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8192-result.json",
+        "sha256": "64fec7b9f03896449ef30ff00bcf47a6f94ef32a2dcb55b1cd6c041c27b90b6d",
+        "bytes": 1531
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8193-result.json",
+        "sha256": "d9a46c8950f653accb253a5864dcb1f6e4a9c04663944eec3bc01fdecb76002e",
+        "bytes": 1531
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8194-result.json",
+        "sha256": "bf70b9db71b114e38a69581361b08e6558e39dc4137886c2939781c440d0773a",
+        "bytes": 1524
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8195-result.json",
+        "sha256": "668e26f2a85058227e6e904e1453c9ff190bc850cf93cc8f4934d0125e6b5dfe",
+        "bytes": 1451
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8196-result.json",
+        "sha256": "8c5a6bdc98a15043ac23c976360309d33c667c54fa889a0099c4823e15bd3bb7",
+        "bytes": 1522
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8197-result.json",
+        "sha256": "2f37b5c0ca0f45c78daf61064a2995a0e21800591c39787808094aea3686418d",
+        "bytes": 1524
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8201-result.json",
+        "sha256": "e1ab10c68026b9536d095ff3d550a714901388be299f2b3789f11b58626b7db0",
+        "bytes": 1532
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8202-result.json",
+        "sha256": "54c27d1bd6a0fee61fcab12927d448250e013682353064d8b683c2c1df63c466",
+        "bytes": 1523
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    },
+    {
+      "record": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/session-001/source-observations/8203-result.json",
+        "sha256": "91233a59bdf8e2d8b81fc392cdb0d48b95e6a6c9bb810e729d27d10bcd78e1fe",
+        "bytes": 1452
+      },
+      "error": "[Errno 49] Can't assign requested address"
+    }
+  ],
+  "native_baseline_advantage_comparison_valid": false,
+  "first_outcomes_preserved": true,
+  "query_retries": 0,
+  "retirement_exception": "PermissionError errno1; original stack not saved, exact originating operation unknown",
+  "controller_consequence": "old session remained attached; subsequent FedUP worker found terminal sources before any method query",
+  "xgap_cost_observation": {
+    "planning_ms": 22.999750450253487,
+    "execution_ms": 45248.07641655207,
+    "strategy": "placement-0/coordinator",
+    "estimated_ms": 389.04192064175345,
+    "selected_once_from": 6,
+    "relative_plan_ranking_quality_known": false,
+    "actual_candidate_probes": 0
+  },
+  "correction": "HTTP/1.1+bounded idle reuse and detach-before-cleanup; small replay only; subsequent unrun cells use explicit new harness epoch"
+}

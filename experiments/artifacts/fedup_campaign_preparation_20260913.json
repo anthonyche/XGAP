@@ -1,0 +1,43 @@
+{
+  "schema_version": "xgap-author-summary-and-hosts-v1",
+  "success": true,
+  "full_summary": {
+    "path": "/Users/anthonyche/xgap-data/fedup-summary-sf01-20260913-v1/receipt.json",
+    "sha256": "9e1c74ab35ab621cee128cdbbc4a452616aa43661887c3105583f3af3b6c8852",
+    "bytes": 4769
+  },
+  "tiny_host_boundary": {
+    "path": "/Users/anthonyche/xgap-data/campaign-hosts-tiny-20260913-v1/receipt.json",
+    "sha256": "affbc16095573c03a7db171e6e57bea8cbaba05ae06cb2f3add3482e6e83138a",
+    "bytes": 1733
+  },
+  "full_summary_offline_ms": 44884.70458332449,
+  "native_summary_quads_by_graph": {
+    "graph": 29,
+    "control": 14
+  },
+  "native_summary_union_statements": 42,
+  "tiny": [
+    {
+      "method": "fedup",
+      "success": true,
+      "answer_em": 1.0,
+      "source_requests": 3,
+      "online_ms": 840.7511254772544
+    },
+    {
+      "method": "fedx",
+      "success": true,
+      "answer_em": 1.0,
+      "source_requests": 5,
+      "online_ms": 559.5538336783648
+    }
+  ],
+  "new_controller_checks": {
+    "passed": 3,
+    "elapsed_seconds": 0.54
+  },
+  "model_calls": 0,
+  "baseline_algorithm_changes": 0,
+  "full_evaluation": "first frozen fixed-semantics group dispatched separately, outcome pending at preparation seal"
+}

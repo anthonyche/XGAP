@@ -1,11 +1,13 @@
 """Per-phase bounded source observation; legacy tiny observer stays unchanged."""
 from collections import Counter
 from dataclasses import asdict, dataclass
+import errno
 import hashlib
 import http.client
 import json
 from pathlib import Path
 import time
+import threading
 from urllib.parse import parse_qs, urlsplit
 
 from xgap.experiments.external_federation import SourceObserver, forwarding_headers, query_kind
@@ -42,7 +44,32 @@ class CampaignSourceObserver(SourceObserver):
         self.budget=budget;self.next_index=0;self.generation=0;self.accepting=True
         self.phase_request_bytes=0;self.phase_response_bytes=0;self.phase_calls=0
         self.sealed=None;self.released=True;self.late_calls=0;self.persistence_failures=0
-        super().__init__(routes,root,max_calls=budget.max_calls,timeout_seconds=budget.timeout_seconds)
+        self.pool_lock=threading.Lock();self.idle_connections={};self.pool_closed=False;self.connection_sequence=0
+        super().__init__(routes,root,max_calls=budget.max_calls,timeout_seconds=budget.timeout_seconds,http_protocol_version='HTTP/1.1')
+
+    def take_connection(self,source,upstream):
+        with self.pool_lock:
+            pool=self.idle_connections.setdefault(source,[])
+            while pool:
+                conn,at,number=pool.pop()
+                if time.monotonic()-at<=1:return conn,number,True
+                conn.close()
+            self.connection_sequence+=1
+            return http.client.HTTPConnection(upstream.hostname,upstream.port,timeout=self.timeout),self.connection_sequence,False
+
+    def return_connection(self,source,conn,number):
+        with self.pool_lock:
+            pool=self.idle_connections.setdefault(source,[])
+            if self.pool_closed or len(pool)>=16:conn.close()
+            else:pool.append((conn,time.monotonic(),number))
+
+    def close(self):
+        super().close()
+        with self.pool_lock:
+            self.pool_closed=True
+            for pool in self.idle_connections.values():
+                for conn,_,_ in pool:conn.close()
+            self.idle_connections.clear()
 
     def set_phase(self,phase,*,fail_source=None):
         if not isinstance(phase,str) or not phase:raise ValueError('A phase identity is required')
@@ -67,7 +94,7 @@ class CampaignSourceObserver(SourceObserver):
             self.records.append(record);self.inflight+=1;self.phase_calls+=1
             call_number=self.phase_calls
         conn=None;body_path=self.root/f'{index:04}-response.bin';digest=hashlib.sha256()
-        stage='incoming';headers_sent=False
+        stage='incoming';headers_sent=False;reusable=False;connection_id=None
         try:
             handler.connection.settimeout(self.timeout)
             if late:raise ObservationFailure('harness_late_source_call','Source call arrived after phase sealing')
@@ -89,7 +116,8 @@ class CampaignSourceObserver(SourceObserver):
             record.update(query=text,query_kind=query_kind(text))
             stage='persistence';write_once(self.root/f'{index:04}-intent.json',record)
             stage='upstream'
-            upstream=urlsplit(self.routes[source]);conn=http.client.HTTPConnection(upstream.hostname,upstream.port,timeout=self.timeout)
+            upstream=urlsplit(self.routes[source]);conn,connection_id,reused=self.take_connection(source,upstream)
+            record.update(upstream_connection_id=connection_id,upstream_connection_reused=reused)
             target=upstream.path+(('?'+urlsplit(handler.path).query) if urlsplit(handler.path).query else '')
             headers=forwarding_headers(handler.headers)
             record['hop_headers_removed']=sorted(k for k in handler.headers if k not in headers)
@@ -112,6 +140,7 @@ class CampaignSourceObserver(SourceObserver):
                     if record['response_body_bytes']>self.budget.response_bytes or over:
                         raise ObservationFailure('harness_response_budget','Received source response byte limit exceeded')
             record.update(response_complete=True,status='returned')
+            reusable=not response.will_close
             if response.status>=400:record['failure_category']='upstream_http_failure'
             stage='downstream';handler.send_response(response.status)
             for k,v in response.getheaders():
@@ -126,6 +155,8 @@ class CampaignSourceObserver(SourceObserver):
         except Exception as error:
             category=(error.category if isinstance(error,ObservationFailure) else
                       'harness_persistence' if stage=='persistence' else
+                      'harness_transport_resources' if stage=='upstream' and isinstance(error,OSError) and error.errno in
+                          (errno.EADDRNOTAVAIL,errno.EMFILE,errno.ENFILE) else
                       'source_timeout' if stage=='upstream' and isinstance(error,TimeoutError) else
                       'source_transport' if stage=='upstream' else 'harness_transport')
             record.update(status='failed',error_type=type(error).__name__,error=str(error),failure_category=category)
@@ -133,7 +164,9 @@ class CampaignSourceObserver(SourceObserver):
                 if not headers_sent:handler.send_error(502,'Source observation failed')
             except OSError:pass
         finally:
-            if conn:conn.close()
+            if conn:
+                if reusable:self.return_connection(source,conn,connection_id)
+                else:conn.close()
             if body_path.exists():
                 record.update(response_path=str(body_path),
                     response_sha256=None if record.get('failure_category')=='harness_persistence' else digest.hexdigest())
@@ -162,6 +195,9 @@ class CampaignSourceObserver(SourceObserver):
             'ask_requests':sum(r.get('query_kind')=='ASK' for r in rows),
             'failed_requests':sum(r['status']!='returned' or r.get('http_status',599)>=400 for r in rows),
             'forwarded_requests':sum(r['forwarded'] for r in rows),'failure_categories':dict(failures),
+            'upstream_connections_opened':sum(r.get('upstream_connection_reused') is False for r in rows),
+            'upstream_connection_reuses':sum(r.get('upstream_connection_reused') is True for r in rows),
+            'transport_profile':'HTTP/1.1;16idle connections/source;1s idle expiry;no automatic retries',
             'request_body_bytes':sum(r['request_body_bytes'] for r in rows),
             'request_target_bytes':sum(r['request_target_bytes'] for r in rows),
             'response_body_bytes':sum(r['response_body_bytes'] for r in rows),

@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 import time
+import traceback
 
 from campaign_method_hosts import CampaignMethodHosts
 from rdf_tdb_session import RdfTdbSession
@@ -26,6 +27,22 @@ from xgap.experiments.process_guard import ProcessBudget
 REPO=Path(__file__).resolve().parents[1]
 
 
+def bind_campaign_identity(root,identity,epoch_reason=None):
+    """Append an explicit harness epoch without rewriting inputs or old outcomes."""
+    anchor=root/'campaign.json';epochs=root/'harness-epochs'
+    if not anchor.exists():return write_once(anchor,identity)
+    previous_path=sorted(epochs.glob('*.json'))[-1] if epochs.exists() and list(epochs.glob('*.json')) else anchor
+    raw=previous_path.read_bytes();previous=json.loads(raw);old=previous.get('identity',previous)
+    if old==identity:return {'path':str(previous_path),'sha256':hashlib.sha256(raw).hexdigest()}
+    if ({k:v for k,v in old.items() if k!='implementation_sha256'}!=
+            {k:v for k,v in identity.items() if k!='implementation_sha256'}):raise ValueError('Cannot change frozen evaluation inputs')
+    if not epoch_reason:raise ValueError('Implementation changed: a documented harness epoch is required')
+    epochs.mkdir(exist_ok=True)
+    return write_once(epochs/f'epoch-{len(list(epochs.glob("*.json")))+1:04}.json',{'identity':identity,
+        'previous':{'path':str(previous_path),'sha256':hashlib.sha256(raw).hexdigest()},'reason':epoch_reason,
+        'prior_intents_retained_and_never_redispatched':True,'cross_epoch_times_not_pooled_without_disclosure':True})
+
+
 class Controller:
     def __init__(self,root,run_root,schedule,prepared,summary,budget):
         self.root=root;self.run_root=run_root;self.schedule=schedule;self.prepared=prepared;self.summary=summary;self.budget=budget
@@ -33,12 +50,19 @@ class Controller:
 
     def close_session(self,cause):
         if self.session is None:return 0
-        at=time.perf_counter();closure=self.session.close()
-        elapsed=(time.perf_counter()-at)*1000
-        event={'kind':'serving_session_retired','cause':cause,'session':str(self.session.root),'closure':closure,'elapsed_ms':elapsed}
-        self.events.append(event);write_once(self.session.root/'retirement.json',event)
+        at=time.perf_counter();session=self.session
+        # Detach before cleanup: an exception must never leave dead sources ready.
         self.session=None;self.hosts=None
-        if not closure['owned_groups_drained']:self.halted='owned_groups_not_drained'
+        try:closure=session.close()
+        except Exception as error:
+            closure={'owned_groups_drained':False,'error_type':type(error).__name__,'error':str(error),
+                'traceback':traceback.format_exc()};self.halted='retirement_failed'
+        elapsed=(time.perf_counter()-at)*1000
+        event={'kind':'serving_session_retired','cause':cause,'session':str(session.root),'closure':closure,'elapsed_ms':elapsed}
+        self.events.append(event)
+        try:write_once(session.root/'retirement.json',event)
+        except Exception as error:self.halted='retirement_record_failed';event['persistence_error']=str(error)
+        if not closure['owned_groups_drained']:self.halted=self.halted or 'owned_groups_not_drained'
         return elapsed
 
     def request_for(self,cell):
@@ -111,6 +135,7 @@ def main():
     for name in ('schedule','schedule-sha256','prepared','prepared-sha256','summary','summary-sha256','output'):
         p.add_argument('--'+name,required=True)
     p.add_argument('--max-groups',type=int,default=1,choices=range(1,5));p.add_argument('--read-key',action='store_true')
+    p.add_argument('--harness-epoch-reason',help='Explicit append-only correction epoch; never rerun old cell intents')
     args=p.parse_args();root=Path(args.output).resolve();root.mkdir(parents=True,exist_ok=True)
     with (root/'active.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -125,14 +150,11 @@ def main():
             if not d['success'] or d['profile']!=schedule['profile']:raise ValueError('Preparation/profile mismatch')
         identity={'schedule':{'path':str(Path(args.schedule).resolve()),'sha256':args.schedule_sha256},
             'prepared':prepared,'summary':summary,'implementation_sha256':hashlib.sha256(tree).hexdigest()}
-        anchor=root/'campaign.json'
-        if anchor.exists():
-            if json.loads(anchor.read_text())!=identity:raise ValueError('Cannot change frozen campaign inputs or code')
-        else:write_once(anchor,identity)
+        epoch=bind_campaign_identity(root,identity,args.harness_epoch_reason)
         runs=root/'runs';runs.mkdir(exist_ok=True);run_root=runs/f'run-{len(list(runs.iterdir())):04}';run_root.mkdir(exist_ok=False)
         budget=CampaignBudget(root,maximum_cells=args.max_groups*len(schedule['methods']))
         ctl=Controller(root,run_root,schedule,prepared,summary,budget);previous=os.environ.get('XGAP_EXTERNAL_LLM_API_KEY')
-        report={'schema_version':'xgap-rdf-campaign-chunk-v1','campaign':identity,'dispatches':[],
+        report={'schema_version':'xgap-rdf-campaign-chunk-v1','campaign':identity,'harness_epoch':epoch,'dispatches':[],
             'maximum_groups':args.max_groups,'maximum_model_calls':budget.maximum_cells if schedule['track']=='natural_language' else 0,
             'model_output_tokens_per_call_maximum':6144,'automatic_retries':0,
             'formal_campaign_dispatched':False,'excludes_native_finbench_and_remaining_tracks':True}

@@ -139,7 +139,7 @@ class SourceObserver:
     A phase may change only after all observed requests finish. Injected failures
     are explicit fixtures, never requests sent to the underlying source.
     """
-    def __init__(self, routes, root, *, max_calls=256, timeout_seconds=3):
+    def __init__(self, routes, root, *, max_calls=256, timeout_seconds=3,http_protocol_version='HTTP/1.0'):
         self.routes, self.root = dict(routes), Path(root)
         self.root.mkdir()
         self.max_calls, self.timeout = max_calls, timeout_seconds
@@ -158,6 +158,7 @@ class SourceObserver:
             def do_POST(self):
                 owner.forward(self)
 
+        Handler.protocol_version=http_protocol_version
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         self.server.daemon_threads = False
         self.thread = threading.Thread(target=self.server.serve_forever, kwargs={"poll_interval": .05})
