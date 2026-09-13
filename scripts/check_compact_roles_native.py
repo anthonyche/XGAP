@@ -12,7 +12,7 @@ from prepare_rdf_tdb import REPO, stream_pin
 from xgap.experiments.campaign_source_observer import SourceObservationBudget
 from xgap.experiments.common_method_trial import run_nl_trial
 from xgap.experiments.common_row_score import score_trial
-from xgap.experiments.compact_profile import derive_compact_prompt_profile
+from xgap.experiments.compact_profile import derive_compact_prompt_profile, derive_compact_contribution_profile
 from xgap.experiments.external_federation import deadline
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.one_shot_profile import read_pinned
@@ -22,11 +22,17 @@ PREPARED_SHA='8f3c88515f52f8526faa4f9963a381ad1df1af7bf419f9bbdce0ec5e11648051'
 FIXTURE=REPO/'tests/fixtures/compact_roles_v2.json'
 
 
-def main(output,read_key=False):
+def main(output,read_key=False,*,contract='roles'):
+    if contract not in ('roles','contribution'):raise ValueError('Unknown tiny contract')
+    is_contribution=contract=='contribution'
+    fixture_path=REPO/'tests/fixtures/compact_contribution_v2.json' if is_contribution else FIXTURE
+    case_limit=1 if is_contribution else 3
+    derive=derive_compact_contribution_profile if is_contribution else derive_compact_prompt_profile
+    revision='contribution-v2' if is_contribution else 'prompt-v2'
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     previous=os.environ.get('XGAP_EXTERNAL_LLM_API_KEY');session=None;session_count=0
-    receipt={'schema_version':'xgap-compact-role-native-gate-v2','success':False,'maximum_model_calls':3,
-        'maximum_final_plans':3,'automatic_retries':0,'data_loads':0,'catalog_builds':0,'fit_calls':0,
+    receipt={'schema_version':'xgap-compact-'+contract+'-native-gate-v2','success':False,'maximum_model_calls':case_limit,
+        'maximum_final_plans':case_limit,'automatic_retries':0,'data_loads':0,'catalog_builds':0,'fit_calls':0,
         'baseline_calls':0,'paper_result':False,'cases':[],'closures':[]}
     try:
         if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True):raise ValueError('Commit before live gate')
@@ -34,10 +40,10 @@ def main(output,read_key=False):
         key=getpass.getpass('LLM credential (not recorded): ') if read_key else previous
         if not key:raise ValueError('Missing configured model credential')
         os.environ['XGAP_EXTERNAL_LLM_API_KEY']=key;key=None
-        fixture=json.loads(FIXTURE.read_text());assert len(fixture['cases'])==3
+        fixture=json.loads(fixture_path.read_text());assert len(fixture['cases'])==case_limit
         dataset={'dataset_id':'financial-binding-tiny','version':'financial-tiny-v1'}
-        receipt['input']=write_once(root/'input.json',{'fixture':stream_pin(FIXTURE),
-            'prepared':{'path':str(PREPARED),'sha256':PREPARED_SHA},'prompt_version':'v2',
+        receipt['input']=write_once(root/'input.json',{'fixture':stream_pin(fixture_path),
+            'prepared':{'path':str(PREPARED),'sha256':PREPARED_SHA},'interpretation_revision':revision,
             'one_call_each':True,'old_formal_questions_retried':False,'overall_seconds':600})
         for i,case in enumerate(fixture['cases']):
             path=root/case['id'];path.mkdir()
@@ -56,8 +62,8 @@ def main(output,read_key=False):
                     budget=SourceObservationBudget(max_calls=64,request_bytes=1024**2,phase_request_bytes=4*1024**2,
                         response_bytes=2*1024**2,phase_response_bytes=8*1024**2,timeout_seconds=20))
                 with deadline(120):session.start()
-                profile=derive_compact_prompt_profile(parent_path=session.profile['path'],parent_sha256=session.profile['sha256'],
-                    output=session.root/'prompt-v2')
+                profile=derive(parent_path=session.profile['path'],parent_sha256=session.profile['sha256'],
+                    output=session.root/revision)
             outcome=run_nl_trial(request_path=request['path'],request_sha256=request['sha256'],
                 method='xgap-'+case['mode'],output=path/'execution',owned_services=session.owned,observer=session.observer,
                 profile_path=profile['path'],profile_sha256=profile['sha256'])

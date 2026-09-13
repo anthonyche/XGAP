@@ -13,27 +13,38 @@ from xgap.experiments.hashing import content_hash
 from xgap.llm.interpretation import OpenAICompatibleInterpretationProvider
 from xgap.llm.openai_compatible import OpenAICompatibleProviderConfig
 from xgap.semantic.compact_lowering import lower_compact_query
-from xgap.semantic.compact_query import SCHEMA, LOWERING, compact_schema
+from xgap.semantic.compact_query import SCHEMA, LOWERING, SCHEMA_V2, LOWERING_V2, compact_schema
 from xgap.semantic.interpretation import InterpretationFailure
 from xgap.semantic.interpretation_candidates import SCHEMA as CANDIDATE_SCHEMA
 
 
 WIRE_PROFILE = 'compact-graph-schema-v1'
+WIRE_PROFILE_V2 = 'compact-graph-schema-v2'
 
 
 @dataclass(frozen=True)
 class CompactInterpretationProviderConfig(OpenAICompatibleProviderConfig):
+    language_version: str = 'v1'
+
     def __post_init__(self):
         super().__post_init__()
         if self.structured_output_mode != 'json_schema' or self.max_repair_calls != 0:
             raise ValueError('Compact interpretation requires JSON schema and zero repairs')
-        if content_hash(self.structured_schema) != content_hash(compact_schema(self.candidate_cap)):
+        if content_hash(self.structured_schema) != content_hash(compact_schema(self.candidate_cap, version=self.language_version)):
             raise ValueError('Compact schema differs from its bounded wire contract')
 
     def safe_dict(self):
-        return {**super().safe_dict(), 'wire_profile': WIRE_PROFILE,
-            'compact_schema': SCHEMA, 'lowering_profile': LOWERING,
+        return {**super().safe_dict(), 'wire_profile': WIRE_PROFILE if self.language_version == 'v1' else WIRE_PROFILE_V2,
+            'compact_schema': self.compact_schema_version, 'lowering_profile': self.lowering_profile,
             'lowered_candidate_schema': CANDIDATE_SCHEMA}
+
+    @property
+    def compact_schema_version(self):
+        return SCHEMA if self.language_version == 'v1' else SCHEMA_V2
+
+    @property
+    def lowering_profile(self):
+        return LOWERING if self.language_version == 'v1' else LOWERING_V2
 
 
 @dataclass
@@ -50,12 +61,12 @@ class OpenAICompatibleCompactInterpretationProvider(OpenAICompatibleInterpretati
 
     def build_request_payload(self, request):
         if request.required_constraints:
-            raise ValueError('Compact-v1 cannot map legacy operator-ID hard constraints; use the full-SGP profile')
+            raise ValueError('Compact cannot map legacy operator-ID hard constraints; use the full-SGP profile')
         if not isinstance(request.context.get('source_schema'), dict):
             raise ValueError('Compact interpretation requires a frozen source schema')
         payload = super().build_request_payload(request)
         payload['messages'][1]['content'] = json.dumps({**request.to_dict(),
-            'schema_version': SCHEMA, 'candidate_cap': self.config.candidate_cap}, ensure_ascii=False)
+            'schema_version': self.config.compact_schema_version, 'candidate_cap': self.config.candidate_cap}, ensure_ascii=False)
         payload['response_format']['json_schema']['name'] = 'xgap_compact_graph_candidates'
         return payload
 
@@ -64,7 +75,7 @@ class OpenAICompatibleCompactInterpretationProvider(OpenAICompatibleInterpretati
         started = time.perf_counter()
         raw = response.payload
         provenance = {**response.provenance, 'raw_compact_response': raw,
-            'compact_lowering': {'profile': LOWERING, 'response_repair': False, 'candidates': []}}
+            'compact_lowering': {'profile': self.config.lowering_profile, 'response_repair': False, 'candidates': []}}
 
         def finish():
             elapsed = (time.perf_counter()-started)*1000
@@ -73,7 +84,7 @@ class OpenAICompatibleCompactInterpretationProvider(OpenAICompatibleInterpretati
             self.last_invocation = provenance
 
         if (not isinstance(raw, dict) or set(raw) != {'schema_version', 'candidates'}
-                or raw['schema_version'] != SCHEMA or not isinstance(raw['candidates'], list)
+                or raw['schema_version'] != self.config.compact_schema_version or not isinstance(raw['candidates'], list)
                 or not 1 <= len(raw['candidates']) <= self.config.candidate_cap):
             finish()
             raise InterpretationFailure('compact_envelope_invalid', 'Invalid compact envelope or candidate count',
@@ -92,7 +103,7 @@ class OpenAICompatibleCompactInterpretationProvider(OpenAICompatibleInterpretati
                 if quality is not None and (type(quality) not in (int, float) or not math.isfinite(quality) or not 0 <= quality <= 1):
                     raise ValueError('Quality proxy must lie in [0,1] or be null')
                 program, sources = lower_compact_query(item['query'], request.context['source_schema'],
-                    program_id='compact-'+str(index))
+                    program_id='compact-'+str(index), version=self.config.language_version)
                 lowered.update(program=program.to_dict(), operator_sources=sources)
                 record.update(status='lowered', operators=len(program.operators), source_reads=len(sources))
             except (ValueError, TypeError, KeyError, AttributeError, RecursionError) as error:

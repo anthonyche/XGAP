@@ -3,7 +3,7 @@
 from collections import defaultdict
 from copy import deepcopy
 
-from xgap.semantic.compact_query import LOWERING, validate_query
+from xgap.semantic.compact_query import LOWERING, LOWERING_V2, validate_query
 from xgap.semantic.parameter_contract import validate_program_parameters
 from xgap.semantic.program import SemanticGraphProgram
 
@@ -58,8 +58,9 @@ class _Builder:
 
 
 class _Lowerer:
-    def __init__(self,query,schema):
-        self.q=validate_query(deepcopy(query));self.b=_Builder()
+    def __init__(self,query,schema,version='v1'):
+        self.version=version
+        self.q=validate_query(deepcopy(query),version=version);self.b=_Builder()
         if not isinstance(schema,dict):raise ValueError('Frozen source schema is required')
         self.views={k:v for k,v in schema.items() if isinstance(v,dict) and 'nodes' in v and 'edges' in v}
         if not 1<=len(self.views)<=64:raise ValueError('Compact profile needs1..64 declared source views')
@@ -193,11 +194,23 @@ class _Lowerer:
             if pred['value_type']=='timestamp_ms':condition['value_type']='timestamp_ms'
             conditions.append(condition)
         result=b.filter(result,conditions)
-        keys=self.q['deduplicate_by']
+        keys=self.q['deduplicate_by' if self.version == 'v1' else 'contribution_by']
+        contribution=None
         if keys is not None:
-            if any(ref['var'] not in keys for ref in output_refs):
+            if self.version == 'v1' and any(ref['var'] not in keys for ref in output_refs):
                 raise ValueError('Post-distinct output values must belong to the retained node/edge variables')
-            result=b.retain(result,{self.ids[v] for v in keys}|{self.column(r) for r in output_refs})
+            retained=set(keys)
+            if self.version == 'v2':
+                for ref in output_refs:
+                    if self.path and ref['var']==self.path['var']:
+                        retained.update((self.path['source'],self.path['target']))
+                    else:retained.add(ref['var'])
+            fields={self.ids[v] for v in retained}|{self.column(r) for r in output_refs}
+            result=b.retain(result,fields)
+            if self.version == 'v2':
+                contribution={'declared_anchors':list(keys),'retained_identity_variables':sorted(retained),
+                    'retained_columns':sorted(fields),'operator_id':result,
+                    'meaning':'distinct joint contribution tuples; witnesses not in this tuple are existential'}
         groups=[];aggregations={};projections={}
         for alias,expr in self.q['select'].items():
             if 'var' in expr:
@@ -213,14 +226,15 @@ class _Lowerer:
         if self.q['order_by']:
             result=b.add('order_limit',(result,),fields=b.fields[result],order_by=self.q['order_by'],limit=self.q['limit'])
         raw={'program_id':program_id,'operators':b.ops,'roots':[result],'holes':self.holes,
-            'metadata':{'compact_lowering':{'profile':LOWERING,'source_coverage':self.decisions,
+            'metadata':{'compact_lowering':{'profile':LOWERING if self.version == 'v1' else LOWERING_V2,'source_coverage':self.decisions,
                 'columns':[{ 'var':v,'property':p,'column':col} for (v,p),col in self.refcols.items()],
                 'path_result_semantics':'distinct (source,target,length) reachability; no path identity output',
                 'deduplication_semantics':'distinct retained identities and selected scalar values',
                 'backend_calls':0,'fit_calls':0,'response_repair':False}}}
+        if self.version == 'v2':raw['metadata']['compact_lowering']['contribution_projection']=contribution
         validate_program_parameters(raw)
         return SemanticGraphProgram.from_dict(raw),dict(b.sources)
 
 
-def lower_compact_query(query,source_schema,*,program_id='compact-query'):
-    return _Lowerer(query,source_schema).lower(program_id)
+def lower_compact_query(query,source_schema,*,program_id='compact-query',version='v1'):
+    return _Lowerer(query,source_schema,version).lower(program_id)

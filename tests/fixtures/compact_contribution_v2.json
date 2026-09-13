@@ -1,0 +1,134 @@
+{
+  "schema_version": "xgap-compact-contribution-fixture-v2",
+  "population": "tiny-contribution-contract-development",
+  "exposure": "Authored diagnostic after real group2; original tiny facts, not held-out evaluation.",
+  "derivation": "Six qualifying transfers:10.125+5.875+7+9+11+13=56. Account2 has two risk media. Company1 owns accounts2/3/4. Jan4 transfer50 excluded; transfer100 enters account1 with no company ownership.",
+  "cases": [
+    {
+      "id": "CONTRIBUTION-01",
+      "mode": "performance",
+      "expected_mentions": [],
+      "question": "For each company, find its accounts that have at least one sign-in from a medium with riskLevel High risk. Sum the amounts and count the incoming transfers to these accounts from 2020-01-01 00:00:00 inclusive to 2020-01-04 00:00:00 exclusive. Each qualifying account contributes once even when several media or sign-in records qualify it; count distinct transfer instances separately even when their amounts match. Return company business ID as company_id, total_amount, and transfer_count. Include all companies with qualifying transfers, sorted by company_id ascending.",
+      "gold_compact": {
+        "nodes": [
+          {
+            "var": "company",
+            "type": "XGAPFinBenchCompany",
+            "entity": null
+          },
+          {
+            "var": "account",
+            "type": "XGAPFinBenchAccount",
+            "entity": null
+          },
+          {
+            "var": "sender",
+            "type": "XGAPFinBenchAccount",
+            "entity": null
+          },
+          {
+            "var": "medium",
+            "type": "XGAPFinBenchMedium",
+            "entity": null
+          }
+        ],
+        "edges": [
+          {
+            "var": "owns",
+            "type": "OWNS_ACCOUNT",
+            "source": "company",
+            "target": "account"
+          },
+          {
+            "var": "signin",
+            "type": "SIGNED_IN_TO",
+            "source": "medium",
+            "target": "account"
+          },
+          {
+            "var": "transfer",
+            "type": "TRANSFERRED_TO",
+            "source": "sender",
+            "target": "account"
+          }
+        ],
+        "path": null,
+        "where": [
+          {
+            "left": {
+              "var": "medium",
+              "property": "riskLevel"
+            },
+            "op": "eq",
+            "right": {
+              "value": "High risk"
+            },
+            "value_type": "scalar"
+          },
+          {
+            "left": {
+              "var": "transfer",
+              "property": "createTime"
+            },
+            "op": "ge",
+            "right": {
+              "value": "2020-01-01 00:00:00.000"
+            },
+            "value_type": "timestamp_ms"
+          },
+          {
+            "left": {
+              "var": "transfer",
+              "property": "createTime"
+            },
+            "op": "lt",
+            "right": {
+              "value": "2020-01-04 00:00:00.000"
+            },
+            "value_type": "timestamp_ms"
+          }
+        ],
+        "select": {
+          "company_id": {
+            "var": "company",
+            "property": "id"
+          },
+          "total_amount": {
+            "aggregate": "sum",
+            "field": {
+              "var": "transfer",
+              "property": "amount"
+            },
+            "distinct": false
+          },
+          "transfer_count": {
+            "aggregate": "count",
+            "field": {
+              "var": "transfer",
+              "property": null
+            },
+            "distinct": false
+          }
+        },
+        "order_by": [
+          {
+            "field": "company_id",
+            "direction": "asc"
+          }
+        ],
+        "limit": null,
+        "contribution_by": [
+          "company",
+          "account"
+        ]
+      },
+      "expected_rows": [
+        {
+          "company_id": "1",
+          "total_amount": 56.0,
+          "transfer_count": 6
+        }
+      ]
+    }
+  ]
+}

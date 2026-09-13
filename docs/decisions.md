@@ -1,3 +1,8 @@
+2026-09-13: [Contribution-v2](decisions/compact_contribution_v2.md) freezes explicit
+anchor plus selected-identity projection, with one shared aggregate grain. Four
+new local checks pass in1.49s; the single tiny live boundary remains pending.
+Old v1 responses/scores and baseline methods are unchanged.
+
 ## 首批真实结果及回收修正 — 2026-09-13
 
 2026-09-13: [Compact entity roles v2](decisions/compact_entity_roles_v2.md) is accepted

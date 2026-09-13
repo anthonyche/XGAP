@@ -108,9 +108,9 @@ def inputs():
     return schema, catalog, bindings, mapping, graphs
 
 
-def execute(intent, inputs):
+def execute(intent, inputs, *, version='v1'):
     schema, catalog, bindings, mapping, graphs = inputs
-    program, sources = lower_compact_query(intent, schema)
+    program, sources = lower_compact_query(intent, schema, version=version)
     sets = []
     for hole in program.holes:
         choices = [e['candidate_id'] for e in catalog['entries'] if e['kind'] == 'entity'

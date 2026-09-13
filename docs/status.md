@@ -1,5 +1,13 @@
 # XGAP Status
 
+## 最新门禁：contribution-v2 小图检查通过，真实 NL 待验证
+
+独立版本明确存在性证明与转账计数粒度，4项新检查首次通过1.49秒；
+旧wire、已曝光失败、planner/估计器/baseline不变。下一步仅1次真实tiny NL
+闭环，复用冻结双库。[语义与边界](decisions/compact_contribution_v2.md)。
+
+以下保留前序结果；当前验收状态以上方为准。
+
 ## 当前执行：名称/ID/变量入口3题通过；真实NL下一缺口为去重与聚合约定
 
 4509c15发布独立prompt-v2和只派生prompt的冻结配置，原v1、wire/compiler/grounding/

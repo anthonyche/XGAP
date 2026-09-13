@@ -13,6 +13,8 @@ from xgap.semantic.parameter_contract import _issues
 
 SCHEMA = 'xgap-compact-graph-candidates-v1'
 LOWERING = 'xgap-compact-graph-lowering-v1'
+SCHEMA_V2 = 'xgap-compact-graph-candidates-v2'
+LOWERING_V2 = 'xgap-compact-graph-lowering-v2'
 TEXT = {'type': 'string', 'minLength': 1}
 NULL = {'type': 'null'}
 BOOL = {'type': 'boolean'}
@@ -51,18 +53,29 @@ QUERY = obj({
     'limit': either(NULL, {'type':'integer','minimum':1})})
 
 
-def compact_schema(candidate_cap):
+def query_schema(version='v1'):
+    if version not in ('v1', 'v2'):
+        raise ValueError('Unknown compact language version')
+    schema = deepcopy(QUERY)
+    if version == 'v2':
+        schema['properties']['contribution_by'] = schema['properties'].pop('deduplicate_by')
+        schema['required'] = [f if f != 'deduplicate_by' else 'contribution_by' for f in schema['required']]
+    return schema
+
+
+def compact_schema(candidate_cap, *, version='v1'):
     if type(candidate_cap) is not int or not 1<=candidate_cap<=8:
         raise ValueError('Compact candidate cap must be1..8')
-    return deepcopy(obj({'schema_version':{'const':SCHEMA}, 'candidates':array(obj({
-        'candidate_id':TEXT, 'quality_proxy':either({'type':'number'},NULL), 'query':QUERY}),candidate_cap,1)}))
+    query = query_schema(version)
+    return obj({'schema_version':{'const':SCHEMA if version == 'v1' else SCHEMA_V2}, 'candidates':array(obj({
+        'candidate_id':TEXT, 'quality_proxy':either({'type':'number'},NULL), 'query':query}),candidate_cap,1)})
 
 
-def validate_query(query):
+def validate_query(query, *, version='v1'):
     # Strict JSON and a byte bound precede traversal. No alias or response repair.
     if len(json.dumps(query,allow_nan=False).encode())>65536:
         raise ValueError('Compact query exceeds64KiB')
-    errors=_issues(QUERY,query,'query')
+    errors=_issues(query_schema(version),query,'query')
     if errors: raise ValueError('; '.join(errors[:8]))
     if len(query['select'])>16 or query['limit'] is not None and query['limit']>1000:
         raise ValueError('Compact output/limit exceeds its profile')
@@ -83,7 +96,12 @@ def validate_query(query):
         raise ValueError('Order fields must be unique selected aliases')
     if query['limit'] is not None and not order:
         raise ValueError('Compact top K requires explicit ordering')
-    keys=query['deduplicate_by']
+    keys=query['deduplicate_by' if version == 'v1' else 'contribution_by']
     if keys is not None and (len(keys)!=len(set(keys)) or not set(keys)<=set(names)-({path['var']} if path else set())):
         raise ValueError('Deduplication requires distinct node/edge variables')
+    if version == 'v2' and keys is not None:
+        measured = {e['field']['var'] for e in query['select'].values()
+            if 'aggregate' in e and e['field'] is not None}
+        if len(measured) > 1 or path and path['var'] in measured:
+            raise ValueError('Contribution aggregates require one shared stored node/edge variable; separate grains and path aggregates are outside v2')
     return query
