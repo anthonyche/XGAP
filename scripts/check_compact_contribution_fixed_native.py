@@ -21,7 +21,7 @@ from xgap.experiments.row_normalization import normalize_rows
 from xgap.semantic.compact_lowering import lower_compact_query
 
 
-def main(output):
+def main(output,fixture=None):
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False);session=None
     r={'schema_version':'xgap-compact-contribution-fixed-native-v2','success':False,
         'model_calls':0,'maximum_final_executions':1,'automatic_retries':0,'data_loads':0,
@@ -30,8 +30,9 @@ def main(output):
     try:
         if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True):raise ValueError('Commit before live gate')
         r['source_commit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip()
-        fixture_path=REPO/'tests/fixtures/compact_contribution_v2.json'
+        fixture_path=Path(fixture).resolve() if fixture else REPO/'tests/fixtures/compact_contribution_v2.json'
         fixture=json.loads(fixture_path.read_text());case=fixture['cases'][0]
+        if len(fixture['cases'])!=1:raise ValueError('One new tiny deterministic case per gate')
         prepared=json.loads(read_pinned(PREPARED,PREPARED_SHA))
         doc=json.loads(read_pinned(prepared['profile']['path'],prepared['profile']['sha256']))
         program,sources=lower_compact_query(case['gold_compact'],doc['source_schema'],version='v2')
@@ -68,6 +69,7 @@ def main(output):
             online_ms=run['timing']['total_online_ms'],source_calls=run['source_observations']['requests'],
             response_bytes=run['source_observations']['response_body_bytes'],selected_strategy=selection['selected_strategy'],
             candidates=selection['domain']['candidate_count'],construction_bound=selection['domain']['construction_bound'])
+        r['anchor_reduction']=selection['selected_plan']['metadata'].get('anchor_reduction')
         r['success']=run['success'] and score['answer_em']==1 and worker['top_level_attempts']==1 and worker['alternative_executions']==0
     except Exception as e:r.update(error_type=type(e).__name__,error=str(e))
     finally:
@@ -82,4 +84,5 @@ def main(output):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',required=True)
+    parser.add_argument('--fixture',help='Independent tiny gold-intent fixture; exactly one case')
     with deadline(600):raise SystemExit(main(**vars(parser.parse_args())))

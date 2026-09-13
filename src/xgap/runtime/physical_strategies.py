@@ -28,13 +28,14 @@ from xgap.compilers.cypher import _cypher_identifier
 from xgap.compilers.features import default_profile
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.runtime.contracts import FederatedExecutionPlan, RuntimeNode, RuntimeNodeKind as R
+from xgap.runtime.anchor_reduction import reduce_scalar_anchor, depends_on
 from xgap.runtime.planning import FederatedPlanCandidate
 from xgap.runtime.semantic_compiler import SemanticBackend, compile_semantic_program
 from xgap.runtime.semantic_placement import _admit_expansion
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S, SemanticProgramError
 
 
-STRATEGY_PROFILE = "semantic-single-entity-bind-v1"
+STRATEGY_PROFILE = "semantic-anchor-single-entity-bind-v2"
 MAX_SEMANTIC_OPERATORS = 64
 MAX_PROGRAM_BYTES = 1_048_576
 
@@ -256,7 +257,9 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
     Existing bounded-path admission runs before compilation. Apart from that
     compiler, construction/validation/serialization costs O((J+1)L + n^2) with
     cached field lineage, where n is the explicitly represented semantic input.
-    There is no general join-order or simultaneous-rewrite optimality claim.
+    One exact anchor normalization adds O(p*n*(n+e)+L) conservative work before
+    constructing alternatives, for p predicate atoms and e DAG edges. It adds no alternatives
+    or remote calls. There is no general join-order or actual-cost guarantee.
     """
     started = time.perf_counter()
     if not isinstance(program, SemanticGraphProgram):
@@ -271,6 +274,7 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
     _admit_expansion(program)
     baseline = _with_exchanges(compile_semantic_program(program, source_bindings=source_bindings,
         backends=backends, max_remote_calls=max_remote_calls, max_parallelism=max_parallelism))
+    baseline = reduce_scalar_anchor(program, baseline)
     operators = {op.operator_id: op for op in program.operators}
     consumers = Counter(i for op in program.operators for i in op.input_ids)
     joins = sorted((op for op in program.operators if op.kind is S.JOIN), key=lambda op: op.operator_id)
@@ -303,6 +307,8 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
                 target, chain, identity_column = _target_match(target_id, target_field, operators, consumers, set(program.roots))
                 backend = backends[source_bindings[target.operator_id]]
                 remote_id = target.operator_id + "/native"
+                if depends_on(baseline, baseline.metadata["operator_outputs"][driver_id], remote_id):
+                    raise _NotAdmitted("Bind dependency would cycle after exact anchor reduction")
                 remote = next(n for n in baseline.nodes if n.node_id == remote_id)
                 artifact, parameter = _bound_match_artifact(QueryArtifact.from_dict(remote.parameters["artifact"]),
                     backend, max_bindings=max_bindings, max_binding_bytes=max_binding_bytes,

@@ -1,3 +1,9 @@
+2026-09-13: [Exact early anchor reduction](decisions/anchor_reduction_v1.md)
+adds one bounded, proven semijoin normalization before XGAP strategy selection.
+Five new checks pass(0.91s+0.26s); tiny join outputs78→36 with exact six-row
+answer/eight source calls. Two saved group5 plans admit the rule without data
+execution. Real tiny native gate pending. Baseline/shared language unchanged.
+
 2026-09-13: [NL outcome handoff](decisions/nl_outcome_handoff_v1.md) separates
 small answer/metrics from full traces without increasing input limits. Three new
 checks pass0.34s. Prior real groups3–4 remain EM0, and their actual8 model calls

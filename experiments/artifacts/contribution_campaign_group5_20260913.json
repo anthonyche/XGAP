@@ -1,0 +1,159 @@
+{
+  "schema_version": "xgap-contribution-nl-group5-audit-v1",
+  "implementation": "d2323c5",
+  "source_run": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0001/receipt.json",
+    "sha256": "e1ea501f5623911c3a8afbd48cdcb8cfcb21a75d682bae80be2c4c6b0d5e2867"
+  },
+  "paper_result": false,
+  "original_outcomes_rescored": false,
+  "old_questions_retried": false,
+  "all_owned_groups_terminal": true,
+  "live_handoff_success_demonstrated": false,
+  "totals": {
+    "model_calls": 4,
+    "input_tokens": 12292,
+    "output_tokens": 2024
+  },
+  "rows": [
+    {
+      "cell_id": "natural_language-00-005-0",
+      "method": "xgap-performance",
+      "question_id": "FBNS-2-d9d0e066eb62a7b9",
+      "status": "guard_method_rss_limit_observed",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "total_online_ms": 161880.4706670344,
+      "original_model_calls": null,
+      "original_input_tokens": null,
+      "original_output_tokens": null,
+      "reconciled_model_calls": 1,
+      "reconciled_input_tokens": 3070,
+      "reconciled_output_tokens": 512,
+      "usage_evidence": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-0/execution/worker/core/interpretation.json",
+        "sha256": "16965f55ee576ec23481a291d2524f27140dbf715ed63e5e14ba13c46f6592cc"
+      },
+      "outcome": {
+        "bytes": 11432,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-0/execution/receipt.json",
+        "sha256": "2c38ddb058a1407dc0f7e06ed7bb3f67a24219a24b5b0fafa9876e1ff4c6a214"
+      },
+      "source_calls": 14,
+      "source_response_bytes": 325110752,
+      "sampled_peak_rss_bytes": {
+        "method": 2320662528,
+        "source": 1460191232
+      },
+      "source_failure": null,
+      "automatic_retries": 0
+    },
+    {
+      "cell_id": "natural_language-00-005-1",
+      "method": "fedx",
+      "question_id": "FBNS-2-d9d0e066eb62a7b9",
+      "status": "harness_budget_censored",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "total_online_ms": 14904.793791472912,
+      "original_model_calls": 1,
+      "original_input_tokens": 3074,
+      "original_output_tokens": 504,
+      "reconciled_model_calls": 1,
+      "reconciled_input_tokens": 3074,
+      "reconciled_output_tokens": 504,
+      "usage_evidence": {
+        "bytes": 6348,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-1/execution/receipt.json",
+        "sha256": "0b898974bec824984db3dbe38ff4e7b057d9e8560951633d317ec84181f480db"
+      },
+      "outcome": {
+        "bytes": 6348,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-1/execution/receipt.json",
+        "sha256": "0b898974bec824984db3dbe38ff4e7b057d9e8560951633d317ec84181f480db"
+      },
+      "source_calls": 981,
+      "source_response_bytes": 557297446,
+      "sampled_peak_rss_bytes": {
+        "method": 537575424,
+        "source": 1380007936
+      },
+      "source_failure": {
+        "categories": {
+          "harness_response_budget": 21
+        },
+        "intrinsic_method_incorrectness_established": false,
+        "native_answer_observed": false,
+        "status": "harness_budget_censored"
+      },
+      "automatic_retries": 0
+    },
+    {
+      "cell_id": "natural_language-00-005-2",
+      "method": "xgap-precision",
+      "question_id": "FBNS-2-d9d0e066eb62a7b9",
+      "status": "guard_method_rss_limit_observed",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "total_online_ms": 135245.98429258913,
+      "original_model_calls": null,
+      "original_input_tokens": null,
+      "original_output_tokens": null,
+      "reconciled_model_calls": 1,
+      "reconciled_input_tokens": 3074,
+      "reconciled_output_tokens": 504,
+      "usage_evidence": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-2/execution/worker/core/interpretation.json",
+        "sha256": "b1e5659db81f44b3e40bda32b6fc639d066f0e5f620ade2c8e65d94a5d0ce0d6"
+      },
+      "outcome": {
+        "bytes": 11423,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-2/execution/receipt.json",
+        "sha256": "2727eeb6e9f541a20296cb93dba75fe976d5e4399fc0d8b1199973f528361d76"
+      },
+      "source_calls": 14,
+      "source_response_bytes": 325110752,
+      "sampled_peak_rss_bytes": {
+        "method": 2167652352,
+        "source": 1552007168
+      },
+      "source_failure": null,
+      "automatic_retries": 0
+    },
+    {
+      "cell_id": "natural_language-00-005-3",
+      "method": "fedup",
+      "question_id": "FBNS-2-d9d0e066eb62a7b9",
+      "status": "external_failed",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "total_online_ms": 9944.268207997084,
+      "original_model_calls": 1,
+      "original_input_tokens": 3074,
+      "original_output_tokens": 504,
+      "reconciled_model_calls": 1,
+      "reconciled_input_tokens": 3074,
+      "reconciled_output_tokens": 504,
+      "usage_evidence": {
+        "bytes": 6109,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-3/execution/receipt.json",
+        "sha256": "9cff39a005f62460e645981e7741474924c73134ca3dbf32eace5a153439af70"
+      },
+      "outcome": {
+        "bytes": 6109,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-3/execution/receipt.json",
+        "sha256": "9cff39a005f62460e645981e7741474924c73134ca3dbf32eace5a153439af70"
+      },
+      "source_calls": 0,
+      "source_response_bytes": 0,
+      "sampled_peak_rss_bytes": {
+        "method": 381566976,
+        "source": 418119680
+      },
+      "source_failure": null,
+      "automatic_retries": 0
+    }
+  ],
+  "next_unrun_group": 6,
+  "limits": "Original unknown usage retained; completed pinned provider records establish known calls/tokens separately. Memory censoring leaves core completion/timing unverified. All four original EM0 retained."
+}
