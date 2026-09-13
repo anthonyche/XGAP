@@ -57,7 +57,7 @@ def prepare(*,profile,profile_sha256,output,java,fuseki_jar):
         jar=stream_pin(fuseki_jar);java_pin=stream_pin(java)
         budget=ProcessBudget(wall_seconds=900,max_group_rss_bytes=3*GIB,max_log_bytes=4*1024**2,sample_seconds=.1)
         receipt.update(dataset=doc['dataset'],profile={'path':str(Path(profile).resolve()),'sha256':profile_sha256})
-        write_once(root/'input-seal.json',{'profile':receipt['profile'],'sources':source_pins,
+        receipt['input_seal']=write_once(root/'input-seal.json',{'profile':receipt['profile'],'sources':source_pins,
             'fuseki_jar':jar,'java':java_pin,'process_budget_per_source':asdict(budget),
             'maximum_loader_invocations':2,'maximum_heap_bytes':2*GIB,'maximum_output_bytes':10*GIB,
             'minimum_free_disk_bytes':6*GIB,'catalog_and_estimator_reused':True,
