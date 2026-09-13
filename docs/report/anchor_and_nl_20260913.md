@@ -11,10 +11,15 @@ compact-v2 全量 native/RDF 配置与原 store、FedUP summary、旧结果前�
 | 3 | 核心 answered，但答案交接失败 | HTTP500，未产生源请求 | 共同响应预算截断 |
 | 4 | 核心 answered，但答案交接失败 | HTTP500，未产生源请求 | 共同响应预算截断 |
 | 5 | 方法内存超过原 2GiB 观察阈值，未完成 | HTTP500，未产生源请求 | 共同响应预算截断 |
+| 6（预筛选修复后，未运行的新题） | 两模式仍内存中断 | HTTP500，未产生源请求 | 共同响应预算截断 |
 
-三组共 12 次实际模型调用，36,592 输入/6,178 输出 token；全部原始 EM=0。这三题 gold 都为空，失败不能记成正确空答案。groups3–4 的四个 XGAP 外层记录曾误记零调用，group5 两个被中断的外层记录将调用记为未知；独立审计依据封存的 provider/core 记录补充已知用量，不改写原记录或评分。
+前面三组共 12 次实际模型调用，36,592 输入/6,178 输出 token；全部原始 EM=0。这三题 gold 都为空，失败不能记成正确空答案。groups3–4 的四个 XGAP 外层记录曾误记零调用，group5 两个被中断的外层记录将调用记为未知；独立审计依据封存的 provider/core 记录补充已知用量，不改写原记录或评分。
 
 group5 完整在线时间：性能模式161.880秒、精度模式135.246秒、FedX14.905秒、FedUP9.944秒。两次 XGAP 方法峰值分别2,320,662,528/2,167,652,352字节；这些是采样观察值。失败用时不能当作完成查询的提速。FedX 在共同预算内未返回原生答案，不能据此声称算法本身答错。未给 baseline 补语义、调参或重试。
+
+新增group6另有4次模型调用，12,300输入/2,019输出token，四个原评分仍为0。至此本轮groups3–6共16次调用，48,892输入/8,197输出token。实现版本不同，不把它们混成同质版本的论文效果分数。
+
+修复后的新题中，性能/精度模式在线135.456/125.130秒、方法峰值2,221,932,544/2,209,382,400字节，仍触发2GiB观察阈值。各14次源调用、325,110,752响应字节，源本身无失败；保存的14个源请求均未使用动态绑定。这说明在coordinator预筛选还不够，原始源结果的传输、规范化与保留开销仍需解决。FedX14.807秒受预算截断，FedUP9.371秒HTTP500；保留各自失败性质。所有源、方法host和observer已确认终态。
 
 ## 工程改动及验收
 
@@ -32,14 +37,16 @@ group5 完整在线时间：性能模式161.880秒、精度模式135.246秒、Fe
 
 ## 下一步与调度
 
-在上述tiny门完成之后，预先限定只运行原RDF NL顺序中未执行的group6，四方法各一次、原模型/提示/数据/预算与方法配置，显式记录新实现版本。groups0–5不重发；结果出来后更新本报告。Native fixed下一group20，RDF fixed下一group5，native NL未启动。原遥端3804210仍由用户更新。
+上述tiny门后仅运行预先限定的group6，已结束并完整封存。下一NL frontier为group7，暂不直接续发大题：先在tiny上接通有界的源端锚点绑定策略，并用保存日志检查大结果规范化/保留开销；不把当前题实际试跑当规划，不绕过冻结估计器，不调高预算。任何新增候选必须更新Ptime构造边界和相对估计接口，然后只执行选中计划。该门通过后才继续未运行group7；groups0–6不重发。Native fixed下一group20，RDF fixed下一group5，native NL未启动。遥端3804210仍由用户更新。
 
-FedShop官方仓库HEAD已定位为37f2e15346ab7fe3e78bfcbea33e9211407cbec3；三个原始文件下载超时已记录。尚未下载数据、运行生成器或方法；后续可使用已成功的git传输继续固定版本准备。该发现不构成FedShop实验结果。
+FedShop官方仓库HEAD已定位为37f2e15346ab7fe3e78bfcbea33e9211407cbec3；三个原始文件下载超时已记录。尚未下载数据、运行生成器或方法；随后一次有界git源码获取也因连接github.com:443失败而退出，75.06秒；未checkout、未运行外部代码或获取数据。失败证据保留，本轮不重复下载。这还不构成FedShop实验结果，也不阻止XGAP源端策略工程。
 
 Sep14 17:00核心/评价接口、Sep18真实论文结果目标保持。整体Goal active；剩余整体NL效果、实际排序收益、FedShop规模、最终oracle/消融和18图，不能宣布论文实验或系统目标全部完成。
 
 ## 证据
 
+- [group6原始审计](../../experiments/artifacts/contribution_campaign_group6_20260913.json)及[CSV](../../experiments/artifacts/contribution_campaign_group6_20260913.csv)，run receipt SHA1925cd9efef5ca2959cd76dacfb7cd367540c076822f3973e75c4a0b543d3d97。
+- [FedShop源码获取失败](../../experiments/artifacts/fedshop_source_fetch_20260913.json)。
 - [groups3–4原始审计](../../experiments/artifacts/contribution_campaign_groups3_4_20260913.json)、[group5审计](../../experiments/artifacts/contribution_campaign_group5_20260913.json)及[逐方法CSV](../../experiments/artifacts/contribution_campaign_group5_20260913.csv)。
 - [两条保存计划的离线回放](../../experiments/artifacts/anchor_plan_replay_20260913.json)、[实际冻结估计器回放](../../experiments/artifacts/anchor_estimator_replay_20260913.json)、[tiny原生执行证据](../../experiments/artifacts/anchor_native_20260913.json)。
 - [精确变换与Ptime论证](../decisions/anchor_reduction_v1.md)、[答案交接契约](../decisions/nl_outcome_handoff_v1.md)。

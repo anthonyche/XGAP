@@ -1,3 +1,7 @@
+2026-09-13: [本轮工程与新NL结果](report/anchor_and_nl_20260913.md)：精确锚点
+预筛选真实tiny4行exact；原顺序新group6两模式仍RSS超限，四方法失败已封存。
+下一门是tiny源端绑定/结果内存开销，不能宣布真实问题已解决或立即重跑大题。
+
 2026-09-13: [Exact early anchor reduction](decisions/anchor_reduction_v1.md)
 adds one bounded, proven semijoin normalization before XGAP strategy selection.
 Five new checks pass(0.91s+0.26s); tiny join outputs78→36 with exact six-row

@@ -93,3 +93,11 @@ eight estimates/bound17 choose one coordinator plan;14 calls/18,606 source bytes
 terminal. Next explicitly bounded evaluation continuation is unrun RDF NL group6
 only, four methods once with original inputs/budgets and an implementation epoch.
 The old handoff and RSS failures are not rerun or rescored.
+
+New group6 at38ea7ab still hits the original RSS guard in both modes, after14
+source calls and325,110,752 response bytes each. The14 saved native requests
+are all unbound. The tiny acceptance establishes exactness, not a sufficient
+real-scale memory fix. All four method failures remain; next frontier isgroup7.
+Before new full queries, use tiny source-anchor binding and saved response
+footprint analysis. Update the candidate bound if introducing a new strategy;
+keep the original baseline input and estimator checks. No repeat ofgroups0–6.

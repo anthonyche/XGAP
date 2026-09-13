@@ -1,11 +1,12 @@
 # Current one-shot development authority
 
 
+
 ## 2026-09-13 最新执行状态
 
-[起点约束与真实NL报告](report/anchor_and_nl_20260913.md)及[Goal顶部](goal.md)为当前交接。
-真实tiny新规则4行exact，下一仅未运行NL group6；保留groups3–5全部失败，原暂停解除。
-全量compact-v2 profile/store/summary关联已发布，Native fixed下一20、RDF fixed下一5。
+[本轮报告](report/anchor_and_nl_20260913.md)及[Goal顶部](goal.md)为当前交接。
+真实tiny新规则4行exact；新NL group6两模式仍内存中断，先做tiny源端策略再进入
+未运行group7。保留全部失败，原暂停解除。Native fixed下一20、RDF fixed下一5。
 
 ## 当前执行：共同固定语义入口已验收，先修正 RDF 表示重叠
 
