@@ -1,3 +1,10 @@
+## 共同 RDF 规范事实互斥 — 2026-09-13
+
+[新表示契约](decisions/disjoint_rdf_metadata_v2.md)与[实际验证](report/disjoint_rdf_trial_20260913.md)
+已接受：共享数据修正、原查询和作者FedX不变，XGAP与FedX同为66/9 exact。旧结果
+保留为表示混淆诊断，不修baseline或挑选样本。开发继续共享NL全局编译和共同campaign
+接线；不重复接受的tiny验证，不作单题性能优势结论。
+
 ## 共同固定语义评价与 RDF 重叠事实 — 2026-09-13
 
 [共同入口契约](decisions/common_method_trial_v1.md)及[首次实际记录](report/common_rdf_trial_20260913.md)

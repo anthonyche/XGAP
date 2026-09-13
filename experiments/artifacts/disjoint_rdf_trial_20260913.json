@@ -1,0 +1,164 @@
+{
+  "audit": {
+    "bytes": 5014,
+    "path": "/Users/anthonyche/xgap-data/disjoint-rdf-trial-20260913-v2/acceptance_audit.json",
+    "sha256": "b5daef4e94814ce1c4fc7a941a3e650e2dc75622a86c1faab193ea496ecf94fc"
+  },
+  "current_pid_exists": {
+    "36850": false,
+    "36866": false,
+    "36877": false
+  },
+  "fixed_query_and_reference_unchanged": true,
+  "formal_campaign_ready": false,
+  "limitations": [
+    "single exposed tiny query; sequential cache states; no comparative speedup claim",
+    "fixed semantic input, not external NL evaluation",
+    "full serving/campaign not ready"
+  ],
+  "native_receipt": {
+    "bytes": 2949,
+    "path": "/Users/anthonyche/xgap-data/disjoint-rdf-trial-20260913-v2/receipt.json",
+    "sha256": "5b1e030df113a38fbf7bf24200591bdc61ffc37447ccabdb2cf015e0f07a0187"
+  },
+  "native_success": true,
+  "profile": {
+    "bytes": 65964,
+    "path": "/Users/anthonyche/xgap-data/disjoint-rdf-trial-20260913-v2/rdf-profile-v2/profile.json",
+    "sha256": "ef8131b3316f2ea83921a3b857576347f4d6058d4d52285b32b7a461cfa7ed89"
+  },
+  "raw_answers": {
+    "fedx": {
+      "bytes": 553,
+      "path": "/Users/anthonyche/xgap-data/disjoint-rdf-trial-20260913-v2/fedx/worker/answer.json",
+      "sha256": "4915a210f742514771909f8a71aadb88fc991466655f50b9b18da58442f5a8ee"
+    },
+    "xgap-rdf": {
+      "bytes": 166,
+      "path": "/Users/anthonyche/xgap-data/disjoint-rdf-trial-20260913-v2/xgap-rdf/worker/answer.json",
+      "sha256": "5cdea97c523db77b03e4e9746f6a37c56b70a3d60ba6e862bb182c3e0321cba0"
+    }
+  },
+  "runs": [
+    {
+      "answer_em": 1.0,
+      "bag_f1": 1.0,
+      "execution_success": true,
+      "method": "xgap-rdf",
+      "offline_method_initialization_ms": 0.0002905726432800293,
+      "quiescence": {
+        "complete": true,
+        "kind": "normal_materialized_return_and_observed_source_drain"
+      },
+      "recovery_ms": 0,
+      "resources": {
+        "limitations": "sampled group RSS may double-count shared pages; short-lived CPU/peaks may be missed; not an OS cap",
+        "limits": {
+          "method": 2147483648,
+          "source": 2147483648
+        },
+        "owned_groups": [
+          {
+            "created": 1789280442.695001,
+            "name": "graph",
+            "pid": 36850,
+            "role": "source"
+          },
+          {
+            "created": 1789280443.671151,
+            "name": "control",
+            "pid": 36866,
+            "role": "source"
+          }
+        ],
+        "sampled_cpu_seconds": {
+          "method": 0.223813628,
+          "source": 0.6849375920000003
+        },
+        "sampled_peak_rss_bytes": {
+          "method": 40452096,
+          "source": 407306240
+        },
+        "samples": 8,
+        "scope": "method worker plus hosted method; source groups separately, remote LLM excluded",
+        "status": "within_observed_budget"
+      },
+      "source_requests": 5,
+      "status": "returned",
+      "total_online_ms": 411.3512495532632
+    },
+    {
+      "answer_em": 1.0,
+      "bag_f1": 1.0,
+      "execution_success": true,
+      "method": "fedx",
+      "offline_method_initialization_ms": 105.28391692787409,
+      "quiescence": {
+        "complete": true,
+        "kind": "normal_materialized_return_and_observed_source_drain"
+      },
+      "recovery_ms": 0,
+      "resources": {
+        "limitations": "sampled group RSS may double-count shared pages; short-lived CPU/peaks may be missed; not an OS cap",
+        "limits": {
+          "method": 2147483648,
+          "source": 2147483648
+        },
+        "owned_groups": [
+          {
+            "created": 1789280442.695001,
+            "name": "graph",
+            "pid": 36850,
+            "role": "source"
+          },
+          {
+            "created": 1789280443.671151,
+            "name": "control",
+            "pid": 36866,
+            "role": "source"
+          },
+          {
+            "created": 1789280444.819839,
+            "name": "fedx",
+            "pid": 36877,
+            "role": "method_host"
+          }
+        ],
+        "sampled_cpu_seconds": {
+          "method": 1.017019844,
+          "source": 0.3692729200000002
+        },
+        "sampled_peak_rss_bytes": {
+          "method": 158957568,
+          "source": 608010240
+        },
+        "samples": 13,
+        "scope": "method worker plus hosted method; source groups separately, remote LLM excluded",
+        "status": "within_observed_budget"
+      },
+      "source_requests": 46,
+      "status": "returned",
+      "total_online_ms": 711.881541647017
+    }
+  ],
+  "schema_version": "xgap-disjoint-rdf-boundary-audit-v2",
+  "score_files": {
+    "fedx": {
+      "bytes": 1037,
+      "path": "/Users/anthonyche/xgap-data/disjoint-rdf-trial-20260913-v2/fedx/score.json",
+      "sha256": "330632e5a9ae35a7888409173fad801a84e8c833ec280f5442e41186491acd08"
+    },
+    "xgap-rdf": {
+      "bytes": 1041,
+      "path": "/Users/anthonyche/xgap-data/disjoint-rdf-trial-20260913-v2/xgap-rdf/score.json",
+      "sha256": "01bda1924604bd187b119ebcd5e7120b5e1562bde8b55cba558de68e9d8575a6"
+    }
+  },
+  "source_commit": "bc659f91dd9e124a3fccc257e278222c17f37fb0",
+  "unit_checks": {
+    "new_checks": 4,
+    "passed": 4,
+    "repeated_prior_gates": 0,
+    "seconds": 0.57
+  }
+}
