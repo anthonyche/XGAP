@@ -162,6 +162,7 @@ def compile_semantic_source(op, backend: SemanticBackend) -> SemanticSourceFragm
                 raise SemanticProgramError("Match descriptors require label/properties")
         options = dict(backend_id=backend_id, backend_mapping=backend.backend_mapping,
             profile=backend.profile, artifact_id=f"{identifier}-match",
+            identity_property=backend.identity_property,
             condition=And(*(_parse_condition(c) for c in path_predicates)) if path_predicates else None)
         if edge_form:
             artifact = compile_edge_match(EdgePattern(**p["edge"]), properties,

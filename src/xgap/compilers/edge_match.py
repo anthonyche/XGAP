@@ -8,12 +8,13 @@ from xgap.backends.rdf_terms import RDF_TERMS_V1, validate_iri
 from xgap.compilers.cypher import _cypher_identifier
 from xgap.compilers.directed import compile_directed_rows, _identifier_safe
 from xgap.compilers.features import default_profile
+from xgap.compilers.match_identity import identity_projection
 from xgap.pattern.ast import EdgePattern, NodePattern, Rel, PathPatternQuery, Selector, SelectorKind, PathMode
 
 
 def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend_id,
         source=None, target=None, backend_mapping=None, rdf_edge_encoding=None,
-        profile=None, artifact_id="semantic-edge-match", condition=None):
+        profile=None, artifact_id="semantic-edge-match", condition=None, identity_property=None):
     reserved = {"entity", "source", "target", "n0", "n1", "e1"}
     if any(not isinstance(name, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name)
            or name in reserved for name in properties):
@@ -31,8 +32,14 @@ def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend
     columns = ["entity", "source", "target", *properties]
     extra = {}
     if base.language == "cypher":
-        text = "CALL {\n" + base.text + "\n}\nRETURN DISTINCT e1 AS entity, source, target"
+        projected = [identity_projection(var, identity_property, profile) + ' AS ' + alias
+                     for var, alias in (('e1', 'entity'), ('source', 'source'), ('target', 'target'))]
+        # Preserve the exact legacy query when no identity view is declared.
+        fields = ', '.join(projected) if identity_property is not None else 'e1 AS entity, source, target'
+        text = "CALL {\n" + base.text + "\n}\nRETURN DISTINCT " + fields
         text += "".join(f", e1.{_cypher_identifier(prop)} AS {alias}" for alias, prop in properties.items())
+        if identity_property is not None:
+            extra = {"native_identity_projection": "property-map-v1", "native_identity_property": identity_property}
     else:
         mapping = (backend_mapping if isinstance(backend_mapping, RdfBackendMapping)
                    else RdfBackendMapping.from_artifact(backend_mapping, backend_id=backend_id))

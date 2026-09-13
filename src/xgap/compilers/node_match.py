@@ -11,6 +11,7 @@ from xgap.compilers.cypher import _cypher_identifier
 from xgap.compilers.features import BoundCondition, default_profile
 from xgap.compilers.directed import DirectedShape, _identifier_safe, _shape, _required, _cypher, _sparql, _fail
 from xgap.compilers.boolean_conditions import PROFILE as BOOLEAN_PROFILE
+from xgap.compilers.match_identity import identity_projection
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.pattern.ast import NodePattern, EdgePattern, Rel, Bounded, PathPatternQuery, Selector, SelectorKind, PathMode
 from xgap.pattern.semantic_validation import type_check_semantic_path_pattern
@@ -18,7 +19,7 @@ from xgap.pattern.semantic_validation import type_check_semantic_path_pattern
 
 def compile_node_match(node: NodePattern, properties: dict[str, str], *, backend_id: str,
                        backend_mapping=None, rdf_node_classes=(), profile=None,
-                       artifact_id="semantic-match", condition=None) -> QueryArtifact:
+                       artifact_id="semantic-match", condition=None, identity_property=None) -> QueryArtifact:
     if any(not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name) or name == "entity"
            for name in properties):
         raise ValueError("Match property aliases must be identifiers distinct from entity")
@@ -41,10 +42,12 @@ def compile_node_match(node: NodePattern, properties: dict[str, str], *, backend
     if language == "cypher":
         base, extra = _cypher(shape, profile)
         base = "MATCH (n0)\n" + base
-        text = "CALL {\n" + base + "\n}\nRETURN DISTINCT source AS entity"
+        entity = identity_projection('source', identity_property, profile)
+        text = "CALL {\n" + base + "\n}\nRETURN DISTINCT " + entity + " AS entity"
         for name, prop in properties.items():
             text += f", source.{_cypher_identifier(prop)} AS {name}"
-        extra = {}
+        extra = ({"native_identity_projection": "property-map-v1", "native_identity_property": identity_property}
+                 if identity_property is not None else {})
     elif language == "sparql":
         if not rdf_node_classes:
             raise ValueError("Match requires an explicit RDF node domain")
