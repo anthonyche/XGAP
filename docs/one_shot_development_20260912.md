@@ -1,11 +1,11 @@
 # Current one-shot development authority
 
+
 ## 2026-09-13 最新执行状态
 
-[本轮报告](report/compact_contribution_20260913.md)：compact-v2贡献粒度的真实确定性链通过；
-单次NL失败单独记录、不修回答。真实native fixed新4题全部正确且含2非空聚合；
-下一group20。以[Goal顶部](goal.md)为准，保持研究原型边界与全部负结果；不追求每题
-模型正确、不重复成功门禁。全量v2 profile尚未发布，后续须明确版本。旧暂停解除。
+[起点约束与真实NL报告](report/anchor_and_nl_20260913.md)及[Goal顶部](goal.md)为当前交接。
+真实tiny新规则4行exact，下一仅未运行NL group6；保留groups3–5全部失败，原暂停解除。
+全量compact-v2 profile/store/summary关联已发布，Native fixed下一20、RDF fixed下一5。
 
 ## 当前执行：共同固定语义入口已验收，先修正 RDF 表示重叠
 

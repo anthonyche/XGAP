@@ -86,3 +86,10 @@ of the failed tiny request yields eight available frozen predictions; still no
 query/model/fit call. New native attempts preflight model support before starting
 services and retain the original worker error/costs if selection is unavailable.
 This repaired development gate may run once on tiny data; no SF0.1 failure retry.
+
+The repaired native gate at0f62658 passes: four independent nonempty rows exact,
+eight estimates/bound17 choose one coordinator plan;14 calls/18,606 source bytes,
+1719.774ms online, zero model/fit/load/alternative execution. All owned services
+terminal. Next explicitly bounded evaluation continuation is unrun RDF NL group6
+only, four methods once with original inputs/budgets and an implementation epoch.
+The old handoff and RSS failures are not rerun or rescored.

@@ -39,3 +39,8 @@ outer NL worker -> post-seal scoring over a synthetic trace exceeding16MiB.
 Corrupt summary retains model/token/final-plan counts; mismatched trace linkage
 fails, explicit missing summary does not fall back, and legacy small records read.
 No external calls or old question retries. Next live gate is unrun RDF NL group5.
+
+Group5 completed with both XGAP workers memory-censored before core completion;
+this gate did not establish live handoff success. Preserve their failures and
+unknown outer usage, with separate reconciliation from saved completed provider
+records. The resulting bounded anchor work is documented in anchor_reduction_v1.md.

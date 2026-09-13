@@ -1,30 +1,26 @@
 # XGAP Status
 
-## 当前执行：真实新增4题全正确；贡献粒度编译通过，NL错误单独保留
 
-本轮cba95be/88bfbec/dd8bdb7完成独立compact-v2贡献粒度语义。4项新检查首次1.49s
-通过，参考计数类型失败的1项检查0.32s通过。真实tiny确定性链金额56/转账6 exact，
-5个估计候选选1计划，6源调用/5295B/1.322s，无model/probe/fit/load。单次NL另报失败：
-模型将High risk改High、用内部xgap_id计数，2387/506token，4.135s、源0、EM0；
-不修响应、不重试，不将gold执行冒充NL成功。[完整结果](report/compact_contribution_20260913.md)。
+## 当前执行：早期起点约束已通过真实tiny；准备未运行NL group6
 
-原生fixed继续未运行groups16–19：4题全exact、2题非空风险聚合（company2036
-=9,428,080.26；company1581=2,249,563.92），2题正确空；16.498–30.164s，
-方法峰值0.855–1.770GB<原2GiB。原profile/程序/估计器/预算，单计划零模型；
-新compact-v2未用于这四题。保留旧错误和超限，不声称总体质量或提速。
-句柄94249/97260失败终态、60371/52511成功终态；所有自有源/observer均已关闭。
+[本轮完整报告](report/anchor_and_nl_20260913.md)。0f62658将精确起点半连接展开为
+已有去重键＋连接，保持冻结估计器权重和共享baseline输入。5项新风险检查通过；
+小图6行exact，原有连接输出78→36（含新增连接共48）。真实tiny Neo4j/Fuseki的4行
+非空全exact，8候选按估计选1计划，14源调用/18,606B/1.720s，零模型/fit/重装。
+首次tiny因估计器不支持独立半连接而失败，零执行，记录保留；修复后已全部关停。
 
-下一步以实验所需的有界功能为发布门槛，不以每个模型回答正确为门槛；不要为这道
-失败题继续改prompt或大数据重跑。compact-v2语义/确定性门已通过，普通NL本次失败
-如实计effectiveness；如后续采用v2，先离线发布并关联完整native/RDF冻结profile，
-保留原store/summary、全部曝光/旧结果，不静默混合版本统计。当前全量NL仍为
-prompt-v2/wire-v1，下一group3；native fixed下一group20；RDF fixed下一group5；
-native NL未启动。继续批准FinBench/FedUP/FedX，随后有界FedShop；oracle/消融最后。
-尚缺完整NL总体、实际排序收益、FedShop/scale与18图。120=24/48/48、33空15非空
-保持，baseline原作者配置保持。Sep14 17:00核心/接口、Sep18论文结果目标不变。
-Goal active，旧暂停已解除，不轮询3804210；可用磁盘约11.9GB，保留6GiB底线。
+新增真实RDF NL groups3–5共12调用、36,592/6,178tokens，原评分全部EM0保留：
+XGAP4次答案交接失败、2次内存中断；FedUP3次HTTP500；FedX3次共同预算截断。
+交接修复3检查通过，但group5更早中断，不能声称真实大规模NL交接验收通过。
+完整compact-v2 native/RDF已离线发布关联原stores/summary/旧12结果，不重建catalog。
 
-以下保留前序结果；当前状态以上方为准。
+下一步仅原顺序未运行NL group6（四方法各一次），显式实现epoch；旧失败不重发。
+当前NL journal为finbench-rdf-nl-campaign-20260913-contribution-v2，旧prompt-v2只证据；
+Native fixed下一20、RDF fixed下一5、native NL未启动。保持120=24/48/48、33空15非空、
+原baseline配置与全部曝光；无总体提速结论。FedShop固定HEAD已发现，数据/运行未做。
+Sep14 17:00核心/接口、Sep18论文结果不变。Goal active；旧暂停解除，不轮询3804210。
+
+以下为前序记录，执行状态以上方为准。
 
 ## 当前执行：名称/ID/变量入口3题通过；真实NL下一缺口为去重与聚合约定
 

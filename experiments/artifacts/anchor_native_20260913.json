@@ -1,0 +1,120 @@
+{
+  "schema_version": "xgap-anchor-native-evidence-v2",
+  "receipt": {
+    "path": "/Users/anthonyche/xgap-data/compact-anchor-native-20260913-v2/receipt.json",
+    "sha256": "530eecc9a4359be10656560bef86149a929b54833f83f865419827f8fcaa5a72"
+  },
+  "source_commit": "0f62658759b8bd447135fafacb3f3c5783ea0645",
+  "answer": {
+    "answer": [
+      {
+        "account_distance": 1,
+        "medium_id": "1",
+        "medium_type": "PHONE",
+        "other_id": "2"
+      },
+      {
+        "account_distance": 1,
+        "medium_id": "2",
+        "medium_type": "PHONE",
+        "other_id": "2"
+      },
+      {
+        "account_distance": 1,
+        "medium_id": "1",
+        "medium_type": "PHONE",
+        "other_id": "3"
+      },
+      {
+        "account_distance": 2,
+        "medium_id": "1",
+        "medium_type": "PHONE",
+        "other_id": "3"
+      }
+    ],
+    "answer_format": "json_rows"
+  },
+  "score": {
+    "actual_rows": 4,
+    "answer_em": 1.0,
+    "answer_row_multiset_f1": 1.0,
+    "comparison_error": null,
+    "dataset": {
+      "dataset_id": "financial-binding-tiny",
+      "version": "financial-tiny-v1"
+    },
+    "evaluation_ms_before_score_seal": 0.512625090777874,
+    "execution_success": true,
+    "expected_rows": 4,
+    "exposure": "Authored tiny business-ID query after saved memory failure; no held-out or paper-result claim. Separate gold-intent module chain; not an NL answer.",
+    "method": "xgap-native",
+    "normalization": {
+      "fields": {
+        "account_distance": "integer",
+        "medium_id": "text",
+        "medium_type": "text",
+        "other_id": "text"
+      },
+      "schema_version": "xgap-row-normalization-v1"
+    },
+    "ordered": true,
+    "population": "tiny-anchor-development",
+    "question_id": "ANCHOR-01-GOLD",
+    "receipt_sha256": "45e55979cb230c0a011e57beff6fd17009138ad4cc6a3fdbf62aeac208831cc3",
+    "reference_sha256": "749cd46f85b89f5a6a517dc72ccd63263a945f654acbbb97f463f293ab2f3382",
+    "schema_version": "xgap-common-row-score-v1",
+    "scope": "post-seal evaluation, outside method online latency; preserve original order and bags",
+    "status": "returned",
+    "track": "fixed_semantics"
+  },
+  "planning_ms": 108.91016758978367,
+  "execution_ms": 1310.5367086827755,
+  "total_online_ms": 1719.773791730404,
+  "source_calls": 14,
+  "response_bytes": 18606,
+  "candidates": 8,
+  "construction_bound": 17,
+  "selected_strategy": "placement-0/coordinator",
+  "anchor_reduction": {
+    "added_runtime_nodes": 5,
+    "condition": {
+      "field": "f0",
+      "op": "eq",
+      "value": "1"
+    },
+    "driver": "cq20",
+    "enforcing_filter": "cq33",
+    "extra_remote_calls": 0,
+    "identity_field": "v0",
+    "original_final_constraints_preserved": true,
+    "physical_form": "join_with_distinct_single_column_identity_keys",
+    "profile": "mandatory-scalar-anchor-distinct-key-join-v1",
+    "selection": "first provably admissible equality in semantic input order",
+    "source_queries_unchanged": true,
+    "target_matches": [
+      "cq1",
+      "cq4",
+      "cq9"
+    ]
+  },
+  "sampled_peak_rss_bytes": {
+    "method": 40861696,
+    "source": 947257344
+  },
+  "model_calls": 0,
+  "fit_calls": 0,
+  "alternative_executions": 0,
+  "top_level_attempts": 1,
+  "all_owned_groups_terminal": true,
+  "full_dataset_speedup_claim": false,
+  "paper_result": false,
+  "tiny_comparison": {
+    "late_original_join_outputs": 78,
+    "early_original_join_outputs": 36,
+    "new_anchor_join_outputs": 12,
+    "early_all_join_outputs": 48,
+    "source_calls_each": 8,
+    "answer_rows_each": 6,
+    "native_service_comparison": false
+  }
+}
