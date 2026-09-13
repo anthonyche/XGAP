@@ -1,21 +1,24 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
-## 当前执行：共同 RDF 表示已修正并验证，继续共享 NL 接线
+## 当前执行：普通 NL 双 RDF 成功，共享外部 NL 接通并保留预算截断
 
-bc659f9完成版本化RDF元数据修正。两源211/36 triples交集从24变为0；去掉辅助
-元数据的新并集等于原规范集合并集。金融事实、原公共查询和reference字节不变。
-4项新检查一次通过0.57秒；一次新真实边界XGAP与未修改FedX均返回66/9 exact，
-分别5/46次源请求。旧128倍结果随表示修正消失，支持重复匹配诊断，不是planner优势。
-[结果、时间与限制](report/disjoint_rdf_trial_20260913.md)。
+a0d5ebf接通bounded global SPARQL、共享K3质量优先前端、共同NL worker/费用监督，
+并修复普通one-shot对RDF实例估计器的类型准入。11项不同新风险检查通过，失败及
+最小回放保留，不重复旧门禁。fd47ea3修正调用方不合法FedX启动超时，未改作者代码。
+[真实结果与边界](report/shared_nl_native_20260913.md)。
 
-本轮零模型/fit/probe/retry/算法修改，无catalog重建；旧数据与全部错误保留。
-未重跑FedUP已知聚合失败，三个自有服务均已退出。单题顺序时间不作方法提速结论。
-下一步共享NL前端→外部全局SPARQL编译，然后完整RDF发布/装载与平衡campaign。
-外部NL尚未实现、完整服务未装载，formal_campaign_ready=false；不冒充完整评价。
+一次真实XGAP performance NL→双RDF：模型1次、最终计划1个、源9次、金额66/9 exact，
+完整3638.164ms。共享NL→FedX另有模型1次、编译1次、顶层查询1次；261个到达请求中
+256转发成功、5被tiny代理上限拒绝。该次被验证预算截断，不是FedX答案错误或原生
+语义失败，不用于优势比较。已保存查询的一次离线并集诊断exact，不冒充FedX答案。
+没有重跑该query、优化baseline或重建catalog/model；全部8个服务进程退出。
 
-用户9月13日13:32已恢复工作，继续推进，旧暂停解除。开发继续tiny/failure replay，
-不重跑旧成功门禁、不重训时间回归。120组/24-48-48及评价33空15非空冻结；
-Sep14 17:00核心/接口和Sep18真实实验目标保持。
+接下来发布完整RDF离线衍生版本，完善正式每题预算/observer重置/服务装载和平衡
+campaign。正式预算不能照搬tiny临时256次或使用跨题累计计数。完整服务未装载，
+formal_campaign_ready=false；外部NL已实施并触达真实源，但本条完成答案仍未测得。
+
+用户9月13日13:32已恢复工作，旧暂停解除；保持tiny开发/failure replay。120组与
+24/48/48划分、评价33空15非空冻结。Sep14 17:00核心/接口、Sep18真实结果目标不变。
 
 ## 以下为历史交接，以当前执行为准
 

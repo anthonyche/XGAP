@@ -1,3 +1,10 @@
+## 共享 NL 全局编译与真实入口 — 2026-09-13
+
+[有界编译/前端契约](decisions/shared_global_sparql_v1.md)已实现，11项新风险检查与
+[真实边界](report/shared_nl_native_20260913.md)完成。普通NL双RDF实际exact；共享NL
+FedX实际执行被tiny源请求上限截断。保持原失败及费用，不把harness截断当baseline
+答案/语义劣势。下一步正式每题预算和serving/campaign接线，不按该结果调优或重跑。
+
 ## 共同 RDF 规范事实互斥 — 2026-09-13
 
 [新表示契约](decisions/disjoint_rdf_metadata_v2.md)与[实际验证](report/disjoint_rdf_trial_20260913.md)
