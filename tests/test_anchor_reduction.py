@@ -83,7 +83,8 @@ def test_union_anchor_preserves_independent_answer_and_reduces_path_work():
     assert a.success and b_result.success
     assert a.final_rows == b_result.final_rows == EXPECTED
     assert a.total_remote_calls == b_result.total_remote_calls == len(s)
-    joins = lambda result:sum(n.row_count for n in result.node_results if n.kind is R.COORDINATOR_JOIN)
+    joins = lambda result:sum(n.row_count for n in result.node_results if n.kind is R.COORDINATOR_JOIN
+                              and '/anchor_reduction/' not in n.node_id)
     assert joins(b_result) < joins(a)
     # Different property values across providers cannot remove the matching key.
     assert any('20' in str(o) for o in graphs['rdf_b'].objects())
@@ -171,7 +172,7 @@ def test_estimated_one_shot_entry_executes_only_one_reduced_plan(estimator):
     assert result['final_plan_executions']==1 and result['observation_calls']==0
     assert result['interpretation_external_calls']==0 and len(calls)==result['backend_remote_calls']
     assert result['selection']['selection_uses_execution_observations'] is False
-    assert 'mandatory-scalar-anchor-semijoin-v1' in json.dumps(result)
+    assert 'mandatory-scalar-anchor-distinct-key-join-v1' in json.dumps(result)
     # The normalizer does not enlarge the estimated domain or permit cycles.
     domain=prepare_physical_strategies(p,source_bindings=placement,backends=backends,max_parallelism=1)
     assert len(domain.candidates)<=domain.candidate_count_upper_bound

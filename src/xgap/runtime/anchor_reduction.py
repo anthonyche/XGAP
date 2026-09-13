@@ -14,7 +14,7 @@ from xgap.runtime.contracts import FederatedExecutionPlan, RuntimeNode, RuntimeN
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S
 
 
-PROFILE = "mandatory-scalar-anchor-semijoin-v1"
+PROFILE = "mandatory-scalar-anchor-distinct-key-join-v1"
 
 
 def _equalities(condition):
@@ -113,14 +113,21 @@ def reduce_scalar_anchor(program: SemanticGraphProgram,
                 continue
             prefix = enforcing.operator_id + "/anchor_reduction/"
             anchor_id = prefix + "keys"
+            filter_id = prefix + "filter"
             replacements = {outputs[t]: prefix + t for t in targets}
-            added_ids = {anchor_id, *replacements.values()}
+            added_ids = {anchor_id, filter_id, *replacements.values()}
             if added_ids & {n.node_id for n in plan.nodes}:
                 # A user-defined identifier collision cannot justify a rewrite.
                 continue
-            additions = [RuntimeNode(anchor_id, R.COORDINATOR_FILTER,
-                (outputs[driver_id],), {"condition": dict(condition)}, (enforcing.operator_id,))]
-            additions.extend(RuntimeNode(replacements[outputs[t]], R.COORDINATOR_SEMI_JOIN,
+            additions = [RuntimeNode(filter_id, R.COORDINATOR_FILTER,
+                (outputs[driver_id],), {"condition": dict(condition)}, (enforcing.operator_id,)),
+                RuntimeNode(anchor_id, R.COORDINATOR_ROW_PROJECT, (filter_id,),
+                    {"projections": {identity: {"kind": "field", "field": identity}}},
+                    (enforcing.operator_id,))]
+            # Projection is DISTINCT in this runtime. The one-column right side
+            # has one row per identity, so the existing inner join is an exact
+            # semijoin without duplicate amplification or a new work category.
+            additions.extend(RuntimeNode(replacements[outputs[t]], R.COORDINATOR_JOIN,
                 (outputs[t], anchor_id), {"left_on": identity, "right_on": identity},
                 (t, enforcing.operator_id)) for t in targets)
             nodes = tuple(replace(n, inputs=tuple(replacements.get(i, i) for i in n.inputs))
@@ -129,6 +136,7 @@ def reduce_scalar_anchor(program: SemanticGraphProgram,
                 "condition": dict(condition), "enforcing_filter": enforcing.operator_id,
                 "target_matches": targets, "added_runtime_nodes": len(additions),
                 "extra_remote_calls": 0, "source_queries_unchanged": True,
+                "physical_form": "join_with_distinct_single_column_identity_keys",
                 "selection": "first provably admissible equality in semantic input order",
                 "original_final_constraints_preserved": True}
             return replace(plan, nodes=nodes, metadata={**dict(plan.metadata),

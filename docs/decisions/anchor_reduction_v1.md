@@ -14,6 +14,8 @@ Normalize XGAP's physical base plan with at most one proven scalar-equality
 anchor. Reuse an existing mandatory node-property read (including a union of
 providers), evaluate the original predicate in the coordinator, and semijoin
 eligible edge-Match outputs with these canonical entity keys before expansion.
+The final implementation realizes this semijoin as DISTINCT one-column key
+projection plus existing inner joins; it introduces no unseen estimator operator.
 Do not push a control-only property into a graph endpoint. Retain the original
 join and final filter. No additional remote query, model call or probing occurs.
 Native source responses remain unchanged in this first bounded mechanism.
@@ -30,7 +32,7 @@ admissible anchor in semantic input order, with no data-dependent choice.
 For n semantic operators, p predicate atoms, e DAG edges and L compiled plan
 size, inspect at most p equalities times n edge Matches with memoized lineage:
 O(p*n*(n+e)+L) time and O(p*n*(n+e)+L) space are conservative polynomial bounds.
-The existing input byte/operator limits also bound p. Add at most n+1 runtime nodes.
+The existing input byte/operator limits also bound p. Add at most n+2 runtime nodes.
 The existing candidate domain remains at most 1+2J: this normalization precedes
 the single-join bind alternatives. Reject a bind rewrite if the new dependency
 would create a cycle. Selection minimizes the frozen estimate in this finite
@@ -69,3 +71,18 @@ and coordinator plans remain within the1+2J bound. Native query artifacts are
 unchanged by the anchor reduction itself. Offline replay of both saved group5
 interpretations admits three first-hop targets and eight estimated candidates
 each, with no model/source/fit call or semantic edit. It does not rerun the data.
+
+The first actual tiny native attempt (076c2f4) stopped before final execution:
+the real frozen work estimator had no training support for the standalone
+coordinator_semi_join category. The source services started and were closed;
+query/source/model calls were zero and original EM0 remains. The test estimator
+was analytic and did not establish this actual deployment support. Do not bypass
+the unseen-work check or refit from evaluation answers.
+
+The exact DISTINCT-key join expansion uses already supported projection/filter/
+join work categories with unchanged weights, feature dimensions and data. All
+five affected checks pass0.87s after this physical-form change. Offline replay
+of the failed tiny request yields eight available frozen predictions; still no
+query/model/fit call. New native attempts preflight model support before starting
+services and retain the original worker error/costs if selection is unavailable.
+This repaired development gate may run once on tiny data; no SF0.1 failure retry.
