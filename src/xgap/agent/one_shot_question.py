@@ -15,6 +15,7 @@ from xgap.compilers.errors import CompilerError
 from xgap.planning.runtime_estimator import FrozenRuntimeEstimator
 from xgap.planning.runtime_work_estimator import FrozenWorkEstimator
 from xgap.planning.runtime_work_deployment import FrozenWorkDeployment
+from xgap.planning.runtime_instance_work import FrozenInstanceWorkDeployment
 from xgap.runtime.one_shot_planning import prepare_one_shot_domain
 from xgap.runtime.scheduler import FederatedScheduler
 from xgap.runtime.tool import FederatedExecutionTool
@@ -43,7 +44,7 @@ def _frontier(items):
 
 
 def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
-                          estimator: FrozenRuntimeEstimator | FrozenWorkEstimator | FrozenWorkDeployment, catalog_root, catalog_hash,
+                          estimator: FrozenRuntimeEstimator | FrozenWorkEstimator | FrozenWorkDeployment | FrozenInstanceWorkDeployment, catalog_root, catalog_hash,
                           sources, backends, backend_clients):
     started = time.perf_counter()
     report = {"schema_version": "xgap-one-shot-answer-v1", "success": False,
@@ -64,7 +65,7 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
             "post_return_persistence_included": False, "backend_wire_bytes": None}
         return report
 
-    if not isinstance(policy, OneShotPolicy) or not isinstance(estimator, (FrozenRuntimeEstimator, FrozenWorkEstimator, FrozenWorkDeployment)):
+    if not isinstance(policy, OneShotPolicy) or not isinstance(estimator, (FrozenRuntimeEstimator, FrozenWorkEstimator, FrozenWorkDeployment, FrozenInstanceWorkDeployment)):
         report.update(status="configuration_unavailable",
                       error="One-shot requires a typed policy and a prepared frozen runtime estimator")
         return finish()
