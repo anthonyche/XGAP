@@ -1,3 +1,8 @@
+## 正式每题观测契约 — 2026-09-13
+
+[预算与封存规则](decisions/campaign_observation_v1.md)已实现并完成10项新风险检查。
+所有方法使用同一预算；原失败留存，harness截断不作为baseline算错证据。
+
 ## 完整 RDF 版本一次离线发布 — 2026-09-13
 
 [新SF0.1 RDF配置](report/full_rdf_profile_20260913.md)已冻结，复用原graph/catalog/模型，

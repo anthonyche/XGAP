@@ -1,5 +1,18 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 当前执行：正式每题预算和失败封存已接通
+
+新增campaign observer与共同runner收尾，10项不同新风险检查通过；只回放1项路径
+错误及2项新增风险，没有重跑旧成功门禁或调用模型/数据库/baseline。每题独立限额、
+流式响应、稳定URL、跨题唯一编号、终态封存后释放内存；异常禁止会话复用。
+旧FedX的5次源调用拒绝已离线识别为harness_budget_censored，原记录与分母不变。
+[本轮证据与限制](report/campaign_observation_20260913.md)。
+
+下一步把已冻结SF0.1 RDF装入磁盘存储，按共同预算接上平衡调度和新评价单元。
+不重建catalog/模型，不重新运行被截断的开发题。真实服务与正式campaign尚未完成；
+Sep14 17:00核心/接口、Sep18真实结果目标保持，Goal active。
+
+
 ## 当前执行：普通 NL 双 RDF 成功，共享外部 NL 接通并保留预算截断
 
 a0d5ebf接通bounded global SPARQL、共享K3质量优先前端、共同NL worker/费用监督，

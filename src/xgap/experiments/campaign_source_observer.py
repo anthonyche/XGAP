@@ -1,0 +1,198 @@
+"""Per-phase bounded source observation; legacy tiny observer stays unchanged."""
+from collections import Counter
+from dataclasses import asdict, dataclass
+import hashlib
+import http.client
+import json
+from pathlib import Path
+import time
+from urllib.parse import parse_qs, urlsplit
+
+from xgap.experiments.external_federation import SourceObserver, forwarding_headers, query_kind
+from xgap.experiments.one_shot_profile import read_pinned
+from xgap.experiments.one_shot_records import write_once
+
+MIB=1024**2
+
+
+@dataclass(frozen=True)
+class SourceObservationBudget:
+    max_calls: int=65536
+    request_bytes: int=16*MIB
+    phase_request_bytes: int=128*MIB
+    response_bytes: int=256*MIB
+    phase_response_bytes: int=512*MIB
+    timeout_seconds: int=120
+
+    def __post_init__(self):
+        caps={'max_calls':1000000,'request_bytes':16*MIB,'phase_request_bytes':1024*MIB,
+              'response_bytes':1024*MIB,'phase_response_bytes':4096*MIB,'timeout_seconds':120}
+        for name,maximum in caps.items():
+            value=getattr(self,name)
+            if type(value) is not int or not 1<=value<=maximum:raise ValueError('Invalid observation budget: '+name)
+
+
+class ObservationFailure(ValueError):
+    def __init__(self,category,message):super().__init__(message);self.category=category
+
+
+class CampaignSourceObserver(SourceObserver):
+    def __init__(self,routes,root,*,budget:SourceObservationBudget):
+        if not isinstance(budget,SourceObservationBudget):raise TypeError('An explicit source budget is required')
+        self.budget=budget;self.next_index=0;self.generation=0;self.accepting=True
+        self.phase_request_bytes=0;self.phase_response_bytes=0;self.phase_calls=0
+        self.sealed=None;self.released=True;self.late_calls=0;self.persistence_failures=0
+        super().__init__(routes,root,max_calls=budget.max_calls,timeout_seconds=budget.timeout_seconds)
+
+    def set_phase(self,phase,*,fail_source=None):
+        if not isinstance(phase,str) or not phase:raise ValueError('A phase identity is required')
+        if fail_source is not None:raise ValueError('Campaign observer has no injected-failure mode')
+        if not self.settle():raise RuntimeError('Cannot change a phase with active source requests')
+        with self.condition:
+            if self.inflight or self.late_calls or self.persistence_failures:
+                raise RuntimeError('Source session requires recovery before reuse')
+            if self.records or not self.released:raise RuntimeError('Seal the previous phase and its outcome before reuse')
+            self.generation+=1;self.phase=phase;self.accepting=True;self.released=False;self.sealed=None
+            self.phase_request_bytes=0;self.phase_response_bytes=0;self.phase_calls=0
+
+    def forward(self,handler):
+        started=time.perf_counter();source=urlsplit(handler.path).path
+        with self.condition:
+            index=self.next_index;self.next_index+=1;local_index=len(self.records)
+            late=not self.accepting;self.late_calls+=int(late)
+            record={'index':index,'phase':self.phase,'generation':self.generation,'source':source,
+                'method':handler.command,'request_target':handler.path,'status':'started',
+                'request_target_bytes':len(handler.path.encode()),'request_body_bytes':0,'response_body_bytes':0,
+                'forwarded':False,'response_complete':False}
+            self.records.append(record);self.inflight+=1;self.phase_calls+=1
+            call_number=self.phase_calls
+        conn=None;body_path=self.root/f'{index:04}-response.bin';digest=hashlib.sha256()
+        stage='incoming';headers_sent=False
+        try:
+            handler.connection.settimeout(self.timeout)
+            if late:raise ObservationFailure('harness_late_source_call','Source call arrived after phase sealing')
+            if call_number>self.budget.max_calls:raise ObservationFailure('harness_call_budget','Per-phase source call budget exceeded')
+            if source not in self.routes:raise ObservationFailure('harness_route','Unknown source route')
+            if handler.headers.get('Transfer-Encoding'):raise ObservationFailure('harness_transport','Chunked request unsupported')
+            length=int(handler.headers.get('Content-Length','0'))
+            if not 0<=length<=self.budget.request_bytes:
+                raise ObservationFailure('harness_request_budget','Per-request body limit exceeded')
+            body=handler.rfile.read(length);record['request_body_bytes']=len(body)
+            if len(body)!=length:raise ObservationFailure('harness_transport','Truncated incoming request')
+            with self.condition:
+                self.phase_request_bytes+=record['request_target_bytes']+len(body)
+                over=self.phase_request_bytes>self.budget.phase_request_bytes
+            if over:raise ObservationFailure('harness_request_budget','Per-phase incoming payload limit exceeded')
+            content_type=handler.headers.get('Content-Type','')
+            text=(body.decode() if content_type.startswith('application/sparql-query') else
+                parse_qs(body.decode() if handler.command=='POST' else urlsplit(handler.path).query).get('query',[''])[0])
+            record.update(query=text,query_kind=query_kind(text))
+            stage='persistence';write_once(self.root/f'{index:04}-intent.json',record)
+            stage='upstream'
+            upstream=urlsplit(self.routes[source]);conn=http.client.HTTPConnection(upstream.hostname,upstream.port,timeout=self.timeout)
+            target=upstream.path+(('?'+urlsplit(handler.path).query) if urlsplit(handler.path).query else '')
+            headers=forwarding_headers(handler.headers)
+            record['hop_headers_removed']=sorted(k for k in handler.headers if k not in headers)
+            record['forwarded']=True;conn.request(handler.command,target,body,headers)
+            response=conn.getresponse();record['http_status']=response.status
+            stage='persistence'
+            with body_path.open('xb') as saved:
+                while True:
+                    remaining=self.budget.response_bytes-record['response_body_bytes']
+                    stage='upstream'
+                    chunk=response.read(min(MIB,remaining+1))
+                    if not chunk:
+                        if response.length:raise http.client.IncompleteRead(b'',response.length)
+                        break
+                    record['response_body_bytes']+=len(chunk)
+                    with self.condition:
+                        self.phase_response_bytes+=len(chunk)
+                        over=self.phase_response_bytes>self.budget.phase_response_bytes
+                    stage='persistence';saved.write(chunk);digest.update(chunk)
+                    if record['response_body_bytes']>self.budget.response_bytes or over:
+                        raise ObservationFailure('harness_response_budget','Received source response byte limit exceeded')
+            record.update(response_complete=True,status='returned')
+            if response.status>=400:record['failure_category']='upstream_http_failure'
+            stage='downstream';handler.send_response(response.status)
+            for k,v in response.getheaders():
+                if k.lower() in {'content-type','content-encoding'}:handler.send_header(k,v)
+            handler.send_header('Content-Length',str(record['response_body_bytes']));handler.end_headers();headers_sent=True
+            stage='persistence'
+            with body_path.open('rb') as saved:
+                while True:
+                    stage='persistence';chunk=saved.read(MIB)
+                    if not chunk:break
+                    stage='downstream';handler.wfile.write(chunk)
+        except Exception as error:
+            category=(error.category if isinstance(error,ObservationFailure) else
+                      'harness_persistence' if stage=='persistence' else
+                      'source_timeout' if stage=='upstream' and isinstance(error,TimeoutError) else
+                      'source_transport' if stage=='upstream' else 'harness_transport')
+            record.update(status='failed',error_type=type(error).__name__,error=str(error),failure_category=category)
+            try:
+                if not headers_sent:handler.send_error(502,'Source observation failed')
+            except OSError:pass
+        finally:
+            if conn:conn.close()
+            if body_path.exists():
+                record.update(response_path=str(body_path),
+                    response_sha256=None if record.get('failure_category')=='harness_persistence' else digest.hexdigest())
+            record['observer_wall_ms']=(time.perf_counter()-started)*1000
+            try:
+                pin=write_once(self.root/f'{index:04}-result.json',record)
+                compact={k:v for k,v in record.items() if k not in ('query','request_target','hop_headers_removed')}
+                compact['record_pin']=pin
+                with self.condition:self.records[local_index]=compact
+            except Exception:
+                with self.condition:self.persistence_failures+=1
+            finally:
+                with self.condition:self.inflight-=1;self.condition.notify_all()
+
+    def snapshot(self,phase):
+        if not self.settle():raise RuntimeError('Source accounting not settled')
+        with self.condition:
+            if self.inflight:raise RuntimeError('Source accounting changed before snapshot')
+            return self._snapshot_locked(phase)
+
+    def _snapshot_locked(self,phase):
+        if phase!=self.phase:raise ValueError('Read past phases through their immutable seals')
+        rows=list(self.records)
+        failures=Counter(r['failure_category'] for r in rows if r.get('failure_category'))
+        return {'phase':phase,'generation':self.generation,'requests':len(rows),
+            'ask_requests':sum(r.get('query_kind')=='ASK' for r in rows),
+            'failed_requests':sum(r['status']!='returned' or r.get('http_status',599)>=400 for r in rows),
+            'forwarded_requests':sum(r['forwarded'] for r in rows),'failure_categories':dict(failures),
+            'request_body_bytes':sum(r['request_body_bytes'] for r in rows),
+            'request_target_bytes':sum(r['request_target_bytes'] for r in rows),
+            'response_body_bytes':sum(r['response_body_bytes'] for r in rows),
+            'partial_response_bytes':sum(r['response_body_bytes'] for r in rows if not r['response_complete']),
+            'records_inline':False,'record_directory':str(self.root),'budget':asdict(self.budget),
+            'first_index':rows[0]['index'] if rows else None,'last_index':rows[-1]['index'] if rows else None,
+            'late_calls':self.late_calls,'persistence_failures':self.persistence_failures}
+
+    def seal_phase(self,phase):
+        if not self.settle():raise RuntimeError('Source accounting not settled')
+        with self.condition:
+            if self.inflight or self.persistence_failures or self.late_calls:raise RuntimeError('Cannot seal inconsistent source observations')
+            if phase!=self.phase:raise ValueError('Cannot seal another phase')
+            if self.sealed is not None:return dict(self.sealed)
+            summary=self._snapshot_locked(phase)
+            self.accepting=False
+            index=[(r['index'],r['record_pin']['sha256']) for r in self.records]
+            ledger=write_once(self.root/f'phase-{self.generation:04}-index.json',{
+                'generation':self.generation,'phase':phase,'result_pattern':'{index:04}-result.json','files':index})
+            summary['ledger_index']=ledger
+            pin=write_once(self.root/f'phase-{self.generation:04}-summary.json',summary)
+            self.sealed={**summary,'phase_seal':pin};return dict(self.sealed)
+
+    def release_phase(self,phase,outcome_pin):
+        outcome=json.loads(read_pinned(outcome_pin['path'],outcome_pin['sha256']))
+        with self.condition:
+            if self.inflight or self.late_calls or self.persistence_failures or phase!=self.phase or self.sealed is None:
+                raise RuntimeError('A drained sealed phase is required')
+            if outcome.get('source_observations',{}).get('phase_seal')!=self.sealed['phase_seal']:
+                raise ValueError('Durable outcome does not reference this source phase seal')
+            if self.released:raise ValueError('Phase already released')
+            write_once(self.root/f'phase-{self.generation:04}-released.json',{'phase':phase,'generation':self.generation,
+                'outcome':outcome_pin,'phase_seal':self.sealed['phase_seal'],'records_released':len(self.records)})
+            self.records.clear();self.released=True
