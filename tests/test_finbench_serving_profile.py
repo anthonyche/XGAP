@@ -116,3 +116,20 @@ def test_large_load_artifact_streaming_preserves_the_small_metadata_boundary(tmp
     verify_asset(path,pin)
     with path.open('r+b') as stream:stream.write(b'y')
     with pytest.raises(ValueError,match='size/hash mismatch'):verify_asset(path,pin)
+
+
+def test_full_source_schema_type_coverage_without_reading_the_real_dataset():
+    # Replay the first real publication failure using only schema descriptors.
+    from xgap.experiments.financial_nl_profile import schema_and_catalog
+    from xgap.experiments.m15_finbench_partition import ENTITY_PLACEMENTS, RELATIONSHIP_PLACEMENTS, NEO4J_BATCH_FILENAME
+    manifest={'source_partition_sha256':'1'*64,
+        'table_rows':{e.table_id:1 for e in (*ENTITY_PLACEMENTS,*RELATIONSHIP_PLACEMENTS)}}
+    schema,catalog,bindings,_=schema_and_catalog(manifest,
+        {'mapping.json':(INPUT_ROOT/'mapping.json').read_bytes(),NEO4J_BATCH_FILENAME:b''})
+    assert len(schema['graph']['nodes'])==len(schema['control']['nodes'])==5
+    assert len(schema['graph']['edges'])==13
+    assert schema['control']['edges']==[]
+    assert 'loanAmount' in schema['graph']['nodes']['XGAPFinBenchLoan']['properties']
+    assert 'loanUsage' in schema['control']['nodes']['XGAPFinBenchLoan']['properties']
+    assert bindings['type:loan']['value']=='XGAPFinBenchLoan'
+    assert 'loans' in next(e for e in catalog['entries'] if e['candidate_id']=='type:loan')['aliases']

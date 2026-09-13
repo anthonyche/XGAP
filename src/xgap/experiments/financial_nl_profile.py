@@ -75,7 +75,7 @@ def schema_and_catalog(manifest, files):
         bindings[candidate] = {'kind': kind, 'value': value}
         if kind == 'entity': bindings[candidate]['identity_property'] = 'xgap_id'
 
-    plural = {'person': 'people', 'company': 'companies', 'account': 'accounts', 'medium': 'media'}
+    plural = {'person': 'people', 'company': 'companies', 'account': 'accounts', 'medium': 'media', 'loan': 'loans'}
     for e in entities:
         add('type', e.table_id, e.table_id, e.neo4j_label, (plural[e.table_id], e.neo4j_label))
     relation_aliases = {'OWNS_ACCOUNT': ('owns', 'owned by', 'own', 'owned'),

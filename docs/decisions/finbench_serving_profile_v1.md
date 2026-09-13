@@ -59,3 +59,11 @@ extra closing brace (no tests executed); after correction3 tests passed0.36s and
 the catalog test exposed missing required request-constructor fields in the test.
 Only that test was corrected/rerun and passed0.24s. No baseline, native request,
 model, training or old test was rerun. Actual profile publication remains next.
+
+First actual profile attempt at516fbb4 stopped before catalog publication with
+KeyError loan: the reused tiny schema helper lacked the fifth entity's plural
+alias. Source materialization was unchanged. This is our schema-helper defect,
+not a dataset or baseline limitation. The exact failure is retained in
+experiments/artifacts/finbench_serving_first_attempt_20260913.json. A minimal
+all-five-type/thirteen-relation metadata replay passes0.22s after adding loans;
+no prior passing checks repeated. A new output version is the next action.
