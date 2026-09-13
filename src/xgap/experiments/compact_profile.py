@@ -11,11 +11,14 @@ from xgap.llm.compact_interpretation import (CompactInterpretationProviderConfig
 from xgap.semantic.compact_query import compact_schema
 
 
-def load_compact_graph_provider(*, mode='performance', disable_thinking=True):
+def load_compact_graph_provider(*, mode='performance', disable_thinking=True, prompt_version='v1'):
+    if prompt_version not in ('v1', 'v2'):
+        raise ValueError('Unknown compact prompt version')
     policy = OneShotPolicy.for_mode(mode)
-    prompt = (Path(__file__).resolve().parents[3]/'prompts/interpretation/compact_graph_v1.txt').read_text()
+    prompt = (Path(__file__).resolve().parents[3]/('prompts/interpretation/compact_graph_'+prompt_version+'.txt')).read_text()
     output = 6144 if mode == 'precision' else 4096
-    config = CompactInterpretationProviderConfig(provider_id=WIRE_PROFILE+':'+mode+':'+MODEL,
+    suffix = '' if prompt_version == 'v1' else ':prompt-'+prompt_version
+    config = CompactInterpretationProviderConfig(provider_id=WIRE_PROFILE+':'+mode+':'+MODEL+suffix,
         base_url=BASE_URL, api_key_env='XGAP_EXTERNAL_LLM_API_KEY', model=MODEL,
         temperature=0.0, top_p=1.0, max_tokens=output, candidate_cap=policy.candidate_cap,
         timeout_seconds=60, structured_output_mode='json_schema', structured_schema=compact_schema(policy.candidate_cap),
@@ -23,3 +26,40 @@ def load_compact_graph_provider(*, mode='performance', disable_thinking=True):
         extra_parameters={'chat_template_kwargs': {'enable_thinking': False}} if disable_thinking else {})
     return OpenAICompatibleCompactInterpretationProvider(config, prompt,
         OneShotChatRequestGuard(MODEL, output_limit=output), BoundedExternalChatTransport())
+
+
+def derive_compact_prompt_profile(*, parent_path, parent_sha256, output, prompt_version='v2'):
+    """Offline prompt-only child; no data/model/catalog rebuild or question reads."""
+    import hashlib
+    import json
+    from xgap.experiments.one_shot_profile import FrozenOneShotProfile
+    from xgap.experiments.one_shot_records import write_once
+
+    if prompt_version != 'v2':
+        raise ValueError('This explicit revision publishes prompt-v2 only')
+    parent = FrozenOneShotProfile.load(parent_path, expected_sha256=parent_sha256)
+    doc = json.loads(parent.document_json)
+    if any(m['provider']['wire_profile'] != WIRE_PROFILE for m in doc['modes'].values()):
+        raise ValueError('Prompt-only revision requires existing compact modes')
+    if doc['offline'].get('interpretation_revision', {}).get('prompt_version') == prompt_version:
+        raise ValueError('Refuse to republish the same prompt revision')
+    root = Path(output).resolve(); root.mkdir(parents=True, exist_ok=False)
+    prompt = load_compact_graph_provider(prompt_version=prompt_version).system_prompt
+    prompt_path = root/'prompt.txt'
+    with prompt_path.open('x') as f: f.write(prompt)
+    prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()
+    for key in ('catalog', 'estimator'):
+        doc[key]['path'] = str((parent.root/doc[key]['path']).resolve())
+    for mode in doc['modes'].values():
+        provider = mode['provider']
+        provider['provider_id'] += ':prompt-'+prompt_version
+        provider['prompt'] = {'path': str(prompt_path), 'sha256': prompt_hash}
+    doc['profile_id'] += ':prompt-'+prompt_version
+    doc['offline']['interpretation_revision'] = {
+        'parent': {'path': str(Path(parent_path).resolve()), 'sha256': parent_sha256},
+        'prompt_version': prompt_version, 'scope': 'prompt and provider/profile identity only; frozen facts/schema/catalog/model/policy unchanged',
+        'query_reads': 0, 'answer_reads': 0, 'model_calls': 0, 'backend_calls': 0,
+        'catalog_builds': 0, 'fit_calls': 0, 'historical_results_not_replaced': True}
+    pin = write_once(root/'profile.json', doc)
+    FrozenOneShotProfile.load(pin['path'], expected_sha256=pin['sha256'])
+    return pin
