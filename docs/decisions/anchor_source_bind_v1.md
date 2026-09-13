@@ -77,3 +77,16 @@ tiny deployment (Neo4j+Fuseki and two Fuseki instances). It records what ordinar
 estimated selection would choose; it is explicitly not an estimated-choice or
 paper comparison. Then inspect frozen selectivity/driver-size features before
 continuing full NL, which would otherwise select the same source-heavy plan.
+
+The88fe577 native component is accepted: one fanout execution each on the
+existing tiny Neo4j+Fuseki and two-Fuseki deployments returns the same four
+independent rows. Native14 calls/17157B/1210.506ms execution; RDF14 calls/26552B/
+205.167ms execution. These are separate component measurements, not a same-run
+speed comparison or an ordinary estimated choice. All services are terminal.
+
+Post-seal source replay diagnoses one distinct actual anchor key from each
+complete20409-row graph/control property response. The estimator assigns30000
+bind-record units across the three targets; that term contributes11468.808ms
+to the fanout-minus-coordinator prediction. No full question/model call/fit was
+repeated. See equality_key_bounds_next.md for the next tiny, independently
+prepared statistics gate; do not feed this exposed key observation into training.

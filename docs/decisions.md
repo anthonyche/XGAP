@@ -1,3 +1,6 @@
+2026-09-13: [源端候选真实组件通过，估计仍缺选择性](report/anchor_source_bind_20260913.md)。
+下一门是[独立冻结键上界](decisions/equality_key_bounds_next.md)，不是重跑失败大题。
+
 2026-09-13: [One bounded source-anchor fanout](decisions/anchor_source_bind_v1.md)
 adds one complete candidate per placement, maximum1+2J+A with A<=1. Eight
 selected checks pass1.13s. Actual frozen estimates remain available but prefer

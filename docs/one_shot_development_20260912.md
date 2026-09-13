@@ -1,12 +1,11 @@
 # Current one-shot development authority
 
-
-
 ## 2026-09-13 最新执行状态
 
-[本轮报告](report/anchor_and_nl_20260913.md)及[Goal顶部](goal.md)为当前交接。
-真实tiny新规则4行exact；新NL group6两模式仍内存中断，先做tiny源端策略再进入
-未运行group7。保留全部失败，原暂停解除。Native fixed下一20、RDF fixed下一5。
+[源端绑定与排序报告](report/anchor_source_bind_20260913.md)、[Goal顶部](goal.md)及
+[下一键上界门](decisions/equality_key_bounds_next.md)为当前交接。真实tiny两部署各4行
+exact，但冻结模型仍选coordinator；先tiny统计与估计一致性，再未运行NL group7。
+Native fixed下一20、RDF fixed下一5，旧暂停解除，所有新组件服务已终态。
 
 ## 当前执行：共同固定语义入口已验收，先修正 RDF 表示重叠
 

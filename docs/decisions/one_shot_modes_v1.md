@@ -1,5 +1,9 @@
 # One-shot two-mode research prototype — approved contract v1
 
+Current implementation addendum (2026-09-13): [anchor fanout](anchor_source_bind_v1.md)
+adds at most one deterministic candidate per placement, making the bound1+2J+A
+with A<=1. Frozen estimation still selects one final plan; no combination enumeration.
+
 Approved by the user on 2026-09-12. This decision supersedes historical pause,
 mandatory clarification, same-meaning-only joint selection, and online full-plan
 probing priorities **for this new explicit profile**. Existing v1 APIs and frozen

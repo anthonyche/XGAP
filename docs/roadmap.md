@@ -1,28 +1,29 @@
 # XGAP Roadmap
 
+## 当前执行：源端绑定两套真实tiny通过；下一门为冻结键上界与估计一致性
 
+88fe577增加每placement至多1个起点fanout候选，域上界1+2J+A（A<=1），构造前
+检查D倍上界，按冻结预测选一个计划。8项定向检查1.13s通过；小图6行exact，
+三个首边响应24→12行、逻辑交换9410→7286B。原语义/提示/baseline/权重不变。
+[当前报告](report/anchor_source_bind_20260913.md)。
 
-## 当前执行：tiny起点预筛选通过；真实新NL仍内存中断，下一门为源端策略
+只在组件门预先指定新候选：tiny Neo4j/Fuseki及双Fuseki各1次执行，均4行非空
+exact，各14源请求，响应17157/26552B，执行1210.506/205.167ms。两套服务全部终态。
+这不是普通估计选择或跨部署提速证据；模型/fit/load/catalog/baseline调用0。
 
-[本轮报告与逐题证据](report/anchor_and_nl_20260913.md)。0f62658的精确去重键＋连接
-预筛选保持原语义和冻结权重，真实tiny Neo4j/Fuseki四行非空exact：8候选选1计划、
-14源调用/18,606B/1.720s，零模型/fit/重装；5项定向检查0.87s。第一次tiny因未知
-估计器类别失败，已保留；通过的是修复后已有算子组合，没有绕过未知类别保护。
+实际冻结模型仍选coordinator。保存group6程序预测834.612ms coordinator vs
+12842.692ms fanout；三次bind共30000 record单位贡献+11468.808预测ms。旧封存
+属性响应各20409行，但两源合计1个不同起点键。没有新源查询、模型调用、训练或
+重评分；不能把这个曝光后的1直接写进参数。[下一tiny门](decisions/equality_key_bounds_next.md)：
+独立完整事实生成冻结source/snapshot/label/property的等值字符串键重复度上界，
+可选metadata收紧实际绑定数量限额，使预测和执行一致。缺统计保留原界；不从字段名
+假设唯一，不绕过快照/估计检查，不重训权重或强制赢家。该门前不继续大题。
 
-修复后仅继续未运行NL group6：四方法失败全保留，XGAP两模式仍超过2GiB观察阈值。
-各14源调用/325,110,752B，保存源请求均未绑定；coordinator预筛选不足以解决真实
-资源瓶颈。FedX共同预算截断、FedUP HTTP500，不能宣称baseline本身答错或总体提速。
-groups3–6本轮共16模型调用/48,892输入/8,197输出token；所有EM0、曝光、版本边界保留。
-完整compact-v2 native/RDF已关联冻结stores/summary/旧12结果；没有新catalog/load/fit。
-
-下一步先tiny验证有界源端锚点绑定与冻结估计器一致性，保存日志检查结果保留开销，
-明确Ptime候选边界后执行一个计划；不要直接继续大题或重跑groups0–6。NL下一group7，
-journal为finbench-rdf-nl-campaign-20260913-contribution-v2；Native fixed下一20、
-RDF fixed下一5、native NL未启动。120=24/48/48、33空15非空、baseline原配置不变。
-FedShop已知固定HEAD，但源码获取网络失败，未生成/运行；本轮不重复下载。
-所有句柄/自有服务已终态（32599失败、62931与78165完成；41698已封存下载失败）。
-可用磁盘最后14.26GB，守6GiB reserve。Sep14 17:00核心/接口、Sep18论文结果不变。
-Goal active，旧暂停解除，3804210由用户更新。完整NL/scale/最终18图仍未完成。
+本轮正式新问题0；NL下一group7，journal finbench-rdf-nl-campaign-20260913-contribution-v2；
+Native fixed下一20、RDF fixed下一5、native NL未启动。旧groups0–6失败/曝光/版本
+不变，120=24/48/48和33空15非空保持。FedShop不重复旧失败下载；3804210由用户更新。
+所有句柄已终态（41722/7063/46323/97549 exit0），无活跃等待。保持6GiB磁盘reserve。
+Sep14 17:00核心/接口、Sep18论文结果不变；Goal active，旧暂停解除，整体尚未完成。
 
 以下为前序记录，执行状态以上方为准。
 
