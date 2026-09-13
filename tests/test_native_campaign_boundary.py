@@ -112,3 +112,22 @@ def test_native_controller_uses_no_rdf_summary_or_host(tmp_path,monkeypatch):
         assert ctl.hosts.owned_for('xgap-performance')==['native-owned-groups']
         with pytest.raises(ValueError,match='Unknown native'):ctl.hosts.owned_for('fedx')
     finally:ctl.close_session('fixture-complete')
+
+
+def test_saved_native_startup_failure_relocates_pinned_prompts_before_services(tmp_path,monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]/'scripts'))
+    from native_store_session import resolve_profile_inputs
+    from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned
+    failure=Path('/Users/anthonyche/xgap-data/native-campaign-boundary-20260913-v1/receipt.json')
+    saved=json.loads(read_pinned(failure,'c13fab3df86be70c40643c77f3b95a31a30a87fa1003759296b1de497beb148b'))
+    assert 'session/performance.txt' in saved['error'] and saved['closure']['owned_groups_drained']
+    p=Path('/Users/anthonyche/xgap-data/financial-nl-native-20260912-compact-v1/profile/profile.json')
+    doc=json.loads(read_pinned(p,'1b9af9d4e60e3428e8f5ac235bb5aab8237da1b329e91510a5992171deb78bd8'))
+    hashes={m:v['provider']['prompt']['sha256'] for m,v in doc['modes'].items()}
+    resolve_profile_inputs(doc,p.parent)
+    new=write_once(tmp_path/'profile.json',doc)
+    FrozenOneShotProfile.load(new['path'],expected_sha256=new['sha256'])
+    assert all(Path(v['provider']['prompt']['path']).is_absolute() and v['provider']['prompt']['sha256']==hashes[m]
+               for m,v in doc['modes'].items())
+    doc['modes']['precision']['provider']['prompt']['sha256']='0'*64
+    with pytest.raises(ValueError):resolve_profile_inputs(doc,p.parent)

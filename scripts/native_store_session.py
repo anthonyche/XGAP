@@ -15,6 +15,16 @@ from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.owned_resources import OwnedProcess
 
 
+def resolve_profile_inputs(doc,origin):
+    """Relocate references, never prompt contents or their frozen checksums."""
+    for key in ('estimator','catalog'):
+        doc[key]['path']=str((Path(origin)/doc[key]['path']).resolve())
+    for mode in doc['modes'].values():
+        prompt=mode['provider']['prompt']
+        prompt['path']=str((Path(origin)/prompt['path']).resolve())
+        read_pinned(prompt['path'],prompt['sha256'])
+
+
 class NativeStoreSession(RdfTdbSession):
     serving_copy_paths=('neo4j/data','neo4j/transactions','control-tdb2')
 
@@ -25,6 +35,7 @@ class NativeStoreSession(RdfTdbSession):
                 raise ValueError('Native session requires native prepared stores')
             parent=self.prepared['profile'];base=Path(parent['path'])
             doc=json.loads(read_pinned(base,parent['sha256']))
+            resolve_profile_inputs(doc,base.parent)
             build=json.loads(read_pinned(self.input_pin['path'],self.input_pin['sha256']))
             if build['profile']!=parent or set(self.prepared['stores'])!={'neo4j','control'}:
                 raise ValueError('Native preparation/profile identity mismatch')
@@ -75,7 +86,6 @@ class NativeStoreSession(RdfTdbSession):
             self.observer=CampaignSourceObserver(routes,self.root/'source-observations',budget=self.budget)
             for spec in doc['backends'].values():
                 spec['client'].update(url=self.observer.base_url,timeout_seconds=self.budget.timeout_seconds)
-            for key in ('estimator','catalog'):doc[key]['path']=str((base.parent/doc[key]['path']).resolve())
             doc['offline'].update(serving_endpoint_parent=parent,prepared_stores=self.prepared_pin)
             self.profile=write_once(self.root/'profile.json',doc)
             FrozenOneShotProfile.load(self.profile['path'],expected_sha256=self.profile['sha256'])

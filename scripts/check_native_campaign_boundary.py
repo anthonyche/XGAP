@@ -6,7 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-from native_store_session import NativeStoreSession
+from native_store_session import NativeStoreSession, resolve_profile_inputs
 from prepare_rdf_tdb import REPO, stream_pin
 from xgap.experiments.campaign_source_observer import SourceObservationBudget
 from xgap.experiments.common_method_trial import run_fixed_trial
@@ -47,7 +47,7 @@ def main(output):
             p=stream_pin(PROFILE.parent/name)
             if (p['sha256'],p['bytes'])!=(pin['sha256'],pin['bytes']):raise ValueError('Tiny profile/load facts differ')
             loads[name]={'path':name,'sha256':p['sha256'],'size_bytes':p['bytes']}
-        for key in ('catalog','estimator'):doc[key]['path']=str((PROFILE.parent/doc[key]['path']).resolve())
+        resolve_profile_inputs(doc,PROFILE.parent)
         doc['offline'].update(materialization_root=str(PROFILE.parent),load_files=loads,
             serving_profile_parent={'path':str(PROFILE),'sha256':PROFILE_SHA},no_data_reloaded=True)
         profile=write_once(root/'profile.json',doc)
