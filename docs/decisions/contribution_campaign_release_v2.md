@@ -35,3 +35,12 @@ EM/F1, complete online time and stage failure is Y. No quality or speedup assume
 Two new lineage checks first pass in0.23s: all prior failed outcomes survive and
 only the next group dispatches; budget drift/nonprefix history fail before creating
 a new journal. No external calls or unchanged earlier gate repetitions.
+
+Offline release3c3bb00 completed: native/RDF children, original prepared-store/summary
+associations and12 inherited outcomes. Receiptca597da9; zero model/backend/load/fit.
+Scheduled groups3–4 now terminal: eight model calls,24300 input/4154 output tokens
+reconciled from pinned core/common receipts. Four XGAP return-handoff failures,
+two FedUP500, two FedX response-budget censored; all EM0 retained. Source/engine/
+summary seals were verified by actual sessions and all groups stopped. The full
+trace16MiB read boundary and lost counters are an XGAP harness defect; see
+[nl_outcome_handoff_v1.md](nl_outcome_handoff_v1.md), not a baseline/LLM repair.

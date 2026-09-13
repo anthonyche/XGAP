@@ -1,3 +1,8 @@
+2026-09-13: [NL outcome handoff](decisions/nl_outcome_handoff_v1.md) separates
+small answer/metrics from full traces without increasing input limits. Three new
+checks pass0.34s. Prior real groups3–4 remain EM0, and their actual8 model calls
+are reconciled from pinned child receipts; next unrun group5 is the live gate.
+
 2026-09-13: [Contribution campaign release](decisions/contribution_campaign_release_v2.md)
 freezes the next two NL groups and complete prior-outcome lineage. Two focused
 checks pass0.23s; offline publication and first real serving association pending.

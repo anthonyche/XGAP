@@ -19,6 +19,7 @@ from xgap.semantic.interpretation_replay import ReplayInterpretationProvider
 
 RUN_SCHEMA = "xgap-one-shot-evaluation-record-v1"
 REPLAY_SCHEMA = "xgap-one-shot-complete-replay-v1"
+OUTCOME_SCHEMA = "xgap-one-shot-outcome-v1"
 
 
 def write_once(path, value):
@@ -30,6 +31,28 @@ def write_once(path, value):
 
 def _canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def write_record_outcome(root, core, trace):
+    """Answer/metrics handoff only; keep the full trace as a separate pinned file."""
+    return write_once(Path(root)/'outcome.json', {'schema_version':OUTCOME_SCHEMA,'trace':trace,
+        'success':core['success'],'status':core['status'],'answer_rows':core.get('answer_rows',[]),
+        'planning_ms':core.get('planning_ms'),'execution_ms':core.get('execution_ms'),
+        'interpretation_ms':(core.get('interpretation') or {}).get('elapsed_ms'),
+        'grounding_ms':core.get('grounding_ms')})
+
+
+def read_record_outcome(receipt):
+    if 'outcome' in receipt:
+        pin=receipt['outcome']
+        if pin is None:return None  # A new producer did not seal an outcome.
+        result=json.loads(read_pinned(pin['path'],pin['sha256']))
+        if result.get('schema_version')!=OUTCOME_SCHEMA or result.get('trace')!=receipt.get('result'):
+            raise ValueError('Outcome/trace identity mismatch')
+        return result
+    # Explicit legacy compatibility; never relabel old large-trace failures.
+    pin=receipt.get('result')
+    return json.loads(read_pinned(pin['path'],pin['sha256'])) if pin else None
 
 
 class BackendReplay:
@@ -105,7 +128,7 @@ def run_record(*, profile_path, profile_sha256, request_path, request_sha256, mo
         "success":False,"status":"preparing","mode":mode,"profile_sha256":profile_sha256,
         "request_sha256":request_sha256,"model_network_calls":0,"backend_network_calls":0,
         "training_calls":0,"fit_calls":0,"current_query_probe_calls":0,"automatic_retries":0,
-        "final_plan_executions":0,"input_tokens":0,"output_tokens":0,"result":None,
+        "final_plan_executions":0,"input_tokens":0,"output_tokens":0,"result":None,"outcome":None,
         "paper_result":False,"backend_snapshot_verified_by_runner":False}
     phase, captured, core, replay_clients = "preflight", [], None, {}
     try:
@@ -168,6 +191,7 @@ def run_record(*, profile_path, profile_sha256, request_path, request_sha256, mo
             execution_ms=core["execution_ms"], current_query_probe_calls=core["observation_calls"],
             replay_backend_invocations=len(captured) if operation=="replay" else 0)
         receipt["result"] = write_once(root/"result.json", core)
+        receipt["outcome"] = write_record_outcome(root,core,receipt['result'])
         phase = "post_seal"
         if operation == "replay":
             provider.assert_consumed()
@@ -185,7 +209,7 @@ def run_record(*, profile_path, profile_sha256, request_path, request_sha256, mo
                 input_tokens=None,output_tokens=None,final_plan_executions=None)
     finally:
         receipt["wrapper_elapsed_ms_before_receipt"] = (time.perf_counter()-started)*1000
-        receipt["cost_boundary"] = "profile/request reads, intent and core/result persistence included; receipt write and evaluation separate"
+        receipt["cost_boundary"] = "profile/request reads, intent, full trace and outcome persistence included; receipt write and evaluation separate"
         write_once(root/"receipt.json", receipt)
     return receipt
 
@@ -195,8 +219,7 @@ def evaluate_record(receipt_path, *, receipt_sha256, reference_path, reference_s
     receipt = json.loads(read_pinned(receipt_path, receipt_sha256))
     if receipt.get("schema_version") != RUN_SCHEMA or receipt.get("operation") == "preflight":
         raise ValueError("An execution/replay terminal receipt is required")
-    result = receipt.get("result")
-    core = json.loads(read_pinned(result["path"], result["sha256"])) if result else None
+    core = read_record_outcome(receipt)
     reference = json.loads(read_pinned(reference_path, reference_sha256))
     if (reference.get("schema_version") != "xgap-normalized-row-reference-v1"
             or reference.get("question_id") != receipt.get("question_id")

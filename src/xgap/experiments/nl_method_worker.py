@@ -6,7 +6,7 @@ import time
 from xgap.agent.shared_external_frontend import prepare_external_query
 from xgap.experiments.external_federation import query_once
 from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned
-from xgap.experiments.one_shot_records import run_record, write_once
+from xgap.experiments.one_shot_records import run_record, write_once, read_record_outcome
 from xgap.experiments.one_shot_toy import _DurableRecordingProvider
 
 SCHEMA='xgap-nl-method-worker-v1'
@@ -29,12 +29,15 @@ def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,outp
             child=run_record(profile_path=profile_path,profile_sha256=profile_sha256,request_path=request_path,
                 request_sha256=request_sha256,mode=method.removeprefix('xgap-'),output=root/'core',operation='execute')
             active=False
-            core=json.loads(read_pinned(child['result']['path'],child['result']['sha256'])) if child['result'] else {}
+            # Usage is already observed even if the subsequent answer handoff fails.
             r.update(dataset=child.get('dataset'),success=child['success'],status=child['status'],
                 model_calls=child['model_network_calls'],input_tokens=child['input_tokens'],output_tokens=child['output_tokens'],
                 top_level_attempts=child['final_plan_executions'],backend_calls=child['backend_network_calls'],
-                planning_ms=core.get('planning_ms'),execution_ms=core.get('execution_ms'),
-                interpretation_ms=(core.get('interpretation') or {}).get('elapsed_ms'),grounding_ms=core.get('grounding_ms'))
+                planning_ms=child.get('planning_ms'),execution_ms=child.get('execution_ms'))
+            core=read_record_outcome(child) or {}
+            r.update(planning_ms=core.get('planning_ms',r['planning_ms']),execution_ms=core.get('execution_ms',r['execution_ms']),
+                interpretation_ms=core.get('interpretation_ms',(core.get('interpretation') or {}).get('elapsed_ms')),
+                grounding_ms=core.get('grounding_ms'))
             answer={'answer_format':'json_rows','answer':core.get('answer_rows') if child['success'] else None}
         else:
             profile=FrozenOneShotProfile.load(profile_path,expected_sha256=profile_sha256)
