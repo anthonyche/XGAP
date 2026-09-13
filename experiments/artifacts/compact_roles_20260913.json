@@ -1,0 +1,78 @@
+{
+  "development_only": true,
+  "full_profile_publication": {
+    "bytes": 1061,
+    "path": "/Users/anthonyche/xgap-data/finbench-compact-roles-v2-20260913/receipt.json",
+    "sha256": "8d48ce4e4a87087050d8c3b5d142fba3168e23b3f919b60677e14a5939f0d2ec"
+  },
+  "gate": {
+    "bytes": 3831,
+    "path": "/Users/anthonyche/xgap-data/compact-roles-native-20260913-v2/receipt.json",
+    "sha256": "fa2a669525c135fa006c09925d2be83f81a909ac6205d3465c59420082309af4"
+  },
+  "held_out_quality_proven": false,
+  "implementation": "4509c15",
+  "new_tests": {
+    "first_attempt": true,
+    "passed": 3,
+    "seconds": 0.35,
+    "unique_checks": 3
+  },
+  "no_old_eval_redispatch": true,
+  "prompt": {
+    "bytes": 4551,
+    "path": "/Users/anthonyche/Developer/XGAP/prompts/interpretation/compact_graph_v2.txt",
+    "sha256": "41820fd6da128f43ad8727e1ddf3bf0484afca1c190bfc66de1fe28995c1d7f8"
+  },
+  "rows": [
+    {
+      "answer_em": 1.0,
+      "final_plan_attempts": 1,
+      "grounding_lookups": 1,
+      "input_tokens": 2102,
+      "mode": "precision",
+      "model_calls": 1,
+      "online_ms": 2340.9465420991182,
+      "output_tokens": 180,
+      "planning_ms": 33.10158383101225,
+      "question_id": "ROLE-NAME-01",
+      "role_contract_match": true,
+      "source_bytes": 2167,
+      "source_calls": 3,
+      "status": "answered"
+    },
+    {
+      "answer_em": 1.0,
+      "final_plan_attempts": 1,
+      "grounding_lookups": 0,
+      "input_tokens": 2202,
+      "mode": "performance",
+      "model_calls": 1,
+      "online_ms": 3523.8386252894998,
+      "output_tokens": 548,
+      "planning_ms": 89.37883283942938,
+      "question_id": "ROLE-ID-01",
+      "role_contract_match": true,
+      "source_bytes": 7953,
+      "source_calls": 10,
+      "status": "answered"
+    },
+    {
+      "answer_em": 1.0,
+      "final_plan_attempts": 1,
+      "grounding_lookups": 0,
+      "input_tokens": 2100,
+      "mode": "precision",
+      "model_calls": 1,
+      "online_ms": 1451.0967498645186,
+      "output_tokens": 167,
+      "planning_ms": 32.902917824685574,
+      "question_id": "ROLE-VARIABLE-01",
+      "role_contract_match": true,
+      "source_bytes": 2648,
+      "source_calls": 3,
+      "status": "answered"
+    }
+  ],
+  "schema_version": "xgap-compact-roles-acceptance-v2"
+}
