@@ -1,5 +1,9 @@
 # Financial binding profile: edge Match and explicit time comparison
 
+The timestamp lexical boundary below is superseded by
+[calendar millisecond v2](financial_timestamp_v2.md): zero to three fractional
+digits, padded only for comparisons. Historical v1 artifacts/scores stay intact.
+
 2026-09-12. Necessary XGAP core work for the approved FinBench research track.
 RQ: can the ordinary bounded program preserve financial edge multiplicity and
 time constraints while estimated planning selects one executable strategy?

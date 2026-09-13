@@ -1,5 +1,9 @@
 # Operator Semantics
 
+`timestamp_ms` now compares equivalent local-calendar millisecond forms with zero
+to three fractional digits, while invalid calendar/timezone/submillisecond values
+remain false. See [the bounded v2 contract](decisions/financial_timestamp_v2.md).
+
 Semantic edge Match now composes Selection(Edges(G)) with binding projection; it does not add
 an algebra operator. Explicit row field/time comparisons, finite literals and no-limit ordering
 are specified in [financial binding semantics](decisions/financial_binding_semantics_v1.md).

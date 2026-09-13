@@ -2,14 +2,13 @@
 
 import json
 import math
-import re
-from datetime import datetime
 from numbers import Real
 from decimal import Decimal, InvalidOperation
 
 from xgap.backends.rdf_terms import RdfTerm, XSD_STRING
 from xgap.compilers.rdf_encoding import RdfRowEncoding
 from xgap.runtime.scalars import numeric, value_key, distinct_rows as _typed_distinct
+from xgap.semantic.calendar_time import canonical_timestamp_ms
 
 
 def distinct_rows(rows, *, preserve_order=False):
@@ -50,13 +49,7 @@ def condition_fields(condition):
 
 
 def _timestamp(value):
-    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}", value):
-        return None
-    try:
-        datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
-    except ValueError:
-        return None
-    return value
+    return canonical_timestamp_ms(value)
 
 
 def _matches(row, c):

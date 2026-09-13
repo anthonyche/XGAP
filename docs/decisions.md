@@ -1,5 +1,14 @@
 ## 首批真实结果及回收修正 — 2026-09-13
 
+2026-09-13: [Millisecond lexical compatibility](decisions/financial_timestamp_v2.md)
+fixes omitted fractional zeros in coordinator and shared-NL predicates. Four new
+checks, including saved failure and a tiny estimated slice, pass in 1.32s; the
+single live Fuseki predicate boundary is pending. Historical group10 EM0/F1.8 stays.
+
+2026-09-13: [Native identity projection](decisions/native_identity_projection_v1.md)
+is accepted in 626bb84; matched tiny payload drops 13,800→4,907 bytes with the same
+five calls and answer. No timing speedup claim; new full groups8–11 remain separate.
+
 2026-09-13: [Native campaign boundary](decisions/native_campaign_boundary_v1.md) connects frozen native copies to the common worker/observer/score, preserves fixed population and leaves baseline methods on RDF. Six new checks and the real tiny boundary are accepted; see the first-eight report for retained memory-censored results.
 
 2026-09-13: [Native frozen store preparation](decisions/native_store_preparation_v1.md) adds offline load/close/seal only; native serving/campaign remains a separate boundary. No method semantics or baseline change.

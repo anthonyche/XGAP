@@ -14,6 +14,7 @@ from xgap.infrastructure.runtime import QueryArtifact
 from xgap.runtime.contracts import RuntimeNodeKind as R
 from xgap.runtime.semantic_compiler import SemanticBackend, compile_semantic_program
 from xgap.semantic.parameter_contract import validate_program_parameters
+from xgap.semantic.calendar_time import MILLISECOND_PATTERN
 from xgap.semantic.program import SemanticOperatorKind as S
 
 PROFILE='xgap-global-semantic-sparql-v1'
@@ -49,8 +50,10 @@ def condition(c,fields):
     right=fields[c['right_field']] if 'right_field' in c else literal(c['value'])
     symbol={'eq':'=','ne':'!=','lt':'<','le':'<=','gt':'>','ge':'>='}[op]
     if c.get('value_type')=='timestamp_ms':
-        pattern='"^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{3}$"'
-        checks=' && '.join(f'(DATATYPE({v})=<{XSD}string> && REGEX(STR({v}),{pattern}))' for v in (left,right))
+        pattern=literal(MILLISECOND_PATTERN)
+        checks=' && '.join(f'(DATATYPE({v})=<{XSD}string> && STRLEN(STR({v}))>=19 && '
+            f'STRLEN(STR({v}))<=23 && SUBSTR(STR({v}),1,4)!="0000" && REGEX(STR({v}),{pattern}))'
+            for v in (left,right))
         values=[f'<{XSD}dateTime>(REPLACE(STR({v})," ","T"))' for v in (left,right)]
         expr=checks+' && ('+values[0]+' '+symbol+' '+values[1]+')'
     elif op in ('eq','ne'):
