@@ -102,3 +102,20 @@ schedule/source/summary pins, all prior intents and outcomes. It is append-only;
 future dispatch skips the three original cells. Disclose epochs and do not silently
 pool their timing. This is an integration correction, not a new workload, altered
 baseline or retry to replace the first result.
+
+The next four-group chunk sealed8new outcomes and halted before a9th cell when
+retirement failed again. Its stack now identifies the legacy tiny
+`Processes.stop` blind killpg call. The affected Java leader was verified zombie
+with matching creation identity; other owned services were absent. The completed
+controller still waited on its observer thread, so its exact PID/creation/cmdline
+was checked and only that controller was sent SIGTERM; the exec handle then
+confirmed exit143. No query was restarted and the next cell remained unrun.
+
+Campaign closure now drains each owned group using the guarded primitive instead
+of the legacy helper, reaps leaders, closes the observer, then discards only new
+serving copies. A PermissionError between scan and signal is resolved only by a
+new read proving no live group members; genuine live permission denial still
+propagates. Two new race checks pass0.35s; a new owned-child/copy-retention check
+separately verifies the campaign close path. This adds another disclosed harness
+epoch; none of the first14cell intents may be redispatched. Resume first at the
+previously unrun FedX cell in group4, retaining all first outcomes and code epochs.

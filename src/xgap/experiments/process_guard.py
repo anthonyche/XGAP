@@ -62,7 +62,7 @@ def _group_sample(pgid):
 
 def _stop_group(process, budget):
     """Only the fresh session created below; handle descendants after leader exit."""
-    signals=[]; started=time.monotonic()
+    signals=[]; started=time.monotonic();resolved_permission_races=0
     for sig,seconds in [(signal.SIGTERM,budget.terminate_grace_seconds),(signal.SIGKILL,2.0)]:
         if not _group_sample(process.pid):
             break
@@ -70,6 +70,11 @@ def _stop_group(process, budget):
             os.killpg(process.pid,sig);signals.append(signal.Signals(sig).name)
         except ProcessLookupError:
             break
+        except PermissionError:
+            # Darwin can reject killpg when the last live member exits between
+            # the scan and signal. A live/inaccessible group is never ignored.
+            if _group_sample(process.pid):raise
+            resolved_permission_races+=1;break
         end=time.monotonic()+seconds
         while time.monotonic()<end:
             process.poll()
@@ -78,7 +83,7 @@ def _stop_group(process, budget):
             time.sleep(min(.02,max(0,end-time.monotonic())))
     process.poll()
     live=_group_sample(process.pid)
-    return {'signals':signals,'live_pids':[p['pid'] for p in live],
+    return {'signals':signals,'live_pids':[p['pid'] for p in live],'resolved_permission_races':resolved_permission_races,
         'elapsed_ms':(time.monotonic()-started)*1000,'complete':not live}
 
 

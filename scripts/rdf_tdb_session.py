@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 import shutil
 import time
+import subprocess
+import psutil
 
 from prepare_rdf_tdb import stream_pin
 from run_external_federation_tiny import Processes, ready
@@ -11,7 +13,7 @@ from xgap.experiments.m15_native_services import LoopbackPortReservations, _fuse
 from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.owned_resources import OwnedProcess
-from xgap.experiments.process_guard import _group_sample
+from xgap.experiments.process_guard import _group_sample, _stop_group, ProcessBudget
 
 
 class RdfTdbSession:
@@ -72,12 +74,29 @@ class RdfTdbSession:
             self.close();raise
 
     def close(self):
-        rows=self.processes.close()
-        if self.observer:self.observer.close()
+        rows=[]
+        # Unlike the legacy tiny Processes.close, inspect/drain the group before
+        # sending a signal; materialized-return cleanup may already have stopped it.
+        for name,process in reversed(self.processes.owned):
+            try:
+                cleanup=_stop_group(process,ProcessBudget())
+                if cleanup['complete'] and process.poll() is None:
+                    try:process.wait(timeout=2)
+                    except subprocess.TimeoutExpired:pass
+                try:state=psutil.Process(process.pid).status() if process.poll() is None else 'reaped'
+                except psutil.NoSuchProcess:state='absent'
+                rows.append({'name':name,'pid':process.pid,'returncode':process.poll(),'leader_state':state,
+                    'terminal':process.poll() is not None or state in ('absent',psutil.STATUS_ZOMBIE),'cleanup':cleanup})
+            except Exception as error:
+                rows.append({'name':name,'pid':process.pid,'returncode':process.poll(),'terminal':False,
+                    'cleanup':{'complete':False,'error_type':type(error).__name__,'error':str(error)}})
+        drained=all(row['cleanup']['complete'] for row in rows)
+        if self.observer and drained:self.observer.close()
+        for log in self.processes.logs:log.close()
         if self.ports:self.ports.close()
-        result={'processes':rows,'owned_processes_terminal':all(r['returncode'] is not None for r in rows),
+        result={'processes':rows,'owned_processes_terminal':all(r['terminal'] for r in rows),
             'observer_stopped':self.observer is None or (not self.observer.thread.is_alive() and not self.observer.inflight)}
-        result['owned_groups_drained']=not any(_group_sample(row['pid']) for row in rows)
+        result['owned_groups_drained']=drained and not any(_group_sample(row['pid']) for row in rows)
         if self.discard_serving_copies and result['owned_groups_drained'] and result['observer_stopped']:
             removed=[]
             for relative in ('graph-tdb2','control-tdb2','fedup-host/serving-summary'):
