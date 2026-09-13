@@ -1,5 +1,7 @@
 ## 首批真实结果及回收修正 — 2026-09-13
 
+2026-09-13: [Native frozen store preparation](decisions/native_store_preparation_v1.md) adds offline load/close/seal only; native serving/campaign remains a separate boundary. No method semantics or baseline change.
+
 [5组结果](report/finbench_rdf_first_five_20260913.md)已记录；当前XGAP更慢，全部已处理gold为空，不能外推质量。
 [harness修正规则](decisions/fedup_campaign_host_v1.md)记录连接复用和退出竞态；题目/作者算法/原始结果不变，不重跑旧intent。
 
