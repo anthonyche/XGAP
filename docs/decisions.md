@@ -1,3 +1,8 @@
+## 磁盘服务与平衡调度 — 2026-09-13
+
+[冻结契约](decisions/rdf_campaign_serving_v1.md)与[真实离线/新边界证据](report/rdf_campaign_preparation_20260913.md)已归档。
+完整RDF已装载，方法评价尚未发车；不改样本、baseline或历史失败。
+
 ## 正式每题观测契约 — 2026-09-13
 
 [预算与封存规则](decisions/campaign_observation_v1.md)已实现并完成10项新风险检查。

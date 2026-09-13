@@ -1,16 +1,20 @@
 # XGAP Status
 
-## 当前执行：正式每题预算和失败封存已接通
+## 当前执行：完整 RDF 磁盘已准备，平衡调度已冻结
 
-新增campaign observer与共同runner收尾，10项不同新风险检查通过；只回放1项路径
-错误及2项新增风险，没有重跑旧成功门禁或调用模型/数据库/baseline。每题独立限额、
-流式响应、稳定URL、跨题唯一编号、终态封存后释放内存；异常禁止会话复用。
-旧FedX的5次源调用拒绝已离线识别为harness_budget_censored，原记录与分母不变。
-[本轮证据与限制](report/campaign_observation_20260913.md)。
+9996bf2完成正式每题观测与失败分类，10项新检查通过；旧FedX5次请求被拒绝的
+证据已离线归类harness_budget_censored，没有重跑该题。24abd5a完成磁盘服务
+会话，tiny两个源各一次HTTP COUNT得到211/36，服务均退出，无NL/planner旧门禁重跑。
+完整SF0.1 RDF一次装载/索引/校验20.216秒，3,496,341 triples、存储约1.026GB，
+原文件不变；无完整数据查询、模型、baseline、catalog重建或fit。
+[本轮数据与边界](report/rdf_campaign_preparation_20260913.md)。
 
-下一步把已冻结SF0.1 RDF装入磁盘存储，按共同预算接上平衡调度和新评价单元。
-不重建catalog/模型，不重新运行被截断的开发题。真实服务与正式campaign尚未完成；
-Sep14 17:00核心/接口、Sep18真实结果目标保持，Goal active。
+6b76737完成平衡顺序和不重复发车日志，两项新检查一次通过。原48评价问题冻结为
+192个NL cell、432个固定语义cell；全部尚未发车。下一步FedUP作者summary、方法
+host/会话恢复、总磁盘/时间/模型预算接线，再执行真实评价。已有普通NL双RDF
+one-shot成功继续接受，不重跑。正式campaign_ready=false，FinBench native与后续
+FedShop等义务保留；Sep14 17:00核心/接口、Sep18真实结果目标不变，Goal active。
+用户9月13日13:32已恢复，旧暂停解除，仍按小时推进并仅通知实质变化。
 
 
 ## 当前执行：普通 NL 双 RDF 成功，共享外部 NL 接通并保留预算截断

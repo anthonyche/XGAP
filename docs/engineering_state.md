@@ -1,23 +1,21 @@
 # XGAP current engineering loop
 
-## 当前执行：共同固定语义入口已验收，先修正 RDF 表示重叠
+## 当前执行：完整 RDF 磁盘已准备，平衡调度已冻结
 
-用户已于9月13日13:32提前恢复工程和实验，旧暂停解除，heartbeat按小时推进。
-1db4c3a接通schema-only源分配、共同结果评分、完整外层计时、worker+方法host/数据库
-资源观察和失败后自有进程组清理。6项新风险检查通过；一次tiny共同入口三方法各
-执行一次，XGAP金额66/9 exact，FedX金额8448/1152（128倍），FedUP聚合HTTP500。
-共171次源请求；零模型/fit/probe/retry/算法修改；服务全部已停。
-[完整结果与边界](report/common_rdf_trial_20260913.md)。
+9996bf2完成正式每题观测与失败分类，10项新检查通过；旧FedX5次请求被拒绝的
+证据已离线归类harness_budget_censored，没有重跑该题。24abd5a完成磁盘服务
+会话，tiny两个源各一次HTTP COUNT得到211/36，服务均退出，无NL/planner旧门禁重跑。
+完整SF0.1 RDF一次装载/索引/校验20.216秒，3,496,341 triples、存储约1.026GB，
+原文件不变；无完整数据查询、模型、baseline、catalog重建或fit。
+[本轮数据与边界](report/rdf_campaign_preparation_20260913.md)。
 
-发现我们两源RDF表示有24条重复身份/类型事实；本地集合并集诊断返回66/9，
-与FedX的重复匹配放大有明确语义混淆。不能把这个问题当作XGAP planner优势。
-下一步版本化共同规范事实，使其跨源互斥，并保留本地元数据映射；只修正我们的
-共同输入，不修改baseline算法/答案，不按方法结果挑样本，旧表示与原结果保留。
-随后完成共享NL前端→外部全局查询编译，以及完整服务装载/平衡campaign控制。
-固定语义不是NL E2E；当前外部共享NL接线尚未实现，不能宣称系统评价已完整就绪。
+6b76737完成平衡顺序和不重复发车日志，两项新检查一次通过。原48评价问题冻结为
+192个NL cell、432个固定语义cell；全部尚未发车。下一步FedUP作者summary、方法
+host/会话恢复、总磁盘/时间/模型预算接线，再执行真实评价。已有普通NL双RDF
+one-shot成功继续接受，不重跑。正式campaign_ready=false，FinBench native与后续
+FedShop等义务保留；Sep14 17:00核心/接口、Sep18真实结果目标不变，Goal active。
+用户9月13日13:32已恢复，旧暂停解除，仍按小时推进并仅通知实质变化。
 
-开发继续tiny/failure replay，不重跑旧成功门禁、不重训时间回归。120组与评价33空/
-15非空冻结，campaign_ready=false。Sep14 17:00核心/接口和Sep18真实实验目标保持。
 
 ## 以下为历史交接，以当前执行为准
 

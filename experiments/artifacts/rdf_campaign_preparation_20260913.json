@@ -1,0 +1,55 @@
+{
+  "schema_version": "xgap-rdf-campaign-preparation-audit-v1",
+  "success": true,
+  "tdb_tiny_serving": {
+    "path": "/Users/anthonyche/xgap-data/rdf-tdb-serving-tiny-20260913-v1/receipt.json",
+    "sha256": "f256baee1cbaf82a712ba59c4491eeefc540b5560f32b7194f5f76ce74e295a6",
+    "bytes": 726
+  },
+  "full_offline_loading": {
+    "path": "/Users/anthonyche/xgap-data/finbench-sf01-rdf-tdb-20260913-v1/receipt.json",
+    "sha256": "43a6696ca010b259ffb7cc4e7a4934307bbba9e4ecca6734cb969c56c76aefb3",
+    "bytes": 4094
+  },
+  "full_offline_ms": 20215.600333176553,
+  "full_triples_from_native_loader": {
+    "graph": 3158311,
+    "control": 338030
+  },
+  "stores_bytes": {
+    "control": 236139840,
+    "graph": 789938150
+  },
+  "sources_unchanged": true,
+  "schedules": [
+    {
+      "path": "/Users/anthonyche/xgap-data/finbench-balanced-schedules-20260913-v1/natural_language.json",
+      "sha256": "238544fcd3ca598147f2ea5d5e0bc73dda180bded52b6fd92205264277496cd9",
+      "bytes": 137130
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/finbench-balanced-schedules-20260913-v1/fixed_semantics.json",
+      "sha256": "cae166901bd3dfe25ac4906cb2dd58ecbeea02eae10f75b0d1158a320720f066",
+      "bytes": 405055
+    }
+  ],
+  "schedule_checks": {
+    "passed": 2,
+    "failed": 0,
+    "elapsed_seconds": 0.24
+  },
+  "model_calls": 0,
+  "baseline_queries": 0,
+  "tiny_source_queries": 2,
+  "full_dataset_queries": 0,
+  "catalog_rebuilds": 0,
+  "estimator_fit_calls": 0,
+  "automatic_retries": 0,
+  "formal_campaign_ready": false,
+  "remaining": [
+    "FedUP author summary on stable logical source identities",
+    "native method hosts and common session recovery callbacks",
+    "package disk/time/model budget and dispatch integration",
+    "FinBench native serving and remaining evaluation tracks"
+  ]
+}
