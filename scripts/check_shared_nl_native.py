@@ -56,7 +56,7 @@ def run_cell(root,method,request,reference):
         if method=='fedx':
             observer.set_phase(method+':initialization');port=ports.ports[2];ports.release(2)
             endpoints=[observer.base_url+'/'+n+'/sparql' for n in ('graph','control')]
-            host=processes.start('fedx',[JAVA,'-Xms128m','-Xmx512m','-jar',str(JARS['fedx']),str(port),'180',*endpoints])
+            host=processes.start('fedx',[JAVA,'-Xms128m','-Xmx512m','-jar',str(JARS['fedx']),str(port),'120',*endpoints])
             ready(host,port);handles.append(OwnedProcess('fedx','method_host',host))
             endpoint=f'http://127.0.0.1:{port}/sparql'
             write_once(root/'initialization.json',observer.snapshot(method+':initialization'))
@@ -85,14 +85,16 @@ def run_cell(root,method,request,reference):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output-root',required=True,type=Path)
-    parser.add_argument('--read-key',action='store_true');args=parser.parse_args()
+    parser.add_argument('--read-key',action='store_true')
+    parser.add_argument('--method',choices=('xgap-performance','fedx'),help='Run only this explicitly selected new boundary')
+    args=parser.parse_args();methods=(args.method,) if args.method else ('xgap-performance','fedx')
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True):raise ValueError('Commit implementation before native boundary')
     key=getpass.getpass('LLM credential (not recorded): ') if args.read_key else os.environ.get('XGAP_EXTERNAL_LLM_API_KEY')
     if not key:raise ValueError('Model credential required; no external action started')
     root=args.output_root.resolve();root.mkdir(parents=True,exist_ok=False)
     receipt={'schema_version':'xgap-shared-nl-native-v1','success':False,'runs':[],
         'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
-        'maximum_model_calls':2,'maximum_final_queries_per_method':1,'fit_calls':0,'probe_calls':0,'automatic_retries':0,
+        'maximum_model_calls':len(methods),'maximum_final_queries_per_method':1,'fit_calls':0,'probe_calls':0,'automatic_retries':0,
         'baseline_algorithm_changes':0,'catalog_rebuilds':0,'summary_rebuilds':0,'paper_result':False,'formal_campaign_ready':False,
         'scope':'first two new NL boundaries on one exposed tiny meaning, independent actual model invocation per method'}
     previous=os.environ.get('XGAP_EXTERNAL_LLM_API_KEY')
@@ -113,14 +115,14 @@ def main():
             write_once(root/'input-seal.json',{'files':before,'request':request,'reference':reference,
                 'worker_receives_no_reference_or_gold':True,'fresh_source_session_per_method':True,
                 'modes':{'xgap-performance':'K1 estimated one-plan','fedx':'shared K3 quality-first frontend, original FedX'},
-                'query_budget_seconds':180,'native_fedx_query_timeout_seconds':180})
+                'query_budget_seconds':180,'native_fedx_query_timeout_seconds':120})
             os.environ['XGAP_EXTERNAL_LLM_API_KEY']=key;key=None
-            for method in ('xgap-performance','fedx'):
+            for method in methods:
                 receipt['runs'].append(run_cell(root/method,method,request,reference))
             receipt['inputs_unchanged']=[fingerprint(p['path']) for p in before]==before
             receipt['success']=all(r['outcome_recorded'] and r['owned_processes_terminal'] and r.get('observer_stopped')
                 for r in receipt['runs']) and receipt['inputs_unchanged']
-            receipt['both_answers_exact']=all(r.get('answer_em')==1 for r in receipt['runs'])
+            receipt['all_selected_answers_exact']=all(r.get('answer_em')==1 for r in receipt['runs'])
     except BaseException as error:receipt.update(error_type=type(error).__name__,error=str(error))
     finally:
         if previous is None:os.environ.pop('XGAP_EXTERNAL_LLM_API_KEY',None)
