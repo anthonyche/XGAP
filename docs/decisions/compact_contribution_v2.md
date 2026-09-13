@@ -96,3 +96,13 @@ A separate authored tiny gold intent will now test the actual v2 lowering ->
 frozen estimated selection -> one native final plan. It never reads that model
 response, does not replace its score, and is not labelled NL E2E. Acceptance of
 this deterministic boundary and observed NL accuracy are different statements.
+
+## Deterministic acceptance
+
+The dd8bdb7 gold-intent native gate passes: company1 total56 and count6; five
+estimates within construction bound9, one executed plan, zero alternatives,
+6 source calls/5295B, total1.322s, planning50.221ms. All owned services terminate.
+The separate NL request remains EM0. This accepts the bounded deterministic
+contribution functionality; it does not claim a successful NL-v2 example or
+require repairing this question before measuring interpretation effectiveness.
+See the report for original pins, retained preflight failure and distinct tracks.

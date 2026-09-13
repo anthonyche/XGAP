@@ -1,7 +1,9 @@
-2026-09-13: [Contribution-v2](decisions/compact_contribution_v2.md) freezes explicit
-anchor plus selected-identity projection, with one shared aggregate grain. Four
-new local checks pass in1.49s; the single tiny live boundary remains pending.
-Old v1 responses/scores and baseline methods are unchanged.
+2026-09-13: [Contribution-v2](decisions/compact_contribution_v2.md) is implemented
+and verified on the actual tiny deterministic chain(56 amount/6 transfers, one
+estimated plan). Four new checks plus one reference-type regression pass. One
+actual NL failure remains EM0; no response repair. [Report and four new real fixed
+results, including two nonempty aggregates](report/compact_contribution_20260913.md).
+Old v1/baseline behavior and all outcomes remain; native fixed nextgroup20.
 
 ## 首批真实结果及回收修正 — 2026-09-13
 

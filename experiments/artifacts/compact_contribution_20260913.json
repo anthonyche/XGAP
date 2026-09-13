@@ -1,0 +1,298 @@
+{
+  "schema_version": "xgap-compact-contribution-evidence-v2",
+  "paper_result": false,
+  "language_commit": "cba95be76a7923c5ed5adc495617d011cfc40389",
+  "checks": {
+    "initial_unique": 4,
+    "first_pass_seconds": 1.49,
+    "reference_type_regression_unique": 1,
+    "regression_seconds": 0.32,
+    "old_successful_gates_repeated": 0
+  },
+  "preflight_failure": {
+    "path": "/Users/anthonyche/xgap-data/compact-contribution-native-20260913-v2/receipt.json",
+    "sha256": "19624bf9143e317ab7e11dcccda018ee0185958d05e065ee2647c869d651c01f",
+    "bytes": 613
+  },
+  "nl": {
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/compact-contribution-native-20260913-v2b/receipt.json",
+      "sha256": "fcb8eede26a32347d592ac877ec94da8deff0ade3e0c61628230c27210c4939d",
+      "bytes": 2167
+    },
+    "core": {
+      "path": "/Users/anthonyche/xgap-data/compact-contribution-native-20260913-v2b/CONTRIBUTION-01/execution/worker/core/result.json",
+      "sha256": "2a6a788e6e0eda98ab0d72421db07240d8ff59ad6696517a364e7a32a59c46e9",
+      "bytes": 38148
+    },
+    "status": "no_admissible_interpretation",
+    "answer_em": 0.0,
+    "model_calls": 1,
+    "input_tokens": 2387,
+    "output_tokens": 506,
+    "source_calls": 0,
+    "online_ms": 4135.333124548197,
+    "raw_compact_response": {
+      "candidates": [
+        {
+          "candidate_id": "c1",
+          "quality_proxy": 0.9,
+          "query": {
+            "contribution_by": [
+              "a"
+            ],
+            "edges": [
+              {
+                "source": "c",
+                "target": "a",
+                "type": "OWNS_ACCOUNT",
+                "var": "e1"
+              },
+              {
+                "source": "m",
+                "target": "a",
+                "type": "SIGNED_IN_TO",
+                "var": "e2"
+              },
+              {
+                "source": "t",
+                "target": "a",
+                "type": "TRANSFERRED_TO",
+                "var": "e3"
+              }
+            ],
+            "limit": null,
+            "nodes": [
+              {
+                "entity": null,
+                "type": "XGAPFinBenchCompany",
+                "var": "c"
+              },
+              {
+                "entity": null,
+                "type": "XGAPFinBenchAccount",
+                "var": "a"
+              },
+              {
+                "entity": null,
+                "type": "XGAPFinBenchMedium",
+                "var": "m"
+              },
+              {
+                "entity": null,
+                "type": "XGAPFinBenchAccount",
+                "var": "t"
+              }
+            ],
+            "order_by": [
+              {
+                "direction": "asc",
+                "field": "company_id"
+              }
+            ],
+            "path": null,
+            "select": {
+              "company_id": {
+                "property": "id",
+                "var": "c"
+              },
+              "total_amount": {
+                "aggregate": "sum",
+                "distinct": false,
+                "field": {
+                  "property": "amount",
+                  "var": "e3"
+                }
+              },
+              "transfer_count": {
+                "aggregate": "count",
+                "distinct": false,
+                "field": {
+                  "property": "xgap_id",
+                  "var": "e3"
+                }
+              }
+            },
+            "where": [
+              {
+                "left": {
+                  "property": "riskLevel",
+                  "var": "m"
+                },
+                "op": "eq",
+                "right": {
+                  "value": "High"
+                },
+                "value_type": "scalar"
+              },
+              {
+                "left": {
+                  "property": "createTime",
+                  "var": "e3"
+                },
+                "op": "ge",
+                "right": {
+                  "value": "2020-01-01 00:00:00.000"
+                },
+                "value_type": "timestamp_ms"
+              },
+              {
+                "left": {
+                  "property": "createTime",
+                  "var": "e3"
+                },
+                "op": "lt",
+                "right": {
+                  "value": "2020-01-04 00:00:00.000"
+                },
+                "value_type": "timestamp_ms"
+              }
+            ]
+          }
+        }
+      ],
+      "schema_version": "xgap-compact-graph-candidates-v2"
+    },
+    "lowering": {
+      "candidates": [
+        {
+          "candidate_id": "c1",
+          "candidate_index": 0,
+          "error": "Use variable identity, not a raw technical identity property",
+          "status": "invalid"
+        }
+      ],
+      "elapsed_ms": 1.0503744706511497,
+      "profile": "xgap-compact-graph-lowering-v2",
+      "response_repair": false
+    },
+    "closure": [
+      {
+        "discarded_reconstructable_serving_copies": [
+          "neo4j/data",
+          "neo4j/transactions",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.0483330115675926,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 70049,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.646958127617836,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-neo4j",
+            "pid": 70024,
+            "returncode": -9,
+            "terminal": true
+          }
+        ]
+      }
+    ]
+  },
+  "deterministic": {
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/compact-contribution-fixed-native-20260913-v2/receipt.json",
+      "sha256": "2ee8fe83ee359ba22aeda4211756475d1581e3a8569414c1f60033f61330d08a",
+      "bytes": 2409
+    },
+    "answer": {
+      "answer": [
+        {
+          "company_id": "1",
+          "total_amount": 56.0,
+          "transfer_count": 6
+        }
+      ],
+      "answer_format": "json_rows"
+    },
+    "score": {
+      "bytes": 1104,
+      "path": "/Users/anthonyche/xgap-data/compact-contribution-fixed-native-20260913-v2/score.json",
+      "sha256": "e05ac152f1b39b46f3927461140e65935c59b36b6268da6e6ef542dfc919d434"
+    },
+    "model_calls": 0,
+    "source_calls": 6,
+    "response_bytes": 5295,
+    "online_ms": 1321.8363747000694,
+    "planning_ms": 50.2212094143033,
+    "execution_ms": 973.8643746823072,
+    "candidate_count": 5,
+    "construction_bound": 9,
+    "final_plans": 1,
+    "alternative_executions": 0,
+    "selected_strategy": "placement-0/coordinator",
+    "closure": {
+      "discarded_reconstructable_serving_copies": [
+        "neo4j/data",
+        "neo4j/transactions",
+        "control-tdb2"
+      ],
+      "frozen_inputs_and_all_query_artifacts_retained": true,
+      "observer_stopped": true,
+      "owned_groups_drained": true,
+      "owned_processes_terminal": true,
+      "processes": [
+        {
+          "cleanup": {
+            "complete": true,
+            "elapsed_ms": 365.7430000603199,
+            "live_pids": [],
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM"
+            ]
+          },
+          "leader_state": "reaped",
+          "name": "source-control",
+          "pid": 70470,
+          "returncode": 143,
+          "terminal": true
+        },
+        {
+          "cleanup": {
+            "complete": true,
+            "elapsed_ms": 503.8662925362587,
+            "live_pids": [],
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM",
+              "SIGKILL"
+            ]
+          },
+          "leader_state": "reaped",
+          "name": "source-neo4j",
+          "pid": 70449,
+          "returncode": -9,
+          "terminal": true
+        }
+      ]
+    }
+  },
+  "scope": "Frozen eight-node/sixteen-edge toy; authored correct intent is a separate deterministic test, never a repaired NL response; original NL EM0 remains.",
+  "no_model_retry_or_answer_repair": true,
+  "data_loads": 0,
+  "catalog_builds": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0
+}

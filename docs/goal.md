@@ -1,12 +1,30 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
-## 最新门禁：contribution-v2 小图检查通过，真实 NL 待验证
+## 当前执行：真实新增4题全正确；贡献粒度编译通过，NL错误单独保留
 
-独立版本明确存在性证明与转账计数粒度，4项新检查首次通过1.49秒；
-旧wire、已曝光失败、planner/估计器/baseline不变。下一步仅1次真实tiny NL
-闭环，复用冻结双库。[语义与边界](decisions/compact_contribution_v2.md)。
+本轮cba95be/88bfbec/dd8bdb7完成独立compact-v2贡献粒度语义。4项新检查首次1.49s
+通过，参考计数类型失败的1项检查0.32s通过。真实tiny确定性链金额56/转账6 exact，
+5个估计候选选1计划，6源调用/5295B/1.322s，无model/probe/fit/load。单次NL另报失败：
+模型将High risk改High、用内部xgap_id计数，2387/506token，4.135s、源0、EM0；
+不修响应、不重试，不将gold执行冒充NL成功。[完整结果](report/compact_contribution_20260913.md)。
 
-以下保留前序结果；当前验收状态以上方为准。
+原生fixed继续未运行groups16–19：4题全exact、2题非空风险聚合（company2036
+=9,428,080.26；company1581=2,249,563.92），2题正确空；16.498–30.164s，
+方法峰值0.855–1.770GB<原2GiB。原profile/程序/估计器/预算，单计划零模型；
+新compact-v2未用于这四题。保留旧错误和超限，不声称总体质量或提速。
+句柄94249/97260失败终态、60371/52511成功终态；所有自有源/observer均已关闭。
+
+下一步以实验所需的有界功能为发布门槛，不以每个模型回答正确为门槛；不要为这道
+失败题继续改prompt或大数据重跑。compact-v2语义/确定性门已通过，普通NL本次失败
+如实计effectiveness；如后续采用v2，先离线发布并关联完整native/RDF冻结profile，
+保留原store/summary、全部曝光/旧结果，不静默混合版本统计。当前全量NL仍为
+prompt-v2/wire-v1，下一group3；native fixed下一group20；RDF fixed下一group5；
+native NL未启动。继续批准FinBench/FedUP/FedX，随后有界FedShop；oracle/消融最后。
+尚缺完整NL总体、实际排序收益、FedShop/scale与18图。120=24/48/48、33空15非空
+保持，baseline原作者配置保持。Sep14 17:00核心/接口、Sep18论文结果目标不变。
+Goal active，旧暂停已解除，不轮询3804210；可用磁盘约11.9GB，保留6GiB底线。
+
+以下保留前序结果；当前状态以上方为准。
 
 ## 当前执行：名称/ID/变量入口3题通过；真实NL下一缺口为去重与聚合约定
 

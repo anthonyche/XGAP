@@ -1,0 +1,239 @@
+{
+  "all_closed": true,
+  "baseline_calls": 0,
+  "chunk": {
+    "bytes": 3564,
+    "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/runs/run-0004/receipt.json",
+    "sha256": "3bf114595a1acf55b5c904a57ae955b1e52edf0742609bdd8c58b5535b0e44a2"
+  },
+  "events": [
+    {
+      "cause": "chunk-complete",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "neo4j/data",
+          "neo4j/transactions",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 404.6517498791218,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": [
+                "SIGTERM"
+              ]
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 70862,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 502.3939572274685,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": [
+                "SIGTERM",
+                "SIGKILL"
+              ]
+            },
+            "leader_state": "reaped",
+            "name": "source-neo4j",
+            "pid": 70845,
+            "returncode": -9,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 1298.7426659092307,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/runs/run-0004/session-001"
+    }
+  ],
+  "full_evaluation_complete": false,
+  "groups": [
+    16,
+    17,
+    18,
+    19
+  ],
+  "implementation_commit": "dd8bdb794c87a31156831a60d751f88abb2a101a",
+  "implementation_epoch": {
+    "bytes": 1058,
+    "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/harness-epochs/epoch-0003.json",
+    "sha256": "bb289529e9f4ff864f92ca102c6ed13f978175ee6e4c42a7e61b45dc24e107f5"
+  },
+  "model_calls": 0,
+  "next_group": 20,
+  "rows": [
+    {
+      "actual_rows": 0,
+      "alternative_executions": 0,
+      "answer": {
+        "answer": [],
+        "answer_format": "json_rows"
+      },
+      "answer_em": 1.0,
+      "candidate_count": 6,
+      "cell_id": "fixed_semantics-00-016-0",
+      "expected_rows": 0,
+      "final_plans": 1,
+      "method_peak_rss_bytes": 1769750528,
+      "model_calls": 0,
+      "online_ms": 30163.810083642602,
+      "question_id": "FBNS-2-b9cc00e6e4ac22e7",
+      "receipt": {
+        "bytes": 7426,
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-016-0/execution/receipt.json",
+        "sha256": "5a9b88888aedac198257ef77f2ceea32d3842ea4b43d552e28d76f4390902b0a"
+      },
+      "score": {
+        "bytes": 1102,
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-016-0/execution/score.json",
+        "sha256": "9fbe43bfa5aeae3bee7ca16d45702297aae5236d9541e93935537fae29432cd5"
+      },
+      "selected_strategy": "placement-0/coordinator",
+      "source_bytes": 54128923,
+      "source_calls": 6,
+      "status": "returned",
+      "prepared": {
+        "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/receipt.json",
+        "sha256": "32d165a35bcdc4439aaaf9c26dbd2cb1d10626886f6ebfb1579d1167eca5076e"
+      }
+    },
+    {
+      "actual_rows": 1,
+      "alternative_executions": 0,
+      "answer": {
+        "answer": [
+          {
+            "company_id": "2036",
+            "total_amount": 9428080.26
+          }
+        ],
+        "answer_format": "json_rows"
+      },
+      "answer_em": 1.0,
+      "candidate_count": 6,
+      "cell_id": "fixed_semantics-00-017-0",
+      "expected_rows": 1,
+      "final_plans": 1,
+      "method_peak_rss_bytes": 922484736,
+      "model_calls": 0,
+      "online_ms": 17923.306999728084,
+      "question_id": "FBNS-3-447b4d9ec52c9afd",
+      "receipt": {
+        "bytes": 6954,
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-017-0/execution/receipt.json",
+        "sha256": "ba2d49b8dab371416fee5be28f501965ce4475a665f940fa261321fb40c10abe"
+      },
+      "score": {
+        "bytes": 1065,
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-017-0/execution/score.json",
+        "sha256": "251edb27b039acb1b11cd87204ef66bfe9791a43a9d9bb279194f84b22f34002"
+      },
+      "selected_strategy": "placement-0/coordinator",
+      "source_bytes": 31190659,
+      "source_calls": 5,
+      "status": "returned",
+      "prepared": {
+        "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/receipt.json",
+        "sha256": "32d165a35bcdc4439aaaf9c26dbd2cb1d10626886f6ebfb1579d1167eca5076e"
+      }
+    },
+    {
+      "actual_rows": 1,
+      "alternative_executions": 0,
+      "answer": {
+        "answer": [
+          {
+            "company_id": "1581",
+            "total_amount": 2249563.92
+          }
+        ],
+        "answer_format": "json_rows"
+      },
+      "answer_em": 1.0,
+      "candidate_count": 6,
+      "cell_id": "fixed_semantics-00-018-0",
+      "expected_rows": 1,
+      "final_plans": 1,
+      "method_peak_rss_bytes": 854851584,
+      "model_calls": 0,
+      "online_ms": 16498.118749819696,
+      "question_id": "FBNS-3-a74dd7933c988262",
+      "receipt": {
+        "bytes": 6955,
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-018-0/execution/receipt.json",
+        "sha256": "88679650da7db4335cd65f249ac3ab918d4eb3fa6cc8b1719fd9b880fc774507"
+      },
+      "score": {
+        "bytes": 1064,
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-018-0/execution/score.json",
+        "sha256": "4f9c4831f472b97aa3a3d36982aebfe492901894d111b0e625e17422b61fa496"
+      },
+      "selected_strategy": "placement-0/coordinator",
+      "source_bytes": 31196611,
+      "source_calls": 5,
+      "status": "returned",
+      "prepared": {
+        "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/receipt.json",
+        "sha256": "32d165a35bcdc4439aaaf9c26dbd2cb1d10626886f6ebfb1579d1167eca5076e"
+      }
+    },
+    {
+      "actual_rows": 0,
+      "alternative_executions": 0,
+      "answer": {
+        "answer": [],
+        "answer_format": "json_rows"
+      },
+      "answer_em": 1.0,
+      "candidate_count": 6,
+      "cell_id": "fixed_semantics-00-019-0",
+      "expected_rows": 0,
+      "final_plans": 1,
+      "method_peak_rss_bytes": 1656504320,
+      "model_calls": 0,
+      "online_ms": 29103.84808294475,
+      "question_id": "FBNS-2-e5c40c7f9db803c0",
+      "receipt": {
+        "bytes": 7434,
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-019-0/execution/receipt.json",
+        "sha256": "863c0f63525088cf88c3fc3a34f4988b29f73b666f025582f9222cfb66b910d4"
+      },
+      "score": {
+        "bytes": 1102,
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-019-0/execution/score.json",
+        "sha256": "b02ad3e4d081c6b09a2ae74dbad4e1fccfe099d61bca27dcb0388229436ce732"
+      },
+      "selected_strategy": "placement-0/coordinator",
+      "source_bytes": 54128387,
+      "source_calls": 6,
+      "status": "returned",
+      "prepared": {
+        "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/receipt.json",
+        "sha256": "32d165a35bcdc4439aaaf9c26dbd2cb1d10626886f6ebfb1579d1167eca5076e"
+      }
+    }
+  ],
+  "schema_version": "xgap-native-fixed-four-audit-v1",
+  "scope": "Original frozen fixed semantics/native profile. Compact-v2 is not used in these four. First block only; retain all earlier outcomes, no cross-epoch pooling.",
+  "metadata_correction": {
+    "previous_audit": {
+      "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/groups16-19-audit.json",
+      "sha256": "ebc5065bb05bfdf36c1bdcaf4099be4c3f8eebf44c2ca975b25a6e70ab2439a1"
+    },
+    "scope": "Rename misleading row profile label to prepared; all receipt paths, results and measurements unchanged."
+  }
+}

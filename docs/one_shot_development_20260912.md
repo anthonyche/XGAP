@@ -2,10 +2,10 @@
 
 ## 2026-09-13 最新执行状态
 
-以[Goal当前执行](goal.md)为准。名称/ID/变量三条真实tiny one-shot均exact，prompt-v2
-保持原compiler和grounding；[证据](report/compact_roles_20260913.md)。真实NL下一组
-暴露去重/聚合表达缺口；[保留的四方法失败与新fixed四题](report/finbench_nl_third_group_20260913.md)。
-下一步tiny澄清有界语义并版本化，不按正式题修答案或反复调prompt。旧暂停解除；下方为历史。
+[本轮报告](report/compact_contribution_20260913.md)：compact-v2贡献粒度的真实确定性链通过；
+单次NL失败单独记录、不修回答。真实native fixed新4题全部正确且含2非空聚合；
+下一group20。以[Goal顶部](goal.md)为准，保持研究原型边界与全部负结果；不追求每题
+模型正确、不重复成功门禁。全量v2 profile尚未发布，后续须明确版本。旧暂停解除。
 
 ## 当前执行：共同固定语义入口已验收，先修正 RDF 表示重叠
 
