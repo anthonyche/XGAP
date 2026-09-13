@@ -102,3 +102,9 @@ Baseline原生代码与配置完全未改，失败和中断原样纳入分母。
 
 [本组逐题与资源审计](../../experiments/artifacts/equality_campaign_group7_20260913.json)、
 [原始审计](/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/group7-audit.json)。
+
+## 本轮结束后的用户安排
+
+用户要求本轮结束即暂停。全部实验/服务已终态，工程与实验停止，
+2026-09-14 10:00北京时间恢复。整体Goal仍未完成；下一步为小图中间结果生命周期/
+紧凑trace门，NL journal下一group8，不重试本轮或此前问题。

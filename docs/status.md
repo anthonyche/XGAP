@@ -1,5 +1,15 @@
 # XGAP Status
 
+## 用户暂停指令：2026-09-14 10:00 北京时间恢复
+
+2026-09-13用户要求本轮里程碑结束后先暂停，直到明早10点恢复。本轮已完成并封存：
+冻结键上界、16个新风险检查、真实tiny普通入口，以及新NL组7两模式正确空答案。
+所有实验/服务已结束。现在不再开发、测试、运行模型/数据库、baseline、下载或远程轮询。
+整体Goal未完成，保持active但执行暂停；此指令覆盖下方“用户已继续/旧暂停无效”的旧状态。
+恢复时间为2026-09-14 10:00 Asia/Shanghai（02:00 UTC）。到时先接续
+[下一tiny生命周期/trace门](decisions/one_shot_trace_retention_next.md)，之后才考虑未运行group8。
+[本轮完整报告](report/equality_key_bounds_20260913.md)。
+
 ## 当前执行：冻结键上界与真实NL两模式已接通；下一门为中间数据保留
 
 630d802/e9acb6b完成可选离线等值字符串键上界，按source/snapshot/namespace/label/property
