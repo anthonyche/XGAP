@@ -15,7 +15,8 @@ from xgap.experiments.source_failure_classification import classify_source_failu
 
 
 def _run_trial(*, track,request_path,request_sha256,method,output,owned_services,observer,
-               profile_path=None,profile_sha256=None,endpoint=None,budget=ProcessBudget(),source_rss_bytes=2*1024**3):
+               profile_path=None,profile_sha256=None,endpoint=None,budget=ProcessBudget(),source_rss_bytes=2*1024**3,
+               package_monitor=None):
     started=time.perf_counter();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     q=json.loads(read_pinned(request_path,request_sha256))
     nl=track=='natural_language'
@@ -29,7 +30,8 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
     campaign_observer=callable(getattr(observer,'seal_phase',None));phase_opened=False
     phase=method+':'+q['question_id'];repo=Path(__file__).resolve().parents[3]
     try:
-        monitor=OwnedResources(owned_services,method_rss_bytes=budget.max_group_rss_bytes,source_rss_bytes=source_rss_bytes)
+        monitor=OwnedResources(owned_services,method_rss_bytes=budget.max_group_rss_bytes,source_rss_bytes=source_rss_bytes,
+            extra_monitor=package_monitor)
         if not any(s.role=='source' for s in owned_services) or (method in ('fedup','fedx') and not any(s.role=='method_host' for s in owned_services)):
             raise ValueError('Live source and hosted-method resources must be owned and observed')
         observer.set_phase(phase)

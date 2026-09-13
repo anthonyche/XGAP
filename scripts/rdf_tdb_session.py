@@ -11,10 +11,11 @@ from xgap.experiments.m15_native_services import LoopbackPortReservations, _fuse
 from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.owned_resources import OwnedProcess
+from xgap.experiments.process_guard import _group_sample
 
 
 class RdfTdbSession:
-    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None):
+    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False):
         self.root=Path(root).resolve();self.root.mkdir(parents=True,exist_ok=False)
         self.prepared=json.loads(read_pinned(prepared_path,prepared_sha256))
         if not self.prepared.get('success'):raise ValueError('Successful frozen store preparation required')
@@ -24,6 +25,7 @@ class RdfTdbSession:
         if not self.input_pin['sha256']:raise ValueError('Pinned preparation input is required')
         self.budget=budget;self.processes=Processes(self.root);self.ports=None;self.observer=None;self.owned=[]
         self.profile=None;self.ready_pin=None
+        self.discard_serving_copies=discard_serving_copies
 
     def start(self):
         at=time.perf_counter()
@@ -75,6 +77,16 @@ class RdfTdbSession:
         if self.ports:self.ports.close()
         result={'processes':rows,'owned_processes_terminal':all(r['returncode'] is not None for r in rows),
             'observer_stopped':self.observer is None or (not self.observer.thread.is_alive() and not self.observer.inflight)}
+        result['owned_groups_drained']=not any(_group_sample(row['pid']) for row in rows)
+        if self.discard_serving_copies and result['owned_groups_drained'] and result['observer_stopped']:
+            removed=[]
+            for relative in ('graph-tdb2','control-tdb2','fedup-host/serving-summary'):
+                path=self.root/relative
+                if path.exists():
+                    if path.is_symlink():raise ValueError('Refuse to discard redirected serving copy')
+                    shutil.rmtree(path);removed.append(relative)
+            result['discarded_reconstructable_serving_copies']=removed
+            result['frozen_inputs_and_all_query_artifacts_retained']=True
         # The caller may close after start already performed failure cleanup.
         if not (self.root/'closed.json').exists():write_once(self.root/'closed.json',result)
         return result

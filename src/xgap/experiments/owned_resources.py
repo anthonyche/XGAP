@@ -15,7 +15,8 @@ class OwnedProcess:
 
 
 class OwnedResources:
-    def __init__(self, services, *, method_rss_bytes=2*1024**3, source_rss_bytes=2*1024**3):
+    def __init__(self, services, *, method_rss_bytes=2*1024**3, source_rss_bytes=2*1024**3, extra_monitor=None):
+        self.extra_monitor=extra_monitor
         self.services=tuple(services);self.limits={'method':method_rss_bytes,'source':source_rss_bytes}
         if not self.services or any(not isinstance(s,OwnedProcess) or s.role not in ('source','method_host') for s in self.services):
             raise ValueError('Live trials require explicit caller-owned method/source processes')
@@ -47,6 +48,8 @@ class OwnedResources:
         for role in totals:
             self.peak[role]=max(self.peak[role],totals[role])
             if totals[role]>self.limits[role]:self.status=role+'_rss_limit_observed'
+        if self.extra_monitor is not None:
+            self.status=self.status or self.extra_monitor.sample(worker_members)
         self.samples+=1;return self.status
 
     def summary(self):
