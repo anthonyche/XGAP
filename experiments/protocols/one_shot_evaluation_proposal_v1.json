@@ -291,11 +291,9 @@
     "preserve_frozen_denominator": true
   },
   "execution_gate": {
-    "reason": "user_pause_after_completed_rdf_instance_milestone",
-    "last_resumed_at": "2026-09-13T12:08:00+08:00",
-    "resume_at": "2026-09-14T12:00:00+08:00",
+    "reason": "user_explicit_early_resumption",
+    "resumed_at": "2026-09-13T13:32:00+08:00",
     "resume_timezone": "Asia/Shanghai",
-    "paused_after_milestone": true,
     "goal_complete": false,
     "campaign_ready": false
   },

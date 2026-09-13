@@ -82,7 +82,7 @@ def _stop_group(process, budget):
         'elapsed_ms':(time.monotonic()-started)*1000,'complete':not live}
 
 
-def run_guarded_command(command, *, cwd, output, budget=ProcessBudget(), environment=None):
+def run_guarded_command(command, *, cwd, output, budget=ProcessBudget(), environment=None, resource_monitor=None):
     """Run once. A zero exit code alone is not proof of answer correctness."""
     import psutil  # Required experiment extra; never silently skip monitoring.
     if os.name!='posix' or not isinstance(budget,ProcessBudget):
@@ -110,9 +110,11 @@ def run_guarded_command(command, *, cwd, output, budget=ProcessBudget(), environ
                 members=_group_sample(process.pid);samples+=1
                 for p in members:seen[p['pid']]=p['created']
                 rss=sum(p['rss'] for p in members);peak=max(peak,rss);peak_processes=max(peak_processes,len(members))
+                resource_status=resource_monitor.sample(members) if resource_monitor is not None else None
                 elapsed=time.monotonic()-started
                 log_bytes=sum((root/name).stat().st_size for name in ('stdout.log','stderr.log'))
-                if elapsed>=budget.wall_seconds:status='deadline_exceeded'
+                if resource_status:status=resource_status
+                elif elapsed>=budget.wall_seconds:status='deadline_exceeded'
                 elif rss>budget.max_group_rss_bytes:status='rss_limit_observed'
                 elif log_bytes>budget.max_log_bytes:status='log_limit_observed'
                 elif len(members)>budget.max_group_processes:status='process_limit_observed'

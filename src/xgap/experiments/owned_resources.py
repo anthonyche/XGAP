@@ -1,0 +1,72 @@
+"""Sample and retire only caller-owned live services around a method trial."""
+from dataclasses import dataclass
+import time
+
+import psutil
+
+from xgap.experiments.process_guard import ProcessBudget, _group_sample, _stop_group
+
+
+@dataclass(frozen=True)
+class OwnedProcess:
+    name: str
+    role: str  # source or method_host
+    process: object  # The Popen handle returned when the serving controller spawned it.
+
+
+class OwnedResources:
+    def __init__(self, services, *, method_rss_bytes=2*1024**3, source_rss_bytes=2*1024**3):
+        self.services=tuple(services);self.limits={'method':method_rss_bytes,'source':source_rss_bytes}
+        if not self.services or any(not isinstance(s,OwnedProcess) or s.role not in ('source','method_host') for s in self.services):
+            raise ValueError('Live trials require explicit caller-owned method/source processes')
+        if len({s.process.pid for s in self.services})!=len(self.services):raise ValueError('Duplicate owned process group')
+        self.identities={};self.cpu_base={};self.cpu_last={};self.seen={};self.peak={'method':0,'source':0}
+        self.samples=0;self.status=None;self.started=time.perf_counter()
+        for s in self.services:
+            if s.process.poll() is not None:raise ValueError('Owned service is already terminal')
+            self.identities[s.process.pid]=psutil.Process(s.process.pid).create_time()
+            for p in _group_sample(s.process.pid):
+                cpu=psutil.Process(p['pid']).cpu_times();key=(p['pid'],p['created'],s.role)
+                self.cpu_base[key]=cpu.user+cpu.system
+
+    def sample(self, worker_members):
+        groups=[('method',p) for p in worker_members]
+        for s in self.services:
+            if s.process.poll() is not None:
+                self.status='owned_service_exited';return self.status
+            if psutil.Process(s.process.pid).create_time()!=self.identities[s.process.pid]:
+                raise ValueError('Owned service PID identity changed')
+            groups.extend((s.role,p) for p in _group_sample(s.process.pid))
+        totals={'method':0,'source':0}
+        for role,p in groups:
+            totals['method' if role=='method_host' else role]+=p['rss']
+            key=(p['pid'],p['created'],role);self.seen[key]=p['rss']
+            try:
+                cpu=psutil.Process(p['pid']).cpu_times();self.cpu_last[key]=cpu.user+cpu.system
+            except psutil.NoSuchProcess:pass
+        for role in totals:
+            self.peak[role]=max(self.peak[role],totals[role])
+            if totals[role]>self.limits[role]:self.status=role+'_rss_limit_observed'
+        self.samples+=1;return self.status
+
+    def summary(self):
+        cpu={'method':0.0,'source':0.0}
+        for (pid,created,role),value in self.cpu_last.items():
+            cpu['method' if role=='method_host' else role]+=max(0,value-self.cpu_base.get((pid,created,role),0))
+        return {'status':self.status or 'within_observed_budget','samples':self.samples,
+            'sampled_peak_rss_bytes':self.peak,'limits':self.limits,'sampled_cpu_seconds':cpu,
+            'owned_groups':[{'name':s.name,'role':s.role,'pid':s.process.pid,'created':self.identities[s.process.pid]} for s in self.services],
+            'scope':'method worker plus hosted method; source groups separately, remote LLM excluded',
+            'limitations':'sampled group RSS may double-count shared pages; short-lived CPU/peaks may be missed; not an OS cap'}
+
+    def stop(self):
+        started=time.perf_counter();records=[]
+        for s in reversed(self.services):
+            try:
+                # A live leader must still be the process the controller actually created.
+                if s.process.poll() is None and psutil.Process(s.process.pid).create_time()!=self.identities[s.process.pid]:
+                    raise ValueError('Refuse to stop a changed process identity')
+                records.append({'name':s.name,**_stop_group(s.process,ProcessBudget())})
+            except Exception as e:records.append({'name':s.name,'complete':False,'error':type(e).__name__+': '+str(e)})
+        return {'complete':all(r['complete'] for r in records),'groups':records,
+            'recovery_ms':(time.perf_counter()-started)*1000,'new_serving_session_required':True}
