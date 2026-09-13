@@ -22,6 +22,11 @@ PREPARED_SHA='8f3c88515f52f8526faa4f9963a381ad1df1af7bf419f9bbdce0ec5e11648051'
 FIXTURE=REPO/'tests/fixtures/compact_roles_v2.json'
 
 
+def reference_spec(case):
+    return case.get('normalization', {'schema_version':'xgap-row-normalization-v1',
+        'fields':{k:('decimal3-half-up' if k=='total_amount' else 'text') for k in case['expected_rows'][0]}})
+
+
 def main(output,read_key=False,*,contract='roles'):
     if contract not in ('roles','contribution'):raise ValueError('Unknown tiny contract')
     is_contribution=contract=='contribution'
@@ -49,8 +54,7 @@ def main(output,read_key=False,*,contract='roles'):
             path=root/case['id'];path.mkdir()
             request=write_once(path/'request.json',{'schema_version':'xgap-one-shot-evaluation-request-v1',
                 'question_id':case['id'],'question':case['question'],'population':fixture['population'],'exposure':fixture['exposure']})
-            spec={'schema_version':'xgap-row-normalization-v1','fields':{k:('decimal3-half-up' if k=='total_amount' else 'text')
-                for k in case['expected_rows'][0]}}
+            spec=reference_spec(case)
             from xgap.experiments.row_normalization import normalize_rows
             reference=write_once(path/'reference.json',{'schema_version':'xgap-normalized-row-reference-v1',
                 'question_id':case['id'],'dataset':dataset,'ordered':True,'normalization':spec,

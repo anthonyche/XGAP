@@ -128,7 +128,15 @@
           "total_amount": 56.0,
           "transfer_count": 6
         }
-      ]
+      ],
+      "normalization": {
+        "schema_version": "xgap-row-normalization-v1",
+        "fields": {
+          "company_id": "text",
+          "total_amount": "decimal3-half-up",
+          "transfer_count": "integer"
+        }
+      }
     }
   ]
 }

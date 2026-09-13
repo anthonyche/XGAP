@@ -77,3 +77,9 @@ Four unique new checks first pass in 1.49s: independent sums/counts with extra
 witness and equal-valued parallel edge, shared global SPARQL parity, saved-v1
 rejection/bounds, frozen-profile and one-call wire isolation. No external calls.
 The actual tiny NL/Neo4j/Fuseki boundary is pending; no formal question rerun.
+
+The first live-gate preflight in cba95be stopped before any database/model action:
+its inherited reference builder labelled transfer_count as text. Receipt19624bf9
+is retained at compact-contribution-native-20260913-v2. The fixture now explicitly
+declares integer count; this is reference transport typing, not answer repair.
+One focused preflight regression is required before the original live attempt.

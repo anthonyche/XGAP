@@ -24,6 +24,14 @@ def intent():
     return json.loads(Path('tests/fixtures/compact_contribution_v2.json').read_text())['cases'][0]['gold_compact']
 
 
+def test_native_fixture_reference_preserves_integer_count():
+    from check_compact_roles_native import reference_spec
+    from xgap.experiments.row_normalization import normalize_rows
+    case=json.loads(Path('tests/fixtures/compact_contribution_v2.json').read_text())['cases'][0]
+    assert normalize_rows(case['expected_rows'],reference_spec(case))==[
+        {'company_id':'1','total_amount':'56.000','transfer_count':6}]
+
+
 def copy_edge(graph, original, identifier):
     fb=Namespace(SCHEMA); duplicate=URIRef(RESOURCE+identifier)
     for p,value in list(graph.predicate_objects(original)):
