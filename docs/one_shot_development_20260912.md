@@ -2,10 +2,11 @@
 
 ## 2026-09-13 最新执行状态
 
-[源端绑定与排序报告](report/anchor_source_bind_20260913.md)、[Goal顶部](goal.md)及
-[下一键上界门](decisions/equality_key_bounds_next.md)为当前交接。真实tiny两部署各4行
-exact，但冻结模型仍选coordinator；先tiny统计与估计一致性，再未运行NL group7。
-Native fixed下一20、RDF fixed下一5，旧暂停解除，所有新组件服务已终态。
+[冻结键上界与真实新组结果](report/equality_key_bounds_20260913.md)、[Goal顶部](goal.md)为
+当前交接。16新风险案例及1个真实tiny普通入口通过；完整源id上界已冻结，模型自行选fanout。
+新真实NL group7两模式正确空答案，80.876/84.423s；4模型调用，所有服务终态。
+下一tiny门为中间rows生命周期/紧凑trace（尚未实现），然后新equality journal未运行group8。
+Native fixed下一20、RDF fixed下一5；旧暂停已解除，整体Goal/论文评价尚未完成。
 
 ## 当前执行：共同固定语义入口已验收，先修正 RDF 表示重叠
 

@@ -27,8 +27,11 @@ deployment assertions, just like replica equivalence; a checksum alone cannot
 prove them. The tiny adapter additionally verifies the exact source load files,
 per-batch hashes, eight graph entities and the same eight control identities.
 It reads no requests, answers or source endpoint. Its complete string projection
-uses the actual control property mappings. It supports only the existing tiny
-native snapshot; publishing statistics for full snapshots is still pending.
+uses the actual control property mappings. That adapter supports only the existing tiny
+native snapshot. A separate, tested FinBench serializer adapter now scans the
+complete frozen RDF files for business IDs across all labels (55604 entities
+per source), with exact hashes, mapping and per-label counts; other properties
+retain their original limits. Full preparation takes9.206s as a one-time cost.
 
 Each LogicalSource may carry optional FrozenEqualityKeyBounds. A new child
 profile pins these artifacts while preserving original source versions,
@@ -69,3 +72,12 @@ tiny source maxima sum to2; fanout estimate changes297.949→226.711ms, while
 coordinator remains28.933ms and is still the estimated winner. This is not
 evidence of a ranking defect on a tiny graph or an observed speedup. A new
 zero-bound transport check and ordinary native gate are recorded in the report.
+
+
+Native ordinary-entry acceptance and actual new NL group7 are complete; see the
+[report](../report/equality_key_bounds_20260913.md). In the original-routing saved
+real program, the unchanged coordinator estimate834.612ms now exceeds the bounded
+fanout777.969ms. Both actual XGAP modes then choose fanout on the next new question
+and return its independently correct empty answer,80.876/84.423s full online.
+No old question was executed again. Trace retention is the next measured risk,
+not a reason to change the source-key statistics or tune frozen weights.

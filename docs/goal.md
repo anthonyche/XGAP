@@ -1,29 +1,30 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
-## 当前执行：源端绑定两套真实tiny通过；下一门为冻结键上界与估计一致性
+## 当前执行：冻结键上界与真实NL两模式已接通；下一门为中间数据保留
 
-88fe577增加每placement至多1个起点fanout候选，域上界1+2J+A（A<=1），构造前
-检查D倍上界，按冻结预测选一个计划。8项定向检查1.13s通过；小图6行exact，
-三个首边响应24→12行、逻辑交换9410→7286B。原语义/提示/baseline/权重不变。
-[当前报告](report/anchor_source_bind_20260913.md)。
+630d802/e9acb6b完成可选离线等值字符串键上界，按source/snapshot/namespace/label/property
+冻结，接入原估计器和实际绑定限额。16个新风险案例通过；tiny普通入口4行非空exact，
+模型自己选一个计划，14源调用，1.412s在线，零LLM/fit。[当前完整报告](report/equality_key_bounds_20260913.md)。
 
-只在组件门预先指定新候选：tiny Neo4j/Fuseki及双Fuseki各1次执行，均4行非空
-exact，各14源请求，响应17157/26552B，执行1210.506/205.167ms。两套服务全部终态。
-这不是普通估计选择或跨部署提速证据；模型/fit/load/catalog/baseline调用0。
+完整RDF源各55604实体的业务id统计9.206s离线冻结，原事实/权重/baseline/prompt不改。
+保存原路由诊断：coordinator834.612ms不变，fanout12842.692→777.969ms，上界10000→2，
+模型自行选择fanout；不是重试旧问题或实测提速。source-only统计，无答案或当前查询采集。
 
-实际冻结模型仍选coordinator。保存group6程序预测834.612ms coordinator vs
-12842.692ms fanout；三次bind共30000 record单位贡献+11468.808预测ms。旧封存
-属性响应各20409行，但两源合计1个不同起点键。没有新源查询、模型调用、训练或
-重评分；不能把这个曝光后的1直接写进参数。[下一tiny门](decisions/equality_key_bounds_next.md)：
-独立完整事实生成冻结source/snapshot/label/property的等值字符串键重复度上界，
-可选metadata收紧实际绑定数量限额，使预测和执行一致。缺统计保留原界；不从字段名
-假设唯一，不绕过快照/估计检查，不重训权重或强制赢家。该门前不继续大题。
+新journal finbench-rdf-nl-campaign-20260913-equality-v1继承全部旧28结果后首次运行group7。
+两XGAP模式均1次模型、1个估计选中的fanout计划、14源请求/182844047B，正确空答案EM1；
+完整80.876/84.423s。FedUP原生失败EM0；FedX共同响应预算中断EM0；四方法合计4模型调用、
+12296输入/2015输出token。不是总体/非空NL准确率或模式Pareto/提速结论，旧分母/失败不改。
 
-本轮正式新问题0；NL下一group7，journal finbench-rdf-nl-campaign-20260913-contribution-v2；
-Native fixed下一20、RDF fixed下一5、native NL未启动。旧groups0–6失败/曝光/版本
-不变，120=24/48/48和33空15非空保持。FedShop不重复旧失败下载；3804210由用户更新。
-所有句柄已终态（41722/7063/46323/97549 exit0），无活跃等待。保持6GiB磁盘reserve。
-Sep14 17:00核心/接口、Sep18论文结果不变；Goal active，旧暂停解除，整体尚未完成。
+下一tiny门：scheduler保留所有中间rows，trace再物化它们，两个成功完整trace各604MB；
+精度RSS2.111GB接近原2GiB限额。先验证仅one-shot的中间数据生命周期与紧凑trace，
+保留最终答案/节点计数/实际源请求与failure replay，再进入未运行group8。不要重跑旧大题。
+该门设计尚未实现；不扩大为通用产品、不修改baseline优化结果、不重新训练毫秒回归。
+
+当前NL下一8（新equality journal；旧journals仅证据）；Native fixed下一20、RDF fixed下一5，
+native NL未启动。120=24/48/48，评价33空15非空保持；FedShop旧下载失败不重复，3804210
+由用户更新。所有新句柄终态，包括35646/36948/47645/61840/43591/19763/61916/71240；
+新campaign三次session关闭均drained/terminal/observer stopped，空闲11.264GB，6GiB reserve。
+Sep14 17:00核心/接口、Sep18论文结果不变；Goal active，用户已继续，旧暂停无效。
 
 以下为前序记录，执行状态以上方为准。
 

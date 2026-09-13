@@ -1,4 +1,9 @@
 2026-09-13: [源端候选真实组件通过，估计仍缺选择性](report/anchor_source_bind_20260913.md)。
+
+2026-09-13: [Frozen equality-key bounds](decisions/equality_key_bounds_v1.md) connect offline
+complete source statistics to estimated and actual binding limits.16 new cases,
+one ordinary native tiny, and two correct real NL outcomes accepted; see
+[results and next memory/trace gate](report/equality_key_bounds_20260913.md).
 下一门是[独立冻结键上界](decisions/equality_key_bounds_next.md)，不是重跑失败大题。
 
 2026-09-13: [One bounded source-anchor fanout](decisions/anchor_source_bind_v1.md)

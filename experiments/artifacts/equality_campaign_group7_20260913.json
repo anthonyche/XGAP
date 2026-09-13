@@ -1,0 +1,569 @@
+{
+  "schema_version": "xgap-equality-campaign-group7-audit-v1",
+  "role": "first attempts on next immutable real NL group; not a paired old-question retry",
+  "run_receipt": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/runs/run-0000/receipt.json",
+    "sha256": "f99cc0c2bd070e8d72f8755db6ce93b3c9fd485912bb41adb174eeac3f6aa257"
+  },
+  "rows": [
+    {
+      "cell": "natural_language-00-007-0",
+      "outcome": {
+        "bytes": 6058,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-0/execution/receipt.json",
+        "sha256": "190dd12a17f4853aad3e4144215549a048c46dae7d6d167b2e4718c284556ba2"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-0/execution/score.json",
+        "sha256": "1d611fc18c23717660c1d6b88e012d83544af49af22316f04479d9072e64a06c",
+        "bytes": 1108
+      },
+      "method": "fedup",
+      "question_id": "FBNS-2-2ac31a7a1ca31f82",
+      "status": "external_failed",
+      "success": false,
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "model_calls": 1,
+      "input_tokens": 3075,
+      "output_tokens": 504,
+      "online_ms": 7555.102459155023,
+      "planning_ms": null,
+      "execution_ms": 159.8381670191884,
+      "source_calls": 0,
+      "response_bytes": 0,
+      "peak_rss_bytes": {
+        "method": 516718592,
+        "source": 318210048
+      },
+      "quiescence": {
+        "complete": true,
+        "groups": [
+          {
+            "complete": true,
+            "elapsed_ms": 456.4696243032813,
+            "live_pids": [],
+            "name": "fedup",
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM"
+            ]
+          },
+          {
+            "complete": true,
+            "elapsed_ms": 446.15683425217867,
+            "live_pids": [],
+            "name": "control",
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM"
+            ]
+          },
+          {
+            "complete": true,
+            "elapsed_ms": 445.92850003391504,
+            "live_pids": [],
+            "name": "graph",
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM"
+            ]
+          }
+        ],
+        "new_serving_session_required": true,
+        "recovery_ms": 1348.7864574417472
+      }
+    },
+    {
+      "cell": "natural_language-00-007-1",
+      "outcome": {
+        "bytes": 12588,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-1/execution/receipt.json",
+        "sha256": "018b9060bd6cd820132cc677f3bdc3b37d76cd47035c357ba19d55d7cb0cb5bf"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-1/execution/score.json",
+        "sha256": "11348fa641310c806a633e4eab806897aa7bb694cc390217cadbdf8f0b47e2ca",
+        "bytes": 1106
+      },
+      "method": "xgap-precision",
+      "question_id": "FBNS-2-2ac31a7a1ca31f82",
+      "status": "answered",
+      "success": true,
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "model_calls": 1,
+      "input_tokens": 3075,
+      "output_tokens": 504,
+      "online_ms": 80875.79795811325,
+      "planning_ms": 60.39004027843475,
+      "execution_ms": 67019.57287546247,
+      "source_calls": 14,
+      "response_bytes": 182844047,
+      "peak_rss_bytes": {
+        "method": 2111209472,
+        "source": 1556332544
+      },
+      "quiescence": {
+        "complete": true,
+        "kind": "normal_materialized_return_and_observed_source_drain"
+      },
+      "core_receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-1/execution/worker/core/receipt.json",
+        "sha256": "d10d637d7f812991b248bf881d789879a2174555c892cbe8ae08310bc2403950",
+        "bytes": 8274
+      },
+      "final_plan_executions": 1,
+      "core_execution_ms": 67019.57287546247,
+      "core_planning_ms": 60.39004027843475,
+      "core_trace_bytes": 603911890,
+      "selection": {
+        "algorithm": "estimated_argmin_per_interpretation_then_quality_cost_argmin_v1",
+        "candidate_id": "c1",
+        "estimated_ms": 777.9694883670753,
+        "frontier_is_actual_quality": false,
+        "interpretation_options": [
+          {
+            "candidate_id": "c1",
+            "estimated_ms": 777.9694883670753,
+            "objective_ms": 827.9694883670753,
+            "plan_id": "oneshot:755939ce75ed89110666",
+            "quality_fallback_used": false,
+            "quality_proxy": 0.95,
+            "quality_proxy_calibrated": false,
+            "ranking_quality_proxy": 0.95,
+            "strategy_id": "placement-0/anchor_fanout_bind"
+          }
+        ],
+        "objective_ms": 827.9694883670753,
+        "optimality_scope": "estimated compatible admitted neighborhood; no global physical or answer guarantee",
+        "plan_id": "oneshot:755939ce75ed89110666",
+        "proxy_frontier": [
+          "c1"
+        ],
+        "quality_fallback_used": false,
+        "quality_proxy": 0.95,
+        "quality_proxy_calibrated": false,
+        "ranking_quality_proxy": 0.95,
+        "selection_uses_execution_observations": false,
+        "strategy_id": "placement-0/anchor_fanout_bind"
+      },
+      "strategy_details": {
+        "combination_enumeration": false,
+        "driver": "cq33/anchor_reduction/keys",
+        "driver_field": "v0",
+        "extra_remote_call_slots": 0,
+        "frozen_key_bound": {
+          "composition": "sum of complete matching-record maxima; overlapping providers may overcount",
+          "distinct_keys_upper_bound": 2,
+          "leaves": [
+            {
+              "label": "XGAPFinBenchAccount",
+              "maximum_matching_records": 1,
+              "operator_id": "cq18",
+              "property": "id",
+              "snapshot_version": "2591ac594fe0b88486bd88290e1f3a2f04ca6d9222d26621b65e343bf9caa150",
+              "source_id": "control",
+              "statistics_sha256": "e7c3b19475884fe6f7421e3fe69f173e5aefe83369d35b6067b2b3e8f95997d3"
+            },
+            {
+              "label": "XGAPFinBenchAccount",
+              "maximum_matching_records": 1,
+              "operator_id": "cq19",
+              "property": "id",
+              "snapshot_version": "bbad8f66368657608517847d043c52bbfd2b3c2a5c7c2d7faf4a1d451f61a06d",
+              "source_id": "graph",
+              "statistics_sha256": "ac315f328b606dcfe0f7df54dbc1a3f6e4ad5805e99dfb34f22bad97be1ccdd9"
+            }
+          ],
+          "profile": "frozen-equality-key-bound-v1"
+        },
+        "max_bindings": 2,
+        "policy_max_bindings": 10000,
+        "rewrite_count": 3,
+        "sparql_max_binding_bytes": 1048576,
+        "target_matches": [
+          "cq1",
+          "cq4",
+          "cq9"
+        ]
+      }
+    },
+    {
+      "cell": "natural_language-00-007-2",
+      "outcome": {
+        "bytes": 6315,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-2/execution/receipt.json",
+        "sha256": "2c242e92a26745275efc0737aa066becf3852e32e0bc1dfab575252721e9904b"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-2/execution/score.json",
+        "sha256": "336705904947a4c9b7ea8fe6a48aeddd24c14a97b2f9151317ff459ad0daaf76",
+        "bytes": 1115
+      },
+      "method": "fedx",
+      "question_id": "FBNS-2-2ac31a7a1ca31f82",
+      "status": "harness_budget_censored",
+      "success": false,
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "model_calls": 1,
+      "input_tokens": 3075,
+      "output_tokens": 504,
+      "online_ms": 12935.358791612089,
+      "planning_ms": null,
+      "execution_ms": 5284.042958170176,
+      "source_calls": 1501,
+      "response_bytes": 556318163,
+      "peak_rss_bytes": {
+        "method": 395968512,
+        "source": 1413693440
+      },
+      "quiescence": {
+        "complete": true,
+        "groups": [
+          {
+            "complete": true,
+            "elapsed_ms": 61.98424939066172,
+            "live_pids": [],
+            "name": "fedx",
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM"
+            ]
+          },
+          {
+            "complete": true,
+            "elapsed_ms": 455.01183439046144,
+            "live_pids": [],
+            "name": "control",
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM"
+            ]
+          },
+          {
+            "complete": true,
+            "elapsed_ms": 465.2012502774596,
+            "live_pids": [],
+            "name": "graph",
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM"
+            ]
+          }
+        ],
+        "new_serving_session_required": true,
+        "recovery_ms": 982.4244994670153
+      }
+    },
+    {
+      "cell": "natural_language-00-007-3",
+      "outcome": {
+        "bytes": 12594,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-3/execution/receipt.json",
+        "sha256": "d5ce04cf39fb01d2a614c1da3cdfa7d7f02e5e8cbbe645e460d6e3f504deddd4"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-3/execution/score.json",
+        "sha256": "36f380550ad9bf31fbb514077a061dac98de4e97d70a13fbd84e45d6c7a6818f",
+        "bytes": 1107
+      },
+      "method": "xgap-performance",
+      "question_id": "FBNS-2-2ac31a7a1ca31f82",
+      "status": "answered",
+      "success": true,
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "model_calls": 1,
+      "input_tokens": 3071,
+      "output_tokens": 503,
+      "online_ms": 84423.40325005352,
+      "planning_ms": 59.36683341860771,
+      "execution_ms": 67225.78249964863,
+      "source_calls": 14,
+      "response_bytes": 182844047,
+      "peak_rss_bytes": {
+        "method": 1653735424,
+        "source": 1609334784
+      },
+      "quiescence": {
+        "complete": true,
+        "kind": "normal_materialized_return_and_observed_source_drain"
+      },
+      "core_receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/cells/natural_language-00-007-3/execution/worker/core/receipt.json",
+        "sha256": "2a2e369679f5192b2919246354100f04267cc1d505804dc40316600bdff7c667",
+        "bytes": 8277
+      },
+      "final_plan_executions": 1,
+      "core_execution_ms": 67225.78249964863,
+      "core_planning_ms": 59.36683341860771,
+      "core_trace_bytes": 603911887,
+      "selection": {
+        "algorithm": "estimated_argmin_per_interpretation_then_quality_cost_argmin_v1",
+        "candidate_id": "c1",
+        "estimated_ms": 777.9694883670753,
+        "frontier_is_actual_quality": false,
+        "interpretation_options": [
+          {
+            "candidate_id": "c1",
+            "estimated_ms": 777.9694883670753,
+            "objective_ms": 777.9694883670753,
+            "plan_id": "oneshot:755939ce75ed89110666",
+            "quality_fallback_used": false,
+            "quality_proxy": 0.9,
+            "quality_proxy_calibrated": false,
+            "ranking_quality_proxy": 0.9,
+            "strategy_id": "placement-0/anchor_fanout_bind"
+          }
+        ],
+        "objective_ms": 777.9694883670753,
+        "optimality_scope": "estimated compatible admitted neighborhood; no global physical or answer guarantee",
+        "plan_id": "oneshot:755939ce75ed89110666",
+        "proxy_frontier": [
+          "c1"
+        ],
+        "quality_fallback_used": false,
+        "quality_proxy": 0.9,
+        "quality_proxy_calibrated": false,
+        "ranking_quality_proxy": 0.9,
+        "selection_uses_execution_observations": false,
+        "strategy_id": "placement-0/anchor_fanout_bind"
+      },
+      "strategy_details": {
+        "combination_enumeration": false,
+        "driver": "cq33/anchor_reduction/keys",
+        "driver_field": "v0",
+        "extra_remote_call_slots": 0,
+        "frozen_key_bound": {
+          "composition": "sum of complete matching-record maxima; overlapping providers may overcount",
+          "distinct_keys_upper_bound": 2,
+          "leaves": [
+            {
+              "label": "XGAPFinBenchAccount",
+              "maximum_matching_records": 1,
+              "operator_id": "cq18",
+              "property": "id",
+              "snapshot_version": "2591ac594fe0b88486bd88290e1f3a2f04ca6d9222d26621b65e343bf9caa150",
+              "source_id": "control",
+              "statistics_sha256": "e7c3b19475884fe6f7421e3fe69f173e5aefe83369d35b6067b2b3e8f95997d3"
+            },
+            {
+              "label": "XGAPFinBenchAccount",
+              "maximum_matching_records": 1,
+              "operator_id": "cq19",
+              "property": "id",
+              "snapshot_version": "bbad8f66368657608517847d043c52bbfd2b3c2a5c7c2d7faf4a1d451f61a06d",
+              "source_id": "graph",
+              "statistics_sha256": "ac315f328b606dcfe0f7df54dbc1a3f6e4ad5805e99dfb34f22bad97be1ccdd9"
+            }
+          ],
+          "profile": "frozen-equality-key-bound-v1"
+        },
+        "max_bindings": 2,
+        "policy_max_bindings": 10000,
+        "rewrite_count": 3,
+        "sparql_max_binding_bytes": 1048576,
+        "target_matches": [
+          "cq1",
+          "cq4",
+          "cq9"
+        ]
+      }
+    }
+  ],
+  "total_model_calls": 4,
+  "input_tokens": 12296,
+  "output_tokens": 2015,
+  "population": "original120=24development/48training/48evaluation; original33empty/15nonempty evaluation split retained",
+  "prior_outcomes_inherited": 28,
+  "next_group": 8,
+  "closures": [
+    {
+      "cause": "natural_language-00-007-0:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2",
+          "fedup-host/serving-summary"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.2536253780126572,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "fedup",
+            "pid": 87982,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.8557494729757309,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 87973,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.8061667904257774,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 87963,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 97.37724997103214,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/runs/run-0000/session-001"
+    },
+    {
+      "cause": "natural_language-00-007-2:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.8892500773072243,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "fedx",
+            "pid": 88204,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.6224587559700012,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 88026,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.596500001847744,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 88012,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 270.2604169026017,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/runs/run-0000/session-002"
+    },
+    {
+      "cause": "chunk-complete",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 397.64599967747927,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": [
+                "SIGTERM"
+              ]
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 88254,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 393.31391733139753,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": [
+                "SIGTERM"
+              ]
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 88252,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 1754.4144159182906,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/runs/run-0000/session-003"
+    }
+  ],
+  "original_results_changed": false,
+  "baseline_optimized": false,
+  "old_profile_time_pooling": false,
+  "conclusion": "Both XGAP modes chose one estimated anchor fanout and returned the correct empty answer within original budgets; no overall/nonempty/speedup claim",
+  "next_gate": "Small-graph lifecycle/trace retention audit; successful full traces each exceed600MB and method RSS is near2GiB. No repeated full query.",
+  "audit": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-equality-v1/group7-audit.json",
+    "sha256": "3b15ea4f4cf55efc30c338f6a836f2b820d2a3cb0e8d9f3385ce01b0f68db823",
+    "bytes": 14440
+  }
+}

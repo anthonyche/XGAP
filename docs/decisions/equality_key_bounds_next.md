@@ -1,7 +1,8 @@
 # Next bounded gate: frozen equality-key multiplicity
 
 2026-09-13, next engineering design after the accepted source-bind component.
-This is a pending design, not an implemented feature or measured ranking result.
+Implemented in630d802/e9acb6b; see [the accepted contract](equality_key_bounds_v1.md) and
+[real tiny/full-source/NL evidence](../report/equality_key_bounds_20260913.md). The historical design below is retained.
 
 The saved full group6 property responses each contain20409 account rows, but
 the original scalar equality produces one distinct canonical anchor key across
