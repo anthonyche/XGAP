@@ -1,3 +1,10 @@
+## 完整 RDF 版本一次离线发布 — 2026-09-13
+
+[新SF0.1 RDF配置](report/full_rdf_profile_20260913.md)已冻结，复用原graph/catalog/模型，
+只转换control的本地元数据；无大数据查询、服务启动或评价。祖先materialization_root
+保留作来源，实际装载使用offline.rdf_loads。下一步共同正式预算按每题计算，不继承
+tiny代理256次临时上限或跨题累计状态；不为改善已截断开发题而重跑baseline。
+
 ## 共享 NL 全局编译与真实入口 — 2026-09-13
 
 [有界编译/前端契约](decisions/shared_global_sparql_v1.md)已实现，11项新风险检查与

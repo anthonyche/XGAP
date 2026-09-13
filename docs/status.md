@@ -13,9 +13,12 @@ a0d5ebf接通bounded global SPARQL、共享K3质量优先前端、共同NL worke
 语义失败，不用于优势比较。已保存查询的一次离线并集诊断exact，不冒充FedX答案。
 没有重跑该query、优化baseline或重建catalog/model；全部8个服务进程退出。
 
-接下来发布完整RDF离线衍生版本，完善正式每题预算/observer重置/服务装载和平衡
-campaign。正式预算不能照搬tiny临时256次或使用跨题累计计数。完整服务未装载，
-formal_campaign_ready=false；外部NL已实施并触达真实源，但本条完成答案仍未测得。
+完整SF0.1的新RDF离线版本已发布：55,604实体/309,577关系；复用原618MB graph，
+生成50.107MB control元数据衍生文件，原59,587项catalog/32观测模型不变，零大数据查询。
+[完整输入发布](report/full_rdf_profile_20260913.md)。配置SHA723e2517…，实际文件在offline.rdf_loads。
+接下来正式每题预算/observer重置、服务装载与平衡campaign。正式预算不能照搬tiny
+临时256次或跨题累计计数。完整服务未装载，formal_campaign_ready=false；外部NL已
+触达真实源，但被截断那条的FedX完成答案仍未观察到，不重跑该题改善结果。
 
 用户9月13日13:32已恢复工作，旧暂停解除；保持tiny开发/failure replay。120组与
 24/48/48划分、评价33空15非空冻结。Sep14 17:00核心/接口、Sep18真实结果目标不变。
