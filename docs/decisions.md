@@ -1,3 +1,7 @@
+2026-09-13: [Contribution campaign release](decisions/contribution_campaign_release_v2.md)
+freezes the next two NL groups and complete prior-outcome lineage. Two focused
+checks pass0.23s; offline publication and first real serving association pending.
+
 2026-09-13: [Contribution-v2](decisions/compact_contribution_v2.md) is implemented
 and verified on the actual tiny deterministic chain(56 amount/6 transfers, one
 estimated plan). Four new checks plus one reference-type regression pass. One
