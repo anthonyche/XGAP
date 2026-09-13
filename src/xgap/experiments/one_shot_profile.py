@@ -172,6 +172,15 @@ class FrozenOneShotProfile:
         for key, spec in raw["backends"].items():
             _text(key); _fields(spec, ("semantic", "client"))
             backends[key], clients[key] = _backend(spec["semantic"], key), _client_spec(spec["client"])
+            capability=backends[key].profile
+            if capability is not None and (capability.backend_id!=key or capability.engine!=clients[key]['engine']
+                    or capability.language.lower()!=('cypher' if clients[key]['engine']=='neo4j' else 'sparql')):
+                raise ValueError('Backend instance capability and client engine differ')
+        from xgap.planning.runtime_instance_work import FrozenInstanceWorkDeployment
+        if isinstance(estimator,FrozenInstanceWorkDeployment):
+            references=dict(estimator.reference_backends)
+            if set(references)!=set(clients) or any(clients[k]['engine']!=reference for k,reference in references.items()):
+                raise ValueError('Instance estimator reference engine differs from client engine')
         for key, spec in raw["sources"].items():
             _fields(spec, ("version", "replicas")); _text(key); _text(spec["version"])
             if not isinstance(spec["replicas"], list) or not spec["replicas"]:

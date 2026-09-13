@@ -27,6 +27,7 @@ FEATURE_SCHEMA = "xgap-runtime-backend-work-features-v2"
 REMOTE = {R.REMOTE_QUERY, R.REMOTE_BIND_QUERY}
 FAMILIES = ("match", "path")
 MODES = ("full", "bind")
+MEASURES = ("calls", "record_units", "column_units", "logical_byte_units", "binding_units")
 
 
 def feature_names(statistics):
@@ -35,7 +36,7 @@ def feature_names(statistics):
         *(f"kind.{kind.value}.input_units" for kind in R if kind not in REMOTE),
         *(f"backend.{source.backend_id}.{family}.{mode}.{measure}"
           for source in statistics.entries for family in FAMILIES for mode in MODES
-          for measure in ("calls", "record_units", "column_units", "logical_byte_units", "binding_units")))
+          for measure in MEASURES))
 
 
 def _support_feature(name):
@@ -225,6 +226,13 @@ class FrozenWorkEstimator:
         """Shared scorer; explicit offline deployment owns alternative statistics."""
         started = time.perf_counter()
         f = extract_work_features(plan, statistics)
+        return self._predict_features(plan, statistics, f, started=started)
+
+    def _predict_features(self, plan, statistics, f, *, started=None):
+        """Score an explicitly projected vector in the original frozen basis."""
+        started = time.perf_counter() if started is None else started
+        if f.names != self.feature_names or f.schema_sha256 != self.feature_schema_sha256:
+            raise ValueError('Prediction feature basis differs from the frozen model')
         p = json.loads(self.training_provenance_json)
         provenance = {"model_version": self.model_version, "model_sha256": self.model_sha256,
             "training_id": p["training_id"], "training_kind": p["training_kind"],
@@ -362,6 +370,9 @@ def fit_work_estimator(samples, *, statistics, training_id, model_version, train
 
 def frozen_estimator_from_dict(data):
     from xgap.planning.runtime_work_deployment import DEPLOYMENT_SCHEMA, FrozenWorkDeployment
+    from xgap.planning.runtime_instance_work import INSTANCE_SCHEMA, FrozenInstanceWorkDeployment
+    if data.get("schema_version") == INSTANCE_SCHEMA:
+        return FrozenInstanceWorkDeployment.from_dict(data)
     if data.get("schema_version") == DEPLOYMENT_SCHEMA:
         return FrozenWorkDeployment.from_dict(data)
     if data.get("schema_version") == MODEL_SCHEMA:
