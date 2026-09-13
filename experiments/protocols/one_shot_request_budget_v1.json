@@ -1,0 +1,11 @@
+{
+  "schema_version": "xgap-request-budget-v1",
+  "process_budget": {
+    "wall_seconds": 180.0,
+    "max_group_rss_bytes": 2147483648,
+    "max_log_bytes": 1048576,
+    "max_group_processes": 64,
+    "sample_seconds": 0.05,
+    "terminate_grace_seconds": 0.5
+  }
+}

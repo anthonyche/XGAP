@@ -13,6 +13,7 @@ test = ["pytest"]
 test-sparql = ["pytest", "rdflib==7.1.4"]
 entity-answers = ["jsonschema==4.26.0"]
 parquet = ["pyarrow>=15"]
+experiment-harness = ["psutil==7.0.0"]
 
 [project.scripts]
 xgap-local-ui = "xgap.ui.local_app:main"
