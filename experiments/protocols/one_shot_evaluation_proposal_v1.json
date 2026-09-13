@@ -344,5 +344,24 @@
     "full_rdf_profile_published": false,
     "full_data_services_loaded": false,
     "formal_method_runs": 0
+  },
+  "common_fixed_trial_evidence": {
+    "code_commit": "1db4c3a",
+    "report": "docs/report/common_rdf_trial_20260913.md",
+    "audit": "experiments/artifacts/common_rdf_trial_20260913.json",
+    "new_native_gate_attempts": 1,
+    "method_requests": 3,
+    "source_requests": 171,
+    "new_unique_tests_passed": 6,
+    "worker_and_host_resource_integration": true,
+    "failure_cleanup_of_owned_method_and_sources": true,
+    "full_outer_method_time_through_terminal_seal": true,
+    "baseline_algorithm_changes": 0,
+    "all_owned_processes_terminal": true,
+    "rdf_overlap_confound": true,
+    "shared_triples_in_tiny": 24,
+    "shared_nl_external_compiler_implemented": false,
+    "balanced_campaign_controller_implemented": false,
+    "formal_campaign_ready": false
   }
 }

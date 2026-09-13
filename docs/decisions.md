@@ -1,3 +1,11 @@
+## 共同固定语义评价与 RDF 重叠事实 — 2026-09-13
+
+[共同入口契约](decisions/common_method_trial_v1.md)及[首次实际记录](report/common_rdf_trial_20260913.md)
+已完成。用户提前恢复执行；旧暂停不再约束。保留FedX的128倍金额与FedUP聚合500，
+不修baseline。现RDF源有24条身份/类型重叠，集合/联邦bag语义混淆，需修正我们
+自己的共同输入表示，不把该现象解释为planner优势。只有新表示在tiny等价验证后
+才进入正式共同外部轨；原population/reference与所有首次结果保留。
+
 ## 独立 RDF 实例投影与本轮暂停 — 2026-09-13
 
 [RDF 实例估计器契约](decisions/rdf_instance_estimator_v1.md)明确：保留实际源身份和统计，
