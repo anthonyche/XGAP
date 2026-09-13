@@ -65,3 +65,13 @@ cleanup, and interrupted request identity scoring0 against an empty reference.
 An unrelated owned test service remains untouched by group termination. No model,
 database, baseline, old regression or accepted native gate ran. Next is one
 zero-network preflight using the already frozen full serving profile.
+
+## Frozen-profile preflight accepted
+
+One new synthetic interface request against the full serving profile passed with
+zero model/backend calls,2871.967ms worker wall and250,527,744bytes sampled group
+RSS. This is preflight, not query latency or effectiveness. Parent/child/partial
+file hashes and terminal process identity were audited. Do not repeat the five
+accepted checks or this preflight. See [the report](../report/one_shot_process_guard_20260913.md).
+Common hosted-engine resources/quiescence, full method cost and external input/
+scoring remain necessary before a campaign.

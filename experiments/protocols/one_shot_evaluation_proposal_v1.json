@@ -311,5 +311,16 @@
     "method_runs": 0,
     "weights_changed": false,
     "transfer_calibrated": false
+  },
+  "process_guard_evidence": {
+    "code_commit": "017a0d2",
+    "report": "docs/report/one_shot_process_guard_20260913.md",
+    "audit": "experiments/artifacts/one_shot_process_guard_20260913.json",
+    "budget": "experiments/protocols/one_shot_request_budget_v1.json",
+    "guarded_full_profile_preflight": true,
+    "method_runs": 0,
+    "scope": "method-worker process group only",
+    "hosted_service_quiescence_and_resource_integration": false,
+    "full_outer_method_cost_accounting": false
   }
 }

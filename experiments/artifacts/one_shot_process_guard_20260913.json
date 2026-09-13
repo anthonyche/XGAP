@@ -1,0 +1,54 @@
+{
+  "schema_version": "xgap-process-guard-acceptance-v1",
+  "success": true,
+  "code_commit": "017a0d2",
+  "audited_at": "2026-09-13T04:47:08.513769+00:00",
+  "root": "/Users/anthonyche/xgap-data/finbench-serving-guard-preflight-20260913-v1",
+  "receipt_sha256": "8dd1177a9e81ce360a5b7cec153a3afd03278a84ccf980821884ecfce5cfd4d1",
+  "guard_receipt_sha256": "99d674df0ca7339619e5ab77419b0e69726cca0cfdcf42f9bacc5281c1b2b89e",
+  "worker_receipt_sha256": "ad636e86f0583c6d6ad744571478f62918aa20cd80c0c59a4eedd5d30db6563b",
+  "profile_sha256": "0d77ce65976c4e7520ffdc7926b1c40398ec8f5bf73ee709343dcd27767f152c",
+  "budget_sha256": "fa964c39c9fa3a77c6a77927fbbcc83588015f0b6b93d9b28ad4200b21621206",
+  "budget": {
+    "max_group_processes": 64,
+    "max_group_rss_bytes": 2147483648,
+    "max_log_bytes": 1048576,
+    "sample_seconds": 0.05,
+    "terminate_grace_seconds": 0.5,
+    "wall_seconds": 180.0
+  },
+  "operation": "preflight",
+  "execution_kind": "preflight",
+  "question_id": "SERVING-PREFLIGHT-20260913",
+  "population": "synthetic_interface_preflight",
+  "supervised_end_to_end_ms": 2871.967416256666,
+  "sampled_peak_method_worker_rss_bytes": 250527744,
+  "cleanup": {
+    "complete": true,
+    "elapsed_ms": 0.5073333159089088,
+    "live_pids": [],
+    "signals": []
+  },
+  "sample_count": 50,
+  "method_runs": 0,
+  "model_calls": 0,
+  "backend_calls": 0,
+  "fit_calls": 0,
+  "new_tests_passed": 5,
+  "new_tests_elapsed_seconds": 0.82,
+  "repeated_old_gates": 0,
+  "checks": [
+    "Owned process group cleanup and unrelated service isolation",
+    "Deadline/RSS/log/orphan/monitor failures retained",
+    "Interrupted query identity retained; empty-reference failure scores zero",
+    "Actual frozen full-profile CLI preflight passed under new parent watchdog",
+    "Parent/worker/partial-file hashes match; worker identity no longer live"
+  ],
+  "scope": "method worker only; no hosted engine/remote LLM resources measured",
+  "formal_campaign_ready": false,
+  "remaining": [
+    "External adapter/input/normalization parity",
+    "Hosted method/backend resources and post-failure quiescence barrier",
+    "Actual full-data service loading and method runs"
+  ]
+}

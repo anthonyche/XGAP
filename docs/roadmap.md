@@ -1,18 +1,20 @@
 # XGAP Roadmap
 
-## 当前执行：9月13日已恢复，真实服务输入milestone完成
+## 当前执行：请求守护与失败计分已接通，继续共同评价接口
 
-用户的中午恢复门限已到，12:08恢复工作，现有xgap heartbeat已恢复每小时推进。
-161ef2e已完成真实FinBench serving输入发布/审计：18表、55,604实体、309,577关系，
-全部事实同源物化，59,587条catalog涵盖全实体/名称/ID/schema/control，原模型权重
-不变，新统计与source snapshot绑定；两个模式可加载。物化7.146秒、发布7.916秒
-（含一次load校验1.566秒），零模型/后端/训练/方法运行。
+017a0d2新增180秒独立worker守护、采样RSS/日志/进程预算、进程组清理与失败终态。
+5项新风险检查一次通过0.82秒；一次完整FinBench profile零调用预检通过，worker
+2.872秒、采样RSS238.922MiB。中断题保留身份和分母，失败对空gold计0；部分用量
+未知即保留unknown。没有模型/数据库/训练/方法运行或旧成功门禁重跑。
+[本轮证据与准确边界](report/one_shot_process_guard_20260913.md)。
 
-首次发布的Loan schema遗漏保留，最小全schema replay修复后用新目录发布；累计
-5项新风险检查接受，不重复旧成功门禁。原120题与分母不变。[结果与证据](report/finbench_serving_profile_20260913.md)。
-完整真实数据尚未装载并执行，正式campaign_ready=false；下一步共同资源/watchdog/
-成本预算与外部输入/评分接口，之后主评价，最后消融。多RDF endpoint身份兼容仍需
-实际代码确认，不能假定已接通。整体Goal未完成，核心Sep14 17:00/真实Sep18保持。
+此前真实serving输入已冻结（161ef2e）：18表55,604实体309,577关系，59,587条catalog，
+原model未fit，新source统计与两模式可加载；[输入证据](report/finbench_serving_profile_20260913.md)。
+服务尚未装载执行，120题及33空/15非空评价分母不变。当前守护只覆盖方法worker，
+父adapter完整成本、常驻server/数据库资源和异常后的静止屏障仍需共同runner接线。
+下一步真正连接XGAP-RDF多endpoint的compiler/estimator身份、共同外部输入/评分，
+再真实主评价/scale，最后消融；不替baseline优化结果，不继续反复做catalog。
+用户暂停已到期，heartbeat按小时推进；整体Goal未完成，Sep14 17:00/真实Sep18保持。
 
 ## 最新执行门限：本轮已完成，暂停至9月13日12:00（北京时间）
 
