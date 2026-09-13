@@ -291,9 +291,11 @@
     "preserve_frozen_denominator": true
   },
   "execution_gate": {
-    "reason": "user_timed_resumption_reached",
-    "resumed_at": "2026-09-13T12:08:00+08:00",
+    "reason": "user_pause_after_completed_rdf_instance_milestone",
+    "last_resumed_at": "2026-09-13T12:08:00+08:00",
+    "resume_at": "2026-09-14T12:00:00+08:00",
     "resume_timezone": "Asia/Shanghai",
+    "paused_after_milestone": true,
     "goal_complete": false,
     "campaign_ready": false
   },
@@ -322,5 +324,27 @@
     "scope": "method-worker process group only",
     "hosted_service_quiescence_and_resource_integration": false,
     "full_outer_method_cost_accounting": false
+  },
+  "rdf_instance_evidence": {
+    "code_commit": "f385709",
+    "report": "docs/report/rdf_instances_native_20260913.md",
+    "audit": "experiments/artifacts/rdf_instances_native_20260913.json",
+    "same_engine_independent_instances": 2,
+    "tiny_entity_count": 8,
+    "tiny_relationship_count": 16,
+    "authored_semantic_queries": 3,
+    "exact_answers": 3,
+    "final_plans_executed": 3,
+    "backend_calls": 16,
+    "model_calls": 0,
+    "baseline_calls": 0,
+    "fit_calls": 0,
+    "alternative_executions": 0,
+    "weights_changed": false,
+    "transfer_calibrated": false,
+    "owned_services_stopped": true,
+    "full_rdf_profile_published": false,
+    "full_data_services_loaded": false,
+    "formal_method_runs": 0
   }
 }

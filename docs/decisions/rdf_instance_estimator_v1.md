@@ -37,7 +37,9 @@ O(B + D + V) time and O(B + D) additional space; the 20 workload measures per
 instance are fixed. Existing feature extraction/plan traversal remains polynomial
 in V, E and descriptor size. This does not enlarge the Ptime candidate domain or
 execute candidates. Training artifact serialization/provenance costs are also
-linear in the fixed artifact size and included in prediction time.
+linear in the fixed artifact size. The enclosing planning timer includes them;
+individual prediction_elapsed_ms currently excludes final deployment-provenance
+serialization and must not be presented as the entire planning cost.
 
 Nonnegative additive represented work is monotone for componentwise increases.
 This is not a guarantee about actual latency, optimal plan selection or parallel

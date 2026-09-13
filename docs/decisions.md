@@ -1,3 +1,13 @@
+## 独立 RDF 实例投影与本轮暂停 — 2026-09-13
+
+[RDF 实例估计器契约](decisions/rdf_instance_estimator_v1.md)明确：保留实际源身份和统计，
+同引擎工作特征投影到未修改的冻结权重；Ptime、未校准迁移、无在线执行探测。
+已有编译器与客户端实例能力复用，配置层校验 engine/capability 一致。
+[一次双 Fuseki 小图证据](report/rdf_instances_native_20260913.md)：三类各只执行一个
+预选计划，16次后端调用、三类答案均exact，5项新增检查通过，零模型/fit/baseline。
+本轮完成后暂停，2026-09-14 12:00 北京时间恢复。未发布完整RDF profile或开启主评价；
+不要重跑成功门禁。其余历史安排受 docs/goal.md 顶部最新门限约束。
+
 ## Move deterministic dataflow construction out of model generation
 
 Financial v2 failed parameter admission; v3 reached catalog grounding but source compilation
