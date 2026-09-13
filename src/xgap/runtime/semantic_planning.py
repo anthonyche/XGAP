@@ -15,6 +15,7 @@ from typing import Mapping
 from uuid import uuid4
 
 from xgap.compilers.errors import CompilerError
+from xgap.planning.equality_key_bounds import FrozenEqualityKeyBounds
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.runtime.contracts import RuntimeNode, RuntimeNodeKind as R
 from xgap.runtime.observations import PlanObservationCollector, PlanObservationRequest
@@ -41,12 +42,18 @@ class LogicalSource:
     source_id: str
     snapshot_version: str
     replica_backend_ids: tuple[str, ...]
+    equality_key_bounds: FrozenEqualityKeyBounds | None = None
 
     def __post_init__(self):
         if not self.source_id or not self.snapshot_version or not self.replica_backend_ids:
             raise ValueError("Logical source needs an identity, snapshot version and replicas")
         if len(set(self.replica_backend_ids)) != len(self.replica_backend_ids):
             raise ValueError("Replica backend IDs must be unique")
+        if self.equality_key_bounds is not None and (
+                not isinstance(self.equality_key_bounds, FrozenEqualityKeyBounds)
+                or self.equality_key_bounds.source_id != self.source_id
+                or self.equality_key_bounds.snapshot_version != self.snapshot_version):
+            raise ValueError("Equality statistics do not describe this logical snapshot")
 
 
 @dataclass(frozen=True)

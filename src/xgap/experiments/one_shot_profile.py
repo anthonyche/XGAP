@@ -23,6 +23,7 @@ from xgap.llm.compact_interpretation import (CompactInterpretationProviderConfig
     OpenAICompatibleCompactInterpretationProvider, WIRE_PROFILE as COMPACT_WIRE, WIRE_PROFILE_V2 as COMPACT_WIRE_V2)
 from xgap.semantic.compact_query import compact_schema
 from xgap.planning.runtime_work_estimator import frozen_estimator_from_dict
+from xgap.planning.equality_key_bounds import FrozenEqualityKeyBounds
 from xgap.runtime.semantic_compiler import SemanticBackend
 from xgap.runtime.semantic_planning import LogicalSource
 from xgap.semantic.interpretation import InterpretationRequest
@@ -183,16 +184,24 @@ class FrozenOneShotProfile:
             if set(references)!=set(clients) or any(clients[k]['engine']!=reference for k,reference in references.items()):
                 raise ValueError('Instance estimator reference engine differs from client engine')
         for key, spec in raw["sources"].items():
-            _fields(spec, ("version", "replicas")); _text(key); _text(spec["version"])
+            _fields(spec, ("version", "replicas"), ("equality_key_bounds",)); _text(key); _text(spec["version"])
             if not isinstance(spec["replicas"], list) or not spec["replicas"]:
                 raise ValueError("Logical sources require an explicit replica list")
-            source = LogicalSource(key, spec["version"], tuple(spec["replicas"]))
+            bounds = None
+            if "equality_key_bounds" in spec:
+                ref = spec["equality_key_bounds"]
+                bounds = FrozenEqualityKeyBounds.from_bytes(_file(self.root, ref), expected_sha256=ref["sha256"],
+                    source_id=key, snapshot_version=spec["version"])
+            source = LogicalSource(key, spec["version"], tuple(spec["replicas"]), bounds)
             for backend in source.replica_backend_ids:
                 if backend not in backends or backend in identities:
                     raise ValueError("Each backend must declare exactly one known logical source")
                 identities[backend] = (key, source.snapshot_version)
             if len({backends[b].resource_namespace for b in source.replica_backend_ids}) != 1:
                 raise ValueError("Replica identity namespace mismatch")
+            if bounds is not None and any(backends[b].resource_namespace != bounds.resource_namespace
+                                          for b in source.replica_backend_ids):
+                raise ValueError("Equality statistics identity namespace mismatch")
             sources[key] = source
         if (set(identities) != set(backends) or identities != {
                 s.backend_id:(s.source_id,s.snapshot_version) for s in estimator.statistics.entries}):

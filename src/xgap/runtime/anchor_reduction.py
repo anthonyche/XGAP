@@ -163,3 +163,43 @@ def depends_on(plan: FederatedExecutionPlan, output: str, target: str) -> bool:
             seen.add(identifier)
             pending.extend(nodes[identifier].inputs)
     return False
+
+
+def frozen_anchor_key_bound(program, anchor, operator_bounds):
+    """Sum complete provider maxima for the already proved node-read UNION.
+
+    Only exact string equality has a v1 bound. Every leaf must be covered;
+    provider overlaps may overcount but cannot remove keys. O(n*S) for n source
+    leaves and S explicit statistics entries; no endpoint or question oracle.
+    """
+    if not operator_bounds or type(anchor["condition"].get("value")) is not str:
+        return None
+    operators = {op.operator_id: op for op in program.operators}
+    field = anchor["condition"]["field"]
+    pending, seen, proof, total = [anchor["driver"]], set(), [], 0
+    while pending:
+        identifier = pending.pop()
+        if identifier in seen:
+            continue
+        seen.add(identifier)
+        op = operators[identifier]
+        if op.kind is S.UNION:
+            pending.extend(op.input_ids)
+            continue
+        if op.kind is not S.MATCH or "node" not in op.parameters:
+            return None
+        stats = operator_bounds.get(identifier)
+        if stats is None:
+            return None
+        label = op.parameters["node"].get("label")
+        prop = op.parameters.get("properties", {}).get(field)
+        limit = stats.bound(label, prop)
+        if limit is None:
+            return None
+        total += limit
+        proof.append({"operator_id": identifier, "source_id": stats.source_id,
+            "snapshot_version": stats.snapshot_version, "statistics_sha256": stats.sha256,
+            "label": label, "property": prop, "maximum_matching_records": limit})
+    return {"profile": "frozen-equality-key-bound-v1", "distinct_keys_upper_bound": total,
+            "composition": "sum of complete matching-record maxima; overlapping providers may overcount",
+            "leaves": sorted(proof, key=lambda item: item["operator_id"])} if proof else None

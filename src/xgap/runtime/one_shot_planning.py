@@ -78,12 +78,16 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
     if construction_bound > policy.max_physical_candidates:
         raise SemanticProgramError("Declared physical domain exceeds candidate-work budget")
     candidates = []
+    equality_bounds = {op: sources[source_id].equality_key_bounds
+                       for op, source_id in operator_sources.items()
+                       if sources[source_id].equality_key_bounds is not None}
     for index, placement in enumerate(placements):
         try:
             space = prepare_physical_strategies(program, source_bindings=placement,
                 backends=backends, max_remote_calls=policy.max_remote_calls,
                 max_parallelism=policy.max_parallelism, max_bindings=policy.max_bindings,
-                max_binding_bytes=policy.max_binding_bytes)
+                max_binding_bytes=policy.max_binding_bytes,
+                operator_equality_bounds=equality_bounds)
         except (ValueError, CompilerError) as error:
             rejected.append({"source_bindings": placement, "status": "unsupported_placement",
                              "reason": str(error)})

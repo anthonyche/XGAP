@@ -247,7 +247,8 @@ def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes,
 def prepare_physical_strategies(program: SemanticGraphProgram, *,
         source_bindings: Mapping[str, str], backends: Mapping[str, SemanticBackend],
         max_remote_calls: int = 16, max_parallelism: int = 4,
-        max_bindings: int = 10000, max_binding_bytes: int = 1_048_576) -> PhysicalStrategySpace:
+        max_bindings: int = 10000, max_binding_bytes: int = 1_048_576,
+        operator_equality_bounds=None) -> PhysicalStrategySpace:
     """Compile the baseline, single binds and at most one anchor fanout.
 
     The binding-list count is enforced by the existing scheduler. SPARQL also
@@ -300,6 +301,14 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
     anchor = baseline.metadata.get("anchor_reduction")
     if anchor:
         try:
+            from xgap.runtime.anchor_reduction import frozen_anchor_key_bound
+            for identifier, stats in (operator_equality_bounds or {}).items():
+                if (identifier not in source_bindings
+                        or backends[source_bindings[identifier]].resource_namespace != stats.resource_namespace):
+                    raise ValueError("Equality statistics source binding/namespace mismatch")
+            key_bound = frozen_anchor_key_bound(program, anchor, operator_equality_bounds)
+            anchor_limit = (min(max_bindings, max(1, key_bound["distinct_keys_upper_bound"]))
+                            if key_bound else max_bindings)
             identity = anchor["identity_field"]
             key_output = anchor["enforcing_filter"] + "/anchor_reduction/keys"
             by_id = {n.node_id: n for n in baseline.nodes}
@@ -317,16 +326,17 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
                 backend = backends[source_bindings[target_id]]
                 artifact, parameter = _bound_match_artifact(
                     QueryArtifact.from_dict(remote.parameters["artifact"]), backend,
-                    max_bindings=max_bindings, max_binding_bytes=max_binding_bytes,
+                    max_bindings=anchor_limit, max_binding_bytes=max_binding_bytes,
                     identity_column=identity_column)
                 replacements[remote_id] = replace(remote, kind=R.REMOTE_BIND_QUERY,
                     inputs=(key_output,), parameters={**dict(remote.parameters),
                         "artifact": artifact.to_dict(), "bind_field": identity,
-                        "parameter": parameter, "max_bindings": max_bindings})
+                        "parameter": parameter, "max_bindings": anchor_limit})
             plan = replace(baseline, nodes=tuple(replacements.get(n.node_id, n) for n in baseline.nodes))
             candidates.append(candidate("anchor_fanout_bind", plan, {
                 "rewrite_count": len(replacements), "target_matches": list(anchor["target_matches"]),
-                "driver": key_output, "driver_field": identity, "max_bindings": max_bindings,
+                "driver": key_output, "driver_field": identity, "max_bindings": anchor_limit,
+                **({"frozen_key_bound": key_bound, "policy_max_bindings": max_bindings} if key_bound else {}),
                 "sparql_max_binding_bytes": max_binding_bytes,
                 "extra_remote_call_slots": 0, "combination_enumeration": False},
                 ("All target uses require an identity in the proved anchor key set",
