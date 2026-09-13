@@ -291,10 +291,25 @@
     "preserve_frozen_denominator": true
   },
   "execution_gate": {
-    "reason": "user_pause_after_current_milestone",
-    "resume_not_before": "2026-09-13T12:00:00+08:00",
+    "reason": "user_timed_resumption_reached",
+    "resumed_at": "2026-09-13T12:08:00+08:00",
     "resume_timezone": "Asia/Shanghai",
     "goal_complete": false,
     "campaign_ready": false
+  },
+  "finbench_serving_evidence": {
+    "code_commit": "161ef2e",
+    "report": "docs/report/finbench_serving_profile_20260913.md",
+    "audit": "experiments/artifacts/finbench_serving_profile_20260913.json",
+    "profile_path": "/Users/anthonyche/xgap-data/finbench-sf01-serving-20260913-v1/native-profile-v2/profile.json",
+    "profile_sha256": "0d77ce65976c4e7520ffdc7926b1c40398ec8f5bf73ee709343dcd27767f152c",
+    "entity_count": 55604,
+    "relationship_count": 309577,
+    "catalog_entries": 59587,
+    "same_facts_rdf_materialized": true,
+    "native_services_loaded": false,
+    "method_runs": 0,
+    "weights_changed": false,
+    "transfer_calibrated": false
   }
 }

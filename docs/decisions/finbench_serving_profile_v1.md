@@ -67,3 +67,14 @@ not a dataset or baseline limitation. The exact failure is retained in
 experiments/artifacts/finbench_serving_first_attempt_20260913.json. A minimal
 all-five-type/thirteen-relation metadata replay passes0.22s after adding loans;
 no prior passing checks repeated. A new output version is the next action.
+
+## Actual publication accepted
+
+161ef2e published native-profile-v2 successfully:59,587 catalog entries (55,604
+entities), full source table counts, unchanged original model, both modes.
+Publication7916.304ms includes one load-validation1565.537ms. Actual source/model/
+catalog/input-identity audit passed with zero model/backend/fit/method calls.
+The first failure remains at native-profile/failure.json; source RDF was not
+rebuilt. Full evidence in [the report](../report/finbench_serving_profile_20260913.md).
+Do not rerun these successful preparations or five checks. Next is the common
+runtime/resource and external-method input/scoring boundary, not more catalog work.
