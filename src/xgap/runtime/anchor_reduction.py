@@ -28,6 +28,12 @@ def _equalities(condition):
         yield condition
 
 
+def anchor_binding_slot(program: SemanticGraphProgram) -> int:
+    """Conservative pre-compilation slot bound; no data or schema inference."""
+    return int(any(next(_equalities(op.parameters.get("condition", {})), None) is not None
+                   for op in program.operators if op.kind is S.FILTER))
+
+
 def reduce_scalar_anchor(program: SemanticGraphProgram,
                          plan: FederatedExecutionPlan) -> FederatedExecutionPlan:
     operators = {op.operator_id: op for op in program.operators}

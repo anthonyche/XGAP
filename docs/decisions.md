@@ -1,3 +1,9 @@
+2026-09-13: [One bounded source-anchor fanout](decisions/anchor_source_bind_v1.md)
+adds one complete candidate per placement, maximum1+2J+A with A<=1. Eight
+selected checks pass1.13s. Actual frozen estimates remain available but prefer
+coordinator; validate the native component separately, then inspect selectivity
+features. Do not force the candidate or rerun failed evaluation questions.
+
 2026-09-13: [本轮工程与新NL结果](report/anchor_and_nl_20260913.md)：精确锚点
 预筛选真实tiny4行exact；原顺序新group6两模式仍RSS超限，四方法失败已封存。
 下一门是tiny源端绑定/结果内存开销，不能宣布真实问题已解决或立即重跑大题。

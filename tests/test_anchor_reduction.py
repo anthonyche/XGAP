@@ -196,6 +196,6 @@ def test_bind_that_would_cycle_is_rejected_before_execution():
     artifacts=lambda plan:[n.parameters['artifact'] for n in plan.nodes if n.kind is R.REMOTE_QUERY]
     assert artifacts(reduced)==artifacts(plain)
     domain=prepare_physical_strategies(p,source_bindings=s,backends=b)
-    assert len(domain.candidates)==2 and domain.candidate_count_upper_bound==3
+    assert len(domain.candidates)==3 and domain.candidate_count_upper_bound==4
     assert any('would cycle' in r['reason'] for r in domain.rejected_strategies)
     assert not calls

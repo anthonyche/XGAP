@@ -1,7 +1,7 @@
 """Polynomial physical domain for frozen-estimate one-shot selection.
 
 Admit local source alternatives, then generate a feasible baseline plus each
-single-source deviation. For each placement, generate at most 1+2J legal strategy
+single-source deviation. For each placement, generate at most 2+2J legal strategy
 DAGs. This explicit neighborhood is not the full Cartesian physical space.
 No backend, observation collector, or training action is invoked here.
 """
@@ -13,6 +13,7 @@ import time
 
 from xgap.compilers.errors import CompilerError
 from xgap.runtime.physical_strategies import prepare_physical_strategies
+from xgap.runtime.anchor_reduction import anchor_binding_slot
 from xgap.runtime.semantic_compiler import compile_semantic_source
 from xgap.runtime.semantic_placement import _admit_expansion
 from xgap.semantic.program import SemanticOperatorKind as S, SemanticProgramError
@@ -70,7 +71,8 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
             if minimum_calls - min(c for _, c in choices) + count <= policy.max_remote_calls:
                 placements.append({**baseline, op: backend_id})
     join_count = sum(op.kind is S.JOIN for op in program.operators)
-    construction_bound = len(placements) * (1 + 2 * join_count)
+    anchor_slots = anchor_binding_slot(program)
+    construction_bound = len(placements) * (1 + 2 * join_count + anchor_slots)
     # Reject an over-budget domain before construction instead of silently
     # truncating it and misreporting exact selection over the promised domain.
     if construction_bound > policy.max_physical_candidates:
@@ -101,10 +103,11 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
             rejected.append({"source_bindings": placement, "strategy": rejection})
     if not candidates:
         raise SemanticProgramError("No executable physical strategy in the admitted domain")
-    return tuple(candidates), {"algorithm": "single_source_neighborhood_and_single_bind_rewrite_v1",
+    return tuple(candidates), {"algorithm": "single_source_neighborhood_bind_and_anchor_fanout_v2",
         "cartesian_expansion": False, "local_option_count": declared_count,
         "placement_count": len(placements), "construction_bound": construction_bound,
         "candidate_count": len(candidates), "rejected": rejected,
-        "domain": "minimum-call baseline plus one-source deviations; one bind rewrite per plan",
+        "anchor_candidate_upper_bound_per_placement": anchor_slots,
+        "domain": "one-source neighborhood; coordinator, one join bind, or one deterministic anchor fanout",
         "global_physical_optimality": False,
         "elapsed_ms": (time.perf_counter() - started) * 1000}

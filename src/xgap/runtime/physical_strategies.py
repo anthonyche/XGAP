@@ -1,8 +1,8 @@
 """Polynomial-size, executable strategy alternatives for a bound semantic DAG.
 
-The declared domain is the ordinary coordinator plan and, for each Join, at
-most one entity-bind rewrite in each direction. Rewrites are never combined:
-there are at most 1 + 2J plans, not a product of local choices. Compilation and
+The domain contains the coordinator plan, at most one entity-bind rewrite per
+Join direction, and one deterministic proved-anchor fanout candidate. There
+are at most 2 + 2J plans, not a product of local choices. Compilation and
 candidate construction perform no data access, profiling, model call or cost
 selection. An estimator can select its minimum over this explicit domain.
 
@@ -35,7 +35,7 @@ from xgap.runtime.semantic_placement import _admit_expansion
 from xgap.semantic.program import SemanticGraphProgram, SemanticOperatorKind as S, SemanticProgramError
 
 
-STRATEGY_PROFILE = "semantic-anchor-single-entity-bind-v2"
+STRATEGY_PROFILE = "semantic-anchor-fanout-and-single-bind-v3"
 MAX_SEMANTIC_OPERATORS = 64
 MAX_PROGRAM_BYTES = 1_048_576
 
@@ -70,10 +70,11 @@ class PhysicalStrategySpace:
     preparation_ms: float
     semantic_equivalence_key: str
     join_count: int
+    anchor_candidate_upper_bound: int = 0
 
     @property
     def candidate_count_upper_bound(self) -> int:
-        return 1 + 2 * self.join_count
+        return 1 + 2 * self.join_count + self.anchor_candidate_upper_bound
 
     def to_dict(self) -> dict[str, Any]:
         return {"profile": STRATEGY_PROFILE, "candidates": [c.to_dict() for c in self.candidates],
@@ -81,8 +82,9 @@ class PhysicalStrategySpace:
                 "preparation_ms": self.preparation_ms,
                 "semantic_equivalence_key": self.semantic_equivalence_key,
                 "candidate_count_upper_bound": self.candidate_count_upper_bound,
-                "domain": "baseline_or_one_join_entity_bind; fixed_source_bindings",
-                "external_calls": 0, "combined_rewrites": False,
+                "domain": "baseline_or_one_join_bind_or_one_anchor_fanout; fixed_source_bindings",
+                "external_calls": 0, "combination_enumeration": False,
+                "anchor_candidate_upper_bound": self.anchor_candidate_upper_bound,
                 "actual_cost_optimality_claim": False}
 
 
@@ -246,20 +248,21 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
         source_bindings: Mapping[str, str], backends: Mapping[str, SemanticBackend],
         max_remote_calls: int = 16, max_parallelism: int = 4,
         max_bindings: int = 10000, max_binding_bytes: int = 1_048_576) -> PhysicalStrategySpace:
-    """Compile the baseline plus every admitted *single* entity-bind rewrite.
+    """Compile the baseline, single binds and at most one anchor fanout.
 
     The binding-list count is enforced by the existing scheduler. SPARQL also
     enforces max_binding_bytes when serializing VALUES; this byte limit is not
     claimed for the Cypher client. Overflow is an execution failure, never
     truncation, hidden batching, a retry or a fallback plan.
 
-    For J joins and compiled size L, at most 1+2J plans of O(L) size are built.
+    For J joins and compiled size L, at most 2+2J plans of O(L) size are built.
     Existing bounded-path admission runs before compilation. Apart from that
     compiler, construction/validation/serialization costs O((J+1)L + n^2) with
     cached field lineage, where n is the explicitly represented semantic input.
     One exact anchor normalization adds O(p*n*(n+e)+L) conservative work before
-    constructing alternatives, for p predicate atoms and e DAG edges. It adds no alternatives
-    or remote calls. There is no general join-order or actual-cost guarantee.
+    constructing alternatives, for p predicate atoms and e DAG edges. The fanout
+    adds O(n*L + generated query bytes), one candidate and no remote-call slots.
+    There is no general join-order or actual-cost guarantee.
     """
     started = time.perf_counter()
     if not isinstance(program, SemanticGraphProgram):
@@ -294,6 +297,42 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
             strategy_features(plan, program), assumptions + extra_assumptions)
 
     candidates.append(candidate("coordinator", baseline, {"rewrite_count": 0}))
+    anchor = baseline.metadata.get("anchor_reduction")
+    if anchor:
+        try:
+            identity = anchor["identity_field"]
+            key_output = anchor["enforcing_filter"] + "/anchor_reduction/keys"
+            by_id = {n.node_id: n for n in baseline.nodes}
+            replacements = {}
+            for target_id in anchor["target_matches"]:
+                target = operators[target_id]
+                identity_column = next((column for column in ("source", "target")
+                    if target.parameters.get(column + "_field", column) == identity), None)
+                if identity_column is None:
+                    raise _NotAdmitted("Proved anchor is not an edge endpoint identity")
+                remote_id = target_id + "/native"
+                if depends_on(baseline, key_output, remote_id):
+                    raise _NotAdmitted("Anchor fanout would create a cyclic native dependency")
+                remote = by_id[remote_id]
+                backend = backends[source_bindings[target_id]]
+                artifact, parameter = _bound_match_artifact(
+                    QueryArtifact.from_dict(remote.parameters["artifact"]), backend,
+                    max_bindings=max_bindings, max_binding_bytes=max_binding_bytes,
+                    identity_column=identity_column)
+                replacements[remote_id] = replace(remote, kind=R.REMOTE_BIND_QUERY,
+                    inputs=(key_output,), parameters={**dict(remote.parameters),
+                        "artifact": artifact.to_dict(), "bind_field": identity,
+                        "parameter": parameter, "max_bindings": max_bindings})
+            plan = replace(baseline, nodes=tuple(replacements.get(n.node_id, n) for n in baseline.nodes))
+            candidates.append(candidate("anchor_fanout_bind", plan, {
+                "rewrite_count": len(replacements), "target_matches": list(anchor["target_matches"]),
+                "driver": key_output, "driver_field": identity, "max_bindings": max_bindings,
+                "sparql_max_binding_bytes": max_binding_bytes,
+                "extra_remote_call_slots": 0, "combination_enumeration": False},
+                ("All target uses require an identity in the proved anchor key set",
+                 "Key overflow fails explicitly; no partial fanout, truncation, retry or fallback")))
+        except _NotAdmitted as error:
+            rejected.append({"strategy_id": "anchor_fanout_bind", "reason": str(error)})
     for join in joins:
         for driving_index in (0, 1):
             direction = "left_to_right" if driving_index == 0 else "right_to_left"
@@ -327,4 +366,4 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
             except _NotAdmitted as error:
                 rejected.append({"strategy_id": strategy_id, "reason": str(error)})
     return PhysicalStrategySpace(tuple(candidates), tuple(rejected),
-        (time.perf_counter() - started) * 1000, semantic_key, len(joins))
+        (time.perf_counter() - started) * 1000, semantic_key, len(joins), int(bool(anchor)))
