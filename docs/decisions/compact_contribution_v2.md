@@ -83,3 +83,16 @@ its inherited reference builder labelled transfer_count as text. Receipt19624bf9
 is retained at compact-contribution-native-20260913-v2. The fixture now explicitly
 declares integer count; this is reference transport typing, not answer repair.
 One focused preflight regression is required before the original live attempt.
+
+## Retained interpretation outcome and separated deterministic gate
+
+The reference-type regression passes in0.32s. Actual NL at88bfbec makes one model
+call(2387 input/506 output tokens), then fails in4.135s with zero source queries: it
+uses technical xgap_id for COUNT and changes the requested literal High risk to
+High. Receipt fcb8eede is retained; all services/observer are terminal. No retry,
+response repair or new prompt revision. This is an interpretation-quality failure.
+
+A separate authored tiny gold intent will now test the actual v2 lowering ->
+frozen estimated selection -> one native final plan. It never reads that model
+response, does not replace its score, and is not labelled NL E2E. Acceptance of
+this deterministic boundary and observed NL accuracy are different statements.
