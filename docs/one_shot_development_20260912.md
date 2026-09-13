@@ -1,5 +1,12 @@
 # Current one-shot development authority
 
+## 2026-09-13 最新执行状态
+
+以 [Goal 当前执行](goal.md) 为准。Native身份投影与时间词法修复已验收，真实固定语义
+已有非空正确答案；普通NL下一缺口是实体名称/业务ID/变量角色约定。两份最新报告：
+[native工程与结果](report/native_projection_timestamp_20260913.md)、
+[第二组NL失败](report/finbench_nl_second_group_20260913.md)。旧暂停已解除；下方为历史。
+
 ## 当前执行：共同固定语义入口已验收，先修正 RDF 表示重叠
 
 用户已于9月13日13:32提前恢复工程和实验，旧暂停解除，heartbeat按小时推进。

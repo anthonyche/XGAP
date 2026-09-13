@@ -1,5 +1,36 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 当前执行：真实非空答案已取得，时间格式缺陷修复，NL 实体角色是下一瓶颈
+
+626bb84精简native身份投影；同一tiny答案/5次调用的源传输13,800→4,907字节
+（减少64.44%，不宣称时延提速）。按原顺序新运行native fixed groups8–11：两题
+正确空、一题正确非空（1行）、一题错误非空（10行，EM0/F1.8）；15.4–28.0秒，
+方法峰值0.943–1.362GB，均未超过原2GiB预算。旧8题/3次内存中断不重跑、不合并
+版本计时。[逐题证据与修复](report/native_projection_timestamp_20260913.md)。
+
+错误非空题的保存记录定位到时间词法：79,909条转账中8,017条省略小数末尾零，
+旧过滤器只认3位；该题漏掉10笔合格转账。独立保存输入诊断解释完整top10差异；
+原评分不改。08eb4f0使timestamp_ms支持有效本地日历时间的0–3位小数，共同NL
+SPARQL与coordinator一致。4项新检查首次通过1.32秒，含tiny估计选一计划完整链；
+一次真实Fuseki VALUES核对23边界全过，服务终态，零模型/重装/fit/baseline。
+
+随后按顺序完成RDF NL group1四方法各1次模型调用：全在grounding停止，源查询0，
+答案分数0。模型把person等普通角色误填成待识别实体；冻结catalog正常加载并返回
+零匹配。这不是catalog build failure或FedUP/FedX原生执行失败。不改prompt/catalog、
+不修该题、不重试。约8.66–9.23秒/方法；原group0四次解释失败继续保留。
+[NL逐题结果与含义](report/finbench_nl_second_group_20260913.md)。控制器全部exit0，
+所有服务终态。最后一次编译修复08eb4f0；本轮不是系统/论文评价全部完成。
+
+下一步用小图和failure replay明确实体名称/业务ID/普通变量的Interpretation约定，
+之后版本化继续未运行评价；不要继续无差别模型调用、不把未解实体直接丢弃。
+Native fixed下一项group12、native NL未启动；RDF fixed下一项group5、NL下一项group2。
+保持120组24/48/48、评价33空15非空、原baseline算法/配置/所有失败。核心Ptime与
+估计选一计划不变；不重建catalog/重训毫秒回归。剩余普通NL可靠性、实际策略排序
+效果、FedShop/scale及批准图表仍需完成。Sep14 17:00核心/接口、Sep18真实实验目标
+不变，Goal active，用户已恢复工作；不轮询3804210，不恢复旧暂停。
+
+## 以下为前序记录；执行状态以上方为准
+
 ## 当前执行：native 共同评价已接通，8组真实结果与内存中断保留
 
 f0ce1df接通冻结Neo4j/control-Fuseki副本、共同observer/worker/评分/调度，新增明确

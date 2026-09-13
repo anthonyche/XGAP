@@ -1,0 +1,5 @@
+group_index,question_id,family,method,status,answer_em,answer_row_multiset_f1,expected_rows,actual_rows,online_ms,planning_ms,execution_ms,source_calls,source_bytes,method_peak_rss_bytes,source_peak_rss_bytes,estimated_candidates,model_calls,final_plan_attempts,implementation,quiescence_complete
+8,FBNS-1-554304d0751a9e1d,f1_direct_transfer_control,xgap-native,returned,1.0,1.0,0,0,17032.15791657567,48.72895963490009,12490.214999765158,5,25516375,942997504,1125515264,6,0,1,626bb84,True
+9,FBNS-3-aa71c9e226915e52,f3_aggregate_risk_ranking,xgap-native,returned,1.0,1.0,0,0,15496.038749814034,49.3578752502799,11272.654834203422,5,31204723,997785600,1210105856,6,0,1,626bb84,True
+10,FBNS-3-b61bf8687d7cfd3f,f3_aggregate_risk_ranking,xgap-native,returned,0.0,0.8,10,10,15407.166082412004,47.90854174643755,10997.273375280201,5,31215166,1028308992,1071284224,6,0,1,626bb84,True
+11,FBNS-2-af04f6a755caca1b,f2_temporal_path_control,xgap-native,returned,1.0,1.0,1,1,28027.94162556529,53.783792071044445,21078.34266591817,6,54132120,1362345984,1108295680,6,0,1,626bb84,True

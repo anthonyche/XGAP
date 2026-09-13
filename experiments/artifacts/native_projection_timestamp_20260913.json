@@ -1,0 +1,130 @@
+{
+  "audit": {
+    "bytes": 9816,
+    "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/groups8-11-audit.json",
+    "sha256": "cda42a0028ba91169e14e3529d158140ca6507b220bd33d40fd03b0421ddc147"
+  },
+  "identity_gate": {
+    "bytes": 3777,
+    "path": "/Users/anthonyche/xgap-data/native-identity-projection-20260913-v1/receipt.json",
+    "sha256": "47428d25320e6c0d493e0383976a2c72798ae925b46eae500279a856f3c5643a"
+  },
+  "new_timestamp_tests": {
+    "elapsed_seconds": 1.32,
+    "first_attempt": true,
+    "passed": 4,
+    "unique_checks": 4
+  },
+  "next_native_fixed_group": 12,
+  "payload_comparison": {
+    "bytes": 1607,
+    "path": "/Users/anthonyche/xgap-data/native-identity-projection-20260913-v1/payload-comparison.json",
+    "sha256": "029e291a20f462845b2311bd41eb8672d30bdba126e6bd7314a31db223cfdff5"
+  },
+  "population_unchanged": true,
+  "rows": [
+    {
+      "actual_rows": 0,
+      "answer_em": 1.0,
+      "answer_row_multiset_f1": 1.0,
+      "estimated_candidates": 6,
+      "execution_ms": 12490.214999765158,
+      "expected_rows": 0,
+      "family": "f1_direct_transfer_control",
+      "final_plan_attempts": 1,
+      "group_index": 8,
+      "implementation": "626bb84",
+      "method": "xgap-native",
+      "method_peak_rss_bytes": 942997504,
+      "model_calls": 0,
+      "online_ms": 17032.15791657567,
+      "planning_ms": 48.72895963490009,
+      "question_id": "FBNS-1-554304d0751a9e1d",
+      "quiescence_complete": true,
+      "source_bytes": 25516375,
+      "source_calls": 5,
+      "source_peak_rss_bytes": 1125515264,
+      "status": "returned"
+    },
+    {
+      "actual_rows": 0,
+      "answer_em": 1.0,
+      "answer_row_multiset_f1": 1.0,
+      "estimated_candidates": 6,
+      "execution_ms": 11272.654834203422,
+      "expected_rows": 0,
+      "family": "f3_aggregate_risk_ranking",
+      "final_plan_attempts": 1,
+      "group_index": 9,
+      "implementation": "626bb84",
+      "method": "xgap-native",
+      "method_peak_rss_bytes": 997785600,
+      "model_calls": 0,
+      "online_ms": 15496.038749814034,
+      "planning_ms": 49.3578752502799,
+      "question_id": "FBNS-3-aa71c9e226915e52",
+      "quiescence_complete": true,
+      "source_bytes": 31204723,
+      "source_calls": 5,
+      "source_peak_rss_bytes": 1210105856,
+      "status": "returned"
+    },
+    {
+      "actual_rows": 10,
+      "answer_em": 0.0,
+      "answer_row_multiset_f1": 0.8,
+      "estimated_candidates": 6,
+      "execution_ms": 10997.273375280201,
+      "expected_rows": 10,
+      "family": "f3_aggregate_risk_ranking",
+      "final_plan_attempts": 1,
+      "group_index": 10,
+      "implementation": "626bb84",
+      "method": "xgap-native",
+      "method_peak_rss_bytes": 1028308992,
+      "model_calls": 0,
+      "online_ms": 15407.166082412004,
+      "planning_ms": 47.90854174643755,
+      "question_id": "FBNS-3-b61bf8687d7cfd3f",
+      "quiescence_complete": true,
+      "source_bytes": 31215166,
+      "source_calls": 5,
+      "source_peak_rss_bytes": 1071284224,
+      "status": "returned"
+    },
+    {
+      "actual_rows": 1,
+      "answer_em": 1.0,
+      "answer_row_multiset_f1": 1.0,
+      "estimated_candidates": 6,
+      "execution_ms": 21078.34266591817,
+      "expected_rows": 1,
+      "family": "f2_temporal_path_control",
+      "final_plan_attempts": 1,
+      "group_index": 11,
+      "implementation": "626bb84",
+      "method": "xgap-native",
+      "method_peak_rss_bytes": 1362345984,
+      "model_calls": 0,
+      "online_ms": 28027.94162556529,
+      "planning_ms": 53.783792071044445,
+      "question_id": "FBNS-2-af04f6a755caca1b",
+      "quiescence_complete": true,
+      "source_bytes": 54132120,
+      "source_calls": 6,
+      "source_peak_rss_bytes": 1108295680,
+      "status": "returned"
+    }
+  ],
+  "scores_not_replaced_by_diagnostic_sums": true,
+  "timestamp_diagnosis": {
+    "bytes": 2943,
+    "path": "/Users/anthonyche/xgap-data/financial-timestamp-diagnosis-20260913-v1/receipt.json",
+    "sha256": "a6314cee57b0341568b3980433a1524080d897f9fa1a26d2b0f986c3f8ee5828"
+  },
+  "timestamp_native_gate": {
+    "bytes": 1019,
+    "path": "/Users/anthonyche/xgap-data/financial-timestamp-native-20260913-v1/receipt.json",
+    "sha256": "021045280b35e6c78b6e091f0c6369cd9a016bb0752d97d75d2394e830ad3a28"
+  }
+}

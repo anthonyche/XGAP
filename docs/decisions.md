@@ -3,7 +3,7 @@
 2026-09-13: [Millisecond lexical compatibility](decisions/financial_timestamp_v2.md)
 fixes omitted fractional zeros in coordinator and shared-NL predicates. Four new
 checks, including saved failure and a tiny estimated slice, pass in 1.32s; the
-single live Fuseki predicate boundary is pending. Historical group10 EM0/F1.8 stays.
+single live Fuseki predicate query matches all23 cases; its service is terminal. Historical group10 EM0/F1.8 stays.
 
 2026-09-13: [Native identity projection](decisions/native_identity_projection_v1.md)
 is accepted in 626bb84; matched tiny payload drops 13,800→4,907 bytes with the same
