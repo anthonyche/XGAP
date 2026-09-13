@@ -20,12 +20,14 @@ def balanced_orders(methods):
     return rows+[tuple(reversed(r)) for r in rows] if n%2 else rows
 
 
-def freeze_schedule(*,population_path,population_sha256,profile_path,profile_sha256,track,output):
+def freeze_schedule(*,population_path,population_sha256,profile_path,profile_sha256,track,output,deployment='rdf'):
     population=json.loads(read_pinned(population_path,population_sha256))
     profile=json.loads(read_pinned(profile_path,profile_sha256))
     if population.get('schema_version')!='xgap-finbench-one-shot-population-v1' or population['dataset']!=profile['dataset']:
         raise ValueError('Frozen population and serving dataset must match')
-    methods=METHODS[track];blocks=1 if track=='natural_language' else 3
+    if deployment not in ('rdf','native'):raise ValueError('Unknown deployment')
+    methods=(('xgap-precision','xgap-performance') if track=='natural_language' else ('xgap-native',)) if deployment=='native' else METHODS[track]
+    blocks=1 if track=='natural_language' else 3
     groups=[g for g in population['artifacts'] if g['split']=='evaluation']
     if len(groups)!=48 or len({g['question_id'] for g in groups})!=48:raise ValueError('The frozen 48-group evaluation denominator is required')
     seed='xgap-formal-evaluation-order-v1'
@@ -54,6 +56,9 @@ def freeze_schedule(*,population_path,population_sha256,profile_path,profile_sha
         'warmup_queries':0,'cache_policy':'retain healthy owned sessions; declare fresh initial/recovered sessions',
         'automatic_retries':0,'reference_or_method_outputs_read':False,
         'formal_campaign_ready':False,'remaining_gate':'pinned external summary, owned hosts and package controller'}
+    if deployment=='native':
+        receipt.update(deployment='native',remaining_gate='owned native serving copies and common controller',
+            order_design='alternating two-mode order' if track=='natural_language' else 'one deterministic native method; same frozen question order')
     return write_once(output,receipt)
 
 

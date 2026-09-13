@@ -28,11 +28,13 @@ def run_fixed(*, request_path,request_sha256,method,output,profile_path=None,pro
         if set(q)!={'schema_version','question_id','dataset','population','exposure','program','sparql'} or q['schema_version']!=REQUEST_SCHEMA:
             raise ValueError('Fixed input contains unexpected fields or source assignments')
         receipt.update({k:q[k] for k in ('question_id','dataset','population','exposure')})
-        if method=='xgap-rdf':
+        if method in ('xgap-rdf','xgap-native'):
             profile=FrozenOneShotProfile.load(profile_path,expected_sha256=profile_sha256)
             doc,model,_,sources,backends,specs,modes=profile.materialize()
-            if doc['dataset']!=q['dataset'] or any(s['engine']!='fuseki' for s in specs.values()):
-                raise ValueError('Fixed RDF method requires the same declared RDF dataset')
+            engines={s['engine'] for s in specs.values()}
+            expected={'fuseki'} if method=='xgap-rdf' else {'neo4j','fuseki'}
+            if doc['dataset']!=q['dataset'] or engines!=expected:
+                raise ValueError('Fixed method requires the same dataset and its declared deployment engines')
             validate_program_parameters(q['program']);program=SemanticGraphProgram.from_dict(q['program'])
             at=time.perf_counter();slots,routing=source_assignments(program,doc['source_schema'],sources)
             candidates,domain=prepare_one_shot_domain(program,operator_sources=slots,sources=sources,backends=backends,policy=modes['performance'][0])

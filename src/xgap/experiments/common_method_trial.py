@@ -1,4 +1,4 @@
-"""One common RDF trial, complete outer timing, owned resource boundary, no retry."""
+"""One common native/RDF trial, complete timing, owned resources, no retry."""
 from dataclasses import replace
 import hashlib
 import json
@@ -44,7 +44,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             if method not in METHODS:raise ValueError('Unknown NL method')
             command+=['--profile-path',str(Path(profile_path).resolve()),'--profile-sha256',profile_sha256]
             if method in ('fedup','fedx'):command+=['--endpoint',endpoint]
-        elif method=='xgap-rdf':
+        elif method in ('xgap-rdf','xgap-native'):
             command+=['--profile-path',str(Path(profile_path).resolve()),'--profile-sha256',profile_sha256]
         elif method in ('fedup','fedx'):command+=['--endpoint',endpoint]
         else:raise ValueError('Unknown method')

@@ -114,6 +114,15 @@ class CampaignSourceObserver(SourceObserver):
             text=(body.decode() if content_type.startswith('application/sparql-query') else
                 parse_qs(body.decode() if handler.command=='POST' else urlsplit(handler.path).query).get('query',[''])[0])
             record.update(query=text,query_kind=query_kind(text))
+            if content_type.startswith('application/json'):
+                # Observation only: forward the unchanged JSON bytes, including
+                # native parameters. Never log authorization header values.
+                try:
+                    payload=json.loads(body)
+                    if isinstance(payload,dict) and isinstance(payload.get('statements'),list):
+                        record.update(query_language='cypher',native_statements=payload['statements'],
+                                      request_body_sha256=hashlib.sha256(body).hexdigest())
+                except (ValueError,TypeError):pass
             stage='persistence';write_once(self.root/f'{index:04}-intent.json',record)
             stage='upstream'
             upstream=urlsplit(self.routes[source]);conn,connection_id,reused=self.take_connection(source,upstream)
@@ -173,7 +182,7 @@ class CampaignSourceObserver(SourceObserver):
             record['observer_wall_ms']=(time.perf_counter()-started)*1000
             try:
                 pin=write_once(self.root/f'{index:04}-result.json',record)
-                compact={k:v for k,v in record.items() if k not in ('query','request_target','hop_headers_removed')}
+                compact={k:v for k,v in record.items() if k not in ('query','request_target','hop_headers_removed','native_statements')}
                 compact['record_pin']=pin
                 with self.condition:self.records[local_index]=compact
             except Exception:

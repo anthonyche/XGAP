@@ -17,6 +17,7 @@ from xgap.experiments.process_guard import _group_sample, _stop_group, ProcessBu
 
 
 class RdfTdbSession:
+    serving_copy_paths=('graph-tdb2','control-tdb2','fedup-host/serving-summary')
     def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False):
         self.root=Path(root).resolve();self.root.mkdir(parents=True,exist_ok=False)
         self.prepared=json.loads(read_pinned(prepared_path,prepared_sha256))
@@ -99,7 +100,7 @@ class RdfTdbSession:
         result['owned_groups_drained']=drained and not any(_group_sample(row['pid']) for row in rows)
         if self.discard_serving_copies and result['owned_groups_drained'] and result['observer_stopped']:
             removed=[]
-            for relative in ('graph-tdb2','control-tdb2','fedup-host/serving-summary'):
+            for relative in self.serving_copy_paths:
                 path=self.root/relative
                 if path.exists():
                     if path.is_symlink():raise ValueError('Refuse to discard redirected serving copy')

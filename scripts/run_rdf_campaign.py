@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a bounded chunk of an immutable RDF evaluation schedule, without retries."""
+"""Run a bounded chunk of an immutable native/RDF schedule, without retries."""
 import argparse
 import fcntl
 import getpass
@@ -13,6 +13,7 @@ import traceback
 
 from campaign_method_hosts import CampaignMethodHosts
 from rdf_tdb_session import RdfTdbSession
+from native_store_session import NativeStoreSession, NativeSources
 from xgap.experiments.campaign_budget import CampaignBudget
 from xgap.experiments.campaign_schedule import dispatch_one_group
 from xgap.experiments.campaign_source_observer import SourceObservationBudget
@@ -88,11 +89,14 @@ class Controller:
             self.current_request=self.request_for(cell)
             if self.session is None:
                 self.sessions+=1
-                self.session=RdfTdbSession(root=self.run_root/f'session-{self.sessions:03}',
+                native=self.schedule.get('deployment','rdf')=='native'
+                factory=NativeStoreSession if native else RdfTdbSession
+                self.session=factory(root=self.run_root/f'session-{self.sessions:03}',
                     prepared_path=self.prepared['path'],prepared_sha256=self.prepared['sha256'],
                     budget=SourceObservationBudget(**self.schedule['source_budget']),discard_serving_copies=True)
                 with deadline(120):self.session.start()
-                self.hosts=CampaignMethodHosts(self.session,summary_path=self.summary['path'],summary_sha256=self.summary['sha256'])
+                self.hosts=(NativeSources(self.session) if native else
+                    CampaignMethodHosts(self.session,summary_path=self.summary['path'],summary_sha256=self.summary['sha256']))
             if cell['method'] in ('fedup','fedx'):self.hosts.start(cell['method'])
             if not self.budget.readiness()['ready']:raise ValueError('Package budget exhausted during initialization')
             return {'ready':True,'session_ready':self.session.ready_pin,'source_session':str(self.session.root),
@@ -132,8 +136,9 @@ class Controller:
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    for name in ('schedule','schedule-sha256','prepared','prepared-sha256','summary','summary-sha256','output'):
+    for name in ('schedule','schedule-sha256','prepared','prepared-sha256','output'):
         p.add_argument('--'+name,required=True)
+    for name in ('summary','summary-sha256'):p.add_argument('--'+name)
     p.add_argument('--max-groups',type=int,default=1,choices=range(1,5));p.add_argument('--read-key',action='store_true')
     p.add_argument('--harness-epoch-reason',help='Explicit append-only correction epoch; never rerun old cell intents')
     args=p.parse_args();root=Path(args.output).resolve();root.mkdir(parents=True,exist_ok=True)
@@ -143,9 +148,16 @@ def main():
         tree=subprocess.check_output(['git','ls-tree','-r','HEAD','src','scripts','prompts','experiments/environments'],cwd=REPO)
         schedule=json.loads(read_pinned(args.schedule,args.schedule_sha256))
         if schedule['schema_version']!='xgap-balanced-campaign-schedule-v1':raise ValueError('Unknown schedule')
+        if schedule.get('deployment','rdf') not in ('native','rdf'):raise ValueError('Unknown deployment')
         prepared={'path':str(Path(args.prepared).resolve()),'sha256':args.prepared_sha256}
-        summary={'path':str(Path(args.summary).resolve()),'sha256':args.summary_sha256}
-        for pin in (prepared,summary):
+        native=schedule.get('deployment','rdf')=='native'
+        expected_methods=(('xgap-precision','xgap-performance') if schedule['track']=='natural_language' else ('xgap-native',)) if native else None
+        if native and (set(schedule['methods'])!=set(expected_methods) or any(c['method'] not in expected_methods for c in schedule['cells'])):
+            raise ValueError('Native schedule contains an external/RDF method')
+        if native and (args.summary or args.summary_sha256):raise ValueError('Native deployment does not use an external RDF summary')
+        if not native and (not args.summary or not args.summary_sha256):raise ValueError('RDF deployment requires its pinned external summary')
+        summary=None if native else {'path':str(Path(args.summary).resolve()),'sha256':args.summary_sha256}
+        for pin in (prepared,) if native else (prepared,summary):
             d=json.loads(read_pinned(pin['path'],pin['sha256']))
             if not d['success'] or d['profile']!=schedule['profile']:raise ValueError('Preparation/profile mismatch')
         identity={'schedule':{'path':str(Path(args.schedule).resolve()),'sha256':args.schedule_sha256},
@@ -154,10 +166,11 @@ def main():
         runs=root/'runs';runs.mkdir(exist_ok=True);run_root=runs/f'run-{len(list(runs.iterdir())):04}';run_root.mkdir(exist_ok=False)
         budget=CampaignBudget(root,maximum_cells=args.max_groups*len(schedule['methods']))
         ctl=Controller(root,run_root,schedule,prepared,summary,budget);previous=os.environ.get('XGAP_EXTERNAL_LLM_API_KEY')
-        report={'schema_version':'xgap-rdf-campaign-chunk-v1','campaign':identity,'harness_epoch':epoch,'dispatches':[],
+        report={'schema_version':'xgap-native-campaign-chunk-v1' if native else 'xgap-rdf-campaign-chunk-v1',
+            'deployment':'native' if native else 'rdf','campaign':identity,'harness_epoch':epoch,'dispatches':[],
             'maximum_groups':args.max_groups,'maximum_model_calls':budget.maximum_cells if schedule['track']=='natural_language' else 0,
             'model_output_tokens_per_call_maximum':6144,'automatic_retries':0,
-            'formal_campaign_dispatched':False,'excludes_native_finbench_and_remaining_tracks':True}
+            'formal_campaign_dispatched':False,'remaining_tracks_not_completed':True}
         try:
             if schedule['track']=='natural_language':
                 key=getpass.getpass('LLM credential (not recorded): ') if args.read_key else previous
