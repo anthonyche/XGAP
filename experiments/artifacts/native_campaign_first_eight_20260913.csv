@@ -1,0 +1,9 @@
+group_index,question_id,family,method,status,answer_em,expected_rows,actual_rows,online_ms,planning_ms,execution_ms,source_calls,source_bytes,method_peak_rss_bytes,source_peak_rss_bytes,selected_strategy,estimated_candidates,model_calls,quiescence_complete
+0,FBNS-2-a0baa0e6711f9de3,f2_temporal_path_control,xgap-native,guard_method_rss_limit_observed,0.0,0,,40829.29666619748,,,6,242609291,2210496512,1071497216,placement-0/coordinator,6,0,True
+1,FBNS-1-cdc6f66be3016baf,f1_direct_transfer_control,xgap-native,returned,1.0,0,0,22887.922917492688,54.21916767954826,16909.315917640924,5,117077814,1631600640,1194885120,placement-0/coordinator,6,0,True
+2,FBNS-3-ba8a93f050468448,f3_aggregate_risk_ranking,xgap-native,returned,1.0,0,0,22457.951540127397,50.70662498474121,16340.424042195082,5,140878893,1886306304,1036877824,placement-0/coordinator,6,0,True
+3,FBNS-3-8e6cf05a873620a1,f3_aggregate_risk_ranking,xgap-native,returned,1.0,0,0,22330.246375873685,51.58404167741537,16287.284083664417,5,140870781,1753448448,895647744,placement-0/coordinator,6,0,True
+4,FBNS-1-c0641cd0810fbb55,f1_direct_transfer_control,xgap-native,returned,1.0,0,0,22618.80441568792,49.28212519735098,16713.649875484407,5,117077809,1715044352,964067328,placement-0/coordinator,6,0,True
+5,FBNS-2-d9d0e066eb62a7b9,f2_temporal_path_control,xgap-native,guard_method_rss_limit_observed,0.0,0,,38011.95362582803,,,6,242609239,2198913024,1008189440,placement-0/coordinator,6,0,True
+6,FBNS-2-5083518349e5ce3f,f2_temporal_path_control,xgap-native,returned,1.0,0,0,42698.58558289707,56.14120792597532,31407.418000511825,6,242613238,2096005120,1203290112,placement-0/coordinator,6,0,True
+7,FBNS-2-2ac31a7a1ca31f82,f2_temporal_path_control,xgap-native,guard_method_rss_limit_observed,0.0,0,,38630.31712453812,,,6,242609238,2207973376,1006518272,placement-0/coordinator,6,0,True
