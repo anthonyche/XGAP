@@ -1,6 +1,6 @@
 {
   "schema_version": "xgap-progress-evidence-seal-v1",
-  "state": "prepared_before_0200_cutoff",
+  "state": "engineering_paused_until_2026-09-15T10:00:00+08:00",
   "evidence_indexes": [
     "practical_model_e2e_20260914",
     "shared_native_reads_20260914",
@@ -40,5 +40,26 @@
     "57ed970005d62b157f05f6204dda072bb4ac9082:datasets/practical_model_toy_v1/manifest.json": "deeca4528c27b378f9bb423c12302c5f57fdcb6663ad48ff3613b2ddacc6f0f3"
   },
   "new_source_or_model_calls": 0,
-  "audit_note": "Initial check compared an old code pin to the current edited file; corrected to its recorded git commit. No historical record was changed and no experiment was rerun."
+  "audit_note": "Initial check compared an old code pin to the current edited file; corrected to its recorded git commit. No historical record was changed and no experiment was rerun.",
+  "final_read_only_check": {
+    "closed": {
+      "owned_groups_drained": true,
+      "owned_processes_terminal": true,
+      "observer_stopped": true
+    },
+    "last_owned_pids_present": {
+      "90109": false,
+      "90071": false
+    },
+    "automation": {
+      "id": "xgap",
+      "status": "ACTIVE",
+      "rrule": "FREQ=YEARLY;BYMONTH=9;BYMONTHDAY=15;BYHOUR=2,10;BYMINUTE=0;BYSECOND=0;COUNT=2",
+      "target_thread_id": "01a085a5-3722-78e2-aab8-c19ef093c36d"
+    }
+  },
+  "check_note": "tomllib unavailable in the Python3.10 environment; existing string fields read without adding a dependency.",
+  "sealed_at": "2026-09-15T02:00:34.681403+08:00",
+  "overall_goal_complete": false,
+  "app_goal_switch_changed": false
 }
