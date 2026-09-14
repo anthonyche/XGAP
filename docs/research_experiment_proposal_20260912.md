@@ -1,5 +1,10 @@
 # XGAP：18图实验计划（优先级已批准）
 
+> 2026-09-15实际接线审计见[新strong研究契约审计](research_contract_audit_20260915.md)。
+> 新共同worker真实门已通，但旧campaign清单仍只调用旧方法；不能把旧结果改名。
+> 文中的K/ontology/阶段计时等需按新strong实际路径修订；18图草案已列出差异，
+> 尚未替换可执行协议或启动新campaign。
+
 > 2026-09-14 方法更新：[当前规划](practical_planning_20260914.md)采用有限深AND/OR
 > strong plan，先保留可行策略，再限额改进。d 尚待用户定义，当前新performance
 > 不声称epsilon保证。18图及原数据集/方法优先级保留，正式新模式参数尚未冻结。

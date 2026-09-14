@@ -75,6 +75,9 @@ catalog/index/statistics/训练离线构建并冻结，一次性成本与在线�
 组合证据。[小型outcome交付](report/practical_outcome_20260915.md)已避免重读大trace
 导致的答案交付失败。下一步核对新strong契约与旧18图协议，形成输入权限/方法/计量和release缺口清单，
 供后续讨论；不自动启动大图或消融，不改变批准的数据优先级及baseline。
+[具体审计与18图修订草案](research_contract_audit_20260915.md)已完成：共同worker已有，
+正式strong输入/profile/campaign映射尚缺；开发PERFORMANCE配置关闭可选物理改进，
+不能由模式名推断优势。主比较必须控制初始信息及可用权威工具。
 统一开发配置的默认地址仍未部署，不作为论文campaign release。
 不为让新候选胜出而改分数；不重复旧大题。保持迭代，不重新暂停。
 
