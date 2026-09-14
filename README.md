@@ -1,5 +1,12 @@
 # XGAP
 
+Current planning direction: [practical strong planning](docs/practical_planning_20260914.md)
+([algorithm contract](docs/decisions/practical_strong_planning_v1.md),
+[implementation evidence](docs/report/practical_strong_planning_20260914.md)).
+The prototype searches finite-depth AND/OR strong policies, retains feasible plans
+before bounded improvement, and does not claim global optimality. The semantic
+discrepancy metric remains a separate theoretical work item.
+
 XGAP is a cost-aware agentic federated graph-query system over heterogeneous
 black-box graph engines.
 

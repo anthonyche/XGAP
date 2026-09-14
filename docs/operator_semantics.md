@@ -1,5 +1,13 @@
 # Operator Semantics
 
+> 2026-09-14: [Practical strong planning](decisions/practical_strong_planning_v1.md)
+> adds an agent policy coordinator, not an algebra operator. Hard constraints and
+> validated bindings remain fixed. New performance predictions require explicit
+> named-slot authorization and carry metric_deferred; legacy relation truncation
+> is not included in the new profile's semantic guarantee. The initial new route
+> requires a content-bound trusted query skeleton.
+
+
 `timestamp_ms` now compares equivalent local-calendar millisecond forms with zero
 to three fractional digits, while invalid calendar/timezone/submillisecond values
 remain false. See [the bounded v2 contract](decisions/financial_timestamp_v2.md).

@@ -1,5 +1,27 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 2026-09-14 当前授权：恢复工程，有限深 AND/OR strong plan 优先
+
+用户已批准 practical planning 方案及审阅建议，明确要求在有限深 AND/OR tree 中寻找
+可行的优良 strong solution subgraph，优先出 plan 和实际表现，不 claim 全局最优。
+用户下一阶段推进 d(Q_tilde,Q_star)，当前不自定义该度量、不声称 epsilon 保证。
+本次明确授权覆盖下方旧暂停和冲突的下一工程；旧实验结论与版本不变。
+
+当前目标：先构造并保留可行 strong plan，再以有界估计搜索改进；所有声明动作结果
+都有可执行后续，实际仅走观察分支，执行一个最终联邦计划。信息、模型和查询成本
+分项计量；未知成本保持未知，catalog/statistics/训练继续离线冻结。不会通过试跑
+全部候选选优，不自动 retry/repair，不改 baseline 算法或答案。
+
+统一依据：[中文规划与里程碑](practical_planning_20260914.md)、
+[算法/语义/复杂度契约](decisions/practical_strong_planning_v1.md)、
+[本轮实现证据](report/practical_strong_planning_20260914.md)。
+P-S1 已实现并通过22项新小图检查及3项受影响旧入口检查；新 strong profile 的真实
+Neo4j+Fuseki/开放NL、统一信息工具适配、逐跳绑定与正式评价仍待完成。
+先做 P-S2 的 provider/真实tiny闭环，再推进共享执行优化；度量待定不阻塞这些工作。
+研发只用 toy/replay；维持原18图及 FinBench/RDF/FedShop 优先级，大规模评价后置。
+项目总体目标未完成。下文均为保留的历史状态，不作为当前执行指令。
+
+
 ## 2026-09-14 用户要求：当前里程碑完成后暂停，等待新的理论进展
 
 里程碑已完成并提交至 `5808228`，实验与服务均已收尾，自动续跑已设为 PAUSED。

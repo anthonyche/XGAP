@@ -1,5 +1,19 @@
 # XGAP Status
 
+## 2026-09-14 当前状态：P-S1 strong-policy 核心与普通模板入口已接通
+
+用户已明确恢复并批准新方向，旧暂停已被本轮授权覆盖。
+[统一规划](practical_planning_20260914.md)与[本轮报告](report/practical_strong_planning_20260914.md)
+是当前状态：22项新风险检查通过，3项受影响旧入口检查通过；实际进程内SPARQL
+核对 Alice/Bob 两个分支的独立答案。新策略未调用真实模型/Neo4j/Fuseki服务或大图。
+
+已实现：有限深 strong plan、先可行后改进、全部声明结果保留、基础计划兜底、
+具名验证/预测权限、GoalLoop 单分支执行、普通入口路由、按需澄清与用量追踪。
+尚未实现/验证：新profile完整信息工具适配、真实小图服务门、开放NL结构验证、
+逐跳绑定传播、discrepancy定义/保证与正式论文评价。不把既有旧native结果当新证据。
+[算法契约](decisions/practical_strong_planning_v1.md)。以下旧状态保留为历史。
+
+
 ## 2026-09-14 用户要求：当前里程碑完成后暂停，等待新的理论进展
 
 里程碑已完成并提交至 `5808228`，实验与服务均已收尾，自动续跑已设为 PAUSED。

@@ -1,5 +1,12 @@
 # M15 Agentic Federated Core
 
+> Current direction (2026-09-14): [finite-depth strong planning](decisions/practical_strong_planning_v1.md).
+> [P-S1](report/practical_strong_planning_20260914.md) now reuses GoalLoop, typed
+> binding, polynomial local placement and one final federated execution. New
+> catalog/model action adapters and live native validation remain P-S2 work;
+> historical native results below do not establish the new policy's whole chain.
+
+
 Current checkout, active observations and next engineering actions are in
 [engineering_state.md](engineering_state.md). The sections below retain
 milestone-specific acceptance and historical intermediate gates. Later

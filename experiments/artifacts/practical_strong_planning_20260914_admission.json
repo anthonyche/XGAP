@@ -1,0 +1,28 @@
+{
+  "schema_version": "xgap-practical-strong-admission-supplement-v1",
+  "date": "2026-09-14",
+  "parent_artifact": "practical_strong_planning_20260914.json",
+  "parent_sha256": "c24e88578314dd90a76788d0cc6568d6a74c5248bb45bb1558eb01e8df54223c",
+  "new_availability_cases": {
+    "passed": 2,
+    "elapsed_s": 0.37
+  },
+  "affected_outcome_admission_checks": {
+    "passed": 3,
+    "elapsed_s": 0.53
+  },
+  "distinct_new_cases_total": 22,
+  "source_files": {
+    "src/xgap/agent/strong_planning.py": "6c672168d4076b68a973822f135479d50c18e7475e309093d9f349289526b3a8",
+    "src/xgap/agent/practical_planning.py": "bdca2d099bb1cc0f0e821536e8148ba47e99759676962983f1a834b53eb19ecf",
+    "src/xgap/agent/practical_execution.py": "f76435ae2101e1058f56ef7fd4a25acd7abdd055bcdfba223f2c8e08d1975946",
+    "src/xgap/agent/practical_question.py": "1b3a3ad779ceef0630e4397f25c5c8954778733ac187f4608cd3fdf7604262a3",
+    "src/xgap/agent/question.py": "187d76c330234452b01018c9f2171f9da10e368fc81791f164816814021965fa",
+    "tests/test_strong_planning.py": "c5eea7a7ffaa372f4f6d884f6ac08cfeb751f5a9a478e4b50470033c53a62731",
+    "tests/test_practical_planning.py": "ee591b19ee481da53bc568c218a309a814b972540456f2cdf39837190218b400"
+  },
+  "native_service_runs": 0,
+  "model_calls": 0,
+  "large_dataset_runs": 0,
+  "claim": "known missing clients excluded before policy feasibility; remaining replica executes correctly"
+}

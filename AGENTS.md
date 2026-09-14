@@ -58,7 +58,21 @@ decision, reference-evaluator behavior, validation, and tests.
 `PathPatternQuery` is a reusable path sub-IR, commonly carried by semantic
 `Traverse`; it is not the entire interpretation or agent plan.
 
-## Current user-approved profile (2026-09-12)
+## Current user-approved profile (2026-09-14)
+
+The user approved `docs/decisions/practical_strong_planning_v1.md` and
+`docs/practical_planning_20260914.md`: finite-depth AND/OR strong policies,
+feasible-plan retention before bounded estimated improvement, no global optimum
+claim. The user will supply the discrepancy metric later; do not invent an
+epsilon/answer-error guarantee. P-S1 has a working local typed/ordinary-template
+slice; new provider adapters, native verification and execution improvement are
+next. All selected acquisition outcomes need feasible continuations. Runtime
+follows one outcome and executes one final plan. The declared bounded semantic
+and outcome model must be explicit; no universal plan-availability claim.
+
+The previous one-shot profile below remains a versioned legacy interface.
+
+## Previous user-approved profile (2026-09-12)
 
 Read `docs/decisions/one_shot_modes_v1.md` and
 `docs/one_shot_development_20260912.md` for the current bounded milestone.

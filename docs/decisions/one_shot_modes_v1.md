@@ -1,5 +1,13 @@
 # One-shot two-mode research prototype — approved contract v1
 
+> Current user direction (2026-09-14): [practical strong planning](practical_strong_planning_v1.md)
+> supersedes conflicting next actions below. Exact semantic validation is distinct
+> from estimated-cost optimization. Preserve a feasible strong policy, improve
+> within a finite-depth/state/action budget, execute one realized terminal. The
+> discrepancy metric is deferred; no epsilon/global-optimality claim. This older
+> profile and its recorded experimental results remain unchanged.
+
+
 Current implementation addendum (2026-09-13): [anchor fanout](anchor_source_bind_v1.md)
 adds at most one deterministic candidate per placement, making the bound1+2J+A
 with A<=1. Frozen estimation still selects one final plan; no combination enumeration.

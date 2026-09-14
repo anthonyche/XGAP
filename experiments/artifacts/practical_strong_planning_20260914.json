@@ -1,0 +1,43 @@
+{
+  "schema_version": "xgap-practical-strong-development-v1",
+  "date": "2026-09-14",
+  "base_commit": "bbc8873",
+  "scope": "trusted bounded semantic skeleton; finite declared acquisition outcomes; no paper claims",
+  "new_tests": {
+    "passed": 20,
+    "elapsed_s": 0.94,
+    "files": [
+      "tests/test_strong_planning.py",
+      "tests/test_practical_planning.py"
+    ]
+  },
+  "affected_legacy_entry_checks": {
+    "passed": 3
+  },
+  "initial_attempt": {
+    "passed": 15,
+    "failed": 2,
+    "repaired": [
+      "deadline-before-action-generation",
+      "content-bound-terminal-identity"
+    ]
+  },
+  "additional_failure_fixture_correction": "one final federated plan can execute two distinct fragments; non-retry assertion corrected without changing answer gold",
+  "evidence_kind": "controlled semantic/template interpretation; compiled in-process RDFLib SPARQL execution",
+  "real_model_calls": 0,
+  "real_native_service_runs": 0,
+  "large_dataset_runs": 0,
+  "catalog_builds": 0,
+  "baseline_changes": 0,
+  "global_optimality_certified": false,
+  "semantic_discrepancy_metric": "deferred to user theory",
+  "source_files": {
+    "src/xgap/agent/practical_execution.py": "13f92a2b8bb653fcc18a5481533b7b4c01d1c18480d2b8687a8aaa828b46b3b3",
+    "src/xgap/agent/practical_planning.py": "bdca2d099bb1cc0f0e821536e8148ba47e99759676962983f1a834b53eb19ecf",
+    "src/xgap/agent/practical_question.py": "1b3a3ad779ceef0630e4397f25c5c8954778733ac187f4608cd3fdf7604262a3",
+    "src/xgap/agent/strong_planning.py": "6c672168d4076b68a973822f135479d50c18e7475e309093d9f349289526b3a8",
+    "tests/test_practical_planning.py": "c2f0ae83ac640ce551baa5939e9a35c4bedbec9c696139a689dea5aceb7a73e8",
+    "tests/test_strong_planning.py": "c5eea7a7ffaa372f4f6d884f6ac08cfeb751f5a9a478e4b50470033c53a62731",
+    "src/xgap/agent/question.py": "187d76c330234452b01018c9f2171f9da10e368fc81791f164816814021965fa"
+  }
+}

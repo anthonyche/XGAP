@@ -11,7 +11,14 @@ from xgap.semantic.program import SemanticGraphProgram
 
 def run_question(request, provider, *, catalog_root, catalog_hash, sources,
                  backends, backend_clients, mode=None, one_shot_policy=None,
-                 estimator=None, **execution_options):
+                 estimator=None, practical_options=None, **execution_options):
+    if practical_options is not None:
+        from xgap.agent.practical_question import run_practical_question
+        if mode is not None or one_shot_policy is not None or execution_options:
+            raise ValueError("Practical strong-plan options cannot be mixed with legacy mode options")
+        return run_practical_question(request, provider, options=practical_options,
+            catalog_root=catalog_root, catalog_hash=catalog_hash, sources=sources,
+            backends=backends, backend_clients=backend_clients, estimator=estimator)
     # Explicit v2 profiles share this ordinary entry; frozen v1 recordings keep
     # their original strict single-interpretation contract when no profile is set.
     if mode is not None or one_shot_policy is not None or estimator is not None:

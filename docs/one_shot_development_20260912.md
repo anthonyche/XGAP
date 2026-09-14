@@ -1,5 +1,18 @@
 # Current one-shot development authority
 
+## Current authority — 2026-09-14 practical strong planning
+
+The user resumed development and approved finite-depth AND/OR strong policies,
+feasible-plan retention before bounded estimated improvement, and no global
+optimality claim. The discrepancy definition is deferred to the user's theory
+stage. [Current plan](practical_planning_20260914.md),
+[contract](decisions/practical_strong_planning_v1.md),
+[evidence](report/practical_strong_planning_20260914.md) supersede conflicting
+pause/next-action instructions below. Old one-shot profiles/results remain versioned.
+P-S1 passes its local gate; provider integration, new native evidence, execution
+improvement and formal evaluation remain. No fresh large campaign is started.
+
+
 ## 2026-09-14 用户要求：当前里程碑完成后暂停，等待新的理论进展
 
 里程碑已完成并提交至 `5808228`，实验与服务均已收尾，自动续跑已设为 PAUSED。
