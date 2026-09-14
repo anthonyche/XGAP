@@ -6,19 +6,33 @@ paid metrics are provenance rather than new network/token consumption.
 """
 import argparse
 from collections import Counter
+import hashlib
 import json
 from pathlib import Path
 import threading
 import time
 
-from xgap.experiments.one_shot_profile import _fields, _file, native_clients, read_pinned
-from xgap.experiments.one_shot_records import BackendReplay, CapturingClient, write_once
+from xgap.experiments.one_shot_profile import _fields, native_clients, read_pinned
+from xgap.experiments.one_shot_records import BackendReplay, CapturingClient, MAX_CAPTURE_REPLAY_BYTES, write_once
 from xgap.experiments.practical_profile import FrozenPracticalProfile
 from xgap.experiments.practical_outcome import write_outcome
 from xgap.tools.contracts import ToolResult, ToolStatus
 
 
 REPLAY_SCHEMA='xgap-practical-call-replay-v2'
+
+
+def _capture_bytes(root,pin):
+    """Use the existing backend-capture bound, not the16MiB config bound."""
+    path=Path(root)/pin['path']
+    size=pin.get('bytes')
+    if size is None:size=path.stat().st_size
+    if type(size) is not int or not 0<size<=MAX_CAPTURE_REPLAY_BYTES:
+        raise ValueError('Source capture byte count exceeds the bounded replay contract')
+    with path.open('rb') as handle:data=handle.read(size+1)
+    if len(data)!=size or hashlib.sha256(data).hexdigest()!=pin['sha256']:
+        raise ValueError('Source capture size/hash mismatch')
+    return data
 
 
 def publish_profile(*,profile_path,profile_sha256,output):
@@ -136,9 +150,7 @@ def run_record(*,profile_path,profile_sha256,request_path,request_sha256,mode,ou
             for pin in replay['backends']:
                 _fields(pin,('path','sha256'),('bytes',))
                 capture_root=Path(replay_path).resolve().parent
-                data=_file(capture_root,{k:pin[k] for k in ('path','sha256')})
-                if 'bytes' in pin and (type(pin['bytes']) is not int or pin['bytes']!=len(data)):
-                    raise ValueError('Source capture byte count differs')
+                data=_capture_bytes(capture_root,pin)
                 row=json.loads(data)
                 # Preserve exact artifact matching when independent source calls
                 # start in a different order. Recheck the pin at consumption.
