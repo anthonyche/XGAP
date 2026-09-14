@@ -104,7 +104,8 @@ class CandidateAcquisitionTool:
 
 
 def candidate_acquisition(program, slot, candidate_ids, provider, *, kind, source_id, version,
-                          question, estimated_ms=1, token_budget=4096, artifact_sha256=None):
+                          question, estimated_ms=1, token_budget=4096, artifact_sha256=None,
+                          search_priority=0):
     """Build a finite action/tool pair without asking the provider for outcomes."""
     candidates = tuple(candidate_ids)
     if not 1 <= len(candidates) <= 254 or len(set(candidates)) != len(candidates):
@@ -116,7 +117,8 @@ def candidate_acquisition(program, slot, candidate_ids, provider, *, kind, sourc
     action = BindingAction(action_id, slot, 'practical.' + action_id,
         tuple((f'candidate-{i}', c) for i, c in enumerate(candidates)) + (('unavailable', None), ('error', None)),
         source_id, version, 'frozen_catalog' if kind == 'catalog' else None, estimated_ms,
-        ResourceUsage(1, token_budget, 1) if kind == 'llm' else ResourceUsage())
+        ResourceUsage(1, token_budget, 1) if kind == 'llm' else ResourceUsage(),
+        search_priority=search_priority)
     request = ResolutionCandidateRequest(program.program_id, slot, hole.kind, hole.mention, candidates,
         question, hard_constraints_sha256(program), len(candidates))
     return action, CandidateAcquisitionTool(action, request, program_identity(program), provider, kind, artifact_sha256)

@@ -1,5 +1,11 @@
 # XGAP Status
 
+## 当前开发：同请求live链路的本地门已通过，真实门待执行
+
+[记录](report/practical_model_e2e_20260914.md)：8项新增+3项受影响检查通过。
+搜索优先级与动作耗时分离，未知保持null；两谓词真实小图覆盖提议/失败后续与EXACT验证。
+下一步仅一次live模型与Neo4j/Fuseki整体门。9月15日02:00收尾，10:00恢复。
+
 ## 最新：逐跳真实组件、live信息适配器与零网络回放已通过
 
 [2026-09-14报告](report/progressive_native_and_live_tools_20260914.md)：真实Neo4j/Fuseki

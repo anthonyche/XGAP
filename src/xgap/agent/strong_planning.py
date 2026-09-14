@@ -85,12 +85,13 @@ class AcquisitionAlternative:
     tool_name: str
     arguments: dict
     outcomes: tuple[DeclaredOutcome, ...]
-    estimated_cost: float
+    estimated_cost: float | None
     resources: ResourceUsage = field(default_factory=ResourceUsage)
     outcomes_exhaustive: bool = True
 
     def __post_init__(self):
-        _cost(self.estimated_cost)
+        if self.estimated_cost is not None:
+            _cost(self.estimated_cost)
         ids = [o.outcome_id for o in self.outcomes]
         if not self.action_id or not self.tool_name or not ids or any(not k for k in ids) or len(set(ids)) != len(ids):
             raise ValueError("Action needs nonempty, distinct declared outcomes")
@@ -220,6 +221,7 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
                 break
             generated += 1
             record = {"state_id": state_id, "action_id": action.action_id,
+                      "acquisition_estimated_cost": action.estimated_cost,
                       "outcomes": [o.outcome_id for o in action.outcomes], "status": "declared"}
             records.append(record)
             if not action.outcomes_exhaustive or action.action_id in history:
@@ -249,7 +251,8 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
                 record["status"] = "no_complete_strong_continuation"
                 continue
             costs = [c.estimated_cost for _, c in children]
-            score = None if any(c is None for c in costs) else action.estimated_cost + max(costs)
+            score = (None if action.estimated_cost is None or any(c is None for c in costs)
+                     else action.estimated_cost + max(costs))
             candidate = PolicyNode(state_id, score,
                                    action=action, children=tuple(children))
             record.update(status="strong", estimated_cost=candidate.estimated_cost)

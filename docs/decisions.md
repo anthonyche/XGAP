@@ -5137,3 +5137,4 @@ Follow-up passes; daily401 pass, final broad3246 pass/38 skip plus24 harness/
 example entrypoints. This Boolean step is accepted; T1/T2/T3 remain open. See
 [the design](decisions/native_boolean_conditions_v1.md) and
 [the report](report/toy_backbone_t1_boolean_conditions.md).
+2026-09-14: [Acquisition order and unknown cost](decisions/acquisition_order_v1.md) separates frozen search priority from latency estimates. Same-request ordinary toy checks pass8 new+3 affected; live combined gate pending. Clarification costs are not fabricated to make the model appear cheaper.

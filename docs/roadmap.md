@@ -1,5 +1,8 @@
 # XGAP Roadmap
 
+2026-09-14补充：[同请求信息与执行门](report/practical_model_e2e_20260914.md)的本地8+3检查已通过；
+显式动作优先级不冒充耗时估计，真实模型+双后端整体门为当前下一步。
+
 ## 当前路线：practical strong planning（2026-09-14）
 
 用户批准恢复，strong plan 是有限深 AND/OR tree 的可行解子图；不追求全局最优认证。

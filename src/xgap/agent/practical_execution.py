@@ -154,6 +154,8 @@ def run_practical_semantic_query(program, *, initial_state, resolution_tools=Non
         "backend_remote_calls": 0, "model_calls": 0, "tokens": 0, "clarification_calls": 0,
         "acquisition_remote_calls": 0, "acquisition_ms": 0, "capability_lookup": capabilities,
         "missing_acquisition_tools": missing, "planning_failures": domain.failures,
+        "acquisition_actions": [asdict(a) for a in domain.action_specs],
+        "acquisition_search_order": "priority, known estimate, estimate, stable action ID",
         "compiled_states": domain.compiled_states, "estimator_calls": domain.estimator_calls,
         "semantic_discrepancy_upper_bound": None, "discrepancy_status": "metric_deferred",
         "optimality_certified": False, "actual_acquisition_usage_complete": True, "status": search.status,

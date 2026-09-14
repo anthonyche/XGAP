@@ -1,0 +1,25 @@
+{
+  "gold_candidate": "predicate:knows",
+  "gold_rows": [
+    {
+      "person": "https://xgap.test/toy/c",
+      "edge": "https://xgap.test/toy/e4"
+    }
+  ],
+  "candidate_rows": {
+    "predicate:knows": [
+      {
+        "person": "https://xgap.test/toy/c",
+        "edge": "https://xgap.test/toy/e4"
+      }
+    ],
+    "predicate:follows": [
+      {
+        "person": "https://xgap.test/toy/z",
+        "edge": "https://xgap.test/toy/e9"
+      }
+    ]
+  },
+  "logical_plan": "Traverse OUT one relation from fixed Alice -> Project target+edge; Match Person -> Filter age>=30; Join person -> Project person+edge",
+  "reference_query": "MATCH (a:Person {id: \"a\"})-[e:KNOWS]->(p:Person) WHERE p.age >= 30 RETURN p.id AS person, e.id AS edge"
+}

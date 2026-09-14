@@ -86,12 +86,17 @@ class BindingAction:
     source_id: str
     version: str
     authority: str | None = None
-    estimated_ms: float = 1.0
+    estimated_ms: float | None = 1.0
     resources: ResourceUsage = field(default_factory=ResourceUsage)
     outcomes_exhaustive: bool = True
+    # Search order is a frozen heuristic, not a fabricated latency estimate.
+    search_priority: int = 0
 
     def __post_init__(self):
-        _cost(self.estimated_ms)
+        if self.estimated_ms is not None:
+            _cost(self.estimated_ms)
+        if type(self.search_priority) is not int or not 0 <= self.search_priority <= 4096:
+            raise ValueError("Acquisition search priority must be an integer in [0,4096]")
         labels = [label for label, _ in self.outcomes]
         candidates = [candidate for _, candidate in self.outcomes if candidate is not None]
         if not labels or any(not label for label in labels) or len(set(labels)) != len(labels) or len(set(candidates)) != len(candidates):
@@ -166,7 +171,8 @@ class PracticalSemanticDomain:
         self.program, self.operator_sources, self.binding_values = program, operator_sources, binding_values
         self.sources, self.backends, self.mode = sources, backends, mode
         self.estimator, self.physical_profile = estimator, physical_profile
-        self.action_specs = tuple(sorted(actions, key=lambda a: (a.estimated_ms, a.action_id)))
+        self.action_specs = tuple(sorted(actions, key=lambda a: (a.search_priority,
+            a.estimated_ms is None, a.estimated_ms if a.estimated_ms is not None else 0, a.action_id)))
         if len(self.action_specs) > 128 or len({a.action_id for a in self.action_specs}) != len(self.action_specs):
             raise ValueError("At most 128 distinct acquisition actions are admitted")
         self.predictions = dict(predictions or {})

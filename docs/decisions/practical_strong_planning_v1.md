@@ -108,6 +108,11 @@ stay unknown; they do not block feasible execution and are not treated as zero.
 Costs compare equivalent physical plans within one query. Different meanings may
 be compared only after the selected mode's semantic admission.
 
+The [acquisition-order extension](acquisition_order_v1.md) makes the brief's search
+priority explicit, separately from latency. Null acquisition estimates propagate
+to null policy scores; they are never zero. Default equal priorities preserve the
+existing numeric-cost order. This is heuristic expansion order, not cost optimality.
+
 ## Algorithm: feasible first, cost-ordered completion, bounded improvement
 
 The initial implementation deliberately uses lazy cost-ordered depth-first
