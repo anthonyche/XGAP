@@ -1,5 +1,9 @@
 # XGAP Roadmap
 
+2026-09-15最新：[strong共同native门](report/practical_worker_native_20260915.md)已通过：
+一输入检查、一真实请求，4行gold/11源请求/0模型。所有owned资源关闭。下一步核对新strong契约与旧18图协议，形成输入权限/方法/计量和release缺口清单，
+供后续讨论；不自动启动大图或消融，不改变批准的数据优先级及baseline。
+
 2026-09-15最新：[合作式预算](report/cooperative_planning_budget_20260915.md)通过6+1定向检查，
 到期停止可选工作且保留可行方案；原子编译/估计可越时。下一门是一条可信模板请求通过新strong共同worker的真实tiny组合边界，核对子进程、
 源观测、答案封存与成本账本；沿用冻结小图，不调用LLM，不改baseline或campaign。

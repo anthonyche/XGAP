@@ -1,5 +1,13 @@
 # XGAP Status
 
+## 最新：新strong共同实验入口的真实成功门已通
+
+[919fd5c记录](report/practical_worker_native_20260915.md)：1项新输入检查及一次真实EXACT
+请求成功，4行gold，1最终计划/11源请求/61源行/15820B。外层在线1711ms，0模型/fit/
+加载/重试；实际子进程正常结束、source/observer全部关闭。可信模板边界仍在。
+下一步核对新strong契约与旧18图协议，形成输入权限/方法/计量和release缺口清单，
+供后续讨论；不自动启动大图或消融，不改变批准的数据优先级及baseline。
+
 ## 最新：可选规划预算门通过，可行方案保留
 
 [8f01b2e记录](report/cooperative_planning_budget_20260915.md)：6项新+1项受影响检查首次通过，

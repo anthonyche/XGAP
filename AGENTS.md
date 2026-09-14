@@ -94,9 +94,12 @@ affected checks and complete replay; combined live success is still untested.
 See `docs/report/practical_worker_20260915.md`. Cooperative budget checks now pass
 six new and one affected case, keeping feasible/estimated incumbents and declaring
 atomic-step overshoot; see `docs/report/cooperative_planning_budget_20260915.md`.
-Next verify one trusted-template strong worker success through the actual common
-process/source/record boundary, on frozen tiny stores; zero LLM, no campaign change
-or baseline tuning. This is a new outer integration gate, not repeated core scoring.
+One actual strong common-worker native request now passes: four gold rows, one
+plan/11 source calls/61 source rows/15820 bytes,1711ms complete outer time, no model;
+see `docs/report/practical_worker_native_20260915.md`. All owned services closed.
+Next audit the new strong paper contract against the old18-figure protocol, making
+input authority, method scope and release gaps explicit for discussion; do not
+automatically start a campaign or change approved dataset/baseline priorities.
 Do not tune scores or repeat the six cells. Open-NL and superiority
 remain unproven. User cutoff: Sep15 02:00 Beijing, summarize/pause until10:00.
 Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime

@@ -77,8 +77,9 @@ d(Q_tilde,Q_star) 由用户下一理论阶段推进。当前不自行定义替�
 [请求准备](report/practical_preparation_20260915.md)已实现每请求冻结bundle加载4→1。
 [共同worker](report/practical_worker_20260915.md)已通过本地/回放门；
 [合作式预算](report/cooperative_planning_budget_20260915.md)保留可行计划，停止到期的可选工作。
-下一门是一条可信模板请求通过新strong共同worker的真实tiny组合边界，核对子进程、
-源观测、答案封存与成本账本；沿用冻结小图，不调用LLM，不改baseline或campaign。不调估计分数，不重复前轮六步或大题。
+[共同native门](report/practical_worker_native_20260915.md)现已通过一次真实EXACT请求，
+4行gold、11源调用，外层1711ms，所有资源关闭。下一步核对新strong契约与旧18图协议，形成输入权限/方法/计量和release缺口清单，
+供后续讨论；不自动启动大图或消融，不改变批准的数据优先级及baseline。不调估计分数，不重复前轮六步或大题。
 动作顺序与费用按[新契约](decisions/acquisition_order_v1.md)分开；
 未知费用保持null，不为展示LLM链路假设昂贵澄清。9月15日02:00收尾总结，10:00恢复。
 

@@ -56,6 +56,8 @@ catalog/index/statistics/训练离线构建并冻结，一次性成本与在线�
   独立trusted_template范围；保留旧methods/campaign。0新网络；组合外层live成功门未测。
 - 合作式预算（8f01b2e）：6项新+1项受影响检查首次通过；到期停止可选构造/打分，
   保留完整可行方案和已完成的更好估计，原子操作可越时。0新网络，不宣称硬实时。
+- 共同native门（919fd5c）：1项新输入检查及一次真实EXACT请求通过；4行gold、
+  1最终计划/11源请求/61源行/15820B，外层1711ms。0模型/fit/加载，所有owned资源关闭。
 - 尚未证明：开放NL结构验证、论文模式发布与两模式真实速度/质量优势、
   用户discrepancy理论与完整论文评价。当前通过的是可信有限模板+live一槽提议。
 
@@ -67,8 +69,9 @@ catalog/index/statistics/训练离线构建并冻结，一次性成本与在线�
 已通过局部和真实门。[必要源过滤](report/source_row_prefilters_20260914.md)也已完成。
 [准备门](report/practical_preparation_20260915.md)与[共同worker接线](report/practical_worker_20260915.md)
 已完成本地门。[合作式预算](report/cooperative_planning_budget_20260915.md)也已通过。
-下一门是一条可信模板请求通过新strong共同worker的真实tiny组合边界，核对子进程、
-源观测、答案封存与成本账本；沿用冻结小图，不调用LLM，不改baseline或campaign。
+[共同native门](report/practical_worker_native_20260915.md)已补齐实际子进程/双后端/封存
+组合证据。下一步核对新strong契约与旧18图协议，形成输入权限/方法/计量和release缺口清单，
+供后续讨论；不自动启动大图或消融，不改变批准的数据优先级及baseline。
 统一开发配置的默认地址仍未部署，不作为论文campaign release。
 不为让新候选胜出而改分数；不重复旧大题。保持迭代，不重新暂停。
 
