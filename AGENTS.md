@@ -83,9 +83,13 @@ fanout169ms, progressive174ms; all gold correct, frozen rank agrees in this one
 case. See `docs/report/practical_cost_diagnostic_20260914.md`. Within-plan exact
 full-native sharing now passes11 new cases and one native strong request:
 calls14→11, bytes18606→16399, four gold rows unchanged; no speed claim across
-cold sessions. See `docs/report/shared_native_reads_20260914.md`. Next inspect
-existing compiler support and semantic preconditions for early single-source
-filters; do not tune scores or repeat the six cells. Open-NL and superiority
+cold sessions. See `docs/report/shared_native_reads_20260914.md`. Necessary native
+row screening now passes14 new+2 affected cases, one11-call native request
+(rows64→61, bytes16399→15820, four gold unchanged), plus one Cypher type component.
+See `docs/report/source_row_prefilters_20260914.md`. Next audit ordinary-profile
+preparation/timing and remove repeated frozen dependency loads per request, using
+focused local tests and saved replay; no new native run or cross-query answer cache.
+Do not tune scores or repeat the six cells. Open-NL and superiority
 remain unproven. User cutoff: Sep15 02:00 Beijing, summarize/pause until10:00.
 Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime
 follows one outcome and executes one final plan. The declared bounded semantic

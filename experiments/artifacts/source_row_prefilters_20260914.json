@@ -1,0 +1,41 @@
+{
+  "schema_version": "xgap-source-row-prefilter-evidence-v1",
+  "source_commit": "15a24b807361b3c96731e6857abf0f61aca22327",
+  "cypher_gate_commit": "d9cd497855efc14a248c2392e9ec8b3a92d48b2e",
+  "native_success": true,
+  "new_test_cases": 14,
+  "affected_test_cases": 2,
+  "new_source_calls": 12,
+  "federated_source_calls": 11,
+  "component_source_calls": 1,
+  "new_model_calls": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "answer_rows": 4,
+  "answer_em": 1,
+  "paper_result": false,
+  "paired_speed_claim": false,
+  "evidence": {
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/source-row-prefilters-20260914-v1/receipt.json",
+      "sha256": "5126394e4e21bd9473671b7573ad5c7646f1b6ef63d3a05f923bb770f032d860"
+    },
+    "result": {
+      "path": "/Users/anthonyche/xgap-data/source-row-prefilters-20260914-v1/result.json",
+      "sha256": "5264b226e026322e0a9dbd5808d3da258fd4f24700e85935f14ad2b6f0f38c02"
+    },
+    "analysis": {
+      "path": "/Users/anthonyche/xgap-data/source-row-prefilters-20260914-v1/analysis.json",
+      "sha256": "3cd8486c3fc0a98efffca584c9fa420a47ac79ea60433b1ab668f53eebcd58ca"
+    },
+    "score": {
+      "path": "/Users/anthonyche/xgap-data/source-row-prefilters-20260914-v1/score.json",
+      "sha256": "77c0bc03c5633c69be1adb4d4aba8355b247c9500dce0a63893bbc71d355daf2"
+    },
+    "cypher_component": {
+      "path": "/Users/anthonyche/xgap-data/necessary-filter-cypher-20260914-v1/receipt.json",
+      "sha256": "4b4ddb78e33fdedab91b8511686ea017384dcad0de5ebaf3cd3831bb51afbf3f"
+    }
+  },
+  "report": "docs/report/source_row_prefilters_20260914.md"
+}
