@@ -14,6 +14,7 @@ import time
 from xgap.experiments.one_shot_profile import _fields, _file, native_clients, read_pinned
 from xgap.experiments.one_shot_records import BackendReplay, CapturingClient, write_once
 from xgap.experiments.practical_profile import FrozenPracticalProfile
+from xgap.experiments.practical_outcome import write_outcome
 from xgap.tools.contracts import ToolResult, ToolStatus
 
 
@@ -103,6 +104,7 @@ def run_record(*,profile_path,profile_sha256,request_path,request_sha256,mode,ou
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     started=time.perf_counter()
     receipt={'schema_version':'xgap-practical-record-v1','success':False,'operation':operation,'mode':mode,
+        'outcome':None,
         'model_network_calls':0,'source_network_calls':0,'final_plan_executions':0,'fit_calls':0,
         'automatic_retries':0,'profile':{'path':str(Path(profile_path).resolve()),'sha256':profile_sha256},
         'request':{'path':str(Path(request_path).resolve()),'sha256':request_sha256}}
@@ -158,6 +160,7 @@ def run_record(*,profile_path,profile_sha256,request_path,request_sha256,mode,ou
         result=profile.run_prepared(prepared,execute=operation!='preflight',backend_clients=clients,
             acquisition_wrapper=wrap,preparation_ms=receipt['admission_ms'])
         receipt['result']=write_once(root/'result.json',result)
+        receipt['outcome']=write_outcome(root,result,receipt['result'])
         receipt.update(status=result['status'],final_plan_executions=result['final_plan_executions'],
             success=result['search']['strong'] if operation=='preflight' else result['success'],
             acquisition_invocations=len(acquisitions) if operation=='execute' else len(consumed),

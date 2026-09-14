@@ -13,6 +13,7 @@ from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.practical_profile import REQUEST_SCHEMA
 from xgap.experiments.practical_records import run_record
+from xgap.experiments.practical_outcome import read_outcome
 
 
 METHODS={'xgap-strong-exact':'exact','xgap-strong-performance':'performance'}
@@ -53,7 +54,7 @@ def run_practical(*,request_path,request_sha256,profile_path,profile_sha256,meth
             top_level_attempts=child['final_plan_executions'],status=child.get('status','record_failed'),
             execution_kind=child.get('execution_kind'),admission_ms=child.get('admission_ms'))
         # Read only the just-sealed method output, never a scoring/reference artifact.
-        pin=child.get('result');core=json.loads(read_pinned(pin['path'],pin['sha256'])) if pin else {}
+        pin=child.get('result');core=read_outcome(child)
         r.update(_usage(core,r['model_calls']))
         execution=core.get('execution',{})
         r.update(success=bool(child['success'] and core.get('success')),status=core.get('status',r['status']),
