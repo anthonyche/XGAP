@@ -1,5 +1,6 @@
 """Follow one realized branch of a precomputed strong policy via GoalLoop."""
 from dataclasses import asdict, dataclass
+import hashlib
 import json
 from pathlib import Path
 import time
@@ -30,6 +31,7 @@ class FrozenClarificationTool:
     """
     response_path: Path
     name: str = "practical.clarify"
+    expected_sha256: str | None = None
 
     @property
     def spec(self):
@@ -39,7 +41,15 @@ class FrozenClarificationTool:
     def invoke(self, arguments, context):
         started = time.perf_counter()
         try:
-            data = json.loads(Path(self.response_path).read_text())
+            if self.expected_sha256 is None:
+                data = json.loads(Path(self.response_path).read_text())
+            else:
+                # Do not read even the binding-only fixture during planning.
+                with Path(self.response_path).open('rb') as stream:
+                    content = stream.read(65537)
+                if len(content) > 65536 or hashlib.sha256(content).hexdigest() != self.expected_sha256:
+                    raise ValueError('Frozen clarification response size/hash mismatch')
+                data = json.loads(content)
             if set(data) != {"schema_version", "program_sha256", "source_id", "version", "bindings"} or data["schema_version"] != "xgap-clarification-bindings-v1":
                 raise ValueError("Clarification fixture may contain only the declared binding schema")
             if any(data[k] != arguments[k] for k in ("program_sha256", "source_id", "version")):

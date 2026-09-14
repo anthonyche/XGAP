@@ -1,0 +1,74 @@
+{
+  "schema_version": "xgap-practical-call-replay-v1",
+  "question": "在 toy graph 中查找 Alice 的熟人，返回年龄至少 30 的 people 和关系编号。",
+  "acquisitions": [
+    {
+      "tool_name": "practical.llm:predicate",
+      "arguments": {
+        "action_id": "llm:predicate",
+        "slot": "predicate",
+        "program_sha256": "89fed24a105219cd752b39b066cdf9b4a752909a2960f58a8be738071ca83e4a",
+        "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+        "version": "06fdaec06f6e0fb7d0641ac402e203e2b2e0c6dbc05f99502ed4ec0d994390e4",
+        "candidates": [
+          "predicate:knows",
+          "predicate:follows"
+        ]
+      },
+      "status": "returned",
+      "result": {
+        "error": null,
+        "metadata": {
+          "authoritative": false,
+          "candidate_count": 1,
+          "provider_kind": "llm",
+          "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+          "version": "06fdaec06f6e0fb7d0641ac402e203e2b2e0c6dbc05f99502ed4ec0d994390e4"
+        },
+        "metrics": {
+          "elapsed_ms": 497.61650059372187,
+          "model_calls": 1,
+          "remote_calls": 1,
+          "tokens": 372
+        },
+        "status": "success",
+        "tool_name": "practical.llm:predicate",
+        "value": {
+          "candidate_id": "predicate:knows",
+          "program_sha256": "89fed24a105219cd752b39b066cdf9b4a752909a2960f58a8be738071ca83e4a",
+          "slot": "predicate",
+          "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+          "version": "06fdaec06f6e0fb7d0641ac402e203e2b2e0c6dbc05f99502ed4ec0d994390e4"
+        }
+      }
+    }
+  ],
+  "backends": [
+    {
+      "path": "backend-0000-result.json",
+      "sha256": "eb6631a84e3c57be49c63320b441d3745b001769a3a0b4af1b7eab6d4398095f"
+    },
+    {
+      "path": "backend-0001-result.json",
+      "sha256": "d6c9819d8e1b97378d76d41b3345e814d50d5f4980b442cbc588c266afb11000"
+    }
+  ],
+  "expected_success": true,
+  "expected_rows": [
+    {
+      "edge": "https://xgap.test/toy/e4",
+      "person": "https://xgap.test/toy/c"
+    }
+  ],
+  "provenance": {
+    "source_receipt": {
+      "path": "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/receipt.json",
+      "sha256": "236f8847419a91ffdc03928547e853bcbfd49b5a8dfed8d4315897ae81926ffb"
+    },
+    "source_result": {
+      "path": "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/result.json",
+      "sha256": "1e496e815ab0c994eb99873a36f3e15db6a7c7821b8b2d284615824194f20373"
+    },
+    "scope": "migration of previously captured tiny tool result and exact native responses; no new execution"
+  }
+}

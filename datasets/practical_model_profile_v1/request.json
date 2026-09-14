@@ -1,0 +1,20 @@
+{
+  "schema_version": "xgap-practical-request-v1",
+  "question_id": "practical-model-published-01",
+  "question": "在 toy graph 中查找 Alice 的熟人，返回年龄至少 30 的 people 和关系编号。",
+  "trusted_bindings": {
+    "person": "entity:alice",
+    "age": "constraint:30",
+    "type": "type:person",
+    "source": "source:toy"
+  },
+  "predictions": {},
+  "clarifications": {
+    "predicate-clarification": {
+      "path": "clarification.json",
+      "sha256": "5de792cd9a09cbc6185f2f1e369e6d6e8f3ba72178783181ab5502fee8503c0b"
+    }
+  },
+  "population": "development",
+  "exposure": "previously-exposed-template"
+}

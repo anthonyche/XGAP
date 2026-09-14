@@ -73,8 +73,12 @@ with unchanged gold, but measured latency advantage remains unproven. See
 `docs/report/progressive_native_and_live_tools_20260914.md`. The same-request live
 information + strong planning + execution gate now passes on a trusted five-node,
 nine-edge template (one model372 tokens, one plan/two source queries, gold matches);
-see `docs/report/practical_model_e2e_20260914.md`. Next is published mode/estimator
-configuration alignment, then actual cost/ranking evaluation. Open-NL and superiority
+see `docs/report/practical_model_e2e_20260914.md`. Frozen mode/estimator profiles and
+the ordinary publish/preflight/execute/replay entry now pass14 new+2 affected
+checks; see `docs/report/practical_profile_20260914.md`. Zero new network calls,
+unchanged trained weights; the development endpoints are unserved. Strict replay
+checks complete original failure outcomes, not just any failure. Next is saved
+tiny-trace cost/ranking diagnosis and minimal necessary measurements. Open-NL and superiority
 remain unproven. User cutoff: Sep15 02:00 Beijing, summarize/pause until10:00.
 Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime
 follows one outcome and executes one final plan. The declared bounded semantic

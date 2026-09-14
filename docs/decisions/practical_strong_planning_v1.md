@@ -43,6 +43,13 @@ passes one request; a subsequent [same-request bounded gate](../report/practical
 also passes with one live model proposal, one final plan and two native queries.
 The trusted-template boundary and absent model-authority/accuracy guarantees remain.
 
+The [frozen practical profile](practical_profile_v1.md) connects both modes,
+budgets, actions and optional frozen estimator to the ordinary request path.
+Publication/preflight make no external calls; execution records actual actions;
+v2 replay requires exact complete successes or failures. The development gate
+reuses historical live captures and unchanged trained weights. It is not a
+formal campaign release or evidence of mode speed/quality superiority.
+
 ## Research question and evaluation boundary
 
 Can XGAP reduce query-to-answer cost by choosing which information to acquire and
