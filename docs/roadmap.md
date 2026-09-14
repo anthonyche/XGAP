@@ -1,5 +1,8 @@
 # XGAP Roadmap
 
+2026-09-15最新：[strong outcome交付](report/practical_outcome_20260915.md)补齐旧入口已有的
+大trace/小答案分离，4+1定向检查通过，0新网络。继续研究契约与实际实验输入审计。
+
 2026-09-15最新：[strong共同native门](report/practical_worker_native_20260915.md)已通过：
 一输入检查、一真实请求，4行gold/11源请求/0模型。所有owned资源关闭。下一步核对新strong契约与旧18图协议，形成输入权限/方法/计量和release缺口清单，
 供后续讨论；不自动启动大图或消融，不改变批准的数据优先级及baseline。

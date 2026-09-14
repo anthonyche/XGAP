@@ -1,0 +1,36 @@
+{
+  "schema_version": "xgap-practical-outcome-evidence-v1",
+  "source_commit": "ef119a6b75bc5c650fc23cc3d784da4c89935e80",
+  "new_test_cases": 4,
+  "affected_test_cases": 1,
+  "test_batches": [
+    {
+      "cases": 4,
+      "seconds": 0.87,
+      "exit_code": 0,
+      "session_id": 17824
+    },
+    {
+      "cases": 1,
+      "seconds": 0.21,
+      "exit_code": 0
+    }
+  ],
+  "new_model_calls": 0,
+  "new_source_calls": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "paper_result": false,
+  "controlled_intermediate_payload_bytes": 16777217,
+  "outcome_upper_bound_bytes_in_test": 4096,
+  "full_trace_retained": true,
+  "evidence": {
+    "tests/test_practical_outcome.py": {
+      "sha256": "70d16fe2b497658cb4dd5ab3ba1eea4de7220fe117d2d01e4ebb6da11a3385af"
+    },
+    "src/xgap/experiments/practical_outcome.py": {
+      "sha256": "767a7694a8ec4ee6261dd34ff44e706d2480c6f10a15f8052d4f09efc1962228"
+    }
+  },
+  "report": "docs/report/practical_outcome_20260915.md"
+}

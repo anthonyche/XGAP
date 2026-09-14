@@ -1,5 +1,11 @@
 # XGAP Status
 
+## 最新：大trace与小答案交付已分开
+
+[ef119a6记录](report/practical_outcome_20260915.md)：4项新+1项受影响检查通过，
+>16MiB受控中间记录不再阻断<4KiB最终摘要交付；完整轨迹保留，失败与unknown不改。
+0新网络，未重跑已成功native门。下一步研究契约/18图接线审计。
+
 ## 最新：新strong共同实验入口的真实成功门已通
 
 [919fd5c记录](report/practical_worker_native_20260915.md)：1项新输入检查及一次真实EXACT

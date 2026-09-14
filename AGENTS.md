@@ -97,6 +97,9 @@ atomic-step overshoot; see `docs/report/cooperative_planning_budget_20260915.md`
 One actual strong common-worker native request now passes: four gold rows, one
 plan/11 source calls/61 source rows/15820 bytes,1711ms complete outer time, no model;
 see `docs/report/practical_worker_native_20260915.md`. All owned services closed.
+Practical answer handoff now avoids the16MiB full-trace reread limit: four new and
+one affected replay checks pass, full traces remain; see
+`docs/report/practical_outcome_20260915.md`. No new native rerun or streaming claim.
 Next audit the new strong paper contract against the old18-figure protocol, making
 input authority, method scope and release gaps explicit for discussion; do not
 automatically start a campaign or change approved dataset/baseline priorities.
