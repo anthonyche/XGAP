@@ -74,7 +74,11 @@ d(Q_tilde,Q_star) 由用户下一理论阶段推进。当前不自行定义替�
 [相同完整源读取共享](report/shared_native_reads_20260914.md)也已通过11项新检查和一次
 真实strong请求，4行gold保持，实际调用14→11。[必要源过滤](report/source_row_prefilters_20260914.md)
 也通过14+2本地检查和真实门，源行64→61，4行gold不变；Cypher类型另有1调用组件证据。
-下一步审计普通配置入口的重复准备与计时；不调估计分数，不重复前轮六步或大题。
+[请求准备](report/practical_preparation_20260915.md)已实现每请求冻结bundle加载4→1。
+[共同worker](report/practical_worker_20260915.md)已通过本地/回放门；
+[合作式预算](report/cooperative_planning_budget_20260915.md)保留可行计划，停止到期的可选工作。
+下一门是一条可信模板请求通过新strong共同worker的真实tiny组合边界，核对子进程、
+源观测、答案封存与成本账本；沿用冻结小图，不调用LLM，不改baseline或campaign。不调估计分数，不重复前轮六步或大题。
 动作顺序与费用按[新契约](decisions/acquisition_order_v1.md)分开；
 未知费用保持null，不为展示LLM链路假设昂贵澄清。9月15日02:00收尾总结，10:00恢复。
 

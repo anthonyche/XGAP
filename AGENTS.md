@@ -91,10 +91,12 @@ now passes5 new+2 affected cases and saved replay, bundle loads4→1 with admiss
 cost retained; see `docs/report/practical_preparation_20260915.md`. New strong
 methods now connect to the common worker with trusted-template scope,6 new+1
 affected checks and complete replay; combined live success is still untested.
-See `docs/report/practical_worker_20260915.md`. Next add cooperative budget checks
-inside optional candidate construction/scoring, retaining feasible incumbents and
-declaring atomic-compilation overshoot. Use controlled-clock/tiny checks only;
-no new native run, campaign change or cross-query answer cache.
+See `docs/report/practical_worker_20260915.md`. Cooperative budget checks now pass
+six new and one affected case, keeping feasible/estimated incumbents and declaring
+atomic-step overshoot; see `docs/report/cooperative_planning_budget_20260915.md`.
+Next verify one trusted-template strong worker success through the actual common
+process/source/record boundary, on frozen tiny stores; zero LLM, no campaign change
+or baseline tuning. This is a new outer integration gate, not repeated core scoring.
 Do not tune scores or repeat the six cells. Open-NL and superiority
 remain unproven. User cutoff: Sep15 02:00 Beijing, summarize/pause until10:00.
 Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime

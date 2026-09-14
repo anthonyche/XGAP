@@ -1,5 +1,9 @@
 # XGAP Roadmap
 
+2026-09-15最新：[合作式预算](report/cooperative_planning_budget_20260915.md)通过6+1定向检查，
+到期停止可选工作且保留可行方案；原子编译/估计可越时。下一门是一条可信模板请求通过新strong共同worker的真实tiny组合边界，核对子进程、
+源观测、答案封存与成本账本；沿用冻结小图，不调用LLM，不改baseline或campaign。
+
 2026-09-15最新：[共同worker](report/practical_worker_20260915.md)已接新strong方法，
 6+1定向检查和完整旧响应回放通过，真实组合外层门未测。下一步合作式规划预算检查，
 使可选候选构造及时停下；仍保留可行计划，不做新的大图或native重跑。

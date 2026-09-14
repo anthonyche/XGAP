@@ -1,5 +1,12 @@
 # XGAP Status
 
+## 最新：可选规划预算门通过，可行方案保留
+
+[8f01b2e记录](report/cooperative_planning_budget_20260915.md)：6项新+1项受影响检查首次通过，
+0新网络。到期停止可选构造/打分，保留完整基础计划及已完成的更好估计；原子步骤可越时，
+不宣称硬实时。下一门是一条可信模板请求通过新strong共同worker的真实tiny组合边界，核对子进程、
+源观测、答案封存与成本账本；沿用冻结小图，不调用LLM，不改baseline或campaign。
+
 ## 最新：新strong方法已接共同worker，本地/回放门通过
 
 [9bd7d15记录](report/practical_worker_20260915.md)：6项新+1项受影响检查及完整回放通过。
