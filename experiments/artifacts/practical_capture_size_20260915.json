@@ -1,0 +1,25 @@
+{
+  "schema_version": "xgap-practical-capture-size-evidence-v1",
+  "source_commit": "66f17838e620d283a0658ec0e3d432eb7ec4def6",
+  "new_test_cases": 5,
+  "affected_test_cases": 1,
+  "test_seconds": 0.73,
+  "test_exit_code": 0,
+  "test_session_id": 25500,
+  "new_model_calls": 0,
+  "new_source_calls": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "source_capture_bound_bytes": 536870912,
+  "config_bound_bytes": 16777216,
+  "paper_result": false,
+  "evidence": {
+    "tests/test_practical_capture_size.py": {
+      "sha256": "2647240bc414df5c11bf861b54c3c5bfdb66945dcc188f5369b59a85ff96d65c"
+    },
+    "src/xgap/experiments/practical_records.py": {
+      "sha256": "35608e30d19a2ba1022939afa6dc7b0e48a541d3f5d348ef0ed3b340adccb309"
+    }
+  },
+  "report": "docs/report/practical_capture_size_20260915.md"
+}

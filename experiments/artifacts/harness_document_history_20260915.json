@@ -1,0 +1,43 @@
+{
+  "schema_version": "xgap-harness-document-history-v1",
+  "source_commit": "66f17838e620d283a0658ec0e3d432eb7ec4def6",
+  "source_documents_unchanged_in_archives": true,
+  "archives": {
+    "goal": {
+      "source": "docs/goal.md",
+      "archive": "docs/goal_history_20260915.md",
+      "sha256": "e2dbc88065ff5bf737f7cdc6f0ad5e18e4c607b1a17a3f5147878874fd8a9852",
+      "lines": 885,
+      "current_lines": 66,
+      "history_preserved_byte_for_byte": true
+    },
+    "status": {
+      "source": "docs/status.md",
+      "archive": "docs/status_history_20260915.md",
+      "sha256": "7e01db4300476be3ed67295277497b208776703d65f9c827d3309a182e9fc844",
+      "lines": 4581,
+      "current_lines": 35,
+      "history_preserved_byte_for_byte": true
+    },
+    "roadmap": {
+      "source": "docs/roadmap.md",
+      "archive": "docs/roadmap_history_20260915.md",
+      "sha256": "884b9774b2123cb0066a841f8477d0c53787606b1440eafe44b00179a39b2d50",
+      "lines": 2988,
+      "current_lines": 32,
+      "history_preserved_byte_for_byte": true
+    },
+    "decisions": {
+      "source": "docs/decisions.md",
+      "archive": "docs/decisions_history_20260915.md",
+      "sha256": "a8ebc29c36d96fe85bb59dc7e90e8d0ede41149681ab3bdad8ffd0678d4d3bcc",
+      "lines": 5146,
+      "current_lines": 48,
+      "history_preserved_byte_for_byte": true
+    }
+  },
+  "software_tests_required": false,
+  "original_entry_lines": 13600,
+  "current_entry_lines": 181,
+  "current_index_links_valid": true
+}

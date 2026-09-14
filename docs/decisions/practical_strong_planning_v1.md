@@ -213,9 +213,11 @@ outcomes and usage. P-S3 progressive binding is implemented and verified on tiny
 native data. The same-request live information/strong/native gate now passes;
 none of these observations establishes latency superiority or general NL accuracy.
 
-1. Publish coherent EXACT/PERFORMANCE configuration for the ordinary entry, with
-   trusted-input/authority scope, tool order, resource limits and frozen estimator.
-   Expose this as an actual callable method, not only a Python fixture assembly.
+1. Coherent development EXACT/PERFORMANCE profiles, ordinary publish/record/replay,
+   a common real native worker and independent per-question study wiring are now
+   implemented. See [current evidence](../status.md). Remaining work is the concrete
+   paper input/authority contract, mode configuration, matched external frontend
+   and release validation; do not describe those as an already launched campaign.
 2. Validate real cost/relative ranking and useful plan availability on the declared
    experiment inputs. Keep missing authority, no-plan and execution failure in the
    denominator. Do not force progressive binding or use observed winners online.

@@ -57,8 +57,11 @@ final execution status/error, node statuses/errors/row counts, and final rows.
 Every captured acquisition and native call must be consumed exactly once.
 Native calls match by exact artifact so independent dispatch order may differ.
 Optional recorded byte counts and hashes are checked, including at consumption.
-The current profile replay file-read bound is 16 MiB per record; it is a bounded
-development protocol, not a large-result streaming release.
+Configuration/replay manifests retain the16MiB read bound. Source captures now use
+the existing512MiB BackendReplay bound with exact size/hash revalidation; see
+[the source-capture correction](practical_capture_size_v1.md). This remains bounded
+JSON replay, not a large-result streaming release. The practical worker reads a
+small pinned [outcome](practical_outcome_v1.md) rather than the full trace.
 
 A replay receipt's success means faithful reproduction. Its separate
 `original_execution_success` can be false; a reproduced failure remains a failed

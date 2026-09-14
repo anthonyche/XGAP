@@ -22,7 +22,7 @@ Before changing code, read:
 4. `docs/roadmap.md`
 5. `docs/status.md`
 6. `docs/operator_semantics.md`
-7. `docs/decisions.md`
+7. `docs/decisions.md` — current index, then the relevant linked decisions
 8. the sprint prompt under `prompts/sprints/`, if one is provided
 
 Then state the current milestone, allowed files, forbidden changes, and
@@ -60,58 +60,23 @@ decision, reference-evaluator behavior, validation, and tests.
 
 ## Current user-approved profile (2026-09-14)
 
-The user approved `docs/decisions/practical_strong_planning_v1.md` and
+Follow `docs/decisions/practical_strong_planning_v1.md` and
 `docs/practical_planning_20260914.md`: finite-depth AND/OR strong policies,
 feasible-plan retention before bounded estimated improvement, no global optimum
 claim. The user will supply the discrepancy metric later; do not invent an
-epsilon/answer-error guarantee. P-S1 has a working local typed/ordinary-template
-slice; P-S2 added catalog/model adapters, capability lookup and one real two-engine
-toy gate (see `docs/report/practical_information_native_20260914.md`). The new model
-action now has one live endpoint component check. P-S3 progressive binding has
-six local cases and one real two-engine component gate; source rows decreased
-with unchanged gold, but measured latency advantage remains unproven. See
-`docs/report/progressive_native_and_live_tools_20260914.md`. The same-request live
-information + strong planning + execution gate now passes on a trusted five-node,
-nine-edge template (one model372 tokens, one plan/two source queries, gold matches);
-see `docs/report/practical_model_e2e_20260914.md`. Frozen mode/estimator profiles and
-the ordinary publish/preflight/execute/replay entry now pass14 new+2 affected
-checks; see `docs/report/practical_profile_20260914.md`. Zero new network calls,
-unchanged trained weights; the development endpoints are unserved. Strict replay
-checks complete original failure outcomes, not just any failure. A fixed six-cell
-same-session tiny cost diagnostic now passes: second sequence coordinator145ms,
-fanout169ms, progressive174ms; all gold correct, frozen rank agrees in this one
-case. See `docs/report/practical_cost_diagnostic_20260914.md`. Within-plan exact
-full-native sharing now passes11 new cases and one native strong request:
-calls14→11, bytes18606→16399, four gold rows unchanged; no speed claim across
-cold sessions. See `docs/report/shared_native_reads_20260914.md`. Necessary native
-row screening now passes14 new+2 affected cases, one11-call native request
-(rows64→61, bytes16399→15820, four gold unchanged), plus one Cypher type component.
-See `docs/report/source_row_prefilters_20260914.md`. Request-local preparation
-now passes5 new+2 affected cases and saved replay, bundle loads4→1 with admission
-cost retained; see `docs/report/practical_preparation_20260915.md`. New strong
-methods now connect to the common worker with trusted-template scope,6 new+1
-affected checks and complete replay; combined live success is still untested.
-See `docs/report/practical_worker_20260915.md`. Cooperative budget checks now pass
-six new and one affected case, keeping feasible/estimated incumbents and declaring
-atomic-step overshoot; see `docs/report/cooperative_planning_budget_20260915.md`.
-One actual strong common-worker native request now passes: four gold rows, one
-plan/11 source calls/61 source rows/15820 bytes,1711ms complete outer time, no model;
-see `docs/report/practical_worker_native_20260915.md`. All owned services closed.
-Practical answer handoff now avoids the16MiB full-trace reread limit: four new and
-one affected replay checks pass, full traces remain; see
-`docs/report/practical_outcome_20260915.md`. No new native rerun or streaming claim.
-Next audit the new strong paper contract against the old18-figure protocol, making
-input authority, method scope and release gaps explicit for discussion; do not
-automatically start a campaign or change approved dataset/baseline priorities.
-The audit is `docs/research_contract_audit_20260915.md`. A separate per-question
-strong study freezer/one-group dispatcher now passes six local checks; see
-`docs/report/practical_study_20260915.md`. It does not alter old schedules, launch
-a real study, or freeze the still-pending paper input/mode/common-frontend contract.
-Do not tune scores or repeat the six cells. Open-NL and superiority
-remain unproven. User cutoff: Sep15 02:00 Beijing, summarize/pause until10:00.
-Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime
-follows one outcome and executes one final plan. The declared bounded semantic
-and outcome model must be explicit; no universal plan-availability claim.
+epsilon/answer-error guarantee. All selected acquisition outcomes need feasible
+continuations; runtime follows one and executes one final federated plan.
+
+The bounded trusted-template core, live information/native slice, frozen profiles,
+common real worker and independent study wiring now exist. Actual tested evidence
+and remaining release gaps are in `docs/status.md` and
+`docs/research_contract_audit_20260915.md`; do not rerun successful gates or pool
+old versions. Open-NL structure authority, formal mode release and superiority
+remain unproven. The development PERFORMANCE profile is not a paper default.
+Legacy domains and baseline algorithms retain their behavior.
+
+User cutoff: Sep15 02:00 Beijing, summarize/stop engineering until10:00.
+Read `docs/goal.md` for current schedule state. Overall Goal remains unfinished.
 
 The previous one-shot profile below remains a versioned legacy interface.
 
@@ -202,7 +167,10 @@ For every milestone:
    or the frozen experiment-release plan. Documentation-only changes need no
    software regression. This supersedes the former blanket rule, following the
    user's explicit September 11 research-directed testing instruction.
-7. Update `docs/status.md`, `docs/roadmap.md`, and design decisions.
+7. Update the concise current `docs/status.md`, `docs/roadmap.md`, and relevant
+   design decisions. Put detailed chronological evidence in its report, not in
+   repeated historical "current/next" sections. The dated history snapshots are
+   read-only provenance for this workflow, not live task instructions.
 8. Report changed files, commands, results, limitations, and the next gate.
 
 ## Definition of done
