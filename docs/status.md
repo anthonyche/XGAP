@@ -2,6 +2,11 @@
 
 ## 2026-09-14 当前状态：P-S2 信息动作与新 strong 真实双后端小图已通
 
+P-S3补充：[逐跳绑定本地门](report/progressive_binding_20260914.md)已通过6项新检查与
+1项受影响检查，后续跳源行24→19、逻辑交换7286→6401B，6行gold与平行边计数不变。
+仅新增一个候选，新strong入口可估计选择；legacy domain不变。既有冻结tiny模型仍选
+coordinator；该新候选真实服务正确性、实际耗时优势与估计排序准确性尚待验证。
+
 [P-S2 报告](report/practical_information_native_20260914.md)：14项新检查及3项受影响检查
 通过，真实5节点8边模板NL请求取得预先编写的1条gold；1 catalog动作、1最终计划、
 Neo4j/Fuseki各1请求，服务全部关闭。首个preflight配置失败保留，未启动服务/查询。

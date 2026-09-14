@@ -7,6 +7,10 @@
 > is not included in the new profile's semantic guarantee. The initial new route
 > requires a content-bound trusted query skeleton.
 
+The opt-in [progressive binding](decisions/progressive_binding_v1.md) candidate
+composes existing entity semijoin restrictions. It preserves original joins,
+filters and aggregates; it introduces no algebra operator or approximate semantics.
+
 
 `timestamp_ms` now compares equivalent local-calendar millisecond forms with zero
 to three fractional digits, while invalid calendar/timezone/submillisecond values

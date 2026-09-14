@@ -266,7 +266,8 @@ class PracticalSemanticDomain:
             return
         try:
             alternatives, _ = prepare_one_shot_domain(bound.program, operator_sources=bound.operator_sources,
-                sources=self.sources, backends=self.backends, policy=self.physical_profile)
+                sources=self.sources, backends=self.backends, policy=self.physical_profile,
+                progressive_bindings=True)
             scored = [self._terminal(c.plan, bound, state, unresolved) for c in alternatives]
             best = min([seed, *scored], key=lambda t: (t.estimated_cost is None, t.estimated_cost or 0))
             self.plan_cache[key] = (seed, best)

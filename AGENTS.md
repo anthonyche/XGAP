@@ -68,7 +68,9 @@ epsilon/answer-error guarantee. P-S1 has a working local typed/ordinary-template
 slice; P-S2 added catalog/model adapters, capability lookup and one real two-engine
 toy gate (see `docs/report/practical_information_native_20260914.md`). The new model
 action has controlled-transport evidence, not live endpoint evidence. Next is
-P-S3 semantics-preserving progressive binding. All selected acquisition outcomes need feasible continuations. Runtime
+P-S3 progressive binding has a six-case local correctness gate; its new native
+component gate and measured advantage remain pending (see `docs/report/progressive_binding_20260914.md`).
+Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime
 follows one outcome and executes one final plan. The declared bounded semantic
 and outcome model must be explicit; no universal plan-availability claim.
 

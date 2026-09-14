@@ -5,6 +5,7 @@ Join direction, and one deterministic proved-anchor fanout candidate. There
 are at most 2 + 2J plans, not a product of local choices. Compilation and
 candidate construction perform no data access, profiling, model call or cost
 selection. An estimator can select its minimum over this explicit domain.
+The opt-in progressive profile adds at most one composed candidate (3 + 2J).
 
 V1 binds a Match source (optionally behind entity-preserving Project/Filter)
 using canonical entity keys from the other Join input. The original Join stays
@@ -66,18 +67,20 @@ class PhysicalStrategyCandidate:
 @dataclass(frozen=True)
 class PhysicalStrategySpace:
     candidates: tuple[PhysicalStrategyCandidate, ...]
-    rejected_strategies: tuple[dict[str, str], ...]
+    rejected_strategies: tuple[dict[str, Any], ...]
     preparation_ms: float
     semantic_equivalence_key: str
     join_count: int
     anchor_candidate_upper_bound: int = 0
+    progressive_candidate_upper_bound: int = 0
 
     @property
     def candidate_count_upper_bound(self) -> int:
-        return 1 + 2 * self.join_count + self.anchor_candidate_upper_bound
+        return 1 + 2 * self.join_count + self.anchor_candidate_upper_bound + self.progressive_candidate_upper_bound
 
     def to_dict(self) -> dict[str, Any]:
-        return {"profile": STRATEGY_PROFILE, "candidates": [c.to_dict() for c in self.candidates],
+        return {"profile": 'semantic-progressive-bind-v1' if self.progressive_candidate_upper_bound else STRATEGY_PROFILE,
+                "candidates": [c.to_dict() for c in self.candidates],
                 "rejected_strategies": list(self.rejected_strategies),
                 "preparation_ms": self.preparation_ms,
                 "semantic_equivalence_key": self.semantic_equivalence_key,
@@ -85,6 +88,9 @@ class PhysicalStrategySpace:
                 "domain": "baseline_or_one_join_bind_or_one_anchor_fanout; fixed_source_bindings",
                 "external_calls": 0, "combination_enumeration": False,
                 "anchor_candidate_upper_bound": self.anchor_candidate_upper_bound,
+                **({"progressive_candidate_upper_bound":self.progressive_candidate_upper_bound,
+                    "domain":"legacy alternatives plus one progressive bind composition"}
+                   if self.progressive_candidate_upper_bound else {}),
                 "actual_cost_optimality_claim": False}
 
 
@@ -248,7 +254,7 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
         source_bindings: Mapping[str, str], backends: Mapping[str, SemanticBackend],
         max_remote_calls: int = 16, max_parallelism: int = 4,
         max_bindings: int = 10000, max_binding_bytes: int = 1_048_576,
-        operator_equality_bounds=None) -> PhysicalStrategySpace:
+        operator_equality_bounds=None, progressive_bindings=False) -> PhysicalStrategySpace:
     """Compile the baseline, single binds and at most one anchor fanout.
 
     The binding-list count is enforced by the existing scheduler. SPARQL also
@@ -264,8 +270,12 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
     constructing alternatives, for p predicate atoms and e DAG edges. The fanout
     adds O(n*L + generated query bytes), one candidate and no remote-call slots.
     There is no general join-order or actual-cost guarantee.
+    The opt-in progressive pass adds at most one candidate and
+    O(J*(L+n)+generated query bytes) work; see progressive_binding_v1.md.
     """
     started = time.perf_counter()
+    if type(progressive_bindings) is not bool:
+        raise ValueError('progressive_bindings must be boolean')
     if not isinstance(program, SemanticGraphProgram):
         raise SemanticProgramError("Physical strategy preparation needs a typed semantic program")
     if len(program.operators) > MAX_SEMANTIC_OPERATORS:
@@ -291,7 +301,8 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
 
     def candidate(strategy_id, plan, details, extra_assumptions=()):
         plan = replace(plan, plan_id=baseline.plan_id + "/" + _digest(strategy_id)[:16],
-            metadata={**dict(plan.metadata), "physical_strategy_profile": STRATEGY_PROFILE,
+            metadata={**dict(plan.metadata), "physical_strategy_profile":
+                'semantic-progressive-bind-v1' if strategy_id == 'progressive_entity_bind' else STRATEGY_PROFILE,
                 "physical_strategy": strategy_id, "strategy_details": details,
                 "semantic_equivalence_key": semantic_key, "current_query_profile_calls": 0})
         return PhysicalStrategyCandidate(strategy_id, plan, semantic_key,
@@ -375,5 +386,18 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
                      "Binding-list overflow fails explicitly; no answer approximation or hidden fallback")))
             except _NotAdmitted as error:
                 rejected.append({"strategy_id": strategy_id, "reason": str(error)})
+    if progressive_bindings and joins:
+        from xgap.runtime.progressive_binding import progressive_bind
+        seed = next((c.plan for c in candidates if c.strategy_id == 'anchor_fanout_bind'), candidates[0].plan)
+        plan, details = progressive_bind(program, seed, source_bindings=source_bindings, backends=backends,
+            max_bindings=max_bindings, max_binding_bytes=max_binding_bytes)
+        if details['rewrite_count']:
+            candidates.append(candidate('progressive_entity_bind', plan, details,
+                ('Each accumulated rewrite preserves an exclusive inner join and canonical identity',
+                 'All original joins/filters/aggregates remain; binding overflow fails without retry')))
+        else:
+            rejected.append({'strategy_id':'progressive_entity_bind','reason':'No additional exclusive acyclic target',
+                             'skipped':details['skipped']})
     return PhysicalStrategySpace(tuple(candidates), tuple(rejected),
-        (time.perf_counter() - started) * 1000, semantic_key, len(joins), int(bool(anchor)))
+        (time.perf_counter() - started) * 1000, semantic_key, len(joins), int(bool(anchor)),
+        int(progressive_bindings and bool(joins)))

@@ -1,6 +1,6 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
-## 2026-09-14 当前授权：P-S2 已验收，进入 P-S3；应用 Goal active
+## 2026-09-14 当前授权：P-S2 已验收，P-S3 本地门已通；应用 Goal active
 
 用户再次明确要求更新 paused Goal 并迭代执行。最初应用 Goal 为 paused，工具无法
 直接恢复；用户后续授权后再次读取返回无 Goal，随后已按当前目标创建新 Goal，工具
@@ -32,6 +32,11 @@ P-S2 新增14项检查与3项受影响检查通过；真实5节点8边、1模板
 见[信息工具与真实小图报告](report/practical_information_native_20260914.md)。
 新模型动作已通过真实provider代码+受控transport，尚非该新profile的live LLM证据。
 进入 P-S3 共享执行优化；度量待定不阻塞这些工作。
+P-S3 已加入确定性逐跳绑定候选，6项新小图检查与1项受影响兜底检查通过；后续三跳
+源行24→19、完整6行答案不变；平行边bag计数7保持。原冻结tiny估计器能评分但仍选
+coordinator，未为新候选改分数。[本地结果](report/progressive_binding_20260914.md)。
+下一门：新候选真实Neo4j/Fuseki小图组件验证，继而判断实际成本与估计排序是否一致；
+当前不能宣称P-S3真实提速、开放NL或论文系统评价完成。保持Goal迭代，不重新暂停。
 研发只用 toy/replay；维持原18图及 FinBench/RDF/FedShop 优先级，大规模评价后置。
 项目总体目标未完成。下文均为保留的历史状态，不作为当前执行指令。
 

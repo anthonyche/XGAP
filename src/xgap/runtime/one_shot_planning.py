@@ -3,6 +3,7 @@
 Admit local source alternatives, then generate a feasible baseline plus each
 single-source deviation. For each placement, generate at most 2+2J legal strategy
 DAGs. This explicit neighborhood is not the full Cartesian physical space.
+Opt-in progressive binding adds at most one candidate per placement.
 No backend, observation collector, or training action is invoked here.
 """
 
@@ -20,8 +21,10 @@ from xgap.runtime.retrieval_budget import apply_retrieval_budget
 from xgap.semantic.program import SemanticOperatorKind as S, SemanticProgramError
 
 
-def prepare_one_shot_domain(program, *, operator_sources, sources, backends, policy):
+def prepare_one_shot_domain(program, *, operator_sources, sources, backends, policy, progressive_bindings=False):
     started = time.perf_counter()
+    if type(progressive_bindings) is not bool:
+        raise ValueError('progressive_bindings must be boolean')
     if program.holes or len(program.operators) > policy.max_operators:
         raise SemanticProgramError("One-shot planning requires a bounded resolved program")
     _admit_expansion(program)
@@ -73,7 +76,8 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
                 placements.append({**baseline, op: backend_id})
     join_count = sum(op.kind is S.JOIN for op in program.operators)
     anchor_slots = anchor_binding_slot(program)
-    construction_bound = len(placements) * (1 + 2 * join_count + anchor_slots)
+    progressive_slots = int(progressive_bindings and bool(join_count))
+    construction_bound = len(placements) * (1 + 2 * join_count + anchor_slots + progressive_slots)
     # Reject an over-budget domain before construction instead of silently
     # truncating it and misreporting exact selection over the promised domain.
     if construction_bound > policy.max_physical_candidates:
@@ -88,7 +92,7 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
                 backends=backends, max_remote_calls=policy.max_remote_calls,
                 max_parallelism=policy.max_parallelism, max_bindings=policy.max_bindings,
                 max_binding_bytes=policy.max_binding_bytes,
-                operator_equality_bounds=equality_bounds)
+                operator_equality_bounds=equality_bounds, progressive_bindings=progressive_bindings)
         except (ValueError, CompilerError) as error:
             rejected.append({"source_bindings": placement, "status": "unsupported_placement",
                              "reason": str(error)})
@@ -120,6 +124,9 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
         "placement_count": len(placements), "construction_bound": construction_bound,
         "candidate_count": len(candidates), "rejected": rejected,
         "anchor_candidate_upper_bound_per_placement": anchor_slots,
-        "domain": "one-source neighborhood; coordinator, one join bind, or one deterministic anchor fanout",
+        **({"progressive_candidate_upper_bound_per_placement":progressive_slots,
+            "algorithm":"single_source_neighborhood_with_progressive_bind_v1"} if progressive_bindings else {}),
+        "domain": "one-source neighborhood; coordinator, one join bind, or one deterministic anchor fanout"
+                  + ('; one progressive bind composition' if progressive_bindings else ''),
         "global_physical_optimality": False,
         "elapsed_ms": (time.perf_counter() - started) * 1000}
