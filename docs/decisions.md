@@ -1,3 +1,5 @@
+2026-09-14: [Anchor-aware retrieval scope](decisions/anchor_budget_scope_v1.md): preserve unbound reads until mandatory anchor bindings exist; four new tiny checks pass, equivalence metadata aligned. Refined mode publisher/preflight passes; two new real-NL native requests pending.
+
 2026-09-14: [Precision local evidence and proxy-quality band](decisions/precision_evidence_v1.md): seven independent tiny cases pass, with actual corrected bindings/answers and one final plan. Real model effectiveness and formal mode release remain pending.
 
 2026-09-14: [Bounded relationship retrieval](decisions/budgeted_relations_v1.md) and [native evidence / next mode gate](report/budgeted_relations_20260914.md): nine new risk cases and native precision/performance boundaries verified, with first harness failure preserved and exact offline recovery. Source bytes fall2565→1725; tiny latency stays similar. Precision NL-quality enhancement and formal mode release remain pending. No evaluation/baseline changes.

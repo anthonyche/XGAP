@@ -23,6 +23,7 @@ class OneShotPolicy:
     retrieval_rows_per_relation: int | None = None
     grounding_ranking: str = "artifact_entry_order_v1"
     max_quality_deficit: float | None = None
+    retrieval_scope: str = "all_relations_v1"
 
     def __post_init__(self):
         if self.mode not in ("precision", "performance"):
@@ -57,6 +58,10 @@ class OneShotPolicy:
             if (self.mode != "precision" or type(value) not in (float, int)
                     or not math.isfinite(value) or not 0 <= value <= 1):
                 raise ValueError("Quality deficit requires precision mode and a finite value in [0,1]")
+        if self.retrieval_scope not in ("all_relations_v1", "bind_after_anchor_v1"):
+            raise ValueError("Unknown relationship retrieval scope")
+        if self.retrieval_scope != "all_relations_v1" and self.retrieval_rows_per_relation is None:
+            raise ValueError("Contextual retrieval scope requires a relationship row budget")
 
     @classmethod
     def for_mode(cls, mode):
@@ -70,12 +75,15 @@ class OneShotPolicy:
         bounded = self.retrieval_rows_per_relation is not None
         if not bounded:
             body.pop("retrieval_rows_per_relation")  # Preserve old request/replay identities.
-        precision = self.grounding_ranking != "artifact_entry_order_v1" or self.max_quality_deficit is not None
+        advanced = (self.grounding_ranking != "artifact_entry_order_v1" or self.max_quality_deficit is not None
+                    or self.retrieval_scope != "all_relations_v1")
         if self.grounding_ranking == "artifact_entry_order_v1":
             body.pop("grounding_ranking")
         if self.max_quality_deficit is None:
             body.pop("max_quality_deficit")
-        version = "v3" if precision else "v2" if bounded else "v1"
+        if self.retrieval_scope == "all_relations_v1":
+            body.pop("retrieval_scope")
+        version = "v3" if advanced else "v2" if bounded else "v1"
         return {"schema_version": "xgap-one-shot-policy-" + version, **body,
                 "quality_proxy_calibrated": False, "final_plan_executions": 1,
                 "online_profile_calls": 0, "automatic_retries": 0}

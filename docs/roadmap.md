@@ -1,5 +1,20 @@
 # XGAP Roadmap
 
+## 当前执行：两模式新控制已通过小图，下一门为两次真实NL请求
+
+precision规范名称证据/质量band的7项新检查通过；performance新增anchor后绑定预算
+的4项检查通过；冻结profile发布/两模式零调用preflight通过1项，另跑1项受影响估计检查。
+详见[precision设计](decisions/precision_evidence_v1.md)和[anchor预算范围及边界](decisions/anchor_budget_scope_v1.md)。
+Late-anchor真实小图source rows54→33、5/5答案，普通估计选anchor_fanout_bind、一次计划。
+高扇出另一例54→39、3/6答案；保留漏答，不改full gold。不宣称native/大数据提速。
+预算candidate和runtime plan中的等价key现已一致；旧元数据证据保留对应旧commit。
+
+已准备唯一新真实NL小图门：冻结8节点16关系，account2问题独立full gold2行；
+precision deficit0.1、performance B2+anchor scope，各最多1模型/1最终计划。
+零数据load/catalog/fit/baseline，无自动retry。先提交后只执行这两次新边界。
+正式campaign profile/参数未发布，baseline前端仍须保留原父配置；NL下一group11不变。
+Goal active、已恢复，无暂停；此前Goal turn均为有代码/实证变化的progress。
+
 ## 当前工程：precision 本地证据与质量约束已接通，真实模型效果尚未验证
 
 [新设计与条件bound](decisions/precision_evidence_v1.md)：可选canonical-context实体排序

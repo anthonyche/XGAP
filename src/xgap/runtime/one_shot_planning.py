@@ -95,12 +95,12 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
             continue
         for candidate in space.candidates:
             if policy.retrieval_rows_per_relation is not None:
-                budgeted = apply_retrieval_budget(candidate.plan, program, policy.retrieval_rows_per_relation)
+                budgeted = apply_retrieval_budget(candidate.plan, program, policy.retrieval_rows_per_relation,
+                                                 scope=policy.retrieval_scope)
                 # Different budgeted physical orders can observe different
                 # subsets. Never reuse the complete-program equivalence claim.
-                key = hashlib.sha256(json.dumps(budgeted.to_dict(),sort_keys=True).encode()).hexdigest()
                 candidate = replace(candidate, plan=budgeted, features=strategy_features(budgeted,program),
-                                    semantic_equivalence_key="budgeted-plan:"+key)
+                                    semantic_equivalence_key=budgeted.metadata["semantic_equivalence_key"])
             encoded = json.dumps(candidate.plan.to_dict(), sort_keys=True, separators=(",", ":"))
             suffix = hashlib.sha256(encoded.encode()).hexdigest()[:20]
             used = {n.parameters["backend_id"] for n in candidate.plan.nodes

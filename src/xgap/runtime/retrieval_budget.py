@@ -6,6 +6,7 @@ The original coordinator operators then run on these observed leaf relations.
 """
 from dataclasses import replace
 import hashlib
+import json
 
 from xgap.runtime.contracts import RuntimeNodeKind as R
 from xgap.semantic.program import SemanticOperatorKind as S
@@ -37,18 +38,28 @@ def observe_budget(spec, received):
         "selection": "backend_return_order_prefix; not a random sample"}
 
 
-def apply_retrieval_budget(plan, program, rows):
+def apply_retrieval_budget(plan, program, rows, *, scope="all_relations_v1"):
     if type(rows) is not int or not 1 <= rows <= MAX_ROWS:
         raise ValueError("Relationship row budget must be in 1..1000000")
     if any(op.kind is S.TRAVERSE for op in program.operators):
         raise ValueError("Budgeted mode requires expanded Match relations, not native Traverse selectors")
-    nodes, bounded = [], []
+    if scope not in ("all_relations_v1", "bind_after_anchor_v1"):
+        raise ValueError("Unknown relationship retrieval scope")
+    bind_first = scope == "bind_after_anchor_v1" and bool(plan.metadata.get("anchor_reduction"))
+    nodes, bounded, uncapped = [], [], []
     for node in plan.nodes:
         artifact = node.parameters.get("artifact", {})
         params = artifact.get("parameters", {})
         if node.kind in REMOTE and params.get("compiler") == "semantic_edge_match_v1":
             if "retrieval_budget" in params or artifact.get("language") not in ("cypher", "sparql"):
                 raise ValueError("Unsupported or already budgeted native relationship query")
+            if bind_first and node.kind is R.REMOTE_QUERY:
+                # The coordinator cannot apply its anchor until these rows
+                # return. Leave this fragment complete rather than globally
+                # cutting away the very keys the query is anchored on.
+                uncapped.append(node.node_id)
+                nodes.append(node)
+                continue
             text = artifact["text"] + f"\nLIMIT {rows + 1}"
             spec = {"profile": PROFILE, "rows": rows, "fetch_rows": rows + 1,
                     "template_sha256": hashlib.sha256(text.encode()).hexdigest()}
@@ -57,7 +68,8 @@ def apply_retrieval_budget(plan, program, rows):
             node = replace(node, parameters={**node.parameters, "artifact": artifact})
             bounded.append(node.node_id)
         nodes.append(node)
-    return replace(plan, nodes=tuple(nodes), metadata={**plan.metadata, "retrieval_budget": {
+    metadata = {k:v for k,v in plan.metadata.items() if k != "semantic_equivalence_key"}
+    budgeted = replace(plan, nodes=tuple(nodes), metadata={**metadata, "retrieval_budget": {
         "profile": PROFILE, "rows_per_relationship_query": rows, "bounded_nodes": bounded,
         "relationship_wire_row_upper_bound": len(bounded) * (rows + 1),
         "relationship_coordinator_row_upper_bound": len(bounded) * rows,
@@ -66,7 +78,14 @@ def apply_retrieval_budget(plan, program, rows):
         "coverage_is_strategy_dependent": True,
         "aggregate_values_may_change": any(op.kind is S.AGGREGATE for op in program.operators),
         "ranking_may_change": any(op.kind is S.ORDER_LIMIT for op in program.operators),
-        "full_source_quality_bound": None, "backend_internal_scan_bound": None}})
+        "full_source_quality_bound": None, "backend_internal_scan_bound": None,
+        **({"scope": scope, "anchor_binding_guard_applied": bind_first,
+            "uncapped_relationship_nodes": uncapped,
+            "row_upper_bounds_apply_to": "bounded relationship fragments only; uncapped fragments excluded"}
+           if scope != "all_relations_v1" else {})}})
+    key = "budgeted-plan:" + hashlib.sha256(json.dumps(budgeted.to_dict(), sort_keys=True).encode()).hexdigest()
+    return replace(budgeted, metadata={**budgeted.metadata, "semantic_equivalence_key": key,
+                                      "semantic_equivalence_scope": "this budgeted plan only"})
 
 
 def retrieval_observation(plan, execution_value):
