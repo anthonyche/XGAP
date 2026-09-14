@@ -19,13 +19,14 @@ from xgap.runtime.semantic_compiler import compile_semantic_source
 from xgap.runtime.semantic_placement import _admit_expansion
 from xgap.runtime.retrieval_budget import apply_retrieval_budget
 from xgap.runtime.shared_native_reads import share_full_native_reads
+from xgap.runtime.source_row_filters import prefilter_source_rows
 from xgap.semantic.program import SemanticOperatorKind as S, SemanticProgramError
 
 
 def prepare_one_shot_domain(program, *, operator_sources, sources, backends, policy, progressive_bindings=False,
-                            shared_native_reads=False):
+                            shared_native_reads=False,source_row_prefilters=False):
     started = time.perf_counter()
-    if type(progressive_bindings) is not bool or type(shared_native_reads) is not bool:
+    if any(type(v) is not bool for v in (progressive_bindings,shared_native_reads,source_row_prefilters)):
         raise ValueError('Physical profile flags must be boolean')
     if program.holes or len(program.operators) > policy.max_operators:
         raise SemanticProgramError("One-shot planning requires a bounded resolved program")
@@ -115,8 +116,10 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
                 metadata={**candidate.plan.metadata, "source_bindings": placement,
                           "source_snapshot_versions": {b: versions[b] for b in sorted(used)},
                           "source_identities": {b: identities[b] for b in sorted(used)}})
+            if source_row_prefilters:plan=prefilter_source_rows(program,plan)
             if shared_native_reads:
                 plan=share_full_native_reads(plan)
+            if shared_native_reads or source_row_prefilters:
                 candidate=replace(candidate,features=strategy_features(plan,program))
             candidates.append(replace(candidate, plan=plan,
                                       strategy_id=f"placement-{index}/{candidate.strategy_id}"))
@@ -135,4 +138,5 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
                   + ('; one progressive bind composition' if progressive_bindings else ''),
         "global_physical_optimality": False,
         **({'shared_native_reads':'identical-complete-native-reads-v1'} if shared_native_reads else {}),
+        **({'source_row_prefilters':'mandatory-source-row-prefilter-v1'} if source_row_prefilters else {}),
         "elapsed_ms": (time.perf_counter() - started) * 1000}

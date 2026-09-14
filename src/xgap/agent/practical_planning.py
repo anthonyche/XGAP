@@ -19,6 +19,7 @@ from xgap.runtime.one_shot_planning import prepare_one_shot_domain
 from xgap.runtime.semantic_compiler import compile_semantic_program, compile_semantic_source
 from xgap.runtime.semantic_placement import _admit_expansion
 from xgap.runtime.shared_native_reads import share_full_native_reads
+from xgap.runtime.source_row_filters import prefilter_source_rows
 from xgap.semantic.binding import bind_semantic_query
 from xgap.semantic.program import SemanticOperatorKind as S, hard_constraints_sha256
 
@@ -155,10 +156,10 @@ def _baseline(program, operator_sources, sources, backends, profile):
     plan = compile_semantic_program(program, source_bindings=placement, backends=backends,
         max_remote_calls=profile.max_remote_calls, max_parallelism=profile.max_parallelism)
     used = {n.parameters["backend_id"] for n in plan.nodes if "backend_id" in n.parameters}
-    return share_full_native_reads(replace(plan, metadata={**plan.metadata,
+    return share_full_native_reads(prefilter_source_rows(program,replace(plan, metadata={**plan.metadata,
         "source_identities": {b: identities[b] for b in used},
         "source_snapshot_versions": {b: identities[b]["snapshot_version"] for b in used},
-        "source_bindings": placement, "planning_fallback": "minimum_call_feasible_placement"}))
+        "source_bindings": placement, "planning_fallback": "minimum_call_feasible_placement"})))
 
 
 class PracticalSemanticDomain:
@@ -274,7 +275,7 @@ class PracticalSemanticDomain:
         try:
             alternatives, _ = prepare_one_shot_domain(bound.program, operator_sources=bound.operator_sources,
                 sources=self.sources, backends=self.backends, policy=self.physical_profile,
-                progressive_bindings=True,shared_native_reads=True)
+                progressive_bindings=True,shared_native_reads=True,source_row_prefilters=True)
             scored = [self._terminal(c.plan, bound, state, unresolved) for c in alternatives]
             best = min([seed, *scored], key=lambda t: (t.estimated_cost is None, t.estimated_cost or 0))
             self.plan_cache[key] = (seed, best)
