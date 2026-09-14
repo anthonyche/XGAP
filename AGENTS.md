@@ -80,9 +80,12 @@ unchanged trained weights; the development endpoints are unserved. Strict replay
 checks complete original failure outcomes, not just any failure. A fixed six-cell
 same-session tiny cost diagnostic now passes: second sequence coordinator145ms,
 fanout169ms, progressive174ms; all gold correct, frozen rank agrees in this one
-case. See `docs/report/practical_cost_diagnostic_20260914.md`. Next is exact
-within-plan duplicate full native reads, using observed identical artifacts;
-do not tune scores or repeat the six cells. Open-NL and superiority
+case. See `docs/report/practical_cost_diagnostic_20260914.md`. Within-plan exact
+full-native sharing now passes11 new cases and one native strong request:
+calls14→11, bytes18606→16399, four gold rows unchanged; no speed claim across
+cold sessions. See `docs/report/shared_native_reads_20260914.md`. Next inspect
+existing compiler support and semantic preconditions for early single-source
+filters; do not tune scores or repeat the six cells. Open-NL and superiority
 remain unproven. User cutoff: Sep15 02:00 Beijing, summarize/pause until10:00.
 Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime
 follows one outcome and executes one final plan. The declared bounded semantic

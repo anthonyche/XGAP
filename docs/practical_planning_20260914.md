@@ -71,7 +71,9 @@ d(Q_tilde,Q_star) 由用户下一理论阶段推进。当前不自行定义替�
 旧权重不变，tiny统计离线更新；0新网络，不等于论文模式release或新native结果。
 成本/排序的[同会话六步诊断](report/practical_cost_diagnostic_20260914.md)已完成：三计划均
 正确，第二序列coordinator145ms、fanout169ms、progressive174ms，冻结排序在本例一致。
-下一步消除已观察到的相同快照/完整artifact重复源读取，先保护各消费者语义；不调估计分数。
+[相同完整源读取共享](report/shared_native_reads_20260914.md)也已通过11项新检查和一次
+真实strong请求，4行gold保持，实际调用14→11。下一步审查单源过滤提前执行的编译与
+等价条件；不调估计分数，不重复前轮六步或大题。
 动作顺序与费用按[新契约](decisions/acquisition_order_v1.md)分开；
 未知费用保持null，不为展示LLM链路假设昂贵澄清。9月15日02:00收尾总结，10:00恢复。
 
