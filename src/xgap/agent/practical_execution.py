@@ -14,6 +14,7 @@ from xgap.agent.strong_planning import ResourceUsage, StrongSearchLimits, search
 from xgap.runtime.contracts import FederatedExecutionPlan
 from xgap.runtime.scheduler import FederatedScheduler
 from xgap.runtime.tool import FederatedExecutionTool
+from xgap.runtime.planning_budget import CooperativePlanningBudget
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPlugin, ToolRegistry
 from xgap.tools.contracts import ToolEffect, ToolResult, ToolSpec, ToolStatus
 
@@ -158,6 +159,8 @@ def run_practical_semantic_query(program, *, initial_state, resolution_tools=Non
     domain_options['sources'] = admitted_sources
     domain = PracticalSemanticDomain(program, **domain_options)
     domain.validate_state(initial_state)
+    checkpoint=CooperativePlanningBudget(limits.planning_ms)
+    domain.planning_checkpoint=checkpoint
     search = search_strong_policy(initial_state, domain, limits=limits)
     report = {"schema_version": "xgap-practical-answer-v1", "success": False, "mode": domain.mode.mode,
         "search": search.to_dict(), "answer_rows": None, "final_plan_executions": 0,
@@ -170,6 +173,7 @@ def run_practical_semantic_query(program, *, initial_state, resolution_tools=Non
         "semantic_discrepancy_upper_bound": None, "discrepancy_status": "metric_deferred",
         "optimality_certified": False, "actual_acquisition_usage_complete": True, "status": search.status,
         "limits": asdict(limits), "strong_scope": "declared finite outcomes and admitted trusted skeleton"}
+    report['cooperative_planning_budget']=checkpoint.to_dict()
     if search.policy is None or not execute:
         report.update(status="planned" if search.policy else search.status,
                       end_to_end_ms=(time.perf_counter() - started) * 1000)

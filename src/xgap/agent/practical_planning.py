@@ -20,6 +20,7 @@ from xgap.runtime.semantic_compiler import compile_semantic_program, compile_sem
 from xgap.runtime.semantic_placement import _admit_expansion
 from xgap.runtime.shared_native_reads import share_full_native_reads
 from xgap.runtime.source_row_filters import prefilter_source_rows
+from xgap.runtime.planning_budget import PlanningBudgetExpired
 from xgap.semantic.binding import bind_semantic_query
 from xgap.semantic.program import SemanticOperatorKind as S, hard_constraints_sha256
 
@@ -191,6 +192,7 @@ class PracticalSemanticDomain:
             self._check_binding(slot, candidate)
         self.failures, self.plan_cache = [], {}
         self.compiled_states = self.estimator_calls = 0
+        self.planning_checkpoint = None
 
     def _check_binding(self, slot, candidate):
         if slot not in self.slots or candidate not in self.binding_values or self.binding_values[candidate].kind != self.slots[slot].kind:
@@ -208,7 +210,12 @@ class PracticalSemanticDomain:
 
     def _terminal(self, plan, bound, state, unresolved):
         estimate, reason = None, "estimator_unavailable"
-        if self.estimator is not None:
+        budget_ok=True
+        if self.estimator is not None and self.planning_checkpoint is not None:
+            try:self.planning_checkpoint()
+            except PlanningBudgetExpired:
+                budget_ok=False;reason='planning_budget_exhausted'
+        if self.estimator is not None and budget_ok:
             stats = {e.backend_id: e for e in self.estimator.statistics.entries}
             compatible = all(b in stats and (stats[b].source_id, stats[b].snapshot_version) ==
                 (v["source_id"], v["snapshot_version"]) for b, v in plan.metadata["source_identities"].items())
@@ -273,14 +280,24 @@ class PracticalSemanticDomain:
         if not self.mode.improve_physical:
             return
         try:
+            if self.planning_checkpoint is not None:self.planning_checkpoint()
             alternatives, _ = prepare_one_shot_domain(bound.program, operator_sources=bound.operator_sources,
                 sources=self.sources, backends=self.backends, policy=self.physical_profile,
-                progressive_bindings=True,shared_native_reads=True,source_row_prefilters=True)
-            scored = [self._terminal(c.plan, bound, state, unresolved) for c in alternatives]
-            best = min([seed, *scored], key=lambda t: (t.estimated_cost is None, t.estimated_cost or 0))
+                progressive_bindings=True,shared_native_reads=True,source_row_prefilters=True,
+                planning_checkpoint=self.planning_checkpoint)
+            best=seed
+            rank=lambda t:(t.estimated_cost is None,t.estimated_cost or 0)
+            for candidate in alternatives:
+                try:
+                    if self.planning_checkpoint is not None:self.planning_checkpoint()
+                except PlanningBudgetExpired as error:
+                    self.failures.append({'bindings':values,'stage':'optional_physical_scoring','error':str(error)})
+                    break
+                scored=self._terminal(candidate.plan,bound,state,unresolved)
+                if rank(scored)<rank(best):best=scored
             self.plan_cache[key] = (seed, best)
             yield best
-        except (ValueError, KeyError, CompilerError) as error:
+        except (ValueError, KeyError, CompilerError,PlanningBudgetExpired) as error:
             self.failures.append({"bindings": values, "stage": "optional_physical_improvement", "error": str(error)})
 
     def actions(self, state):

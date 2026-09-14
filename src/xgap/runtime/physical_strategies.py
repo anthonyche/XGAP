@@ -254,7 +254,7 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
         source_bindings: Mapping[str, str], backends: Mapping[str, SemanticBackend],
         max_remote_calls: int = 16, max_parallelism: int = 4,
         max_bindings: int = 10000, max_binding_bytes: int = 1_048_576,
-        operator_equality_bounds=None, progressive_bindings=False) -> PhysicalStrategySpace:
+        operator_equality_bounds=None, progressive_bindings=False,planning_checkpoint=None) -> PhysicalStrategySpace:
     """Compile the baseline, single binds and at most one anchor fanout.
 
     The binding-list count is enforced by the existing scheduler. SPARQL also
@@ -274,6 +274,7 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
     O(J*(L+n)+generated query bytes) work; see progressive_binding_v1.md.
     """
     started = time.perf_counter()
+    if planning_checkpoint is not None:planning_checkpoint()
     if type(progressive_bindings) is not bool:
         raise ValueError('progressive_bindings must be boolean')
     if not isinstance(program, SemanticGraphProgram):
@@ -288,6 +289,7 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
     _admit_expansion(program)
     baseline = _with_exchanges(compile_semantic_program(program, source_bindings=source_bindings,
         backends=backends, max_remote_calls=max_remote_calls, max_parallelism=max_parallelism))
+    if planning_checkpoint is not None:planning_checkpoint()
     baseline = reduce_scalar_anchor(program, baseline)
     operators = {op.operator_id: op for op in program.operators}
     consumers = Counter(i for op in program.operators for i in op.input_ids)
@@ -300,6 +302,7 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
                    "Fixed source bindings; original hard constraints and answer operators preserved")
 
     def candidate(strategy_id, plan, details, extra_assumptions=()):
+        if planning_checkpoint is not None:planning_checkpoint()
         plan = replace(plan, plan_id=baseline.plan_id + "/" + _digest(strategy_id)[:16],
             metadata={**dict(plan.metadata), "physical_strategy_profile":
                 'semantic-progressive-bind-v1' if strategy_id == 'progressive_entity_bind' else STRATEGY_PROFILE,
@@ -325,6 +328,7 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
             by_id = {n.node_id: n for n in baseline.nodes}
             replacements = {}
             for target_id in anchor["target_matches"]:
+                if planning_checkpoint is not None:planning_checkpoint()
                 target = operators[target_id]
                 identity_column = next((column for column in ("source", "target")
                     if target.parameters.get(column + "_field", column) == identity), None)
@@ -356,6 +360,7 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
             rejected.append({"strategy_id": "anchor_fanout_bind", "reason": str(error)})
     for join in joins:
         for driving_index in (0, 1):
+            if planning_checkpoint is not None:planning_checkpoint()
             direction = "left_to_right" if driving_index == 0 else "right_to_left"
             strategy_id = "entity_bind/" + join.operator_id + "/" + direction
             driver_id, target_id = join.input_ids[driving_index], join.input_ids[1-driving_index]
@@ -387,10 +392,11 @@ def prepare_physical_strategies(program: SemanticGraphProgram, *,
             except _NotAdmitted as error:
                 rejected.append({"strategy_id": strategy_id, "reason": str(error)})
     if progressive_bindings and joins:
+        if planning_checkpoint is not None:planning_checkpoint()
         from xgap.runtime.progressive_binding import progressive_bind
         seed = next((c.plan for c in candidates if c.strategy_id == 'anchor_fanout_bind'), candidates[0].plan)
         plan, details = progressive_bind(program, seed, source_bindings=source_bindings, backends=backends,
-            max_bindings=max_bindings, max_binding_bytes=max_binding_bytes)
+            max_bindings=max_bindings, max_binding_bytes=max_binding_bytes,planning_checkpoint=planning_checkpoint)
         if details['rewrite_count']:
             candidates.append(candidate('progressive_entity_bind', plan, details,
                 ('Each accumulated rewrite preserves an exclusive inner join and canonical identity',

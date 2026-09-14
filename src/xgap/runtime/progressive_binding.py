@@ -9,10 +9,11 @@ from xgap.runtime.contracts import RuntimeNodeKind as R
 from xgap.semantic.program import SemanticOperatorKind as S
 
 
-def progressive_bind(program, seed, *, source_bindings, backends, max_bindings, max_binding_bytes):
+def progressive_bind(program, seed, *, source_bindings, backends, max_bindings, max_binding_bytes,planning_checkpoint=None):
     # Imported here to keep the strategy module's existing compiler helpers as
     # the single authority for native syntax and exclusive target admission.
     from xgap.runtime.physical_strategies import _entity_lineage, _target_match, _bound_match_artifact, _NotAdmitted
+    if planning_checkpoint is not None:planning_checkpoint()
     operators = {op.operator_id: op for op in program.operators}
     consumers = Counter(i for op in program.operators for i in op.input_ids)
     is_entity = _entity_lineage(operators, seed.metadata['schemas'])
@@ -26,6 +27,7 @@ def progressive_bind(program, seed, *, source_bindings, backends, max_bindings, 
     plan = seed; rewrites = []; skipped = []
     for join in joins:
         for driving_index in (0, 1):
+            if planning_checkpoint is not None:planning_checkpoint()
             direction = 'left_to_right' if driving_index == 0 else 'right_to_left'
             driver_id, target_id = join.input_ids[driving_index], join.input_ids[1-driving_index]
             driver_field = join.parameters['left_on' if driving_index == 0 else 'right_on']

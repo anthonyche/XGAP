@@ -24,8 +24,9 @@ from xgap.semantic.program import SemanticOperatorKind as S, SemanticProgramErro
 
 
 def prepare_one_shot_domain(program, *, operator_sources, sources, backends, policy, progressive_bindings=False,
-                            shared_native_reads=False,source_row_prefilters=False):
+                            shared_native_reads=False,source_row_prefilters=False,planning_checkpoint=None):
     started = time.perf_counter()
+    if planning_checkpoint is not None:planning_checkpoint()
     if any(type(v) is not bool for v in (progressive_bindings,shared_native_reads,source_row_prefilters)):
         raise ValueError('Physical profile flags must be boolean')
     if program.holes or len(program.operators) > policy.max_operators:
@@ -50,6 +51,7 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
             raise SemanticProgramError("Equivalent replicas must share their identity namespace")
         choices, schemas = [], set()
         for backend_id in sorted(source.replica_backend_ids):
+            if planning_checkpoint is not None:planning_checkpoint()
             identity = {"source_id": source.source_id, "snapshot_version": source.snapshot_version}
             if backend_id in identities and identities[backend_id] != identity:
                 raise SemanticProgramError("One-shot statistics require one snapshot version per backend")
@@ -90,17 +92,20 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
                        for op, source_id in operator_sources.items()
                        if sources[source_id].equality_key_bounds is not None}
     for index, placement in enumerate(placements):
+        if planning_checkpoint is not None:planning_checkpoint()
         try:
             space = prepare_physical_strategies(program, source_bindings=placement,
                 backends=backends, max_remote_calls=policy.max_remote_calls,
                 max_parallelism=policy.max_parallelism, max_bindings=policy.max_bindings,
                 max_binding_bytes=policy.max_binding_bytes,
-                operator_equality_bounds=equality_bounds, progressive_bindings=progressive_bindings)
+                operator_equality_bounds=equality_bounds, progressive_bindings=progressive_bindings,
+                planning_checkpoint=planning_checkpoint)
         except (ValueError, CompilerError) as error:
             rejected.append({"source_bindings": placement, "status": "unsupported_placement",
                              "reason": str(error)})
             continue
         for candidate in space.candidates:
+            if planning_checkpoint is not None:planning_checkpoint()
             if policy.retrieval_rows_per_relation is not None:
                 budgeted = apply_retrieval_budget(candidate.plan, program, policy.retrieval_rows_per_relation,
                                                  scope=policy.retrieval_scope)
