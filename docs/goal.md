@@ -52,6 +52,8 @@ catalog/index/statistics/训练离线构建并冻结，一次性成本与在线�
   合计12源调用、0模型/fit；全部资源terminal；原始最终typed过滤保留。
 - 请求准备（28d733f）：5项新+2项受影响检查与完整旧响应回放通过，catalog bundle
   每请求加载4→1，准备成本仍包含在请求总成本；0新模型/源/fit，下一请求重新验pin。
+- 共同worker（9bd7d15）：6项新+1项受影响检查及持久化回放通过，新strong方法使用
+  独立trusted_template范围；保留旧methods/campaign。0新网络；组合外层live成功门未测。
 - 尚未证明：开放NL结构验证、论文模式发布与两模式真实速度/质量优势、
   用户discrepancy理论与完整论文评价。当前通过的是可信有限模板+live一槽提议。
 
@@ -61,9 +63,9 @@ catalog/index/statistics/训练离线构建并冻结，一次性成本与在线�
 [固定成本诊断](report/practical_cost_diagnostic_20260914.md)已经完成：本例没有逐跳提速或
 误排序证据，不调估计器、不重复六次测量。[计划内共享](report/shared_native_reads_20260914.md)
 已通过局部和真实门。[必要源过滤](report/source_row_prefilters_20260914.md)也已完成。
-[准备门](report/practical_preparation_20260915.md)也已完成；下一步把新strong入口接到
-共同实验worker的计时/资源监督接口，明确命名和可信模板scope。保持旧方法/基线与
-campaign计划，不自动运行新大图或混入旧NL结果；仅已有响应回放的定向检查。
+[准备门](report/practical_preparation_20260915.md)与[共同worker接线](report/practical_worker_20260915.md)
+已完成本地门。下一步为可选候选构造/打分增加合作式预算检查，及时停止改进并保住
+已有可行计划；原子编译不宣称硬实时抢占。只做受控时钟/小图检查，不启动native或大图。
 统一开发配置的默认地址仍未部署，不作为论文campaign release。
 不为让新候选胜出而改分数；不重复旧大题。保持迭代，不重新暂停。
 

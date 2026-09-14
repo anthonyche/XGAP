@@ -1,5 +1,9 @@
 # XGAP Roadmap
 
+2026-09-15最新：[共同worker](report/practical_worker_20260915.md)已接新strong方法，
+6+1定向检查和完整旧响应回放通过，真实组合外层门未测。下一步合作式规划预算检查，
+使可选候选构造及时停下；仍保留可行计划，不做新的大图或native重跑。
+
 2026-09-15最新：[请求准备](report/practical_preparation_20260915.md)通过5+2定向检查，
 catalog加载4→1，零网络完整回放一致。下一门接通新strong入口与共同worker计时/资源
 监督，不自动改旧campaign或把可信模板输入视作开放NL；baseline保持原样。

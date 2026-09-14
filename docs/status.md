@@ -1,5 +1,12 @@
 # XGAP Status
 
+## 最新：新strong方法已接共同worker，本地/回放门通过
+
+[9bd7d15记录](report/practical_worker_20260915.md)：6项新+1项受影响检查及完整回放通过。
+独立trusted_template输入，真实trial拒绝offline replay；旧方法/基线/campaign不变。
+组合外层live成功仍未测。本轮0新网络。下一项可选候选构造/打分的合作式预算检查，
+减少截止后继续优化的工作，并保留已找到的可行计划。
+
 ## 最新：每请求catalog加载4→1，下一门连接共同实验worker
 
 [28d733f记录](report/practical_preparation_20260915.md)：5项新+2项受影响检查与完整回放
