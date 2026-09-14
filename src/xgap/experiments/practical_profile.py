@@ -3,7 +3,7 @@
 Trusted intake and explicitly caller-pinned request bindings define the admitted
 input contract. This does not validate arbitrary NL or promote model proposals.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 from pathlib import Path
@@ -77,6 +77,9 @@ class PreparedPracticalRequest:
     program: SemanticGraphProgram
     options: PracticalQuestionOptions
     model_providers: dict
+    profile_sha256: str
+    request_sha256: str
+    configuration: tuple
 
 
 @dataclass(frozen=True)
@@ -87,10 +90,14 @@ class FrozenPracticalProfile:
 
     @classmethod
     def load(cls,path,*,expected_sha256):
+        return cls.load_materialized(path,expected_sha256=expected_sha256)[0]
+
+    @classmethod
+    def load_materialized(cls,path,*,expected_sha256):
+        """Admit once and return the request-local dependency snapshot to its owner."""
         data=read_pinned(path,expected_sha256)
         obj=cls(Path(path).resolve().parent,expected_sha256,data.decode('utf-8'))
-        obj.materialize()  # All modes and dependencies admitted before any call.
-        return obj
+        return obj,obj.materialize()  # All modes/dependencies admitted before any call.
 
     def materialize(self):
         doc=json.loads(self.document_json)
@@ -207,7 +214,9 @@ class FrozenPracticalProfile:
             'population','exposure'))
         if raw['schema_version']!=REQUEST_SCHEMA:raise ValueError('Unsupported practical request')
         for k in ('question_id','question','population','exposure'):_text(raw[k])
-        doc,intake,bundle,_,_,_,_,modes=materialized or self.materialize()
+        cfg=materialized or self.materialize()
+        doc,intake,bundle,_,_,_,_,modes=cfg
+        if doc!=json.loads(self.document_json):raise ValueError('Prepared configuration differs from this profile')
         if mode not in modes:raise ValueError('Unknown practical mode')
         request=InterpretationRequest(raw['question'],{'query_id':raw['question_id']},intake.required_hard_constraints)
         provider=TemplateInterpretationProvider(intake,doc['operator_sources'])
@@ -256,20 +265,41 @@ class FrozenPracticalProfile:
                     tool=FrozenClarificationTool(Path(request_root)/pin['path'],action.tool_name,pin['sha256'])
             actions.append(action)
             if tool is not None:registry.register(acquisition_wrapper(tool) if acquisition_wrapper else tool)
-        options=PracticalQuestionOptions(state,semantic,tuple(actions),registry,raw['predictions'],limits,physical)
-        return PreparedPracticalRequest(request,provider,program,options,providers)
+        options=PracticalQuestionOptions(state,semantic,tuple(actions),registry,raw['predictions'],limits,physical,bundle)
+        return PreparedPracticalRequest(request,provider,program,options,providers,self.sha256,request_sha256,cfg)
 
     def run(self,*,request_path,request_sha256,mode,execute=True,backend_clients=None,model_transports=None,
             acquisition_wrapper=None):
         started=time.perf_counter()
         raw=json.loads(read_pinned(request_path,request_sha256))
         cfg=self.materialize()
-        doc,_,bundle,estimator,sources,backends,client_specs,_=cfg
         q=self.prepare(raw,request_sha256=request_sha256,request_root=Path(request_path).resolve().parent,mode=mode,
             materialized=cfg,model_transports=model_transports,acquisition_wrapper=acquisition_wrapper)
+        return self.run_prepared(q,execute=execute,backend_clients=backend_clients,
+            preparation_ms=(time.perf_counter()-started)*1000,model_transport_origin='caller_supplied' if model_transports else 'configured')
+
+    def run_prepared(self,q,*,execute=True,backend_clients=None,acquisition_wrapper=None,
+                     preparation_ms=0.0,model_transport_origin='configured'):
+        """Consume admitted in-memory inputs; late clarification/source captures stay pinned.
+
+        The record runner owns one snapshot per request. No global cache, result
+        reuse, or re-reading of profile dependencies after admission is implied.
+        """
+        started=time.perf_counter()
+        if not isinstance(q,PreparedPracticalRequest) or q.profile_sha256!=self.sha256:
+            raise ValueError('Prepared request belongs to another profile')
+        doc,_,bundle,estimator,sources,backends,client_specs,_=q.configuration
+        if doc!=json.loads(self.document_json):raise ValueError('Prepared configuration changed after admission')
+        if type(preparation_ms) not in (int,float) or not 0<=preparation_ms<float('inf'):
+            raise ValueError('Preparation cost must be finite and nonnegative')
+        if acquisition_wrapper:
+            registry=ToolRegistry()
+            for spec in q.options.resolution_tools.specs():
+                registry.register(acquisition_wrapper(q.options.resolution_tools.get(spec.name)))
+            q=replace(q,options=replace(q.options,resolution_tools=registry))
+        mode=q.options.mode.mode;request_sha256=q.request_sha256
         clients=backend_clients if backend_clients is not None else (native_clients(client_specs) if execute else
             {b:object() for b in client_specs})
-        prepared_ms=(time.perf_counter()-started)*1000
         if execute:
             result=run_question(q.request,q.provider,practical_options=q.options,
                 catalog_root=self.root/doc['catalog']['path'],catalog_hash=bundle.bundle_hash,
@@ -281,11 +311,12 @@ class FrozenPracticalProfile:
                 operator_sources=doc['operator_sources'],binding_values=bundle.bindings,sources=sources,
                 backends=backends,backend_clients=clients,estimator=estimator,execute=False)
         return {**result,'profile_sha256':self.sha256,'request_sha256':request_sha256,'profile_id':doc['profile_id'],
-            'profile_preparation_ms':prepared_ms,'request_total_ms':(time.perf_counter()-started)*1000,
+            'profile_preparation_ms':preparation_ms,'request_total_ms':preparation_ms+(time.perf_counter()-started)*1000,
+            'dependency_lifetime':'admitted request snapshot; next request revalidates files',
             'source_statistics_sha256':estimator.statistics.sha256 if estimator else None,
             'estimator_sha256':estimator.model_sha256 if estimator else None,
             'input_scope':'caller-pinned trusted intake and request bindings; not open-domain NL validation',
             'mode_configuration':doc['modes'][mode], 'execution_enabled':execute,
             'client_origin':'caller_supplied' if backend_clients is not None else 'configured' if execute else 'preflight_only',
-            'model_transport_origin':'caller_supplied' if model_transports else 'configured',
+            'model_transport_origin':model_transport_origin,
             'model_invocations':{k:p.last_invocation.to_dict() for k,p in q.model_providers.items() if p.last_invocation is not None}}

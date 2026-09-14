@@ -109,12 +109,13 @@ def run_record(*,profile_path,profile_sha256,request_path,request_sha256,mode,ou
     sources,acquisitions,consumed=[],[],[];clients={};replay=None
     phase='admission'
     try:
-        profile=FrozenPracticalProfile.load(profile_path,expected_sha256=profile_sha256)
+        profile,cfg=FrozenPracticalProfile.load_materialized(profile_path,expected_sha256=profile_sha256)
         raw=json.loads(read_pinned(request_path,request_sha256))
-        cfg=profile.materialize()
         # Request admission and response pin syntax validation, without authority-file reads.
-        profile.prepare(raw,request_sha256=request_sha256,request_root=Path(request_path).resolve().parent,
+        prepared=profile.prepare(raw,request_sha256=request_sha256,request_root=Path(request_path).resolve().parent,
             mode=mode,materialized=cfg)
+        receipt['admission_ms']=(time.perf_counter()-started)*1000
+        receipt['dependency_lifetime']='one admitted snapshot per record request'
         write_once(root/'input.json',{'request':raw,'profile_sha256':profile_sha256,'mode':mode})
         if operation=='replay':
             replay=json.loads(read_pinned(replay_path,replay_sha256))
@@ -154,8 +155,8 @@ def run_record(*,profile_path,profile_sha256,request_path,request_sha256,mode,ou
         if operation!='preflight':write_once(root/'intent.json',{'operation':operation,'maximum_final_plans':1,
             'profile_sha256':profile_sha256,'request_sha256':request_sha256})
         phase='request'
-        result=profile.run(request_path=request_path,request_sha256=request_sha256,mode=mode,
-            execute=operation!='preflight',backend_clients=clients,acquisition_wrapper=wrap)
+        result=profile.run_prepared(prepared,execute=operation!='preflight',backend_clients=clients,
+            acquisition_wrapper=wrap,preparation_ms=receipt['admission_ms'])
         receipt['result']=write_once(root/'result.json',result)
         receipt.update(status=result['status'],final_plan_executions=result['final_plan_executions'],
             success=result['search']['strong'] if operation=='preflight' else result['success'],

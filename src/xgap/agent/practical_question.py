@@ -20,6 +20,7 @@ class PracticalQuestionOptions:
     predictions: object = None
     limits: StrongSearchLimits = field(default_factory=StrongSearchLimits)
     physical_profile: OneShotPolicy = field(default_factory=OneShotPolicy)
+    resolution_bundle: FrozenResolutionBundle | None = None
 
 
 def run_practical_question(request, provider, *, options, catalog_root, catalog_hash,
@@ -33,7 +34,12 @@ def run_practical_question(request, provider, *, options, catalog_root, catalog_
     def finish(result):
         return {**result, "end_to_end_ms": (time.perf_counter() - started) * 1000}
     try:
-        bundle = FrozenResolutionBundle.load(catalog_root, expected_bundle_hash=catalog_hash)
+        if options.resolution_bundle is None:
+            bundle = FrozenResolutionBundle.load(catalog_root, expected_bundle_hash=catalog_hash)
+        else:
+            bundle = options.resolution_bundle
+            if not isinstance(bundle,FrozenResolutionBundle) or bundle.bundle_hash != catalog_hash:
+                raise ValueError('Prepared resolution snapshot differs from the requested bundle')
     except (OSError, ValueError) as error:
         return finish({**base, "status": "catalog_unavailable", "error": str(error)})
     interpreted = interpret_question(request, provider)
