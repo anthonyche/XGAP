@@ -103,6 +103,10 @@ one affected replay checks pass, full traces remain; see
 Next audit the new strong paper contract against the old18-figure protocol, making
 input authority, method scope and release gaps explicit for discussion; do not
 automatically start a campaign or change approved dataset/baseline priorities.
+The audit is `docs/research_contract_audit_20260915.md`. A separate per-question
+strong study freezer/one-group dispatcher now passes six local checks; see
+`docs/report/practical_study_20260915.md`. It does not alter old schedules, launch
+a real study, or freeze the still-pending paper input/mode/common-frontend contract.
 Do not tune scores or repeat the six cells. Open-NL and superiority
 remain unproven. User cutoff: Sep15 02:00 Beijing, summarize/pause until10:00.
 Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime

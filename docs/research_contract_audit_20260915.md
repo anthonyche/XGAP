@@ -3,6 +3,10 @@
 2026-09-15，北京时间。审计代码`93952fa`；不启动实验、不改已批准的数据优先级、
 旧campaign或baseline。本文供下一次实验讨论使用，原18图方案的执行清单尚未替换。
 
+审计后已补[82dd2ad逐题study接线](report/practical_study_20260915.md)：独立配置冻结与
+最多一组的共同trial/journal调度已实现，6项检查通过。以下对应缺口已更新；没有
+新增真实study批次、正式population或外部共同前端。
+
 当前结论：**可信有界模板下，新strong核心闭环与共同真实实验入口已通；论文版
 两模式的可比输入、配置和campaign尚未发布。** 后者包含接线工作，也包含实验协议，
 不能统一说成“所有功能都没实现”，也不能说“只剩跑大图”。
@@ -21,12 +25,13 @@
 |记录/回放/共同worker|新方法名、独立trusted_template范围、原始结果与失败回放已实现|一次真实EXACT外层1.711s/11源调用/4行gold；大trace摘要交付另有本地门|不等于旧campaign已调用新方法；最终答案本身仍有记录容量限制，未实现无界流式答案|
 |论文模式配置|开发配置发布、预检、执行、回放已实现|冻结toy profile可调用；真实入口有部署副本|正式FinBench/FedShop输入范围、两模式参数与release manifest未发布|
 |外部方法|旧RDF固定语义及旧NL组合路由已有实际实现/记录|作者FedUP/FedX路径与失败保留|没有把新的可信模板权限接成共同组合前端；不能直接与无同等信息的旧NL结果混图|
-|正式评价|独立参考、预算/监督/评分、顺序journal等已有实现|旧FinBench分批真实记录保留，含错误/失败/空与非空|新strong campaign方法清单/逐题profile映射尚未实现；新strong总体质量/效率/规模结果未测|
+|正式评价|独立参考、预算/监督/评分、顺序journal等已有实现|旧FinBench分批真实记录保留，含错误/失败/空与非空|独立strong study清单/逐题profile映射已补并通过局部门；正式发布/该包装真实批次和总体质量/效率/规模未测|
 
 代码核对：`nl_method_worker.METHODS`已包含`xgap-strong-exact`与
 `xgap-strong-performance`；`campaign_schedule.METHODS`仍只有旧NL/RDF方法。
 `run_practical_trial`只能明确使用`trusted_template`，不会把新方法塞进旧NL分母。
-这是一项实际的campaign接线缺口，不是缺一张图；保留旧清单是为防止混版本。
+独立practical_study现已补对应方法/逐题配置映射；旧清单继续保留以防混版本。
+新study还需要具体已冻结的论文输入、caller-owned部署和一次必要的发布验收。
 
 开发profile中的PERFORMANCE目前`improve_physical=false`、每状态最多1个terminal；
 EXACT为true、最多8个。可选物理改进机制已经存在，但这个性能开发配置通常止于基础
@@ -96,7 +101,7 @@ EXACT为true、最多8个。可选物理改进机制已经存在，但这个性�
 
 1. 对照本审计与凌晨报告，先确认论文主范围沿用已批准的部分绑定可信结构。若要求
    任意NL结构也纳入EXACT保证，需要另一个结构验证研究契约，不能当作配置开关。
-2. 发布独立版本的strong输入/两模式profile/共同前端契约，再补最薄的campaign
+2. 发布独立版本的strong输入/两模式profile/共同前端契约，使用已补的独立study
    方法与逐题profile映射；沿用现有guard/observer/score/journal，不重写基础设施。
 3. 在未看正式评价输出的开发条件下冻结性能模式的优化预算与信息动作。只检查新的
    接线风险及一条必要vertical slice，保留失败replay，不再一轮轮重复已通门。

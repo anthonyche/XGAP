@@ -1,5 +1,9 @@
 # XGAP Roadmap
 
+2026-09-15最新：[独立strong study](report/practical_study_20260915.md)补齐逐题配置/两模式
+单组调度/不重试续跑，6项新检查通过，旧campaign/外部方法不变。下一步具体论文
+输入权限/模式/前端release冻结，保留10:00讨论与后续必要发布验收。
+
 2026-09-15最新：[strong outcome交付](report/practical_outcome_20260915.md)补齐旧入口已有的
 大trace/小答案分离，4+1定向检查通过，0新网络。继续研究契约与实际实验输入审计。
 

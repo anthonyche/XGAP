@@ -60,6 +60,8 @@ catalog/index/statistics/训练离线构建并冻结，一次性成本与在线�
   1最终计划/11源请求/61源行/15820B，外层1711ms。0模型/fit/加载，所有owned资源关闭。
 - outcome交付（ef119a6）：4项新+1项受影响检查通过，>16MiB中间记录完整保留，
   worker从<4KiB摘要交付正确答案；0新网络。完整trace内存成本仍在，非流式大答案实现。
+- 独立study接线（82dd2ad）：逐题profile冻结、两模式单组调度、既有journal续跑
+  已实现，6项新检查通过；0新网络/批次。旧campaign不变，正式输入/模式/前端待冻结。
 - 尚未证明：开放NL结构验证、论文模式发布与两模式真实速度/质量优势、
   用户discrepancy理论与完整论文评价。当前通过的是可信有限模板+live一槽提议。
 
@@ -76,7 +78,8 @@ catalog/index/statistics/训练离线构建并冻结，一次性成本与在线�
 导致的答案交付失败。下一步核对新strong契约与旧18图协议，形成输入权限/方法/计量和release缺口清单，
 供后续讨论；不自动启动大图或消融，不改变批准的数据优先级及baseline。
 [具体审计与18图修订草案](research_contract_audit_20260915.md)已完成：共同worker已有，
-正式strong输入/profile/campaign映射尚缺；开发PERFORMANCE配置关闭可选物理改进，
+独立study映射随后已补；正式strong输入/profile及外部共同前端仍待冻结。
+开发PERFORMANCE配置关闭可选物理改进，
 不能由模式名推断优势。主比较必须控制初始信息及可用权威工具。
 统一开发配置的默认地址仍未部署，不作为论文campaign release。
 不为让新候选胜出而改分数；不重复旧大题。保持迭代，不重新暂停。

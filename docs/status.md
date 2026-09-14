@@ -1,5 +1,11 @@
 # XGAP Status
 
+## 最新：独立strong study接线已补，正式评价尚未启动
+
+[82dd2ad记录](report/practical_study_20260915.md)：逐题profile/模式冻结、最多一组调度与
+不重试续跑已实现，6项新检查通过，0新网络。旧campaign/基线不变。正式输入权限、
+两模式参数与外部共同前端仍待冻结；新增包装尚无真实批次，不等于论文release。
+
 ## 最新：大trace与小答案交付已分开
 
 [ef119a6记录](report/practical_outcome_20260915.md)：4项新+1项受影响检查通过，
