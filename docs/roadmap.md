@@ -1,5 +1,9 @@
 # XGAP Roadmap
 
+2026-09-15最新：[请求准备](report/practical_preparation_20260915.md)通过5+2定向检查，
+catalog加载4→1，零网络完整回放一致。下一门接通新strong入口与共同worker计时/资源
+监督，不自动改旧campaign或把可信模板输入视作开放NL；baseline保持原样。
+
 2026-09-14最新：[必要源过滤](report/source_row_prefilters_20260914.md)通过14项新检查、
 2项受影响检查和真实请求/单独Cypher组件；源行64→61，4行gold保持。下一门普通入口
 准备与计时一致性：避免同一请求反复加载冻结配置，不扩展跨query缓存，不重复native门。

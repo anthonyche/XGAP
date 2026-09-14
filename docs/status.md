@@ -1,5 +1,11 @@
 # XGAP Status
 
+## 最新：每请求catalog加载4→1，下一门连接共同实验worker
+
+[28d733f记录](report/practical_preparation_20260915.md)：5项新+2项受影响检查与完整回放
+通过，0新网络/模型/fit。请求准备仍计费，下一请求重新校验。共同实验worker仍走旧
+one-shot；下一门新增明确strong方法及可信模板scope，保留全部旧方法与baseline路径。
+
 ## 最新：必要源条件提前执行，源行64→61、gold保持
 
 [15a24b8记录](report/source_row_prefilters_20260914.md)：14项新检查+2项受影响检查通过。

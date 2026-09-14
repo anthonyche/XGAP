@@ -86,9 +86,12 @@ calls14→11, bytes18606→16399, four gold rows unchanged; no speed claim acros
 cold sessions. See `docs/report/shared_native_reads_20260914.md`. Necessary native
 row screening now passes14 new+2 affected cases, one11-call native request
 (rows64→61, bytes16399→15820, four gold unchanged), plus one Cypher type component.
-See `docs/report/source_row_prefilters_20260914.md`. Next audit ordinary-profile
-preparation/timing and remove repeated frozen dependency loads per request, using
-focused local tests and saved replay; no new native run or cross-query answer cache.
+See `docs/report/source_row_prefilters_20260914.md`. Request-local preparation
+now passes5 new+2 affected cases and saved replay, bundle loads4→1 with admission
+cost retained; see `docs/report/practical_preparation_20260915.md`. Next connect
+new explicitly named strong methods to common worker timing/resource supervision
+with a trusted-template input scope, keeping old methods/baselines/campaigns intact.
+Use focused saved-response replay; no new native run or cross-query answer cache.
 Do not tune scores or repeat the six cells. Open-NL and superiority
 remain unproven. User cutoff: Sep15 02:00 Beijing, summarize/pause until10:00.
 Legacy domains default unchanged. All selected acquisition outcomes need feasible continuations. Runtime
