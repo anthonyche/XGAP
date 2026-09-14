@@ -39,7 +39,7 @@ def query():
         'operators':nodes,'roots':roots,'holes':[],'metadata':{}}),slots
 
 
-def main(output):
+def main(output,mode='both'):
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False);session=None
     receipt={'schema_version':'xgap-budgeted-relations-native-v1','success':False,'closures':[],
         'model_calls':0,'fit_calls':0,'baseline_calls':0,'data_loads':0,'catalog_builds':0,
@@ -75,7 +75,9 @@ def main(output):
                     'quality_proxy':1,'program':program.to_dict(),'operator_sources':slots}]})
         request=InterpretationRequest('Count graph transfers, control transfers and control accounts.',
             context={'query_id':'independent-native-budget-counts'})
-        for mode in ('precision','performance'):
+        selected_modes=('precision','performance') if mode=='both' else (mode,)
+        receipt['requested_modes']=list(selected_modes)
+        for mode in selected_modes:
             path=root/mode;path.mkdir();records=[];lock=threading.Lock()
             policy=replace(modes[mode][0],retrieval_rows_per_relation=2 if mode=='performance' else None)
             clients={b:CapturingClient(c,path,records,lock,retain_payloads=False) for b,c in native_clients(specs).items()}
@@ -84,8 +86,10 @@ def main(output):
             phase='native-budget-'+mode;session.observer.set_phase(phase);at=time.perf_counter()
             with deadline(120):core=run_question(request,Authored(),backend_clients=clients,**args)
             pin=write_once(path/'core.json',core);outcome=write_record_outcome(path,core,pin)
-            observed=session.observer.seal_phase(phase);elapsed=(time.perf_counter()-at)*1000
-            session.observer.release_phase(phase,outcome)
+            observed=session.observer.seal_phase(phase)
+            source_outcome=write_once(path/'source-outcome.json',{'outcome':outcome,'source_observations':observed})
+            elapsed=(time.perf_counter()-at)*1000
+            session.observer.release_phase(phase,source_outcome)
             ledger=write_once(path/'ledger.json',records)
             actual=sorted(row['n'] for row in core['answer_rows']) if core['success'] else None
             expected=[0,4,8] if mode=='precision' else [0,2,4]
@@ -103,13 +107,13 @@ def main(output):
                      and not scope['aggregate_values_full_source_exact'])))
             item={'mode':mode,'success':passed,'core':pin,'outcome':outcome,'ledger':ledger,'actual':actual,
                 'expected_budget_scope':expected,'full_source_answer_em':int(actual==[0,4,8]),
-                'source_observations':observed,'source_calls':observed['requests'],
+                'source_observations':observed,'source_outcome':source_outcome,'source_calls':observed['requests'],
                 'source_response_bytes':observed['response_body_bytes'],'online_ms_through_outcome_seal':elapsed,
                 'planning_ms':core['planning_ms'],'execution_ms':core['execution_ms'],
                 'replay':replay_pin,'replay_success':replay_ok,'replay_network_calls':0}
             receipt['cases'].append(item);print(json.dumps({k:item[k] for k in (
                 'mode','success','actual','full_source_answer_em','source_calls','source_response_bytes')}),flush=True)
-        receipt['success']=len(receipt['cases'])==2 and all(c['success'] for c in receipt['cases'])
+        receipt['success']=len(receipt['cases'])==len(selected_modes) and all(c['success'] for c in receipt['cases'])
     except Exception as error:receipt.update(error_type=type(error).__name__,error=str(error))
     finally:
         if session:receipt['closures'].append(session.close())
@@ -122,4 +126,5 @@ def main(output):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',required=True)
+    parser.add_argument('--mode',choices=('both','precision','performance'),default='both')
     with deadline(600):raise SystemExit(main(**vars(parser.parse_args())))

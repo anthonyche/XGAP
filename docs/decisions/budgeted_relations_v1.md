@@ -102,3 +102,14 @@ explicit complete-result rejection and propagation of approximation markers.
 A single new mixed Neo4j/Fuseki tiny gate checks native syntax, actual rows and
 saved-response replay. Neither large-data speedup nor precision-quality uplift
 is claimed by these engineering gates.
+
+First native attempt: precision executed once and returned independent counts
+[0,4,8] correctly (three source calls). The harness then failed its source-phase
+release because the compact answer did not reference the source seal; performance
+was never executed. Original receipt remains false at
+`/Users/anthonyche/xgap-data/budgeted-relations-native-20260914-v1/receipt.json`
+(SHA256 80a7f01ca648549634d6515d23ff6b2b9f1b284c38ea734a4af1e188c7e53117).
+All processes closed. Exact offline replay consumed all three captures with zero
+network calls; receipt SHA256 db92c4d74ee248337aa10ff035b487ff520b92c9299c437e72e808687b96d8de.
+The harness now writes a separate source-outcome carrying the sealed observation
+identity. Only the unexecuted performance case is next; no precision redispatch.
