@@ -1,7 +1,8 @@
 # One-shot intermediate retention — 2026-09-14
 
-Implementation and directed offline gate are complete; one native tiny boundary
-is the next acceptance step. No new full-data question has run in this milestone.
+The retention milestone is accepted: directed offline checks, one correct real
+Neo4j+Fuseki tiny execution, and an exact offline replay of its captured responses.
+No new full-data question has run yet in this milestone.
 The user clarified September14 10:00 is the resume time; execution is active.
 
 Research scope: preserve exact selected-plan semantics while reducing retained
@@ -9,7 +10,7 @@ intermediate payloads and duplicate trace serialization. X is all versus explici
 root retention on the same independent tiny DAG; Y is exact rows, call/byte/node
 metrics, registered rows, serialized trace bytes, failure visibility and replay.
 
-Twelve new directed cases have passed across the targeted runs: six-row fanout
+Thirteen new directed cases have passed across the targeted runs: six-row fanout
 answers and node metrics; multiple roots including downstream consumers (success
 and native failure); a deliberately delayed concurrent bind consumer; legacy
 prefix/omitted-payload rejection; pinned response replay for success and native
@@ -38,7 +39,7 @@ No model/remote GPU calls, baseline changes, new source preparation, or full-dat
 retries were needed for these checks. The tiny analytic estimator fixture uses
 its independent synthetic training setup; production frozen weights are untouched.
 
-Native acceptance: pending. Then run only the next predeclared real NL group8,
+Native acceptance: complete (evidence below). Next run only the next predeclared real NL group8,
 with a new implementation epoch and unchanged budgets, retaining all old outcomes.
 
 The first real native gate executed one estimated coordinator plan correctly:
@@ -51,3 +52,17 @@ of unrelated request start order; duplicate requests retain multiplicity and has
 identity checks. Legacy embedded records still require their old order. Seven
 new/affected indexed-replay cases passed after this correction. The live query is
 not repeated: only its newly saved records will be replayed offline.
+
+Final acceptance: native receipt `d86f9bf65bea4895002d507a8045088c8ff5a50be064790b2ba7b661e3a7ad3b` retains its
+original overall-failed replay status. Corrected offline replay receipt
+`94b2cb7f42f1774add4a32508c7689d450d3f8d6283d21a6bfa0d4213d748855` independently verifies the same plan,
+all14 exact source responses consumed, the same4 correct nonempty rows, and zero
+network/model/fit/load calls. No original receipt or score was overwritten.
+The native gate used the frozen tiny stats and existing stores (zero rebuilding).
+One selected coordinator plan: planning124.459ms,
+execution1356.007ms, online before outcome1503.974ms.
+Its full one-shot core record is223892B; pinned complete backend
+captures47670B; ledger30233B.
+76 intermediate nodes released; final4 rows preserved. These native figures have
+no paired full-retention timing run, so they do not establish a speedup.
+Implementation commits246f3f0/a23a1fa; current NL frontier remainsgroup8.

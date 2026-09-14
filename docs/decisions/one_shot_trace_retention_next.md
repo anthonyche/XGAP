@@ -1,7 +1,7 @@
 # Next tiny gate: one-shot intermediate rows and trace retention
 
-2026-09-14: implemented; new lifetime/capture gates accepted offline. The one
-necessary native boundary remains pending before the next real NL group.
+2026-09-14: implemented; new lifetime/capture gates accepted offline. One real
+native tiny execution plus its corrected saved-response replay are accepted.
 The September13 motivation below is historical; it is not a measured speedup.
 
 Both real XGAP modes selected anchor fanout, executed once and returned the
@@ -93,3 +93,6 @@ of unrelated request start order; duplicate requests retain multiplicity and has
 identity checks. Legacy embedded records still require their old order. Seven
 new/affected indexed-replay cases passed after this correction. The live query is
 not repeated: only its newly saved records will be replayed offline.
+
+The corrected native replay accepted all14 saved responses and reproduced the
+same4-row exact answer and selected plan, without a live rerun. See final report.
