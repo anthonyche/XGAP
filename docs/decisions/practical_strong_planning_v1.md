@@ -39,8 +39,9 @@ authority nor a hash of the entire backend executable/configuration.
 The native tiny gate uses a trusted NL template, frozen catalog and a controlled
 clarification continuation. Strongness covers declared outcomes, not all possible
 file/server failures. A [live model action component](../report/progressive_native_and_live_tools_20260914.md)
-now passes one request; same-request live information/strong planning/native execution
-remains a separate pending gate.
+passes one request; a subsequent [same-request bounded gate](../report/practical_model_e2e_20260914.md)
+also passes with one live model proposal, one final plan and two native queries.
+The trusted-template boundary and absent model-authority/accuracy guarantees remain.
 
 ## Research question and evaluation boundary
 
@@ -155,7 +156,8 @@ Let n include the explicit skeleton, binding values, declared actions/outcomes,
 source descriptors and bit lengths. Let C(n) bound local admission, typed binding,
 compilation, prediction and plan serialization for one state. Source construction
 uses L explicit local alternatives and the existing polynomial neighborhood of
-at most (1+L)*(1+2J+B) strategies, with B<=1 anchor candidate per placement.
+at most (1+L)*(1+2J+B+G) strategies, with B<=1 anchor and G<=1 progressive
+binding candidate per placement (the latter added at P-S3).
 Finite path expansion is admitted before compilation (existing work cap4096).
 
 A conservative local bound is O(S*T*C(n) + S*M*O*n + A*O*n), where M is the explicit
@@ -197,18 +199,21 @@ inputs. A reusable supplied strong-policy seed is a possible later extension.
 Existing strict APIs, old one-shot mode profiles, backend internals, source facts,
 frozen estimators and baseline/shared frontends are unchanged.
 
-## Remaining implementation gates
+## Completed development gates and remaining work
 
-1. Extend the provider adapters for frozen catalog/capability/optional LLM actions;
-   declare honest finite outcomes, authority scope and reserved/actual costs.
-   Existing providers are reusable, but not all are wired into this new policy yet.
-2. Improve useful plan availability within the supported profile and acquisition
-   ordering on independent tiny counterexamples. Do not buy a strong-plan label by
-   hiding unknown outcomes or silently truncating candidate domains.
-3. Run a necessary live Neo4j+Fuseki tiny gate for the new route and record new
-   versioned evidence. Prior native results validate reused components, not this
-   new complete policy integration. No full dataset run during development.
-4. Address later-hop full reads through a separately specified semantics-preserving
-   binding-propagation candidate shared by both modes. It is not implemented here.
-5. Integrate the user's future discrepancy definition, then freeze epsilon-enabled
-   semantics/profiles and discuss the final campaign amendment before evaluation.
+P-S2 adapters and local capability admission are implemented, with explicit failed
+outcomes and usage. P-S3 progressive binding is implemented and verified on tiny
+native data. The same-request live information/strong/native gate now passes;
+none of these observations establishes latency superiority or general NL accuracy.
+
+1. Publish coherent EXACT/PERFORMANCE configuration for the ordinary entry, with
+   trusted-input/authority scope, tool order, resource limits and frozen estimator.
+   Expose this as an actual callable method, not only a Python fixture assembly.
+2. Validate real cost/relative ranking and useful plan availability on the declared
+   experiment inputs. Keep missing authority, no-plan and execution failure in the
+   denominator. Do not force progressive binding or use observed winners online.
+3. Integrate the user's future discrepancy definition before any epsilon-enabled
+   guarantees; other engineering may proceed with explicit metric_deferred scope.
+4. Discuss/freeze the campaign amendment and execute the full research evaluation,
+   preserving external baseline fidelity, additional clarification information and
+   all old results under their actual versions. No large-data debugging campaign.

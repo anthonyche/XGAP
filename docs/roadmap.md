@@ -1,7 +1,8 @@
 # XGAP Roadmap
 
-2026-09-14补充：[同请求信息与执行门](report/practical_model_e2e_20260914.md)的本地8+3检查已通过；
-显式动作优先级不冒充耗时估计，真实模型+双后端整体门为当前下一步。
+2026-09-14补充：[同请求信息与执行门](report/practical_model_e2e_20260914.md)的本地8+3检查及真实门通过；
+1模型372token、1最终计划2源请求、gold一致，在线812ms。显式动作优先级不冒充耗时估计。
+下一步模式与冻结估计器发布配置对齐，随后验证实际成本/排序。可信模板边界不等于开放NL验证。
 
 ## 当前路线：practical strong planning（2026-09-14）
 
@@ -12,10 +13,10 @@
    进程内查询；22项新检查、3项受影响旧入口检查通过。
 2. P-S2 已通过有界开发门：冻结catalog/能力/可选LLM适配、完整失败分支与成本账本；
    新路由真实Neo4j+Fuseki tiny闭环。[证据](report/practical_information_native_20260914.md)。
-   新LLM动作的live endpoint尚未验证，当前使用真实provider代码+受控transport。
+   新LLM动作已有live组件与同请求双后端整体证据，见本页最新补充。
 3. P-S3：共享的后续跳绑定传播候选已实现并通过本地6项新检查；[证据](report/progressive_binding_20260914.md)。
    [真实native组件及live模型适配器](report/progressive_native_and_live_tools_20260914.md)已通过；
-   下一门为同请求live信息+strong规划+执行，实际成本/排序优势仍需验证。
+   同请求live信息+strong规划+执行门已通；发布配置与实际成本/排序优势仍需验证。
 4. P-S4：用户推进discrepancy理论后接入，冻结论文模式，讨论并执行评价修订。
 
 旧18图/数据优先级与baseline忠实原则不变；不提前做大规模消融。以下历史路线中的

@@ -1,0 +1,109 @@
+{
+  "schema_version": "xgap-practical-model-e2e-evidence-v1",
+  "date": "2026-09-14",
+  "source_commit": "57ed970005d62b157f05f6204dda072bb4ac9082",
+  "success": true,
+  "goal_complete": false,
+  "paper_result": false,
+  "input_scope": "trusted bounded NL template with one unvalidated nonentity predicate slot",
+  "same_request_live_information_strong_planning_native_execution": true,
+  "live_open_domain_interpretation": false,
+  "new_local_cases": 8,
+  "affected_cases": 3,
+  "local_check_elapsed_seconds": 1.04,
+  "evidence": {
+    "receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/receipt.json",
+      "sha256": "236f8847419a91ffdc03928547e853bcbfd49b5a8dfed8d4315897ae81926ffb"
+    },
+    "result.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/result.json",
+      "sha256": "1e496e815ab0c994eb99873a36f3e15db6a7c7821b8b2d284615824194f20373"
+    },
+    "preflight.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/preflight.json",
+      "sha256": "ce019a7ce6230a9ed4583c0e63b767ddfda3b6f288fe58bc910469a99ab2e348"
+    },
+    "input-seal.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/input-seal.json",
+      "sha256": "fc3f6fa85c429ca0e4fa1eca6d46b1b9c4a4e40997d506505e6bd878daaef732"
+    },
+    "outcome.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/outcome.json",
+      "sha256": "c52558e2a3ba8d95ca873090b8245dab8dbd9d5f87414dfefbbb104941b7791f"
+    },
+    "model-invocation.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/model-invocation.json",
+      "sha256": "0a086d0f663cbc4cb71b08adb1ab47d31496c2b923ba7dc1815da24a4272c138"
+    }
+  },
+  "source_files": [
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/strong_planning.py",
+      "sha256": "f05d19a5b68ffc232f206dc69320bdc7ac10c54d41b476a62371a169e753837b"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_planning.py",
+      "sha256": "351a973d022b22bd419f923d7d98827212d9ba6b3b4123781b26f324c7c22434"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_tools.py",
+      "sha256": "6d35c7c8ecc2382e8f02a6027b3d63977b06221933114c8102e7a7a3f8c42c20"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_execution.py",
+      "sha256": "14bfe8e6ce7c83c4cf1e90369e949fbdf5a62fc4ef5187e64113e75870a9fe8a"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/scripts/check_practical_strong_native.py",
+      "sha256": "1fb01d31245bfe5cbeab65590314792291ee61042bfa599ea1f976a8e68d7ff3"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/scripts/practical_model_fixture.py",
+      "sha256": "8b91918f289d692fef2879c22a0ecee1ad26e23a9d85689dbd0fa8c591da2eae"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/tests/test_practical_model_e2e.py",
+      "sha256": "32a7acf1eae82b92ee3e537d3629cb8af587720d2147fd88c17503880bc69a68"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/datasets/practical_model_toy_v1/manifest.json",
+      "sha256": "deeca4528c27b378f9bb423c12302c5f57fdcb6663ad48ff3613b2ddacc6f0f3"
+    }
+  ],
+  "observations": {
+    "nodes": 5,
+    "edges": 9,
+    "model_calls": 1,
+    "input_tokens": 353,
+    "output_tokens": 19,
+    "total_tokens": 372,
+    "final_plan_executions": 1,
+    "source_queries": 2,
+    "gold_rows": 1,
+    "answer_em": 1,
+    "clarification_calls": 0,
+    "model_proposal_authoritative": false,
+    "end_to_end_ms": 812.1977504342794,
+    "acquisition_ms": 497.61650059372187,
+    "search_ms": 46.0930410772562,
+    "execution_ms": 259.39962454140186,
+    "expanded_states": 9,
+    "generated_actions": 3,
+    "compiled_states": 4,
+    "policy_identical_to_symbolic_preflight": true,
+    "all_owned_processes_terminal": true,
+    "fit_calls": 0,
+    "baseline_calls": 0,
+    "current_query_probes": 0,
+    "automatic_retries": 0
+  },
+  "limits": [
+    "No speed or quality advantage established",
+    "Heuristic model-before-clarification search order, unknown costs",
+    "Trusted finite skeleton, not open-domain NL",
+    "Clarification model assumes two authored answers and available fixture",
+    "Formal discrepancy deferred",
+    "Frozen estimator mode publication and paper evaluation incomplete"
+  ]
+}

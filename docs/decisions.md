@@ -5137,4 +5137,4 @@ Follow-up passes; daily401 pass, final broad3246 pass/38 skip plus24 harness/
 example entrypoints. This Boolean step is accepted; T1/T2/T3 remain open. See
 [the design](decisions/native_boolean_conditions_v1.md) and
 [the report](report/toy_backbone_t1_boolean_conditions.md).
-2026-09-14: [Acquisition order and unknown cost](decisions/acquisition_order_v1.md) separates frozen search priority from latency estimates. Same-request ordinary toy checks pass8 new+3 affected; live combined gate pending. Clarification costs are not fabricated to make the model appear cheaper.
+2026-09-14: [Acquisition order and unknown cost](decisions/acquisition_order_v1.md) separates frozen search priority from latency estimates. [Same-request ordinary toy gate](report/practical_model_e2e_20260914.md) passes8 new+3 affected checks and one live model/strong/native request:372 tokens, one final plan, two source queries, gold matches,812ms. Clarification costs are not fabricated. Next published mode/estimator alignment; open-domain NL and superiority unproven. Sep15 02:00 summary/pause,10:00 resume.
