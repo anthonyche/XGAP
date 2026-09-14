@@ -38,7 +38,9 @@ remains in the actual compiler. The view is neither live health nor a semantic
 authority nor a hash of the entire backend executable/configuration.
 The native tiny gate uses a trusted NL template, frozen catalog and a controlled
 clarification continuation. Strongness covers declared outcomes, not all possible
-file/server failures. The new profile's live model action remains unverified.
+file/server failures. A [live model action component](../report/progressive_native_and_live_tools_20260914.md)
+now passes one request; same-request live information/strong planning/native execution
+remains a separate pending gate.
 
 ## Research question and evaluation boundary
 

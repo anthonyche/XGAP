@@ -1,5 +1,13 @@
 # XGAP Status
 
+## 最新：逐跳真实组件、live信息适配器与零网络回放已通过
+
+[2026-09-14报告](report/progressive_native_and_live_tools_20260914.md)：真实Neo4j/Fuseki
+逐跳组件4行gold一致、14请求、16252B；旧/新封存记录源行62→51、后三跳24→14。
+独立冷会话耗时不是速度对照。新模型动作一次live调用成功（330token/355ms），非权威；
+原生14响应零网络回放一致。所有本轮资源已关闭，Goal active。下一门为同一次普通请求
+中的live信息+strong规划+执行，仍需论文模式冻结与正式效果/成本评价。
+
 ## 2026-09-14 当前状态：P-S2 信息动作与新 strong 真实双后端小图已通
 
 P-S3补充：[逐跳绑定本地门](report/progressive_binding_20260914.md)已通过6项新检查与

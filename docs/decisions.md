@@ -1,3 +1,5 @@
+2026-09-14: [Real progressive component and live proposal adapter](report/progressive_native_and_live_tools_20260914.md) pass; four native gold rows, source rows62→51 in sealed historical/new records, one live model proposal, exact14-response zero-network replay. No paired speed claim or same-request live E2E claim. Goal active; next bounded combined chain, then profile/evaluation alignment.
+
 2026-09-14: [Progressive binding contract](decisions/progressive_binding_v1.md) adds one deterministic, bounded composition candidate in the new strong profile; legacy candidates remain unchanged. [Six new local checks](report/progressive_binding_20260914.md) pass, later-hop rows decrease with unchanged gold. Real new-candidate verification and advantage remain pending; old frozen estimator still selects coordinator.
 
 2026-09-14: [P-S2 information/native gate](report/practical_information_native_20260914.md) passed: explicit catalog/model failure outcomes, pinned provenance, actual/unknown usage, local capability admission, one two-engine native toy query. Live model action and performance claims remain unverified. Application Goal active; next P-S3 progressive binding.

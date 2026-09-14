@@ -44,3 +44,9 @@ reduced later-hop source rows, empty-frontier skip, count overflow, shared-root
 protection, acyclic accumulated dependencies, deterministic bound/candidate IDs,
 and visibility to the new estimated domain. No full-data evaluation until this
 new risk gate passes; a necessary real tiny boundary follows separately.
+
+The [native component gate](../report/progressive_native_and_live_tools_20260914.md)
+now passes: unchanged four-row gold and14 source calls, recorded source rows62→51
+against the prior fanout capture. All new responses replay exactly without network.
+Different cold-session times are not a speed comparison; frozen estimated selection
+still chooses coordinator. Do not force the new candidate into evaluation.

@@ -1,44 +1,51 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
-## 2026-09-14 当前授权：P-S2 已验收，P-S3 本地门已通；应用 Goal active
+## 当前目标与授权（2026-09-14，应用 Goal active）
 
-用户再次明确要求更新 paused Goal 并迭代执行。最初应用 Goal 为 paused，工具无法
-直接恢复；用户后续授权后再次读取返回无 Goal，随后已按当前目标创建新 Goal，工具
-确认 `active`。未复制旧自动化或虚报旧目标完成。项目总体未完成。
+用户已授权持续迭代。旧paused Goal消失后，已按最新方案创建新Goal，工具确认active；
+未将旧目标虚标完成。总体系统与论文评价目标未完成，本节覆盖下方历史暂停/下一步。
 
-本轮 P-S2 已完成：连接冻结 catalog 与有界可选模型 provider，保留 unavailable/error 分支、
-权威来源、版本及实际资源；复用静态能力/编译准入；验证新 strong 入口的真实
-Neo4j+Fuseki 小图闭环。只改该入口、信息适配器、定向检查、tiny harness 和相关说明。
-不改 baseline、不跑大数据或消融、不自行定义 discrepancy。下一步做逐跳绑定；
-核心一致接通后讨论并冻结正式实验计划。验收证据与未完成项分开记录。
+构建面向研究的有界XGAP原型：有限深AND/OR strong plan，先返回并保留可行方案，
+再有界估计改进。OR选动作，所选AND动作的每个声明结果都须有可执行后续；实际只走
+观察分支并执行一个最终联邦计划。明确Ptime输入/状态/动作/候选界限，不claim全局最优。
 
-用户已批准 practical planning 方案及审阅建议，明确要求在有限深 AND/OR tree 中寻找
-可行的优良 strong solution subgraph，优先出 plan 和实际表现，不 claim 全局最优。
-用户下一阶段推进 d(Q_tilde,Q_star)，当前不自定义该度量、不声称 epsilon 保证。
-本次明确授权覆盖下方旧暂停和冲突的下一工程；旧实验结论与版本不变。
+EXACT使用可信结构与逐槽验证；PERFORMANCE只在明确授权的未验证绑定范围内取舍。
+硬请求约束保持。d(Q_tilde,Q_star)由用户下一理论阶段推进，当前不自定义度量，不声称
+不存在的epsilon、答案误差或启发式近似比。估计器可用于相对快慢排序，不要求精确时间。
+未知费用保留未知，不通过当前query试跑候选选观测赢家，不隐式retry/repair。
 
-当前目标：先构造并保留可行 strong plan，再以有界估计搜索改进；所有声明动作结果
-都有可执行后续，实际仅走观察分支，执行一个最终联邦计划。信息、模型和查询成本
-分项计量；未知成本保持未知，catalog/statistics/训练继续离线冻结。不会通过试跑
-全部候选选优，不自动 retry/repair，不改 baseline 算法或答案。
+catalog/index/statistics/训练离线构建并冻结，一次性成本与在线信息/模型/规划/查询分开。
+只用toy和failure replay开发，分开测试Interpretation与deterministic planning，并维护
+完整vertical slice。只跑新风险定向检查及必要真实tiny边界，不盲目回归/提前大量消融。
+不将GrailQA当开发环境。baseline只忠实适配到能运行，不优化算法、语义、答案或按结果调参。
 
-统一依据：[中文规划与里程碑](practical_planning_20260914.md)、
-[算法/语义/复杂度契约](decisions/practical_strong_planning_v1.md)、
-[本轮实现证据](report/practical_strong_planning_20260914.md)。
-P-S1 已实现并通过22项新小图检查及3项受影响旧入口检查；开放NL结构验证、
-逐跳绑定、discrepancy理论与正式评价仍待完成。
-P-S2 新增14项检查与3项受影响检查通过；真实5节点8边、1模板NL请求、1catalog动作、
-1最终计划、Neo4j/Fuseki各1请求，返回预先编写的1条gold，服务已关闭。
-见[信息工具与真实小图报告](report/practical_information_native_20260914.md)。
-新模型动作已通过真实provider代码+受控transport，尚非该新profile的live LLM证据。
-进入 P-S3 共享执行优化；度量待定不阻塞这些工作。
-P-S3 已加入确定性逐跳绑定候选，6项新小图检查与1项受影响兜底检查通过；后续三跳
-源行24→19、完整6行答案不变；平行边bag计数7保持。原冻结tiny估计器能评分但仍选
-coordinator，未为新候选改分数。[本地结果](report/progressive_binding_20260914.md)。
-下一门：新候选真实Neo4j/Fuseki小图组件验证，继而判断实际成本与估计排序是否一致；
-当前不能宣称P-S3真实提速、开放NL或论文系统评价完成。保持Goal迭代，不重新暂停。
-研发只用 toy/replay；维持原18图及 FinBench/RDF/FedShop 优先级，大规模评价后置。
-项目总体目标未完成。下文均为保留的历史状态，不作为当前执行指令。
+## 已验证进展与当前缺口
+
+- P-S1：strong核心、可行基础计划、普通模板入口已通过22项新检查与3项受影响检查。
+- P-S2：信息适配器14项新检查与3项受影响检查通过；真实5节点8边模板NL→catalog→
+  Neo4j/Fuseki得到预期1行gold。新模型动作另有1次live组件证据：330token/355ms，非权威。
+- P-S3：逐跳候选6项新检查与1项受影响检查通过。真实8节点16关系组件得到4行gold，
+  14源请求、16252B；相对旧封存fanout源行62→51、后三跳24→14。两次冷会话不是
+  延迟对照，冻结模型仍选coordinator。14个原始响应零网络回放一致，所有本轮资源关闭。
+- 尚未证明：同一普通请求内的live信息动作+strong planner+native执行整体门、
+  开放NL结构验证、两模式真实速度/质量优势、用户discrepancy理论与完整论文评价。
+
+## 下一工程与实验门
+
+优先补同请求live信息+strong规划+执行的有界整体门，明确可信输入/语义边界，避免
+把分开通过的组件拼成完整live端到端。随后对齐模式发布配置、测实际成本与冻结估计排序。
+不为让新候选胜出而改分数；不重复旧大题。保持迭代，不重新暂停。
+
+核心一致后讨论并冻结原16–20图计划的修订：RQ/X/Y、efficiency/effectiveness/
+scalability/Pareto/ablation，外部SOTA同图。维持批准优先级：FinBench native与同事实
+RDF FedUP/FedX，再bounded FedShop；GrailQA/KBQA-R1依完整KB条件后置。
+保留旧44个FinBench结果、所有版本/失败/分母，不追溯为新strong模式结果。
+仅凭据、VPN/服务器操作、外部artifacts或实质研究方向决策请求用户介入；远端3804210
+保持用户更新，不自行查询/取消/重提；已有外部LLM可用，不等GPU。
+
+依据：[统一规划](practical_planning_20260914.md)、[strong契约](decisions/practical_strong_planning_v1.md)、
+[逐跳契约](decisions/progressive_binding_v1.md)、[最新真实组件与live证据](report/progressive_native_and_live_tools_20260914.md)。
+以下全部为保留历史，项目总体目标只有真实全部完成后才标complete。
 
 
 ## 2026-09-14 用户要求：当前里程碑完成后暂停，等待新的理论进展

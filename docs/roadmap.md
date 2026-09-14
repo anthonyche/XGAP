@@ -11,7 +11,8 @@
    新路由真实Neo4j+Fuseki tiny闭环。[证据](report/practical_information_native_20260914.md)。
    新LLM动作的live endpoint尚未验证，当前使用真实provider代码+受控transport。
 3. P-S3：共享的后续跳绑定传播候选已实现并通过本地6项新检查；[证据](report/progressive_binding_20260914.md)。
-   下一门为真实服务组件验证与实际成本/估计排序检查，尚不宣称速度优势。
+   [真实native组件及live模型适配器](report/progressive_native_and_live_tools_20260914.md)已通过；
+   下一门为同请求live信息+strong规划+执行，实际成本/排序优势仍需验证。
 4. P-S4：用户推进discrepancy理论后接入，冻结论文模式，讨论并执行评价修订。
 
 旧18图/数据优先级与baseline忠实原则不变；不提前做大规模消融。以下历史路线中的

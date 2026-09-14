@@ -1,0 +1,70 @@
+{
+  "schema_version": "xgap-progressive-native-live-tool-evidence-v1",
+  "native_commit": "555dad0",
+  "live_tool_commit": "efac01c",
+  "success": true,
+  "paper_result": false,
+  "goal_complete": false,
+  "same_request_live_e2e_verified": false,
+  "native_receipt": {
+    "path": "/Users/anthonyche/xgap-data/progressive-binding-native-20260914-v1/receipt.json",
+    "sha256": "79fc145d7e0b752525850af2be65c3184c8a390bac3635c5c2796611ae67c5a9"
+  },
+  "capture_analysis": {
+    "path": "/Users/anthonyche/xgap-data/progressive-binding-native-20260914-v1/capture-analysis.json",
+    "sha256": "d5ca767bc1fdd50a3ba9bdf3ad990468d80290fc6360b623cac4f0d44136efa9"
+  },
+  "zero_network_replay": {
+    "path": "/Users/anthonyche/xgap-data/progressive-binding-native-20260914-v1/replay/receipt.json",
+    "sha256": "6f9c1eb1643bc505823bfab10a737786943c290852d6591cfe0ecedc63184277"
+  },
+  "live_tool_receipt": {
+    "path": "/Users/anthonyche/xgap-data/practical-model-action-20260914-v1/receipt.json",
+    "sha256": "26cfcd525c5328faff5899ce972b1c33ea1cab2b6867fc253a8f5975750dbf3a"
+  },
+  "live_invocation": {
+    "path": "/Users/anthonyche/xgap-data/practical-model-action-20260914-v1/invocation.json",
+    "sha256": "635a513931056b797b8b795fc9359470f852280ea092cf4d65c73455b260f2e5"
+  },
+  "native_plan_executions": 1,
+  "live_model_calls": 1,
+  "live_model_tokens": 330,
+  "native_source_calls": 14,
+  "native_answer_rows": 4,
+  "native_answer_em": 1,
+  "native_response_bytes": 16252,
+  "native_execution_ms": 1516.1332907155156,
+  "all_owned_resources_terminal": true,
+  "frozen_estimator_winner": "placement-0/coordinator",
+  "latency_advantage_verified": false,
+  "baseline_calls": 0,
+  "fit_calls": 0,
+  "large_query_executions": 0,
+  "files": [
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/scripts/check_anchor_source_bind_native.py",
+      "sha256": "476be2ca47d5fb9a140249950641eeca6206191a443b512443c582dd1d4960c6"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/scripts/check_practical_model_action.py",
+      "sha256": "460fe4a06875f58f208025e3853449e61a30e71f50b26b2246a44e33346f2503"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/scripts/replay_native_component.py",
+      "sha256": "832cf7baae33b9dedf6f277525dd9cc203f2d9053175c438e49c3c8d0a5538df"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_tools.py",
+      "sha256": "28fcd0cb794602098e11536729098a456dee7829ad9404eb193dbdc21e12eeaa"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/runtime/progressive_binding.py",
+      "sha256": "4fff5952ca0b0807c479d0eae2b74903217a213c52ed4d4c211986090377f817"
+    }
+  ],
+  "replay_node_root_validation": {
+    "path": "/Users/anthonyche/xgap-data/progressive-binding-native-20260914-v1/replay/outcome-check.json",
+    "sha256": "b5b7907539b0f42419490844b5993a7e3803f2514f3b331897d590566eff460f",
+    "bytes": 189
+  }
+}

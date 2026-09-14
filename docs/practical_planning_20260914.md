@@ -55,12 +55,13 @@ d(Q_tilde,Q_star) 由用户下一理论阶段推进。当前不自行定义替�
 |里程碑|内容|当前证据/完成标准|
 |---|---|---|
 |P-S1|strong-plan 协调器、权威验证、可行基础计划、GoalLoop 执行、普通入口|已实现；22 项新检查通过，普通模板 NL 与实际进程内 SPARQL 链路通过|
-|P-S2|冻结 catalog/能力查询/可选 LLM 动作的统一适配，以及真实 Neo4j+Fuseki 小图门|已完成有界开发门；14项新风险检查、3项受影响检查；真实5节点8边模板NL→catalog→两后端→gold一致。新LLM动作仅受控transport证据|
-|P-S3|降低实际数据读取和总延迟|已实现逐跳绑定候选，6项新小图检查通过、后续跳源行24→19且6行gold不变；真实新候选门与性能优势尚待验证|
+|P-S2|冻结 catalog/能力查询/可选 LLM 动作的统一适配，以及真实 Neo4j+Fuseki 小图门|有界开发门已完成；14项新风险+3项受影响检查；模板NL真实双后端正确；本轮补1次live模型组件，整体live信息链仍待验证|
+|P-S3|降低实际数据读取和总延迟|逐跳候选6项新小图检查通过；真实native组件4行gold不变，源行62→51；14响应可回放；速度/排序优势仍待评价|
 |P-S4|用户定义的偏差度量接入与论文配置冻结|等待度量；其余工程不因此停滞。之后讨论实验计划的模式/信息条件修订|
 
 [P-S2 完整证据与局限](report/practical_information_native_20260914.md)。
 [P-S3 本地组件门与冻结估计器排序](report/progressive_binding_20260914.md)。
+[真实逐跳与live信息组件补充](report/progressive_native_and_live_tools_20260914.md)。
 当前成功不是“新模式真实 LLM+Neo4j+Fuseki 全部验证”，也不是论文总体结果。
 原来的真实 native/FinBench 结果继续按旧版本报告，不能追溯作为新 strong planner 的证据。
 
