@@ -10,20 +10,25 @@
 
 以下旧状态为历史；以本节及随后当前里程碑报告为准。
 
-## 当前里程碑：保留策略已通过真实group8；继续冻结顺序的新问题
+## 当前优先级：当前实验已结束，按用户观察强化两模式的实际差异
 
-246f3f0/a23a1fa实现one-shot释放中间行、完整源响应pins、按请求身份安全回放。
-13个新风险案例及1个受影响成本检查通过。真实Neo4j+Fuseki tiny4行非空exact、14调用；
-保存响应离线重现同计划/答案，零网络/模型/fit/load，首次顺序回放失败原记录保留。
-新NL group8（epoch1）两模式各1模型/1最终coordinator，正确空答案，39.199/38.261s，
-10源请求88284870B，方法RSS0.806/0.828GB；完整core trace207631/207615B。
-FedUP原生失败EM0，FedX共同响应预算中断EM0；四方法共12132输入/2195输出token。
-这是不同问题，不把它和group7算作提速对照。当前仍缺完整非空NL/总体/scale结果。
-[完整报告与逐项证据](report/one_shot_retention_20260914.md)。唯一equality-v1 NL journal
-现在下一group9（已保留前36结果），下一chunk继续原顺序；Native fixed20、RDF fixed5。
-所有本轮服务/句柄终态，原预算/基线/统计/模型不改。整体Goal active，用户已明确恢复。
+用户要求先跑完当前实验，再分析更激进的performance和更精确的exact/precision。
+新group9–10八方法已封存，所有服务/控制器96519终态。两XGAP模式都正确：group9
+空答案（精度37.903s/性能36.715s），group10为10行非空exact（36.028s/38.902s）。
+两模式每题6源请求76995602B、相同实际执行nodes，各仅1解释、0grounding lookup。
+FedUP两次原生失败；FedX两次共同响应预算censor；8模型调用24328输入3929输出token。
+[逐题结果、实现审计和下一小图里程碑](report/mode_differentiation_20260914.md)。
 
-以下为历史结果，未实现/暂停等旧时态不代表本轮状态。
+当前performance仅减少解释/grounding候选和关闭ontology，执行层近似检索尚未实现；
+precision的软质量权重/按artifact顺序grounding也不保证更高精度。先转回tiny实现真实
+预算化检索/扩展、明确聚合与排名近似边界，并加强精度模式解释/grounding一致性验证。
+预算必须在昂贵操作前生效，Ptime/冻结估计/单最终计划不变；不能人为拖慢precision、
+把快速失败当收益、调旧评价题、改baseline或无限加回归。新mode门通过再继续评价。
+唯一NL equality-v1 journal下一group11（全部44结果保留）；Native fixed20、RDF fixed5。
+已验收保留工程246f3f0/a23a1fa及group8证据保留。整体Goal active，9月14日10点已恢复；
+没有未来暂停。Sep14 17:00/ Sep18目标保持；两模式新差异尚未实现，不冒称系统已全部完成。
+
+以下为历史记录；旧暂停/待运行group及旧next方向以上方为准。
 
 ## 当前执行：冻结键上界与真实NL两模式已接通；下一门为中间数据保留
 
