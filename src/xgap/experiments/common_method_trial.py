@@ -19,13 +19,18 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                package_monitor=None):
     started=time.perf_counter();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     q=json.loads(read_pinned(request_path,request_sha256))
-    nl=track=='natural_language'
-    if q.get('schema_version')!=(NL_SCHEMA if nl else REQUEST_SCHEMA):raise ValueError('A pinned request with the declared track is required')
+    practical=track=='trusted_template';nl=track in ('natural_language','trusted_template')
+    if practical:
+        from xgap.experiments.practical_profile import REQUEST_SCHEMA as PRACTICAL_SCHEMA
+    schema=PRACTICAL_SCHEMA if practical else NL_SCHEMA if nl else REQUEST_SCHEMA
+    if q.get('schema_version')!=schema:raise ValueError('A pinned request with the declared track is required')
+    if practical!=method.startswith('xgap-strong-'):raise ValueError('Strong methods require their explicit trusted-template track')
     dataset=json.loads(read_pinned(profile_path,profile_sha256))['dataset'] if nl else q['dataset']
     r={'schema_version':'xgap-common-method-trial-v1',**{k:q[k] for k in ('question_id','population','exposure')},
         'method':method,'track':track,'dataset':dataset,'request_sha256':request_sha256,
         'success':False,'status':'preparing','result':None,'can_continue_session':False,
         'model_calls':None if nl else 0,'fit_calls':0,'probe_calls':0,'automatic_retries':0,'paper_result':False}
+    if practical:r['input_scope']='pinned trusted template and declared binding authority; not unaided open-domain NL'
     monitor=None;guard=None;child=None;observed=None;barrier=None
     campaign_observer=callable(getattr(observer,'seal_phase',None));phase_opened=False
     phase=method+':'+q['question_id'];repo=Path(__file__).resolve().parents[3]
@@ -59,6 +64,9 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                 raise ValueError('Worker receipt identity mismatch')
             if nl and (child.get('profile_sha256')!=profile_sha256 or child.get('dataset') not in (None,dataset)):
                 raise ValueError('NL worker profile or dataset identity mismatch')
+            if practical and (child.get('track')!=track or child.get('execution_kind') not in (None,'configured_native')
+                              or (child.get('success') and child.get('execution_kind')!='configured_native')):
+                raise ValueError('Strong worker scope differs or replay was substituted for live execution')
         observed=observer.snapshot(phase)
         r.update(success=bool(guard['success'] and child and child['success'] and observed['failed_requests']==0),
             status=child['status'] if guard['success'] and child else 'guard_'+guard['status'],
@@ -71,6 +79,10 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             r['status']=r['source_failure']['status']
         if nl:
             for key in ('model_calls','input_tokens','output_tokens','frontend_ms','interpretation_ms','grounding_ms','compilation_ms'):
+                r[key]=child.get(key) if child else None
+        if practical:
+            for key in ('admission_ms','acquisition_ms','clarification_calls','strong_plan','semantic_validation',
+                        'unvalidated_bindings','semantic_discrepancy_upper_bound','discrepancy_status','core_result'):
                 r[key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
     except Exception as error:
@@ -130,3 +142,7 @@ def run_fixed_trial(**kwargs):
 
 def run_nl_trial(**kwargs):
     return _run_trial(track='natural_language',**kwargs)
+
+
+def run_practical_trial(**kwargs):
+    return _run_trial(track='trusted_template',**kwargs)

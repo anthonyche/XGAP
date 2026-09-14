@@ -10,10 +10,15 @@ from xgap.experiments.one_shot_records import run_record, write_once, read_recor
 from xgap.experiments.one_shot_toy import _DurableRecordingProvider
 
 SCHEMA='xgap-nl-method-worker-v1'
-METHODS=('xgap-precision','xgap-performance','fedx','fedup')
+PRACTICAL_METHODS=('xgap-strong-exact','xgap-strong-performance')
+METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS)
 
 
 def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,output,endpoint=None,seconds=180):
+    if method in PRACTICAL_METHODS:
+        from xgap.experiments.practical_method_worker import run_practical
+        return run_practical(request_path=request_path,request_sha256=request_sha256,profile_path=profile_path,
+            profile_sha256=profile_sha256,method=method,output=output,endpoint=endpoint,seconds=seconds)
     root=Path(output);root.mkdir(parents=True,exist_ok=False);started=time.perf_counter()
     r={'schema_version':SCHEMA,'method':method,'track':'natural_language','success':False,'status':'preparing',
         'request_sha256':request_sha256,'profile_sha256':profile_sha256,'result':None,
