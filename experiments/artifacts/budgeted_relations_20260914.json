@@ -1,0 +1,86 @@
+{
+  "schema_version": "xgap-budgeted-relations-milestone-v1",
+  "paper_result": false,
+  "source_commits": [
+    "a3f5f39e15855d9b85184228e3e2321b1409ccde",
+    "cb148c3658689e6de847979b6f5e3c2966f50fbf"
+  ],
+  "boundary_verified": true,
+  "precision_quality_enhancement_implemented": false,
+  "formal_campaign_profile_released": false,
+  "scope": "independent tiny deterministic queries; zero model calls, data loads, fits, probes, baseline calls",
+  "module_tests": {
+    "unique_cases_passed": 9,
+    "initial_run_seconds": 0.7,
+    "followup_four_cases_seconds": 0.49,
+    "overfetch_evidence_case_seconds": 0.4,
+    "complete_requirement_case_seconds": 0.4,
+    "rerun_reason": "only fixture portability, new handoff, overfetch accounting and request validation changed"
+  },
+  "native_precision": {
+    "original_harness_receipt": {
+      "path": "/Users/anthonyche/xgap-data/budgeted-relations-native-20260914-v1/receipt.json",
+      "sha256": "80a7f01ca648549634d6515d23ff6b2b9f1b284c38ea734a4af1e188c7e53117",
+      "bytes": 1675
+    },
+    "original_harness_success": false,
+    "core": {
+      "path": "/Users/anthonyche/xgap-data/budgeted-relations-native-20260914-v1/precision/core.json",
+      "sha256": "9c5374fafea2764c230a7cfafea643f538ca789fc754bd0d4f7b8d7274558444",
+      "bytes": 50365
+    },
+    "source_observations": {
+      "path": "/Users/anthonyche/xgap-data/budgeted-relations-native-20260914-v1/session/source-observations/phase-0001-summary.json",
+      "sha256": "5fca94ce2575ef9624dd68c2972088a2514abd8301cd66e88677d98733a1df48",
+      "bytes": 1065
+    },
+    "source_calls": 3,
+    "source_response_bytes": 2565,
+    "answer_counts": [
+      0,
+      4,
+      8
+    ],
+    "full_source_answer_em": 1,
+    "planning_ms": 20.084249787032604,
+    "execution_ms": 759.3499580398202,
+    "core_end_to_end_ms": 781.9234170019627,
+    "offline_replay": {
+      "path": "/Users/anthonyche/xgap-data/budgeted-relations-precision-replay-20260914-v1/receipt.json",
+      "sha256": "db92c4d74ee248337aa10ff035b487ff520b92c9299c437e72e808687b96d8de",
+      "bytes": 971
+    },
+    "replay_success": true
+  },
+  "native_performance": {
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/budgeted-relations-native-20260914-performance-v1/receipt.json",
+      "sha256": "a73b67b5e9a770eaa895149e97f02e24c4fa94f422e774bf4833c14d054ae5ef",
+      "bytes": 4455
+    },
+    "source_calls": 3,
+    "source_response_bytes": 1725,
+    "answer_counts": [
+      0,
+      2,
+      4
+    ],
+    "full_source_answer_em": 0,
+    "planning_ms": 20.307249389588833,
+    "execution_ms": 768.7744991853833,
+    "online_ms_through_outcome_seal": 793.7400415539742,
+    "replay_success": true,
+    "rows_per_relationship": 2,
+    "fetch_rows_per_relationship": 3
+  },
+  "source_response_reduction_fraction": 0.32748538011695905,
+  "speedup_claim": false,
+  "precision_harness_failure_preserved": true,
+  "network_retries": 0,
+  "evaluation_frontier": {
+    "rdf_nl_next_group": 11,
+    "preserved_outcomes": 44,
+    "native_fixed_next_group": 20,
+    "rdf_fixed_next_group": 5
+  }
+}

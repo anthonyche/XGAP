@@ -1,23 +1,24 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
-## 当前工程：performance 关系读取预算已实现，真实 tiny 验收待运行
+## 当前里程碑已验收：性能模式能在源端限制关系读取，尚未证明明显提速
 
-原group9–10已全部封存；目前不重跑评价题。按用户观察实现可选
-`retrieval_rows_per_relation`：原生关系查询LIMIT B+1，保留B行并记录漏行；
-节点身份/属性完整读取，估计器只缩减返回/后续输入工作，原权重和扫描工作代理不变。
-聚合/排名在观测子关系上执行；full-source exact标志、最终answer和紧凑handoff明确
-保留近似范围。显式完整结果要求在模型/数据库调用前拒绝预算冲突。旧默认不变。
+[最新报告与下一门](report/budgeted_relations_20260914.md)。a3f5f39实现可选
+performance关系预算；cb148c3修正验证脚本封存接口。9个新增定向风险案例通过。
+真实Neo4j+Fuseki小图：precision完整计数0/4/8，performance(B=2)为0/2/4；
+各3源调用，响应2565→1725B，完整gold EM分别1/0，近似范围一直保留到最终answer。
+执行759/769ms近似，不能称为明显提速；并未在正式campaign启用新profile。
 
-[设计、Ptime与准确性边界](decisions/budgeted_relations_v1.md)。9个独立新风险案例已通过；
-后续定向重跑只覆盖改动的fixture/handoff/超额返回成本记录。实际SPARQL小图8关系→
-返回3/保留2，COUNT8→2且full-source EM必须仍为0；该门不是论文提速结果。
-真实Neo4j/Fuseki新tiny脚本已离线确认普通估计可用；下一步只运行一次该外部边界，
-复用冻结8节点16边及统计，不load/fit/model/baseline，不重跑旧问题。
+第一tiny脚本在precision正确执行后封存失败，原false保留；3响应离线回放正确，
+未重发precision。随后只执行从未开始的performance，原生与离线回放均通过。
+所有句柄69625/34590终态，服务与observer关闭。原实验group9–10、全部44结果保留。
 
-precision完整执行保持；其解释/grounding一致性增强仍待实现，两模式新profile尚未
-发布到正式campaign。其后再冻结模式预算并讨论/执行真正的速度—质量评估。
-NL唯一journal下一group11、所有44结果保留；Native fixed20/RDF fixed5不变。
-9月14日10点已恢复，整体Goal active，无未来暂停。以下旧“当前”段为历史。
+下一小图门：让检索预算关注相关候选、避免盲目prefix过度漏答，并强化precision基于
+冻结schema/catalog的解释/绑定一致性与质量优先选择。precision目前完整执行，
+自然语言准确性增强尚未实现，不把软权重/candidate cap当准确性保证。统一B及模式
+profile需开发集先冻结，再进行真实速度—质量评价；不能用旧评价答案调参。
+Ptime/一模型请求/一个最终计划、零在线fit/probe/retry不变；baseline忠实运行不优化。
+NL唯一journal下一group11；Native fixed20、RDF fixed5；不重跑已成功门或旧大题。
+9月14日10点已恢复，整体Goal active；无未来暂停。以下旧“当前”段为历史。
 
 ## 2026-09-14 10:00 北京时间已恢复执行
 

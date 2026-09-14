@@ -1,4 +1,4 @@
-2026-09-14: [Bounded relationship retrieval](decisions/budgeted_relations_v1.md): optional performance-only native row caps, observed-relation aggregate semantics, immutable estimates, explicit approximation through answer handoff. Nine targeted new risk cases pass; native tiny boundary pending. No new evaluation or baseline changes.
+2026-09-14: [Bounded relationship retrieval](decisions/budgeted_relations_v1.md) and [native evidence / next mode gate](report/budgeted_relations_20260914.md): nine new risk cases and native precision/performance boundaries verified, with first harness failure preserved and exact offline recovery. Source bytes fall2565→1725; tiny latency stays similar. Precision NL-quality enhancement and formal mode release remain pending. No evaluation/baseline changes.
 
 2026-09-13: [源端候选真实组件通过，估计仍缺选择性](report/anchor_source_bind_20260913.md)。
 

@@ -164,6 +164,9 @@ def test_ordinary_modes_execute_once_with_explicit_coverage_and_hard_completenes
     denied=run_question(replace(request,context={**request.context,'require_complete_results':True}),
         provider,mode='performance',one_shot_policy=policy(2),**args)
     assert denied['status']=='configuration_unavailable' and provider.calls==2 and len(calls)==2
+    malformed=run_question(replace(request,context={'require_complete_results':'true'}),provider,
+        mode='performance',one_shot_policy=policy(2),**args)
+    assert malformed['status']=='configuration_unavailable' and provider.calls==2 and len(calls)==2
     assert 'retrieval_rows_per_relation' not in policy().to_dict()
     with pytest.raises(ValueError,match='performance mode'):policy(2,mode='precision')
 

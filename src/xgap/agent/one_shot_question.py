@@ -71,6 +71,10 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
                       error="One-shot requires a typed policy and a prepared frozen runtime estimator")
         return finish()
     report["policy"] = policy.to_dict()
+    if ("require_complete_results" in request.context
+            and type(request.context["require_complete_results"]) is not bool):
+        report.update(status="configuration_unavailable", error="Complete-result requirement must be boolean")
+        return finish()
     if policy.retrieval_rows_per_relation is not None:
         if isinstance(estimator, FrozenRuntimeEstimator):
             report.update(status="configuration_unavailable",
