@@ -18,13 +18,15 @@ from xgap.runtime.anchor_reduction import anchor_binding_slot
 from xgap.runtime.semantic_compiler import compile_semantic_source
 from xgap.runtime.semantic_placement import _admit_expansion
 from xgap.runtime.retrieval_budget import apply_retrieval_budget
+from xgap.runtime.shared_native_reads import share_full_native_reads
 from xgap.semantic.program import SemanticOperatorKind as S, SemanticProgramError
 
 
-def prepare_one_shot_domain(program, *, operator_sources, sources, backends, policy, progressive_bindings=False):
+def prepare_one_shot_domain(program, *, operator_sources, sources, backends, policy, progressive_bindings=False,
+                            shared_native_reads=False):
     started = time.perf_counter()
-    if type(progressive_bindings) is not bool:
-        raise ValueError('progressive_bindings must be boolean')
+    if type(progressive_bindings) is not bool or type(shared_native_reads) is not bool:
+        raise ValueError('Physical profile flags must be boolean')
     if program.holes or len(program.operators) > policy.max_operators:
         raise SemanticProgramError("One-shot planning requires a bounded resolved program")
     _admit_expansion(program)
@@ -113,6 +115,9 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
                 metadata={**candidate.plan.metadata, "source_bindings": placement,
                           "source_snapshot_versions": {b: versions[b] for b in sorted(used)},
                           "source_identities": {b: identities[b] for b in sorted(used)}})
+            if shared_native_reads:
+                plan=share_full_native_reads(plan)
+                candidate=replace(candidate,features=strategy_features(plan,program))
             candidates.append(replace(candidate, plan=plan,
                                       strategy_id=f"placement-{index}/{candidate.strategy_id}"))
         for rejection in getattr(space, "rejected_strategies", ()):
@@ -129,4 +134,5 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
         "domain": "one-source neighborhood; coordinator, one join bind, or one deterministic anchor fanout"
                   + ('; one progressive bind composition' if progressive_bindings else ''),
         "global_physical_optimality": False,
+        **({'shared_native_reads':'identical-complete-native-reads-v1'} if shared_native_reads else {}),
         "elapsed_ms": (time.perf_counter() - started) * 1000}
