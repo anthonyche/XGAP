@@ -15,7 +15,7 @@
     "released_nodes": 48
   },
   "native_acceptance": "accepted: exact native result plus corrected offline replay; original overall-failed receipt retained",
-  "full_data_acceptance": "pending",
+  "full_data_acceptance": "new group8 two exact empty XGAP outcomes; external failures retained",
   "paper_result": false,
   "native_receipt": {
     "path": "/Users/anthonyche/xgap-data/retention-native-20260914-v1/receipt.json",
@@ -48,5 +48,6 @@
     "planning_ms": 124.45850018411875,
     "execution_ms": 1356.0073329135776,
     "all_sources_terminal": true
-  }
+  },
+  "real_group_audit": "retention_group8_20260914.json"
 }

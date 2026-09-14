@@ -10,15 +10,18 @@
 
 以下旧状态为历史；以本节及随后当前里程碑报告为准。
 
-## 当前里程碑：中间数据释放与真实tiny回放已验收；继续新NL group8
+## 当前里程碑：保留策略已通过真实group8；继续冻结顺序的新问题
 
-246f3f0/a23a1fa实现one-shot释放非root中间行、保留节点指标和完整源响应pins。
-13个新风险案例及受影响的成本封存检查通过。同题小图6行答案/8调用不变，runtime
-trace48788→18412B。真实Neo4j+Fuseki tiny估计选一个coordinator，4行非空exact、14源请求。
-首次回放因并行请求顺序不同失败，原记录保留；按完整请求身份匹配后，离线消费全部14份
-响应，重现同一个计划/答案，零网络/模型/fit/load。所有真实服务终态。
-[完整报告](report/one_shot_retention_20260914.md)。下一步只运行未执行的NL group8，按新实现
-与instrumentation epoch记录；预算/基线/统计/模型不改，不重跑旧题。整体论文评价未完成。
+246f3f0/a23a1fa实现one-shot释放中间行、完整源响应pins、按请求身份安全回放。
+13个新风险案例及1个受影响成本检查通过。真实Neo4j+Fuseki tiny4行非空exact、14调用；
+保存响应离线重现同计划/答案，零网络/模型/fit/load，首次顺序回放失败原记录保留。
+新NL group8（epoch1）两模式各1模型/1最终coordinator，正确空答案，39.199/38.261s，
+10源请求88284870B，方法RSS0.806/0.828GB；完整core trace207631/207615B。
+FedUP原生失败EM0，FedX共同响应预算中断EM0；四方法共12132输入/2195输出token。
+这是不同问题，不把它和group7算作提速对照。当前仍缺完整非空NL/总体/scale结果。
+[完整报告与逐项证据](report/one_shot_retention_20260914.md)。唯一equality-v1 NL journal
+现在下一group9（已保留前36结果），下一chunk继续原顺序；Native fixed20、RDF fixed5。
+所有本轮服务/句柄终态，原预算/基线/统计/模型不改。整体Goal active，用户已明确恢复。
 
 以下为历史结果，未实现/暂停等旧时态不代表本轮状态。
 

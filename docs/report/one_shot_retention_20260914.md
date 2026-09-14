@@ -2,7 +2,7 @@
 
 The retention milestone is accepted: directed offline checks, one correct real
 Neo4j+Fuseki tiny execution, and an exact offline replay of its captured responses.
-No new full-data question has run yet in this milestone.
+New real NL group8 subsequently completed; all four method outcomes are retained below.
 The user clarified September14 10:00 is the resume time; execution is active.
 
 Research scope: preserve exact selected-plan semantics while reducing retained
@@ -66,3 +66,33 @@ captures47670B; ledger30233B.
 76 intermediate nodes released; final4 rows preserved. These native figures have
 no paired full-retention timing run, so they do not establish a speedup.
 Implementation commits246f3f0/a23a1fa; current NL frontier remainsgroup8.
+
+## First real group with compact retention
+
+The unchanged equality-v1 journal continued at previously unrun group8,
+question FBNS-1-554304d0751a9e1d. Harness epoch1 explicitly changes instrumentation;
+old intents and scores stay untouched. It selected coordinator in both modes
+from frozen estimates (this is a different question from group7's fanout).
+
+| Method | Outcome | Correctness | Complete online seconds | Source requests | Response bytes | Method peak RSS bytes |
+|---|---|---|---:|---:|---:|---:|
+| XGAP precision | answered | exact empty, EM1 |39.199|10|88284870|805912576|
+| XGAP performance | answered | exact empty, EM1 |38.261|10|88284870|828375040|
+| shared NL + FedUP | native external failure | EM0 |9.255|0|0|460963840|
+| shared NL + FedX | common response-budget censoring | EM0 |14.186|1444|550152299|392626176|
+
+Every method made exactly one model call: total12132 input/2195 output tokens,
+4 calls. Both XGAP modes executed one final plan, released51 intermediate nodes,
+and preserved full answers plus node metrics. Core traces207631/207615 bytes;
+complete source responses remain pinned separately. Neither the roughly604MB
+previous-question trace nor its80–84s latency is a paired control for this39s
+question. No cross-query speedup or memory-reduction percentage is inferred.
+A valid empty answer still cannot establish nonempty NL recall or overall quality.
+
+Audit: `f0d3845284261a59ebdaddc5b05ca8c8d45cab96d21dfa0fac471eaed0da51c5`.
+Run receipt: `d4790c36f6e0012374986f63a6d594556a797cb14bfdb28eec6d59c49a9ebcb8`.
+All four outcomes are terminal; both source-session retirements confirm drained
+process groups/terminal owned processes/stopped observers.124.903s chunk,
+4.729GB sampled package peak,18.625GB free afterward; original budgets unchanged.
+Next journal frontier9. Continue the next bounded frozen-order chunk; no tuning,
+full regression, baseline repair or repeat of the old questions is required.
