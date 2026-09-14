@@ -1,6 +1,6 @@
 """Single-request execution records and strict offline replay; no benchmark loop."""
 
-from collections import Counter
+from collections import Counter, defaultdict, deque
 from dataclasses import replace
 import hashlib
 import json
@@ -59,11 +59,28 @@ def read_record_outcome(receipt):
 class BackendReplay:
     def __init__(self, backend_id, records):
         self.backend_id, self.records, self.position = backend_id, list(records), 0
+        self.lock = threading.Lock()
+        self.indexed = bool(self.records) and all("response_record" in r for r in self.records)
+        self.by_artifact = defaultdict(deque)
+        if self.indexed:
+            for i, record in enumerate(self.records):
+                self.by_artifact[_canonical(record["artifact"])].append(i)
 
     def execute(self, artifact):
+        # Independent remote requests may start in a different order in replay.
+        # Indexed captures match exact identities once; legacy embedded records
+        # preserve their original ordered replay contract.
+        with self.lock:
+            return self._execute(artifact)
+
+    def _execute(self, artifact):
         if self.position == len(self.records):
             raise ValueError("No backend replay call remains")
-        record = self.records[self.position]
+        key = _canonical(artifact.to_dict())
+        if self.indexed and not self.by_artifact.get(key):
+            raise ValueError("Backend replay artifact differs; another plan's rows cannot be reused")
+        index = self.by_artifact[key][0] if self.indexed else self.position
+        record = self.records[index]
         if _canonical(artifact.to_dict()) != _canonical(record["artifact"]):
             raise ValueError("Backend replay artifact differs; another plan's rows cannot be reused")
         if "response_record" in record:
@@ -85,6 +102,8 @@ class BackendReplay:
             original = ExecutionReport.from_dict(record["execution"])
         if original.backend_id != self.backend_id or original.artifact_id != artifact.artifact_id:
             raise ValueError("Backend replay response identity mismatch")
+        if self.indexed:
+            self.by_artifact[key].popleft()
         self.position += 1
         # Historical timing is retained as provenance, not this run's measurement.
         return replace(original, elapsed_ms=0.0, metadata={"execution_kind":"offline_replay",

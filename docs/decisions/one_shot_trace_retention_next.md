@@ -82,3 +82,14 @@ The protocol and instrumentation epoch change; data, prompt, semantic operators,
 physical strategy domain, frozen estimator and baseline implementations do not.
 See ../report/one_shot_retention_20260914.md for actual gate outcomes, including
 incompatible historical replay fixtures. Continue only new evaluation questions.
+
+The first real native gate executed one estimated coordinator plan correctly:
+4 nonempty exact rows,14 source requests/18,606 response bytes; all source
+processes and observer closed. Its replay failed because independent concurrent
+requests reached the per-backend ordered replay cursor in a different order.
+That original failed overall receipt is preserved. Indexed complete captures now
+use an exact-artifact multimap and lock to consume each record once, independent
+of unrelated request start order; duplicate requests retain multiplicity and hash/
+identity checks. Legacy embedded records still require their old order. Seven
+new/affected indexed-replay cases passed after this correction. The live query is
+not repeated: only its newly saved records will be replayed offline.

@@ -167,6 +167,20 @@ def test_failed_capture_write_keeps_indeterminate_record_without_retry(tmp_path,
     assert "response_record" not in records[0]
 
 
+def test_indexed_parallel_order_is_not_a_query_change_and_cannot_duplicate_calls(tmp_path):
+    records=[];lock=threading.Lock()
+    client=RowsBackendClient('rdf',{'a':[{'id':'a'}],'b':[{'id':'b'}]})
+    wrapped=CapturingClient(client,tmp_path,records,lock,retain_payloads=False)
+    a,b=(QueryArtifact(k,'sparql',f'SELECT {k}') for k in ('a','b'))
+    wrapped.execute(b);wrapped.execute(a)  # Native start order is b,a.
+    replay=BackendReplay('rdf',records)
+    assert replay.execute(a).rows==[{'id':'a'}]
+    with pytest.raises(ValueError,match='artifact differs'):replay.execute(a)
+    assert replay.position==1
+    assert replay.execute(b).rows==[{'id':'b'}] and replay.position==2
+    with pytest.raises(ValueError,match='No backend replay'):replay.execute(b)
+
+
 def test_new_capture_replays_the_same_current_ordinary_entry(tmp_path,monkeypatch,estimator):
     import socket
     monkeypatch.setattr(socket.socket,"connect",lambda *a,**kw:pytest.fail("Unexpected network"))
