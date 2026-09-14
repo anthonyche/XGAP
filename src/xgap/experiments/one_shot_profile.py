@@ -218,7 +218,7 @@ class FrozenOneShotProfile:
 
     def request(self, raw, mode, materialized=None):
         _fields(raw, ("schema_version", "question_id", "question", "population", "exposure"),
-            ("required_constraints", "requested_output"))
+            ("required_constraints", "requested_output", "require_complete_results"))
         if raw["schema_version"] != REQUEST_SCHEMA: raise ValueError("Unsupported request schema")
         for key in ("question_id", "question", "population", "exposure"): _text(raw[key])
         doc, _, bundle, sources, _, _, modes = materialized or self.materialize()
@@ -227,6 +227,12 @@ class FrozenOneShotProfile:
             "one_shot_profile":policy.to_dict(), "runtime":{"resolution_bundle":bundle.identity,
                 "sources":{key:{"version":s.snapshot_version,"replicas":list(s.replica_backend_ids)} for key,s in sources.items()}}}
         if "requested_output" in raw: context["requested_output"] = raw["requested_output"]
+        if "require_complete_results" in raw:
+            if type(raw["require_complete_results"]) is not bool:
+                raise ValueError("Complete-result requirement must be boolean")
+            if raw["require_complete_results"] and policy.retrieval_rows_per_relation is not None:
+                raise ValueError("Complete-result requirement conflicts with relationship retrieval budget")
+            context["require_complete_results"] = raw["require_complete_results"]
         return InterpretationRequest(raw["question"], context, tuple(raw.get("required_constraints", ())))
 
 

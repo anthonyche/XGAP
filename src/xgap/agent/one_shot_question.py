@@ -18,6 +18,7 @@ from xgap.planning.runtime_work_deployment import FrozenWorkDeployment
 from xgap.planning.runtime_instance_work import FrozenInstanceWorkDeployment
 from xgap.runtime.one_shot_planning import prepare_one_shot_domain
 from xgap.runtime.scheduler import FederatedScheduler
+from xgap.runtime.retrieval_budget import retrieval_observation
 from xgap.runtime.tool import FederatedExecutionTool
 from xgap.semantic.interpretation_candidates import interpret_candidate_question
 from xgap.semantic.program import SemanticGraphProgram
@@ -70,6 +71,15 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
                       error="One-shot requires a typed policy and a prepared frozen runtime estimator")
         return finish()
     report["policy"] = policy.to_dict()
+    if policy.retrieval_rows_per_relation is not None:
+        if isinstance(estimator, FrozenRuntimeEstimator):
+            report.update(status="configuration_unavailable",
+                          error="Budgeted retrieval requires the work estimator and its explicit returned-work projection")
+            return finish()
+        if request.context.get("require_complete_results") is True:
+            report.update(status="configuration_unavailable",
+                          error="The request requires complete results; budgeted retrieval cannot relax that contract")
+            return finish()
     provider_config = getattr(provider, "config", None)
     if provider_config is not None and getattr(provider_config, "candidate_cap", None) != policy.candidate_cap:
         report.update(status="configuration_unavailable",
@@ -205,10 +215,13 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
         report.update(execution=result.to_dict(), backend_remote_calls=int(result.metrics.get("remote_calls", 0)),
                       success=result.status is ToolStatus.SUCCESS, error=result.error)
         if report["success"]:
+            retrieval = retrieval_observation(selected.plan, result.value)
             report.update(status="answered", answer_rows=result.value["final_rows"],
-                answer_semantics="selected_predicted_interpretation", approximation={
+                answer_semantics=("budgeted_source_relations" if retrieval and not retrieval["complete_for_selected_interpretation"]
+                                  else "selected_predicted_interpretation"), approximation={
                     "interpretation_is_prediction": True, "candidate_coverage_bounded": True,
-                    "result_rows_truncated": False, "grounding": detail["grounding"]})
+                    "result_rows_truncated": False, "grounding": detail["grounding"],
+                    **({"retrieval": retrieval} if retrieval is not None else {})})
         else:
             report["status"] = "execution_failed"
     except Exception as error:

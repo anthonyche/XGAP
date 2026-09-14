@@ -12,10 +12,11 @@ import json
 import time
 
 from xgap.compilers.errors import CompilerError
-from xgap.runtime.physical_strategies import prepare_physical_strategies
+from xgap.runtime.physical_strategies import prepare_physical_strategies, strategy_features
 from xgap.runtime.anchor_reduction import anchor_binding_slot
 from xgap.runtime.semantic_compiler import compile_semantic_source
 from xgap.runtime.semantic_placement import _admit_expansion
+from xgap.runtime.retrieval_budget import apply_retrieval_budget
 from xgap.semantic.program import SemanticOperatorKind as S, SemanticProgramError
 
 
@@ -93,6 +94,13 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
                              "reason": str(error)})
             continue
         for candidate in space.candidates:
+            if policy.retrieval_rows_per_relation is not None:
+                budgeted = apply_retrieval_budget(candidate.plan, program, policy.retrieval_rows_per_relation)
+                # Different budgeted physical orders can observe different
+                # subsets. Never reuse the complete-program equivalence claim.
+                key = hashlib.sha256(json.dumps(budgeted.to_dict(),sort_keys=True).encode()).hexdigest()
+                candidate = replace(candidate, plan=budgeted, features=strategy_features(budgeted,program),
+                                    semantic_equivalence_key="budgeted-plan:"+key)
             encoded = json.dumps(candidate.plan.to_dict(), sort_keys=True, separators=(",", ":"))
             suffix = hashlib.sha256(encoded.encode()).hexdigest()[:20]
             used = {n.parameters["backend_id"] for n in candidate.plan.nodes

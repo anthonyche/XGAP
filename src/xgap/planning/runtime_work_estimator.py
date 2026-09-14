@@ -20,6 +20,7 @@ from xgap.planning.runtime_estimator import (
     _hash, _json, _number, _text, extract_runtime_features,
 )
 from xgap.runtime.contracts import FederatedExecutionPlan, RuntimeNodeKind as R
+from xgap.runtime.retrieval_budget import budget_from_artifact
 
 
 MODEL_SCHEMA = "xgap-runtime-nonnegative-work-estimator-v2"
@@ -111,12 +112,17 @@ def extract_work_features(plan, statistics):
                             raise ValueError("missing bind bound")
                         records = min(records, incoming, float(limit))
                     prefix = f"backend.{backend}.{family}.{mode}"
+                    budget = budget_from_artifact(raw_artifact)
+                    received = min(records, float(budget["fetch_rows"])) if budget else records
                     features[prefix + ".calls"] += 1.0
                     features[prefix + ".record_units"] += records
                     features[prefix + ".column_units"] += records * len(columns)
-                    features[prefix + ".logical_byte_units"] += records * source.mean_row_bytes
+                    features[prefix + ".logical_byte_units"] += received * source.mean_row_bytes
                     features[prefix + ".binding_units"] += incoming if mode == "bind" else 0.0
-                    output = records
+                    # LIMIT bounds returned work, not the black-box scan/sort.
+                    # Keep native record/column proxies; only bound transfer and
+                    # the downstream input work, with the same executable cap.
+                    output = min(records, float(budget["rows"])) if budget else records
                 except (ValueError, TypeError, OverflowError):
                     unknown.append(f"node.{node.node_id}.finite_workload_descriptor")
                     output = 0.0
@@ -248,6 +254,11 @@ class FrozenWorkEstimator:
             provenance["workload_lowering_extension"] = {
                 "profile": "edge_match_as_one_edge_path_v1", "calibrated": False,
                 "weights_changed": False, "feature_dimensions_changed": False}
+        if plan.metadata.get("retrieval_budget") is not None:
+            provenance["retrieval_work_extension"] = {
+                "profile": "bounded-edge-relations-v1", "calibrated": False,
+                "weights_changed": False, "native_scan_discounted": False,
+                "scope": "compiled returned-row cap bounds transfer and downstream work proxies"}
         outside = ()
         status, estimate, residual = "unavailable_missing_features", None, None
         if not f.unknown_fields:

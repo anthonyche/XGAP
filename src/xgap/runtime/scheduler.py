@@ -24,6 +24,7 @@ from xgap.runtime.contracts import (
 )
 from xgap.runtime.scalars import distinct_rows as _typed_distinct, value_key
 from xgap.runtime.binding_operations import aggregate_rows, sort_rows
+from xgap.runtime.retrieval_budget import budget_from_artifact, observe_budget
 from xgap.tools.backends import BACKEND_INVOKE_TOOL, BackendInvokeTool
 from xgap.tools.contracts import ToolContext, ToolStatus
 
@@ -232,6 +233,10 @@ class FederatedScheduler:
         input_bytes = 0
         binding_count: int | None = None
         prepared_artifact = dict(artifact)
+        try:
+            retrieval = budget_from_artifact(prepared_artifact)
+        except (ValueError, TypeError, KeyError) as error:
+            return self._error(node, str(error), started)
         if node.kind is RuntimeNodeKind.REMOTE_BIND_QUERY:
             input_rows = results[node.inputs[0]].rows
             if input_rows is None:
@@ -259,6 +264,7 @@ class FederatedScheduler:
                         "backend_id": backend_id,
                         "binding_count": 0,
                         "empty_binding_short_circuit": True,
+                        **({"retrieval_budget": observe_budget(retrieval, 0)} if retrieval else {}),
                     },
                 )
         try:
@@ -297,10 +303,18 @@ class FederatedScheduler:
                 input_bytes=input_bytes,
                 remote_calls=1,
             )
-        rows = tuple(dict(row) for row in raw_rows)
+        received = len(raw_rows)
+        if retrieval and received > retrieval["fetch_rows"]:
+            failed = self._error(node, "Backend exceeded the compiled relationship fetch bound", started,
+                                 input_bytes=input_bytes, remote_calls=1)
+            return replace(failed, metadata={"backend_id": backend_id, "tool_metrics": dict(result.metrics),
+                "retrieval_budget_violation": {"received_rows": received, "fetch_bound": retrieval["fetch_rows"]}})
+        kept = raw_rows[:retrieval["rows"]] if retrieval else raw_rows
+        rows = tuple(dict(row) for row in kept)
         metadata: dict[str, Any] = {
             "backend_id": backend_id,
             "tool_metrics": dict(result.metrics),
+            **({"retrieval_budget": observe_budget(retrieval, received)} if retrieval else {}),
         }
         if binding_count is not None:
             metadata["binding_count"] = binding_count

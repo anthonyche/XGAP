@@ -39,6 +39,9 @@ def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,outp
                 interpretation_ms=core.get('interpretation_ms',(core.get('interpretation') or {}).get('elapsed_ms')),
                 grounding_ms=core.get('grounding_ms'))
             answer={'answer_format':'json_rows','answer':core.get('answer_rows') if child['success'] else None}
+            scope={k:core[k] for k in ('answer_semantics','approximation') if k in core}
+            answer.update(scope)
+            r.update(scope)
         else:
             profile=FrozenOneShotProfile.load(profile_path,expected_sha256=profile_sha256)
             materialized=profile.materialize();doc,_,_,sources,_,specs,modes=materialized

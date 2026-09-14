@@ -1,3 +1,5 @@
+2026-09-14: [Bounded relationship retrieval](decisions/budgeted_relations_v1.md): optional performance-only native row caps, observed-relation aggregate semantics, immutable estimates, explicit approximation through answer handoff. Nine targeted new risk cases pass; native tiny boundary pending. No new evaluation or baseline changes.
+
 2026-09-13: [源端候选真实组件通过，估计仍缺选择性](report/anchor_source_bind_20260913.md)。
 
 2026-09-13: [Frozen equality-key bounds](decisions/equality_key_bounds_v1.md) connect offline

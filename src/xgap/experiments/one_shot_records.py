@@ -38,6 +38,7 @@ def write_record_outcome(root, core, trace):
     """Answer/metrics handoff only; keep the full trace as a separate pinned file."""
     return write_once(Path(root)/'outcome.json', {'schema_version':OUTCOME_SCHEMA,'trace':trace,
         'success':core['success'],'status':core['status'],'answer_rows':core.get('answer_rows',[]),
+        **{k:core[k] for k in ('answer_semantics','approximation') if k in core},
         'planning_ms':core.get('planning_ms'),'execution_ms':core.get('execution_ms'),
         'interpretation_ms':(core.get('interpretation') or {}).get('elapsed_ms'),
         'grounding_ms':core.get('grounding_ms')})

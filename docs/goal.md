@@ -1,5 +1,24 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 当前工程：performance 关系读取预算已实现，真实 tiny 验收待运行
+
+原group9–10已全部封存；目前不重跑评价题。按用户观察实现可选
+`retrieval_rows_per_relation`：原生关系查询LIMIT B+1，保留B行并记录漏行；
+节点身份/属性完整读取，估计器只缩减返回/后续输入工作，原权重和扫描工作代理不变。
+聚合/排名在观测子关系上执行；full-source exact标志、最终answer和紧凑handoff明确
+保留近似范围。显式完整结果要求在模型/数据库调用前拒绝预算冲突。旧默认不变。
+
+[设计、Ptime与准确性边界](decisions/budgeted_relations_v1.md)。9个独立新风险案例已通过；
+后续定向重跑只覆盖改动的fixture/handoff/超额返回成本记录。实际SPARQL小图8关系→
+返回3/保留2，COUNT8→2且full-source EM必须仍为0；该门不是论文提速结果。
+真实Neo4j/Fuseki新tiny脚本已离线确认普通估计可用；下一步只运行一次该外部边界，
+复用冻结8节点16边及统计，不load/fit/model/baseline，不重跑旧问题。
+
+precision完整执行保持；其解释/grounding一致性增强仍待实现，两模式新profile尚未
+发布到正式campaign。其后再冻结模式预算并讨论/执行真正的速度—质量评估。
+NL唯一journal下一group11、所有44结果保留；Native fixed20/RDF fixed5不变。
+9月14日10点已恢复，整体Goal active，无未来暂停。以下旧“当前”段为历史。
+
 ## 2026-09-14 10:00 北京时间已恢复执行
 
 用户已明确恢复时间为9月14日上午10点，现在继续工程。旧暂停到期；9月15日恢复

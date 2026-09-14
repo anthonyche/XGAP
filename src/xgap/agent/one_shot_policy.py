@@ -20,6 +20,7 @@ class OneShotPolicy:
     max_binding_bytes: int = 1048576
     quality_penalty_ms: float = 1000.0
     unknown_quality_proxy: float = 0.5
+    retrieval_rows_per_relation: int | None = None
 
     def __post_init__(self):
         if self.mode not in ("precision", "performance"):
@@ -41,6 +42,10 @@ class OneShotPolicy:
                 raise ValueError(f"{name} must be finite and nonnegative")
         if self.unknown_quality_proxy > 1:
             raise ValueError("Unknown quality fallback must lie in [0,1]")
+        if self.retrieval_rows_per_relation is not None:
+            if (self.mode != "performance" or type(self.retrieval_rows_per_relation) is not int
+                    or not 1 <= self.retrieval_rows_per_relation <= 1_000_000):
+                raise ValueError("Relationship retrieval budget requires performance mode and 1..1000000 rows")
 
     @classmethod
     def for_mode(cls, mode):
@@ -50,6 +55,10 @@ class OneShotPolicy:
         return cls(mode=mode)
 
     def to_dict(self):
-        return {"schema_version": "xgap-one-shot-policy-v1", **asdict(self),
+        body = asdict(self)
+        bounded = self.retrieval_rows_per_relation is not None
+        if not bounded:
+            body.pop("retrieval_rows_per_relation")  # Preserve old request/replay identities.
+        return {"schema_version": "xgap-one-shot-policy-v2" if bounded else "xgap-one-shot-policy-v1", **body,
                 "quality_proxy_calibrated": False, "final_plan_executions": 1,
                 "online_profile_calls": 0, "automatic_retries": 0}
