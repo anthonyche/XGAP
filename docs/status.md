@@ -1,5 +1,12 @@
 # XGAP Status
 
+## 最新：真实同会话成本诊断完成，下一项消除计划内重复读取
+
+[六次固定小图测量](report/practical_cost_diagnostic_20260914.md)均4行gold正确。
+第二序列coordinator145ms、fanout169ms、progressive174ms，分别返回74/62/51源行；
+均14调用。冻结排序在这一例正确；数据更少未带来更短延迟。84源调用、0模型/fit/baseline，
+服务全部terminal。不调估计器，不重复测量；下一门是观察到的3对相同完整源读取共享。
+
 ## 最新：strong 两模式配置、普通请求记录与严格失败回放已通
 
 [2026-09-14报告](report/practical_profile_20260914.md)：14项新案例+2项受影响案例通过，

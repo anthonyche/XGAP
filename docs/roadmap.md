@@ -1,5 +1,9 @@
 # XGAP Roadmap
 
+2026-09-14最新：[同会话小图成本诊断](report/practical_cost_diagnostic_20260914.md)已完成。
+第二序列145/169/174ms，冻结排序在此例一致，六次均gold正确。下一门从已观察到的
+3对相同完整artifact出发，做新strong profile的计划内精确源读取共享；不继续调分数。
+
 2026-09-14最新：[冻结模式与普通记录入口](report/practical_profile_20260914.md)通过
 14项新检查+2项受影响检查及CLI发布/v2严格回放。旧真实提议和native响应零网络复现；
 完整失败原因与未完成调用也有边界。统一开发配置已通，论文release与模式优势仍未证明。

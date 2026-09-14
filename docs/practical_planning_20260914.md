@@ -69,7 +69,9 @@ d(Q_tilde,Q_star) 由用户下一理论阶段推进。当前不自行定义替�
 统一开发配置与普通请求记录入口现已通过14项新检查+2项受影响检查，支持发布、预检、
 单次执行与严格成功/失败回放；见[配置报告](report/practical_profile_20260914.md)。
 旧权重不变，tiny统计离线更新；0新网络，不等于论文模式release或新native结果。
-当前接续：先从已保存轨迹诊断实际成本和冻结估计排序，再做最小必要新测量。
+成本/排序的[同会话六步诊断](report/practical_cost_diagnostic_20260914.md)已完成：三计划均
+正确，第二序列coordinator145ms、fanout169ms、progressive174ms，冻结排序在本例一致。
+下一步消除已观察到的相同快照/完整artifact重复源读取，先保护各消费者语义；不调估计分数。
 动作顺序与费用按[新契约](decisions/acquisition_order_v1.md)分开；
 未知费用保持null，不为展示LLM链路假设昂贵澄清。9月15日02:00收尾总结，10:00恢复。
 
