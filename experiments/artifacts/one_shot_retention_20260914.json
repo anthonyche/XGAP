@@ -1,0 +1,20 @@
+{
+  "schema_version": "xgap-retention-gate-v1",
+  "offline_new_cases_passed": 12,
+  "affected_cost_case_passed": 1,
+  "historical_replay_compatibility": "v1 record rejected under v2; not a current successful replay",
+  "tiny_fanout": {
+    "answer_rows": 6,
+    "source_calls_each": 8,
+    "full_trace_bytes": 48788,
+    "compact_trace_bytes": 18412,
+    "full_final_registered_rows": 255,
+    "compact_final_registered_rows": 6,
+    "compact_peak_registered_rows": 48,
+    "compact_peak_registered_output_bytes": 6576,
+    "released_nodes": 48
+  },
+  "native_acceptance": "pending",
+  "full_data_acceptance": "pending",
+  "paper_result": false
+}

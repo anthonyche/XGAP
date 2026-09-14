@@ -199,7 +199,8 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
     execute_at = time.perf_counter()
     report["final_plan_executions"] = 1
     try:
-        result = FederatedExecutionTool(FederatedScheduler(BackendInvokeTool(registry))).invoke(
+        report["runtime_retention_profile"] = "roots-and-node-metrics-v1"
+        result = FederatedExecutionTool(FederatedScheduler(BackendInvokeTool(registry), retention="roots")).invoke(
             {"plan": selected.plan.to_dict()}, ToolContext("one-shot:" + selected.plan.plan_id, 1, "final"))
         report.update(execution=result.to_dict(), backend_remote_calls=int(result.metrics.get("remote_calls", 0)),
                       success=result.status is ToolStatus.SUCCESS, error=result.error)

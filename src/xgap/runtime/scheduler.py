@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import math
 import time
+from collections import Counter
+from dataclasses import replace
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal, InvalidOperation
 from functools import cmp_to_key
@@ -41,8 +43,11 @@ def _deduplicate(rows: Iterable[Mapping[str, Any]]) -> tuple[JsonRow, ...]:
 class FederatedScheduler:
     """Execute independent remote nodes in parallel and local nodes deterministically."""
 
-    def __init__(self, backend_tool: BackendInvokeTool):
+    def __init__(self, backend_tool: BackendInvokeTool, *, retention: str = "all"):
+        if retention not in ("all", "roots"):
+            raise RuntimePlanError("Unknown runtime retention mode")
         self._backend_tool = backend_tool
+        self._retention = retention
 
     def execute(
         self,
@@ -57,8 +62,35 @@ class FederatedScheduler:
             initial_results = {}
         if not isinstance(initial_results, Mapping):
             raise RuntimePlanError("initial runtime results must be a mapping")
+        if self._retention == "roots" and initial_results:
+            raise RuntimePlanError("Root-only one-shot retention does not accept a resumable prefix")
         results = self._validate_initial_results(nodes, initial_results)
         pending = set(nodes) - set(results)
+        remaining = Counter(i for node_id in pending for i in nodes[node_id].inputs)
+        roots = set(plan.roots)
+        retained_rows = sum(r.row_count for r in results.values())
+        retained_bytes = sum(r.output_bytes for r in results.values())
+        peak_rows, peak_bytes, released = retained_rows, retained_bytes, 0
+
+        def release(node_id):
+            nonlocal retained_rows, retained_bytes, released
+            result = results.get(node_id)
+            if (self._retention == "roots" and node_id not in roots and remaining[node_id] == 0
+                    and result is not None and result.rows is not None):
+                retained_rows -= result.row_count; retained_bytes -= result.output_bytes
+                results[node_id] = replace(result, rows=None, released_row_count=result.row_count)
+                released += 1
+
+        def completed(node_id, result):
+            nonlocal retained_rows, retained_bytes, peak_rows, peak_bytes
+            results[node_id] = result
+            pending.remove(node_id)
+            retained_rows += result.row_count; retained_bytes += result.output_bytes
+            peak_rows = max(peak_rows, retained_rows); peak_bytes = max(peak_bytes, retained_bytes)
+            for input_id in nodes[node_id].inputs:
+                remaining[input_id] -= 1
+                release(input_id)
+            release(node_id)
 
         while pending:
             while True:
@@ -75,13 +107,12 @@ class FederatedScheduler:
                     break
                 for node_id in skipped:
                     node = nodes[node_id]
-                    results[node_id] = RuntimeNodeResult(
+                    completed(node_id, RuntimeNodeResult(
                         node_id=node_id,
                         kind=node.kind,
                         status=RuntimeNodeStatus.SKIPPED,
                         error="dependency did not complete successfully",
-                    )
-                    pending.remove(node_id)
+                    ))
 
             if not pending:
                 break
@@ -119,11 +150,12 @@ class FederatedScheduler:
                         for node in remote
                     }
                     for node_id in sorted(future_by_id):
-                        results[node_id] = future_by_id[node_id].result()
-                        pending.remove(node_id)
+                        completed(node_id, future_by_id[node_id].result())
+                # Completed futures also hold payload references; do not retain
+                # the entire previous remote batch through later local work.
+                future_by_id.clear()
             for node in local:
-                results[node.node_id] = self._execute_local(node, results)
-                pending.remove(node.node_id)
+                completed(node.node_id, self._execute_local(node, results))
 
         root_rows = {
             root: results[root].rows
@@ -138,6 +170,11 @@ class FederatedScheduler:
             root_rows=root_rows,
             node_results=ordered_results,
             elapsed_ms=(time.perf_counter() - started) * 1000,
+            retention=({"profile": "roots-and-node-metrics-v1", "released_nodes": released,
+                "peak_registered_rows": peak_rows, "final_registered_rows": retained_rows,
+                "peak_registered_output_bytes": peak_bytes, "final_registered_output_bytes": retained_bytes,
+                "measurement_scope": "registered result payloads only; aliases may double-count; in-flight/temporary buffers and RSS excluded",
+                "final_rows_truncated": False} if self._retention == "roots" else {}),
         )
 
     @staticmethod
@@ -164,6 +201,8 @@ class FederatedScheduler:
                 raise RuntimePlanError(
                     f"initial result for '{key}' must be successful"
                 )
+            if result.rows is None:
+                raise RuntimePlanError("Released payloads cannot seed a resumable prefix")
             results[key] = result
         for node_id in results:
             missing = [
@@ -195,6 +234,8 @@ class FederatedScheduler:
         prepared_artifact = dict(artifact)
         if node.kind is RuntimeNodeKind.REMOTE_BIND_QUERY:
             input_rows = results[node.inputs[0]].rows
+            if input_rows is None:
+                raise RuntimePlanError("Binding input was released before consumption")
             input_bytes = _encoded_size(input_rows)
             try:
                 prepared_artifact, binding_count = self._bind_artifact(
@@ -342,6 +383,8 @@ class FederatedScheduler:
     ) -> RuntimeNodeResult:
         started = time.perf_counter()
         inputs = [results[input_id].rows for input_id in node.inputs]
+        if any(rows is None for rows in inputs):
+            raise RuntimePlanError("Local input was released before consumption")
         input_bytes = sum(_encoded_size(rows) for rows in inputs)
         try:
             if node.kind is RuntimeNodeKind.ALIGN:

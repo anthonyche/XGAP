@@ -212,7 +212,7 @@ class RuntimeNodeResult:
     node_id: str
     kind: RuntimeNodeKind
     status: RuntimeNodeStatus
-    rows: tuple[JsonRow, ...] = ()
+    rows: tuple[JsonRow, ...] | None = ()
     elapsed_ms: float = 0.0
     input_bytes: int = 0
     output_bytes: int = 0
@@ -220,17 +220,27 @@ class RuntimeNodeResult:
     remote_calls: int = 0
     error: str | None = None
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    released_row_count: int | None = None
+
+    def __post_init__(self):
+        if self.rows is None:
+            if type(self.released_row_count) is not int or self.released_row_count < 0:
+                raise RuntimePlanError("Released node payload requires its observed row count")
+        elif self.released_row_count is not None:
+            raise RuntimePlanError("Retained node payload cannot have a released row count")
 
     @property
     def row_count(self) -> int:
-        return len(self.rows)
+        return self.released_row_count if self.rows is None else len(self.rows)
 
     def to_dict(self) -> JsonMap:
         return {
             "node_id": self.node_id,
             "kind": self.kind.value,
             "status": self.status.value,
-            "rows": [dict(row) for row in self.rows],
+            "rows": None if self.rows is None else [dict(row) for row in self.rows],
+            **({"rows_retained": False, "payload_status": "released_after_last_consumer"}
+               if self.rows is None else {}),
             "row_count": self.row_count,
             "elapsed_ms": self.elapsed_ms,
             "input_bytes": self.input_bytes,
@@ -249,6 +259,7 @@ class FederatedRunResult:
     root_rows: Mapping[str, tuple[JsonRow, ...]]
     node_results: tuple[RuntimeNodeResult, ...]
     elapsed_ms: float
+    retention: Mapping[str, Any] = field(default_factory=dict)
 
     @property
     def total_remote_calls(self) -> int:
@@ -278,4 +289,5 @@ class FederatedRunResult:
             "elapsed_ms": self.elapsed_ms,
             "total_remote_calls": self.total_remote_calls,
             "total_bytes_moved": self.total_bytes_moved,
+            **({"retention": dict(self.retention)} if self.retention else {}),
         }

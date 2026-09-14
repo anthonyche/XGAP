@@ -20,6 +20,7 @@ from xgap.semantic.interpretation_replay import ReplayInterpretationProvider
 RUN_SCHEMA = "xgap-one-shot-evaluation-record-v1"
 REPLAY_SCHEMA = "xgap-one-shot-complete-replay-v1"
 OUTCOME_SCHEMA = "xgap-one-shot-outcome-v1"
+MAX_CAPTURE_REPLAY_BYTES = 512 * 1024 * 1024
 
 
 def write_once(path, value):
@@ -65,19 +66,36 @@ class BackendReplay:
         record = self.records[self.position]
         if _canonical(artifact.to_dict()) != _canonical(record["artifact"]):
             raise ValueError("Backend replay artifact differs; another plan's rows cannot be reused")
-        self.position += 1
-        original = ExecutionReport.from_dict(record["execution"])
+        if "response_record" in record:
+            pin = record["response_record"]
+            size = pin.get("bytes")
+            if type(size) is not int or not 0 < size <= MAX_CAPTURE_REPLAY_BYTES:
+                raise ValueError("Backend replay capture size exceeds its offline bound")
+            with Path(pin["path"]).open("rb") as handle:
+                data = handle.read(size + 1)
+            if len(data) != size or hashlib.sha256(data).hexdigest() != pin["sha256"]:
+                raise ValueError("Backend replay capture size/hash mismatch")
+            captured = json.loads(data)
+            if (record.get("status") != "returned" or captured.get("status") != "returned"
+                    or captured.get("backend_id") != self.backend_id
+                    or _canonical(captured.get("artifact")) != _canonical(record["artifact"])):
+                raise ValueError("Backend replay capture identity mismatch")
+            original = ExecutionReport.from_dict(captured["execution"])
+        else:
+            original = ExecutionReport.from_dict(record["execution"])
         if original.backend_id != self.backend_id or original.artifact_id != artifact.artifact_id:
             raise ValueError("Backend replay response identity mismatch")
+        self.position += 1
         # Historical timing is retained as provenance, not this run's measurement.
         return replace(original, elapsed_ms=0.0, metadata={"execution_kind":"offline_replay",
             "historical_elapsed_ms":original.elapsed_ms, "network_calls":0})
 
 
 class CapturingClient:
-    def __init__(self, client, root, records, lock):
+    def __init__(self, client, root, records, lock, *, retain_payloads=True):
         self.client, self.backend_id, self.root = client, client.backend_id, root
         self.records, self.lock = records, lock
+        self.retain_payloads = retain_payloads
 
     def execute(self, artifact):
         with self.lock:
@@ -87,8 +105,13 @@ class CapturingClient:
         write_once(self.root/f"backend-{index:04}-intent.json", record)
         try:
             result = self.client.execute(artifact)
-            record.update(status="returned", execution=result.to_dict())
-            write_once(self.root/f"backend-{index:04}-result.json", record)
+            complete = {**record, "status":"returned", "execution":result.to_dict()}
+            pin = write_once(self.root/f"backend-{index:04}-result.json", complete)
+            if self.retain_payloads:
+                record.update(complete)
+            else:
+                record.update(status="returned", response_record=pin,
+                    row_count=len(result.rows), payload_status="durable_capture_only")
             return result
         except BaseException:
             record.update(status="indeterminate", error="Backend call or durable recording failed")
@@ -106,6 +129,8 @@ def replay_from_saved_result(interpretation, result):
         if node["kind"] != "remote_query" or node["node_id"] not in outcomes:
             continue
         outcome = outcomes[node["node_id"]]
+        if outcome.get("rows") is None:
+            raise ValueError("Released native rows require the original captured backend ledger")
         artifact = QueryArtifact.from_dict(node["parameters"]["artifact"])
         backend = node["parameters"]["backend_id"]
         execution = ExecutionReport(backend, artifact.artifact_id, artifact.language,
@@ -175,7 +200,8 @@ def run_record(*, profile_path, profile_sha256, request_path, request_sha256, mo
         # Live config must remain visible to the core wire-cap admission.
         recorder.config = getattr(provider, "config", None)
         lock = threading.Lock()
-        clients = {b:CapturingClient(c,root,captured,lock) for b,c in clients.items()}
+        clients = {b:CapturingClient(c,root,captured,lock,retain_payloads=False) for b,c in clients.items()}
+        receipt["backend_capture_profile"] = "pinned-responses-v1"
         receipt["preparation_ms"] = (time.perf_counter()-started)*1000
         write_once(root/"intent.json", {"operation":operation,"profile_sha256":profile.sha256,
             "request_sha256":request_sha256,"maximum_final_executions":1,"automatic_retries":0})
