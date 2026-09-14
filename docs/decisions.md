@@ -1,3 +1,5 @@
+2026-09-14: [Refined mode native evidence and progressive-binding next gate](report/refined_modes_20260914.md). Two real NL requests succeed, each one model/one final plan; both choose complete coordinator so no budget-speedup claim. Twelve new risk cases pass. Formal campaign release remains pending; next implement one bounded progressive-binding candidate.
+
 2026-09-14: [Anchor-aware retrieval scope](decisions/anchor_budget_scope_v1.md): preserve unbound reads until mandatory anchor bindings exist; four new tiny checks pass, equivalence metadata aligned. Refined mode publisher/preflight passes; two new real-NL native requests pending.
 
 2026-09-14: [Precision local evidence and proxy-quality band](decisions/precision_evidence_v1.md): seven independent tiny cases pass, with actual corrected bindings/answers and one final plan. Real model effectiveness and formal mode release remain pending.

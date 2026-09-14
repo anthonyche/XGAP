@@ -1,19 +1,25 @@
 # XGAP Roadmap
 
-## 当前执行：两模式新控制已通过小图，下一门为两次真实NL请求
+## 当前里程碑：两模式新控制与真实NL入口已通；下一瓶颈是后续跳完整关系读取
 
-precision规范名称证据/质量band的7项新检查通过；performance新增anchor后绑定预算
-的4项检查通过；冻结profile发布/两模式零调用preflight通过1项，另跑1项受影响估计检查。
-详见[precision设计](decisions/precision_evidence_v1.md)和[anchor预算范围及边界](decisions/anchor_budget_scope_v1.md)。
-Late-anchor真实小图source rows54→33、5/5答案，普通估计选anchor_fanout_bind、一次计划。
-高扇出另一例54→39、3/6答案；保留漏答，不改full gold。不宣称native/大数据提速。
-预算candidate和runtime plan中的等价key现已一致；旧元数据证据保留对应旧commit。
+[最新结果与下一工程门](report/refined_modes_20260914.md)。84b222e/aa86c79接通
+precision规范名称证据与质量band、performance起点绑定后的预算、冻结模式发布。
+12个新小图/配置案例及1个受影响估计检查通过。受控歧义/成本反例实际改正答案；
+late-anchor源行54→33且5/5正确，另一扇出例54→39且3/6，完整gold/漏答均保留。
 
-已准备唯一新真实NL小图门：冻结8节点16关系，account2问题独立full gold2行；
-precision deficit0.1、performance B2+anchor scope，各最多1模型/1最终计划。
-零数据load/catalog/fit/baseline，无自动retry。先提交后只执行这两次新边界。
-正式campaign profile/参数未发布，baseline前端仍须保留原父配置；NL下一group11不变。
-Goal active、已恢复，无暂停；此前Goal turn均为有代码/实证变化的progress。
+真实新account2 NL小图，两模式均2/2正确，各1模型/1最终计划/14源请求18312B；
+precision5.078s、performance3.920s。但均选coordinator，performance实际预算片段0；
+耗时差受运行顺序/缓存混杂，不能称为预算提速或真实精度提升。2调用4840输入973输出。
+78726和离线投影86720终态，所有源/observer关闭。新profile仅开发，正式campaign未发布。
+
+离线将该新toy结构代入已有全量RDF统计：两模式都估计选fanout777.969ms，performance
+3个可预算片段但4个完整关系片段；零大图执行/拟合。下一项直接影响性能的开发：
+增加一个确定性逐跳传播绑定的候选，使后续关系先受绑定约束再预算。复用合法身份连接，
+不枚举组合，不强制模型选计划；给DAG/精确及近似语义、候选数与Ptime/条件质量bound。
+以小图多跳/扇出/空起点验证新风险，之后冻结论文参数和baseline独立前端路由，再评价。
+NL下一group11、全部44旧结果保留；Native fixed20/RDF fixed5不变。baseline不优化。
+Goal active，9月14日10点已恢复，无暂停。当前Goal turn属于有实现及真实证据的progress。
+以下旧“当前”段为历史。
 
 ## 当前工程：precision 本地证据与质量约束已接通，真实模型效果尚未验证
 
