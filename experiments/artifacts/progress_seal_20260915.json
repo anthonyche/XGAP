@@ -1,0 +1,44 @@
+{
+  "schema_version": "xgap-progress-evidence-seal-v1",
+  "state": "prepared_before_0200_cutoff",
+  "evidence_indexes": [
+    "practical_model_e2e_20260914",
+    "shared_native_reads_20260914",
+    "source_row_prefilters_20260914",
+    "practical_worker_native_20260915"
+  ],
+  "verified_record_pins": {
+    "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/receipt.json": "236f8847419a91ffdc03928547e853bcbfd49b5a8dfed8d4315897ae81926ffb",
+    "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/result.json": "1e496e815ab0c994eb99873a36f3e15db6a7c7821b8b2d284615824194f20373",
+    "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/preflight.json": "ce019a7ce6230a9ed4583c0e63b767ddfda3b6f288fe58bc910469a99ab2e348",
+    "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/input-seal.json": "fc3f6fa85c429ca0e4fa1eca6d46b1b9c4a4e40997d506505e6bd878daaef732",
+    "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/outcome.json": "c52558e2a3ba8d95ca873090b8245dab8dbd9d5f87414dfefbbb104941b7791f",
+    "/Users/anthonyche/xgap-data/practical-model-strong-native-20260914-v1/model-invocation.json": "0a086d0f663cbc4cb71b08adb1ab47d31496c2b923ba7dc1815da24a4272c138",
+    "/Users/anthonyche/xgap-data/shared-native-reads-20260914-v1/receipt.json": "0dd2af47bb72a53d85fd4febbad175c6f8783c5bb7fa55792ee62dc981185e22",
+    "/Users/anthonyche/xgap-data/shared-native-reads-20260914-v1/result.json": "4dc0f5bd33a8652f7e7d835c15e4df223a66f3fca03e3f5f23231055d7e343a8",
+    "/Users/anthonyche/xgap-data/shared-native-reads-20260914-v1/analysis.json": "1d484b4a92aeee20b580fd954ec37227cdf46d9ad82c4637e4ef2d55a8495fc3",
+    "/Users/anthonyche/xgap-data/shared-native-reads-20260914-v1/score.json": "77c0bc03c5633c69be1adb4d4aba8355b247c9500dce0a63893bbc71d355daf2",
+    "/Users/anthonyche/xgap-data/source-row-prefilters-20260914-v1/receipt.json": "5126394e4e21bd9473671b7573ad5c7646f1b6ef63d3a05f923bb770f032d860",
+    "/Users/anthonyche/xgap-data/source-row-prefilters-20260914-v1/result.json": "5264b226e026322e0a9dbd5808d3da258fd4f24700e85935f14ad2b6f0f38c02",
+    "/Users/anthonyche/xgap-data/source-row-prefilters-20260914-v1/analysis.json": "3cd8486c3fc0a98efffca584c9fa420a47ac79ea60433b1ab668f53eebcd58ca",
+    "/Users/anthonyche/xgap-data/source-row-prefilters-20260914-v1/score.json": "77c0bc03c5633c69be1adb4d4aba8355b247c9500dce0a63893bbc71d355daf2",
+    "/Users/anthonyche/xgap-data/necessary-filter-cypher-20260914-v1/receipt.json": "4b4ddb78e33fdedab91b8511686ea017384dcad0de5ebaf3cd3831bb51afbf3f",
+    "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/receipt.json": "778acf9ac9fbea9a390633444291979e1e3c72ac87788f9acb16c23b450d342d",
+    "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/trial/receipt.json": "c7a7dff312915dabb7b6ec543c7ef17881d2592129d0b0a385a5a5a475c60c33",
+    "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/trial/timing.json": "8461b416f94ec95cfbd08cb500bff01f81fbda4e70f35daac60dd23bdf6fb823",
+    "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/trial/worker/core/result.json": "0499787522c3b2c26d84ac2f5eb2bf1e00b493e30cc40641d382401ed6d4b352",
+    "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/score.json": "e52b72eb574dee61da8127da3956e02f1457220a11750583a218464dbd0b6e39"
+  },
+  "verified_historical_code_blobs": {
+    "57ed970005d62b157f05f6204dda072bb4ac9082:src/xgap/agent/strong_planning.py": "f05d19a5b68ffc232f206dc69320bdc7ac10c54d41b476a62371a169e753837b",
+    "57ed970005d62b157f05f6204dda072bb4ac9082:src/xgap/agent/practical_planning.py": "351a973d022b22bd419f923d7d98827212d9ba6b3b4123781b26f324c7c22434",
+    "57ed970005d62b157f05f6204dda072bb4ac9082:src/xgap/agent/practical_tools.py": "6d35c7c8ecc2382e8f02a6027b3d63977b06221933114c8102e7a7a3f8c42c20",
+    "57ed970005d62b157f05f6204dda072bb4ac9082:src/xgap/agent/practical_execution.py": "14bfe8e6ce7c83c4cf1e90369e949fbdf5a62fc4ef5187e64113e75870a9fe8a",
+    "57ed970005d62b157f05f6204dda072bb4ac9082:scripts/check_practical_strong_native.py": "1fb01d31245bfe5cbeab65590314792291ee61042bfa599ea1f976a8e68d7ff3",
+    "57ed970005d62b157f05f6204dda072bb4ac9082:scripts/practical_model_fixture.py": "8b91918f289d692fef2879c22a0ecee1ad26e23a9d85689dbd0fa8c591da2eae",
+    "57ed970005d62b157f05f6204dda072bb4ac9082:tests/test_practical_model_e2e.py": "32a7acf1eae82b92ee3e537d3629cb8af587720d2147fd88c17503880bc69a68",
+    "57ed970005d62b157f05f6204dda072bb4ac9082:datasets/practical_model_toy_v1/manifest.json": "deeca4528c27b378f9bb423c12302c5f57fdcb6663ad48ff3613b2ddacc6f0f3"
+  },
+  "new_source_or_model_calls": 0,
+  "audit_note": "Initial check compared an old code pin to the current edited file; corrected to its recorded git commit. No historical record was changed and no experiment was rerun."
+}
