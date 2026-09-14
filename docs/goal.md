@@ -1,5 +1,20 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
+## 当前工程：precision 本地证据与质量约束已接通，真实模型效果尚未验证
+
+[新设计与条件bound](decisions/precision_evidence_v1.md)：可选canonical-context实体排序
+使用冻结catalog已返回候选的规范名称证据；质量band在有界解释池中约束proxy损失，再选
+预测最快计划。Ptime、不增加调用/组合枚举，不把名称证据或模型confidence当权威/校准概率。
+旧policy默认与序列化保持不变，共享baseline前端未改。
+
+7个新定向案例0.69秒通过：实际小图Alex→Bob绑定使答案从Alice的e4变为正确e2，
+显式年龄/身份硬约束保留；另一个成本反例从便宜但错误的Alice选择改为Bob。
+每请求一受控解释响应、一个实际最终图计划，零真实模型/fit/probe。候选边界、上下文
+词边界、歧义稳定tie、原权威singleton及未知proxy也有明确证据。
+这是机制验收，不是LLM准确率提高或正式mode发布。下一步补相关性保护的performance
+预算，使已有anchor/bind在截断前发挥作用；随后统一冻结模式并做必要新NL小图门。
+大数据group11尚未运行，所有44旧结果/分母保留，baseline不优化。Goal active，无暂停。
+
 ## 当前里程碑已验收：性能模式能在源端限制关系读取，尚未证明明显提速
 
 [最新报告与下一门](report/budgeted_relations_20260914.md)。a3f5f39实现可选

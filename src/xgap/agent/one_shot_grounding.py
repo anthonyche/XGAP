@@ -1,15 +1,17 @@
 """Bounded frozen-artifact grounding without interactive identity resolution.
 
-Each hole receives one prediction in artifact order; candidate combinations are
+Each hole receives one prediction under an explicit local ranking; combinations are
 never materialized. A predicted binding remains explicitly non-authoritative.
 No model, backend, preparation builder, retry or answer reference is consulted.
 """
 
 from dataclasses import replace
+import re
 import time
 
 from xgap.catalog.bundle import FrozenResolutionBundle
 from xgap.semantic.binding import BoundSemanticQuery, bind_semantic_query
+from xgap.semantic import normalize_semantic_mention
 from xgap.semantic.program import SemanticGraphProgram, SemanticHoleKind, SemanticProgramError, hard_constraints_sha256
 from xgap.tools.contracts import ToolContext
 from xgap.tools.resolution import ResolutionCandidateRequest, ResolutionProviderFailure
@@ -23,8 +25,28 @@ class OneShotGroundingError(ValueError):
         self.status, self.trace = status, trace
 
 
+def _contextual_entity_order(candidates, response, mention, question):
+    """Lexical evidence on an already capped pool; never authority or coreference proof."""
+    labels = {m["candidate_id"]: m.get("canonical_label")
+              for m in response.metadata.get("matches", []) if isinstance(m, dict) and "candidate_id" in m}
+    question, mention = normalize_semantic_mention(question), normalize_semantic_mention(mention)
+    evidence = []
+    for index, candidate in enumerate(candidates):
+        raw = labels.get(candidate)
+        label = normalize_semantic_mention(raw) if isinstance(raw, str) and raw.strip() else None
+        exact = label is not None and label == mention
+        contextual = label is not None and re.search(r"(?<!\w)" + re.escape(label) + r"(?!\w)", question) is not None
+        evidence.append({"candidate_id": candidate, "canonical_label": raw,
+            "exact_canonical_mention": exact, "canonical_label_in_question": contextual,
+            "artifact_index": index})
+    evidence.sort(key=lambda row: (-int(row["exact_canonical_mention"]),
+                                  -int(row["canonical_label_in_question"]), row["artifact_index"]))
+    return tuple(row["candidate_id"] for row in evidence), evidence
+
+
 def ground_interpretation(program, operator_sources, bundle, question, *,
-                          max_holes=16, max_candidates_per_hole=64, use_ontology=True):
+                          max_holes=16, max_candidates_per_hole=64, use_ontology=True,
+                          ranking_policy="artifact_entry_order_v1"):
     """Return ``(BoundSemanticQuery, trace)`` or raise OneShotGroundingError.
 
     Catalog matches are visited in frozen artifact order, with an explicit cap.
@@ -70,6 +92,10 @@ def ground_interpretation(program, operator_sources, bundle, question, *,
                 or type(max_candidates_per_hole) is not int or not 1 <= max_candidates_per_hole <= 256
                 or type(use_ontology) is not bool):
             raise ValueError("Grounding requires bounded integer hole/candidate limits and boolean ontology policy")
+        if ranking_policy not in ("artifact_entry_order_v1", "canonical_context_v1"):
+            raise ValueError("Unknown grounding ranking policy")
+        if ranking_policy != "artifact_entry_order_v1":
+            trace.update(schema_version="xgap-one-shot-grounding-v2", ranking_policy=ranking_policy)
         if len(program.holes) > max_holes:
             raise ValueError("Semantic program exceeds its grounding hole budget")
         trace.update(resolution_bundle=bundle.identity, max_holes=max_holes,
@@ -87,6 +113,9 @@ def ground_interpretation(program, operator_sources, bundle, question, *,
                 response = lookup("ontology", bundle.ontology, request, context)
                 source_kind = "ontology"
             candidates = response.candidate_ids
+            evidence = None
+            if ranking_policy == "canonical_context_v1" and hole.kind is SemanticHoleKind.ENTITY:
+                candidates, evidence = _contextual_entity_order(candidates, response, hole.mention, question)
             record = {"hole_id": hole.hole_id, "hole_kind": hole.kind.value,
                 "mention": hole.mention, "candidate_ids": list(candidates),
                 "selected_candidate_id": candidates[0] if candidates else None,
@@ -94,6 +123,9 @@ def ground_interpretation(program, operator_sources, bundle, question, *,
                 "source_kind": source_kind, "truncated": response.metadata.get("candidate_set_truncated", False),
                 "ignored_program_candidates": list(hole.candidates),
                 "selection_policy": "artifact_authoritative_singleton" if response.authoritative else "predicted_catalog_choice"}
+            if evidence is not None:
+                record.update(ranking_evidence=evidence, ranking_policy=ranking_policy,
+                    original_candidate_ids=list(response.candidate_ids), evidence_is_authority=False)
             trace["candidate_sets"].append(record)
             if not candidates:
                 record["status"] = "unresolved"
@@ -104,7 +136,8 @@ def ground_interpretation(program, operator_sources, bundle, question, *,
             if record["truncated"]:
                 trace["approximation_reasons"].append({"hole_id": hole.hole_id, "reason": "candidate_pool_truncated"})
             if len(candidates) > 1 or record["truncated"]:
-                trace["approximation_reasons"].append({"hole_id": hole.hole_id, "reason": "ambiguous_artifact_order_choice"})
+                trace["approximation_reasons"].append({"hole_id": hole.hole_id,
+                    "reason": "ambiguous_contextual_prediction" if evidence is not None else "ambiguous_artifact_order_choice"})
             if hole.kind is SemanticHoleKind.ENTITY and not response.authoritative:
                 trace["approximation_reasons"].append({"hole_id": hole.hole_id, "reason": "non_authoritative_entity_prediction"})
         selected = [{"hole_id": item["hole_id"], "candidate_ids": [item["selected_candidate_id"]],

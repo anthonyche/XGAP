@@ -10,6 +10,7 @@ import time
 
 from xgap.agent.one_shot_grounding import ground_interpretation
 from xgap.agent.one_shot_policy import OneShotPolicy
+from xgap.agent.quality_band import quality_band
 from xgap.catalog.bundle import FrozenResolutionBundle
 from xgap.compilers.errors import CompilerError
 from xgap.planning.runtime_estimator import FrozenRuntimeEstimator
@@ -136,7 +137,8 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
                 raise ValueError("Interpretation exceeds the supported operator bound")
             bound, trace = ground_interpretation(program, interpretation["operator_sources"],
                 bundle, request.question, max_holes=policy.max_holes,
-                max_candidates_per_hole=policy.max_candidates_per_hole, use_ontology=policy.use_ontology)
+                max_candidates_per_hole=policy.max_candidates_per_hole, use_ontology=policy.use_ontology,
+                ranking_policy=policy.grounding_ranking)
             detail["grounding"] = trace
             detail["bound_program"] = bound.program.to_dict()
             detail["bindings"] = dict(bound.bindings)
@@ -180,7 +182,8 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
                 "plan_id": best.plan.plan_id, "estimated_ms": cost, "quality_proxy": quality,
                 "ranking_quality_proxy": proxy, "quality_fallback_used": quality is None,
                 "quality_proxy_calibrated": False,
-                "objective_ms": cost + policy.quality_penalty_ms * (1 - proxy)}
+                "objective_ms": cost if policy.max_quality_deficit is not None else
+                    cost + policy.quality_penalty_ms * (1 - proxy)}
             detail.update(status="planned", estimated_best=winner)
             winners.append(winner)
             choices[candidate_id] = (best, detail, best_record)
@@ -192,13 +195,21 @@ def run_one_shot_question(request, provider, *, policy: OneShotPolicy,
         report.update(status="no_executable_interpretation", error="No interpretation has a grounded estimated plan")
         return finish()
     decision_at = time.perf_counter()
-    winner = min(winners, key=lambda item: (item["objective_ms"], item["estimated_ms"], item["candidate_id"]))
+    band = None
+    if policy.max_quality_deficit is not None:
+        eligible, band = quality_band(winners, policy.max_quality_deficit)
+        winner = min(eligible, key=lambda item: (item["estimated_ms"], -item["ranking_quality_proxy"], item["candidate_id"]))
+    else:
+        winner = min(winners, key=lambda item: (item["objective_ms"], item["estimated_ms"], item["candidate_id"]))
     selected, detail, _ = choices[winner["candidate_id"]]
     report["selection"] = {**winner, "interpretation_options": winners,
         "proxy_frontier": _frontier(winners), "frontier_is_actual_quality": False,
         "algorithm": "estimated_argmin_per_interpretation_then_quality_cost_argmin_v1",
         "optimality_scope": "estimated compatible admitted neighborhood; no global physical or answer guarantee",
         "selection_uses_execution_observations": False}
+    if band is not None:
+        report["selection"].update(algorithm="estimated_argmin_within_proxy_quality_band_v1", quality_band=band,
+            optimality_scope=band["scope"], objective="estimated_execution_ms_within_proxy_quality_band")
     report["selected_plan"] = selected.plan.to_dict()
     report["selected_grounding"] = detail["grounding"]
     report["planning_ms"] += (time.perf_counter() - decision_at) * 1000
