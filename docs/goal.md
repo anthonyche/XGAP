@@ -1,6 +1,16 @@
 # XGAP Active Goal — Research-directed, Toy-first Development
 
-## 2026-09-14 当前授权：恢复工程，有限深 AND/OR strong plan 优先
+## 2026-09-14 当前授权：P-S2 已验收，进入 P-S3；应用 Goal active
+
+用户再次明确要求更新 paused Goal 并迭代执行。最初应用 Goal 为 paused，工具无法
+直接恢复；用户后续授权后再次读取返回无 Goal，随后已按当前目标创建新 Goal，工具
+确认 `active`。未复制旧自动化或虚报旧目标完成。项目总体未完成。
+
+本轮 P-S2 已完成：连接冻结 catalog 与有界可选模型 provider，保留 unavailable/error 分支、
+权威来源、版本及实际资源；复用静态能力/编译准入；验证新 strong 入口的真实
+Neo4j+Fuseki 小图闭环。只改该入口、信息适配器、定向检查、tiny harness 和相关说明。
+不改 baseline、不跑大数据或消融、不自行定义 discrepancy。下一步做逐跳绑定；
+核心一致接通后讨论并冻结正式实验计划。验收证据与未完成项分开记录。
 
 用户已批准 practical planning 方案及审阅建议，明确要求在有限深 AND/OR tree 中寻找
 可行的优良 strong solution subgraph，优先出 plan 和实际表现，不 claim 全局最优。
@@ -15,9 +25,13 @@
 统一依据：[中文规划与里程碑](practical_planning_20260914.md)、
 [算法/语义/复杂度契约](decisions/practical_strong_planning_v1.md)、
 [本轮实现证据](report/practical_strong_planning_20260914.md)。
-P-S1 已实现并通过22项新小图检查及3项受影响旧入口检查；新 strong profile 的真实
-Neo4j+Fuseki/开放NL、统一信息工具适配、逐跳绑定与正式评价仍待完成。
-先做 P-S2 的 provider/真实tiny闭环，再推进共享执行优化；度量待定不阻塞这些工作。
+P-S1 已实现并通过22项新小图检查及3项受影响旧入口检查；开放NL结构验证、
+逐跳绑定、discrepancy理论与正式评价仍待完成。
+P-S2 新增14项检查与3项受影响检查通过；真实5节点8边、1模板NL请求、1catalog动作、
+1最终计划、Neo4j/Fuseki各1请求，返回预先编写的1条gold，服务已关闭。
+见[信息工具与真实小图报告](report/practical_information_native_20260914.md)。
+新模型动作已通过真实provider代码+受控transport，尚非该新profile的live LLM证据。
+进入 P-S3 共享执行优化；度量待定不阻塞这些工作。
 研发只用 toy/replay；维持原18图及 FinBench/RDF/FedShop 优先级，大规模评价后置。
 项目总体目标未完成。下文均为保留的历史状态，不作为当前执行指令。
 

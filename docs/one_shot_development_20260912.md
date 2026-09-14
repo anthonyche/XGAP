@@ -9,8 +9,9 @@ stage. [Current plan](practical_planning_20260914.md),
 [contract](decisions/practical_strong_planning_v1.md),
 [evidence](report/practical_strong_planning_20260914.md) supersede conflicting
 pause/next-action instructions below. Old one-shot profiles/results remain versioned.
-P-S1 passes its local gate; provider integration, new native evidence, execution
-improvement and formal evaluation remain. No fresh large campaign is started.
+P-S1 passes its local gate; [P-S2](report/practical_information_native_20260914.md)
+passes bounded provider integration and a real native tiny query. Live model
+actions, execution improvement and formal evaluation remain. No fresh large campaign is started.
 
 
 ## 2026-09-14 用户要求：当前里程碑完成后暂停，等待新的理论进展

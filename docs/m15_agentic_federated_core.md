@@ -3,8 +3,9 @@
 > Current direction (2026-09-14): [finite-depth strong planning](decisions/practical_strong_planning_v1.md).
 > [P-S1](report/practical_strong_planning_20260914.md) now reuses GoalLoop, typed
 > binding, polynomial local placement and one final federated execution. New
-> catalog/model action adapters and live native validation remain P-S2 work;
-> historical native results below do not establish the new policy's whole chain.
+> [P-S2](report/practical_information_native_20260914.md) adds catalog/model action
+> adapters and one real native tiny query; model actions use controlled transport
+> in this gate. Historical results below retain their original policy/version.
 
 
 Current checkout, active observations and next engineering actions are in

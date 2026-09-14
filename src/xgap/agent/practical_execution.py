@@ -1,5 +1,5 @@
 """Follow one realized branch of a precomputed strong policy via GoalLoop."""
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
 import time
@@ -8,6 +8,7 @@ from xgap.agent.contracts import AgentDecision, GoalSpec, GoalStatus, PlannedToo
 from xgap.agent.environment import AgentEnvironment
 from xgap.agent.loop import GoalLoop
 from xgap.agent.practical_planning import PracticalSemanticDomain
+from xgap.agent.practical_tools import lookup_practical_capabilities
 from xgap.agent.strong_planning import ResourceUsage, StrongSearchLimits, search_strong_policy
 from xgap.runtime.contracts import FederatedExecutionPlan
 from xgap.runtime.scheduler import FederatedScheduler
@@ -142,11 +143,8 @@ def run_practical_semantic_query(program, *, initial_state, resolution_tools=Non
     domain_options["actions"] = tuple(a for a in declared if a.tool_name in available)
     # A known missing adapter is a planning capability restriction, not a
     # post-selection reason to discard a plan when another replica is usable.
-    admitted_sources = {}
-    for source_id, source in domain_options['sources'].items():
-        replicas = tuple(b for b in source.replica_backend_ids if b in backend_clients)
-        if replicas:
-            admitted_sources[source_id] = replace(source, replica_backend_ids=replicas)
+    admitted_sources, capabilities = lookup_practical_capabilities(
+        domain_options['sources'], domain_options['backends'], backend_clients)
     domain_options['sources'] = admitted_sources
     domain = PracticalSemanticDomain(program, **domain_options)
     domain.validate_state(initial_state)
@@ -154,6 +152,7 @@ def run_practical_semantic_query(program, *, initial_state, resolution_tools=Non
     report = {"schema_version": "xgap-practical-answer-v1", "success": False, "mode": domain.mode.mode,
         "search": search.to_dict(), "answer_rows": None, "final_plan_executions": 0,
         "backend_remote_calls": 0, "model_calls": 0, "tokens": 0, "clarification_calls": 0,
+        "acquisition_remote_calls": 0, "acquisition_ms": 0, "capability_lookup": capabilities,
         "missing_acquisition_tools": missing, "planning_failures": domain.failures,
         "compiled_states": domain.compiled_states, "estimator_calls": domain.estimator_calls,
         "semantic_discrepancy_upper_bound": None, "discrepancy_status": "metric_deferred",
@@ -196,12 +195,14 @@ def run_practical_semantic_query(program, *, initial_state, resolution_tools=Non
             action_id = observation.payload['call_id'].split(':', 1)[1]
             spec = next(a for a in domain.action_specs if a.action_id == action_id)
             report['clarification_calls'] += int(spec.authority == 'clarification')
-            for key in ("model_calls", "tokens"):
+            report['acquisition_ms'] += metrics.get('elapsed_ms', 0)
+            for key in ("model_calls", "tokens", "remote_calls"):
+                reported = 'acquisition_remote_calls' if key == 'remote_calls' else key
                 if key not in metrics and getattr(spec.resources, key):
-                    report[key] = None
+                    report[reported] = None
                     report['actual_acquisition_usage_complete'] = False
-                elif report[key] is not None:
-                    report[key] += metrics.get(key, 0)
+                elif report[reported] is not None:
+                    report[reported] += metrics.get(key, 0)
     report.update(success=state.status is GoalStatus.SUCCEEDED, status=state.status.value,
         execution_state=state.to_dict(), resource_reservation_used=asdict(follower.usage),
         end_to_end_ms=(time.perf_counter() - started) * 1000)

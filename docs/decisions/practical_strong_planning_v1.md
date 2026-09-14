@@ -11,6 +11,34 @@ This decision supersedes conflicting next actions in the historical one-shot,
 precision/proxy-band, retrieval-budget, pause and acquisition-search notes. It
 does not relabel or rescore any old experiment. Current implementation and evidence:
 [milestone report](../report/practical_strong_planning_20260914.md).
+P-S2 follow-up: [information adapters and native tiny evidence](../report/practical_information_native_20260914.md).
+
+### P-S2 provider contract
+
+Catalog acquisition requires pinned artifact provenance, a complete singleton
+entity match and the existing provider's authoritative flag. A schema singleton
+alone does not validate intent. Model proposals are bounded non-entity candidate
+IDs with no authority. Empty/multiple/incomplete or non-authoritative catalog
+responses lead to `unavailable`; malformed/version-mismatched/provider failures
+lead to `error`. Both are declared AND outcomes; search cannot silently drop them.
+Without feasible continuations, EXACT may correctly return no feasible plan.
+Remote failures never trigger a hidden retry; a different action may run only
+when it was already part of the returned strong policy's declared continuation.
+
+The OpenAI adapter reuses the existing one-call/no-repair provider and pins its
+safe configuration plus actual prompt hash. Tokens omitted by a paid provider
+remain unknown, while reservations are separately recorded. Reservations are
+checked against reported usage; no hard token certificate is claimed without
+provider-side preflight. Provider input/output candidate caps share the existing
+request contract; a multi-candidate output is unavailable, never first-item authority.
+
+Capability lookup is local configuration admission with a hashed view of source
+versions, backend adapters and languages. Per-operator capability validation
+remains in the actual compiler. The view is neither live health nor a semantic
+authority nor a hash of the entire backend executable/configuration.
+The native tiny gate uses a trusted NL template, frozen catalog and a controlled
+clarification continuation. Strongness covers declared outcomes, not all possible
+file/server failures. The new profile's live model action remains unverified.
 
 ## Research question and evaluation boundary
 

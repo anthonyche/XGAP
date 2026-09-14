@@ -1,3 +1,5 @@
+2026-09-14: [P-S2 information/native gate](report/practical_information_native_20260914.md) passed: explicit catalog/model failure outcomes, pinned provenance, actual/unknown usage, local capability admission, one two-engine native toy query. Live model action and performance claims remain unverified. Application Goal active; next P-S3 progressive binding.
+
 2026-09-14: User approved [practical strong planning](decisions/practical_strong_planning_v1.md): finite-depth AND/OR strong policies, feasible-first bounded improvement, no global optimality, discrepancy deferred to user theory. [Current plan](practical_planning_20260914.md) and [P-S1 implementation/evidence](report/practical_strong_planning_20260914.md) supersede conflicting historical next actions; old results remain unchanged.
 
 2026-09-14: [Refined mode native evidence and progressive-binding next gate](report/refined_modes_20260914.md). Two real NL requests succeed, each one model/one final plan; both choose complete coordinator so no budget-speedup claim. Twelve new risk cases pass. Formal campaign release remains pending; next implement one bounded progressive-binding candidate.

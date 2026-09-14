@@ -1,6 +1,15 @@
 # XGAP Status
 
-## 2026-09-14 当前状态：P-S1 strong-policy 核心与普通模板入口已接通
+## 2026-09-14 当前状态：P-S2 信息动作与新 strong 真实双后端小图已通
+
+[P-S2 报告](report/practical_information_native_20260914.md)：14项新检查及3项受影响检查
+通过，真实5节点8边模板NL请求取得预先编写的1条gold；1 catalog动作、1最终计划、
+Neo4j/Fuseki各1请求，服务全部关闭。首个preflight配置失败保留，未启动服务/查询。
+新模型适配器已验证既有OpenAI provider代码与受控transport，尚无live模型动作证据。
+应用 Goal 已以当前目标创建为active，继续P-S3逐跳绑定；无新大规模评价或baseline改动。
+以下P-S1及更早状态按各自版本保留。
+
+## P-S1：strong-policy 核心与普通模板入口已接通
 
 用户已明确恢复并批准新方向，旧暂停已被本轮授权覆盖。
 [统一规划](practical_planning_20260914.md)与[本轮报告](report/practical_strong_planning_20260914.md)

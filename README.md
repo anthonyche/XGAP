@@ -6,6 +6,9 @@ Current planning direction: [practical strong planning](docs/practical_planning_
 The prototype searches finite-depth AND/OR strong policies, retains feasible plans
 before bounded improvement, and does not claim global optimality. The semantic
 discrepancy metric remains a separate theoretical work item.
+The [P-S2 development gate](docs/report/practical_information_native_20260914.md)
+connects information actions and verifies a real Neo4j+Fuseki tiny query; it is
+not a paper performance result or an unrestricted NL accuracy claim.
 
 XGAP is a cost-aware agentic federated graph-query system over heterogeneous
 black-box graph engines.

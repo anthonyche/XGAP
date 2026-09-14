@@ -2,7 +2,7 @@
 > uses a finite-depth AND/OR strong policy, retains a feasible plan before bounded
 > estimated improvement, and makes no global-optimality claim. The user defers the
 > discrepancy definition. See [current roadmap](practical_planning_20260914.md) and
-> [P-S1 evidence](report/practical_strong_planning_20260914.md). Conflicting historical
+> [P-S1 evidence](report/practical_strong_planning_20260914.md) and [P-S2 native gate](report/practical_information_native_20260914.md). Conflicting historical
 > next actions below are superseded; legacy semantics/results keep their scope.
 
 > Current authority (2026-09-12): the user approved [one-shot two-mode integration](decisions/one_shot_modes_v1.md). Its bounded joint interpretation/physical selection and frozen-estimator profile supersede conflicting historical next actions below; old implementations/results retain their recorded scope. No new comparative evaluation until ordinary-entry core acceptance.

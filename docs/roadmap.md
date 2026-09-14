@@ -7,8 +7,9 @@
 
 1. P-S1 已完成开发门：strong协调器、可行基础计划、证据与授权、普通模板入口及实际
    进程内查询；22项新检查、3项受影响旧入口检查通过。
-2. P-S2 下一门：冻结catalog/能力/可选LLM动作适配，诚实的有限结果模型与成本账本，
-   新路由真实Neo4j+Fuseki tiny闭环；仍在小图开发。
+2. P-S2 已通过有界开发门：冻结catalog/能力/可选LLM适配、完整失败分支与成本账本；
+   新路由真实Neo4j+Fuseki tiny闭环。[证据](report/practical_information_native_20260914.md)。
+   新LLM动作的live endpoint尚未验证，当前使用真实provider代码+受控transport。
 3. P-S3：共享的后续跳绑定传播候选，减少昂贵完整读取；先正确性再测真实成本。
 4. P-S4：用户推进discrepancy理论后接入，冻结论文模式，讨论并执行评价修订。
 

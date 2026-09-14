@@ -65,8 +65,10 @@ The user approved `docs/decisions/practical_strong_planning_v1.md` and
 feasible-plan retention before bounded estimated improvement, no global optimum
 claim. The user will supply the discrepancy metric later; do not invent an
 epsilon/answer-error guarantee. P-S1 has a working local typed/ordinary-template
-slice; new provider adapters, native verification and execution improvement are
-next. All selected acquisition outcomes need feasible continuations. Runtime
+slice; P-S2 added catalog/model adapters, capability lookup and one real two-engine
+toy gate (see `docs/report/practical_information_native_20260914.md`). The new model
+action has controlled-transport evidence, not live endpoint evidence. Next is
+P-S3 semantics-preserving progressive binding. All selected acquisition outcomes need feasible continuations. Runtime
 follows one outcome and executes one final plan. The declared bounded semantic
 and outcome model must be explicit; no universal plan-availability claim.
 
