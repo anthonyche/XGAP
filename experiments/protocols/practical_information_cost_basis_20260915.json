@@ -1,0 +1,18 @@
+{
+  "schema_version": "xgap-practical-information-cost-basis-v1",
+  "cohort": {
+    "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/native/manifest.json",
+    "sha256": "f92dac7861d71860e5c8b2749d6178cd4c902656cdb2f9ad6efdcb7074011b0c"
+  },
+  "questions": [
+    {"question_id": "FBNS-1-eeb7a157eba85fce", "family": "f1_direct_transfer_control", "order": ["llm:relation", "clarification:relation"]},
+    {"question_id": "FBNS-2-e232ac0c7df2b3a5", "family": "f2_temporal_path_control", "order": ["clarification:relation", "llm:relation"]},
+    {"question_id": "FBNS-3-33bc9c0ac5b05e5f", "family": "f3_aggregate_risk_ranking", "order": ["llm:relation", "clarification:relation"]}
+  ],
+  "maximum_model_attempts": 3,
+  "maximum_authority_attempts": 3,
+  "timeout_seconds": 200,
+  "stop_remote_after_non_success": true,
+  "source_calls": 0,
+  "retries": 0
+}
