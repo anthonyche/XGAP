@@ -138,17 +138,21 @@ bounded AND/OR tree.
 2. At each visited state, attempt a complete terminal. Construct a minimum-call
    feasible source placement from independently admitted local replicas first.
    Preserve it even if the estimator is missing or optional strategy generation
-   exceeds its own domain budget. Retain the estimated better equivalent plan
-   when available; compiler/capability failures remain explicit.
+   exceeds its own domain budget. Initially stop at the first resource-feasible
+   terminal; keep its bounded iterator for optional refinement only after a
+   complete root policy exists. Compiler/capability failures remain explicit.
 3. At unresolved states, consider declared actions in frozen cost/ID order.
    Reserve storage for all their outcomes atomically before visiting children.
    A partial outcome subset can never count as a solved AND node.
 4. Complete the children within shared global search budgets and per-path resource
    reservations. Do not reset the state/action budget per branch or repeat an
    already attempted action along the realized path.
-5. Record the first complete root policy immediately. Spend only the remaining
-   improvement-action allowance; replace the incumbent only by a preferred
-   complete strong policy. Never discard a feasible incumbent for a partial one.
+5. Record the first complete root policy immediately. Refine its terminal leaves
+   using the saved streams, remaining time and original path resources; then
+   consider root alternatives within the remaining improvement-action allowance.
+   Terminal caps span both phases. Replace only with preferred complete policies;
+   optional terminal-generation errors/expiry preserve the incumbent. See
+   [global seed amendment](global_strong_seed_v1.md), including cache sharing.
 6. Return policy feasibility and search stop reason separately. No result means
    no feasible plan was found under this search; it is not a proof of INFEASIBLE.
 
@@ -172,8 +176,10 @@ at most (1+L)*(1+2J+B+G) strategies, with B<=1 anchor and G<=1 progressive
 binding candidate per placement (the latter added at P-S3).
 Finite path expansion is admitted before compilation (existing work cap4096).
 
-A conservative local bound is O(S*T*C(n) + S*M*O*n + A*O*n), where M is the explicit
-action-list size. Retained policy/trace memory is polynomial in S,A,O and the
+A conservative local bound is O(S*T*C(n) + S*M*O*n + A*O*n + A*S), where M is the explicit
+action-list size. The final term conservatively covers policy refinement and
+backups; the terminal streams consume at most S*T candidates across both phases.
+Retained policy/trace memory is polynomial in S,A,O and the
 compiled plan size; no entire implicit depth-H tree is materialized. Catalog
 preprocessing, LLM inference, remote query execution and output enumeration are
 not hidden unit-cost operations in this local planning claim. The wall-clock
