@@ -49,6 +49,11 @@ Publication/preflight make no external calls; execution records actual actions;
 v2 replay requires exact complete successes or failures. The development gate
 reuses historical live captures and unchanged trained weights. It is not a
 formal campaign release or evidence of mode speed/quality superiority.
+The [EXACT evidence-progress view](exact_information_pruning_v1.md) removes
+non-authoritative fixed binding steps from strong search only. It preserves all
+retained authority outcomes; generic search, PERFORMANCE and fixed external
+sequences remain unchanged. Six frozen development policies retain identical
+terminal sets while shrinking from 24 to 4 states; this is not a latency claim.
 
 ## Research question and evaluation boundary
 

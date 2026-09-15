@@ -1,0 +1,395 @@
+{
+  "schema_version": "xgap-exact-information-pruning-evidence-v1",
+  "implementation_commit": "24a294dba059a59cadf18685c21abd6950882c3f",
+  "driver": {
+    "path": "/Users/anthonyche/xgap-data/exact-information-pruning-20260915-v1/check_exact.py",
+    "sha256": "dc2f6c3a477e65a3520f76b839c50e171ff4f7b50996b41197817cace4ca9c24"
+  },
+  "planning_receipt": {
+    "path": "/Users/anthonyche/xgap-data/exact-information-pruning-20260915-v1/planning/receipt.json",
+    "sha256": "ad9b096843ad4d62770ea1f4e2bf918861b047020e4963ac03cad0d08bca4c16"
+  },
+  "previous_planning_receipt": {
+    "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/development-planning/receipt.json",
+    "sha256": "94964714d3e61d2d948a0d53c571dd7797d3c1d59a2709bc47a338c2ca61bcd7"
+  },
+  "planning_cases": [
+    {
+      "after": {
+        "elapsed_ms": 253.55250015854836,
+        "expanded_states": 4,
+        "first_feasible_ms": 253.54924984276295,
+        "generated_actions": 1,
+        "retained_states": 4
+      },
+      "before": {
+        "elapsed_ms": 254.34679072350264,
+        "expanded_states": 24,
+        "first_feasible_ms": 253.94404027611017,
+        "generated_actions": 7,
+        "retained_states": 24
+      },
+      "family": "f1_direct_transfer_control",
+      "new_root": "clarification:relation",
+      "new_terminal_count": 3,
+      "old_root": "llm:relation",
+      "old_terminal_count": 3,
+      "planning_failures": [],
+      "previous_result": {
+        "bytes": 11068,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/development-planning/native-f1_direct_transfer_control-exact.json",
+        "sha256": "10a919b6fd690d3ec61074afe204ee5efd37aab633a4b51f947199f426695df7"
+      },
+      "profile": {
+        "bytes": 23461,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/native/group-000/profile.json",
+        "sha256": "a549d56566d133a21b4a4d7c9567206e7e87c0fdb47c47d23c9f47baabe83032"
+      },
+      "profile_admission_ms": 1399.4820825755596,
+      "pruning": {
+        "applied": true,
+        "declared_available_actions": 2,
+        "policy": "exact_evidence_progress_v1",
+        "pruned_action_ids": [
+          "llm:relation"
+        ],
+        "reason": "non_authoritative_binding_steps_do_not_advance_exact_validation",
+        "retained_actions": 1,
+        "scope": "fixed independent PracticalSemanticDomain actions only; no PERFORMANCE or baseline change"
+      },
+      "question_id": "FBNS-1-eeb7a157eba85fce",
+      "representation": "native",
+      "request": {
+        "bytes": 967,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/native/group-000/request.json",
+        "sha256": "ab882c7359f21979ea75ccef67949a4ed743aa33b664b2137b9a722f36afcd33"
+      },
+      "result": {
+        "bytes": 6640,
+        "path": "/Users/anthonyche/xgap-data/exact-information-pruning-20260915-v1/planning/native-f1_direct_transfer_control.json",
+        "sha256": "e472cd05917975e6266dd980d13e440cf1553291c7d87d0eab8a451ea8439a9c"
+      },
+      "same_terminal_id_set": true,
+      "stop_reason": "declared_alternatives_finished",
+      "strong": true
+    },
+    {
+      "after": {
+        "elapsed_ms": 302.11241729557514,
+        "expanded_states": 4,
+        "first_feasible_ms": 302.1090002730489,
+        "generated_actions": 1,
+        "retained_states": 4
+      },
+      "before": {
+        "elapsed_ms": 298.4655415639281,
+        "expanded_states": 24,
+        "first_feasible_ms": 297.9108327999711,
+        "generated_actions": 7,
+        "retained_states": 24
+      },
+      "family": "f2_temporal_path_control",
+      "new_root": "clarification:relation",
+      "new_terminal_count": 3,
+      "old_root": "llm:relation",
+      "old_terminal_count": 3,
+      "planning_failures": [],
+      "previous_result": {
+        "bytes": 11080,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/development-planning/native-f2_temporal_path_control-exact.json",
+        "sha256": "2aa2c6fb51a04e24ba4d0b583e6d5bfde395a031eeb4d2a2514a144f1cf3e984"
+      },
+      "profile": {
+        "bytes": 23479,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/native/group-040/profile.json",
+        "sha256": "2190308668ea69afe39980c15959aa55a455986c3f081e47e0553b9b068077a8"
+      },
+      "profile_admission_ms": 1438.3117081597447,
+      "pruning": {
+        "applied": true,
+        "declared_available_actions": 2,
+        "policy": "exact_evidence_progress_v1",
+        "pruned_action_ids": [
+          "llm:relation"
+        ],
+        "reason": "non_authoritative_binding_steps_do_not_advance_exact_validation",
+        "retained_actions": 1,
+        "scope": "fixed independent PracticalSemanticDomain actions only; no PERFORMANCE or baseline change"
+      },
+      "question_id": "FBNS-2-e232ac0c7df2b3a5",
+      "representation": "native",
+      "request": {
+        "bytes": 1165,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/native/group-040/request.json",
+        "sha256": "c5c49928154b25686bf7900eb8854d51eaa005a36b900acd615f9d7f963cfe76"
+      },
+      "result": {
+        "bytes": 6645,
+        "path": "/Users/anthonyche/xgap-data/exact-information-pruning-20260915-v1/planning/native-f2_temporal_path_control.json",
+        "sha256": "ac272a90ab08bbba5f840ef126189552794174afe0ad6248f2d4522ed421b066"
+      },
+      "same_terminal_id_set": true,
+      "stop_reason": "declared_alternatives_finished",
+      "strong": true
+    },
+    {
+      "after": {
+        "elapsed_ms": 293.4317924082279,
+        "expanded_states": 4,
+        "first_feasible_ms": 293.4280829504132,
+        "generated_actions": 1,
+        "retained_states": 4
+      },
+      "before": {
+        "elapsed_ms": 246.29779066890478,
+        "expanded_states": 24,
+        "first_feasible_ms": 245.9166245535016,
+        "generated_actions": 7,
+        "retained_states": 24
+      },
+      "family": "f3_aggregate_risk_ranking",
+      "new_root": "clarification:relation",
+      "new_terminal_count": 3,
+      "old_root": "llm:relation",
+      "old_terminal_count": 3,
+      "planning_failures": [],
+      "previous_result": {
+        "bytes": 11067,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/development-planning/native-f3_aggregate_risk_ranking-exact.json",
+        "sha256": "faac401693f7ddd7ab3fae7fbb947b7b90e83c96c457e06268ac63291578c07f"
+      },
+      "profile": {
+        "bytes": 23453,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/native/group-080/profile.json",
+        "sha256": "5dd668398dd6c311d6c6aa00b732a4f1712b73677aa09127c98fb4dc23394375"
+      },
+      "profile_admission_ms": 1397.2647096961737,
+      "pruning": {
+        "applied": true,
+        "declared_available_actions": 2,
+        "policy": "exact_evidence_progress_v1",
+        "pruned_action_ids": [
+          "llm:relation"
+        ],
+        "reason": "non_authoritative_binding_steps_do_not_advance_exact_validation",
+        "retained_actions": 1,
+        "scope": "fixed independent PracticalSemanticDomain actions only; no PERFORMANCE or baseline change"
+      },
+      "question_id": "FBNS-3-33bc9c0ac5b05e5f",
+      "representation": "native",
+      "request": {
+        "bytes": 1049,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/native/group-080/request.json",
+        "sha256": "686ac3fb17e2740d18cd1819d4b1e209e052545f13107713b3f3723a0bcb66d3"
+      },
+      "result": {
+        "bytes": 6639,
+        "path": "/Users/anthonyche/xgap-data/exact-information-pruning-20260915-v1/planning/native-f3_aggregate_risk_ranking.json",
+        "sha256": "5afa8afdf10ac8844640ddadd8664d801bc52803a2a7507fc41fb25b63cb04ff"
+      },
+      "same_terminal_id_set": true,
+      "stop_reason": "declared_alternatives_finished",
+      "strong": true
+    },
+    {
+      "after": {
+        "elapsed_ms": 114.28245715796947,
+        "expanded_states": 4,
+        "first_feasible_ms": 114.27883245050907,
+        "generated_actions": 1,
+        "retained_states": 4
+      },
+      "before": {
+        "elapsed_ms": 138.31070810556412,
+        "expanded_states": 24,
+        "first_feasible_ms": 137.94375024735928,
+        "generated_actions": 7,
+        "retained_states": 24
+      },
+      "family": "f1_direct_transfer_control",
+      "new_root": "clarification:relation",
+      "new_terminal_count": 3,
+      "old_root": "llm:relation",
+      "old_terminal_count": 3,
+      "planning_failures": [],
+      "previous_result": {
+        "bytes": 11082,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/development-planning/rdf-f1_direct_transfer_control-exact.json",
+        "sha256": "a6d8014ad1fb836b2f0099263b189d10d8689f6bda813be6ceec054826edf7bf"
+      },
+      "profile": {
+        "bytes": 62931,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/rdf/group-000/profile.json",
+        "sha256": "640faf8d80874c7063147b9e667d62c6c2e4b8ccd47b7b3b604cbe73785fc666"
+      },
+      "profile_admission_ms": 1529.732458293438,
+      "pruning": {
+        "applied": true,
+        "declared_available_actions": 2,
+        "policy": "exact_evidence_progress_v1",
+        "pruned_action_ids": [
+          "llm:relation"
+        ],
+        "reason": "non_authoritative_binding_steps_do_not_advance_exact_validation",
+        "retained_actions": 1,
+        "scope": "fixed independent PracticalSemanticDomain actions only; no PERFORMANCE or baseline change"
+      },
+      "question_id": "FBNS-1-eeb7a157eba85fce",
+      "representation": "rdf",
+      "request": {
+        "bytes": 964,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/rdf/group-000/request.json",
+        "sha256": "8c33080a902ee6a2e0c91ba56b42c051dc9070e33cd4da23891c2bd3bc230122"
+      },
+      "result": {
+        "bytes": 6642,
+        "path": "/Users/anthonyche/xgap-data/exact-information-pruning-20260915-v1/planning/rdf-f1_direct_transfer_control.json",
+        "sha256": "b424c35232bfe70007915a43d961cc9727a9461c8e97377d10b633de48481907"
+      },
+      "same_terminal_id_set": true,
+      "stop_reason": "declared_alternatives_finished",
+      "strong": true
+    },
+    {
+      "after": {
+        "elapsed_ms": 130.9016663581133,
+        "expanded_states": 4,
+        "first_feasible_ms": 130.8983750641346,
+        "generated_actions": 1,
+        "retained_states": 4
+      },
+      "before": {
+        "elapsed_ms": 139.0717076137662,
+        "expanded_states": 24,
+        "first_feasible_ms": 138.45087494701147,
+        "generated_actions": 7,
+        "retained_states": 24
+      },
+      "family": "f2_temporal_path_control",
+      "new_root": "clarification:relation",
+      "new_terminal_count": 3,
+      "old_root": "llm:relation",
+      "old_terminal_count": 3,
+      "planning_failures": [],
+      "previous_result": {
+        "bytes": 11078,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/development-planning/rdf-f2_temporal_path_control-exact.json",
+        "sha256": "bb6e35584daf30922e71566f6438d8591c1cc91d1c7faaf61369c82e24692f88"
+      },
+      "profile": {
+        "bytes": 62949,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/rdf/group-040/profile.json",
+        "sha256": "f092d51de2382aaefab993189d00743e627a450d8f0df0897560328ba368a1b9"
+      },
+      "profile_admission_ms": 1403.6952499300241,
+      "pruning": {
+        "applied": true,
+        "declared_available_actions": 2,
+        "policy": "exact_evidence_progress_v1",
+        "pruned_action_ids": [
+          "llm:relation"
+        ],
+        "reason": "non_authoritative_binding_steps_do_not_advance_exact_validation",
+        "retained_actions": 1,
+        "scope": "fixed independent PracticalSemanticDomain actions only; no PERFORMANCE or baseline change"
+      },
+      "question_id": "FBNS-2-e232ac0c7df2b3a5",
+      "representation": "rdf",
+      "request": {
+        "bytes": 1162,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/rdf/group-040/request.json",
+        "sha256": "a8674a50d353b69f488dfc5b9d9ed8cf45bca3d36bfc03da47293052e54f30ef"
+      },
+      "result": {
+        "bytes": 6642,
+        "path": "/Users/anthonyche/xgap-data/exact-information-pruning-20260915-v1/planning/rdf-f2_temporal_path_control.json",
+        "sha256": "0858211cb37a0fbfad87dbe0402d65fe53550e2a27576901bb04fb0ee26646b5"
+      },
+      "same_terminal_id_set": true,
+      "stop_reason": "declared_alternatives_finished",
+      "strong": true
+    },
+    {
+      "after": {
+        "elapsed_ms": 110.59541534632444,
+        "expanded_states": 4,
+        "first_feasible_ms": 110.59200018644333,
+        "generated_actions": 1,
+        "retained_states": 4
+      },
+      "before": {
+        "elapsed_ms": 109.00633409619331,
+        "expanded_states": 24,
+        "first_feasible_ms": 108.64045936614275,
+        "generated_actions": 7,
+        "retained_states": 24
+      },
+      "family": "f3_aggregate_risk_ranking",
+      "new_root": "clarification:relation",
+      "new_terminal_count": 3,
+      "old_root": "llm:relation",
+      "old_terminal_count": 3,
+      "planning_failures": [],
+      "previous_result": {
+        "bytes": 11082,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/development-planning/rdf-f3_aggregate_risk_ranking-exact.json",
+        "sha256": "4709b11315e65d4a2878cea25c5d90e8d1a769125783707408854963ccc6cbb8"
+      },
+      "profile": {
+        "bytes": 62923,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/rdf/group-080/profile.json",
+        "sha256": "d208cf84dc3ef4831265e9512b49fed988b5ac2fbb6034741cd9ce4083fe676c"
+      },
+      "profile_admission_ms": 1437.8364998847246,
+      "pruning": {
+        "applied": true,
+        "declared_available_actions": 2,
+        "policy": "exact_evidence_progress_v1",
+        "pruned_action_ids": [
+          "llm:relation"
+        ],
+        "reason": "non_authoritative_binding_steps_do_not_advance_exact_validation",
+        "retained_actions": 1,
+        "scope": "fixed independent PracticalSemanticDomain actions only; no PERFORMANCE or baseline change"
+      },
+      "question_id": "FBNS-3-33bc9c0ac5b05e5f",
+      "representation": "rdf",
+      "request": {
+        "bytes": 1046,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-20260915-v1/rdf/group-080/request.json",
+        "sha256": "07cd74490e8bd1b6f0330ddf794f722f3a582691f22bc7ae6e1e692d5d3891b9"
+      },
+      "result": {
+        "bytes": 6644,
+        "path": "/Users/anthonyche/xgap-data/exact-information-pruning-20260915-v1/planning/rdf-f3_aggregate_risk_ranking.json",
+        "sha256": "58733fd21b81e1e0b65d2896c7d59bc498732412ee14dd78361d2c5dceee6b04"
+      },
+      "same_terminal_id_set": true,
+      "stop_reason": "declared_alternatives_finished",
+      "strong": true
+    }
+  ],
+  "directed_checks": {
+    "new_passed": 7,
+    "affected_passed": 1,
+    "initial_result": {
+      "passed": 2,
+      "setup_errors": 6
+    },
+    "cause": "New test module omitted analytic_weights fixture import; fixed import, reran only six setup-error cases",
+    "followup_result": {
+      "passed": 6,
+      "deselected": 1
+    },
+    "full_regression": false
+  },
+  "actual_external_model_calls": 0,
+  "actual_native_source_calls": 0,
+  "paper_result": false,
+  "limitations": [
+    "Planning-only six development inputs; no dataset answers evaluated",
+    "Correctness on two authority outcomes uses in-process RDFLib and controlled proposal tool",
+    "Single runs at different times; no measured overall planning speedup",
+    "No profile/estimator/baseline changes or paper-release claim"
+  ]
+}
