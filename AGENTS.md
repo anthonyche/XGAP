@@ -68,15 +68,19 @@ epsilon/answer-error guarantee. All selected acquisition outcomes need feasible
 continuations; runtime follows one and executes one final federated plan.
 
 The bounded trusted-template core, live information/native slice, frozen profiles,
-common real worker and independent study wiring now exist. Actual tested evidence
-and remaining release gaps are in `docs/status.md` and
-`docs/research_contract_audit_20260915.md`; do not rerun successful gates or pool
-old versions. Open-NL structure authority, formal mode release and superiority
-remain unproven. The development PERFORMANCE profile is not a paper default.
+common worker and independent study exist. The first frozen evaluation at 5d82b6f
+has 384/384 sealed/scored cells and all owned sessions closed; see
+`docs/report/partial_strong_first_pass_20260915.md`. This does not establish open-NL
+accuracy, mode-mechanism superiority, comparable SOTA efficiency, or scalability.
 Legacy domains and baseline algorithms retain their behavior.
 
-The Sep15 02:00–10:00 pause is over; the user explicitly resumed execution.
-Read `docs/goal.md` for current schedule state. Overall Goal remains unfinished.
+Latest user direction (Sep15): finish this frozen execution, then review and discuss
+results before further engineering or experiments. The execution is now finished.
+Automatic wakeups are paused. Do not apply pending code, generate datasets, fit an
+estimator, run new queries/models, or start an ablation until the user resumes after
+review. If no significant optimization plan exists, keep the iteration paused until
+a better idea. Overall Goal remains unfinished; do not mark it complete to stop it.
+Read `docs/goal.md`; the expired Sep15 02:00–10:00 schedule is not a resume command.
 
 The previous one-shot profile below remains a versioned legacy interface.
 

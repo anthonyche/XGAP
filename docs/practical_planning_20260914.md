@@ -50,42 +50,30 @@ d(Q_tilde,Q_star) 由用户下一理论阶段推进。当前不自行定义替�
 数学对象依然是有限深 AND/OR 树的 strong solution subgraph。有限深不等于多项式；
 实现同时限制全局状态/动作/结果数量，并复用非笛卡尔积的物理候选生成。
 
-## 工程顺序与完成标准
+## 工程范围与当前验收
 
-|里程碑|内容|当前证据/完成标准|
+2026-09-15：冻结5d82b6f的首轮真实评价已完成，384/384终态/评分、全部托管服务关闭。
+用户最新要求先验收和讨论，自动唤醒已暂停，不自动执行候选改动。整体Goal未完成。
+
+|环节|已有实现/证据|本轮结论|
 |---|---|---|
-|P-S1|strong-plan 协调器、权威验证、可行基础计划、GoalLoop 执行、普通入口|已实现；22 项新检查通过，普通模板 NL 与实际进程内 SPARQL 链路通过|
-|P-S2|冻结 catalog/能力查询/可选 LLM 动作的统一适配，以及真实 Neo4j+Fuseki 小图门|有界开发门已完成；14+3适配检查与后续8+3同请求检查；同请求live槽位提议→strong→双后端成功，1模型372token/1计划/2源调用/gold一致|
-|P-S3|降低实际数据读取和总延迟|逐跳候选6项新小图检查通过；真实native组件4行gold不变，源行62→51；14响应可回放；速度/排序优势仍待评价|
-|P-S4|用户定义的偏差度量接入与论文配置冻结|等待度量；其余工程不因此停滞。之后讨论实验计划的模式/信息条件修订|
+|P-S1 strong核心|全策略seed完成后再优化，声明AND结果完整、可行方案保留|192次XGAP执行均strong、1最终计划，无当前题probe/fit/retry|
+|P-S2 信息与真实链|catalog/可选LLM/权威适配、同请求live模型与双后端门|本轮两模式均选择便宜关系权威，模型0调用，不是接口不可用|
+|P-S3 执行工作降低|协调器/首跳/逐跳、完整读取共享、必要过滤和准备优化|native/RDF两模式均48/48正确；本轮源调用/bytes逐题相同|
+|P-S4 度量与论文契约|可信结构/单关系槽、两模式参数、固定外部前端及独立release已发布|d仍待用户定义；模式机制收益、有效SOTA效率比较和scalability尚未证明|
 
-[P-S2 完整证据与局限](report/practical_information_native_20260914.md)。
-[P-S3 本地组件门与冻结估计器排序](report/progressive_binding_20260914.md)。
-[真实逐跳与live信息组件补充](report/progressive_native_and_live_tools_20260914.md)。
-[同请求live信息与双后端证据](report/practical_model_e2e_20260914.md)补齐了可信模板下的一槽
-模型动作整体链路；不是开放NL结构验证、两模式性能优势或论文总体结果。
-原来的真实 native/FinBench 结果继续按旧版本报告，不能追溯作为新 strong planner 的证据。
+[本轮结果与验收](report/partial_strong_first_pass_20260915.md)给出完整分母、计时、失败、
+模型usage恢复及候选收益依据。[系统与18图审计](research_contract_audit_20260915.md)说明
+接下来的讨论范围。新结果不并入旧NL、旧固定计划或不同权限的结果。
 
-统一开发配置与普通请求记录入口现已通过14项新检查+2项受影响检查，支持发布、预检、
-单次执行与严格成功/失败回放；见[配置报告](report/practical_profile_20260914.md)。
-旧权重不变，tiny统计离线更新；0新网络，不等于论文模式release或新native结果。
-成本/排序的[同会话六步诊断](report/practical_cost_diagnostic_20260914.md)已完成：三计划均
-正确，第二序列coordinator145ms、fanout169ms、progressive174ms，冻结排序在本例一致。
-[相同完整源读取共享](report/shared_native_reads_20260914.md)也已通过11项新检查和一次
-真实strong请求，4行gold保持，实际调用14→11。[必要源过滤](report/source_row_prefilters_20260914.md)
-也通过14+2本地检查和真实门，源行64→61，4行gold不变；Cypher类型另有1调用组件证据。
-[请求准备](report/practical_preparation_20260915.md)已实现每请求冻结bundle加载4→1。
-[共同worker](report/practical_worker_20260915.md)已通过本地/回放门；
-[合作式预算](report/cooperative_planning_budget_20260915.md)保留可行计划，停止到期的可选工作。
-[共同native门](report/practical_worker_native_20260915.md)现已通过一次真实EXACT请求，
-4行gold、11源调用，外层1711ms，所有资源关闭。下一步核对新strong契约与旧18图协议，形成输入权限/方法/计量和release缺口清单，
-供后续讨论；不自动启动大图或消融，不改变批准的数据优先级及baseline。不调估计分数，不重复前轮六步或大题。
-动作顺序与费用按[新契约](decisions/acquisition_order_v1.md)分开；
-未知费用保持null，不为展示LLM链路假设昂贵澄清。9月15日02:00收尾总结，10:00恢复。
-
-最新接线审计见[系统完成范围与18图修订草案](research_contract_audit_20260915.md)。
-可信模板核心与共同native成功门已通；新strong方法尚未进入旧campaign，论文版本的
-输入权限/模式配置仍需单独发布。该草案不改变已批准的数据优先级或启动新评价。
+原始开发证据：[Strong核心](report/practical_strong_planning_20260914.md)、
+[信息适配](report/practical_information_native_20260914.md)、
+[同请求live链](report/practical_model_e2e_20260914.md)、
+[逐跳诊断](report/practical_cost_diagnostic_20260914.md)、
+[读取共享](report/shared_native_reads_20260914.md)、
+[必要过滤](report/source_row_prefilters_20260914.md)、
+[共同真实worker](report/practical_worker_native_20260915.md)、
+[全策略先可行](report/global_strong_seed_20260915.md)。它们各自保持原版本/范围，不重复运行以累加证据。
 
 ## 实验应证明什么
 
@@ -93,8 +81,9 @@ d(Q_tilde,Q_star) 由用户下一理论阶段推进。当前不自行定义替�
 时间和意图/答案质量。执行占主导的查询：关注源行数、bytes、调用数、执行时间和
 完整答案。两者分开解释，再报告整体效果，不用人为昂贵的澄清成本制造胜出。
 
-旧 FinBench 的约21ms规划、约2.7s解释、约27–30s执行说明：仅缩小搜索预算不足以
-大幅改善这些大图请求。新理论解决信息决策，执行策略仍需解决后续跳完整读取。
+本轮native搜索中位数270→90ms，但在线12.832→12.623s；RDF搜索115→35ms，
+在线29.319→26.552s，后者差距主要在执行阶段且源工作量未变。不能把全部时间差归因
+于planner。下一步是否验证重复读取/估计特征，要先讨论机制与否证门，不自动继续循环。
 
 研发只用 toy 和失败 replay。保持原有 18 图计划及数据集优先级，不提前启动大量消融。
 baseline 忠实运行，不修改算法或修补答案。澄清带来的额外语义信息单独报告；共同

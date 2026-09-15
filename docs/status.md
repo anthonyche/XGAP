@@ -1,49 +1,50 @@
 # XGAP Current Status
 
-2026-09-15。可信有界模板下的新strong核心与共同真实入口已通，论文配置/总体评价
-尚未完成。用户已授权恢复；10:04核实后从干净提交1b7f2af继续，恢复时没有本任务活动native服务。[Goal与工作时段](goal.md)优先于历史记录。
+2026-09-15。**本轮执行与结果验收材料已完成，等待用户讨论，不启动后续工程或实验。**
+自动唤醒已暂停，整体研究Goal未完成。[Goal](goal.md)优先于历史调度。
 
-本轮正在发布并执行[首轮48题主评价](decisions/practical_campaign_release_v1.md)：沿用
-已验证 strong 参数及真实信息费用，两表示各48题，native两模式、RDF六显式方法。
-新增controller三个定向检查通过；发布/运行结果将在本轮独立记录，旧结果不继承。
+## 本轮真实结果
 
-## 当前实现与证据
+冻结提交5d82b6f，native 48题×2模式、same-facts RDF 48题×6方法，384/384封存并评分；
+全部托管服务关闭，历次journal pin不变、无indeterminate、无自动重试。全部原始结果保留。
 
-|环节|已有证据|边界|
+|表示|EXACT正确|PERFORMANCE正确|在线中位数：EXACT / PERFORMANCE|
+|---|---:|---:|---:|
+|Native Neo4j+Fuseki|48/48|48/48|12.832 / 12.623 s|
+|同事实RDF|48/48|48/48|29.319 / 26.552 s|
+
+48题含33空、15非空参考（家族非空数0/4/11），两模式各15/15非空正确。192次XGAP
+均strong、1最终计划、0当前题probe/fit/retry/模型、1次本地关系权威。外部固定信息
+FedUP两个组合各48次失败，全部有原生extend异常；FedX两个组合各48次预算截断。
+不把这些失败当成SOTA速度优势。外部前端192模型调用，已报告79,832token，原usage
+字段遗漏通过只读sidecar恢复，未改原receipt。[完整验收报告](report/partial_strong_first_pass_20260915.md)。
+
+配对EXACT/PERFORMANCE速度比中位数native 1.015×、RDF 1.101×；每表示48题源调用
+和响应bytes逐题相同，EXACT额外优化没有降低所选估计成本。RDF差距主要在执行阶段，
+不能归因于planner改进。单次观测未证明统计显著性、总体模式机制收益或scalability。
+
+## 已实现与已有验证
+
+|环节|实现与证据|范围|
 |---|---|---|
-|Strong策略与信息工具|P-S1 22新+3受影响；P-S2 14+3；真实catalog与双后端tiny|有限声明结果的strongness，不保证任意服务永不失败|
-|Live模型同请求链|1模型372token、1计划2源请求、正确1行，在线812ms|可信模板的一槽提议，不是开放NL结构验证；[报告](report/practical_model_e2e_20260914.md)|
-|逐跳策略与成本诊断|真实逐跳正确；同会话第二序列协调器145ms、首跳169ms、逐跳174ms|未证明逐跳提速；不改估计分数；[报告](report/practical_cost_diagnostic_20260914.md)|
-|重复源读取共享|11新+1受影响；真实调用14→11、响应18606→16399B，4行gold保持|完整同源同artifact范围；[报告](report/shared_native_reads_20260914.md)|
-|必要源过滤|14新+2受影响；真实源行64→61、响应16399→15820B，另1次Cypher类型门|保留最终typed过滤；[报告](report/source_row_prefilters_20260914.md)|
-|请求准备|5新+2受影响；bundle加载4→1，完整回放一致|准备成本仍在线计量；[报告](report/practical_preparation_20260915.md)|
-|合作式规划预算|6新+1受影响；到期保留基础/已改善完整计划|原子步骤可越时；[报告](report/cooperative_planning_budget_20260915.md)|
-|新strong共同worker|6新+1受影响；随后1输入检查+真实EXACT请求：4行gold、11源调用、外层1711ms|owned服务全部关闭；[报告](report/practical_worker_native_20260915.md)|
-|大trace/小outcome|4新+1受影响；>16MiB中间记录、<4KiB摘要正确交付|全trace仍保留/占内存；[报告](report/practical_outcome_20260915.md)|
-|大源记录回放|5新+1受影响；>16MiB合法JSON捕获完整回放，源容量界限512MiB|非流式/规模实证；[报告](report/practical_capture_size_20260915.md)|
-|独立study接线|6新检查；现补1真实group/双模式，各4行gold、1计划/11源调用|总22源调用，0模型，owned服务关闭；[新报告](report/resolved_strong_inputs_20260915.md)|
-|完整可信查询与两表示输入|7新+3受影响检查通过；native/RDF各120题与24/48/48原划分，726生成pin校验|在线schema路由计费；新物理开发preset100/2000ms；[报告](report/resolved_strong_inputs_20260915.md)。非部分绑定或总体评价|
-|部分绑定共同前端/外部组合|固定信息顺序、同模式权限、一次global SPARQL及v2调度；17新检查最终通过；真实六cell各执行一次|XGAP/FedX各模式成功返回，权限差异一致；FedUP两cell原生extend不支持；[报告](report/fixed_information_frontend_20260915.md)。36源请求、0模型/重试，全部owned服务已关|
-|部分绑定FinBench输入候选|两表示各120题、24/48/48原划分，968 pin；10新+1受影响检查最终通过；12次开发离线规划均strong|仅关系标签共享槽；0模型/源执行；发现EXACT模型提议后仍全部需权威步骤；[报告](report/partial_strong_inputs_20260915.md)|
-|EXACT证据推进剪枝|7新+1受影响case最终通过；六个原EXACT输入仍strong且终端集合相同，状态24→4、动作7→1|两种进程内权威答案均正确/零模型/一最终计划；规划时间未一致降低，PERFORMANCE及固定外部顺序保持；[报告](report/exact_information_pruning_20260915.md)|
-|真实信息费用与搜索排序|3次live模型/1242token，关系槽3/3一致；模型中位329ms、权威2.67ms；3新+2受影响检查通过；费用候选两表示各120题|三个新PERFORMANCE离线策略均先取便宜权威；未做端到端评价，固定基线顺序保持；[报告](report/practical_information_cost_20260915.md)|
-|全策略可行优先|8新+8通用solver+3受影响deadline检查通过；反例从无计划到3ms逻辑时间保住完整策略；三EXACT输入首个策略86–108ms|总规划仍260–295ms，额外优化未改善估计；软预算仍可越时；[报告](report/global_strong_seed_20260915.md)|
+|语义/编译/执行|有界semantic DAG、Cypher/SPARQL、协调器及真实双后端|可信结构与支持算子，不是任意NL/图查询语言|
+|Strong策略|有限AND/OR、所有声明结果可行后续、全策略先可行后有界改进|保留可行方案；无全局最优/近似比保证；[全策略门](report/global_strong_seed_20260915.md)|
+|两模式与信息动作|验证/授权预测、冻结catalog、可选LLM、按需权威、普通profile入口|权限差别已有小图证据；本轮两模式均选便宜权威|
+|同请求live链|1模型372token、1计划2源调用、gold一致|一槽提议，非开放NL结构保证；[live证据](report/practical_model_e2e_20260914.md)|
+|物理策略/估计|协调器、首跳/逐跳绑定、冻结相对排序|toy迁移未校准；总体排序/regret未证明|
+|读取/准备优化|已有同artifact完整读取共享、必要过滤、每请求一次准备|已有真实tiny源调用/行数降低；别名共享仍是未合入候选|
+|研究入口|逐题发布、共同fixed-info前端、guard、observer、score、journal及failure replay|本轮384次首次观测，不是重复六轮，不与旧版本合并|
 
-所有计数按对应里程碑原始记录，不把重复的受影响检查累加为独立实验样本。新记录
-接口/profile有可调用实现；它们不是占位文档。当前测试只覆盖声明边界。
+具体历史门见[9月15日审计](research_contract_audit_20260915.md)与各report；不重复已成功门来增加计数。
 
-## 尚未实现与尚未验证
+## 待讨论而不自动执行
 
-- 完整语义与部分绑定FinBench候选输入已发布；论文模式profile/release尚未发布。
-  EXACT冗余已剪枝，实际信息成本与排序已有候选，全策略可行优先反例已修正。
-  下一步收敛论文模式/release与首批真实评价；三个开发输入的可选优化没有估计收益，
-  不据此改估计分数，首次可行与额外优化费用分开呈现。
-  外部同权限组合前端已实现且真实小图已运行；FedUP当前生成形式的原生不支持保留，
-  不能作为优化器速度优势。正式评价仍未启动。
-- 任意NL结构的权威验证、用户待定义的d/epsilon保证尚未实现；新模式明确限定可信结构。
-- 实际两模式质量/速度优势、估计排序泛化、regret与scalability尚未证明。
-- 旧FinBench真实结果存在，含错误/失败、空与非空答案，按原版本/曝光保存；不能换名
-  为新strong模式分数。旧NL44个结果、native固定20题、RDF固定5组不合并成同质主结果。
+- 一个时序请求中的重复别名读取涉及约47MB、占该题响应约42%；有等价共享候选，尚未
+  合入/测试，不能声称实际延迟收益，更不能直接触发全量重跑。
+- 模型usage接口修复、RDF equality-key统计接线、扇出特征及便宜物理改进是候选问题。
+  不把key上界当结果行数上界；不用evaluation观测拟合。
+- 当前输入不体现精度—性能权衡；外部比较缺共同成功范围。bounded FedShop只有静态
+  准备、未生成/执行；讨论后才决定下一轮机制和验收门，不优化baseline。
+- 任意NL结构权威、用户待定义d/epsilon、总体优势、scalability和完整16–20图未完成。
 
-[系统边界与18图草案](research_contract_audit_20260915.md)解释剩余接线、输入权限与结论。
-更多历史数据见[旧状态逐字快照](status_history_20260915.md)，其旧“下一步”不再生效。
+[此前状态快照](status_history_20260915.md)只供溯源，旧“下一步”不生效。
