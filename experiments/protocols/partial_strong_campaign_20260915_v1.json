@@ -1,0 +1,74 @@
+{
+  "schema_version": "xgap-practical-campaign-spec-v1",
+  "campaign_id": "partial-strong-finbench-first-pass-20260915-v1",
+  "scope": "First complete 48-question evaluation per method on authored trusted partial templates; three FinBench-derived families, one shared relation hole and supplied source assignments. Existing 24/48/48 split, semantics, permissions, costs and estimator frozen. Not arbitrary NL or official FinBench interactive-query conformance. No inherited old method results.",
+  "studies": {
+    "native": {
+      "cohort": {
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/manifest.json",
+        "sha256": "50f2de117d5e4825fbd82975a2b89d9735dc752604f38bcdc340349e5132eb18"
+      },
+      "input": {
+        "bytes": 31271,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/evaluation-study-input.json",
+        "sha256": "d9cf9251773db975e58f7577054444833e459c858b360e19dcfc803a5ad68402"
+      },
+      "prepared": {
+        "path": "/Users/anthonyche/xgap-data/finbench-compact-contribution-v2-20260913/associations/native-prepared.json",
+        "sha256": "dd6bb5352b27033fc9ca3d6c4659767ae9f72eef1d35a5533a60bb178d21c36a"
+      }
+    },
+    "rdf": {
+      "cohort": {
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/rdf/manifest.json",
+        "sha256": "ad16cd915ce496f4e7ad43580b5f39fa3364bc0aab4f1467f30fba0c9e16d657"
+      },
+      "input": {
+        "bytes": 31097,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/rdf/evaluation-study-input.json",
+        "sha256": "43e511dddd7ee92c92beeba3ca7c134c463a8a871f8a1d6add9fd296ed1b604d"
+      },
+      "prepared": {
+        "path": "/Users/anthonyche/xgap-data/finbench-compact-contribution-v2-20260913/associations/rdf-prepared.json",
+        "sha256": "92fb6cd48401d248542a540c525ce44e66b43ce43ba41ab7d7baeddfb407cdbe"
+      },
+      "summary": {
+        "path": "/Users/anthonyche/xgap-data/finbench-compact-contribution-v2-20260913/associations/rdf-summary.json",
+        "sha256": "454e2c6f8d5b34b1f3f88941e0bb44242e0b82b039130f8be7c5f495d7ee55c1"
+      }
+    }
+  },
+  "process_budget": {
+    "wall_seconds": 180.0,
+    "max_group_rss_bytes": 2147483648,
+    "max_log_bytes": 1048576,
+    "max_group_processes": 64,
+    "sample_seconds": 0.05,
+    "terminate_grace_seconds": 0.5
+  },
+  "source_budget": {
+    "max_calls": 65536,
+    "request_bytes": 16777216,
+    "phase_request_bytes": 134217728,
+    "response_bytes": 268435456,
+    "phase_response_bytes": 536870912,
+    "timeout_seconds": 20
+  },
+  "protocol": {
+    "repeats": 1,
+    "group_order": "original cohort evaluation order, unchanged before outcomes",
+    "method_order": "cyclic rotation by group index; 48 groups balance positions for two/six methods",
+    "warmup_queries": 0,
+    "healthy_session": "reuse; fresh after failed method, no rerun",
+    "automatic_retries": 0,
+    "model_max_output_tokens": 512,
+    "model_timeout_seconds": 45,
+    "model_max_calls_per_method": 1,
+    "model_token_reservation": 4096,
+    "query_answers": "existing pinned independent reference, post-seal only",
+    "costs": "online admission, acquisition, planning, source execution and durable records; serving/profile publication/catalog/statistics/estimator/summary preparation separately",
+    "missing_or_failed_methods": "all-denominator correctness, no zero latency; efficiency subset must declare joint support/success and session warmth",
+    "paper_comparison": "native two XGAP modes; same-facts RDF six explicitly composed methods; no cross-engine raw speedup claim",
+    "next_repetitions": "not part of this release; preselect 12 groups and three time blocks in a later frozen association"
+  }
+}

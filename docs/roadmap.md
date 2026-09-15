@@ -33,6 +33,9 @@
 5. 用户推进d之后再接入其正式误差契约。无epsilon主张的评价不因此自动停止。
    GrailQA/KBQA-R1仍等待完整KB与作者artifact，不作为前两轨开发前提。
 
+当前落实为[首轮评价发布](decisions/practical_campaign_release_v1.md)：先封存既有配置，
+运行原48题/每方法一次的native与RDF评价。不再把额外开发门置于主结果之前。
+
 ## 不属于下一轮默认任务
 
 不继续建设无限语义/通用开源产品；不反复构建GrailQA catalog；不重提未知远端作业；

@@ -33,6 +33,7 @@
 |EXACT不推进证据的动作剪枝|[evidence-progress pruning](decisions/exact_information_pruning_v1.md)|
 |真实信息费用、strong专用估计排序|[cost basis](decisions/practical_information_cost_basis_v1.md)、[排序修订](decisions/acquisition_order_v1.md)|
 |全策略先可行、再延迟优化terminal|[global strong seed](decisions/global_strong_seed_v1.md)|
+|新strong首轮48题配置发布与真实评价|[campaign release](decisions/practical_campaign_release_v1.md)|
 |为何不强制新候选胜出|[预定成本诊断](decisions/practical_cost_diagnostic_v1.md)|
 
 ## 共享语义与旧接口仍需保留

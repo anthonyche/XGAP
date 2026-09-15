@@ -22,6 +22,10 @@ EXACT不推进证据的模型前缀已剪枝；六个原开发输入仍strong、
 通过；三个冻结EXACT开发输入先完整后优化，首个策略86–108ms。[报告](report/global_strong_seed_20260915.md)。
 下一步收敛论文配置与首批真实评价，不重复已成功门，不靠调估计分数制造优化收益。
 
+当前执行更新：开始[新strong首轮48题评价发布](decisions/practical_campaign_release_v1.md)。
+冻结已有费用候选和模式参数，native 96 cell、同事实RDF 288 cell；每方法每题一次，
+失败保留并只续跑未开始cell，不改baseline、估计器或题目分母。本轮优先交付真实主结果。
+
 ## 研究目标与不可变边界
 
 构建用于真实论文实验的research prototype，不追求通用产品或无限语义。
