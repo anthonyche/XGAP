@@ -346,7 +346,7 @@ class PracticalSemanticDomain:
 
 
 @dataclass(frozen=True)
-class _ExactEvidenceSearchView:
+class _PracticalStrongSearchView:
     """Search-only projection; the shared domain/externally fixed sequence stays intact."""
     domain: PracticalSemanticDomain
     retained: tuple[BindingAction, ...]
@@ -359,16 +359,22 @@ class _ExactEvidenceSearchView:
 
 
 def strong_search_view(domain: PracticalSemanticDomain):
-    """Remove EXACT steps that cannot change its evidence-state projection.
+    """Order by available cost estimates; prune EXACT evidence-stuttering steps.
 
     Valid only for this domain's fixed, independent binding actions. Validation
     happens before this function; it is not an excuse to accept malformed actions.
     """
     pruned=tuple(a.action_id for a in domain.action_specs if domain.mode.mode=='exact' and a.authority is None)
+    pruned_ids=frozenset(pruned)
+    retained=tuple(sorted((a for a in domain.action_specs if a.action_id not in pruned_ids),
+        key=lambda a:(a.estimated_ms is None,a.estimated_ms if a.estimated_ms is not None else 0,
+            a.search_priority,a.action_id)))
     report={'policy':'exact_evidence_progress_v1','applied':bool(pruned),'pruned_action_ids':list(pruned),
         'declared_available_actions':len(domain.action_specs),'retained_actions':len(domain.action_specs)-len(pruned),
         'reason':'non_authoritative_binding_steps_do_not_advance_exact_validation',
-        'scope':'fixed independent PracticalSemanticDomain actions only; no PERFORMANCE or baseline change'}
-    if not pruned:return domain,report
-    retained=tuple(a for a in domain.action_specs if a.authority is not None)
-    return _ExactEvidenceSearchView(domain,retained),report
+        'scope':'pruning only for fixed independent EXACT binding actions; baseline order unchanged',
+        'search_order':'known estimate, estimate, declared priority, stable action ID',
+        'ordered_action_ids':[a.action_id for a in retained],
+        'cost_order_policy':'strong_information_estimate_order_v1'}
+    if retained==domain.action_specs:return domain,report
+    return _PracticalStrongSearchView(domain,retained),report

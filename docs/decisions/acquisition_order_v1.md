@@ -1,5 +1,28 @@
 # Acquisition search order and unknown cost
 
+## Strong search amendment — 2026-09-15
+
+The strong-only view now orders retained actions by known estimate, estimated
+milliseconds, declared priority, then stable ID. When all costs are unknown,
+the original priority order remains. Estimates participate in the existing
+acquisition-plus-worst-outcome terminal score; they are not probabilities or
+latency guarantees. Root improvement and all AND continuations retain their
+original budgets. O(M log M) ordering and O(M) storage remain polynomial.
+No optimality or approximation ratio follows from this heuristic order.
+
+The underlying domain's declaration order and fixed external frontend remain
+priority-first as below. In particular a baseline configured model-before-authority
+keeps that sequence even when the recorded authority estimate is lower. This
+amendment changes XGAP's own planning, not an author's baseline result.
+
+Actual development costs are measured separately under the
+[cost-basis contract](practical_information_cost_basis_v1.md). New cost values
+must cite their sample, observation scope and uncertainty. Do not use arbitrary
+rank values as milliseconds or tune from evaluation answers. The prior all-null
+profiles and their captured results remain unchanged.
+
+## Original declaration order and historical gate
+
 2026-09-14. Implements the approved brief's distinction between default search
 order, semantic authority and actual cost. This extends the practical strong
 profile; it does not change the legacy one-shot/baseline paths.
