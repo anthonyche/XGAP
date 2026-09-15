@@ -1,0 +1,137 @@
+{
+  "candidate_ids": [
+    "predicate:OWNS_ACCOUNT",
+    "predicate:SIGNED_IN_TO",
+    "predicate:TRANSFERRED_TO"
+  ],
+  "family_rules": {
+    "f1_direct_transfer_control": {
+      "phrases": [
+        "owned"
+      ],
+      "predicate": "OWNS_ACCOUNT"
+    },
+    "f2_temporal_path_control": {
+      "phrases": [
+        "transfers"
+      ],
+      "predicate": "TRANSFERRED_TO"
+    },
+    "f3_aggregate_risk_ranking": {
+      "phrases": [
+        "signed into"
+      ],
+      "predicate": "SIGNED_IN_TO"
+    }
+  },
+  "model_provider": {
+    "api_key_env": "XGAP_EXTERNAL_LLM_API_KEY",
+    "base_url": "http://112.95.75.67:9018/v1",
+    "disable_thinking": true,
+    "max_tokens": 512,
+    "model": "qwen3.8-27b",
+    "prompt": {
+      "path": "../../datasets/practical_model_profile_v1/prompt.txt",
+      "sha256": "e14bf228e64340f607b6dd1490754b2984b890bae4dd26af44943d1a7aa616c8"
+    },
+    "provider_id": "practical-live-slot-v1",
+    "temperature": 0,
+    "timeout_seconds": 45,
+    "top_p": 1
+  },
+  "modes": {
+    "exact": {
+      "actions": {
+        "relation-authority": {
+          "estimated_ms": 2.673249691724777,
+          "search_priority": 1,
+          "token_budget": 0
+        },
+        "relation-model": {
+          "estimated_ms": 329.38550040125847,
+          "search_priority": 0,
+          "token_budget": 4096
+        }
+      },
+      "physical": {
+        "max_binding_bytes": 1048576,
+        "max_bindings": 10000,
+        "max_holes": 16,
+        "max_local_options": 64,
+        "max_operators": 64,
+        "max_parallelism": 4,
+        "max_physical_candidates": 256,
+        "max_remote_calls": 16
+      },
+      "search": {
+        "improvement_actions": 2,
+        "max_actions": 64,
+        "max_depth": 2,
+        "max_outcomes": 8,
+        "max_states": 64,
+        "max_terminals_per_state": 2,
+        "planning_ms": 2000.0,
+        "resources": {
+          "model_calls": 1,
+          "remote_calls": 32,
+          "tokens": 4096
+        }
+      },
+      "semantic": {
+        "allowed_unvalidated": [],
+        "epsilon": null,
+        "improve_physical": true,
+        "mode": "exact"
+      }
+    },
+    "performance": {
+      "actions": {
+        "relation-authority": {
+          "estimated_ms": 2.673249691724777,
+          "search_priority": 1,
+          "token_budget": 0
+        },
+        "relation-model": {
+          "estimated_ms": 329.38550040125847,
+          "search_priority": 0,
+          "token_budget": 4096
+        }
+      },
+      "physical": {
+        "max_binding_bytes": 1048576,
+        "max_bindings": 10000,
+        "max_holes": 16,
+        "max_local_options": 64,
+        "max_operators": 64,
+        "max_parallelism": 4,
+        "max_physical_candidates": 64,
+        "max_remote_calls": 16
+      },
+      "search": {
+        "improvement_actions": 0,
+        "max_actions": 64,
+        "max_depth": 2,
+        "max_outcomes": 8,
+        "max_states": 64,
+        "max_terminals_per_state": 2,
+        "planning_ms": 500,
+        "resources": {
+          "model_calls": 1,
+          "remote_calls": 8,
+          "tokens": 4096
+        }
+      },
+      "semantic": {
+        "allowed_unvalidated": [
+          "relation"
+        ],
+        "epsilon": null,
+        "improve_physical": false,
+        "mode": "performance"
+      }
+    }
+  },
+  "policy_id": "partial-strong-cost-informed-v1",
+  "schema_version": "xgap-partial-strong-input-policy-v1",
+  "scope": "Development candidate; unchanged permissions/budgets/fixed baseline order. Action estimates are observed three-case median invocation wall ms including capture overhead; not general calibration. Basis receipt SHA-256 3ea23f67312fd27156666a38b5abe2dba3b8afc3b0c1e0375034d5653653f59b"
+}
