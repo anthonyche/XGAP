@@ -216,8 +216,10 @@ none of these observations establishes latency superiority or general NL accurac
 1. Coherent development EXACT/PERFORMANCE profiles, ordinary publish/record/replay,
    a common real native worker and independent per-question study wiring are now
    implemented. See [current evidence](../status.md). Remaining work is the concrete
-   paper input/authority contract, mode configuration, matched external frontend
-   and release validation; do not describe those as an already launched campaign.
+   paper mode configuration and release validation. Partial predicate-hole input
+   candidates and the matched fixed-information external frontend now exist;
+   see current status for actual evidence and remaining redundant EXACT actions.
+   Do not describe these as an already launched campaign.
 2. Validate real cost/relative ranking and useful plan availability on the declared
    experiment inputs. Keep missing authority, no-plan and execution failure in the
    denominator. Do not force progressive binding or use observed winners online.

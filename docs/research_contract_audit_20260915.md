@@ -15,6 +15,9 @@ tiny study，各4行gold、1计划/11源调用。完整输入采用在线schema 
 最终通过。真实六cell各尝试一次，XGAP/FedX权限差异一致；FedUP两cell因原生extend
 不支持失败，结果不修补。[报告](report/fixed_information_frontend_20260915.md)。固定前端
 不是作者方法本身的NL能力或strong策略，也不能把不支持当作XGAP速度优势。
+后续已发布[关系槽输入候选](report/partial_strong_inputs_20260915.md)：两表示各120题、
+原24/48/48划分、968 pin；12次开发离线规划均strong，未执行大图或模型。论文profile
+仍未release；EXACT候选的冗余模型前缀是下一工程风险。
 
 当前结论：**可信有界模板下，新strong核心闭环与共同真实实验入口已通；论文版
 两模式的可比输入、配置和campaign尚未发布。** 后者包含接线工作，也包含实验协议，
@@ -32,7 +35,7 @@ tiny study，各4行gold、1计划/11源调用。完整输入采用在线schema 
 |读取与准备优化|相同完整源查询共享、必要string/bool过滤、每请求一次依赖admission|源调用14→11，源行74→61，响应18606→15820B；bundle加载4→1|只在对应等价/类型前提下适用；跨冷会话不能由此推出提速倍数|
 |规划预算|内部检查点已实现，保留完整incumbent|6项新+1项受影响检查|合作式软预算；单次编译/预测与封存仍可越时，外层监督独立|
 |记录/回放/共同worker|新方法名、独立trusted_template范围、原始结果与失败回放已实现|一次真实EXACT外层1.711s/11源调用/4行gold；大trace摘要交付另有本地门|不等于旧campaign已调用新方法；最终答案本身仍有记录容量限制，源捕获另支持有界512MiB回放；未实现无界流式答案|
-|论文模式配置|开发配置发布、预检、执行、回放已实现；完整语义FinBench子轨已有输入|native/RDF各120题元数据与一个双模式tiny study|正式部分绑定输入、论文两模式参数与release manifest未发布|
+|论文模式配置|开发配置发布、预检、执行、回放已实现；完整/部分绑定FinBench输入候选已发布|两表示各120题及原划分；新部分绑定12次开发离线规划均strong|论文两模式参数与release manifest未发布；EXACT候选有冗余模型前缀|
 |外部方法|新同权限固定信息前端及四个显式FedUP/FedX组合worker已实现|17个新检查最终通过；真实FedX两模式返回，FedUP两模式原生extend不支持|正式部分绑定population/release未发布；效率对照必须明确共同支持范围，不能混旧NL分母|
 |正式评价|独立参考、预算/监督/评分、顺序journal和strong逐题映射已有实现|旧FinBench记录保留；新study一组真实tiny batch正确|正式部分绑定发布和新strong总体质量/效率/规模未测；不能将tiny gate视为主评价|
 
