@@ -17,16 +17,16 @@
 |新strong共同worker|6新+1受影响；随后1输入检查+真实EXACT请求：4行gold、11源调用、外层1711ms|owned服务全部关闭；[报告](report/practical_worker_native_20260915.md)|
 |大trace/小outcome|4新+1受影响；>16MiB中间记录、<4KiB摘要正确交付|全trace仍保留/占内存；[报告](report/practical_outcome_20260915.md)|
 |大源记录回放|5新+1受影响；>16MiB合法JSON捕获完整回放，源容量界限512MiB|非流式/规模实证；[报告](report/practical_capture_size_20260915.md)|
-|独立study接线|6新检查；逐题profile、交替模式顺序、单组续跑及不重提intent|局部门；尚无该包装真实批次；[报告](report/practical_study_20260915.md)|
-|完整可信查询入口|7新+3受影响检查已通过；两个实际小图模式各1计划/1源调用，14条边对计数正确|closed输入绑定原问题，在线schema路由计费；[契约](decisions/resolved_strong_inputs_v1.md)。FinBench元数据发布进行中，不是总体评价|
+|独立study接线|6新检查；现补1真实group/双模式，各4行gold、1计划/11源调用|总22源调用，0模型，owned服务关闭；[新报告](report/resolved_strong_inputs_20260915.md)|
+|完整可信查询与两表示输入|7新+3受影响检查通过；native/RDF各120题与24/48/48原划分，726生成pin校验|在线schema路由计费；新物理开发preset100/2000ms；[报告](report/resolved_strong_inputs_20260915.md)。非部分绑定或总体评价|
 
 所有计数按对应里程碑原始记录，不把重复的受影响检查累加为独立实验样本。新记录
 接口/profile有可调用实现；它们不是占位文档。当前测试只覆盖声明边界。
 
 ## 尚未实现与尚未验证
 
-- 正式部分绑定population、论文模式profile/release及外部同权限组合前端尚未发布。
-  独立study映射已经实现；仍需接入具体冻结输入和必要发布验收。
+- 完整语义FinBench输入已发布；正式部分绑定population、论文模式profile/release及
+  外部同权限组合前端尚未发布。独立study已过一次真实tiny group，正式评价仍未启动。
 - 任意NL结构的权威验证、用户待定义的d/epsilon保证尚未实现；新模式明确限定可信结构。
 - 实际两模式质量/速度优势、估计排序泛化、regret与scalability尚未证明。
 - 旧FinBench真实结果存在，含错误/失败、空与非空答案，按原版本/曝光保存；不能换名
