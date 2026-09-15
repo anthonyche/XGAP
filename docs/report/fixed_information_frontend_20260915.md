@@ -1,6 +1,7 @@
 # 部分绑定共同前端与外部组合方法
 
-2026-09-15。实现完成；真实共同输入门尚待执行。本报告随本次验收更新。
+2026-09-15。实现提交`1fa5c89`；真实共同输入六个cell均已执行一次并封存。
+其中4个成功返回、2个FedUP原生不支持；不能写成六个方法全部成功。
 
 问题：旧FedUP/FedX路径消费完整SPARQL或旧NL输入，不能直接作为新trusted-template
 strong系统的同信息权限对照。现在新增显式`fixed-info-{exact,performance}-{fedup,fedx}`：
@@ -29,6 +30,40 @@ common trial、guard、observer、post-seal score和journal；参考答案不会
 预期EXACT读权威回答得到Account，PERFORMANCE可以采用Person预测。gold为既有
 tiny fixture的Account business IDs 1/2/3/4，独立于方法输出；这不是随机质量样本。
 使用既有冻结tiny RDF/TDB和FedUP summary，不重建catalog、不训练估计器。
+
+## 真实共同输入结果
+
+|方法|权威读取|返回/答案|源请求（其中ASK）|共同online ms|
+|---|---:|---|---:|---:|
+|XGAP EXACT|1|4行，EM=1|1（0）|666.08|
+|XGAP PERFORMANCE|0|1行，EM=0|1（0）|286.79|
+|固定信息 EXACT + FedUP|1|HTTP500，原生不支持|0|1566.06|
+|固定信息 EXACT + FedX|1|4行，EM=1|17（14）|683.35|
+|固定信息 PERFORMANCE + FedUP|0|HTTP500，原生不支持|0|1507.83|
+|固定信息 PERFORMANCE + FedX|0|1行，EM=0|17（14）|670.95|
+
+共6次最终方法调用、36次源请求、0模型/训练/自动重试。每个成功返回的方法都使用
+同一模式权限：EXACT采集权威类型，PERFORMANCE保留显式授权的错误类型预测。
+这证明实现确实区分了权限，不是测得真实问题中的“EXACT准确率100%/PERFORMANCE0%”。
+clarification是按需读取预先提交的权威文件，计实际访问耗时，没有虚构用户等待费用。
+
+两个外部方法在同模式下收到的global SPARQL hash完全相同。FedUP作者日志均为
+`UnsupportedOperationException`，当前生成查询的`extend`结构被拒绝，失败发生在
+发源请求之前。原始HTTP响应和日志保留，不简化查询、不加outer algebra、不改作者
+能力或答案。这个结果说明当前生成形式不在其可运行范围；不能把该缺口当作XGAP
+优化器的速度优势。后续效率图必须明确共同支持范围；作者原生支持范围另行报告。
+
+第一次会话在FedUP失败后按既有规则退役sources，两个后续会话只接续尚未创建intent
+的cell。先前journal文件逐个hash保持不变，所有owned进程组已排空、observer已停止。
+不是把失败重跑到成功。三会话的冷启动/缓存状态不同；表中时间是原始计量，不能用
+这一个合成group宣称整体速度倍数。FedUP失败时间包含明确的退役/恢复成本。
+FedX的14个ASK属于原作者方法的源选择行为，完整计入源请求，不是前端试跑备选计划。
+
+[聚合证据](../../experiments/artifacts/fixed_information_frontend_20260915.json) SHA
+`28dd52db40b0a36c5c91f784bd6ae5050ba395e5486fc2605f404ef9b35624ca`；含三会话的原始
+receipt、各方法结果/查询pin和资源关闭证据。最后一次续跑receipt成功仅指最后一个
+FedX cell；全组仍有两个原生失败。只读聚合初次因`read_pinned`参数名误用失败，修正
+调用后完成；未重跑任何模型、方法、源请求或评分。
 
 代码：`agent/fixed_information_frontend.py`、`experiments/fixed_information_worker.py`、
 `practical_methods.py`；共享binding extraction、profile mapping pin、worker/common/study
