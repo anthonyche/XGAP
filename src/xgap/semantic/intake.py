@@ -253,8 +253,9 @@ class DeterministicSemanticIntake:
             raise SemanticIntakeError("allow_closed must be an explicit boolean")
         if not isinstance(raw_holes, list) or (not raw_holes and not allow_closed):
             raise SemanticIntakeError("semantic intake template requires holes")
-        if not raw_holes:
-            question_pin = _safe_json_mapping(payload["metadata"], name="metadata").get("trusted_question_sha256")
+        metadata = _safe_json_mapping(payload["metadata"], name="metadata")
+        if not raw_holes or "trusted_question_sha256" in metadata:
+            question_pin = metadata.get("trusted_question_sha256")
             if not isinstance(question_pin, str) or not _SHA256.fullmatch(question_pin):
                 raise SemanticIntakeError("Closed trusted intake must pin the exact question text")
         holes: list[_HoleTemplate] = []
@@ -423,8 +424,8 @@ class DeterministicSemanticIntake:
         if not isinstance(question, str) or not question.strip():
             raise SemanticIntakeError("natural-language request must be nonempty")
         question_sha256 = hashlib.sha256(question.encode("utf-8")).hexdigest()
-        if not self._holes and question_sha256 != self._metadata["trusted_question_sha256"]:
-            raise SemanticIntakeError("Question differs from its closed trusted intake")
+        if "trusted_question_sha256" in self._metadata and question_sha256 != self._metadata["trusted_question_sha256"]:
+            raise SemanticIntakeError("Question differs from its pinned trusted intake")
         phrase_matches: list[IntakePhraseMatch] = []
         holes: list[SemanticHole] = []
         for template in self._holes:
