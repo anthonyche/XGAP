@@ -7,7 +7,8 @@ Scores are estimates, never admissible bounds or global optimality certificates.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
+from itertools import islice
 import math
 import time
 from typing import Any, Hashable, Iterable, Protocol
@@ -133,6 +134,7 @@ class PolicySearchResult:
     optimality_certified: bool = False
     root_lower_bound: float | None = None
     incumbent_cost_upper_bound: float | None = None
+    terminal_refinement_records: tuple[dict, ...] = ()
 
     def to_dict(self):
         return {"schema_version": "xgap-strong-policy-search-v1", "status": self.status,
@@ -146,6 +148,8 @@ class PolicySearchResult:
                 "cost_objective": "estimated acquisition plus worst-outcome terminal cost",
                 "optimality_certified": False, "root_lower_bound": None,
                 "incumbent_cost_upper_bound": None, "action_records": list(self.action_records),
+                "terminal_refinement_records": list(self.terminal_refinement_records),
+                "feasible_first_scope": "complete_root_policy_before_optional_terminal_refinement",
                 "limit_events": list(self.limit_events), "external_calls_during_search": 0}
 
 
@@ -162,6 +166,7 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
     started = clock()
     retained, expanded, generated = 1, 0, 0
     records, events = [], []
+    terminal_streams, refinements = {}, []
     first_ms = first_cost = first_action_count = None
 
     def elapsed():
@@ -181,23 +186,64 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
         if first_ms is None:
             first_ms, first_cost, first_action_count = elapsed(), policy.estimated_cost, generated
 
+    def rank(node):
+        return (node.estimated_cost is None, node.estimated_cost or 0)
+
+    def backed_up(action, children):
+        costs = [c.estimated_cost for _, c in children]
+        return (None if action.estimated_cost is None or any(c is None for c in costs)
+                else action.estimated_cost + max(costs))
+
+    def refine(node):
+        # Called only after a COMPLETE root candidate exists. Every replacement
+        # preserves that candidate's full outcome tree and pathwise admission.
+        if stopped():
+            return node
+        if node.terminal is not None:
+            saved = terminal_streams.pop(node.state_id, None)
+            if saved is None:
+                return node
+            stream, usage = saved
+            record = {"state_id": node.state_id, "before_cost": node.estimated_cost,
+                      "candidates": 0, "resource_rejections": 0, "accepted": 0, "status": "finished"}
+            refinements.append(record)
+            while not stopped():
+                try:
+                    terminal = next(stream)
+                except StopIteration:
+                    break
+                except Exception as error:
+                    record.update(status="optional_generation_error", error_type=type(error).__name__)
+                    events.append("optional_terminal_error")
+                    break
+                record["candidates"] += 1
+                if not (usage + terminal.resources).fits(limits.resources):
+                    record["resource_rejections"] += 1
+                    continue
+                candidate = PolicyNode(node.state_id, terminal.estimated_cost, terminal=terminal)
+                if rank(candidate) < rank(node):
+                    node = candidate
+                    record["accepted"] += 1
+            record["after_cost"] = node.estimated_cost
+            if record['status']=='finished' and elapsed() >= limits.planning_ms:
+                record['status']='planning_deadline'
+            return node
+        children = tuple((label, refine(child)) for label, child in node.children)
+        return replace(node, children=children, estimated_cost=backed_up(node.action, children))
+
     def solve(state, state_id, depth, usage, history):
         nonlocal retained, expanded, generated
         if stopped():
             return None
         expanded += 1
         best = None
-        # The domain is responsible for polynomial local candidate generation.
-        from itertools import islice
-        def rank(node):
-            return (node.estimated_cost is None, node.estimated_cost or 0)
-        for terminal in islice(domain.terminals(state), limits.max_terminals_per_state):
+        # One stream/cap covers both initial admission and later refinement.
+        stream = islice(domain.terminals(state), limits.max_terminals_per_state)
+        for terminal in stream:
             if (usage + terminal.resources).fits(limits.resources):
-                candidate = PolicyNode(state_id, terminal.estimated_cost, terminal=terminal)
-                if best is None or rank(candidate) < rank(best):
-                    best = candidate
-                    if not depth:
-                        found(best)
+                best = PolicyNode(state_id, terminal.estimated_cost, terminal=terminal)
+                terminal_streams[state_id] = (stream, usage)
+                break
             if elapsed() >= limits.planning_ms:
                 events.append("planning_deadline")
                 break
@@ -205,6 +251,7 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
             if depth:
                 return best
             found(best)
+            best = refine(best)
         if depth >= limits.max_depth:
             events.append("depth_budget")
             return best
@@ -250,20 +297,21 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
             if len(children) != count:
                 record["status"] = "no_complete_strong_continuation"
                 continue
-            costs = [c.estimated_cost for _, c in children]
-            score = (None if action.estimated_cost is None or any(c is None for c in costs)
-                     else action.estimated_cost + max(costs))
+            score = backed_up(action, children)
             candidate = PolicyNode(state_id, score,
                                    action=action, children=tuple(children))
             record.update(status="strong", estimated_cost=candidate.estimated_cost)
+            if depth:
+                return candidate
+            found(candidate)
+            candidate = refine(candidate)
+            record['refined_estimated_cost'] = candidate.estimated_cost
             if best is None or rank(candidate) < rank(best):
                 best = candidate
-            if depth:
-                return best
-            found(best)
         return best
 
     policy = solve(root, 1, 0, ResourceUsage(), frozenset())
     return PolicySearchResult(policy, "feasible" if policy else "no_feasible_plan",
         events[-1] if events else "declared_alternatives_finished", expanded, retained, generated,
-        elapsed(), first_ms, first_cost, tuple(records), tuple(dict.fromkeys(events)))
+        elapsed(), first_ms, first_cost, tuple(records), tuple(dict.fromkeys(events)),
+        terminal_refinement_records=tuple(refinements))

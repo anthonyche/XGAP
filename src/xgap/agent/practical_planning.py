@@ -191,6 +191,7 @@ class PracticalSemanticDomain:
         for slot, candidate in self.predictions.items():
             self._check_binding(slot, candidate)
         self.failures, self.plan_cache = [], {}
+        self.completed_improvements = set()
         self.compiled_states = self.estimator_calls = 0
         self.planning_checkpoint = None
 
@@ -283,23 +284,31 @@ class PracticalSemanticDomain:
             return
         values, unresolved = choices
         key = (tuple(sorted(values.items())), state.evidence)
+        bound = None
         if key in self.plan_cache:
-            yield from self.plan_cache[key]
-            return
-        try:
-            bound = self._bind_choices(state, values)
-            baseline = _baseline(bound.program, bound.operator_sources, self.sources, self.backends, self.physical_profile)
-        except (ValueError, KeyError, CompilerError) as error:
-            self.failures.append({"bindings": values, "stage": "baseline", "error": str(error)})
-            return
-        self.compiled_states += 1
-        seed = self._terminal(baseline, bound, state, unresolved)
-        self.plan_cache[key] = (seed,)
+            seed = self.plan_cache[key][0]
+        else:
+            try:
+                bound = self._bind_choices(state, values)
+                baseline = _baseline(bound.program, bound.operator_sources, self.sources, self.backends, self.physical_profile)
+            except (ValueError, KeyError, CompilerError) as error:
+                self.failures.append({"bindings": values, "stage": "baseline", "error": str(error)})
+                return
+            self.compiled_states += 1
+            seed = self._terminal(baseline, bound, state, unresolved)
+            self.plan_cache[key] = (seed,)
         yield seed  # A legal fallback survives unknown estimates/strategy-domain caps.
         if not self.mode.improve_physical:
             return
+        if key in self.completed_improvements:
+            yield from self.plan_cache[key][1:]
+            return
+        # A yielded seed is not a completed optimization. Any suspended stream
+        # may finish this key once; every other stream then reuses the result.
+        self.completed_improvements.add(key)
         try:
             if self.planning_checkpoint is not None:self.planning_checkpoint()
+            if bound is None:bound = self._bind_choices(state, values)
             alternatives, _ = prepare_one_shot_domain(bound.program, operator_sources=bound.operator_sources,
                 sources=self.sources, backends=self.backends, policy=self.physical_profile,
                 progressive_bindings=True,shared_native_reads=True,source_row_prefilters=True,
