@@ -64,7 +64,7 @@ def test_publication_preserves_denominator_and_meaning_without_reading_answers(t
         return original_open(path,*a,**kw)
     monkeypatch.setattr(Path,'open',guarded)
     p=publish_partial_cohort(**args);doc=json.loads(Path(p['path']).read_text())
-    assert doc['instance_count']==3 and doc['catalog_admission_count']==3
+    assert doc['instance_count']==3 and doc['catalog_admission_count']==1
     assert doc['model_calls']==doc['backend_calls']==doc['planning_runs']==doc['catalog_builds']==doc['fit_calls']==0
     assert not doc['reference_contents_read'] and not doc['formal_campaign_ready']
     for group in doc['groups']:
@@ -94,7 +94,7 @@ def test_publication_preserves_denominator_and_meaning_without_reading_answers(t
     assert all(json.loads(Path(p['path']).read_text())['methods']==list(PRACTICAL_METHODS if rdf else STRONG_METHODS) for p in doc['study_inputs'].values())
 
 
-@pytest.mark.parametrize('change',['duplicate','dataset','predictions','target','prompt'])
+@pytest.mark.parametrize('change',['duplicate','dataset','predictions','target','prompt','source','dependencies'])
 def test_changed_or_unsupported_candidate_inputs_fail_without_release_manifest(tmp_path,change):
     args=inputs(tmp_path);cohort=json.loads(Path(args['cohort_path']).read_text())
     if change=='duplicate':cohort['groups'][1]['question_id']='0'
@@ -102,6 +102,14 @@ def test_changed_or_unsupported_candidate_inputs_fail_without_release_manifest(t
     elif change=='predictions':
         old=cohort['groups'][0]['request'];raw=json.loads(Path(old['path']).read_text());raw['predictions']={'relation':'predicate:knows'}
         cohort['groups'][0]['request']=write_once(tmp_path/'wrong-request.json',raw)
+    elif change=='source':
+        old=cohort['groups'][1]['authored_semantics_as_explicit_input'];raw=json.loads(Path(old['path']).read_text())
+        raw['operator_sources']['edge0']='undeclared'
+        cohort['groups'][1]['authored_semantics_as_explicit_input']=write_once(tmp_path/'wrong-source.json',raw)
+    elif change=='dependencies':
+        old=cohort['groups'][1]['profile'];raw=json.loads(Path(old['path']).read_text())
+        raw['sources']['toy']['version']='different'
+        cohort['groups'][1]['profile']=write_once(tmp_path/'wrong-profile.json',raw)
     elif change in ('target','prompt'):
         policy=json.loads(Path(args['policy_path']).read_text())
         if change=='target':policy['family_rules']['controlled']['predicate']='NOT_PRESENT'

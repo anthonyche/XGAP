@@ -14,6 +14,7 @@ from xgap.experiments.practical_profile import FrozenPracticalProfile
 from xgap.experiments.practical_study import SCHEMA_V2
 from xgap.experiments.resolved_strong_inputs import closed_template, SPLITS
 from xgap.semantic.binding import bind_semantic_query
+from xgap.semantic.intake import DeterministicSemanticIntake
 from xgap.semantic.program import SemanticGraphProgram, hard_constraints_sha256
 
 SLOT='relation'
@@ -70,7 +71,7 @@ def publish_partial_cohort(*,cohort_path,cohort_sha256,policy_path,policy_sha256
     if rdf!=(rdf_mapping_sha256 is not None):raise ValueError('RDF mapping path and hash must be supplied together')
     mapping={'path':str(Path(rdf_mapping_path).resolve()),'sha256':rdf_mapping_sha256} if rdf else None
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
-    groups={s:[] for s in SPLITS};published=[];dependency_reads=0
+    groups={s:[] for s in SPLITS};published=[];dependency_reads=0;shared_cfg=None;shared_contract=None
     for i,row in enumerate(rows):
         previous=_pin(row['profile'],origin);previous_root=Path(previous['path']).parent
         old=json.loads(read_pinned(previous['path'],previous['sha256']))
@@ -92,6 +93,13 @@ def publish_partial_cohort(*,cohort_path,cohort_sha256,policy_path,policy_sha256
         refs += [s['equality_key_bounds'] for s in common['sources'].values() if 'equality_key_bounds' in s]
         for ref in refs:ref['path']=str((previous_root/ref['path']).resolve())
         for spec in common['backends'].values():spec['client']['url']='http://127.0.0.1:1'
+        source_ops={op.operator_id for op in program.operators if op.kind.value in ('match','traverse')}
+        assignments=semantic['operator_sources']
+        if (not isinstance(assignments,dict) or set(assignments)!=source_ops or
+                any(not isinstance(v,str) or v not in common['sources'] for v in assignments.values())):
+            raise ValueError('Supplied source assignments must cover exactly the declared source operators')
+        if shared_contract is not None and common!=shared_contract:
+            raise ValueError('A partial cohort must share the same frozen dependencies')
         annotation={'kind':'clarification','slot':SLOT,'candidate_ids':candidates,
             'source_id':'finbench-authored-semantic-annotation','version':semantic_pin['sha256'],'failed_outcomes':[]}
         doc={**common,'schema_version':'xgap-frozen-practical-profile-v1','profile_id':f'{policy["policy_id"]}:{i:03}',
@@ -104,8 +112,16 @@ def publish_partial_cohort(*,cohort_path,cohort_sha256,policy_path,policy_sha256
                 'formal_campaign_ready':False,'catalog_builds':0,'fit_calls':0,'initial_predictions_supplied':False}}
         if rdf:doc['external_frontend']={'policy':'fixed_action_order_v1','mapping':mapping}
         profile_pin=write_once(directory/'profile.json',doc)
-        profile,cfg=FrozenPracticalProfile.load_materialized(profile_pin['path'],expected_sha256=profile_pin['sha256'])
-        dependency_reads+=1
+        if shared_cfg is None:
+            profile,shared_cfg=FrozenPracticalProfile.load_materialized(profile_pin['path'],expected_sha256=profile_pin['sha256'])
+            cfg=shared_cfg;shared_contract=deepcopy(common);dependency_reads+=1
+        else:
+            # Only self-generated per-question fields vary. Candidate sets, modes,
+            # providers and mapping are one fixed policy; common dependencies must
+            # compare equal before reuse. Every template/source map is checked.
+            profile=FrozenPracticalProfile(directory,profile_pin['sha256'],json.dumps(doc))
+            intake=DeterministicSemanticIntake(template,artifact_sha256=intake_pin['sha256'],allow_closed=True)
+            cfg=(doc,intake,*shared_cfg[2:])
         intended=[c for c in candidates if cfg[2].bindings[c].value==rule['predicate']]
         if len(intended)!=1:raise ValueError('Exactly one declared predicate binding must restore authored meaning')
         raw={**request,'trusted_bindings':{},'predictions':{},'clarifications':{}}
