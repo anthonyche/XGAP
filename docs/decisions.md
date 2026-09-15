@@ -28,6 +28,7 @@
 |较大源响应回放|[capture size](decisions/practical_capture_size_v1.md)|
 |逐题配置、单组调度与续跑|[study](decisions/practical_study_v1.md)|
 |完整可信FinBench语义输入与在线源路由|[resolved inputs](decisions/resolved_strong_inputs_v1.md)|
+|部分绑定共同前端、外部组合与v2 study|[fixed information frontend](decisions/fixed_information_frontend_v1.md)|
 |为何不强制新候选胜出|[预定成本诊断](decisions/practical_cost_diagnostic_v1.md)|
 
 ## 共享语义与旧接口仍需保留

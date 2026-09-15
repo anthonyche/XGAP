@@ -42,6 +42,7 @@ def publish_profile(*,profile_path,profile_sha256,output):
     if doc['estimator'] is not None:refs.append(doc['estimator'])
     refs += [s['equality_key_bounds'] for s in doc['sources'].values() if 'equality_key_bounds' in s]
     refs += [a['provider']['prompt'] for a in doc['acquisitions'].values() if a['kind']=='model']
+    if 'external_frontend' in doc:refs.append(doc['external_frontend']['mapping'])
     for pin in refs:pin['path']=str((profile.root/pin['path']).resolve())
     doc['offline']={**doc['offline'],'published_from':{'path':str(Path(profile_path).resolve()),'sha256':profile_sha256},
         'publication_model_calls':0,'publication_source_calls':0,'publication_fit_calls':0}

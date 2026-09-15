@@ -19,8 +19,9 @@
    双模式study；它用于物理规划比较，不代替部分绑定下的信息获取实验。
 2. 在开发条件下冻结论文profile/工具顺序与成本来源、估计器、PERFORMANCE改进预算。
    不用评价输出调参，不人为制造高澄清成本，不把unknown当0。
-3. 发布具体逐题输入/参考/配置和外部共同前端。复用已实现study、共同guard、observer、
-   score与journal，只检验新接线风险和必要vertical slice，保留失败replay。
+3. 发布具体逐题输入/参考/配置；外部共同固定信息前端与显式六方法v2映射已实现。
+   复用已实现study、共同guard、observer、score与journal，完成新的tiny真实共同输入门；
+   随后只检验具体发布风险，保留失败replay。
 4. 依已批准优先级执行真实FinBench native与同事实RDF FedUP/FedX，再bounded FedShop。
    主效率/质量/规模结果在前，消融在后；同图对照必须有相同事实与可比较的信息条件。
 5. 用户推进d之后再接入其正式误差契约。无epsilon主张的评价不因此自动停止。

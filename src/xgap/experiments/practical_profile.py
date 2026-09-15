@@ -104,7 +104,7 @@ class FrozenPracticalProfile:
     def materialize(self):
         doc=json.loads(self.document_json)
         _fields(doc,('schema_version','profile_id','dataset','intake','operator_sources','catalog',
-            'estimator','sources','backends','acquisitions','modes','offline'),('source_schema',))
+            'estimator','sources','backends','acquisitions','modes','offline'),('source_schema','external_frontend'))
         if doc['schema_version'] != SCHEMA: raise ValueError('Unsupported practical profile')
         _text(doc['profile_id']);_fields(doc['dataset'],('dataset_id','version'))
         for v in doc['dataset'].values():_text(v)
@@ -143,6 +143,16 @@ class FrozenPracticalProfile:
                 raise ValueError('Equality statistics namespace mismatch')
             sources[key]=LogicalSource(key,spec['version'],replicas,bounds)
         if set(identities)!=set(backends):raise ValueError('Every backend requires a source')
+        if 'external_frontend' in doc:
+            front=doc['external_frontend']
+            _fields(front,('policy','mapping'))
+            if front['policy']!='fixed_action_order_v1' or any(s['engine']!='fuseki' for s in clients.values()):
+                raise ValueError('Fixed-information external composition needs an explicit all-RDF profile')
+            mapping=json.loads(_file(self.root,front['mapping']))
+            if not isinstance(mapping,dict) or not {'resource_namespace','identity_property','backend_mapping','rdf_edge_encoding','rdf_node_classes'}<=mapping.keys():
+                raise ValueError('External frontend needs a pinned global RDF mapping')
+            if any(b.resource_namespace!=mapping['resource_namespace'] or b.identity_property!=mapping['identity_property'] for b in backends.values()):
+                raise ValueError('External mapping and declared source identities differ')
         if estimator is not None:
             if identities!={s.backend_id:(s.source_id,s.snapshot_version) for s in estimator.statistics.entries}:
                 raise ValueError('Frozen estimator/source identities mismatch')

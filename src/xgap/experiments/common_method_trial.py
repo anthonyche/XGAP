@@ -12,6 +12,7 @@ from xgap.experiments.owned_resources import OwnedResources
 from xgap.experiments.process_guard import ProcessBudget, run_guarded_command
 from xgap.experiments.fixed_semantic_worker import REQUEST_SCHEMA
 from xgap.experiments.source_failure_classification import classify_source_failure
+from xgap.experiments.practical_methods import PRACTICAL_METHODS, external_engine
 
 
 def _run_trial(*, track,request_path,request_sha256,method,output,owned_services,observer,
@@ -24,7 +25,8 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
         from xgap.experiments.practical_profile import REQUEST_SCHEMA as PRACTICAL_SCHEMA
     schema=PRACTICAL_SCHEMA if practical else NL_SCHEMA if nl else REQUEST_SCHEMA
     if q.get('schema_version')!=schema:raise ValueError('A pinned request with the declared track is required')
-    if practical!=method.startswith('xgap-strong-'):raise ValueError('Strong methods require their explicit trusted-template track')
+    if practical!=(method in PRACTICAL_METHODS):raise ValueError('Practical methods require their explicit trusted-template track')
+    hosted=external_engine(method) is not None
     dataset=json.loads(read_pinned(profile_path,profile_sha256))['dataset'] if nl else q['dataset']
     r={'schema_version':'xgap-common-method-trial-v1',**{k:q[k] for k in ('question_id','population','exposure')},
         'method':method,'track':track,'dataset':dataset,'request_sha256':request_sha256,
@@ -37,7 +39,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
     try:
         monitor=OwnedResources(owned_services,method_rss_bytes=budget.max_group_rss_bytes,source_rss_bytes=source_rss_bytes,
             extra_monitor=package_monitor)
-        if not any(s.role=='source' for s in owned_services) or (method in ('fedup','fedx') and not any(s.role=='method_host' for s in owned_services)):
+        if not any(s.role=='source' for s in owned_services) or (hosted and not any(s.role=='method_host' for s in owned_services)):
             raise ValueError('Live source and hosted-method resources must be owned and observed')
         observer.set_phase(phase)
         phase_opened=True
@@ -48,7 +50,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             from xgap.experiments.nl_method_worker import METHODS
             if method not in METHODS:raise ValueError('Unknown NL method')
             command+=['--profile-path',str(Path(profile_path).resolve()),'--profile-sha256',profile_sha256]
-            if method in ('fedup','fedx'):command+=['--endpoint',endpoint]
+            if hosted:command+=['--endpoint',endpoint]
         elif method in ('xgap-rdf','xgap-native'):
             command+=['--profile-path',str(Path(profile_path).resolve()),'--profile-sha256',profile_sha256]
         elif method in ('fedup','fedx'):command+=['--endpoint',endpoint]
@@ -64,8 +66,9 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                 raise ValueError('Worker receipt identity mismatch')
             if nl and (child.get('profile_sha256')!=profile_sha256 or child.get('dataset') not in (None,dataset)):
                 raise ValueError('NL worker profile or dataset identity mismatch')
-            if practical and (child.get('track')!=track or child.get('execution_kind') not in (None,'configured_native')
-                              or (child.get('success') and child.get('execution_kind')!='configured_native')):
+            expected_kind='configured_external' if hosted else 'configured_native'
+            if practical and (child.get('track')!=track or child.get('execution_kind') not in (None,expected_kind)
+                              or (child.get('success') and child.get('execution_kind')!=expected_kind)):
                 raise ValueError('Strong worker scope differs or replay was substituted for live execution')
         observed=observer.snapshot(phase)
         r.update(success=bool(guard['success'] and child and child['success'] and observed['failed_requests']==0),
@@ -82,7 +85,8 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                 r[key]=child.get(key) if child else None
         if practical:
             for key in ('admission_ms','acquisition_ms','clarification_calls','strong_plan','semantic_validation',
-                        'unvalidated_bindings','semantic_discrepancy_upper_bound','discrepancy_status','core_result'):
+                        'unvalidated_bindings','semantic_discrepancy_upper_bound','discrepancy_status','core_result',
+                        'external_engine','information_strategy'):
                 r[key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
     except Exception as error:

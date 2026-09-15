@@ -19,14 +19,15 @@
 |大源记录回放|5新+1受影响；>16MiB合法JSON捕获完整回放，源容量界限512MiB|非流式/规模实证；[报告](report/practical_capture_size_20260915.md)|
 |独立study接线|6新检查；现补1真实group/双模式，各4行gold、1计划/11源调用|总22源调用，0模型，owned服务关闭；[新报告](report/resolved_strong_inputs_20260915.md)|
 |完整可信查询与两表示输入|7新+3受影响检查通过；native/RDF各120题与24/48/48原划分，726生成pin校验|在线schema路由计费；新物理开发preset100/2000ms；[报告](report/resolved_strong_inputs_20260915.md)。非部分绑定或总体评价|
+|部分绑定共同前端/外部组合|固定信息顺序、同模式绑定权限、一次global SPARQL及v2调度已实现；17个新定向检查最终通过|真实六方法tiny输入预检通过，实际边界待执行；[契约](decisions/fixed_information_frontend_v1.md)。不更改作者算法或答案|
 
 所有计数按对应里程碑原始记录，不把重复的受影响检查累加为独立实验样本。新记录
 接口/profile有可调用实现；它们不是占位文档。当前测试只覆盖声明边界。
 
 ## 尚未实现与尚未验证
 
-- 完整语义FinBench输入已发布；正式部分绑定population、论文模式profile/release及
-  外部同权限组合前端尚未发布。独立study已过一次真实tiny group，正式评价仍未启动。
+- 完整语义FinBench输入已发布；正式部分绑定population、论文模式profile/release尚未发布。
+  外部同权限组合前端已实现，当前进行新的真实共同输入门；正式评价仍未启动。
 - 任意NL结构的权威验证、用户待定义的d/epsilon保证尚未实现；新模式明确限定可信结构。
 - 实际两模式质量/速度优势、估计排序泛化、regret与scalability尚未证明。
 - 旧FinBench真实结果存在，含错误/失败、空与非空答案，按原版本/曝光保存；不能换名

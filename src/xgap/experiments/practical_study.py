@@ -11,10 +11,19 @@ from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.practical_profile import FrozenPracticalProfile
 from xgap.experiments.practical_records import publish_profile
 from xgap.experiments.process_guard import ProcessBudget
+from xgap.experiments.practical_methods import PRACTICAL_METHODS, FIXED_INFORMATION_METHODS
 
 
 SCHEMA='xgap-practical-study-input-v1'
+SCHEMA_V2='xgap-practical-study-input-v2'
 METHODS=('xgap-strong-exact','xgap-strong-performance')
+
+
+def _methods(value):
+    if (not isinstance(value,list) or not 2<=len(value)<=len(PRACTICAL_METHODS) or
+            len(set(value))!=len(value) or any(m not in PRACTICAL_METHODS for m in value)):
+        raise ValueError('Explicit distinct practical/composed method identities required')
+    return tuple(value)
 
 
 def _pin(raw,root):
@@ -30,10 +39,12 @@ def freeze_study(*,input_path,input_sha256,output):
     """Freeze declared input cells; do not read gold answers or invoke any tool."""
     origin=Path(input_path).resolve().parent
     raw=json.loads(read_pinned(input_path,input_sha256))
-    if (set(raw)!={'schema_version','study_id','groups'} or raw['schema_version']!=SCHEMA or
+    version=raw.get('schema_version');v2=version==SCHEMA_V2
+    if (set(raw)!=({'schema_version','study_id','groups','methods'} if v2 else {'schema_version','study_id','groups'}) or version not in (SCHEMA,SCHEMA_V2) or
             not isinstance(raw['study_id'],str) or not raw['study_id'] or
             not isinstance(raw['groups'],list) or not 1<=len(raw['groups'])<=128):
         raise ValueError('Expected a named practical study with1..128 explicit groups')
+    methods=_methods(raw['methods']) if v2 else METHODS
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     cells=[];seen=set();dataset=source_contract=None;profiles={}
     for index,group in enumerate(raw['groups']):
@@ -47,6 +58,8 @@ def freeze_study(*,input_path,input_sha256,output):
             obj,cfg=FrozenPracticalProfile.load_materialized(published['path'],expected_sha256=published['sha256'])
             profiles[identity]=(published,obj,cfg)
         published,obj,cfg=profiles[identity];doc=cfg[0]
+        if any(m in FIXED_INFORMATION_METHODS for m in methods) and 'external_frontend' not in doc:
+            raise ValueError('Composed methods require the explicit shared external RDF mapping')
         current={'sources':doc['sources'],'backends':doc['backends']}
         if dataset is None:dataset=doc['dataset'];source_contract=current
         if doc['dataset']!=dataset or current!=source_contract:
@@ -58,16 +71,17 @@ def freeze_study(*,input_path,input_sha256,output):
             obj.prepare(question,request_sha256=request['sha256'],request_root=Path(request['path']).parent,
                 mode=mode,materialized=cfg)
         # Preserve the declared group order. Alternate mode order before outcomes.
-        for position,method in enumerate(METHODS if index%2==0 else tuple(reversed(METHODS))):
+        offset=index%len(methods)
+        for position,method in enumerate(methods[offset:]+methods[:offset]):
             cells.append({'cell_id':f'trusted-template-00-{index:03}-{position}','block':0,
                 'group_index':index,'method_position':position,'method':method,'track':'trusted_template',
                 'question_id':question['question_id'],'population':question['population'],'exposure':question['exposure'],
                 'request':request,'practical_profile':published,'reference_for_post_seal_scoring_only':reference})
     return write_once(root/'schedule.json',{'schema_version':'xgap-balanced-campaign-schedule-v1',
-        'profile_kind':'practical_per_question_v1','deployment':'caller_owned_practical','study_id':raw['study_id'],
+        'profile_kind':'practical_per_question_v2' if v2 else 'practical_per_question_v1','deployment':'caller_owned_practical','study_id':raw['study_id'],
         'input':{'path':str(Path(input_path).resolve()),'sha256':input_sha256},'dataset':dataset,
-        'track':'trusted_template','methods':list(METHODS),'groups':len(seen),'blocks':1,'cells':cells,
-        'order_design':'declared group order; alternating two-mode order; frozen before outcomes',
+        'track':'trusted_template','methods':list(methods),'groups':len(seen),'blocks':1,'cells':cells,
+        'order_design':'declared group order; cyclic method rotation by group index; frozen before outcomes' if v2 else 'declared group order; alternating two-mode order; frozen before outcomes',
         'maximum_top_level_method_attempts':len(cells),'automatic_retries':0,
         'reference_answers_read':False,'paper_result':False,'formal_campaign_ready':False,
         'scope':'new explicit strong-study mapping; no replacement of old NL/RDF schedules'})
@@ -90,7 +104,7 @@ def _deployment(declared,supplied,observer_url):
 
 
 def dispatch_practical_group(*,schedule_path,schedule_sha256,ledger,owned_services,observer,
-        deployment_for,ready=lambda cell:{'ready':True},budget=ProcessBudget()):
+        deployment_for,ready=lambda cell:{'ready':True},budget=ProcessBudget(),endpoint_for=None):
     """Run at most one group on caller-owned serving sources, with no retry.
 
     The caller owns startup/closing. Failed common trials retire sources and stop
@@ -98,12 +112,14 @@ def dispatch_practical_group(*,schedule_path,schedule_sha256,ledger,owned_servic
     Reference pins reach only the scorer, after a sealed method outcome.
     """
     schedule=json.loads(read_pinned(schedule_path,schedule_sha256))
+    methods=_methods(schedule.get('methods'))
+    kind=schedule.get('profile_kind')
     if (schedule.get('schema_version')!='xgap-balanced-campaign-schedule-v1' or
-            schedule.get('profile_kind')!='practical_per_question_v1' or schedule.get('track')!='trusted_template' or
-            schedule.get('methods')!=list(METHODS) or
-            any(c.get('track')!='trusted_template' or c.get('method') not in METHODS for c in schedule.get('cells',[]))):
+            kind not in ('practical_per_question_v1','practical_per_question_v2') or schedule.get('track')!='trusted_template' or
+            (kind=='practical_per_question_v1' and methods!=METHODS) or
+            any(c.get('track')!='trusted_template' or c.get('method') not in methods for c in schedule.get('cells',[]))):
         raise ValueError('Expected an explicit practical per-question schedule')
-    halted=False;deployed={};starts={};preparation={}
+    halted=False;deployed={};starts={};preparation={};endpoints={}
     def check(cell):
         if halted:return {'ready':False,'reason':'previous_method_requires_new_serving_session'}
         starts[cell['cell_id']]=time.perf_counter()
@@ -112,14 +128,20 @@ def dispatch_practical_group(*,schedule_path,schedule_sha256,ledger,owned_servic
         if not state['ready']:return state
         supplied=deployment_for(public)
         deployed[cell['cell_id']]=_deployment(cell['practical_profile'],supplied,getattr(observer,'base_url',None))
+        if cell['method'] in FIXED_INFORMATION_METHODS:
+            from xgap.experiments.one_shot_profile import _url
+            if endpoint_for is None:raise ValueError('An owned external method endpoint callback is required')
+            endpoints[cell['cell_id']]=_url(endpoint_for(public))
         preparation[cell['cell_id']]=(time.perf_counter()-starts[cell['cell_id']])*1000
         return {**state,'profile':deployed[cell['cell_id']],'deployment_preparation_ms':preparation[cell['cell_id']]}
     def execute(cell,output):
         nonlocal halted
         request=cell['request'];profile=deployed[cell['cell_id']]
+        public={k:v for k,v in cell.items() if k!='reference_for_post_seal_scoring_only'}
+        owned=owned_services(public) if callable(owned_services) else owned_services
         result=run_practical_trial(request_path=request['path'],request_sha256=request['sha256'],
             profile_path=profile['path'],profile_sha256=profile['sha256'],method=cell['method'],output=output,
-            owned_services=owned_services,observer=observer,budget=budget)
+            owned_services=owned,observer=observer,budget=budget,endpoint=endpoints.get(cell['cell_id']))
         halted=not result['can_continue_session']
         write_once(output/'study-timing.json',{'receipt':result['receipt'],
             'deployment_preparation_ms':preparation[cell['cell_id']],

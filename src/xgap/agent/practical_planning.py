@@ -245,7 +245,7 @@ class PracticalSemanticDomain:
                                              allow_nan=False).encode()).hexdigest()
         return TerminalAlternative("practical-terminal:" + identity, estimate, payload, ResourceUsage(remote_calls=remote))
 
-    def terminals(self, state):
+    def _terminal_choices(self, state):
         self.validate_state(state)
         values = dict(state.choices)
         validated = {e.slot for e in state.evidence}
@@ -257,18 +257,37 @@ class PracticalSemanticDomain:
                 if slot not in self.predictions:
                     return
                 values[slot] = self.predictions[slot]
-        key = (tuple(sorted(values.items())), state.evidence)
-        if key in self.plan_cache:
-            yield from self.plan_cache[key]
-            return
+        return values, unresolved
+
+    def _bind_choices(self, state, values):
+        validated = {e.slot for e in state.evidence}
         resolution = {"program_id": self.program.program_id,
             "hard_constraints_sha256": hard_constraints_sha256(self.program), "hard_constraints_preserved": True,
             "candidate_sets": [{"hole_id": slot, "candidate_ids": [candidate],
                 "authoritative": slot in validated, "selection_policy": "predicted_catalog_choice",
                 "sources": [e.source_id for e in state.evidence if e.slot == slot]} for slot, candidate in values.items()]}
+        return bind_semantic_query(self.program, resolution, binding_values=self.binding_values,
+            operator_sources=self.operator_sources, allow_predicted_entities=self.mode.mode == "performance")
+
+    def bind_terminal(self, state):
+        """Shared authority admission and typed binding; no physical planning/costing."""
+        choices = self._terminal_choices(state)
+        if choices is None:
+            return None
+        values, unresolved = choices
+        return self._bind_choices(state, values), unresolved
+
+    def terminals(self, state):
+        choices = self._terminal_choices(state)
+        if choices is None:
+            return
+        values, unresolved = choices
+        key = (tuple(sorted(values.items())), state.evidence)
+        if key in self.plan_cache:
+            yield from self.plan_cache[key]
+            return
         try:
-            bound = bind_semantic_query(self.program, resolution, binding_values=self.binding_values,
-                operator_sources=self.operator_sources, allow_predicted_entities=self.mode.mode == "performance")
+            bound = self._bind_choices(state, values)
             baseline = _baseline(bound.program, bound.operator_sources, self.sources, self.backends, self.physical_profile)
         except (ValueError, KeyError, CompilerError) as error:
             self.failures.append({"bindings": values, "stage": "baseline", "error": str(error)})
