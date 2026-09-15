@@ -31,6 +31,7 @@
 |部分绑定共同前端、外部组合与v2 study|[fixed information frontend](decisions/fixed_information_frontend_v1.md)|
 |FinBench关系槽输入与配置候选发布|[partial inputs](decisions/partial_strong_inputs_v1.md)|
 |EXACT不推进证据的动作剪枝|[evidence-progress pruning](decisions/exact_information_pruning_v1.md)|
+|真实信息费用、strong专用估计排序|[cost basis](decisions/practical_information_cost_basis_v1.md)、[排序修订](decisions/acquisition_order_v1.md)|
 |为何不强制新候选胜出|[预定成本诊断](decisions/practical_cost_diagnostic_v1.md)|
 
 ## 共享语义与旧接口仍需保留
