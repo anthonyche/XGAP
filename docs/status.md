@@ -1,7 +1,7 @@
 # XGAP Current Status
 
 2026-09-15。可信有界模板下的新strong核心与共同真实入口已通，论文配置/总体评价
-尚未完成。02:00已收尾，实际工程/实验暂停至10:00；当前没有本任务活动native服务。[Goal与工作时段](goal.md)优先于历史记录。
+尚未完成。用户已授权恢复；10:04核实后从干净提交1b7f2af继续，恢复时没有本任务活动native服务。[Goal与工作时段](goal.md)优先于历史记录。
 
 ## 当前实现与证据
 
@@ -18,6 +18,7 @@
 |大trace/小outcome|4新+1受影响；>16MiB中间记录、<4KiB摘要正确交付|全trace仍保留/占内存；[报告](report/practical_outcome_20260915.md)|
 |大源记录回放|5新+1受影响；>16MiB合法JSON捕获完整回放，源容量界限512MiB|非流式/规模实证；[报告](report/practical_capture_size_20260915.md)|
 |独立study接线|6新检查；逐题profile、交替模式顺序、单组续跑及不重提intent|局部门；尚无该包装真实批次；[报告](report/practical_study_20260915.md)|
+|完整可信查询入口|7新+3受影响检查已通过；两个实际小图模式各1计划/1源调用，14条边对计数正确|closed输入绑定原问题，在线schema路由计费；[契约](decisions/resolved_strong_inputs_v1.md)。FinBench元数据发布进行中，不是总体评价|
 
 所有计数按对应里程碑原始记录，不把重复的受影响检查累加为独立实验样本。新记录
 接口/profile有可调用实现；它们不是占位文档。当前测试只覆盖声明边界。

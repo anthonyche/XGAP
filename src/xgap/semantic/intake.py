@@ -220,6 +220,7 @@ class DeterministicSemanticIntake:
         template: Mapping[str, Any],
         *,
         artifact_sha256: str | None = None,
+        allow_closed: bool = False,
     ) -> None:
         payload = _safe_json_mapping(template, name="semantic intake template")
         required = {
@@ -248,8 +249,14 @@ class DeterministicSemanticIntake:
             computed_sha256 = artifact_sha256
 
         raw_holes = payload["holes"]
-        if not isinstance(raw_holes, list) or not raw_holes:
+        if type(allow_closed) is not bool:
+            raise SemanticIntakeError("allow_closed must be an explicit boolean")
+        if not isinstance(raw_holes, list) or (not raw_holes and not allow_closed):
             raise SemanticIntakeError("semantic intake template requires holes")
+        if not raw_holes:
+            question_pin = _safe_json_mapping(payload["metadata"], name="metadata").get("trusted_question_sha256")
+            if not isinstance(question_pin, str) or not _SHA256.fullmatch(question_pin):
+                raise SemanticIntakeError("Closed trusted intake must pin the exact question text")
         holes: list[_HoleTemplate] = []
         for raw in raw_holes:
             if not isinstance(raw, Mapping) or set(raw) != {
@@ -416,6 +423,8 @@ class DeterministicSemanticIntake:
         if not isinstance(question, str) or not question.strip():
             raise SemanticIntakeError("natural-language request must be nonempty")
         question_sha256 = hashlib.sha256(question.encode("utf-8")).hexdigest()
+        if not self._holes and question_sha256 != self._metadata["trusted_question_sha256"]:
+            raise SemanticIntakeError("Question differs from its closed trusted intake")
         phrase_matches: list[IntakePhraseMatch] = []
         holes: list[SemanticHole] = []
         for template in self._holes:

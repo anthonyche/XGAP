@@ -21,6 +21,7 @@ from xgap.catalog.bundle import FrozenResolutionBundle
 from xgap.compilers.features import default_profile
 from xgap.experiments.one_shot_profile import (_fields, _file, _text, _url, _env, _backend,
     _client_spec, native_clients, read_pinned)
+from xgap.experiments.schema_source_routing import source_assignments
 from xgap.llm.openai_compatible import OpenAICompatibleProviderConfig
 from xgap.llm.resolution import M15_RESOLUTION_BASE_SCHEMA, OpenAICompatibleResolutionCandidateProvider
 from xgap.planning.equality_key_bounds import FrozenEqualityKeyBounds
@@ -80,6 +81,7 @@ class PreparedPracticalRequest:
     profile_sha256: str
     request_sha256: str
     configuration: tuple
+    source_routing: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -102,13 +104,13 @@ class FrozenPracticalProfile:
     def materialize(self):
         doc=json.loads(self.document_json)
         _fields(doc,('schema_version','profile_id','dataset','intake','operator_sources','catalog',
-            'estimator','sources','backends','acquisitions','modes','offline'))
+            'estimator','sources','backends','acquisitions','modes','offline'),('source_schema',))
         if doc['schema_version'] != SCHEMA: raise ValueError('Unsupported practical profile')
         _text(doc['profile_id']);_fields(doc['dataset'],('dataset_id','version'))
         for v in doc['dataset'].values():_text(v)
         if not isinstance(doc['offline'],dict):raise ValueError('Offline provenance must be an object')
         template=json.loads(_file(self.root,doc['intake']))
-        intake=DeterministicSemanticIntake(template,artifact_sha256=doc['intake']['sha256'])
+        intake=DeterministicSemanticIntake(template,artifact_sha256=doc['intake']['sha256'],allow_closed=True)
         _fields(doc['catalog'],('path','bundle_hash'))
         bundle=FrozenResolutionBundle.load(self.root/doc['catalog']['path'],expected_bundle_hash=doc['catalog']['bundle_hash'])
         estimator=None if doc['estimator'] is None else frozen_estimator_from_dict(json.loads(_file(self.root,doc['estimator'])))
@@ -148,7 +150,10 @@ class FrozenPracticalProfile:
                 raise ValueError('Instance estimator reference engines differ')
         holes={h['hole_id']:SemanticHoleKind(h['kind']) for h in template['holes']}
         source_ops={o['operator_id'] for o in template['operators'] if o['kind'] in ('match','traverse')}
-        if not isinstance(doc['operator_sources'],dict) or set(doc['operator_sources'])!=source_ops:
+        routed='source_schema' in doc
+        if routed and (holes or doc['operator_sources']!={} or not isinstance(doc['source_schema'],dict)):
+            raise ValueError('Online schema routing requires a closed intake and no supplied source assignments')
+        if not isinstance(doc['operator_sources'],dict) or (not routed and set(doc['operator_sources'])!=source_ops):
             raise ValueError('Operator sources must cover every source operator')
         for value in doc['operator_sources'].values():
             if isinstance(value,str) and value in sources:continue
@@ -221,6 +226,12 @@ class FrozenPracticalProfile:
         request=InterpretationRequest(raw['question'],{'query_id':raw['question_id']},intake.required_hard_constraints)
         provider=TemplateInterpretationProvider(intake,doc['operator_sources'])
         program=SemanticGraphProgram.from_dict(provider.interpret(request).payload['program'])
+        routing=None
+        if 'source_schema' in doc:
+            at=time.perf_counter()
+            assignments,routing=source_assignments(program,doc['source_schema'],cfg[4])
+            routing={**routing,'elapsed_ms':(time.perf_counter()-at)*1000,'scope':'online request preparation; nested in admission'}
+            provider=TemplateInterpretationProvider(intake,assignments)
         semantic,limits,physical=modes[mode]
         if len(program.operators)>physical.max_operators:raise ValueError('Intake operator budget exceeded')
         holes={h.hole_id:h.kind for h in program.holes}
@@ -266,7 +277,7 @@ class FrozenPracticalProfile:
             actions.append(action)
             if tool is not None:registry.register(acquisition_wrapper(tool) if acquisition_wrapper else tool)
         options=PracticalQuestionOptions(state,semantic,tuple(actions),registry,raw['predictions'],limits,physical,bundle)
-        return PreparedPracticalRequest(request,provider,program,options,providers,self.sha256,request_sha256,cfg)
+        return PreparedPracticalRequest(request,provider,program,options,providers,self.sha256,request_sha256,cfg,routing)
 
     def run(self,*,request_path,request_sha256,mode,execute=True,backend_clients=None,model_transports=None,
             acquisition_wrapper=None):
@@ -308,10 +319,11 @@ class FrozenPracticalProfile:
             result=run_practical_semantic_query(q.program,initial_state=q.options.initial_state,
                 mode=q.options.mode,actions=q.options.actions,resolution_tools=q.options.resolution_tools,
                 predictions=q.options.predictions,limits=q.options.limits,physical_profile=q.options.physical_profile,
-                operator_sources=doc['operator_sources'],binding_values=bundle.bindings,sources=sources,
+                operator_sources=q.provider.operator_sources,binding_values=bundle.bindings,sources=sources,
                 backends=backends,backend_clients=clients,estimator=estimator,execute=False)
         return {**result,'profile_sha256':self.sha256,'request_sha256':request_sha256,'profile_id':doc['profile_id'],
             'profile_preparation_ms':preparation_ms,'request_total_ms':preparation_ms+(time.perf_counter()-started)*1000,
+            'source_routing':q.source_routing,
             'dependency_lifetime':'admitted request snapshot; next request revalidates files',
             'source_statistics_sha256':estimator.statistics.sha256 if estimator else None,
             'estimator_sha256':estimator.model_sha256 if estimator else None,

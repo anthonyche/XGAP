@@ -75,7 +75,7 @@ old versions. Open-NL structure authority, formal mode release and superiority
 remain unproven. The development PERFORMANCE profile is not a paper default.
 Legacy domains and baseline algorithms retain their behavior.
 
-User cutoff: Sep15 02:00 Beijing, summarize/stop engineering until10:00.
+The Sep15 02:00–10:00 pause is over; the user explicitly resumed execution.
 Read `docs/goal.md` for current schedule state. Overall Goal remains unfinished.
 
 The previous one-shot profile below remains a versioned legacy interface.
