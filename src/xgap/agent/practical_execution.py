@@ -159,10 +159,12 @@ def run_practical_semantic_query(program, *, initial_state, resolution_tools=Non
     domain_options['sources'] = admitted_sources
     domain = PracticalSemanticDomain(program, **domain_options)
     domain.validate_state(initial_state)
+    planning_cpu_started = time.process_time()
     checkpoint=CooperativePlanningBudget(limits.planning_ms)
     domain.planning_checkpoint=checkpoint
     search_domain,pruning=strong_search_view(domain)
     search = search_strong_policy(initial_state, search_domain, limits=limits)
+    planning_cpu_ms = (time.process_time() - planning_cpu_started) * 1000
     report = {"schema_version": "xgap-practical-answer-v1", "success": False, "mode": domain.mode.mode,
         "search": search.to_dict(), "answer_rows": None, "final_plan_executions": 0,
         "backend_remote_calls": 0, "model_calls": 0, "tokens": 0, "clarification_calls": 0,
@@ -175,6 +177,11 @@ def run_practical_semantic_query(program, *, initial_state, resolution_tools=Non
         "optimality_certified": False, "actual_acquisition_usage_complete": True, "status": search.status,
         "limits": asdict(limits), "strong_scope": "declared finite outcomes and admitted trusted skeleton"}
     report['cooperative_planning_budget']=checkpoint.to_dict()
+    report['planning_cpu_ms']=planning_cpu_ms
+    if domain.structure_proposal is not None:
+        report.update(strong_scope='declared finite outcomes conditional on the model-proposed query',
+            structure_validation='model_proposed_unverified_intent', user_intent_verified=False,
+            structure_provenance=asdict(domain.structure_proposal))
     report['acquisition_pruning']=pruning
     if search.policy is None or not execute:
         report.update(status="planned" if search.policy else search.status,

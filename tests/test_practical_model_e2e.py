@@ -81,13 +81,15 @@ def test_single_request_all_model_outcomes_have_real_continuations(tmp_path,monk
     assert result['search']['external_calls_during_search']==0 and result['discrepancy_status']=='metric_deferred'
 
 
-def test_exact_requires_authority_even_after_live_style_proposal(tmp_path,monkeypatch):
+def test_exact_uses_authority_without_calling_proposal_only_model(tmp_path,monkeypatch):
     monkeypatch.setenv(KEY_ENV,'local-test-placeholder')
     transport=_Transport([_envelope({'hole_id':'predicate','candidate_ids':['predicate:follows']})])
     _,request,provider,_,_,options,kwargs,calls=local_setup(tmp_path,transport)
     result=run_question(request,provider,practical_options=replace(options,mode=PracticalMode()),**kwargs)
     assert result['success'],result
-    assert result['model_calls']==result['clarification_calls']==1 and len(transport.calls)==1
+    # Current evidence-progress pruning already skips a model that cannot
+    # discharge any EXACT authority obligation. It must not pay a useless call.
+    assert result['model_calls']==len(transport.calls)==0 and result['clarification_calls']==1
     assert result['execution']['unvalidated_bindings']==[] and result['answer_rows'][0]['edge'].endswith('e4')
     assert len(calls)==2
 

@@ -109,6 +109,7 @@ class NativeSources:
         raise ValueError('External RDF baselines cannot run on the native deployment')
 
     def owned_for(self,method):
-        if method not in ('xgap-native','xgap-precision','xgap-performance'):
+        from xgap.agent.nl_strong_question import NL_STRONG_METHODS
+        if method not in ('xgap-native','xgap-precision','xgap-performance',*NL_STRONG_METHODS):
             raise ValueError('Unknown native method')
         return self.session.owned

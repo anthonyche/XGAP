@@ -13,6 +13,7 @@ from xgap.experiments.process_guard import ProcessBudget, run_guarded_command
 from xgap.experiments.fixed_semantic_worker import REQUEST_SCHEMA
 from xgap.experiments.source_failure_classification import classify_source_failure
 from xgap.experiments.practical_methods import PRACTICAL_METHODS, external_engine
+from xgap.agent.nl_strong_question import NL_STRONG_METHODS
 
 
 def _run_trial(*, track,request_path,request_sha256,method,output,owned_services,observer,
@@ -83,10 +84,11 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
         if nl:
             for key in ('model_calls','input_tokens','output_tokens','frontend_ms','interpretation_ms','grounding_ms','compilation_ms'):
                 r[key]=child.get(key) if child else None
-        if practical:
+        if practical or method in NL_STRONG_METHODS:
             for key in ('admission_ms','acquisition_ms','clarification_calls','strong_plan','semantic_validation',
                         'unvalidated_bindings','semantic_discrepancy_upper_bound','discrepancy_status','core_result',
-                        'external_engine','information_strategy'):
+                        'external_engine','information_strategy','input_scope','structure_validation','strong_scope',
+                        'user_intent_verified','planning_cpu_ms'):
                 r[key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
     except Exception as error:

@@ -9,12 +9,17 @@ from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned
 from xgap.experiments.one_shot_records import run_record, write_once, read_record_outcome
 from xgap.experiments.one_shot_toy import _DurableRecordingProvider
 from xgap.experiments.practical_methods import PRACTICAL_METHODS, FIXED_INFORMATION_METHODS
+from xgap.agent.nl_strong_question import NL_STRONG_METHODS
 
 SCHEMA='xgap-nl-method-worker-v1'
-METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS)
+METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS,*NL_STRONG_METHODS)
 
 
 def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,output,endpoint=None,seconds=180):
+    if method in NL_STRONG_METHODS:
+        from xgap.experiments.nl_strong_worker import run_nl_strong
+        return run_nl_strong(request_path=request_path,request_sha256=request_sha256,profile_path=profile_path,
+            profile_sha256=profile_sha256,method=method,output=output)
     if method in FIXED_INFORMATION_METHODS:
         from xgap.experiments.fixed_information_worker import run_fixed_information
         return run_fixed_information(request_path=request_path,request_sha256=request_sha256,profile_path=profile_path,

@@ -24,6 +24,7 @@ from xgap.experiments.fixed_semantic_worker import REQUEST_SCHEMA
 from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.process_guard import ProcessBudget
+from xgap.agent.nl_strong_question import NL_STRONG_METHODS
 
 REPO=Path(__file__).resolve().parents[1]
 
@@ -152,6 +153,8 @@ def main():
         prepared={'path':str(Path(args.prepared).resolve()),'sha256':args.prepared_sha256}
         native=schedule.get('deployment','rdf')=='native'
         expected_methods=(('xgap-precision','xgap-performance') if schedule['track']=='natural_language' else ('xgap-native',)) if native else None
+        if native and schedule.get('method_profile')=='nl-conditional-strong-k1-v1':
+            expected_methods=NL_STRONG_METHODS
         if native and (set(schedule['methods'])!=set(expected_methods) or any(c['method'] not in expected_methods for c in schedule['cells'])):
             raise ValueError('Native schedule contains an external/RDF method')
         if native and (args.summary or args.summary_sha256):raise ValueError('Native deployment does not use an external RDF summary')

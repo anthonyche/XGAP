@@ -81,10 +81,17 @@ def _stop_group(process, budget):
             if not _group_sample(process.pid):
                 break
             time.sleep(min(.02,max(0,end-time.monotonic())))
-    process.poll()
+    # Darwin's group scan can stop seeing an exiting leader just before waitpid
+    # exposes its status. Reap our own Popen handle before sealing quiescence.
+    # An empty sampled group alone is not proof that the owned leader is terminal.
+    if process.poll() is None:
+        try:
+            process.wait(timeout=0.5)
+        except subprocess.TimeoutExpired:
+            pass
     live=_group_sample(process.pid)
     return {'signals':signals,'live_pids':[p['pid'] for p in live],'resolved_permission_races':resolved_permission_races,
-        'elapsed_ms':(time.monotonic()-started)*1000,'complete':not live}
+        'elapsed_ms':(time.monotonic()-started)*1000,'complete':not live and process.returncode is not None}
 
 
 def run_guarded_command(command, *, cwd, output, budget=ProcessBudget(), environment=None, resource_monitor=None):

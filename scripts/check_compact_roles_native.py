@@ -27,7 +27,8 @@ def reference_spec(case):
         'fields':{k:('decimal3-half-up' if k=='total_amount' else 'text') for k in case['expected_rows'][0]}})
 
 
-def main(output,read_key=False,*,contract='roles'):
+def main(output,read_key=False,*,contract='roles',strong=False):
+    if strong and contract != 'contribution':raise ValueError('NL strong gate uses the contribution tiny fixture')
     if contract not in ('roles','contribution'):raise ValueError('Unknown tiny contract')
     is_contribution=contract=='contribution'
     fixture_path=REPO/'tests/fixtures/compact_contribution_v2.json' if is_contribution else FIXTURE
@@ -68,16 +69,21 @@ def main(output,read_key=False,*,contract='roles'):
                 with deadline(120):session.start()
                 profile=derive(parent_path=session.profile['path'],parent_sha256=session.profile['sha256'],
                     output=session.root/revision)
+                if strong:
+                    from xgap.experiments.nl_strong_release import freeze_common_profile
+                    profile=freeze_common_profile(profile,session.root/'nl-strong-profile.json')
+            method='xgap-nl-strong-exact' if strong else 'xgap-'+case['mode']
             outcome=run_nl_trial(request_path=request['path'],request_sha256=request['sha256'],
-                method='xgap-'+case['mode'],output=path/'execution',owned_services=session.owned,observer=session.observer,
+                method=method,output=path/'execution',owned_services=session.owned,observer=session.observer,
                 profile_path=profile['path'],profile_sha256=profile['sha256'])
             score=score_trial(outcome['receipt']['path'],receipt_sha256=outcome['receipt']['sha256'],
                 reference_path=reference['path'],reference_sha256=reference['sha256'],output=path/'score.json')
-            core_path=path/'execution/worker/core/result.json';core=json.loads(core_path.read_text()) if core_path.exists() else {}
+            core_path=path/('execution/worker/core.json' if strong else 'execution/worker/core/result.json')
+            core=json.loads(core_path.read_text()) if core_path.exists() else {}
             admitted=[c for c in core.get('interpretation',{}).get('candidates',[]) if c.get('status')=='admitted']
             mentions=[[h['mention'] for h in c['program']['holes']] for c in admitted]
             agreement=bool(mentions) and all(sorted(m)==sorted(case['expected_mentions']) for m in mentions)
-            receipt['cases'].append({'question_id':case['id'],'mode':case['mode'],'profile':profile,'receipt':outcome['receipt'],
+            receipt['cases'].append({'question_id':case['id'],'mode':'exact' if strong else case['mode'],'method':method,'profile':profile,'receipt':outcome['receipt'],
                 'score':stream_pin(path/'score.json'),'answer_em':score['answer_em'],'status':outcome['status'],
                 'model_calls':outcome['model_calls'],'source_calls':outcome['source_observations']['requests'],
                 'online_ms':outcome['timing']['total_online_ms'],'admitted_mentions':mentions,'role_contract_match':agreement})

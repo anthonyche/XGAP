@@ -35,6 +35,23 @@ def program_identity(program):
 
 
 @dataclass(frozen=True)
+class ModelStructureProposal:
+    """Host opt-in to planning a model query, never evidence of user intent.
+
+    Bind the whole generated program AND placement to the admitted proposal.
+    A checksum establishes identity, not semantic correctness or authority.
+    """
+    program_sha256: str
+    operator_sources: tuple[tuple[str, str], ...]
+    provider_id: str
+
+    def __post_init__(self):
+        if (len(self.program_sha256) != 64 or any(c not in '0123456789abcdef' for c in self.program_sha256)
+                or not self.provider_id or len(dict(self.operator_sources)) != len(self.operator_sources)):
+            raise ValueError('A model structure proposal requires content identity and provider provenance')
+
+
+@dataclass(frozen=True)
 class BindingEvidence:
     slot: str
     candidate_id: str
@@ -166,12 +183,17 @@ def _baseline(program, operator_sources, sources, backends, profile):
 class PracticalSemanticDomain:
     def __init__(self, program, *, operator_sources, binding_values, sources, backends,
                  mode=PracticalMode(), actions=(), predictions=None, estimator=None,
-                 physical_profile=OneShotPolicy()):
+                 physical_profile=OneShotPolicy(), structure_proposal=None):
         if len(program.operators) > physical_profile.max_operators or len(program.holes) > physical_profile.max_holes:
             raise ValueError("Semantic input exceeds its finite profile")
         if physical_profile.retrieval_rows_per_relation is not None:
             raise ValueError("Unbounded-error row truncation is outside this strong-policy release")
         self.program, self.operator_sources, self.binding_values = program, operator_sources, binding_values
+        if structure_proposal is not None and (not isinstance(structure_proposal, ModelStructureProposal)
+                or structure_proposal.program_sha256 != program_identity(program)
+                or dict(structure_proposal.operator_sources) != operator_sources):
+            raise ValueError('Model structure proposal does not identify this program and source assignment')
+        self.structure_proposal = structure_proposal
         self.sources, self.backends, self.mode = sources, backends, mode
         self.estimator, self.physical_profile = estimator, physical_profile
         self.action_specs = tuple(sorted(actions, key=lambda a: (a.search_priority,
@@ -202,7 +224,9 @@ class PracticalSemanticDomain:
     def validate_state(self, state):
         evidence = {e.slot: e for e in state.evidence}
         structure = evidence.get("$structure")
-        if structure is None or structure.candidate_id != program_identity(self.program):
+        if self.structure_proposal is not None and structure is not None:
+            raise ValueError('A model proposal cannot also claim trusted structure validation')
+        if self.structure_proposal is None and (structure is None or structure.candidate_id != program_identity(self.program)):
             raise ValueError("A versioned trusted validation of this query skeleton is required")
         if set(evidence) - self.slots.keys() - {"$structure"}:
             raise ValueError("Validation targets an unknown slot")
@@ -239,6 +263,9 @@ class PracticalSemanticDomain:
             "semantic_discrepancy_upper_bound": None, "discrepancy_status": "metric_deferred",
             "semantic_validation": "all_declared_slots" if not unresolved else "authorized_prediction",
             "optimality_certified": False, "estimate_status": reason}
+        if self.structure_proposal is not None:
+            payload.update(structure_provenance=asdict(self.structure_proposal),
+                structure_validation='model_proposed_unverified_intent', user_intent_verified=False)
         remote = sum(n.kind in (R.REMOTE_QUERY, R.REMOTE_BIND_QUERY) for n in plan.nodes)
         # Compiler plan IDs may be shared by distinct bindings of one template.
         # The policy terminal must identify its complete query AND evidence.

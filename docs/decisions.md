@@ -1,7 +1,9 @@
 # XGAP Decision Index
 
-2026-09-15。先读当前profile及本次受影响的专题，历史用于核实旧语义/API或实验版本，
+2026-09-16。先读当前profile及本次受影响的专题，历史用于核实旧语义/API或实验版本，
 不执行其中过期的“下一步”。[当前Goal](goal.md)、[状态](status.md)、[研究审计](research_contract_audit_20260915.md)。
+
+最新接入：[NL条件strong首版](decisions/nl_conditional_strong_v1.md)，用户已恢复执行。
 
 ## 当前用户批准的研究契约
 
