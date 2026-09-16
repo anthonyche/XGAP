@@ -97,3 +97,17 @@ zero-model/zero-method-query cells get a separate correction schedule for their
 first actual model/engine observation; keep the original failed adapter receipts,
 time and classification. No completed XGAP cell is rerun. Reports distinguish the
 extra integration attempts from the first actual method observations.
+
+## Sealed first-pass outcome
+
+All 72 logical method observations and the eight quarantined configuration
+records are sealed and scored; all 53 owned serving sessions closed. Native
+matches 7/12 under both modes; RDF EXACT matches 8/12 and PERFORMANCE 7/12.
+Each XGAP group has four temporal-path method-RSS failures. Native additionally
+has one invalid model-variable interpretation per mode. RDF PERFORMANCE's
+remaining failure is cumulative artifact-disk censoring, not evidence of poorer
+semantic accuracy. The eleven-empty/one-nonempty workload remains unchanged.
+FedX has twelve response-budget censorings; FedUP has eleven native failures and
+one provider failure. No SOTA efficiency conclusion follows. See the
+[full report](../report/nl_strong_first_pass_20260916.md). This finite milestone
+ends in result review, not an automatic tuning or larger-dataset loop.

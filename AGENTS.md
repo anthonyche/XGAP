@@ -87,6 +87,12 @@ EXACT experiments are unattended: no per-question human answers/validation, no
 benchmark gold or authority-response fixture in inference. Use bounded automatic
 evidence; report unresolved cases without waiting for the user or fabricating proof.
 
+The Sep16 NL first pass is now sealed: 12 questions, 72 method observations and
+eight separately retained zero-call adapter configuration records; all owned
+sessions closed. See `docs/report/nl_strong_first_pass_20260916.md`. Enter result
+review; do not automatically rerun, tune, or expand this cohort. Multi-hop
+intermediate work and evaluation coverage are candidates for the next toy milestone.
+
 The previous one-shot profile below remains a versioned legacy interface.
 
 ## Previous user-approved profile (2026-09-12)
