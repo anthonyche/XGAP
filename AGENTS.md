@@ -74,14 +74,18 @@ has 384/384 sealed/scored cells and all owned sessions closed; see
 accuracy, mode-mechanism superiority, comparable SOTA efficiency, or scalability.
 Legacy domains and baseline algorithms retain their behavior.
 
-Latest user direction (Sep16): resume and obtain the first evaluable real SF0.1
-NL end-to-end results. Follow `docs/decisions/nl_conditional_strong_v1.md`.
-The former discussion pause is superseded. Toy-first checks precede a new frozen
-12-question first pass; no tuning on these outcomes, baseline optimization,
-blanket regressions, or changes to the prior 384-cell artifacts. The new opt-in
-model-structure contract is conditional and does not provide intent authority.
-The trusted-template default and all authority invariants remain unchanged.
-Overall Goal is unfinished. Stored app pause/older wakeups are not current scope.
+Latest user direction (Sep16, after first-pass review): the next-stage comparison
+direction is approved, but only analyze the situation and update the plan now;
+do not start execution. Follow `docs/research_next_stage_plan_20260916.md` and
+`docs/goal.md`. Read-only analysis and plan/document updates are allowed. Runtime
+edits, tests, data generation, model/backend/baseline calls and automatic wakeups
+remain paused until an explicit resume instruction. Plan agreement alone is not
+execution authorization. Overall Goal is unfinished.
+
+The opt-in model-structure contract remains conditional and supplies no intent
+authority; see `docs/decisions/nl_conditional_strong_v1.md`. Trusted-template
+defaults, authority invariants and prior artifacts remain unchanged. No outcome
+tuning, baseline optimization or blanket regressions.
 
 EXACT experiments are unattended: no per-question human answers/validation, no
 benchmark gold or authority-response fixture in inference. Use bounded automatic

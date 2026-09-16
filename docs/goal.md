@@ -2,12 +2,18 @@
 
 ## 当前目标与工作时段
 
-2026-09-16。用户已明确恢复工程与实验，要求先在SF0.1得到可评价的真实结果。
-本轮里程碑已完成：自然语言单次入口接通当前strong planner、真实Neo4j/Fuseki执行、独立评分。
-不等待PERFORMANCE调优，也不等待下一版d/risk理论。此前验收暂停已被本次授权替代。
+2026-09-16，首版验收后的最新指令：用户认可下一阶段比较路线，要求先分析情况、
+更新计划，**暂时不要开始执行**。当前仅允许只读分析与计划文档更新；工程修改、
+数据生成、模型/数据库调用、baseline运行、回归和自动唤醒保持暂停，直到明确恢复。
+本轮计划认可不等于执行授权；总体研究Goal尚未完成。
+
+下一次恢复遵循[新阶段计划](research_next_stage_plan_20260916.md)：先以小图修复多跳
+执行与计量风险；建立作者原查询上的FedShop/FedUP/FedX共同支持范围；冻结更有信息量
+的FinBench NL评价集；分别交付固定查询执行比较与真实NL端到端结果。模式理论由用户
+推进，工程不预设Performance必胜，不以大批消融替代理论机制。
+
 EXACT工程与实验必须无人值守：不能要求用户逐题回答或验证；使用有界自动证据，
 不足时记录未解决/失败，不能读gold或使用逐题权威答案夹具来补齐。
-应用Goal的存储暂停状态不代表本轮用户要求暂停；总体研究Goal尚未完成。
 
 首版12题/72方法观测已封存评分，服务已关闭，进入验收讨论；不自动扩量或调参。
 Native两模式均7/12匹配，RDF 8/12与7/12（后者含整批磁盘预算截断）；每组4道多跳
@@ -50,8 +56,9 @@ vertical slice。每题有NL、gold semantic/path query、预期logical/native p
 只做新风险的模块检查、failure replay与必要真实边界门，不重复已成功门增加样本计数。
 GrailQA catalog完全离线；GrailQA-mini用于后续集成，全量大集只用于真实评价。
 
-按批准顺序推进FinBench native与同事实RDF FedUP/FedX，再bounded FedShop；GrailQA/
-KBQA-R1依完整KB及作者artifact后置。保留16–20图的RQ/X/Y结构：efficiency、effectiveness、
+首版FinBench native与同事实RDF观察已完成。下一次恢复优先执行稳定性与有界FedShop
+作者原查询对照，同时准备更好的NL评价覆盖；不以反复修补当前FinBench基线失败作前提。
+GrailQA/KBQA-R1依完整KB及作者artifact后置。保留16–20图的RQ/X/Y结构：efficiency、effectiveness、
 scalability、Pareto与最后的ablation。内部变体不能替代外部SOTA；总体图用同权限外部
 方法同图呈现。明确共同支持范围，不把不支持语义、预算截断或失败耗时当成提速证据。
 
@@ -64,7 +71,8 @@ baseline只忠实适配到能运行，绝不优化算法、语义、答案或按
 
 ## 权威入口与历史
 
-[当前规划](practical_planning_20260914.md) · [技术决策索引](decisions.md) · [路线](roadmap.md)
+[下一阶段计划（未执行）](research_next_stage_plan_20260916.md) · [算法规划](practical_planning_20260914.md)
+· [技术决策索引](decisions.md) · [路线](roadmap.md)
 · [系统与实验契约](research_contract_audit_20260915.md)。详细过程写独立report，不叠加旧的
 “当前/下一步”。[历史快照](goal_history_20260915.md)与[凌晨报告](report/xgap_progress_20260915_0200.md)
 仅作溯源，不作为当前执行指令。

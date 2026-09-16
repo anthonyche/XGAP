@@ -3,7 +3,8 @@
 2026-09-16。先读当前profile及本次受影响的专题，历史用于核实旧语义/API或实验版本，
 不执行其中过期的“下一步”。[当前Goal](goal.md)、[状态](status.md)、[研究审计](research_contract_audit_20260915.md)。
 
-最新接入：[NL条件strong首版](decisions/nl_conditional_strong_v1.md)，用户已恢复执行。
+最新计划：[首版后的分析与下一阶段](research_next_stage_plan_20260916.md)。用户认可路线，
+当前仅更新文档，暂不执行。上一轮[NL条件strong首版](decisions/nl_conditional_strong_v1.md)已封存。
 
 ## 当前用户批准的研究契约
 
