@@ -5,6 +5,8 @@
 
 最新计划：[首版后的分析与下一阶段](research_next_stage_plan_20260916.md)。用户认可路线，
 当前仅更新文档，暂不执行。上一轮[NL条件strong首版](decisions/nl_conditional_strong_v1.md)已封存。
+最新纠正：[权威模拟用户](decisions/simulated_user_authority_v1.md)是无人值守EXACT所需的
+可查询角色；允许它私有持有gold意图。撤回“无人值守就禁止用户oracle”的错误解释。
 
 ## 当前用户批准的研究契约
 

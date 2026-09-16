@@ -87,9 +87,15 @@ authority; see `docs/decisions/nl_conditional_strong_v1.md`. Trusted-template
 defaults, authority invariants and prior artifacts remain unchanged. No outcome
 tuning, baseline optimization or blanket regressions.
 
-EXACT experiments are unattended: no per-question human answers/validation, no
-benchmark gold or authority-response fixture in inference. Use bounded automatic
-evidence; report unresolved cases without waiting for the user or fabricating proof.
+Corrected user requirement: unattended EXACT must have a queryable simulated
+user that owns authoritative intent. The real user must not answer or validate
+each question. Ground-truth semantic intent may live privately in this oracle;
+XGAP acquires scoped authoritative answers through explicit, metered interaction.
+Do not fail merely because the real user is absent, or forbid the oracle as a
+"gold fixture." Keep hidden intent out of initial method input and keep answer
+rows/optimal physical plans out of intent replies. See
+`docs/decisions/simulated_user_authority_v1.md`. This is a design correction;
+implementation and experiments remain paused until explicit resume.
 
 The Sep16 NL first pass is now sealed: 12 questions, 72 method observations and
 eight separately retained zero-call adapter configuration records; all owned

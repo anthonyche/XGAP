@@ -3,15 +3,18 @@
 User resumed engineering and authorized a first evaluable real SF0.1 result.
 Performance tuning and the next discrepancy definition are not prerequisites.
 
-User clarification (Sep16): EXACT engineering/evaluation must be unattended.
-Do not ask the user to resolve or validate individual benchmark questions. Use
-available frozen catalog/schema/data evidence within the declared budget; never
-substitute gold, a per-question authority fixture, or model confidence for that
-evidence. If the configured autonomous evidence is insufficient, record an
-unresolved/failure outcome rather than suspend the campaign for human input.
-The present NL profile has no human/fixture clarification tool at all. Future
-automatic acquisition must keep its scope and cost visible; intent correctness
-still requires independent evaluation rather than a claim from the validator.
+Correction after review (Sep16): the assistant incorrectly interpreted unattended
+execution as forbidding a per-question authoritative simulated user. The user
+requires that oracle: it owns authoritative intent and answers clarification
+requests automatically, replacing the real user's participation. Gold semantic
+intent is a legitimate private oracle source, exposed only through declared
+interactions. See [the corrected design](simulated_user_authority_v1.md).
+
+The sealed K=1 profile described below did not include this capability. Its
+limitations and measurements remain historical facts, not the desired final
+EXACT contract. The new simulator has not been implemented by this document
+change. Model confidence alone still does not supply user authority; independent
+result scoring remains separate from interactive intent confirmation.
 
 ## Input and claim boundary
 
