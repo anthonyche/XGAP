@@ -63,8 +63,10 @@ decision, reference-evaluator behavior, validation, and tests.
 Follow `docs/decisions/practical_strong_planning_v1.md` and
 `docs/practical_planning_20260914.md`: finite-depth AND/OR strong policies,
 feasible-plan retention before bounded estimated improvement, no global optimum
-claim. The user will supply the discrepancy metric later; do not invent an
-epsilon/answer-error guarantee. All selected acquisition outcomes need feasible
+claim. Sep16 update: the user explicitly authorizes proposing a discrepancy
+definition. The opt-in finite-family contract is documented in
+`docs/decisions/finite_intent_discrepancy_v1.md`; it does not provide an
+answer-error or open-NL guarantee. All selected acquisition outcomes need feasible
 continuations; runtime follows one and executes one final federated plan.
 
 The bounded trusted-template core, live information/native slice, frozen profiles,
@@ -89,6 +91,13 @@ avoidable acquisition and coverage as well as end-to-end cost; never credit the
 necessary final plan/execution as automatically saved. A later unified search
 should be terminal-first and lazy with equal permissions/caches/snapshots. If no
 nontrivial cost-discrepancy-coverage frontier exists, report it; do not tune wins.
+
+T1 now has a deterministic worst-case structured-intent certificate, scoped
+private family user and terminal-first toy compiler/runtime entry. It is an
+opt-in finite-family fallback, not replacement of the shared AND/OR/NL entry.
+Full-intent acquisition must remain an available consideration in subsequent
+information-policy comparisons; do not manufacture a win by forcing only Exact
+to ask one coordinate at a time. See `docs/report/intent_terminal_20260916.md`.
 
 The opt-in model-structure contract remains conditional and supplies no intent
 authority; see `docs/decisions/nl_conditional_strong_v1.md`. Trusted-template

@@ -1,5 +1,11 @@
 # XGAP Current Roadmap
 
+2026-09-16最新：用户授权提出d；有限家族最坏差异证书和terminal-first小图门已完成，
+见[契约](decisions/finite_intent_discrepancy_v1.md)、[结果](report/intent_terminal_20260916.md)。
+下一步先把closed-family范围获取、full-intent/逐槽动作接回共享NL/AND-OR入口，
+再对同权限trace做机会分析；不要直接把逐槽toy的2→1次当作总体优势。
+保留未知覆盖、安全拒答、证书费用与答案差异，不进入大规模参数扫测。
+
 2026-09-16：M0模拟用户第一版与M1小图内存修复已通过，见
 [验收报告](report/simulated_user_memory_20260916.md)。整体研究目标未完成。
 

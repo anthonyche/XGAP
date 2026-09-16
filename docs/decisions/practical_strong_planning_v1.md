@@ -1,5 +1,10 @@
 # Practical strong planning v1 — current user-approved direction
 
+Sep16 update: the user explicitly authorizes proposing a discrepancy definition.
+See the opt-in [finite-family contract](finite_intent_discrepancy_v1.md). It does
+not change this legacy API's deferred metric, confer open-NL authority, or replace
+the shared strong search. The original Sep14 deferral below is historical.
+
 2026-09-14. The user approved the practical two-mode brief and the review,
 then clarified: the mathematical policy space is a finite-depth AND/OR tree;
 the returned policy must be a **strong plan**. Prioritize producing a useful

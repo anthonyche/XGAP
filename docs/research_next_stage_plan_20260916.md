@@ -1,5 +1,10 @@
 # 下一阶段：先核验terminal机会，再决定策略重构
 
+最新T1更新：用户授权提出理论定义。[有限意图距离/证书提案](decisions/finite_intent_discrepancy_v1.md)
+及terminal-first逐槽小图入口已实现并通过定向门，见[结果](report/intent_terminal_20260916.md)。
+接下来将full-intent与scoped动作放回同一个共享NL/AND-OR状态/预算接口，再作同权限机会
+分析。公开家族完整性不能来自模型置信度；原NL trace仍缺此依据，不补发旧epsilon结果。
+
 2026-09-16更新：M0模拟用户第一版和M1小图内存修复已验收，见
 [工程证据](report/simulated_user_memory_20260916.md)。以下M2–M4保留为后续路线，
 本轮不启动大数据、baseline比较或自动唤醒。
@@ -12,7 +17,7 @@
 budgets)`，每个状态terminal-first、候选/证书/physical plan lazy，证书增量缓存。
 操作分为required_for_execution、required_for_exactness、optional_for_costing和proposal_only。
 后者不能出权威证据；两种terminal都不能跳过执行必要条件。预算耗尽仅返回certified
-incumbent，否则safe non-answer。当前没有可运行的epsilon证书，不先发明一个来计分。
+incumbent，否则safe non-answer。新证书仅适用声明完整家族，不能给旧开放NL traces计分。
 
 结果记录epsilon、early eligibility、acquisition、LLM/token、probe/backend calls、search/
 certificate时间、expanded states、execution latency/bytes、总成本、empirical discrepancy、

@@ -1,10 +1,14 @@
 # XGAP Decision Index
 
+最新T1：[有限意图discrepancy与terminal证书](decisions/finite_intent_discrepancy_v1.md)。
+用户明确授权由工程方提出定义；新的opt-in契约仅保证声明完整家族内的意图距离，
+不提供答案误差或开放NL覆盖保证。[小图验收](report/intent_terminal_20260916.md)。
+
 2026-09-16。先读当前profile及本次受影响的专题，历史用于核实旧语义/API或实验版本，
 不执行其中过期的“下一步”。[当前Goal](goal.md)、[状态](status.md)、[研究审计](research_contract_audit_20260915.md)。
 
 最新计划：[首版后的分析与下一阶段](research_next_stage_plan_20260916.md)。用户认可路线，
-M0第一版和M1小图修复已验收，当前先分析terminal机会，不立即重构。上一轮[NL条件strong首版](decisions/nl_conditional_strong_v1.md)已封存。
+M0/M1小图、首轮机会分析和T1证书入口已完成，主NL/共享AND-OR接线待推进。上一轮[NL条件strong首版](decisions/nl_conditional_strong_v1.md)已封存。
 最新纠正：[权威模拟用户](decisions/simulated_user_authority_v1.md)是无人值守EXACT所需的
 可查询角色；允许它私有持有gold意图。撤回“无人值守就禁止用户oracle”的错误解释。
 
@@ -15,7 +19,7 @@ M0第一版和M1小图修复已验收，当前先分析terminal机会，不立�
 ## 当前用户批准的研究契约
 
 - [Practical strong planning](decisions/practical_strong_planning_v1.md)：有限深AND/OR
-  strong policy；先可行后有界估计改进；EXACT验证/PERFORMANCE授权预测；d待用户定义。
+  strong policy；先可行后有界估计改进；旧API仍保持原模式，新d见上方独立契约。
 - [Ptime规划契约](decisions/planning_ptime_contract_v1.md)：输入/编译扩展/候选构造的
   多项式前提；模型特殊情形与一般启发式分开，不把budget当近似比。
 - [Baseline忠实原则](decisions/baseline_fidelity_v1.md)：不优化算法、语义、答案或按结果调参。
