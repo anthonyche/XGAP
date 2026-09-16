@@ -17,8 +17,9 @@ still requires independent evaluation rather than a claim from the validator.
 
 The new `xgap-nl-strong-exact` / `xgap-nl-strong-performance` methods receive only
 natural-language text and generic, frozen schema/catalog/backend descriptions.
-A single existing compact-v2 model call (K=1, no repair) generates the semantic
-program and source assignment. No per-question template, gold operators, reference
+A single existing compact-v2 model call (K=1, no repair) proposes the compact
+logical query; deterministic lowering uses generic schema to produce the semantic
+program and logical source assignment. No per-question template, gold operators, reference
 answer or preselected source assignment enters inference. Baseline labels are
 “same NL frontend + FedX/FedUP”; their author algorithms remain unchanged.
 
@@ -75,3 +76,24 @@ and tokens, planner CPU/wall time, execution time, source calls/bytes, and failu
 Planner wall time is not end-to-end latency; wall time is not CPU time.
 Native and RDF must have separate plots/tables; external failures cannot be used
 as speedup denominators. One-time costs may later be amortized explicitly.
+
+## First-pass adapter correction
+
+Native twelve-question observations completed at e7f8e00: each mode matches 7/12,
+with four temporal-path RSS failures and one invalid model variable allocation.
+The only nonempty question matches ten rows under both modes. The prefix contains
+eleven empty references; it is insufficient for a broad NL accuracy claim.
+
+The first RDF four-question chunk exposed an integration error: the legacy shared
+external frontend rejected the new K=1 profile before any model or final method
+query. Eight such records are quarantined as adapter configuration failures, not
+FedX/FedUP capability outcomes. The current chunk finished and closed normally;
+no query was interrupted. Add explicit K=1 admission, retaining the K=3 default
+and unchanged engine/query/answer algorithms. Focused tests cover the full worker
+dispatch and preservation of an intentionally wrong native response.
+
+Resume untouched RDF cell intents in a documented implementation epoch. The eight
+zero-model/zero-method-query cells get a separate correction schedule for their
+first actual model/engine observation; keep the original failed adapter receipts,
+time and classification. No completed XGAP cell is rerun. Reports distinguish the
+extra integration attempts from the first actual method observations.

@@ -1,5 +1,6 @@
 """Only shared-NL and ordinary RDF instance connection risks, controlled I/O."""
 from copy import deepcopy
+from dataclasses import replace
 import json
 import threading
 from types import SimpleNamespace
@@ -38,6 +39,38 @@ def test_highest_grounded_quality_chosen_once_without_cost_or_execution(monkeypa
     assert not r['selection']['estimated_cost_used'] and r['compilations']==1
     assert len(transport.calls)==r['model_calls']==1 and (r['input_tokens'],r['output_tokens'])==(10,20)
     assert r['backend_calls']==r['fit_calls']==r['automatic_retries']==0
+
+
+def test_explicit_k1_profile_compiles_once_and_keeps_legacy_default_strict(monkeypatch,inputs):
+    _,m,_,request,policy,provider,transport=setup_provider(monkeypatch,financial_intents()[:1],mode='performance')
+    policy=replace(policy,mode='precision')
+    options=dict(policy=policy,catalog_root=m[0]['catalog']['path'],catalog_hash=m[0]['catalog']['bundle_hash'],
+        sources=m[3],mapping=inputs[2])
+    legacy=prepare_external_query(request,provider,**options)
+    assert not legacy['success'] and not transport.calls
+    result=prepare_external_query(request,provider,information_profile='nl-conditional-strong-k1-v1',**options)
+    assert result['success'],result
+    assert result['model_calls']==result['compilations']==len(transport.calls)==1
+    assert result['interpretation']['candidate_cap']==1 and result['backend_calls']==result['automatic_retries']==0
+
+
+def test_external_worker_honors_frozen_k1_association_without_repair(monkeypatch,tmp_path):
+    from xgap.experiments import nl_method_worker as worker
+    profile,m,raw,_,policy,provider,transport=setup_provider(monkeypatch,financial_intents()[:1],mode='performance')
+    m[0]['offline']['nl_strong_frontend']={'profile_id':'nl-conditional-strong-k1-v1'}
+    m[6]['precision']=(replace(policy,mode='precision'),provider)
+    request=write_once(tmp_path/'request.json',raw)
+    monkeypatch.setattr(worker.FrozenOneShotProfile,'load',lambda *a,**kw:SimpleNamespace(materialize=lambda:m,request=profile.request))
+    calls=[]
+    wrong={'head':{'vars':['wrong']},'results':{'bindings':[]}}
+    def query(endpoint,text,*,seconds,output):
+        calls.append(text)
+        return {'status':'returned','http_status':200,'body_utf8':json.dumps(wrong),'client_wall_ms':1}
+    monkeypatch.setattr(worker,'query_once',query)
+    r=worker.run_nl(request_path=request['path'],request_sha256=request['sha256'],profile_path=ROOT/'profile.json',
+        profile_sha256=PIN,method='fedup',output=tmp_path/'worker',endpoint='http://unused.invalid')
+    assert r['success'] and len(calls)==len(transport.calls)==r['model_calls']==r['top_level_attempts']==1
+    assert json.loads((tmp_path/'worker/answer.json').read_text())['answer']==wrong
 
 
 def test_selected_unsupported_compilation_does_not_try_another_meaning(monkeypatch,inputs):

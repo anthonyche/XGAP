@@ -10,7 +10,8 @@ from xgap.semantic.interpretation_candidates import interpret_candidate_question
 from xgap.semantic.program import SemanticGraphProgram
 
 
-def prepare_external_query(request,provider,*,policy,catalog_root,catalog_hash,sources,mapping):
+def prepare_external_query(request,provider,*,policy,catalog_root,catalog_hash,sources,mapping,
+                           information_profile='precision-k3-v1'):
     started=time.perf_counter()
     r={'schema_version':'xgap-shared-external-frontend-v1','success':False,'status':'preparing',
         'interpretation':None,'candidates':[],'selection':None,'artifact':None,
@@ -21,8 +22,12 @@ def prepare_external_query(request,provider,*,policy,catalog_root,catalog_hash,s
         r['frontend_ms']=(time.perf_counter()-started)*1000
         return r
     try:
-        if not isinstance(policy,OneShotPolicy) or policy.mode!='precision' or policy.candidate_cap!=3:
-            raise ValueError('Shared external frontend requires the frozen precision K3 information profile')
+        caps={'precision-k3-v1':3,'nl-conditional-strong-k1-v1':1}
+        if information_profile not in caps:
+            raise ValueError('Unknown frozen shared frontend information profile')
+        if not isinstance(policy,OneShotPolicy) or policy.mode!='precision' or policy.candidate_cap!=caps[information_profile]:
+            raise ValueError('Shared external frontend policy does not match its explicit frozen information profile')
+        r['information_profile']=information_profile
         config=getattr(provider,'config',None)
         if config is not None and config.candidate_cap!=policy.candidate_cap:
             raise ValueError('Provider wire candidate bound differs')
@@ -50,7 +55,8 @@ def prepare_external_query(request,provider,*,policy,catalog_root,catalog_hash,s
                 program=SemanticGraphProgram.from_dict(candidate['program'])
                 if len(program.operators)>policy.max_operators:raise ValueError('Interpretation exceeds operator bound')
                 bound,trace=ground_interpretation(program,candidate['operator_sources'],bundle,request.question,
-                    max_holes=policy.max_holes,max_candidates_per_hole=policy.max_candidates_per_hole,use_ontology=policy.use_ontology)
+                    max_holes=policy.max_holes,max_candidates_per_hole=policy.max_candidates_per_hole,use_ontology=policy.use_ontology,
+                    ranking_policy=policy.grounding_ranking if information_profile=='nl-conditional-strong-k1-v1' else 'artifact_entry_order_v1')
                 quality=candidate['quality_proxy'];proxy=policy.unknown_quality_proxy if quality is None else quality
                 detail.update(status='grounded',grounding=trace,bound_program=bound.program.to_dict(),
                     quality_proxy=quality,ranking_quality_proxy=proxy,quality_fallback_used=quality is None)

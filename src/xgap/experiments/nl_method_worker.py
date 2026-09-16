@@ -70,8 +70,10 @@ def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,outp
             metadata=json.loads(read_pinned(representation['path'],representation['sha256']))
             mapping=json.loads(read_pinned(metadata['mapping']['path'],metadata['mapping']['sha256']))
             recorder=_DurableRecordingProvider(provider,root/'interpretation.json');active=True
+            information_profile=doc['offline'].get('nl_strong_frontend',{}).get('profile_id','precision-k3-v1')
             front=prepare_external_query(request,recorder,policy=policy,catalog_root=doc['catalog']['path'],
-                catalog_hash=doc['catalog']['bundle_hash'],sources=sources,mapping=mapping)
+                catalog_hash=doc['catalog']['bundle_hash'],sources=sources,mapping=mapping,
+                information_profile=information_profile)
             active=False;write_once(root/'frontend.json',front)
             r.update(model_calls=front['model_calls'],input_tokens=front['input_tokens'],output_tokens=front['output_tokens'],
                 status=front['status'],frontend_ms=front['frontend_ms'],compilation_ms=front['compilation_ms'],
