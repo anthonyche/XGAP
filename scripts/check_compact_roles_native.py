@@ -27,11 +27,14 @@ def reference_spec(case):
         'fields':{k:('decimal3-half-up' if k=='total_amount' else 'text') for k in case['expected_rows'][0]}})
 
 
-def main(output,read_key=False,*,contract='roles',strong=False):
+def main(output,read_key=False,*,contract='roles',strong=False,case_id=None):
     if strong and contract != 'contribution':raise ValueError('NL strong gate uses the contribution tiny fixture')
     if contract not in ('roles','contribution'):raise ValueError('Unknown tiny contract')
     is_contribution=contract=='contribution'
     fixture_path=REPO/'tests/fixtures/compact_contribution_v2.json' if is_contribution else FIXTURE
+    if case_id is not None:
+        if not strong or case_id != 'ROLE-ID-01':raise ValueError('Only the existing business-ID strong boundary case is selectable')
+        fixture_path=FIXTURE
     case_limit=1 if is_contribution else 3
     derive=derive_compact_contribution_profile if is_contribution else derive_compact_prompt_profile
     revision='contribution-v2' if is_contribution else 'prompt-v2'
@@ -46,7 +49,9 @@ def main(output,read_key=False,*,contract='roles',strong=False):
         key=getpass.getpass('LLM credential (not recorded): ') if read_key else previous
         if not key:raise ValueError('Missing configured model credential')
         os.environ['XGAP_EXTERNAL_LLM_API_KEY']=key;key=None
-        fixture=json.loads(fixture_path.read_text());assert len(fixture['cases'])==case_limit
+        fixture=json.loads(fixture_path.read_text())
+        if case_id is not None:fixture['cases']=[c for c in fixture['cases'] if c['id']==case_id]
+        assert len(fixture['cases'])==case_limit
         dataset={'dataset_id':'financial-binding-tiny','version':'financial-tiny-v1'}
         receipt['input']=write_once(root/'input.json',{'fixture':stream_pin(fixture_path),
             'prepared':{'path':str(PREPARED),'sha256':PREPARED_SHA},'interpretation_revision':revision,
