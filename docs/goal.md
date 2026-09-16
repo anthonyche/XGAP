@@ -37,7 +37,7 @@ EXACT仍保持声明hole的权威门，PERFORMANCE显式记录预测。首版K=1
 
 ## 最新Performance验收方向
 
-先做Exact trace prefix replay的opportunity analysis，不立即大改系统。成功可以是
+首轮[Exact prefix机会分析](report/terminal_opportunity_20260916.md)已完成：旧15条完整NL-only trace无澄清，新交互trace有3个prefix；epsilon认证保持未知。暂不大改系统。成功可以是
 减少clarification、LLM/token、metadata/source probes、远程调用/数据移动或总成本，
 以及Exact因预算不足safe non-answer时提高answer coverage；不要求backend execution
 一定不同。主结果应为cost–discrepancy–coverage frontier，而非单一速度比。

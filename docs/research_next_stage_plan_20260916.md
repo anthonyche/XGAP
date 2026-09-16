@@ -4,7 +4,7 @@
 [工程证据](report/simulated_user_memory_20260916.md)。以下M2–M4保留为后续路线，
 本轮不启动大数据、baseline比较或自动唤醒。
 
-用户最新顺序：先对完整Exact traces做prefix opportunity analysis。每个prefix只使用
+用户最新顺序：先对完整Exact traces做prefix opportunity analysis。[首轮审计](report/terminal_opportunity_20260916.md)已完成，下一步先接certificate再判断是否重构。每个prefix只使用
 当时可见的候选、已收到证据与相同源快照。区分epsilon-certified最早停止点、乐观可避免
 成本上限、未定义certificate导致的未知；不得把事后gold或全部最终执行费用当可避免成本。
 

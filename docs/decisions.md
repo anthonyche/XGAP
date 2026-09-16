@@ -10,6 +10,8 @@ M0第一版和M1小图修复已验收，当前先分析terminal机会，不立�
 
 本轮工程证据：[模拟用户与内存修复](report/simulated_user_memory_20260916.md)。
 
+[Terminal机会分析](report/terminal_opportunity_20260916.md)：前缀隔离、成本上限与epsilon未知项。
+
 ## 当前用户批准的研究契约
 
 - [Practical strong planning](decisions/practical_strong_planning_v1.md)：有限深AND/OR

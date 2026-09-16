@@ -3,6 +3,8 @@
 2026-09-16：M0模拟用户第一版与M1小图内存修复已通过，见
 [验收报告](report/simulated_user_memory_20260916.md)。整体研究目标未完成。
 
+[首轮机会分析](report/terminal_opportunity_20260916.md)：仅做只读重放，0新模型/后端/oracle调用；证书缺失时不产生提前认证或收益结论。
+
 ## 当前顺序：先机会分析，再决定搜索器改动
 
 1. 对已有完整Exact traces逐前缀重建公开状态，检查可用terminal contract。
