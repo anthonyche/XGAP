@@ -1,16 +1,27 @@
-## Material Passport
+# 下一阶段：先核验terminal机会，再决定策略重构
 
-- Origin Skill / Mode: academic-research-suite / experiment-agent plan
-- Date / Version: 2026-09-16 / next_stage_v2_simulated_user_correction
-- Verification Status: UNVERIFIED — 下一阶段尚未执行；既有结果只读核对
-- Scope: 当前情况分析、阶段计划、验收门与依赖；不修改或运行实验代码
-- Authorization: 用户认可比较路线，明确要求“暂时不要开始执行”
+2026-09-16更新：M0模拟用户第一版和M1小图内存修复已验收，见
+[工程证据](report/simulated_user_memory_20260916.md)。以下M2–M4保留为后续路线，
+本轮不启动大数据、baseline比较或自动唤醒。
 
-# 下一阶段：稳定执行、有效外部对照与更有信息量的 NL 评价
+用户最新顺序：先对完整Exact traces做prefix opportunity analysis。每个prefix只使用
+当时可见的候选、已收到证据与相同源快照。区分epsilon-certified最早停止点、乐观可避免
+成本上限、未定义certificate导致的未知；不得把事后gold或全部最终执行费用当可避免成本。
 
-本页是下一次明确恢复后的工作顺序。当前仅更新文档，工程、模型调用、数据生成、
-baseline 运行、回归、规模扫参和自动唤醒均不启动。路线认可不等于本轮执行授权。
-总体研究 Goal 未完成；旧文档中的自动继续指令不覆盖这次暂停。
+若机会足够大，再复用现有strong引擎接入统一 `PolicySearch(state, terminal_contract,
+budgets)`，每个状态terminal-first、候选/证书/physical plan lazy，证书增量缓存。
+操作分为required_for_execution、required_for_exactness、optional_for_costing和proposal_only。
+后者不能出权威证据；两种terminal都不能跳过执行必要条件。预算耗尽仅返回certified
+incumbent，否则safe non-answer。当前没有可运行的epsilon证书，不先发明一个来计分。
+
+结果记录epsilon、early eligibility、acquisition、LLM/token、probe/backend calls、search/
+certificate时间、expanded states、execution latency/bytes、总成本、empirical discrepancy、
+answer coverage与root gap。未知值不记0；收益不限于执行速度。相同起点、权限、候选、
+cache和snapshot下形成cost–discrepancy–coverage frontier才有机制证据。无非平凡frontier
+则Performance降为extension，不按输赢调参。源子集、hop、聚合等变体须先独立满足语义
+certificate，才能比较成本。
+
+原始下一阶段分析与M0–M4计划如下；其中历史“未实施/暂停”由上述最新状态覆盖。
 
 ## 1. 当前情况与可支持的结论
 
@@ -30,7 +41,7 @@ EXACT 继续无人值守，但必须有一个可查询、持有权威意图的�
 交互循环中；需要clearance时向模拟用户询问并继续，不因现实用户未答而失败。
 模拟用户可私有持有gold语义/意图标注，通过有范围、有记录的回答提供权威信息。
 撤回先前禁止此类oracle的解释。未获确认的结构仍不能因类型检查而被视为正确意图。
-细节见[模拟用户设计修正](decisions/simulated_user_authority_v1.md)，当前尚未实施。
+细节见[模拟用户设计修正](decisions/simulated_user_authority_v1.md)，现已接入第一版，后续信息选择仍需机会分析。
 
 ### 多跳瓶颈：已经看到什么，尚未证明什么
 
@@ -187,7 +198,7 @@ M1–M4 中不依赖该理论的执行/效果工作可以在恢复后推进；�
 
 ## 4. 恢复规则、顺序和停止条件
 
-当前只完成计划文档。明确恢复后，先 M0 模拟用户与 M1 小图稳定性；M2 的静态准备和 M3 的采样设计可以穿插，
+M0第一版与M1内存子阶段已完成；先分析terminal机会，再恢复后续阶段。M2 的静态准备和 M3 的采样设计可以穿插，
 涉及计时的服务运行保持串行。接入可行性达到门槛后再 M4；T 由用户推进，不承诺日历完成日
 或预设正面结果。各阶段未满足验收时定位最小缺口，不用全量实验替代 debug。
 

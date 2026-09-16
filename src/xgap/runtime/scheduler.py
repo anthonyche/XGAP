@@ -30,11 +30,12 @@ from xgap.tools.contracts import ToolContext, ToolStatus
 
 
 def _encoded_size(rows: Iterable[Mapping[str, Any]]) -> int:
-    return len(
-        json.dumps(list(rows), sort_keys=True, separators=(",", ":"), default=str).encode(
-            "utf-8"
-        )
-    )
+    # Same JSON-array byte count without a second full-result string/bytes copy.
+    size = 2
+    for index, row in enumerate(rows):
+        size += int(index > 0) + len(json.dumps(row, sort_keys=True,
+            separators=(",", ":"), default=str).encode('utf-8'))
+    return size
 
 
 def _deduplicate(rows: Iterable[Mapping[str, Any]]) -> tuple[JsonRow, ...]:
@@ -515,22 +516,24 @@ class FederatedScheduler:
             key = value_key(row[right_on])
             index.setdefault(key, []).append(row)
 
-        joined: list[JsonRow] = []
-        for left in left_rows:
-            if left_on not in left:
-                raise ValueError(f"left join field '{left_on}' is missing")
-            if left[left_on] is None:
-                continue
-            key = value_key(left[left_on])
-            for right in index.get(key, []):
-                merged = dict(left)
-                for name, value in right.items():
-                    if name not in merged or value_key(merged[name]) == value_key(value):
-                        merged[name] = value
-                    else:
-                        merged[f"{right_prefix}{name}"] = value
-                joined.append(merged)
-        return _deduplicate(joined)
+        def joined():
+            # Deduplicate while producing rows. Materializing every raw pair
+            # first can use quadratic memory even when the distinct output is1.
+            for left in left_rows:
+                if left_on not in left:
+                    raise ValueError(f"left join field '{left_on}' is missing")
+                if left[left_on] is None:
+                    continue
+                key = value_key(left[left_on])
+                for right in index.get(key, []):
+                    merged = dict(left)
+                    for name, value in right.items():
+                        if name not in merged or value_key(merged[name]) == value_key(value):
+                            merged[name] = value
+                        else:
+                            merged[f"{right_prefix}{name}"] = value
+                    yield merged
+        return _deduplicate(joined())
 
     @staticmethod
     def _semi_join(

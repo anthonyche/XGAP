@@ -2,12 +2,12 @@
 
 ## 当前目标与工作时段
 
-2026-09-16，首版验收后的最新指令：用户认可下一阶段比较路线，要求先分析情况、
-更新计划，**暂时不要开始执行**。当前仅允许只读分析与计划文档更新；工程修改、
-数据生成、模型/数据库调用、baseline运行、回归和自动唤醒保持暂停，直到明确恢复。
-本轮计划认可不等于执行授权；总体研究Goal尚未完成。
+2026-09-16，最新授权：**M0 第一版接入及 M1 小图内存优化已验收，进入机会分析**。
+本轮允许必要工程修改、定向测试和对应真实 tiny 接口验收；不启动 M2–M4、大数据集、
+baseline 调优、全量回归或自动唤醒。实际证据见[验收报告](report/simulated_user_memory_20260916.md)。
+总体研究 Goal 尚未完成。
 
-下一次恢复遵循[新阶段计划](research_next_stage_plan_20260916.md)：先接入可查询的权威
+整体路线遵循[新阶段计划](research_next_stage_plan_20260916.md)：先接入可查询的权威
 模拟用户，并以小图修复多跳执行与计量风险；建立作者原查询上的FedShop/FedUP/FedX共同支持范围；冻结更有信息量
 的FinBench NL评价集；分别交付固定查询执行比较与真实NL端到端结果。模式理论由用户
 推进，工程不预设Performance必胜，不以大批消融替代理论机制。
@@ -16,24 +16,39 @@ EXACT无人值守的正确含义：现实用户不逐题参与，但必须提供
 模拟用户。需要澄清时向它询问并继续；不能因为现实用户没有回答就返回失败。
 模拟用户可以私有持有gold语义/意图标注，通过有范围、有记录的信息动作回答；planner
 不直接读取隐藏意图或最终结果。见[模拟用户契约](decisions/simulated_user_authority_v1.md)。
-该模块不等待新的d/risk理论，当前仍只更新设计、尚未实施。
+该模块第一版已接入并通过真实小图；后续动作选择等待可执行terminal契约。
 
 首版12题/72方法观测已封存评分，服务已关闭，进入验收讨论；不自动扩量或调参。
 Native两模式均7/12匹配，RDF 8/12与7/12（后者含整批磁盘预算截断）；每组4道多跳
 内存失败，11题参考为空。下一轮候选优先小图上的中间结果控制与非空评价覆盖，
 不得将模式差别或baseline失败包装成优势。见[本轮报告](report/nl_strong_first_pass_20260916.md)。
 
-本轮已在极小图检查新边界和真实模型/双后端链，再冻结12题（既有三家族各4题）的
+历史NL-only首版已在极小图检查新边界和真实模型/双后端链，再冻结12题（既有三家族各4题）的
 首版评价：native两模式，同事实RDF加FedX/FedUP。只提供NL和通用schema，输入不含
 每题gold结构、源分配或答案。所有失败如实计入；不在评价题上反复修补重跑。
 方法、预算、输入、评分范围见[本次契约](decisions/nl_conditional_strong_v1.md)。
 
-查询结构由模型提出，strong保证明确限定于该结构；这不是用户意图已获验证。
+旧NL-only profile的查询结构由模型提出，strong保证明确限定于该结构；这不是用户意图已获验证。
 EXACT仍保持声明hole的权威门，PERFORMANCE显式记录预测。首版K=1共同前端只负责
 取得可信的端到端观测，不声称已验证信息获取Pareto收益、epsilon保证或SOTA优势。
 
 保留5d82b6f的384条历史观测及[原报告](report/partial_strong_first_pass_20260915.md)；
 不能把此前可信模板结果重新命名为本轮NL结果。catalog、估计器、baseline和数据不重建。
+
+## 最新Performance验收方向
+
+先做Exact trace prefix replay的opportunity analysis，不立即大改系统。成功可以是
+减少clarification、LLM/token、metadata/source probes、远程调用/数据移动或总成本，
+以及Exact因预算不足safe non-answer时提高answer coverage；不要求backend execution
+一定不同。主结果应为cost–discrepancy–coverage frontier，而非单一速度比。
+
+候选/历史cache/source snapshot和oracle权限必须相同。逐状态先检查ExactTerminal或
+BoundedTerminal(epsilon)，通过certificate后才生成必要物理计划；否则选择一个信息动作。
+明确区分required_for_execution、required_for_exactness、optional_for_costing、proposal_only。
+不能预读oracle、把模型置信度当authority、把便宜程度当用户意图、将全部最终执行时间
+计成可避免成本。没有可执行certificate时eligible和root gap保留未知。
+若完成合理terminal-first/lazy实现后仍没有非平凡frontier，Performance降为extension，
+不调参制造优势。当前固定流程只是M0接线验收，不是Performance机制验收。
 
 ## 研究目标与不可变边界
 
@@ -74,7 +89,7 @@ baseline只忠实适配到能运行，绝不优化算法、语义、答案或按
 
 ## 权威入口与历史
 
-[下一阶段计划（未执行）](research_next_stage_plan_20260916.md) · [算法规划](practical_planning_20260914.md)
+[下一阶段计划](research_next_stage_plan_20260916.md) · [算法规划](practical_planning_20260914.md)
 · [技术决策索引](decisions.md) · [路线](roadmap.md)
 · [系统与实验契约](research_contract_audit_20260915.md)。详细过程写独立report，不叠加旧的
 “当前/下一步”。[历史快照](goal_history_20260915.md)与[凌晨报告](report/xgap_progress_20260915_0200.md)

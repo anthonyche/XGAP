@@ -108,9 +108,9 @@ def inputs():
     return schema, catalog, bindings, mapping, graphs
 
 
-def execute(intent, inputs, *, version='v1'):
+def execute(intent, inputs, *, version='v1', optimize=False, return_runtime=False):
     schema, catalog, bindings, mapping, graphs = inputs
-    program, sources = lower_compact_query(intent, schema, version=version)
+    program, sources = lower_compact_query(intent, schema, version=version, optimize=optimize)
     sets = []
     for hole in program.holes:
         choices = [e['candidate_id'] for e in catalog['entries'] if e['kind'] == 'entity'
@@ -142,10 +142,11 @@ def execute(intent, inputs, *, version='v1'):
 
     registry = BackendPluginRegistry()
     registry.register(NativeBackendPlugin('fuseki', LocalSources(BackendDescriptor('fuseki', 'fuseki', 'sparql', 'rdf'))))
-    result = FederatedScheduler(BackendInvokeTool(registry)).execute(plan)
+    result = FederatedScheduler(BackendInvokeTool(registry), retention='roots').execute(plan)
     assert result.success, result.to_dict()
     assert len(calls) == len(sources) == result.total_remote_calls
-    return list(result.final_rows), program, sources
+    output = (list(result.final_rows), program, sources)
+    return (*output, result) if return_runtime else output
 
 
 @pytest.mark.parametrize('index', [0, 1, 2], ids=['direct-sum', 'temporal-reachability', 'risk-dedup-sum'])

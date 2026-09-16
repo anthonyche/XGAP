@@ -58,8 +58,9 @@ class _Builder:
 
 
 class _Lowerer:
-    def __init__(self,query,schema,version='v1'):
+    def __init__(self,query,schema,version='v1',optimize=False):
         self.version=version
+        self.optimize=optimize
         self.q=validate_query(deepcopy(query),version=version);self.b=_Builder()
         if not isinstance(schema,dict):raise ValueError('Frozen source schema is required')
         self.views={k:v for k,v in schema.items() if isinstance(v,dict) and 'nodes' in v and 'edges' in v}
@@ -118,7 +119,12 @@ class _Lowerer:
         self.decisions.append({'kind':'edge','label':label,'sources':views,'coverage':'union of all declared matching views'})
         return result
 
-    def path_read(self):
+    def local_conditions(self, item):
+        """Only conjuncts whose operands are available on this relation."""
+        return [c for c in self.conditions if {c['field']} | (
+            {c['right_field']} if 'right_field' in c else set()) <= self.b.fields[item]]
+
+    def path_read(self, anchors=()):
         p=self.path;branches=[];b=self.b
         for hops in range(p['min_hops'],p['max_hops']+1):
             nodes=[self.ids[p['source']]]+['pi'+str(hops)+'_'+str(i) for i in range(1,hops)]+[self.ids[p['target']]]
@@ -130,13 +136,25 @@ class _Lowerer:
                 right=self.descriptor(p['target']) if i==hops-1 else {'label':self.nodes[p['target']]['type']}
                 props={times[i]:p['time']['property']} if p['time'] else {}
                 part=self.edge_read(p['type'],left,right,nodes[i],nodes[i+1],edgecols[i],props)
-                result=part if result is None else b.join(result,part,set(nodes)|set(edgecols))
+                local=[];incremental=[]
                 if p['time']:
                     t=p['time']
                     for bound,op in [('lower','ge' if t['lower_inclusive'] else 'gt'),('upper','le' if t['upper_inclusive'] else 'lt')]:
-                        if t[bound] is not None:conditions.append({'op':op,'field':times[i],'value':t[bound],'value_type':'timestamp_ms'})
-                    if i and t['increasing']:conditions.append({'op':'lt','field':times[i-1],'right_field':times[i],'value_type':'timestamp_ms'})
-            if p['mode']=='ACYCLIC':
+                        if t[bound] is not None:local.append({'op':op,'field':times[i],'value':t[bound],'value_type':'timestamp_ms'})
+                    if i and t['increasing']:incremental.append({'op':'lt','field':times[i-1],'right_field':times[i],'value_type':'timestamp_ms'})
+                if self.optimize:
+                    part=b.filter(part,local)
+                result=part if result is None else b.join(result,part,set(nodes)|set(edgecols))
+                if self.optimize:
+                    if i==0:
+                        for anchor in anchors:
+                            result=b.join(result,anchor,set(nodes)|set(edgecols))
+                    if p['mode']=='ACYCLIC':
+                        incremental.extend({'op':'ne','field':nodes[j],'right_field':nodes[i+1]} for j in range(i+1))
+                    result=b.filter(result,incremental)
+                else:
+                    conditions.extend(local+incremental)
+            if p['mode']=='ACYCLIC' and not self.optimize:
                 conditions.extend({'op':'ne','field':nodes[i],'right_field':nodes[j]} for i in range(hops+1) for j in range(i+1,hops+1))
             result=b.filter(result,conditions)
             projections={self.ids[v]:{'kind':'field','field':self.ids[v]} for v in (p['source'],p['target'])}
@@ -174,26 +192,38 @@ class _Lowerer:
             ref=expr if 'var' in expr else expr['field']
             if ref is not None:self.column(ref);output_refs.append(ref)
             if 'aggregate' in expr and expr['aggregate']!='count' and ref is None:raise ValueError('Numeric aggregate needs a field')
+        self.conditions=[]
+        for pred in self.q['where']:
+            right=pred['right'];condition={'op':pred['op'],'field':self.column(pred['left'])}
+            condition.update({'right_field':self.column(right)} if 'var' in right else {'value':right['value']})
+            if pred['value_type']=='timestamp_ms':condition['value_type']='timestamp_ms'
+            self.conditions.append(condition)
+        anchors=[]
+        if self.optimize:
+            # Create property relations early so a selective start property can
+            # constrain EACH path prefix, including model-generated business IDs.
+            for edge in self.q['edges']+([self.path] if self.path else []):
+                self.covered.update((edge['source'],edge['target']))
+            self.node_reads()
+            self.units=[b.filter(u,self.local_conditions(u)) for u in self.units]
+            if self.path:
+                start=self.ids[self.path['source']]
+                anchors=[u for u in self.units if start in b.fields[u] and self.local_conditions(u)]
         for edge in self.q['edges']:
             properties={col:prop for (v,prop),col in self.refcols.items() if v==edge['var']}
-            self.units.append(self.edge_read(edge['type'],self.descriptor(edge['source']),self.descriptor(edge['target']),
-                self.ids[edge['source']],self.ids[edge['target']],self.ids[edge['var']],properties))
+            unit=self.edge_read(edge['type'],self.descriptor(edge['source']),self.descriptor(edge['target']),
+                self.ids[edge['source']],self.ids[edge['target']],self.ids[edge['var']],properties)
+            self.units.append(b.filter(unit,self.local_conditions(unit)) if self.optimize else unit)
             self.covered.update((edge['source'],edge['target']))
-        if self.path:self.units.append(self.path_read())
-        self.node_reads()
+        if self.path:self.units.append(self.path_read(anchors))
+        if not self.optimize:self.node_reads()
         pending=list(self.units);result=pending.pop(0)
         identities=set(self.ids.values())
         while pending:
             match=next((i for i,p in enumerate(pending) if b.fields[p]&b.fields[result]&identities),None)
             if match is None:raise ValueError('Disconnected compact query is outside the admitted profile')
             result=b.join(result,pending.pop(match),identities)
-        conditions=[]
-        for pred in self.q['where']:
-            right=pred['right'];condition={'op':pred['op'],'field':self.column(pred['left'])}
-            condition.update({'right_field':self.column(right)} if 'var' in right else {'value':right['value']})
-            if pred['value_type']=='timestamp_ms':condition['value_type']='timestamp_ms'
-            conditions.append(condition)
-        result=b.filter(result,conditions)
+        result=b.filter(result,self.conditions)
         keys=self.q['deduplicate_by' if self.version == 'v1' else 'contribution_by']
         contribution=None
         if keys is not None:
@@ -232,9 +262,20 @@ class _Lowerer:
                 'deduplication_semantics':'distinct retained identities and selected scalar values',
                 'backend_calls':0,'fit_calls':0,'response_repair':False}}}
         if self.version == 'v2':raw['metadata']['compact_lowering']['contribution_projection']=contribution
+        if self.optimize:raw['metadata']['compact_lowering']['execution_rewrite']='early-path-constraints-v1'
         validate_program_parameters(raw)
         return SemanticGraphProgram.from_dict(raw),dict(b.sources)
 
 
-def lower_compact_query(query,source_schema,*,program_id='compact-query',version='v1'):
-    return _Lowerer(query,source_schema,version).lower(program_id)
+def lower_compact_query(query,source_schema,*,program_id='compact-query',version='v1',optimize=False):
+    if type(optimize) is not bool:raise ValueError('Compact optimization must be an explicit boolean')
+    try:
+        return _Lowerer(query,source_schema,version,optimize).lower(program_id)
+    except ValueError as error:
+        if not optimize or str(error) != 'Lowered compact program exceeds64 operators':
+            raise
+        # An optional rewrite must not remove an already admitted feasible seed.
+        program,sources=_Lowerer(query,source_schema,version,False).lower(program_id)
+        program.metadata['compact_lowering']['execution_rewrite']='legacy-budget-fallback'
+        program.metadata['compact_lowering']['rewrite_stop_reason']='64_operator_limit'
+        return program,sources

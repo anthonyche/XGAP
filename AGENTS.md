@@ -74,13 +74,21 @@ has 384/384 sealed/scored cells and all owned sessions closed; see
 accuracy, mode-mechanism superiority, comparable SOTA efficiency, or scalability.
 Legacy domains and baseline algorithms retain their behavior.
 
-Latest user direction (Sep16, after first-pass review): the next-stage comparison
-direction is approved, but only analyze the situation and update the plan now;
-do not start execution. Follow `docs/research_next_stage_plan_20260916.md` and
-`docs/goal.md`. Read-only analysis and plan/document updates are allowed. Runtime
-edits, tests, data generation, model/backend/baseline calls and automatic wakeups
-remain paused until an explicit resume instruction. Plan agreement alone is not
-execution authorization. Overall Goal is unfinished.
+Latest user direction (Sep16): explicitly resume M0 simulated-user integration
+and M1 small-graph memory/execution repairs. Implementation, focused tests and
+one relevant live tiny gate are authorized. Follow the bounded acceptance in
+`docs/research_next_stage_plan_20260916.md`. M2-M4 campaigns, baseline changes,
+large datasets, blanket regressions and automatic wakeups remain out of this
+turn's scope. Overall Goal is unfinished.
+
+M0 integration and the M1 tiny-memory substage are verified; see
+`docs/report/simulated_user_memory_20260916.md`. New direction: FIRST audit Exact
+trace prefixes for terminal opportunity, before any broad search redesign.
+Keep epsilon eligibility unknown without an executable certificate. Account for
+avoidable acquisition and coverage as well as end-to-end cost; never credit the
+necessary final plan/execution as automatically saved. A later unified search
+should be terminal-first and lazy with equal permissions/caches/snapshots. If no
+nontrivial cost-discrepancy-coverage frontier exists, report it; do not tune wins.
 
 The opt-in model-structure contract remains conditional and supplies no intent
 authority; see `docs/decisions/nl_conditional_strong_v1.md`. Trusted-template
@@ -94,8 +102,7 @@ XGAP acquires scoped authoritative answers through explicit, metered interaction
 Do not fail merely because the real user is absent, or forbid the oracle as a
 "gold fixture." Keep hidden intent out of initial method input and keep answer
 rows/optimal physical plans out of intent replies. See
-`docs/decisions/simulated_user_authority_v1.md`. This is a design correction;
-implementation and experiments remain paused until explicit resume.
+`docs/decisions/simulated_user_authority_v1.md`. M0/M1 implementation is now explicitly authorized.
 
 The Sep16 NL first pass is now sealed: 12 questions, 72 method observations and
 eight separately retained zero-call adapter configuration records; all owned

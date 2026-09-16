@@ -4,9 +4,11 @@
 不执行其中过期的“下一步”。[当前Goal](goal.md)、[状态](status.md)、[研究审计](research_contract_audit_20260915.md)。
 
 最新计划：[首版后的分析与下一阶段](research_next_stage_plan_20260916.md)。用户认可路线，
-当前仅更新文档，暂不执行。上一轮[NL条件strong首版](decisions/nl_conditional_strong_v1.md)已封存。
+M0第一版和M1小图修复已验收，当前先分析terminal机会，不立即重构。上一轮[NL条件strong首版](decisions/nl_conditional_strong_v1.md)已封存。
 最新纠正：[权威模拟用户](decisions/simulated_user_authority_v1.md)是无人值守EXACT所需的
 可查询角色；允许它私有持有gold意图。撤回“无人值守就禁止用户oracle”的错误解释。
+
+本轮工程证据：[模拟用户与内存修复](report/simulated_user_memory_20260916.md)。
 
 ## 当前用户批准的研究契约
 

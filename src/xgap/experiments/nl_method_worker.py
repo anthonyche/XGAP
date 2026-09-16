@@ -9,17 +9,21 @@ from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned
 from xgap.experiments.one_shot_records import run_record, write_once, read_record_outcome
 from xgap.experiments.one_shot_toy import _DurableRecordingProvider
 from xgap.experiments.practical_methods import PRACTICAL_METHODS, FIXED_INFORMATION_METHODS
-from xgap.agent.nl_strong_question import NL_STRONG_METHODS
+from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS
 
 SCHEMA='xgap-nl-method-worker-v1'
-METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS,*NL_STRONG_METHODS)
+METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS,*NL_STRONG_METHODS,*NL_USER_METHODS)
 
 
-def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,output,endpoint=None,seconds=180):
-    if method in NL_STRONG_METHODS:
+def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,output,endpoint=None,seconds=180,
+           oracle_path=None,oracle_sha256=None,user_max_calls=9):
+    if method not in NL_USER_METHODS and (oracle_path is not None or oracle_sha256 is not None):
+        raise ValueError('Private oracle is only allowed on the declared user-interaction method')
+    if method in (*NL_STRONG_METHODS,*NL_USER_METHODS):
         from xgap.experiments.nl_strong_worker import run_nl_strong
         return run_nl_strong(request_path=request_path,request_sha256=request_sha256,profile_path=profile_path,
-            profile_sha256=profile_sha256,method=method,output=output)
+            profile_sha256=profile_sha256,method=method,output=output,
+            oracle_path=oracle_path,oracle_sha256=oracle_sha256,user_max_calls=user_max_calls)
     if method in FIXED_INFORMATION_METHODS:
         from xgap.experiments.fixed_information_worker import run_fixed_information
         return run_fixed_information(request_path=request_path,request_sha256=request_sha256,profile_path=profile_path,

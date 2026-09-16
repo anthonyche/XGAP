@@ -1,13 +1,15 @@
 # XGAP Current Roadmap
 
-2026-09-16。NL首版已收尾，下一阶段计划已更新；用户要求暂不执行。
-当前只允许分析与文档更新，待明确恢复后开始下列阶段。总体研究目标尚未完成。
+2026-09-16：M0模拟用户第一版与M1小图内存修复已通过，见
+[验收报告](report/simulated_user_memory_20260916.md)。整体研究目标未完成。
 
-## 当前任务：完成计划，保持执行暂停
+## 当前顺序：先机会分析，再决定搜索器改动
 
-1. 已完成首版情况分析，区分执行风险、采样覆盖、模式理论与外部比较有效性。
-2. 已明确下一次恢复后的阶段、依赖、研究问题及验收门，不自动生成可执行schedule。
-3. 工程修改、测试、数据生成、模型/数据库调用和自动唤醒均不启动。
+1. 对已有完整Exact traces逐前缀重建公开状态，检查可用terminal contract。
+2. 将可认证的可避免成本与乐观上限、未知项分开，保留一次必要最终规划/执行。
+3. 有非平凡机会才推进统一terminal-first、lazy候选/物理计划生成。无可执行epsilon
+   certificate时不能伪造eligible、root gap或coverage收益。
+4. M2–M4不自动扩量；baseline算法和历史结果保持原样。
 
 最新授权与顺序见[Goal](goal.md)及[下一阶段详细计划](research_next_stage_plan_20260916.md)。
 现行实现界限仍见[NL契约](decisions/nl_conditional_strong_v1.md)。
