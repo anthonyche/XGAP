@@ -1,8 +1,10 @@
 # XGAP Current Roadmap
 
-T3最新授权（2026-09-17）：用户批准从toy机制门转到冻结的SF0.1策略价值评价。
-[机器可读协议](../experiments/protocols/family_policy_study_v1.json)固定16题、两档epsilon、
-两个简单对照、平衡顺序与少量预定重复。先封存第一次结果，再讨论改进，不在运行中调参。
+T3当前（2026-09-17）：两个简单对照/独立参考已实现，32项定向测试通过；
+冻结16题首轮因5GiB记录预算停止，47条封存、65条未运行，服务全关闭。
+[部分结果与图](report/family_policy_first_pass_20260917.md)保留搜索胜/平/负及答案损失。
+当前先讨论；下一工程门建议为toy记录共享/无损压缩、预算原因保真与容量预检；
+之后冻结未运行组的继续方案。hard/cheap负对照与时间重复未执行，不能宣称全批完成。
 
 2026-09-17：T2按用户最新授权完成有限家族certificate→主NL→共享AND/OR→共同worker
 接线，并提供双方相同的full-intent/局部询问。先验收[小图机制与原生接口](report/strong_intent_20260917.md)，

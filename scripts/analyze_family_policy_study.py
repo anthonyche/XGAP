@@ -20,18 +20,22 @@ def analyze(release_path,release_sha256,run_root,output):
     for cell in release['cells']:
         case=cases[cell['question_id']];path=run_root/'cells'/cell['cell_id'];row={k:cell[k] for k in (
             'cell_id','round','group_index','method_position','label','method','epsilon','question_id','scenario')}
-        row.update(reference_rows=case['reference_rows'],status='unrun',answered=False,answer_em=0,answer_f1=0,
+        row.update(reference_rows=case['reference_rows'],status='unrun',guard_status=None,observation_class='unrun',answered=False,answer_em=0,answer_f1=0,
             clarification_calls=None,disclosed_coordinates=None,information_burden=None,source_calls=None,
             response_body_bytes=None,planner_cpu_ms=None,certificate_ms=None,expanded_states=None,
             final_plan_executions=None,model_calls=None,actual_intent_discrepancy=None,answer_jaccard_discrepancy=None,
             online_ms=None,fresh_source_session=None,selected=None)
         if not (path/'terminal.json').exists():
-            if path.exists():row['status']='indeterminate_prior_intent'
+            if path.exists():row.update(status='indeterminate_prior_intent',observation_class='indeterminate')
             rows.append(row);continue
         terminal=json.loads((path/'terminal.json').read_text());trial=load(terminal['outcome']);score=load(terminal['score'])
         core=load(trial['core_result']) if trial.get('core_result') else {}
         search=core.get('search') or {};obs=trial.get('source_observations') or {}
-        row.update(status=trial['status'],answered=trial['success'],answer_em=score['answer_em'],answer_f1=score['answer_row_multiset_f1'],
+        guard_status=trial.get('guard_status')
+        observation_class=('study_censored' if guard_status and guard_status.startswith('study_') else
+            'method_observed' if trial['success'] or trial['status']=='no_feasible_strong_policy' else 'unresolved_failure')
+        row.update(status=trial['status'],guard_status=guard_status,observation_class=observation_class,
+            answered=trial['success'],answer_em=score['answer_em'],answer_f1=score['answer_row_multiset_f1'],
             answer_rows=score['actual_rows'],model_calls=trial.get('model_calls'),source_calls=obs.get('requests'),
             response_body_bytes=obs.get('response_body_bytes'),planner_cpu_ms=core.get('planning_cpu_ms'),
             certificate_ms=core.get('certificate_ms'),expanded_states=search.get('expanded_states'),
@@ -63,10 +67,15 @@ def analyze(release_path,release_sha256,run_root,output):
         for label in release['design']['methods']:
             cohort=[r for r in rows if r['round']=='first' and r['label']==label and (scenario=='all' or r['scenario']==scenario)]
             answered=[r for r in cohort if r['answered']]
+            observed=[r for r in cohort if r['observation_class']=='method_observed']
             def med(key):
                 values=[r[key] for r in answered if isinstance(r.get(key),(int,float))]
                 return median(values) if values else None
             summaries.append(dict(scenario=scenario,label=label,questions=len(cohort),answered=len(answered),
+                method_observed=len(observed),study_censored=sum(r['observation_class']=='study_censored' for r in cohort),
+                unrun=sum(r['observation_class']=='unrun' for r in cohort),
+                coverage_observed=len(answered)/len(observed) if observed else None,
+                mean_f1_observed=mean(r['answer_f1'] for r in observed) if observed else None,
                 correct=sum(r['answer_em'] for r in cohort),coverage=len(answered)/len(cohort),
                 mean_f1_all=mean(r['answer_f1'] for r in cohort),mean_f1_answered=mean(r['answer_f1'] for r in answered) if answered else None,
                 median_fields_answered=med('disclosed_coordinates'),median_calls_answered=med('clarification_calls'),
@@ -94,22 +103,26 @@ def analyze(release_path,release_sha256,run_root,output):
     closures=[]
     for p in (run_root/'sessions').glob('*/closed.json'):
         c=json.loads(p.read_text());closures.append(all(c[k] for k in ('owned_groups_drained','owned_processes_terminal','observer_stopped')))
+    session_count=len(list((run_root/'sessions').iterdir()))
     summary=dict(scope=release['design']['scope'],unique_questions=16,first_cells=96,repeat_cells=16,
         statuses={s:sum(r['status']==s for r in rows) for s in sorted({r['status'] for r in rows})},
+        observation_classes={s:sum(r['observation_class']==s for r in rows) for s in sorted({r['observation_class'] for r in rows})},
         total_model_calls=sum(r['model_calls'] or 0 for r in rows),summaries=summaries,pairs=pairs,timing_repeats=repeats,
-        sessions=len(list((run_root/'sessions').iterdir())),closed_sessions=len(closures),all_closed=bool(closures) and all(closures),
+        sessions=session_count,closed_sessions=len(closures),all_closed=session_count==len(closures) and all(closures),
+        denominator_warning='Planned-denominator coverage/F1 include unrun and censored cells and are not method-effect estimates; use matched fully observed cohorts.',
         analysis_scope='descriptive first pass; no significance, population, SOTA or open-NL claim',
         release=dict(path=release_path,sha256=release_sha256))
     write_once(root/'summary.json',summary)
     lines=['# Bounded intent-policy study: first results','',
-        '16 distinct authored tasks on full SF0.1 facts; 96 first-pass observations and16 predeclared timing repeats.',
+        'Planned:16 distinct authored tasks on full SF0.1 facts;96 first-pass cells and16 timing repeats. This is not a completion claim.',
         '0 model calls by protocol. Internal simple controls, not SOTA. Conditional finite-family scope.', '',
-        '| Method | Answered /16 | Exact answers /16 | F1 (all16) | Fields (answered median) | Source calls (answered median) |',
-        '|---|---:|---:|---:|---:|---:|']
+        '| Method | Observed /16 | Censored | Unrun | Answered / observed | Exact answers / observed |',
+        '|---|---:|---:|---:|---:|---:|---:|']
     for s in summaries:
-        if s['scenario']=='all':lines.append(f"| {s['label']} | {s['answered']} | {s['correct']:g} | {s['mean_f1_all']:.3f} | {s['median_fields_answered']} | {s['median_source_calls_answered']} |")
+        if s['scenario']=='all':lines.append(f"| {s['label']} | {s['method_observed']} | {s['study_censored']} | {s['unrun']} | {s['answered']} / {s['method_observed']} | {s['correct']:g} / {s['method_observed']} |")
     lines+=['','Answer coverage and correctness have separate denominators. A non-answer is not an empty answer.',
         'Information burden units differ across scenario groups; the all-group report does not add those units.',
+        'Observed denominators can differ: this table is accounting, not a ranking. Compare only matched fully observed questions. Unrun/censoring is not incorrectness.',
         'Timing is descriptive and remains affected by first/subsequent access, recovery and source warm caches.',
         '', 'Statuses: `'+json.dumps(summary['statuses'])+'`. All owned sessions closed: '+str(summary['all_closed'])+'.']
     (root/'report.md').write_text('\n'.join(lines)+'\n')

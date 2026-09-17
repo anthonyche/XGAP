@@ -9,6 +9,14 @@ two epsilon levels, no outcome-driven changes and no retry of failed cells.
 This authorization supersedes older no-campaign statements only for T3. No
 open-NL, model-saving or SOTA claim follows from the finite-family track.
 
+T3 first bounded pass is now sealed but incomplete:47 cells, including39
+answers,7 information-budget nonanswers and1 study-disk censoring;65 cells
+unrun, all14 sessions closed. See `docs/report/family_policy_first_pass_20260917.md`.
+Preserve the raw transport status and its underlying study_disk_budget cause.
+Do not resume beyond the frozen stop, rerun outcomes, or tune the algorithms.
+Discuss results before a new release; next toy candidate is lossless evidence
+storage and budget-cause preservation. Overall Goal is unfinished.
+
 ## Project identity
 
 XGAP is a cost-aware agentic federated graph-query system over heterogeneous

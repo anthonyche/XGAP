@@ -2,6 +2,7 @@
 
 最新T3：[终止规则与策略搜索价值评价](decisions/family_policy_study_v1.md)。用户已批准
 16个新问题、两个简单策略和SF0.1有界运行；保持有限家族输入边界与不调参原则。
+首轮因记录预算停止，47条封存、65未运行，见[部分结果/下一工程门](report/family_policy_first_pass_20260917.md)。
 
 最新T2：[有限家族terminal接入共享strong policy](decisions/family_strong_terminal_v1.md)。
 主NL/共同worker提供新有界profile，双方共享full/scoped模拟用户动作；旧开放NL入口
