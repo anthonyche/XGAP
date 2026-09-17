@@ -28,13 +28,16 @@ class ScopePolicy:
     domains: tuple[ScopeDomain, ...]
     max_candidates: int = 64
     language_version: str = 'v1'
+    expansion: str = 'cartesian'
 
     def __post_init__(self):
         if not self.policy_id or not isinstance(self.domains, tuple) or len(self.domains) > 32:
             raise ValueError('Named bounded scope policy required')
         if type(self.max_candidates) is not int or not 1 <= self.max_candidates <= 64:
             raise ValueError('Candidate limit must be 1..64')
-        if math.prod(len(d.values) for d in self.domains) > self.max_candidates:
+        if self.expansion not in ('cartesian', 'proposals_only'):
+            raise ValueError('Unknown finite scope construction policy')
+        if self.expansion == 'cartesian' and math.prod(len(d.values) for d in self.domains) > self.max_candidates:
             raise ValueError('Scope product exceeds budget before candidate construction')
         paths = [d.slot.path for d in self.domains]
         if len({d.slot.name for d in self.domains}) != len(paths) or any(
@@ -46,7 +49,8 @@ class ScopePolicy:
 
     @classmethod
     def from_dict(cls, value):
-        if (not isinstance(value, dict) or set(value) != {'schema_version','policy_id','domains','max_candidates','language_version'}
+        required = {'schema_version','policy_id','domains','max_candidates','language_version'}
+        if (not isinstance(value, dict) or not required <= set(value) or set(value)-required-{'expansion'}
                 or value['schema_version'] != 'xgap-finite-scope-policy-v1'):
             raise ValueError('Invalid frozen scope policy')
         domains=[]
@@ -55,14 +59,15 @@ class ScopePolicy:
                 raise ValueError('Invalid scope coordinate')
             slot=dict(item['slot']);slot['path']=tuple(slot['path'])
             domains.append(ScopeDomain(IntentSlot(**slot),tuple(item['values'])))
-        return cls(value['policy_id'],tuple(domains),value['max_candidates'],value['language_version'])
+        return cls(value['policy_id'],tuple(domains),value['max_candidates'],value['language_version'],
+                   value.get('expansion','cartesian'))
 
 
 def construct_scope(proposals, policy, source_snapshot):
     """No oracle read, backend call or gold row; no truncation of a large product."""
     if not isinstance(proposals, (list, tuple)) or not 1 <= len(proposals) <= 8:
         raise ValueError('One to eight compact proposals required')
-    combinations = math.prod(len(d.values) for d in policy.domains)
+    combinations = math.prod(len(d.values) for d in policy.domains) if policy.expansion == 'cartesian' else 1
     if combinations * len(proposals) > policy.max_candidates:
         raise ValueError('Proposal/domain product exceeds budget before construction')
     queries = {}
@@ -70,6 +75,15 @@ def construct_scope(proposals, policy, source_snapshot):
         if len(canonical(proposal).encode()) > 65536:
             raise ValueError('Compact proposal exceeds byte bound')
         base = validate_query(deepcopy(proposal), version=policy.language_version)
+        if policy.expansion == 'proposals_only':
+            for domain in policy.domains:
+                value = base
+                for key in domain.slot.path:
+                    value = value[key]
+                if canonical(value) not in {canonical(v) for v in domain.values}:
+                    raise ValueError('Proposed coordinate is outside its frozen domain')
+            queries[canonical(base)] = base
+            continue
         for values in product(*(domain.values for domain in policy.domains)):
             query = deepcopy(base)
             for domain, value in zip(policy.domains, values):
@@ -81,7 +95,14 @@ def construct_scope(proposals, policy, source_snapshot):
                 parent[domain.slot.path[-1]] = deepcopy(value)
             valid = validate_query(query, version=policy.language_version)
             queries[canonical(valid)] = valid
-    slots = tuple(d.slot for d in policy.domains if len(d.values) > 1)
+    def values_at(path):
+        for query in queries.values():
+            value = query
+            for key in path:
+                value = value[key]
+            yield canonical(value)
+    # Constant coordinates are fixed skeleton fields, not metric dilution.
+    slots = tuple(d.slot for d in policy.domains if len(set(values_at(d.slot.path))) > 1)
     candidates = tuple(IntentCandidate.create(fingerprint(q), q) for q in queries.values())
     return IntentFamily(policy.policy_id, candidates, slots, source_snapshot,
                         coverage_basis=None, language_version=policy.language_version)

@@ -14,6 +14,10 @@ explicitly; there is no hidden gold repair or confidence-based coverage claim.
 Further full/scoped clarification is metered and preserves the existing strong
 contract. Scope confirmation is charged in both modes, not credited as a saving.
 
+The frozen scope policy chooses Cartesian coordinate expansion or `proposals_only`
+Top-K support, without inventing all coordinate combinations. Both paths require
+the same paid containment reply. Constant coordinates become fixed skeleton fields.
+
 Scope is the existing compact language and declared finite slot domains, at most
 64 complete candidates/32 coordinates. Product cardinality is checked before
 generation, never truncated. Explicit fixed fields remain hard. Entity grounding

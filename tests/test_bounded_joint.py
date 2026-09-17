@@ -190,3 +190,26 @@ def test_current_entry_through_real_compact_provider_with_injected_transport(inp
     assert result['model_calls']==1 and result['input_tokens']==10 and result['output_tokens']==20
     assert len(transport.calls)==1
     assert 'nonce' not in json.dumps(transport.calls) and 'private-query-intent' not in json.dumps(transport.calls)
+
+
+def test_correlated_topk_proposals_keep_support_without_cartesian_invention(inputs,tmp_path,monkeypatch):
+    from test_compact_provider import ResponseTransport, pool
+    from xgap.experiments.compact_profile import load_compact_graph_provider
+    monkeypatch.setenv('XGAP_EXTERNAL_LLM_API_KEY','fixture-only-not-sent')
+    proposals=[base_query()]
+    for key in ('lower_inclusive','upper_inclusive'):
+        q=deepcopy(proposals[0]);q['path']['time'][key]=False;proposals.append(q)
+    policy=ScopePolicy('finite-topk-conventions',scope().domains[1:],expansion='proposals_only')
+    draft=construct_scope(proposals,policy,'tiny')
+    assert len(draft.candidates)==3 and draft.coverage_basis is None
+    assert ScopePolicy.from_dict(json.loads(json.dumps(policy.to_dict())))==policy
+    options,calls=runtime(inputs);schema=options.pop('source_schema');physical=replace(options.pop('physical_profile'),candidate_cap=3)
+    provider=load_compact_graph_provider(mode='precision');provider.transport=ResponseTransport(pool(*proposals))
+    result=answer(InterpretationRequest(QUESTION,{'source_schema':schema}),provider,mode='performance',epsilon='1/2',
+        scope_policy=policy,authority=user(tmp_path,proposals[1]),physical_profile=physical,**options)
+    assert result['success'],result
+    assert result['candidate_count']==3 and result['scope_confirmation_calls']==1
+    assert result['clarification_calls']==0 and result['final_plan_executions']==1
+    assert result['terminal_certificate']['upper_bound']=={'numerator':1,'denominator':2}
+    bad=deepcopy(proposals[0]);bad['path']['time']['lower_inclusive']='not-boolean'
+    with pytest.raises(ValueError):construct_scope([bad],policy,'tiny')

@@ -1,18 +1,23 @@
 # XGAP Current Status
 
-T4工程进行中（2026-09-17）。已完成的最新版本：T3有限家族Exact/Performance共享strong
-搜索、权威模拟用户、真实Neo4j+Fuseki执行；[T3结果](report/family_policy_first_pass_20260917.md)。
-T3共47条封存/65未运行，存储预算触发停止。32个不同定向测试通过。
+T4 bounded joint system implementation is complete within its declared profile
+(2026-09-17): [acceptance report](report/bounded_joint_system_20260917.md),
+[Chapter 6 implementation map](implementation_chapter6.md).
 
-本轮正在实现：[T4契约](decisions/bounded_joint_system_v1.md)。四项新增工作均须有独立验收，
-不能将实现中的能力当作已完成或将历史实验冒充新版本结果。
-
-|项目|当前状态|
+|Item|Verified state|
 |---|---|
-|当前入口、legacy隔离、GitHub与第六章索引|进行中|
-|压缩记录、预算原因透传、资源验收|进行中|
-|NL候选构造＋模拟用户范围确认|进行中|
-|统一信息/执行成本与有界规划|进行中|
-|正式实验计划、第七章|工程验收后讨论，未启动|
+|Current entry and legacy isolation|`xgap.api.answer`; three historical controllers moved, compatibility retained|
+|NL candidates and authority|Bounded Cartesian/Top-K support, paid containment confirmation, scoped/full simulated user|
+|Joint information/execution objective|Shared finite strong search, frozen estimates/fallback, feasible seed, one execution|
+|Storage/memory|Streaming gzip, logical/stored hashes, raw replay support, budget-cause preservation|
+|Correctness|88 targeted tests; real eight-node Neo4j+Fuseki gate; services closed|
+|GitHub|Verified source synchronization is the final release step; see Git branch/commit|
+|Formal evaluation/Chapter 7|Await discussion; no new campaign launched|
 
-[T3前状态原文](status_history_20260917_t3.md)为历史证据，不作为当前开发指令。
+This does not mean universal NL support or proven overall superiority. Current
+bounds and two stale historical full-model replay tests are explicit in the report.
+The real tiny gate returned four exact rows versus one ε-certified Performance row;
+backend call counts were equal. Storage benefits are separately measured, not
+presented as query speedup. T3 remains 47 sealed/65 unrun with its original version.
+
+[Previous status](status_history_20260917_t3.md) is historical evidence only.

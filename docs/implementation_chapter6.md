@@ -35,8 +35,12 @@ this release's current entry; the older catalog-grounding implementation remains
 available only in its historical profile. Do not describe this as arbitrary NL
 entity grounding. All candidates must share one fixed query skeleton; alternate
 unrelated graph topologies are rejected. Distinct fixed fields cannot be relaxed.
-The scope constructor checks product size *before* generation; it never truncates
-uncertainty to fit K. K bounds computational support, not real-world NL coverage.
+Scope construction explicitly chooses either finite Cartesian expansion or the
+`proposals_only` Top-K support (≤8 proposals). The latter validates coordinates
+against frozen domains without inventing Cartesian combinations. Both require paid
+authoritative containment; model scores never certify support. Constant coordinates
+remain fixed fields rather than diluting distance. Cartesian product size is checked
+*before* generation; neither path truncates uncertainty to fit K. K bounds computational support, not real-world NL coverage.
 
 ## 6.2 Authority and the two modes
 
