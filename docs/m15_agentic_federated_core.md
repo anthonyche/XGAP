@@ -1,3 +1,9 @@
+> Current authority (2026-09-17): [certified family strong planning](decisions/family_strong_terminal_v1.md)
+> connects equal-permission full/scoped clarification to terminal-first shared AND/OR search and
+> the NL worker. The finite-family discrepancy contract is executable; it does not establish
+> open-NL coverage or an answer-error bound. [Tiny native evidence](report/strong_intent_20260917.md)
+> supersedes older statements that discrepancy or main-entry wiring is wholly deferred.
+
 # M15 Agentic Federated Core
 
 > Current direction (2026-09-14): [finite-depth strong planning](decisions/practical_strong_planning_v1.md).

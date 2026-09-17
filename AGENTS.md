@@ -76,7 +76,7 @@ has 384/384 sealed/scored cells and all owned sessions closed; see
 accuracy, mode-mechanism superiority, comparable SOTA efficiency, or scalability.
 Legacy domains and baseline algorithms retain their behavior.
 
-Latest user direction (Sep16): explicitly resume M0 simulated-user integration
+Prior user direction (Sep16): explicitly resume M0 simulated-user integration
 and M1 small-graph memory/execution repairs. Implementation, focused tests and
 one relevant live tiny gate are authorized. Follow the bounded acceptance in
 `docs/research_next_stage_plan_20260916.md`. M2-M4 campaigns, baseline changes,
@@ -98,6 +98,17 @@ opt-in finite-family fallback, not replacement of the shared AND/OR/NL entry.
 Full-intent acquisition must remain an available consideration in subsequent
 information-policy comparisons; do not manufacture a win by forcing only Exact
 to ask one coordinate at a time. See `docs/report/intent_terminal_20260916.md`.
+
+Latest Sep17 direction explicitly authorizes completing the wiring and testing
+real Performance tradeoffs. T2 now connects the public finite-family certificate
+to the main NL API, common worker and shared strong solver, with identical
+full/scoped clarification permissions. See
+`docs/decisions/family_strong_terminal_v1.md` and
+`docs/report/strong_intent_20260917.md`: 52 distinct targeted tests and two live
+model/native executions passed; owned services are closed. Open-NL coverage,
+joint lazy model/probe actions and broader evaluation remain unfinished. Do not
+claim saved model calls from the optional common proposal, treat toy timing as
+statistically established, or run a large campaign without its frozen plan.
 
 The opt-in model-structure contract remains conditional and supplies no intent
 authority; see `docs/decisions/nl_conditional_strong_v1.md`. Trusted-template

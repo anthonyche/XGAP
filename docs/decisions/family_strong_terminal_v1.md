@@ -50,10 +50,11 @@ incumbent；选中 AND 动作每个回复都必须有可编译且满足契约的
 物理候选采用冻结的 path-depth/edge-count 相对工作量顺序，只有满足证书者可入选。
 这是未校准的结构启发式；尚非学习估计器或 acquisition+execution 联合时延最优。
 
-令输入字节 B、候选 K、槽 m、全局状态上限 S、action 上限 A、编译成本 C(B)。
-距离表 O(K²m)，每状态证书最坏 O(K²+Km)，每 action 划分/排序回复
-O(Km + K log K)，候选物理准备总计不超过 K·C(B)。忽略定长 hash 的常数，搜索上界可写为
-O(B + K²m + S(K²+Km) + A(Km+K log K) + K·C(B))；序列化各状态/回复还乘其有界编码长度。
+令输入字节 B、候选 K、槽 m、全局状态上限 S、action 上限 A、每状态公开scope数
+L≤m+32、编译成本 C(B)。距离表 O(K²m)，当前checker逐候选重新检查support，
+每状态证书保守上界 O(K²m)。每scope划分/排序回复 O(Km log K)，包含未产生action
+的无信息scope检查；候选物理准备总计不超过 K·C(B)。忽略定长hash常数，上界可写为
+O(B + K²m + S(K²m+LKm log K) + AKm + K·C(B))；状态/回复还乘其有界编码长度。
 权重、分数位长、输入大小、缓存、S/A/H 都受显式限制。强策略输出亦受 S 约束，
 无需枚举无界组合；有限深本身不是 PTime 证明。最终数据库执行的数据复杂度另计。
 

@@ -4,7 +4,9 @@
 新 `xgap-nl-family-*` profile有相同full/scoped动作和预算，terminal-first、按需编译与缓存；
 Exact无需真人在线。已知8节点/5意图上，Exact一问/5次编译/1次执行得到4行；
 Performance ε=1/4零问/1次编译得到相同4行，ε=1/2零问得到3行、源适配器调用14→9。
-这是公开有限家族机制结果，不是开放NL或统计提速。原生worker门状态见
+真实模型＋Neo4j/Fuseki共同worker门也通过：两模式各1模型/1最终执行，4行与3行，
+源调用14→9，响应正文17,872→7,582bytes；全部托管服务关闭。
+这是公开有限家族机制结果，不是开放NL或统计提速。原生worker门见
 [本轮报告](report/strong_intent_20260917.md)，算法/输入界见[T2契约](decisions/family_strong_terminal_v1.md)。
 
 2026-09-16历史：**T1有限意图证书与terminal-first小图入口已接通。**

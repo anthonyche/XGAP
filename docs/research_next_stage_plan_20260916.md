@@ -1,5 +1,11 @@
 # 下一阶段：先核验terminal机会，再决定策略重构
 
+2026-09-17最新授权及执行：用户批准继续优化并完成接线。T2已将相同full/scoped动作、
+terminal-first证书与共享AND/OR接入主NL及共同worker；52项定向测试与两次真实模型/
+原生最终执行门通过，托管服务关闭。见[结果](report/strong_intent_20260917.md)与
+[契约/剩余边界](decisions/family_strong_terminal_v1.md)。下方T1“接下来接线”成为历史；
+未完成的是开放NL完整覆盖获取及LLM/probe联合策略，不能扩大当前有限家族结论。
+
 最新T1更新：用户授权提出理论定义。[有限意图距离/证书提案](decisions/finite_intent_discrepancy_v1.md)
 及terminal-first逐槽小图入口已实现并通过定向门，见[结果](report/intent_terminal_20260916.md)。
 接下来将full-intent与scoped动作放回同一个共享NL/AND-OR状态/预算接口，再作同权限机会

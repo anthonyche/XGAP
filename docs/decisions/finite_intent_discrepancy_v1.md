@@ -113,7 +113,8 @@ toy 的隐藏用户只能在公开家族中选意图；完整家族及相同权�
 
 设 K 个公开候选、m 个槽、总输入字节 B。结构一致性检查为多项式；两两距离表
 成本 \(O(K^2m)\)，使用精确分数，位复杂度另由权重和输入编码长度界定。
-一个状态给全部候选认证最坏为 \(O(K^2+Km)\)，无需物理执行或 catalog 重建。
+当前实现逐候选重查support，一个状态给全部候选认证保守最坏为 \(O(K^2m)\)，
+无需物理执行或catalog重建。原先较紧界需要另加support缓存，现不据此声称已实现。
 v1 只有通过证书的候选才做 lowering/physical preparation；失败准备会记忆，
 每个候选最多一次，最终后端执行最多一次。
 
@@ -142,7 +143,7 @@ while budget permits a state:
     retain the paid observation; intersect the possible-intent set
 ```
 
-总体实现上界可写为 \(O(K^2m+(m+1)(K^2+Km+K\log K)+K C(B))\)，其中 C 为
+总体实现保守上界可写为 \(O(K^2m+(m+1)(K^2m+K\log K)+K C(B))\)，其中 C 为
 当前有界语言的编译成本；不包含一次最终数据库查询的数据复杂度。
 实现限制 2≤K≤64、1≤m≤32、单 compact query≤64KiB、物理准备≤64 次；只沿实际分支
 维护状态，不生成全部 AND/OR 树。metric 表及状态证书缓存有内存界，缓存按

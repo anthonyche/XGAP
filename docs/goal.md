@@ -7,6 +7,7 @@ T2已将有限家族证书、full-intent/局部模拟用户询问接入主NL API
 仅当所有选中回复都有可行后续才返回strong策略，运行期执行一次。见
 [T2契约/算法界](decisions/family_strong_terminal_v1.md)、[本轮结果](report/strong_intent_20260917.md)。
 新profile需要公开完整家族，开放NL的覆盖获取及proposal/probe联合按需优化尚未完成。
+本轮52项不同定向测试和原生小图共同worker门通过（各1模型、1最终执行），服务已关闭。
 M0/M1、首轮机会分析与[T1验收](report/intent_terminal_20260916.md)的历史证据保留。
 本轮允许必要工程修改、定向测试和对应真实 tiny 接口验收；不启动 M2–M4、大数据集、
 baseline 调优、全量回归或自动唤醒。实际证据见[验收报告](report/simulated_user_memory_20260916.md)。
