@@ -1,5 +1,9 @@
 # XGAP Current Status
 
+2026-09-17 T3进行中：两个简单策略（完整询问、固定槽序+同证书）已接入相同strong
+检查与worker。独立CSV参考和新小图对照检查已通过；即将冻结16个新SF0.1交互问题。
+研究问题是搜索器是否比简单规则有价值，不预设Performance胜出。见[T3协议](decisions/family_policy_study_v1.md)。
+
 2026-09-17最新：**T2证书已接入主NL API/共同worker/共享AND-OR strong搜索。**
 新 `xgap-nl-family-*` profile有相同full/scoped动作和预算，terminal-first、按需编译与缓存；
 Exact无需真人在线。已知8节点/5意图上，Exact一问/5次编译/1次执行得到4行；

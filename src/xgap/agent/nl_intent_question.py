@@ -33,7 +33,7 @@ def family_configuration(raw, question):
 
 def run_nl_family_question(request, provider, *, mode, policy, family, user_oracle,
                             information=FamilyInformationPolicy(), epsilon='0',
-                            limits=StrongSearchLimits(), propose_with_model=True,
+                            limits=StrongSearchLimits(), propose_with_model=True, strategy='search',
                             sources, backends, backend_clients, on_user_observation=None):
     started=time.perf_counter()
     r=dict(schema_version='xgap-nl-strong-answer-v1',profile_id=PROFILE,mode=mode,success=False,status='preparing',
@@ -74,7 +74,7 @@ def run_nl_family_question(request, provider, *, mode, policy, family, user_orac
         order=tuple(sorted(range(len(family.candidates)),key=work))
         core=run_strong_intent(request.question,TerminalContract(family,mode=mode,epsilon=epsilon),user_oracle,
             prepare=prepare,execute=execute,information=information,candidate_order=order,limits=limits,
-            on_observation=on_user_observation)
+            on_observation=on_user_observation,strategy=strategy)
         usage={k:r[k] for k in ('model_calls','input_tokens','output_tokens','usage_complete')}
         r.update(core);r.update(usage);r['schema_version']='xgap-nl-strong-answer-v1'
         r['profile_id']=PROFILE;r['family_strong']=core

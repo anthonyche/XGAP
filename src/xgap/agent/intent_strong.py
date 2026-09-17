@@ -44,7 +44,10 @@ class FamilyState:
 
 
 class FamilyStrongDomain:
-    def __init__(self, question, contract, information, prepare, *, tool_name, candidate_order=None):
+    def __init__(self, question, contract, information, prepare, *, tool_name, candidate_order=None, strategy='search'):
+        if strategy not in ('search','full','fixed') or strategy=='full' and contract.mode!='exact':
+            raise ValueError('Unknown strategy or non-exact full-clarification control')
+        self.strategy=strategy
         self.question=question; self.contract=contract; self.family=contract.family
         self.information=information; self.prepare=prepare; self.tool_name=tool_name
         n=len(self.family.slots); full=tuple(range(n))
@@ -96,6 +99,17 @@ class FamilyStrongDomain:
             return
 
     def actions(self, state):
+        # Controls share tool permissions and strong-outcome admission. Only
+        # their choice rule differs; they never consult outcomes or costs.
+        for action in self._actions(state):
+            if self.strategy=='search':yield action
+            elif self.strategy=='full':
+                if len(action.arguments['slots'])==len(self.family.slots):
+                    yield action;return
+            elif len(action.arguments['slots'])==1:
+                yield action;return
+
+    def _actions(self, state):
         p=self.information
         if self.family.coverage_basis is None or state.calls>=p.max_calls: return
         remaining=self.family.consistent(state.observations)
@@ -119,12 +133,12 @@ class FamilyStrongDomain:
 
 def run_strong_intent(question, contract, oracle, *, prepare, execute,
                       information=FamilyInformationPolicy(), candidate_order=None,
-                      limits=StrongSearchLimits(), on_observation=None):
+                      limits=StrongSearchLimits(), on_observation=None, strategy='search'):
     started=time.perf_counter(); registry=ToolRegistry(); registry.register(oracle)
     domain=FamilyStrongDomain(question,contract,information,prepare,
-        tool_name=oracle.spec.name,candidate_order=candidate_order)
+        tool_name=oracle.spec.name,candidate_order=candidate_order,strategy=strategy)
     r=dict(schema_version='xgap-family-strong-answer-v1',success=False,status='planning',
-        mode=contract.mode,family_sha256=contract.family.identity,epsilon=fraction_view(contract.epsilon),
+        mode=contract.mode,strategy=strategy,family_sha256=contract.family.identity,epsilon=fraction_view(contract.epsilon),
         acquisition_policy=asdict(information),cost_basis='declared '+information.cost_basis+'; not wall time',
         final_plan_executions=0,clarification_calls=0,disclosed_coordinates=0,oracle_reply_bytes=0,
         oracle_processing_ms=0.0,acquisition_ms=0.0,execution_ms=0.0,model_calls=0,tokens=0,

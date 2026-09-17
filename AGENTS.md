@@ -1,5 +1,14 @@
 # XGAP Agent Harness
 
+Latest user authority (Sep17, T3): the user fully approved the proposed next
+milestone. Implement only the two simple information-policy controls, freeze
+16 new reference-stratified intent tasks, and execute the bounded SF0.1 study
+in `docs/decisions/family_policy_study_v1.md`. The machine-readable protocol fixes
+96 first-pass cells plus16 timing repeats, identical strong admission/tools,
+two epsilon levels, no outcome-driven changes and no retry of failed cells.
+This authorization supersedes older no-campaign statements only for T3. No
+open-NL, model-saving or SOTA claim follows from the finite-family track.
+
 ## Project identity
 
 XGAP is a cost-aware agentic federated graph-query system over heterogeneous

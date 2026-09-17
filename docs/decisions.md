@@ -1,5 +1,8 @@
 # XGAP Decision Index
 
+最新T3：[终止规则与策略搜索价值评价](decisions/family_policy_study_v1.md)。用户已批准
+16个新问题、两个简单策略和SF0.1有界运行；保持有限家族输入边界与不调参原则。
+
 最新T2：[有限家族terminal接入共享strong policy](decisions/family_strong_terminal_v1.md)。
 主NL/共同worker提供新有界profile，双方共享full/scoped模拟用户动作；旧开放NL入口
 不宣称获得完整覆盖。见[2026-09-17接线验收](report/strong_intent_20260917.md)。

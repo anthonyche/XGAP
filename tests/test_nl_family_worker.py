@@ -39,7 +39,8 @@ def test_pinned_worker_routes_both_modes_without_model_or_gold_in_request(inputs
             return InterpretationRequest(raw['question'],{'source_schema':options['source_schema']})
     monkeypatch.setattr(worker.FrozenOneShotProfile,'load',lambda *_a,**_k:Profile())
     monkeypatch.setattr(worker,'native_clients',lambda _:options['backend_clients'])
-    for mode,expected,user_calls in [('exact',EXPECTED[1],1),('performance',EXPECTED[1][:3],0)]:
+    for mode,expected,user_calls in [('exact',EXPECTED[1],1),('performance',EXPECTED[1][:3],0),
+                                   ('full',EXPECTED[1],1),('fixed',EXPECTED[1][:3],0)]:
         result=run_nl(request_path=request['path'],request_sha256=request['sha256'],profile_path='injected',
             profile_sha256='injected-profile',method='xgap-nl-family-'+mode,output=tmp_path/mode,
             oracle_path=oracle['path'],oracle_sha256=oracle['sha256'],

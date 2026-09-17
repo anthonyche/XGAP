@@ -5,7 +5,7 @@ from pathlib import Path
 import threading
 import time
 
-from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS, run_nl_strong_question
+from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS, NL_FAMILY_METHOD_CONFIG, run_nl_strong_question
 from xgap.agent.nl_intent_question import family_configuration
 from xgap.agent.intent_user import ScopedFamilyUser
 from xgap.agent.simulated_user import SimulatedUserTool, SimulatedUserPolicy
@@ -45,14 +45,15 @@ def run_nl_strong(*, request_path, request_sha256, profile_path, profile_sha256,
         # Both modes use the SAME frozen K=1 interpretation and grounding policy.
         request = profile.request(raw, 'performance', materialized)
         policy, provider = modes['performance']
-        family_args={};propose=True;effective_user_max=user_max_calls
+        family_args={};propose=True;effective_user_max=user_max_calls;mode=method.rsplit('-',1)[1]
         if family_mode:
             family,info,limits,epsilon,propose=family_configuration(
                 json.loads(read_pinned(intent_family_path,intent_family_sha256)),request.question)
             oracle=ScopedFamilyUser(family,Path(oracle_path),oracle_sha256)
             effective_user_max=info.max_calls
+            mode,strategy=NL_FAMILY_METHOD_CONFIG[method]
             family_args=dict(intent_family=family,family_information=info,family_limits=limits,
-                family_epsilon='0' if method.endswith('-exact') else epsilon,propose_with_model=propose)
+                family_epsilon='0' if mode=='exact' else epsilon,propose_with_model=propose,family_strategy=strategy)
             r.update(intent_family_sha256=intent_family_sha256,family_identity=family.identity)
         else:
             oracle = SimulatedUserTool(Path(oracle_path), oracle_sha256) if interaction else None
@@ -85,7 +86,7 @@ def run_nl_strong(*, request_path, request_sha256, profile_path, profile_sha256,
         def user_observation(record):
             user_records.append(write_once(root/f'user-observation-{len(user_records):02}.json', record))
         active = True
-        core = run_nl_strong_question(request, recorder, mode=method.rsplit('-',1)[1],
+        core = run_nl_strong_question(request, recorder, mode=mode,
             policy=policy, bundle=bundle, sources=sources, backends=backends, backend_clients=clients, estimator=estimator,
             user_oracle=oracle, user_policy=user_policy, on_user_observation=user_observation,**family_args)
         active = False
