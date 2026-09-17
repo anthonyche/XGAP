@@ -13,12 +13,13 @@ from xgap.experiments.process_guard import ProcessBudget, run_guarded_command
 from xgap.experiments.fixed_semantic_worker import REQUEST_SCHEMA
 from xgap.experiments.source_failure_classification import classify_source_failure
 from xgap.experiments.practical_methods import PRACTICAL_METHODS, external_engine
-from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS
+from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS
 
 
 def _run_trial(*, track,request_path,request_sha256,method,output,owned_services,observer,
                profile_path=None,profile_sha256=None,endpoint=None,budget=ProcessBudget(),source_rss_bytes=2*1024**3,
-               package_monitor=None,oracle_path=None,oracle_sha256=None,user_max_calls=9):
+               package_monitor=None,oracle_path=None,oracle_sha256=None,user_max_calls=9,
+               intent_family_path=None,intent_family_sha256=None):
     started=time.perf_counter();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     q=json.loads(read_pinned(request_path,request_sha256))
     practical=track=='trusted_template';nl=track in ('natural_language','trusted_template')
@@ -51,12 +52,20 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             from xgap.experiments.nl_method_worker import METHODS
             if method not in METHODS:raise ValueError('Unknown NL method')
             command+=['--profile-path',str(Path(profile_path).resolve()),'--profile-sha256',profile_sha256]
-            if method in NL_USER_METHODS:
+            if method not in NL_FAMILY_METHODS and (intent_family_path is not None or intent_family_sha256 is not None):
+                raise ValueError('Finite-family input cannot be attached to another method')
+            if method in (*NL_USER_METHODS,*NL_FAMILY_METHODS):
                 if oracle_path is None or oracle_sha256 is None:
                     raise ValueError('User interaction requires a separately pinned private oracle')
                 r.update(track='natural_language_interaction',oracle_sha256=oracle_sha256)
                 command+=['--oracle-path',str(Path(oracle_path).resolve()),'--oracle-sha256',oracle_sha256,
                     '--user-max-calls',str(user_max_calls)]
+                if method in NL_FAMILY_METHODS:
+                    if intent_family_path is None or intent_family_sha256 is None:
+                        raise ValueError('Finite-family method needs a pinned public contract')
+                    r.update(track='natural_language_finite_family',intent_family_sha256=intent_family_sha256)
+                    command+=['--intent-family-path',str(Path(intent_family_path).resolve()),
+                        '--intent-family-sha256',intent_family_sha256]
             elif oracle_path is not None or oracle_sha256 is not None:
                 raise ValueError('Oracle cannot be attached to a non-interaction method')
             if hosted:command+=['--endpoint',endpoint]
@@ -82,6 +91,9 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             if method in NL_USER_METHODS and (child.get('track')!='natural_language_interaction'
                     or child.get('oracle_sha256')!=oracle_sha256):
                 raise ValueError('Simulated-user worker track or private artifact identity differs')
+            if method in NL_FAMILY_METHODS and (child.get('track')!='natural_language_finite_family'
+                    or child.get('oracle_sha256')!=oracle_sha256 or child.get('intent_family_sha256')!=intent_family_sha256):
+                raise ValueError('Finite-family worker track or artifact identity differs')
         observed=observer.snapshot(phase)
         r.update(success=bool(guard['success'] and child and child['success'] and observed['failed_requests']==0),
             status=child['status'] if guard['success'] and child else 'guard_'+guard['status'],
@@ -95,12 +107,14 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
         if nl:
             for key in ('model_calls','input_tokens','output_tokens','frontend_ms','interpretation_ms','grounding_ms','compilation_ms'):
                 r[key]=child.get(key) if child else None
-        if practical or method in (*NL_STRONG_METHODS,*NL_USER_METHODS):
+        if practical or method in (*NL_STRONG_METHODS,*NL_USER_METHODS,*NL_FAMILY_METHODS):
             for key in ('admission_ms','acquisition_ms','clarification_calls','strong_plan','semantic_validation',
                         'unvalidated_bindings','semantic_discrepancy_upper_bound','discrepancy_status','core_result',
                         'external_engine','information_strategy','input_scope','structure_validation','strong_scope',
                         'user_intent_verified','planning_cpu_ms','oracle_processing_ms','oracle_lowering_ms',
-                        'declared_user_wait_ms','acquisition_policy_scope','user_observations'):
+                        'declared_user_wait_ms','acquisition_policy_scope','user_observations',
+                        'disclosed_coordinates','oracle_reply_bytes','certificate_ms','certificate_checks',
+                        'physical_prepare_attempts','physical_plan_cache_hits','terminal_certificate','root_gap','search'):
                 r[key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
     except Exception as error:

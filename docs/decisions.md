@@ -1,5 +1,9 @@
 # XGAP Decision Index
 
+最新T2：[有限家族terminal接入共享strong policy](decisions/family_strong_terminal_v1.md)。
+主NL/共同worker提供新有界profile，双方共享full/scoped模拟用户动作；旧开放NL入口
+不宣称获得完整覆盖。见[2026-09-17接线验收](report/strong_intent_20260917.md)。
+
 最新T1：[有限意图discrepancy与terminal证书](decisions/finite_intent_discrepancy_v1.md)。
 用户明确授权由工程方提出定义；新的opt-in契约仅保证声明完整家族内的意图距离，
 不提供答案误差或开放NL覆盖保证。[小图验收](report/intent_terminal_20260916.md)。
@@ -8,7 +12,7 @@
 不执行其中过期的“下一步”。[当前Goal](goal.md)、[状态](status.md)、[研究审计](research_contract_audit_20260915.md)。
 
 最新计划：[首版后的分析与下一阶段](research_next_stage_plan_20260916.md)。用户认可路线，
-M0/M1小图、首轮机会分析和T1证书入口已完成，主NL/共享AND-OR接线待推进。上一轮[NL条件strong首版](decisions/nl_conditional_strong_v1.md)已封存。
+M0/M1小图、首轮机会分析和T1证书入口已完成；主NL/共享AND-OR新接线见上述T2。上一轮[NL条件strong首版](decisions/nl_conditional_strong_v1.md)已封存。
 最新纠正：[权威模拟用户](decisions/simulated_user_authority_v1.md)是无人值守EXACT所需的
 可查询角色；允许它私有持有gold意图。撤回“无人值守就禁止用户oracle”的错误解释。
 

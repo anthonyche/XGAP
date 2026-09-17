@@ -19,12 +19,23 @@ from xgap.agent.simulated_user import PROFILE as USER_PROFILE, SimulatedUserPoli
 
 NL_STRONG_METHODS = ('xgap-nl-strong-exact', 'xgap-nl-strong-performance')
 NL_USER_METHODS = ('xgap-nl-user-exact', 'xgap-nl-user-performance')
+NL_FAMILY_METHODS = ('xgap-nl-family-exact', 'xgap-nl-family-performance')
 PROFILE_ID = 'nl-conditional-strong-k1-v1'
 
 
 def run_nl_strong_question(request, provider, *, mode, policy, bundle, sources, backends,
                            backend_clients, estimator=None, user_oracle=None,
-                           user_policy=SimulatedUserPolicy(), on_user_observation=None):
+                           user_policy=SimulatedUserPolicy(), on_user_observation=None,
+                           intent_family=None, family_information=None, family_epsilon='0',
+                           family_limits=None, propose_with_model=True):
+    if intent_family is not None:
+        from xgap.agent.nl_intent_question import run_nl_family_question
+        from xgap.agent.intent_strong import FamilyInformationPolicy
+        return run_nl_family_question(request,provider,mode=mode,policy=policy,family=intent_family,
+            user_oracle=user_oracle,information=family_information or FamilyInformationPolicy(),
+            epsilon=family_epsilon,limits=family_limits or StrongSearchLimits(),
+            propose_with_model=propose_with_model,sources=sources,backends=backends,
+            backend_clients=backend_clients,on_user_observation=on_user_observation)
     started = time.perf_counter()
     r = dict(schema_version='xgap-nl-strong-answer-v1', success=False, status='preparing', mode=mode,
         profile_id=PROFILE_ID, answer_rows=None, user_intent_verified=False, answer_quality_verified=False,

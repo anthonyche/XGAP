@@ -2,10 +2,12 @@
 
 ## 当前目标与工作时段
 
-2026-09-16，最新授权：**继续优化，并由工程方提出可执行 discrepancy 定义**。
-M0/M1小图与首轮机会分析已完成；T1新增有限意图家族的最坏差异证书及terminal-first
-小图入口，见[定义/证明/界限](decisions/finite_intent_discrepancy_v1.md)和
-[T1验收](report/intent_terminal_20260916.md)。这仍是可替换提案，未接管主NL/AND-OR入口。
+2026-09-17，最新授权：**完成 terminal-first 主入口接线，以同权限实验验证 Performance tradeoff**。
+T2已将有限家族证书、full-intent/局部模拟用户询问接入主NL API、共享AND/OR和共同worker；
+仅当所有选中回复都有可行后续才返回strong策略，运行期执行一次。见
+[T2契约/算法界](decisions/family_strong_terminal_v1.md)、[本轮结果](report/strong_intent_20260917.md)。
+新profile需要公开完整家族，开放NL的覆盖获取及proposal/probe联合按需优化尚未完成。
+M0/M1、首轮机会分析与[T1验收](report/intent_terminal_20260916.md)的历史证据保留。
 本轮允许必要工程修改、定向测试和对应真实 tiny 接口验收；不启动 M2–M4、大数据集、
 baseline 调优、全量回归或自动唤醒。实际证据见[验收报告](report/simulated_user_memory_20260916.md)。
 总体研究 Goal 尚未完成。
@@ -19,7 +21,7 @@ EXACT无人值守的正确含义：现实用户不逐题参与，但必须提供
 模拟用户。需要澄清时向它询问并继续；不能因为现实用户没有回答就返回失败。
 模拟用户可以私有持有gold语义/意图标注，通过有范围、有记录的信息动作回答；planner
 不直接读取隐藏意图或最终结果。见[模拟用户契约](decisions/simulated_user_authority_v1.md)。
-该模块第一版已接入并通过真实小图；有限家族terminal已另行接通，主NL的按需信息选择待接线。
+该模块第一版已接入并通过真实小图；T2主NL的有限家族按需full/scoped信息选择已实现。
 
 首版12题/72方法观测已封存评分，服务已关闭，进入验收讨论；不自动扩量或调参。
 Native两模式均7/12匹配，RDF 8/12与7/12（后者含整批磁盘预算截断）；每组4道多跳
@@ -40,7 +42,7 @@ EXACT仍保持声明hole的权威门，PERFORMANCE显式记录预测。首版K=1
 
 ## 最新Performance验收方向
 
-首轮[Exact prefix机会分析](report/terminal_opportunity_20260916.md)已完成：旧15条完整NL-only trace无澄清，新交互trace有3个prefix；epsilon认证保持未知。暂不大改系统。成功可以是
+首轮[Exact prefix机会分析](report/terminal_opportunity_20260916.md)已完成：旧15条完整NL-only trace无澄清，新交互trace有3个prefix；旧trace的epsilon认证保持未知。T2据新授权接线，成功可以是
 减少clarification、LLM/token、metadata/source probes、远程调用/数据移动或总成本，
 以及Exact因预算不足safe non-answer时提高answer coverage；不要求backend execution
 一定不同。主结果应为cost–discrepancy–coverage frontier，而非单一速度比。
@@ -51,7 +53,7 @@ BoundedTerminal(epsilon)，通过certificate后才生成必要物理计划；否
 不能预读oracle、把模型置信度当authority、把便宜程度当用户意图、将全部最终执行时间
 计成可避免成本。没有可执行certificate时eligible和root gap保留未知。
 若完成合理terminal-first/lazy实现后仍没有非平凡frontier，Performance降为extension，
-不调参制造优势。当前固定流程只是M0接线验收，不是Performance机制验收。
+不调参制造优势。M0固定流程证据与T2有限家族机制证据分开；不得把toy优势推广到总体评价。
 
 ## 研究目标与不可变边界
 

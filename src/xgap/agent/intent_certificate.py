@@ -4,7 +4,7 @@ This is not an answer-error bound, a query-equivalence solver, or a guarantee
 that model top-K covers the user's intent. Coverage is a separate host premise.
 Immutable JSON and exact rational arithmetic keep cached certificates scoped.
 """
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from copy import deepcopy
 from fractions import Fraction
 from functools import cached_property
@@ -141,6 +141,17 @@ class IntentFamily:
         if not remaining:
             raise ValueError('Authoritative outcome contradicts the declared closed family; no certificate')
         return remaining
+
+    def to_dict(self):
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, raw):
+        if set(raw) != {'family_id','candidates','slots','source_snapshot','coverage_basis','language_version'}:
+            raise ValueError('Unknown finite-family fields')
+        return cls(raw['family_id'], tuple(IntentCandidate(**c) for c in raw['candidates']),
+            tuple(IntentSlot(**{**s,'path':tuple(s['path'])}) for s in raw['slots']),
+            raw['source_snapshot'],raw['coverage_basis'],raw['language_version'])
 
 
 class TerminalContract:

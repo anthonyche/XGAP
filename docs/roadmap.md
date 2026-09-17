@@ -1,6 +1,13 @@
 # XGAP Current Roadmap
 
-2026-09-16最新：用户授权提出d；有限家族最坏差异证书和terminal-first小图门已完成，
+2026-09-17：T2按用户最新授权完成有限家族certificate→主NL→共享AND/OR→共同worker
+接线，并提供双方相同的full-intent/局部询问。先验收[小图机制与原生接口](report/strong_intent_20260917.md)，
+再讨论更有信息量的workload，不启动大数据、扫参或baseline优化。
+后续实质缺口：开放NL的权威覆盖范围获取；LLM/probe的按需动作；factorized support；
+经冻结估计器联合比较acquisition与execution。不能把当前公开家族profile称为上述全部完成。
+现行[T2策略/复杂度/边界](decisions/family_strong_terminal_v1.md)优先于下方历史待办。
+
+2026-09-16历史：用户授权提出d；有限家族最坏差异证书和terminal-first小图门已完成，
 见[契约](decisions/finite_intent_discrepancy_v1.md)、[结果](report/intent_terminal_20260916.md)。
 下一步先把closed-family范围获取、full-intent/逐槽动作接回共享NL/AND-OR入口，
 再对同权限trace做机会分析；不要直接把逐槽toy的2→1次当作总体优势。

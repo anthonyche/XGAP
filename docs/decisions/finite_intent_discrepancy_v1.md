@@ -152,7 +152,8 @@ while budget permits a state:
 信息或执行，AND 分支包含选中动作的全部声明结果，保留 feasible strong incumbent。
 固定深度 H 的显式有限树搜索是多项式（多项式次数依赖固定 H）；H 成为输入时
 不能仅凭“有限深”声称 PTime。有界启发式必须分别报告状态/时间上界、incumbent
-及未知 root gap。当前新控制入口只实现逐槽 fallback，**未替代原 strong 搜索器**。
+及未知 root gap。T1控制入口只实现逐槽fallback；2026-09-17新增主NL/shared-strong接线见
+[T2契约](family_strong_terminal_v1.md)，T1作用域与历史定理不自动推广到T2。
 
 ## 5. 与答案、性能实验的关系
 

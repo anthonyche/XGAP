@@ -24,9 +24,8 @@ def snapshot_identity(sources, backends, schema):
             for k, b in backends.items()}, 'source_schema': schema})
 
 
-def run_family_query(question, contract, oracle, *, source_schema, sources, backends, backend_clients,
-                     physical_profile, **options):
-    started = time.perf_counter(); family = contract.family
+def family_runtime(family, *, source_schema, sources, backends, backend_clients, physical_profile):
+    """Shared lazy preparation and one-final-execution callbacks for both controllers."""
     if family.source_snapshot != snapshot_identity(sources, backends, source_schema):
         raise ValueError('Intent certificate belongs to a different source/mapping snapshot')
     if physical_profile.retrieval_rows_per_relation is not None:
@@ -53,6 +52,14 @@ def run_family_query(question, contract, oracle, *, source_schema, sources, back
         return dict(success=result.status is ToolStatus.SUCCESS, result=result.to_dict(),
             physical_plan=plan.to_dict(), answer_rows=(result.value or {}).get('final_rows'))
 
+    return prepare, execute, capabilities, capability_ms
+
+
+def run_family_query(question, contract, oracle, *, source_schema, sources, backends, backend_clients,
+                     physical_profile, **options):
+    started = time.perf_counter()
+    prepare, execute, capabilities, capability_ms = family_runtime(contract.family,source_schema=source_schema,
+        sources=sources,backends=backends,backend_clients=backend_clients,physical_profile=physical_profile)
     report = run_intent_policy(question, contract, oracle, prepare=prepare, execute=execute, **options)
     report['capability_lookup'] = capabilities
     report['capability_lookup_ms'] = capability_ms

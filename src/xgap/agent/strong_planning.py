@@ -154,7 +154,7 @@ class PolicySearchResult:
 
 
 def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSearchLimits(),
-                         clock=time.perf_counter):
+                         clock=time.perf_counter, terminal_first=False, prune_nonimproving_actions=False):
     """Return the best discovered COMPLETE strong policy, or no feasible plan.
 
     S states/A actions/depth H are global caps, not per recursive call. Each
@@ -163,6 +163,8 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
     is feasible-first; root alternatives receive only the remaining improvement
     action allowance. No probability distribution or admissible heuristic needed.
     """
+    if type(terminal_first) is not bool or type(prune_nonimproving_actions) is not bool:
+        raise ValueError('Explicit boolean search switches are required')
     started = clock()
     retained, expanded, generated = 1, 0, 0
     records, events = [], []
@@ -197,7 +199,7 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
     def refine(node):
         # Called only after a COMPLETE root candidate exists. Every replacement
         # preserves that candidate's full outcome tree and pathwise admission.
-        if stopped():
+        if terminal_first or stopped():
             return node
         if node.terminal is not None:
             saved = terminal_streams.pop(node.state_id, None)
@@ -251,6 +253,9 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
             if depth:
                 return best
             found(best)
+            if terminal_first:
+                events.append('root_terminal_contract')
+                return best
             best = refine(best)
         if depth >= limits.max_depth:
             events.append("depth_budget")
@@ -271,6 +276,12 @@ def search_strong_policy(root, domain: StrongPlanningDomain, *, limits=StrongSea
                       "acquisition_estimated_cost": action.estimated_cost,
                       "outcomes": [o.outcome_id for o in action.outcomes], "status": "declared"}
             records.append(record)
+            # Nonnegative downstream costs make the action's own cost a lower
+            # bound. This is estimate-relative pruning, not a runtime bound.
+            if (prune_nonimproving_actions and best is not None and best.estimated_cost is not None
+                    and action.estimated_cost is not None and action.estimated_cost >= best.estimated_cost):
+                record['status'] = 'cannot_improve_incumbent_lower_bound'
+                continue
             if not action.outcomes_exhaustive or action.action_id in history:
                 record["status"] = "incomplete_outcome_model_or_repeated_action"
                 continue

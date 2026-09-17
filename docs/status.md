@@ -1,6 +1,13 @@
 # XGAP Current Status
 
-2026-09-16最新：**T1有限意图证书与terminal-first小图入口已接通。**
+2026-09-17最新：**T2证书已接入主NL API/共同worker/共享AND-OR strong搜索。**
+新 `xgap-nl-family-*` profile有相同full/scoped动作和预算，terminal-first、按需编译与缓存；
+Exact无需真人在线。已知8节点/5意图上，Exact一问/5次编译/1次执行得到4行；
+Performance ε=1/4零问/1次编译得到相同4行，ε=1/2零问得到3行、源适配器调用14→9。
+这是公开有限家族机制结果，不是开放NL或统计提速。原生worker门状态见
+[本轮报告](report/strong_intent_20260917.md)，算法/输入界见[T2契约](decisions/family_strong_terminal_v1.md)。
+
+2026-09-16历史：**T1有限意图证书与terminal-first小图入口已接通。**
 用户授权工程方提出d：冻结语义坐标的加权差异，对权威一致的完整意图集合取最坏界。
 11项定向测试通过（含穷尽小域前缀及双RDF源执行）；逐槽toy中Exact询问2次得到3行
 正确答案，Bounded ε=1/2询问1次得到4行（多1行），相同一问预算Exact拒答。
