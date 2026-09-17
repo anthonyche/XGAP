@@ -82,7 +82,7 @@ def run(release_path,release_sha256,output):
                 oracle_path=oracle['path'],oracle_sha256=oracle['sha256'],intent_family_path=family['path'],
                 intent_family_sha256=family['sha256'],owned_services=NativeSources(session).owned_for(cell['method']),
                 observer=session.observer,budget=ProcessBudget(wall_seconds=d['method_wall_seconds'],
-                    max_group_rss_bytes=d['method_rss_bytes']),source_rss_bytes=d['source_rss_bytes'],package_monitor=budget.sample)
+                    max_group_rss_bytes=d['method_rss_bytes']),source_rss_bytes=d['source_rss_bytes'],package_monitor=budget)
             ref=cell['reference']
             score=score_trial(outcome['receipt']['path'],receipt_sha256=outcome['receipt']['sha256'],
                 reference_path=ref['path'],reference_sha256=ref['sha256'],output=path/'score.json')
@@ -95,6 +95,8 @@ def run(release_path,release_sha256,output):
                 answer_em=score['answer_em'],calls=terminal['source_calls'],ms=round(terminal['end_to_end_ms'],1))),flush=True)
             if not outcome['can_continue_session']:
                 closures.append(session.close());session=None
+            if outcome['status'] in ('guard_monitor_failed','supervisor_failed','harness_observation_failure'):
+                budget.status='harness_integration_failure';break
     finally:
         if session:closures.append(session.close())
         write_once(group_root/'receipt.json',dict(identity=identity,group=group,outputs=outputs,closures=closures,
