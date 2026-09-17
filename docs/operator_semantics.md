@@ -1,11 +1,10 @@
 # Operator Semantics
 
-> 2026-09-14: [Practical strong planning](decisions/practical_strong_planning_v1.md)
-> adds an agent policy coordinator, not an algebra operator. Hard constraints and
-> validated bindings remain fixed. New performance predictions require explicit
-> named-slot authorization and carry metric_deferred; legacy relation truncation
-> is not included in the new profile's semantic guarantee. The initial new route
-> requires a content-bound trusted query skeleton.
+> Current controller: [bounded joint system](decisions/bounded_joint_system_v1.md).
+> Exact/Performance use the [finite structured-intent distance](decisions/finite_intent_discrepancy_v1.md).
+> This is not an answer-error bound. Fixed fields/hard coordinates and all audited
+> algebra semantics below remain unchanged. Earlier `metric_deferred` profiles
+> remain historical and are not the current default.
 
 The opt-in [progressive binding](decisions/progressive_binding_v1.md) candidate
 composes existing entity semijoin restrictions. It preserves original joins,

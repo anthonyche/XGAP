@@ -14,6 +14,7 @@ from xgap.experiments.fixed_semantic_worker import REQUEST_SCHEMA
 from xgap.experiments.source_failure_classification import classify_source_failure
 from xgap.experiments.practical_methods import PRACTICAL_METHODS, external_engine
 from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS
+from xgap.experiments.evidence_store import file_pin
 
 
 def _run_trial(*, track,request_path,request_sha256,method,output,owned_services,observer,
@@ -142,9 +143,13 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
         r['session_reuse_requires_release']=campaign_observer
         r['resources']=monitor.summary() if monitor else None
         r['guard_status']=guard['status'] if guard else None
+        if r['guard_status'] and r['guard_status'].startswith('study_'):
+            r.update(secondary_status=r['status'], status=r['guard_status'], success=False,
+                     failure_scope='study_budget_censoring_not_method_incorrectness')
         r['cost_scope']='full outer entry through durable outcome; recovery explicit; score and final timing telemetry separate'
-        files=(root/'worker').rglob('*.json') if nl else (root/'worker').glob('*.json')
-        r['partial_worker_files']=[{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(files)]
+        files=(root/'worker').rglob('*') if nl else (root/'worker').glob('*')
+        r['partial_worker_files']=[file_pin(p) for p in sorted(files)
+                                   if p.is_file() and (p.name.endswith('.json') or p.name.endswith('.json.gz'))]
         seal_started=time.perf_counter();pin=write_once(root/'receipt.json',r)
         finalization=None
         if campaign_observer:

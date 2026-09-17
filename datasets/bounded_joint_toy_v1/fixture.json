@@ -1,0 +1,1674 @@
+{
+  "bindings": {
+    "constraint:0": {
+      "kind": "constraint",
+      "value": "0"
+    },
+    "constraint:1": {
+      "kind": "constraint",
+      "value": "1"
+    },
+    "constraint:10": {
+      "kind": "constraint",
+      "value": "6"
+    },
+    "constraint:11": {
+      "kind": "constraint",
+      "value": "7"
+    },
+    "constraint:12": {
+      "kind": "constraint",
+      "value": "Alice"
+    },
+    "constraint:13": {
+      "kind": "constraint",
+      "value": "Company One"
+    },
+    "constraint:14": {
+      "kind": "constraint",
+      "value": "account 1"
+    },
+    "constraint:15": {
+      "kind": "constraint",
+      "value": "account 2"
+    },
+    "constraint:16": {
+      "kind": "constraint",
+      "value": "account 3"
+    },
+    "constraint:17": {
+      "kind": "constraint",
+      "value": "account 4"
+    },
+    "constraint:18": {
+      "kind": "constraint",
+      "value": 10.125
+    },
+    "constraint:19": {
+      "kind": "constraint",
+      "value": 100.0
+    },
+    "constraint:2": {
+      "kind": "constraint",
+      "value": "2"
+    },
+    "constraint:20": {
+      "kind": "constraint",
+      "value": 11.0
+    },
+    "constraint:21": {
+      "kind": "constraint",
+      "value": 13.0
+    },
+    "constraint:22": {
+      "kind": "constraint",
+      "value": 5.875
+    },
+    "constraint:23": {
+      "kind": "constraint",
+      "value": 50.0
+    },
+    "constraint:24": {
+      "kind": "constraint",
+      "value": 7.0
+    },
+    "constraint:25": {
+      "kind": "constraint",
+      "value": 9.0
+    },
+    "constraint:26": {
+      "kind": "constraint",
+      "value": false
+    },
+    "constraint:27": {
+      "kind": "constraint",
+      "value": true
+    },
+    "constraint:3": {
+      "kind": "constraint",
+      "value": "2020-01-01 00:00:00.000"
+    },
+    "constraint:4": {
+      "kind": "constraint",
+      "value": "2020-01-02 00:00:00.000"
+    },
+    "constraint:5": {
+      "kind": "constraint",
+      "value": "2020-01-03 00:00:00.000"
+    },
+    "constraint:6": {
+      "kind": "constraint",
+      "value": "2020-01-04 00:00:00.000"
+    },
+    "constraint:7": {
+      "kind": "constraint",
+      "value": "3"
+    },
+    "constraint:8": {
+      "kind": "constraint",
+      "value": "4"
+    },
+    "constraint:9": {
+      "kind": "constraint",
+      "value": "5"
+    },
+    "entity:account_31": {
+      "identity_property": "xgap_id",
+      "kind": "entity",
+      "value": "account_31"
+    },
+    "entity:account_32": {
+      "identity_property": "xgap_id",
+      "kind": "entity",
+      "value": "account_32"
+    },
+    "entity:account_33": {
+      "identity_property": "xgap_id",
+      "kind": "entity",
+      "value": "account_33"
+    },
+    "entity:account_34": {
+      "identity_property": "xgap_id",
+      "kind": "entity",
+      "value": "account_34"
+    },
+    "entity:company_31": {
+      "identity_property": "xgap_id",
+      "kind": "entity",
+      "value": "company_31"
+    },
+    "entity:medium_31": {
+      "identity_property": "xgap_id",
+      "kind": "entity",
+      "value": "medium_31"
+    },
+    "entity:medium_32": {
+      "identity_property": "xgap_id",
+      "kind": "entity",
+      "value": "medium_32"
+    },
+    "entity:person_31": {
+      "identity_property": "xgap_id",
+      "kind": "entity",
+      "value": "person_31"
+    },
+    "predicate:OWNS_ACCOUNT": {
+      "kind": "predicate",
+      "value": "OWNS_ACCOUNT"
+    },
+    "predicate:SIGNED_IN_TO": {
+      "kind": "predicate",
+      "value": "SIGNED_IN_TO"
+    },
+    "predicate:TRANSFERRED_TO": {
+      "kind": "predicate",
+      "value": "TRANSFERRED_TO"
+    },
+    "source:control": {
+      "kind": "source",
+      "value": "control"
+    },
+    "source:graph": {
+      "kind": "source",
+      "value": "graph"
+    },
+    "type:account": {
+      "kind": "type",
+      "value": "XGAPFinBenchAccount"
+    },
+    "type:company": {
+      "kind": "type",
+      "value": "XGAPFinBenchCompany"
+    },
+    "type:medium": {
+      "kind": "type",
+      "value": "XGAPFinBenchMedium"
+    },
+    "type:person": {
+      "kind": "type",
+      "value": "XGAPFinBenchPerson"
+    }
+  },
+  "catalog": {
+    "catalog_id": "financial-tiny-nl-v1",
+    "catalog_version": "1",
+    "entries": [
+      {
+        "aliases": [
+          "people",
+          "XGAPFinBenchPerson"
+        ],
+        "authoritative_mentions": [],
+        "candidate_id": "type:person",
+        "canonical_label": "person",
+        "kind": "type",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [
+          "accounts",
+          "XGAPFinBenchAccount"
+        ],
+        "authoritative_mentions": [],
+        "candidate_id": "type:account",
+        "canonical_label": "account",
+        "kind": "type",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [
+          "companies",
+          "XGAPFinBenchCompany"
+        ],
+        "authoritative_mentions": [],
+        "candidate_id": "type:company",
+        "canonical_label": "company",
+        "kind": "type",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [
+          "media",
+          "XGAPFinBenchMedium"
+        ],
+        "authoritative_mentions": [],
+        "candidate_id": "type:medium",
+        "canonical_label": "medium",
+        "kind": "type",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [
+          "owns",
+          "owned by",
+          "own",
+          "owned"
+        ],
+        "authoritative_mentions": [],
+        "candidate_id": "predicate:OWNS_ACCOUNT",
+        "canonical_label": "OWNS_ACCOUNT",
+        "kind": "predicate",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [
+          "sign in",
+          "signed in",
+          "sign-in"
+        ],
+        "authoritative_mentions": [],
+        "candidate_id": "predicate:SIGNED_IN_TO",
+        "canonical_label": "SIGNED_IN_TO",
+        "kind": "predicate",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [
+          "transfer",
+          "transfers",
+          "sent",
+          "transferred"
+        ],
+        "authoritative_mentions": [],
+        "candidate_id": "predicate:TRANSFERRED_TO",
+        "canonical_label": "TRANSFERRED_TO",
+        "kind": "predicate",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "source:graph",
+        "canonical_label": "graph",
+        "kind": "source",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "source:control",
+        "canonical_label": "control",
+        "kind": "source",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "entity:person_31",
+        "canonical_label": "Alice",
+        "kind": "entity",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "entity:account_31",
+        "canonical_label": "account 1",
+        "kind": "entity",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "entity:account_32",
+        "canonical_label": "account 2",
+        "kind": "entity",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "entity:account_33",
+        "canonical_label": "account 3",
+        "kind": "entity",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "entity:account_34",
+        "canonical_label": "account 4",
+        "kind": "entity",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "entity:company_31",
+        "canonical_label": "Company One",
+        "kind": "entity",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "entity:medium_31",
+        "canonical_label": "medium 1",
+        "kind": "entity",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "entity:medium_32",
+        "canonical_label": "medium 2",
+        "kind": "entity",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:0",
+        "canonical_label": "0",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:1",
+        "canonical_label": "1",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:2",
+        "canonical_label": "2",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:3",
+        "canonical_label": "2020-01-01 00:00:00.000",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:4",
+        "canonical_label": "2020-01-02 00:00:00.000",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:5",
+        "canonical_label": "2020-01-03 00:00:00.000",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:6",
+        "canonical_label": "2020-01-04 00:00:00.000",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:7",
+        "canonical_label": "3",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:8",
+        "canonical_label": "4",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:9",
+        "canonical_label": "5",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:10",
+        "canonical_label": "6",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:11",
+        "canonical_label": "7",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:12",
+        "canonical_label": "Alice",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:13",
+        "canonical_label": "Company One",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:14",
+        "canonical_label": "account 1",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:15",
+        "canonical_label": "account 2",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:16",
+        "canonical_label": "account 3",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:17",
+        "canonical_label": "account 4",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:18",
+        "canonical_label": "10.125",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:19",
+        "canonical_label": "100.0",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:20",
+        "canonical_label": "11.0",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:21",
+        "canonical_label": "13.0",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:22",
+        "canonical_label": "5.875",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:23",
+        "canonical_label": "50.0",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:24",
+        "canonical_label": "7.0",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:25",
+        "canonical_label": "9.0",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:26",
+        "canonical_label": "false",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      },
+      {
+        "aliases": [],
+        "authoritative_mentions": [],
+        "candidate_id": "constraint:27",
+        "canonical_label": "true",
+        "kind": "constraint",
+        "provenance": {
+          "selection": "prediction, not authority",
+          "snapshot": "685ee7749d909bcac63093000e0c8ef5f1e91165c81452f5b2c86bdc1969a97f",
+          "source": "offline source schema and entity attributes"
+        }
+      }
+    ],
+    "metadata": {
+      "offline": true,
+      "question_reads": 0,
+      "scalar_domain": "finite observed graph values plus booleans"
+    },
+    "schema_version": "m15-e3-resolution-catalog-v1"
+  },
+  "expected": [
+    {
+      "account_distance": 1,
+      "medium_id": "1",
+      "medium_type": "PHONE",
+      "other_id": "2"
+    },
+    {
+      "account_distance": 1,
+      "medium_id": "2",
+      "medium_type": "PHONE",
+      "other_id": "2"
+    },
+    {
+      "account_distance": 1,
+      "medium_id": "1",
+      "medium_type": "PHONE",
+      "other_id": "3"
+    },
+    {
+      "account_distance": 2,
+      "medium_id": "1",
+      "medium_type": "PHONE",
+      "other_id": "3"
+    }
+  ],
+  "mapping": {
+    "backend_mapping": {
+      "backends": {
+        "fuseki": {
+          "namespace": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/"
+        },
+        "rdf_control": {
+          "namespace": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/"
+        },
+        "rdf_graph": {
+          "namespace": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/"
+        }
+      },
+      "mapping_id": "finbench-same-facts-v1",
+      "term_mappings": {
+        "fuseki": {
+          "APPLIED_FOR": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/APPLIED_FOR"
+          },
+          "DEPOSITED_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/DEPOSITED_TO"
+          },
+          "GUARANTEES": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/GUARANTEES"
+          },
+          "INVESTED_IN": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/INVESTED_IN"
+          },
+          "OWNS_ACCOUNT": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/OWNS_ACCOUNT"
+          },
+          "REPAID": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/REPAID"
+          },
+          "SIGNED_IN_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/SIGNED_IN_TO"
+          },
+          "TRANSFERRED_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/TRANSFERRED_TO"
+          },
+          "WITHDREW_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/WITHDREW_TO"
+          },
+          "XGAPFinBenchAccount": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Account"
+          },
+          "XGAPFinBenchCompany": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Company"
+          },
+          "XGAPFinBenchLoan": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Loan"
+          },
+          "XGAPFinBenchMedium": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Medium"
+          },
+          "XGAPFinBenchPerson": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Person"
+          },
+          "accountLevel": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/accountLevel"
+          },
+          "accountType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/accountType"
+          },
+          "amount": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/amount"
+          },
+          "balance": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/balance"
+          },
+          "birthday": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/birthday"
+          },
+          "business": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/business"
+          },
+          "city": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/city"
+          },
+          "comment": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/comment"
+          },
+          "companyName": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/companyName"
+          },
+          "country": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/country"
+          },
+          "createTime": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/createTime"
+          },
+          "description": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/description"
+          },
+          "email": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/email"
+          },
+          "frequentLoginType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/frequentLoginType"
+          },
+          "gender": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/gender"
+          },
+          "goodsType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/goodsType"
+          },
+          "id": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/sourceId"
+          },
+          "interestRate": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/interestRate"
+          },
+          "isBlocked": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/isBlocked"
+          },
+          "lastLoginTime": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/lastLoginTime"
+          },
+          "loanAmount": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/loanAmount"
+          },
+          "loanUsage": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/loanUsage"
+          },
+          "location": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/location"
+          },
+          "mediumType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/mediumType"
+          },
+          "nickname": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/nickname"
+          },
+          "orderNum": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/orderNum"
+          },
+          "org": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/org"
+          },
+          "payType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/payType"
+          },
+          "personName": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/personName"
+          },
+          "phonenum": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/phonenum"
+          },
+          "ratio": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/ratio"
+          },
+          "relation": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/relation"
+          },
+          "riskLevel": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/riskLevel"
+          },
+          "url": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/url"
+          },
+          "xgap_id": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id"
+          }
+        },
+        "rdf_control": {
+          "APPLIED_FOR": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/APPLIED_FOR"
+          },
+          "DEPOSITED_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/DEPOSITED_TO"
+          },
+          "GUARANTEES": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/GUARANTEES"
+          },
+          "INVESTED_IN": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/INVESTED_IN"
+          },
+          "OWNS_ACCOUNT": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/OWNS_ACCOUNT"
+          },
+          "REPAID": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/REPAID"
+          },
+          "SIGNED_IN_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/SIGNED_IN_TO"
+          },
+          "TRANSFERRED_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/TRANSFERRED_TO"
+          },
+          "WITHDREW_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/WITHDREW_TO"
+          },
+          "XGAPFinBenchAccount": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Account"
+          },
+          "XGAPFinBenchCompany": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Company"
+          },
+          "XGAPFinBenchLoan": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Loan"
+          },
+          "XGAPFinBenchMedium": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Medium"
+          },
+          "XGAPFinBenchPerson": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Person"
+          },
+          "accountLevel": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/accountLevel"
+          },
+          "accountType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/accountType"
+          },
+          "amount": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/amount"
+          },
+          "balance": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/balance"
+          },
+          "birthday": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/birthday"
+          },
+          "business": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/business"
+          },
+          "city": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/city"
+          },
+          "comment": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/comment"
+          },
+          "companyName": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/companyName"
+          },
+          "country": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/country"
+          },
+          "createTime": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/createTime"
+          },
+          "description": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/description"
+          },
+          "email": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/email"
+          },
+          "frequentLoginType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/frequentLoginType"
+          },
+          "gender": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/gender"
+          },
+          "goodsType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/goodsType"
+          },
+          "id": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/sourceId"
+          },
+          "interestRate": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/interestRate"
+          },
+          "isBlocked": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/isBlocked"
+          },
+          "lastLoginTime": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/lastLoginTime"
+          },
+          "loanAmount": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/loanAmount"
+          },
+          "loanUsage": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/loanUsage"
+          },
+          "location": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/location"
+          },
+          "mediumType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/mediumType"
+          },
+          "nickname": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/nickname"
+          },
+          "orderNum": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/orderNum"
+          },
+          "org": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/org"
+          },
+          "payType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/payType"
+          },
+          "personName": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/personName"
+          },
+          "phonenum": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/phonenum"
+          },
+          "ratio": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/ratio"
+          },
+          "relation": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/relation"
+          },
+          "riskLevel": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/riskLevel"
+          },
+          "url": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/url"
+          },
+          "xgap_id": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id"
+          }
+        },
+        "rdf_graph": {
+          "APPLIED_FOR": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/APPLIED_FOR"
+          },
+          "DEPOSITED_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/DEPOSITED_TO"
+          },
+          "GUARANTEES": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/GUARANTEES"
+          },
+          "INVESTED_IN": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/INVESTED_IN"
+          },
+          "OWNS_ACCOUNT": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/OWNS_ACCOUNT"
+          },
+          "REPAID": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/REPAID"
+          },
+          "SIGNED_IN_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/SIGNED_IN_TO"
+          },
+          "TRANSFERRED_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/TRANSFERRED_TO"
+          },
+          "WITHDREW_TO": {
+            "kind": "relation",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/WITHDREW_TO"
+          },
+          "XGAPFinBenchAccount": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Account"
+          },
+          "XGAPFinBenchCompany": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Company"
+          },
+          "XGAPFinBenchLoan": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Loan"
+          },
+          "XGAPFinBenchMedium": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Medium"
+          },
+          "XGAPFinBenchPerson": {
+            "kind": "class",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Person"
+          },
+          "accountLevel": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/accountLevel"
+          },
+          "accountType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/accountType"
+          },
+          "amount": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/amount"
+          },
+          "balance": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/balance"
+          },
+          "birthday": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/birthday"
+          },
+          "business": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/business"
+          },
+          "city": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/city"
+          },
+          "comment": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/comment"
+          },
+          "companyName": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/companyName"
+          },
+          "country": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/country"
+          },
+          "createTime": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/createTime"
+          },
+          "description": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/description"
+          },
+          "email": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/email"
+          },
+          "frequentLoginType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/frequentLoginType"
+          },
+          "gender": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/gender"
+          },
+          "goodsType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/goodsType"
+          },
+          "id": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/sourceId"
+          },
+          "interestRate": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/interestRate"
+          },
+          "isBlocked": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/isBlocked"
+          },
+          "lastLoginTime": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/lastLoginTime"
+          },
+          "loanAmount": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/loanAmount"
+          },
+          "loanUsage": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/loanUsage"
+          },
+          "location": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/location"
+          },
+          "mediumType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/mediumType"
+          },
+          "nickname": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/nickname"
+          },
+          "orderNum": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/orderNum"
+          },
+          "org": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/org"
+          },
+          "payType": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/payType"
+          },
+          "personName": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/personName"
+          },
+          "phonenum": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/phonenum"
+          },
+          "ratio": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/ratio"
+          },
+          "relation": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/relation"
+          },
+          "riskLevel": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/riskLevel"
+          },
+          "url": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/url"
+          },
+          "xgap_id": {
+            "kind": "property",
+            "representation": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id"
+          }
+        }
+      },
+      "version": "1"
+    },
+    "identity_property": "xgap_id",
+    "rdf_edge_encoding": {
+      "class_predicate_iri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+      "edge_class_iri": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Edge",
+      "encoding_id": "finbench-same-facts-v1",
+      "label_encoding": "mapped_iri",
+      "label_predicate_iri": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/edgeLabel",
+      "source_predicate_iri": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/source",
+      "target_predicate_iri": "https://xgap.dev/benchmark/finbench/v0.1.0/schema/target"
+    },
+    "rdf_node_classes": [
+      "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Person",
+      "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Account",
+      "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Company",
+      "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Medium",
+      "https://xgap.dev/benchmark/finbench/v0.1.0/schema/Loan"
+    ],
+    "resource_namespace": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/"
+  },
+  "query_template": {
+    "deduplicate_by": null,
+    "edges": [
+      {
+        "source": "medium",
+        "target": "other",
+        "type": "SIGNED_IN_TO",
+        "var": "signin"
+      }
+    ],
+    "limit": null,
+    "nodes": [
+      {
+        "entity": null,
+        "type": "XGAPFinBenchAccount",
+        "var": "start"
+      },
+      {
+        "entity": null,
+        "type": "XGAPFinBenchAccount",
+        "var": "other"
+      },
+      {
+        "entity": null,
+        "type": "XGAPFinBenchMedium",
+        "var": "medium"
+      }
+    ],
+    "order_by": [
+      {
+        "direction": "asc",
+        "field": "account_distance"
+      },
+      {
+        "direction": "asc",
+        "field": "other_id"
+      },
+      {
+        "direction": "asc",
+        "field": "medium_id"
+      }
+    ],
+    "path": {
+      "max_hops": 3,
+      "min_hops": 1,
+      "mode": "ACYCLIC",
+      "source": "start",
+      "target": "other",
+      "time": {
+        "increasing": true,
+        "lower": "2020-01-01 00:00:00.000",
+        "lower_inclusive": true,
+        "property": "createTime",
+        "upper": "2020-01-04 00:00:00.000",
+        "upper_inclusive": true
+      },
+      "type": "TRANSFERRED_TO",
+      "var": "reach"
+    },
+    "select": {
+      "account_distance": {
+        "property": "length",
+        "var": "reach"
+      },
+      "medium_id": {
+        "property": "id",
+        "var": "medium"
+      },
+      "medium_type": {
+        "property": "mediumType",
+        "var": "medium"
+      },
+      "other_id": {
+        "property": "id",
+        "var": "other"
+      }
+    },
+    "where": [
+      {
+        "left": {
+          "property": "isBlocked",
+          "var": "medium"
+        },
+        "op": "eq",
+        "right": {
+          "value": true
+        },
+        "value_type": "scalar"
+      },
+      {
+        "left": {
+          "property": "id",
+          "var": "start"
+        },
+        "op": "eq",
+        "right": {
+          "value": "1"
+        },
+        "value_type": "scalar"
+      }
+    ]
+  },
+  "schema": {
+    "control": {
+      "description": "Entity type and identity stubs plus control attributes. No relationship edges or graph profile fields.",
+      "edges": [],
+      "nodes": {
+        "XGAPFinBenchAccount": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "isBlocked",
+            "accountType",
+            "frequentLoginType",
+            "accountLevel"
+          ]
+        },
+        "XGAPFinBenchCompany": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "isBlocked",
+            "country",
+            "city",
+            "business"
+          ]
+        },
+        "XGAPFinBenchMedium": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "isBlocked",
+            "mediumType",
+            "riskLevel"
+          ]
+        },
+        "XGAPFinBenchPerson": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "isBlocked",
+            "gender",
+            "country",
+            "city"
+          ]
+        }
+      }
+    },
+    "graph": {
+      "description": "Entity types, business IDs, profile attributes and all stored directed edges; no control attributes.",
+      "edges": [
+        {
+          "label": "OWNS_ACCOUNT",
+          "properties": [
+            "xgap_id",
+            "createTime"
+          ],
+          "source": "XGAPFinBenchPerson",
+          "target": "XGAPFinBenchAccount"
+        },
+        {
+          "label": "OWNS_ACCOUNT",
+          "properties": [
+            "xgap_id",
+            "createTime"
+          ],
+          "source": "XGAPFinBenchCompany",
+          "target": "XGAPFinBenchAccount"
+        },
+        {
+          "label": "TRANSFERRED_TO",
+          "properties": [
+            "xgap_id",
+            "amount",
+            "createTime",
+            "orderNum",
+            "comment",
+            "payType",
+            "goodsType"
+          ],
+          "source": "XGAPFinBenchAccount",
+          "target": "XGAPFinBenchAccount"
+        },
+        {
+          "label": "SIGNED_IN_TO",
+          "properties": [
+            "xgap_id",
+            "createTime",
+            "location"
+          ],
+          "source": "XGAPFinBenchMedium",
+          "target": "XGAPFinBenchAccount"
+        }
+      ],
+      "nodes": {
+        "XGAPFinBenchAccount": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "createTime",
+            "nickname",
+            "phonenum",
+            "email",
+            "lastLoginTime"
+          ]
+        },
+        "XGAPFinBenchCompany": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "companyName",
+            "createTime",
+            "description",
+            "url"
+          ]
+        },
+        "XGAPFinBenchMedium": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "createTime",
+            "lastLoginTime"
+          ]
+        },
+        "XGAPFinBenchPerson": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "personName",
+            "createTime",
+            "birthday"
+          ]
+        }
+      }
+    },
+    "identity_property": "xgap_id",
+    "identity_semantics": "Canonical node identity joins across stores; id is a raw string business ID, not canonical identity.",
+    "scalar_semantics": {
+      "amount": "number",
+      "createTime": "calendar string YYYY-MM-DD HH:MM:SS.mmm; order with timestamp_ms",
+      "id": "string",
+      "isBlocked": "boolean",
+      "missing_fields": "Missing nullable properties return null; no implicit lookup in another source.",
+      "parallel_edges": "Each edge has a separate canonical identity, even for equal endpoints and values."
+    },
+    "shared_identity_namespace": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/"
+  }
+}

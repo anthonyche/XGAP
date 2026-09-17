@@ -16,6 +16,7 @@ from xgap.runtime.tool import FederatedExecutionTool
 from xgap.semantic.compact_lowering import lower_compact_query
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPlugin
 from xgap.tools.contracts import ToolContext, ToolStatus
+from xgap.runtime.one_shot_planning import prepare_one_shot_domain
 
 
 def snapshot_identity(sources, backends, schema):
@@ -24,7 +25,8 @@ def snapshot_identity(sources, backends, schema):
             for k, b in backends.items()}, 'source_schema': schema})
 
 
-def family_runtime(family, *, source_schema, sources, backends, backend_clients, physical_profile):
+def family_runtime(family, *, source_schema, sources, backends, backend_clients, physical_profile,
+                   joint_cost=None, estimator=None, planning_deadline=None):
     """Shared lazy preparation and one-final-execution callbacks for both controllers."""
     if family.source_snapshot != snapshot_identity(sources, backends, source_schema):
         raise ValueError('Intent certificate belongs to a different source/mapping snapshot')
@@ -34,6 +36,10 @@ def family_runtime(family, *, source_schema, sources, backends, backend_clients,
     admitted, capabilities = lookup_practical_capabilities(sources, backends, backend_clients)
     capability_ms = (time.perf_counter()-at)*1000
 
+    def checkpoint():
+        if planning_deadline is not None and time.perf_counter() >= planning_deadline:
+            raise TimeoutError('Optional physical improvement reached planning deadline')
+
     def prepare(candidate, certificate):
         program, assignment = lower_compact_query(json.loads(candidate.query_json), source_schema,
             version=family.language_version, optimize=True)
@@ -41,7 +47,34 @@ def family_runtime(family, *, source_schema, sources, backends, backend_clients,
             raise ValueError('Candidate exceeds the admitted operator bound')
         if program.holes:
             raise ValueError('Finite-family execution requires complete semantic candidates; unresolved entity hole')
-        return _baseline(program, assignment, admitted, backends, physical_profile)
+        baseline = _baseline(program, assignment, admitted, backends, physical_profile)
+        if joint_cost is None:
+            return baseline
+        # Retain the independently feasible seed if optional neighborhood
+        # generation is unavailable; never execute alternatives to select one.
+        plans = [baseline]
+        domain = {'status': 'baseline_only'}
+        try:
+            alternatives, domain = prepare_one_shot_domain(program, operator_sources=assignment,
+                sources=admitted, backends=backends, policy=physical_profile,
+                progressive_bindings=True, shared_native_reads=True, source_row_prefilters=True,
+                planning_checkpoint=checkpoint)
+            plans.extend(c.plan for c in alternatives)
+        except (ValueError, TimeoutError) as error:
+            domain = {'status': 'optional_domain_unavailable', 'reason': str(error)}
+        scored = [(joint_cost.execution(baseline, estimator), 0, baseline)]
+        for index, candidate_plan in enumerate(plans[1:], 1):
+            try:
+                checkpoint()
+            except TimeoutError:
+                domain = {**domain, 'scoring_stopped': 'planning_deadline'}
+                break
+            scored.append((joint_cost.execution(candidate_plan, estimator), index, candidate_plan))
+        (score, evidence), _, plan = min(scored, key=lambda item: (item[0][0], item[1]))
+        from dataclasses import replace
+        return replace(plan, metadata={**plan.metadata, 'joint_execution_cost': score,
+            'joint_execution_estimate': evidence, 'joint_physical_domain': domain,
+            'joint_compared_plans': len(scored), 'alternative_executions': 0})
 
     def execute(plan):
         registry = BackendPluginRegistry()

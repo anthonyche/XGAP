@@ -3,6 +3,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass
 import errno
 import hashlib
+import gzip
 import http.client
 import json
 from pathlib import Path
@@ -13,6 +14,7 @@ from urllib.parse import parse_qs, urlsplit
 from xgap.experiments.external_federation import SourceObserver, forwarding_headers, query_kind
 from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
+from xgap.experiments.evidence_store import file_pin
 
 MIB=1024**2
 
@@ -25,8 +27,11 @@ class SourceObservationBudget:
     response_bytes: int=256*MIB
     phase_response_bytes: int=512*MIB
     timeout_seconds: int=120
+    capture_compression: str='none'
 
     def __post_init__(self):
+        if self.capture_compression not in ('none','gzip'):
+            raise ValueError('Capture compression must be none or gzip')
         caps={'max_calls':1000000,'request_bytes':16*MIB,'phase_request_bytes':1024*MIB,
               'response_bytes':1024*MIB,'phase_response_bytes':4096*MIB,'timeout_seconds':120}
         for name,maximum in caps.items():
@@ -93,7 +98,8 @@ class CampaignSourceObserver(SourceObserver):
                 'forwarded':False,'response_complete':False}
             self.records.append(record);self.inflight+=1;self.phase_calls+=1
             call_number=self.phase_calls
-        conn=None;body_path=self.root/f'{index:04}-response.bin';digest=hashlib.sha256()
+        compressed=self.budget.capture_compression=='gzip'
+        conn=None;body_path=self.root/(f'{index:04}-response.bin'+('.gz' if compressed else ''));digest=hashlib.sha256()
         stage='incoming';headers_sent=False;reusable=False;connection_id=None
         try:
             handler.connection.settimeout(self.timeout)
@@ -133,7 +139,7 @@ class CampaignSourceObserver(SourceObserver):
             record['forwarded']=True;conn.request(handler.command,target,body,headers)
             response=conn.getresponse();record['http_status']=response.status
             stage='persistence'
-            with body_path.open('xb') as saved:
+            with (gzip.open(body_path,'xb',compresslevel=1) if compressed else body_path.open('xb')) as saved:
                 while True:
                     remaining=self.budget.response_bytes-record['response_body_bytes']
                     stage='upstream'
@@ -156,7 +162,7 @@ class CampaignSourceObserver(SourceObserver):
                 if k.lower() in {'content-type','content-encoding'}:handler.send_header(k,v)
             handler.send_header('Content-Length',str(record['response_body_bytes']));handler.end_headers();headers_sent=True
             stage='persistence'
-            with body_path.open('rb') as saved:
+            with (gzip.open(body_path,'rb') if compressed else body_path.open('rb')) as saved:
                 while True:
                     stage='persistence';chunk=saved.read(MIB)
                     if not chunk:break
@@ -179,6 +185,12 @@ class CampaignSourceObserver(SourceObserver):
             if body_path.exists():
                 record.update(response_path=str(body_path),
                     response_sha256=None if record.get('failure_category')=='harness_persistence' else digest.hexdigest())
+                if compressed:
+                    try:
+                        record.update(response_encoding='gzip',response_storage_pin=file_pin(body_path))
+                    except OSError as error:
+                        record.update(status='failed',failure_category='harness_persistence',
+                                      error=str(error),response_sha256=None)
             record['observer_wall_ms']=(time.perf_counter()-started)*1000
             try:
                 pin=write_once(self.root/f'{index:04}-result.json',record)
@@ -210,6 +222,8 @@ class CampaignSourceObserver(SourceObserver):
             'request_body_bytes':sum(r['request_body_bytes'] for r in rows),
             'request_target_bytes':sum(r['request_target_bytes'] for r in rows),
             'response_body_bytes':sum(r['response_body_bytes'] for r in rows),
+            'capture_storage_bytes':sum(r.get('response_storage_pin',{}).get('bytes',r['response_body_bytes']) for r in rows),
+            'capture_compression':self.budget.capture_compression,
             'partial_response_bytes':sum(r['response_body_bytes'] for r in rows if not r['response_complete']),
             'records_inline':False,'record_directory':str(self.root),'budget':asdict(self.budget),
             'first_index':rows[0]['index'] if rows else None,'last_index':rows[-1]['index'] if rows else None,

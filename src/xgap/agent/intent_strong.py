@@ -44,10 +44,11 @@ class FamilyState:
 
 
 class FamilyStrongDomain:
-    def __init__(self, question, contract, information, prepare, *, tool_name, candidate_order=None, strategy='search'):
+    def __init__(self, question, contract, information, prepare, *, tool_name, candidate_order=None, strategy='search', joint_cost=None):
         if strategy not in ('search','full','fixed') or strategy=='full' and contract.mode!='exact':
             raise ValueError('Unknown strategy or non-exact full-clarification control')
         self.strategy=strategy
+        self.joint_cost=joint_cost
         self.question=question; self.contract=contract; self.family=contract.family
         self.information=information; self.prepare=prepare; self.tool_name=tool_name
         n=len(self.family.slots); full=tuple(range(n))
@@ -88,15 +89,16 @@ class FamilyStrongDomain:
                     self.prepare_ms+=(time.perf_counter()-at)*1000
             else: self.plan_cache_hits+=1
             plan=self.plans[i]
-            remote=sum(n.kind is RuntimeNodeKind.REMOTE_QUERY for n in plan.nodes)
+            remote=sum(n.kind in (RuntimeNodeKind.REMOTE_QUERY, RuntimeNodeKind.REMOTE_BIND_QUERY) for n in plan.nodes)
             self.terminal_prefixes.append(dict(state=fingerprint(asdict(state)),observations=len(state.observations),
                 remaining_intents=len(remaining),checked=checked,candidate_id=self.family.candidates[i].candidate_id))
-            # The objective is future information burden. A terminal needs zero
-            # further information; execution latency remains separately unknown.
-            yield TerminalAlternative(fingerprint([i,state.observations]),0,
+            # Historical profiles optimize information alone; the current
+            # profile also accounts for estimated final execution work.
+            cost = 0 if self.joint_cost is None else plan.metadata['joint_execution_cost']
+            yield TerminalAlternative(fingerprint([i,state.observations]),cost,
                 dict(candidate_index=i,certificate=cert,plan=plan,observations=state.observations),
                 resources=ResourceUsage(remote_calls=remote))
-            return
+            if self.joint_cost is None: return
 
     def actions(self, state):
         # Controls share tool permissions and strong-outcome admission. Only
@@ -128,15 +130,16 @@ class FamilyStrongDomain:
                     FamilyState(observations,state.calls+1,state.disclosed+len(scope))))
             yield AcquisitionAlternative('scope:'+','.join(map(str,scope)),self.tool_name,
                 dict(family_sha256=self.family.identity,question_sha256=fingerprint(self.question),
-                    slots=[self.family.slots[j].name for j in scope]),tuple(outcomes),p.cost(scope))
+                    slots=[self.family.slots[j].name for j in scope]),tuple(outcomes),
+                self.joint_cost.information(scope) if self.joint_cost else p.cost(scope))
 
 
 def run_strong_intent(question, contract, oracle, *, prepare, execute,
                       information=FamilyInformationPolicy(), candidate_order=None,
-                      limits=StrongSearchLimits(), on_observation=None, strategy='search'):
+                      limits=StrongSearchLimits(), on_observation=None, strategy='search', joint_cost=None):
     started=time.perf_counter(); registry=ToolRegistry(); registry.register(oracle)
     domain=FamilyStrongDomain(question,contract,information,prepare,
-        tool_name=oracle.spec.name,candidate_order=candidate_order,strategy=strategy)
+        tool_name=oracle.spec.name,candidate_order=candidate_order,strategy=strategy,joint_cost=joint_cost)
     r=dict(schema_version='xgap-family-strong-answer-v1',success=False,status='planning',
         mode=contract.mode,strategy=strategy,family_sha256=contract.family.identity,epsilon=fraction_view(contract.epsilon),
         acquisition_policy=asdict(information),cost_basis='declared '+information.cost_basis+'; not wall time',
@@ -149,12 +152,17 @@ def run_strong_intent(question, contract, oracle, *, prepare, execute,
     checks=contract.checks; hits=contract.cache_hits
     try:
         at=time.process_time()
-        search=search_strong_policy(FamilyState(),domain,limits=limits,terminal_first=True,
+        search=search_strong_policy(FamilyState(),domain,limits=limits,terminal_first=joint_cost is None,
             prune_nonimproving_actions=True)
         r['planning_cpu_ms']=(time.process_time()-at)*1000
         r['search']=search.to_dict();r['planning_ms']=search.elapsed_ms;r['strong_plan']=search.policy is not None
         r['search']['cost_objective']='declared information burden plus worst-outcome remaining information burden'
         r['search']['terminal_first']=True
+        if joint_cost is not None:
+            r['cost_profile']=joint_cost.to_dict()
+            r['cost_basis']='declared_work_units; not measured latency'
+            r['search']['cost_objective']='clarification cost plus worst-outcome estimated final execution cost'
+            r['search']['stop_at_first_certified_terminal']=False
         if search.policy is None:
             r['status']='unknown_coverage' if contract.family.coverage_basis is None else 'no_feasible_strong_policy'
             return r

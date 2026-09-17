@@ -1,0 +1,47 @@
+@prefix xgapfb: <https://xgap.dev/benchmark/finbench/v0.1.0/schema/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/person_31> rdf:type xgapfb:Person .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/person_31> xgapfb:sourceId "1" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/person_31> xgapfb:isBlocked false .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_31> rdf:type xgapfb:Account .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_31> xgapfb:sourceId "1" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_31> xgapfb:isBlocked false .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_32> rdf:type xgapfb:Account .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_32> xgapfb:sourceId "2" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_32> xgapfb:isBlocked true .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_33> rdf:type xgapfb:Account .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_33> xgapfb:sourceId "3" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_33> xgapfb:isBlocked true .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_34> rdf:type xgapfb:Account .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_34> xgapfb:sourceId "4" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_34> xgapfb:isBlocked true .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/company_31> rdf:type xgapfb:Company .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/company_31> xgapfb:sourceId "1" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/company_31> xgapfb:isBlocked false .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_31> rdf:type xgapfb:Medium .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_31> xgapfb:sourceId "1" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_31> xgapfb:isBlocked true .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_31> xgapfb:mediumType "PHONE" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_31> xgapfb:riskLevel "High risk" .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_32> rdf:type xgapfb:Medium .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_32> xgapfb:sourceId "2" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_32> xgapfb:isBlocked true .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_32> xgapfb:mediumType "PHONE" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_32> xgapfb:riskLevel "High risk" .
+
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_31> <https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id> "account_31" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_32> <https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id> "account_32" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_33> <https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id> "account_33" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_34> <https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id> "account_34" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/company_31> <https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id> "company_31" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_31> <https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id> "medium_31" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/medium_32> <https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id> "medium_32" .
+<https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/person_31> <https://xgap.dev/benchmark/finbench/v0.1.0/schema/xgap_id> "person_31" .

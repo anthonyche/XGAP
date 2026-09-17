@@ -15,6 +15,7 @@ from xgap.experiments.one_shot_toy import _DurableRecordingProvider
 from xgap.experiments.row_normalization import normalize_rows
 from xgap.infrastructure.runtime import QueryArtifact, ExecutionReport
 from xgap.semantic.interpretation_replay import ReplayInterpretationProvider
+from xgap.experiments.evidence_store import read_json_evidence, write_json_evidence
 
 
 RUN_SCHEMA = "xgap-one-shot-evaluation-record-v1"
@@ -89,11 +90,7 @@ class BackendReplay:
             size = pin.get("bytes")
             if type(size) is not int or not 0 < size <= MAX_CAPTURE_REPLAY_BYTES:
                 raise ValueError("Backend replay capture size exceeds its offline bound")
-            with Path(pin["path"]).open("rb") as handle:
-                data = handle.read(size + 1)
-            if len(data) != size or hashlib.sha256(data).hexdigest() != pin["sha256"]:
-                raise ValueError("Backend replay capture size/hash mismatch")
-            captured = json.loads(data)
+            captured = read_json_evidence(pin, max_bytes=MAX_CAPTURE_REPLAY_BYTES)
             if (record.get("status") != "returned" or captured.get("status") != "returned"
                     or captured.get("backend_id") != self.backend_id
                     or _canonical(captured.get("artifact")) != _canonical(record["artifact"])):
@@ -112,10 +109,11 @@ class BackendReplay:
 
 
 class CapturingClient:
-    def __init__(self, client, root, records, lock, *, retain_payloads=True):
+    def __init__(self, client, root, records, lock, *, retain_payloads=True, compress=False):
         self.client, self.backend_id, self.root = client, client.backend_id, root
         self.records, self.lock = records, lock
         self.retain_payloads = retain_payloads
+        self.compress = compress
 
     def execute(self, artifact):
         with self.lock:
@@ -126,7 +124,8 @@ class CapturingClient:
         try:
             result = self.client.execute(artifact)
             complete = {**record, "status":"returned", "execution":result.to_dict()}
-            pin = write_once(self.root/f"backend-{index:04}-result.json", complete)
+            pin = (write_json_evidence(self.root/f"backend-{index:04}-result.json.gz", complete)
+                   if self.compress else write_once(self.root/f"backend-{index:04}-result.json", complete))
             if self.retain_payloads:
                 record.update(complete)
             else:

@@ -81,8 +81,8 @@ class IntentFamily:
 
     def __post_init__(self):
         if (not self.family_id or not self.source_snapshot or not isinstance(self.candidates, tuple) or
-                not isinstance(self.slots, tuple) or not 2 <= len(self.candidates) <= 64 or not 1 <= len(self.slots) <= 32):
-            raise ValueError('Ambiguous finite family requires 2..64 candidates, 1..32 slots and a source snapshot')
+                not isinstance(self.slots, tuple) or not 1 <= len(self.candidates) <= 64 or not 0 <= len(self.slots) <= 32):
+            raise ValueError('Finite family requires 1..64 candidates, 0..32 slots and a source snapshot')
         if len({c.candidate_id for c in self.candidates}) != len(self.candidates) or any(not c.candidate_id for c in self.candidates):
             raise ValueError('Candidate identities must be distinct')
         if len({s.name for s in self.slots}) != len(self.slots):

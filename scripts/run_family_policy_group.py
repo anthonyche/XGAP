@@ -96,7 +96,7 @@ def run(release_path,release_sha256,output):
             if not outcome['can_continue_session']:
                 closures.append(session.close());session=None
             if outcome['status'] in ('guard_monitor_failed','supervisor_failed','harness_observation_failure'):
-                budget.status='harness_integration_failure';break
+                budget.status=budget.status or 'harness_integration_failure';break
     finally:
         if session:closures.append(session.close())
         write_once(group_root/'receipt.json',dict(identity=identity,group=group,outputs=outputs,closures=closures,
