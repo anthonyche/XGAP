@@ -1,7 +1,7 @@
 # XGAP Current Roadmap
 
 [T4工程契约](decisions/bounded_joint_system_v1.md)的1–4项已实现并通过定向验收；
-当前完成第5项发布，随后停在第6项讨论。顺序如下：
+第5项已发布为[审核PR #1](https://github.com/anthonyche/XGAP/pull/1)，现在停在第6项讨论。顺序如下：
 
 1. 收敛当前文档/入口，隔离legacy并保留replay。
 2. 无损记录压缩、预算原因保真与资源小图门。

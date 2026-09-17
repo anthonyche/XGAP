@@ -76,7 +76,9 @@ Both calls produced complete strong policies. For each chosen interpretation,
 estimator was used in this gate. The declared total estimated costs were 3.035 and
 2.535 work units, not measured milliseconds. Both sources and the observer were
 closed, process groups drained, and reconstructable serving copies discarded;
-frozen stores and evidence were retained.
+frozen stores and evidence were retained. All 28 captured backend responses also
+passed strict offline artifact-matching replay with zero network calls
+(`offline-capture-audit.json` in the same root).
 
 The provider was the bounded English template, with zero model network calls.
 This gate establishes system execution and certificate behavior, not live model
@@ -123,3 +125,7 @@ preserves values/order/multiplicity, while whitespace encoding can differ.
 For Chapter 6 use [the implementation map](../implementation_chapter6.md), including
 algorithm, polynomial bounds and file-level responsibilities. Next: discuss and
 freeze Chapter 7's experimental plan; do not automatically restart T3.
+
+GitHub review: [PR #1](https://github.com/anthonyche/XGAP/pull/1), branch
+`codex/m13e4-grailqa-semantic-paper-protocol`. This publishes the current source for
+agent review and Chapter 6; it does not merge or rewrite `main`.

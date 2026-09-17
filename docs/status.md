@@ -11,7 +11,7 @@ T4 bounded joint system implementation is complete within its declared profile
 |Joint information/execution objective|Shared finite strong search, frozen estimates/fallback, feasible seed, one execution|
 |Storage/memory|Streaming gzip, logical/stored hashes, raw replay support, budget-cause preservation|
 |Correctness|88 targeted tests; real eight-node Neo4j+Fuseki gate; services closed|
-|GitHub|Verified source synchronization is the final release step; see Git branch/commit|
+|GitHub|Published on `codex/m13e4-grailqa-semantic-paper-protocol`; [review PR #1](https://github.com/anthonyche/XGAP/pull/1), not merged into main|
 |Formal evaluation/Chapter 7|Await discussion; no new campaign launched|
 
 This does not mean universal NL support or proven overall superiority. Current
