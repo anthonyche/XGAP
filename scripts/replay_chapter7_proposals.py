@@ -64,7 +64,7 @@ def main(*,receipt_path,receipt_sha256,output):
         _,runtime,calls=local_runtime();schema=runtime.pop('source_schema')
         provider=RecordedProposal(saved['interpretation']['provenance']['raw_compact_response'],old['core'])
         result=answer(InterpretationRequest(request['question'],{'source_schema':schema}),provider,
-            mode=case['mode'],epsilon=config['epsilon'],scope_policy=policy,
+            mode=case['mode'],epsilon='0' if case['mode']=='exact' else config['epsilon'],scope_policy=policy,
             authority=QueryIntentAuthority(Path(oracle['path']),oracle['sha256']),
             information=information,limits=limits,costs=costs,**runtime)
         sealed=write_json_evidence(path/'core.json.gz',result)
