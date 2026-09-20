@@ -1,5 +1,10 @@
 # XGAP Active Goal
 
+T6进度：共同状态、反馈开关、完整policy、独立query-loss已接通；4个真实native
+toy受控配置通过。真实Qwen暴露的表示等价误拒已修复，并以保存输出回放通过。
+下一步是新工作负载/数据/外部方法的pilot接入，见[验收记录](report/chapter7_readiness_20260920.md)。
+不能将本次toy或回放当作三数据集正式结果；保留失败记录及baseline原算法。
+
 2026-09-20 T6：用户提供并批准[20图实验执行计划](research_experiment_plan_20260920.md)。
 已通过合理性审查，开始按[执行契约](decisions/chapter7_execution_v1.md)推进：三衍生数据集，
 接入与日志验收→每集20–30例开发pilot→冻结正式样本与预算→正式矩阵→20图及复现材料。

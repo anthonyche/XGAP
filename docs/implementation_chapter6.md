@@ -2,8 +2,9 @@
 
 This describes executable T4 code, not the complete space of research ideas.
 Current entry: `xgap.api.answer`. Engineering evidence and limitations are in
-[the T4 report](report/bounded_joint_system_20260917.md). Formal evaluation is a
-separate Chapter 7 discussion. Earlier T3 results belong to their recorded version.
+[the T4 report](report/bounded_joint_system_20260917.md). The Chapter 7 plan was
+adopted on 2026-09-20; [T6 readiness](report/chapter7_readiness_20260920.md) extends
+the interfaces below. Earlier T3 results belong to their recorded version.
 
 The 2026-09-20 [T5 batch acceptance](report/bounded_joint_batch_20260920.md) adds
 current-method dispatch, independent compressed-answer scoring and nonduplicating
@@ -24,6 +25,10 @@ batch resume. It does not change the core algorithm or discrepancy definition.
 |Durable entry|`experiments/bounded_joint_worker.py`|Pinned input/profile/scope/user; compressed evidence; no answer labels|
 |Batch method boundary|`experiments/nl_method_worker.py`, `common_method_trial.py`, `bounded_joint_contract.py`|Explicit current IDs, pinned scope/config/user, worker/source/study budgets; old IDs unchanged|
 |Independent scoring|`experiments/common_row_score.py`|Post-seal raw/gzip rows; hashes, declared row equivalence, order and bags|
+|Controlled initial state|`api.answer_controlled`, `experiments/controlled_state.py`|Shared planner/runtime; full loss denominator; no NL timing or free replayed clarification|
+|Complete policy evidence|`agent/policy_evidence.py`|Every selected outcome plus physical plans; observed state IDs separate; no hypothetical measurements|
+|Query representation identity|`semantic/compact_identity.py`|Bounded alpha-renaming/conjunction order; literal/semantic fields unchanged; stored slot coordinates unchanged|
+|Independent query loss|`experiments/query_loss_score.py`|Post-seal private comparison; no certificate-as-observation or answer-error guarantee|
 |Evidence and source accounting|`experiments/evidence_store.py`, `campaign_source_observer.py`|Separate stored bytes from logical transferred bytes; lossless replay|
 
 Paths in this table are under `src/xgap/`.
@@ -91,6 +96,10 @@ calls, remote bytes and execution latency are reported independently.
 The current search does not choose whether to call the initial LLM or purchase new
 statistics: those are future optional actions. Do not claim saved LLM/probe calls
 from a workload in which they are common or absent.
+
+T6's `execution_cost_feedback=False` zeros execution estimates only in policy
+backup; per-candidate physical estimation/ranking remains enabled. It implements
+the approved feedback ablation rather than reverting to the historical worker.
 
 ## 6.4 Bounded feasible-first AND/OR search
 
@@ -170,6 +179,6 @@ Use the current API and this map for Chapter 6. The three historical controllers
 are isolated under `xgap.legacy`; thin old-path imports retain compatibility.
 Shared compiler/runtime modules remain current. [Legacy inventory](legacy_inventory.md)
 records the boundary. Prototype engineering gates are not comparative evaluation.
-The next conversation should freeze datasets, workload/intent distributions,
-independent baselines, cost/coverage/discrepancy factors and resource protocol.
-No experiment plan is silently adopted by this implementation milestone.
+The user explicitly adopted the [20-figure plan](research_experiment_plan_20260920.md).
+Dataset admission and development pilots now precede formal sample/budget freezing;
+the current implementation and readiness evidence do not constitute formal results.

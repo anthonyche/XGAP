@@ -1,5 +1,13 @@
 # XGAP Current Status
 
+2026-09-20 T6：用户的三数据集/E1–E20实验计划已采纳并开始执行。
+已接好共同初始状态、执行反馈开关、完整policy和独立query-loss评分。
+真实Neo4j+Fuseki的4个tiny受控配置通过；2次真实Qwen预检发现表示等价问题，
+已修复并用保存输出完成零新增模型调用的RDF回放。失败记录保留。
+详见[当前验收报告](report/chapter7_readiness_20260920.md)与
+[能力表](../experiments/protocols/chapter7_capabilities_20260920.csv)。
+这些是接口验收，尚非24例/数据集pilot、正式比较结果或20张论文图。
+
 T4 bounded joint system implementation is complete within its declared profile
 (2026-09-17): [acceptance report](report/bounded_joint_system_20260917.md),
 [Chapter 6 implementation map](implementation_chapter6.md).
@@ -17,7 +25,8 @@ T4 bounded joint system implementation is complete within its declared profile
 |Correctness|88 targeted tests; real eight-node Neo4j+Fuseki gate; services closed|
 |Current batch boundary|40 unique targeted tests; native 3-case batch: 2 answers + 1 declared budget non-answer; resume skips all attempted cells|
 |GitHub|Published on `codex/m13e4-grailqa-semantic-paper-protocol`; [review PR #1](https://github.com/anthonyche/XGAP/pull/1), not merged into main|
-|Formal evaluation/Chapter 7|User designs the plan in parallel; no new evaluation campaign launched; current batch LLM quality and large-scale behavior not measured|
+|Chapter 7 readiness|53 distinct focused tests across T6 contracts and representation boundary; native controlled gate passed; full policy rendered|
+|Formal evaluation/Chapter 7|Plan adopted; pilot populations/data mapping/external setup pending; no formal release or repaired fresh-model evaluation yet|
 
 This does not mean universal NL support or proven overall superiority. Current
 bounds and two stale historical full-model replay tests are explicit in the report.

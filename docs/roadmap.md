@@ -1,5 +1,10 @@
 # XGAP Current Roadmap
 
+T6接口和首轮tiny验收已完成，见[2026-09-20报告](report/chapter7_readiness_20260920.md)。
+当前下一步：FinBench新family隔离的24例开发集；Freebase/FedShop的冻结数据映射和参考；
+ARUQULA依赖、lookup和FedUP实际执行接线；逐集pilot后冻结正式样本、重复与资源预算。
+E19/E20需要真正分片而非副本；本地磁盘保留6 GiB底线，数据部署串行准备。
+
 2026-09-20当前优先级已进入T6：[用户实验计划](research_experiment_plan_20260920.md)
 已获批准，[执行契约](decisions/chapter7_execution_v1.md)先补共同初始状态、成本反馈开关、
 完整policy导出和独立query-loss评分，然后按三数据集能力门发布pilot；正式样本与总预算

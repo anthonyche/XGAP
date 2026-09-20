@@ -20,6 +20,17 @@ candidate. Optional clarification reveals only requested coordinates. No private
 query or gold answer is supplied to the proposal provider. Outside-scope intent is
 an explicit failed attempt; it is not repaired with hidden gold.
 
+Scope identity accepts declaration-order variable renaming and reordered pure
+WHERE conjunctions; the stored queries and metric coordinates are not rewritten.
+It does not claim arbitrary query equivalence or change literal/direction semantics.
+
+T6 adds `xgap.api.answer_controlled` for the approved experiment plan: start from a
+frozen full family plus authoritative public initial clues, then share the same
+planner/compiler/runtime. This track excludes NL initialization from its timing.
+The no-execution-feedback variant preserves physical planning; complete selected
+policies and observed paths are exported separately. Independent query loss is
+computed only after sealing. See the [T6 contract](decisions/chapter7_execution_v1.md).
+
 Layers remain `semantic` (typed programs), `agent` (state/authority/policy),
 `planning` (frozen costs), `runtime` (fragments/coordinator), `tools` (effects),
 `compilers`/`algebra` (audited logical/native semantics), and `experiments` (recording).
