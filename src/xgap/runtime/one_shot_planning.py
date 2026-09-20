@@ -123,7 +123,7 @@ def prepare_one_shot_domain(program, *, operator_sources, sources, backends, pol
                           "source_identities": {b: identities[b] for b in sorted(used)}})
             if source_row_prefilters:plan=prefilter_source_rows(program,plan)
             if shared_native_reads:
-                plan=share_full_native_reads(plan)
+                plan=share_full_native_reads(plan,program=program,backends=backends)
             if shared_native_reads or source_row_prefilters:
                 candidate=replace(candidate,features=strategy_features(plan,program))
             candidates.append(replace(candidate, plan=plan,

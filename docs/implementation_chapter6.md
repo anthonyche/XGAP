@@ -29,6 +29,7 @@ batch resume. It does not change the core algorithm or discrepancy definition.
 |Complete policy evidence|`agent/policy_evidence.py`|Every selected outcome plus physical plans; observed state IDs separate; no hypothetical measurements|
 |Query representation identity|`semantic/compact_identity.py`|Bounded alpha-renaming/conjunction order; literal/semantic fields unchanged; stored slot coordinates unchanged|
 |Independent query loss|`experiments/query_loss_score.py`|Post-seal private comparison; no certificate-as-observation or answer-error guarantee|
+|Equivalent source projections|`runtime/shared_match_projections.py`|Compiler-proved complete Match reuse under output renaming; original native representative, consumer schemas preserved|
 |Evidence and source accounting|`experiments/evidence_store.py`, `campaign_source_observer.py`|Separate stored bytes from logical transferred bytes; lossless replay|
 
 Paths in this table are under `src/xgap/`.

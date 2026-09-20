@@ -40,8 +40,11 @@ def _key(node,plan):
         sort_keys=True,separators=(',',':'),allow_nan=False)
 
 
-def share_full_native_reads(plan: FederatedExecutionPlan) -> FederatedExecutionPlan:
+def share_full_native_reads(plan: FederatedExecutionPlan, *, program=None, backends=None) -> FederatedExecutionPlan:
     """Preserve the feasible plan when there are no admissible duplicate reads."""
+    if program is not None and backends is not None:
+        from xgap.runtime.shared_match_projections import share_match_projections
+        plan=share_match_projections(plan,program,backends,native_key=_key)
     consumers=defaultdict(set)
     for node in plan.nodes:
         for parent in node.inputs:consumers[parent].add(node.node_id)

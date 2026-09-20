@@ -177,7 +177,8 @@ def _baseline(program, operator_sources, sources, backends, profile):
     return share_full_native_reads(prefilter_source_rows(program,replace(plan, metadata={**plan.metadata,
         "source_identities": {b: identities[b] for b in used},
         "source_snapshot_versions": {b: identities[b]["snapshot_version"] for b in used},
-        "source_bindings": placement, "planning_fallback": "minimum_call_feasible_placement"})))
+        "source_bindings": placement, "planning_fallback": "minimum_call_feasible_placement"})),
+        program=program,backends=backends)
 
 
 class PracticalSemanticDomain:

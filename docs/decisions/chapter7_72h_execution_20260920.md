@@ -91,3 +91,31 @@ Repaired two-call live native admission passed on code `9c05901`:
 `ch7-nl-native-20260920-v2/receipt.json`, SHA-256
 `5a27cab8fb38f4460e19b6ede93b2d267c4e5b31cf83347e7757c3b3f5eb34fa`.
 Both modes executed once; Exact EM=1; both certificates passed; all services closed.
+
+## Post-pilot execution blocker: equivalent Match projections
+
+The first frozen pilot selected three full transfer-edge reads differing only in
+output aliases. The current sharing pass now optionally proves equivalence from
+the original semantic Match and backend compiler: both source artifact and
+normalizer must exactly match recompilation; a canonical projection is compiled
+for comparison only. Keep the original representative native query and decoder;
+replace each redundant decoder with a bijective column projection of the shared
+normalized relation. All consumers, identities, nulls and final predicates remain.
+Constraints, binding queries, modified decoders/artifacts, different sources or
+snapshots, and retrieval limits are conservatively excluded from this new pass.
+The existing identical-read pass remains available without compiler context.
+No new semantic operator, extra execution or cross-query cache is introduced.
+
+At most two source recompilations per eligible Match per physical candidate,
+followed by keyed grouping and linear graph rewriting: the existing polynomial
+input/compilation bound is preserved. Baseline and optional candidates share this
+optimization before cost estimation, for both terminal modes.
+
+Acceptance uses focused independent RDF edge-pair answers and a new native
+diagnostic release with frozen pilot cases P01 and P13, each in both modes.
+P13 is the pilot's sole nonempty reference; selecting it is an explicit development
+correctness check, not a revised evaluation sample. P01 supplies the empty case.
+Reuse their controlled inputs and original references; no model calls, no repair,
+at most four executions, 600 s batch wall time, 1 GiB artifact cap, same per-method
+and source limits, and the existing 6 GiB free-disk reserve. Preserve the original
+pilot runs and label all new timings development diagnostics, not formal speedups.
