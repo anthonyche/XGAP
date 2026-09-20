@@ -15,14 +15,14 @@ from xgap.experiments.source_failure_classification import classify_source_failu
 from xgap.experiments.practical_methods import PRACTICAL_METHODS, external_engine
 from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS
 from xgap.experiments.evidence_store import file_pin
-from xgap.experiments.bounded_joint_contract import METHODS as JOINT_METHODS, TRACK as JOINT_TRACK, METRICS as JOINT_METRICS
+from xgap.experiments.bounded_joint_contract import METHODS as JOINT_METHODS, TRACK as JOINT_TRACK, METRICS as JOINT_METRICS, CONTROLLED_TRACK
 
 
 def _run_trial(*, track,request_path,request_sha256,method,output,owned_services,observer,
                profile_path=None,profile_sha256=None,endpoint=None,budget=ProcessBudget(),source_rss_bytes=2*1024**3,
                package_monitor=None,oracle_path=None,oracle_sha256=None,user_max_calls=9,
                intent_family_path=None,intent_family_sha256=None,scope_path=None,scope_sha256=None,
-               joint_config_path=None,joint_config_sha256=None):
+               joint_config_path=None,joint_config_sha256=None,controlled_state_path=None,controlled_state_sha256=None):
     started=time.perf_counter();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     q=json.loads(read_pinned(request_path,request_sha256))
     practical=track=='trusted_template';nl=track in ('natural_language','trusted_template')
@@ -56,6 +56,8 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             if method not in METHODS:raise ValueError('Unknown NL method')
             command+=['--profile-path',str(Path(profile_path).resolve()),'--profile-sha256',profile_sha256]
             joint_args=(scope_path,scope_sha256,joint_config_path,joint_config_sha256)
+            if method not in JOINT_METHODS and (controlled_state_path or controlled_state_sha256):
+                raise ValueError('Controlled state requires a current method')
             if method not in JOINT_METHODS and any(v is not None for v in joint_args):
                 raise ValueError('Current scope/configuration requires a current method')
             if method not in NL_FAMILY_METHODS and (intent_family_path is not None or intent_family_sha256 is not None):
@@ -65,6 +67,11 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                     raise ValueError('Current method requires pinned scope/configuration/private user')
                 r.update(track=JOINT_TRACK,scope_sha256=scope_sha256,joint_config_sha256=joint_config_sha256,
                     oracle_sha256=oracle_sha256)
+                if controlled_state_path or controlled_state_sha256:
+                    if not controlled_state_path or not controlled_state_sha256:raise ValueError('Pinned controlled state required')
+                    r.update(track=CONTROLLED_TRACK,controlled_state_sha256=controlled_state_sha256)
+                    command+=['--controlled-state-path',str(Path(controlled_state_path).resolve()),
+                        '--controlled-state-sha256',controlled_state_sha256]
                 for name,path,digest in (('scope',scope_path,scope_sha256),('joint-config',joint_config_path,joint_config_sha256),
                                          ('oracle',oracle_path,oracle_sha256)):
                     command+=['--'+name+'-path',str(Path(path).resolve()),'--'+name+'-sha256',digest]
@@ -108,8 +115,9 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             if method in NL_FAMILY_METHODS and (child.get('track')!='natural_language_finite_family'
                     or child.get('oracle_sha256')!=oracle_sha256 or child.get('intent_family_sha256')!=intent_family_sha256):
                 raise ValueError('Finite-family worker track or artifact identity differs')
-            if method in JOINT_METHODS and (child.get('track')!=JOINT_TRACK or
-                    any(child.get(k)!=r[k] for k in ('scope_sha256','joint_config_sha256','oracle_sha256'))):
+            if method in JOINT_METHODS and (child.get('track')!=r['track'] or
+                    any(child.get(k)!=r[k] for k in ('scope_sha256','joint_config_sha256','oracle_sha256')) or
+                    child.get('controlled_state_sha256')!=controlled_state_sha256):
                 raise ValueError('Current worker track or artifact identity differs')
         observed=observer.snapshot(phase)
         r.update(success=bool(guard['success'] and child and child['success'] and observed['failed_requests']==0),
@@ -135,7 +143,8 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                 r[key]=child.get(key) if child else None
         if method in JOINT_METHODS:
             for key in (*JOINT_METRICS,'core','search','user_observations','final_plan_executions',
-                        'backend_calls','proposal_kind','epsilon','error','error_type'):
+                        'backend_calls','proposal_kind','epsilon','error','error_type','execution_cost_feedback',
+                        'controlled_processing_ms','initial_state'):
                 r['method_cost_scope' if key=='cost_scope' else key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
     except Exception as error:

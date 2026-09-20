@@ -1,0 +1,211 @@
+{
+  "schema_version": "xgap-chapter7-experiment-matrix-v1",
+  "phase": "intake_and_logging",
+  "formal_release_frozen": false,
+  "user_plan": {
+    "path": "docs/research_experiment_plan_20260920.md",
+    "sha256": "4793666506043369519cfeeac48fc4410f95ccc635fc2af1312f167c52d2986e"
+  },
+  "datasets": [
+    "finbench-derived",
+    "grailqa-freebase-derived",
+    "fedshop-derived"
+  ],
+  "pilot": {
+    "cases_per_dataset": 24,
+    "selection": "uniform family then uniform legal distinct intent",
+    "split_unit": "query_family",
+    "seed": "xgap-ch7-pilot-20260920-v1",
+    "epsilon_candidates": [
+      "0",
+      "1/10",
+      "1/4",
+      "1/2"
+    ],
+    "ambiguity_candidates": [
+      1,
+      2,
+      3
+    ],
+    "candidate_count_candidates": [
+      4,
+      16,
+      64
+    ],
+    "source_count_candidates": [
+      2,
+      4,
+      8
+    ],
+    "formal_values_frozen": false,
+    "repeats_are_not_independent_cases": true
+  },
+  "figures": [
+    {
+      "id": "E1",
+      "track": "end_to_end",
+      "x": "method",
+      "y": "end_to_end_seconds_mean",
+      "rq": "RQ1",
+      "section": "main"
+    },
+    {
+      "id": "E2",
+      "track": "end_to_end",
+      "x": "method",
+      "y": "backend_response_mib_mean",
+      "rq": "RQ1",
+      "section": "main"
+    },
+    {
+      "id": "E3",
+      "track": "controlled",
+      "x": "epsilon",
+      "y": "controlled_processing_seconds_mean",
+      "rq": "RQ3",
+      "section": "main"
+    },
+    {
+      "id": "E4",
+      "track": "controlled",
+      "x": "epsilon",
+      "y": "clarification_calls_mean",
+      "rq": "RQ3",
+      "section": "main"
+    },
+    {
+      "id": "E5",
+      "track": "controlled",
+      "x": "initial_semantic_choices",
+      "y": "controlled_processing_seconds_mean",
+      "rq": "RQ3",
+      "section": "main"
+    },
+    {
+      "id": "E6",
+      "track": "controlled",
+      "x": "initial_semantic_choices",
+      "y": "clarification_calls_mean",
+      "rq": "RQ3",
+      "section": "main"
+    },
+    {
+      "id": "E7",
+      "track": "end_to_end",
+      "x": "method",
+      "y": "correct_completion_percent",
+      "rq": "RQ2",
+      "section": "main"
+    },
+    {
+      "id": "E8",
+      "track": "end_to_end",
+      "x": "method",
+      "y": "answer_coverage_percent",
+      "rq": "RQ2",
+      "section": "main"
+    },
+    {
+      "id": "E9",
+      "track": "controlled",
+      "x": "epsilon",
+      "y": "answer_f1_mean_all_requests",
+      "rq": "RQ3",
+      "section": "main"
+    },
+    {
+      "id": "E10",
+      "track": "controlled",
+      "x": "epsilon",
+      "y": "query_loss_max_executed",
+      "rq": "RQ3",
+      "section": "main"
+    },
+    {
+      "id": "E11",
+      "track": "controlled",
+      "x": "initial_semantic_choices",
+      "y": "correct_completion_percent",
+      "rq": "RQ2/RQ3",
+      "section": "main"
+    },
+    {
+      "id": "E12",
+      "track": "controlled",
+      "x": "initial_semantic_choices",
+      "y": "answer_coverage_percent",
+      "rq": "RQ2/RQ3",
+      "section": "main"
+    },
+    {
+      "id": "E13",
+      "track": "controlled",
+      "x": "execution_cost_feedback",
+      "y": "controlled_processing_seconds_mean",
+      "rq": "RQ4",
+      "section": "main"
+    },
+    {
+      "id": "E14",
+      "track": "controlled",
+      "x": "execution_cost_feedback",
+      "y": "clarification_calls_mean",
+      "rq": "RQ4",
+      "section": "main"
+    },
+    {
+      "id": "E15",
+      "track": "controlled",
+      "x": "execution_cost_contrast",
+      "y": "controlled_processing_seconds_mean",
+      "rq": "RQ4",
+      "section": "main"
+    },
+    {
+      "id": "E16",
+      "track": "observed_policy",
+      "x": null,
+      "y": null,
+      "rq": "RQ4",
+      "section": "main"
+    },
+    {
+      "id": "E17",
+      "track": "controlled",
+      "x": "initial_candidate_count",
+      "y": "policy_search_ms_mean",
+      "rq": "RQ5",
+      "section": "appendix"
+    },
+    {
+      "id": "E18",
+      "track": "controlled",
+      "x": "initial_candidate_count",
+      "y": "expanded_states_mean",
+      "rq": "RQ5",
+      "section": "appendix"
+    },
+    {
+      "id": "E19",
+      "track": "controlled_rdf_shards",
+      "x": "source_count",
+      "y": "controlled_processing_seconds_mean",
+      "rq": "RQ5",
+      "section": "appendix"
+    },
+    {
+      "id": "E20",
+      "track": "controlled_rdf_shards",
+      "x": "source_count",
+      "y": "backend_response_mib_mean",
+      "rq": "RQ5",
+      "section": "appendix"
+    }
+  ],
+  "missing_capability": "omit unsupported method from its deployment panel with explicit reason; never fill zero",
+  "latency_cohort": "fixed intersection of completed cases across configurations in the same figure; publish whole-denominator quality/failure tables",
+  "quality_denominator": "all formal requests; unanswered or failed F1 is zero; unrun and study censoring separately disclosed",
+  "loss_definition": "frozen full-family weighted structured query coordinate loss; not answer error",
+  "statistics": "paired by base case; family-cluster intervals; no result-driven sample addition",
+  "formal_resource_budget": null
+}

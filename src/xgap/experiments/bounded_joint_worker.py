@@ -11,8 +11,8 @@ from pathlib import Path
 import threading
 import time
 
-from xgap.api import answer
-from xgap.agent.scope_authority import QueryIntentAuthority
+from xgap.api import answer, answer_controlled
+from xgap.agent.scope_authority import QueryIntentAuthority, ScopedQueryUser
 from xgap.agent.intent_strong import FamilyInformationPolicy
 from xgap.agent.strong_planning import StrongSearchLimits
 from xgap.experiments.evidence_store import write_json_evidence
@@ -22,15 +22,15 @@ from xgap.experiments.one_shot_toy import _DurableRecordingProvider
 from xgap.llm.compact_interpretation import CompactInterpretationProviderConfig
 from xgap.planning.joint_cost import JointCostProfile
 from xgap.semantic.intent_scope import ScopePolicy
-from xgap.experiments.bounded_joint_contract import METHODS, TRACK, METRICS, load_configuration
+from xgap.experiments.bounded_joint_contract import METHODS, TRACK, CONTROLLED_TRACK, METRICS, load_configuration
 
 
 def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_path, scope_sha256,
         oracle_path, oracle_sha256, mode, output, epsilon='0', provider_override=None,
         information=FamilyInformationPolicy(), limits=StrongSearchLimits(), costs=JointCostProfile(),
-        method=None, joint_config_path=None, joint_config_sha256=None):
+        method=None, joint_config_path=None, joint_config_sha256=None,controlled_state_path=None,controlled_state_sha256=None):
     root=Path(output);root.mkdir(parents=True,exist_ok=False)
-    started=time.perf_counter();captures=[];active=False
+    started=time.perf_counter();captures=[];active=False;config={};controlled=None
     receipt=dict(schema_version='xgap-bounded-joint-worker-v1',success=False,status='preparing',mode=mode,
         request_sha256=request_sha256,profile_sha256=profile_sha256,scope_sha256=scope_sha256,
         oracle_sha256=oracle_sha256,model_calls=0,final_plan_executions=0,automatic_retries=0,
@@ -40,19 +40,24 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         if method is not None:
             if method not in METHODS or method != 'xgap-bounded-joint-'+mode:
                 raise ValueError('Current method/mode mismatch')
-            receipt.update(schema_version='xgap-nl-method-worker-v1',method=method,track=TRACK,
+            receipt.update(schema_version='xgap-nl-method-worker-v1',method=method,
+                track=CONTROLLED_TRACK if controlled_state_path else TRACK,controlled_state_sha256=controlled_state_sha256,
                 joint_config_sha256=joint_config_sha256,top_level_attempts=0,
                 alternative_executions=0,fit_calls=0,probe_calls=0)
         raw=json.loads(read_pinned(request_path,request_sha256))
         if set(raw)!={'schema_version','question_id','question','population','exposure'}:
             raise ValueError('Public input contains fields outside the NL request contract')
         receipt.update({k:raw[k] for k in ('question_id','population','exposure')})
+        if controlled_state_path or controlled_state_sha256:
+            if not controlled_state_path or not controlled_state_sha256:raise ValueError('Pinned controlled state required')
+            from xgap.experiments.controlled_state import read_state
+            controlled=read_state(json.loads(read_pinned(controlled_state_path,controlled_state_sha256)),raw['question'])
         if joint_config_path is not None or joint_config_sha256 is not None:
             if not joint_config_path or not joint_config_sha256 or provider_override is not None:
                 raise ValueError('Pinned configuration requires both identity fields and no provider override')
             config,information,limits,costs=load_configuration(joint_config_path,joint_config_sha256)
             epsilon='0' if mode=='exact' else config['epsilon']
-            if config['provider']=='development_toy_template':
+            if config['provider']=='development_toy_template' and controlled is None:
                 if raw['exposure']!='development':
                     raise ValueError('Toy provider is restricted to explicit development requests')
                 from xgap.experiments.bounded_joint_toy import TemplateProposalProvider, FIXTURE
@@ -68,7 +73,9 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         scope=ScopePolicy.from_dict(json.loads(read_pinned(scope_path,scope_sha256)))
         # No oracle preflight read: a scope confirmation is the first paid access.
         authority=QueryIntentAuthority(Path(oracle_path),oracle_sha256)
-        if provider_override is None:
+        if controlled is not None:
+            receipt.update(proposal_kind='frozen_controlled_state',initial_state=controlled[2])
+        elif provider_override is None:
             if not isinstance(provider.config, CompactInterpretationProviderConfig):
                 raise ValueError('Current worker needs a frozen compact proposal provider')
             budget=provider.token_guard.check(provider.build_request_payload(request),call_kind='generation')
@@ -79,7 +86,8 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
             provider=provider_override
         write_once(root/'intent.json',dict(request=request.to_dict(),scope_policy=scope.to_dict(),
             information_policy=asdict(information),search_limits=asdict(limits),
-            cost_profile=costs.to_dict(),provider_kind='frozen_compact_model' if provider_override is None else 'explicit_development_provider',
+            cost_profile=costs.to_dict(),provider_kind=receipt['proposal_kind'],
+            controlled_state_sha256=controlled_state_sha256,execution_cost_feedback=config.get('execution_cost_feedback',True),
             epsilon=epsilon,mode=mode,maximum_final_plan_executions=1,maximum_user_calls=information.max_calls))
         lock=threading.Lock()
         clients={name:CapturingClient(client,root,captures,lock,retain_payloads=False,compress=True)
@@ -88,14 +96,22 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         def observed(record):
             records.append(write_once(root/f'user-{len(records):02}.json',record))
         active=True
-        core=answer(request,provider,mode=mode,epsilon=epsilon,scope_policy=scope,authority=authority,
-            physical_profile=physical,sources=sources,backends=backends,backend_clients=clients,
-            estimator=estimator,information=information,limits=limits,costs=costs,on_user_observation=observed)
+        options=dict(mode=mode,epsilon=epsilon,physical_profile=physical,sources=sources,backends=backends,backend_clients=clients,
+            estimator=estimator,information=information,limits=limits,costs=costs,on_user_observation=observed,
+            execution_cost_feedback=config.get('execution_cost_feedback',True))
+        if controlled is None:
+            core=answer(request,provider,scope_policy=scope,authority=authority,**options)
+        else:
+            family,initial,_=controlled
+            core=answer_controlled(request.question,family,ScopedQueryUser(family,Path(oracle_path),oracle_sha256),
+                initial_observations=initial,source_schema=request.context['source_schema'],**options)
         active=False
         receipt.update({k:core.get(k) for k in ('success','status','model_calls','input_tokens','output_tokens',
             'final_plan_executions',*METRICS)})
         receipt.update(top_level_attempts=core['final_plan_executions'],
-            search=(core.get('joint_policy') or {}).get('search'),
+            search=(core.get('joint_policy') or core).get('search'),
+            controlled_processing_ms=core.get('controlled_processing_ms'),
+            execution_cost_feedback=config.get('execution_cost_feedback',True),
             error=core.get('error'),error_type=core.get('error_type'))
         receipt.update(dataset=doc['dataset'],question_id=raw['question_id'],user_observations=records,
             backend_calls=len(captures),core=write_json_evidence(root/'core.json.gz',core),

@@ -1,5 +1,10 @@
 # XGAP Current Roadmap
 
+2026-09-20当前优先级已进入T6：[用户实验计划](research_experiment_plan_20260920.md)
+已获批准，[执行契约](decisions/chapter7_execution_v1.md)先补共同初始状态、成本反馈开关、
+完整policy导出和独立query-loss评分，然后按三数据集能力门发布pilot；正式样本与总预算
+在pilot后冻结，不因结果不利改题或调baseline。下文记录T4/T5来源，不是继续等待许可。
+
 [T4工程契约](decisions/bounded_joint_system_v1.md)的1–4项已实现并通过定向验收；
 第5项已发布为[审核PR #1](https://github.com/anthonyche/XGAP/pull/1)。2026-09-20用户授权补齐
 [T5批量接口](decisions/bounded_joint_batch_v1.md)，与第6项写作设计并行；正式评价仍需冻结实验计划。顺序如下：

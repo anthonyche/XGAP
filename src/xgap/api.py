@@ -19,7 +19,7 @@ from xgap.tools.contracts import ToolStatus
 def answer(request, provider, *, mode, scope_policy, authority, physical_profile,
            sources, backends, backend_clients, epsilon='0', estimator=None,
            information=FamilyInformationPolicy(), limits=StrongSearchLimits(),
-           costs=JointCostProfile(), on_user_observation=None):
+           costs=JointCostProfile(), on_user_observation=None,execution_cost_feedback=True):
     """One attempt, bounded declared semantics, no hidden repair or plan trials."""
     started = time.perf_counter()
     report = dict(schema_version='xgap-bounded-joint-answer-v1', profile_id='bounded-joint-v1',
@@ -63,6 +63,7 @@ def answer(request, provider, *, mode, scope_policy, authority, physical_profile
             report['status'] = 'intent_outside_proposed_scope' if confirmed.status is ToolStatus.SUCCESS else 'scope_authority_failed'
             return report
         family, user = authority.bind(request.question, draft, confirmed)
+        report['intent_family']=family.to_dict()
         report['scope_confirmed'] = True
         prepare, execute, capabilities, capability_ms = family_runtime(family, source_schema=schema,
             sources=sources, backends=backends, backend_clients=backend_clients,
@@ -73,7 +74,7 @@ def answer(request, provider, *, mode, scope_policy, authority, physical_profile
         core = run_strong_intent(request.question, TerminalContract(family, mode=mode, epsilon=epsilon), user,
             prepare=prepare, execute=execute, joint_cost=costs,
             information=replace(information, max_calls=information.max_calls-1), limits=limits,
-            on_observation=on_user_observation)
+            on_observation=on_user_observation,execution_cost_feedback=execution_cost_feedback,include_policy=True)
         report['joint_policy'] = core
         for key in ('success', 'status', 'answer_rows', 'final_plan_executions', 'clarification_calls',
                     'disclosed_coordinates', 'backend_remote_calls', 'planning_cpu_ms', 'planning_ms',
@@ -94,3 +95,31 @@ def answer(request, provider, *, mode, scope_policy, authority, physical_profile
     finally:
         report['end_to_end_ms'] = (time.perf_counter()-started)*1000
     return report
+
+
+def answer_controlled(question, family, user, *, initial_observations=(), mode, physical_profile,
+                      sources, backends, backend_clients, source_schema, epsilon='0', estimator=None,
+                      information=FamilyInformationPolicy(),limits=StrongSearchLimits(),costs=JointCostProfile(),
+                      execution_cost_feedback=True,on_user_observation=None):
+    """Frozen common-state experiment, explicitly excluding NL and scope acquisition.
+
+    The publisher owns the initial evidence; this entry never opens hidden intent
+    to obtain clues. Full family coordinates and weights survive state restriction.
+    """
+    started=time.perf_counter()
+    if not family.coverage_basis:raise ValueError('Controlled state requires frozen authoritative scope evidence')
+    if getattr(user,'family',None)!=family:raise ValueError('Controlled user and public family differ')
+    family.consistent(initial_observations)
+    prepare,execute,capabilities,capability_ms=family_runtime(family,source_schema=source_schema,
+        sources=sources,backends=backends,backend_clients=backend_clients,physical_profile=physical_profile,
+        joint_cost=costs,estimator=estimator,planning_deadline=time.perf_counter()+limits.planning_ms/1000)
+    core=run_strong_intent(question,TerminalContract(family,mode=mode,epsilon=epsilon),user,
+        prepare=prepare,execute=execute,information=information,limits=limits,joint_cost=costs,
+        initial_observations=initial_observations,execution_cost_feedback=execution_cost_feedback,
+        on_observation=on_user_observation,include_policy=True)
+    return {**core,'schema_version':'xgap-bounded-joint-controlled-answer-v1',
+        'track':'controlled_initial_state','controlled_processing_ms':(time.perf_counter()-started)*1000,
+        'intent_family':family.to_dict(),'capability_lookup':capabilities,'capability_lookup_ms':capability_ms,
+        'scope_confirmation_calls':0,'scope_confirmed':True,'total_user_calls':core['clarification_calls'],
+        'model_calls':0,'input_tokens':0,'output_tokens':0,
+        'timing_scope':'frozen state to materialized result; excludes NL and initial authority publication'}

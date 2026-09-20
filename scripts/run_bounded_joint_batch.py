@@ -26,6 +26,7 @@ from xgap.experiments.external_federation import deadline
 from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.process_guard import ProcessBudget
+from xgap.experiments.query_loss_score import score_query_loss
 
 REPO=Path(__file__).resolve().parents[1]
 SCHEMA='xgap-bounded-joint-batch-v1'
@@ -53,7 +54,7 @@ def validate(manifest):
     if not isinstance(cells,list) or not 1<=len(cells)<=10000:raise ValueError('Bounded nonempty cells required')
     ids=[]
     for cell in cells:
-        if set(cell)!={'cell_id','method','request','scope','oracle','config','reference'}:
+        if set(cell)-{'controlled_state'}!={'cell_id','method','request','scope','oracle','config','reference'}:
             raise ValueError('Invalid cell fields')
         if not isinstance(cell['cell_id'],str) or not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}',cell['cell_id']):
             raise ValueError('Invalid cell ID')
@@ -61,7 +62,8 @@ def validate(manifest):
         ids.append(cell['cell_id'])
     if len(ids)!=len(set(ids)):raise ValueError('Duplicate cell IDs')
     # Only pin syntax is inspected here, not private intent or reference contents.
-    for pin in [manifest['prepared'],*(c[k] for c in cells for k in ('request','scope','oracle','config','reference'))]:
+    for pin in [manifest['prepared'],*(c[k] for c in cells for k in ('request','scope','oracle','config','reference')),
+                *(c['controlled_state'] for c in cells if 'controlled_state' in c)]:
         if not isinstance(pin,dict) or not isinstance(pin.get('path'),str) or not Path(pin['path']).is_absolute() or not re.fullmatch(r'[a-f0-9]{64}',pin.get('sha256','')):
             raise ValueError('Absolute artifact paths and SHA-256 pins required')
 
@@ -107,6 +109,10 @@ def inventory(root,cells):
                     score['receipt_sha256']!=terminal['outcome']['sha256'] or
                     score['reference_sha256']!=cell['reference']['sha256']):
                 raise ValueError('Sealed cell identity differs')
+            if 'query_loss' in terminal:
+                loss=load(terminal['query_loss'])
+                if loss['receipt_sha256']!=terminal['outcome']['sha256'] or loss['oracle_sha256']!=cell['oracle']['sha256']:
+                    raise ValueError('Sealed query loss identity differs')
             counts['sealed']+=1
             counts['execution_success' if outcome['success'] else 'execution_failed']+=1
     return counts
@@ -167,6 +173,9 @@ def _run(manifest,digest,commit,root,max_new_cells):
             kwargs={}
             for key,argument in (('request','request'),('scope','scope'),('oracle','oracle'),('config','joint_config')):
                 kwargs[argument+'_path']=cell[key]['path'];kwargs[argument+'_sha256']=cell[key]['sha256']
+            if 'controlled_state' in cell:
+                kwargs.update(controlled_state_path=cell['controlled_state']['path'],
+                    controlled_state_sha256=cell['controlled_state']['sha256'])
             outcome=run_nl_trial(**kwargs,method=cell['method'],output=path/'execution',
                 profile_path=session.profile['path'],profile_sha256=session.profile['sha256'],
                 observer=session.observer,owned_services=session.owned,
@@ -179,8 +188,13 @@ def _run(manifest,digest,commit,root,max_new_cells):
             ref=cell['reference']
             score=score_trial(outcome['receipt']['path'],receipt_sha256=outcome['receipt']['sha256'],
                 reference_path=ref['path'],reference_sha256=ref['sha256'],output=path/'score.json')
+            loss_pin=None
+            if outcome.get('core'):
+                score_query_loss(receipt=outcome['receipt'],request=cell['request'],oracle=cell['oracle'],output=path/'query-loss.json')
+                loss_pin=file_pin(path/'query-loss.json')
             write_once(path/'terminal.json',dict(cell_id=cell['cell_id'],outcome=outcome['receipt'],
-                score=file_pin(path/'score.json'),execution_success=outcome['success'],answer_em=score['answer_em']))
+                score=file_pin(path/'score.json'),**({'query_loss':loss_pin} if loss_pin else {}),
+                execution_success=outcome['success'],answer_em=score['answer_em']))
             print(json.dumps(dict(cell_id=cell['cell_id'],status=outcome['status'],answer_em=score['answer_em'])),flush=True)
             if outcome['status'] in ('guard_monitor_failed','supervisor_failed','harness_observation_failure'):
                 budget.status='study_harness_failure';break

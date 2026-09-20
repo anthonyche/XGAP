@@ -44,11 +44,14 @@ class FamilyState:
 
 
 class FamilyStrongDomain:
-    def __init__(self, question, contract, information, prepare, *, tool_name, candidate_order=None, strategy='search', joint_cost=None):
+    def __init__(self, question, contract, information, prepare, *, tool_name, candidate_order=None, strategy='search', joint_cost=None,
+                 execution_cost_feedback=True):
         if strategy not in ('search','full','fixed') or strategy=='full' and contract.mode!='exact':
             raise ValueError('Unknown strategy or non-exact full-clarification control')
         self.strategy=strategy
         self.joint_cost=joint_cost
+        if type(execution_cost_feedback) is not bool:raise ValueError('Feedback switch must be boolean')
+        self.execution_cost_feedback=execution_cost_feedback
         self.question=question; self.contract=contract; self.family=contract.family
         self.information=information; self.prepare=prepare; self.tool_name=tool_name
         n=len(self.family.slots); full=tuple(range(n))
@@ -94,7 +97,7 @@ class FamilyStrongDomain:
                 remaining_intents=len(remaining),checked=checked,candidate_id=self.family.candidates[i].candidate_id))
             # Historical profiles optimize information alone; the current
             # profile also accounts for estimated final execution work.
-            cost = 0 if self.joint_cost is None else plan.metadata['joint_execution_cost']
+            cost = 0 if self.joint_cost is None or not self.execution_cost_feedback else plan.metadata['joint_execution_cost']
             yield TerminalAlternative(fingerprint([i,state.observations]),cost,
                 dict(candidate_index=i,certificate=cert,plan=plan,observations=state.observations),
                 resources=ResourceUsage(remote_calls=remote))
@@ -136,10 +139,12 @@ class FamilyStrongDomain:
 
 def run_strong_intent(question, contract, oracle, *, prepare, execute,
                       information=FamilyInformationPolicy(), candidate_order=None,
-                      limits=StrongSearchLimits(), on_observation=None, strategy='search', joint_cost=None):
+                      limits=StrongSearchLimits(), on_observation=None, strategy='search', joint_cost=None,
+                      initial_observations=(),execution_cost_feedback=True,include_policy=False):
     started=time.perf_counter(); registry=ToolRegistry(); registry.register(oracle)
     domain=FamilyStrongDomain(question,contract,information,prepare,
-        tool_name=oracle.spec.name,candidate_order=candidate_order,strategy=strategy,joint_cost=joint_cost)
+        tool_name=oracle.spec.name,candidate_order=candidate_order,strategy=strategy,joint_cost=joint_cost,
+        execution_cost_feedback=execution_cost_feedback)
     r=dict(schema_version='xgap-family-strong-answer-v1',success=False,status='planning',
         mode=contract.mode,strategy=strategy,family_sha256=contract.family.identity,epsilon=fraction_view(contract.epsilon),
         acquisition_policy=asdict(information),cost_basis='declared '+information.cost_basis+'; not wall time',
@@ -147,12 +152,17 @@ def run_strong_intent(question, contract, oracle, *, prepare, execute,
         oracle_processing_ms=0.0,acquisition_ms=0.0,execution_ms=0.0,model_calls=0,tokens=0,
         backend_remote_calls=0,answer_rows=None,user_intent_verified=False,answer_quality_verified=False,
         terminal_certificate=None,ledger=[],realized_prefixes=[],root_gap=None,
-        strong_plan=False,strong_scope='declared complete family and truthful scoped replies; '
+        strong_plan=False,execution_cost_feedback=execution_cost_feedback,
+        observed_policy_state_ids=[],strong_scope='declared complete family and truthful scoped replies; '
             'compiled continuation for every selected outcome; backend availability remains conditional')
     checks=contract.checks; hits=contract.cache_hits
     try:
+        initial=tuple(sorted(initial_observations))
+        contract.family.consistent(initial)  # Keep the full metric and filter only the state.
+        root_state=FamilyState(initial)
+        r['initial_observations']=list(initial)
         at=time.process_time()
-        search=search_strong_policy(FamilyState(),domain,limits=limits,terminal_first=joint_cost is None,
+        search=search_strong_policy(root_state,domain,limits=limits,terminal_first=joint_cost is None,
             prune_nonimproving_actions=True)
         r['planning_cpu_ms']=(time.process_time()-at)*1000
         r['search']=search.to_dict();r['planning_ms']=search.elapsed_ms;r['strong_plan']=search.policy is not None
@@ -163,11 +173,18 @@ def run_strong_intent(question, contract, oracle, *, prepare, execute,
             r['cost_basis']='declared_work_units; not measured latency'
             r['search']['cost_objective']='clarification cost plus worst-outcome estimated final execution cost'
             r['search']['stop_at_first_certified_terminal']=False
+            if not execution_cost_feedback:
+                r['search']['cost_objective']='clarification cost; execution feedback disabled; physical ranking unchanged'
         if search.policy is None:
             r['status']='unknown_coverage' if contract.family.coverage_basis is None else 'no_feasible_strong_policy'
             return r
-        current=search.policy; state=FamilyState()
+        if include_policy:
+            from xgap.agent.policy_evidence import export_intent_policy
+            at=time.perf_counter();r['policy_evidence']=export_intent_policy(search.policy,contract.family)
+            r['policy_export_ms']=(time.perf_counter()-at)*1000
+        current=search.policy; state=root_state
         for step in range(information.max_calls+1):
+            r['observed_policy_state_ids'].append(current.state_id)
             r['realized_prefixes'].append(dict(calls=state.calls,observations=len(state.observations),
                 remaining_intents=len(contract.family.consistent(state.observations))))
             if current.terminal is not None:
@@ -180,6 +197,8 @@ def run_strong_intent(question, contract, oracle, *, prepare, execute,
                 if not cert['eligible'] or state.observations!=payload['observations']:
                     raise ValueError('Realized state does not justify the selected terminal')
                 r['terminal_certificate']=cert;r['user_intent_verified']=cert['upper_bound']['numerator']==0
+                if include_policy:
+                    r['selected_query']=json.loads(contract.family.candidates[payload['candidate_index']].query_json)
                 r['final_plan_executions']=1;at=time.perf_counter()
                 try: result=execute(payload['plan'])
                 finally: r['execution_ms']=(time.perf_counter()-at)*1000
