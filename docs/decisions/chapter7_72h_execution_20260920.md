@@ -61,3 +61,33 @@ reference/catalog/load costs stay separate. Native/RDF panels cannot mix speedup
 - Dataset and baseline capability table updated from actual setup/execution.
 - Formal release and analysis ready per admitted dataset; never wait for a perfect
   general-purpose implementation before producing the first real results.
+
+## First FinBench pilot release
+
+The first 24-case pilot uses the already admitted outgoing temporal path + blocked
+sign-in pattern (compact-v2, depth 1 or 2, two boundary-inclusivity choices). This
+is a grounded-family development cohort, not the entire final workload. A family
+contains the legal intents for a fixed account/window; every window/intent sharing
+an account belongs to the same pilot/formal fold. Both template ID and grounded
+family/group IDs are recorded; templates are shared, so this cannot support an
+unseen-template generalization claim. Structural/template breadth remains a
+separate workload requirement rather than inflating the independent sample count.
+
+Choose 24 distinct accounts uniformly from the deterministic pilot fold, then
+uniformly choose one of four equal-duration source-time windows and one of eight
+legal intents. Seal the complete private selection before calculating any CSV
+reference answer. Do not inspect degree, answer existence, latency or method
+output when selecting. The public NL carries the fixed bounds/IDs and all open
+conventions; the private truth index is not in worker/model inputs.
+
+Twelve cases test live NL and twelve test controlled initial state with path depth
+already supplied. Each runs both current modes, epsilon 0.5 for Performance; first
+method order is balanced within each track. This yields 48 method cells and at most
+24 new model generations. The two timing tracks are analyzed separately. These
+pilot observations do not count as the formal sample, and no output is relabelled
+as a new independent case or template.
+
+Repaired two-call live native admission passed on code `9c05901`:
+`ch7-nl-native-20260920-v2/receipt.json`, SHA-256
+`5a27cab8fb38f4460e19b6ede93b2d267c4e5b31cf83347e7757c3b3f5eb34fa`.
+Both modes executed once; Exact EM=1; both certificates passed; all services closed.
