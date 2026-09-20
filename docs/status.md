@@ -4,6 +4,10 @@ T4 bounded joint system implementation is complete within its declared profile
 (2026-09-17): [acceptance report](report/bounded_joint_system_20260917.md),
 [Chapter 6 implementation map](implementation_chapter6.md).
 
+2026-09-20 T5补齐新版worker的批量接口，已经过统一子进程入口、压缩答案评分、
+预算非回答与不重复续跑验收；见[报告](report/bounded_joint_batch_20260920.md)。
+用户可同步设计第七章；正式评价配置尚未冻结，本轮没有启动全量实验。
+
 |Item|Verified state|
 |---|---|
 |Current entry and legacy isolation|`xgap.api.answer`; three historical controllers moved, compatibility retained|
@@ -11,8 +15,9 @@ T4 bounded joint system implementation is complete within its declared profile
 |Joint information/execution objective|Shared finite strong search, frozen estimates/fallback, feasible seed, one execution|
 |Storage/memory|Streaming gzip, logical/stored hashes, raw replay support, budget-cause preservation|
 |Correctness|88 targeted tests; real eight-node Neo4j+Fuseki gate; services closed|
+|Current batch boundary|40 unique targeted tests; native 3-case batch: 2 answers + 1 declared budget non-answer; resume skips all attempted cells|
 |GitHub|Published on `codex/m13e4-grailqa-semantic-paper-protocol`; [review PR #1](https://github.com/anthonyche/XGAP/pull/1), not merged into main|
-|Formal evaluation/Chapter 7|Await discussion; no new campaign launched|
+|Formal evaluation/Chapter 7|User designs the plan in parallel; no new evaluation campaign launched; current batch LLM quality and large-scale behavior not measured|
 
 This does not mean universal NL support or proven overall superiority. Current
 bounds and two stale historical full-model replay tests are explicit in the report.

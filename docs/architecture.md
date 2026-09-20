@@ -25,6 +25,12 @@ Layers remain `semantic` (typed programs), `agent` (state/authority/policy),
 `compilers`/`algebra` (audited logical/native semantics), and `experiments` (recording).
 GrailQA/catalog builds stay offline; no runtime dataset build is introduced.
 
+The current batch route is `scripts/run_bounded_joint_batch.py` → common guarded
+NL trial → `nl_method_worker` → `bounded_joint_worker` → `xgap.api.answer`.
+The common scorer consumes sealed raw/gzip answers separately. Pinned scope,
+configuration, private user and nonduplicating resume are described in the
+[T5 contract](decisions/bounded_joint_batch_v1.md); reference rows never enter the worker.
+
 See [Chapter 6 map](implementation_chapter6.md) for files, pseudocode, bounds,
 semantics and evidence. [Legacy inventory](legacy_inventory.md) distinguishes
 historical profiles from shared compiler/runtime components.

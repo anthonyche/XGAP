@@ -5,6 +5,10 @@ Current entry: `xgap.api.answer`. Engineering evidence and limitations are in
 [the T4 report](report/bounded_joint_system_20260917.md). Formal evaluation is a
 separate Chapter 7 discussion. Earlier T3 results belong to their recorded version.
 
+The 2026-09-20 [T5 batch acceptance](report/bounded_joint_batch_20260920.md) adds
+current-method dispatch, independent compressed-answer scoring and nonduplicating
+batch resume. It does not change the core algorithm or discrepancy definition.
+
 ## 6.1 Interfaces and admitted semantics
 
 |Step|Implementation|Boundary|
@@ -18,6 +22,8 @@ separate Chapter 7 discussion. Earlier T3 results belong to their recorded versi
 |Physical preparation|`agent/intent_execution.py`, `runtime/one_shot_planning.py`|Lazy per certified candidate; bounded strategies, frozen scoring, no execution trials|
 |Compilation/execution|`semantic/compact_lowering.py`, `compilers`, `runtime/scheduler.py`|Cypher/SPARQL; coordinator joins/filters/aggregates; retain root rows|
 |Durable entry|`experiments/bounded_joint_worker.py`|Pinned input/profile/scope/user; compressed evidence; no answer labels|
+|Batch method boundary|`experiments/nl_method_worker.py`, `common_method_trial.py`, `bounded_joint_contract.py`|Explicit current IDs, pinned scope/config/user, worker/source/study budgets; old IDs unchanged|
+|Independent scoring|`experiments/common_row_score.py`|Post-seal raw/gzip rows; hashes, declared row equivalence, order and bags|
 |Evidence and source accounting|`experiments/evidence_store.py`, `campaign_source_observer.py`|Separate stored bytes from logical transferred bytes; lossless replay|
 
 Paths in this table are under `src/xgap/`.
@@ -148,6 +154,15 @@ compress core/answer artifacts as well. Old raw replay schemas remain readable;
 strict source/model/profile identity checks are not weakened to pass old fixtures.
 Study-wide disk/memory censoring retains its primary reason even when terminating
 a worker subsequently causes a transport error.
+
+The current batch driver (`scripts/run_bounded_joint_batch.py`) consumes an ordered
+pinned manifest. Its output pins the clean source commit, locks concurrent entry,
+and records a cell intent before each worker. Resume skips successes, failures and
+incomplete intents; it reports these separately. A missing resource-closure receipt
+blocks automatic resume. Serving copies are owned and closed; only successful
+phases may reuse a session. The concrete cache/order protocol belongs to Chapter 7.
+The scorer currently parses bounded JSON in memory (512 MiB evidence-read ceiling);
+this is not a guarantee that large-result scoring fits every RAM budget.
 
 ## 6.6 Review and writing boundaries
 

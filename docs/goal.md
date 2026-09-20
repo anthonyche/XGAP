@@ -9,6 +9,10 @@ GitHub [审核PR #1](https://github.com/anthonyche/XGAP/pull/1)已建立。
 用户同步设计第七章。执行定向测试和真实tiny接口验收，不启动全量评价。
 见[批量接口契约](decisions/bounded_joint_batch_v1.md)；整体研究Goal仍未完成。
 
+T5已完成：[批量接口验收](report/bounded_joint_batch_20260920.md)。40项不重复定向测试通过；
+真实Neo4j+Fuseki的两次回答、一次预算非回答经统一入口封存评分，续跑未重复执行，
+本轮服务全部关闭。下一步结合用户第七章设计冻结实验发布；不自行追加全量运行。
+
 ## 当前工程里程碑（已实现）
 
 1. 收敛一个当前入口和一份实现说明；历史控制器移入legacy，历史报告/实验留存。
