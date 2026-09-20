@@ -86,3 +86,22 @@ No automatic retry of an attempted case and no resumption of T3.
 
 Original sources: [ARUQULA](https://github.com/AKSW/ARUQULA/tree/aruqula),
 [FedUP](https://github.com/GDD-Nantes/fedup).
+
+## Representation identity gate
+
+The first two live-model trials were rejected before execution because the model
+used different variable names and WHERE-conjunct ordering for the same query.
+Keep those failures unchanged. `compact_identity.py` now compares declaration-order
+alpha-renaming and sorted pure conjunctions; it does not rewrite the stored AST,
+slot paths or denominator. Literals, entity IDs, direction, contribution grain,
+aggregation, output aliases/order and limit remain exact. Unknown references and
+duplicate equivalent true intents fail closed. Arbitrary declaration permutations,
+different graph shapes and general query equivalence are not claimed.
+
+The authoritative scope action and scoped reply use this equality. Post-seal loss
+independently matches the private query to a unique family representative and then
+computes coordinate loss against the original AST; it never reuses certificate U.
+`replay_chapter7_proposals.py` reads pinned saved model responses and exercises
+current authority/planning/RDF execution with zero new model calls. Its receipts
+are failure-replay evidence, not replacements for the failed live trials or a
+fresh model-quality measurement.

@@ -7,6 +7,7 @@ from xgap.agent.intent_certificate import canonical, fingerprint
 from xgap.experiments.evidence_store import read_json_evidence
 from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
+from xgap.semantic.compact_identity import IDENTITY_VERSION, representation_key
 
 
 def query_loss(selected,truth,slots):
@@ -26,6 +27,17 @@ def query_loss(selected,truth,slots):
             if values[0]!=values[1]:numerator+=weight
     if canonical(shells[0])!=canonical(shells[1]):return None
     return Fraction(numerator,denominator or 1)
+
+
+def aligned_query_loss(selected,truth,family,*,language_version):
+    """Post-seal alignment to original family coordinates, never certificate U."""
+    version=family['language_version']
+    if version!=language_version:raise ValueError('Private language version differs')
+    truth_key=representation_key(truth,version=version)
+    matches=[json.loads(c['query_json']) for c in family['candidates']
+        if representation_key(json.loads(c['query_json']),version=version)==truth_key]
+    if len(matches)!=1:raise ValueError('Private query has no unique representation match in sealed family')
+    return query_loss(selected,matches[0],family['slots'])
 
 
 def score_query_loss(*,receipt,request,oracle,output):
@@ -49,14 +61,17 @@ def score_query_loss(*,receipt,request,oracle,output):
                 raise ValueError('Private question or selected candidate identity differs')
             candidate=next(c for c in family['candidates'] if c['candidate_id']==cert['candidate_id'])
             if canonical(selected)!=candidate['query_json']:raise ValueError('Selected query differs from policy candidate')
-            loss=query_loss(selected,private['query'],family['slots'])
+            # Align only proven representation equality after sealing. Keep the
+            # family's original AST coordinates/denominator, not sorted copies.
+            loss=aligned_query_loss(selected,private['query'],family,language_version=private['language_version'])
             upper=Fraction(cert['upper_bound']['numerator'],cert['upper_bound']['denominator'])
             epsilon=Fraction(cert['epsilon']['numerator'],cert['epsilon']['denominator'])
             result.update(status='measured',loss=float(loss) if loss is not None else None,
                 loss_fraction=dict(numerator=loss.numerator,denominator=loss.denominator) if loss is not None else None,
                 loss_infinite=loss is None,certificate_upper_bound=float(upper),epsilon=float(epsilon),
                 certificate_violation=loss is None or loss>upper or upper>epsilon,
-                loss_denominator=sum(s['weight'] for s in family['slots'] if not s['hard']) or 1)
+                loss_denominator=sum(s['weight'] for s in family['slots'] if not s['hard']) or 1,
+                query_identity=IDENTITY_VERSION)
         except (KeyError,ValueError,TypeError,OSError) as error:
             result.update(status='loss_evidence_error',error=str(error))
     elif attempts!=0:raise ValueError('Unexpected final-plan count')

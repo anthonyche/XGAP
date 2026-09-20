@@ -10,6 +10,7 @@ import time
 from xgap.agent.intent_certificate import canonical, fingerprint
 from xgap.agent.intent_user import ScopedFamilyUser
 from xgap.semantic.compact_query import validate_query
+from xgap.semantic.compact_identity import IDENTITY_VERSION, matching_candidates
 from xgap.tools.contracts import ToolResult, ToolStatus
 
 
@@ -43,13 +44,17 @@ class QueryIntentAuthority:
         args = dict(question_sha256=fingerprint(question), proposed_scope_sha256=draft.identity)
         try:
             query, version = self._query(args['question_sha256'])
-            covered = version == draft.language_version and canonical(query) in {c.query_json for c in draft.candidates}
+            matches = matching_candidates(query, draft.candidates, version=version) if version == draft.language_version else []
+            if len(matches) > 1:
+                raise ValueError('Proposed scope contains duplicate equivalent intents')
+            covered = len(matches) == 1
             result = ToolResult.success('user.confirm_scope', {**args, 'covered': covered})
         except (OSError, ValueError, KeyError, TypeError) as error:
             result = ToolResult.error_result('user.confirm_scope', str(error))
         return ToolResult(result.tool_name, result.status, result.value, result.error,
             metrics=dict(user_calls=1, disclosed_coordinates=0, elapsed_ms=(time.perf_counter()-started)*1000,
-                         reply_bytes=len(canonical(result.value).encode()) if result.value else 0))
+                         reply_bytes=len(canonical(result.value).encode()) if result.value else 0,
+                         query_identity=IDENTITY_VERSION))
 
     def bind(self, question, draft, confirmation):
         args = dict(question_sha256=fingerprint(question), proposed_scope_sha256=draft.identity, covered=True)
@@ -64,8 +69,8 @@ class QueryIntentAuthority:
 class ScopedQueryUser(ScopedFamilyUser):
     def _load(self, question_sha256):
         query, version = QueryIntentAuthority(self.response_path, self.expected_sha256)._query(question_sha256)
-        matches = [i for i, c in enumerate(self.family.candidates)
-                   if c.query_json == canonical(query) and version == self.family.language_version]
+        matches = (matching_candidates(query, self.family.candidates, version=version)
+                   if version == self.family.language_version else [])
         if len(matches) != 1:
             raise ValueError('User intent is outside the confirmed scope')
         return matches[0]
