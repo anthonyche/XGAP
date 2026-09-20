@@ -59,6 +59,15 @@ Avoiding a local simulated clarification does not remove this execution cost.
 Observed peak worker RSS was about 724 MiB and source-group RSS about 1.38 GiB,
 within the declared sampled limits. These are sampled observations, not OS caps.
 
+Post-seal inspection of the first selected plan found three unbound transfer-edge
+reads with the same projected property but different output aliases. The frozen
+toy-transfer estimator flags 28 features outside its training range: its 0.524 s
+prediction accompanies 26.834 s actual execution. Absolute error alone does not
+establish a ranking error, but calibration/relative ordering needs a development
+check before formal use. Existing binding alternatives also reject several shared
+chains. The saved diagnostic is `pilot-execution-diagnostic.json`; no alternative
+plan was executed to choose an online winner.
+
 ## Immediate actions before formal freeze
 
 1. Keep this pilot intact. Broaden the declared workload using independently
@@ -96,3 +105,8 @@ terminal, reference score, timing and query-loss record. Regenerate with
 This is offline analysis with zero model/backend calls. Two focused tests cover
 failure denominators, paired timing exclusion, missing metrics and unattempted
 cells; the analyzer also validated all real receipt hashes and source closure.
+
+GitHub synchronization was attempted after local commit `06a7272`; both HTTPS API
+and SSH port 443 timed out. The local commits are retained. Do not describe these
+T7 changes as remotely published until a later push is verified. The same network
+failure currently prevents fetching official baseline dependency artifacts.
