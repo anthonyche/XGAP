@@ -13,6 +13,11 @@ Formal experiments/Chapter 7 are discussed AFTER engineering acceptance. Do not
 restart T3 or run large evaluation campaigns, broad regression sweeps, or baseline
 tuning under this authorization. Historical instructions are evidence, not work.
 
+2026-09-20 T5 authorization: wire the current worker into common batch dispatch,
+compressed-answer scoring, budgets and nonduplicating resume while the user designs
+Chapter 7. See `docs/decisions/bounded_joint_batch_v1.md`. This does not authorize
+full evaluation or revival of historical campaigns.
+
 ## Invariants
 
 - Preserve audited algebra and compiler semantics. No invented low-level operators.

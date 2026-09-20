@@ -11,5 +11,7 @@ if __name__=='__main__':
     parser.add_argument('--oracle-path');parser.add_argument('--oracle-sha256')
     parser.add_argument('--user-max-calls',type=int,default=9)
     parser.add_argument('--intent-family-path');parser.add_argument('--intent-family-sha256')
+    for name in ('scope-path','scope-sha256','joint-config-path','joint-config-sha256'):
+        parser.add_argument('--'+name)
     result=run_nl(**vars(parser.parse_args()))
     print(json.dumps({'success':result['success'],'status':result['status']}))

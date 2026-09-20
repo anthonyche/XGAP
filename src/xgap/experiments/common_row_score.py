@@ -6,6 +6,7 @@ import time
 from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.row_normalization import normalize_rows, validate_normalization
+from xgap.experiments.evidence_store import read_json_evidence
 
 XSD='http://www.w3.org/2001/XMLSchema#'
 NUMERIC={XSD+s for s in ('integer','decimal','double','float','int','long','short','byte',
@@ -43,10 +44,11 @@ def score_trial(receipt_path, *, receipt_sha256, reference_path, reference_sha25
     spec=ref['normalization'];expected=normalize_rows(ref['rows'],spec);actual=[];error=None
     try:
         if r['success']:
-            result=json.loads(read_pinned(r['result']['path'],r['result']['sha256']))
+            result=read_json_evidence(r['result'])
+            if result['answer_format'] not in ('sparql_json','json_rows'):raise ValueError('Unknown answer format')
             rows=sparql_values(result['answer'],spec) if result['answer_format']=='sparql_json' else result['answer']
             actual=normalize_rows(rows,spec)
-    except (ValueError,TypeError,KeyError) as exc:error=type(exc).__name__+': '+str(exc)
+    except (ValueError,TypeError,KeyError,OSError,EOFError) as exc:error=type(exc).__name__+': '+str(exc)
     encode=lambda row:json.dumps(row,sort_keys=True,separators=(',',':'),allow_nan=False)
     a,e=list(map(encode,actual)),list(map(encode,expected));aa,ee=Counter(a),Counter(e)
     comparable=r['success'] and error is None;overlap=sum((aa&ee).values())

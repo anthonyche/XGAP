@@ -10,15 +10,28 @@ from xgap.experiments.one_shot_records import run_record, write_once, read_recor
 from xgap.experiments.one_shot_toy import _DurableRecordingProvider
 from xgap.experiments.practical_methods import PRACTICAL_METHODS, FIXED_INFORMATION_METHODS
 from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS
+from xgap.experiments.bounded_joint_contract import METHODS as JOINT_METHODS
 
 SCHEMA='xgap-nl-method-worker-v1'
-METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS,*NL_STRONG_METHODS,*NL_USER_METHODS,*NL_FAMILY_METHODS)
+METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS,*NL_STRONG_METHODS,*NL_USER_METHODS,*NL_FAMILY_METHODS,*JOINT_METHODS)
 
 
 def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,output,endpoint=None,seconds=180,
-           oracle_path=None,oracle_sha256=None,user_max_calls=9,intent_family_path=None,intent_family_sha256=None):
+           oracle_path=None,oracle_sha256=None,user_max_calls=9,intent_family_path=None,intent_family_sha256=None,
+           scope_path=None,scope_sha256=None,joint_config_path=None,joint_config_sha256=None):
+    joint_args=(scope_path,scope_sha256,joint_config_path,joint_config_sha256)
+    if method not in JOINT_METHODS and any(v is not None for v in joint_args):
+        raise ValueError('Current scope/configuration cannot be attached to a historical method')
     if method not in NL_FAMILY_METHODS and (intent_family_path is not None or intent_family_sha256 is not None):
         raise ValueError('Public intent contract is only allowed on the declared finite-family method')
+    if method in JOINT_METHODS:
+        if not all(joint_args) or not oracle_path or not oracle_sha256 or endpoint is not None or user_max_calls!=9:
+            raise ValueError('Current methods require pinned scope/configuration/private user; budgets belong to configuration')
+        from xgap.experiments.bounded_joint_worker import run
+        return run(request_path=request_path,request_sha256=request_sha256,profile_path=profile_path,
+            profile_sha256=profile_sha256,method=method,mode=method.removeprefix('xgap-bounded-joint-'),output=output,
+            oracle_path=oracle_path,oracle_sha256=oracle_sha256,scope_path=scope_path,scope_sha256=scope_sha256,
+            joint_config_path=joint_config_path,joint_config_sha256=joint_config_sha256)
     if method not in (*NL_USER_METHODS,*NL_FAMILY_METHODS) and (oracle_path is not None or oracle_sha256 is not None):
         raise ValueError('Private oracle is only allowed on the declared user-interaction method')
     if method in (*NL_STRONG_METHODS,*NL_USER_METHODS,*NL_FAMILY_METHODS):

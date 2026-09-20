@@ -4,8 +4,10 @@
 统一优化信息获取及执行成本，修复批量存储/内存/性能风险。工程完成后再讨论第七章实验计划。
 
 T4声明范围内工程已验收；见[报告](report/bounded_joint_system_20260917.md)。
-GitHub [审核PR #1](https://github.com/anthonyche/XGAP/pull/1)已建立。发布验收后暂停新增执行，
-等待与用户讨论实验计划；整体研究Goal仍未完成。
+GitHub [审核PR #1](https://github.com/anthonyche/XGAP/pull/1)已建立。
+2026-09-20 用户授权T5：现在接通新版worker与批量调度、压缩结果评分、预算和失败续跑，
+用户同步设计第七章。执行定向测试和真实tiny接口验收，不启动全量评价。
+见[批量接口契约](decisions/bounded_joint_batch_v1.md)；整体研究Goal仍未完成。
 
 ## 当前工程里程碑（已实现）
 

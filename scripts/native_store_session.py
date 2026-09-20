@@ -110,7 +110,8 @@ class NativeSources:
 
     def owned_for(self,method):
         from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS
+        from xgap.experiments.bounded_joint_contract import METHODS as JOINT_METHODS
         if method not in ('xgap-native','xgap-precision','xgap-performance',*NL_STRONG_METHODS,
-                          *NL_USER_METHODS,*NL_FAMILY_METHODS):
+                          *NL_USER_METHODS,*NL_FAMILY_METHODS,*JOINT_METHODS):
             raise ValueError('Unknown native method')
         return self.session.owned
