@@ -1,5 +1,8 @@
 # XGAP Current Roadmap
 
+当前执行T7：[72小时交付安排](decisions/chapter7_72h_execution_20260920.md)，应用Goal ACTIVE。
+立即启动修复后的模型/native验收与FinBench新pilot发布；不再停留在方案讨论。
+
 T6接口和首轮tiny验收已完成，见[2026-09-20报告](report/chapter7_readiness_20260920.md)。
 当前下一步：FinBench新family隔离的24例开发集；Freebase/FedShop的冻结数据映射和参考；
 ARUQULA依赖、lookup和FedUP实际执行接线；逐集pilot后冻结正式样本、重复与资源预算。
