@@ -1,5 +1,11 @@
 # XGAP Current Status
 
+2026-09-20 T7：应用Goal ACTIVE，72小时目标已开始执行。新真实Qwen/native门已通过；
+FinBench SF0.1的24题/48次pilot已全部封存，47次正确回答、1次模型超时，未重试。
+主要发现是23/24空参考、受控Performance减少澄清但执行成本占主导。
+见[实测报告](report/chapter7_pilot_20260920.md)。下文T6待办记录是此前时点；
+正式三数据集矩阵、外部方法与可扩展性尚未完成。
+
 2026-09-20 T6：用户的三数据集/E1–E20实验计划已采纳并开始执行。
 已接好共同初始状态、执行反馈开关、完整policy和独立query-loss评分。
 真实Neo4j+Fuseki的4个tiny受控配置通过；2次真实Qwen预检发现表示等价问题，
@@ -26,7 +32,7 @@ T4 bounded joint system implementation is complete within its declared profile
 |Current batch boundary|40 unique targeted tests; native 3-case batch: 2 answers + 1 declared budget non-answer; resume skips all attempted cells|
 |GitHub|Published on `codex/m13e4-grailqa-semantic-paper-protocol`; [review PR #1](https://github.com/anthonyche/XGAP/pull/1), not merged into main|
 |Chapter 7 readiness|53 distinct focused tests across T6 contracts and representation boundary; native controlled gate passed; full policy rendered|
-|Formal evaluation/Chapter 7|Plan adopted; pilot populations/data mapping/external setup pending; no formal release or repaired fresh-model evaluation yet|
+|Formal evaluation/Chapter 7|T7 repaired live-model gate and FinBench 24-case pilot complete; formal freeze, other data mapping and external setup pending|
 
 This does not mean universal NL support or proven overall superiority. Current
 bounds and two stale historical full-model replay tests are explicit in the report.

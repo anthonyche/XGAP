@@ -5,6 +5,11 @@ ACTIVE应用Goal，按[72小时执行表](decisions/chapter7_72h_execution_20260
 完整目标截至9月23日20:30；先交付FinBench真实pilot与正式结果，各数据集独立推进，
 实际缺失项保持未完成。下文“paused元数据／等待实验授权”均已被本次授权覆盖。
 
+T7当前结果：[FinBench 24题/48次pilot已完成](report/chapter7_pilot_20260920.md)，
+47次正确回答、1次模型超时，零重试、服务已关闭。23/24参考答案为空；受控Performance
+少一次澄清但未降低总耗时。下一步补工作负载覆盖、核查执行传输瓶颈、接入外部方法与其他
+数据集后冻结正式配置。Goal保持ACTIVE；这不是三数据集正式评价完成。
+
 T6进度：共同状态、反馈开关、完整policy、独立query-loss已接通；4个真实native
 toy受控配置通过。真实Qwen暴露的表示等价误拒已修复，并以保存输出回放通过。
 下一步是新工作负载/数据/外部方法的pilot接入，见[验收记录](report/chapter7_readiness_20260920.md)。
