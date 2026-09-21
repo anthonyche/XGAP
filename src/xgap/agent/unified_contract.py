@@ -6,6 +6,8 @@ inference rules do not silently turn singleton candidates into validations.
 """
 from dataclasses import asdict, dataclass
 import json
+import time
+from copy import deepcopy
 
 from xgap.agent.intent_certificate import canonical, fingerprint, fraction_view, rational
 
@@ -60,6 +62,9 @@ class UnifiedTerminalContract:
         self.identity = fingerprint([family.identity, [asdict(r) for r in self.requirements],
                                      sorted(self.relaxable), fraction_view(self.epsilon)])
         self.checks = 0
+        self.cache_hits = 0
+        self.elapsed_ms = 0.0
+        self.cache = {}
 
     def consistent(self, bindings=()):
         if len(bindings) > len(self.requirements) or len({b.name for b in bindings}) != len(bindings):
@@ -75,7 +80,20 @@ class UnifiedTerminalContract:
         return remaining
 
     def check(self, candidate_index, bindings=()):
-        self.checks += 1
+        started=time.perf_counter();self.checks+=1
+        try:
+            key=(candidate_index,tuple(bindings))
+            if key in self.cache:
+                self.cache_hits+=1
+                return deepcopy(self.cache[key])
+            result=self._check(candidate_index,bindings)
+            if len(self.cache)>=1024:self.cache.pop(next(iter(self.cache)))
+            self.cache[key]=deepcopy(result)
+            return result
+        finally:
+            self.elapsed_ms+=(time.perf_counter()-started)*1000
+
+    def _check(self, candidate_index, bindings=()):
         remaining = self.consistent(bindings)
         if type(candidate_index) is not int or candidate_index not in remaining:
             raise ValueError('Selected query is inconsistent with actual validation evidence')

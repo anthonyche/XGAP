@@ -129,7 +129,7 @@ class BindingAction:
             raise ValueError("Model proposal actions cannot produce authoritative validation")
 
 
-def _baseline(program, operator_sources, sources, backends, profile):
+def _baseline(program, operator_sources, sources, backends, profile, *, optimize_reads=True):
     """Construct one feasible minimum-call placement without a product/domain cap.
 
     This reuses the existing compiler and independent replica admission. A later
@@ -174,11 +174,12 @@ def _baseline(program, operator_sources, sources, backends, profile):
     plan = compile_semantic_program(program, source_bindings=placement, backends=backends,
         max_remote_calls=profile.max_remote_calls, max_parallelism=profile.max_parallelism)
     used = {n.parameters["backend_id"] for n in plan.nodes if "backend_id" in n.parameters}
-    return share_full_native_reads(prefilter_source_rows(program,replace(plan, metadata={**plan.metadata,
+    plan = replace(plan, metadata={**plan.metadata,
         "source_identities": {b: identities[b] for b in used},
         "source_snapshot_versions": {b: identities[b]["snapshot_version"] for b in used},
-        "source_bindings": placement, "planning_fallback": "minimum_call_feasible_placement"})),
-        program=program,backends=backends)
+        "source_bindings": placement, "planning_fallback": "minimum_call_feasible_placement"})
+    return (share_full_native_reads(prefilter_source_rows(program, plan), program=program, backends=backends)
+            if optimize_reads else plan)
 
 
 class PracticalSemanticDomain:

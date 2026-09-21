@@ -35,7 +35,7 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
             if (not isinstance(unified, UnifiedSettings) or mode is not None or epsilon != '0'
                     or execution_cost_feedback is not True or limits != StrongSearchLimits()):
                 raise ValueError('Unified settings replace mode/epsilon/strong-search controls; do not mix profiles')
-            report.update(schema_version='xgap-unified-nl-v1', profile_id='unified-lookahead-seeds-v1',
+            report.update(schema_version='xgap-unified-nl-v1', profile_id='unified-lookahead-v1',
                           mode=None, terminal_settings=dict(epsilon=unified.epsilon, relaxable=list(unified.relaxable)))
         elif mode not in ('exact', 'performance'):
             raise ValueError('Explicit mode and compact-profile hard constraints required')
@@ -94,7 +94,7 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
         prepare, execute, capabilities, capability_ms = family_runtime(family, source_schema=schema,
             sources=sources, backends=backends, backend_clients=backend_clients,
             physical_profile=physical_profile, joint_cost=costs, estimator=estimator,
-            planning_deadline=time.perf_counter()+limits.planning_ms/1000, seed_only=unified is not None)
+            planning_deadline=time.perf_counter()+limits.planning_ms/1000, seed_only=unified is not None, stepwise=unified is not None and unified.physical_moves)
         report.update(capability_lookup=capabilities, capability_lookup_ms=capability_ms)
         # Same support, information permissions and joint objective for both modes.
         if unified is None:
@@ -108,13 +108,21 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
             online_calls = online_calls if ceiling is None else min(ceiling, online_calls)
             settings = replace(unified, limits=replace(unified.limits,
                 resources=replace(unified.limits.resources, user_calls=online_calls)))
+            from xgap.runtime.unified_physical import PhysicalMoves
+            for target in settings.information_targets:
+                source=sources.get(target.source_id)
+                if (source is None or source.snapshot_version!=target.version or target.backend not in source.replica_backend_ids
+                        or target.backend not in backend_clients):
+                    raise ValueError('Registered information target differs from the frozen source snapshot')
             core = run_unified_family(request.question, family, user, prepare_seed=prepare, execute=execute,
-                costs=costs, settings=settings, on_observation=on_user_observation, estimator=estimator)
+                costs=costs, settings=settings, on_observation=on_user_observation, estimator=estimator,
+                moves=PhysicalMoves(family,schema,backends,physical_profile,sources) if settings.physical_moves else None,
+                backend_clients=backend_clients,sources=sources,information=information)
         report['joint_policy'] = core
         for key in ('success', 'status', 'answer_rows', 'final_plan_executions', 'clarification_calls',
                     'disclosed_coordinates', 'backend_remote_calls', 'planning_cpu_ms', 'planning_ms',
                     'execution_ms', 'certificate_ms', 'strong_plan', 'terminal_certificate',
-                    'user_intent_verified', 'root_gap', 'physical_prepare_attempts'):
+                    'user_intent_verified', 'root_gap', 'physical_prepare_attempts', 'probe_calls', 'metadata_calls', 'physical_actions'):
             report[key] = core.get(key)
         report['total_user_calls'] = 1 + core['clarification_calls']
         usage = (report['model_calls'], report['input_tokens'], report['output_tokens'])
@@ -136,11 +144,7 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
 
 
 def answer_unified(request, provider, *, settings=None, **options):
-    """Opt-in migration slice: unified online control over protected seed plans.
-
-    The measured historical `answer(..., mode=...)` route is unchanged. Live
-    metadata/probes and stepwise physical transformations are not admitted here.
-    """
+    """Unified fixed-depth decisions over protected seeds, local rewrites and pinned tools."""
     from xgap.agent.unified_family import UnifiedSettings
     return answer(request, provider, unified=settings or UnifiedSettings(), **options)
 
@@ -171,3 +175,35 @@ def answer_controlled(question, family, user, *, initial_observations=(), mode, 
         'scope_confirmation_calls':0,'scope_confirmed':True,'total_user_calls':core['clarification_calls'],
         'model_calls':0,'input_tokens':0,'output_tokens':0,
         'timing_scope':'frozen state to materialized result; excludes NL and initial authority publication'}
+
+
+def answer_unified_controlled(question,family,user,*,initial_clues=None,settings=None,physical_profile,
+        sources,backends,backend_clients,source_schema,estimator=None,information=FamilyInformationPolicy(),
+        costs=JointCostProfile(),on_user_observation=None):
+    """Publisher-attested initial state; no model call or online hidden-gold access."""
+    from xgap.agent.unified_family import UnifiedSettings,run_unified_family
+    from xgap.runtime.unified_physical import PhysicalMoves
+    started=time.perf_counter()
+    settings=settings or UnifiedSettings()
+    if not family.coverage_basis or getattr(user,'family',None)!=family:
+        raise ValueError('Controlled entry requires a confirmed family and matching private tool')
+    for target in settings.information_targets:
+        source=sources.get(target.source_id)
+        if (source is None or source.snapshot_version!=target.version or target.backend not in source.replica_backend_ids
+                or target.backend not in backend_clients):raise ValueError('Information target snapshot differs')
+    prepare,execute,capabilities,capability_ms=family_runtime(family,source_schema=source_schema,
+        sources=sources,backends=backends,backend_clients=backend_clients,physical_profile=physical_profile,
+        joint_cost=costs,estimator=estimator,seed_only=True,stepwise=settings.physical_moves)
+    ceiling=settings.limits.resources.user_calls
+    settings=replace(settings,limits=replace(settings.limits,resources=replace(settings.limits.resources,
+        user_calls=information.max_calls if ceiling is None else min(ceiling,information.max_calls))))
+    core=run_unified_family(question,family,user,prepare_seed=prepare,execute=execute,costs=costs,settings=settings,
+        estimator=estimator,moves=PhysicalMoves(family,source_schema,backends,physical_profile,sources) if settings.physical_moves else None,
+        backend_clients=backend_clients,sources=sources,information=information,initial_clues=initial_clues,
+        on_observation=on_user_observation)
+    return {**core,'schema_version':'xgap-unified-controlled-v1','profile_id':'unified-lookahead-v1',
+        'track':'controlled_unified_lookahead','intent_family':family.to_dict(),
+        'scope_confirmation_calls':0,'total_user_calls':core['clarification_calls'],
+        'scope_confirmed':True,'candidate_count':len(family.candidates),'input_tokens':0,'output_tokens':0,
+        'capability_lookup':capabilities,'capability_lookup_ms':capability_ms,
+        'controlled_processing_ms':(time.perf_counter()-started)*1000}

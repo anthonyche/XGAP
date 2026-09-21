@@ -30,6 +30,7 @@ from xgap.experiments.query_loss_score import score_query_loss
 
 REPO=Path(__file__).resolve().parents[1]
 SCHEMA='xgap-bounded-joint-batch-v1'
+UNIFIED_SCHEMA='xgap-unified-lookahead-batch-v1'
 
 
 def load(pin):
@@ -37,7 +38,7 @@ def load(pin):
 
 
 def validate(manifest):
-    if set(manifest)!={'schema_version','deployment','prepared','design','cells'} or manifest['schema_version']!=SCHEMA:
+    if set(manifest)!={'schema_version','deployment','prepared','design','cells'} or manifest['schema_version'] not in (SCHEMA,UNIFIED_SCHEMA):
         raise ValueError('Unexpected bounded joint manifest')
     if manifest['deployment'] not in ('native','rdf'):raise ValueError('Unknown deployment')
     design=manifest['design']
@@ -50,6 +51,8 @@ def validate(manifest):
     ProcessBudget(wall_seconds=design['method_wall_seconds'],max_group_rss_bytes=design['method_rss_bytes'])
     if any(type(design[k]) is not int for k in ('package_max_bytes','free_disk_reserve_bytes','source_rss_bytes')):
         raise ValueError('Byte budgets must be integers')
+    from xgap.experiments.unified_contract import METHODS as UNIFIED_METHODS
+    allowed=UNIFIED_METHODS if manifest['schema_version']==UNIFIED_SCHEMA else METHODS
     cells=manifest['cells']
     if not isinstance(cells,list) or not 1<=len(cells)<=10000:raise ValueError('Bounded nonempty cells required')
     ids=[]
@@ -58,7 +61,7 @@ def validate(manifest):
             raise ValueError('Invalid cell fields')
         if not isinstance(cell['cell_id'],str) or not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}',cell['cell_id']):
             raise ValueError('Invalid cell ID')
-        if cell['method'] not in METHODS:raise ValueError('Only current bounded joint methods are allowed')
+        if cell['method'] not in allowed:raise ValueError('Only current bounded joint methods are allowed')
         ids.append(cell['cell_id'])
     if len(ids)!=len(set(ids)):raise ValueError('Duplicate cell IDs')
     # Only pin syntax is inspected here, not private intent or reference contents.
@@ -202,7 +205,7 @@ def _run(manifest,digest,commit,root,max_new_cells):
         error=dict(type=type(exc).__name__,message=str(exc))
     finally:
         if session:closures.append(session.close())
-        result=dict(schema_version='xgap-bounded-joint-batch-invocation-v1',identity=identity,
+        result=dict(schema_version='xgap-unified-batch-invocation-v1' if manifest['schema_version']==UNIFIED_SCHEMA else 'xgap-bounded-joint-batch-invocation-v1',identity=identity,
             new_cells=attempts,counts=inventory(root,manifest['cells']),budget_status=budget.status,error=error,
             closures=closures,all_owned_closed=all(closed(c) for c in closures),automatic_retries=0,
             scope='sealed counts include failed outcomes; incomplete intents are never retried; offline startup/scoring excluded from method latency')

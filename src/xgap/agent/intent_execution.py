@@ -26,7 +26,7 @@ def snapshot_identity(sources, backends, schema):
 
 
 def family_runtime(family, *, source_schema, sources, backends, backend_clients, physical_profile,
-                   joint_cost=None, estimator=None, planning_deadline=None, seed_only=False):
+                   joint_cost=None, estimator=None, planning_deadline=None, seed_only=False, stepwise=False):
     """Shared lazy preparation and one-final-execution callbacks for both controllers."""
     if family.source_snapshot != snapshot_identity(sources, backends, source_schema):
         raise ValueError('Intent certificate belongs to a different source/mapping snapshot')
@@ -47,7 +47,7 @@ def family_runtime(family, *, source_schema, sources, backends, backend_clients,
             raise ValueError('Candidate exceeds the admitted operator bound')
         if program.holes:
             raise ValueError('Finite-family execution requires complete semantic candidates; unresolved entity hole')
-        baseline = _baseline(program, assignment, admitted, backends, physical_profile)
+        baseline = _baseline(program, assignment, admitted, backends, physical_profile, optimize_reads=not stepwise)
         if joint_cost is None or seed_only:
             return baseline
         # Retain the independently feasible seed if optional neighborhood

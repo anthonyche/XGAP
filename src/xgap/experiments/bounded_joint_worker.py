@@ -11,7 +11,7 @@ from pathlib import Path
 import threading
 import time
 
-from xgap.api import answer, answer_controlled
+from xgap.api import answer, answer_controlled, answer_unified, answer_unified_controlled
 from xgap.agent.scope_authority import QueryIntentAuthority, ScopedQueryUser
 from xgap.agent.intent_strong import FamilyInformationPolicy
 from xgap.agent.strong_planning import StrongSearchLimits
@@ -23,12 +23,14 @@ from xgap.llm.compact_interpretation import CompactInterpretationProviderConfig
 from xgap.planning.joint_cost import JointCostProfile
 from xgap.semantic.intent_scope import ScopePolicy
 from xgap.experiments.bounded_joint_contract import METHODS, TRACK, CONTROLLED_TRACK, METRICS, load_configuration
+from xgap.experiments import unified_contract as unified_run
 
 
 def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_path, scope_sha256,
         oracle_path, oracle_sha256, mode, output, epsilon='0', provider_override=None,
         information=FamilyInformationPolicy(), limits=StrongSearchLimits(), costs=JointCostProfile(),
         method=None, joint_config_path=None, joint_config_sha256=None,controlled_state_path=None,controlled_state_sha256=None):
+    unified=method in unified_run.METHODS
     root=Path(output);root.mkdir(parents=True,exist_ok=False)
     started=time.perf_counter();captures=[];active=False;config={};controlled=None
     receipt=dict(schema_version='xgap-bounded-joint-worker-v1',success=False,status='preparing',mode=mode,
@@ -36,12 +38,13 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         oracle_sha256=oracle_sha256,model_calls=0,final_plan_executions=0,automatic_retries=0,
         reference_available_to_worker=False,source_ownership='caller must enforce study budgets and close services')
     try:
-        if mode not in ('exact','performance'):raise ValueError('Unknown mode')
+        if (unified and mode is not None) or (not unified and mode not in ('exact','performance')):raise ValueError('Unknown or mixed mode')
         if method is not None:
-            if method not in METHODS or method != 'xgap-bounded-joint-'+mode:
+            if not unified and (method not in METHODS or method != 'xgap-bounded-joint-'+mode):
                 raise ValueError('Current method/mode mismatch')
             receipt.update(schema_version='xgap-nl-method-worker-v1',method=method,
-                track=CONTROLLED_TRACK if controlled_state_path else TRACK,controlled_state_sha256=controlled_state_sha256,
+                track=(unified_run.CONTROLLED_TRACK if controlled_state_path else unified_run.TRACK) if unified else
+                      CONTROLLED_TRACK if controlled_state_path else TRACK,controlled_state_sha256=controlled_state_sha256,
                 joint_config_sha256=joint_config_sha256,top_level_attempts=0,
                 alternative_executions=0,fit_calls=0,probe_calls=0)
         raw=json.loads(read_pinned(request_path,request_sha256))
@@ -55,8 +58,11 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         if joint_config_path is not None or joint_config_sha256 is not None:
             if not joint_config_path or not joint_config_sha256 or provider_override is not None:
                 raise ValueError('Pinned configuration requires both identity fields and no provider override')
-            config,information,limits,costs=load_configuration(joint_config_path,joint_config_sha256)
-            epsilon='0' if mode=='exact' else config['epsilon']
+            loader=unified_run.load_configuration if unified else load_configuration
+            config,information,limits,costs=loader(joint_config_path,joint_config_sha256)
+            if unified and limits.decision_order != ('joint' if method=='xgap-unified-lookahead' else 'semantic_then_physical'):
+                raise ValueError('Method identity differs from frozen stage order')
+            epsilon=limits.epsilon if unified else '0' if mode=='exact' else config['epsilon']
             if config['provider']=='development_toy_template' and controlled is None:
                 if raw['exposure']!='development':
                     raise ValueError('Toy provider is restricted to explicit development requests')
@@ -99,7 +105,17 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         options=dict(mode=mode,epsilon=epsilon,physical_profile=physical,sources=sources,backends=backends,backend_clients=clients,
             estimator=estimator,information=information,limits=limits,costs=costs,on_user_observation=observed,
             execution_cost_feedback=config.get('execution_cost_feedback',True))
-        if controlled is None:
+        if unified:
+            options=dict(physical_profile=physical,sources=sources,backends=backends,backend_clients=clients,
+                estimator=estimator,information=information,costs=costs,on_user_observation=observed,settings=limits)
+            if controlled is None:
+                core=answer_unified(request,provider,scope_policy=scope,authority=authority,**options)
+            else:
+                family,initial,_=controlled
+                clues={family.slots[i].name:json.loads(value) for i,value in initial}
+                core=answer_unified_controlled(request.question,family,ScopedQueryUser(family,Path(oracle_path),oracle_sha256),
+                    initial_clues=clues,source_schema=request.context['source_schema'],**options)
+        elif controlled is None:
             core=answer(request,provider,scope_policy=scope,authority=authority,**options)
         else:
             family,initial,_=controlled
@@ -107,12 +123,17 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
                 initial_observations=initial,source_schema=request.context['source_schema'],**options)
         active=False
         receipt.update({k:core.get(k) for k in ('success','status','model_calls','input_tokens','output_tokens',
-            'final_plan_executions',*METRICS)})
+            'final_plan_executions',*METRICS,*(unified_run.METRICS if unified else ()))})
         receipt.update(top_level_attempts=core['final_plan_executions'],
             search=(core.get('joint_policy') or core).get('search'),
             controlled_processing_ms=core.get('controlled_processing_ms'),
             execution_cost_feedback=config.get('execution_cost_feedback',True),
             error=core.get('error'),error_type=core.get('error_type'))
+        if unified:
+            online=core.get('joint_policy') or core
+            receipt.update({k:online.get(k) for k in unified_run.METRICS if k!='initial_decision_estimate_including_common_actions'})
+            receipt.update(algorithm_profile='unified-lookahead-v1',terminal_settings=config.get('settings'),
+                search=None,execution_cost_feedback=None)
         receipt.update(dataset=doc['dataset'],question_id=raw['question_id'],user_observations=records,
             backend_calls=len(captures),core=write_json_evidence(root/'core.json.gz',core),
             result=write_json_evidence(root/'answer.json.gz',dict(answer_format='json_rows',answer=core['answer_rows'])))

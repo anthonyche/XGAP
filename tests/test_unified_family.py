@@ -31,7 +31,7 @@ def invocation(tmp_path, settings=None, **overrides):
 def test_nl_scope_fixed_depth_clarification_seed_compiler_and_materialized_answer(tmp_path):
     r, calls = invocation(tmp_path)
     assert r['success'], r
-    assert r['profile_id'] == 'unified-lookahead-seeds-v1' and r['mode'] is None
+    assert r['profile_id'] == 'unified-lookahead-v1' and r['mode'] is None
     assert r['answer_rows'] == EXPECTED[1]
     assert r['scope_confirmation_calls'] == r['clarification_calls'] == r['final_plan_executions'] == 1
     assert r['total_user_calls'] == 2 and r['model_calls'] == 0
@@ -90,7 +90,7 @@ def test_singleton_confirmation_is_not_skipped_by_family_action_generator(tmp_pa
     domain = FamilyDomain(QUESTION, contract, {}, JointCostProfile(), authority_name='user', authority_version=f.identity)
     state = domain.updated(FamilyState(), ('hops',), {'hops': 1})
     assert len(contract.consistent(state.bindings)) == 1
-    actions = domain.actions(state)
+    actions = tuple(domain.actions(state))
     assert actions and all(len(a.outcomes) == 1 for a in actions)
     assert all(a.arguments['slots'] != ['hops'] for a in actions)
 

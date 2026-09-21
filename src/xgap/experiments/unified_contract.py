@@ -1,0 +1,42 @@
+"""Versioned unified run settings; immutable inputs shared by all contract values."""
+from dataclasses import asdict,fields
+import json
+
+from xgap.agent.unified_family import UnifiedSettings
+from xgap.agent.unified_information import targets_from_dict
+from xgap.agent.unified_lookahead import Limits,Resources
+from xgap.agent.intent_strong import FamilyInformationPolicy
+from xgap.planning.joint_cost import JointCostProfile
+from xgap.experiments.one_shot_profile import read_pinned
+
+METHODS=('xgap-unified-lookahead','xgap-unified-sequential')
+TRACK='natural_language_unified_lookahead'
+CONTROLLED_TRACK='controlled_unified_lookahead'
+METRICS=('probe_calls','metadata_calls','physical_actions','initial_decision_estimate_including_common_actions',
+         'plan_registry_count','plan_registry_bytes','estimate_evaluations','estimate_cache_hits')
+
+
+def configuration(*,settings=UnifiedSettings(),information=FamilyInformationPolicy(),costs=JointCostProfile(),
+                  provider='frozen_compact_model'):
+    return dict(schema_version='xgap-unified-run-config-v1',settings=asdict(settings),information=asdict(information),
+                costs=asdict(costs),provider=provider)
+
+
+def load_configuration(path,sha256):
+    raw=json.loads(read_pinned(path,sha256))
+    if (set(raw)!={'schema_version','settings','information','costs','provider'}
+            or raw['schema_version']!='xgap-unified-run-config-v1'
+            or raw['provider'] not in ('frozen_compact_model','development_toy_template')):
+        raise ValueError('Invalid unified run configuration')
+    def checked(cls,doc):
+        if not isinstance(doc,dict) or set(doc)!={f.name for f in fields(cls)}:
+            raise ValueError('Missing or unknown '+cls.__name__+' setting')
+        return dict(doc)
+    settings=checked(UnifiedSettings,raw['settings'])
+    limits=checked(Limits,settings['limits']);limits['resources']=Resources(**checked(Resources,limits['resources']))
+    settings['limits']=Limits(**limits);settings['relaxable']=tuple(settings['relaxable'])
+    if settings['candidate_weights'] is not None:settings['candidate_weights']=tuple(settings['candidate_weights'])
+    settings['information_targets']=targets_from_dict(settings['information_targets'])
+    information=checked(FamilyInformationPolicy,raw['information'])
+    information['additional_scopes']=tuple(tuple(x) for x in information['additional_scopes'])
+    return raw,FamilyInformationPolicy(**information),UnifiedSettings(**settings),JointCostProfile(**checked(JointCostProfile,raw['costs']))

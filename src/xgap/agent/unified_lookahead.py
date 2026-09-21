@@ -218,7 +218,9 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
                 or not math.isclose(math.fsum(o.probability for o in action.outcomes), 1, abs_tol=1e-12, rel_tol=0)):
             return None, 'missing_or_invalid_probability_model'
         history = dict(s.attempts)
-        attempt_key = (action.key, domain.knowledge_key(s.payload))
+        knowledge = (domain.action_knowledge_key(s.payload,action) if hasattr(domain,'action_knowledge_key')
+                     else domain.knowledge_key(s.payload))
+        attempt_key = (action.key, knowledge)
         if action.kind in ('probe', 'metadata'):
             if history.get(attempt_key, 0) >= action.retry_limit:
                 return None, 'no_progress_repeat'
@@ -342,6 +344,7 @@ def run_online(initial, domain, *, perform, execute, limits=Limits()):
                         or not state.used.then(choice.resources).fits(limits.resources)):
                     raise ValueError('Actual state no longer supports the selected terminal')
                 report['final_plan_executions'] = 1
+                report['selected_terminal'] = choice.key
                 at = time.perf_counter()
                 try:
                     result = execute(choice)

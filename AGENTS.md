@@ -1,5 +1,9 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-21 最新授权：持续完成统一迁移、必要小图/真实后端/模型接口验收、
+新版批量与论文实现说明，停在全量实验启动之前。当前开发继续；不得启动正式矩阵、
+自动恢复旧实验或覆盖已有证据。此条优先于下文历史暂停/运行安排。
+
 2026-09-21 unified migration is now authorized. Follow
 `docs/decisions/unified_lookahead_migration_20260921.md`, including completion
 reservation against validation starvation. `xgap.api.answer_unified` is the new

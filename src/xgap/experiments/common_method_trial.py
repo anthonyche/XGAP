@@ -15,7 +15,9 @@ from xgap.experiments.source_failure_classification import classify_source_failu
 from xgap.experiments.practical_methods import PRACTICAL_METHODS, external_engine
 from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS
 from xgap.experiments.evidence_store import file_pin
-from xgap.experiments.bounded_joint_contract import METHODS as JOINT_METHODS, TRACK as JOINT_TRACK, METRICS as JOINT_METRICS, CONTROLLED_TRACK
+from xgap.experiments.bounded_joint_contract import METHODS as HISTORICAL_JOINT_METHODS, TRACK as JOINT_TRACK, METRICS as JOINT_METRICS, CONTROLLED_TRACK
+from xgap.experiments import unified_contract as unified_run
+JOINT_METHODS=(*HISTORICAL_JOINT_METHODS,*unified_run.METHODS)
 
 
 def _run_trial(*, track,request_path,request_sha256,method,output,owned_services,observer,
@@ -65,11 +67,11 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             if method in JOINT_METHODS:
                 if not all(joint_args) or not oracle_path or not oracle_sha256 or endpoint is not None or user_max_calls!=9:
                     raise ValueError('Current method requires pinned scope/configuration/private user')
-                r.update(track=JOINT_TRACK,scope_sha256=scope_sha256,joint_config_sha256=joint_config_sha256,
+                r.update(track=unified_run.TRACK if method in unified_run.METHODS else JOINT_TRACK,scope_sha256=scope_sha256,joint_config_sha256=joint_config_sha256,
                     oracle_sha256=oracle_sha256)
                 if controlled_state_path or controlled_state_sha256:
                     if not controlled_state_path or not controlled_state_sha256:raise ValueError('Pinned controlled state required')
-                    r.update(track=CONTROLLED_TRACK,controlled_state_sha256=controlled_state_sha256)
+                    r.update(track=unified_run.CONTROLLED_TRACK if method in unified_run.METHODS else CONTROLLED_TRACK,controlled_state_sha256=controlled_state_sha256)
                     command+=['--controlled-state-path',str(Path(controlled_state_path).resolve()),
                         '--controlled-state-sha256',controlled_state_sha256]
                 for name,path,digest in (('scope',scope_path,scope_sha256),('joint-config',joint_config_path,joint_config_sha256),
@@ -144,7 +146,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
         if method in JOINT_METHODS:
             for key in (*JOINT_METRICS,'core','search','user_observations','final_plan_executions',
                         'backend_calls','proposal_kind','epsilon','error','error_type','execution_cost_feedback',
-                        'controlled_processing_ms','initial_state'):
+                        'controlled_processing_ms','initial_state',*unified_run.METRICS,'algorithm_profile','terminal_settings'):
                 r['method_cost_scope' if key=='cost_scope' else key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
     except Exception as error:
