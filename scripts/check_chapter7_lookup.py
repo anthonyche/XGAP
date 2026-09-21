@@ -20,12 +20,13 @@ from xgap.experiments.one_shot_records import write_once
 JAVA='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home/bin/java'
 
 
-def check(*, source, aruqula_source, aruqula_python, output):
+def check(*, source, aruqula_source, aruqula_python, output, classpath=None):
     source=Path(source).resolve();aruqula_source=Path(aruqula_source).resolve()
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     processes=Processes(root);ports=None;started=time.perf_counter()
     receipt=dict(schema_version='xgap-ch7-official-lookup-admission-v1', success=False,
         model_calls=0, paper_result=False, baseline_source_changes=0,
+        harness=file_pin(__file__),
         scope='official example RDF, indexer and lookup API; unchanged ARUQULA search_span only')
     try:
         with deadline(120):
@@ -34,6 +35,18 @@ def check(*, source, aruqula_source, aruqula_python, output):
                     raise ValueError(name+' tracked author source changed')
                 receipt[name+'_commit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=path,text=True).strip()
             jar=source/'lookup/target/lookup-1.0-jar-with-dependencies.jar'
+            launch=['-jar',str(jar)]
+            if classpath is not None:
+                # The author's assembly overwrites duplicate META-INF/services.
+                # Separate unchanged dependency jars retain Java's normal SPI
+                # discovery; no algorithm, POM or dependency version is changed.
+                dependencies=Path(classpath).read_text().strip().split(':')
+                if any(not Path(p).is_absolute() or not Path(p).is_file() for p in dependencies):
+                    raise ValueError('Explicit original dependency jars required')
+                jar=source/'lookup/target/lookup-1.0.jar'
+                receipt['classpath']=file_pin(classpath)
+                receipt['dependency_jars']=[file_pin(p) for p in dependencies]
+                launch=['-cp',str(jar)+':'+':'.join(dependencies),'org.dbpedia.lookup.Main']
             receipt['jar']=file_pin(jar)
             # Use the author's installed YAML dependency, without changing the
             # separate XGAP measurement environment just to run this setup gate.
@@ -48,7 +61,7 @@ def check(*, source, aruqula_source, aruqula_python, output):
             receipt.update(server_config=config_pin,index_config=index_pin,
                 example_data=file_pin(source/'examples/indexing/data/openenergy-ontology.ttl'))
             ports=LoopbackPortReservations.acquire(1);port=ports.ports[0];ports.release(0)
-            process=processes.start('lookup',[JAVA,'-Xms64m','-Xmx512m','-jar',str(jar),
+            process=processes.start('lookup',[JAVA,'-Xms64m','-Xmx512m',*launch,
                 '--config',config_pin['path'],'--port',str(port)],cwd=root)
             ready(process,port)
             base=f'http://127.0.0.1:{port}'
@@ -87,4 +100,5 @@ def check(*, source, aruqula_source, aruqula_python, output):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('source','aruqula-source','aruqula-python','output'):p.add_argument('--'+name,required=True)
+    p.add_argument('--classpath',help='Official POM dependency:build-classpath output; versions unchanged.')
     raise SystemExit(check(**vars(p.parse_args())))
