@@ -1,5 +1,9 @@
 # XGAP Current Roadmap
 
+2026-09-21 已开始实施：验证契约、guarded lookahead 与受保护种子计划的完整入口已接通。
+接下来是保留计划池／单步物理动作、真实信息工具和新版批量；
+见[首阶段实现](report/unified_lookahead_seed_20260921.md)。不启动正式矩阵。
+
 统一 lookahead 的迁移验收必须包含“可选探测不得耗尽已知可行完成路径的预算”：
 叶评分补齐必要验证／能力／建计划成本，并以可验证的保底路径预留步骤与执行资源。
 详见[防验证饥饿规则](decisions/unified_lookahead_migration_20260921.md#21-required-refinement-prevent-validation-starvation)；

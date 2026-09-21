@@ -1,5 +1,13 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-21 unified migration is now authorized. Follow
+`docs/decisions/unified_lookahead_migration_20260921.md`, including completion
+reservation against validation starvation. `xgap.api.answer_unified` is the new
+opt-in protected-seed implementation slice; see
+`docs/report/unified_lookahead_seed_20260921.md` for admitted versus pending
+capabilities. The historical measured entry below stays reproducible. Formal
+campaigns and automation remain paused; tiny development gates are authorized.
+
 Current entry: `xgap.api.answer`; active contract:
 `docs/decisions/bounded_joint_system_v1.md` (T4, 2026-09-17).
 Read `docs/goal.md`, `docs/status.md`, `docs/architecture.md`,

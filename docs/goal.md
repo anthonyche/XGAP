@@ -1,5 +1,9 @@
 # XGAP Goal
 
+2026-09-21 用户授权迁移实现，首阶段接通 `answer_unified`、独立验证契约与带完成预算保护
+的 fixed-D 控制器。见[首阶段范围与证据](report/unified_lookahead_seed_20260921.md)。
+本轮仅推进迁移工程与必要 tiny 验收，正式评价及自动唤醒继续暂停；完整新系统尚未完成。
+
 2026-09-21 新研究范围：按用户四份修订稿，将双模式卖点收敛为统一的信息获取／物理规划／
 执行决策系统，采用固定 D 步 lookahead 与实际观测后重规划。Lambda 与 epsilon 为同一
 算法的验证／解释损失契约。见[迁移契约](decisions/unified_lookahead_migration_20260921.md)。

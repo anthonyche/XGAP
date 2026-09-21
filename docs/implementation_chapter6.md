@@ -1,5 +1,10 @@
 # Chapter 6 implementation map — bounded joint system v1
 
+2026-09-21: [the first unified implementation slice](report/unified_lookahead_seed_20260921.md)
+now exists in `unified_contract`, `unified_lookahead`, `unified_family` and
+`api.answer_unified`. Use its explicit capability boundaries when describing
+new code; the historical complete-strong-policy map below is not the new algorithm.
+
 2026-09-21 writing update: the new manuscript uses one fixed-depth online planner
 with validation/loss settings. Its [code migration map](decisions/unified_lookahead_migration_20260921.md)
 supersedes this page as the target design, not as completed implementation evidence.

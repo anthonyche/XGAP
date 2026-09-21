@@ -1,5 +1,10 @@
 # XGAP Current Status
 
+2026-09-21 用户已授权开始实现；[统一控制器首阶段](report/unified_lookahead_seed_20260921.md)
+已接入独立验证、fixed-D lookahead、保底预算、无进展去重及现有前端／编译执行。
+当前是 protected-seed slice；真实 metadata/probe、逐步物理变换与新版批量尚未完成。
+正式实验／自动执行仍暂停，下文“尚未实现”是此前分析阶段状态。
+
 2026-09-21 迁移方案补充：已用两个确定性小反例确认忽略后续验证／完成预算会造成饥饿。
 [新增保护契约](decisions/unified_lookahead_migration_20260921.md#21-required-refinement-prevent-validation-starvation)
 要求完成成本叶评分、保底完成路径及资源预留、无进展探测去重；仅改文档，尚未实现或重跑实验。

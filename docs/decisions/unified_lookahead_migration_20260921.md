@@ -1,5 +1,9 @@
 # Unified XGAP: manuscript-to-implementation migration
 
+Implementation update: the [protected-seed first slice](../report/unified_lookahead_seed_20260921.md)
+now implements the validation and guarded online-controller foundation. This
+does not mark all migration items below implemented or evaluated.
+
 2026-09-21. User supplied a revised Introduction, Preliminaries, problem
 formulation, and fixed-depth planning algorithm. This records the new research
 target and an inspection of code at `9d60598c041d9b7869e833e5b50cea63b243db68`.

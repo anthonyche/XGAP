@@ -26,7 +26,7 @@ def snapshot_identity(sources, backends, schema):
 
 
 def family_runtime(family, *, source_schema, sources, backends, backend_clients, physical_profile,
-                   joint_cost=None, estimator=None, planning_deadline=None):
+                   joint_cost=None, estimator=None, planning_deadline=None, seed_only=False):
     """Shared lazy preparation and one-final-execution callbacks for both controllers."""
     if family.source_snapshot != snapshot_identity(sources, backends, source_schema):
         raise ValueError('Intent certificate belongs to a different source/mapping snapshot')
@@ -48,7 +48,7 @@ def family_runtime(family, *, source_schema, sources, backends, backend_clients,
         if program.holes:
             raise ValueError('Finite-family execution requires complete semantic candidates; unresolved entity hole')
         baseline = _baseline(program, assignment, admitted, backends, physical_profile)
-        if joint_cost is None:
+        if joint_cost is None or seed_only:
             return baseline
         # Retain the independently feasible seed if optional neighborhood
         # generation is unavailable; never execute alternatives to select one.
@@ -77,6 +77,8 @@ def family_runtime(family, *, source_schema, sources, backends, backend_clients,
             'joint_compared_plans': len(scored), 'alternative_executions': 0})
 
     def execute(plan):
+        if seed_only and family.source_snapshot != snapshot_identity(sources, backends, source_schema):
+            raise ValueError('Source/mapping descriptor version changed before final execution')
         registry = BackendPluginRegistry()
         for backend in {n.parameters['backend_id'] for n in plan.nodes if 'backend_id' in n.parameters}:
             registry.register(NativeBackendPlugin(backend, backend_clients[backend]))
