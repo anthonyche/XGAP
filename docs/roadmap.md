@@ -1,5 +1,10 @@
 # XGAP Current Roadmap
 
+统一 lookahead 的迁移验收必须包含“可选探测不得耗尽已知可行完成路径的预算”：
+叶评分补齐必要验证／能力／建计划成本，并以可验证的保底路径预留步骤与执行资源。
+详见[防验证饥饿规则](decisions/unified_lookahead_migration_20260921.md#21-required-refinement-prevent-validation-starvation)；
+不得把这一保护重新实现为指数规模的全策略搜索。
+
 2026-09-21 新目标优先：按[统一 lookahead 迁移契约](decisions/unified_lookahead_migration_20260921.md)
 依次整合状态／验证、固定深度在线控制器、逐步物理动作与信息工具、tiny vertical slice、
 新版批量与论文接口。该顺序取代下文继续寻找双模式优势的开发目标；正式实验保持暂停，

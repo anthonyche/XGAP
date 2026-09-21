@@ -1,5 +1,9 @@
 # XGAP Current Status
 
+2026-09-21 迁移方案补充：已用两个确定性小反例确认忽略后续验证／完成预算会造成饥饿。
+[新增保护契约](decisions/unified_lookahead_migration_20260921.md#21-required-refinement-prevent-validation-starvation)
+要求完成成本叶评分、保底完成路径及资源预留、无进展探测去重；仅改文档，尚未实现或重跑实验。
+
 2026-09-21 新稿对齐：已读四份修订章节并完成[统一 lookahead 迁移分析](decisions/unified_lookahead_migration_20260921.md)。
 研究目标改为一个系统，Lambda/epsilon 是契约参数；当前运行代码仍是下述旧版本，
 新控制器、强制验证状态、metadata/probe 与逐步物理动作尚待整合。未恢复正式实验。

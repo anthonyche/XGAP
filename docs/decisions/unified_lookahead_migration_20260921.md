@@ -32,8 +32,9 @@ effectiveness of this new algorithm. Keep the old measurements and method IDs.
 NL proposal + public domains -> full bounded family -> paid coverage confirmation
  -> actual state (validated bindings, evidence, descriptors, retained plans,
                   consumed resources, completed action count)
+ -> construct/retain a bounded completion witness and reserve its resources
  -> enumerate eligible terminal pairs and supported local actions
- -> symbolic lookahead of at most D steps
+ -> symbolic lookahead of at most D steps, rejecting loss of reserved completion
  -> choose Execute or the FIRST selected nonterminal action
  -> perform exactly that action, validate its actual response, update state
  -> discard hypothetical continuations and replan
@@ -42,9 +43,12 @@ NL proposal + public domains -> full bounded family -> paid coverage confirmatio
 
 There is no materialized complete policy over the full horizon H. Finite scores
 at truncated leaves do not prove an executable continuation beyond D. In
-particular, this algorithm need not find a policy even when one exists; it may
-consume its horizon and fail safely. Do not export `strong_plan=True` simply
-because a bounded lookahead returned an action.
+general the bounded algorithm need not find a policy even when one exists.
+However, consuming resources on optional actions until a KNOWN feasible
+completion becomes impossible is an avoidable defect, not an acceptable use of
+that incompleteness disclaimer. The guard below preserves such a completion.
+Do not export `strong_plan=True` simply because a bounded lookahead returned an
+action; any completion guarantee must cite its separate witness and assumptions.
 
 Terminal eligibility is checked before it is compared with action values; it
 does not force immediate execution if a cheaper predicted continuation exists.
@@ -59,6 +63,107 @@ binding. Probe/metadata contracts can include an exhaustive `unknown` category;
 it consumes an action without creating knowledge. Hypothetical responses never
 reach the actual evidence ledger or live tools.
 
+### 2.1 Required refinement: prevent validation starvation
+
+The user identified a gap in the original truncated-leaf score on 2026-09-21.
+This refinement changes the migration target; it is not yet implemented in the
+runtime and is not claimed to be a guarantee already established by the draft.
+
+**Concrete counterexample.** Set D=1, H=2, with two required sequential
+validations costing 5 each, an available retained plan costing 1, and an
+optional probe costing 0.1 that returns unknown and changes no knowledge.
+The plan is not eligible until both validations finish. With g=1 at every
+truncated leaf, the first validation scores 6 while the probe scores 1.1.
+The controller probes, leaving only one action for two validations, then fails.
+Validation, validation, execution was feasible initially, at cost 11.
+
+Adding the remaining validation cost fixes that example, but is not sufficient
+as a general safeguard. With the same two-step horizon, suppose terminal cost
+is estimated as 100 until a one-time useful probe revises it to 1. Even if g
+includes the exact remaining validation cost, the first validation scores 110
+and the probe scores 11.1. The probe still destroys completion feasibility.
+This also shows that suppressing repeated probes alone is insufficient.
+Both deterministic examples were checked with a small local symbolic calculation;
+they involve no model/backend calls and are not experimental measurements.
+
+Implement the following three protections together.
+
+**A. Score completion, not execution alone.** At a truncated leaf use a
+nonrecursive completion estimate with separately logged components:
+
+`g_complete(s) = estimated_required_validation + estimated_required_capability`
+`                + estimated_required_plan_construction + estimated_execution`.
+
+Compute the components for a specified bounded completion routine and its
+retained plan choices, not unrelated minima that cannot be realized together.
+Do not double-count an action that discharges multiple requirements. Its cost is
+an estimate in the shared objective units, not a certified lower/upper cost bound.
+No retained plan must not be interpreted as free completion: include the bounded
+seed-construction work or mark completion unavailable. Omit neither mandatory
+attestations nor requirements outside the lookahead window. The leaf score
+remains a ranking heuristic, never execution authority or a resource certificate.
+
+**B. Preserve a constructive completion witness.** Maintain W(s), a compact
+recipe leading to eligible execution under every declared normal response,
+together with certified remaining action bound L_W and resource bounds R_W.
+An already eligible retained plan is a witness with zero remaining nonterminal
+actions, but its execution resources must still be reserved. Otherwise a
+supported fallback can use a fixed order of authoritative validations followed
+by selection of a supported seed plan for the resulting candidate. Validate the
+recipe by bounded local rules and scans over the explicit family; never search
+the full policy space to obtain it or enumerate all combinations of responses.
+
+Before allowing an optional action a, require a bounded check/repair of a witness
+for EVERY successor s'=T(s,a,o), including unknown and probability-zero outcomes:
+
+`1 + L_W(s') <= H - h_s`,
+
+and the action's certified consumption plus the successor's reserved completion
+must fit all remaining hard budgets. For cumulative resources this means
+`r_s + r_a(o) + R_W(s') <= b_max`; for peaks use a sound peak-composition bound,
+including retained live memory. Estimates, expected resource use and static
+remote-node counts do not establish this inequality. The reservation includes
+final execution and the bounded local work needed to carry out the fallback;
+optional lookahead CPU/bytes cannot spend a reserved completion allowance.
+
+If a successor loses its witness, reject that optional action. Store the checked
+tail for the actual outcome. On a deadline or when no improving preserving
+action fits, take the first action of the saved recipe without another optional
+search. That recipe has a decreasing remaining-step rank and never depends on
+optimistically repeating unknown probes. Execution wins ties; among tied
+nonterminal choices prefer the saved completion action over optional work.
+
+Do not discard protected seed plans or their evidence to satisfy the K-plan
+retention cap. A compact recipe may refer to at most one protected seed per
+remaining candidate; it must respect the same polynomial representation limits.
+If no such witness can be constructed, report `completion_witness_unavailable`
+or use an explicitly bounded required-action bootstrap; disable optional probes
+until a witness exists. Neither outcome proves that no feasible policy exists.
+An unknown required capability cannot be assumed supported to mint a witness.
+
+This provides a CONDITIONAL guarantee: once a valid witness fits, preserved
+snapshots, correct normal responses, sound bounds and execution contracts imply
+that optional optimization will not consume the ability to complete. A service
+failure, source-version change or broken certified bound is still an explicit
+failure. This does not solve general policy feasibility or imply global
+optimality. It preserves one cheaply constructed route, rather than searching
+or storing the complete optimal conditional-policy tree.
+
+**C. Suppress repeated no-progress work.** Memoize attempted probe identity,
+parameters and the relevant semantic/capability/statistics/source fingerprint.
+Unknown or unchanged information is not a knowledge advance. Increasing h,
+appending a receipt or changing a timestamp alone must not unlock the same probe.
+Retry only under a declared finite contract or a relevant knowledge/version
+change, and reapply the reserve guard. Allow useful probes with some unknown
+outcomes when all outcomes preserve completion; do not require every outcome
+to reduce the semantic candidate set. Different probes can still consume slack,
+so this rule supplements rather than replaces the reservation.
+
+Log completion-witness identity, remaining reserved steps/resources, leaf-score
+components, optional-action rejection reasons, no-progress suppression and actual
+fallback activation. Charge only performed actions as trace work; checking the
+witness and hypothetical branches is separately measured planning overhead.
+
 ## 3. Code inspection and required changes
 
 |Component|Verified current implementation|Migration|
@@ -67,11 +172,11 @@ reach the actual evidence ledger or live tools.
 |Loss|`agent.intent_certificate.TerminalContract`: finite family and exact rational weighted field discrepancy|Reuse distance/cache primitives; add designated-validation and Lambda checks independently of rho|
 |Validation state|`FamilyState` stores observations/call/field counts; singleton consistency can satisfy epsilon=0|Store attestations or registered inference premises separately; candidate uniqueness is not automatically an authorized validation rule|
 |Validation actions|`FamilyStrongDomain._actions` skips partitions with fewer than two groups|Allow required attestations even if they do not reduce the candidate set; otherwise singleton validation/set-cover cases cannot be represented|
-|Search|`search_strong_policy` builds a complete feasible policy; `run_strong_intent` follows its saved children|Replace the current route with fixed-D value lookahead and observed-response replanning; keep historical solver for frozen releases|
+|Search|`search_strong_policy` builds a complete feasible policy; `run_strong_intent` follows its saved children|Replace the current route with fixed-D value lookahead, completion-resource reservation and observed-response replanning; keep historical solver for frozen releases|
 |Capabilities|`family_runtime` eagerly calls `lookup_practical_capabilities`; this is local configured-adapter lookup, zero external calls|Keep initial declarations as s0 evidence; add selected metadata actions for genuinely missing capabilities, without relabeling the old lookup as a live probe|
 |Physical plans|`FamilyStrongDomain.terminals` prepares only certified candidates; `family_runtime.prepare` builds/scores a bounded neighborhood and keeps one plan|Build bounded seeds independently of interpretation eligibility; retain up to K plans per query; make one supported transformation a local action|
 |Statistics/probes|Current primary route does not select statistics acquisition actions|Add bounded named targets, fixed exhaustive outcome categories, real selected invocation and dependent-estimate invalidation|
-|Cost|`JointCostProfile` already compares information and execution in declared units|Include selected local transformations; support outcome-dependent costs and request-fixed expectation/max backup; distinguish numerical preferences from calibrated latency|
+|Cost|`JointCostProfile` already compares information and execution in declared units|Include required completion costs at truncated leaves and selected local transformations; support outcome-dependent costs and request-fixed expectation/max backup; keep estimates separate from reserve certificates|
 |Execution|Existing lowering, compiler, scheduler, row retention and recorded backend calls|Reuse; recheck mapping/capability/snapshot/budget witnesses against actual state before the one final dispatch|
 |Evidence|Complete policy export plus observed path, compressed answers, independent scoring|Record per-round decision summaries and actual trace; label hypothetical values as predictions; preserve old evidence formats|
 
@@ -97,6 +202,13 @@ in explicit input size. A merely finite D that grows with the input does not
 give this result. Parsing, outcome generation, loss evaluation, rewrite checks,
 cost evaluation, arithmetic precision and cache-key construction must obey the
 same representation bounds. Do not hide a recursive search in g.
+
+The starvation guard extends T_local with polynomial construction/checking of
+the compact completion recipe, resource reservation and no-progress lookup.
+It does not enlarge D or require exhaustive horizon-H policy search. If witness
+verification itself recursively enumerates a full outcome tree, the PTIME claim
+has not been preserved. The new conditional completion guarantee and these
+local operation bounds must be reflected in the algorithm/proof revision.
 
 The full candidate family must be explicitly bounded before Cartesian
 construction. Each action enumerates its complete finite outcome set; no
@@ -144,8 +256,13 @@ implemented generators. This note does not certify those proofs.
 2. **Pure lookahead and online controller.** Fixed D, finite nonrecursive g,
    expectation/max, zero-probability dead branch, execution tie, H boundary,
    unknown-response consumption and replan after the actual observation.
-   Include a case where a finite heuristic leads to later failure; it must not
-   emit a false strong-policy or infeasibility claim.
+   Reproduce both starvation examples above, then require completion with the
+   reserve guard. Test exact step-budget fit, token/remote/byte exhaustion,
+   probability-zero reserve violation, unchanged unknown probe, a useful probe
+   that preserves slack, protected-plan retention and deadline fallback without
+   replanning. Missing witnesses must not emit false strong-policy or general
+   infeasibility claims. Do not assert guaranteed completion outside the stated
+   witness, authority, source and resource assumptions.
 3. **Shared physical and information domain.** Seed plans before validation;
    enumerate single legal rewrites; cap/deduplicate plan pools; test preservation
    of an executable incumbent and of all semantic candidates. Add actual
