@@ -8,9 +8,8 @@ import json
 from pathlib import Path
 import subprocess
 import time
-
-import requests
-import yaml
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from run_external_federation_tiny import Processes, ready
 from xgap.experiments.evidence_store import file_pin
@@ -36,10 +35,14 @@ def check(*, source, aruqula_source, aruqula_python, output):
                 receipt[name+'_commit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=path,text=True).strip()
             jar=source/'lookup/target/lookup-1.0-jar-with-dependencies.jar'
             receipt['jar']=file_pin(jar)
-            config=yaml.safe_load((source/'examples/config.yml').read_text())
+            # Use the author's installed YAML dependency, without changing the
+            # separate XGAP measurement environment just to run this setup gate.
+            yaml_code='import json,sys,yaml; print(json.dumps([yaml.safe_load(open(p)) for p in sys.argv[1:]]))'
+            config,index=json.loads(subprocess.check_output([str(aruqula_python),'-c',yaml_code,
+                str(source/'examples/config.yml'),str(source/'examples/indexing/ontology-file-indexer.yml')],
+                text=True,timeout=10))
             config['indexPath']=str(root/'index')
             config_pin=write_once(root/'server-config.json',config)
-            index=yaml.safe_load((source/'examples/indexing/ontology-file-indexer.yml').read_text())
             index['dataPath']=str(source/'examples/indexing/data')
             index_pin=write_once(root/'index-config.json',index)
             receipt.update(server_config=config_pin,index_config=index_pin,
@@ -49,13 +52,16 @@ def check(*, source, aruqula_source, aruqula_python, output):
                 '--config',config_pin['path'],'--port',str(port)],cwd=root)
             ready(process,port)
             base=f'http://127.0.0.1:{port}'
-            with Path(index_pin['path']).open('rb') as f:
-                response=requests.post(base+'/api/index/run',files={'config':('index.json',f,'application/json')},timeout=60)
-            receipt['index_status']=response.status_code
-            if response.status_code!=200:raise RuntimeError('Official example indexing failed')
+            boundary='xgap-official-index-config'
+            body=(f'--{boundary}\r\nContent-Disposition: form-data; name="config"; filename="index.json"\r\n'
+                'Content-Type: application/json\r\n\r\n').encode()+Path(index_pin['path']).read_bytes()+f'\r\n--{boundary}--\r\n'.encode()
+            request=Request(base+'/api/index/run',data=body,
+                headers={'Content-Type':'multipart/form-data; boundary='+boundary},method='POST')
+            with urlopen(request,timeout=60) as response:receipt['index_status']=response.status
+            if receipt['index_status']!=200:raise RuntimeError('Official example indexing failed')
             endpoint=base+'/api/search'
-            response=requests.get(endpoint,params={'query':'fuel role','format':'JSON','type':'class','maxResults':5},timeout=10)
-            response.raise_for_status();docs=response.json()
+            with urlopen(endpoint+'?'+urlencode(dict(query='fuel role',format='JSON',type='class',maxResults=5)),timeout=10) as response:
+                docs=json.loads(response.read(2*1024**2))
             receipt['lookup_response']=write_once(root/'lookup-response.json',docs)
             wanted='http://openenergy-platform.org/ontology/oeo/OEO_00000001'
             receipt['expected_example_uri_present']=any(wanted in d.get('id',[]) for d in docs.get('docs',[]))
