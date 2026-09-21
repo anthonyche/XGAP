@@ -1,8 +1,4 @@
-"""Current research entry: bounded NL -> paid authority -> joint strong policy.
-
-Historical query APIs remain available for replay, not as the default system.
-The proposal provider uses the existing compact interpretation wire contract.
-"""
+"""Unified fixed-depth entry, with the historical strong-policy API preserved."""
 from dataclasses import replace
 import time
 
@@ -134,8 +130,16 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
                         'initial_decision_estimate_including_common_actions')
         report[estimate_key] = (
             common+remaining if common is not None and remaining is not None else None)
+        if unified is not None:
+            online=core.get('realized_acquisition_cost_estimate')
+            terminal=core.get('selected_execution_cost_estimate',0 if core['final_plan_executions']==0 else None)
+            report['realized_trace_work_estimate']=(common+online+terminal
+                if all(v is not None for v in (common,online,terminal)) else None)
         report['cost_scope'] = ('common proposal/scope costs plus initial worst-outcome clarification and execution estimates; '
                                 'actual planner CPU/LLM tokens/source bytes remain separately measured')
+        if unified is not None:
+            report['cost_scope']=('declared work units: realized paid proposal/scope/actions plus selected execution estimate; '
+                'initial lookahead uses the configured backup; not measured money or an execution-time guarantee')
     except Exception as error:
         report.update(status='bounded_joint_failed', error_type=type(error).__name__, error=str(error))
     finally:

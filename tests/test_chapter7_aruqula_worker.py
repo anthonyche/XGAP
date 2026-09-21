@@ -28,6 +28,7 @@ def test_wrapper_keeps_original_api_options_and_submits_its_query_unchanged(tmp_
     monkeypatch.setenv('XGAP_EXTERNAL_LLM_API_KEY', 'test-credential-not-real')
     monkeypatch.setattr(worker.subprocess, 'check_output',
         lambda command, **kw: worker.AUTHOR_COMMIT if 'rev-parse' in command else b'')
+    monkeypatch.setenv('OPENAI_API_KEY','previous-value')
     seen = {}
     query = 'SELECT ?x WHERE { ?x <https://p> "literal" }'
 
@@ -35,6 +36,8 @@ def test_wrapper_keeps_original_api_options_and_submits_its_query_unchanged(tmp_
         @classmethod
         def initialize(cls, **kwargs):
             seen['initialize'] = kwargs
+            assert worker.os.environ['OPENAI_API_KEY']=='test-credential-not-real'
+            assert worker.os.environ['OPENAI_BASE_URL']==args.model_endpoint
 
         @classmethod
         def run_batch(cls, questions, **kwargs):
@@ -67,6 +70,7 @@ def test_wrapper_keeps_original_api_options_and_submits_its_query_unchanged(tmp_
         monkeypatch.setitem(worker.sys.modules, name, value)
     monkeypatch.setattr(worker, 'urlopen', endpoint)
     assert worker.run(args) == 0
+    assert worker.os.environ['OPENAI_API_KEY']=='previous-value'
     assert seen['questions'] == [dict(question='Public question', questionId='q', conversation_history=[])]
     assert seen['postprocessing'] == dict(regex_use_select_distinct_and_id_not_label=True,
                                           llm_extract_prediction_if_null=True)

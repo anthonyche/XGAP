@@ -54,6 +54,7 @@ def run(args):
         parent_observers_required=True, gold_reads=0, wrapper_retries=0,
         author_algorithm_changes=0, answer=None)
     prompt_writer = None
+    previous_openai={k:os.environ.get(k) for k in ('OPENAI_API_KEY','OPENAI_BASE_URL')}
     try:
         source = Path(args.author_source).resolve()
         current = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=source, text=True).strip()
@@ -70,6 +71,11 @@ def run(args):
         lookup = local_endpoint(args.lookup_endpoint)
         if not os.environ.get('XGAP_EXTERNAL_LLM_API_KEY'):
             raise ValueError('Model credential missing from process environment')
+        # This pinned LangChain/LiteLLM bridge reads the standard OpenAI environment
+        # alias even though ChainLite also accepts a named key in its YAML config.
+        # Configure credentials in memory only; keep the original client/algorithm.
+        os.environ['OPENAI_API_KEY']=os.environ['XGAP_EXTERNAL_LLM_API_KEY']
+        os.environ['OPENAI_BASE_URL']=model
         # The same primary and auxiliary model mapping is configured before any
         # author imports. Original prompt contents and decoding remain unchanged.
         import yaml
@@ -142,6 +148,9 @@ def run(args):
                 prompt_writer()
             except Exception as error:
                 receipt['prompt_log_error_type'] = type(error).__name__
+        for key,value in previous_openai.items():
+            if value is None:os.environ.pop(key,None)
+            else:os.environ[key]=value
         receipt['worker_ms'] = (time.perf_counter() - started) * 1000
         write(root / 'receipt.json', receipt)
     print(json.dumps(dict(success=receipt['success'], status=receipt['status'],

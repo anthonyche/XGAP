@@ -328,7 +328,7 @@ def run_online(initial, domain, *, perform, execute, limits=Limits()):
     report = dict(schema_version='xgap-unified-online-v1', success=False, status='planning',
                   rounds=[], trace=[], final_plan_executions=0, answer_rows=None,
                   strong_plan=False, root_gap=None, planning_ms=0.0, planning_cpu_ms=0.0,
-                  acquisition_ms=0.0, execution_ms=0.0, attempted_actions=0, external_calls_during_search=0)
+                  acquisition_ms=0.0, local_action_ms=0.0, execution_ms=0.0, attempted_actions=0, external_calls_during_search=0)
     try:
         for _ in range(limits.horizon+1):
             cpu = time.process_time()
@@ -353,6 +353,7 @@ def run_online(initial, domain, *, perform, execute, limits=Limits()):
                     raise ValueError('Actual state no longer supports the selected terminal')
                 report['final_plan_executions'] = 1
                 report['selected_terminal'] = choice.key
+                report['selected_execution_cost_estimate'] = choice.estimated_cost
                 at = time.perf_counter()
                 try:
                     result = execute(choice)
@@ -375,7 +376,7 @@ def run_online(initial, domain, *, perform, execute, limits=Limits()):
                 spent = UNBOUNDED  # An entered effect with no receipt cannot prove zero spend.
                 raise
             finally:
-                report['acquisition_ms'] += (time.perf_counter()-at)*1000
+                report['local_action_ms' if choice.kind=='transform' else 'acquisition_ms'] += (time.perf_counter()-at)*1000
             spent = spent.then(observed.used)
             report['trace'].append(dict(action=choice.key, kind=choice.kind, label=observed.label,
                                         used=asdict(observed.used), evidence=observed.evidence))
@@ -383,6 +384,7 @@ def run_online(initial, domain, *, perform, execute, limits=Limits()):
             if selected is None or observed.payload != selected[1].payload:
                 raise ValueError('Actual response does not match a declared checked transition')
             outcome, predicted, tail = selected
+            report['trace'][-1]['declared_action_cost'] = outcome.estimated_cost
             if not observed.used.fits(outcome.resources):
                 raise ValueError('Actual action resource use violates its certified bound')
             actual = State(observed.payload, state.steps+1, state.used.then(observed.used), predicted.attempts)
@@ -397,6 +399,8 @@ def run_online(initial, domain, *, perform, execute, limits=Limits()):
         report.update(status='unified_failed', error_type=type(error).__name__, error=str(error))
         return report
     finally:
+        costs=[t.get('declared_action_cost') for t in report['trace']]
+        report['realized_acquisition_cost_estimate'] = (sum(costs) if all(v is not None for v in costs) else None)
         report['consumed_nonterminal_resources'] = asdict(spent)
         report['completed_actions'] = state.steps
         report['end_to_end_ms'] = (time.perf_counter()-started)*1000
