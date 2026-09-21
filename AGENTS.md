@@ -1,60 +1,52 @@
 # XGAP research prototype — current engineering authority
 
-2026-09-21 最新授权：持续完成统一迁移、必要小图/真实后端/模型接口验收、
-新版批量与论文实现说明，停在全量实验启动之前。当前开发继续；不得启动正式矩阵、
-自动恢复旧实验或覆盖已有证据。此条优先于下文历史暂停/运行安排。
+2026-09-21: the user authorized continuous engineering through the boundary
+BEFORE full experiments. The unified migration and tiny admission are now
+recorded in `docs/report/unified_prerelease_20260921.md`. Do not start a formal
+matrix, resume an old automation or relabel an old result. Earlier schedules
+and the old two-mode development objective are superseded.
 
-2026-09-21 unified migration is now authorized. Follow
-`docs/decisions/unified_lookahead_migration_20260921.md`, including completion
-reservation against validation starvation. `xgap.api.answer_unified` is the new
-opt-in protected-seed implementation slice; see
-`docs/report/unified_lookahead_seed_20260921.md` for admitted versus pending
-capabilities. The historical measured entry below stays reproducible. Formal
-campaigns and automation remain paused; tiny development gates are authorized.
-
-Current entry: `xgap.api.answer`; active contract:
-`docs/decisions/bounded_joint_system_v1.md` (T4, 2026-09-17).
+Current entry: `xgap.api.answer_unified`; controlled entry:
+`xgap.api.answer_unified_controlled`; contract:
+`docs/decisions/unified_lookahead_migration_20260921.md`.
 Read `docs/goal.md`, `docs/status.md`, `docs/architecture.md`,
-`docs/implementation_chapter6.md`, `docs/operator_semantics.md`, and the relevant
-linked decision before changes. Read `docs/roadmap.md` for next actions.
+`docs/implementation_chapter6.md`, `docs/operator_semantics.md`, and relevant
+linked decisions before changes. Read `docs/roadmap.md` for remaining work.
 
-The user authorizes legacy cleanup, compressed evidence, bounded NL candidate
-construction, authoritative simulated-user scope/clarification, joint end-to-end
-cost planning, focused toy/native verification and GitHub synchronization.
-2026-09-20 T6 supersedes the evaluation hold: the user approved execution of
-`docs/research_experiment_plan_20260920.md` after reasonableness review. Follow
-`docs/decisions/chapter7_execution_v1.md`: intake/log gates, development pilot,
-frozen release, then the same E1–E20 matrix on three derived datasets. Preserve
-missing capabilities explicitly; never invent measurements to fill a figure.
-Do not restart T3, run broad regression sweeps, or optimize baseline algorithms.
-Historical instructions are evidence, not work.
-
-2026-09-20 T5 authorization: wire the current worker into common batch dispatch,
-compressed-answer scoring, budgets and nonduplicating resume while the user designs
-Chapter 7. See `docs/decisions/bounded_joint_batch_v1.md`. This does not authorize
-full evaluation or revival of historical campaigns; T6 now authorizes new planned
-evaluation releases after its readiness and resource gates.
+The user authorizes necessary tiny development gates, legacy isolation,
+compressed evidence, faithful baseline integration and GitHub synchronization.
+This is a bounded research prototype. Do not expand universal NL support or
+build general open-source-product features instead of advancing the experiment.
 
 ## Invariants
 
-- Preserve audited algebra and compiler semantics. No invented low-level operators.
-- Model/catalog output proposes; it cannot attest user intent or scope completeness.
-- The private simulated user may hold the true query. Only paid tool replies may
-  affect online decisions. Do not expose private intent/reference rows to a model.
-- Fixed fields and hard coordinates cannot be relaxed. Performance's certificate
-  bounds declared structured-intent discrepancy, not answer F1 or open-NL error.
-- Both modes share candidates, sources, tools and budgets. Check terminal first;
-  selected information actions require a feasible continuation for every outcome.
-- Retain a feasible incumbent under optional search limits. PTime claims need
-  explicit finite input/compilation bounds. No global optimum/approximation claim.
-- Use frozen estimates/ranks; no current-query trial executions to select a plan.
-- Execute at most one final federated plan. Record real calls/tokens/bytes separately
-  from declared cost units and offline preparation; unknown is not zero.
-- Keep credentials out of files/logs/Git. Preserve old commits, frozen artifacts,
-  failed trials and jobs. Never retry/cancel/switch an old job without authority.
-- Baselines run faithfully; no result-driven changes. Old entry shims stay for
-  reproducibility. Shared runtime/compiler modules are not disposable legacy.
-- Test changed contracts on portable toy data plus a necessary real tiny boundary.
-  Do not make expensive GrailQA preprocessing the development loop.
+- One fixed-D online controller; Lambda/epsilon are validation/loss parameters.
+  Do not restore separate Exact/Performance algorithms or search a full H tree.
+- Preserve audited algebra/compiler semantics. No invented low-level operators.
+- Model/catalog output proposes; it cannot attest intent or scope completeness.
+  Only the metered authoritative user tool may disclose private intent online.
+- Mandatory validation is independent of singleton candidates and zero loss.
+  Fixed fields/hard coordinates never relax. The current distance is structured
+  query discrepancy, not output-F1 or open-NL error.
+- Before optional work, preserve a compact completion witness for EVERY outcome,
+  including unknown/probability-zero outcomes. Completion-aware leaf scores are
+  estimates, not resource certificates. Retain protected seeds and suppress
+  repeated no-progress work. Unknown bounds are never zero.
+- PTime needs fixed D and explicit candidate/action/outcome/plan/representation
+  bounds, plus polynomial local operations. No global-optimum/whole-policy ratio.
+- Use frozen estimates or declared work models, never current-query trial plans
+  to choose a winner. Physical moves are individual checked transformations.
+- Execute at most one final plan. Only selected actions enter the paid ledger;
+  hypothetical work, actual calls/tokens/bytes, declared cost units and offline
+  preprocessing are reported separately. No invented measurements.
+- Preserve old commits, frozen/failed trials, jobs and historical method IDs.
+  Do not retry/cancel/switch an existing run without authority.
+- Baselines run faithfully. Fix environment/transport integration only; do not
+  tune their algorithms, prompts, outputs or decoding to improve their results.
+- Test changed contracts on portable toy data and necessary real tiny boundaries.
+  No blanket regression/ablation campaign or GrailQA preprocessing in development.
+- Keep credentials/private intent/large artifacts out of Git. Push without
+  rewriting remote history. Shared compiler/runtime code is not disposable legacy.
 
-Historical harness: `docs/agent_harness_history_20260917.md`.
+Historical instructions: `AGENTS_history_20260921_before_unified.md` and
+`docs/agent_harness_history_20260917.md`; neither is current work authorization.

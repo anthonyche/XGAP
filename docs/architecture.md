@@ -1,60 +1,59 @@
-# Current architecture — bounded joint system v1
+# Current architecture — unified lookahead v1
 
-2026-09-21 implementation update: `api.answer_unified` now shares the frontend
-and runtime with a fixed-depth online controller and protected seed completion.
-See the [admitted first slice](report/unified_lookahead_seed_20260921.md).
-The revised full information/physical action space remains under migration;
-the old measured architecture below is preserved for reproduction.
-
-2026-09-21: the user has respecified the research target as unified fixed-depth
-online planning. See the [migration map](decisions/unified_lookahead_migration_20260921.md).
-The executable architecture below is the measured previous version; it is not
-yet an implementation of the revised algorithm. Formal experiments remain paused.
-
-The current public entry is `xgap.api.answer`. There is one system and two terminal
-contracts, not two independent implementations.
+The current entry is `xgap.api.answer_unified`. Lambda and epsilon configure one
+validation/loss contract; they are not two algorithms. A fixed-depth online
+controller replaces the historical full strong-policy construction.
 
 ```text
-NL + frozen source schema
-  -> compact proposal provider (model or declared deterministic grammar)
-  -> finite coordinate domains -> complete bounded candidate scope
-  -> paid private-user containment confirmation
-  -> shared terminal-first finite AND/OR policy search
-       terminal: certificate -> lazy compiler/physical neighborhood -> estimated cost
-       acquisition: full/scoped user clarification -> ALL symbolic outcomes
-  -> follow ONE observed policy branch
-  -> execute ONE plan -> rows + certificate + cost/usage evidence
+NL + frozen source schema and public finite domains
+ -> one compact proposal call (or declared development template)
+ -> bounded complete candidate family
+ -> paid private-user containment confirmation
+ -> prepare protected seed plans + configured source/capability evidence
+ -> actual state: validated bindings, facts, retained plans, spent resources
+      check eligible terminals
+      retain compact completion recipe + reserve remaining resources
+      compare terminal with D-step symbolic acquisition / local rewrite options
+      choose one action -> observe/check actual reply -> replan
+      optional limit/no improvement -> saved completion action
+ -> recheck contract/snapshots -> execute ONE plan -> rows and observed trace
 ```
 
-The first scope reply is required by both modes and does not reveal the chosen
-candidate. Optional clarification reveals only requested coordinates. No private
-query or gold answer is supplied to the proposal provider. Outside-scope intent is
-an explicit failed attempt; it is not repaired with hidden gold.
+The loss bound is evaluated against every remaining intent, including candidates
+without retained optional plans. Plan retention never removes semantic uncertainty.
+Mandatory validations cannot be inferred from candidate uniqueness or an LLM score.
+Scope confirmation discloses containment, not the true candidate. Subsequent paid
+full/scoped replies reveal only requested coordinates; private answer rows never
+enter the online method.
 
-Scope identity accepts declaration-order variable renaming and reordered pure
-WHERE conjunctions; the stored queries and metric coordinates are not rewritten.
-It does not claim arbitrary query equivalence or change literal/direction semantics.
+`unified_family` maintains protected seeds and bounded plan pools.
+`runtime.unified_physical` generates individual compiler-checked changes, not a
+whole neighborhood as one action. `unified_information` invokes a registered
+read-only scalar metadata/statistics target only when selected. Its finite outcome
+category updates estimates or optional-rule prerequisites, not intent authority.
+Hypothetical lookahead never contacts a tool or executes a trial plan.
 
-T6 adds `xgap.api.answer_controlled` for the approved experiment plan: start from a
-frozen full family plus authoritative public initial clues, then share the same
-planner/compiler/runtime. This track excludes NL initialization from its timing.
-The no-execution-feedback variant preserves physical planning; complete selected
-policies and observed paths are exported separately. Independent query loss is
-computed only after sealing. See the [T6 contract](decisions/chapter7_execution_v1.md).
+The completion recipe is verified through bounded local scans rather than a full
+conditional-policy tree. Remaining validations, final remote calls and known
+resources are reserved for every outcome. Unknown bytes/memory bounds cannot
+certify finite budgets. Normal-response, source and execution assumptions remain
+explicit; backend failure or an exceeded bind bound can still prevent an answer.
 
-Layers remain `semantic` (typed programs), `agent` (state/authority/policy),
-`planning` (frozen costs), `runtime` (fragments/coordinator), `tools` (effects),
-`compilers`/`algebra` (audited logical/native semantics), and `experiments` (recording).
-GrailQA/catalog builds stay offline; no runtime dataset build is introduced.
+`answer_unified_controlled` uses publisher-attested initial clues and the same
+runtime, excluding NL initialization from its timing. The sequential comparator
+requires complete validation before physical/information optimization; it shares
+candidate construction, compilers, cost model, tools and final runtime.
 
-The current batch route is `scripts/run_bounded_joint_batch.py` → common guarded
-NL trial → `nl_method_worker` → `bounded_joint_worker` → `xgap.api.answer`.
-The common scorer consumes sealed raw/gzip answers separately. Pinned scope,
-configuration, private user and nonduplicating resume are described in the
-[T5 contract](decisions/bounded_joint_batch_v1.md); reference rows never enter the worker.
+The batch path is `run_bounded_joint_batch.py` → guarded common trial →
+`nl_method_worker` → shared `bounded_joint_worker` → new unified entry.
+New manifest/config/method IDs prevent accidental reuse of old algorithms.
+Independent answer and query-loss scoring runs after compressed artifacts seal;
+resume skips all attempted cells, including failures, and requires resource closure.
 
-See [Chapter 6 map](implementation_chapter6.md) for files, pseudocode, bounds,
-semantics and evidence. [Legacy inventory](legacy_inventory.md) distinguishes
-historical profiles from shared compiler/runtime components.
-The [previous architecture](architecture_history_20260917.md) is retained verbatim
-for historical details; its development directions are superseded.
+The semantic/compiler/runtime substrate remains shared. Catalog/ontology creation
+is offline frozen preprocessing. The historical `api.answer(..., mode=...)` and
+strong solver remain for frozen runs; see [legacy boundary](legacy_inventory.md).
+Details, PTime assumptions and current evidence: [Chapter 6 map](implementation_chapter6.md),
+[readiness](report/unified_prerelease_20260921.md).
+
+[Pre-migration architecture](architecture_history_20260921_before_unified.md).

@@ -44,8 +44,16 @@ class ObservationFailure(ValueError):
 
 
 class CampaignSourceObserver(SourceObserver):
-    def __init__(self,routes,root,*,budget:SourceObservationBudget):
+    def __init__(self,routes,root,*,budget:SourceObservationBudget,upstream_http_proxy=None):
         if not isinstance(budget,SourceObservationBudget):raise TypeError('An explicit source budget is required')
+        # Explicit transport configuration, never inherited for local database
+        # routes. This HTTP-only path preserves author request bytes and headers.
+        self.upstream_http_proxy=urlsplit(upstream_http_proxy) if upstream_http_proxy else None
+        if self.upstream_http_proxy:
+            p=self.upstream_http_proxy
+            if (p.scheme!='http' or not p.hostname or p.username or p.password or p.path not in ('','/')
+                    or p.query or p.fragment or any(urlsplit(url).scheme!='http' for url in routes.values())):
+                raise ValueError('An unauthenticated HTTP proxy and HTTP upstream routes are required')
         self.budget=budget;self.next_index=0;self.generation=0;self.accepting=True
         self.phase_request_bytes=0;self.phase_response_bytes=0;self.phase_calls=0
         self.sealed=None;self.released=True;self.late_calls=0;self.persistence_failures=0
@@ -60,7 +68,8 @@ class CampaignSourceObserver(SourceObserver):
                 if time.monotonic()-at<=1:return conn,number,True
                 conn.close()
             self.connection_sequence+=1
-            return http.client.HTTPConnection(upstream.hostname,upstream.port,timeout=self.timeout),self.connection_sequence,False
+            destination=self.upstream_http_proxy or upstream
+            return http.client.HTTPConnection(destination.hostname,destination.port,timeout=self.timeout),self.connection_sequence,False
 
     def return_connection(self,source,conn,number):
         with self.pool_lock:
@@ -134,6 +143,7 @@ class CampaignSourceObserver(SourceObserver):
             upstream=urlsplit(self.routes[source]);conn,connection_id,reused=self.take_connection(source,upstream)
             record.update(upstream_connection_id=connection_id,upstream_connection_reused=reused)
             target=upstream.path+(('?'+urlsplit(handler.path).query) if urlsplit(handler.path).query else '')
+            if self.upstream_http_proxy:target=upstream.scheme+'://'+upstream.netloc+target
             headers=forwarding_headers(handler.headers)
             record['hop_headers_removed']=sorted(k for k in handler.headers if k not in headers)
             record['forwarded']=True;conn.request(handler.command,target,body,headers)
@@ -219,6 +229,7 @@ class CampaignSourceObserver(SourceObserver):
             'upstream_connections_opened':sum(r.get('upstream_connection_reused') is False for r in rows),
             'upstream_connection_reuses':sum(r.get('upstream_connection_reused') is True for r in rows),
             'transport_profile':'HTTP/1.1;16idle connections/source;1s idle expiry;no automatic retries',
+            'upstream_http_proxy':self.upstream_http_proxy.geturl() if self.upstream_http_proxy else None,
             'request_body_bytes':sum(r['request_body_bytes'] for r in rows),
             'request_target_bytes':sum(r['request_target_bytes'] for r in rows),
             'response_body_bytes':sum(r['response_body_bytes'] for r in rows),

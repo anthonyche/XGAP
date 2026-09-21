@@ -1,8 +1,14 @@
 # Unified XGAP: manuscript-to-implementation migration
 
-Implementation update: the [protected-seed first slice](../report/unified_lookahead_seed_20260921.md)
-now implements the validation and guarded online-controller foundation. This
-does not mark all migration items below implemented or evaluated.
+Implementation update (2026-09-21, end of milestone): the unified controller,
+protected pools, single-step physical moves, selected information tools and new
+batch path are implemented in the admitted bounded profile. See the
+[current evidence and limits](../report/unified_prerelease_20260921.md) and
+[Chapter 6 map](../implementation_chapter6.md). The text below preserves the
+original migration analysis; its future-tense tasks describe the target at intake,
+not current status. Missing mandatory-capability bootstrap, general inference
+rules and finite byte/memory completion proofs remain outside this profile.
+No new full evaluation was run.
 
 2026-09-21. User supplied a revised Introduction, Preliminaries, problem
 formulation, and fixed-depth planning algorithm. This records the new research
@@ -70,8 +76,9 @@ reach the actual evidence ledger or live tools.
 ### 2.1 Required refinement: prevent validation starvation
 
 The user identified a gap in the original truncated-leaf score on 2026-09-21.
-This refinement changes the migration target; it is not yet implemented in the
-runtime and is not claimed to be a guarantee already established by the draft.
+At intake this refinement changed the migration target. Its completion estimate,
+reservation and no-progress guard are now implemented; the separate guarantee
+assumptions and limits below still apply. This does not certify the draft's proof.
 
 **Concrete counterexample.** Set D=1, H=2, with two required sequential
 validations costing 5 each, an available retained plan costing 1, and an

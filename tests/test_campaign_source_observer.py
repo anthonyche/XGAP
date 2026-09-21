@@ -169,6 +169,41 @@ def test_saved_legacy_cap_failure_is_replay_only():
     assert not classified['intrinsic_method_incorrectness_established']
 
 
+def test_explicit_http_proxy_preserves_model_request_and_does_not_log_credentials(tmp_path):
+    seen=[]
+    class Proxy(BaseHTTPRequestHandler):
+        def log_message(self,*_):pass
+        def do_POST(self):
+            body=self.rfile.read(int(self.headers['Content-Length']))
+            seen.append((self.path,self.headers.get('Authorization'),body))
+            result=b'{"choices":[],"usage":{"prompt_tokens":2,"completion_tokens":1}}'
+            self.send_response(200);self.send_header('Content-Length',str(len(result)))
+            self.end_headers();self.wfile.write(result)
+    server=ThreadingHTTPServer(('127.0.0.1',0),Proxy)
+    thread=threading.Thread(target=server.serve_forever,kwargs={'poll_interval':.01});thread.start()
+    proxy='http://127.0.0.1:'+str(server.server_port)
+    observer=None
+    try:
+        observer=CampaignSourceObserver({'/model':'http://model.invalid:9018/v1/chat/completions'},tmp_path/'records',
+            budget=SourceObservationBudget(),upstream_http_proxy=proxy)
+        observer.set_phase('transport')
+        body=b'{"model":"unchanged-model","messages":[]}'
+        with urlopen(Request(observer.base_url+'/model',data=body,
+                headers={'Content-Type':'application/json','Authorization':'Bearer local-test-secret'}),timeout=3) as r:
+            assert r.status==200
+            r.read()
+        seal=observer.seal_phase('transport')
+        assert seen==[('http://model.invalid:9018/v1/chat/completions','Bearer local-test-secret',body)]
+        assert seal['forwarded_requests']==1 and seal['upstream_http_proxy']==proxy
+        assert all('local-test-secret' not in f.read_text() for f in (tmp_path/'records').glob('*.json'))
+    finally:
+        if observer:observer.close()
+        server.shutdown();server.server_close();thread.join()
+    with pytest.raises(ValueError):
+        CampaignSourceObserver({'/model':'http://model.invalid'},tmp_path/'reject',
+            budget=SourceObservationBudget(),upstream_http_proxy='http://user:secret@localhost:99')
+
+
 def test_truncated_response_is_partial_transport_evidence(tmp_path):
     with observer(tmp_path/'source') as p:
         p.set_phase('truncated');assert call(p,'/truncated')[0]==502

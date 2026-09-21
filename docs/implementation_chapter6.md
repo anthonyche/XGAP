@@ -1,198 +1,205 @@
-# Chapter 6 implementation map — bounded joint system v1
+# Chapter 6 implementation map — unified lookahead v1
 
-2026-09-21: [the first unified implementation slice](report/unified_lookahead_seed_20260921.md)
-now exists in `unified_contract`, `unified_lookahead`, `unified_family` and
-`api.answer_unified`. Use its explicit capability boundaries when describing
-new code; the historical complete-strong-policy map below is not the new algorithm.
-
-2026-09-21 writing update: the new manuscript uses one fixed-depth online planner
-with validation/loss settings. Its [code migration map](decisions/unified_lookahead_migration_20260921.md)
-supersedes this page as the target design, not as completed implementation evidence.
-The old strong-policy details below remain accurate for the sealed old runs only.
-
-This describes executable T4 code, not the complete space of research ideas.
-Current entry: `xgap.api.answer`. Engineering evidence and limitations are in
-[the T4 report](report/bounded_joint_system_20260917.md). The Chapter 7 plan was
-adopted on 2026-09-20; [T6 readiness](report/chapter7_readiness_20260920.md) extends
-the interfaces below. Earlier T3 results belong to their recorded version.
-
-The 2026-09-20 [T5 batch acceptance](report/bounded_joint_batch_20260920.md) adds
-current-method dispatch, independent compressed-answer scoring and nonduplicating
-batch resume. It does not change the core algorithm or discrepancy definition.
+2026-09-21. This maps the admitted implementation to the revised manuscript.
+Current entry: `xgap.api.answer_unified`; algorithm contract:
+[unified migration](decisions/unified_lookahead_migration_20260921.md).
+The [readiness report](report/unified_prerelease_20260921.md) separates implemented,
+actually exercised and still unsupported capabilities. The prior full-policy
+implementation is [preserved here](implementation_chapter6_history_20260921_before_unified.md).
 
 ## 6.1 Interfaces and admitted semantics
 
-|Step|Implementation|Boundary|
+|Step|Implementation under `src/xgap/`|Boundary|
 |---|---|---|
-|NL proposal|`llm/compact_interpretation.py`|One frozen compact-model call, no repair; deterministic template is an explicit alternative|
-|Candidate construction|`semantic/intent_scope.py`|1–8 proposals; frozen coordinate domains; ≤64 complete candidates, ≤32 coordinates|
-|Predicate coordinates|`semantic/intent_scope.py`|Optional public property/operator locator; unique match required before expansion; ambiguous/overlapping coordinates fail closed|
-|Proposal scope contract|`api.py`|Public alternative domains reach the same frontend in both modes; unknown predicates need a representative value; no private value or answer is supplied|
-|Representation identity|`semantic/compact_identity.py`|Bounded structural-role refinement, then exact renamed AST comparison; no semantic repair or permutation enumeration; unresolved symmetries may reject|
-|Scope authority|`agent/scope_authority.py`|Private full query; paid containment yes/no; no candidate ID disclosed|
-|Terminal certificate|`agent/intent_certificate.py`|Fixed skeleton, hard coordinates, rational weighted soft-coordinate distance|
-|Policy search|`agent/intent_strong.py`, `agent/strong_planning.py`|One shared finite AND/OR search; every selected outcome needs a continuation|
-|Joint objective|`planning/joint_cost.py`|Information + estimated final execution in declared comparable work units|
-|Physical preparation|`agent/intent_execution.py`, `runtime/one_shot_planning.py`|Lazy per certified candidate; bounded strategies, frozen scoring, no execution trials|
-|Compilation/execution|`semantic/compact_lowering.py`, `compilers`, `runtime/scheduler.py`|Cypher/SPARQL; coordinator joins/filters/aggregates; retain root rows|
-|Durable entry|`experiments/bounded_joint_worker.py`|Pinned input/profile/scope/user; compressed evidence; no answer labels|
-|Batch method boundary|`experiments/nl_method_worker.py`, `common_method_trial.py`, `bounded_joint_contract.py`|Explicit current IDs, pinned scope/config/user, worker/source/study budgets; old IDs unchanged|
-|Independent scoring|`experiments/common_row_score.py`|Post-seal raw/gzip rows; hashes, declared row equivalence, order and bags|
-|Controlled initial state|`api.answer_controlled`, `experiments/controlled_state.py`|Shared planner/runtime; full loss denominator; no NL timing or free replayed clarification|
-|Complete policy evidence|`agent/policy_evidence.py`|Every selected outcome plus physical plans; observed state IDs separate; no hypothetical measurements|
-|Query representation identity|`semantic/compact_identity.py`|Bounded alpha-renaming/conjunction order; literal/semantic fields unchanged; stored slot coordinates unchanged|
-|Independent query loss|`experiments/query_loss_score.py`|Post-seal private comparison; no certificate-as-observation or answer-error guarantee|
-|Equivalent source projections|`runtime/shared_match_projections.py`|Compiler-proved complete Match reuse under output renaming; original native representative, consumer schemas preserved|
-|Evidence and source accounting|`experiments/evidence_store.py`, `campaign_source_observer.py`|Separate stored bytes from logical transferred bytes; lossless replay|
+|NL proposal|`llm/compact_interpretation.py`|One compact-model call, no hidden repair; development template separately labelled|
+|Candidate family|`semantic/intent_scope.py`|1–8 proposals; at most 64 complete candidates/32 coordinates; bound checked before Cartesian expansion|
+|Representation identity|`semantic/compact_identity.py`|Bounded role refinement and renamed AST equality; literal/direction meaning unchanged|
+|Scope authority|`agent/scope_authority.py`|Question-bound private query; paid containment; no free selected candidate|
+|Mandatory validation and loss|`agent/unified_contract.py`|Direct registered evidence, independent Lambda and epsilon; bounded certificate cache|
+|Online search|`agent/unified_lookahead.py`|Fixed D, all declared outcomes, one actual action then replan|
+|Domain and completion|`agent/unified_family.py`|Protected seeds, bounded plan pools, nonrecursive completion estimate/reservation|
+|Physical changes|`runtime/unified_physical.py`|One checked transformation per action, no alternative-plan executions|
+|Information tools|`agent/unified_information.py`|Pinned scalar metadata/probe artifacts and exhaustive finite categories including unknown|
+|Costs|`planning/joint_cost.py` plus domain score|Frozen model/fallback plus declared information work units|
+|Compiler/runtime|`semantic/compact_lowering.py`, `compilers`, `runtime/scheduler.py`|Cypher/SPARQL, coordinator operations, one final dispatch|
+|New configuration/methods|`experiments/unified_contract.py`|Distinct NL/controlled tracks; no mixing legacy mode controls|
+|Durable worker|`experiments/bounded_joint_worker.py`|Versioned dispatch, compressed core/answers/captures, no reference rows|
+|Batch and scoring|`common_method_trial.py`, `common_row_score.py`, `query_loss_score.py` in `experiments`|Code/input pins; post-seal scoring; no repeating attempted cells|
 
-Paths in this table are under `src/xgap/`.
-The supported compact language contains ≤8 node variables, ≤12 explicit edges,
-≤32 predicates, ≤16 output expressions and at most one directed bounded path of
-1–3 hops (`WALK` or `ACYCLIC`). It supports connected typed patterns, equality and
-ordered property/time comparisons, optional sum/count/min/max, declared
-contribution/deduplication, order and a bounded explicit limit. The compiler and
-source capabilities can reject a structurally valid query; syntax validation alone
-does not establish executable semantics.
+The compact grammar admits at most 8 node variables, 12 explicit edges,
+32 predicates, 16 output expressions and one directed bounded path of 1–3 hops
+(WALK or ACYCLIC). It supports connected typed patterns, property/time comparisons,
+sum/count/min/max, declared contribution/deduplication, ordering and explicit
+bounded limits. Actual compiler/capability checks may reject a syntactically valid
+query. This does not expand the audited [operator semantics](operator_semantics.md).
 
-The new route requires complete candidates: explicit business IDs/literals or
-frozen finite coordinate alternatives. Unresolved named-entity holes are outside
-this release's current entry; the older catalog-grounding implementation remains
-available only in its historical profile. Do not describe this as arbitrary NL
-entity grounding. All candidates must share one fixed query skeleton; alternate
-unrelated graph topologies are rejected. Distinct fixed fields cannot be relaxed.
-Scope construction explicitly chooses either finite Cartesian expansion or the
-`proposals_only` Top-K support (≤8 proposals). The latter validates coordinates
-against frozen domains without inventing Cartesian combinations. Both require paid
-authoritative containment; model scores never certify support. Constant coordinates
-remain fixed fields rather than diluting distance. Cartesian product size is checked
-*before* generation; neither path truncates uncertainty to fit K. K bounds computational support, not real-world NL coverage.
+Candidates use explicit business IDs/literals or frozen finite alternatives and
+share one fixed query skeleton. Arbitrary named-entity holes or unrelated candidate
+topologies are outside this entry. Cartesian and proposals-only support remain
+separate declared constructions. Neither may truncate uncertainty to pass a cap.
+A host domain is a bounded computational support, not a proof of arbitrary NL
+coverage. Only the paid authority can confirm containment.
 
-## 6.2 Authority and the two modes
+## 6.2 Validation is separate from interpretation loss
 
-For a family Q and acquired truthful replies o, let Q(o) be its consistent subset.
-For two candidates, d is infinity when any declared hard coordinate disagrees;
-otherwise d is weighted Hamming distance over soft coordinates, divided by their
-total weight (or one when there are none). Fixed non-coordinate structure is
-identical by admission. The certificate is
+For an actual state s, Q(s) contains all queries consistent with observed binding
+replies. Current d is exact rational weighted coordinate discrepancy: any hard
+coordinate disagreement is infinite, otherwise use normalized soft-coordinate
+Hamming distance; all fixed fields match by admission. The implemented certificate
+is `rho(q,s) = max_{q* in Q(s)} d(q*,q)`.
 
-`U(q,o) = max { d(q,q') : q' in Q(o) }`.
+An eligible query needs confirmed coverage, every designated validation outside
+Lambda, consistency and `rho <= epsilon`. Singleton support or epsilon=0 does
+not discharge a missing validation. Hard-coordinate conflicts remain ineligible
+even if a requirement is named in Lambda. This profile admits direct authority
+only, not arbitrary inference rules. Controlled initial clues require an explicit
+publisher attestation and retain the full family/loss denominator.
 
-A terminal must belong to Q(o), have confirmed scope/snapshot identity, and satisfy
-`U ≤ epsilon`. EXACT uses epsilon=0. PERFORMANCE uses the declared epsilon.
-A full/scoped user reply narrows Q(o); it does not rewrite the candidate or silently
-replace it with gold. Contradictions and out-of-scope intent are explicit failures.
+This is a conditional interpretation-loss guarantee over a confirmed finite
+family. It is NOT an output answer-error, result-F1, probability-of-error or
+open-domain semantic guarantee. Independent answer/query-loss scoring happens
+only after execution evidence seals. Private answers never enter planning.
 
-The simulated user holds a frozen, question-bound complete query independent of
-the proposed release. `confirm_scope` is an actual metered action in both modes.
-It reveals only containment, not the chosen intent. Only subsequent paid
-clarification reveals requested coordinates. Offline gold/reference rows are
-excluded from `answer` and the worker. Correctness scoring must happen afterwards.
-This is a deterministic structured-intent guarantee conditional on truthful scope
-and replies. It is not an answer-F1, probability-of-error or open-domain guarantee.
+## 6.3 State, local transformations and information
 
-## 6.3 One joint cost objective
+The actual domain state records checked bindings, disclosed-coordinate count,
+finite information categories and plan-pool keys. A bounded registry stores each
+plan once. Protected seeds are never evicted by optional search, and removing an
+optional plan never removes its interpretation from the loss calculation.
+The coordinator additionally tracks completed steps, spent resources and attempts.
 
-`J(terminal plan) = estimated execution work`
+Supported local actions each perform one change:
 
-`J(acquire a) = declared acquisition work(a) + max_outcome J(child)`
+- One source replica substitution with equal schema/namespace/version and an
+  unchanged native fragment.
+- One exact read contraction or compiler-proved projection-sharing contraction.
+- One necessary native row prefilter, preserving full query filters.
+- One bounded entity-bind restriction at an exclusive acyclic inner join,
+  preserving the original join and all answer semantics.
 
-Information prices are frozen call/field costs; an available compatible offline
-estimator supplies execution predictions, normalized into the same work units.
-If unavailable/incompatible, an explicitly labelled fallback counts remote plan
-nodes plus coordinator work. Actual bind batches can cause more calls than this
-static count. This fallback is a ranking heuristic, not measured latency.
-Unavailable evidence stays recorded; model confidence never establishes intent.
+This is a polynomial local neighborhood, not all placements/join orders. Physical
+seeds are compiled before eligibility so later validation cannot leave a query
+with no protected route solely because optional generation consumed its allowance.
+General missing mandatory-capability discovery is not implemented: admitted seeds
+rely on frozen configured capabilities. A failed seed is recorded, not silently
+removed from semantic support.
 
-Both modes use the same cost profile, actions and physical neighborhood. The
-initial model proposal and scope confirmation are common costs and included in
-the reported estimated total when usage is known. Actual CPU time, tokens, user
-calls, remote bytes and execution latency are reported independently.
-The current search does not choose whether to call the initial LLM or purchase new
-statistics: those are future optional actions. Do not claim saved LLM/probe calls
-from a workload in which they are common or absent.
+Named metadata/probe targets are frozen host registrations tied to source/backend
+versions. Only a selected target is invoked. A single scalar response maps to a
+fixed category; errors/malformed responses become explicit unknown where the
+contract permits. Categories change a declared cost model or gate optional rules;
+they never establish user intent or replace compiler capability proofs.
+Estimate caches depend on relevant target identity/category; unrelated receipts do
+not invalidate them. An unchanged unknown outcome does not authorize the same
+probe again. Frozen candidate priors and target probabilities are required for
+expectation; no uniform prior is silently invented.
 
-T6's `execution_cost_feedback=False` zeros execution estimates only in policy
-backup; per-candidate physical estimation/ranking remains enabled. It implements
-the approved feedback ablation rather than reverting to the historical worker.
-
-## 6.4 Bounded feasible-first AND/OR search
+## 6.4 Online planning and completion protection
 
 ```text
-build bounded candidate scope from public proposals/domains
-pay for authoritative scope confirmation; stop explicitly if absent/false
-search(state):
-    check terminal certificates before generating information actions
-    lazily prepare/cache certified candidate plans; keep a feasible incumbent
-    if needed, try a full clarification as the feasible-policy seed
-    for bounded alternative actions:
-        admit ALL declared outcomes atomically within remaining budgets
-        construct a feasible continuation for EVERY outcome
-        compare action cost + worst-outcome continuation with the incumbent
-    spend remaining allowance on certified terminal/physical improvements
-    return best discovered COMPLETE policy, else safe non-answer
-follow actual paid replies through that policy; execute one final plan
+prepare bounded family and protected seeds; record initialization separately
+for at most H nonterminal actions:
+    check actual terminal eligibility
+    construct/check a compact completion recipe and resource reservation
+    compare eligible terminals with depth-D symbolic actions
+        every declared outcome must preserve a completion recipe
+        leaf score includes remaining mandatory work and final execution
+    if optional limit reached: select saved completion's first action
+    if Execute chosen: recheck actual state/snapshots; execute once; return
+    perform only the chosen action; validate response and actual spend; replan
+at H: execute an eligible terminal, otherwise explicit non-answer
 ```
 
-Terminal-first describes the order of checking. With the joint objective, finding
-one certified terminal does not prove that its estimated cost is best; further
-bounded estimated improvement may be worthwhile. No future private reply is read
-while building symbolic branches. Optional work cannot replace a complete
-incumbent with a partial AND subtree. A preparation failure is not hidden.
+The leaf heuristic is the cost of one coherent bounded completion routine,
+separately recording remaining validation, capability/plan work where applicable,
+and execution. Here protected seeds and known capabilities exist at entry, so
+that continuation needs authoritative disclosure followed by a retained plan.
+Its calculation scans the explicit family; it does not recursively search all
+possible validation policies.
 
-Let K be admitted candidate count, L the bounded query/coordinate representation,
-S the global retained-state cap, A the global action cap, and F the physical
-candidate cap per semantic candidate. Scope/distance construction costs
-O(K² L). Terminal checking is bounded conservatively by O(S K² L), action
-partitioning/backup by O(A K L). Physical preparation costs O(K F C), where C is
-the polynomial cost of compiling/scoring one admitted bounded program. Query
-parsing, snapshot hashing and frozen-estimator loading are polynomial in their
-explicit bounded inputs. Search state, depth, action and outcome limits are global,
-not exponentially reset at each recursive level.
+Before an optional action, the controller checks its cost-independent certified
+resource consumption plus the completion reserve for EVERY outcome, including
+unknown and probability-zero outcomes. Remaining-step rank decreases along the
+saved routine. On an optional deadline/state/record cap, the protected routine
+remains executable without another optional search. Small terminal enumeration
+caps cannot erase its direct terminal check. Execute wins cost ties.
 
-The physical placement neighborhood contains the minimum-call seed plus each
-single-operator replica deviation: P = 1 + sum(r_i−1). Its strategy construction
-bound is P × (1 + 2J + B + I_progressive), checked against F before construction.
-It does not enumerate the full Cartesian placement or join-order space. Baseline
-compilation is retained if optional generation/scoring reaches its cooperative
-planning deadline. This is a bounded polynomial heuristic with no global optimum
-or approximation-ratio guarantee. `root_gap=null` means unproved, not zero.
-The bounds concern planning, not arbitrary database execution or external latency.
-A feasible policy is conditional on admitted inputs, adequate budgets and working
-backends; no planner can promise an answer for unsupported/inconsistent inputs.
+The protection is conditional on truthful normal replies, unchanged snapshots,
+sound resource bounds and supported execution contracts. It prevents optional
+work from consuming a KNOWN feasible route. It does not establish feasibility
+for all inputs, global optimality or a whole-policy approximation ratio.
+`strong_plan=False` and `root_gap=null` are intentional: a D-step decision is not
+a materialized full strong policy or a proven optimality gap.
 
-## 6.5 Memory, storage and reproducibility
+For fixed D, coordinator work is bounded by
+`O((H+1) * sum_{j=0..D} (A*Delta)^j * T_local)` plus bounded initialization.
+H, actions A, outcomes Delta, candidates, plan pools, arithmetic representation
+and local compilation/rewriting/certificate work must remain polynomial in
+explicit admitted input size. Merely finite but input-growing D is insufficient.
+No recursive horizon search is hidden in the completion heuristic. Cooperative
+wall/state/byte guards are additional safeguards, not a proof about arbitrary
+callbacks, remote execution complexity or preemption.
 
-The scheduler retains root rows and releases intermediate relations using the
-existing audited retention policy. Current backend recording uses `retain_payloads=False`
-and streams JSON to level-1 gzip instead of creating a second whole-response JSON
-string. Records carry compressed and logical SHA-256/length; replay verifies both.
-Buffering is bounded apart from individual JSON scalar encoding and the input
-result object. This does not turn the backend parser into a streaming row engine;
-large result objects still exist in memory and need response/runtime budgets.
+Current defaults/caps: D=1 (accepted 1–4), H=16 (0–64), 4096 expanded states
+(max 8192), 128 actions/state (max 256), 64 outcomes/action and terminals/state
+(max 256), 4 retained plans/query (1–16), 1024 registry plans (max 4096), 32 MiB
+canonical plan representations (max 256 MiB), 1 MiB/plan, at most 16 information
+targets with at most 10 categories each. Certificate/estimate/move caches are
+bounded to 1024/4096/128 entries. Registry byte size is serialized representation,
+not measured Python heap. Optional deadline defaults to 1000 ms per decision;
+initialization, fallback checking, local actions and whole request need separate
+measurement and outer worker budgets.
 
-The source observer also streams gzip to disk and replays logical bytes downstream.
-Accounting still measures original source traffic, not the smaller stored artifact.
-Compression consumes CPU; its measured effect is reported separately. New workers
-compress core/answer artifacts as well. Old raw replay schemas remain readable;
-strict source/model/profile identity checks are not weakened to pass old fixtures.
-Study-wide disk/memory censoring retains its primary reason even when terminating
-a worker subsequently causes a transport error.
+## 6.5 Costs, resources and observed evidence
 
-The current batch driver (`scripts/run_bounded_joint_batch.py`) consumes an ordered
-pinned manifest. Its output pins the clean source commit, locks concurrent entry,
-and records a cell intent before each worker. Resume skips successes, failures and
-incomplete intents; it reports these separately. A missing resource-closure receipt
-blocks automatic resume. Serving copies are owned and closed; only successful
-phases may reuse a session. The concrete cache/order protocol belongs to Chapter 7.
-The scorer currently parses bounded JSON in memory (512 MiB evidence-read ceiling);
-this is not a guarantee that large-result scoring fits every RAM budget.
+A terminal is scored by estimated execution work. An action is scored by its
+declared work plus the request-fixed max or expectation of child values. Every
+outcome must remain feasible even under expectation. A rank-only model can order
+plans; comparing acquisition with execution additionally needs declared common
+numerical units. No regression to milliseconds is required. Uncalibrated priors,
+row estimates and prices must be labelled as assumptions, not measured facts.
 
-## 6.6 Review and writing boundaries
+Only actual actions are charged to `realized_acquisition_cost_estimate`.
+`selected_execution_cost_estimate` remains a prediction; the NL report's
+`realized_trace_work_estimate` combines actual-path declared work, observed common
+usage priced in those units, and that prediction. These are not money or observed
+end-to-end time. Unknown failed-action costs remain unknown.
 
-Use the current API and this map for Chapter 6. The three historical controllers
-are isolated under `xgap.legacy`; thin old-path imports retain compatibility.
-Shared compiler/runtime modules remain current. [Legacy inventory](legacy_inventory.md)
-records the boundary. Prototype engineering gates are not comparative evaluation.
-The user explicitly adopted the [20-figure plan](research_experiment_plan_20260920.md).
-Dataset admission and development pilots now precede formal sample/budget freezing;
-the current implementation and readiness evidence do not constitute formal results.
+Report separately: model requests/tokens, scope/clarification, metadata/probe calls,
+physical actions, initialization, planning wall/CPU time, certificate time, selected
+local-action time, acquisition wait, final execution time and request latency.
+Certificate time overlaps its owning phase; do not add it twice. Source observer
+HTTP counts/bytes are actual traffic; static plan nodes/adapter calls are different
+units. Hypothetical branches make zero external calls.
+
+The family adapter reserves online authoritative/remote adapter calls with the
+current one-invocation-per-remote-node scheduler; bind overflow fails explicitly
+before another hidden batch. It does not certify final rows, transfer bytes or
+peak memory. Those quantities remain unknown and cannot admit a finite hard
+completion bound. Runtime/process/response guards still cap attempted work, but
+may stop it without an answer. Initial model/scope/seed work is outside the online
+resource ledger and is included separately in whole-request usage/timing; online
+reservation is not a whole-request resource guarantee.
+
+## 6.6 Storage and experiment boundary
+
+The shared runtime releases intermediate rows and keeps required root results.
+Captures, core and answer files use lossless gzip with logical/stored hashes;
+source transfer accounting uses uncompressed bytes. This avoids duplicate large
+serialized payloads, but backend parsers still materialize result objects and
+scoring reads bounded JSON. It is not an unlimited streaming execution engine.
+
+New method IDs: `xgap-unified-lookahead`, `xgap-unified-sequential`.
+New config: `xgap-unified-run-config-v1`; new manifest:
+`xgap-unified-lookahead-batch-v1`. The sequential comparator fully validates
+interpretation before the same physical/information stage; no baseline optimizer
+is improved for it. NL and controlled tracks are distinct, frozen initial clues
+are public, and final references remain unavailable to method workers.
+
+Batch execution pins clean source/config/data, records intent before effects,
+compresses artifacts, scores after sealing and skips every attempted cell on
+resume. Failed/incomplete attempts remain visible. Owned services must close
+before reuse/resume. Catalog/data/estimator creation remains offline and frozen.
+The current tiny admissions prove these interfaces, not comparative effectiveness
+or scalability. Full dataset/method admission and the revised Chapter 7 release
+remain separate gates.

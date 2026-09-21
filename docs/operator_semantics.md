@@ -1,7 +1,8 @@
 # Operator Semantics
 
-> Current controller: [bounded joint system](decisions/bounded_joint_system_v1.md).
-> Exact/Performance use the [finite structured-intent distance](decisions/finite_intent_discrepancy_v1.md).
+> Current controller: [unified lookahead](decisions/unified_lookahead_migration_20260921.md).
+> Lambda/epsilon use the [finite structured-intent distance](decisions/finite_intent_discrepancy_v1.md)
+> with independent mandatory validations. Old Exact/Performance runs remain historical.
 > This is not an answer-error bound. Fixed fields/hard coordinates and all audited
 > algebra semantics below remain unchanged. Earlier `metric_deferred` profiles
 > remain historical and are not the current default.

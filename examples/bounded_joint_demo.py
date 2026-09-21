@@ -1,4 +1,4 @@
-"""Current entry on a portable tiny graph. Run from an editable installation."""
+"""Historical bounded-joint entry; use unified_demo.py for current development."""
 import argparse
 import hashlib
 import json
