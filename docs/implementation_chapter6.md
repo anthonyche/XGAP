@@ -16,6 +16,7 @@ batch resume. It does not change the core algorithm or discrepancy definition.
 |---|---|---|
 |NL proposal|`llm/compact_interpretation.py`|One frozen compact-model call, no repair; deterministic template is an explicit alternative|
 |Candidate construction|`semantic/intent_scope.py`|1–8 proposals; frozen coordinate domains; ≤64 complete candidates, ≤32 coordinates|
+|Predicate coordinates|`semantic/intent_scope.py`|Optional public property/operator locator; unique match required before expansion; ambiguous/overlapping coordinates fail closed|
 |Scope authority|`agent/scope_authority.py`|Private full query; paid containment yes/no; no candidate ID disclosed|
 |Terminal certificate|`agent/intent_certificate.py`|Fixed skeleton, hard coordinates, rational weighted soft-coordinate distance|
 |Policy search|`agent/intent_strong.py`, `agent/strong_planning.py`|One shared finite AND/OR search; every selected outcome needs a continuation|

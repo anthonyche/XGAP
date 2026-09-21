@@ -1,5 +1,10 @@
 # XGAP Current Roadmap
 
+最新：本轮完成，按用户要求暂停至 **2026-09-21 10:00（北京时间）**，
+见[中文收尾报告](report/chapter7_milestone_20260920_evening.md)。读取复用已通过 4 个
+原生执行单元；三种新结构的候选/CSV 参考仅离线通过。恢复后继续真实接入与正式冻结，
+不重跑旧 pilot，不把离线候选当作独立正式题目。下文 ACTIVE 为启动时记录。
+
 当前执行T7：[72小时交付安排](decisions/chapter7_72h_execution_20260920.md)，应用Goal ACTIVE。
 新模型/native验收和FinBench 24题/48次pilot已完成；见[结果](report/chapter7_pilot_20260920.md)。
 当前优先补workload结构覆盖、核查大响应/宽扫描、原版baseline依赖与Freebase/FedShop接入；
