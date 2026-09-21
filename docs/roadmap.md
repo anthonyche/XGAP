@@ -1,5 +1,10 @@
 # XGAP Current Roadmap
 
+2026-09-21 新目标优先：按[统一 lookahead 迁移契约](decisions/unified_lookahead_migration_20260921.md)
+依次整合状态／验证、固定深度在线控制器、逐步物理动作与信息工具、tiny vertical slice、
+新版批量与论文接口。该顺序取代下文继续寻找双模式优势的开发目标；正式实验保持暂停，
+旧结果保持冻结。新稿分析完成不等于新算法已实现或取得新版成绩。
+
 **2026-09-21：正式主比较收尾后暂停，先与用户讨论结果；没有新的定时恢复。**
 [本轮 96 次执行与四图](report/chapter7_finbench_primary_20260921.md)已封存，不能将点估计
 差异宣称为 Performance 优势。恢复后仍按完整三数据集／E1–E20 计划推进，优先讨论既定

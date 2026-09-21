@@ -1,5 +1,10 @@
 # Chapter 6 implementation map — bounded joint system v1
 
+2026-09-21 writing update: the new manuscript uses one fixed-depth online planner
+with validation/loss settings. Its [code migration map](decisions/unified_lookahead_migration_20260921.md)
+supersedes this page as the target design, not as completed implementation evidence.
+The old strong-policy details below remain accurate for the sealed old runs only.
+
 This describes executable T4 code, not the complete space of research ideas.
 Current entry: `xgap.api.answer`. Engineering evidence and limitations are in
 [the T4 report](report/bounded_joint_system_20260917.md). The Chapter 7 plan was

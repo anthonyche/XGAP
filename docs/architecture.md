@@ -1,5 +1,10 @@
 # Current architecture — bounded joint system v1
 
+2026-09-21: the user has respecified the research target as unified fixed-depth
+online planning. See the [migration map](decisions/unified_lookahead_migration_20260921.md).
+The executable architecture below is the measured previous version; it is not
+yet an implementation of the revised algorithm. Formal experiments remain paused.
+
 The current public entry is `xgap.api.answer`. There is one system and two terminal
 contracts, not two independent implementations.
 

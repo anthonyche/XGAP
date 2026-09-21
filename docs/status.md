@@ -1,5 +1,9 @@
 # XGAP Current Status
 
+2026-09-21 新稿对齐：已读四份修订章节并完成[统一 lookahead 迁移分析](decisions/unified_lookahead_migration_20260921.md)。
+研究目标改为一个系统，Lambda/epsilon 是契约参数；当前运行代码仍是下述旧版本，
+新控制器、强制验证状态、metadata/probe 与逐步物理动作尚待整合。未恢复正式实验。
+
 **2026-09-21：本轮里程碑完成，按用户要求收尾后暂停，等待讨论。**
 [FinBench 正式主比较](report/chapter7_finbench_primary_20260921.md)：48 题 × 两模式，96 次全部
 回答正确，服务已关闭；四个 FinBench 原生图面板及逐题 CSV 已产出。Performance 平均略快，
