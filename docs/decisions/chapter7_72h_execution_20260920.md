@@ -195,3 +195,7 @@ Use the existing admitted SF0.1 stores, same frozen estimator, 90 s/method,
 one-hour batch wall limit. No baseline install or data preparation may overlap
 measured execution. Preserve all failures, empty references and original pilot
 results. Formal cohorts/repeats/budgets are still to be frozen after this admission.
+
+## Approved dual sampling frames and completed coverage pilot
+
+2026-09-21 the user approved separately reported all-ID and source-structural-active frames. Follow [the precise frame definitions](chapter7_sampling_strata_20260921.md); do not modify any frozen pilot. The three-shape pilot sealed all 48 cells, 24/24 Exact and 23/24 Performance answers correct, no certificate violation or retry, all owned services closed. Performance saved a controlled clarification but did not reduce measured time. Formal sample sizes and study caps remain to be frozen. See [the measured report](../report/chapter7_three_shape_pilot_20260921.md).

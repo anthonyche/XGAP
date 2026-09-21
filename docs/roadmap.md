@@ -1,5 +1,7 @@
 # XGAP Current Roadmap
 
+2026-09-21 当前顺序：三结构 pilot 已封存 → [双框正式取样](decisions/chapter7_sampling_strata_20260921.md)及样本/资源冻结 → 原版 ARUQULA/lookup/FedUP 接入 → 已就绪数据集正式矩阵，同时完成 Freebase/FedShop 数据映射及真实分片。每个测量批次期间不并行安装依赖或准备数据。保留 pilot 的一例 Performance 答案差异和未提速事实，不通过换题或调 baseline 制造优势。Goal ACTIVE，旧暂停安排已失效。
+
 2026-09-21 10:00 用户已恢复本任务，Goal 继续 ACTIVE。先完成新增三种结构的真实
 边界验收、发布有结构覆盖的冻结工作负载，再推进正式方法/epsilon 比较及外部方法。
 下述“暂停至10:00”已到期，不需要再次等待授权。

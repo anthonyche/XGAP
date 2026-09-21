@@ -1,5 +1,7 @@
 # XGAP Current Status
 
+2026-09-21 最新：三结构 SF0.1 pilot 48/48 执行完成；Exact 24/24 正确，Performance 23/24。受控组澄清 1→0，但处理 11.19→12.14 s；NL 两模式均需一次模型/澄清。21/24 空参考，不能夸大高正确率；[完整结果和哈希](report/chapter7_three_shape_pilot_20260921.md)。用户已批准[双取样框分别报告](decisions/chapter7_sampling_strata_20260921.md)，实现通过 8 项定向检查，尚未执行正式双框样本。ARUQULA 原依赖/导入通过，真实组合仍待接通。Goal ACTIVE，三数据集/E1–E20 未完成。
+
 2026-09-21 10:00 用户明确恢复，应用 Goal 为 ACTIVE。前一轮代码/报告已本地提交至
 `7a764a1`，恢复后继续新增结构的真实接入、正式冻结及其他数据/方法；全矩阵仍未完成。
 
