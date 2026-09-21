@@ -101,11 +101,11 @@ def release(*, output, prepared_path, prepared_sha256, track='full'):
             rows=reference_rows(data, template, truth), derivation='independent tabular transcription and CSV scan/DFS'))
         state = write_once(path/'state.json', publish_state(question, family, truth, clue_names=(),
             semantic_choices=[dict(name=s.name, type=s.name, slots=[s.name]) for s in family.slots]))
-        for track in ('controlled', 'nl'):
+        for input_track in ('controlled', 'nl'):
             for method in (METHODS if index % 2 == 0 else tuple(reversed(METHODS))):
-                cells.append(dict(cell_id=f's{index}-{track}-'+method.rsplit('-', 1)[-1],
+                cells.append(dict(cell_id=f's{index}-{input_track}-'+method.rsplit('-', 1)[-1],
                     method=method, request=request, scope=scope_pin, oracle=oracle, config=config,
-                    reference=reference, **({'controlled_state':state} if track=='controlled' else {})))
+                    reference=reference, **({'controlled_state':state} if input_track=='controlled' else {})))
         cases.append(dict(template=template, request=request, scope=scope_pin, oracle=oracle, reference=reference, controlled_state=state))
     # All deterministic cells precede model calls, exposing execution errors cheaply.
     cells.sort(key=lambda c: 'controlled_state' not in c)
