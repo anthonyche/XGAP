@@ -295,6 +295,21 @@ class FamilyDomain:
                            max(costs) if self.settings.limits.aggregation=='max' else
                            sum(o.probability*c for o,c in zip(first.outcomes,costs)))), first)
 
+    def check_terminal(self,state,terminal):
+        # Bounded direct check, independent of optional terminal-enumeration caps.
+        index=terminal.payload['candidate_index']
+        if self.settings.decision_order=='semantic_then_physical' and len(state.bindings)<len(self.names):return False
+        cert=self.contract.check(index,state.bindings)
+        for key in self.pool(state,index):
+            plan=self.plans[key][1]
+            if self.contract.family.candidates[index].candidate_id+':'+plan.plan_id!=terminal.key:continue
+            if any(dict(state.facts).get(n)!=label for n,label in self.required_facts(plan)):return False
+            calls=sum(n.kind in (RuntimeNodeKind.REMOTE_QUERY,RuntimeNodeKind.REMOTE_BIND_QUERY) for n in plan.nodes)
+            expected=Terminal(terminal.key,self.score(state,key),Resources(remote_calls=calls,bytes=None,peak_bytes=None),
+                dict(candidate_index=index,certificate=cert,plan=plan))
+            return cert['eligible'] and terminal==expected
+        return False
+
     def verify_completion(self, state, witness):
         # This is a direct reconstruction of the fixed one-step recipe over N
         # candidates, not recursive completion or enumeration over horizon H.

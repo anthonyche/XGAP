@@ -240,8 +240,12 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
             return None
         if isinstance(w.first, Terminal):
             # Recheck actual eligibility even for a purported terminal witness.
-            admitted = bounded(domain.terminals(s.payload), limits.max_terminals)
-            if w.first not in admitted or not s.used.then(w.first.resources).fits(limits.resources):
+            if hasattr(domain, 'check_terminal'):
+                admitted = domain.check_terminal(s.payload, w.first)
+            else:
+                from itertools import islice
+                admitted = w.first in tuple(islice(domain.terminals(s.payload), limits.max_terminals))
+            if not admitted or not s.used.then(w.first.resources).fits(limits.resources):
                 return None
             return w.first, w.estimated_cost, (), w
         children, reason = successors(s, w.first)
@@ -289,6 +293,8 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
         for action in actions:
             if clock() >= deadline:
                 raise SearchLimit('optional_deadline')
+            if len(records) >= limits.max_states:
+                raise SearchLimit('decision_record_limit')
             children, reason = successors(s, action)
             record = dict(state=domain.key(s.payload), action=action.key, status=reason or 'evaluated')
             records.append(record)
@@ -340,7 +346,9 @@ def run_online(initial, domain, *, perform, execute, limits=Limits()):
                 report['status'] = decision['status']
                 return report
             if isinstance(choice, Terminal):
-                if (not domain.valid(state.payload) or choice not in tuple(domain.terminals(state.payload))
+                eligible = (domain.check_terminal(state.payload,choice) if hasattr(domain,'check_terminal')
+                            else choice in tuple(domain.terminals(state.payload)))
+                if (not domain.valid(state.payload) or not eligible
                         or not state.used.then(choice.resources).fits(limits.resources)):
                     raise ValueError('Actual state no longer supports the selected terminal')
                 report['final_plan_executions'] = 1

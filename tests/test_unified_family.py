@@ -102,3 +102,28 @@ def test_empty_lost_or_bad_seed_does_not_shrink_semantic_uncertainty():
     domain = FamilyDomain(QUESTION, contract, {}, JointCostProfile(), authority_name='user', authority_version=f.identity)
     assert domain.completion(FamilyState()) is None
     assert len(contract.consistent()) == len(f.candidates)
+
+
+def test_small_optional_terminal_cap_cannot_destroy_existing_completion(tmp_path):
+    settings=UnifiedSettings(epsilon='1',relaxable=('hops','lower','upper'),
+        limits=Limits(max_terminals=1))
+    r,calls=invocation(tmp_path,settings)
+    assert r['success'] and r['final_plan_executions']==1 and calls
+    assert r['joint_policy']['rounds'][0]['status']=='representation_limit'
+
+
+def test_sequential_barrier_and_public_initial_clues_use_new_controller(tmp_path):
+    from dataclasses import replace
+    from test_unified_actions import fixture
+    from xgap.agent.scope_authority import ScopedQueryUser
+    from xgap.api import answer_unified_controlled
+    data,options,calls,family,_,_=fixture()
+    path=tmp_path/'private.json';path.write_text(json.dumps(private_query_intent(QUESTION,data['query_template'])))
+    user=ScopedQueryUser(family,path,hashlib.sha256(path.read_bytes()).hexdigest())
+    settings=UnifiedSettings(decision_order='semantic_then_physical',limits=Limits(optional_ms=3000))
+    r=answer_unified_controlled(QUESTION,family,user,settings=settings,
+        initial_clues={'hops':3,'lower':True,'upper':True},**options)
+    assert r['success'] and r['answer_rows']==data['expected']
+    assert r['model_calls']==r['clarification_calls']==0 and r['final_plan_executions']==1
+    assert all(t['kind']!='binding' for t in r['trace'])
+    assert r['terminal_certificate']['missing_validations']==[]
