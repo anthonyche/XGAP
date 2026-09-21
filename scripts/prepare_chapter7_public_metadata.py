@@ -84,7 +84,7 @@ def metadata_lines(catalog, bindings, mapping):
             if value not in terms:
                 raise ValueError('Catalog schema binding has no RDF representation')
             uri = terms[value]['representation']
-        elif kind in ('source', 'scalar'):
+        elif kind in ('source', 'scalar', 'constraint'):
             continue  # These scalar catalog entries are not new graph resources.
         else:
             raise ValueError('Unsupported public catalog kind')

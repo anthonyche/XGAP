@@ -35,3 +35,15 @@ def test_rdf_labels_preserve_controls_quotes_and_literal_backslashes():
     value = 'literal \\b \\f path, actual \b\f\n\r\t and "quote"'
     graph = rdflib.Graph().parse(data='<https://a> <https://p> '+label(value)+' .', format='nt')
     assert str(next(graph.objects())) == value
+
+
+def test_real_frozen_catalog_constraint_values_are_not_rdf_resources():
+    from pathlib import Path
+    import json
+    fixture=Path(__file__).resolve().parents[1]/'datasets/bounded_joint_toy_v1/fixture.json'
+    data=json.loads(fixture.read_text())
+    # Full legacy catalog kind set, including literal constraints. No query or
+    # private truth is needed to publish labels.
+    entries=[dict(candidate_id=k,canonical_label=str(v['value']),aliases=[]) for k,v in data['bindings'].items()]
+    lines=list(metadata_lines({'entries':entries},data['bindings'],data['mapping']))
+    assert lines and not any('<True>' in line or '<False>' in line for line in lines)
