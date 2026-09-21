@@ -1,0 +1,5 @@
+figure,dataset,deployment,frame,method,mean,ci95_low,ci95_high,interval_method,families,records,planned,correct,answered,common_completion_cases,empty_references,cohort,metric,unit
+E8,FinBench SF0.1 derived,native_neo4j_fuseki,all_ids,xgap-bounded-joint-exact,100,86.20237953250198,100.0,wilson_one_observation_per_independent_family,24,24,24,24,24,24,17,All planned requests,coverage,Answer coverage (%)
+E8,FinBench SF0.1 derived,native_neo4j_fuseki,all_ids,xgap-bounded-joint-performance,100,86.20237953250198,100.0,wilson_one_observation_per_independent_family,24,24,24,24,24,24,17,All planned requests,coverage,Answer coverage (%)
+E8,FinBench SF0.1 derived,native_neo4j_fuseki,active_anchors,xgap-bounded-joint-exact,100,86.20237953250198,100.0,wilson_one_observation_per_independent_family,24,24,24,24,24,24,20,All planned requests,coverage,Answer coverage (%)
+E8,FinBench SF0.1 derived,native_neo4j_fuseki,active_anchors,xgap-bounded-joint-performance,100,86.20237953250198,100.0,wilson_one_observation_per_independent_family,24,24,24,24,24,24,20,All planned requests,coverage,Answer coverage (%)

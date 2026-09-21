@@ -1,5 +1,12 @@
 # XGAP Current Status
 
+**2026-09-21：本轮里程碑完成，按用户要求收尾后暂停，等待讨论。**
+[FinBench 正式主比较](report/chapter7_finbench_primary_20260921.md)：48 题 × 两模式，96 次全部
+回答正确，服务已关闭；四个 FinBench 原生图面板及逐题 CSV 已产出。Performance 平均略快，
+配对区间跨零，澄清／模型／bytes 均无节省；全 ID／活跃框分别 17/24 和 20/24 空参考。
+原版 ARUQULA/FedUP 串接代码及定向测试已补，新的真实组合验收未执行。
+整体三数据集／E1–E20 未完成；下文旧 ACTIVE／恢复安排不覆盖这次暂停指令。
+
 2026-09-21 正式主比较已制定[双框冻结协议](decisions/chapter7_finbench_primary_freeze_20260921.md)：每框24题、共96个NL执行单元，ε=1/2、每配置一次，2小时/2GiB上限，结果前封存。
 [原版外部依赖/Redis/lookup已通过接口门](report/chapter7_baseline_setup_20260921.md)，真实图/模型/FedUP串接待做；不改变baseline算法。
 

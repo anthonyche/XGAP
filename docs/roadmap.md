@@ -1,5 +1,12 @@
 # XGAP Current Roadmap
 
+**2026-09-21：正式主比较收尾后暂停，先与用户讨论结果；没有新的定时恢复。**
+[本轮 96 次执行与四图](report/chapter7_finbench_primary_20260921.md)已封存，不能将点估计
+差异宣称为 Performance 优势。恢复后仍按完整三数据集／E1–E20 计划推进，优先讨论既定
+受控扫描中的澄清动作／信息成本假设、空答案对质量证据的限制；原版组合真实门、
+Freebase/FedShop 映射、真实分片与其余图均为待办。本批保持冻结，不按结果替换题目或重跑。
+下文历史执行顺序和 ACTIVE 状态只供溯源。
+
 2026-09-21 正式主比较已制定[双框冻结协议](decisions/chapter7_finbench_primary_freeze_20260921.md)：每框24题、共96个NL执行单元，ε=1/2、每配置一次，2小时/2GiB上限，结果前封存。
 [原版外部依赖/Redis/lookup已通过接口门](report/chapter7_baseline_setup_20260921.md)，真实图/模型/FedUP串接待做；不改变baseline算法。
 

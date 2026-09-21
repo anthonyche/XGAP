@@ -1,0 +1,9 @@
+figure,dataset,deployment,frame,method,mean,ci95_low,ci95_high,interval_method,families,records,planned,correct,answered,common_completion_cases,empty_references,cohort,metric,unit
+E2,FinBench SF0.1 derived,native_neo4j_fuseki,all_ids,xgap-bounded-joint-exact,30.957167466481526,29.779153313239412,32.15667213598888,family_cluster_percentile_bootstrap,24,24,24,24,24,24,17,All planned requests,backend_response_bytes,"Mean backend transfer
+(MiB/request)"
+E2,FinBench SF0.1 derived,native_neo4j_fuseki,all_ids,xgap-bounded-joint-performance,30.957167466481526,29.779153313239412,32.15667213598888,family_cluster_percentile_bootstrap,24,24,24,24,24,24,17,All planned requests,backend_response_bytes,"Mean backend transfer
+(MiB/request)"
+E2,FinBench SF0.1 derived,native_neo4j_fuseki,active_anchors,xgap-bounded-joint-exact,32.01153246561686,30.784738129377367,33.16552065610886,family_cluster_percentile_bootstrap,24,24,24,24,24,24,20,All planned requests,backend_response_bytes,"Mean backend transfer
+(MiB/request)"
+E2,FinBench SF0.1 derived,native_neo4j_fuseki,active_anchors,xgap-bounded-joint-performance,32.01153246561686,30.784738129377367,33.16552065610886,family_cluster_percentile_bootstrap,24,24,24,24,24,24,20,All planned requests,backend_response_bytes,"Mean backend transfer
+(MiB/request)"

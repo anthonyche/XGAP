@@ -1,4 +1,11 @@
-# XGAP Active Goal
+# XGAP Goal
+
+**2026-09-21 本轮收尾后按用户要求暂停，等待结果讨论；未约定自动恢复时间。**
+FinBench 双框正式 48 题／96 次真实 NL 执行已全部封存，两个模式各 48/48 正确、无失败或重试。
+两框耗时配对区间均跨零；两模式的信息获取和传输量相同，本轮不支持 Performance 提速。
+见[正式结果与图表](report/chapter7_finbench_primary_20260921.md)。E1/E2/E7/E8 的 FinBench
+原生面板完成；三数据集完整矩阵、真实分片及原版外部比较仍未完成，完整 Goal 保持原范围。
+暂停期间保留所有原始结果，下一轮执行需用户明确恢复；下文 ACTIVE 为此前记录。
 
 2026-09-21 正式主比较已制定[双框冻结协议](decisions/chapter7_finbench_primary_freeze_20260921.md)：每框24题、共96个NL执行单元，ε=1/2、每配置一次，2小时/2GiB上限，结果前封存。
 [原版外部依赖/Redis/lookup已通过接口门](report/chapter7_baseline_setup_20260921.md)，真实图/模型/FedUP串接待做；不改变baseline算法。
