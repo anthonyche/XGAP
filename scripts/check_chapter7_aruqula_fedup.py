@@ -90,7 +90,8 @@ def check(*, profile_path, profile_sha256, output, read_key=False):
     receipt = dict(schema_version='xgap-ch7-aruqula-fedup-admission-v1', source_commit=commit,
         success=False, composition_admitted=False, paper_result=False, attempts=1,
         automatic_retries=0, baseline_algorithm_changes=0, original_prompt_changes=0)
-    design = dict(total_wall_seconds=900, package_max_bytes=512*1024**2, free_disk_reserve_bytes=6*1024**3)
+    # Three fixed Jena TDB stores alone occupy about 576 MiB before any trial.
+    design = dict(total_wall_seconds=900, package_max_bytes=1024**3, free_disk_reserve_bytes=6*1024**3)
     study = BatchBudget(root, design, time.time())
     try:
         with deadline(900):
