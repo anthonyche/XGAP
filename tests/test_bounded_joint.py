@@ -71,6 +71,25 @@ def test_candidate_construction_bounds_and_no_authority_from_proposal():
         construct_scope([base_query()]*8, replace(scope(),max_candidates=32), 'tiny')
 
 
+def test_public_scope_reaches_proposal_without_private_authority(tmp_path):
+    from xgap.experiments.bounded_joint_toy import local_runtime
+    data, options, calls = local_runtime()
+    query = data['query_template']; schema = options.pop('source_schema')
+    provider = ControlledCompactProvider(query)
+    observed = []
+    original = provider.interpret
+    provider.interpret = lambda request: (observed.append(request.to_dict()) or original(request))
+    request = InterpretationRequest(QUESTION, {'source_schema': schema})
+    result = answer(request, provider, mode='exact', scope_policy=scope(), authority=user(tmp_path, query),
+                    limits=StrongSearchLimits(planning_ms=10000), **options)
+    assert result['success'] and calls and len(observed) == 1
+    public = observed[0]['context']['public_scope_construction']
+    assert public['policy'] == json.loads(json.dumps(scope().to_dict()))
+    assert set(public) == {'policy', 'instruction'}
+    assert 'private' not in json.dumps(observed[0]) and 'nonce' not in json.dumps(observed[0])
+    assert set(request.context) == {'source_schema'}
+
+
 def test_scope_confirmation_does_not_reveal_truth_or_repair_bad_structure(tmp_path):
     q=base_query();auth=user(tmp_path,q);draft=construct_scope([q],scope(),'tiny')
     reply=auth.confirm_scope(QUESTION,draft)

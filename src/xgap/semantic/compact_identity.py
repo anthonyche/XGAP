@@ -1,9 +1,10 @@
 """Bounded representation equality, not arbitrary query equivalence.
 
-Declaration positions determine alpha-renaming. Only the pure WHERE conjunction
-is sorted. This neither reorders declarations nor rewrites the stored AST/slot
-coordinates. For bounded query size B and P predicates: O(B + P log P) key work
-(including serialized comparison keys); no graph-isomorphism search.
+Structural roles color declarations before alpha-renaming. The final complete
+renamed AST must still match exactly: colors alone never establish equivalence.
+Unresolved color ties retain declaration order (possible false negatives). This
+does not rewrite the stored AST/slot coordinates or search permutations. At most
+V refinement rounds on V declarations and E references: polynomial bounded work.
 """
 from copy import deepcopy
 import json
@@ -11,11 +12,67 @@ import json
 from xgap.semantic.compact_query import validate_query
 
 
-IDENTITY_VERSION = 'xgap-compact-representation-identity-v1'
+IDENTITY_VERSION = 'xgap-compact-representation-identity-v2'
+
+
+def _role_order(value):
+    """Resolve ordinary declaration permutations; no semantic query rewrites."""
+    encode = lambda x: json.dumps(x, sort_keys=True, separators=(',', ':'), allow_nan=False)
+    groups = [('node', value['nodes']), ('edge', value['edges']),
+              ('path', [value['path']] if value['path'] else [])]
+    features, links = {}, {}
+    for kind, declarations in groups:
+        for declaration in declarations:
+            name = declaration['var']
+            features[name] = [[kind, {k:v for k,v in declaration.items() if k not in ('var','source','target')}]]
+            links[name] = []
+
+    def connect(left, right, label):
+        links[left].append((['out', label], right))
+        links[right].append((['in', label], left))
+
+    for _, declarations in groups[1:]:
+        for declaration in declarations:
+            for role in ('source', 'target'):
+                connect(declaration['var'], declaration[role], role)
+    for alias, expression in value['select'].items():
+        ref = expression.get('field') if 'aggregate' in expression else expression
+        if ref is not None:
+            features[ref['var']].append(['select', alias, ref['property'],
+                {k:v for k,v in expression.items() if k not in ('var','property','field')}])
+    for predicate in value['where']:
+        left, right = predicate['left'], predicate['right']
+        spec = [left['property'], predicate['op'], predicate['value_type']]
+        if 'var' in right:
+            connect(left['var'], right['var'], ['predicate', spec, right['property']])
+        else:
+            features[left['var']].append(['predicate', spec, right])
+    grain = value.get('contribution_by', value.get('deduplicate_by'))
+    for position, name in enumerate(grain or []):
+        features[name].append(['contribution', position])
+    seeds = {name: encode(sorted(items, key=encode)) for name, items in features.items()}
+
+    def ranks(signatures):
+        labels = {value:i for i,value in enumerate(sorted(set(signatures.values())))}
+        return {name:labels[value] for name,value in signatures.items()}
+
+    colors = ranks(seeds)
+    for _ in range(len(features)):
+        refined = ranks({name:encode([seeds[name], colors[name], sorted(
+            ([role, colors[other]] for role, other in links[name]), key=encode)]) for name in features})
+        if refined == colors:
+            break
+        colors = refined
+    for _, declarations in groups:
+        declarations.sort(key=lambda d: colors[d['var']])
 
 
 def representation_key(query, *, version='v1'):
     value = deepcopy(validate_query(query, version=version))
+    try:
+        _role_order(value)
+    except KeyError as error:
+        raise ValueError('Undeclared compact variable reference') from error
     names = {}
     for prefix, declarations in (('n', value['nodes']), ('e', value['edges']),
                                  ('p', [value['path']] if value['path'] else [])):

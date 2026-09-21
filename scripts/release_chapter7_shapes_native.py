@@ -56,7 +56,9 @@ def selected_truth(family):
     raise ValueError('Tiny boundary absent from complete scope')
 
 
-def release(*, output, prepared_path, prepared_sha256):
+def release(*, output, prepared_path, prepared_sha256, track='full'):
+    if track not in ('full', 'nl-exact'):
+        raise ValueError('Unknown shape admission track')
     commit = source_commit()
     root = Path(output).resolve()
     root.mkdir(parents=True, exist_ok=False)
@@ -107,6 +109,8 @@ def release(*, output, prepared_path, prepared_sha256):
         cases.append(dict(template=template, request=request, scope=scope_pin, oracle=oracle, reference=reference, controlled_state=state))
     # All deterministic cells precede model calls, exposing execution errors cheaply.
     cells.sort(key=lambda c: 'controlled_state' not in c)
+    if track == 'nl-exact':
+        cells = [c for c in cells if 'controlled_state' not in c and c['method'] == METHODS[0]]
     design = dict(total_wall_seconds=1800, package_max_bytes=1024**3, free_disk_reserve_bytes=6*1024**3,
         method_wall_seconds=90, method_rss_bytes=1024**3, source_rss_bytes=2*1024**3, startup_seconds=120,
         source_budget=asdict(SourceObservationBudget(capture_compression='gzip', max_calls=64,
@@ -115,7 +119,8 @@ def release(*, output, prepared_path, prepared_sha256):
     batch = write_once(root/'batch.json', dict(schema_version=SCHEMA, deployment='native',
         prepared=prepared_pin, design=design, cells=cells))
     return write_once(root/'release.json', dict(schema_version='xgap-ch7-shapes-native-gate-v1',
-        source_commit=commit, batch=batch, cases=cases, maximum_model_calls=6, maximum_final_plans=12,
+        source_commit=commit, batch=batch, cases=cases, track=track,
+        maximum_model_calls=sum('controlled_state' not in c for c in cells), maximum_final_plans=len(cells),
         formal_result=False, source_reference=file_pin(FIXTURE/'family_reference.json')))
 
 
@@ -123,4 +128,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('output', 'prepared-path', 'prepared-sha256'):
         parser.add_argument('--'+name, required=True)
+    parser.add_argument('--track', choices=('full', 'nl-exact'), default='full')
     print(json.dumps(release(**vars(parser.parse_args()))))

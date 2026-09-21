@@ -37,7 +37,23 @@ def answer(request, provider, *, mode, scope_policy, authority, physical_profile
         schema = request.context['source_schema']
         if not isinstance(schema, dict):
             raise ValueError('Frozen source schema required')
-        report['interpretation'] = interpreted = interpret_candidate_question(request, provider,
+        # Public alternatives, never the authority's selected value or query.
+        # The compact wire requires complete proposals; an unknown predicate
+        # must be represented by one point in its domain rather than omitted.
+        proposal_request = replace(request, context={**request.context,
+            'public_scope_construction': {
+                'policy': scope_policy.to_dict(),
+                'instruction': (
+                    'These are public alternative domains, not confirmed user values. '
+                    'Produce a complete representative query containing every declared coordinate. '
+                    'Use any one listed value for each unknown coordinate; the host expands all legal '
+                    'alternatives and queries the user for authority. Do not omit an unknown predicate, '
+                    'including a required boolean condition whose true/false value is unspecified. '
+                    'Infer variable roles from the original question, never from array positions. '
+                    'If the question requires each distinct edge to contribute once, name the '
+                    'contributing edge variable in contribution_by. Do not invent other constraints.')
+            }})
+        report['interpretation'] = interpreted = interpret_candidate_question(proposal_request, provider,
             candidate_cap=physical_profile.candidate_cap)
         for key in ('input_tokens', 'output_tokens'):
             report[key] = interpreted[key] if interpreted['token_usage_complete'] else None

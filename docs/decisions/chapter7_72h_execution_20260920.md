@@ -139,3 +139,27 @@ GitHub connectivity recovered and all prior local commits through `7a764a1` were
 successfully pushed. The exact official LiteLLM 1.37.19 source tag was recovered;
 the baseline's 300 s dependency-install attempt is preserved as budget-stopped,
 not an algorithm failure. No baseline source changed or model call occurred.
+
+The resumed tiny gate completed all 12 cells: six controlled answers correct;
+six live NL proposals failed before scope confirmation because an unspecified
+boolean predicate was omitted. Retain all six failures. The representative
+compact proposal needs the public finite-domain construction contract at its
+frontend: it must contain each unknown coordinate, without treating its arbitrary
+representative as authoritative. Forward only the public ScopePolicy and this
+instruction, never the private query/outcome. All compared methods must have the
+same public scope metadata available; neither source assignments nor gold intent
+are introduced. An external method may use its own native way of consuming it;
+do not change its prompts/algorithm to exploit it.
+
+Model output also reordered node/edge declarations. Representation identity v2
+uses finite structural-role color refinement, not permutation enumeration; it
+compares the full renamed AST, so identical colors alone cannot authorize scope.
+Unresolved symmetry retains declaration order and may conservatively reject.
+Directions, literal values, ordering, aggregate and contribution grain remain
+exact. No missing condition is inserted into a saved proposal. Existing failed
+records keep their original identities and code pins.
+
+After focused checks, allow a separate three-call NL-Exact development diagnostic
+(one per shape, shared frontend). Same questions/data and limits, new code and
+directory, no automatic retry or replacement of the failed six cells. This tests
+the frontend contract, not an improved model-quality score or formal result.

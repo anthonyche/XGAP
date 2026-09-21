@@ -67,6 +67,41 @@ def test_aggregate_and_contribution_references_are_renamed(version):
     assert representation_key(q,version=version)==representation_key(renamed(q),version=version)
 
 
+def test_role_identity_handles_declaration_permutations_without_relaxing_semantics():
+    from itertools import permutations
+    from xgap.experiments.chapter7_finbench_families import make_family
+    family, _, _, _ = make_family('company_transfer_summary', '1',
+        '2020-01-01 00:00:00.000', '2020-01-04 00:00:00.000', 'tiny')
+    query = json.loads(family.candidates[0].query_json)
+    other = deepcopy(query)
+    other['nodes'].reverse(); other['edges'].reverse(); other['where'].reverse()
+    before = deepcopy(other)
+    assert representation_key(query, version='v2') == representation_key(other, version='v2')
+    assert other == before
+    for nodes in permutations(query['nodes']):
+        for edges in permutations(query['edges']):
+            reordered = {**query, 'nodes':list(nodes), 'edges':list(edges)}
+            assert representation_key(query, version='v2') == representation_key(reordered, version='v2')
+    other['contribution_by'] = None
+    assert representation_key(query, version='v2') != representation_key(other, version='v2')
+    other = deepcopy(before)
+    edge = other['edges'][0]
+    edge['source'], edge['target'] = edge['target'], edge['source']
+    assert representation_key(query, version='v2') != representation_key(other, version='v2')
+
+
+def test_symmetric_colors_do_not_replace_full_graph_comparison():
+    # Same types/degrees/colors: a 6-cycle differs from two disconnected triangles.
+    from test_compact_lowering import node, edge, query
+    nodes = [node('n'+str(i), 'account') for i in range(6)]
+    def cycle(edges):
+        return query(nodes, [edge('e'+str(i), 'TRANSFERRED_TO', 'n'+str(a), 'n'+str(b))
+                             for i,(a,b) in enumerate(edges)], {'count':{'aggregate':'count','field':None,'distinct':False}})
+    a = cycle([(i,(i+1)%6) for i in range(6)])
+    b = cycle([(0,1),(1,2),(2,0),(3,4),(4,5),(5,3)])
+    assert representation_key(a) != representation_key(b)
+
+
 def test_renamed_model_proposal_reaches_real_rdf_execution(tmp_path):
     data,options,calls=local_runtime();q=data['query_template'];schema=options.pop('source_schema')
     provider=ControlledCompactProvider(renamed(q))
