@@ -21,6 +21,11 @@ from xgap.experiments.one_shot_profile import FrozenOneShotProfile, native_clien
 from xgap.experiments.one_shot_records import write_once
 
 
+def public_request():
+    return dict(schema_version='xgap-one-shot-evaluation-request-v1', question_id='UNIFIED-TINY',
+                question=QUESTION, population='authored toy', exposure='development')
+
+
 def main(output, prepared_path, prepared_sha256):
     root = Path(output).resolve()
     root.mkdir(parents=True, exist_ok=False)
@@ -33,6 +38,7 @@ def main(output, prepared_path, prepared_sha256):
             raise ValueError('Commit before native boundary gate')
         receipt['source_commit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()
         data, _ = load_inputs()
+        request_pin = write_once(root/'request.json', public_request())
         user = write_once(root/'private-user.json', private_query_intent(QUESTION, data['query_template']))
         intent = write_once(root/'intent.json', dict(question=QUESTION, population='authored eight-node toy',
             cases=['strict', 'zero_optional_search', 'no_completion_calls'], expected_final_executions=[1, 1, 0],
@@ -50,10 +56,9 @@ def main(output, prepared_path, prepared_sha256):
         profile = FrozenOneShotProfile.load(pin['path'], expected_sha256=pin['sha256'])
         materialized = profile.materialize()
         _, _, _, sources, backends, specs, modes = materialized
-        request = profile.request(dict(question_id='UNIFIED-TINY', question=QUESTION, population='authored toy',
-                                       exposure='development'), 'performance', materialized)
+        request = profile.request(public_request(), 'performance', materialized)
         physical, _ = modes['performance']  # Reuse the frozen physical input, not its historical controller.
-        receipt['inputs'] = dict(profile=pin, private_user=user, intent=intent,
+        receipt['inputs'] = dict(profile=pin, request=request_pin, private_user=user, intent=intent,
                                 prepared=dict(path=str(prepared_path), sha256=prepared_sha256))
         cases = [('strict', UnifiedSettings()),
                  ('zero_optional_search', UnifiedSettings(limits=Limits(optional_ms=0))),
