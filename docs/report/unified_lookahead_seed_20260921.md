@@ -84,4 +84,35 @@ rules remain an explicit next-step interface, not an automatic singleton rule.
 3. Pin the new controller/settings in the durable batch worker and revise the
    evaluation release. Do not reuse old Exact/Performance method IDs for this code.
 
-Real native evidence is appended only after the pinned gate completes.
+## Completed verification
+
+40 distinct focused tests passed across incremental checks: 4 validation-contract,
+15 lookahead/resource/failure-accounting, 8 new family/API, and 13 existing bounded
+joint tests. The initial native harness missed the frozen request's schema field;
+it failed before any case execution. Its failure receipt and complete service
+closure are preserved. The corrected request was checked offline against that
+frozen profile before starting a new, separately recorded admission.
+
+The real native gate on code `d6adaa0` passed all three expected outcomes:
+
+|Case|Outcome|Answer rows|Scope / clarification calls|Final plans|Observed backend HTTP requests|
+|---|---|---:|---:|---:|---:|
+|Strict validation, fixed-depth search|Correct independent reference|4|1 / 1|1|9|
+|Zero optional-search time|Correct answer through saved completion|4|1 / 1|1|9|
+|Zero remaining validation calls|`completion_witness_unavailable`|No answer|1 / 0|0|0|
+
+Both executions use actual Neo4j and Fuseki over the same frozen eight-node
+development input. No model calls, dataset builds, training, baseline runs or
+current-query alternative-plan executions occurred. These are correctness and
+interface results, not a speed comparison or formal Chapter 7 result. All owned
+process groups were drained, services terminated and observers stopped. Frozen
+source data and original evidence were retained.
+
+Evidence roots:
+
+- Successful gate: `/Users/anthonyche/xgap-data/unified-lookahead-seed-native-20260921-v2`.
+  Receipt SHA-256: `405c7f310a22a0b186332a78df2218a5a9951bf195daf82c50e8c26173e17d14`.
+- Preserved setup failure: `/Users/anthonyche/xgap-data/unified-lookahead-seed-native-20260921-v1`.
+  Receipt SHA-256: `2f0ee77fd62d99bfeab1fff33ab17b0a945c4d3b9bc0accd9e9dbe1826b70e94`.
+- Frozen prepared tiny stores: `/Users/anthonyche/xgap-data/native-campaign-boundary-20260913-v2/prepared.json`,
+  SHA-256 `8f3c88515f52f8526faa4f9963a381ad1df1af7bf419f9bbdce0ec5e11648051`.

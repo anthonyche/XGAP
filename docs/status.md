@@ -1,5 +1,9 @@
 # XGAP Current Status
 
+统一首阶段验收已完成：40 项不重复定向检查通过；真实 Neo4j/Fuseki 上两次四行正确回答、
+一次验证预算不足的零数据库调用拒绝均符合预期，服务已关闭。
+[报告与失败留存](report/unified_lookahead_seed_20260921.md#completed-verification)。这不是完整新版动作空间或正式实验完成。
+
 2026-09-21 用户已授权开始实现；[统一控制器首阶段](report/unified_lookahead_seed_20260921.md)
 已接入独立验证、fixed-D lookahead、保底预算、无进展去重及现有前端／编译执行。
 当前是 protected-seed slice；真实 metadata/probe、逐步物理变换与新版批量尚未完成。
