@@ -66,3 +66,31 @@ def test_overlap_keeps_cluster_identity_without_excluding_uniform_anchors():
 def test_insufficient_active_frame_fails_without_replenishing_from_inactive():
     frames=fixture();frames['active_anchors']['company']=()
     with pytest.raises(ValueError,match='Insufficient'):select_families(frames,per_shape=8)
+
+
+def test_known_development_exposures_are_excluded_from_both_frames():
+    frames=fixture()
+    before=select_families(frames,per_shape=8)
+    excluded={k:tuple({r['anchor'] for r in before['selected'] if r['anchor_type']==k})
+              for k in ('account','company')}
+    after=select_families(frames,per_shape=8,excluded=excluded)
+    assert all(r['anchor'] not in excluded[r['anchor_type']] for r in after['selected'])
+    assert len(after['selected'])==48
+
+
+def test_primary_order_is_truth_independent_and_balances_modes_per_shape_frame():
+    from copy import deepcopy
+    from release_chapter7_finbench_formal import execution_order
+    selection=select_families(fixture(),per_shape=8)
+    first=execution_order(selection)
+    altered=deepcopy(selection)
+    for r in altered['selected']:r['truth_index']=(r['truth_index']+1)%16
+    assert execution_order(altered)==first
+    assert len({b['index'] for b in first})==48
+    by_index={r['index']:r for r in selection['selected']}
+    for stratum in STRATA:
+        for template in TEMPLATES:
+            blocks=[b for b in first if by_index[b['index']]['stratum']==stratum and
+                    by_index[b['index']]['template']==template]
+            assert len(blocks)==8
+            assert sum(b['methods'][0].endswith('-exact') for b in blocks)==4

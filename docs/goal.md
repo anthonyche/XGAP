@@ -1,5 +1,8 @@
 # XGAP Active Goal
 
+2026-09-21 正式主比较已制定[双框冻结协议](decisions/chapter7_finbench_primary_freeze_20260921.md)：每框24题、共96个NL执行单元，ε=1/2、每配置一次，2小时/2GiB上限，结果前封存。
+[原版外部依赖/Redis/lookup已通过接口门](report/chapter7_baseline_setup_20260921.md)，真实图/模型/FedUP串接待做；不改变baseline算法。
+
 **2026-09-21 当前目标：继续 ACTIVE。** 用户批准正式实验采用全 ID 均匀框与源结构活跃锚点框，分别报告，详见[取样契约](decisions/chapter7_sampling_strata_20260921.md)。三结构 SF0.1 pilot 已完成 24 题/48 次执行：Exact 24/24 正确，Performance 23/24；证书违规 0、零重试、服务关闭。受控 Performance 少一次澄清但平均更慢，不能宣称提速。见[结果](report/chapter7_three_shape_pilot_20260921.md)。当前继续冻结双框正式样本/预算、接入原版外部方法与其余数据集；旧暂停安排已被恢复指令覆盖。
 
 **2026-09-21 10:00 用户已明确恢复执行**：“可以继续了，时间到了”。应用 Goal 继续

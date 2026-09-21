@@ -48,7 +48,7 @@ def structural_frames(accounts, companies, transfers, company_by_account):
     }
 
 
-def select_families(frames, *, per_shape, seed=SEED, target_fold='formal'):
+def select_families(frames, *, per_shape, seed=SEED, target_fold='formal', excluded=None):
     """Uniform anchors without replacement within each frame, then window/intent.
 
     Account anchors are distinct across its two shapes within each frame. Frames
@@ -68,9 +68,16 @@ def select_families(frames, *, per_shape, seed=SEED, target_fold='formal'):
         normalized[stratum] = {kind: _ids(ids) for kind, ids in frames[stratum].items()}
     if any(set(normalized['active_anchors'][k]) - set(normalized['all_ids'][k]) for k in ('account','company')):
         raise ValueError('Active frame must be contained in all source identifiers')
+    excluded = excluded if excluded is not None else dict(account=(), company=())
+    if set(excluded) != {'account','company'}:
+        raise ValueError('Type-qualified prior-exposure exclusions required')
+    excluded = {kind: _ids(ids) for kind,ids in excluded.items()}
+    if any(set(excluded[k]) - set(normalized['all_ids'][k]) for k in excluded):
+        raise ValueError('Prior-exposure exclusion is absent from the source frame')
     selected, evidence = [], []
     for stratum in STRATA:
-        pools = {k: [a for a in ids if fold(k, a) == target_fold] for k, ids in normalized[stratum].items()}
+        pools = {k: [a for a in ids if fold(k, a) == target_fold and a not in excluded[k]]
+                 for k, ids in normalized[stratum].items()}
         if len(pools['account']) < 2 * per_shape or len(pools['company']) < per_shape:
             raise ValueError('Insufficient independent anchors in '+stratum)
         rng = random.Random(fingerprint([seed, stratum, target_fold]))
@@ -89,7 +96,7 @@ def select_families(frames, *, per_shape, seed=SEED, target_fold='formal'):
                     family_group_id=fingerprint(['finbench-sf0.1', kind, anchor]),
                     window=rng.randrange(4), truth_index=rng.randrange(16)))
     return dict(schema_version='xgap-ch7-dual-frame-selection-v1', seed=seed, target_fold=target_fold,
-        per_shape=per_shape, frames=evidence, selected=selected,
+        per_shape=per_shape, frames=evidence, selected=selected, prior_exposure_exclusions=excluded,
         samples_per_stratum=3*per_shape, total_case_records=len(selected),
         distinct_anchor_groups=len({s['family_group_id'] for s in selected}),
         overlap_anchor_groups=6*per_shape-len({s['family_group_id'] for s in selected}),

@@ -1,5 +1,8 @@
 # XGAP Current Roadmap
 
+2026-09-21 正式主比较已制定[双框冻结协议](decisions/chapter7_finbench_primary_freeze_20260921.md)：每框24题、共96个NL执行单元，ε=1/2、每配置一次，2小时/2GiB上限，结果前封存。
+[原版外部依赖/Redis/lookup已通过接口门](report/chapter7_baseline_setup_20260921.md)，真实图/模型/FedUP串接待做；不改变baseline算法。
+
 2026-09-21 当前顺序：三结构 pilot 已封存 → [双框正式取样](decisions/chapter7_sampling_strata_20260921.md)及样本/资源冻结 → 原版 ARUQULA/lookup/FedUP 接入 → 已就绪数据集正式矩阵，同时完成 Freebase/FedShop 数据映射及真实分片。每个测量批次期间不并行安装依赖或准备数据。保留 pilot 的一例 Performance 答案差异和未提速事实，不通过换题或调 baseline 制造优势。Goal ACTIVE，旧暂停安排已失效。
 
 2026-09-21 10:00 用户已恢复本任务，Goal 继续 ACTIVE。先完成新增三种结构的真实
