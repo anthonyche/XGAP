@@ -154,3 +154,20 @@ def test_csv_reference_aggregates_keep_parallel_edges_and_distinguish_ownership(
         [{'account_id': '2', 'total': '3'}, {'account_id': '3', 'total': '7'}])
     assert reference_rows(tiny_data(), template, query_for(template, blocked=False)) == (
         [{'account_id': '4', 'total': '2'}] if template == TEMPLATES[1] else [])
+
+
+@pytest.mark.parametrize('template', TEMPLATES)
+def test_every_new_intent_matches_independent_reference_on_portable_rdf(template):
+    from release_chapter7_shapes_native import reference_data
+    from test_compact_lowering import execute
+    from xgap.experiments.bounded_joint_toy import load_inputs
+    from xgap.experiments.row_normalization import normalize_rows
+    data, graphs = load_inputs()
+    inputs = data['schema'], data['catalog'], data['bindings'], data['mapping'], graphs
+    raw = reference_data()
+    family, _, _, normalization = make_family(template, '1', raw.minimum_transfer_time,
+                                              raw.maximum_transfer_time, 'tiny')
+    for candidate in family.candidates:
+        query = json.loads(candidate.query_json)
+        actual, _, _ = execute(query, inputs, version='v2')
+        assert normalize_rows(actual, normalization) == normalize_rows(reference_rows(raw, template, query), normalization)

@@ -119,3 +119,23 @@ Reuse their controlled inputs and original references; no model calls, no repair
 at most four executions, 600 s batch wall time, 1 GiB artifact cap, same per-method
 and source limits, and the existing 6 GiB free-disk reserve. Preserve the original
 pilot runs and label all new timings development diagnostics, not formal speedups.
+
+## 2026-09-21 resumed shape admission
+
+The user explicitly resumed at 10:00 Asia/Shanghai. Before publishing a broader
+formal workload, admit the three new finite shapes on the existing eight-node
+snapshot. Each has 16 intents; all 48 have independently tabulated reference
+answers compared against the portable RDF executor. The new gate is three fixed
+development questions, each in both modes, first controlled then live NL: at most
+12 final plans and six model calls, zero retries, 1,800 s wall, 1 GiB retained
+package, 6 GiB free-disk reserve and existing worker/source limits. It is not a
+formal sample, repeat or a new code-selected replacement for a failed old cell.
+The controlled phase must finish correctly before the six NL calls are launched.
+References/private queries are not provided to the NL model. Both modes use the
+same compact-v2 frontend, source snapshot, scope domains and budget. No LLM calls
+or catalog/data rebuilds are needed for the controlled admission.
+
+GitHub connectivity recovered and all prior local commits through `7a764a1` were
+successfully pushed. The exact official LiteLLM 1.37.19 source tag was recovered;
+the baseline's 300 s dependency-install attempt is preserved as budget-stopped,
+not an algorithm failure. No baseline source changed or model call occurred.
