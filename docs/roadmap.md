@@ -11,8 +11,8 @@
    [发布前检查清单](decisions/unified_experiment_release_checklist_20260921.md)列出必需冻结项。
 2. 固定数据快照、共享初始状态、题目/结构/取样框、参考结果及轨道。原先批准的均匀/活跃
    双框分别报告；不能根据空答案、耗时或方法胜负换题。NL 与受控轨道分开。
-3. 完成外部原版方法接入中剩余的模型可用性/调用兼容诊断；不更改作者 prompt、搜索、
-   解码或结果。最新超时如实保留，不做无差别自动重试；外部方法没到数据库不算比较结果。
+3. 处理外部原版组合的支持边界：所固定 FedUP 不支持作者查询的 VALUES/OpTable；不更改作者 prompt、搜索、
+   解码或结果。最新算子不支持与此前网络超时均如实保留，不做无差别自动重试；外部方法没到数据库不算比较结果。
 4. 对拟纳入的新数据映射、实际分片和外部方法，仅补一个必要 tiny 边界门；
    Freebase/FedShop 尚未准入的部分不能靠已有 FinBench tiny 成功代替。
 5. 冻结 clean commit、方法配置、显式成本/概率模型、所有预算及失败/截断处理。
@@ -26,7 +26,5 @@
 
 [此前 roadmap](roadmap_history_20260921_before_unified.md)仅用于溯源。
 
-Transport diagnosis update: the old observer bypassed the system HTTP proxy,
-while the working compact client used it. Explicit proxy support now preserves
-original request bytes; a new tiny admission is needed. The old timeout remains
-harness/network evidence, not an intrinsic method performance result.
+网络代理差异已修复：新验收的 2 次模型和 1 次 lookup 均成功；接下来遇到的
+FedUP OpTable 不支持保持原样。不能通过修改 baseline 算法把它变成成功。

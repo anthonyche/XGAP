@@ -45,6 +45,16 @@
       },
       "source_commit": "39142f8b6d7b6b7f07a75b5b9145006ba9585688",
       "all_owned_closed": true
+    },
+    {
+      "id": "external-v5",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/unified-external-admission-20260921-v5/receipt.json",
+        "sha256": "a6f64621d334561fc076af3b40e240a658436e1de42e75f8360188cd9244760c",
+        "bytes": 10913
+      },
+      "source_commit": "a38deaf10ed09714bf2abdd72d3ccf15a08f1e0d",
+      "all_owned_closed": true
     }
   ],
   "gates": [
@@ -193,11 +203,29 @@
       "external_remote_compute_quiescence": "not established",
       "baseline_algorithm_changes": 0,
       "original_prompt_changes": 0
+    },
+    {
+      "group": "external-v5",
+      "status": "method_error",
+      "composition_admitted": false,
+      "model_network_calls": 2,
+      "input_tokens": 2017,
+      "output_tokens": 111,
+      "lookup_requests": 1,
+      "federation_requests": 3,
+      "source_requests": 0,
+      "diagnosis": "pinned FedUP rejects author VALUES via unsupported OpTable",
+      "diagnosis_log": {
+        "path": "/Users/anthonyche/xgap-data/unified-external-admission-20260921-v5/fedup.log",
+        "sha256": "78b487f1b7a66b761afa608dd32f742fb361112a16a914ce94b6f9e05bf3c8d2"
+      },
+      "baseline_algorithm_changes": 0,
+      "original_prompt_changes": 0
     }
   ],
   "release_blockers": [
     "updated formal matrix, datasets and budgets not frozen",
-    "ARUQULA plus FedUP has not completed the model to database boundary",
+    "pinned ARUQULA plus FedUP composition encounters unsupported VALUES/OpTable; no successful source query",
     "additional dataset mappings and actual source sharding not admitted by this tiny gate"
   ]
 }

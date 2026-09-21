@@ -130,8 +130,7 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
             execution_cost_feedback=config.get('execution_cost_feedback',True),
             error=core.get('error'),error_type=core.get('error_type'))
         if unified:
-            online=core.get('joint_policy') or core
-            receipt.update({k:online.get(k) for k in unified_run.METRICS if k!='initial_decision_estimate_including_common_actions'})
+            receipt.update(unified_run.metric_values(core))
             receipt.update(algorithm_profile='unified-lookahead-v1',terminal_settings=config.get('settings'),
                 search=None,execution_cost_feedback=None)
         receipt.update(dataset=doc['dataset'],question_id=raw['question_id'],user_observations=records,

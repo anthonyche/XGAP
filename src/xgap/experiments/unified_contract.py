@@ -12,8 +12,18 @@ from xgap.experiments.one_shot_profile import read_pinned
 METHODS=('xgap-unified-lookahead','xgap-unified-sequential')
 TRACK='natural_language_unified_lookahead'
 CONTROLLED_TRACK='controlled_unified_lookahead'
-METRICS=('probe_calls','metadata_calls','physical_actions','initial_decision_estimate_including_common_actions',
-         'plan_registry_count','plan_registry_bytes','estimate_evaluations','estimate_cache_hits')
+REQUEST_METRICS=('initial_decision_estimate_including_common_actions','realized_trace_work_estimate')
+ONLINE_METRICS=('probe_calls','metadata_calls','physical_actions','plan_registry_count','plan_registry_bytes',
+    'estimate_evaluations','estimate_cache_hits','initialization_ms','local_action_ms','acquisition_ms',
+    'expanded_states','certificate_checks','certificate_cache_hits','optional_plan_rejections',
+    'realized_acquisition_cost_estimate','selected_execution_cost_estimate')
+METRICS=REQUEST_METRICS+ONLINE_METRICS
+
+
+def metric_values(core):
+    """Keep whole-request prices distinct from nested online-only diagnostics."""
+    online=core.get('joint_policy') or core
+    return {**{k:core.get(k) for k in REQUEST_METRICS},**{k:online.get(k) for k in ONLINE_METRICS}}
 
 
 def configuration(*,settings=UnifiedSettings(),information=FamilyInformationPolicy(),costs=JointCostProfile(),

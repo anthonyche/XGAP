@@ -25,7 +25,7 @@ and stop before full experiments. [Current evidence](../report/unified_prereleas
 |Sampling|Uniform IDs and structural active-anchor frames, separately reported, eligibility not answer-dependent|Prior user decision retained|
 |Costs|Comparable work units, offline estimator split, category prices/priors, max or expectation|Interfaces implemented; final numerical assumptions not frozen|
 |Settings|Lambda/epsilon, D/H, plan caps, tool/outcome limits, snapshots and all budgets|Bounded settings available; formal grid not frozen|
-|Baselines|Supported data/semantics and original algorithm parameters; unsuccessful attempt status retained|Original ARUQULA model requests timed out before source access|
+|Baselines|Supported data/semantics and original algorithm parameters; unsuccessful attempt status retained|Model and lookup pass; pinned FedUP rejects author VALUES/OpTable|
 |Run protocol|Order/seeds/cache, repetitions, censoring/failures, source/worker/whole-study limits|Harness supports these; no new final campaign manifest|
 |Evaluation|Post-seal query loss, answers/coverage, latency/resources, offline costs and denominators|Scorers available; some figures require new raw-counter admission|
 
@@ -52,10 +52,12 @@ with external NL whole-request timings as if they were the same task.
 
 ## Explicit release blockers
 
-1. Original ARUQULA+FedUP has no successful model→lookup/source invocation in the
-   current composition; latest failure is a remote model timeout, not a scored
-   database answer. Determine supported transport/model execution without tuning
-   author reasoning, prompts, output repair or decoding for result quality.
+1. Original ARUQULA+FedUP now reaches the model (two successful calls), lookup
+   and the federation endpoint. The pinned FedUP build rejects the author's
+   VALUES operator as unsupported OpTable before source access. Preserve this
+   support failure; do not rewrite author queries or optimize the baseline to
+   manufacture a successful comparison. Any change of declared method/version
+   must be explicit in the new release, not silently applied to the old attempt.
 2. Tiny native/RDF admission does not admit all Freebase/FedShop mappings or
    real source sharding. Preserve supported/unsupported/setup-failed distinctions.
 3. No final revised figure matrix, dataset cell grid or whole-study budget is
@@ -66,7 +68,6 @@ Once these gates are resolved or explicitly scoped in a new release, the next
 step is the new frozen pilot/formal manifest. Do not auto-resume old attempts or
 silently repurpose the old paused application Goal.
 
-Transport diagnosis update: the old observer bypassed the system HTTP proxy,
-while the working compact client used it. Explicit proxy support now preserves
-original request bytes; a new tiny admission is needed. The old timeout remains
-harness/network evidence, not an intrinsic method performance result.
+Transport diagnosis: the earlier observer bypassed the system HTTP proxy; this
+was fixed without changing original requests. The subsequent successful model
+requests separate that setup failure from the pinned engine support failure.

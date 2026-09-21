@@ -205,9 +205,14 @@ def answer_unified_controlled(question,family,user,*,initial_clues=None,settings
         estimator=estimator,moves=PhysicalMoves(family,source_schema,backends,physical_profile,sources) if settings.physical_moves else None,
         backend_clients=backend_clients,sources=sources,information=information,initial_clues=initial_clues,
         on_observation=on_user_observation)
+    acquisition=core.get('realized_acquisition_cost_estimate')
+    terminal=core.get('selected_execution_cost_estimate',0 if core['final_plan_executions']==0 else None)
     return {**core,'schema_version':'xgap-unified-controlled-v1','profile_id':'unified-lookahead-v1',
         'track':'controlled_unified_lookahead','intent_family':family.to_dict(),
         'scope_confirmation_calls':0,'total_user_calls':core['clarification_calls'],
         'scope_confirmed':True,'candidate_count':len(family.candidates),'input_tokens':0,'output_tokens':0,
         'capability_lookup':capabilities,'capability_lookup_ms':capability_ms,
+        'initial_decision_estimate_including_common_actions':core['rounds'][0]['estimated_cost'] if core['rounds'] else None,
+        'realized_trace_work_estimate':acquisition+terminal if acquisition is not None and terminal is not None else None,
+        'cost_scope':'declared online action work plus selected execution estimate; controlled input excludes NL/scope acquisition',
         'controlled_processing_ms':(time.perf_counter()-started)*1000}

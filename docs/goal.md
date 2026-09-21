@@ -32,7 +32,7 @@ Lambda/epsilon 是验证与解释损失契约参数，撤销“两个模式必�
 ## 尚未完成的整体目标
 
 新版正式矩阵与预算尚未冻结；Freebase/FedShop 的完整映射、真实分片与所有外部方法
-并未因此通过。原版 ARUQULA+FedUP 的最新接入在模型请求阶段超时，不能声称已跑通完整
+并未因此通过。原版 ARUQULA+FedUP 的模型/lookup 已接通，但所固定 FedUP 拒绝作者的 VALUES 查询，不能声称已跑通完整
 baseline。下一步见[roadmap](roadmap.md)，而不是自动启动旧 E1–E20 任务。
 
 [此前 Goal 全文](goal_history_20260921_before_unified.md)保留全部阶段与原始研究范围，

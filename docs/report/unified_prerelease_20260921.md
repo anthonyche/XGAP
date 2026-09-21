@@ -21,6 +21,8 @@
 - 新方法 ID/配置/manifest 接入批量、压缩、独立评分和不重复续跑；旧运行保持原版本。
 - 指标区分规划 CPU/wall、certificate、选中本地动作、实际获取等待、最终执行、
   token/调用/bytes 与声明的工作单位。没有把预测值包装成实测时间。
+  request 总成本与 nested online 成本分别导出到 worker/common receipt，controlled 轨道
+  明确排除初始 NL/scope；未执行或无计量的字段保持 null。
 
 主要实现提交：`e16d8d4`（动作空间/批量），`b6c4a60`（完成路径/记录上限），
 `39142f8`（实际路径成本记录与原版客户端环境兼容）。其他两个提交只处理外部接入：
@@ -74,7 +76,7 @@ decision records 也受限。中间关系释放和 gzip 证据保留继续使用
 commit `939b3f36fefafca444cc6dff6c568c5b559f58e0`，FedUP/summary JAR 固定哈希。
 作者算法、提示、解码和结果后处理均未改。
 
-本轮保留四个独立 attempt：
+本轮保留五个独立 attempt：
 
 1. v1：metadata 发布器误把 literal constraint 当作 RDF resource，服务/模型调用为零。
 2. v2：三份固定 Jena TDB 文件已约 604 MB，超过 512 MiB package 预算，方法未运行；
@@ -84,18 +86,24 @@ commit `939b3f36fefafca444cc6dff6c568c5b559f58e0`，FedUP/summary JAR 固定哈�
 4. v4：调用链进入真实模型请求，5 次请求均在 70 s 上游边界超时；作者原有重试行为
    未修改。300 s worker 预算终止本次 attempt，源数据库/lookup/FedUP 查询仍为零，
    tokens 未知，不能记为零。wrapper 不自动重试。
+5. v5：显式系统代理后，原版模型 2 次调用均 HTTP 200（2017 input / 111 output tokens），
+   lookup 1 次 HTTP 200；作者自带 `VALUES` 的查询 3 次到达 FedUP，均 HTTP 500，
+   错误栈为 `OpVisitorUnimplemented.visit(OpTable)` / `UnsupportedOperationException`。
+   原始 worker 记录 `RetryError` / `method_error`，未提交最终查询，数据源请求为零。
+   这是所固定外部组合的算子支持边界；不改写作者查询、不修补 FedUP 算法。
 
 v4 的状态是 `deadline_exceeded`，`composition_admitted=false`，并非答案错误或
 证明作者算法差。收尾的无凭据网络诊断发现：直连 TCP 超时，而系统代理路径立即收到 401；
 正常 XGAP 客户端采用系统代理，observer 原来强制直连。因此这五次超时不能归因于
 作者方法或模型推理速度。已补充显式 HTTP 代理路由并以本地传输测试验证请求正文/
-Authorization 不变且凭据不落盘；下一项独立 tiny 验收将使用同一网络路径。所有本地 owned 组和 observer 均已关闭；关闭客户端
-不能证明远端模型计算已经停止。不能将这项未完成的组合放入一张成功查询耗时图。
+Authorization 不变且凭据不落盘；v5 已用同一网络路径验证模型和 lookup 可达。所有本地 owned 组和 observer 均已关闭；关闭客户端
+不能证明远端模型计算已经停止。v4/v5 均不能放入一张成功查询耗时图；v5 需按所固定组合的支持失败记录，
+不能推广为 ARUQULA 或 FedUP 对所有查询都无效。
 
 ## 5. 测试与仍然存在的边界
 
-本轮按变更分组完成 75 个不重复定向测试，收尾只核对 collected IDs，不重跑整库。
-覆盖 unified contract/controller/family/actions/batch 41 项、共享 bounded-joint
+本轮按变更分组完成 76 个不重复定向测试，收尾只核对 collected IDs，不重跑整库。
+覆盖 unified contract/controller/family/actions/batch 42 项、共享 bounded-joint
 前端/批量 27 项、公开 metadata 3 项、原版 worker 2 项和 observer 传输 2 项。
 单个物理变换用便携 RDF 实际执行并对照独立答案；真实数据库接口门另列于上表。
 
@@ -125,6 +133,7 @@ controlled 初始权威、实际选中 probe、版本匹配和失败续跑。
 |unified-model-native-20260921-v1|receipt.json|`d3a7352103b5cbd6beefbb4d8235da7c76ea895c5c26cc941b1c4b2cf92110b2`|
 |unified-rdf-admission-20260921-v3|batch/invocations/0001/receipt.json|`a451bc85fe2c1392032b58adec517a2049527f45d2bd562bfdc5d42f7ecd4ba4`|
 |unified-external-admission-20260921-v4|receipt.json|`50b051e3fe435042a0b8c9e84b778d2821a3dc78fa51ff003d5fec00a20843f6`|
+|unified-external-admission-20260921-v5|receipt.json|`a6f64621d334561fc076af3b40e240a658436e1de42e75f8360188cd9244760c`|
 
 RDF v1/v2 在 intake 阶段分别发现 deployment 身份不同、旧 prepared receipt 缺少
 input-seal 关联；保留失败并为新 attempt 校验关联，没有重建业务数据或改写旧快照。

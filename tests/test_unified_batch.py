@@ -12,6 +12,19 @@ from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.nl_method_worker import run_nl
 
 
+def test_export_keeps_common_request_cost_and_observed_online_work_separate():
+    from xgap.experiments.unified_contract import metric_values
+    core=dict(realized_trace_work_estimate=20,initial_decision_estimate_including_common_actions=25,
+        joint_policy=dict(realized_trace_work_estimate=3,realized_acquisition_cost_estimate=2,
+            selected_execution_cost_estimate=1,expanded_states=18,local_action_ms=4,acquisition_ms=7))
+    row=metric_values(core)
+    assert row['realized_trace_work_estimate']==20
+    assert row['initial_decision_estimate_including_common_actions']==25
+    assert row['realized_acquisition_cost_estimate']==2 and row['selected_execution_cost_estimate']==1
+    assert (row['expanded_states'],row['local_action_ms'],row['acquisition_ms'])==(18,4,7)
+    assert metric_values(dict(status='proposal_failed'))['realized_trace_work_estimate'] is None
+
+
 def test_new_settings_roundtrip_and_strict_method_boundary(tmp_path):
     pin=write_once(tmp_path/'settings.json',configuration(settings=UnifiedSettings(limits=Limits(depth=2))))
     raw,_,settings,_=load_configuration(pin['path'],pin['sha256'])

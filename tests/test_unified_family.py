@@ -127,3 +127,5 @@ def test_sequential_barrier_and_public_initial_clues_use_new_controller(tmp_path
     assert r['model_calls']==r['clarification_calls']==0 and r['final_plan_executions']==1
     assert all(t['kind']!='binding' for t in r['trace'])
     assert r['terminal_certificate']['missing_validations']==[]
+    assert r['realized_trace_work_estimate']==pytest.approx(
+        sum(t['declared_action_cost'] for t in r['trace'])+r['selected_execution_cost_estimate'])
