@@ -9,6 +9,9 @@ from xgap.experiments.external_federation import deadline
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('archive','lock-path','prepared-path','prepared-sha256','output'):p.add_argument('--'+name,required=True)
-    args=vars(p.parse_args());args['source_commit']=source_commit()
+    p.add_argument('--population',choices=('path-signin','three-shape'),default='path-signin')
+    args=vars(p.parse_args());population=args.pop('population');args['source_commit']=source_commit()
+    if population=='three-shape':
+        from xgap.experiments.chapter7_finbench_coverage import release
     with deadline(300):pin=release(**args)
     print(json.dumps(pin))

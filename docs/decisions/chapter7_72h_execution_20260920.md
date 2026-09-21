@@ -163,3 +163,35 @@ After focused checks, allow a separate three-call NL-Exact development diagnosti
 (one per shape, shared frontend). Same questions/data and limits, new code and
 directory, no automatic retry or replacement of the failed six cells. This tests
 the frontend contract, not an improved model-quality score or formal result.
+
+The corrected three-call NL gate passed on `1913fc4`: all three shapes returned
+the exact independent answer with one model call, one clarification and one
+execution each, query loss zero and no certificate violation. Services closed.
+The intermediate v2 gate has a preserved release-selector bug: it ran three
+controlled cells (all correct, zero model calls) and left nine unattempted; it is
+not NL admission. The selector bug was fixed before the separate v3 gate.
+
+### Three-shape SF0.1 development cohort, frozen before answers
+
+This addresses missing structural coverage in the original single-template pilot,
+not a relabelled formal result. Choose eight families uniformly per new shape;
+use 16 distinct account anchors across the account shapes and eight distinct
+company anchors. Keep the original account pilot/formal split; company groups
+use a type-qualified deterministic split. All windows/intents for an anchor have
+one fold. Within each family choose one of four source-time quarters and one of
+16 legal intents uniformly, without reading reference answers or degree. No
+answer-based resampling. The same structural templates remain shared with formal.
+
+Each shape has four NL and four controlled cases. Controlled cases have the
+structural choice (depth/aggregate) and lower boundary already supplied as public
+initial evidence; blocked-recipient status and upper inclusivity remain unknown.
+The full four-coordinate denominator stays six. NL cases start without those
+initial clues. Method order is balanced within shape and track. Thus 24 distinct
+base cases, 48 cells, at most 24 new model calls, zero retries; this is additional
+development work needed after the first pilot exposed its coverage limitation.
+
+Use the existing admitted SF0.1 stores, same frozen estimator, 90 s/method,
+1 GiB worker and 2 GiB source bounds, 3 GiB package/6 GiB free-disk reserve,
+one-hour batch wall limit. No baseline install or data preparation may overlap
+measured execution. Preserve all failures, empty references and original pilot
+results. Formal cohorts/repeats/budgets are still to be frozen after this admission.

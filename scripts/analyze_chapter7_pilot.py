@@ -92,7 +92,7 @@ def analyze(*,release_path,release_sha256,run,output):
         interpretation='development pilot only; shared template, no superiority inference; timing uses common completed cohorts')
     pin=write_once(root/'summary.json',summary)
     lines=['# FinBench Chapter 7 development pilot','',f'Complete and closed: {complete}. Formal paper result: false.',
-        '24 base cases; 12 live NL and 12 controlled. One shared structural template. No speedup claim.','',
+        f"{len(cases)} base cases; tracks reported separately. {summary['independent_templates']} structural templates. No speedup claim.",'',
         '|Track|Mode|Sealed/planned|Answered|Correct|Empty references|Common timing cases|Measured max query loss|',
         '|---|---|---|---|---|---|---|---|']
     for s in summaries:lines.append(f"|{s['track']}|{s['method'].rsplit('-',1)[-1]}|{s['sealed']}/{s['planned']}|{s['answered']}|{s['correct']}|{s['empty_reference_cases']}/{s['reference_cases_observed']}|{s['common_completion_cases']}|{s['maximum_measured_loss']}|")
