@@ -1,5 +1,9 @@
 # Chapter 6 implementation map — unified lookahead v1
 
+2026-09-22 numbering note: this filename is retained for existing links. The
+user's current Chapter 6 is the [experimental study](ch6_experiment_plan_20260922.md);
+this document remains an implementation map, not the new chapter outline.
+
 2026-09-21. This maps the admitted implementation to the revised manuscript.
 Current entry: `xgap.api.answer_unified`; algorithm contract:
 [unified migration](decisions/unified_lookahead_migration_20260921.md).
@@ -189,12 +193,18 @@ source transfer accounting uses uncompressed bytes. This avoids duplicate large
 serialized payloads, but backend parsers still materialize result objects and
 scoring reads bounded JSON. It is not an unlimited streaming execution engine.
 
-New method IDs: `xgap-unified-lookahead`, `xgap-unified-sequential`.
-New config: `xgap-unified-run-config-v1`; new manifest:
-`xgap-unified-lookahead-batch-v1`. The sequential comparator fully validates
-interpretation before the same physical/information stage; no baseline optimizer
-is improved for it. NL and controlled tracks are distinct, frozen initial clues
-are public, and final references remain unavailable to method workers.
+Current method IDs add `xgap-unified-two-stage`, `xgap-unified-no-probe`,
+`xgap-unified-shallow`, `xgap-unified-myopic` to `xgap-unified-lookahead`.
+The old `xgap-unified-sequential` still means full validation and is historical.
+Configuration v2 adds information/action objectives; strict v1 loading preserves
+the old defaults. Manifest remains `xgap-unified-lookahead-batch-v1`.
+Two-stage stops at common semantic eligibility, selects a candidate by ID and
+then runs the shared physical stage. No execution cost enters semantic ranking;
+execution resource reservations still apply. `ch6_direct.answer_direct` reuses
+the physical domain and online controller with an unvalidated fixed proposal;
+it cannot issue an intent certificate or clarify. Its batch publication remains
+a separate admission item. See [method definitions](decisions/ch6_dataset_and_methods_20260922.md).
+NL and controlled tracks remain distinct and hidden references stay offline.
 
 Batch execution pins clean source/config/data, records intent before effects,
 compresses artifacts, scores after sealing and skips every attempted cell on

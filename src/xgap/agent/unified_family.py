@@ -29,6 +29,8 @@ class UnifiedSettings:
     transform_cost: float = 0.01
     candidate_weights: tuple[float, ...] | None = None
     information_targets: tuple = ()
+    information_mode: str = 'all'
+    action_objective: str = 'continuation'
 
     def __post_init__(self):
         rational(self.epsilon)
@@ -40,7 +42,9 @@ class UnifiedSettings:
         from xgap.agent.unified_information import InformationTarget
         from xgap.agent.unified_lookahead import cost
         cost(self.transform_cost)
-        if self.decision_order not in ('joint','semantic_then_physical'):raise ValueError('Unknown stage ordering')
+        if self.decision_order not in ('joint','semantic_then_physical','two_stage'):raise ValueError('Unknown stage ordering')
+        if self.information_mode not in ('all','no_probe') or self.action_objective not in ('continuation','myopic'):
+            raise ValueError('Unknown information or action objective')
         if (type(self.physical_moves) is not bool or type(self.plan_pool) is not int or not 1<=self.plan_pool<=16
                 or type(self.max_plans) is not int or not 1<=self.max_plans<=4096
                 or type(self.max_plan_bytes) is not int or not 65536<=self.max_plan_bytes<=256*1024*1024
@@ -61,6 +65,7 @@ class FamilyState:
     pools: tuple = ()
     facts: tuple = ()
     disclosed: int = 0
+    fixed_candidate: int | None = None
 
 
 class FamilyDomain:
@@ -141,6 +146,7 @@ class FamilyDomain:
     def physical_actions(self,state):
         if self.moves is None or not self.settings.physical_moves or self.settings.plan_pool==1:return
         for i in self.contract.consistent(state.bindings):
+            if state.fixed_candidate is not None and i!=state.fixed_candidate:continue
             current=self.pool(state,i)
             for parent in current:
                 cache_key=(i,parent)
@@ -168,6 +174,7 @@ class FamilyDomain:
 
     def information_actions(self,state):
         for target in self.targets.values():
+            if self.settings.information_mode=='no_probe' and target.kind=='probe':continue
             if target.name in dict(state.facts):continue
             outcomes=[]
             for j,label in enumerate(target.labels):
@@ -179,7 +186,22 @@ class FamilyDomain:
             yield Action('information:'+target.identity,target.kind,tuple(outcomes),dict(target=target.name,identity=target.identity))
 
     def key(self, state):
-        return fingerprint([self.contract.identity, [asdict(b) for b in state.bindings],state.pools,state.facts,state.disclosed])
+        return fingerprint([self.contract.identity, [asdict(b) for b in state.bindings],state.pools,state.facts,state.disclosed,state.fixed_candidate])
+
+    def semantic_only(self,state):
+        return self.settings.decision_order=='two_stage' and state.fixed_candidate is None
+
+    def settle(self,state):
+        """Freeze the first eligible ID without consulting execution estimates.
+
+        This is a zero-cost phase boundary, not a binding or extra H action.
+        Keep the original consistent family intact for all discrepancy checks.
+        """
+        if not self.semantic_only(state):return state
+        eligible=[i for i in self.contract.consistent(state.bindings) if self.contract.check(i,state.bindings)['eligible']]
+        if not eligible:return state
+        index=min(eligible,key=lambda i:self.contract.family.candidates[i].candidate_id)
+        return replace(state,fixed_candidate=index)
 
     def knowledge_key(self, state):
         return fingerprint([self.contract.identity,
@@ -192,8 +214,15 @@ class FamilyDomain:
         return self.knowledge_key(state)
 
     def valid(self, state):
+        return self.contract.family.coverage_basis is not None and self.valid_representation(state)
+
+    def valid_representation(self, state):
+        """Shared bounded physical state checks, independent of intent coverage."""
         try:
-            return (self.contract.family.coverage_basis is not None and bool(self.contract.consistent(state.bindings))
+            return (bool(self.contract.consistent(state.bindings))
+                and (state.fixed_candidate is None or self.settings.decision_order=='two_stage'
+                     and state.fixed_candidate in self.contract.consistent(state.bindings)
+                     and self.contract.check(state.fixed_candidate,state.bindings)['eligible'])
                 and 0<=state.disclosed<=self.information.max_disclosed_coordinates
                 and len(dict(state.pools))==len(state.pools) and len(dict(state.facts))==len(state.facts)
                 and all(n in self.targets and label in self.targets[n].labels[:-1] for n,label in state.facts)
@@ -209,7 +238,7 @@ class FamilyDomain:
         for name in names:
             known[name] = ValidatedBinding(name, canonical(answers[name]), self.authority_name,
                                           self.authority_version, receipt)
-        return replace(state,bindings=tuple(known[n] for n in sorted(known)),disclosed=state.disclosed+len(names))
+        return self.settle(replace(state,bindings=tuple(known[n] for n in sorted(known)),disclosed=state.disclosed+len(names)))
 
     def arguments(self, names):
         return dict(family_sha256=self.contract.family.identity, question_sha256=fingerprint(self.question), slots=list(names))
@@ -238,10 +267,11 @@ class FamilyDomain:
         if unknown and self.settings.decision_order=='semantic_then_physical':
             yield self.action(state,unknown)
             return
-        if unknown:
+        if unknown and not (self.settings.decision_order=='two_stage' and state.fixed_candidate is not None):
             scopes = tuple(dict.fromkeys((unknown, *((n,) for n in unknown),
                 *(tuple(self.names[i] for i in scope if self.names[i] in unknown) for scope in self.information.additional_scopes))))
             yield from (self.action(state,names) for names in scopes if names)
+        if self.semantic_only(state):return
         yield from self.physical_actions(state)
         yield from self.information_actions(state)
 
@@ -249,6 +279,7 @@ class FamilyDomain:
         if self.settings.decision_order=='semantic_then_physical' and len(state.bindings)<len(self.names):return ()
         results = []
         for i in self.contract.consistent(state.bindings):
+            if state.fixed_candidate is not None and i!=state.fixed_candidate:continue
             if i not in self.seeds:
                 continue
             cert = self.contract.check(i, state.bindings)
@@ -298,6 +329,7 @@ class FamilyDomain:
     def check_terminal(self,state,terminal):
         # Bounded direct check, independent of optional terminal-enumeration caps.
         index=terminal.payload['candidate_index']
+        if state.fixed_candidate is not None and index!=state.fixed_candidate:return False
         if self.settings.decision_order=='semantic_then_physical' and len(state.bindings)<len(self.names):return False
         cert=self.contract.check(index,state.bindings)
         for key in self.pool(state,index):
@@ -344,6 +376,7 @@ def run_unified_family(question, family, user, *, prepare_seed, execute, costs, 
     registry.register(user)
     actual = FamilyState(bindings=tuple(ValidatedBinding(name,canonical(value),'authored-request',family.identity,
         fingerprint(['public-initial-clue',family.identity,name,value])) for name,value in sorted(initial_clues.items())))
+    actual = domain.settle(actual)
     receipts = []
     tool_receipts = []
 
@@ -394,7 +427,8 @@ def run_unified_family(question, family, user, *, prepare_seed, execute, costs, 
             raise ValueError('Actual validation and loss contract no longer permits execution')
         return execute(terminal.payload['plan'])
 
-    result = run_online(actual, domain, perform=perform, execute=dispatch, limits=settings.limits)
+    result = run_online(actual, domain, perform=perform, execute=dispatch, limits=settings.limits,
+                        action_objective=settings.action_objective)
     selected = (next((t for t in domain.terminals(actual) if t.key == result.get('selected_terminal')), None)
                 if result.get('selected_terminal') and domain.valid(actual) else None)
     result.update(clarification_calls=len(receipts), ledger=receipts, initialization_ms=initialization_ms,
@@ -417,5 +451,7 @@ def run_unified_family(question, family, user, *, prepare_seed, execute, costs, 
                   retained_plans={str(i):list(domain.pool(actual,i)) for i in seeds},
                   estimate_evaluations=domain.estimate_evaluations,estimate_cache_hits=domain.estimate_cache_hits,
                   selected_facts=dict(actual.facts),
+                  decision_order=settings.decision_order, fixed_candidate=actual.fixed_candidate,
+                  information_mode=settings.information_mode, action_objective=settings.action_objective,
                   estimator_basis='frozen numerical model plus declared category work costs; not measured latency')
     return result

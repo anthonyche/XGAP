@@ -40,9 +40,13 @@ certify finite budgets. Normal-response, source and execution assumptions remain
 explicit; backend failure or an exceeded bind bound can still prevent an answer.
 
 `answer_unified_controlled` uses publisher-attested initial clues and the same
-runtime, excluding NL initialization from its timing. The sequential comparator
-requires complete validation before physical/information optimization; it shares
-candidate construction, compilers, cost model, tools and final runtime.
+runtime, excluding NL initialization from its timing. The current Two-stage
+comparator uses the same semantic eligibility, D and completion/resource guards.
+Its semantic stage ranks only acquisition cost, then freezes the first eligible
+candidate ID without execution-price feedback. The same physical stage follows.
+The old full-validation sequential comparator retains its historical method ID.
+noProbe removes only statistics actions; myopic ranks immediate nonterminal cost
+while retaining terminal cost and the same completion guard; shallow is D=1.
 
 The batch path is `run_bounded_joint_batch.py` → guarded common trial →
 `nl_method_worker` → shared `bounded_joint_worker` → new unified entry.

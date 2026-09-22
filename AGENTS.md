@@ -1,10 +1,13 @@
 # XGAP research prototype — current engineering authority
 
-2026-09-21: the user authorized continuous engineering through the boundary
-BEFORE full experiments. The unified migration and tiny admission are now
-recorded in `docs/report/unified_prerelease_20260921.md`. Do not start a formal
-matrix, resume an old automation or relabel an old result. Earlier schedules
-and the old two-mode development objective are superseded.
+2026-09-22: current authority is `docs/ch6_experiment_plan_20260922.md`,
+`docs/query_structure_spec_20260922.md`, and `docs/coding_agent_brief_20260922.md`.
+Inventory, builders and local development tests are authorized. Paid model,
+backend interface/pilot execution and full experiments require separately frozen
+execution budgets. Do not resume old automations or relabel historical results.
+The user also authorized replacing D2 with a usable alternative: see
+`docs/decisions/ch6_dataset_and_methods_20260922.md` (MovieLens development intake;
+stable 20M proposed for evaluation, no fabricated Wikidata mappings).
 
 Current entry: `xgap.api.answer_unified`; controlled entry:
 `xgap.api.answer_unified_controlled`; contract:

@@ -4,8 +4,12 @@
 采用固定 D 步 lookahead，每次只实施选中的一个动作，观测后重规划，最后执行一个计划。
 Lambda/epsilon 是验证与解释损失契约参数，撤销“两个模式必须形成优势”的开发目标。
 
-用户最新授权是“请一直执行到全量实验之前”。本轮工程验收和文档收尾已完成，
-**停在新版全量实验发布之前**；没有启动正式矩阵或恢复旧自动任务。
+2026-09-22 新授权：按[第六章实验计划](ch6_experiment_plan_20260922.md)、
+[查询规范](query_structure_spec_20260922.md)、[交接说明](coding_agent_brief_20260922.md)
+推进 inventory、结构抽取、三域开发 workload、方法对齐和 pilot 预算准备。
+用户随后允许更换 D2，已接 MovieLens 小开发包，正式候选为稳定 20M；
+见[数据与方法决定](decisions/ch6_dataset_and_methods_20260922.md)。
+**尚未授权付费/真实后端 pilot 或全量矩阵**；未恢复旧自动任务。
 应用中旧三数据集 Goal 仍为 paused，不能把这次工程完成写成整体论文实验目标完成。
 
 ## 本轮交付
@@ -31,9 +35,11 @@ Lambda/epsilon 是验证与解释损失契约参数，撤销“两个模式必�
 
 ## 尚未完成的整体目标
 
-新版正式矩阵与预算尚未冻结；Freebase/FedShop 的完整映射、真实分片与所有外部方法
-并未因此通过。原版 ARUQULA+FedUP 的模型/lookup 已接通，但所固定 FedUP 拒绝作者的 VALUES 查询，不能声称已跑通完整
-baseline。下一步见[roadmap](roadmap.md)，而不是自动启动旧 E1–E20 任务。
+新版正式矩阵与预算尚未冻结。当前 D1/D2/D3 分别是 SNB-derived、MovieLens-derived、
+FinBench-derived；Freebase/FedShop 不再是这次三域准备的启动前提。
+原版 ARUQULA+FedUP 的模型/lookup 已接通，但所固定 FedUP 拒绝作者的 VALUES 查询，
+不能声称已跑通完整 baseline。[本次准备交付](report/ch6_preparation_20260922.md)与
+[roadmap](roadmap.md)分别记录已做和仍需做的工作。
 
 [此前 Goal 全文](goal_history_20260921_before_unified.md)保留全部阶段与原始研究范围，
 [旧正式结果](report/chapter7_finbench_primary_20260921.md)保留原版本，不改标签。

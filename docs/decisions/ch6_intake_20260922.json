@@ -1,0 +1,12 @@
+{
+  "schema_version": "xgap-user-intake-v1",
+  "source_sha256": "a0fe8bf8c368e13d8e92afc1a68105c5a074bf396984af69d9980d3f121465cd",
+  "source_bytes": 45323,
+  "parts": {
+    "ch6_experiment_plan_20260922.md": "65275f95818d0ee40d00800ffe2835dbdd4f4d549253c2ecba0906cd42cff1c3",
+    "query_structure_spec_20260922.md": "3db06f8f5e60344dd2d99f8c0be619f16e2ebabafc13be5c412a707749ac80d9",
+    "coding_agent_brief_20260922.md": "40495083b274b517fe961d68fce551939072b4ea677e08ab80d8751151baaf9c"
+  },
+  "edits": "split at top-level titles; trim inter-document blank lines only",
+  "authorization": "inventory, builder, local tests; no paid API, backend interface run, pilot execution, full run, old automation"
+}

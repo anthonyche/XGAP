@@ -60,8 +60,7 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
                 raise ValueError('Pinned configuration requires both identity fields and no provider override')
             loader=unified_run.load_configuration if unified else load_configuration
             config,information,limits,costs=loader(joint_config_path,joint_config_sha256)
-            if unified and limits.decision_order != ('joint' if method=='xgap-unified-lookahead' else 'semantic_then_physical'):
-                raise ValueError('Method identity differs from frozen stage order')
+            if unified:unified_run.validate_method(method,limits)
             epsilon=limits.epsilon if unified else '0' if mode=='exact' else config['epsilon']
             if config['provider']=='development_toy_template' and controlled is None:
                 if raw['exposure']!='development':

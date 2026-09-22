@@ -178,7 +178,7 @@ class ActionFailure(Exception):
         self.used, self.evidence = used, evidence
 
 
-def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
+def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_objective='continuation'):
     """Return one action plus checked immediate completion tails, not a full tree.
 
     Required domain methods: valid, key, knowledge_key, terminals, actions,
@@ -187,6 +187,12 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
     routine using domain rules, not recursively call this search.
     """
     started = clock()
+    if action_objective not in ('continuation','myopic'):raise ValueError('Unknown action objective')
+    semantic_phase = bool(getattr(domain,'semantic_only',lambda s:False)(state.payload))
+    def terminal_price(t):
+        return 0.0 if semantic_phase else t.estimated_cost
+    def completion_price(w):
+        return sum(value for name,value in w.costs if name!='execution') if semantic_phase else w.estimated_cost
     records = []
     expanded = 0
     stop = 'completed'
@@ -247,7 +253,7 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
                 admitted = w.first in tuple(islice(domain.terminals(s.payload), limits.max_terminals))
             if not admitted or not s.used.then(w.first.resources).fits(limits.resources):
                 return None
-            return w.first, w.estimated_cost, (), w
+            return w.first, completion_price(w), (), w
         children, reason = successors(s, w.first)
         if children is None or any(t.remaining_steps >= w.remaining_steps for _, _, t in children):
             return None
@@ -255,7 +261,7 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
         # whole-recipe certificate, not just by the request's loose budget.
         if any(not o.resources.then(t.resources).fits(w.resources) for o, _, t in children):
             return None
-        return w.first, w.estimated_cost, tuple(children), w
+        return w.first, completion_price(w), tuple(children), w
 
     initial = base(state)
     if initial is None:
@@ -275,9 +281,12 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
             return math.inf, None, ()
         terminals = bounded(domain.terminals(s.payload), limits.max_terminals)
         terminals = [t for t in terminals if s.used.then(t.resources).fits(limits.resources)]
-        terminal = min(terminals, key=lambda t: (t.estimated_cost, t.key), default=None)
-        best = terminal.estimated_cost if terminal else math.inf
+        terminal = min(terminals, key=lambda t: (terminal_price(t), t.key), default=None)
+        best = terminal_price(terminal) if terminal else math.inf
         selected, tails = terminal, ()
+        # A semantic-stage leaf ends at eligibility; do not optimize a physical
+        # continuation or use execution prices to choose an interpretation.
+        if semantic_phase and terminal is not None:return best, selected, tails
         if s.steps == limits.horizon:
             return best, selected, tails
         if j == 0:
@@ -300,7 +309,8 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
             records.append(record)
             if children is None:
                 continue
-            values = [o.estimated_cost+evaluate(child, j-1)[0] for o, child, _ in children]
+            values = [o.estimated_cost+(0 if action_objective=='myopic' else evaluate(child, j-1)[0])
+                      for o, child, _ in children]
             score = (math.inf if any(v == math.inf for v in values) else max(values)
                      if limits.aggregation == 'max' else math.fsum(o.probability*v for (o, _, _), v in zip(children, values)))
             record['estimated_cost'] = score if math.isfinite(score) else None
@@ -317,10 +327,11 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter):
     except SearchLimit as error:
         stop = str(error)
     return dict(choice=choice, status=stop, estimated_cost=score, tails=tails, witness=saved,
-                records=records, expanded_states=expanded, elapsed_ms=(clock()-started)*1000)
+                records=records, expanded_states=expanded, elapsed_ms=(clock()-started)*1000,
+                objective='acquisition_only' if semantic_phase else action_objective)
 
 
-def run_online(initial, domain, *, perform, execute, limits=Limits()):
+def run_online(initial, domain, *, perform, execute, limits=Limits(), action_objective='continuation'):
     """Observe one selected action and replan; never execute hypothetical leaves."""
     started = time.perf_counter()
     state = State(initial)
@@ -332,11 +343,12 @@ def run_online(initial, domain, *, perform, execute, limits=Limits()):
     try:
         for _ in range(limits.horizon+1):
             cpu = time.process_time()
-            decision = choose(state, domain, limits=limits)
+            decision = choose(state, domain, limits=limits, action_objective=action_objective)
             report['planning_cpu_ms'] += (time.process_time()-cpu)*1000
             report['planning_ms'] += decision['elapsed_ms']
             choice, w = decision['choice'], decision['witness']
             report['rounds'].append(dict(step=state.steps, status=decision['status'],
+                objective=decision.get('objective'),
                 choice=choice.key if choice else None, estimated_cost=decision['estimated_cost'],
                 completion=w.key if w else None, reserved_steps=w.remaining_steps if w else None,
                 reserved_resources=asdict(w.resources) if w else None,
