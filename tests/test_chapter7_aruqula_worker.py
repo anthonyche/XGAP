@@ -135,3 +135,16 @@ def test_action_key_alias_preserves_text_and_action_without_guessing_missing_val
                   {'thought':'author value','>':'other','action_name':'stop','action_argument':''},
                   {**raw,'unexpected':'field'}):
         assert worker.action_envelope_alias(value) is value
+
+
+def test_sole_reasoning_field_contract_does_not_fill_missing_actions_or_conflicts():
+    for key in ('>', ', ', 'unexpected_reasoning_key'):
+        value={key:'Original trace text', 'action_name':'stop','action_argument':''}
+        assert worker.action_envelope_alias(value,sole_reasoning_key=True)==dict(
+            thought='Original trace text',action_name='stop',action_argument='')
+    for value in ({'thought':'original','>':'other','action_name':'stop'},
+                  {'a':'text','b':'text','action_name':'stop'},
+                  {'>':'text','action_name':'stop'},
+                  {'>':'text','action_name':'stop','action_argument':None},
+                  {'>':'text','other':'text','action_name':'stop','action_argument':''}):
+        assert worker.action_envelope_alias(value,sole_reasoning_key=True) is value

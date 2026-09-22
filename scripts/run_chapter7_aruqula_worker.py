@@ -28,18 +28,21 @@ HTTPS_PROPERTY_FIX = ('    if pid.startswith("http:"):\n        pid = f"<{pid}>"
 HTTPS_ENTITY_FIX = ('    elif entity.startswith("http:"):\n        entity = f"<{entity}>"',
                    '    elif entity.startswith(("http:", "https:")):\n        entity = f"<{entity}>"')
 COMPATIBILITIES = ('original','https-property-iris-v1','https-property-iris-qwen-key-v1',
-                   'https-iris-qwen-key-v2')
+                   'https-iris-qwen-key-v2','https-iris-qwen-envelope-v3')
 
 
-def action_envelope_alias(value):
+def action_envelope_alias(value, *, sole_reasoning_key=False):
     """Recognize one observed serializer key alias; never infer an action/value.
 
     Thought text is retained verbatim in the author's subsequent history. Any
     other missing/malformed field still reaches the original parser unchanged.
     """
-    if (isinstance(value,dict) and set(value)=={'>','action_name','action_argument'}
-            and all(isinstance(v,str) for v in value.values())):
-        return dict(thought=value['>'],action_name=value['action_name'],action_argument=value['action_argument'])
+    if isinstance(value,dict) and 'thought' not in value:
+        extra=set(value)-{'action_name','action_argument'}
+        if (len(value)==3 and len(extra)==1 and (sole_reasoning_key or extra=={'>'})
+                and all(isinstance(v,str) for v in value.values())):
+            return dict(thought=value[next(iter(extra))],action_name=value['action_name'],
+                        action_argument=value['action_argument'])
     return value
 
 
@@ -162,7 +165,7 @@ def run(args):
         sys.path.insert(0, str(source))
         if compatibility != 'original':
             overlay, patch_receipt = https_property_overlay(source,root,
-                include_entity=compatibility=='https-iris-qwen-key-v2')
+                include_entity=compatibility in ('https-iris-qwen-key-v2','https-iris-qwen-envelope-v3'))
             receipt['compatibility_patch'] = patch_receipt
             receipt['author_source_compatibility_patches'] = patch_receipt['replacements']
             write(root/'compatibility-patch.json',patch_receipt)
@@ -172,16 +175,19 @@ def run(args):
         prompt_writer = write_prompt_logs_to_file
         from spinach_agent import part_to_whole_parser
         PartToWholeParser = part_to_whole_parser.PartToWholeParser
-        if compatibility in ('https-property-iris-qwen-key-v1','https-iris-qwen-key-v2'):
+        if compatibility in ('https-property-iris-qwen-key-v1','https-iris-qwen-key-v2','https-iris-qwen-envelope-v3'):
             from langchain_core.runnables import RunnableLambda
             def decode_envelope(value):
-                decoded = action_envelope_alias(value)
+                decoded = action_envelope_alias(value,
+                    sole_reasoning_key=compatibility=='https-iris-qwen-envelope-v3')
                 if decoded is not value:
                     receipt['action_envelope_key_aliases'] += 1
                     # No prompt, action argument or query content in this audit.
                     digest=lambda v:hashlib.sha256(json.dumps(v,sort_keys=True).encode()).hexdigest()
                     record=dict(index=receipt['action_envelope_key_aliases'],
-                        rule='rename > to thought only when it is the sole missing key',
+                        rule=('sole reasoning string key -> thought; action_name/action_argument unchanged'
+                              if compatibility=='https-iris-qwen-envelope-v3'
+                              else 'rename > to thought only when it is the sole missing key'),
                         before_sha256=digest(value),after_sha256=digest(decoded))
                     with (root/'action-key-aliases.jsonl').open('a') as stream:
                         stream.write(json.dumps(record)+'\n')
