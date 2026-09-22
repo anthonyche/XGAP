@@ -1,5 +1,13 @@
 # XGAP 下一步
 
+**baseline 已完成 tiny 单源/跨源接通，停止为其答案质量做优化。**
+当前优先级改为：外部 worker 接正式批量入口 → 共同 RDF 上冻结同题输入、metadata、
+评分/顺序/缓存及预算 → D3 SF0.1 小批配对发布检查 → 正式评价。
+D1/D2 实际装载与 workload 准入继续按原计划补齐；不阻塞 D3 首组比较。
+见[最新验收和剩余条件](report/ch6_baseline_admission_20260922.md)。
+
+以下为本轮早期推进记录，其“外部方法未接通”状态已更新：
+
 2026-09-22 以新的[实验计划](ch6_experiment_plan_20260922.md)为准。当前完成的是
 [首批真实 XGAP 实测](report/ch6_first_real_20260922.md)，尚未发布可执行的全量 manifest。
 不启动旧 Exact/Performance campaign 或自动任务。

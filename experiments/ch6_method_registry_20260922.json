@@ -9,9 +9,11 @@
     },
     {
       "name": "Two-stage",
-      "method_id": null,
+      "method_id": "aruqula-fedx",
       "kind": "external_method_composition",
-      "status": "composition_admission_required"
+      "status": "tiny_single_and_cross_source_execution_admitted",
+      "compatibility": "https-iris-action-schema-fedx-v2",
+      "formal_evaluation_ready": false
     }
   ],
   "external_candidates": [
@@ -22,13 +24,14 @@
     },
     {
       "composition": "ARUQULA -> FedX",
-      "status": "adapted_tools_executable_NL_composition_admission_in_progress",
-      "successful_nl_answer_observed": false,
+      "status": "tiny_single_and_cross_source_answered_both_EM_F1_zero",
+      "successful_nl_answer_observed": true,
       "author_algorithm_changes": 0,
-      "evidence": "docs/report/ch6_planner_external_followup_20260922.md",
-      "operator_compatibility_failure": "RDF4J 5.1.2 parser rejects original author entity-probe COALESCE(); reproduced after HTTPS IRI compatibility",
+      "evidence": "docs/report/ch6_baseline_admission_20260922.md",
+      "operator_compatibility_failure": "Original empty COALESCE and NULL binding failure retained; adapted fixed tool template passes execution and Jena equivalence; FedX duplicate rows retained",
       "single_source_failures_also_observed": true,
-      "current_compatibility": "https-iris-action-schema-fedx-v1"
+      "current_compatibility": "https-iris-action-schema-fedx-v2",
+      "correct_nl_answer_observed": false
     }
   ],
   "diagnostic_only": [
@@ -47,7 +50,7 @@
       "W3_cross_source",
       "W4_cross_source_multifield"
     ],
-    "rule": "Record capability, transport, model-format, timeout, answer quality separately; single-source-only support requires evidence, not inference from a formatter failure. No added baseline federation capability.",
+    "rule": "Record capability, transport, model-format, timeout and answer quality separately. The adapted composition returned answers on both a single-source and a two-source tiny case; neither was correct. This does not establish arbitrary cross-source support or only-single-source capability.",
     "native_heterogeneous_unsupported": "N/A; no zero-latency bar",
     "supported_runtime_failures": "Keep in the corresponding stratum denominator"
   },

@@ -1,5 +1,13 @@
 # XGAP 当前 Goal
 
+**当前 milestone 已完成：baseline 正常产出。** ARUQULA→FedX 在固定 tiny 单源与
+两源题均完成最终执行，答案评分分别保留为 0；不再优化 baseline 质量。
+见[接通报告](report/ch6_baseline_admission_20260922.md)。下一步转为正式实验接线：
+注册外部批量 worker、共同 RDF/同题/metadata/计量、冻结正式 manifest 与预算。
+先推进 D3 SF0.1 配对实测；D1/D2 的装载与 workload 准入另行补齐，不冒称全量就绪。
+
+以下保留本轮推进背景，以最新接通报告为准：
+
 本轮后续已完成有界规划缓存与超时进展保留；3 个固定真数据实例、FedX 协议验收和
 原版 ARUQULA→FedX 方法尝试均已封存，见[报告](report/ch6_planner_external_followup_20260922.md)。
 当前 milestone 明确为 baseline 端到端产出结果；必要中间适配与管道已获用户授权。

@@ -4,6 +4,11 @@
 user's current Chapter 6 is the [experimental study](ch6_experiment_plan_20260922.md);
 this document remains an implementation map, not the new chapter outline.
 
+External baseline update: ARUQULA→FedX now completes tiny single/two-source NL
+execution with disclosed serialization and tool compatibility. Both answers are
+wrong and remain unchanged. Its standalone worker is not yet in the general batch
+dispatcher; see the [admission and readiness report](report/ch6_baseline_admission_20260922.md).
+
 2026-09-21. This maps the admitted implementation to the revised manuscript.
 2026-09-22 follow-up: optional deadlines retain fully scored root incumbents with
 all outcome reserves; bounded request-local caches avoid repeated proof/seed work.

@@ -22,6 +22,10 @@ linked decisions before changes. Read `docs/roadmap.md` for remaining work.
 
 The user authorizes necessary tiny development gates, legacy isolation,
 compressed evidence, faithful baseline integration and GitHub synchronization.
+Current baseline milestone is complete on tiny single/two-source data; see
+`docs/report/ch6_baseline_admission_20260922.md`. Do not tune its answer quality.
+The next boundary is formal batch dispatch and same-RDF workload/budget freezing,
+not another baseline correctness-improvement loop. No full matrix is released yet.
 This is a bounded research prototype. Do not expand universal NL support or
 build general open-source-product features instead of advancing the experiment.
 

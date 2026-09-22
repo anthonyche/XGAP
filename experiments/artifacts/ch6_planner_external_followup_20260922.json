@@ -95,6 +95,16 @@
       "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v3/receipt.json",
       "sha256": "75b0b3ae75af5a646b1f8d882a373b3cad847c27fd6b84cb727a0f6d462344bc",
       "bytes": 11329
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v4/receipt.json",
+      "sha256": "ee6dc79b117ec139f0910dd2e53aec9f96ffe39b108bc11cd515b26c7ae3e00a",
+      "bytes": 13184
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v5/receipt.json",
+      "sha256": "2a4cf5a823ff8edf4cd91612ab561537d52d0c6387f858696ba56dfb78709237",
+      "bytes": 12433
     }
   ],
   "offline_https_replay": {
@@ -202,5 +212,37 @@
       "sha256": "9f432f9d716f66149691a5bd2a33e533a365f403366149378700954e271dc8ef",
       "bytes": 4626
     }
-  }
+  },
+  "cross_source_admitted": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v3/receipt.json",
+    "sha256": "712250cba9869e0300d0c9362eb3cf2cab5b4ca4a0bd569342a36fb4760d05f9",
+    "bytes": 14637
+  },
+  "baseline_admission_public_summary": {
+    "path": "docs/report/assets/ch6_baseline_admission_20260922/summary.json",
+    "sha256": "bc9f5a86c365507d25f116782916c08e64977995e9cea01d075b6f147c1eb0da",
+    "bytes": 3336
+  },
+  "preserved_tool_diagnostic_failures": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-coalesce-equivalence-20260922-v1/receipt.json",
+      "sha256": "ae14248353d10c3fad5145cdfc8f2291d8b483b903c4b3e73bda7340770ff917",
+      "bytes": 1403
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-coalesce-equivalence-20260922-v2/receipt.json",
+      "sha256": "42e06e3906adb57ea9d7b3137be656cac363d746693694cb8346fa69e02892c2",
+      "bytes": 1403
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-coalesce-equivalence-20260922-v3/receipt.json",
+      "sha256": "ac756c674c56950a3fc0c89755906eb469a272a24e4ded7f852fbf0696d00b94",
+      "bytes": 1403
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-entity-label-equivalence-20260922-v1/receipt.json",
+      "sha256": "c613d4e796a424b1f79ed0c1062bbe5410bb761823db445a0784e2d60f1c7058",
+      "bytes": 1521
+    }
+  ]
 }
