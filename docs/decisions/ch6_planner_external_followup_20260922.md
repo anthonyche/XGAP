@@ -200,3 +200,12 @@ FedX uses its default OPTIONAL configuration again.
 Freeze https-iris-action-schema-fedx-v1 plus transport build v4 for single-source
 FedX v4, followed, if answered, by the existing cross-source case in v3. Each has
 the unchanged 300 s / 64 model / 256 source admission limits.
+
+FedX single-source v4 reached 35 model responses but its last formatter response
+ended with finish_reason=length at 700 tokens. The controller's complete query
+was truncated during serialization; the original method retried that malformed
+query and failed. Freeze v2 with ONLY the exact formatter's maximum increased
+to 2048; controller/pruner/reporter budgets and prompts are unchanged. This is a
+disclosed serialization capacity change, not a claim of identical decoding.
+Use single-source v5, followed if answered by cross-source v3, each once under
+the existing admission limits. Preserve v4 and its truncation as a failed profile.

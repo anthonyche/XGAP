@@ -174,6 +174,8 @@ def test_action_schema_applies_only_to_exact_formatter_instruction():
     for key in ('temperature','top_p','max_tokens'):assert configured[key]==original[key]
     controller=dict(original,messages=[{'role':'system','content':'Controller instruction'}])
     assert worker.nonthinking_parameters(controller,message['content'])['response_format']=={'type':'json_object'}
+    assert worker.nonthinking_parameters(original,message['content'],2048)['max_tokens']==2048
+    assert worker.nonthinking_parameters(controller,message['content'],2048)['max_tokens']==700
 
 
 def test_coalesce_overlay_changes_only_pinned_active_tool_expression(tmp_path):

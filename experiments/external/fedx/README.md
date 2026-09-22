@@ -29,3 +29,14 @@ Gold scoring and durable invocation/response records belong to the external harn
 
 Build status and actual tiny endpoint correctness are separate acceptance gates.
 See `docs/report/external_federation_preparation_20260912.md` in the repository.
+
+2026-09-22 baseline integration also accepts GET and form-encoded SELECT requests.
+`scripts/build_ch6_fedx_transport.py` can replace only the adapter classes inside
+the frozen distribution, checking that every external entry is byte-identical.
+The diagnostic JVM switch `xgap.fedx.debugErrors` emits private exception stacks.
+`xgap.fedx.disableOptionalBind` was tested against a NULL failure and did not fix
+it; the admitted baseline profile leaves it off and retains the original config.
+ARUQULA compatibility is in its separate worker overlay, not this engine. See the
+[frozen protocol](../../../docs/decisions/ch6_planner_external_followup_20260922.md).
+Successful HTTP execution and agreement with an independent answer are recorded
+separately; the adapter never deduplicates or corrects the engine's returned rows.

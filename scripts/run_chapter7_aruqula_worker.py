@@ -37,14 +37,15 @@ ENTITY_LABEL_TAIL = ('        BIND(COALESCE(?vLabel_en, ?vLabel_) AS ?vLabel)',
         BIND(IF(?p = rdf:type, "is a", ?xgapCompatPLabel) AS ?pLabel)''')
 COMPATIBILITIES = ('original','https-property-iris-v1','https-property-iris-qwen-key-v1',
                    'https-iris-qwen-key-v2','https-iris-qwen-envelope-v3','https-iris-nonthinking-v1',
-                   'https-iris-action-schema-v1','https-iris-action-schema-fedx-v1')
+                   'https-iris-action-schema-v1','https-iris-action-schema-fedx-v1',
+                   'https-iris-action-schema-fedx-v2')
 
 ACTION_SCHEMA = {'type':'object','properties':{k:{'type':'string'}
     for k in ('thought','action_name','action_argument')},
     'required':['thought','action_name','action_argument'],'additionalProperties':False}
 
 
-def nonthinking_parameters(kwargs, formatter_instruction=None):
+def nonthinking_parameters(kwargs, formatter_instruction=None, formatter_max_tokens=None):
     """Match the existing XGAP Qwen serving template, without tuning sampling."""
     result=dict(kwargs);extra=dict(result.get('extra_body') or {})
     template=dict(extra.get('chat_template_kwargs') or {})
@@ -58,14 +59,15 @@ def nonthinking_parameters(kwargs, formatter_instruction=None):
             raise ValueError('Unexpected original formatter response format')
         result['response_format']={'type':'json_schema','json_schema':dict(
             name='aruqula_action_envelope',strict=True,schema=ACTION_SCHEMA)}
+        if formatter_max_tokens is not None:result['max_tokens']=formatter_max_tokens
     return result
 
 
-def install_nonthinking_transport(formatter_instruction=None):
+def install_nonthinking_transport(formatter_instruction=None, formatter_max_tokens=None):
     import litellm
     original_async,original_sync=litellm.acompletion,litellm.completion
-    async def async_call(*args,**kwargs):return await original_async(*args,**nonthinking_parameters(kwargs,formatter_instruction))
-    def sync_call(*args,**kwargs):return original_sync(*args,**nonthinking_parameters(kwargs,formatter_instruction))
+    async def async_call(*args,**kwargs):return await original_async(*args,**nonthinking_parameters(kwargs,formatter_instruction,formatter_max_tokens))
+    def sync_call(*args,**kwargs):return original_sync(*args,**nonthinking_parameters(kwargs,formatter_instruction,formatter_max_tokens))
     litellm.acompletion,litellm.completion=async_call,sync_call
     def restore():litellm.acompletion,litellm.completion=original_async,original_sync
     return restore
@@ -224,19 +226,23 @@ def run(args):
         if compatibility != 'original':
             overlay, patch_receipt = https_property_overlay(source,root,
                 include_entity=compatibility in ('https-iris-qwen-key-v2','https-iris-qwen-envelope-v3',
-                    'https-iris-nonthinking-v1','https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'),
-                entity_label=compatibility=='https-iris-action-schema-fedx-v1')
+                    'https-iris-nonthinking-v1','https-iris-action-schema-v1',
+                    'https-iris-action-schema-fedx-v1','https-iris-action-schema-fedx-v2'),
+                entity_label=compatibility in ('https-iris-action-schema-fedx-v1','https-iris-action-schema-fedx-v2'))
             receipt['compatibility_patch'] = patch_receipt
             receipt['author_source_compatibility_patches'] = patch_receipt['replacements']
             write(root/'compatibility-patch.json',patch_receipt)
             sys.path.insert(0,str(overlay))
-        if compatibility in ('https-iris-nonthinking-v1','https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'):
+        if compatibility in ('https-iris-nonthinking-v1','https-iris-action-schema-v1',
+                             'https-iris-action-schema-fedx-v1','https-iris-action-schema-fedx-v2'):
             instruction=None
-            if compatibility in ('https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'):
+            if compatibility in ('https-iris-action-schema-v1','https-iris-action-schema-fedx-v1','https-iris-action-schema-fedx-v2'):
                 prompt=(source/'spinach_agent/prompts/format_actions.prompt').read_text()
                 instruction=prompt.split('# instruction\n',1)[1].split('# distillation instruction',1)[0].strip()
                 receipt['formatter_transport_schema']=ACTION_SCHEMA
-            restore_model_transport=install_nonthinking_transport(instruction)
+            formatter_limit=2048 if compatibility=='https-iris-action-schema-fedx-v2' else None
+            restore_model_transport=install_nonthinking_transport(instruction,formatter_limit)
+            receipt['formatter_max_tokens']=formatter_limit or 700
             receipt['model_template_parameters']={'enable_thinking':False}
             receipt['model_template_matches_xgap']=True
             receipt['action_envelope_adapter_enabled']=False

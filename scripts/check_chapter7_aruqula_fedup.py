@@ -354,5 +354,6 @@ if __name__ == '__main__':
     parser.add_argument('--compatibility',choices=['original','https-property-iris-v1',
                         'https-property-iris-qwen-key-v1','https-iris-qwen-key-v2',
                         'https-iris-qwen-envelope-v3','https-iris-nonthinking-v1',
-                        'https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'],default='original')
+                        'https-iris-action-schema-v1','https-iris-action-schema-fedx-v1',
+                        'https-iris-action-schema-fedx-v2'],default='original')
     raise SystemExit(check(**vars(parser.parse_args())))
