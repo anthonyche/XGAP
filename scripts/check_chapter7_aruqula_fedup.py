@@ -124,6 +124,8 @@ def public_source_loads(profile, metadata, output):
 def check(*, profile_path, profile_sha256, output, read_key=False, federation='fedup', fedx_build=None,
           case='cross-source', compatibility='original'):
     selected = admission_case(case)
+    if federation=='single-fuseki' and selected['sources']!=('graph',):
+        raise ValueError('Native single-endpoint admission cannot be labeled cross-source')
     commit = source_commit()
     root = Path(output).resolve()
     root.mkdir(parents=True, exist_ok=False)
@@ -155,7 +157,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 raise ValueError('Admission requires the existing eight-entity development snapshot')
             for name in ('graph.ttl', 'control.ttl'):
                 verify_asset(materialization/name,manifest['output_files'][name])
-            if federation not in ('fedup','fedx'):raise ValueError('Unknown original federation method')
+            if federation not in ('fedup','fedx','single-fuseki'):raise ValueError('Unknown original endpoint configuration')
             fedx=None
             if federation=='fedx':
                 build=json.loads(Path(fedx_build).read_text())
@@ -184,7 +186,8 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 maximum_model_calls=64, maximum_source_calls=256, official_lookup_config=file_pin(LOOKUP/'examples/config.yml'),
                 model_transport='explicit system HTTP proxy' if model_proxy else 'direct HTTP',
                 composition='aruqula-'+federation,
-                jars=({name:file_pin(JARS[name]) for name in ('fedup','summary')} if federation=='fedup' else dict(fedx=fedx)), redis=file_pin(REDIS),
+                jars=({name:file_pin(JARS[name]) for name in ('fedup','summary')} if federation=='fedup'
+                      else dict(fedx=fedx) if federation=='fedx' else {}), redis=file_pin(REDIS),
                 worker=file_pin(REPO/'scripts/run_chapter7_aruqula_worker.py'), classpath=file_pin(CLASSPATH),
                 lookup_jar=file_pin(LOOKUP/'lookup/target/lookup-1.0.jar')))
             prepare_metadata(profile_path=profile_path, profile_sha256=profile_sha256, output=root/'public-metadata')
@@ -236,15 +239,19 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 receipt['offline_summary'] = write_once(root/'summary-seal.json',dict(
                     files=[file_pin(p) for p in sorted(summary.rglob('*')) if p.is_file()], hash_modulo=1))
                 shutil.copytree(summary,root/'serving-summary')
-            port = ports.ports[2]
-            ports.release(2)
-            command=([JAVA,'-Xms64m','-Xmx512m','-jar',str(JARS['fedup']),
-                '--port',str(port),'--summaries',str(root/'serving-summary'),'--engine','FedX','--modify','(e) -> e']
-                if federation=='fedup' else [JAVA,'-Xms64m','-Xmx512m','-jar',fedx['path'],str(port),'20',*endpoints])
-            host = processes.start(federation,command)
-            ready(host,port)
-            owned.append(OwnedProcess(federation,'method_host',host))
-            endpoint=f'http://127.0.0.1:{port}/'+('serving-summary/sparql' if federation=='fedup' else 'sparql')
+            if federation=='single-fuseki':
+                endpoint=endpoints[0]
+                receipt['endpoint_role']='native_single_source; no federation engine'
+            else:
+                port = ports.ports[2]
+                ports.release(2)
+                command=([JAVA,'-Xms64m','-Xmx512m','-jar',str(JARS['fedup']),
+                    '--port',str(port),'--summaries',str(root/'serving-summary'),'--engine','FedX','--modify','(e) -> e']
+                    if federation=='fedup' else [JAVA,'-Xms64m','-Xmx512m','-jar',fedx['path'],str(port),'20',*endpoints])
+                host = processes.start(federation,command)
+                ready(host,port)
+                owned.append(OwnedProcess(federation,'method_host',host))
+                endpoint=f'http://127.0.0.1:{port}/'+('serving-summary/sparql' if federation=='fedup' else 'sparql')
             observers['federation'] = CampaignSourceObserver({'/sparql':endpoint},
                 root/'federation-observations',budget=source_budget)
             yaml_code = 'import json,sys,yaml; print(json.dumps([yaml.safe_load(open(p)) for p in sys.argv[1:]]))'
@@ -338,9 +345,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('profile-path','profile-sha256','output'): parser.add_argument('--'+name,required=True)
     parser.add_argument('--read-key',action='store_true')
-    parser.add_argument('--federation',choices=['fedup','fedx'],default='fedup')
+    parser.add_argument('--federation',choices=['fedup','fedx','single-fuseki'],default='fedup')
     parser.add_argument('--fedx-build')
     parser.add_argument('--case',choices=['single-source','cross-source'],default='cross-source')
     parser.add_argument('--compatibility',choices=['original','https-property-iris-v1',
-                        'https-property-iris-qwen-key-v1'],default='original')
+                        'https-property-iris-qwen-key-v1','https-iris-qwen-key-v2'],default='original')
     raise SystemExit(check(**vars(parser.parse_args())))

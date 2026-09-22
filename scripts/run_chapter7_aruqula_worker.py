@@ -25,7 +25,10 @@ AUTHOR_COMMIT = '9a3982baca03d62f7250572e300b1e4ba47727cc'
 DATASET_ID = 'https://text2sparql.aksw.org/2025/corporate/'
 HTTPS_PROPERTY_FIX = ('    if pid.startswith("http:"):\n        pid = f"<{pid}>"',
                      '    if pid.startswith(("http:", "https:")):\n        pid = f"<{pid}>"')
-COMPATIBILITIES = ('original','https-property-iris-v1','https-property-iris-qwen-key-v1')
+HTTPS_ENTITY_FIX = ('    elif entity.startswith("http:"):\n        entity = f"<{entity}>"',
+                   '    elif entity.startswith(("http:", "https:")):\n        entity = f"<{entity}>"')
+COMPATIBILITIES = ('original','https-property-iris-v1','https-property-iris-qwen-key-v1',
+                   'https-iris-qwen-key-v2')
 
 
 def action_envelope_alias(value):
@@ -40,7 +43,7 @@ def action_envelope_alias(value):
     return value
 
 
-def https_property_overlay(source, output):
+def https_property_overlay(source, output, include_entity=False):
     """One recorded URI-scheme compatibility fix; no query/output rewriting."""
     path = Path(source)/'kg_utils.py'
     raw = path.read_bytes()
@@ -48,13 +51,19 @@ def https_property_overlay(source, output):
     if raw.count(original)!=1:
         raise ValueError('Pinned HTTPS compatibility patch does not apply exactly once')
     updated = raw.replace(original,replacement)
+    if include_entity:
+        before,after=(s.encode() for s in HTTPS_ENTITY_FIX)
+        if updated.count(before)!=1:
+            raise ValueError('Pinned entity HTTPS patch does not apply exactly once')
+        updated=updated.replace(before,after)
     target = Path(output)/'author-compatibility'
     target.mkdir()
     (target/'kg_utils.py').write_bytes(updated)
-    return target,dict(kind='https-property-iris-v1',changed_module='kg_utils.py',
+    return target,dict(kind='https-iris-v2' if include_entity else 'https-property-iris-v1',changed_module='kg_utils.py',
         changed_function='get_property_examples',original_sha256=hashlib.sha256(raw).hexdigest(),
-        patched_sha256=hashlib.sha256(updated).hexdigest(),replacements=1,
-        change='Recognize https: as an absolute property IRI, like existing http: support',
+        changed_functions=['get_property_examples']+(['get_outgoing_edges'] if include_entity else []),
+        patched_sha256=hashlib.sha256(updated).hexdigest(),replacements=2 if include_entity else 1,
+        change='Recognize https: as an absolute IRI, like existing http: support',
         original_author_checkout_unchanged=True,algorithm_changes=0,prompt_changes=0,output_repairs=0)
 
 
@@ -152,9 +161,10 @@ def run(args):
         os.chdir(root)
         sys.path.insert(0, str(source))
         if compatibility != 'original':
-            overlay, patch_receipt = https_property_overlay(source,root)
+            overlay, patch_receipt = https_property_overlay(source,root,
+                include_entity=compatibility=='https-iris-qwen-key-v2')
             receipt['compatibility_patch'] = patch_receipt
-            receipt['author_source_compatibility_patches'] = 1
+            receipt['author_source_compatibility_patches'] = patch_receipt['replacements']
             write(root/'compatibility-patch.json',patch_receipt)
             sys.path.insert(0,str(overlay))
         write(root / 'intent.json', receipt)
@@ -162,7 +172,7 @@ def run(args):
         prompt_writer = write_prompt_logs_to_file
         from spinach_agent import part_to_whole_parser
         PartToWholeParser = part_to_whole_parser.PartToWholeParser
-        if compatibility == 'https-property-iris-qwen-key-v1':
+        if compatibility in ('https-property-iris-qwen-key-v1','https-iris-qwen-key-v2'):
             from langchain_core.runnables import RunnableLambda
             def decode_envelope(value):
                 decoded = action_envelope_alias(value)
@@ -244,6 +254,6 @@ if __name__ == '__main__':
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--query-seconds', type=int, default=20)
     parser.add_argument('--response-bytes', type=int, default=64 * 1024**2)
-    parser.add_argument('--method-id',choices=['aruqula-fedup','aruqula-fedx'],default='aruqula-fedup')
+    parser.add_argument('--method-id',choices=['aruqula-fedup','aruqula-fedx','aruqula-single-fuseki'],default='aruqula-fedup')
     parser.add_argument('--compatibility',choices=COMPATIBILITIES,default='original')
     raise SystemExit(run(parser.parse_args()))

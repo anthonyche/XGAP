@@ -25,7 +25,7 @@ from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.process_guard import _group_sample
 
 
-def check(build,profile_path,profile_sha256,output):
+def check(build,profile_path,profile_sha256,output,query_manifest=None,query_manifest_sha256=None):
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     processes=Processes(root);ports=None;observer=None
     receipt=dict(success=False,model_calls=0,cases=[],external_algorithm_changes=0)
@@ -38,14 +38,30 @@ def check(build,profile_path,profile_sha256,output):
             old=Path('/Users/anthonyche/xgap-data/unified-external-admission-20260921-v5/federation-observations/0000-intent.json')
             parameters=dict(person_id='1',start_time='2020-01-01 00:00:00.000',end_time='2020-01-04 00:00:00.000')
             queries={'author-values':json.loads(old.read_text())['query'],'cross-source':fixed_semantics_query(FAMILIES[0],parameters)}
+            replay_pin=None
+            if query_manifest:
+                replay=json.loads(read_pinned(query_manifest,query_manifest_sha256))
+                if replay.get('schema_version')!='xgap-author-query-replay-v1' or not 1<=len(replay['queries'])<=4:
+                    raise ValueError('Expected a bounded pinned replay manifest')
+                queries={}
+                for item in replay['queries']:
+                    if not item['name'].isidentifier() or item['name'] in queries:
+                        raise ValueError('Invalid replay query name')
+                    queries[item['name']]=read_pinned(item['path'],item['sha256']).decode()
+                replay_pin=file_pin(query_manifest)
             receipt['inputs']=write_once(root/'input-seal.json',dict(build=file_pin(build),jar=jar,failed_author_query=file_pin(old),
-                profile=dict(path=profile_path,sha256=profile_sha256),queries=queries,model_calls_cap=0,federation_requests_cap=7,wall_seconds=180))
+                profile=dict(path=profile_path,sha256=profile_sha256),queries=queries,replay_manifest=replay_pin,
+                model_calls_cap=0,federation_requests_cap=3*len(queries)+1,wall_seconds=180))
             prepare(profile_path=profile_path,profile_sha256=profile_sha256,output=root/'metadata')
             loads=public_source_loads(profile,root/'metadata/metadata.nt',root)
             receipt['public_sources']=[file_pin(p) for p in loads]
             oracle=Graph()
             for load in loads:oracle.parse(load,format='turtle')
-            expected={name:json.loads(oracle.query(query).serialize(format='json')) for name,query in queries.items()}
+            # Captured author tools have no evaluator answer contract. Their
+            # replay verifies transport/JSON only; keep answer scoring separate.
+            # In particular do not rewrite COALESCE() for RDFLib compatibility.
+            expected={} if query_manifest else {
+                name:json.loads(oracle.query(query).serialize(format='json')) for name,query in queries.items()}
             ports=LoopbackPortReservations.acquire(3);routes={}
             for i,load in enumerate(loads):
                 port=ports.ports[i];ports.release(i);state=root/f'source-{i}';state.mkdir()
@@ -66,20 +82,24 @@ def check(build,profile_path,profile_sha256,output):
                         'application/x-www-form-urlencoded' if transport=='form' else 'application/sparql-query'}))
                     with urlopen(req,timeout=15) as response:answer=json.load(response)
                     write_once(root/(name+'-'+transport+'-answer.json'),answer)
-                    if name=='cross-source':
+                    if query_manifest:
+                        same=(isinstance(answer.get('head',{}).get('vars'),list) and
+                              isinstance(answer.get('results',{}).get('bindings'),list))
+                    elif name=='cross-source':
                         # Use the pre-existing shared financial answer contract:
                         # decimal 66 and double 66.0 denote the same amount.
                         spec=normalization(FAMILIES[0])
                         same=normalize_rows(sparql_values(answer,spec),spec)==normalize_rows(sparql_values(expected[name],spec),spec)
                     else:same=score_sparql(answer,expected[name],ordered=False)['exact']
-                    receipt['cases'].append(dict(query=name,transport=transport,success=same,rows=len(answer['results']['bindings'])))
+                    receipt['cases'].append(dict(query=name,transport=transport,success=same,rows=len(answer['results']['bindings']),
+                        validation='transport_and_result_format' if query_manifest else 'independent_reference'))
                     if not same:raise ValueError('Independent RDF terms differ')
             try:
                 urlopen(Request(endpoint,data=b'INSERT DATA { <urn:x> <urn:p> <urn:y> }',headers={'Content-Type':'application/sparql-query'}),timeout=15)
                 raise ValueError('UPDATE accepted')
             except HTTPError as error:receipt['update_rejected']=error.code==500
             receipt['observations']=observer.seal_phase('protocol')
-            receipt['success']=receipt['update_rejected'] and len(receipt['cases'])==6
+            receipt['success']=receipt['update_rejected'] and len(receipt['cases'])==3*len(queries)
     except (Exception,KeyboardInterrupt) as error:receipt.update(error_type=type(error).__name__,error=str(error))
     finally:
         receipt['processes']=processes.close()
@@ -95,4 +115,6 @@ def check(build,profile_path,profile_sha256,output):
 if __name__=='__main__':
     p=argparse.ArgumentParser()
     for name in ('build','profile-path','profile-sha256','output'):p.add_argument('--'+name,required=True)
+    p.add_argument('--query-manifest')
+    p.add_argument('--query-manifest-sha256')
     raise SystemExit(check(**vars(p.parse_args())))
