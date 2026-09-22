@@ -12,10 +12,11 @@ from xgap.experiments.practical_methods import PRACTICAL_METHODS, FIXED_INFORMAT
 from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL_FAMILY_METHODS
 from xgap.experiments.bounded_joint_contract import METHODS as HISTORICAL_JOINT_METHODS
 from xgap.experiments.unified_contract import METHODS as UNIFIED_METHODS
+from xgap.experiments.ch6_direct import METHOD as DIRECT_METHOD
 JOINT_METHODS=(*HISTORICAL_JOINT_METHODS,*UNIFIED_METHODS)
 
 SCHEMA='xgap-nl-method-worker-v1'
-METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS,*NL_STRONG_METHODS,*NL_USER_METHODS,*NL_FAMILY_METHODS,*JOINT_METHODS)
+METHODS=('xgap-precision','xgap-performance','fedx','fedup',*PRACTICAL_METHODS,*NL_STRONG_METHODS,*NL_USER_METHODS,*NL_FAMILY_METHODS,*JOINT_METHODS,DIRECT_METHOD)
 
 
 def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,output,endpoint=None,seconds=180,
@@ -24,6 +25,13 @@ def run_nl(*,request_path,request_sha256,profile_path,profile_sha256,method,outp
            controlled_state_path=None,controlled_state_sha256=None):
     joint_args=(scope_path,scope_sha256,joint_config_path,joint_config_sha256)
     state_args=(controlled_state_path,controlled_state_sha256)
+    if method == DIRECT_METHOD:
+        if (any(v is not None for v in (*state_args,scope_path,scope_sha256,oracle_path,oracle_sha256,
+                intent_family_path,intent_family_sha256,endpoint)) or not joint_config_path or not joint_config_sha256):
+            raise ValueError('Direct proposal accepts public input and physical settings only; no intent oracle')
+        from xgap.experiments.ch6_direct_worker import run
+        return run(request_path=request_path,request_sha256=request_sha256,profile_path=profile_path,
+            profile_sha256=profile_sha256,joint_config_path=joint_config_path,joint_config_sha256=joint_config_sha256,output=output)
     if method not in JOINT_METHODS and any(v is not None for v in (*joint_args,*state_args)):
         raise ValueError('Current scope/configuration cannot be attached to a historical method')
     if method not in NL_FAMILY_METHODS and (intent_family_path is not None or intent_family_sha256 is not None):

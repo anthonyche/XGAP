@@ -17,6 +17,7 @@ from xgap.agent.nl_strong_question import NL_STRONG_METHODS, NL_USER_METHODS, NL
 from xgap.experiments.evidence_store import file_pin
 from xgap.experiments.bounded_joint_contract import METHODS as HISTORICAL_JOINT_METHODS, TRACK as JOINT_TRACK, METRICS as JOINT_METRICS, CONTROLLED_TRACK
 from xgap.experiments import unified_contract as unified_run
+from xgap.experiments.ch6_direct import METHOD as DIRECT_METHOD, TRACK as DIRECT_TRACK
 JOINT_METHODS=(*HISTORICAL_JOINT_METHODS,*unified_run.METHODS)
 
 
@@ -60,11 +61,17 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             joint_args=(scope_path,scope_sha256,joint_config_path,joint_config_sha256)
             if method not in JOINT_METHODS and (controlled_state_path or controlled_state_sha256):
                 raise ValueError('Controlled state requires a current method')
-            if method not in JOINT_METHODS and any(v is not None for v in joint_args):
+            if method not in (*JOINT_METHODS,DIRECT_METHOD) and any(v is not None for v in joint_args):
                 raise ValueError('Current scope/configuration requires a current method')
             if method not in NL_FAMILY_METHODS and (intent_family_path is not None or intent_family_sha256 is not None):
                 raise ValueError('Finite-family input cannot be attached to another method')
-            if method in JOINT_METHODS:
+            if method == DIRECT_METHOD:
+                if (not joint_config_path or not joint_config_sha256 or scope_path or scope_sha256
+                        or oracle_path or oracle_sha256 or endpoint is not None):
+                    raise ValueError('Direct worker must not receive scope or private user artifacts')
+                r.update(track=DIRECT_TRACK,joint_config_sha256=joint_config_sha256)
+                command+=['--joint-config-path',str(Path(joint_config_path).resolve()),'--joint-config-sha256',joint_config_sha256]
+            elif method in JOINT_METHODS:
                 if not all(joint_args) or not oracle_path or not oracle_sha256 or endpoint is not None or user_max_calls!=9:
                     raise ValueError('Current method requires pinned scope/configuration/private user')
                 r.update(track=unified_run.TRACK if method in unified_run.METHODS else JOINT_TRACK,scope_sha256=scope_sha256,joint_config_sha256=joint_config_sha256,
@@ -121,6 +128,10 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                     any(child.get(k)!=r[k] for k in ('scope_sha256','joint_config_sha256','oracle_sha256')) or
                     child.get('controlled_state_sha256')!=controlled_state_sha256):
                 raise ValueError('Current worker track or artifact identity differs')
+            if method == DIRECT_METHOD and (child.get('track') != DIRECT_TRACK
+                    or child.get('joint_config_sha256') != joint_config_sha256
+                    or child.get('oracle_available_to_worker') is not False):
+                raise ValueError('Direct worker identity or private input boundary differs')
         observed=observer.snapshot(phase)
         r.update(success=bool(guard['success'] and child and child['success'] and observed['failed_requests']==0),
             status=child['status'] if guard['success'] and child else 'guard_'+guard['status'],
@@ -143,7 +154,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                         'disclosed_coordinates','oracle_reply_bytes','certificate_ms','certificate_checks',
                         'physical_prepare_attempts','physical_plan_cache_hits','terminal_certificate','root_gap','search'):
                 r[key]=child.get(key) if child else None
-        if method in JOINT_METHODS:
+        if method in (*JOINT_METHODS,DIRECT_METHOD):
             for key in (*JOINT_METRICS,'core','search','user_observations','final_plan_executions',
                         'backend_calls','proposal_kind','epsilon','error','error_type','execution_cost_feedback',
                         'controlled_processing_ms','initial_state',*unified_run.METRICS,'algorithm_profile','terminal_settings'):

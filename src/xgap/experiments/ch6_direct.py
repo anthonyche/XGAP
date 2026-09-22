@@ -16,6 +16,9 @@ from xgap.runtime.unified_physical import PhysicalMoves
 from xgap.semantic.intent_scope import ScopePolicy,construct_scope
 from xgap.semantic.interpretation_candidates import interpret_candidate_question
 
+METHOD = 'xgap-llm-direct'
+TRACK = 'natural_language_single_proposal'
+
 
 class ProposalContract:
     """Physical fixed-input eligibility only. Never called an intent certificate."""

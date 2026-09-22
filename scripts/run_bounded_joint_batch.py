@@ -27,6 +27,7 @@ from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.process_guard import ProcessBudget
 from xgap.experiments.query_loss_score import score_query_loss
+from xgap.experiments.ch6_direct import METHOD as DIRECT_METHOD
 
 REPO=Path(__file__).resolve().parents[1]
 SCHEMA='xgap-bounded-joint-batch-v1'
@@ -52,7 +53,7 @@ def validate(manifest):
     if any(type(design[k]) is not int for k in ('package_max_bytes','free_disk_reserve_bytes','source_rss_bytes')):
         raise ValueError('Byte budgets must be integers')
     from xgap.experiments.unified_contract import METHODS as UNIFIED_METHODS
-    allowed=UNIFIED_METHODS if manifest['schema_version']==UNIFIED_SCHEMA else METHODS
+    allowed=(*UNIFIED_METHODS,DIRECT_METHOD) if manifest['schema_version']==UNIFIED_SCHEMA else METHODS
     cells=manifest['cells']
     if not isinstance(cells,list) or not 1<=len(cells)<=10000:raise ValueError('Bounded nonempty cells required')
     ids=[]
@@ -62,6 +63,8 @@ def validate(manifest):
         if not isinstance(cell['cell_id'],str) or not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}',cell['cell_id']):
             raise ValueError('Invalid cell ID')
         if cell['method'] not in allowed:raise ValueError('Only current bounded joint methods are allowed')
+        if cell['method']==DIRECT_METHOD and 'controlled_state' in cell:
+            raise ValueError('Direct baseline requires a natural-language proposal, not controlled truth')
         ids.append(cell['cell_id'])
     if len(ids)!=len(set(ids)):raise ValueError('Duplicate cell IDs')
     # Only pin syntax is inspected here, not private intent or reference contents.
@@ -175,6 +178,7 @@ def _run(manifest,digest,commit,root,max_new_cells):
                 fresh_source_session=session.observer.generation==0,attempts=1))
             kwargs={}
             for key,argument in (('request','request'),('scope','scope'),('oracle','oracle'),('config','joint_config')):
+                if cell['method']==DIRECT_METHOD and key in ('scope','oracle'):continue
                 kwargs[argument+'_path']=cell[key]['path'];kwargs[argument+'_sha256']=cell[key]['sha256']
             if 'controlled_state' in cell:
                 kwargs.update(controlled_state_path=cell['controlled_state']['path'],
@@ -192,7 +196,7 @@ def _run(manifest,digest,commit,root,max_new_cells):
             score=score_trial(outcome['receipt']['path'],receipt_sha256=outcome['receipt']['sha256'],
                 reference_path=ref['path'],reference_sha256=ref['sha256'],output=path/'score.json')
             loss_pin=None
-            if outcome.get('core'):
+            if outcome.get('core') and cell['method']!=DIRECT_METHOD:
                 score_query_loss(receipt=outcome['receipt'],request=cell['request'],oracle=cell['oracle'],output=path/'query-loss.json')
                 loss_pin=file_pin(path/'query-loss.json')
             write_once(path/'terminal.json',dict(cell_id=cell['cell_id'],outcome=outcome['receipt'],
