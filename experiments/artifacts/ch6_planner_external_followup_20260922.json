@@ -121,5 +121,54 @@
     "path": "/Users/anthonyche/xgap-data/ch6-fedx-author-tools-20260922-v2/parser-receipt.json",
     "sha256": "236cccce0618bb9aca942981704ee6a01d4d516eb883cdb1bbad803a096c482b",
     "bytes": 542
+  },
+  "native_single_admissions": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v1/receipt.json",
+      "sha256": "e958353aeb3d7e9dc7454b1b3f5f61a02eaa1794413d931fe2977c96945993e2",
+      "bytes": 9602
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v2/receipt.json",
+      "sha256": "d9ab90bc8fb7b9a10673b92d87717f678e070dda41e36adc3ea87647ce9bd93a",
+      "bytes": 12241
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v3/receipt.json",
+      "sha256": "8efeca45d4fa98cbb94b9e40c125290f9be0b46c0ea5f4746d82ae85e4a33867",
+      "bytes": 12355
+    }
+  ],
+  "client_loopback_diagnostic": {
+    "path": "/Users/anthonyche/xgap-data/ch6-client-loopback-20260922-v1/receipt.json",
+    "sha256": "828fe9094837ad59377c6bb1914ae318633c14c07c4febda40dc6fe667f3d4a6",
+    "bytes": 1314
+  },
+  "captured_native_client_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-native-client-replay-20260922-v1/receipt.json",
+    "sha256": "a20d76c6f2df23a39d623ce960bb293adc8ce69efd5251788829d320d309459e",
+    "bytes": 2600
+  },
+  "sole_reasoning_field_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-envelope-replay-20260922-v1/receipt.json",
+    "sha256": "4401df300713eca1b7f706c2f91e3beef4b1f80deb8b42844a31b83db6999d2f",
+    "bytes": 231
+  },
+  "diagnostic_scripts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-client-loopback-diagnostic.py",
+      "sha256": "1b832e649d3c4885b8c569c8e198eee7d25b9f54ceea34e18a4bc9b44e400c1f",
+      "bytes": 3974
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/replay-ch6-native-single.py",
+      "sha256": "42066781890d5e17e34c30391f5c2777a7c9059ba1d356ade17d54ba5effe870",
+      "bytes": 3702
+    }
+  ],
+  "nonthinking_wire_diagnostic": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-format-wire-20260922-v3/receipt.json",
+    "sha256": "f60813cf6808f575e268c0dca23a34a55a84a944cf61df70a0050bcba4fc1d60",
+    "bytes": 821
   }
 }

@@ -148,3 +148,15 @@ def test_sole_reasoning_field_contract_does_not_fill_missing_actions_or_conflict
                   {'>':'text','action_name':'stop','action_argument':None},
                   {'>':'text','other':'text','action_name':'stop','action_argument':''}):
         assert worker.action_envelope_alias(value,sole_reasoning_key=True) is value
+
+
+def test_shared_template_mode_preserves_original_prompts_sampling_and_format():
+    import pytest
+    original=dict(messages=[{'role':'system','content':'Original author prompt'}],
+        temperature=1.,top_p=.9,max_tokens=700,response_format={'type':'json_object'})
+    configured=worker.nonthinking_parameters(original)
+    assert {k:v for k,v in configured.items() if k!='extra_body'}==original
+    assert configured['extra_body']=={'chat_template_kwargs':{'enable_thinking':False}}
+    assert 'extra_body' not in original
+    with pytest.raises(ValueError,match='Conflicting'):
+        worker.nonthinking_parameters(dict(extra_body={'chat_template_kwargs':{'enable_thinking':True}}))

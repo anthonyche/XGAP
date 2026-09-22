@@ -351,5 +351,5 @@ if __name__ == '__main__':
     parser.add_argument('--case',choices=['single-source','cross-source'],default='cross-source')
     parser.add_argument('--compatibility',choices=['original','https-property-iris-v1',
                         'https-property-iris-qwen-key-v1','https-iris-qwen-key-v2',
-                        'https-iris-qwen-envelope-v3'],default='original')
+                        'https-iris-qwen-envelope-v3','https-iris-nonthinking-v1'],default='original')
     raise SystemExit(check(**vars(parser.parse_args())))

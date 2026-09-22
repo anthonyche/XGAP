@@ -28,7 +28,27 @@ HTTPS_PROPERTY_FIX = ('    if pid.startswith("http:"):\n        pid = f"<{pid}>"
 HTTPS_ENTITY_FIX = ('    elif entity.startswith("http:"):\n        entity = f"<{entity}>"',
                    '    elif entity.startswith(("http:", "https:")):\n        entity = f"<{entity}>"')
 COMPATIBILITIES = ('original','https-property-iris-v1','https-property-iris-qwen-key-v1',
-                   'https-iris-qwen-key-v2','https-iris-qwen-envelope-v3')
+                   'https-iris-qwen-key-v2','https-iris-qwen-envelope-v3','https-iris-nonthinking-v1')
+
+
+def nonthinking_parameters(kwargs):
+    """Match the existing XGAP Qwen serving template, without tuning sampling."""
+    result=dict(kwargs);extra=dict(result.get('extra_body') or {})
+    template=dict(extra.get('chat_template_kwargs') or {})
+    if 'enable_thinking' in template and template['enable_thinking'] is not False:
+        raise ValueError('Conflicting model-template configuration')
+    template['enable_thinking']=False;extra['chat_template_kwargs']=template;result['extra_body']=extra
+    return result
+
+
+def install_nonthinking_transport():
+    import litellm
+    original_async,original_sync=litellm.acompletion,litellm.completion
+    async def async_call(*args,**kwargs):return await original_async(*args,**nonthinking_parameters(kwargs))
+    def sync_call(*args,**kwargs):return original_sync(*args,**nonthinking_parameters(kwargs))
+    litellm.acompletion,litellm.completion=async_call,sync_call
+    def restore():litellm.acompletion,litellm.completion=original_async,original_sync
+    return restore
 
 
 def action_envelope_alias(value, *, sole_reasoning_key=False):
@@ -111,6 +131,7 @@ def run(args):
     prompt_writer = None
     previous_openai={k:os.environ.get(k) for k in ('OPENAI_API_KEY','OPENAI_BASE_URL','NO_PROXY','no_proxy')}
     diagnostic=None
+    restore_model_transport=None
     try:
         source = Path(args.author_source).resolve()
         current = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=source, text=True).strip()
@@ -165,11 +186,16 @@ def run(args):
         sys.path.insert(0, str(source))
         if compatibility != 'original':
             overlay, patch_receipt = https_property_overlay(source,root,
-                include_entity=compatibility in ('https-iris-qwen-key-v2','https-iris-qwen-envelope-v3'))
+                include_entity=compatibility in ('https-iris-qwen-key-v2','https-iris-qwen-envelope-v3','https-iris-nonthinking-v1'))
             receipt['compatibility_patch'] = patch_receipt
             receipt['author_source_compatibility_patches'] = patch_receipt['replacements']
             write(root/'compatibility-patch.json',patch_receipt)
             sys.path.insert(0,str(overlay))
+        if compatibility=='https-iris-nonthinking-v1':
+            restore_model_transport=install_nonthinking_transport()
+            receipt['model_template_parameters']={'enable_thinking':False}
+            receipt['model_template_matches_xgap']=True
+            receipt['action_envelope_adapter_enabled']=False
         write(root / 'intent.json', receipt)
         from chainlite import write_prompt_logs_to_file
         prompt_writer = write_prompt_logs_to_file
@@ -235,6 +261,7 @@ def run(args):
         receipt.update(status='setup_error' if receipt['status']=='setup_error' else 'method_error',
                        error_type=type(error).__name__)
     finally:
+        if restore_model_transport:restore_model_transport()
         if diagnostic:
             faulthandler.cancel_dump_traceback_later()
             diagnostic.close()

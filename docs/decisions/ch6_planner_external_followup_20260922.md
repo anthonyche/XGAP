@@ -124,3 +124,17 @@ keepalive 是唯一原因。小型双请求接口测试后，同一原生单源�
 唯一多余键为 thought；保留其文本和两个动作字段。缺动作、缺参数、多个多余键、
 非字符串或已有 thought 时均不推断/覆盖。仍只修封装，不改作者决策和答案。
 在同一道单源题、同预算，原生单端点 v3 验收一次，v2 保留失败；不按成绩调题或 prompt。
+
+### 当前里程碑：baseline 端到端产出与模型模板对齐
+
+用户进一步明确：本轮目标是把 baseline 接通并正常产出结果，必要中间管道均获授权。
+允许有记录的协议、序列化和服务配置适配；保留原方法决策、独立评分及既往失败，
+不把“接通”与“答对”混为一谈。后续必须推进到实际结果，不能仅以失败归档结束。
+
+原生 v3 的 formatter 返回了把整个 action JSON 塞入单一键的对象，动作字段缺失，
+严格适配器没有猜测动作。审查发现 XGAP 显式关闭 Qwen thinking 模板，而原
+ARUQULA 配置继承服务默认。新 `https-iris-nonthinking-v1` 保留两处 HTTPS 适配，
+对全部模型调用设置 `chat_template_kwargs.enable_thinking=false`，与 XGAP 对齐，
+并禁用所有 thought-key 输出修补。原 prompt、temperature、top_p、max_tokens、
+JSON response_format 不变。真实 wire 的离线检查已经通过，零真实模型/源调用。
+此配置是否解决故障仍待真实验证；同题、同预算、独立原生 v4 目录进行一次验收。
