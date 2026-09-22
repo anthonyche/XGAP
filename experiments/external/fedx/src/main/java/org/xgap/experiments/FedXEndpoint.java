@@ -98,6 +98,7 @@ public final class FedXEndpoint {
         } catch (Exception error) {
             // Never retry, emit partial successful JSON, or turn an error into empty rows.
             System.err.println("FedX request failed: " + error.getClass().getSimpleName());
+            if (Boolean.getBoolean("xgap.fedx.debugErrors")) error.printStackTrace(System.err);
             respond(exchange, 500, "text/plain", ("FedX failure: " + error.getClass().getSimpleName()).getBytes(StandardCharsets.UTF_8));
         } finally {
             exchange.close();
@@ -115,9 +116,14 @@ public final class FedXEndpoint {
         if (port < 1 || port > 65535 || seconds < 1 || seconds > 120) throw new IllegalArgumentException("Invalid port/timeout");
         // Match the published FedUP executor's batching/workers; preserve FedX
         // source selection and joins. The shared outer deadline is still required.
-        var factory = FedXFactory.newFederation().withConfig(new FedXConfig()
+        var config = new FedXConfig()
                 .withBoundJoinBlockSize(10).withJoinWorkerThreads(10)
-                .withUnionWorkerThreads(10).withDebugQueryPlan(false));
+                .withUnionWorkerThreads(10).withDebugQueryPlan(false);
+        // Explicit compatibility switch for the pinned version's NULL failure
+        // in QueryStringUtil.selectQueryStringBoundJoinVALUES on OPTIONAL rows.
+        // Retain the engine's own ordinary left join; no query/answer rewriting.
+        if (Boolean.getBoolean("xgap.fedx.disableOptionalBind")) config.withEnableOptionalAsBindJoin(false);
+        var factory = FedXFactory.newFederation().withConfig(config);
         for (int i = 2; i < args.length; i++) {
             URI endpoint = URI.create(args[i]);
             if (!("http".equals(endpoint.getScheme()) || "https".equals(endpoint.getScheme()))

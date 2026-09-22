@@ -14,7 +14,7 @@ import subprocess
 import threading
 
 
-def check(author_source, input_logs, output, nonthinking=False):
+def check(author_source, input_logs, output, nonthinking=False, action_schema=False):
     source, root = Path(author_source).resolve(), Path(output).resolve()
     if (subprocess.check_output(['git','rev-parse','HEAD'],cwd=source,text=True).strip()
             != '9a3982baca03d62f7250572e300b1e4ba47727cc'
@@ -56,9 +56,11 @@ def check(author_source, input_logs, output, nonthinking=False):
         os.environ['OPENAI_API_KEY']=os.environ['XGAP_OFFLINE_DUMMY']='offline-placeholder'
         os.environ['NO_PROXY']=os.environ['no_proxy']='127.0.0.1,localhost,::1'
         from chainlite import llm_generation_chain
-        if nonthinking:
+        prompt = (source/'spinach_agent/prompts/format_actions.prompt').read_bytes()
+        instruction = prompt.decode().split('# instruction\n',1)[1].split('# distillation instruction',1)[0].strip()
+        if nonthinking or action_schema:
             from run_chapter7_aruqula_worker import install_nonthinking_transport
-            install_nonthinking_transport()
+            install_nonthinking_transport(instruction if action_schema else None)
         from langchain.globals import set_llm_cache
         from langchain_community.cache import InMemoryCache
         # Fresh diagnostic cache avoids Redis; actual baseline keeps author Redis.
@@ -77,10 +79,13 @@ def check(author_source, input_logs, output, nonthinking=False):
             message_roles=[m['role'] for m in body['messages']],
             **{k:body.get(k) for k in ('response_format','temperature','top_p','max_tokens')})
         receipt['model_template_parameters']=body.get('chat_template_kwargs')
+        from run_chapter7_aruqula_worker import ACTION_SCHEMA
+        expected_format=({'type':'json_schema','json_schema':dict(name='aruqula_action_envelope',strict=True,schema=ACTION_SCHEMA)}
+                         if action_schema else {'type':'json_object'})
         receipt['success'] = (receipt['system_instruction_unchanged'] and receipt['last_user_input_unchanged']
-            and receipt['response_format']=={'type':'json_object'} and receipt['max_tokens']==700
+            and receipt['response_format']==expected_format and receipt['max_tokens']==700
             and receipt['temperature']==0 and receipt['top_p']==0.9)
-        if nonthinking:receipt['success'] &= receipt['model_template_parameters']=={'enable_thinking':False}
+        if nonthinking or action_schema:receipt['success'] &= receipt['model_template_parameters']=={'enable_thinking':False}
     finally:
         server.shutdown();server.server_close();thread.join()
         receipt.update(loopback_calls=len(requests),server_closed=not thread.is_alive())
@@ -93,4 +98,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('author-source','input-logs','output'):p.add_argument('--'+name,required=True)
     p.add_argument('--nonthinking',action='store_true')
+    p.add_argument('--action-schema',action='store_true')
     raise SystemExit(check(**vars(p.parse_args())))

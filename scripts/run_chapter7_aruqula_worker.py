@@ -27,25 +27,39 @@ HTTPS_PROPERTY_FIX = ('    if pid.startswith("http:"):\n        pid = f"<{pid}>"
                      '    if pid.startswith(("http:", "https:")):\n        pid = f"<{pid}>"')
 HTTPS_ENTITY_FIX = ('    elif entity.startswith("http:"):\n        entity = f"<{entity}>"',
                    '    elif entity.startswith(("http:", "https:")):\n        entity = f"<{entity}>"')
+EMPTY_COALESCE_FIX = ('\n        BIND(if(?p = rdf:type, "is a", COALESCE()) AS ?pLabel)',
+                      '\n        BIND(if(?p = rdf:type, "is a", COALESCE(1/0)) AS ?pLabel)')
 COMPATIBILITIES = ('original','https-property-iris-v1','https-property-iris-qwen-key-v1',
-                   'https-iris-qwen-key-v2','https-iris-qwen-envelope-v3','https-iris-nonthinking-v1')
+                   'https-iris-qwen-key-v2','https-iris-qwen-envelope-v3','https-iris-nonthinking-v1',
+                   'https-iris-action-schema-v1','https-iris-action-schema-fedx-v1')
+
+ACTION_SCHEMA = {'type':'object','properties':{k:{'type':'string'}
+    for k in ('thought','action_name','action_argument')},
+    'required':['thought','action_name','action_argument'],'additionalProperties':False}
 
 
-def nonthinking_parameters(kwargs):
+def nonthinking_parameters(kwargs, formatter_instruction=None):
     """Match the existing XGAP Qwen serving template, without tuning sampling."""
     result=dict(kwargs);extra=dict(result.get('extra_body') or {})
     template=dict(extra.get('chat_template_kwargs') or {})
     if 'enable_thinking' in template and template['enable_thinking'] is not False:
         raise ValueError('Conflicting model-template configuration')
     template['enable_thinking']=False;extra['chat_template_kwargs']=template;result['extra_body']=extra
+    messages=result.get('messages') or []
+    if (formatter_instruction and messages and messages[0].get('role')=='system'
+            and messages[0].get('content')==formatter_instruction):
+        if result.get('response_format')!={'type':'json_object'}:
+            raise ValueError('Unexpected original formatter response format')
+        result['response_format']={'type':'json_schema','json_schema':dict(
+            name='aruqula_action_envelope',strict=True,schema=ACTION_SCHEMA)}
     return result
 
 
-def install_nonthinking_transport():
+def install_nonthinking_transport(formatter_instruction=None):
     import litellm
     original_async,original_sync=litellm.acompletion,litellm.completion
-    async def async_call(*args,**kwargs):return await original_async(*args,**nonthinking_parameters(kwargs))
-    def sync_call(*args,**kwargs):return original_sync(*args,**nonthinking_parameters(kwargs))
+    async def async_call(*args,**kwargs):return await original_async(*args,**nonthinking_parameters(kwargs,formatter_instruction))
+    def sync_call(*args,**kwargs):return original_sync(*args,**nonthinking_parameters(kwargs,formatter_instruction))
     litellm.acompletion,litellm.completion=async_call,sync_call
     def restore():litellm.acompletion,litellm.completion=original_async,original_sync
     return restore
@@ -66,7 +80,7 @@ def action_envelope_alias(value, *, sole_reasoning_key=False):
     return value
 
 
-def https_property_overlay(source, output, include_entity=False):
+def https_property_overlay(source, output, include_entity=False, empty_coalesce=False):
     """One recorded URI-scheme compatibility fix; no query/output rewriting."""
     path = Path(source)/'kg_utils.py'
     raw = path.read_bytes()
@@ -79,14 +93,22 @@ def https_property_overlay(source, output, include_entity=False):
         if updated.count(before)!=1:
             raise ValueError('Pinned entity HTTPS patch does not apply exactly once')
         updated=updated.replace(before,after)
+    if empty_coalesce:
+        before,after=(s.encode() for s in EMPTY_COALESCE_FIX)
+        if updated.count(before)!=1:
+            raise ValueError('Pinned empty-COALESCE compatibility patch does not apply exactly once')
+        updated=updated.replace(before,after)
     target = Path(output)/'author-compatibility'
     target.mkdir()
     (target/'kg_utils.py').write_bytes(updated)
-    return target,dict(kind='https-iris-v2' if include_entity else 'https-property-iris-v1',changed_module='kg_utils.py',
+    return target,dict(kind=('https-iris-empty-coalesce-v1' if empty_coalesce else
+                            'https-iris-v2' if include_entity else 'https-property-iris-v1'),changed_module='kg_utils.py',
         changed_function='get_property_examples',original_sha256=hashlib.sha256(raw).hexdigest(),
         changed_functions=['get_property_examples']+(['get_outgoing_edges'] if include_entity else []),
-        patched_sha256=hashlib.sha256(updated).hexdigest(),replacements=2 if include_entity else 1,
-        change='Recognize https: as an absolute IRI, like existing http: support',
+        patched_sha256=hashlib.sha256(updated).hexdigest(),replacements=1+int(include_entity)+int(empty_coalesce),
+        empty_coalesce_compatibility=empty_coalesce,
+        change=('Recognize absolute HTTPS IRIs; empty COALESCE becomes COALESCE(1/0), an error in either case'
+                if empty_coalesce else 'Recognize https: as an absolute IRI, like existing http: support'),
         original_author_checkout_unchanged=True,algorithm_changes=0,prompt_changes=0,output_repairs=0)
 
 
@@ -186,13 +208,20 @@ def run(args):
         sys.path.insert(0, str(source))
         if compatibility != 'original':
             overlay, patch_receipt = https_property_overlay(source,root,
-                include_entity=compatibility in ('https-iris-qwen-key-v2','https-iris-qwen-envelope-v3','https-iris-nonthinking-v1'))
+                include_entity=compatibility in ('https-iris-qwen-key-v2','https-iris-qwen-envelope-v3',
+                    'https-iris-nonthinking-v1','https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'),
+                empty_coalesce=compatibility=='https-iris-action-schema-fedx-v1')
             receipt['compatibility_patch'] = patch_receipt
             receipt['author_source_compatibility_patches'] = patch_receipt['replacements']
             write(root/'compatibility-patch.json',patch_receipt)
             sys.path.insert(0,str(overlay))
-        if compatibility=='https-iris-nonthinking-v1':
-            restore_model_transport=install_nonthinking_transport()
+        if compatibility in ('https-iris-nonthinking-v1','https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'):
+            instruction=None
+            if compatibility in ('https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'):
+                prompt=(source/'spinach_agent/prompts/format_actions.prompt').read_text()
+                instruction=prompt.split('# instruction\n',1)[1].split('# distillation instruction',1)[0].strip()
+                receipt['formatter_transport_schema']=ACTION_SCHEMA
+            restore_model_transport=install_nonthinking_transport(instruction)
             receipt['model_template_parameters']={'enable_thinking':False}
             receipt['model_template_matches_xgap']=True
             receipt['action_envelope_adapter_enabled']=False

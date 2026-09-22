@@ -138,3 +138,39 @@ ARUQULA 配置继承服务默认。新 `https-iris-nonthinking-v1` 保留两处 
 并禁用所有 thought-key 输出修补。原 prompt、temperature、top_p、max_tokens、
 JSON response_format 不变。真实 wire 的离线检查已经通过，零真实模型/源调用。
 此配置是否解决故障仍待真实验证；同题、同预算、独立原生 v4 目录进行一次验收。
+
+### baseline 接通优先：固定字段输出与等价工具语法
+
+原生 v4 在第十个 HTTP 成功响应后再次出现 formatter 将整个对象编码为单一键，
+因此关闭 thinking 不是充分修复。新 `https-iris-action-schema-v1` 对原作者
+`format_actions.prompt` 的精确 system instruction 匹配后，才将 json_object
+替换为严格的三个字符串字段 schema。控制器、pruner 等请求不套此 schema；
+原 prompt、采样数值、token 上限及调用次数策略不变。此项属于结构化解码接口
+适配，必须披露，不再声称 JSON response_format 与原版相同。没有字段别名修补，
+没有动作白名单枚举、答案/约束注入，也不利用 gold。
+
+同配置仅将原作者实体工具模板的一处 `COALESCE()` 改为 `COALESCE(1/0)`。
+两者均求值为 expression error，外层 IF/BIND 的值/未绑定语义不变，原 FedX
+优化器和执行器不修改。依据：[SPARQL 1.1 §17.4.1.3](https://www.w3.org/TR/sparql11-query/#func-coalesce)。
+改写仅发生于已知工具模板，不改最终模型查询。单独的零模型验证对原始 Jena
+与适配后 FedX 比较完整工具结果及 IF/外层 COALESCE 的成功、错误、回退分支，
+不是以 HTTP 200 代替正确性证明。
+
+通过上述 gate 后，在同一单源题、同预算、独立 FedX 单源 v4 目录验证端到端。
+成功返回答案后，以同配置对既有跨源题再做一次独立验证。保持不同 source strata，
+分别报告接通、答案评分及调用成本，不把接通失败重新解释为能力边界。
+
+空 COALESCE 适配后的 replay 进一步触发原 FedX 的空指针，位于
+`QueryStringUtil.selectQueryStringBoundJoinVALUES`，由 OPTIONAL 的未绑定值导致。
+该异常与模型无关。对新兼容 profile 固定使用原生
+`FedXConfig.withEnableOptionalAsBindJoin(false)`，不改 external jar classes，
+其他 batching/workers 保持原值。禁用的是故障优化路径，继续由原 FedX 执行
+普通 left join；这属于公开披露的配置变更，不是保持默认配置的结果。
+等价工具 gate 追加独立 v3，之前两个失败保留。实际单源/跨源同用此固定配置。
+
+原生 OPTIONAL 配置开关仍触发同类 NULL 绑定错误，因此不保留为正式兼容配置，
+不通过调连接参数继续试成绩。结构化输出接通与联邦故障隔离：
+`https-iris-action-schema-v1` 仅含 HTTPS + nonthinking + action schema，
+先以原生单源 v5 验证前端完整产出，不依赖 FedX 修复；
+`https-iris-action-schema-fedx-v1` 才包含工具 COALESCE 适配，尚未准入。
+以上为首次真实 schema 调用前的最终 profile 定义；失败配置的 gate 保留。

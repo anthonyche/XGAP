@@ -182,6 +182,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 worker_budget=dict(wall_seconds=300, max_group_rss_bytes=2*1024**3),
                 admission_case=case, execution_sources=list(selected['sources']),
                 compatibility=compatibility,
+                fedx_disable_optional_bind=False,
                 workload_stratum=selected['workload_stratum'],
                 maximum_model_calls=64, maximum_source_calls=256, official_lookup_config=file_pin(LOOKUP/'examples/config.yml'),
                 model_transport='explicit system HTTP proxy' if model_proxy else 'direct HTTP',
@@ -248,7 +249,8 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 ports.release(2)
                 command=([JAVA,'-Xms64m','-Xmx512m','-jar',str(JARS['fedup']),
                     '--port',str(port),'--summaries',str(root/'serving-summary'),'--engine','FedX','--modify','(e) -> e']
-                    if federation=='fedup' else [JAVA,'-Xms64m','-Xmx512m','-jar',fedx['path'],str(port),'20',*endpoints])
+                    if federation=='fedup' else [JAVA,'-Xms64m','-Xmx512m',
+                        '-jar',fedx['path'],str(port),'20',*endpoints])
                 host = processes.start(federation,command)
                 ready(host,port)
                 owned.append(OwnedProcess(federation,'method_host',host))
@@ -351,5 +353,6 @@ if __name__ == '__main__':
     parser.add_argument('--case',choices=['single-source','cross-source'],default='cross-source')
     parser.add_argument('--compatibility',choices=['original','https-property-iris-v1',
                         'https-property-iris-qwen-key-v1','https-iris-qwen-key-v2',
-                        'https-iris-qwen-envelope-v3','https-iris-nonthinking-v1'],default='original')
+                        'https-iris-qwen-envelope-v3','https-iris-nonthinking-v1',
+                        'https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'],default='original')
     raise SystemExit(check(**vars(parser.parse_args())))

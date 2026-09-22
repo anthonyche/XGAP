@@ -52,9 +52,9 @@ build general open-source-product features instead of advancing the experiment.
   tune their algorithms, prompts, outputs or decoding to improve their results.
   User clarification requires making supported workflows run and reporting
   single-source/cross-source strata separately. Explicit compatibility profiles
-  for HTTPS property IRI serialization and one action-envelope key alias are
+  for HTTPS IRIs, action-envelope serialization and equivalent tool syntax are
   recorded in `docs/decisions/ch6_planner_external_followup_20260922.md`; preserve
-  raw responses and unadapted failures, never modify action values/final queries,
+  raw responses and unadapted failures, never inject reference answers or change intended action values/final queries,
   and never label an adapted profile as byte-identical author code.
 - Test changed contracts on portable toy data and necessary real tiny boundaries.
   No blanket regression/ablation campaign or GrailQA preprocessing in development.

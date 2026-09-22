@@ -160,3 +160,30 @@ def test_shared_template_mode_preserves_original_prompts_sampling_and_format():
     assert 'extra_body' not in original
     with pytest.raises(ValueError,match='Conflicting'):
         worker.nonthinking_parameters(dict(extra_body={'chat_template_kwargs':{'enable_thinking':True}}))
+
+
+def test_action_schema_applies_only_to_exact_formatter_instruction():
+    message={'role':'system','content':'Original format instruction'}
+    original=dict(messages=[message,{'role':'user','content':'Unchanged controller action'}],
+                  response_format={'type':'json_object'},temperature=0,top_p=.9,max_tokens=700)
+    configured=worker.nonthinking_parameters(original,message['content'])
+    assert configured['messages']==original['messages']
+    assert configured['response_format']['json_schema']['schema']==worker.ACTION_SCHEMA
+    assert set(worker.ACTION_SCHEMA['properties'])=={'thought','action_name','action_argument'}
+    assert all(v=={'type':'string'} for v in worker.ACTION_SCHEMA['properties'].values())
+    for key in ('temperature','top_p','max_tokens'):assert configured[key]==original[key]
+    controller=dict(original,messages=[{'role':'system','content':'Controller instruction'}])
+    assert worker.nonthinking_parameters(controller,message['content'])['response_format']=={'type':'json_object'}
+
+
+def test_coalesce_overlay_changes_only_pinned_active_tool_expression(tmp_path):
+    source=tmp_path/'source';source.mkdir();output=tmp_path/'output';output.mkdir()
+    original=worker.HTTPS_PROPERTY_FIX[0]+'\n'+worker.HTTPS_ENTITY_FIX[0]+worker.EMPTY_COALESCE_FIX[0]
+    original+='\n#         BIND(if(?p = rdf:type, "is a", COALESCE()) AS ?pLabel)'
+    (source/'kg_utils.py').write_text(original)
+    target,receipt=worker.https_property_overlay(source,output,include_entity=True,empty_coalesce=True)
+    patched=(target/'kg_utils.py').read_text()
+    for before,after in (worker.HTTPS_PROPERTY_FIX,worker.HTTPS_ENTITY_FIX,worker.EMPTY_COALESCE_FIX):
+        patched=patched.replace(after,before)
+    assert patched==original==(source/'kg_utils.py').read_text()
+    assert receipt['replacements']==3 and receipt['empty_coalesce_compatibility']
