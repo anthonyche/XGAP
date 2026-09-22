@@ -1,6 +1,6 @@
 import hashlib
 import pytest
-from check_chapter7_aruqula_fedup import admission_case, public_source_loads, reference_for_case
+from check_chapter7_aruqula_fedup import admission_case, check, public_source_loads, reference_for_case
 
 
 def test_external_sources_use_profile_loads_instead_of_materialization_parent(tmp_path):
@@ -29,3 +29,10 @@ def test_source_strata_have_separate_inputs_without_reference_leakage():
     assert rows == [{'account_id':str(i)} for i in (1,2,3,4)]
     assert spec['fields'] == {'account_id':'text'}
     with pytest.raises(ValueError): admission_case('unknown')
+
+
+def test_native_endpoint_cannot_be_used_to_claim_cross_source_admission(tmp_path):
+    with pytest.raises(ValueError, match='cannot be labeled cross-source'):
+        check(profile_path='not-opened',profile_sha256='not-opened',output=tmp_path/'not-created',
+              federation='single-fuseki',case='cross-source')
+    assert not (tmp_path/'not-created').exists()

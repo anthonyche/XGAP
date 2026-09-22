@@ -44,8 +44,11 @@ class ObservationFailure(ValueError):
 
 
 class CampaignSourceObserver(SourceObserver):
-    def __init__(self,routes,root,*,budget:SourceObservationBudget,upstream_http_proxy=None):
+    def __init__(self,routes,root,*,budget:SourceObservationBudget,upstream_http_proxy=None,
+                 downstream_keepalive=True):
         if not isinstance(budget,SourceObservationBudget):raise TypeError('An explicit source budget is required')
+        if type(downstream_keepalive) is not bool:raise TypeError('Explicit boolean connection policy required')
+        self.downstream_keepalive=downstream_keepalive
         # Explicit transport configuration, never inherited for local database
         # routes. This HTTP-only path preserves author request bytes and headers.
         self.upstream_http_proxy=urlsplit(upstream_http_proxy) if upstream_http_proxy else None
@@ -168,6 +171,9 @@ class CampaignSourceObserver(SourceObserver):
             reusable=not response.will_close
             if response.status>=400:record['failure_category']='upstream_http_failure'
             stage='downstream';handler.send_response(response.status)
+            if not self.downstream_keepalive:
+                handler.send_header('Connection','close')
+                handler.close_connection=True
             for k,v in response.getheaders():
                 if k.lower() in {'content-type','content-encoding'}:handler.send_header(k,v)
             handler.send_header('Content-Length',str(record['response_body_bytes']));handler.end_headers();headers_sent=True
@@ -228,7 +234,8 @@ class CampaignSourceObserver(SourceObserver):
             'forwarded_requests':sum(r['forwarded'] for r in rows),'failure_categories':dict(failures),
             'upstream_connections_opened':sum(r.get('upstream_connection_reused') is False for r in rows),
             'upstream_connection_reuses':sum(r.get('upstream_connection_reused') is True for r in rows),
-            'transport_profile':'HTTP/1.1;16idle connections/source;1s idle expiry;no automatic retries',
+            'transport_profile':'HTTP/1.1;16idle connections/source;1s idle expiry;no automatic retries'+
+                ('' if self.downstream_keepalive else ';downstream Connection: close'),
             'upstream_http_proxy':self.upstream_http_proxy.geturl() if self.upstream_http_proxy else None,
             'request_body_bytes':sum(r['request_body_bytes'] for r in rows),
             'request_target_bytes':sum(r['request_target_bytes'] for r in rows),

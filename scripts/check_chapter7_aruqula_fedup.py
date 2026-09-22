@@ -185,6 +185,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 workload_stratum=selected['workload_stratum'],
                 maximum_model_calls=64, maximum_source_calls=256, official_lookup_config=file_pin(LOOKUP/'examples/config.yml'),
                 model_transport='explicit system HTTP proxy' if model_proxy else 'direct HTTP',
+                model_downstream_keepalive=False,
                 composition='aruqula-'+federation,
                 jars=({name:file_pin(JARS[name]) for name in ('fedup','summary')} if federation=='fedup'
                       else dict(fedx=fedx) if federation=='fedx' else {}), redis=file_pin(REDIS),
@@ -279,7 +280,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
             observers['model'] = CampaignSourceObserver({'/v1/chat/completions':'http://112.95.75.67:9018/v1/chat/completions'},
                 root/'model-observations',budget=SourceObservationBudget(max_calls=64,response_bytes=8*1024**2,
                     phase_response_bytes=64*1024**2,timeout_seconds=70,capture_compression='gzip'),
-                upstream_http_proxy=model_proxy)
+                upstream_http_proxy=model_proxy,downstream_keepalive=False)
             for observer in observers.values(): observer.set_phase('aruqula')
             if read_key:
                 os.environ['XGAP_EXTERNAL_LLM_API_KEY'] = getpass.getpass('Qwen credential (not recorded): ')

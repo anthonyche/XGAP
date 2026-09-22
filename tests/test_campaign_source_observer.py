@@ -47,6 +47,29 @@ def call(proxy,path='/ok'):
     except HTTPError as e:return e.code,e.read()
 
 
+def test_opt_in_connection_close_keeps_request_and_response_bytes(tmp_path):
+    import http.client
+    from urllib.parse import urlsplit
+    with source() as upstream:
+        proxy=CampaignSourceObserver({'/ok':upstream+'/ok'},tmp_path/'observer',
+            budget=SourceObservationBudget(),downstream_keepalive=False)
+        try:
+            proxy.set_phase('client-compatibility');url=urlsplit(proxy.base_url)
+            client=http.client.HTTPConnection(url.hostname,url.port,timeout=3)
+            for _ in range(2):
+                client.request('POST','/ok',b'ASK {}',{'Content-Type':'application/sparql-query'})
+                response=client.getresponse()
+                assert response.will_close and response.getheader('Connection')=='close'
+                assert response.status==200 and response.read()==b'abcdefghij'
+                assert client.sock is None
+            client.close();sealed=proxy.seal_phase(proxy.phase)
+            assert sealed['forwarded_requests']==2 and sealed['failed_requests']==0
+            assert 'Connection: close' in sealed['transport_profile']
+            for i in range(2):
+                assert json.loads((proxy.root/f'{i:04}-intent.json').read_text())['query']=='ASK {}'
+        finally:proxy.close()
+
+
 def release(proxy,root):
     sealed=proxy.seal_phase(proxy.phase)
     pin=write_once(root/'outcome.json',{'source_observations':sealed})
