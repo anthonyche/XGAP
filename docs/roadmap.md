@@ -1,8 +1,12 @@
 # XGAP 下一步
 
 2026-09-22 以新的[实验计划](ch6_experiment_plan_20260922.md)为准。当前完成的是
-[首次准备交付](report/ch6_preparation_20260922.md)，尚未发布可执行的全量 manifest。
+[首批真实 XGAP 实测](report/ch6_first_real_20260922.md)，尚未发布可执行的全量 manifest。
 不启动旧 Exact/Performance campaign 或自动任务。
+
+当前优先项：外部 Two-stage 的忠实接口验收和同 RDF 部署；分析首轮搜索超时后的
+完成回退、完成估计复用，以及约 34.7–56.3 MB/题的数据移动。先以小图和失败 replay
+验证修复，再发布必要的小批真数据边界，避免反复全量/消融。
 
 1. Workload 继续准入：LC-QuAD 已有 typed AST、参数实例化与拒收证据；将明确支持的
    实例化结构接到 compact lowering。当前三域 29 个开发实例来自 authored 领域模板，

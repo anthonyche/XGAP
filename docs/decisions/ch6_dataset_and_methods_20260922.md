@@ -1,5 +1,8 @@
 # 2026-09-22 数据与方法补充决定
 
+**方法更新：**用户后续更正 Two-stage 为外部方法实际串接，LD 退出实验。
+[最新方法决定](ch6_external_twostage_20260922.md)覆盖下文旧方法建议；数据集决定保留。
+
 用户提供的三份原文保持在 ch6_experiment_plan、query_structure_spec 和 coding_agent_brief
 中；本文件记录其后获准的替代与实际接线，不改写原文或历史测量。
 
