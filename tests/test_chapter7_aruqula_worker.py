@@ -187,3 +187,16 @@ def test_coalesce_overlay_changes_only_pinned_active_tool_expression(tmp_path):
         patched=patched.replace(after,before)
     assert patched==original==(source/'kg_utils.py').read_text()
     assert receipt['replacements']==3 and receipt['empty_coalesce_compatibility']
+
+
+def test_entity_label_overlay_preserves_original_source_and_other_tool_text(tmp_path):
+    source=tmp_path/'source';source.mkdir();output=tmp_path/'output';output.mkdir()
+    original='\n'.join((worker.HTTPS_PROPERTY_FIX[0],worker.HTTPS_ENTITY_FIX[0],
+                         worker.ENTITY_LABEL_FIX[0],worker.ENTITY_LABEL_TAIL[0]))
+    (source/'kg_utils.py').write_text(original)
+    target,receipt=worker.https_property_overlay(source,output,include_entity=True,entity_label=True)
+    patched=(target/'kg_utils.py').read_text()
+    for before,after in (worker.HTTPS_PROPERTY_FIX,worker.HTTPS_ENTITY_FIX,worker.ENTITY_LABEL_FIX,worker.ENTITY_LABEL_TAIL):
+        patched=patched.replace(after,before)
+    assert patched==original==(source/'kg_utils.py').read_text()
+    assert receipt['replacements']==4 and receipt['entity_label_compatibility']

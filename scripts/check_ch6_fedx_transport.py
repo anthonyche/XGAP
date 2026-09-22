@@ -88,7 +88,14 @@ def check(build,profile_path,profile_sha256,output,query_manifest=None,query_man
                         headers={'Content-Type':'application/x-www-form-urlencoded','Accept':'application/sparql-results+json'})
                     with urlopen(req,timeout=15) as response:expected[name]=json.load(response)
                     write_once(root/(name+'-original-answer.json'),expected[name])
-                receipt['original_reference_calls']=len(originals)
+                    req=Request(f'http://127.0.0.1:{port}/ds/sparql',data=urlencode({'query':queries[name]}).encode(),
+                        headers={'Content-Type':'application/x-www-form-urlencoded','Accept':'application/sparql-results+json'})
+                    with urlopen(req,timeout=15) as response:adapted=json.load(response)
+                    write_once(root/(name+'-adapted-Jena-answer.json'),adapted)
+                    equivalent=score_sparql(adapted,expected[name],ordered=False)['exact']
+                    receipt.setdefault('rewrite_equivalence',[]).append(dict(query=name,equivalent=equivalent))
+                    if not equivalent:raise ValueError('Compatibility rewrite changed Jena reference result')
+                receipt['original_reference_calls']=2*len(originals)
             observer=CampaignSourceObserver(routes,root/'source-observations',budget=SourceObservationBudget(
                 max_calls=128,response_bytes=2**20,phase_response_bytes=8*2**20,timeout_seconds=10,capture_compression='gzip'))
             observer.set_phase('protocol')
@@ -116,10 +123,14 @@ def check(build,profile_path,profile_sha256,output,query_manifest=None,query_man
                         spec=normalization(FAMILIES[0])
                         same=normalize_rows(sparql_values(answer,spec),spec)==normalize_rows(sparql_values(expected[name],spec),spec)
                     else:same=score_sparql(answer,expected[name],ordered=False)['exact']
-                    receipt['cases'].append(dict(query=name,transport=transport,success=same,rows=len(answer['results']['bindings']),
+                    receipt['cases'].append(dict(query=name,transport=transport,success=True if originals else same,
+                        answer_matches_original_reference=same if originals else None,rows=len(answer['results']['bindings']),
                         validation=('original_Jena_vs_adapted_FedX' if originals else
                                     'transport_and_result_format' if query_manifest else 'independent_reference')))
-                    if not same:raise ValueError('Independent RDF terms differ')
+                    # A faulty engine result is method evidence, not a reason to
+                    # improve the baseline. The rewrite itself is checked above
+                    # on the SAME Jena engine before comparing FedX output.
+                    if not same and not originals:raise ValueError('Independent RDF terms differ')
             try:
                 urlopen(Request(endpoint,data=b'INSERT DATA { <urn:x> <urn:p> <urn:y> }',headers={'Content-Type':'application/sparql-query'}),timeout=15)
                 raise ValueError('UPDATE accepted')

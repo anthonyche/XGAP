@@ -29,6 +29,12 @@ HTTPS_ENTITY_FIX = ('    elif entity.startswith("http:"):\n        entity = f"<{
                    '    elif entity.startswith(("http:", "https:")):\n        entity = f"<{entity}>"')
 EMPTY_COALESCE_FIX = ('\n        BIND(if(?p = rdf:type, "is a", COALESCE()) AS ?pLabel)',
                       '\n        BIND(if(?p = rdf:type, "is a", COALESCE(1/0)) AS ?pLabel)')
+ENTITY_LABEL_FIX = ('''        BIND(if(?p = rdf:type, "is a", COALESCE()) AS ?pLabel)
+        OPTIONAL {{?p rdfs:label ?pLabel FILTER(LANG(?pLabel) = "en") }}''',
+    '''        OPTIONAL {{?p rdfs:label ?xgapCompatPLabel FILTER(LANG(?xgapCompatPLabel) = "en" && ?p != rdf:type) }}''')
+ENTITY_LABEL_TAIL = ('        BIND(COALESCE(?vLabel_en, ?vLabel_) AS ?vLabel)',
+    '''        BIND(COALESCE(?vLabel_en, ?vLabel_) AS ?vLabel)
+        BIND(IF(?p = rdf:type, "is a", ?xgapCompatPLabel) AS ?pLabel)''')
 COMPATIBILITIES = ('original','https-property-iris-v1','https-property-iris-qwen-key-v1',
                    'https-iris-qwen-key-v2','https-iris-qwen-envelope-v3','https-iris-nonthinking-v1',
                    'https-iris-action-schema-v1','https-iris-action-schema-fedx-v1')
@@ -80,7 +86,7 @@ def action_envelope_alias(value, *, sole_reasoning_key=False):
     return value
 
 
-def https_property_overlay(source, output, include_entity=False, empty_coalesce=False):
+def https_property_overlay(source, output, include_entity=False, empty_coalesce=False, entity_label=False):
     """One recorded URI-scheme compatibility fix; no query/output rewriting."""
     path = Path(source)/'kg_utils.py'
     raw = path.read_bytes()
@@ -93,6 +99,13 @@ def https_property_overlay(source, output, include_entity=False, empty_coalesce=
         if updated.count(before)!=1:
             raise ValueError('Pinned entity HTTPS patch does not apply exactly once')
         updated=updated.replace(before,after)
+    if entity_label:
+        if empty_coalesce or b'?xgapCompatPLabel' in raw:
+            raise ValueError('Conflicting label compatibility patch')
+        for before,after in (ENTITY_LABEL_FIX,ENTITY_LABEL_TAIL):
+            before,after=before.encode(),after.encode()
+            if updated.count(before)!=1:raise ValueError('Pinned entity-label template changed')
+            updated=updated.replace(before,after)
     if empty_coalesce:
         before,after=(s.encode() for s in EMPTY_COALESCE_FIX)
         if updated.count(before)!=1:
@@ -101,13 +114,15 @@ def https_property_overlay(source, output, include_entity=False, empty_coalesce=
     target = Path(output)/'author-compatibility'
     target.mkdir()
     (target/'kg_utils.py').write_bytes(updated)
-    return target,dict(kind=('https-iris-empty-coalesce-v1' if empty_coalesce else
+    return target,dict(kind=('https-iris-entity-label-v1' if entity_label else 'https-iris-empty-coalesce-v1' if empty_coalesce else
                             'https-iris-v2' if include_entity else 'https-property-iris-v1'),changed_module='kg_utils.py',
         changed_function='get_property_examples',original_sha256=hashlib.sha256(raw).hexdigest(),
         changed_functions=['get_property_examples']+(['get_outgoing_edges'] if include_entity else []),
-        patched_sha256=hashlib.sha256(updated).hexdigest(),replacements=1+int(include_entity)+int(empty_coalesce),
+        patched_sha256=hashlib.sha256(updated).hexdigest(),replacements=1+int(include_entity)+int(empty_coalesce)+2*int(entity_label),
         empty_coalesce_compatibility=empty_coalesce,
-        change=('Recognize absolute HTTPS IRIs; empty COALESCE becomes COALESCE(1/0), an error in either case'
+        entity_label_compatibility=entity_label,
+        change=('Recognize absolute HTTPS IRIs; equivalent entity-label OPTIONAL before final projection binding'
+                if entity_label else 'Recognize absolute HTTPS IRIs; empty COALESCE becomes COALESCE(1/0), an error in either case'
                 if empty_coalesce else 'Recognize https: as an absolute IRI, like existing http: support'),
         original_author_checkout_unchanged=True,algorithm_changes=0,prompt_changes=0,output_repairs=0)
 
@@ -210,7 +225,7 @@ def run(args):
             overlay, patch_receipt = https_property_overlay(source,root,
                 include_entity=compatibility in ('https-iris-qwen-key-v2','https-iris-qwen-envelope-v3',
                     'https-iris-nonthinking-v1','https-iris-action-schema-v1','https-iris-action-schema-fedx-v1'),
-                empty_coalesce=compatibility=='https-iris-action-schema-fedx-v1')
+                entity_label=compatibility=='https-iris-action-schema-fedx-v1')
             receipt['compatibility_patch'] = patch_receipt
             receipt['author_source_compatibility_patches'] = patch_receipt['replacements']
             write(root/'compatibility-patch.json',patch_receipt)
