@@ -6,6 +6,9 @@ The latest user instruction, “请继续推进得到实验结果”, authorizes
 model/backend pilot execution. Freeze inputs and execution budgets before calls;
 the first release is `docs/decisions/ch6_first_real_pilot_20260922.md`. Do not
 resume old automations, launch the full matrix, or relabel historical results.
+Latest correction: `docs/decisions/ch6_external_twostage_20260922.md` overrides
+method definitions. Two-stage means an actual external-method composition.
+No further LLM-direct cells or internal-two-stage main comparisons are authorized.
 The user also authorized replacing D2 with a usable alternative: see
 `docs/decisions/ch6_dataset_and_methods_20260922.md` (MovieLens development intake;
 stable 20M proposed for evaluation, no fabricated Wikidata mappings).

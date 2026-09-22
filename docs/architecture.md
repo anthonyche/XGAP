@@ -40,11 +40,14 @@ certify finite budgets. Normal-response, source and execution assumptions remain
 explicit; backend failure or an exceeded bind bound can still prevent an answer.
 
 `answer_unified_controlled` uses publisher-attested initial clues and the same
-runtime, excluding NL initialization from its timing. The current Two-stage
-comparator uses the same semantic eligibility, D and completion/resource guards.
+runtime, excluding NL initialization from its timing. The historical internal
+two-stage diagnostic uses the same semantic eligibility, D and completion/resource guards.
 Its semantic stage ranks only acquisition cost, then freezes the first eligible
 candidate ID without execution-price feedback. The same physical stage follows.
 The old full-validation sequential comparator retains its historical method ID.
+The paper's Two-stage now means an actual external-method composition, not this
+internal diagnostic; LLM-direct is excluded. See the
+[current method contract](decisions/ch6_external_twostage_20260922.md).
 noProbe removes only statistics actions; myopic ranks immediate nonterminal cost
 while retaining terminal cost and the same completion guard; shallow is D=1.
 

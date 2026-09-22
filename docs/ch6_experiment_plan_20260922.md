@@ -1,5 +1,10 @@
 # Chapter 6: Experimental Study — Execution Plan
 
+**2026-09-22 后续用户更正（优先于下方保留原文）：** Two-stage 表示外部方法串接，
+不是内部 XGAP 变体；删除 LD。方法、预算及适用轨道以
+[最新方法定义](decisions/ch6_external_twostage_20260922.md)为准。下方 §4.1 旧定义及
+相应三方法乘数只作历史，不可据此执行。
+
 2026-09-22. 对应统一 fixed-depth XGAP；本文件是实验设计，不是实验结果。与之配套的是 [查询结构与生成规范](query_structure_spec_20260922.md) 和 [coding agent 交接说明](coding_agent_brief_20260922.md)。旧控制器的测量不改名为新版结果。
 
 ## 1. 研究问题与章节结构

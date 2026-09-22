@@ -72,6 +72,10 @@ def selection(data):
 
 
 def release(*, archive, lock_path, prepared_path, prepared_sha256, output):
+    raise ValueError('Retired by user correction: no LD or internal Two-stage primary cells. Reproduce only at the pinned historical commit.')
+
+
+def historical_release(*, archive, lock_path, prepared_path, prepared_sha256, output):
     commit = source_commit(); root = Path(output).resolve(); root.mkdir(parents=True, exist_ok=False)
     (root/'private').mkdir(); (root/'cases').mkdir()
     parent = dict(path=str(Path(prepared_path).resolve()), sha256=prepared_sha256)

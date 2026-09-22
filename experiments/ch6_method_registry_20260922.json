@@ -1,0 +1,16 @@
+{
+  "schema_version": "xgap-ch6-method-registry-v2",
+  "authority": "docs/decisions/ch6_external_twostage_20260922.md",
+  "primary": [
+    {"name": "XGAP", "method_id": "xgap-unified-lookahead", "kind": "proposed_system"},
+    {"name": "Two-stage", "method_id": null, "kind": "external_method_composition", "status": "composition_admission_required"}
+  ],
+  "external_candidates": [
+    {"composition": "ARUQULA -> FedUP (FedX execution)", "status": "pinned_composition_failed_VALUES_OpTable", "author_algorithm_changes": 0},
+    {"composition": "ARUQULA -> FedX", "status": "compatibility_candidate_not_admitted", "author_algorithm_changes": 0}
+  ],
+  "diagnostic_only": ["xgap-unified-two-stage", "xgap-unified-sequential"],
+  "excluded": ["xgap-llm-direct"],
+  "comparison_rule": "Compare on the same supported deployment; no native versus RDF speedup; external API calls are not assumed one per case",
+  "sota_scope": "Cite component evidence and benchmark scope; composition is not itself claimed to be an author-published SOTA system"
+}

@@ -193,17 +193,18 @@ source transfer accounting uses uncompressed bytes. This avoids duplicate large
 serialized payloads, but backend parsers still materialize result objects and
 scoring reads bounded JSON. It is not an unlimited streaming execution engine.
 
-Current method IDs add `xgap-unified-two-stage`, `xgap-unified-no-probe`,
+Historical internal method IDs add `xgap-unified-two-stage`, `xgap-unified-no-probe`,
 `xgap-unified-shallow`, `xgap-unified-myopic` to `xgap-unified-lookahead`.
 The old `xgap-unified-sequential` still means full validation and is historical.
 Configuration v2 adds information/action objectives; strict v1 loading preserves
 the old defaults. Manifest remains `xgap-unified-lookahead-batch-v1`.
-Two-stage stops at common semantic eligibility, selects a candidate by ID and
+The internal two-stage diagnostic stops at common semantic eligibility, selects a candidate by ID and
 then runs the shared physical stage. No execution cost enters semantic ranking;
 execution resource reservations still apply. `ch6_direct.answer_direct` reuses
 the physical domain and online controller with an unvalidated fixed proposal;
-it cannot issue an intent certificate or clarify. Its batch publication remains
-a separate admission item. See [method definitions](decisions/ch6_dataset_and_methods_20260922.md).
+it cannot issue an intent certificate or clarify. Its batch adapter is implemented
+but excluded by the latest user correction. Neither internal method represents
+the paper's external Two-stage. See [current definitions](decisions/ch6_external_twostage_20260922.md).
 NL and controlled tracks remain distinct and hidden references stay offline.
 
 Batch execution pins clean source/config/data, records intent before effects,
