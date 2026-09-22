@@ -33,6 +33,13 @@ read-only scalar metadata/statistics target only when selected. Its finite outco
 category updates estimates or optional-rule prerequisites, not intent authority.
 Hypothetical lookahead never contacts a tool or executes a trial plan.
 
+On an optional deadline, keep a root action only after all of its outcomes have
+passed completion reservations and fixed-depth scoring; incomplete actions never
+replace the saved fallback. Seed identities are fixed at admission. Request-local
+state-key/terminal/completion caches each hold at most 128 full state keys, including
+bindings, evidence, retained pools and disclosure. See the
+[2026-09-22 engineering contract](decisions/ch6_planner_external_followup_20260922.md).
+
 The completion recipe is verified through bounded local scans rather than a full
 conditional-policy tree. Remaining validations, final remote calls and known
 resources are reserved for every outcome. Unknown bytes/memory bounds cannot

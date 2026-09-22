@@ -2,15 +2,50 @@
   "schema_version": "xgap-ch6-method-registry-v2",
   "authority": "docs/decisions/ch6_external_twostage_20260922.md",
   "primary": [
-    {"name": "XGAP", "method_id": "xgap-unified-lookahead", "kind": "proposed_system"},
-    {"name": "Two-stage", "method_id": null, "kind": "external_method_composition", "status": "composition_admission_required"}
+    {
+      "name": "XGAP",
+      "method_id": "xgap-unified-lookahead",
+      "kind": "proposed_system"
+    },
+    {
+      "name": "Two-stage",
+      "method_id": null,
+      "kind": "external_method_composition",
+      "status": "composition_admission_required"
+    }
   ],
   "external_candidates": [
-    {"composition": "ARUQULA -> FedUP (FedX execution)", "status": "pinned_composition_failed_VALUES_OpTable", "author_algorithm_changes": 0},
-    {"composition": "ARUQULA -> FedX", "status": "compatibility_candidate_not_admitted", "author_algorithm_changes": 0}
+    {
+      "composition": "ARUQULA -> FedUP (FedX execution)",
+      "status": "pinned_composition_failed_VALUES_OpTable",
+      "author_algorithm_changes": 0
+    },
+    {
+      "composition": "ARUQULA -> FedX",
+      "status": "transport_admitted_full_method_failed_missing_thought",
+      "successful_nl_answer_observed": false,
+      "author_algorithm_changes": 0,
+      "evidence": "docs/report/ch6_planner_external_followup_20260922.md"
+    }
   ],
-  "diagnostic_only": ["xgap-unified-two-stage", "xgap-unified-sequential"],
-  "excluded": ["xgap-llm-direct"],
+  "diagnostic_only": [
+    "xgap-unified-two-stage",
+    "xgap-unified-sequential"
+  ],
+  "excluded": [
+    "xgap-llm-direct"
+  ],
   "comparison_rule": "Compare on the same supported deployment; no native versus RDF speedup; external API calls are not assumed one per case",
-  "sota_scope": "Cite component evidence and benchmark scope; composition is not itself claimed to be an author-published SOTA system"
+  "sota_scope": "Cite component evidence and benchmark scope; composition is not itself claimed to be an author-published SOTA system",
+  "scope_reporting": {
+    "strata": [
+      "W1_single_source_unambiguous",
+      "W2_single_source_entity_ambiguity",
+      "W3_cross_source",
+      "W4_cross_source_multifield"
+    ],
+    "rule": "Record capability, transport, model-format, timeout, answer quality separately; single-source-only support requires evidence, not inference from a formatter failure. No added baseline federation capability.",
+    "native_heterogeneous_unsupported": "N/A; no zero-latency bar",
+    "supported_runtime_failures": "Keep in the corresponding stratum denominator"
+  }
 }

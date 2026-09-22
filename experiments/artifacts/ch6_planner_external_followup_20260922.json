@@ -1,0 +1,82 @@
+{
+  "schema_version": "xgap-ch6-planner-external-followup-evidence-v1",
+  "report": "docs/report/ch6_planner_external_followup_20260922.md",
+  "formal_or_comparative_result": false,
+  "unique_exposed_planner_cases": 3,
+  "repetitions_per_version": 1,
+  "same_query_speedup_claim": false,
+  "model_calls_planner_followup": 0,
+  "planner_release": {
+    "path": "/Users/anthonyche/xgap-data/ch6-planner-followup-20260922-v1/release.json",
+    "sha256": "96adf2e1c92194ee28ea1f776cc29785aac0d1e7afe3238c3586d0a3d8e6801e",
+    "bytes": 3881
+  },
+  "planner_manifest": {
+    "path": "/Users/anthonyche/xgap-data/ch6-planner-followup-20260922-v1/manifest.json",
+    "sha256": "47cd5b716b45533671044808b9fa6fb43e7342a1c53c3f693b72c0244da6f0ab",
+    "bytes": 4755
+  },
+  "closure_receipts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-planner-followup-20260922-v1/batch/invocations/0001/receipt.json",
+      "sha256": "5c29e139ff4504f11cb0e7437d3b7b68f6422fc23d2ad0970363a3d20d99cdcb",
+      "bytes": 1359
+    }
+  ],
+  "fedx_transport_build": {
+    "path": "/Users/anthonyche/xgap-data/ch6-fedx-transport-build-20260922-v2/receipt.json",
+    "sha256": "1b3d964d54da3e9759ec1cd24c4fd676c6832ccd8df78b2b98272b423e4fd278",
+    "bytes": 774
+  },
+  "fedx_protocol_gate": {
+    "path": "/Users/anthonyche/xgap-data/ch6-fedx-protocol-20260922-v4/receipt.json",
+    "sha256": "96ff679dea8a7422f51161d5f303f6e42434cf39bb9f2f0896a3aa78ffb2f345",
+    "bytes": 2734
+  },
+  "external_method_attempts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v1/receipt.json",
+      "sha256": "01b2373f38da21b2af0c30cab2dbbedf567f6605e3c7966e8b9788d7c823df8b",
+      "bytes": 9520
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v2/receipt.json",
+      "sha256": "492442f486f42fbb376e81a46b055e3c689e0080802e05c2f40afc6fe6395639",
+      "bytes": 10949
+    }
+  ],
+  "offline_parser_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v2/offline-parser-replay.json",
+    "sha256": "5eb9267cdd4e5d698b3bbec3808c16819560083c43c34dec34026a818195b74b",
+    "bytes": 428
+  },
+  "offline_formatter_wire": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-format-wire-20260922-v2/receipt.json",
+    "sha256": "0261e78442c607663a918b8f6a1a9487ec4d3186a2e18a3790a4b38ef30f31f4",
+    "bytes": 754
+  },
+  "derived": [
+    {
+      "path": "docs/report/assets/ch6_planner_followup_20260922/cells.csv",
+      "sha256": "04a6b6f550df49ffda8a134292235d41332bcce9cd85d781f7fc485c2036d8f9",
+      "bytes": 1658
+    },
+    {
+      "path": "docs/report/assets/ch6_planner_followup_20260922/planner_followup.pdf",
+      "sha256": "befc75b1e50300d6825eecfb06c4dbe2dedf359fbb5a89499b14ccbf012999e8",
+      "bytes": 33954
+    },
+    {
+      "path": "docs/report/assets/ch6_planner_followup_20260922/planner_followup.png",
+      "sha256": "ce7fbd27d06f08c2002b6a68ef8fcd695fdf7a7d95ce5b78f3a168ac1ffd9722",
+      "bytes": 84972
+    },
+    {
+      "path": "docs/report/assets/ch6_planner_followup_20260922/summary.json",
+      "sha256": "ce50c3cb9d25892eedf5f7f292155d2cabd68ca1a0869e55b19cc026efce7063",
+      "bytes": 12420
+    }
+  ],
+  "all_owned_closed": true,
+  "summaries_only_no_private_intent_or_model_content": true
+}

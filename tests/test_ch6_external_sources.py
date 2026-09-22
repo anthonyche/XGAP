@@ -1,6 +1,6 @@
 import hashlib
 import pytest
-from check_chapter7_aruqula_fedup import public_source_loads
+from check_chapter7_aruqula_fedup import admission_case, public_source_loads, reference_for_case
 
 
 def test_external_sources_use_profile_loads_instead_of_materialization_parent(tmp_path):
@@ -17,3 +17,15 @@ def test_external_sources_use_profile_loads_instead_of_materialization_parent(tm
     with pytest.raises(ValueError,match='hash mismatch'):public_source_loads(profile,metadata,output)
     profile['offline']['rdf_loads']['control']['sha256']=hashlib.sha256(control.read_bytes()).hexdigest()
     with pytest.raises(ValueError,match='overlap'):public_source_loads(profile,metadata,output)
+
+
+def test_source_strata_have_separate_inputs_without_reference_leakage():
+    single, cross = admission_case('single-source'), admission_case('cross-source')
+    assert single['sources'] == ('graph',)
+    assert cross['sources'] == ('graph','control')
+    assert single['question_id'] != cross['question_id']
+    assert set(single) == set(cross) == {'question_id','question','sources','workload_stratum'}
+    rows, spec = reference_for_case('single-source')
+    assert rows == [{'account_id':str(i)} for i in (1,2,3,4)]
+    assert spec['fields'] == {'account_id':'text'}
+    with pytest.raises(ValueError): admission_case('unknown')

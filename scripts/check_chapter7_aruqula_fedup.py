@@ -47,6 +47,34 @@ QUESTION = ('For person with business ID 1, find accounts owned by that person t
     'Order by company_id then account_id ascending, without a result limit.')
 
 
+def admission_case(name):
+    """Prespecified source strata, independent of observed method outcomes."""
+    if name == 'cross-source':
+        return dict(question_id='CH7-ARUQULA-TINY-01', question=QUESTION,
+                    sources=('graph', 'control'), workload_stratum='cross_source_unambiguous')
+    if name == 'single-source':
+        return dict(question_id='CH6-ARUQULA-SINGLE-01',
+            question=('List the business IDs of all accounts as account_id, '
+                      'ordered by account_id ascending, without a result limit.'),
+            sources=('graph',), workload_stratum='W1_single_source_unambiguous')
+    raise ValueError('Unknown admission case')
+
+
+def reference_for_case(name):
+    """Evaluator-only values: invoke after the author outcome is sealed."""
+    if name == 'single-source':
+        return ([dict(account_id=str(i)) for i in (1, 2, 3, 4)],
+                dict(schema_version='xgap-row-normalization-v1', fields={'account_id': 'text'}))
+    if name != 'cross-source':
+        raise ValueError('Unknown admission case')
+    import sys
+    sys.path.insert(0, str(REPO/'tests'))
+    from test_finbench_rdf import expected_rows
+    from xgap.experiments.finbench_one_shot_population import normalization
+    from xgap.experiments.finbench_rdf import FAMILIES
+    return expected_rows()[0], normalization(FAMILIES[0])
+
+
 def observed_model_usage(observer):
     """A response without provider usage stays unknown, including streaming."""
     totals = dict(input_tokens=0, output_tokens=0)
@@ -93,7 +121,9 @@ def public_source_loads(profile, metadata, output):
     return target,Path(loads['control']['path'])
 
 
-def check(*, profile_path, profile_sha256, output, read_key=False, federation='fedup', fedx_build=None):
+def check(*, profile_path, profile_sha256, output, read_key=False, federation='fedup', fedx_build=None,
+          case='cross-source'):
+    selected = admission_case(case)
     commit = source_commit()
     root = Path(output).resolve()
     root.mkdir(parents=True, exist_ok=False)
@@ -105,6 +135,8 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
         composition='aruqula-'+federation,
         success=False, composition_admitted=False, paper_result=False, attempts=1,
         automatic_retries=0, baseline_algorithm_changes=0, original_prompt_changes=0)
+    receipt.update(admission_case=case, workload_stratum=selected['workload_stratum'],
+                   execution_sources=list(selected['sources']))
     # Three fixed Jena TDB stores alone occupy about 576 MiB before any trial.
     design = dict(total_wall_seconds=900, package_max_bytes=1024**3, free_disk_reserve_bytes=6*1024**3)
     study = BatchBudget(root, design, time.time())
@@ -142,10 +174,12 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repository, text=True).strip()
                 if head != expected or subprocess.check_output(['git', 'diff', 'HEAD', '--'], cwd=repository):
                     raise ValueError('Pinned author tracked files changed')
-            request = write_once(root/'request.json', dict(question_id='CH7-ARUQULA-TINY-01', question=QUESTION))
+            request = write_once(root/'request.json', {k:selected[k] for k in ('question_id','question')})
             receipt['input_seal'] = write_once(root/'input-seal.json', dict(profile=dict(path=profile_path,
                 sha256=profile_sha256), request=request, budget=design, public_question_exposure='old tiny development',
                 worker_budget=dict(wall_seconds=300, max_group_rss_bytes=2*1024**3),
+                admission_case=case, execution_sources=list(selected['sources']),
+                workload_stratum=selected['workload_stratum'],
                 maximum_model_calls=64, maximum_source_calls=256, official_lookup_config=file_pin(LOOKUP/'examples/config.yml'),
                 model_transport='explicit system HTTP proxy' if model_proxy else 'direct HTTP',
                 composition='aruqula-'+federation,
@@ -154,7 +188,8 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 lookup_jar=file_pin(LOOKUP/'lookup/target/lookup-1.0.jar')))
             prepare_metadata(profile_path=profile_path, profile_sha256=profile_sha256, output=root/'public-metadata')
             graph,control=public_source_loads(profile,root/'public-metadata/metadata.nt',root)
-            receipt['public_sources'] = {name:file_pin(path) for name,path in (('graph',graph),('control',control))}
+            source_loads=[(name,dict(graph=graph,control=control)[name]) for name in selected['sources']]
+            receipt['public_sources'] = {name:file_pin(path) for name,path in source_loads}
             # Redis's fixed localhost port is an original interface requirement.
             # Own a fresh empty instance; never clear or commandeer another one.
             with socket.socket() as reservation:
@@ -165,7 +200,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
             owned.append(OwnedProcess('redis','method_host',redis))
             ports = LoopbackPortReservations.acquire(4)
             routes = {}
-            for index,(name,load) in enumerate((('graph',graph),('control',control))):
+            for index,(name,load) in enumerate(source_loads):
                 state = root/('fuseki-'+name)
                 state.mkdir()
                 (state/'config.ttl').write_text(_fuseki_server_configuration(query_timeout_seconds=20))
@@ -180,9 +215,9 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
             source_budget = SourceObservationBudget(max_calls=256,response_bytes=8*1024**2,
                 phase_response_bytes=64*1024**2,timeout_seconds=20,capture_compression='gzip')
             observers['source'] = CampaignSourceObserver(routes,root/'source-observations',budget=source_budget)
-            endpoints = [observers['source'].base_url+'/'+name+'/sparql' for name in ('graph','control')]
+            endpoints = [observers['source'].base_url+'/'+name+'/sparql' for name,_ in source_loads]
             prefixes, graphs = set(), []
-            for load,endpoint in zip((graph,control), endpoints):
+            for (_,load),endpoint in zip(source_loads, endpoints):
                 body = []
                 for line in load.read_text().splitlines():
                     if line.startswith('@prefix '): prefixes.add(line)
@@ -263,22 +298,19 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                     receipt['observations']['source']['forwarded_requests'] > 0)
                 # Only now open the independent, previously hand-derived tiny
                 # answer. The method never receives this query or these rows.
-                import sys
-                sys.path.insert(0,str(REPO/'tests'))
-                from test_finbench_rdf import expected_rows
-                from xgap.experiments.finbench_one_shot_population import normalization
-                from xgap.experiments.finbench_rdf import FAMILIES
                 answer = json.loads(read_pinned(outcome['answer']['path'],outcome['answer']['sha256'])) if outcome['success'] else None
                 result = write_once(root/'result.json',dict(answer_format='sparql_json',answer=answer))
                 common = dict(schema_version='xgap-common-method-trial-v1',method='aruqula-'+federation,track='natural_language',
-                    question_id='CH7-ARUQULA-TINY-01',dataset=profile['dataset'],population='tiny_development',
+                    question_id=selected['question_id'],dataset=profile['dataset'],population='tiny_development',
+                    workload_stratum=selected['workload_stratum'], execution_sources=list(selected['sources']),
                     exposure='previously exposed facts and meaning; new original-author composition',
                     success=outcome['success'] and receipt['guard']['success'],status=outcome['status'],result=result,
                     worker=receipt['worker'],observations=receipt['observations'])
                 sealed = write_once(root/'common-outcome.json',common)
+                rows,normalization_spec = reference_for_case(case)
                 reference = write_once(root/'reference.json',dict(schema_version='xgap-normalized-row-reference-v1',
                     question_id=common['question_id'],dataset=profile['dataset'],ordered=True,
-                    rows=expected_rows()[0],normalization=normalization(FAMILIES[0])))
+                    rows=rows,normalization=normalization_spec))
                 receipt['score'] = score_trial(sealed['path'],receipt_sha256=sealed['sha256'],
                     reference_path=reference['path'],reference_sha256=reference['sha256'],output=root/'score.json')
             receipt['success'] = receipt['composition_admitted']
@@ -306,4 +338,5 @@ if __name__ == '__main__':
     parser.add_argument('--read-key',action='store_true')
     parser.add_argument('--federation',choices=['fedup','fedx'],default='fedup')
     parser.add_argument('--fedx-build')
+    parser.add_argument('--case',choices=['single-source','cross-source'],default='cross-source')
     raise SystemExit(check(**vars(parser.parse_args())))

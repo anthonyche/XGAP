@@ -5,6 +5,10 @@ user's current Chapter 6 is the [experimental study](ch6_experiment_plan_2026092
 this document remains an implementation map, not the new chapter outline.
 
 2026-09-21. This maps the admitted implementation to the revised manuscript.
+2026-09-22 follow-up: optional deadlines retain fully scored root incumbents with
+all outcome reserves; bounded request-local caches avoid repeated proof/seed work.
+[Real engineering evidence](report/ch6_planner_external_followup_20260922.md) includes
+a changed interpretation and lower answer F1, not a same-query universal speedup.
 Current entry: `xgap.api.answer_unified`; algorithm contract:
 [unified migration](decisions/unified_lookahead_migration_20260921.md).
 The [readiness report](report/unified_prerelease_20260921.md) separates implemented,
