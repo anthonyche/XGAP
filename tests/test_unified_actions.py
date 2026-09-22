@@ -58,6 +58,25 @@ def test_pool_preserves_seed_and_actual_transform_executes_once(tmp_path):
     assert core['plan_registry_bytes']<=32*1024*1024
 
 
+def test_convergent_rewrite_parents_offer_one_action_for_identical_child_pool():
+    _,options,calls,family,prepare,_=fixture()
+    seed=prepare(family.candidates[0],None)
+    moves=PhysicalMoves(family,options['source_schema'],options['backends'],options['physical_profile'])
+    alternatives=list(moves.neighbors(0,seed))
+    assert len(alternatives)>=2
+    parent,target_plan=alternatives[:2]
+    class Converging:
+        def neighbors(self,index,plan):return (target_plan,)
+    domain=FamilyDomain('q',UnifiedTerminalContract(family,(),epsilon='1'),{0:(seed,1,Resources())},
+        JointCostProfile(),authority_name='user',authority_version=family.identity,moves=Converging())
+    parent_key=domain.store(0,parent)
+    state=FamilyState(pools=((0,(domain.pool(FamilyState(),0)[0],parent_key)),))
+    actions=list(domain.physical_actions(state))
+    assert len(actions)==1 and len(actions[0].outcomes)==1 and not calls
+    assert actions[0].arguments['parent']==domain.pool(state,0)[0]
+    assert actions[0].arguments['plan_key'] in domain.pool(actions[0].outcomes[0].payload,0)
+
+
 def test_declared_target_executes_only_on_invocation_and_versions_are_checked():
     data,options,calls,*_=fixture()
     item=target()

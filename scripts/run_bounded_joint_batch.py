@@ -205,7 +205,7 @@ def _run(manifest,digest,commit,root,max_new_cells):
             print(json.dumps(dict(cell_id=cell['cell_id'],status=outcome['status'],answer_em=score['answer_em'])),flush=True)
             if outcome['status'] in ('guard_monitor_failed','supervisor_failed','harness_observation_failure'):
                 budget.status='study_harness_failure';break
-    except Exception as exc:
+    except (Exception,KeyboardInterrupt) as exc:
         error=dict(type=type(exc).__name__,message=str(exc))
     finally:
         if session:closures.append(session.close())

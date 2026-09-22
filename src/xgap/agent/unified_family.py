@@ -145,6 +145,7 @@ class FamilyDomain:
 
     def physical_actions(self,state):
         if self.moves is None or not self.settings.physical_moves or self.settings.plan_pool==1:return
+        emitted=set()
         for i in self.contract.consistent(state.bindings):
             if state.fixed_candidate is not None and i!=state.fixed_candidate:continue
             current=self.pool(state,i)
@@ -161,13 +162,17 @@ class FamilyDomain:
                     self.move_cache[cache_key]=tuple(dict.fromkeys(generated))
                 for key in self.move_cache[cache_key]:
                     plan=self.plans[key][1]
-                    if key is None or key in current:continue
+                    if key is None or key in current or key in emitted:continue
                     # The protected seed is never pruned. Keep K-1 scored alternatives.
                     eligible=sorted(set(current[1:]+(key,)),key=lambda k:(self.score(state,k),k))
                     retained=(current[0],)+tuple(eligible[:self.settings.plan_pool-1])
                     if key not in retained:continue
                     pools=dict(state.pools);pools[i]=retained
                     child=replace(state,pools=tuple(sorted(pools.items())))
+                    # Distinct parents can reach the same executable DAG. Its
+                    # child pool and price are identical; retain the first proof
+                    # deterministically, rather than emitting duplicate actions.
+                    emitted.add(key)
                     yield Action('transform:'+key,'transform',(Outcome('applied',child,self.settings.transform_cost,
                         Resources(),1.0),),dict(candidate=i,parent=parent,plan_key=key,
                         rule=plan.metadata['unified_rewrite']['rule']))
