@@ -93,6 +93,7 @@
 |ARUQULA→FedUP，历史版|VALUES/OpTable 不支持；原始失败保留|
 |ARUQULA→FedX v1|300 s 截止；4 次模型、2 次 lookup、2 次联邦查询、29 次源请求均成功；无最终回答|
 |ARUQULA→FedX v2，本地直连|约 36.01 s 后原版解析器 `KeyError`；6 次模型，输入 6,208/output 232 tokens；2 次 lookup、2 次联邦查询、29 次源请求；无最终执行|
+|单源 W1 v1，原版|约 41.39 s 后 `RetryError`；8 次模型，输入 8,248/output 489 tokens；3 次 lookup、5 次端点查询（2 成功、3 语法失败）；无最终执行|
 
 v2 最后一个模型动作 JSON 有 `action_name`、`action_argument` 和 `>`，缺少 `thought`。
 原版 `json_to_action` 首句读取 `action_dict["thought"]`。对该捕获输出做零网络的函数
@@ -109,6 +110,15 @@ temperature=0、top_p=0.9、max_tokens=700 均到达 HTTP 请求体。0 真实�
 实测。**本题作为已封存的方法失败，答案 EM/F1=0、coverage=0，不被排除以美化平均值。
 这是一道 tiny 题，不能外推原方法所有题都失败，或宣称 XGAP 因此胜过 SOTA。
 后续正式比较必须同 RDF 部署，不能与上述 native 三题直接比较耗时。
+
+用户要求进一步区分单源/跨源，因此增加单源 W1 接口题（列出全部账户 ID），只挂载
+graph 一个源，不把同事实集中装载的部署称为跨源。原版这次失败的直接原因不同：
+属性探测函数把 `https://…/business` 拼成 `dbo:https://…/business`。作者只识别
+`http:` 的绝对 IRI，导致 HTTPS 进入了默认 dbo 分支。这不是跨源不支持的证据。
+新的兼容配置只将这一处扩成 HTTP/HTTPS 均识别，保留原 checkout，在副本中留存
+原文件/补丁后哈希；显式记录 1 个源码兼容补丁，算法、prompt、解码、动作和最终
+输出不修补。原函数离线重放重现实际失败查询，补丁后可解析，HTTP/dbo 的查询文本
+不变。该配置不能标为“作者所有源文件逐字节未改”，旧原版失败仍单独报告。
 
 构建/gate 中的失败也保留：首次 JAR 更新工具改变 module descriptor 因字节核对失败
 被拒绝；第一次 gate 参数缺失、第二次装载旧重叠源、第三次金额词法比较过严，均在

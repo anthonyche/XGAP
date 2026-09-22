@@ -66,10 +66,11 @@ def test_wrapper_keeps_original_api_options_and_submits_its_query_unchanged(tmp_
                 return b'{"head":{"vars":["x"]},"results":{"bindings":[]}}'
         return Response()
 
+    author_parser = SimpleNamespace(PartToWholeParser=Parser)
     modules = {'yaml': SimpleNamespace(safe_load=json.loads),
         'chainlite': SimpleNamespace(write_prompt_logs_to_file=lambda: None),
-        'spinach_agent': SimpleNamespace(),
-        'spinach_agent.part_to_whole_parser': SimpleNamespace(PartToWholeParser=Parser),
+        'spinach_agent': SimpleNamespace(part_to_whole_parser=author_parser),
+        'spinach_agent.part_to_whole_parser': author_parser,
         'spinach_agent.evaluate_parser': SimpleNamespace(post_processing=post_process),
         'spinach_agent.parser_state': SimpleNamespace(state_to_string=json.dumps)}
     for name, value in modules.items():
@@ -120,3 +121,17 @@ def test_https_overlay_only_extends_existing_absolute_iri_serialization(tmp_path
     assert before['get_property_examples'](iri)=='dbo:'+iri
     assert after['get_property_examples'](iri)=='<'+iri+'>'
     assert receipt['replacements']==1 and receipt['algorithm_changes']==receipt['output_repairs']==0
+
+
+def test_action_key_alias_preserves_text_and_action_without_guessing_missing_values():
+    raw={'>':'Observed text unchanged\n', 'action_name':'execute_sparql',
+         'action_argument':'SELECT ?x WHERE { ?x <https://p> ?y }'}
+    original=dict(raw);decoded=worker.action_envelope_alias(raw)
+    assert raw==original and decoded==dict(thought=raw['>'],action_name=raw['action_name'],
+                                          action_argument=raw['action_argument'])
+    for value in ({'action_name':'stop','action_argument':''},
+                  {'>':'text','action_name':'stop'},
+                  {'>':None,'action_name':'stop','action_argument':''},
+                  {'thought':'author value','>':'other','action_name':'stop','action_argument':''},
+                  {**raw,'unexpected':'field'}):
+        assert worker.action_envelope_alias(value) is value

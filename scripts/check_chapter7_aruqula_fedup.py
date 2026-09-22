@@ -341,5 +341,6 @@ if __name__ == '__main__':
     parser.add_argument('--federation',choices=['fedup','fedx'],default='fedup')
     parser.add_argument('--fedx-build')
     parser.add_argument('--case',choices=['single-source','cross-source'],default='cross-source')
-    parser.add_argument('--compatibility',choices=['original','https-property-iris-v1'],default='original')
+    parser.add_argument('--compatibility',choices=['original','https-property-iris-v1',
+                        'https-property-iris-qwen-key-v1'],default='original')
     raise SystemExit(check(**vars(parser.parse_args())))

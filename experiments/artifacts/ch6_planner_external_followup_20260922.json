@@ -79,5 +79,17 @@
   ],
   "all_owned_closed": true,
   "summaries_only_no_private_intent_or_model_content": true,
-  "csv_public_copy_line_endings": "LF; cell values identical to sealed derived CSV"
+  "csv_public_copy_line_endings": "LF; cell values identical to sealed derived CSV",
+  "single_source_admissions": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v1/receipt.json",
+      "sha256": "9b7c98b27bef64a909a3f25ae543b3ed7d30ef304562e7e3264abd9b8bcf748e",
+      "bytes": 10900
+    }
+  ],
+  "offline_https_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-https-replay-20260922-v2/receipt.json",
+    "sha256": "d68bcf01da7ba830d27f18baad975d9236fff7cd031cc2e817d312fab9255430",
+    "bytes": 2373
+  }
 }

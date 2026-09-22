@@ -5,8 +5,8 @@ Run in the author's isolated Python environment under the common process guard.
 The parent owns Redis, lookup, source/model observers and FedUP; this worker must
 never receive a private intent, reference answer or gold SPARQL. Its only input is
 a pinned public question. Observer records are the authoritative call accounting.
-The opt-in HTTPS property-IRI compatibility patch is separately recorded; it
-does not change author search, prompts, model outputs or final query selection.
+Opt-in IRI and action-envelope compatibility are separately recorded; they do
+not change author search, prompts, action names/arguments or final query selection.
 """
 import argparse
 import asyncio
@@ -25,6 +25,19 @@ AUTHOR_COMMIT = '9a3982baca03d62f7250572e300b1e4ba47727cc'
 DATASET_ID = 'https://text2sparql.aksw.org/2025/corporate/'
 HTTPS_PROPERTY_FIX = ('    if pid.startswith("http:"):\n        pid = f"<{pid}>"',
                      '    if pid.startswith(("http:", "https:")):\n        pid = f"<{pid}>"')
+COMPATIBILITIES = ('original','https-property-iris-v1','https-property-iris-qwen-key-v1')
+
+
+def action_envelope_alias(value):
+    """Recognize one observed serializer key alias; never infer an action/value.
+
+    Thought text is retained verbatim in the author's subsequent history. Any
+    other missing/malformed field still reaches the original parser unchanged.
+    """
+    if (isinstance(value,dict) and set(value)=={'>','action_name','action_argument'}
+            and all(isinstance(v,str) for v in value.values())):
+        return dict(thought=value['>'],action_name=value['action_name'],action_argument=value['action_argument'])
+    return value
 
 
 def https_property_overlay(source, output):
@@ -77,10 +90,12 @@ def run(args):
         parent_observers_required=True, gold_reads=0, wrapper_retries=0,
         author_algorithm_changes=0, answer=None)
     compatibility = getattr(args,'compatibility','original')
-    if compatibility not in ('original','https-property-iris-v1'):
+    if compatibility not in COMPATIBILITIES:
         raise ValueError('Unknown author compatibility configuration')
     receipt['compatibility'] = compatibility
     receipt['author_source_compatibility_patches'] = 0
+    receipt['action_envelope_key_aliases'] = 0
+    receipt['action_name_or_argument_repairs'] = 0
     prompt_writer = None
     previous_openai={k:os.environ.get(k) for k in ('OPENAI_API_KEY','OPENAI_BASE_URL','NO_PROXY','no_proxy')}
     diagnostic=None
@@ -136,7 +151,7 @@ def run(args):
         os.environ['ORG_LOOKUP_SERVICE_URL'] = lookup
         os.chdir(root)
         sys.path.insert(0, str(source))
-        if compatibility == 'https-property-iris-v1':
+        if compatibility != 'original':
             overlay, patch_receipt = https_property_overlay(source,root)
             receipt['compatibility_patch'] = patch_receipt
             receipt['author_source_compatibility_patches'] = 1
@@ -145,7 +160,24 @@ def run(args):
         write(root / 'intent.json', receipt)
         from chainlite import write_prompt_logs_to_file
         prompt_writer = write_prompt_logs_to_file
-        from spinach_agent.part_to_whole_parser import PartToWholeParser
+        from spinach_agent import part_to_whole_parser
+        PartToWholeParser = part_to_whole_parser.PartToWholeParser
+        if compatibility == 'https-property-iris-qwen-key-v1':
+            from langchain_core.runnables import RunnableLambda
+            def decode_envelope(value):
+                decoded = action_envelope_alias(value)
+                if decoded is not value:
+                    receipt['action_envelope_key_aliases'] += 1
+                    # No prompt, action argument or query content in this audit.
+                    digest=lambda v:hashlib.sha256(json.dumps(v,sort_keys=True).encode()).hexdigest()
+                    record=dict(index=receipt['action_envelope_key_aliases'],
+                        rule='rename > to thought only when it is the sole missing key',
+                        before_sha256=digest(value),after_sha256=digest(decoded))
+                    with (root/'action-key-aliases.jsonl').open('a') as stream:
+                        stream.write(json.dumps(record)+'\n')
+                return decoded
+            part_to_whole_parser.json_to_action = (
+                RunnableLambda(decode_envelope) | part_to_whole_parser.json_to_action)
         from spinach_agent.evaluate_parser import post_processing
         from spinach_agent.parser_state import state_to_string
         receipt['status'] = 'running'
@@ -213,5 +245,5 @@ if __name__ == '__main__':
     parser.add_argument('--query-seconds', type=int, default=20)
     parser.add_argument('--response-bytes', type=int, default=64 * 1024**2)
     parser.add_argument('--method-id',choices=['aruqula-fedup','aruqula-fedx'],default='aruqula-fedup')
-    parser.add_argument('--compatibility',choices=['original','https-property-iris-v1'],default='original')
+    parser.add_argument('--compatibility',choices=COMPATIBILITIES,default='original')
     raise SystemExit(run(parser.parse_args()))
