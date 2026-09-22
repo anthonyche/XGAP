@@ -22,12 +22,13 @@
     },
     {
       "composition": "ARUQULA -> FedX",
-      "status": "VALUES_and_aggregate_transport_admitted_author_COALESCE_empty_arguments_rejected",
+      "status": "adapted_tools_executable_NL_composition_admission_in_progress",
       "successful_nl_answer_observed": false,
       "author_algorithm_changes": 0,
       "evidence": "docs/report/ch6_planner_external_followup_20260922.md",
       "operator_compatibility_failure": "RDF4J 5.1.2 parser rejects original author entity-probe COALESCE(); reproduced after HTTPS IRI compatibility",
-      "single_source_failures_also_observed": true
+      "single_source_failures_also_observed": true,
+      "current_compatibility": "https-iris-action-schema-fedx-v1"
     }
   ],
   "diagnostic_only": [
@@ -54,9 +55,11 @@
     {
       "method_id": "aruqula-single-fuseki",
       "kind": "native_single_endpoint_frontend_diagnostic_not_Two_stage",
-      "status": "admission_in_progress",
-      "current_compatibility": "https-iris-nonthinking-v1",
-      "no_added_federation_capability": true
+      "status": "answered_tiny_single_source_wrong_answer",
+      "current_compatibility": "https-iris-action-schema-v1",
+      "no_added_federation_capability": true,
+      "answer_em": 0,
+      "answer_row_multiset_f1": 0
     }
   ]
 }

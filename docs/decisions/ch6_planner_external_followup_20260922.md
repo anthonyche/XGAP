@@ -174,3 +174,29 @@ JSON response_format 不变。真实 wire 的离线检查已经通过，零真�
 先以原生单源 v5 验证前端完整产出，不依赖 FedX 修复；
 `https-iris-action-schema-fedx-v1` 才包含工具 COALESCE 适配，尚未准入。
 以上为首次真实 schema 调用前的最终 profile 定义；失败配置的 gate 保留。
+
+### Native output admitted; fixed FedX tool bridge
+
+Native single v5 completed: 46 model calls, one final query, four returned rows,
+115.70 s worker time. EM/F1 are both zero: the method chose internal IDs instead
+of business IDs. Preserve that outcome without correcting its interpretation.
+All owned services closed.
+
+The final FedX profile uses an equivalent entity-tool template. OPTIONAL obtains
+English labels for non-rdf:type properties into a fresh temporary variable;
+the final BIND uses IF(type, "is a", temporary) to produce pLabel. In the original
+type branch the plain literal "is a" cannot satisfy LANG(...)=en; the other branch
+retains all English labels or an unbound value. vLabel and projection stay intact.
+The temporary variable must be absent from the original source. Two exact source
+fragments change; final model queries and the author checkout remain untouched.
+
+The same Jena fixture produces identical original/adapted results in 4/4 cases.
+FedX executes all 12 GET/form/raw requests. Its entity probe returns 27 rows
+against Jena's 15, including extra duplicates. Retain this engine behavior: do not
+deduplicate or improve baseline results. Rewrite equivalence and engine answer
+correctness are separate fields; 12/12 transport success is not 12/12 correctness.
+FedX uses its default OPTIONAL configuration again.
+
+Freeze https-iris-action-schema-fedx-v1 plus transport build v4 for single-source
+FedX v4, followed, if answered, by the existing cross-source case in v3. Each has
+the unchanged 300 s / 64 model / 256 source admission limits.

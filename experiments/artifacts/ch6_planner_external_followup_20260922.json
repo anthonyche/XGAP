@@ -137,6 +137,16 @@
       "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v3/receipt.json",
       "sha256": "8efeca45d4fa98cbb94b9e40c125290f9be0b46c0ea5f4746d82ae85e4a33867",
       "bytes": 12355
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v4/receipt.json",
+      "sha256": "0a82beb5d372778fa2528c7c5faaf73901ef76257a02875bf338c6484be28ed2",
+      "bytes": 10841
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v5/receipt.json",
+      "sha256": "905b2a4a7b82bd2f1bcc3e6402d085b7eb4254ce39384c757fe4aa3668f21fc6",
+      "bytes": 14000
     }
   ],
   "client_loopback_diagnostic": {
@@ -170,5 +180,27 @@
     "path": "/Users/anthonyche/xgap-data/ch6-aruqula-format-wire-20260922-v3/receipt.json",
     "sha256": "f60813cf6808f575e268c0dca23a34a55a84a944cf61df70a0050bcba4fc1d60",
     "bytes": 821
+  },
+  "action_schema_wire": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-format-wire-20260922-v4/receipt.json",
+    "sha256": "10a0c68e7637f150d1f543bee8eefb0718ab24dc47bab952d9a200d55b343efd",
+    "bytes": 1350
+  },
+  "fedx_tool_compatibility": {
+    "build": {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-transport-build-20260922-v4/receipt.json",
+      "sha256": "2e08ca01685ea2ebbab3208844974f852a88f3a1dc72ca111b7999022ce629ba",
+      "bytes": 774
+    },
+    "manifest": {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-entity-label-replay-20260922-v1/manifest.json",
+      "sha256": "c0b1e99516e2581b200607ecbc87d1aa6ed46b1aab770f2cf3e976734841f932",
+      "bytes": 1829
+    },
+    "replay": {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-entity-label-equivalence-20260922-v2/receipt.json",
+      "sha256": "9f432f9d716f66149691a5bd2a33e533a365f403366149378700954e271dc8ef",
+      "bytes": 4626
+    }
   }
 }
