@@ -66,3 +66,16 @@ metadata，列出全部账户 business ID，输出 account_id、升序、不截�
 沿用原 300 s worker / 900 s study / 64 model / 256 source 上限，不修改原模型、
 prompt、搜索和后处理。旧跨源题和失败原样保留，新题使用独立 ID/目录，一次尝试。
 额外的 formatter wire 检查只用本地模拟 HTTP 返回，0 真实模型/数据源调用。
+
+### 单源 v1 之后：HTTPS 数据集接口兼容
+
+原版单源试验已封存：8 次成功模型调用后，`get_property_examples` 把完整 HTTPS
+属性 IRI 拼成 `dbo:https://…`，三个同样的原生重试均语法失败。作者函数仅对 `http:`
+加 `<…>`，没有识别 `https:`。这是绝对 IRI 编码兼容问题，不是跨源能力问题。
+
+用户要求让 baseline work 的范围包括这项必要的数据接口修复：保留作者原 checkout，
+在独立、留哈希的模块副本中只将该函数的 `startswith("http:")` 扩为
+`startswith(("http:", "https:"))`。启用时显式标记 `https-property-iris-v1`，
+记录 1 个 source compatibility patch，不再声称该次作者源代码逐字节原版；
+算法/prompt/解码/动作输出和最终 query 不修补。已有 HTTP/dbo 行为保持一致。
+离线重放原实际函数后，对同一单源题新建 v2、沿用同预算一次验收。v1 不覆盖。

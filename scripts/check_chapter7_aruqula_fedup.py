@@ -122,7 +122,7 @@ def public_source_loads(profile, metadata, output):
 
 
 def check(*, profile_path, profile_sha256, output, read_key=False, federation='fedup', fedx_build=None,
-          case='cross-source'):
+          case='cross-source', compatibility='original'):
     selected = admission_case(case)
     commit = source_commit()
     root = Path(output).resolve()
@@ -136,7 +136,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
         success=False, composition_admitted=False, paper_result=False, attempts=1,
         automatic_retries=0, baseline_algorithm_changes=0, original_prompt_changes=0)
     receipt.update(admission_case=case, workload_stratum=selected['workload_stratum'],
-                   execution_sources=list(selected['sources']))
+                   execution_sources=list(selected['sources']), compatibility=compatibility)
     # Three fixed Jena TDB stores alone occupy about 576 MiB before any trial.
     design = dict(total_wall_seconds=900, package_max_bytes=1024**3, free_disk_reserve_bytes=6*1024**3)
     study = BatchBudget(root, design, time.time())
@@ -179,6 +179,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 sha256=profile_sha256), request=request, budget=design, public_question_exposure='old tiny development',
                 worker_budget=dict(wall_seconds=300, max_group_rss_bytes=2*1024**3),
                 admission_case=case, execution_sources=list(selected['sources']),
+                compatibility=compatibility,
                 workload_stratum=selected['workload_stratum'],
                 maximum_model_calls=64, maximum_source_calls=256, official_lookup_config=file_pin(LOOKUP/'examples/config.yml'),
                 model_transport='explicit system HTTP proxy' if model_proxy else 'direct HTTP',
@@ -280,6 +281,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
             resources = OwnedResources(owned,method_rss_bytes=3*1024**3,source_rss_bytes=2*1024**3,extra_monitor=study)
             command = [str(PYTHON),str(REPO/'scripts/run_chapter7_aruqula_worker.py'),
                 '--method-id','aruqula-'+federation,
+                '--compatibility',compatibility,
                 '--author-source',str(AUTHOR),'--request-path',request['path'],'--request-sha256',request['sha256'],
                 '--model-endpoint',observers['model'].base_url+'/v1','--model-id','qwen3.8-27b',
                 '--federation-endpoint',observers['federation'].base_url+'/sparql',
@@ -339,4 +341,5 @@ if __name__ == '__main__':
     parser.add_argument('--federation',choices=['fedup','fedx'],default='fedup')
     parser.add_argument('--fedx-build')
     parser.add_argument('--case',choices=['single-source','cross-source'],default='cross-source')
+    parser.add_argument('--compatibility',choices=['original','https-property-iris-v1'],default='original')
     raise SystemExit(check(**vars(parser.parse_args())))

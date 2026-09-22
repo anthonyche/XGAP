@@ -100,3 +100,23 @@ def test_private_fields_are_rejected_before_author_import_or_network(tmp_path, m
     assert worker.run(args) == 1
     receipt = json.loads((tmp_path / 'result/receipt.json').read_text())
     assert receipt['status'] == 'setup_error' and receipt['final_query_submissions'] == 0
+
+
+def test_https_overlay_only_extends_existing_absolute_iri_serialization(tmp_path):
+    source=tmp_path/'author';source.mkdir()
+    original=('def get_property_examples(pid):\n'+worker.HTTPS_PROPERTY_FIX[0]+
+              '\n    elif not pid.startswith("dbo:"):\n        pid = "dbo:" + pid\n    return pid\n')
+    (source/'kg_utils.py').write_text(original)
+    output=tmp_path/'output';output.mkdir()
+    overlay,receipt=worker.https_property_overlay(source,output)
+    assert (source/'kg_utils.py').read_text()==original
+    patched=(overlay/'kg_utils.py').read_text()
+    assert patched.replace(worker.HTTPS_PROPERTY_FIX[1],worker.HTTPS_PROPERTY_FIX[0])==original
+    before,after={},{}
+    exec(original,before);exec(patched,after)
+    for term in ('http://example.org/p','dbo:p','p'):
+        assert before['get_property_examples'](term)==after['get_property_examples'](term)
+    iri='https://example.org/p'
+    assert before['get_property_examples'](iri)=='dbo:'+iri
+    assert after['get_property_examples'](iri)=='<'+iri+'>'
+    assert receipt['replacements']==1 and receipt['algorithm_changes']==receipt['output_repairs']==0

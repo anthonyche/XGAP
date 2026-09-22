@@ -58,8 +58,8 @@
   "derived": [
     {
       "path": "docs/report/assets/ch6_planner_followup_20260922/cells.csv",
-      "sha256": "04a6b6f550df49ffda8a134292235d41332bcce9cd85d781f7fc485c2036d8f9",
-      "bytes": 1658
+      "sha256": "0dfb45382b8d419eabba841005d5fbde3b717cebf56aad582ac5b2fb5438be1e",
+      "bytes": 1651
     },
     {
       "path": "docs/report/assets/ch6_planner_followup_20260922/planner_followup.pdf",
@@ -78,5 +78,6 @@
     }
   ],
   "all_owned_closed": true,
-  "summaries_only_no_private_intent_or_model_content": true
+  "summaries_only_no_private_intent_or_model_content": true,
+  "csv_public_copy_line_endings": "LF; cell values identical to sealed derived CSV"
 }

@@ -44,7 +44,7 @@ def summarize(parent,followup,output):
             evidence.append(dict(version=version,cell=cell['cell_id'],terminal=file_pin(directory/'terminal.json'),
                 outcome=terminal['outcome'],score=terminal['score'],query_loss=terminal['query_loss'],timing=file_pin(directory/'execution/timing.json')))
     with (out/'cells.csv').open('x',newline='') as f:
-        writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
+        writer=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator='\n');writer.writeheader();writer.writerows(rows)
     summary=dict(schema_version='xgap-ch6-planner-followup-results-v1',source_commit=release['source_commit'],
         release=file_pin(new/'release.json'),unique_exposed_cases=3,repetitions_per_version=1,model_calls=0,
         same_inputs_and_epsilon=True,interpretations_may_differ=True,same_query_speedup_claim=False,

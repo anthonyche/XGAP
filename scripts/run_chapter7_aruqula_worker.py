@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Unmodified author text-to-SPARQL API, followed by one final endpoint request.
+"""Author text-to-SPARQL API, followed by one final endpoint request.
 
 Run in the author's isolated Python environment under the common process guard.
 The parent owns Redis, lookup, source/model observers and FedUP; this worker must
 never receive a private intent, reference answer or gold SPARQL. Its only input is
 a pinned public question. Observer records are the authoritative call accounting.
+The opt-in HTTPS property-IRI compatibility patch is separately recorded; it
+does not change author search, prompts, model outputs or final query selection.
 """
 import argparse
 import asyncio
@@ -21,6 +23,26 @@ from urllib.request import Request, urlopen
 
 AUTHOR_COMMIT = '9a3982baca03d62f7250572e300b1e4ba47727cc'
 DATASET_ID = 'https://text2sparql.aksw.org/2025/corporate/'
+HTTPS_PROPERTY_FIX = ('    if pid.startswith("http:"):\n        pid = f"<{pid}>"',
+                     '    if pid.startswith(("http:", "https:")):\n        pid = f"<{pid}>"')
+
+
+def https_property_overlay(source, output):
+    """One recorded URI-scheme compatibility fix; no query/output rewriting."""
+    path = Path(source)/'kg_utils.py'
+    raw = path.read_bytes()
+    original, replacement = (s.encode() for s in HTTPS_PROPERTY_FIX)
+    if raw.count(original)!=1:
+        raise ValueError('Pinned HTTPS compatibility patch does not apply exactly once')
+    updated = raw.replace(original,replacement)
+    target = Path(output)/'author-compatibility'
+    target.mkdir()
+    (target/'kg_utils.py').write_bytes(updated)
+    return target,dict(kind='https-property-iris-v1',changed_module='kg_utils.py',
+        changed_function='get_property_examples',original_sha256=hashlib.sha256(raw).hexdigest(),
+        patched_sha256=hashlib.sha256(updated).hexdigest(),replacements=1,
+        change='Recognize https: as an absolute property IRI, like existing http: support',
+        original_author_checkout_unchanged=True,algorithm_changes=0,prompt_changes=0,output_repairs=0)
 
 
 def pinned_json(path, expected):
@@ -54,6 +76,11 @@ def run(args):
         output_tokens=None, backend_calls=None, final_query_submissions=0,
         parent_observers_required=True, gold_reads=0, wrapper_retries=0,
         author_algorithm_changes=0, answer=None)
+    compatibility = getattr(args,'compatibility','original')
+    if compatibility not in ('original','https-property-iris-v1'):
+        raise ValueError('Unknown author compatibility configuration')
+    receipt['compatibility'] = compatibility
+    receipt['author_source_compatibility_patches'] = 0
     prompt_writer = None
     previous_openai={k:os.environ.get(k) for k in ('OPENAI_API_KEY','OPENAI_BASE_URL','NO_PROXY','no_proxy')}
     diagnostic=None
@@ -105,11 +132,17 @@ def run(args):
             dataset_alias_is_interface_configuration=True,
             postprocessing=dict(regex_use_select_distinct_and_id_not_label=True,
                                 llm_extract_prediction_if_null=True))
-        write(root / 'intent.json', receipt)
         os.environ['ORG_SPARQL_SERVICE_URL'] = endpoint
         os.environ['ORG_LOOKUP_SERVICE_URL'] = lookup
         os.chdir(root)
         sys.path.insert(0, str(source))
+        if compatibility == 'https-property-iris-v1':
+            overlay, patch_receipt = https_property_overlay(source,root)
+            receipt['compatibility_patch'] = patch_receipt
+            receipt['author_source_compatibility_patches'] = 1
+            write(root/'compatibility-patch.json',patch_receipt)
+            sys.path.insert(0,str(overlay))
+        write(root / 'intent.json', receipt)
         from chainlite import write_prompt_logs_to_file
         prompt_writer = write_prompt_logs_to_file
         from spinach_agent.part_to_whole_parser import PartToWholeParser
@@ -180,4 +213,5 @@ if __name__ == '__main__':
     parser.add_argument('--query-seconds', type=int, default=20)
     parser.add_argument('--response-bytes', type=int, default=64 * 1024**2)
     parser.add_argument('--method-id',choices=['aruqula-fedup','aruqula-fedx'],default='aruqula-fedup')
+    parser.add_argument('--compatibility',choices=['original','https-property-iris-v1'],default='original')
     raise SystemExit(run(parser.parse_args()))
