@@ -73,6 +73,7 @@ def selection(data):
 
 def release(*, archive, lock_path, prepared_path, prepared_sha256, output):
     commit = source_commit(); root = Path(output).resolve(); root.mkdir(parents=True, exist_ok=False)
+    (root/'private').mkdir(); (root/'cases').mkdir()
     parent = dict(path=str(Path(prepared_path).resolve()), sha256=prepared_sha256)
     prepared = json.loads(read_pinned(prepared_path, prepared_sha256))
     original = prepared['profile']
@@ -99,6 +100,7 @@ def release(*, archive, lock_path, prepared_path, prepared_sha256, output):
     cells = []; cases = []
     for i, item in enumerate(chosen):
         qid = f'CH6-FIRST-{i:02}'; directory = root/'cases'/qid
+        directory.mkdir()
         family, policy, question, normalization = family3(item['template'], item['anchor'],
             data.minimum_transfer_time, data.maximum_transfer_time, snapshot)
         truth = json.loads(family.candidates[item['truth_index']].query_json)
