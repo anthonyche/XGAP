@@ -8,6 +8,7 @@ a pinned public question. Observer records are the authoritative call accounting
 """
 import argparse
 import asyncio
+import faulthandler
 import hashlib
 import json
 import os
@@ -48,13 +49,14 @@ def run(args):
     root.mkdir(parents=True, exist_ok=False)
     started = time.perf_counter()
     receipt = dict(schema_version='xgap-ch7-aruqula-worker-v1', success=False,
-        status='setup_error', method='aruqula-fedup', author_commit=AUTHOR_COMMIT,
+        status='setup_error', method=getattr(args,'method_id','aruqula-fedup'), author_commit=AUTHOR_COMMIT,
         request_sha256=args.request_sha256, model_calls=None, input_tokens=None,
         output_tokens=None, backend_calls=None, final_query_submissions=0,
         parent_observers_required=True, gold_reads=0, wrapper_retries=0,
         author_algorithm_changes=0, answer=None)
     prompt_writer = None
-    previous_openai={k:os.environ.get(k) for k in ('OPENAI_API_KEY','OPENAI_BASE_URL')}
+    previous_openai={k:os.environ.get(k) for k in ('OPENAI_API_KEY','OPENAI_BASE_URL','NO_PROXY','no_proxy')}
+    diagnostic=None
     try:
         source = Path(args.author_source).resolve()
         current = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=source, text=True).strip()
@@ -76,6 +78,15 @@ def run(args):
         # Configure credentials in memory only; keep the original client/algorithm.
         os.environ['OPENAI_API_KEY']=os.environ['XGAP_EXTERNAL_LLM_API_KEY']
         os.environ['OPENAI_BASE_URL']=model
+        # All author endpoints are owned loopback observers. Keep their traffic
+        # direct even when macOS advertises a system-wide HTTP proxy. Only the
+        # model observer's remote hop uses that proxy, as configured by parent.
+        for name in ('NO_PROXY','no_proxy'):
+            prior=os.environ.get(name,os.environ.get(name.swapcase(),''))
+            os.environ[name]=','.join(filter(None,(prior,'127.0.0.1','localhost','::1')))
+        receipt['loopback_proxy_bypass']=True
+        diagnostic=(root/'deadline-stack.txt').open('x')
+        faulthandler.dump_traceback_later(270,file=diagnostic)
         # The same primary and auxiliary model mapping is configured before any
         # author imports. Original prompt contents and decoding remain unchanged.
         import yaml
@@ -143,6 +154,9 @@ def run(args):
         receipt.update(status='setup_error' if receipt['status']=='setup_error' else 'method_error',
                        error_type=type(error).__name__)
     finally:
+        if diagnostic:
+            faulthandler.cancel_dump_traceback_later()
+            diagnostic.close()
         if prompt_writer:
             try:
                 prompt_writer()
@@ -165,4 +179,5 @@ if __name__ == '__main__':
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--query-seconds', type=int, default=20)
     parser.add_argument('--response-bytes', type=int, default=64 * 1024**2)
+    parser.add_argument('--method-id',choices=['aruqula-fedup','aruqula-fedx'],default='aruqula-fedup')
     raise SystemExit(run(parser.parse_args()))

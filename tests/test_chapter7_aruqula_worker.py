@@ -29,6 +29,9 @@ def test_wrapper_keeps_original_api_options_and_submits_its_query_unchanged(tmp_
     monkeypatch.setattr(worker.subprocess, 'check_output',
         lambda command, **kw: worker.AUTHOR_COMMIT if 'rev-parse' in command else b'')
     monkeypatch.setenv('OPENAI_API_KEY','previous-value')
+    monkeypatch.setenv('NO_PROXY','existing.example')
+    monkeypatch.setenv('no_proxy','existing.example')
+    args.method_id='aruqula-fedx'
     seen = {}
     query = 'SELECT ?x WHERE { ?x <https://p> "literal" }'
 
@@ -38,6 +41,9 @@ def test_wrapper_keeps_original_api_options_and_submits_its_query_unchanged(tmp_
             seen['initialize'] = kwargs
             assert worker.os.environ['OPENAI_API_KEY']=='test-credential-not-real'
             assert worker.os.environ['OPENAI_BASE_URL']==args.model_endpoint
+            from urllib.request import proxy_bypass_environment
+            assert proxy_bypass_environment('127.0.0.1')
+            assert proxy_bypass_environment('existing.example')
 
         @classmethod
         def run_batch(cls, questions, **kwargs):
@@ -71,6 +77,7 @@ def test_wrapper_keeps_original_api_options_and_submits_its_query_unchanged(tmp_
     monkeypatch.setattr(worker, 'urlopen', endpoint)
     assert worker.run(args) == 0
     assert worker.os.environ['OPENAI_API_KEY']=='previous-value'
+    assert worker.os.environ['NO_PROXY']==worker.os.environ['no_proxy']=='existing.example'
     assert seen['questions'] == [dict(question='Public question', questionId='q', conversation_history=[])]
     assert seen['postprocessing'] == dict(regex_use_select_distinct_and_id_not_label=True,
                                           llm_extract_prediction_if_null=True)
@@ -79,6 +86,7 @@ def test_wrapper_keeps_original_api_options_and_submits_its_query_unchanged(tmp_
     assert 'test-credential-not-real' not in config
     receipt = json.loads((tmp_path / 'result/receipt.json').read_text())
     assert receipt['success'] and receipt['final_query_submissions'] == 1
+    assert receipt['method']=='aruqula-fedx' and receipt['loopback_proxy_bypass']
     assert receipt['model_calls'] is None  # Only the parent observer can report this.
 
 

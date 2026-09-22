@@ -244,6 +244,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False, federation='f
                 raise ValueError('Model credential unavailable')
             resources = OwnedResources(owned,method_rss_bytes=3*1024**3,source_rss_bytes=2*1024**3,extra_monitor=study)
             command = [str(PYTHON),str(REPO/'scripts/run_chapter7_aruqula_worker.py'),
+                '--method-id','aruqula-'+federation,
                 '--author-source',str(AUTHOR),'--request-path',request['path'],'--request-sha256',request['sha256'],
                 '--model-endpoint',observers['model'].base_url+'/v1','--model-id','qwen3.8-27b',
                 '--federation-endpoint',observers['federation'].base_url+'/sparql',
