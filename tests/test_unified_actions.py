@@ -118,6 +118,28 @@ def test_metadata_unknown_preserves_seed_and_blocks_only_dependent_alternative()
     assert len(domain.terminals(child))==1 # seed, never the unverified optional plan
     informed=replace(child,facts=((item.name,'large'),))
     assert len(domain.terminals(informed))==2 and domain.completion(child) is not None and not calls
+    # Cached completions include pool and evidence dependencies. A reply cannot
+    # inherit eligibility from a different hypothetical branch.
+    before=domain.completion(child)
+    assert domain.completion(informed)==domain._completion(informed)
+    assert domain.completion(child)==before
+    assert domain.verify_completion(child,before)
+    assert domain.completion_cache_hits>0
+    assert domain.check_terminal(child,domain.terminals(informed)[0]) == (
+        domain.terminals(informed)[0] in domain.terminals(child))
+
+
+def test_state_memoization_is_bounded_and_seed_identity_is_not_recomputed(monkeypatch):
+    _,_,_,family,prepare,_=fixture()
+    seed=prepare(family.candidates[0],None)
+    domain=FamilyDomain('q',UnifiedTerminalContract(family,(),epsilon='1'),{0:(seed,1,Resources())},
+        JointCostProfile(),authority_name='user',authority_version=family.identity)
+    import xgap.runtime.unified_physical as physical
+    monkeypatch.setattr(physical,'identity',lambda p:pytest.fail('Seed identity was already sealed'))
+    for count in range(160):
+        state=FamilyState(disclosed=count)
+        domain.pool(state,0);domain.key(state);domain.completion(state)
+    assert all(len(cache)<=128 for cache in (domain.key_cache,domain.terminal_cache,domain.completion_cache))
 
 
 def test_expectation_needs_explicit_model_and_small_registry_falls_back(tmp_path):

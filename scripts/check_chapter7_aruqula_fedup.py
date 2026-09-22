@@ -79,7 +79,21 @@ def observed_model_usage(observer):
         usage_complete=known, **{k: v if known else None for k, v in totals.items()}, records=records)
 
 
-def check(*, profile_path, profile_sha256, output, read_key=False):
+def public_source_loads(profile, metadata, output):
+    """Honor the declared representation; never fall back to old raw copies."""
+    from rdflib import Graph
+    loads=profile['offline']['rdf_loads']
+    original={name:read_pinned(loads[name]['path'],loads[name]['sha256']) for name in ('graph','control')}
+    graph=Graph().parse(data=original['graph'].decode(),format='turtle')
+    control=Graph().parse(data=original['control'].decode(),format='turtle')
+    graph.parse(metadata,format='nt')
+    if graph&control:raise ValueError('Declared disjoint public source facts overlap')
+    target=Path(output)/'graph.ttl'
+    target.write_bytes(original['graph']+b'\n'+Path(metadata).read_bytes())
+    return target,Path(loads['control']['path'])
+
+
+def check(*, profile_path, profile_sha256, output, read_key=False, federation='fedup', fedx_build=None):
     commit = source_commit()
     root = Path(output).resolve()
     root.mkdir(parents=True, exist_ok=False)
@@ -87,7 +101,8 @@ def check(*, profile_path, profile_sha256, output, read_key=False):
     observers, ports = {}, None
     owned = []
     prior_key = os.environ.get('XGAP_EXTERNAL_LLM_API_KEY')
-    receipt = dict(schema_version='xgap-ch7-aruqula-fedup-admission-v1', source_commit=commit,
+    receipt = dict(schema_version='xgap-ch6-external-composition-admission-v2', source_commit=commit,
+        composition='aruqula-'+federation,
         success=False, composition_admitted=False, paper_result=False, attempts=1,
         automatic_retries=0, baseline_algorithm_changes=0, original_prompt_changes=0)
     # Three fixed Jena TDB stores alone occupy about 576 MiB before any trial.
@@ -108,7 +123,16 @@ def check(*, profile_path, profile_sha256, output, read_key=False):
                 raise ValueError('Admission requires the existing eight-entity development snapshot')
             for name in ('graph.ttl', 'control.ttl'):
                 verify_asset(materialization/name,manifest['output_files'][name])
-            for name in ('fedup', 'summary'):
+            if federation not in ('fedup','fedx'):raise ValueError('Unknown original federation method')
+            fedx=None
+            if federation=='fedx':
+                build=json.loads(Path(fedx_build).read_text())
+                if not build['external_entries_byte_identical']:raise ValueError('Changed external FedX code')
+                fedx=build['jar']
+                read_pinned(build['source']['path'],build['source']['sha256'])
+                if file_pin(fedx['path'])!=fedx:raise ValueError('FedX transport build changed')
+                receipt['transport_build']=file_pin(fedx_build)
+            for name in (('fedup', 'summary') if federation=='fedup' else ()):
                 if file_pin(JARS[name])['sha256'] != PINS[name]:
                     raise ValueError('Original author JAR changed')
             if file_pin(REDIS)['sha256'] != 'fd2e0635cfad3a62e87a638d2d9948f967ae886715f6177c07f812046a894acb':
@@ -124,13 +148,12 @@ def check(*, profile_path, profile_sha256, output, read_key=False):
                 worker_budget=dict(wall_seconds=300, max_group_rss_bytes=2*1024**3),
                 maximum_model_calls=64, maximum_source_calls=256, official_lookup_config=file_pin(LOOKUP/'examples/config.yml'),
                 model_transport='explicit system HTTP proxy' if model_proxy else 'direct HTTP',
-                jars={name:file_pin(JARS[name]) for name in ('fedup', 'summary')}, redis=file_pin(REDIS),
+                composition='aruqula-'+federation,
+                jars=({name:file_pin(JARS[name]) for name in ('fedup','summary')} if federation=='fedup' else dict(fedx=fedx)), redis=file_pin(REDIS),
                 worker=file_pin(REPO/'scripts/run_chapter7_aruqula_worker.py'), classpath=file_pin(CLASSPATH),
                 lookup_jar=file_pin(LOOKUP/'lookup/target/lookup-1.0.jar')))
             prepare_metadata(profile_path=profile_path, profile_sha256=profile_sha256, output=root/'public-metadata')
-            graph = root/'graph.ttl'
-            graph.write_bytes((INPUT_ROOT/'graph.ttl').read_bytes() + b'\n' + (root/'public-metadata/metadata.nt').read_bytes())
-            control = INPUT_ROOT/'control.ttl'
+            graph,control=public_source_loads(profile,root/'public-metadata/metadata.nt',root)
             receipt['public_sources'] = {name:file_pin(path) for name,path in (('graph',graph),('control',control))}
             # Redis's fixed localhost port is an original interface requirement.
             # Own a fresh empty instance; never clear or commandeer another one.
@@ -169,20 +192,24 @@ def check(*, profile_path, profile_sha256, output, read_key=False):
             trig.write_text('\n'.join(sorted(prefixes))+'\n'+'\n'.join(graphs))
             summary = root/'summary'
             summary.mkdir()
-            processes.command('summary-load',[JAVA,'-Xmx512m','-cp',str(JARS['fedup']),'tdb2.tdbloader',
-                '--loc',str(root/'summary-input'),str(trig)],seconds=40)
-            processes.command('summary-build',[JAVA,'-Xmx512m','-jar',str(JARS['summary']),
-                '--input',str(root/'summary-input'),'--output',str(summary),'--hash','1'],seconds=40)
-            receipt['offline_summary'] = write_once(root/'summary-seal.json',dict(
-                files=[file_pin(p) for p in sorted(summary.rglob('*')) if p.is_file()], hash_modulo=1))
-            shutil.copytree(summary,root/'serving-summary')
+            if federation=='fedup':
+                processes.command('summary-load',[JAVA,'-Xmx512m','-cp',str(JARS['fedup']),'tdb2.tdbloader',
+                    '--loc',str(root/'summary-input'),str(trig)],seconds=40)
+                processes.command('summary-build',[JAVA,'-Xmx512m','-jar',str(JARS['summary']),
+                    '--input',str(root/'summary-input'),'--output',str(summary),'--hash','1'],seconds=40)
+                receipt['offline_summary'] = write_once(root/'summary-seal.json',dict(
+                    files=[file_pin(p) for p in sorted(summary.rglob('*')) if p.is_file()], hash_modulo=1))
+                shutil.copytree(summary,root/'serving-summary')
             port = ports.ports[2]
             ports.release(2)
-            fedup = processes.start('fedup',[JAVA,'-Xms64m','-Xmx512m','-jar',str(JARS['fedup']),
-                '--port',str(port),'--summaries',str(root/'serving-summary'),'--engine','FedX','--modify','(e) -> e'])
-            ready(fedup,port)
-            owned.append(OwnedProcess('fedup','method_host',fedup))
-            observers['federation'] = CampaignSourceObserver({'/sparql':f'http://127.0.0.1:{port}/serving-summary/sparql'},
+            command=([JAVA,'-Xms64m','-Xmx512m','-jar',str(JARS['fedup']),
+                '--port',str(port),'--summaries',str(root/'serving-summary'),'--engine','FedX','--modify','(e) -> e']
+                if federation=='fedup' else [JAVA,'-Xms64m','-Xmx512m','-jar',fedx['path'],str(port),'20',*endpoints])
+            host = processes.start(federation,command)
+            ready(host,port)
+            owned.append(OwnedProcess(federation,'method_host',host))
+            endpoint=f'http://127.0.0.1:{port}/'+('serving-summary/sparql' if federation=='fedup' else 'sparql')
+            observers['federation'] = CampaignSourceObserver({'/sparql':endpoint},
                 root/'federation-observations',budget=source_budget)
             yaml_code = 'import json,sys,yaml; print(json.dumps([yaml.safe_load(open(p)) for p in sys.argv[1:]]))'
             config,index = json.loads(subprocess.check_output([str(PYTHON),'-c',yaml_code,
@@ -242,7 +269,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False):
                 from xgap.experiments.finbench_rdf import FAMILIES
                 answer = json.loads(read_pinned(outcome['answer']['path'],outcome['answer']['sha256'])) if outcome['success'] else None
                 result = write_once(root/'result.json',dict(answer_format='sparql_json',answer=answer))
-                common = dict(schema_version='xgap-common-method-trial-v1',method='aruqula-fedup',track='natural_language',
+                common = dict(schema_version='xgap-common-method-trial-v1',method='aruqula-'+federation,track='natural_language',
                     question_id='CH7-ARUQULA-TINY-01',dataset=profile['dataset'],population='tiny_development',
                     exposure='previously exposed facts and meaning; new original-author composition',
                     success=outcome['success'] and receipt['guard']['success'],status=outcome['status'],result=result,
@@ -254,7 +281,7 @@ def check(*, profile_path, profile_sha256, output, read_key=False):
                 receipt['score'] = score_trial(sealed['path'],receipt_sha256=sealed['sha256'],
                     reference_path=reference['path'],reference_sha256=reference['sha256'],output=root/'score.json')
             receipt['success'] = receipt['composition_admitted']
-    except Exception as error:
+    except (Exception,KeyboardInterrupt) as error:
         receipt.update(error_type=type(error).__name__, error=str(error))
     finally:
         receipt['processes'] = processes.close()
@@ -276,4 +303,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('profile-path','profile-sha256','output'): parser.add_argument('--'+name,required=True)
     parser.add_argument('--read-key',action='store_true')
+    parser.add_argument('--federation',choices=['fedup','fedx'],default='fedup')
+    parser.add_argument('--fedx-build')
     raise SystemExit(check(**vars(parser.parse_args())))

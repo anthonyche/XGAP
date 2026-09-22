@@ -270,9 +270,17 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
     # Preparation above is mandatory bounded certificate work. The optional
     # deadline cannot prevent executing this independently retained fallback.
     deadline = clock()+limits.optional_ms/1000
+    incumbent = initial[:3]
+    completed_root_actions = 0
+
+    def retain(value, picked, checked):
+        nonlocal incumbent
+        if picked is not None and (value < incumbent[1] or
+                value == incumbent[1] and isinstance(picked,Terminal)):
+            incumbent = (picked,value,checked)
 
     def evaluate(s, j, fallback=None):
-        nonlocal expanded
+        nonlocal expanded, completed_root_actions
         if clock() >= deadline or expanded >= limits.max_states:
             raise SearchLimit('optional_deadline_or_state_limit')
         expanded += 1
@@ -284,6 +292,7 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
         terminal = min(terminals, key=lambda t: (terminal_price(t), t.key), default=None)
         best = terminal_price(terminal) if terminal else math.inf
         selected, tails = terminal, ()
+        if s is state:retain(best,selected,tails)
         # A semantic-stage leaf ends at eligibility; do not optimize a physical
         # continuation or use execution prices to choose an interpretation.
         if semantic_phase and terminal is not None:return best, selected, tails
@@ -305,7 +314,7 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
             if len(records) >= limits.max_states:
                 raise SearchLimit('decision_record_limit')
             children, reason = successors(s, action)
-            record = dict(state=domain.key(s.payload), action=action.key, status=reason or 'evaluated')
+            record = dict(state=domain.key(s.payload), action=action.key, status=reason or 'pending')
             records.append(record)
             if children is None:
                 continue
@@ -314,9 +323,15 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
             score = (math.inf if any(v == math.inf for v in values) else max(values)
                      if limits.aggregation == 'max' else math.fsum(o.probability*v for (o, _, _), v in zip(children, values)))
             record['estimated_cost'] = score if math.isfinite(score) else None
+            record['status'] = 'evaluated'
             # Strict comparison preserves terminal ties and fallback-first ties.
             if score < best:
                 best, selected, tails = score, action, tuple(children)
+            if s is state:
+                completed_root_actions += 1
+                # Commit only after every outcome is certified AND scored.
+                # A later timeout must not erase this completed root option.
+                retain(best,selected,tails)
         return best, selected, tails
 
     choice, score, tails, saved = initial
@@ -326,8 +341,14 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
             choice, score, tails = picked, value, checked
     except SearchLimit as error:
         stop = str(error)
+        choice, score, tails = incumbent
+        for record in records:
+            if record['status']=='pending':record['status']='interrupted'
     return dict(choice=choice, status=stop, estimated_cost=score, tails=tails, witness=saved,
                 records=records, expanded_states=expanded, elapsed_ms=(clock()-started)*1000,
+                completed_root_actions=completed_root_actions,
+                selection_basis=('full_lookahead' if stop=='completed' else
+                    'completed_root_incumbent' if choice is not initial[0] else 'completion_fallback'),
                 objective='acquisition_only' if semantic_phase else action_objective)
 
 
@@ -349,6 +370,8 @@ def run_online(initial, domain, *, perform, execute, limits=Limits(), action_obj
             choice, w = decision['choice'], decision['witness']
             report['rounds'].append(dict(step=state.steps, status=decision['status'],
                 objective=decision.get('objective'),
+                selection_basis=decision.get('selection_basis'),
+                completed_root_actions=decision.get('completed_root_actions',0),
                 choice=choice.key if choice else None, estimated_cost=decision['estimated_cost'],
                 completion=w.key if w else None, reserved_steps=w.remaining_steps if w else None,
                 reserved_resources=asdict(w.resources) if w else None,

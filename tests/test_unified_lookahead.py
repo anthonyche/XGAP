@@ -127,6 +127,27 @@ def test_optional_limits_fall_back_to_saved_completion(limit):
     assert report['rounds'][0]['status'] != 'completed'
 
 
+def test_timeout_keeps_only_fully_scored_root_action_with_all_outcome_reservations():
+    now=[0.0]
+    class Interrupted(Domain):
+        def actions(self,p):
+            return super().actions(p)+(Action('unfinished','probe',(
+                Outcome('first',Toy(0,True),0,Resources(),.5),
+                Outcome('slow',Toy(2,True),0,Resources(),.5))),)
+        def completion(self,p):
+            if p==Toy(2,True):now[0]=2.0
+            return super().completion(p)
+    domain=Interrupted(True)
+    result=choose(State(Toy()),domain,limits=Limits(depth=1,horizon=3,optional_ms=1000),clock=lambda:now[0])
+    assert result['status']=='optional_deadline_or_state_limit'
+    assert result['choice'].key=='probe' and result['estimated_cost']==pytest.approx(11.1)
+    assert result['selection_basis']=='completed_root_incumbent'
+    assert result['completed_root_actions']==2
+    assert len(result['tails'])==len(result['choice'].outcomes)
+    assert result['records'][-1]['status']=='interrupted'
+    assert 'estimated_cost' not in result['records'][-1]
+
+
 def test_action_use_and_actual_payload_must_match_the_declared_contract():
     report, _, executed = run(Domain(), Limits(horizon=2), override=lambda a:
         Observation('ok', Toy(2), Resources(user_calls=1)))

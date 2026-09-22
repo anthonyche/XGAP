@@ -84,10 +84,14 @@ class FamilyDomain:
         self.targets = {t.name:t for t in settings.information_targets}
         self.estimate_cache = {}
         self.move_cache = {}
+        # Request-local, bounded caches. Keys include bindings/receipts, facts,
+        # retained pools and disclosure state; no reuse across source snapshots.
+        self.key_cache, self.terminal_cache, self.completion_cache = {}, {}, {}
+        self.completion_cache_hits = 0
+        self.completion_evaluations = 0
         self.estimate_evaluations = 0
         self.estimate_cache_hits = 0
-        for i,(plan,estimate,resources) in self.seeds.items():
-            self.store(i,plan,protected=True)
+        self.seed_keys = {i:self.store(i,plan,protected=True) for i,(plan,_,_) in self.seeds.items()}
         if settings.limits.aggregation=='expectation':
             if settings.candidate_weights is None or len(settings.candidate_weights)!=len(contract.family.candidates):
                 raise ValueError('Expectation requires a frozen prior for every candidate')
@@ -109,7 +113,7 @@ class FamilyDomain:
 
     def pool(self,state,index):
         if index not in self.seeds:return ()
-        seed=self.store(index,self.seeds[index][0])
+        seed=self.seed_keys[index]
         return (seed,)+tuple(k for k in dict(state.pools).get(index,()) if k!=seed)
 
     def score(self,state,key):
@@ -191,7 +195,16 @@ class FamilyDomain:
             yield Action('information:'+target.identity,target.kind,tuple(outcomes),dict(target=target.name,identity=target.identity))
 
     def key(self, state):
-        return fingerprint([self.contract.identity, [asdict(b) for b in state.bindings],state.pools,state.facts,state.disclosed,state.fixed_candidate])
+        if state not in self.key_cache:
+            self.remember(self.key_cache,state,fingerprint([self.contract.identity,
+                [asdict(b) for b in state.bindings],state.pools,state.facts,state.disclosed,state.fixed_candidate]))
+        return self.key_cache[state]
+
+    @staticmethod
+    def remember(cache,key,value):
+        if len(cache)>=128:cache.pop(next(iter(cache)))
+        cache[key]=value
+        return value
 
     def semantic_only(self,state):
         return self.settings.decision_order=='two_stage' and state.fixed_candidate is None
@@ -281,6 +294,11 @@ class FamilyDomain:
         yield from self.information_actions(state)
 
     def terminals(self, state):
+        if state not in self.terminal_cache:
+            self.remember(self.terminal_cache,state,self._terminals(state))
+        return self.terminal_cache[state]
+
+    def _terminals(self, state):
         if self.settings.decision_order=='semantic_then_physical' and len(state.bindings)<len(self.names):return ()
         results = []
         for i in self.contract.consistent(state.bindings):
@@ -301,6 +319,13 @@ class FamilyDomain:
         return tuple(sorted(results, key=lambda t: (t.estimated_cost, t.key)))
 
     def completion(self, state):
+        if state in self.completion_cache:
+            self.completion_cache_hits+=1
+            return self.completion_cache[state]
+        self.completion_evaluations+=1
+        return self.remember(self.completion_cache,state,self._completion(state))
+
+    def _completion(self, state):
         if not self.valid(state):
             return None
         terminals = self.terminals(state)
@@ -453,6 +478,9 @@ def run_unified_family(question, family, user, *, prepare_seed, execute, costs, 
                   metadata_calls=sum(t['kind']=='metadata' for t in result['trace']),
                   information_ledger=tool_receipts,plan_registry_count=len(domain.plans),plan_registry_bytes=domain.plan_bytes,
                   optional_plan_rejections=domain.optional_plan_rejections,
+                  completion_cache_hits=domain.completion_cache_hits,
+                  completion_evaluations=domain.completion_evaluations,
+                  completion_cache_entries=len(domain.completion_cache),
                   retained_plans={str(i):list(domain.pool(actual,i)) for i in seeds},
                   estimate_evaluations=domain.estimate_evaluations,estimate_cache_hits=domain.estimate_cache_hits,
                   selected_facts=dict(actual.facts),

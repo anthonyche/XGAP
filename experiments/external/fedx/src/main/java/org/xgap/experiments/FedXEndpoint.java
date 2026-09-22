@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 import org.eclipse.rdf4j.federated.FedXConfig;
@@ -42,27 +43,53 @@ public final class FedXEndpoint {
     private static void query(HttpExchange exchange, Repository repository, int seconds) throws IOException {
         long started = System.nanoTime();
         try {
+            String method = exchange.getRequestMethod();
             if (!exchange.getRequestURI().getPath().equals("/sparql")
-                    || !exchange.getRequestMethod().equals("POST")) {
-                respond(exchange, 405, "text/plain", "Use POST /sparql".getBytes(StandardCharsets.UTF_8));
-                return;
-            }
-            String type = exchange.getRequestHeaders().getFirst("Content-Type");
-            if (type == null || !type.split(";", 2)[0].trim().equalsIgnoreCase("application/sparql-query")) {
-                respond(exchange, 415, "text/plain", "Use application/sparql-query".getBytes(StandardCharsets.UTF_8));
+                    || !(method.equals("POST") || method.equals("GET"))) {
+                respond(exchange, 405, "text/plain", "Use GET or POST /sparql".getBytes(StandardCharsets.UTF_8));
                 return;
             }
             byte[] body;
-            try (var in = exchange.getRequestBody()) { body = in.readNBytes(MAX_QUERY_BYTES + 1); }
+            boolean encoded;
+            if (method.equals("GET")) {
+                String parameters = exchange.getRequestURI().getRawQuery();
+                body = (parameters == null ? "" : parameters).getBytes(StandardCharsets.UTF_8);
+                encoded = true;
+            } else {
+                String type = exchange.getRequestHeaders().getFirst("Content-Type");
+                type = type == null ? "" : type.split(";", 2)[0].trim();
+                encoded = type.equalsIgnoreCase("application/x-www-form-urlencoded");
+                if (!encoded && !type.equalsIgnoreCase("application/sparql-query")) {
+                    respond(exchange, 415, "text/plain", "Unsupported query media type".getBytes(StandardCharsets.UTF_8));
+                    return;
+                }
+                try (var in = exchange.getRequestBody()) { body = in.readNBytes(MAX_QUERY_BYTES + 1); }
+            }
             if (body.length > MAX_QUERY_BYTES) {
                 respond(exchange, 413, "text/plain", "Query byte limit exceeded".getBytes(StandardCharsets.UTF_8));
                 return;
             }
             BoundedResult answer = new BoundedResult();
+            String text = new String(body, StandardCharsets.UTF_8);
+            if (encoded) {
+                // Decode only the HTTP envelope. Do not rewrite the author's
+                // SPARQL, inject constraints, or replace unsupported algebra.
+                String queryText = null;
+                for (String part : text.split("&")) {
+                    String[] pair = part.split("=", 2);
+                    String name = URLDecoder.decode(pair[0], StandardCharsets.UTF_8);
+                    if (name.equals("query") && pair.length == 2 && queryText == null)
+                        queryText = URLDecoder.decode(pair[1], StandardCharsets.UTF_8);
+                    else if (!name.equals("format"))
+                        throw new IllegalArgumentException("Unsupported or duplicate protocol parameter");
+                }
+                if (queryText == null) throw new IllegalArgumentException("Missing query parameter");
+                text = queryText;
+            }
             try (var connection = repository.getConnection()) {
                 // Tuple-query admission rejects UPDATE, ASK and graph construction.
                 // Engine selection, source discovery and joins remain entirely FedX's.
-                var tuple = connection.prepareTupleQuery(QueryLanguage.SPARQL, new String(body, StandardCharsets.UTF_8));
+                var tuple = connection.prepareTupleQuery(QueryLanguage.SPARQL, text);
                 tuple.setMaxExecutionTime(seconds);
                 tuple.evaluate(new SPARQLResultsJSONWriter(answer));
             }
@@ -80,7 +107,7 @@ public final class FedXEndpoint {
     public static void main(String[] args) throws Exception {
         if (args.length == 1 && args[0].equals("--help")) {
             System.out.println("FedX 5.1.2 adapter: <loopback-port> <query-timeout-seconds> <endpoint> [endpoint ...]");
-            System.out.println("Read-only SELECT via POST /sparql; no dataset loading, fitting or retry.");
+            System.out.println("Read-only SELECT via GET or POST /sparql; no dataset loading, fitting or retry.");
             return;
         }
         if (args.length < 3 || args.length > 66) throw new IllegalArgumentException("Expected port, timeout and 1..64 endpoints");
