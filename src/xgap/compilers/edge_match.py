@@ -8,7 +8,7 @@ from xgap.backends.rdf_terms import RDF_TERMS_V1, validate_iri
 from xgap.compilers.cypher import _cypher_identifier
 from xgap.compilers.directed import compile_directed_rows, _identifier_safe
 from xgap.compilers.features import default_profile
-from xgap.compilers.match_identity import identity_projection,binding_checkpoint
+from xgap.compilers.match_identity import identity_projection,binding_checkpoint,rdf_binding_checkpoint
 from xgap.pattern.ast import EdgePattern, NodePattern, Rel, PathPatternQuery, Selector, SelectorKind, PathMode
 
 
@@ -51,6 +51,7 @@ def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend
             text += f"OPTIONAL {{ ?e1 <{iri}> ?{alias} . }}\n"
         text += "}"
         extra = {"rdf_result_encoding": RDF_TERMS_V1, "expected_result_columns": columns}
+        extra['rdf_binding_checkpoint']=rdf_binding_checkpoint(text,base.text,{'entity':'e1','source':'n0','target':'n1'})
     return replace(base, text=text, parameters={**base.parameters, **extra,
         "compiler": "semantic_edge_match_v1", "output_columns": columns,
         "branch_edge_counts": [1], "workload_lowering": "edge_match_as_one_edge_path_v1"})

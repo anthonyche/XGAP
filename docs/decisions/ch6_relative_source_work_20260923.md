@@ -88,3 +88,13 @@ once, then expands from that bound variable; the identical inner and outer
 identity predicates remain. This exact local semijoin does not promise an index
 seek or bypass the existing limits. Node/edge-identity binds retain their previous
 path. Four targeted compiler/identity checks pass; real replay remains necessary.
+
+The analogous RDF boundary is now explicit as well: new compiler-owned artifacts
+place a parameterized VALUES block on the original node/edge variable inside the
+innermost BGP, before projected subqueries. Placing VALUES only outside nested
+SELECTs is logically correct but need not restrict the scan early. Exact text
+hash and variable provenance gate the rewrite; modified/legacy text keeps the
+old correct wrapper. Existing escaping, key/byte caps and overflow rejection are
+unchanged. Seventeen focused physical strategy/identity/necessary-bind tests
+passed, including actual tiny RDF answer equivalence and one-selected-plan
+execution. This does not substitute for the forthcoming real Fuseki gate.

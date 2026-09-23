@@ -21,3 +21,13 @@ def binding_checkpoint(text,base,variables):
         raise ValueError('Unknown native Match construction')
     return dict(profile='typed-match-before-distinct-v1',offset=len(prefix)+len(before)+1,
         text_sha256=hashlib.sha256(text.encode()).hexdigest(),variables=dict(variables))
+
+
+def rdf_binding_checkpoint(text,base,variables):
+    """Bind inside the innermost generated BGP, before subquery projection."""
+    prefix,separator,_=text.partition('WHERE { {\n')
+    head,where,_=base.partition(' WHERE {')
+    if not separator or not where or not text.startswith(prefix+separator+base+'\n}'):
+        raise ValueError('Unknown RDF Match construction')
+    return dict(profile='typed-match-inner-values-v1',offset=len(prefix)+len(separator)+len(head)+len(where),
+        text_sha256=hashlib.sha256(text.encode()).hexdigest(),variables=dict(variables))

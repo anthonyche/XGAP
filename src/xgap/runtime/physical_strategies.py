@@ -230,9 +230,18 @@ def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes,
     columns = artifact.parameters["output_columns"]
     parameters = dict(artifact.parameters)
     if language == "sparql":
-        text = ("SELECT DISTINCT " + " ".join("?" + c for c in columns) + " WHERE {\n"
-                + IRI_VALUES_MARKER + "\n{\n" + artifact.text + "\n}\n}")
-        parameters["sparql_iri_binding"] = {"parameter": parameter, "variable": identity_column,
+        point=parameters.get('rdf_binding_checkpoint',{});variable=identity_column
+        if (point.get('profile')=='typed-match-inner-values-v1'
+                and point.get('text_sha256')==hashlib.sha256(artifact.text.encode()).hexdigest()):
+            offset=point['offset'];variable=point['variables'][identity_column]
+            if type(offset) is not int or artifact.text[offset-1:offset]!='{':
+                raise _NotAdmitted('Invalid RDF binding checkpoint')
+            text=artifact.text[:offset]+'\n'+IRI_VALUES_MARKER+'\n'+artifact.text[offset:]
+            parameters['rdf_binding_placement']='inside-innermost-bgp-v1'
+        else:
+            text = ("SELECT DISTINCT " + " ".join("?" + c for c in columns) + " WHERE {\n"
+                    + IRI_VALUES_MARKER + "\n{\n" + artifact.text + "\n}\n}")
+        parameters["sparql_iri_binding"] = {"parameter": parameter, "variable": variable,
             "max_bindings": max_bindings, "max_bytes": max_binding_bytes}
     else:
         names = ", ".join(_cypher_identifier(c) for c in columns)
