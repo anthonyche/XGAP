@@ -187,7 +187,8 @@ def run_trial(*,request,output,session,budget,source_rss_bytes,package_monitor=N
             harness={name:summary.get('failure_categories',{}) for name,summary in observed.items()
                      if any(k.startswith('harness_') for k in summary.get('failure_categories',{}))}
             if harness:
-                result.update(success=False,status='harness_observation_failure',harness_failures=harness)
+                result.update(success=False,status='harness_observation_failure',harness_failures=harness,
+                              failure_scope='study_budget_censoring_not_method_incorrectness')
                 if barrier is None:barrier=monitor.stop()
         except Exception as error:
             result.update(success=False,status='harness_observation_failure',observation_error_type=type(error).__name__)

@@ -13,10 +13,10 @@ from xgap.experiments.one_shot_records import write_once
 REPO=Path(__file__).resolve().parents[1]
 
 
-def prepare(*,output,attachment,overall_panels='both',data_root='/Users/anthonyche/xgap-data'):
+def prepare(*,output,attachment,overall_panels='mixed',data_root='/Users/anthonyche/xgap-data'):
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     source=pin_file(attachment);doc=registry();doc['source_attachment_sha256']=source['sha256']
-    panels={'both':('native','rdf'),'rdf':('rdf',),'native':('native',)}[overall_panels]
+    panels={'mixed':('mixed',),'both':('native','rdf'),'rdf':('rdf',),'native':('native',)}[overall_panels]
     doc['overall_panels']=list(panels)
     pins={};pins['figure_contract']=write_once(root/'figure_contract.json',doc)
     rows=matrix(overall_panels=panels)
@@ -34,6 +34,7 @@ def prepare(*,output,attachment,overall_panels='both',data_root='/Users/anthonyc
                     comparison_rows.append(dict(dataset=d,workload=w,deployment=panel,method=method,
                         planned_cases=200,planned_cases_status='initial_target_not_power_or_resource_admitted',
                         repetitions=None,template_families=None,heldout_cases=None,
+                        supported_cases=None,support_rate=None,support_contract=None,
                         status='unsupported_deployment' if panel=='native' and method=='TS' else 'awaiting_frozen_test_split',
                         answer_em=None,answer_f1=None,e2e_ms=None,backend_calls=None,evidence_pin=None))
     write_csv(root/'overall_workload_matrix.csv',comparison_rows);pins['overall_workload_matrix']=pin_file(root/'overall_workload_matrix.csv')
@@ -54,18 +55,20 @@ def prepare(*,output,attachment,overall_panels='both',data_root='/Users/anthonyc
         ('factor_inputs','Admit actual N/u/source-count/graph-scale case bundles, with exact counts and invariant gold semantics.'),
         ('f6_cost_pool','Freeze equivalent complete-query plans and comparable offline costs; TS reference is conditional on Q equivalence.'),
         ('sample_budget','Freeze independent case count, repetitions, all-call/token/wall/disk limits after the bounded gate.'),
+        ('capability_support','Freeze mixed workload composition and per-case five-method support before observing formal outcomes; keep errors/timeouts within supported denominator.'),
+        ('storage_placement','Verify CWRU writable research directory, quota and Linux runtime before remote asset preparation; local symlink alone is insufficient.'),
         ('release_audit','Require successful release audit with all asset pins, input identities and closure receipts.'),
     ]
     blockers=[dict(id=k,description=v,status='pending',evidence=None) for k,v in tasks]
     budget=dict(schema_version='xgap-ch6-budget-scenarios-v1',formal_authorization=False,
-        methods=doc['method_order'],overall_cases_target=2400,rdf_cells_per_repetition=12000,
-        native_cells_per_repetition=9600 if 'native' in panels else 0,
-        external_calls_per_request_cap=64,external_model_calls_per_rdf_repetition_cap=2400*64,
-        internal_calls_per_nl_request_cap=1,internal_model_calls_per_rdf_repetition_cap=2400*4,
+        methods=doc['method_order'],overall_cases_target=2400,all_supported_cells_upper_bound_per_repetition=12000,
+        actual_cells_per_repetition=None,support_counts_frozen=False,
+        external_calls_per_request_cap=64,external_model_calls_per_repetition_upper_bound=2400*64,
+        internal_calls_per_nl_request_cap=1,internal_model_calls_per_repetition_upper_bound=2400*4,
         external_output_tokens_per_request_cap=64*2048,input_tokens_cap=None,
         request_wall_seconds=300,source_calls_per_request=256,source_timeout_seconds=20,
         model_money=None,pricing_known=False,actual_total_calls=0,
-        sequential_rdf_hours_if_each_request_seconds={str(t):12000*t/3600 for t in (5,15,60,300)},
+        sequential_hours_if_all_supported_and_each_request_seconds={str(t):12000*t/3600 for t in (5,15,60,300)},
         all_figures_are_one_factor_sweeps=True,reused_figures=['E1/E2/F1/F2','E5/F5','F3/F4','F7/F8','S3/S4'],
         zero_calls_during_this_preparation=True,
         warning='These are ceilings/scenarios, not measured forecasts or an approved full-run budget. TS makes many calls per request.')
@@ -86,6 +89,6 @@ def prepare(*,output,attachment,overall_panels='both',data_root='/Users/anthonyc
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for n in ('output','attachment'):p.add_argument('--'+n,required=True)
-    p.add_argument('--overall-panels',choices=['both','rdf','native'],default='both')
+    p.add_argument('--overall-panels',choices=['mixed','both','rdf','native'],default='mixed')
     p.add_argument('--data-root',default='/Users/anthonyche/xgap-data')
     prepare(**vars(p.parse_args()))

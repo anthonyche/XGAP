@@ -44,7 +44,7 @@ class Figure:
 
 FIGURES = (
     Figure('E1','End-to-end latency vs. dataset','dataset','e2e_ms',('D1','D2','D3'),'ms','overall','nl',
-           note='Native and same-facts RDF panels; no speedup across deployments.'),
+           note='Mixed workload; each method on its predeclared supported subset, with support n/rate. Paired speedups require the identical subset and deployment.'),
     Figure('E2','Backend calls vs. dataset','dataset','backend_calls',('D1','D2','D3'),'calls','overall','nl',
            note='All actual source attempts, including recovered and terminal failures.'),
     Figure('E3','Request latency vs. candidate count','candidates','request_ms',(10,50,100,500,1000),'ms','candidate','controlled'),
@@ -89,7 +89,8 @@ def registry():
             'rho','preferred_plan','evidence_pin'], counts_as_figure=False)],
         missing_value_rule='null plus explicit status/reason; never zero or an invented curve',
         reference_rule='one frozen observation set referenced at all inapplicable levels; no extra samples',
-        deployment_rule='native TS unsupported; paired comparisons require same dataset, deployment, input and timing scope',
+        deployment_rule='Mixed single-source/RDF-federated/heterogeneous workload; freeze per-case support before outcomes. TS supports RDF federation, not native heterogeneous federation.',
+        population_rule='Method-supported subset, including wrong answers and method failures; report support n/rate and XGAP on each baseline subset. Never select support using outcomes.',
         source_attachment_sha256='TO_BE_BOUND_BY_PREPARATION_SCRIPT')
 
 
@@ -103,7 +104,7 @@ def parameter_applies(method, parameter):
     return True
 
 
-def matrix(*, overall_panels=('native','rdf')):
+def matrix(*, overall_panels=('mixed',)):
     """Design cells, not trial observations. All five methods remain visible."""
     rows=[]
     for fig in FIGURES:
@@ -137,6 +138,8 @@ def matrix(*, overall_panels=('native','rdf')):
                         timing_scope='nl_reference' if method=='TS' and fig.track=='controlled' else fig.track,
                         configuration_kind=kind,status=status,reason=reason.strip(),
                         reference_key=reference_key,defaults=setting,value=None,ci_low=None,ci_high=None,
+                        population='predeclared_method_supported_subset',support_contract=None,
+                        total_cases=None,supported_cases=None,support_rate=None,
                         applicable_requests=None,scored_requests=None,evidence_pin=None))
     return rows
 

@@ -23,12 +23,12 @@ def test_all_figures_keep_five_methods_single_axes_and_real_reference_identity()
     references=[r for r in rows if r['figure']=='E5' and r['method']=='SH']
     assert len({r['reference_key'] for r in references})==1
     assert all(r['defaults']['depth']==1 for r in references)
-    assert len([r for r in rows if r['figure']=='F7' and r['deployment']=='rdf'])==5
-    assert all(r['status']=='unsupported_deployment' for r in rows if r['method']=='TS' and r['deployment']=='native')
+    assert len([r for r in rows if r['figure']=='F7' and r['deployment']=='mixed'])==5
+    assert all(r['population']=='predeclared_method_supported_subset' for r in rows)
 
 
 def test_missing_is_not_zero_or_invented_curve():
-    row=next(r for r in matrix() if r['status']=='unsupported_deployment')
+    row=next(r for r in matrix(overall_panels=('native',)) if r['status']=='unsupported_deployment')
     audit_observation(row)
     with pytest.raises(ValueError,match='invented'):audit_observation({**row,'value':0})
     with pytest.raises(ValueError,match='sealed evidence'):audit_observation({**row,'status':'measured','value':1})

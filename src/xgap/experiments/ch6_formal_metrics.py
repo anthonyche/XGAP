@@ -24,14 +24,21 @@ def extract_metrics(*,outcome_pin,score_pin,timing_pin,loss_pin=None,weights=DEF
     cost=trace_cost(actual,weights)
     loss=load_pin(loss_pin) if loss_pin else None
     if loss and loss['receipt_sha256']!=outcome_pin['sha256']:raise ValueError('Loss receipt differs')
-    if trial.get('failure_scope')=='study_budget_censoring_not_method_incorrectness':
+    # Historical seals are immutable. Correct their interpretation here when an
+    # observer limit cut off the method; this is not evidence of a wrong answer.
+    harness=trial.get('harness_failures') or {}
+    categories={k for failures in harness.values() for k in failures if k.startswith('harness_')}
+    censored=(trial.get('failure_scope')=='study_budget_censoring_not_method_incorrectness'
+              or bool(categories) or trial['status'] in ('harness_observation_failure','supervisor_failed','guard_monitor_failed'))
+    if censored:
         scored_em=scored_f1=None
     else:scored_em=score['answer_em'];scored_f1=score['answer_row_multiset_f1']
     return dict(method_id=trial['method'],question_id=trial['question_id'],dataset=trial['dataset'],
-        timing_scope=trial['track'],execution_success=trial['success'],status=trial['status'],
+        timing_scope='nl' if trial['track'].startswith('natural_language') else trial['track'],
+        execution_success=trial['success'],status=trial['status'],study_censored=censored,
         e2e_ms=timing['total_online_ms'],request_ms=timing['total_online_ms'],planning_ms=trial.get('planning_ms'),
         answer_em=scored_em,answer_f1=scored_f1,
-        answer_coverage=int(bool(trial['success'] and not score['comparison_error'])),
+        answer_coverage=None if censored else int(bool(trial['success'] and not score['comparison_error'])),
         interpretation_loss=loss.get('loss') if loss and loss['status']=='measured' else None,
         interpretation_loss_status=loss['status'] if loss else 'unscorable_metric',
         certificate_violation=loss.get('certificate_violation') if loss else None,

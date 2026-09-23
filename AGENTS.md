@@ -6,6 +6,10 @@ up to the launch boundary, not the full campaign itself. Current figure authorit
 retain fixed references for inapplicable knobs and explicit unsupported/missing
 statuses. F6 is five-method cost sensitivity. No fabricated curves or zero fill.
 Preparation completeness is distinct from actual held-out/data readiness.
+Latest user clarification: use a mixed workload and report each method only on
+its predeclared supported subset, with support counts/rates and paired XGAP
+numbers on that same subset. Unsupported is not failed; never infer support from
+answer quality or timeouts. TS supports RDF federation, not native heterogeneity.
 
 2026-09-22: current authority is `docs/ch6_experiment_plan_20260922.md`,
 `docs/query_structure_spec_20260922.md`, and `docs/coding_agent_brief_20260922.md`.

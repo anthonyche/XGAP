@@ -1,5 +1,9 @@
 # XGAP 当前 Goal
 
+最新补充：混合 workload，按事前冻结的各方法支持子集统计并报告支持率，保留同子集
+XGAP 配对结果。已授权直接使用 CWRU CPU/存储 + 现有外部 Qwen API，不申请 GPU。
+见[远程执行决定](decisions/ch6_cwru_cpu_20260923.md)和[本轮小 gate](report/ch6_five_method_gate_20260923.md)。
+
 **2026-09-23 当前任务：正式实验启动前准备。**按
 [五方法执行合同](ch6_formal_execution_20260923.md)完成 artifact、流程、脚本和评估矩阵。
 21 图各保留 XGAP、NP、SH、GR、TS；F6 成本敏感性；不补零或造曲线。本轮不启动全量。

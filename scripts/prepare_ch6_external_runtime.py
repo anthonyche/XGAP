@@ -20,7 +20,14 @@ from xgap.experiments.compact_profile import derive_compact_prompt_profile
 from xgap.experiments.one_shot_records import write_once
 
 
-def prepare(*,profile_path,profile_sha256,fedx_build,output):
+def prepare(*,profile_path,profile_sha256,fedx_build,output,author_source=None,python_command=None,
+            lookup_source=None,classpath_path=None,redis_binary=None,java_binary=None):
+    author=Path(author_source) if author_source else AUTHOR
+    python=Path(python_command) if python_command else PYTHON
+    lookup=Path(lookup_source) if lookup_source else LOOKUP
+    classpath=Path(classpath_path) if classpath_path else CLASSPATH
+    redis=Path(redis_binary) if redis_binary else REDIS
+    java=Path(java_binary) if java_binary else Path(JAVA)
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     parent=dict(path=profile_path,sha256=profile_sha256)
     original=load_pin(parent)
@@ -51,15 +58,15 @@ def prepare(*,profile_path,profile_sha256,fedx_build,output):
     published=write_once(root/'profile.json',profile)
     code='import json,sys,yaml; print(json.dumps(yaml.safe_load(open(sys.argv[1]))))'
     config={}
-    for name,path in [('lookup_config',LOOKUP/'examples/config.yml'),('index_config',LOOKUP/'examples/indexing/ontology-file-indexer.yml')]:
-        original=json.loads(subprocess.check_output([str(PYTHON),'-c',code,str(path)],text=True,timeout=10))
+    for name,path in [('lookup_config',lookup/'examples/config.yml'),('index_config',lookup/'examples/indexing/ontology-file-indexer.yml')]:
+        original=json.loads(subprocess.check_output([str(python),'-c',code,str(path)],text=True,timeout=10))
         config[name]=write_once(root/(name+'.json'),original)
     config.update(schema_version='xgap-ch6-external-runtime-v1',compatibility='https-iris-action-schema-fedx-v2',
-        java=pin_file(JAVA),python=pin_file(PYTHON),python_command=str(PYTHON.absolute()),
-        python_environment=pin_file(PYTHON.parent.parent/'pyvenv.cfg'),redis=pin_file(REDIS),classpath=pin_file(CLASSPATH),
-        lookup_jar=pin_file(LOOKUP/'lookup/target/lookup-1.0.jar'),metadata=metadata,fedx_build=pin_file(fedx_build),
-        author_source=dict(path=str(AUTHOR),commit='9a3982baca03d62f7250572e300b1e4ba47727cc'),
-        lookup_source=dict(path=str(LOOKUP),commit='939b3f36fefafca444cc6dff6c568c5b559f58e0'),
+        java=pin_file(java),python=pin_file(python),python_command=str(python.absolute()),
+        python_environment=pin_file(python.parent.parent/'pyvenv.cfg'),redis=pin_file(redis),classpath=pin_file(classpath),
+        lookup_jar=pin_file(lookup/'lookup/target/lookup-1.0.jar'),metadata=metadata,fedx_build=pin_file(fedx_build),
+        author_source=dict(path=str(author),commit='9a3982baca03d62f7250572e300b1e4ba47727cc'),
+        lookup_source=dict(path=str(lookup),commit='939b3f36fefafca444cc6dff6c568c5b559f58e0'),
         model_endpoint='http://112.95.75.67:9018/v1',model_id='qwen3.8-27b',query_seconds=20,
         model_budget=asdict(SourceObservationBudget(max_calls=64,response_bytes=8*1024**2,phase_response_bytes=64*1024**2,
             timeout_seconds=70,capture_compression='gzip')),
@@ -76,4 +83,6 @@ def prepare(*,profile_path,profile_sha256,fedx_build,output):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for n in ('profile-path','profile-sha256','fedx-build','output'):p.add_argument('--'+n,required=True)
+    for n in ('author-source','python-command','lookup-source','classpath-path','redis-binary','java-binary'):
+        p.add_argument('--'+n)
     prepare(**vars(p.parse_args()))
