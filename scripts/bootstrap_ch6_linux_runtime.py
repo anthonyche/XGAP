@@ -20,6 +20,9 @@ from urllib.request import urlopen
 JAVA_URL = ('https://github.com/adoptium/temurin21-binaries/releases/download/'
             'jdk-21.0.8%2B9/OpenJDK21U-jdk_x64_linux_hotspot_21.0.8_9.tar.gz')
 JAVA_SHA = 'f2dc5418092c43003db8f9005c4a286e1c0104fea96ccdd49e8ebd037cac9219'
+LITELLM_SOURCE = ('https://codeload.github.com/BerriAI/litellm/tar.gz/'
+                  'f20184cd49c77ee66da21001a960f50b8875c321'
+                  '#sha256=61ce6448db7d0d26e26670910c5830ac56ef7539db6593f328a0fe36215ffde5')
 GIB = 1024**3
 
 
@@ -57,7 +60,19 @@ def unpack(archive, output, *, allow_links=False, max_bytes=GIB):
             package.extract(member, output)
 
 
-def bootstrap(archive, archive_sha256, output):
+def portable_constraints(text):
+    lines=[]
+    for line in text.splitlines():
+        if line.lower().startswith(('appnope==', 'pyobjc')):continue
+        if ' @ file:' in line:
+            if not line.startswith('litellm @ file:') or not line.endswith('/litellm-1.37.19.tar.gz'):
+                raise ValueError('Unmapped local dependency artifact')
+            line='litellm @ '+LITELLM_SOURCE
+        lines.append(line)
+    return '\n'.join(lines)+'\n'
+
+
+def bootstrap(archive, archive_sha256, output, reuse_root=None):
     if (platform.system() != 'Linux' or platform.machine() != 'x86_64'
             or not os.environ.get('SLURM_JOB_ID')):
         raise ValueError('Linux x86_64 CPU scheduler allocation required')
@@ -85,8 +100,22 @@ def bootstrap(archive, archive_sha256, output):
         if shutil.disk_usage(root).free < 8*GIB: raise ValueError('Storage reserve unavailable')
         transfer = pin(archive)
         if transfer['sha256'] != archive_sha256: raise ValueError('Transfer checksum mismatch')
-        unpack(archive, root/'inputs', max_bytes=512*1024**2)
-        inputs = root/'inputs'; manifest = json.loads((inputs/'manifest.json').read_text())
+        reused=Path(reuse_root).resolve() if reuse_root else None
+        if reused:
+            previous=json.loads((reused/'receipt.json').read_text())
+            if previous.get('error')!='Dependency stage failed: author-dependencies':
+                raise ValueError('Only the known installation-path failure is resumable')
+            completed={c['name'] for c in previous['commands'] if c['returncode']==0}
+            if not {'java-version','redis-build','redis-version','checkout-aruqula','checkout-lookup','checkout-redis'}<=completed:
+                raise ValueError('Prerequisite installation stages incomplete')
+            if pin(reused/'temurin21-linux.tar.gz')['sha256']!=JAVA_SHA:
+                raise ValueError('Reused Java archive changed')
+            for name in ('inputs','java','aruqula','lookup','redis'):
+                (root/name).symlink_to(reused/name,target_is_directory=True)
+            result['reused_prerequisites']=pin(reused/'receipt.json')
+        else:
+            unpack(archive, root/'inputs', max_bytes=512*1024**2)
+        inputs = (root/'inputs').resolve(); manifest = json.loads((inputs/'manifest.json').read_text())
         if manifest['schema_version'] != 'xgap-ch6-linux-transfer-v1': raise ValueError('Unknown package')
         for relative, expected in manifest['files'].items():
             path = (inputs/relative).resolve()
@@ -95,28 +124,32 @@ def bootstrap(archive, archive_sha256, output):
             if any(actual[k] != expected[k] for k in ('sha256', 'bytes')):
                 raise ValueError('Transfer member mismatch: '+relative)
         result.update(transfer=transfer, verified_files=len(manifest['files']))
-        download = root/'temurin21-linux.tar.gz'
-        with urlopen(JAVA_URL, timeout=60) as response, download.open('xb') as stream:
-            size = 0
-            while chunk := response.read(1024**2):
-                size += len(chunk)
-                if size > 300*1024**2: raise ValueError('Java download budget exceeded')
-                stream.write(chunk)
-        if pin(download)['sha256'] != JAVA_SHA: raise ValueError('Official Java checksum mismatch')
-        unpack(download, root/'java', allow_links=True)
+        if not reused:
+            download = root/'temurin21-linux.tar.gz'
+            with urlopen(JAVA_URL, timeout=60) as response, download.open('xb') as stream:
+                size = 0
+                while chunk := response.read(1024**2):
+                    size += len(chunk)
+                    if size > 300*1024**2: raise ValueError('Java download budget exceeded')
+                    stream.write(chunk)
+            if pin(download)['sha256'] != JAVA_SHA: raise ValueError('Official Java checksum mismatch')
+            unpack(download, root/'java', allow_links=True)
         java = root/'java/jdk-21.0.8+9/bin/java'
         run('java-version', [java, '-version'], seconds=30)
         for name, commit in manifest['repositories'].items():
             target = root/name
-            run('clone-'+name, ['git', 'clone', inputs/(name+'.bundle'), target], seconds=300)
-            run('checkout-'+name, ['git', 'checkout', '--detach', commit], cwd=target, seconds=30)
+            if not reused:
+                run('clone-'+name, ['git', 'clone', inputs/(name+'.bundle'), target], seconds=300)
+                run('checkout-'+name, ['git', 'checkout', '--detach', commit], cwd=target, seconds=30)
             if subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=target, text=True).strip() != commit:
                 raise ValueError('Author commit mismatch')
-        run('redis-build', ['make', '-j4', 'MALLOC=libc'], cwd=root/'redis', seconds=900)
+        if not reused:run('redis-build', ['make', '-j4', 'MALLOC=libc'], cwd=root/'redis', seconds=900)
         run('redis-version', [root/'redis/src/redis-server', '--version'], seconds=30)
-        shutil.copyfile(inputs/'lookup.jar', root/'lookup/lookup.jar')
-        target = root/'lookup/lookup/target'; target.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(inputs/'lookup.jar', target/'lookup-1.0.jar')
+        if not reused:
+            target = root/'lookup/lookup/target'; target.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(inputs/'lookup.jar', target/'lookup-1.0.jar')
+        if pin(root/'lookup/lookup/target/lookup-1.0.jar')['sha256']!=pin(inputs/'lookup.jar')['sha256']:
+            raise ValueError('Lookup JAR differs from verified transfer')
         classpath = root/'lookup-classpath.txt'
         classpath.write_text(':'.join(str(inputs/name) for name in manifest['classpath'])+'\n')
         run('python-venv', [sys.executable, '-m', 'venv', root/'author-venv'])
@@ -124,8 +157,7 @@ def bootstrap(archive, archive_sha256, output):
         # Preserve the admitted Mac dependency versions where portable; appnope
         # is an IPython macOS extra, never imported by the Linux author method.
         constraints = root/'linux-constraints.txt'
-        constraints.write_text('\n'.join(line for line in (inputs/'mac-reference-packages.txt').read_text().splitlines()
-                                         if not line.lower().startswith(('appnope==', 'pyobjc'))) + '\n')
+        constraints.write_text(portable_constraints((inputs/'mac-reference-packages.txt').read_text()))
         run('author-dependencies', [python, '-m', 'pip', 'install', '--disable-pip-version-check',
             '--no-cache-dir', '-r', inputs/'author-requirements.txt', '-c', constraints, 'psutil'], seconds=1500)
         run('pip-check', [python, '-m', 'pip', 'check'], seconds=30)
@@ -150,4 +182,5 @@ def bootstrap(archive, archive_sha256, output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('archive', 'archive-sha256', 'output'): parser.add_argument('--'+name, required=True)
+    parser.add_argument('--reuse-root',help='Reuse completed pre-Python stages from the retained path-failure receipt')
     raise SystemExit(bootstrap(**vars(parser.parse_args())))

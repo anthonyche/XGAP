@@ -2,7 +2,7 @@ import io
 from pathlib import Path
 import tarfile
 import pytest
-from bootstrap_ch6_linux_runtime import unpack
+from bootstrap_ch6_linux_runtime import unpack,portable_constraints
 
 
 def archive(tmp_path, names, *, link=None):
@@ -36,3 +36,10 @@ def test_only_contained_nonparent_java_links_allowed(tmp_path):
     with pytest.raises(ValueError):unpack(path,tmp_path/'rejected')
     unpack(path,tmp_path/'out',allow_links=True)
     assert (tmp_path/'out/src').read_bytes()==b'ok'
+
+
+def test_mac_source_reference_maps_to_same_frozen_author_bytes():
+    result=portable_constraints('appnope==1.0.0\nredis==5.2.1\nlitellm @ file:///old/litellm-1.37.19.tar.gz\n')
+    assert 'file:' not in result and 'appnope' not in result
+    assert 'redis==5.2.1' in result and '#sha256=61ce6448' in result
+    with pytest.raises(ValueError):portable_constraints('unknown @ file:///private/unknown.whl')
