@@ -219,3 +219,23 @@ per neighbor. New cyclic constraints still run. Fifteen targeted estimator and
 reference tests pass, including reversed endpoint skew, original relational
 equivalence, descending order and untouched parallel-edge contribution grain.
 No large-D2 success is inferred from these portable checks.
+
+The subsequent native replay 3858296 passed all eight original cases on the full
+20M source, with exact independent-reference agreement. Parent-observed case
+wall times were 2.263–8.429 s and sampled source RSS stayed below 1.151 GiB.
+RDF replay 3858297 passed the first four cases, but the fifth again crossed
+4 GiB sampled RSS (4,302,888,960 bytes); the failed run is preserved.
+
+An explicit RDF serving-only diagnostic now accepts `rdf_file_mode=direct`.
+Default remains unchanged. Jena's [storage architecture](https://jena.apache.org/documentation/tdb/architecture.html)
+distinguishes file mappings from Java heap, so heap caps alone do not bound
+resident mapped pages. The installed Fuseki 5.6.0 CLI and TDB2 class were checked:
+`--set=tdb2:fileMode=direct` selects direct file access. A real two-triple gate
+opened the identical TDB2 store in default/direct modes, returned the same two
+ordered answers, and verified `direct (forced)` in the source log:
+`/Users/anthonyche/xgap-data/tdb2-direct-check-20260923-v1/receipt.json`.
+The selection is recorded in the intent, serving profile and ready receipt.
+Heap, source RSS, query time and worker limits remain unchanged. This is a
+deployment diagnostic, not an improved baseline algorithm. Any adopted formal
+serving configuration must be shared by all methods and frozen before comparison.
+The original RDF failure is not yet attributed conclusively to mapped pages.

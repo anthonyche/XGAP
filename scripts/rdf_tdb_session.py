@@ -19,7 +19,9 @@ from xgap.experiments.verified_store_copy import copy_sealed_store
 
 class RdfTdbSession:
     serving_copy_paths=('graph-tdb2','control-tdb2','fedup-host/serving-summary')
-    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False,serving_root=None):
+    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False,serving_root=None,file_mode='default'):
+        if file_mode not in ('default','direct'):raise ValueError('Unknown TDB2 serving file mode')
+        self.file_mode=file_mode
         self.root=Path(root).resolve();self.root.mkdir(parents=True,exist_ok=False)
         self.prepared=json.loads(read_pinned(prepared_path,prepared_sha256))
         if not self.prepared.get('success'):raise ValueError('Successful frozen store preparation required')
@@ -65,8 +67,9 @@ class RdfTdbSession:
                 port=self.ports.ports[i];state=self.root/('fuseki-'+name);state.mkdir()
                 (state/'config.ttl').write_text(_fuseki_server_configuration(query_timeout_seconds=self.budget.timeout_seconds))
                 self.ports.release(i)
+                file_args=['--set=tdb2:fileMode=direct'] if self.file_mode=='direct' else []
                 process=self.processes.start('source-'+name,[java['path'],'-Xms64m',f'-Xmx{heap_mib}m','-jar',engine['path'],
-                    '--localhost','--port',str(port),'--tdb2','--loc',str(self.store_root/(name+'-tdb2')),'/'+name],
+                    '--localhost','--port',str(port),'--tdb2','--loc',str(self.store_root/(name+'-tdb2')),*file_args,'/'+name],
                     cwd=Path(engine['path']).parent,env={'FUSEKI_BASE':str(state)})
                 self.owned.append(OwnedProcess(name,'source',process));ready(process,port)
                 routes['/'+name+'/sparql']=f'http://127.0.0.1:{port}/{name}/sparql'
@@ -78,12 +81,14 @@ class RdfTdbSession:
             for key in ('estimator','catalog'):doc[key]['path']=str((base.parent/doc[key]['path']).resolve())
             doc['offline']['serving_endpoint_parent']=parent
             doc['offline']['prepared_stores']=self.prepared_pin
+            doc['offline']['tdb2_serving_file_mode']=self.file_mode
             self.profile=write_once(self.root/'profile.json',doc)
             FrozenOneShotProfile.load(self.profile['path'],expected_sha256=self.profile['sha256'])
             self.ready_pin=write_once(self.root/'ready.json',{'prepared':self.prepared_pin,'preparation_input':self.input_pin,'profile':self.profile,
                 'source_urls':routes,'observation_url':self.observer.base_url,'read_only_cli':True,
                 'query_timeout_seconds':self.budget.timeout_seconds,'offline_fresh_session_ms':(time.perf_counter()-at)*1000,
                 'aggregate_heap_mib':heap_mib*len(names),'per_source_heap_mib':heap_mib,
+                'tdb2_file_mode':self.file_mode,
                 'scope':'store/engine verification, serving copies, startup, observer and profile reads; no warmup query',
                 'source_groups':[{'name':s.name,'pid':s.process.pid} for s in self.owned]})
             return self

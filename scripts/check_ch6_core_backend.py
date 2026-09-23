@@ -86,10 +86,11 @@ def worker(bundle_pin, case_id, profile_pin, output, planning='fixed_scan'):
     return 0 if success else 2
 
 
-def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300):
+def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default'):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     if planning not in ('fixed_scan','unified'):raise ValueError('Unknown admission planning profile')
+    if rdf_file_mode not in ('default','direct'):raise ValueError('Unknown RDF serving file mode')
     if type(startup_seconds) is not int or not 60<=startup_seconds<=3600:
         raise ValueError('Explicit offline serving startup limit required')
     bundle, prepared = load(bundle_pin), load(prepared_pin)
@@ -110,6 +111,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
                   free_disk_reserve_bytes=6*1024**3)
     write(root/'intent.json', dict(bundle=bundle_pin, prepared=prepared_pin, limits=limits,
         planning=planning,worker_seconds=120, worker_rss_bytes=3*1024**3, source_rss_bytes=4*1024**3,
+        rdf_file_mode=rdf_file_mode,
         case_order=[c['case_id'] for c in bundle['cases']], model_calls=0, automatic_retries=0,
         serving_copy_bytes=serving_bytes, additional_output_budget_bytes=2*1024**3,
         serving_root=str(Path(serving_root).resolve()) if serving_root else None,startup_seconds=startup_seconds,
@@ -124,6 +126,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
         session = cls(root=root/'session', prepared_path=prepared_pin['path'],
             prepared_sha256=prepared_pin['sha256'], discard_serving_copies=True,
             serving_root=serving_root,
+            **({'file_mode':rdf_file_mode} if bundle['deployment']!='native' else {}),
             budget=SourceObservationBudget(max_calls=128, request_bytes=1024**2,
                 phase_request_bytes=16*1024**2, response_bytes=64*1024**2,
                 phase_response_bytes=256*1024**2, timeout_seconds=60, capture_compression='gzip'))
@@ -188,12 +191,13 @@ if __name__ == '__main__':
     p.add_argument('--execute', action='store_true'); p.add_argument('--worker', action='store_true')
     p.add_argument('--planning',choices=['fixed_scan','unified'],default='fixed_scan')
     p.add_argument('--serving-root');p.add_argument('--startup-seconds',type=int,default=300)
+    p.add_argument('--rdf-file-mode',choices=['default','direct'],default='default')
     a=p.parse_args(); bundle_pin=dict(path=a.bundle_path, sha256=a.bundle_sha256)
     if a.worker:
         raise SystemExit(worker(bundle_pin, a.case_id,
             dict(path=a.profile_path, sha256=a.profile_sha256), a.output,a.planning))
     if a.execute:
         raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning,
-            a.serving_root,a.startup_seconds))
+            a.serving_root,a.startup_seconds,a.rdf_file_mode))
     b=load(bundle_pin)
     print(json.dumps(dict(stage='dry_run', cases=len(b['cases']), model_calls=0, backend_calls=0)))
