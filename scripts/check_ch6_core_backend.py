@@ -31,37 +31,65 @@ from xgap.tools import BackendPluginRegistry, NativeBackendPlugin, BackendInvoke
 REPO = Path(__file__).resolve().parents[1]
 
 
-def worker(bundle_pin, case_id, profile_pin, output):
+def worker(bundle_pin, case_id, profile_pin, output, planning='fixed_scan'):
     bundle = load(bundle_pin)
     case = next(c for c in bundle['cases'] if c['case_id'] == case_id)
     intent = load(case['oracle'])
     profile = FrozenOneShotProfile.load(profile_pin['path'], expected_sha256=profile_pin['sha256'])
-    doc, _, _, sources, backends, specs, modes = profile.materialize()
+    doc, _, estimator, sources, backends, specs, modes = profile.materialize()
     snapshot = snapshot_identity(sources, backends, doc['source_schema'])
     if snapshot != case['source_snapshot_sha256']:
         raise ValueError('Actual backend and authored snapshot differ')
     query = intent['query']
     program, assignment = lower_compact_query(query, doc['source_schema'], version='v2', optimize=True)
-    plan = _baseline(program, assignment, sources, backends, modes['performance'][0])
     root = Path(output); root.mkdir(parents=True, exist_ok=False)
-    plan_pin = write_once(root/'plan.json', plan.to_dict())
     registry = BackendPluginRegistry()
     for name, client in native_clients(specs).items():
         registry.register(NativeBackendPlugin(name, client))
-    result = FederatedScheduler(BackendInvokeTool(registry), retention='roots').execute(plan)
-    answer = write_once(root/'answer.json', dict(rows=list(result.final_rows)))
-    write(root/'receipt.json', dict(success=result.success, case_id=case_id, bundle=bundle_pin,
+    scheduler=FederatedScheduler(BackendInvokeTool(registry), retention='roots')
+    executions=[];plan_pin=None;policy=None
+    def execute(plan):
+        nonlocal plan_pin
+        if executions:raise ValueError('Admission permits one final plan, never trial-and-select')
+        plan_pin=write_once(root/'plan.json',plan.to_dict())
+        result=scheduler.execute(plan);executions.append(result)
+        return dict(success=result.success,answer_rows=list(result.final_rows))
+    if planning=='fixed_scan':
+        execute(_baseline(program,assignment,sources,backends,modes['performance'][0]))
+    elif planning=='unified':
+        from xgap.agent.intent_certificate import IntentCandidate,IntentFamily
+        from xgap.agent.scope_authority import ScopedQueryUser
+        from xgap.agent.unified_family import run_unified_family,UnifiedSettings
+        from xgap.runtime.unified_physical import PhysicalMoves
+        from xgap.planning.joint_cost import JointCostProfile
+        question=load(case['request'])['question']
+        family=IntentFamily('offline-admission-complete-query',(IntentCandidate.create(fingerprint(query),query),),(),snapshot,
+            language_version='v2',coverage_basis='offline publisher supplied a complete query; no NL or intent-inference claim')
+        user=ScopedQueryUser(family,case['oracle']['path'],case['oracle']['sha256'])
+        physical=modes['performance'][0]
+        policy=run_unified_family(question,family,user,
+            prepare_seed=lambda *_:_baseline(program,assignment,sources,backends,physical,optimize_reads=False),
+            execute=execute,costs=JointCostProfile(),settings=UnifiedSettings(),estimator=estimator,
+            moves=PhysicalMoves(family,doc['source_schema'],backends,physical,sources))
+        write(root/'planning.json',policy)
+    else:raise ValueError('Unknown offline admission planning profile')
+    result=executions[0] if executions else None
+    answer = write_once(root/'answer.json', dict(rows=list(result.final_rows) if result else []))
+    success=bool(result and result.success and (policy is None or policy['success']))
+    write(root/'receipt.json', dict(success=success, case_id=case_id, bundle=bundle_pin,
         profile=profile_pin, query_sha256=fingerprint(query), source_snapshot_sha256=snapshot,
-        plan=plan_pin, answer=answer, execution_ms=result.elapsed_ms,
-        backend_calls=result.total_remote_calls, bytes_moved=result.total_bytes_moved,
-        failures=[dict(node_id=n.node_id, error=n.error) for n in result.node_results if n.error],
+        plan=plan_pin, answer=answer, execution_ms=result.elapsed_ms if result else None,
+        backend_calls=result.total_remote_calls if result else 0, bytes_moved=result.total_bytes_moved if result else 0,
+        failures=[dict(node_id=n.node_id, error=n.error) for n in result.node_results if n.error] if result else [],
+        planning=planning,final_plan_executions=len(executions),policy_status=policy.get('status') if policy else None,
         model_calls=0, evaluated_method=False))
-    return 0 if result.success else 2
+    return 0 if success else 2
 
 
-def run(bundle_pin, prepared_pin, output):
+def run(bundle_pin, prepared_pin, output, planning='fixed_scan'):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
+    if planning not in ('fixed_scan','unified'):raise ValueError('Unknown admission planning profile')
     bundle, prepared = load(bundle_pin), load(prepared_pin)
     if (bundle['schema_version'] not in ('xgap-ch6-heldout-cases-v1', 'xgap-ch6-factor-inputs-v1','xgap-ch6-deployment-factor-v1') or not prepared.get('success')
             or bundle['profile']['sha256'] != prepared['profile']['sha256']):
@@ -79,7 +107,7 @@ def run(bundle_pin, prepared_pin, output):
     limits = dict(total_wall_seconds=3600, package_max_bytes=serving_bytes+2*1024**3,
                   free_disk_reserve_bytes=6*1024**3)
     write(root/'intent.json', dict(bundle=bundle_pin, prepared=prepared_pin, limits=limits,
-        worker_seconds=120, worker_rss_bytes=3*1024**3, source_rss_bytes=4*1024**3,
+        planning=planning,worker_seconds=120, worker_rss_bytes=3*1024**3, source_rss_bytes=4*1024**3,
         case_order=[c['case_id'] for c in bundle['cases']], model_calls=0, automatic_retries=0,
         serving_copy_bytes=serving_bytes, additional_output_budget_bytes=2*1024**3,
         scope='Offline compiler/backend/reference admission, not NL or policy evaluation'))
@@ -107,7 +135,7 @@ def run(bundle_pin, prepared_pin, output):
             command=[sys.executable, str(Path(__file__).resolve()), '--worker',
                 '--bundle-path', bundle_pin['path'], '--bundle-sha256', bundle_pin['sha256'],
                 '--case-id', case['case_id'], '--profile-path', session.profile['path'],
-                '--profile-sha256', session.profile['sha256'], '--output', str(trial/'worker')]
+                '--profile-sha256', session.profile['sha256'], '--output', str(trial/'worker'),'--planning',planning]
             worker_attempts += 1
             guard=run_guarded_command(command, cwd=REPO, output=trial/'guard',
                 budget=ProcessBudget(wall_seconds=120, max_group_rss_bytes=3*1024**3), resource_monitor=resources)
@@ -154,11 +182,12 @@ if __name__ == '__main__':
     for n in ('prepared-path', 'prepared-sha256', 'profile-path', 'profile-sha256', 'case-id'):
         p.add_argument('--'+n)
     p.add_argument('--execute', action='store_true'); p.add_argument('--worker', action='store_true')
+    p.add_argument('--planning',choices=['fixed_scan','unified'],default='fixed_scan')
     a=p.parse_args(); bundle_pin=dict(path=a.bundle_path, sha256=a.bundle_sha256)
     if a.worker:
         raise SystemExit(worker(bundle_pin, a.case_id,
-            dict(path=a.profile_path, sha256=a.profile_sha256), a.output))
+            dict(path=a.profile_path, sha256=a.profile_sha256), a.output,a.planning))
     if a.execute:
-        raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output))
+        raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning))
     b=load(bundle_pin)
     print(json.dumps(dict(stage='dry_run', cases=len(b['cases']), model_calls=0, backend_calls=0)))

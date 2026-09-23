@@ -77,3 +77,19 @@ reclamation errors and retained paths without retrying deletion or losing query
 outcomes. This does not upgrade an unknown process-group state. The old v7 native
 run remains incomplete; a new admission must produce the complete closure receipt.
 Five focused shutdown/retirement fixtures passed after updating stale Popen fixtures.
+
+D1 v9 native completed 8/8 with a sealed closure. Its F6 pool measurement also
+completed successfully. D2 v9 published all 8 pilot references in 66.50 seconds,
+then its first fixed-scan backend attempt hit Neo4j's 537.6 MiB transaction limit.
+That gate uses a predetermined scan DAG, not the evaluated online controller;
+its failure cannot be labelled an observed XGAP policy failure.
+
+Add an explicit `--planning unified` admission profile. A singleton complete Q
+enters the existing fixed-depth controller and frozen estimator; only the selected
+plan executes, with the same source, query, timeout, memory and observation bounds.
+Record the selection trace and one final plan separately. No NL interpretation,
+model calls, current-query plan races, new estimator training or baseline changes
+are introduced. Preserve the original fixed-scan gate for failure evidence.
+Two tiny RDF execution checks passed for both admission profiles; real D2 unified
+admission remains required. A hypothesized scalar-filter issue was excluded by
+checking the lowering contract; no source-filter implementation was changed.
