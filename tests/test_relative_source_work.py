@@ -94,3 +94,37 @@ def test_source_only_publisher_preserves_sources_and_reloads_new_model(tmp_path)
     assert diagnostic['success'] and not diagnostic['backend_admission']
     assert diagnostic['actual_plan_executions']==diagnostic['backend_calls']==diagnostic['reference_rows_read']==0
     assert len(diagnostic['cases'])==1
+    from prepare_ch6_degree_work import build,revise
+    degrees=build(pin(index),tmp_path/'degrees')
+    scored=load_pin(revise(pin(tmp_path/'revised/receipt.json'),degrees,tmp_path/'degree-revision'))
+    new_doc,new_model,*_=FrozenOneShotProfile.load(scored['profile']['path'],expected_sha256=scored['profile']['sha256']).materialize()
+    assert new_model.endpoint_degrees and new_model.to_dict()['schema_version']=='xgap-relative-source-work-v2'
+    assert frozen_estimator_from_dict(new_model.to_dict()).model_sha256==new_model.model_sha256
+    for key in ('dataset','source_schema','backends','sources'):assert new_doc[key]==doc[key]
+    revised2=rebind(revised,pin(tmp_path/'degree-revision/receipt.json'),tmp_path/'degree-bundle.json')
+    selected=load_pin(inspect(revised2,tmp_path/'degree-diagnostic'))
+    assert selected['cases'][0]['estimate']['provenance']['model_sha256']==new_model.model_sha256
+    assert selected['reference_rows_read']==selected['actual_plan_executions']==0
+
+
+def test_endpoint_skew_and_direction_are_typed_source_estimates():
+    from xgap.runtime.contracts import RuntimeNode
+    model,parent=fixture()
+    model=replace(model,populations=(('neo4j',100000,0),('fuseki',0,100000)),
+        endpoint_degrees=(('fuseki','R','source',100000,10000,10000000,200),
+                         ('fuseki','R','target',100000,2000,20000000,400)))
+    seed=parent.nodes[0]
+    def predict(direction,one=False):
+        anchor=deepcopy(seed.parameters)
+        if one:anchor['artifact']['parameters'].update(scalar_properties={'id':'id'},
+            necessary_row_filters={'conditions':[dict(op='eq',field='id',value='a')]})
+        params=dict(backend_id='fuseki',max_bindings=100000,
+                    artifact=dict(parameters=dict(compiler='semantic_edge_match_v1',
+                        edge_statistics_descriptor=dict(label='R',direction=direction),bound_identity_column='source')))
+        plan=replace(parent,nodes=(replace(seed,parameters=anchor),
+            RuntimeNode('bound',R.REMOTE_BIND_QUERY,(seed.node_id,),params)),roots=('bound',))
+        return model.predict(plan).provenance['nodes'][-1]['endpoint_degree']
+    assert predict('OUT')['selected_proxy']==100
+    assert predict('IN')['selected_proxy']==200
+    assert predict('OUT',one=True)['selected_proxy']==10
+    assert predict('IN',one=True)['selected_proxy']==50

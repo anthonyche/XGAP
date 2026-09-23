@@ -189,3 +189,33 @@ SQLite reference. Real Neo4j 5.26.30 min/sum/count equivalents also pass in
 its private source was stopped. These are correctness gates, not speedup results.
 The original failed v1 native gate receipt is preserved (the harness incorrectly
 expected the deliberately inadmissible outgoing-maximum rewrite).
+
+Remote planning-only diagnostic 3858292 selected the leaf move for all eight
+incoming-minimum occurrences across the unchanged native/RDF pilot bundles;
+all sixteen selected plans have zero full edge reads. It performed no backend
+execution and read no reference rows. Large-source correctness and resource
+admission remain separate gates.
+
+## Endpoint-degree ranking and incremental reference checks
+
+The opt-in `xgap-relative-source-work-v2` freezes source/target degree moments
+separately for each stored relation and temporal view. A single offline pass
+over the complete source index records rows, distinct endpoints, squared degree
+sum and maximum. No query, answer, timing label or candidate winner is read.
+Singleton-key work uses the endpoint mean; multi-key work uses the size-biased
+mean as an explicit heuristic for edge-derived keys. Direction comes from the
+typed compiler descriptor. These are ranking proxies, not certified cardinality
+or latency bounds. Unknown many-to-many joins use a capped Cartesian proxy
+instead of assuming their cardinality is just the larger input. The leaf's
+proven output cap remains separate from its estimated scan work. Historical v1
+models are unchanged. Rebinding requires identical source and query inputs.
+
+Reference-bank v3 (3858282) still timed out for both deployments. EXPLAIN exposed
+repeated scans of already satisfied edge predicates at each deeper prefix.
+Ordered adjacency now checks each edge when all its dependencies first become
+bound, and checks each node predicate when its last dependency is introduced.
+Earlier prefix facts are retained by construction, so they need no revalidation
+per neighbor. New cyclic constraints still run. Fifteen targeted estimator and
+reference tests pass, including reversed endpoint skew, original relational
+equivalence, descending order and untouched parallel-edge contribution grain.
+No large-D2 success is inferred from these portable checks.

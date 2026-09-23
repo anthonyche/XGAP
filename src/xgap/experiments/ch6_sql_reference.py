@@ -180,22 +180,29 @@ def compile_reference(query, index_receipt, *, scale='1', projection_exists=True
                 for expression in conditions:
                     arity=expression.count('?')
                     raw_conditions.append((expression,params[offset:offset+arity]));offset+=arity
-                steps=[];available=set()
+                steps=[];available=set();checked_edges=set()
                 for var in node_order:
                     alias=objects[var][1];previous=list(available);available.add(alias)
                     closed={a for a in edge_aliases if all(set(re.findall(r'\bn\d+(?=\.)',expr))<=available for expr in grouped[a])}
                     # A seeded edge needs a previously bound endpoint. Its
                     # adjacency index yields only the current prefix's neighbors.
+                    newly_closed=closed-checked_edges
                     seeds=[objects[e['var']][1] for e in query['edges']
-                           if objects[e['var']][1] in closed and var in (e['source'],e['target'])
+                           if objects[e['var']][1] in newly_closed and var in (e['source'],e['target'])
                            and any(objects[v][1] in previous for v in (e['source'],e['target']))]
                     seed=seeds[0] if seeds else None
                     part=[];values=[]
                     for expr,vs in raw_conditions:
                         owners=set(re.findall(r'\b[en]\d+(?=\.)',expr))
-                        if owners<=available|({seed} if seed else set()):part.append(expr);values.extend(vs)
+                        # Every emitted prefix already satisfies its earlier
+                        # predicates. Rechecking a closed edge per new neighbor
+                        # can turn ordered adjacency into repeated large scans.
+                        # Only the newly bound node / seed introduces new facts.
+                        if (owners<=available|({seed} if seed else set())
+                                and (alias in owners or seed in owners or not previous and not owners)):
+                            part.append(expr);values.extend(vs)
                     for a in edge_aliases:
-                        if a in closed and a!=seed:
+                        if a in newly_closed and a!=seed:
                             part.append('EXISTS (SELECT 1 FROM edges '+a+' WHERE '+' AND '.join(grouped[a])+')')
                             values.extend(bound[a])
                     prior=sorted(previous)
@@ -206,6 +213,7 @@ def compile_reference(query, index_receipt, *, scale='1', projection_exists=True
                     step_sql='SELECT DISTINCT '+alias+'.id FROM '+' CROSS JOIN '.join(tables)+' WHERE '+' AND '.join(part)
                     step_sql+=' ORDER BY '+alias+'.id '+directions.get(var,'ASC')
                     steps.append(dict(var=var,alias=alias,sql=step_sql,parameters=values,prior=prior))
+                    checked_edges.update(closed)
                 compiled['ordered_adjacency']=dict(steps=steps,projection={k:objects[e['var']][1] for k,e in selected.items()},limit=query['limit'])
             return compiled
     # A declared contribution grain existentially removes unused witnesses.

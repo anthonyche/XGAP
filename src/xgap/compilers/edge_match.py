@@ -61,4 +61,5 @@ def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend
             'target':dict(subject='e1',predicate=rdf_edge_encoding.target_predicate_iri if forward else rdf_edge_encoding.source_predicate_iri)}
     return replace(base, text=text, parameters={**base.parameters, **extra,
         "compiler": "semantic_edge_match_v1", "output_columns": columns,
+        "edge_statistics_descriptor": {"label":edge.label,"direction":edge.direction.name},
         "branch_edge_counts": [1], "workload_lowering": "edge_match_as_one_edge_path_v1"})

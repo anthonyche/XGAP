@@ -98,6 +98,13 @@ class HeldoutReferenceTests(unittest.TestCase):
             q=template_query(CORES['D3'],name,'a',0);q['limit']=2
             for order in q['order_by']:order['direction']='desc'
             original=compile_reference(q,self.index,projection_exists=False)
+            steps=compile_reference(q,self.index)['ordered_adjacency']['steps']
+            # Earlier edge witnesses were already checked by the prefix. Do
+            # not scan those adjacencies again for each later bound node.
+            if name in ('zigzag','cycle'):
+                self.assertNotIn('edges e0',steps[2]['sql'])
+            if name=='cycle':
+                self.assertNotIn('edges e1',steps[3]['sql'])
             with sqlite3.connect(self.root/'facts.sqlite') as db:
                 expected=list(db.execute(original['sql'],original['parameters']))
             result=evaluate(q,self.index)

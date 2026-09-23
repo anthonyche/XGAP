@@ -13,6 +13,7 @@ from xgap.planning.runtime_estimator import FrozenSourceStatistics, _hash
 from xgap.runtime.contracts import RuntimeNodeKind as R
 
 SCHEMA='xgap-relative-source-work-v1'
+DEGREE_SCHEMA='xgap-relative-source-work-v2'
 REMOTE={R.REMOTE_QUERY,R.REMOTE_BIND_QUERY}
 
 
@@ -38,6 +39,8 @@ class FrozenSourceWorkRanker:
     unique_node_properties: tuple
     preparation_ref: str
     record_quantum: int=1024
+    # backend, edge label, stored endpoint role, rows, NDV, sum(degree^2), max
+    endpoint_degrees: tuple=()
 
     def __post_init__(self):
         if any(not isinstance(p,(tuple,list)) or len(p)!=3 or not isinstance(p[0],str)
@@ -45,6 +48,7 @@ class FrozenSourceWorkRanker:
             raise ValueError('Typed source population triples required')
         object.__setattr__(self,'populations',tuple(sorted(tuple(p) for p in self.populations)))
         object.__setattr__(self,'unique_node_properties',tuple(sorted(self.unique_node_properties)))
+        object.__setattr__(self,'endpoint_degrees',tuple(sorted(tuple(r) for r in self.endpoint_degrees)))
         known={s.backend_id:s for s in self.statistics.entries}
         if (len(self.populations)!=len(known) or {p[0] for p in self.populations}!=set(known)
                 or any(len(p)!=3 or any(type(v) is not int or v<0 for v in p[1:])
@@ -54,20 +58,28 @@ class FrozenSourceWorkRanker:
                 or any(not isinstance(p,str) or not p for p in self.unique_node_properties)
                 or len(set(self.unique_node_properties))!=len(self.unique_node_properties)):
             raise ValueError('Frozen complete source populations and provenance required')
+        if (len({r[:3] for r in self.endpoint_degrees})!=len(self.endpoint_degrees)
+                or any(len(r)!=7 or r[0] not in known or not isinstance(r[1],str) or r[2] not in ('source','target')
+                    or any(type(v) is not int or v<0 for v in r[3:]) or r[4]>r[3]
+                    or bool(r[3])!=bool(r[4]) or r[5]<r[3] or r[6]>r[3]
+                    for r in self.endpoint_degrees)):
+            raise ValueError('Invalid frozen endpoint degree statistics')
 
     @property
     def model_sha256(self):return self.to_dict()['model_sha256']
 
     def to_dict(self):
-        body=dict(schema_version=SCHEMA,statistics=self.statistics.to_dict(),populations=self.populations,
+        body=dict(schema_version=DEGREE_SCHEMA if self.endpoint_degrees else SCHEMA,statistics=self.statistics.to_dict(),populations=self.populations,
             unique_node_properties=self.unique_node_properties,preparation_ref=self.preparation_ref,
             record_quantum=self.record_quantum)
+        if self.endpoint_degrees:body['endpoint_degrees']=self.endpoint_degrees
         return {**body,'model_sha256':_hash(body)}
 
     @classmethod
     def from_dict(cls,raw):
         doc=dict(raw);digest=doc.pop('model_sha256',None)
-        if doc.get('schema_version')!=SCHEMA or _hash(doc)!=digest:raise ValueError('Relative work model hash/schema differs')
+        if doc.get('schema_version') not in (SCHEMA,DEGREE_SCHEMA) or _hash(doc)!=digest:raise ValueError('Relative work model hash/schema differs')
+        if (doc['schema_version']==DEGREE_SCHEMA)!=bool(doc.get('endpoint_degrees')):raise ValueError('Degree model schema differs')
         doc.pop('schema_version');doc['statistics']=FrozenSourceStatistics.from_dict(doc['statistics'])
         return cls(**doc)
 
@@ -80,6 +92,7 @@ class FrozenSourceWorkRanker:
         queue=deque(sorted(k for k,v in degree.items() if v==0));rows={};unique={}
         scan=transfer=local=keys=calls=risk=0.;details=[]
         total_population=sum(n+e for n,e in counts.values())
+        degrees={r[:3]:r[3:] for r in self.endpoint_degrees}
 
         def singleton(condition,fields):
             if condition.get('op')=='and':return any(singleton(c,fields) for c in condition['args'])
@@ -89,7 +102,7 @@ class FrozenSourceWorkRanker:
         while queue:
             node=nodes[queue.popleft()];p=node.parameters
             incoming=sum(rows[i] for i in node.inputs);out=incoming
-            fields=set(unique[node.inputs[0]]) if len(node.inputs)==1 else set()
+            fields=set(unique[node.inputs[0]]) if len(node.inputs)==1 else set();degree_evidence=None
             if node.kind in REMOTE:
                 backend=p['backend_id'];s=sources.get(backend)
                 if s is None or plan.metadata['source_identities'].get(backend)!={
@@ -111,6 +124,19 @@ class FrozenSourceWorkRanker:
                     # Uniform-degree proxy, not an assertion about a particular
                     # key or an upper bound. Full edge scans always have work.
                     fanout=1. if node_read else edge_rows/max(1,node_rows)
+                    descriptor=a.get('edge_statistics_descriptor',{});role=a.get('bound_identity_column')
+                    if descriptor.get('direction')=='IN' and role in ('source','target'):
+                        role='target' if role=='source' else 'source'
+                    endpoint_info=degrees.get((backend,descriptor.get('label'),role))
+                    if not node_read and endpoint_info:
+                        count,ndv,squared,maximum=endpoint_info
+                        # Edge-derived keys oversample high-degree endpoints.
+                        # This frozen second moment is still a proxy, never a
+                        # claim about the current query's literal/key set.
+                        fanout=(squared/max(1,count) if sent>1 else count/max(1,ndv))
+                        degree_evidence=dict(endpoint=role,rows=count,ndv=ndv,mean=count/max(1,ndv),
+                            size_biased_mean=squared/max(1,count),maximum=maximum,
+                            selected_proxy=fanout,origin='frozen complete source; no current keys read')
                     work=out=min(population,sent*fanout)
                     witness=a.get('leaf_witness')
                     if witness:
@@ -138,7 +164,8 @@ class FrozenSourceWorkRanker:
                 elif node.kind is R.COORDINATOR_JOIN:
                     left,right=node.inputs;l,r=rows[left],rows[right]
                     lu=p['left_on'] in unique[left];ru=p['right_on'] in unique[right]
-                    out=min(l,r) if lu and ru else l if ru else r if lu else max(l,r)
+                    unknown_join=(min(1e100,l*r) if self.endpoint_degrees else max(l,r))
+                    out=min(l,r) if lu and ru else l if ru else r if lu else unknown_join
                     if not l or not r:out=0.
                     fields=set(unique[left]) if ru else set()
                     # Right fields can be renamed. Only the same-name equality
@@ -153,7 +180,7 @@ class FrozenSourceWorkRanker:
                 elif node.kind not in (R.EXCHANGE,R.ALIGN):raise ValueError('Unadmitted relative-work operator')
             if not math.isfinite(out) or out<0:raise ValueError('Invalid relative row proxy')
             rows[node.node_id]=out;unique[node.node_id]=fields
-            details.append(dict(node=node.node_id,estimated_rows=out,unique_fields=sorted(fields)))
+            details.append(dict(node=node.node_id,estimated_rows=out,unique_fields=sorted(fields),endpoint_degree=degree_evidence))
             for child in children[node.node_id]:
                 degree[child]-=1
                 if degree[child]==0:queue.append(child)
@@ -164,5 +191,6 @@ class FrozenSourceWorkRanker:
             dict(model_sha256=self.model_sha256,source_statistics_sha256=self.statistics.sha256,
                 source_scan_record_units=scan,returned_record_proxy=transfer,transmitted_key_proxy=keys,
                 coordinator_input_proxy=local,bind_overflow_risk_work=risk,remote_call_units=calls,nodes=details,
-                assumptions='Uniform average degree, key-preserving joins, conservative identity equality; proxies, not bounds',
+                assumptions=('Endpoint-specific mean / size-biased degree; unknown many-many join uses capped Cartesian proxy (1e100); proxies, not bounds'
+                             if self.endpoint_degrees else 'Uniform average degree, key-preserving joins, conservative identity equality; proxies, not bounds'),
                 measured_latency=False,quality_bound=None,fit_calls=0,current_query_observation_calls=0))
