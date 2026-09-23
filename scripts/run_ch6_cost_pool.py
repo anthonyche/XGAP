@@ -8,7 +8,7 @@ import sys
 import time
 
 from xgap.agent.intent_execution import snapshot_identity
-from xgap.experiments.ch6_cost_pool import load,freeze
+from xgap.experiments.ch6_cost_pool import load,freeze,pin_identity
 from xgap.experiments.ch6_fact_index import pin,write
 from xgap.experiments.one_shot_profile import FrozenOneShotProfile,native_clients
 from xgap.experiments.one_shot_records import write_once
@@ -78,7 +78,8 @@ def run(pool_pin,prepared_pin,deployment,output):
                 budget=ProcessBudget(wall_seconds=b['worker_seconds'],max_group_rss_bytes=b['worker_rss_bytes']),resource_monitor=monitor)
             sealed=session.observer.seal_phase(phase);child_path=directory/'worker/receipt.json'
             child=json.loads(child_path.read_text()) if child_path.exists() else None
-            if child and (child['plan_id']!=item['plan_id'] or child['pool']!=pool_pin or child['profile']!=session.profile):
+            if child and (child['plan_id']!=item['plan_id'] or pin_identity(child['pool'])!=pin_identity(pool_pin)
+                          or pin_identity(child['profile'])!=pin_identity(session.profile)):
                 raise ValueError('Offline worker identity differs')
             success=bool(guard['success'] and child and child['success'] and sealed['failed_requests']==0)
             em=None

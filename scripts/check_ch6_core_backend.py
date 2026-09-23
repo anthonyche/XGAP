@@ -15,7 +15,7 @@ import time
 from xgap.agent.intent_certificate import fingerprint
 from xgap.agent.intent_execution import snapshot_identity
 from xgap.agent.practical_planning import _baseline
-from xgap.experiments.ch6_cost_pool import load
+from xgap.experiments.ch6_cost_pool import load, pin_identity
 from xgap.experiments.ch6_fact_index import pin, write
 from xgap.experiments.one_shot_profile import FrozenOneShotProfile, native_clients
 from xgap.experiments.one_shot_records import write_once
@@ -63,7 +63,7 @@ def run(bundle_pin, prepared_pin, output):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     bundle, prepared = load(bundle_pin), load(prepared_pin)
-    if (bundle['schema_version'] != 'xgap-ch6-heldout-cases-v1' or not prepared.get('success')
+    if (bundle['schema_version'] not in ('xgap-ch6-heldout-cases-v1', 'xgap-ch6-factor-inputs-v1') or not prepared.get('success')
             or bundle['profile']['sha256'] != prepared['profile']['sha256']):
         raise ValueError('Frozen bundle/store identity mismatch')
     if not 1 <= len(bundle['cases']) <= 1024:
@@ -114,8 +114,8 @@ def run(bundle_pin, prepared_pin, output):
             path=trial/'worker/receipt.json'; child=json.loads(path.read_text()) if path.exists() else None
             success=bool(guard['success'] and child and child['success'] and not observed['failed_requests'])
             em=None
-            if child and (child['case_id'] != case['case_id'] or child['bundle'] != bundle_pin
-                          or child['profile'] != session.profile):
+            if child and (child['case_id'] != case['case_id'] or pin_identity(child['bundle']) != pin_identity(bundle_pin)
+                          or pin_identity(child['profile']) != pin_identity(session.profile)):
                 raise ValueError('Admission worker identity mismatch')
             if success:
                 reference=load(case['reference'])

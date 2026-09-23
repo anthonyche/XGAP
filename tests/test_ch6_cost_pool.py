@@ -2,10 +2,21 @@
 import tempfile
 from pathlib import Path
 import unittest
-from xgap.experiments.ch6_cost_pool import freeze,score_selection
+from xgap.experiments.ch6_cost_pool import freeze,score_selection,pin_identity,load
 
 
 class CostPoolTests(unittest.TestCase):
+    def test_cli_pin_roundtrip_keeps_content_identity_and_still_checks_hash(self):
+        from xgap.experiments.ch6_fact_index import pin
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/'reference.json';path.write_text('{"rows":[]}')
+            parent=pin(path);worker={k:parent[k] for k in ('path','sha256')}
+            self.assertEqual(pin_identity(parent),pin_identity(worker))
+            self.assertEqual(load(worker),{'rows':[]})
+            path.write_text('{"rows":[1]}')
+            with self.assertRaises(ValueError):load(worker)
+            self.assertNotEqual(pin_identity(worker),pin_identity(pin(path)))
+
     def fixture(self):
         pool=dict(schema_version='xgap-ch6-offline-cost-pool-v1',plans=[dict(plan_id=p,plan={'test':p}) for p in ('a','b')],
             query_sha256='query',source_snapshot_sha256='source',unit='ms',timing_scope='scheduler',order_seed=1,

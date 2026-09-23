@@ -23,6 +23,14 @@ ETA_LEVELS=(0,.05,.1,.2,.5)
 def load(ref):return json.loads(read_pinned(ref['path'],ref['sha256']))
 
 
+def pin_identity(ref):
+    """CLI workers carry path/hash; optional byte counts are not new identities.
+
+    Content still must pass read_pinned at each read. Never compare only paths.
+    """
+    return (str(Path(ref['path']).resolve()),ref['sha256'])
+
+
 def prepare(*,query,profile_path,profile_sha256,reference,output,max_plans=4,repetitions=3,seed=20260923):
     if not 1<=max_plans<=16 or not 1<=repetitions<=6:raise ValueError('Bounded pool/repetitions required')
     query=validate_query(deepcopy(query),version='v2');qhash=fingerprint(query)

@@ -120,6 +120,9 @@ def publish(*,index_receipt,profile_path,profile_sha256,output,seed=20260923):
                         nl_interface='unsupported: placeholder scope is not the correlated family; controlled_state is mandatory'))
         write(root/'bundle.json',dict(schema_version='xgap-ch6-factor-inputs-v1',input_track='controlled',dataset=index['dataset'],
             cases=cases,excluded=excluded,model_outputs_used=False,backend_admission='required',
+            profile=dict(path=str(Path(profile_path).resolve()),sha256=profile_sha256),
+            deployment='native' if any(s['client']['engine']=='neo4j' for s in doc['backends'].values()) else 'rdf',
+            source_snapshot_sha256=snapshot,scale=materialization['scale'],source_count=materialization['source_count'],
             TS_reference='One fixed public NL configuration per cohort, no controlled-family injection; score only comparable metrics'))
         receipt.update(success=True,bundle=pin(root/'bundle.json'),cases=len(cases),excluded=excluded)
     except Exception as error:receipt.update(error_type=type(error).__name__,error=str(error))
