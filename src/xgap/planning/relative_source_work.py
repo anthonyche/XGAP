@@ -112,6 +112,14 @@ class FrozenSourceWorkRanker:
                     # key or an upper bound. Full edge scans always have work.
                     fanout=1. if node_read else edge_rows/max(1,node_rows)
                     work=out=min(population,sent*fanout)
+                    witness=a.get('leaf_witness')
+                    if witness:
+                        if witness.get('profile')!='contribution-leaf-witness-v1' or witness.get('returned_rows_per_key_upper_bound')!=1:
+                            raise ValueError('Unknown leaf witness cardinality contract')
+                        out=min(out,sent)
+                        fields.add(a['bound_identity_column'])
+                        # The output bound does NOT bound adjacency scanning;
+                        # retain the unreduced scan-work proxy above.
                     if incoming>cap:
                         risk+=(incoming/cap)*total_population
                 for c in a.get('necessary_row_filters',{}).get('conditions',[]):

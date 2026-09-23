@@ -151,3 +151,41 @@ general evaluator. A single shared deadline and output cap remain; no partial
 answer or sample substitution is allowed. Six focused reference tests pass,
 including parallel edges, cycles, reversed ordering, 20,000 isolated nodes and
 comparison with the original exhaustive relational evaluator on tiny facts.
+
+RDF constant-anchor replay 3858266 passed the four presampled outgoing-maximum
+cases with exact reference agreement. It then hit the source RSS guard on the
+first incoming-minimum case. This isolates remaining witness fanout from the
+previous singleton binding defect. It is not an eight-case admission pass.
+
+## Existential leaf physical move
+
+`contribution-leaf-witness-v1` admits only a degree-one witness node and its edge
+that both disappear at the declared contribution projection. Every predicate
+involving either must be enforced before selecting a representative; other
+retained-variable dependencies, edge-property couplings, path cases, shared/union
+reads and remote witness properties are declined. Only a mandatory string-ID
+anchor may substitute another variable's ID. The original final filters, joins,
+contribution projection and aggregation remain. Thus one *real satisfying edge*
+per retained boundary identity preserves the exact joint contribution set; it
+is not a result truncation or approximate answer. Parallel contributing edges
+remain distinct. A witness depending on another unbound retained node cannot be
+reduced this way (the outgoing-maximum case is explicitly declined).
+
+Cypher uses bounded keys and a correlated subquery with LIMIT 1 per key. RDF
+expands a finite UNION of singleton, constant-indexed subqueries with LIMIT 1 per
+branch; the complete expanded request obeys the declared byte cap. Empty keys
+return no rows, overflow fails, and no partial key set is executed. The RDF rule
+also declines guards on potentially multivalued boundary properties. Each local
+move changes one remote artifact; it can combine its proved mandatory bind with
+the witness reduction without enumerating a plan product. At most O(J*N) checked
+proposals are added, and wire generation is O(K*L) for capped key count K and
+query size L. Only one selected plan is executed by the online controller.
+
+The ranker recognizes the proven returned-row cap of one per key while retaining
+its unreduced adjacency-scan proxy: result cardinality does not certify search
+work or elapsed time. Tiny RDF end-to-end min/sum/count queries match the separate
+SQLite reference. Real Neo4j 5.26.30 min/sum/count equivalents also pass in
+`/Users/anthonyche/xgap-data/ch6-leaf-witness-native-20260923-v2/receipt.json`;
+its private source was stopped. These are correctness gates, not speedup results.
+The original failed v1 native gate receipt is preserved (the harness incorrectly
+expected the deliberately inadmissible outgoing-maximum rewrite).

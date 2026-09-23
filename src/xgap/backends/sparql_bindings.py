@@ -20,7 +20,7 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
     spec = parameters.get("sparql_iri_binding")
     if spec is None:
         return text
-    if not isinstance(spec, Mapping) or set(spec)-{'singleton_anchor'} != {
+    if not isinstance(spec, Mapping) or set(spec)-{'singleton_anchor','per_key_limit','projection'} != {
         "parameter", "variable", "max_bindings", "max_bytes"
     }:
         raise ValueError("Invalid SPARQL IRI binding specification")
@@ -35,6 +35,23 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
         raise ValueError("Missing or excessive SPARQL IRI bindings")
     if text.count(IRI_VALUES_MARKER) != 1:
         raise ValueError("SPARQL binding requires exactly one VALUES marker")
+    if 'per_key_limit' in spec or 'projection' in spec:
+        if (type(spec.get('per_key_limit')) is not int or spec['per_key_limit']!=1
+                or 'singleton_anchor' not in spec or spec.get('projection')!=['entity','source','target']):
+            raise ValueError('Unknown representative leaf binding profile')
+        single={k:v for k,v in spec.items() if k not in ('per_key_limit','projection')}
+        branches=[];expanded_bytes=0
+        for value in sorted({validate_iri(v) for v in values}):
+            bound=bind_sparql_iris(text,{**parameters,'sparql_iri_binding':single,spec['parameter']:[value]})
+            branches.append('{\n'+bound+'\nLIMIT 1\n}')
+            expanded_bytes+=len(branches[-1].encode('utf-8'))
+            if expanded_bytes>spec['max_bytes']:
+                raise ValueError('SPARQL representative request byte budget exceeded')
+        body=' UNION '.join(branches) if branches else 'FILTER(false)'
+        result='SELECT DISTINCT ?entity ?source ?target WHERE {\n'+body+'\n}'
+        if len(result.encode('utf-8'))>spec['max_bytes']:
+            raise ValueError('SPARQL representative request byte budget exceeded')
+        return result
     # Only resource IRIs are accepted; strings that resemble literal or native
     # query syntax cannot change the declared VALUES column or query structure.
     encoded = " ".join(f"<{value}>" for value in sorted({validate_iri(v) for v in values}))

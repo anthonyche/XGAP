@@ -52,6 +52,10 @@ class PhysicalMoves:
         program = self.program(index)
         operators = {o.operator_id:o for o in program.operators}
         consumers = Counter(i for o in program.operators for i in o.input_ids)
+        from xgap.runtime.leaf_witness import witness_neighbors
+        for nodes,proof in witness_neighbors(json.loads(self.family.candidates[index].query_json),
+                program,plan,self.backends,self.policy):
+            yield finish(plan,nodes,'leaf_witness',proof)
         # One proved macro transform turns a mandatory scalar anchor into a
         # bounded native key reduction. The old equality/semijoin proof is reused;
         # this does not generate or execute a Cartesian strategy space.
@@ -147,5 +151,9 @@ class PhysicalMoves:
                             'artifact':artifact.to_dict(),'bind_field':field,'parameter':parameter,'max_bindings':self.policy.max_bindings})
                         yield finish(plan,[bound if n.node_id==remote.node_id else n for n in plan.nodes],'entity_bind',
                             dict(join=join.operator_id,driver=driver,target=match.operator_id,chain=chain))
+                        bound_plan=replace(plan,nodes=tuple(bound if n.node_id==remote.node_id else n for n in plan.nodes))
+                        for nodes,proof in witness_neighbors(json.loads(self.family.candidates[index].query_json),
+                                program,bound_plan,self.backends,self.policy):
+                            yield finish(plan,nodes,'leaf_witness',dict(**proof,bind_driver=driver))
                 except (ValueError,KeyError,StopIteration):
                     continue

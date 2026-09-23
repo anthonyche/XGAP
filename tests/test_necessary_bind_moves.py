@@ -1,6 +1,7 @@
 """Tiny D2-shaped replay of the full-source witness planning failure."""
 import json
 import sqlite3
+import pytest
 from dataclasses import replace
 
 from test_ch6_fact_materialization import CoreMaterializationTest
@@ -22,7 +23,8 @@ from xgap.semantic.compact_lowering import lower_compact_query
 from xgap.tools import BackendPluginRegistry,NativeBackendPlugin,BackendInvokeTool
 
 
-def test_anchor_and_nested_witness_reductions_preserve_independent_gold(tmp_path):
+@pytest.mark.parametrize('template',('incoming_minimum','witnessed_sum','witnessed_count'))
+def test_anchor_and_nested_witness_reductions_preserve_independent_gold(tmp_path,template):
     fixture=CoreMaterializationTest();index=fixture.index(tmp_path)
     db=sqlite3.connect(tmp_path/'facts.sqlite')
     add_nodes(db,[dict(id='user:2',type='User')])
@@ -32,7 +34,7 @@ def test_anchor_and_nested_witness_reductions_preserve_independent_gold(tmp_path
     pp=publish(tmp_path/'facts/receipt.json',PARENT,PIN,tmp_path/'profile')
     profile=FrozenOneShotProfile.load(pp['path'],expected_sha256=pp['sha256'])
     doc,estimator,_,sources,backends,_,modes=profile.materialize();schema=revise_schema(doc['source_schema'])
-    q=template_query(CORES['D2'],'incoming_minimum','user:1',0,cross=False)
+    q=template_query(CORES['D2'],template,'user:1',0,cross=False)
     expected=evaluate(q,index)['rows'];assert expected
     program,assignment=lower_compact_query(q,schema,version='v2',optimize=True)
     family=IntentFamily('complete',(IntentCandidate.create(fingerprint(q),q),),(),
@@ -56,6 +58,16 @@ def test_anchor_and_nested_witness_reductions_preserve_independent_gold(tmp_path
     # Only this tiny correctness oracle executes alternatives; the online
     # controller sees no outcomes and still executes just its selected plan.
     for plan in [anchors[0],*nested]:
+        result=scheduler.execute(plan)
+        assert result.success,result
+        assert list(result.final_rows)==expected,plan.metadata['unified_rewrite']
+
+    # Existential leaf reduction must select a real jointly satisfying witness
+    # before the contribution projection, preserving parallel contributing edges.
+    leaf=[p for parent in [anchors[0],*nested] for p in moves.neighbors(0,parent)
+          if p.metadata['unified_rewrite']['rule']=='leaf_witness']
+    assert leaf
+    for plan in leaf:
         result=scheduler.execute(plan)
         assert result.success,result
         assert list(result.final_rows)==expected,plan.metadata['unified_rewrite']
