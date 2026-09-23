@@ -8,7 +8,7 @@ from xgap.backends.rdf_terms import RDF_TERMS_V1, validate_iri
 from xgap.compilers.cypher import _cypher_identifier
 from xgap.compilers.directed import compile_directed_rows, _identifier_safe
 from xgap.compilers.features import default_profile
-from xgap.compilers.match_identity import identity_projection
+from xgap.compilers.match_identity import identity_projection,binding_checkpoint
 from xgap.pattern.ast import EdgePattern, NodePattern, Rel, PathPatternQuery, Selector, SelectorKind, PathMode
 
 
@@ -40,6 +40,7 @@ def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend
         text += "".join(f", e1.{_cypher_identifier(prop)} AS {alias}" for alias, prop in properties.items())
         if identity_property is not None:
             extra = {"native_identity_projection": "property-map-v1", "native_identity_property": identity_property}
+        extra['native_binding_checkpoint']=binding_checkpoint(text,base.text,{'entity':'e1','source':'n0','target':'n1'})
     else:
         mapping = (backend_mapping if isinstance(backend_mapping, RdfBackendMapping)
                    else RdfBackendMapping.from_artifact(backend_mapping, backend_id=backend_id))

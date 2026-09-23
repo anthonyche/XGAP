@@ -11,7 +11,7 @@ from xgap.compilers.cypher import _cypher_identifier
 from xgap.compilers.features import BoundCondition, default_profile
 from xgap.compilers.directed import DirectedShape, _identifier_safe, _shape, _required, _cypher, _sparql, _fail
 from xgap.compilers.boolean_conditions import PROFILE as BOOLEAN_PROFILE
-from xgap.compilers.match_identity import identity_projection
+from xgap.compilers.match_identity import identity_projection,binding_checkpoint
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.pattern.ast import NodePattern, EdgePattern, Rel, Bounded, PathPatternQuery, Selector, SelectorKind, PathMode
 from xgap.pattern.semantic_validation import type_check_semantic_path_pattern
@@ -48,6 +48,7 @@ def compile_node_match(node: NodePattern, properties: dict[str, str], *, backend
             text += f", source.{_cypher_identifier(prop)} AS {name}"
         extra = ({"native_identity_projection": "property-map-v1", "native_identity_property": identity_property}
                  if identity_property is not None else {})
+        extra['native_binding_checkpoint']=binding_checkpoint(text,base,{'entity':'n0'})
     elif language == "sparql":
         if not rdf_node_classes:
             raise ValueError("Match requires an explicit RDF node domain")

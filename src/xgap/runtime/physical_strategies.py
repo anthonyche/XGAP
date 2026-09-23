@@ -237,7 +237,20 @@ def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes,
     else:
         names = ", ".join(_cypher_identifier(c) for c in columns)
         native_identity = "entity" if identity_column == "entity" else _cypher_identifier(identity_column)
-        text = ("CALL {\n" + artifact.text + "\n}\nWITH " + names
+        native_text=artifact.text
+        point=parameters.get('native_binding_checkpoint',{})
+        # Never infer structure by parsing arbitrary native text. Only an exact
+        # compiler-owned artifact admits the early, identical identity predicate.
+        # Wrapped/legacy artifacts keep their original correct outer binding.
+        if (point.get('profile')=='typed-match-before-distinct-v1'
+                and point.get('text_sha256')==hashlib.sha256(native_text.encode()).hexdigest()):
+            offset=point['offset'];variable=point['variables'][identity_column]
+            if type(offset) is not int or not native_text[offset:].startswith('RETURN DISTINCT '):
+                raise _NotAdmitted('Invalid native binding checkpoint')
+            early='WITH *\nWHERE ($'+namespace_parameter+' + '+_cypher_identifier(variable)+'.'+_cypher_identifier(backend.identity_property)+') IN $'+parameter+'\n'
+            native_text=native_text[:offset]+early+native_text[offset:]
+            parameters['native_binding_placement']='before-innermost-distinct-v1'
+        text = ("CALL {\n" + native_text + "\n}\nWITH " + names
                 + "\nWHERE ($" + namespace_parameter + " + " + native_identity + "."
                 + _cypher_identifier(backend.identity_property) + ") IN $" + parameter
                 + "\nRETURN DISTINCT " + names)

@@ -68,9 +68,17 @@ def test_bind_wrapping_retains_declared_identity_and_projection():
         a=QueryArtifact.from_dict(fragment.nodes[0].parameters['artifact'])
         for col in ('entity','source','target') if edge else ('entity',):
             bound,parameter=_bound_match_artifact(a,backend,max_bindings=16,max_binding_bytes=4096,identity_column=col)
-            assert a.text in bound.text and f'{col}.xgap_id' in bound.text
+            point=a.parameters['native_binding_checkpoint'];offset=point['offset']
+            assert a.text[:offset] in bound.text and a.text[offset:] in bound.text
+            early=f'($xgap_strategy_entity_namespace + {point["variables"][col]}.xgap_id) IN $'+parameter
+            assert bound.text.index(early)<bound.text.index('RETURN DISTINCT ')
+            assert f'{col}.xgap_id' in bound.text  # final defensive identity filter remains
+            assert bound.parameters['native_binding_placement']=='before-innermost-distinct-v1'
             assert bound.parameters['native_identity_projection']=='property-map-v1'
             assert bound.parameters['bound_entity_parameter']==parameter
+            wrapped=replace(a,text='// independently wrapped artifact\n'+a.text)
+            legacy,_=_bound_match_artifact(wrapped,backend,max_bindings=16,max_binding_bytes=4096,identity_column=col)
+            assert wrapped.text in legacy.text and 'native_binding_placement' not in legacy.parameters
 
 
 def test_identity_property_escaping_and_invalid_names():

@@ -62,3 +62,15 @@ Focused validation: 27 source-filter/sharing/ranker tests passed; after adding
 source-profile rebinding and zero-execution diagnostics, 9 ranker/necessary-bind
 tests passed. No full regression, model call, or baseline tuning was performed.
 Real D2 admission remains pending; do not claim the memory bottleneck is fixed.
+
+Remote diagnostic 3858096 (`b5005f2`) completed in 7 seconds: all 8 original
+D2 native pilot cases selected plans with zero **unbound edge-read nodes**,
+and 3–4 bound reads. This is a symbolic plan property, not a measured database
+scan count, latency, answer result, or proof that the engine uses an index.
+
+Native bindings also now use a compiler-owned, text-hash-checked insertion point
+to apply the identical canonical-ID predicate before the innermost DISTINCT.
+The final outer identity predicate remains. Legacy/wrapped text with a different
+hash retains the old correct wrapper; arbitrary Cypher is never parsed or edited.
+This addresses an execution barrier in the generated query; 9 focused native
+identity/bind tests passed, while real Neo4j execution remains the next gate.
