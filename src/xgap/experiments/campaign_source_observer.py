@@ -273,3 +273,13 @@ class CampaignSourceObserver(SourceObserver):
             write_once(self.root/f'phase-{self.generation:04}-released.json',{'phase':phase,'generation':self.generation,
                 'outcome':outcome_pin,'phase_seal':self.sealed['phase_seal'],'records_released':len(self.records)})
             self.records.clear();self.released=True
+
+    def persist_outcome(self, phase, path, outcome):
+        """Attach the actual phase seal before releasing its in-memory records."""
+        sealed=self.seal_phase(phase)
+        if 'source_observations' in outcome and outcome['source_observations']!=sealed:
+            raise ValueError('Outcome attempts to substitute another source observation')
+        record={**outcome,'source_observations':sealed}
+        pin=write_once(path,record)
+        self.release_phase(phase,pin)
+        return record,pin

@@ -91,7 +91,7 @@ def run(pool_pin,prepared_pin,deployment,output):
                 actual_cost=child['execution_ms'] if success else None,source_observations=sealed,
                 guard=pin(directory/'guard/receipt.json') if (directory/'guard/receipt.json').exists() else guard,
                 worker=pin(child_path) if child else None,resources=monitor.summary())
-            outcome=write_once(directory/'outcome.json',row);session.observer.release_phase(phase,outcome);observations.append(row)
+            row,_=session.observer.persist_outcome(phase,directory/'outcome.json',row);observations.append(row)
             if not success or em!=1:raise ValueError('Prespecified plan failed admission; stop without pruning or retrying it')
         freeze(pool,observations,root/'frozen-costs.json');result.update(success=True,frozen_costs=pin(root/'frozen-costs.json'))
     except Exception as error:result.update(error_type=type(error).__name__,error=str(error))

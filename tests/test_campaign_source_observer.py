@@ -77,6 +77,19 @@ def release(proxy,root):
     return sealed
 
 
+def test_admission_outcome_persists_phase_identity_before_next_case(tmp_path):
+    with observer(tmp_path/'source',max_calls=1) as p:
+        for i in range(2):
+            phase='admission:'+str(i);p.set_phase(phase)
+            assert call(p)==(200,b'abcdefghij')
+            row,pin=p.persist_outcome(phase,tmp_path/f'case-{i}.json',{'case_id':str(i),'answer_em':1})
+            saved=json.loads(Path(pin['path']).read_text())
+            assert row==saved and saved['source_observations']['requests']==1
+            assert saved['source_observations']['phase']==phase
+            assert p.released and not p.records
+            assert json.loads((p.root/f'phase-{p.generation:04}-released.json').read_text())['outcome']==pin
+
+
 def test_two_phases_reset_quota_and_preserve_pins_before_release(tmp_path):
     with observer(tmp_path/'source',max_calls=1) as p:
         url=p.base_url;p.set_phase('same-question')

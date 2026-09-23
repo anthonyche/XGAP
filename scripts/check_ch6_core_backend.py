@@ -84,7 +84,7 @@ def run(bundle_pin, prepared_pin, output):
         serving_copy_bytes=serving_bytes, additional_output_budget_bytes=2*1024**3,
         scope='Offline compiler/backend/reference admission, not NL or policy evaluation'))
     budget = BatchBudget(root, limits, time.time())
-    session = None; closure = None; outcomes = []
+    session = None; closure = None; outcomes = []; worker_attempts = 0
     result = dict(success=False, backend_roundtrip=False, bundle=bundle_pin,
         profile=bundle['profile'], prepared=prepared_pin, source_commit=commit,
         model_calls=0, evaluated_method=False, formal_campaign_started=False)
@@ -108,6 +108,7 @@ def run(bundle_pin, prepared_pin, output):
                 '--bundle-path', bundle_pin['path'], '--bundle-sha256', bundle_pin['sha256'],
                 '--case-id', case['case_id'], '--profile-path', session.profile['path'],
                 '--profile-sha256', session.profile['sha256'], '--output', str(trial/'worker')]
+            worker_attempts += 1
             guard=run_guarded_command(command, cwd=REPO, output=trial/'guard',
                 budget=ProcessBudget(wall_seconds=120, max_group_rss_bytes=3*1024**3), resource_monitor=resources)
             observed=session.observer.seal_phase(phase)
@@ -126,9 +127,9 @@ def run(bundle_pin, prepared_pin, output):
                 em=int(normalize_rows(actual['rows'], reference['normalization']) ==
                        normalize_rows(reference['rows'], reference['normalization']))
             row=dict(case_id=case['case_id'], success=success, answer_em=em, guard=guard,
-                worker=pin(path) if child else None, observations=observed, resources=resources.summary())
-            sealed=write_once(trial/'outcome.json', row)
-            session.observer.release_phase(phase, sealed); outcomes.append(row)
+                worker=pin(path) if child else None, source_observations=observed, resources=resources.summary())
+            row,_=session.observer.persist_outcome(phase,trial/'outcome.json',row)
+            outcomes.append(row)
             if not success or em != 1:
                 raise ValueError('Admission failed at '+case['case_id']+'; preserve case and failure without retry')
         result.update(success=True, backend_roundtrip=True)
@@ -137,12 +138,12 @@ def run(bundle_pin, prepared_pin, output):
     finally:
         if session:
             closure=session.close()
-    result.update(cases=outcomes, attempted=len(outcomes), planned=len(bundle['cases']), closure=closure)
+    result.update(cases=outcomes, attempted=worker_attempts, audited=len(outcomes), planned=len(bundle['cases']), closure=closure)
     if closure is None or not all(closure.get(k) is True for k in
             ('owned_groups_drained', 'owned_processes_terminal', 'observer_stopped')):
         result.update(success=False, backend_roundtrip=False, closure_error='Unverified service cleanup')
     write(root/'receipt.json', result)
-    print(json.dumps(dict(success=result['success'], attempted=len(outcomes), output=str(root), error=result.get('error'))))
+    print(json.dumps(dict(success=result['success'], attempted=worker_attempts, audited=len(outcomes), output=str(root), error=result.get('error'))))
     return 0 if result['success'] else 2
 
 
