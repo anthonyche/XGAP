@@ -32,6 +32,8 @@ from xgap.experiments.ch6_direct import METHOD as DIRECT_METHOD
 REPO=Path(__file__).resolve().parents[1]
 SCHEMA='xgap-bounded-joint-batch-v1'
 UNIFIED_SCHEMA='xgap-unified-lookahead-batch-v1'
+FORMAL_SCHEMA='xgap-ch6-five-method-batch-v1'
+EXTERNAL_METHOD='aruqula-fedx'
 
 
 def load(pin):
@@ -39,7 +41,9 @@ def load(pin):
 
 
 def validate(manifest):
-    if set(manifest)!={'schema_version','deployment','prepared','design','cells'} or manifest['schema_version'] not in (SCHEMA,UNIFIED_SCHEMA):
+    formal=manifest.get('schema_version')==FORMAL_SCHEMA
+    expected={'schema_version','deployment','prepared','design','cells'}|({'external_runtime'} if formal else set())
+    if set(manifest)!=expected or manifest['schema_version'] not in (SCHEMA,UNIFIED_SCHEMA,FORMAL_SCHEMA):
         raise ValueError('Unexpected bounded joint manifest')
     if manifest['deployment'] not in ('native','rdf'):raise ValueError('Unknown deployment')
     design=manifest['design']
@@ -53,12 +57,18 @@ def validate(manifest):
     if any(type(design[k]) is not int for k in ('package_max_bytes','free_disk_reserve_bytes','source_rss_bytes')):
         raise ValueError('Byte budgets must be integers')
     from xgap.experiments.unified_contract import METHODS as UNIFIED_METHODS
-    allowed=(*UNIFIED_METHODS,DIRECT_METHOD) if manifest['schema_version']==UNIFIED_SCHEMA else METHODS
+    from xgap.experiments.ch6_formal_protocol import METHODS as PAPER_METHODS
+    allowed=tuple(PAPER_METHODS.values()) if formal else (*UNIFIED_METHODS,DIRECT_METHOD) if manifest['schema_version']==UNIFIED_SCHEMA else METHODS
     cells=manifest['cells']
     if not isinstance(cells,list) or not 1<=len(cells)<=10000:raise ValueError('Bounded nonempty cells required')
     ids=[]
     for cell in cells:
-        if set(cell)-{'controlled_state'}!={'cell_id','method','request','scope','oracle','config','reference'}:
+        if formal and cell.get('method')==EXTERNAL_METHOD:
+            if manifest['deployment']!='rdf':raise ValueError('ARUQULA->FedX requires matched RDF deployment')
+            if set(cell)!={'cell_id','method','request','reference'}:
+                raise ValueError('External cell accepts public request and evaluator reference only; no private oracle/config/state')
+            if not manifest['external_runtime']:raise ValueError('Pinned original external runtime required')
+        elif set(cell)-{'controlled_state'}!={'cell_id','method','request','scope','oracle','config','reference'}:
             raise ValueError('Invalid cell fields')
         if not isinstance(cell['cell_id'],str) or not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}',cell['cell_id']):
             raise ValueError('Invalid cell ID')
@@ -68,8 +78,8 @@ def validate(manifest):
         ids.append(cell['cell_id'])
     if len(ids)!=len(set(ids)):raise ValueError('Duplicate cell IDs')
     # Only pin syntax is inspected here, not private intent or reference contents.
-    for pin in [manifest['prepared'],*(c[k] for c in cells for k in ('request','scope','oracle','config','reference')),
-                *(c['controlled_state'] for c in cells if 'controlled_state' in c)]:
+    for pin in [manifest['prepared'],*(c[k] for c in cells for k in ('request','scope','oracle','config','reference','controlled_state') if k in c),
+                *([manifest['external_runtime']] if formal and manifest['external_runtime'] else [])]:
         if not isinstance(pin,dict) or not isinstance(pin.get('path'),str) or not Path(pin['path']).is_absolute() or not re.fullmatch(r'[a-f0-9]{64}',pin.get('sha256','')):
             raise ValueError('Absolute artifact paths and SHA-256 pins required')
 
@@ -154,13 +164,13 @@ def _run(manifest,digest,commit,root,max_new_cells):
     invocation=runs/f'{len(previous)+1:04}';invocation.mkdir()
     write_once(invocation/'intent.json',dict(identity=identity,max_new_cells=max_new_cells))
     (root/'cells').mkdir(exist_ok=True);(root/'sessions').mkdir(exist_ok=True)
-    design=manifest['design'];budget=BatchBudget(root,design,started);session=None;closures=[];attempts=0;error=None
+    design=manifest['design'];budget=BatchBudget(root,design,started);session=None;external=None;closures=[];attempts=0;error=None
     try:
         for cell in manifest['cells']:
             path=root/'cells'/cell['cell_id']
             if path.exists():continue
             if attempts>=max_new_cells or budget.sample([]):break
-            needed=design['method_wall_seconds']+(design['startup_seconds'] if session is None else 0)
+            needed=design['method_wall_seconds']+(design['startup_seconds'] if session is None or cell['method']==EXTERNAL_METHOD else 0)
             if design['total_wall_seconds']-(time.time()-started)<needed:
                 budget.status='study_insufficient_time_for_cell';break
             if session is None:
@@ -178,16 +188,26 @@ def _run(manifest,digest,commit,root,max_new_cells):
                 fresh_source_session=session.observer.generation==0,attempts=1))
             kwargs={}
             for key,argument in (('request','request'),('scope','scope'),('oracle','oracle'),('config','joint_config')):
+                if cell['method']==EXTERNAL_METHOD:continue
                 if cell['method']==DIRECT_METHOD and key in ('scope','oracle'):continue
                 kwargs[argument+'_path']=cell[key]['path'];kwargs[argument+'_sha256']=cell[key]['sha256']
             if 'controlled_state' in cell:
                 kwargs.update(controlled_state_path=cell['controlled_state']['path'],
                     controlled_state_sha256=cell['controlled_state']['sha256'])
-            outcome=run_nl_trial(**kwargs,method=cell['method'],output=path/'execution',
-                profile_path=session.profile['path'],profile_sha256=session.profile['sha256'],
-                observer=session.observer,owned_services=session.owned,
-                budget=ProcessBudget(wall_seconds=design['method_wall_seconds'],max_group_rss_bytes=design['method_rss_bytes']),
-                source_rss_bytes=design['source_rss_bytes'],package_monitor=budget)
+            process_budget=ProcessBudget(wall_seconds=design['method_wall_seconds'],max_group_rss_bytes=design['method_rss_bytes'])
+            if cell['method']==EXTERNAL_METHOD:
+                from ch6_external_session import ExternalSession,run_trial as external_trial
+                external=ExternalSession(root=path/'external-services',config_pin=manifest['external_runtime'],source_session=session)
+                with deadline(design['startup_seconds']):external.start()
+                outcome=external_trial(request=cell['request'],output=path/'execution',session=external,
+                    budget=process_budget,source_rss_bytes=design['source_rss_bytes'],package_monitor=budget)
+                closure=external.close();closures.append(closure);external=None
+                if not closed(closure):raise ValueError('External method resources did not close')
+            else:
+                outcome=run_nl_trial(**kwargs,method=cell['method'],output=path/'execution',
+                    profile_path=session.profile['path'],profile_sha256=session.profile['sha256'],
+                    observer=session.observer,owned_services=session.owned,budget=process_budget,
+                    source_rss_bytes=design['source_rss_bytes'],package_monitor=budget)
             # Costly sources close before scoring a failed method. Never reuse a failed phase.
             if not outcome['can_continue_session']:
                 closure=session.close();closures.append(closure);session=None
@@ -208,8 +228,9 @@ def _run(manifest,digest,commit,root,max_new_cells):
     except (Exception,KeyboardInterrupt) as exc:
         error=dict(type=type(exc).__name__,message=str(exc))
     finally:
+        if external:closures.append(external.close())
         if session:closures.append(session.close())
-        result=dict(schema_version='xgap-unified-batch-invocation-v1' if manifest['schema_version']==UNIFIED_SCHEMA else 'xgap-bounded-joint-batch-invocation-v1',identity=identity,
+        result=dict(schema_version='xgap-ch6-five-method-invocation-v1' if manifest['schema_version']==FORMAL_SCHEMA else 'xgap-unified-batch-invocation-v1' if manifest['schema_version']==UNIFIED_SCHEMA else 'xgap-bounded-joint-batch-invocation-v1',identity=identity,
             new_cells=attempts,counts=inventory(root,manifest['cells']),budget_status=budget.status,error=error,
             closures=closures,all_owned_closed=all(closed(c) for c in closures),automatic_retries=0,
             scope='sealed counts include failed outcomes; incomplete intents are never retried; offline startup/scoring excluded from method latency')

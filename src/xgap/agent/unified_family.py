@@ -8,7 +8,7 @@ import json
 import math
 import time
 
-from xgap.agent.intent_certificate import canonical, fingerprint, rational
+from xgap.agent.intent_certificate import canonical, fingerprint, rational, MAX_FAMILY_CANDIDATES
 from xgap.agent.unified_contract import UnifiedTerminalContract, ValidationRequirement, ValidatedBinding
 from xgap.agent.unified_lookahead import Action, ActionFailure, Completion, Limits, Observation, Outcome, Resources, Terminal, run_online
 from xgap.runtime.contracts import RuntimeNodeKind
@@ -53,7 +53,7 @@ class UnifiedSettings:
                 or len({t.name for t in self.information_targets})!=len(self.information_targets)):
             raise ValueError('Invalid bounded plan pool/information registry')
         if self.candidate_weights is not None:
-            if not isinstance(self.candidate_weights,tuple) or not 1<=len(self.candidate_weights)<=64:
+            if not isinstance(self.candidate_weights,tuple) or not 1<=len(self.candidate_weights)<=MAX_FAMILY_CANDIDATES:
                 raise ValueError('Explicit bounded candidate prior required')
             for weight in self.candidate_weights:cost(weight)
             if any(w<=0 for w in self.candidate_weights):raise ValueError('Admitted family prior requires positive support')

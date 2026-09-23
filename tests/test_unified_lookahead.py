@@ -181,7 +181,7 @@ def test_peak_resources_compose_by_max_and_unknown_remains_unknown():
     with pytest.raises(ValueError):
         Resources(tokens=True)
     with pytest.raises(ValueError):
-        Limits(depth=5)
+        Limits(depth=11)
 
 
 def test_terminal_ties_prefer_execution_and_horizon_zero_allows_it():

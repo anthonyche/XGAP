@@ -5,7 +5,7 @@ from itertools import product
 import json
 import math
 
-from xgap.agent.intent_certificate import IntentCandidate, IntentFamily, IntentSlot, canonical, fingerprint
+from xgap.agent.intent_certificate import IntentCandidate, IntentFamily, IntentSlot, canonical, fingerprint, MAX_FAMILY_CANDIDATES
 from xgap.semantic.compact_query import validate_query
 
 
@@ -16,7 +16,7 @@ class ScopeDomain:
     where_selector: dict | None = None
 
     def __post_init__(self):
-        if not isinstance(self.values, tuple) or not 1 <= len(self.values) <= 64:
+        if not isinstance(self.values, tuple) or not 1 <= len(self.values) <= MAX_FAMILY_CANDIDATES:
             raise ValueError('Finite nonempty coordinate domain required')
         encoded = [canonical(v) for v in self.values]
         if len(set(encoded)) != len(encoded) or any(len(v.encode()) > 65536 for v in encoded):
@@ -45,8 +45,8 @@ class ScopePolicy:
     def __post_init__(self):
         if not self.policy_id or not isinstance(self.domains, tuple) or len(self.domains) > 32:
             raise ValueError('Named bounded scope policy required')
-        if type(self.max_candidates) is not int or not 1 <= self.max_candidates <= 64:
-            raise ValueError('Candidate limit must be 1..64')
+        if type(self.max_candidates) is not int or not 1 <= self.max_candidates <= MAX_FAMILY_CANDIDATES:
+            raise ValueError('Candidate limit must be 1..1024')
         if self.expansion not in ('cartesian', 'proposals_only'):
             raise ValueError('Unknown finite scope construction policy')
         if self.expansion == 'cartesian' and math.prod(len(d.values) for d in self.domains) > self.max_candidates:

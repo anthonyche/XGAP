@@ -1,5 +1,12 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-23 latest task: prepare ALL formal artifacts/workflows/scripts/matrices
+up to the launch boundary, not the full campaign itself. Current figure authority:
+`docs/ch6_formal_execution_20260923.md`: 21 figures, all XGAP/NP/SH/GR/TS;
+retain fixed references for inapplicable knobs and explicit unsupported/missing
+statuses. F6 is five-method cost sensitivity. No fabricated curves or zero fill.
+Preparation completeness is distinct from actual held-out/data readiness.
+
 2026-09-22: current authority is `docs/ch6_experiment_plan_20260922.md`,
 `docs/query_structure_spec_20260922.md`, and `docs/coding_agent_brief_20260922.md`.
 The latest user instruction, “请继续推进得到实验结果”, authorizes bounded actual

@@ -14,6 +14,8 @@ import re
 
 from xgap.semantic.compact_query import validate_query
 
+MAX_FAMILY_CANDIDATES = 1024
+
 
 def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False)
@@ -81,8 +83,8 @@ class IntentFamily:
 
     def __post_init__(self):
         if (not self.family_id or not self.source_snapshot or not isinstance(self.candidates, tuple) or
-                not isinstance(self.slots, tuple) or not 1 <= len(self.candidates) <= 64 or not 0 <= len(self.slots) <= 32):
-            raise ValueError('Finite family requires 1..64 candidates, 0..32 slots and a source snapshot')
+                not isinstance(self.slots, tuple) or not 1 <= len(self.candidates) <= MAX_FAMILY_CANDIDATES or not 0 <= len(self.slots) <= 32):
+            raise ValueError('Finite family requires 1..1024 candidates, 0..32 slots and a source snapshot')
         if len({c.candidate_id for c in self.candidates}) != len(self.candidates) or any(not c.candidate_id for c in self.candidates):
             raise ValueError('Candidate identities must be distinct')
         if len({s.name for s in self.slots}) != len(self.slots):
@@ -131,6 +133,24 @@ class IntentFamily:
                 return None
             return Fraction(sum(s.weight for j, s in enumerate(self.slots) if not s.hard and a[j] != b[j]), total)
         return tuple(tuple(distance(a, b) for b in self.values) for a in self.values)
+
+    def worst_distance(self, candidate_index, remaining):
+        """Exact maximum without retaining an N-by-N Fraction matrix.
+
+        O(N*u) time and O(u) auxiliary space for one candidate. Fixed skeleton,
+        positive coordinate weights and hard-mismatch infinity are unchanged.
+        The historical ``distances`` property remains for legacy evidence only.
+        """
+        a=self.values[candidate_index]
+        hard=tuple(j for j,s in enumerate(self.slots) if s.hard)
+        soft=tuple((j,s.weight) for j,s in enumerate(self.slots) if not s.hard)
+        maximum=0;seen=False
+        for i in remaining:
+            seen=True;b=self.values[i]
+            if any(a[j]!=b[j] for j in hard):return None
+            maximum=max(maximum,sum(w for j,w in soft if a[j]!=b[j]))
+        if not seen:raise ValueError('Empty intent set has no discrepancy certificate')
+        return Fraction(maximum,sum(w for _,w in soft) or 1)
 
     def consistent(self, observations=()):
         if len(observations) > len(self.slots) or len({i for i, _ in observations}) != len(observations):

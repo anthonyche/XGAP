@@ -132,8 +132,8 @@ class Limits:
     resources: Resources = UNBOUNDED
 
     def __post_init__(self):
-        for name, lo, hi in (('depth', 1, 4), ('horizon', 0, 64), ('max_states', 1, 8192),
-                             ('max_actions', 1, 256), ('max_outcomes', 1, 256), ('max_terminals', 1, 256)):
+        for name, lo, hi in (('depth', 1, 10), ('horizon', 0, 64), ('max_states', 1, 8192),
+                             ('max_actions', 1, 256), ('max_outcomes', 1, 1024), ('max_terminals', 1, 4096)):
             if type(getattr(self, name)) is not int or not lo <= getattr(self, name) <= hi:
                 raise ValueError('Invalid fixed-depth/representation limit: '+name)
         cost(self.optional_ms)

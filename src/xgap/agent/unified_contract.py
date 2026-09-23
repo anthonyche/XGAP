@@ -98,9 +98,9 @@ class UnifiedTerminalContract:
         if type(candidate_index) is not int or candidate_index not in remaining:
             raise ValueError('Selected query is inconsistent with actual validation evidence')
         missing = sorted(set(self.by_name) - self.relaxable - {b.name for b in bindings})
-        # Orientation is d(intended, selected), including for future asymmetric losses.
-        distances = [self.family.distances[i][candidate_index] for i in remaining]
-        bound = None if any(d is None for d in distances) else max(distances)
+        # The admitted weighted coordinate loss is symmetric. A future asymmetric
+        # metric must define the intended-to-selected orientation explicitly.
+        bound = self.family.worst_distance(candidate_index,remaining)
         if self.family.coverage_basis is None:
             status = 'unknown_coverage'
         elif missing:

@@ -46,19 +46,26 @@ class RdfTdbSession:
                 if actual!=seal['files']:raise ValueError('Frozen store changed: '+name)
                 if shutil.disk_usage(self.root).free<store['bytes']+6*1024**3:raise ValueError('Insufficient serving-copy reserve')
                 shutil.copytree(store['path'],self.root/(name+'-tdb2'))
-            self.ports=LoopbackPortReservations.acquire(2)
+            names=sorted(self.prepared['stores'])
+            if set(names)!=set(doc['offline']['rdf_loads']) or not 1<=len(names)<=8:
+                raise ValueError('Prepared and frozen source sets differ')
+            self.ports=LoopbackPortReservations.acquire(len(names))
+            # Keep aggregate Java heap fixed as source count changes (S2).
+            heap_mib=1536//len(names)
             routes={}
-            for i,name in enumerate(('graph','control')):
+            for i,name in enumerate(names):
                 port=self.ports.ports[i];state=self.root/('fuseki-'+name);state.mkdir()
                 (state/'config.ttl').write_text(_fuseki_server_configuration(query_timeout_seconds=self.budget.timeout_seconds))
                 self.ports.release(i)
-                process=self.processes.start('source-'+name,[java['path'],'-Xms128m','-Xmx768m','-jar',engine['path'],
+                process=self.processes.start('source-'+name,[java['path'],'-Xms64m',f'-Xmx{heap_mib}m','-jar',engine['path'],
                     '--localhost','--port',str(port),'--tdb2','--loc',str(self.root/(name+'-tdb2')),'/'+name],
                     cwd=Path(engine['path']).parent,env={'FUSEKI_BASE':str(state)})
                 self.owned.append(OwnedProcess(name,'source',process));ready(process,port)
                 routes['/'+name+'/sparql']=f'http://127.0.0.1:{port}/{name}/sparql'
             self.observer=CampaignSourceObserver(routes,self.root/'source-observations',budget=self.budget)
             for spec in doc['backends'].values():
+                if spec['client']['database'] not in names:
+                    raise ValueError('Backend dataset is absent from frozen stores')
                 spec['client'].update(url=self.observer.base_url,timeout_seconds=self.budget.timeout_seconds)
             for key in ('estimator','catalog'):doc[key]['path']=str((base.parent/doc[key]['path']).resolve())
             doc['offline']['serving_endpoint_parent']=parent
@@ -68,6 +75,7 @@ class RdfTdbSession:
             self.ready_pin=write_once(self.root/'ready.json',{'prepared':self.prepared_pin,'preparation_input':self.input_pin,'profile':self.profile,
                 'source_urls':routes,'observation_url':self.observer.base_url,'read_only_cli':True,
                 'query_timeout_seconds':self.budget.timeout_seconds,'offline_fresh_session_ms':(time.perf_counter()-at)*1000,
+                'aggregate_heap_mib':heap_mib*len(names),'per_source_heap_mib':heap_mib,
                 'scope':'store/engine verification, serving copies, startup, observer and profile reads; no warmup query',
                 'source_groups':[{'name':s.name,'pid':s.process.pid} for s in self.owned]})
             return self
@@ -100,7 +108,7 @@ class RdfTdbSession:
         result['owned_groups_drained']=drained and not any(_group_sample(row['pid']) for row in rows)
         if self.discard_serving_copies and result['owned_groups_drained'] and result['observer_stopped']:
             removed=[]
-            for relative in self.serving_copy_paths:
+            for relative in (*self.serving_copy_paths,*(n+'-tdb2' for n in self.prepared['stores'])):
                 path=self.root/relative
                 if path.exists():
                     if path.is_symlink():raise ValueError('Refuse to discard redirected serving copy')

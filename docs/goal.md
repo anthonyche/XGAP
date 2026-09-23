@@ -1,5 +1,10 @@
 # XGAP 当前 Goal
 
+**2026-09-23 当前任务：正式实验启动前准备。**按
+[五方法执行合同](ch6_formal_execution_20260923.md)完成 artifact、流程、脚本和评估矩阵。
+21 图各保留 XGAP、NP、SH、GR、TS；F6 成本敏感性；不补零或造曲线。本轮不启动全量。
+先验证五方法 dispatch、容量和计量，再冻结三域 held-out/存储/预算。设计与代码就绪不等于全量准入。
+
 **当前 milestone 已完成：baseline 正常产出。** ARUQULA→FedX 在固定 tiny 单源与
 两源题均完成最终执行，答案评分分别保留为 0；不再优化 baseline 质量。
 见[接通报告](report/ch6_baseline_admission_20260922.md)。下一步转为正式实验接线：
