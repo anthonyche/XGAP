@@ -47,7 +47,16 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
             expanded_bytes+=len(branches[-1].encode('utf-8'))
             if expanded_bytes>spec['max_bytes']:
                 raise ValueError('SPARQL representative request byte budget exceeded')
-        body=' UNION '.join(branches) if branches else 'FILTER(false)'
+        # SPARQL's flat UNION syntax builds a left-deep algebra tree. Hundreds
+        # of per-key subqueries can exhaust ARQ's optimizer heap before any
+        # source work. UNION is associative (including bag multiplicities);
+        # explicitly balanced groups retain every independently sliced branch
+        # and keep generated union depth logarithmic in the key count.
+        while len(branches)>1:
+            branches=[('{ '+branches[i]+' UNION '+branches[i+1]+' }'
+                       if i+1<len(branches) else branches[i])
+                      for i in range(0,len(branches),2)]
+        body=branches[0] if branches else 'FILTER(false)'
         result='SELECT DISTINCT ?entity ?source ?target WHERE {\n'+body+'\n}'
         if len(result.encode('utf-8'))>spec['max_bytes']:
             raise ValueError('SPARQL representative request byte budget exceeded')

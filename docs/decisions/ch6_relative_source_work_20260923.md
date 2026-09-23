@@ -342,3 +342,18 @@ answer before/after (1.374 / 0.629 s including JVM startup; a diagnostic, not a
 paper performance claim). An additional regression checks missing properties,
 excluded-only values, multiple property values, parallel witness edges and a
 valid but unrelated node: only the actual connected satisfying witness survives.
+
+3858337 completed the first four cases but still timed out on case five
+(64.644 s worker observation). The source peak was 3,801,321,472 bytes, below
+the original 4 GiB guard: memory expansion was reduced, but admission still fails.
+Receipt SHA-256: `bb0b1c5e25a5d7b337090a20c528d3768a0ca7fafc87297ab6b8230eb8550d3f`.
+
+A separate 567-key Jena 5.6.0 optimizer replay found that the flat UNION chain
+exhausts a 512 MiB heap; an equivalent balanced UNION finishes optimization in
+1.52 s. The binder now builds a balanced associative UNION tree, leaving the
+per-key LIMIT inside each branch and keeping the outer DISTINCT. No key, row
+contract, request count or budget changes. Expanded query length remains O(KL),
+construction work is O(KL log K), and UNION depth is O(log K); the final complete
+request still must pass the byte guard. Twelve focused tests pass, including
+independent algebra-depth inspection and all 65 keys surviving a two-witness
+graph (with duplicate input keys). This is not a full-source performance claim.

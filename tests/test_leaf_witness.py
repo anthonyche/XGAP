@@ -86,3 +86,25 @@ def test_correlated_leaf_guard_rejects_missing_or_unrelated_values():
     assert len(rows)==1
     assert rows[0].source==ns.u2 and rows[0].target==ns.m2
     assert rows[0].entity in (ns.e2,ns.e3)
+
+
+def test_many_witness_keys_have_bounded_algebra_depth_without_lost_keys():
+    from rdflib import Graph,URIRef
+    from rdflib.plugins.sparql.algebra import translateQuery
+    from rdflib.plugins.sparql.parser import parseQuery
+    keys=['https://test/key'+str(i) for i in range(65)]
+    text='SELECT ?entity ?source ?target WHERE { '+IRI_VALUES_MARKER+' ?entity <https://test/p> ?target . BIND(?entity AS ?source) }'
+    spec=dict(parameter='keys',variable='target',max_bindings=66,max_bytes=100000,
+        singleton_anchor=dict(subject='entity',predicate='https://test/p'),per_key_limit=1,projection=['entity','source','target'])
+    query=bind_sparql_iris(text,dict(sparql_iri_binding=spec,keys=keys+[keys[0]]))
+    def union_depth(value):
+        if isinstance(value,dict):
+            return int(getattr(value,'name',None)=='Union')+max(map(union_depth,value.values()),default=0)
+        if isinstance(value,(list,tuple)):return max(map(union_depth,value),default=0)
+        return 0
+    assert union_depth(translateQuery(parseQuery(query)).algebra)<=7
+    g=Graph()
+    for key in keys:
+        for suffix in ('a','b'):g.add((URIRef(key+suffix),URIRef('https://test/p'),URIRef(key)))
+    rows=list(g.query(query))
+    assert len(rows)==len(keys) and {str(row.target) for row in rows}==set(keys)
