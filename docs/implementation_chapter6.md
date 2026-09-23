@@ -6,8 +6,10 @@ this document remains an implementation map, not the new chapter outline.
 
 External baseline update: ARUQULA→FedX now completes tiny single/two-source NL
 execution with disclosed serialization and tool compatibility. Both answers are
-wrong and remain unchanged. Its standalone worker is not yet in the general batch
-dispatcher; see the [admission and readiness report](report/ch6_baseline_admission_20260922.md).
+wrong and remain unchanged. Its worker is now connected to the five-method batch
+dispatcher; the shared-question gate retained an external harness-budget cut as
+study-censored, not an incorrect answer. See the
+[shared batch evidence](report/ch6_five_method_gate_20260923.md).
 
 2026-09-21. This maps the admitted implementation to the revised manuscript.
 2026-09-22 follow-up: optional deadlines retain fully scored root incumbents with
@@ -25,7 +27,7 @@ implementation is [preserved here](implementation_chapter6_history_20260921_befo
 |Step|Implementation under `src/xgap/`|Boundary|
 |---|---|---|
 |NL proposal|`llm/compact_interpretation.py`|One compact-model call, no hidden repair; development template separately labelled|
-|Candidate family|`semantic/intent_scope.py`|1–8 proposals; at most 64 complete candidates/32 coordinates; bound checked before Cartesian expansion|
+|Candidate family|`semantic/intent_scope.py`|1–8 proposals; default 64 complete candidates, explicit capacity ceiling 1024/32 coordinates; bound checked before Cartesian expansion; large-N formal inputs still need admission|
 |Representation identity|`semantic/compact_identity.py`|Bounded role refinement and renamed AST equality; literal/direction meaning unchanged|
 |Scope authority|`agent/scope_authority.py`|Question-bound private query; paid containment; no free selected candidate|
 |Mandatory validation and loss|`agent/unified_contract.py`|Direct registered evidence, independent Lambda and epsilon; bounded certificate cache|
