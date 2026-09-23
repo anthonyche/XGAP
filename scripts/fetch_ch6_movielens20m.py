@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 import time
 import urllib.request
@@ -28,9 +29,10 @@ def fetch(output):
         with urllib.request.urlopen(BASE+'ml-20m.zip.md5', timeout=30) as response:
             checksum=response.read(1025)
         if len(checksum)>1024:raise ValueError('Unexpected checksum response')
-        expected=checksum.decode('ascii').split()[0].lower()
-        if len(expected)!=32 or any(c not in '0123456789abcdef' for c in expected):
+        match=re.fullmatch(r'MD5 \(ml-20m\.zip\) = ([0-9a-fA-F]{32})\s*', checksum.decode('ascii'))
+        if match is None:
             raise ValueError('Publisher checksum is not MD5')
+        expected=match.group(1).lower()
         (root/'publisher.md5').write_bytes(checksum)
         md5=hashlib.md5();sha=hashlib.sha256();size=0
         archive=root/'ml-20m.zip'
