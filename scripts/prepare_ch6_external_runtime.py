@@ -16,13 +16,22 @@ from prepare_chapter7_public_metadata import prepare as prepare_metadata
 from xgap.experiments.campaign_source_observer import SourceObservationBudget
 from xgap.experiments.ch6_formal_protocol import load_pin,pin_file
 from xgap.experiments.nl_strong_release import freeze_common_profile
+from xgap.experiments.compact_profile import derive_compact_prompt_profile
 from xgap.experiments.one_shot_records import write_once
 
 
 def prepare(*,profile_path,profile_sha256,fedx_build,output):
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     parent=dict(path=profile_path,sha256=profile_sha256)
-    pin=freeze_common_profile(parent,root/'base-profile.json');profile=load_pin(pin)
+    original=load_pin(parent)
+    # Existing RDF store profiles may predate the current prompt. Select the
+    # already-admitted generic revision, never tune a prompt to this gate's gold.
+    current=parent
+    revision=original['offline'].get('interpretation_revision',{})
+    if (original['modes']['performance']['provider']['wire_profile']=='compact-graph-schema-v1'
+            and revision.get('prompt_version')!='v2'):
+        current=derive_compact_prompt_profile(parent_path=profile_path,parent_sha256=profile_sha256,output=root/'current-frontend')
+    pin=freeze_common_profile(current,root/'base-profile.json');profile=load_pin(pin)
     if any(b['client']['engine']!='fuseki' for b in profile['backends'].values()):
         raise ValueError('Matched RDF profile required; native is not an external TS deployment')
     prepare_metadata(profile_path=pin['path'],profile_sha256=pin['sha256'],output=root/'public-metadata')
@@ -46,7 +55,8 @@ def prepare(*,profile_path,profile_sha256,fedx_build,output):
         original=json.loads(subprocess.check_output([str(PYTHON),'-c',code,str(path)],text=True,timeout=10))
         config[name]=write_once(root/(name+'.json'),original)
     config.update(schema_version='xgap-ch6-external-runtime-v1',compatibility='https-iris-action-schema-fedx-v2',
-        java=pin_file(JAVA),python=pin_file(PYTHON),redis=pin_file(REDIS),classpath=pin_file(CLASSPATH),
+        java=pin_file(JAVA),python=pin_file(PYTHON),python_command=str(PYTHON.absolute()),
+        python_environment=pin_file(PYTHON.parent.parent/'pyvenv.cfg'),redis=pin_file(REDIS),classpath=pin_file(CLASSPATH),
         lookup_jar=pin_file(LOOKUP/'lookup/target/lookup-1.0.jar'),metadata=metadata,fedx_build=pin_file(fedx_build),
         author_source=dict(path=str(AUTHOR),commit='9a3982baca03d62f7250572e300b1e4ba47727cc'),
         lookup_source=dict(path=str(LOOKUP),commit='939b3f36fefafca444cc6dff6c568c5b559f58e0'),

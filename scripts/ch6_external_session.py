@@ -38,8 +38,12 @@ def verify_config(config,profile):
     # This is a data identity requirement, not a claim that labels improve answers.
     if profile['offline'].get('shared_public_metadata')!=config['metadata']:
         raise ValueError('TS metadata must be part of the shared frozen deployment')
-    for name in ('java','python','redis','classpath','lookup_jar','metadata','lookup_config','index_config'):
+    for name in ('java','python','python_environment','redis','classpath','lookup_jar','metadata','lookup_config','index_config'):
         if file_pin(config[name]['path'])!=config[name]:raise ValueError('Runtime artifact changed: '+name)
+    if file_pin(config['python_command'])!=config['python']:
+        raise ValueError('Virtual-environment interpreter no longer resolves to the pinned executable')
+    if Path(config['python_command']).parent.parent/'pyvenv.cfg'!=Path(config['python_environment']['path']):
+        raise ValueError('Python invocation must retain its pinned virtual environment')
     for name in ('author_source','lookup_source'):
         pin=config[name];root=Path(pin['path'])
         head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
@@ -151,7 +155,7 @@ def run_trial(*,request,output,session,budget,source_rss_bytes,package_monitor=N
         if not os.environ.get('XGAP_EXTERNAL_LLM_API_KEY'):raise ValueError('Model credential missing')
         # The original worker's stricter two-key input boundary is retained.
         public=write_once(root/'public-question.json',{k:q[k] for k in ('question_id','question')})
-        command=[cfg['python']['path'],str(REPO/'scripts/run_chapter7_aruqula_worker.py'),
+        command=[cfg['python_command'],str(REPO/'scripts/run_chapter7_aruqula_worker.py'),
             '--method-id',METHOD,'--compatibility',COMPATIBILITY,'--author-source',cfg['author_source']['path'],
             '--request-path',public['path'],'--request-sha256',public['sha256'],
             '--model-endpoint',observers['model'].base_url+'/v1','--model-id',cfg['model_id'],
