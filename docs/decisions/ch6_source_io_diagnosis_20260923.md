@@ -29,3 +29,27 @@ Local validation on the existing synthetic TDB2 graph: the constant-key request
 returns the same one witness; 7 index tuple yields from 7 lookups (1 POS, 6 SPO).
 No real-source performance result yet. Next: a single exact 567-key failed
 request, then a fix selected from the measured evidence, not another full gate.
+
+## First measured replay
+
+3859381 (`3a32d2e`, compt311), original query SHA
+`26eb1410c89dac31234d77401afccc6e7cc47bc259a91aa651088abbd133ebb2`:
+60.193 s process timeout; last query sample at 49.866 s, 6 witness rows,
+91 index tuple yields. POS `?BB` has 7 find calls / 18 tuples / 38.365 s in
+completed index API calls; a further POS find was pending for about 9.735 s.
+Query-phase deltas: 1,910,075,392 storage read bytes, 466 major / 10,723 minor
+faults, 215 user / 237 system ticks. Final sample is not the full query interval.
+All 50 query stack samples are mapped integer reads; detailed stacks include
+RecordBufferPage.format, BPTreeNode.iterator and range-iterator loadStack.
+No uninterruptible native thread was captured, and task_delayacct availability
+is unknown. Therefore do not invent an I/O wait duration from CPU-wall residuals.
+The graph copy is 56,115,900,920 bytes. This run used a different compute node
+from the old gates, and cannot be used as their paired latency comparison.
+
+Pinned Jena source/bytecode shows BPTreeNode.iterator eagerly materializes child
+pages for its range, before LIMIT can stop tuple consumption. This is a plausible
+source of page-read amplification, supported by the observed stack, but physical
+page counts are not yet instrumented. First isolate mapped versus direct buffered
+file access with the **same captured query** and same 60 s / 4 GiB bounds on the
+same node. Direct is Jena's file-access mode, not OS O_DIRECT. No new query rewrite,
+source facts, estimator, baseline algorithm or official deployment default changes.

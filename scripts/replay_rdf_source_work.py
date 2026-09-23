@@ -20,6 +20,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('prepared','captured','query-sha256','java','jar','output','work'):
         p.add_argument('--'+name,required=True)
+    p.add_argument('--file-mode',choices=('mapped','direct'),default='mapped')
     a=p.parse_args();o=Path(a.output).resolve();o.mkdir(parents=True,exist_ok=False)
     capture=Path(a.captured);q=json.loads(capture.read_text())['query']
     if hashlib.sha256(q.encode()).hexdigest()!=a.query_sha256:
@@ -36,13 +37,14 @@ def main():
         java_source=pin(source),jar=pin(Path(a.jar)),query_count=1,
         attempts=1,wall_seconds=60,max_rss_bytes=4*1024**3,java_heap='768m',
         os_cache='uncontrolled; verified copy is not a cold-cache guarantee',
-        model_calls=0,full_workload_run=False))
+        file_mode=a.file_mode,clock_ticks_per_second=os.sysconf('SC_CLK_TCK'),
+        page_size_bytes=os.sysconf('SC_PAGE_SIZE'),model_calls=0,full_workload_run=False))
     classes=o/'classes';classes.mkdir();javac=Path(a.java).with_name('javac')
-    subprocess.run([str(javac),'--release','21','-cp',a.jar,'-d',str(classes),str(source)],check=True)
+    subprocess.run([str(javac),'-proc:none','--release','21','-cp',a.jar,'-d',str(classes),str(source)],check=True)
     write_once(o/'copy.json',copy_sealed_store(s['path'],work,seal['files']))
     query=o/'query.rq';query.write_text(q)
     outcome=run_guarded_command([a.java,'-Xmx768m','-cp',str(classes)+os.pathsep+a.jar,
-        'XgapTdbReplay',str(work),str(query),str(o/'metrics.json'),str(o/'rows.json')],
+        'XgapTdbReplay',str(work),str(query),str(o/'metrics.json'),str(o/'rows.json'),a.file_mode],
         cwd=o,output=o/'guard',budget=budget)
     write_once(o/'receipt.json',dict(guard=outcome,query=pin(query),model_calls=0,
         diagnostic_only=True,source_unchanged=True,
