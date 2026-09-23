@@ -33,6 +33,17 @@ class HeldoutReferenceTests(unittest.TestCase):
         q['select']['total']['aggregate']='count'
         self.assertEqual(evaluate(q,self.index)['rows'],[dict(result='a',total=1),dict(result='b',total=2),dict(result='d',total=1)])
 
+    def test_existential_witness_keeps_joint_conditions_and_parameter_identity(self):
+        q=template_query(CORES['D3'],'witnessed_sum','a',2)
+        q['edges'][1]['type']='TRANSFERRED_TO_EARLY'
+        result=evaluate(q,self.index)
+        self.assertEqual(result['rows'],[dict(result='b',total=3),dict(result='d',total=5)])
+        self.assertIn('EXISTS (SELECT 1 FROM edges e1 CROSS JOIN nodes n2',result['sql'])
+        # Restrict the same witness, rather than satisfying its properties using
+        # unrelated nodes. Parallel contributing edges must remain separate.
+        q['where'].append(dict(left=dict(var='c',property='id'),op='eq',right={'value':'b'},value_type='scalar'))
+        self.assertEqual(evaluate(q,self.index)['rows'],[])
+
     def test_path_acyclic_length_and_parallel_projection(self):
         q=template_query(CORES['D3'],'bounded_path','a',0)
         self.assertEqual(evaluate(q,self.index)['rows'],[dict(result='c',distance=2),dict(result='d',distance=3)])

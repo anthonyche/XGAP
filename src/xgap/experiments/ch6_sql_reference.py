@@ -128,8 +128,29 @@ def compile_reference(query, index_receipt, *, scale='1'):
         add(edge['var']);add(edge['source']);add(edge['target']);pending.remove(edge)
     for n in query['nodes']:add(n['var'])
     table_by_alias={table.split()[-1]:table for table in tables}
-    ordered_tables=[table_by_alias[objects[v][1]] for v in order]
-    inner='SELECT DISTINCT '+','.join(base)+' FROM '+' CROSS JOIN '.join(ordered_tables)+' WHERE '+' AND '.join(conditions)
+    # A declared contribution grain existentially removes unused witnesses.
+    # Keep anchored nodes outside so the reference starts at a source ID. One
+    # correlated EXISTS preserves joint witness constraints, including cycles;
+    # do not use independent EXISTS tests for different edges of the same witness.
+    anchored={p['left']['var'] for p in query['where'] if p['op']=='eq' and p['left']['property']=='id'
+              and 'value' in p['right']}
+    essential=retained|anchored
+    witnesses=set(objects)-essential if query['contribution_by'] is not None else set()
+    outside=[table_by_alias[objects[v][1]] for v in order if v not in witnesses]
+    inside=[table_by_alias[objects[v][1]] for v in order if v in witnesses]
+    witness_aliases={objects[v][1] for v in witnesses}
+    outer_conditions=[];inner_conditions=[];outer_params=[];inner_params=[];offset=0
+    for expression in conditions:
+        arity=expression.count('?');values=params[offset:offset+arity];offset+=arity
+        nested=any(re.search(r'\b'+re.escape(a)+r'\.',expression) for a in witness_aliases)
+        (inner_conditions if nested else outer_conditions).append(expression)
+        (inner_params if nested else outer_params).extend(values)
+    if offset!=len(params):raise ValueError('Reference parameter association differs')
+    if inside:
+        outer_conditions.append('EXISTS (SELECT 1 FROM '+' CROSS JOIN '.join(inside)+' WHERE '+' AND '.join(inner_conditions)+')')
+    elif inner_conditions:raise ValueError('Reference witness condition has no relation')
+    params=outer_params+inner_params
+    inner='SELECT DISTINCT '+','.join(base)+' FROM '+' CROSS JOIN '.join(outside)+' WHERE '+' AND '.join(outer_conditions)
     plain=[];outer=[];has_aggregate=False
     for name,e in selected.items():
         alias=ident(name)

@@ -53,3 +53,19 @@ identity and shared scalar prompt apply equally across all five methods; regener
 cohorts before dispatch. Two additional focused profile/routing checks passed,
 including 2/4/8-source pilot lowering within 64 operators and unchanged physical
 store references. One cleanup replay passed with both terminal/nonterminal cases.
+
+D1 v7 RDF admission passed all 8 cases and verified both source reaping and observer
+shutdown. D3 v6 also matched all 8 RDF answers, but retains its failed cleanup
+status; do not relabel that gate as successful.
+
+D2 v7 stopped before backend execution: the independent reference for frozen
+`D2-pilot-uniform-incoming_minimum-000-W1` (anchor `user:12937`) exceeded 60 seconds.
+Its contribution grain retains the rated edge but not the other-user witness.
+Enumerating all popular-movie witnesses before DISTINCT is unnecessary. Compile
+such unused witnesses into one correlated EXISTS, preserving their joint conditions,
+parameter association, contributing edge identities and aggregate inputs. This is
+an offline reference evaluator optimization, not a method optimizer change. Keep
+the same query, selection seed and source snapshot, and preserve the failed receipt.
+The repaired reference must pass the original bounds on the real source before
+backend admission. Eight focused toy reference/factor tests passed, including
+joint-witness constraints and parallel-edge contribution identity.
