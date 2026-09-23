@@ -113,7 +113,7 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
     import hashlib
     from xgap.backends.mapping import RdfBackendMapping
     from xgap.backends.rdf_terms import validate_iri
-    from xgap.backends.sparql_bindings import IRI_VALUES_MARKER
+    from xgap.backends.sparql_bindings import IRI_VALUES_MARKER, IRI_SINGLETON_MARKER
     p=base.parameters;point=p.get('rdf_binding_checkpoint',{})
     if (base.language!='sparql' or p.get('compiler')!='semantic_edge_match_v1'
             or point.get('text_sha256')!=hashlib.sha256(base.text.encode()).hexdigest()
@@ -146,6 +146,9 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
         # edge-to-leaf connection, producing endpoint-adjacency x all leaf IDs.
         # EXISTS cannot test this guard until the leaf is bound by the edge BGP.
         extra+='FILTER EXISTS { ?'+variables[leaf_column]+' <'+id_iri+'> '+scalar+' .\nFILTER('+' && '.join(checks)+') }\n'
+    # Guard literals are also user data, outside the typed endpoint body.
+    if IRI_SINGLETON_MARKER in extra:
+        constant_body=None
     flat=point.get('flat_body')
     if identity is not None:
         # A representative branch needs its first satisfying row, not all

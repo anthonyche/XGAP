@@ -197,7 +197,10 @@ The scalar-free, single-edge positive-label branch uses direct identity variable
 and a continuous triple pattern. Compiler-owned typed terms avoid renaming text
 inside IRIs/literals. Per-key SELECT/LIMIT needs no inner DISTINCT or redundant
 anchor; the combined relation retains DISTINCT. Composite predicates keep the
-audited fallback. This is semantic/compiler evidence; full-source admission and
+audited fallback. A typed endpoint-body template can substitute the single key
+into triple terms while retaining VALUES for projection; real label/marker
+collisions decline this optimization. It does not rely on source propagation
+from a VALUES table to an indexable triple. This is semantic/compiler evidence; full-source admission and
 performance evidence are recorded separately in the current status report.
 The online controller selects
 one plan from symbolic estimates and executes it once.

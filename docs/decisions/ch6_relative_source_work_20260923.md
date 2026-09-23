@@ -512,3 +512,22 @@ text rewriting. Full singleton-key UNION and per-key LIMIT remain; malformed
 keys fail, marker collision in a real logical label declines the optimization.
 Thirty focused tests pass, plus the six leaf tests rerun after adding literal
 marker-collision coverage. Final source admission remains pending.
+
+Constant-endpoint gate 3859203 (`ab86725`) still fails at case five: 64.451 s,
+source peak 3,935,657,984 bytes, first four EM=1. The captured 555,996-byte
+request contains the actual endpoint constants, so patch propagation is verified.
+Receipt SHA-256 `bd816d5706e8ab4b6d1a6b64e1490524cb6aa58d8216296f120f23c2783d34b1`;
+all service cleanup barriers pass. A later tiny guard-marker-collision fix also
+declines substitution for that literal case; six leaf tests pass. It does not
+change any of the eight presampled queries and was not applied to the running job.
+
+Local TDB2 execution of constant-body and anchor-first-body variants over the
+same synthetic data returns the same correct witness and identical reordered
+access sequence. The static algebra keeps a connected BGP. This does not justify
+yet another triple-order patch. Slurm records place the earlier successful warm
+diagnostics and the current failures on compt265, so a node change is excluded.
+v6/v7 failures use about 9.44/9.26 sampled source CPU seconds over about 64 s wall
+time and have predominantly file-backed source RSS. This suggests investigation
+of I/O/cache stalls but does not prove their cause or scanned cardinality. Next
+work must measure source page faults/I/O and actual scan volume before another
+full gate or a changed budget; no latency improvement is established so far.

@@ -119,6 +119,14 @@ def test_correlated_leaf_guard_rejects_missing_or_unrelated_values(reverse):
     literal_rows=list(g.query(bind_sparql_iris(literal_artifact.text,
         {**literal_artifact.parameters,'keys':[str(ns.m2)]})))
     assert len(literal_rows)==1 and literal_rows[0].entity in (ns.e2,ns.e3)
+    guard_collision=deepcopy(proof)
+    for guard in guard_collision['guards']:
+        for term in (guard['left'],guard['right']):
+            if 'value' in term:term['value']=IRI_SINGLETON_MARKER
+    guarded=compile_rdf_leaf_bound(base,backend,guard_collision,parameter='keys',max_bindings=4,max_bytes=20000)
+    assert 'inline_singleton' not in guarded.parameters['sparql_iri_binding']
+    g.set((ns.e1,ns.edgeLabel,ns.RATED));g.set((ns.u1,ns.id,Literal(IRI_SINGLETON_MARKER)))
+    assert not list(g.query(bind_sparql_iris(guarded.text,{**guarded.parameters,'keys':[str(ns.m1)]})))
 
 
 def test_many_witness_keys_have_bounded_algebra_depth_without_lost_keys():
