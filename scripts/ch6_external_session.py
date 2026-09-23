@@ -42,7 +42,7 @@ def verify_config(config,profile):
         if file_pin(config[name]['path'])!=config[name]:raise ValueError('Runtime artifact changed: '+name)
     if file_pin(config['python_command'])!=config['python']:
         raise ValueError('Virtual-environment interpreter no longer resolves to the pinned executable')
-    if Path(config['python_command']).parent.parent/'pyvenv.cfg'!=Path(config['python_environment']['path']):
+    if (Path(config['python_command']).parent.parent/'pyvenv.cfg').resolve()!=Path(config['python_environment']['path']).resolve():
         raise ValueError('Python invocation must retain its pinned virtual environment')
     for name in ('author_source','lookup_source'):
         pin=config[name];root=Path(pin['path'])
