@@ -358,6 +358,16 @@ def _sparql(
         if isinstance(item, LabelEquals) and isinstance(item.ref, EdgeRef):
             labels.setdefault(bound.edge_index(item.ref), item.value)
     body = []
+    # Preserve typed triple components for an alias-free scalar-free one-edge
+    # relation. Never rename variable-looking substrings inside mapped IRIs or
+    # literals. Complex predicates keep the ordinary audited compiler path.
+    identity_triples = [] if rdf_edge_encoding is not None and shape.edge_count == 1 else None
+    def triple(subject, predicate, obj):
+        line = f"{subject} <{predicate}> {obj} ."
+        if line not in body:
+            body.append(line)
+            if identity_triples is not None:
+                identity_triples.append((subject, predicate, obj))
     for index, edge in enumerate(shape.edges):
         left, right = (
             (index, index + 1)
@@ -367,11 +377,9 @@ def _sparql(
         if rdf_edge_encoding is not None:
             encoding = rdf_edge_encoding
             variable = f"?e{index + 1}"
-            body.extend((
-                f"{variable} <{encoding.class_predicate_iri}> <{encoding.edge_class_iri}> .",
-                f"{variable} <{encoding.source_predicate_iri}> ?n{left} .",
-                f"{variable} <{encoding.target_predicate_iri}> ?n{right} .",
-            ))
+            triple(variable, encoding.class_predicate_iri, f"<{encoding.edge_class_iri}>")
+            triple(variable, encoding.source_predicate_iri, f"?n{left}")
+            triple(variable, encoding.target_predicate_iri, f"?n{right}")
             if index in labels:
                 term = (
                     _literal(labels[index])
@@ -379,7 +387,7 @@ def _sparql(
                     else sparql._mapped_iri(labels[index], "edge_labels", mapping,
                                             used, profile.backend_id)
                 )
-                body.append(f"{variable} <{encoding.label_predicate_iri}> {term} .")
+                triple(variable, encoding.label_predicate_iri, term)
             continue
         predicate = f"?e{index + 1}"
         if index in labels:
@@ -406,10 +414,9 @@ def _sparql(
                 predicate = rdf_edge_encoding.label_predicate_iri
                 term = (_literal(item.value) if rdf_edge_encoding.label_encoding == "logical_string"
                         else sparql._mapped_iri(item.value, "edge_labels", mapping, used, profile.backend_id))
-            triple = f"{subject} <{predicate}> {term} ."
-            if triple not in body:
-                body.append(triple)
+            triple(subject, predicate, term)
             continue
+        identity_triples = None
         try:
             term = sparql_condition(bound, backend_id=profile.backend_id,
                 mapping=mapping, used=used, rdf_encoding=rdf_encoding,
@@ -439,11 +446,16 @@ def _sparql(
     ]
     text = "SELECT DISTINCT " + " ".join("?" + name for name in columns) + " WHERE {\n"
     text += "\n".join("  " + line for line in body) + "\n}"
+    identity_aliases = {'?e1': '?entity', '?n0': '?source', '?n1': '?target'}
     return text, {
         # Compiler-owned body for removing redundant one-edge subquery
         # projections. Consumers must retain the final DISTINCT projection.
         **({"rdf_single_edge_body": list(body)}
            if rdf_edge_encoding is not None and shape.edge_count == 1 else {}),
+        **({"rdf_single_edge_identity_body": [
+            f"{identity_aliases.get(s,s)} <{p}> {identity_aliases.get(o,o)} ."
+            for s,p,o in identity_triples]}
+           if identity_triples is not None else {}),
         **({
             "rdf_edge_encoding_id": rdf_edge_encoding.encoding_id,
             "rdf_edge_encoding_sha256": rdf_edge_encoding.identity,

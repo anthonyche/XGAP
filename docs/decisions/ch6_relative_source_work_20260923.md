@@ -450,3 +450,30 @@ compiler uses that body instead of parsing arbitrary SPARQL. Scalar/OPTIONAL
 queries are not admitted, and old artifacts retain the previous fallback.
 Twenty-nine targeted tests pass, including min/sum/count full toy answers.
 The next original 8-case gate uses a fresh service copy and unchanged budgets.
+
+Fresh-session gate 3859159 (`cc45a70`, `formal-endpoint-admission-v6/D2/rdf`)
+failed on the same fifth case: 64.641 s and 3,850,866,688 bytes sampled source
+RSS, below the original 4 GiB limit. The first four answers matched. This does
+not establish a working full RDF admission or a speedup.
+
+Comparison of the captured request with the successful 567-key diagnostic
+identified an incomplete integration: production still had per-branch DISTINCT,
+three alias BINDs and a redundant constant endpoint triple; the diagnostic used
+direct identity variables with SELECT/LIMIT and no redundant anchor. These
+differences may affect execution; cache/order also remains a competing cause.
+
+The follow-up compiler emits an alias-free relation only for a scalar-free
+single reified edge with positive atomic label conditions. It retains typed
+triple components and renames variable tokens at construction, never variable-
+looking substrings inside IRIs or literals. IN keeps positional endpoint
+semantics. Other conditions retain the existing path. Dropping the redundant
+anchor removes a consequence of the original BGP plus VALUES. Per-key LIMIT 1
+can use the first satisfying row without an inner DISTINCT; duplicate witnesses
+cannot alter existence. The outer DISTINCT, complete key set, joint guards,
+actual edge identity and final aggregation stay intact. Generation is linear
+in this body, within the existing bounded key expansion. No estimator observes
+these diagnostic results and no external baseline compiler is changed.
+
+Thirty focused tests pass, including missing/multivalued properties, parallel
+edges, reverse direction, mapped IRIs containing variable-looking text, and
+independent min/sum/count final answers. Fresh-source admission remains required.

@@ -37,7 +37,7 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
         raise ValueError("SPARQL binding requires exactly one VALUES marker")
     if 'per_key_limit' in spec or 'projection' in spec:
         if (type(spec.get('per_key_limit')) is not int or spec['per_key_limit']!=1
-                or 'singleton_anchor' not in spec or spec.get('projection')!=['entity','source','target']):
+                or spec.get('projection')!=['entity','source','target']):
             raise ValueError('Unknown representative leaf binding profile')
         single={k:v for k,v in spec.items() if k not in ('per_key_limit','projection')}
         branches=[];expanded_bytes=0

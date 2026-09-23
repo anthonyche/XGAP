@@ -133,6 +133,9 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
         fallback='true' if g['value_type']=='scalar' and g['op']=='ne' else 'false'
         checks.append('IF(BOUND('+scalar+'), IF(isLiteral('+scalar+'), IF(DATATYPE('+scalar+
             ') = <http://www.w3.org/2001/XMLSchema#string>, '+left+op+right+', '+fallback+'), '+fallback+'), false)')
+    identity=point.get('identity_body')
+    variables=({'entity':'entity','source':'source','target':'target'}
+               if identity is not None else point['variables'])
     extra=IRI_VALUES_MARKER+'\n'
     if checks:
         # Only existence of a jointly satisfying local property value matters:
@@ -141,9 +144,15 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
         # property triple lets ARQ's filter placement split the BGP BEFORE the
         # edge-to-leaf connection, producing endpoint-adjacency x all leaf IDs.
         # EXISTS cannot test this guard until the leaf is bound by the edge BGP.
-        extra+='FILTER EXISTS { ?'+point['variables'][leaf_column]+' <'+id_iri+'> '+scalar+' .\nFILTER('+' && '.join(checks)+') }\n'
+        extra+='FILTER EXISTS { ?'+variables[leaf_column]+' <'+id_iri+'> '+scalar+' .\nFILTER('+' && '.join(checks)+') }\n'
     flat=point.get('flat_body')
-    if flat is not None:
+    if identity is not None:
+        # A representative branch needs its first satisfying row, not all
+        # distinct witnesses. The typed binder adds LIMIT 1 independently to
+        # every key and retains DISTINCT over their combined identity rows.
+        # Direct identity variables also remove Extend/alias scope barriers.
+        text='SELECT ?entity ?source ?target WHERE {\n'+extra+'\n'.join(identity)+'\n}'
+    elif flat is not None:
         # Keep one projection over the compiler-owned scalar-free relation.
         # No OPTIONAL/scalar column is admitted above; all removed inner
         # variables are exactly aliases of the three final identity columns.
@@ -153,8 +162,9 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
     params={k:v for k,v in p.items() if k not in ('native_binding_checkpoint','rdf_binding_checkpoint')}
     params.update(bound_entity_parameter=parameter,bound_identity_column=column,
         binding_key_work_profile='scheduler-distinct-key-cap-v1',
-        sparql_iri_binding=dict(parameter=parameter,variable=point['variables'][column],max_bindings=max_bindings,max_bytes=max_bytes,
-            singleton_anchor=point['endpoint_anchors'][column],per_key_limit=1,projection=p['output_columns']),
+        sparql_iri_binding=dict(parameter=parameter,variable=variables[column],max_bindings=max_bindings,max_bytes=max_bytes,
+            **({'singleton_anchor':point['endpoint_anchors'][column]} if identity is None else {}),
+            per_key_limit=1,projection=p['output_columns']),
         leaf_witness=dict(profile=PROFILE,proof=proof,returned_rows_per_key_upper_bound=1,adjacency_scan_bound=None,max_bindings=max_bindings))
     return replace(base,text=text,parameters=params,artifact_id=base.artifact_id+'-leaf-witness')
 

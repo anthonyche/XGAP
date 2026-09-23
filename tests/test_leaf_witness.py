@@ -59,25 +59,37 @@ def test_rdf_branch_limit_and_full_expansion_bytes_are_bounded():
         bind_sparql_iris(text,{**p,'keys':['https://test/'+str(i) for i in range(4)]})
 
 
-def test_correlated_leaf_guard_rejects_missing_or_unrelated_values():
+@pytest.mark.parametrize('reverse',[False,True])
+def test_correlated_leaf_guard_rejects_missing_or_unrelated_values(reverse):
     from rdflib import Graph,Namespace,Literal,RDF
+    from xgap.pattern.ast import Direction
     from xgap.compilers.rdf_encoding import RdfEdgeEncoding
     from xgap.runtime.leaf_witness import compile_rdf_leaf_bound
     ns=Namespace('https://test/');g=Graph()
     terms={k:dict(kind=kind,representation=str(ns[k])) for k,kind in
            [('User','class'),('Movie','class'),('RATED','relation'),('id','property')]}
+    # Variable-looking text in a mapped IRI must not be alpha-renamed.
+    terms['User']['representation']=str(ns['User?n0'])
     mapping=dict(mapping_id='leaf-test',version='1',backends={'fuseki':dict(namespace=str(ns))},
                  term_mappings={'fuseki':terms})
     encoding=RdfEdgeEncoding('leaf-test',str(ns.Edge),str(ns.source),str(ns.target),str(ns.edgeLabel))
     backend=SemanticBackend('fuseki',str(ns),backend_mapping=mapping,rdf_edge_encoding=encoding)
-    base=compile_edge_match(EdgePattern(label='RATED'),{},backend_id='fuseki',backend_mapping=mapping,
-        rdf_edge_encoding=encoding,source=NodePattern(label='User'),target=NodePattern(label='Movie'))
+    base=compile_edge_match(EdgePattern(label='RATED',direction=Direction.IN if reverse else Direction.OUT),{},
+        backend_id='fuseki',backend_mapping=mapping,rdf_edge_encoding=encoding,
+        source=NodePattern(label='Movie' if reverse else 'User'),target=NodePattern(label='User' if reverse else 'Movie'))
     proof=next(leaf_proofs(template_query(CORES['D2'],'incoming_minimum','user:1',0)))
+    if reverse:
+        proof['boundary_column']='source'
+        for guard in proof['guards']:
+            for term in (guard['left'],guard['right']):
+                if 'endpoint' in term:term['endpoint']={'source':'target','target':'source'}[term['endpoint']]
     artifact=compile_rdf_leaf_bound(base,backend,proof,parameter='keys',max_bindings=4,max_bytes=20000)
-    assert artifact.text.count('SELECT DISTINCT')==1
+    assert artifact.text.count('SELECT')==1 and 'DISTINCT' not in artifact.text
+    assert 'BIND(' not in artifact.text and '<https://test/User?n0>' in artifact.text
+    assert 'singleton_anchor' not in artifact.parameters['sparql_iri_binding']
     assert 'flat_body' not in artifact.parameters
     for i in range(4):
-        g.add((ns['u'+str(i)],RDF.type,ns.User));g.add((ns['m'+str(i)],RDF.type,ns.Movie))
+        g.add((ns['u'+str(i)],RDF.type,ns['User?n0']));g.add((ns['m'+str(i)],RDF.type,ns.Movie))
     for u,value in [('u1','user:1'),('u2','user:1'),('u2','user:2'),('u3','unrelated')]:
         g.add((ns[u],ns.id,Literal(value)))
     for edge,u,m in [('e0','u0','m0'),('e1','u1','m1'),('e2','u2','m2'),('e3','u2','m2')]:
@@ -86,7 +98,7 @@ def test_correlated_leaf_guard_rejects_missing_or_unrelated_values():
     rows=list(g.query(bind_sparql_iris(artifact.text,{**artifact.parameters,
                       'keys':[str(ns['m'+str(i)]) for i in range(4)]})))
     assert len(rows)==1
-    assert rows[0].source==ns.u2 and rows[0].target==ns.m2
+    assert (rows[0].source,rows[0].target)==((ns.m2,ns.u2) if reverse else (ns.u2,ns.m2))
     assert rows[0].entity in (ns.e2,ns.e3)
 
 
