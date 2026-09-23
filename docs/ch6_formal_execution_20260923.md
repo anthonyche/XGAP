@@ -154,3 +154,23 @@ TS 保持 censored/null，不能因旧 raw terminal 中的 0 而改判错误。
 汇总产物：`/Users/anthonyche/xgap-data/ch6-cohort-aggregation-gate-20260923-v1/summary.json`，
 SHA-256 `3e94ad164e6d7665c8433ab6c3cbc0ad91478b071fe32684685af242bbeef864`。
 这是历史证据的汇总验收，未增加正式样本、模型调用或实验结果。
+
+### 实际输入与图中位置的绑定
+
+全量 release 区分 `case_bundles`（三域 overall test 分母）和 `factor_bundles`
+（实际 N/u、source/scale 输入）。后者不增加 overall n；每个输入仍有唯一 case ID、
+source snapshot、私有意图和独立参考。检查 controlled-state 的真实候选数/未绑定字段数，
+不能只填写 N/u 标签。N/u 扫描的 TS 为不支持 controlled 接口；其固定 NL 参考须另行绑定。
+
+`ch6_rebound_cohort.publish` 从冻结 D1 test 题包中按 ID 选取每个取样层的
+window_edge/W3 子集，跨源数/规模保持同一完整 Q、候选族和私有意图；源数扫描独立
+参考必须完全相同。规模扫描允许答案变化；active-anchor 资格固定在原始完整图，
+不能在每个 scale 重新挑活跃题。新输入使用独立名称空间，不覆盖原 case。
+源/规模变化必须引用真正物化并冻结的 prepared stores，编译通过仍需真实后端准入。
+
+正式 release 还必须包含覆盖每个绘图位置的 `figure_bindings`：figure、method、
+x_value、status，以及具体 unit/cell 引用或不可评分证据。固定参考重复引用同一组
+cells，不创造新重复；F6 引用已测量、同 Q/单位的 terminal sensitivity artifact。
+检查实际配置的 D/H/epsilon、controlled-state N/u、实际物化的源数/规模。价格扫描
+绑定冻结的 `cost_reference`，只有指定信息价格改变；没有注册 probe 时必须标明
+`inactive_factor`，不能将无变化曲线解释为信息获取策略收益。

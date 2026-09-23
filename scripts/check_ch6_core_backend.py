@@ -63,7 +63,7 @@ def run(bundle_pin, prepared_pin, output):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     bundle, prepared = load(bundle_pin), load(prepared_pin)
-    if (bundle['schema_version'] not in ('xgap-ch6-heldout-cases-v1', 'xgap-ch6-factor-inputs-v1') or not prepared.get('success')
+    if (bundle['schema_version'] not in ('xgap-ch6-heldout-cases-v1', 'xgap-ch6-factor-inputs-v1','xgap-ch6-deployment-factor-v1') or not prepared.get('success')
             or bundle['profile']['sha256'] != prepared['profile']['sha256']):
         raise ValueError('Frozen bundle/store identity mismatch')
     if not 1 <= len(bundle['cases']) <= 1024:
