@@ -188,7 +188,12 @@ all their predicates are evaluated before representative selection. It declines
 unbound retained-variable dependencies and unsupported property/path cases.
 Cypher uses a correlated per-key subquery; RDF uses capped singleton UNION
 branches with a whole-request byte bound. Output cardinality is bounded by sent
-keys, but adjacency scan work remains estimated. The online controller selects
+keys, but adjacency scan work remains estimated. RDF leaf-property guards use
+a correlated existential test: their scalar is not projected. This prevents
+ARQ filter placement from splitting the edge-to-leaf connection and evaluating
+an endpoint-adjacency / global-property Cartesian prefix. Missing properties
+do not qualify; multiple values require one jointly satisfying value.
+The online controller selects
 one plan from symbolic estimates and executes it once.
 
 Only actual actions are charged to `realized_acquisition_cost_estimate`.

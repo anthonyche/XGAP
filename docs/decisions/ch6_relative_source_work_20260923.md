@@ -327,3 +327,18 @@ the already-running resource diagnostic. No new dataset/case selection occurs.
 The [Jena optimizer documentation](https://jena.apache.org/documentation/tdb/optimizer.html)
 describes filter placement and algebra inspection; the observed algebra above,
 not the documentation alone, establishes this particular disconnected prefix.
+
+Resource-only diagnostic 3858334 failed at the same fifth case: the source
+request reached its 60 s timeout although the enlarged RSS budget was not hit
+(source sampled peak 6,856,650,752 bytes; worker observation 64.393 s).
+At the last sample, the graph JVM had 778,731,520 anonymous and 5,859,815,424
+file RSS bytes. Increasing the resource allowance alone is not a solution and
+the 16 GiB diagnostic is not adopted as a new formal default.
+
+Correlated-guard replay 3858337 uses code 52d2ec6 and the original 4 GiB source
+limit at `formal-endpoint-admission-v3/D2/rdf`. A separate Jena synthetic replay
+with 5,000 user nodes and 32 bound movie keys returns the identical one-row
+answer before/after (1.374 / 0.629 s including JVM startup; a diagnostic, not a
+paper performance claim). An additional regression checks missing properties,
+excluded-only values, multiple property values, parallel witness edges and a
+valid but unrelated node: only the actual connected satisfying witness survives.

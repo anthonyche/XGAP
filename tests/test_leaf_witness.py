@@ -57,3 +57,32 @@ def test_rdf_branch_limit_and_full_expansion_bytes_are_bounded():
         bind_sparql_iris(text,{**p,'sparql_iri_binding':{**spec,'max_bytes':200}})
     with pytest.raises(ValueError,match='excessive'):
         bind_sparql_iris(text,{**p,'keys':['https://test/'+str(i) for i in range(4)]})
+
+
+def test_correlated_leaf_guard_rejects_missing_or_unrelated_values():
+    from rdflib import Graph,Namespace,Literal,RDF
+    from xgap.compilers.rdf_encoding import RdfEdgeEncoding
+    from xgap.runtime.leaf_witness import compile_rdf_leaf_bound
+    ns=Namespace('https://test/');g=Graph()
+    terms={k:dict(kind=kind,representation=str(ns[k])) for k,kind in
+           [('User','class'),('Movie','class'),('RATED','relation'),('id','property')]}
+    mapping=dict(mapping_id='leaf-test',version='1',backends={'fuseki':dict(namespace=str(ns))},
+                 term_mappings={'fuseki':terms})
+    encoding=RdfEdgeEncoding('leaf-test',str(ns.Edge),str(ns.source),str(ns.target),str(ns.edgeLabel))
+    backend=SemanticBackend('fuseki',str(ns),backend_mapping=mapping,rdf_edge_encoding=encoding)
+    base=compile_edge_match(EdgePattern(label='RATED'),{},backend_id='fuseki',backend_mapping=mapping,
+        rdf_edge_encoding=encoding,source=NodePattern(label='User'),target=NodePattern(label='Movie'))
+    proof=next(leaf_proofs(template_query(CORES['D2'],'incoming_minimum','user:1',0)))
+    artifact=compile_rdf_leaf_bound(base,backend,proof,parameter='keys',max_bindings=4,max_bytes=20000)
+    for i in range(4):
+        g.add((ns['u'+str(i)],RDF.type,ns.User));g.add((ns['m'+str(i)],RDF.type,ns.Movie))
+    for u,value in [('u1','user:1'),('u2','user:1'),('u2','user:2'),('u3','unrelated')]:
+        g.add((ns[u],ns.id,Literal(value)))
+    for edge,u,m in [('e0','u0','m0'),('e1','u1','m1'),('e2','u2','m2'),('e3','u2','m2')]:
+        for p,o in [(RDF.type,ns.Edge),(ns.source,ns[u]),(ns.target,ns[m]),(ns.edgeLabel,ns.RATED)]:
+            g.add((ns[edge],p,o))
+    rows=list(g.query(bind_sparql_iris(artifact.text,{**artifact.parameters,
+                      'keys':[str(ns['m'+str(i)]) for i in range(4)]})))
+    assert len(rows)==1
+    assert rows[0].source==ns.u2 and rows[0].target==ns.m2
+    assert rows[0].entity in (ns.e2,ns.e3)
