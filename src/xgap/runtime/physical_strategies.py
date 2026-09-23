@@ -243,6 +243,8 @@ def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes,
                     + IRI_VALUES_MARKER + "\n{\n" + artifact.text + "\n}\n}")
         parameters["sparql_iri_binding"] = {"parameter": parameter, "variable": variable,
             "max_bindings": max_bindings, "max_bytes": max_binding_bytes}
+        if parameters.get('rdf_binding_placement')=='inside-innermost-bgp-v1' and identity_column in point.get('endpoint_anchors',{}):
+            parameters['sparql_iri_binding']['singleton_anchor']=point['endpoint_anchors'][identity_column]
     else:
         names = ", ".join(_cypher_identifier(c) for c in columns)
         native_identity = "entity" if identity_column == "entity" else _cypher_identifier(identity_column)

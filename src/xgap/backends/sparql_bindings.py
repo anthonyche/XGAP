@@ -20,7 +20,7 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
     spec = parameters.get("sparql_iri_binding")
     if spec is None:
         return text
-    if not isinstance(spec, Mapping) or set(spec) != {
+    if not isinstance(spec, Mapping) or set(spec)-{'singleton_anchor'} != {
         "parameter", "variable", "max_bindings", "max_bytes"
     }:
         raise ValueError("Invalid SPARQL IRI binding specification")
@@ -39,6 +39,16 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
     # query syntax cannot change the declared VALUES column or query structure.
     encoded = " ".join(f"<{value}>" for value in sorted({validate_iri(v) for v in values}))
     clause = f"VALUES ?{spec['variable']} {{ {encoded} }}"
+    if 'singleton_anchor' in spec:
+        anchor=spec['singleton_anchor']
+        if (not isinstance(anchor,Mapping) or set(anchor)!={'subject','predicate'}
+                or not isinstance(anchor['subject'],str) or not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*',anchor['subject'])):
+            raise ValueError('Invalid singleton endpoint anchor')
+        predicate=validate_iri(anchor['predicate'])
+        if len(set(values))==1:
+            # Compiler-owned redundant consequence of the original endpoint
+            # triple plus VALUES. No path parsing, truncation or new semantics.
+            clause+=f"\n?{anchor['subject']} <{predicate}> {encoded} ."
     if len(clause.encode("utf-8")) > spec["max_bytes"]:
         raise ValueError("SPARQL IRI binding byte budget exceeded")
     return text.replace(IRI_VALUES_MARKER, clause)

@@ -52,6 +52,13 @@ def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend
         text += "}"
         extra = {"rdf_result_encoding": RDF_TERMS_V1, "expected_result_columns": columns}
         extra['rdf_binding_checkpoint']=rdf_binding_checkpoint(text,base.text,{'entity':'e1','source':'n0','target':'n1'})
+        # A redundant constant triple for a singleton key exposes source index
+        # selectivity directly; VALUES alone may remain a late table join.
+        from xgap.pattern.ast import Direction
+        forward=edge.direction is Direction.OUT
+        extra['rdf_binding_checkpoint']['endpoint_anchors']={
+            'source':dict(subject='e1',predicate=rdf_edge_encoding.source_predicate_iri if forward else rdf_edge_encoding.target_predicate_iri),
+            'target':dict(subject='e1',predicate=rdf_edge_encoding.target_predicate_iri if forward else rdf_edge_encoding.source_predicate_iri)}
     return replace(base, text=text, parameters={**base.parameters, **extra,
         "compiler": "semantic_edge_match_v1", "output_columns": columns,
         "branch_edge_counts": [1], "workload_lowering": "edge_match_as_one_edge_path_v1"})

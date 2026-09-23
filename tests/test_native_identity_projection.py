@@ -92,3 +92,22 @@ def test_identity_property_escaping_and_invalid_names():
     for prop in ('',0,'unsafe\\u0060','line\nbreak'):
         with pytest.raises((ValueError,UnsupportedCompilationError)):
             compile_node_match(NodePattern(),{},backend_id='neo4j',identity_property=prop)
+
+
+def test_rdf_singleton_anchor_uses_stored_direction_and_preserves_key_caps():
+    from xgap.pattern.ast import Direction
+    from xgap.backends.sparql_bindings import bind_sparql_iris
+    _,_,_,_,backends,_,_=FrozenOneShotProfile.load(PROFILE,expected_sha256=PROFILE_SHA).materialize()
+    backend=backends['fuseki'];encoding=backend.rdf_edge_encoding;key='https://example.test/key'
+    for direction in (Direction.OUT,Direction.IN):
+        a=compile_edge_match(EdgePattern(label='TRANSFERRED_TO',direction=direction),{},backend_id='fuseki',
+            backend_mapping=backend.backend_mapping,rdf_edge_encoding=encoding,profile=backend.profile)
+        for col in ('source','target'):
+            bound,parameter=_bound_match_artifact(a,backend,max_bindings=16,max_binding_bytes=4096,identity_column=col)
+            params={**bound.parameters,parameter:[key]}
+            pred=encoding.source_predicate_iri if (col=='source')==(direction is Direction.OUT) else encoding.target_predicate_iri
+            triple='?e1 <'+pred+'> <'+key+'> .'
+            assert triple in bind_sparql_iris(bound.text,params)
+            assert triple not in bind_sparql_iris(bound.text,{**params,parameter:[key,key+'/second']})
+            small={**params,'sparql_iri_binding':{**params['sparql_iri_binding'],'max_bytes':1}}
+            with pytest.raises(ValueError,match='byte budget'):bind_sparql_iris(bound.text,small)

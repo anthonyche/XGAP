@@ -120,3 +120,20 @@ and never starts a service on a failed copy. The guard counts durable evidence
 plus the separate serving directory and checks free space on both filesystems.
 Only reconstructable copies are removed after source quiescence; original stores
 and all evidence remain. Seven focused copy/cleanup/accounting checks pass.
+
+Local-serving gate 3858243 retained the native first-case timeout (about 75.55 s
+whole execution, 4 requests). Thus storage placement alone does not solve the
+fanout bottleneck. RDF gate 3858244 completed preparation but its first case
+hit the 4 GiB aggregate source RSS guard after about 48.92 s; the two edge
+requests timed out. The requests contained an inner VALUES row for a single
+user, yet still consumed excessive resources. The output remains censored, not
+an empty or incorrect answer.
+
+For exact compiler-owned reified edge Matches, singleton endpoint binding now
+adds the redundant triple `?edge source-or-target <key>` next to VALUES. Its
+predicate comes from the frozen RDF edge encoding, adjusted for direction.
+This exposes a literal index key without relying solely on late VALUES joining.
+It is implied by the existing triple and the singleton binding; all original
+constraints remain. Multiple/empty keys keep the existing query. The added
+clause is included in the existing byte cap. Tiny execution equivalence plus
+direction/key-cap tests pass; actual Fuseki benefit is still unverified.
