@@ -380,3 +380,23 @@ explanation enabled. It is **failure replay only**, not a replacement workload,
 not a new evaluation subset, and its observations never enter the estimator.
 Evidence root: `formal-rdf-point-debug-v1`. No full pilot resubmission is made
 without a new diagnosis/fix.
+
+
+3858351 completed successfully: 1 / 16 actual witness rows; guard wall times
+5,384.310 / 16,143.982 ms; sampled peaks 151,674,880 / 218,890,240 bytes.
+These include JVM startup and verbose execution logging and are not comparable
+formal latency measurements. The trace contains eleven execution stages per
+branch, including redundant correlated positive edge-label predicates.
+
+The one-edge reified compiler now expresses positive atomic node/edge labels
+as mandatory constant-object triples and deduplicates an identical edge-label
+triple already emitted by the edge pattern. Each triple adds no new variable,
+is true exactly when the old EXISTS is true, and has at most one match for each
+bound row in an RDF graph. Composite/negative predicates and multi-edge code
+keep their existing Boolean compiler. Conflicting labels are retained.
+Twenty-nine focused tests pass (including independent RDF execution, conflicting
+labels, OR/NOT, both label encodings, leaf-property cases and balanced binds).
+Actual Jena optimized algebra now has one continuous edge/label BGP followed
+by the correlated property guard, rather than several filtered stages.
+Full-source validation retains the original cases and resource caps; this is
+a compiler optimization candidate, not yet a proven D2 latency improvement.

@@ -389,6 +389,27 @@ def _sparql(
             body.append(f"BIND({predicate} AS ?e{index + 1})")
         body.append(f"?n{left} {predicate} ?n{right} .")
     for bound in shape.conditions:
+        item = bound.condition
+        if rdf_edge_encoding is not None and shape.edge_count == 1 and isinstance(item, LabelEquals):
+            # Both endpoints and the edge are already bound by the mandatory
+            # reified-edge BGP. A positive atomic label test is therefore an
+            # exact constant-object triple join (at most one matching RDF
+            # triple), not a correlated subquery. Keep composite/negative
+            # conditions in the audited boolean compiler below.
+            if isinstance(item.ref, NodeRef):
+                subject = sparql._node_var(bound, item.ref)
+                predicate = (rdf_encoding.class_predicate_iri if rdf_encoding is not None
+                             else "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+                term = sparql._mapped_iri(item.value, "node_labels", mapping, used, profile.backend_id)
+            else:
+                subject = f"?e{bound.edge_index(item.ref)+1}"
+                predicate = rdf_edge_encoding.label_predicate_iri
+                term = (_literal(item.value) if rdf_edge_encoding.label_encoding == "logical_string"
+                        else sparql._mapped_iri(item.value, "edge_labels", mapping, used, profile.backend_id))
+            triple = f"{subject} <{predicate}> {term} ."
+            if triple not in body:
+                body.append(triple)
+            continue
         try:
             term = sparql_condition(bound, backend_id=profile.backend_id,
                 mapping=mapping, used=used, rdf_encoding=rdf_encoding,

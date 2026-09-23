@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from xgap.algebra.conditions import EdgeRef, PropertyEquals
+from xgap.algebra.conditions import EdgeRef, NodeRef, PropertyEquals, LabelEquals, Or, Not
 from xgap.backends.fuseki_client import FusekiClient
 from xgap.backends.rdf_terms import RDF_TERMS_V1
 from xgap.compilers import UnsupportedCompilationError
@@ -108,6 +108,28 @@ def test_edge_property_filter_uses_edge_resource_not_node_or_predicate(graph):
 def test_unlabeled_edges_exclude_rdf_metadata(graph):
     value = replace(pattern(), expr=Rel(EdgePattern()))
     assert paths(graph, compile_rdf(value)) == BY_ID["T02"]["expected_paths"]
+
+
+def test_one_edge_atomic_labels_are_exact_joins_without_duplicate_filters(graph):
+    value = replace(pattern("T03"), source=NodePattern(label="Person"),
+                    target=NodePattern(label="Person"), condition=None)
+    artifact = compile_rdf(value)
+    assert "EXISTS" not in artifact.text
+    assert artifact.text.count(f'<{ENCODING.label_predicate_iri}> "KNOWS" .') == 1
+    expected = paths(graph, artifact)
+    assert expected
+    # A conflicting positive condition must be retained, not discarded merely
+    # because this edge already has a label in its mandatory pattern.
+    conflict = replace(value, condition=LabelEquals(EdgeRef(1), "LIKES"))
+    assert paths(graph, compile_rdf(conflict)) == []
+    # Boolean branches remain predicates: promoting OR/NOT to mandatory triples
+    # would silently change the declared query semantics.
+    for condition in (Or(LabelEquals(NodeRef.first(), "Person"),
+                         LabelEquals(EdgeRef(1), "LIKES")),
+                      Not(LabelEquals(EdgeRef(1), "LIKES"))):
+        boolean = compile_rdf(replace(value, condition=condition))
+        assert "EXISTS" in boolean.text
+        assert paths(graph, boolean) == expected
 
 
 def test_label_term_encoding_is_explicit_and_mapping_is_used(graph, rdf):
