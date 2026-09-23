@@ -259,3 +259,19 @@ selection, profile, templates, queries and backend stores remain the originals.
 This is independent reference preparation, not XGAP/baseline online work. Eleven
 focused reference tests pass, including unchanged source digest, covering-index
 use and identical answers for zigzag/cycle/parallel contribution queries.
+
+The covering-index preparation 3858313 has completed the native 24-case test
+reference bank (76.09 s including publication work), preserving the original
+private preselection exactly. RDF references are checked separately.
+
+RDF direct-file diagnostic 3858310 did not solve the fifth-case RSS failure;
+4,301,688,832 bytes were observed. Keep this negative result and retain default
+file access for the next compiler replay. Query inspection revealed that the
+representative compiler placed an OPTIONAL leaf-property pattern before the
+edge BGP. This creates a left-join barrier while the leaf is still unbound.
+All admitted guards explicitly return false when the property is unbound, so
+OPTIONAL plus that filter is exactly an inner property join. The compiler now
+emits that mandatory triple, allowing the endpoint and edge patterns to join
+before global property expansion. Missing values still cannot pass. Ten focused
+leaf/bind tests pass, including complete RDF min/sum/count results against the
+independent evaluator. Actual large-source replay remains required.

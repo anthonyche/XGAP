@@ -68,6 +68,10 @@ def test_anchor_and_nested_witness_reductions_preserve_independent_gold(tmp_path
           if p.metadata['unified_rewrite']['rule']=='leaf_witness']
     assert leaf
     for plan in leaf:
+        for node in plan.nodes:
+            a=node.parameters.get('artifact',{})
+            if a.get('parameters',{}).get('leaf_witness'):
+                assert '?xgap_leaf_id' in a['text'] and 'OPTIONAL' not in a['text']
         result=scheduler.execute(plan)
         assert result.success,result
         assert list(result.final_rows)==expected,plan.metadata['unified_rewrite']
