@@ -195,7 +195,7 @@ def question_text(core, name, query, policy):
 
 
 def publish(*, index_receipt, profile_path, profile_sha256, output, split, anchors_per_template, seed=20260923,
-            deployment_selection='balanced'):
+            deployment_selection='balanced',reference_workspace=None):
     if split not in TEMPLATES or not 1<=anchors_per_template<=100:raise ValueError('Explicit bounded split/size required')
     if deployment_selection not in ('balanced','all'):raise ValueError('Unknown predeclared deployment assignment')
     index=json.loads(Path(index_receipt).read_text());verify(index['database'])
@@ -204,6 +204,16 @@ def publish(*, index_receipt, profile_path, profile_sha256, output, split, ancho
     doc=json.loads(Path(profile_path).read_text());materialization=json.loads(Path(doc['offline']['materialization']['path']).read_text())
     verify(doc['offline']['materialization'])
     if materialization['index_receipt']['sha256']!=pin(index_receipt)['sha256']:raise ValueError('Profile and reference index differ')
+    reference_database=None
+    if reference_workspace is not None:
+        verify(reference_workspace)
+        workspace=json.loads(Path(reference_workspace['path']).read_text())
+        if (not workspace.get('success') or workspace.get('schema_version')!='xgap-independent-reference-index-v1'
+                or workspace['source_index']['sha256']!=pin(index_receipt)['sha256']
+                or workspace['original_database']!=index['database']
+                or workspace.get('row_mutations')!=0 or not workspace.get('source_copy_verified_before_ddl')):
+            raise ValueError('Independent reference workspace source differs')
+        verify(workspace['database']);reference_database=workspace['database']['path']
     scale=materialization['scale'];core=index['core'];dataset=index['dataset']
     deployment='native' if 'neo4j' in doc['backends'] else 'rdf'
     _,_,_,sources,backends,_,_=profile.materialize()
@@ -270,18 +280,19 @@ def publish(*, index_receipt, profile_path, profile_sha256, output, split, ancho
             _,_,state=read_state(controlled,question)
             expected=(1,0) if row['workload']=='W1' else (2,1) if row['workload']=='W2' else (8,3)
             if (state['initial_candidate_count'],state['initial_ambiguity'])!=expected:raise ValueError('Actual N/u differs: '+cid)
-            reference=evaluate(q,index_receipt,scale=scale)
+            reference=evaluate(q,index_receipt,scale=scale,execution_database=reference_database)
             fields={k:('text' if 'var' in e and e['property']=='id' else 'integer' if 'var' in e or e['aggregate']=='count' else 'decimal3-half-up') for k,e in q['select'].items()}
             norm=dict(schema_version='xgap-row-normalization-v1',fields=fields)
             normalized=normalize_rows(reference['rows'],norm)
             reference_pin=write_once(directory/'reference.json',dict(schema_version='xgap-normalized-row-reference-v1',
                 dataset=doc['dataset'],question_id=cid,query_sha256=fingerprint(q),source_snapshot_sha256=snapshot,
                 ordered=True,normalization=norm,rows=normalized))
-            write(directory/'reference-evidence.json',{**reference,'query_sha256':fingerprint(q),'index':pin(index_receipt)})
+            write(directory/'reference-evidence.json',{**reference,'query_sha256':fingerprint(q),'index':pin(index_receipt),
+                'reference_workspace':reference_workspace})
             state_pin=write_once(directory/'controlled-state.json',controlled)
             cases.append({k:row[k] for k in ('case_id','stratum','template','workload','template_family')}|
                 dict(request=request,oracle=oracle,scope=scope,reference=reference_pin,controlled_state=state_pin,
-                    reference_engine='independent_relational',initial_candidate_count=state['initial_candidate_count'],
+                    reference_engine=reference['engine'],initial_candidate_count=state['initial_candidate_count'],
                     initial_ambiguity=state['initial_ambiguity'],contributing_sources=sorted(used_sources),
                     deployment=deployment,source_snapshot_sha256=snapshot,
                     structures=[STRUCTURES.get(row['template'],'development')]))

@@ -66,6 +66,22 @@ class HeldoutReferenceTests(unittest.TestCase):
         self.assertNotIn('e',choose_anchors(meta,stratum='active-anchor',size=4,seed=1))
         with self.assertRaises(ValueError):choose_anchors(meta,stratum='active-anchor',size=5,seed=1)
 
+    def test_independent_covering_index_copy_keeps_facts_and_reference_answers(self):
+        from prepare_ch6_reference_workspace import prepare
+        from xgap.experiments.ch6_formal_protocol import load_pin
+        original=pin(self.root/'facts.sqlite')
+        receipt=load_pin(prepare(pin(self.index),self.root/'indexed',self.root/'work'))
+        self.assertEqual(pin(self.root/'facts.sqlite'),original)
+        self.assertEqual(receipt['row_mutations'],0)
+        self.assertEqual(receipt['original_database'],original)
+        with sqlite3.connect(receipt['database']['path']) as db:
+            detail=list(db.execute('EXPLAIN QUERY PLAN SELECT src FROM edges WHERE dst=?',('b',)))
+            self.assertIn('COVERING INDEX reference_dst_src',str(detail))
+        for name in ('zigzag','cycle','witnessed_sum'):
+            q=template_query(CORES['D3'],name,'a',0)
+            self.assertEqual(evaluate(q,self.index)['rows'],
+                evaluate(q,self.index,execution_database=receipt['database']['path'])['rows'])
+
     def test_set_projection_exists_matches_general_reference_and_keeps_coupled_edges(self):
         from xgap.experiments.ch6_sql_reference import compile_reference
         from xgap.experiments.ch6_fact_index import read_index

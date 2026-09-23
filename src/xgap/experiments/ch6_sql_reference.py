@@ -266,9 +266,14 @@ class ReferenceExecutionError(RuntimeError):
         super().__init__(str(error));self.evidence=evidence
 
 
-def evaluate(query, index_receipt, *, seconds=60, row_cap=100000, scale='1'):
+def evaluate(query, index_receipt, *, seconds=60, row_cap=100000, scale='1',execution_database=None):
     if seconds<=0 or row_cap<1:raise ValueError('Positive reference bounds required')
     compiled=compile_reference(query,index_receipt,scale=scale)
+    if execution_database is not None:
+        # The publisher verifies its offline index-only derivation once, before
+        # any query. Retain both paths in evidence; the original remains frozen.
+        compiled['original_database']=compiled['database']
+        compiled['database']=str(execution_database)
     sql,parameters=compiled['sql'],compiled['parameters']
     started=time.monotonic();explain=[]
     with read_index(compiled['database']) as db:

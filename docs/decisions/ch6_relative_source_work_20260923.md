@@ -239,3 +239,23 @@ Heap, source RSS, query time and worker limits remain unchanged. This is a
 deployment diagnostic, not an improved baseline algorithm. Any adopted formal
 serving configuration must be shared by all methods and frozen before comparison.
 The original RDF failure is not yet attributed conclusively to mapped pages.
+
+Full-source statistics job 3858302 completed in 2:02 (the statistics receipt
+records 104.82 s offline). RATED has 20,000,263 rows, 138,493 source endpoints and
+26,744 target endpoints; maximum degrees are 9,254 and 67,310 respectively.
+Both native/RDF v2 selection diagnostics used the endpoint statistics and kept
+all sixteen selected plans free of full edge reads. They made no backend/model
+calls. No latency calibration or answer-based estimator fitting occurred.
+
+Reference v4 retained every presampled case but still stopped at native zigzag
+(4 references completed) and RDF cycle (22 completed). The remaining SQL plans
+use single-endpoint indexes followed by table lookups and DISTINCT sorting.
+`prepare_ch6_reference_workspace.py` therefore creates an offline SQLite copy,
+verifies its complete original byte digest, and applies only covering indexes
+on `(src,dst)` and `(dst,src)`. No rows are inserted, removed or updated. The
+derived database and exact DDL are sealed separately; the publisher checks the
+original source pin and derived file digest before any evaluation. Source
+selection, profile, templates, queries and backend stores remain the originals.
+This is independent reference preparation, not XGAP/baseline online work. Eleven
+focused reference tests pass, including unchanged source digest, covering-index
+use and identical answers for zigzag/cycle/parallel contribution queries.
