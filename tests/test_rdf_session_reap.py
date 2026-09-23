@@ -29,3 +29,18 @@ def test_late_owned_child_reap_and_observer_shutdown_are_independent(tmp_path,mo
         assert result['observer_stopped'] and not session.observer.thread.is_alive()
         assert result['owned_groups_drained'] is finishes
         assert result['processes'][0]['cleanup']['complete'] is finishes
+
+
+def test_failed_nfs_reclamation_still_seals_quiescence(tmp_path,monkeypatch):
+    session=sessions.RdfTdbSession.__new__(sessions.RdfTdbSession)
+    session.root=tmp_path;session.processes=SimpleNamespace(owned=[],logs=[])
+    session.ports=None;session.observer=None;session.discard_serving_copies=True
+    session.prepared={'stores':{'graph':{}}}
+    (tmp_path/'graph-tdb2').mkdir()
+    def busy(path):raise OSError(39,'Directory not empty',str(path))
+    monkeypatch.setattr(sessions.shutil,'rmtree',busy)
+    result=session.close()
+    assert result['owned_groups_drained'] and result['observer_stopped']
+    assert not result['serving_copy_reclamation_complete']
+    assert len(result['retained_serving_copy_errors'])==1
+    assert (tmp_path/'closed.json').exists() and (tmp_path/'graph-tdb2').exists()

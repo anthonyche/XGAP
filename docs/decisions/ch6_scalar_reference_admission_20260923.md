@@ -69,3 +69,11 @@ the same query, selection seed and source snapshot, and preserve the failed rece
 The repaired reference must pass the original bounds on the real source before
 backend admission. Eight focused toy reference/factor tests passed, including
 joint-witness constraints and parallel-edge contribution identity.
+
+D1 v7 native also returned all 8 expected answers. Its final receipt was interrupted
+by an NFS `Directory not empty` error while removing a reconstructable serving copy.
+Keep source termination/observer closure separate from storage reclamation: persist
+reclamation errors and retained paths without retrying deletion or losing query
+outcomes. This does not upgrade an unknown process-group state. The old v7 native
+run remains incomplete; a new admission must produce the complete closure receipt.
+Five focused shutdown/retirement fixtures passed after updating stale Popen fixtures.

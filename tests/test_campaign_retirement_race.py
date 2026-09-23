@@ -15,6 +15,7 @@ def test_permission_error_after_last_group_member_exit_is_read_verified(monkeypa
     monkeypatch.setattr(module.os,'killpg',deny)
     class Process:
         pid=12
+        returncode=143
         def poll(self):return 143
     r=module._stop_group(Process(),ProcessBudget())
     assert r['complete'] and r['resolved_permission_races']==1 and r['signals']==[]
@@ -38,6 +39,7 @@ def test_disk_session_reaps_owned_leader_and_only_discards_new_copies(tmp_path,m
     session=RdfTdbSession.__new__(RdfTdbSession);session.root=tmp_path/'session';session.root.mkdir()
     session.processes=SimpleNamespace(owned=[('already-exited',child)],logs=[])
     session.observer=None;session.ports=None;session.discard_serving_copies=True
+    session.prepared={'stores':{}}
     retained=session.root/'query-response.json';retained.write_text('immutable outcome')
     frozen=tmp_path/'frozen-source';frozen.write_text('original data')
     for name in ('graph-tdb2','control-tdb2','fedup-host/serving-summary'):

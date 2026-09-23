@@ -115,13 +115,22 @@ class RdfTdbSession:
             'observer_stopped':self.observer is None or (not self.observer.thread.is_alive() and not self.observer.inflight)}
         result['owned_groups_drained']=drained and not any(_group_sample(row['pid']) for row in rows)
         if self.discard_serving_copies and result['owned_groups_drained'] and result['observer_stopped']:
-            removed=[]
-            for relative in (*self.serving_copy_paths,*(n+'-tdb2' for n in self.prepared['stores'])):
+            removed=[];retained=[]
+            for relative in dict.fromkeys((*self.serving_copy_paths,*(n+'-tdb2' for n in self.prepared['stores']))):
                 path=self.root/relative
                 if path.exists():
-                    if path.is_symlink():raise ValueError('Refuse to discard redirected serving copy')
-                    shutil.rmtree(path);removed.append(relative)
+                    try:
+                        if path.is_symlink():raise ValueError('Refuse to discard redirected serving copy')
+                        shutil.rmtree(path);removed.append(relative)
+                    except (OSError,ValueError) as error:
+                        # NFS may retain delayed-unlink files after the owned
+                        # JVM has exited. Storage reclamation is separate from
+                        # source quiescence; always seal the latter and retain
+                        # this bounded failure without a destructive retry loop.
+                        retained.append(dict(path=relative,error_type=type(error).__name__,error=str(error)))
             result['discarded_reconstructable_serving_copies']=removed
+            result['serving_copy_reclamation_complete']=not retained
+            result['retained_serving_copy_errors']=retained
             result['frozen_inputs_and_all_query_artifacts_retained']=True
         # The caller may close after start already performed failure cleanup.
         if not (self.root/'closed.json').exists():write_once(self.root/'closed.json',result)
