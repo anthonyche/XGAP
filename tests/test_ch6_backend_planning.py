@@ -14,7 +14,13 @@ from xgap.experiments.ch6_fact_index import pin,write
 def test_complete_query_admission_executes_only_one_selected_plan(tmp_path,monkeypatch,planning):
     data,options,calls=local_runtime();q=deepcopy(data['query_template']);q['contribution_by']=q.pop('deduplicate_by')
     doc={'source_schema':options['source_schema']}
-    materialized=(doc,None,None,options['sources'],options['backends'],{}, {'performance':(options['physical_profile'],None)})
+    predictions=[]
+    def predict(plan):
+        predictions.append(plan)
+        return SimpleNamespace(status='unavailable',estimated_ms=None,to_dict=lambda:{'status':'unavailable'})
+    # FrozenOneShotProfile returns estimator second, catalog third. Neither is
+    # None: the fixture must catch accidentally swapping these two contracts.
+    materialized=(doc,SimpleNamespace(predict=predict),object(),options['sources'],options['backends'],{}, {'performance':(options['physical_profile'],None)})
     monkeypatch.setattr(gate,'FrozenOneShotProfile',SimpleNamespace(load=lambda *_args,**_kwargs:SimpleNamespace(materialize=lambda:materialized)))
     monkeypatch.setattr(gate,'native_clients',lambda _:options['backend_clients'])
     write(tmp_path/'oracle.json',private_query_intent(QUESTION,q,language_version='v2'))
@@ -28,5 +34,6 @@ def test_complete_query_admission_executes_only_one_selected_plan(tmp_path,monke
     assert result['backend_calls']==len(calls)>0
     assert answer['rows']==data['expected']
     if planning=='unified':
+        assert predictions
         report=json.loads((tmp_path/'worker/planning.json').read_text())
         assert report['external_calls_during_search']==0 and report['final_plan_executions']==1

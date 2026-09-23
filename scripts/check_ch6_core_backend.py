@@ -36,7 +36,7 @@ def worker(bundle_pin, case_id, profile_pin, output, planning='fixed_scan'):
     case = next(c for c in bundle['cases'] if c['case_id'] == case_id)
     intent = load(case['oracle'])
     profile = FrozenOneShotProfile.load(profile_pin['path'], expected_sha256=profile_pin['sha256'])
-    doc, _, estimator, sources, backends, specs, modes = profile.materialize()
+    doc, estimator, _, sources, backends, specs, modes = profile.materialize()
     snapshot = snapshot_identity(sources, backends, doc['source_schema'])
     if snapshot != case['source_snapshot_sha256']:
         raise ValueError('Actual backend and authored snapshot differ')

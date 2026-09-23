@@ -93,3 +93,18 @@ are introduced. Preserve the original fixed-scan gate for failure evidence.
 Two tiny RDF execution checks passed for both admission profiles; real D2 unified
 admission remains required. A hypothesized scalar-filter issue was excluded by
 checking the lowering contract; no source-filter implementation was changed.
+
+Unified admission v1 stopped before any backend calls because its new wrapper
+unpacked the catalog as the estimator. Correct the wrapper to the existing
+materialize contract and make both fixture positions non-null, with a checked
+predict call. This is an admission-harness bug, not a policy or backend result.
+
+D2 RDF loading v5 reached 34 million triples while still progressing, then hit
+the declared 3600-second offline bound; peak RSS was below its cap. Add an optional
+new node-local workspace for loader/index I/O, followed by a hash-verified durable
+copy. Keep frozen source/profile identity and the serving/query environment
+unchanged. Reserve space for both copies, reject overlapping paths and symlinks,
+retain failure logs, and reclaim only newly owned, successfully copied workspace
+files. This changes offline preprocessing, not online experiment accounting.
+Five focused checks passed for one-shot admission, durable-copy integrity,
+corruption rejection and workspace separation. Real repaired gates are still needed.
