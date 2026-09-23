@@ -247,3 +247,13 @@ before reuse/resume. Catalog/data/estimator creation remains offline and frozen.
 The current tiny admissions prove these interfaces, not comparative effectiveness
 or scalability. Full dataset/method admission and the revised Chapter 7 release
 remain separate gates.
+
+
+### 单边 RDF 编译中的正向标签条件（2026-09-23）
+
+针对 reified one-edge Match，正向原子类型/标签检查编译为固定宾语三元组，
+与端点和边的基本图模式连续合并，重复边标签三元组只保留一次。端点与边变量
+已由图模式绑定，RDF 集合中相同三元组至多出现一次，因此与原 EXISTS 语义等价，
+不会增加每行多重性。不同标签约束均保留；OR/NOT 与多边编译继续使用原条件编译器。
+存在性叶节点的联合 ID 属性条件仍使用相关 EXISTS，避免提前跨接所有节点 ID。
+该编译优化不改变候选/估计器选择、不观察当前查询答案、不影响外部 baseline 编译。

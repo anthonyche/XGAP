@@ -400,3 +400,19 @@ Actual Jena optimized algebra now has one continuous edge/label BGP followed
 by the correlated property guard, rather than several filtered stages.
 Full-source validation retains the original cases and resource caps; this is
 a compiler optimization candidate, not yet a proven D2 latency improvement.
+
+
+Full-source label-join replay 3858362 (`d41267c`) still fails on case five
+with the 60 s source timeout (64.538 s worker observation, sampled source peak
+3,835,154,432 bytes). First four cases remain EM=1. Receipt SHA-256
+`62e1c47521e09bc97f0a21e6bbe6e53c17eb67c932e25f0f28197aa8e1021c47`.
+The patch is semantically verified but has not removed the admission blocker.
+
+Next diagnostic compares the first 16 captured branches with an ARQ LATERAL
+representation, then all 567 captured keys under 60 s / 4 GiB per request.
+It uses a private verified graph copy and no model calls, not a new evaluation
+subset. Jena's documented correlated per-row LIMIT is tested separately from
+portable SPARQL; nothing enables the extension for other backends by default.
+Local Jena 5.6.0 synthetic 32-key execution matches the previous exact one-row
+result (0.793 s including startup, not a speedup claim).
+Reference: https://jena.apache.org/documentation/query/lateral-join.html .
