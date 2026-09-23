@@ -74,3 +74,17 @@ The final outer identity predicate remains. Legacy/wrapped text with a different
 hash retains the old correct wrapper; arbitrary Cypher is never parsed or edited.
 This addresses an execution barrier in the generated query; 9 focused native
 identity/bind tests passed, while real Neo4j execution remains the next gate.
+
+The real v4 gate (3858143, `180632c`) failed on the original first question:
+`cq5/native` timed out, 4 backend calls, about 78.93 seconds total execution.
+The previous transaction-memory exception was not observed in this replay;
+this is not yet a successful memory/performance/correctness result. The read
+observer retained about 14.55 MB of completed response bodies. Failure preserved
+under `formal-unified-admission-v4/D2/native`.
+
+The next bounded compiler revision also places a node-only endpoint subquery
+before the edge MATCH for source/target binds. It returns each matching endpoint
+once, then expands from that bound variable; the identical inner and outer
+identity predicates remain. This exact local semijoin does not promise an index
+seek or bypass the existing limits. Node/edge-identity binds retain their previous
+path. Four targeted compiler/identity checks pass; real replay remains necessary.

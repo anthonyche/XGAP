@@ -69,11 +69,15 @@ def test_bind_wrapping_retains_declared_identity_and_projection():
         for col in ('entity','source','target') if edge else ('entity',):
             bound,parameter=_bound_match_artifact(a,backend,max_bindings=16,max_binding_bytes=4096,identity_column=col)
             point=a.parameters['native_binding_checkpoint'];offset=point['offset']
-            assert a.text[:offset] in bound.text and a.text[offset:] in bound.text
+            assert a.text[len('CALL {\n'):offset] in bound.text and a.text[offset:] in bound.text
             early=f'($xgap_strategy_entity_namespace + {point["variables"][col]}.xgap_id) IN $'+parameter
             assert bound.text.index(early)<bound.text.index('RETURN DISTINCT ')
             assert f'{col}.xgap_id' in bound.text  # final defensive identity filter remains
-            assert bound.parameters['native_binding_placement']=='before-innermost-distinct-v1'
+            anchored=edge and col in ('source','target')
+            assert bound.parameters['native_binding_placement']==('endpoint-anchor-before-expand-v1' if anchored else 'before-innermost-distinct-v1')
+            if anchored:
+                v=point['variables'][col]
+                assert bound.text.index('RETURN '+v+'\n}\n')<bound.text.index('MATCH (n0)-[e1]')
             assert bound.parameters['native_identity_projection']=='property-map-v1'
             assert bound.parameters['bound_entity_parameter']==parameter
             wrapped=replace(a,text='// independently wrapped artifact\n'+a.text)

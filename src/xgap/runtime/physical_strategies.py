@@ -250,6 +250,18 @@ def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes,
             early='WITH *\nWHERE ($'+namespace_parameter+' + '+_cypher_identifier(variable)+'.'+_cypher_identifier(backend.identity_property)+') IN $'+parameter+'\n'
             native_text=native_text[:offset]+early+native_text[offset:]
             parameters['native_binding_placement']='before-innermost-distinct-v1'
+            if compiler=='semantic_edge_match_v1' and identity_column in ('source','target'):
+                # Materialize only the matching endpoint nodes before expanding
+                # edges. The same identity predicate before DISTINCT alone can
+                # still let the engine choose a full relationship scan first.
+                # This is an exact local semijoin, not an index-use assertion.
+                prefix='CALL {\n'
+                if not native_text.startswith(prefix):raise _NotAdmitted('Unknown Match subquery boundary')
+                variable=_cypher_identifier(variable)
+                endpoint=('CALL {\nMATCH ('+variable+')\nWHERE ($'+namespace_parameter+' + '+variable+'.'
+                    +_cypher_identifier(backend.identity_property)+') IN $'+parameter+'\nRETURN '+variable+'\n}\n')
+                native_text=prefix+endpoint+native_text[len(prefix):]
+                parameters['native_binding_placement']='endpoint-anchor-before-expand-v1'
         text = ("CALL {\n" + native_text + "\n}\nWITH " + names
                 + "\nWHERE ($" + namespace_parameter + " + " + native_identity + "."
                 + _cypher_identifier(backend.identity_property) + ") IN $" + parameter
