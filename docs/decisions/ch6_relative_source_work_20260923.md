@@ -137,3 +137,17 @@ It is implied by the existing triple and the singleton binding; all original
 constraints remain. Multiple/empty keys keep the existing query. The added
 clause is included in the existing byte cap. Tiny execution equivalence plus
 direction/key-cap tests pass; actual Fuseki benefit is still unverified.
+
+The user requires D2 to pass before formal results. Source-side fanout, estimator
+error and missing physical alternatives are now tracked separately. Reference
+bank v2 (3858253) still timed out: EXPLAIN shows node-range Cartesian iteration
+and global DISTINCT/ORDER sorting despite independent edge EXISTS predicates.
+The independent reference now admits ordered adjacency enumeration for the exact
+node-ID set projection fragment. It visits ID domains in declared lexicographic
+order, seeds each domain from a bound incident edge, retains every conjunct and
+stops only at the query's own LIMIT. All unanchored nodes must be projected, all
+projected nodes must be ordered, and cross-edge predicates fall back to the
+general evaluator. A single shared deadline and output cap remain; no partial
+answer or sample substitution is allowed. Six focused reference tests pass,
+including parallel edges, cycles, reversed ordering, 20,000 isolated nodes and
+comparison with the original exhaustive relational evaluator on tiny facts.

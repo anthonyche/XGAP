@@ -77,12 +77,33 @@ class HeldoutReferenceTests(unittest.TestCase):
                     general=compile_reference(q,self.index,scale=scale,projection_exists=False)
                     self.assertTrue(optimized['sql'].startswith('SELECT DISTINCT'))
                     with read_index(optimized['database']) as db:
-                        self.assertEqual(list(db.execute(optimized['sql'],optimized['parameters'])),
-                            list(db.execute(general['sql'],general['parameters'])))
+                        expected=list(db.execute(general['sql'],general['parameters']))
+                        self.assertEqual(list(db.execute(optimized['sql'],optimized['parameters'])),expected)
+                    actual=evaluate(q,self.index,scale=scale)
+                    self.assertEqual([tuple(r.values()) for r in actual['rows']],expected)
+                    self.assertEqual(actual['engine'],'independent_ordered_adjacency')
         q=template_query(CORES['D3'],'cycle','a',0)
         q['where'].append(dict(left=dict(var='e',property='amount'),op='lt',
             right=dict(var='f',property='amount'),value_type='scalar'))
         self.assertTrue(compile_reference(q,self.index)['sql'].startswith('WITH RECURSIVE'))
+
+    def test_ordered_adjacency_preserves_descending_limit_and_avoids_node_cartesian(self):
+        from xgap.experiments.ch6_sql_reference import compile_reference
+        db=sqlite3.connect(self.root/'facts.sqlite')
+        db.executescript('CREATE INDEX edge_src ON edges(src,ordinal); CREATE INDEX edge_dst ON edges(dst,ordinal);'
+                        'CREATE INDEX node_kind ON nodes(kind,id);')
+        add_nodes(db,[dict(id='isolated:'+str(i),type='Account') for i in range(20000)])
+        db.close()
+        for name in ('window_edge','zigzag','cycle','ordered_star'):
+            q=template_query(CORES['D3'],name,'a',0);q['limit']=2
+            for order in q['order_by']:order['direction']='desc'
+            original=compile_reference(q,self.index,projection_exists=False)
+            with sqlite3.connect(self.root/'facts.sqlite') as db:
+                expected=list(db.execute(original['sql'],original['parameters']))
+            result=evaluate(q,self.index)
+            self.assertEqual([tuple(r.values()) for r in result['rows']],expected)
+            self.assertLess(result['step_calls'],30)
+            self.assertTrue(any('edge_src' in str(s) for s in result['explain']))
 
     def test_star_reference_joins_edges_before_unanchored_node_ranges(self):
         db=sqlite3.connect(self.root/'facts.sqlite')

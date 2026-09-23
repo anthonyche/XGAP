@@ -167,7 +167,47 @@ def compile_reference(query, index_receipt, *, scale='1', projection_exists=True
             if query['limit'] is not None:
                 if type(query['limit']) is not int or query['limit']<=0:raise ValueError('Bad query limit')
                 sql+=' LIMIT '+str(query['limit'])
-            return dict(sql=sql,parameters=outer_params,database=meta['database']['path'])
+            compiled=dict(sql=sql,parameters=outer_params,database=meta['database']['path'])
+            # Ordered adjacency enumeration avoids a Cartesian node product and
+            # a global sort of every path witness. Each SQL step returns exactly
+            # the next ID domain under the already chosen prefix; DFS therefore
+            # emits the same complete lexicographic tuples and may stop at LIMIT.
+            directions={}
+            for o in query['order_by']:
+                directions.setdefault(selected[o['field']]['var'],o['direction'].upper())
+            if projected<=set(directions)|anchored and query['order_by']:
+                raw_conditions=[];offset=0
+                for expression in conditions:
+                    arity=expression.count('?')
+                    raw_conditions.append((expression,params[offset:offset+arity]));offset+=arity
+                steps=[];available=set()
+                for var in node_order:
+                    alias=objects[var][1];previous=list(available);available.add(alias)
+                    closed={a for a in edge_aliases if all(set(re.findall(r'\bn\d+(?=\.)',expr))<=available for expr in grouped[a])}
+                    # A seeded edge needs a previously bound endpoint. Its
+                    # adjacency index yields only the current prefix's neighbors.
+                    seeds=[objects[e['var']][1] for e in query['edges']
+                           if objects[e['var']][1] in closed and var in (e['source'],e['target'])
+                           and any(objects[v][1] in previous for v in (e['source'],e['target']))]
+                    seed=seeds[0] if seeds else None
+                    part=[];values=[]
+                    for expr,vs in raw_conditions:
+                        owners=set(re.findall(r'\b[en]\d+(?=\.)',expr))
+                        if owners<=available|({seed} if seed else set()):part.append(expr);values.extend(vs)
+                    for a in edge_aliases:
+                        if a in closed and a!=seed:
+                            part.append('EXISTS (SELECT 1 FROM edges '+a+' WHERE '+' AND '.join(grouped[a])+')')
+                            values.extend(bound[a])
+                    prior=sorted(previous)
+                    for a in prior:part.append(a+'.id=?')
+                    tables=[table_by_alias[a] for a in prior]
+                    if seed:tables.append(table_by_alias[seed])
+                    tables.append(table_by_alias[alias])
+                    step_sql='SELECT DISTINCT '+alias+'.id FROM '+' CROSS JOIN '.join(tables)+' WHERE '+' AND '.join(part)
+                    step_sql+=' ORDER BY '+alias+'.id '+directions.get(var,'ASC')
+                    steps.append(dict(var=var,alias=alias,sql=step_sql,parameters=values,prior=prior))
+                compiled['ordered_adjacency']=dict(steps=steps,projection={k:objects[e['var']][1] for k,e in selected.items()},limit=query['limit'])
+            return compiled
     # A declared contribution grain existentially removes unused witnesses.
     # Keep anchored nodes outside so the reference starts at a source ID. One
     # correlated EXISTS preserves joint witness constraints, including cycles;
@@ -227,14 +267,34 @@ def evaluate(query, index_receipt, *, seconds=60, row_cap=100000, scale='1'):
         explain=[list(r) for r in db.execute('EXPLAIN QUERY PLAN '+sql,parameters)]
         db.set_progress_handler(lambda:1 if time.monotonic()-started>seconds else 0,10000)
         try:
-            cursor=db.execute(sql,parameters);rows=[];names=[c[0] for c in cursor.description]
-            for r in cursor:
-                if len(rows)>=row_cap:raise ValueError('Reference output bound exceeded, not an empty answer')
-                rows.append(dict(zip(names,r)))
+            rows=[];enumeration=compiled.get('ordered_adjacency');step_calls=0
+            if enumeration:
+                assignments={};explain=[]
+                def visit(depth):
+                    nonlocal step_calls
+                    if time.monotonic()-started>seconds:raise TimeoutError('Reference time bound exceeded')
+                    if depth==len(enumeration['steps']):
+                        if len(rows)>=row_cap:raise ValueError('Reference output bound exceeded, not an empty answer')
+                        rows.append({k:assignments[a] for k,a in enumeration['projection'].items()});return
+                    step=enumeration['steps'][depth];args=step['parameters']+[assignments[a] for a in step['prior']]
+                    if step_calls<32:
+                        explain.append(dict(depth=depth,plan=[list(r) for r in db.execute('EXPLAIN QUERY PLAN '+step['sql'],args)]))
+                    step_calls+=1
+                    for (value,) in db.execute(step['sql'],args):
+                        assignments[step['alias']]=value;visit(depth+1)
+                        if enumeration['limit'] is not None and len(rows)>=enumeration['limit']:break
+                    assignments.pop(step['alias'],None)
+                visit(0)
+            else:
+                cursor=db.execute(sql,parameters);names=[c[0] for c in cursor.description]
+                for r in cursor:
+                    if len(rows)>=row_cap:raise ValueError('Reference output bound exceeded, not an empty answer')
+                    rows.append(dict(zip(names,r)))
         except Exception as error:
             if isinstance(error,ValueError):raise
             raise ReferenceExecutionError(error,dict(**compiled,explain=explain,seconds=seconds,
                 elapsed_seconds=time.monotonic()-started,scale=scale)) from error
-    return dict(rows=rows,engine='independent_relational',sql=sql,parameters=parameters,explain=explain,
+    return dict(rows=rows,engine='independent_ordered_adjacency' if enumeration else 'independent_relational',
+                sql=sql,parameters=parameters,explain=explain,ordered_adjacency=enumeration,step_calls=step_calls,
                 elapsed_seconds=time.monotonic()-started,scale=scale,
                 scale4_scope='Queries anchored in the original replica; disconnected renamed copies cannot contribute')
