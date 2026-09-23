@@ -357,3 +357,26 @@ construction work is O(KL log K), and UNION depth is O(log K); the final complet
 request still must pass the byte guard. Twelve focused tests pass, including
 independent algebra-depth inspection and all 65 keys surviving a two-witness
 graph (with duplicate input keys). This is not a full-source performance claim.
+
+Qualification: that 512 MiB failure is specifically the `arq.qparse
+--print=optquad` diagnostic path. Normal `arq.arq` execution on the same
+synthetic 567-key input succeeds for both flat and balanced forms (one identical
+answer; 1.150 / 0.926 s including startup). Therefore it does **not** establish
+the cause of the server timeout. The full-source fifth-case receipt records
+only 9.96 sampled source CPU seconds over 64.64 s wall time. Replay 3858348
+(`ec4c61f`, `formal-endpoint-admission-v4/D2/rdf`) keeps original resource caps
+and permits one read-only thread dump of its own graph JVM if case five runs
+longer than ten seconds; diagnostic intent/output lives in `formal-rdf-debug-v1`.
+This instrumentation must not be included as formal method performance data.
+
+3858348 also timed out at case five (64.508 s, source peak 3,950,854,144 bytes).
+The owned-thread snapshot is inside TDB2 tuple-index/B+tree access, not query
+upload or socket setup. A single-branch algebra inspection with the actual
+server jar succeeds and confirms the correlated guard. It also shows several
+separate filtered BGP stages. The next bounded diagnostic 3858351 uses a verified
+private graph-store copy and exactly the first 1 and 16 branches of the captured
+failed request, each capped at 20 s / 4 GiB / 4 MiB logs, with TDB execution
+explanation enabled. It is **failure replay only**, not a replacement workload,
+not a new evaluation subset, and its observations never enter the estimator.
+Evidence root: `formal-rdf-point-debug-v1`. No full pilot resubmission is made
+without a new diagnosis/fix.
