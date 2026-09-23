@@ -49,13 +49,16 @@ def run(pool_pin,prepared_pin,deployment,output):
     pool=load(pool_pin);prepared=load(prepared_pin)
     if not prepared.get('success') or prepared['profile']['sha256']!=pool['profile']['sha256']:raise ValueError('Pool/store profile differs')
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
+    serving_bytes=sum(s['bytes'] for s in prepared['stores'].values())
+    if type(serving_bytes) is not int or not 0<serving_bytes<=256*1024**3:raise ValueError('Bounded frozen serving-copy size required')
     write(root/'intent.json',dict(pool=pool_pin,prepared=prepared_pin,deployment=deployment,automatic_retries=0,
+                                 serving_copy_bytes=serving_bytes,additional_output_budget_bytes=pool['budget']['output_bytes'],
                                  stage='offline measurement; no model calls and no formal method campaign'))
     from run_bounded_joint_batch import BatchBudget,source_commit
     source_commit()
     from native_store_session import NativeStoreSession
     from rdf_tdb_session import RdfTdbSession
-    b=pool['budget'];budget=BatchBudget(root,dict(total_wall_seconds=b['total_seconds'],package_max_bytes=b['output_bytes'],
+    b=pool['budget'];budget=BatchBudget(root,dict(total_wall_seconds=b['total_seconds'],package_max_bytes=serving_bytes+b['output_bytes'],
                                                free_disk_reserve_bytes=b['free_reserve_bytes']),time.time())
     observations=[];session=None;closure=None;result=dict(success=False,model_calls=0,online_feedback=False)
     try:

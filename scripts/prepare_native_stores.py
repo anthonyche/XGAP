@@ -174,12 +174,15 @@ def worker(seal_path, seal_sha256, output):
         if bulk:
             for expected in bulk.values():
                 if stream_pin(expected['path'])!=expected:raise ValueError('Bulk input changed')
-            command=[str(neo/'bin/neo4j-admin'),'database','import','full','--id-type=string','--threads=4',
+            # Neo4j's --nodes/--relationships options consume one or more
+            # arguments. Put the positional database BEFORE these variadic
+            # options, or Picocli treats "neo4j" as another input filename.
+            command=[str(neo/'bin/neo4j-admin'),'database','import','full','neo4j','--id-type=string','--threads=4',
                      '--max-off-heap-memory=2G','--multiline-fields=true','--bad-tolerance=0',
                      '--skip-bad-relationships=false','--skip-duplicate-nodes=false',
                      '--report-file='+str(root/'bulk-report.txt')]
             command += ['--nodes='+ref['path'] for name,ref in sorted(bulk.items()) if name.startswith('nodes-')]
-            command += ['--relationships='+bulk['relationships.csv.gz']['path'],'neo4j']
+            command += ['--relationships='+bulk['relationships.csv.gz']['path']]
             write_once(root/'bulk-intent.json',{'command':command,'offline':True,'overwrite_destination':False})
             with (root/'bulk-import.log').open('xb') as stream:
                 result=subprocess.run(command,cwd=neo,env=environment,stdout=stream,stderr=subprocess.STDOUT,
