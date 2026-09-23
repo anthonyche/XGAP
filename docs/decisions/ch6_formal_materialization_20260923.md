@@ -55,3 +55,46 @@ MovieLens 官方 archive SHA-256
 D3 首次 index 因原始时间存在无小数部分而失败，失败目录保留。已增加整秒/毫秒
 解析与离线 failure replay 测试；修复后以独立新目录准备，不覆盖原记录。
 以上都不等于数据库装载验收或正式实验结果。
+
+## 后续接线与待实机准入
+
+终端随后再次显示 CWRU Single Sign-On，已请求重新登录。3856726 的 D2 状态为
+断开前最后一次观测，不能据此宣称现在仍在运行或已完成。Slurm 作业不依赖浏览器会话；
+恢复后先读取既有结果，成功的 index 复用，不重建 20M 数据、不覆盖旧失败。
+
+`publish_ch6_heldout.py` 发布三域 authored 问题。development/pilot/test 使用不同
+模板族；结构身份抹除常量、域标签和有界参数值，保留方向、连接、过滤运算符、
+分组/贡献粒度及排序。更换 ID、hop 数或 top-k 不是新模板族。
+test 包括窗口边、zigzag、排序分叉、矩形闭环、带 incoming witness 的有界路径、
+见证去重 count/sum、排名 count；D2 的同类型路径、D1 的非平凡金额 sum 明确不适用。
+这些是领域派生题，不冒称原始 SNB/FinBench query cards。
+
+两个取样 frame 分别按 ID hash 排序选取。active-anchor 只检查是否有原始出边；
+先封存完整选题/私有意图，才计算答案。空参考保留；reference timeout 是发布失败，
+不能改成空表，也不能换题。每个 frame/W 层在读取答案之前按种子平衡分配 native/RDF；
+两部署生成不重叠的 case ID，W1/W2 是图源，W3/W4 同时用图源与 control。
+正式 n 和 repetitions 仍需在材料实际封存后发布；当前代码没有冒称 200 题已备好。
+
+`ch6_sql_reference.py` 使用独立 SQL/递归 CTE，保留平行边、贡献粒度和路径无环语义。
+4× 的快捷 reference 只允许每个连通分量都锚定原始副本；未锚定的全局聚合拒绝该捷径。
+不复用 XGAP 编译器或物理计划来产生 gold。
+
+`publish_ch6_factor_inputs.py` 创建实际 N/u controlled families，验证所有查询互异、
+实际候选数和模糊坐标数。固定 N=8、u>3 时明确使用相关有限族；不称独立笛卡尔积。
+D1 的单位 edge measure 恒为 1，因此用真实 edge-ID 范围坐标代替虚假的 measure 歧义。
+这些范围扫描是受控机制输入，不冒充 NL benchmark；TS 保留单独的固定 NL 参考/不可评分项。
+源数与 scale 仍必须由真实分片/物化快照和后端不变性检查准入。
+
+`prepare_ch6_cost_pool.py` 从同完整 Q 生成受限的已检查 physical rewrite 池；
+`run_ch6_cost_pool.py` 默认 dry-run，显式执行才会启动 CPU/数据库测量。
+固定顺序、3 次重复、scheduler execution 毫秒单位，源缓存按预定次序演进，不能叫 cold-cache。
+只有固定池所有试次都完成且匹配独立参考，才冻结中位成本、共同 Z 和 eta 误差表。
+失败不从池删除，不选测过的最快计划反馈在线规划。方法选择尚须读取实际方法轨迹；
+TS 没有同 Q 同单位证据时保持 null，不能由池的 argmin 冒充其选择。
+
+`freeze_ch6_mixed_support.py` 要求真实 backend roundtrip、成功 stores 和当前 profile
+身份一致。仅编译通过的题包不能冻结成正式支持合同；错误答案/超时不改变支持子集。
+
+本地新增小图 gate：7 个测试通过，覆盖独立答案、路径、分层、N/u、F6 成本单位及
+误差边界；另以临时小图走过完整题包/profile/4-plan pool 发布。全部零模型、零后端调用，
+临时 fixture 不计正式数据/实验结果。服务器上的真实题包、成本和总预算仍待冻结。
