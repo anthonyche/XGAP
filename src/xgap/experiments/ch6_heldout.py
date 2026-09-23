@@ -41,7 +41,9 @@ def ref(var, prop='id'):
 
 def predicate(var, prop, op, value):
     return dict(left=ref(var, prop), op=op, right={'value':value},
-                value_type='timestamp_ms' if prop=='timestamp' else 'scalar')
+                # The three formal cores store INTEGER epoch milliseconds;
+                # timestamp_ms is the separate legacy calendar-string contract.
+                value_type='lexical_string' if prop=='id' and op in ('lt','le','gt','ge') else 'scalar')
 
 
 def template_query(core, name, anchor, cut, *, cross=False):
@@ -67,7 +69,7 @@ def template_query(core, name, anchor, cut, *, cross=False):
             if name=='cycle':q['edges'].append(edge('h','a','d'))
     elif name in ('ordered_star','outgoing_maximum'):
         q['nodes'].append(node('c',target));q['edges'].append(edge('f','a','c'))
-        q['where'].append(dict(left=ref('b'),op='lt',right=ref('c'),value_type='scalar'))
+        q['where'].append(dict(left=ref('b'),op='lt',right=ref('c'),value_type='lexical_string'))
         q['select']['other']=ref('c')
     if name in ('plain_count','witnessed_count','witnessed_sum','ranked_count','incoming_minimum','outgoing_maximum'):
         aggregate={'witnessed_sum':'sum','incoming_minimum':'min','outgoing_maximum':'max'}.get(name,'count')
@@ -296,5 +298,6 @@ def publish(*, index_receipt, profile_path, profile_sha256, output, split, ancho
         receipt.update(success=True,bundle=pin(root/'bundle.json'),cases=len(cases),excluded_templates=excluded)
     except Exception as error:
         receipt.update(error_type=type(error).__name__,error=str(error))
+        if hasattr(error,'evidence'):write(root/'reference-failure.json',error.evidence)
     receipt['offline_seconds']=time.monotonic()-started;write(root/'receipt.json',receipt)
     return receipt

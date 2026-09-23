@@ -58,6 +58,9 @@ def build_family(core,bounds,anchors,*,n,u,snapshot,family_id):
                predicate('e',measure_property,'ge',v0),predicate('e',measure_property,'le',v1),
                predicate('b','id','ge',b0),predicate('b','id','le',b1)],
         select={'result':ref('b')},contribution_by=None,order_by=[dict(field='result',direction='asc')],limit=20)
+    for condition in q['where']:
+        if condition['left']['property']=='id' and condition['op'] in ('lt','le','gt','ge'):
+            condition['value_type']='lexical_string'
     candidates=[]
     for i in range(n):
         query=deepcopy(q)

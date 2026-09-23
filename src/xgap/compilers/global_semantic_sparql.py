@@ -49,7 +49,10 @@ def condition(c,fields):
     if op in ('is_null','is_not_null'):return ('!' if op=='is_null' else '')+bound(left)
     right=fields[c['right_field']] if 'right_field' in c else literal(c['value'])
     symbol={'eq':'=','ne':'!=','lt':'<','le':'<=','gt':'>','ge':'>='}[op]
-    if c.get('value_type')=='timestamp_ms':
+    if c.get('value_type')=='lexical_string':
+        expr=(f'DATATYPE({left})=<{XSD}string> && DATATYPE({right})=<{XSD}string> '
+              f'&& ({left} {symbol} {right})')
+    elif c.get('value_type')=='timestamp_ms':
         pattern=literal(MILLISECOND_PATTERN)
         checks=' && '.join(f'(DATATYPE({v})=<{XSD}string> && STRLEN(STR({v}))>=19 && '
             f'STRLEN(STR({v}))<=23 && SUBSTR(STR({v}),1,4)!="0000" && REGEX(STR({v}),{pattern}))'

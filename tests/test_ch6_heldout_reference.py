@@ -55,6 +55,23 @@ class HeldoutReferenceTests(unittest.TestCase):
         self.assertNotIn('e',choose_anchors(meta,stratum='active-anchor',size=4,seed=1))
         with self.assertRaises(ValueError):choose_anchors(meta,stratum='active-anchor',size=5,seed=1)
 
+    def test_star_reference_joins_edges_before_unanchored_node_ranges(self):
+        db=sqlite3.connect(self.root/'facts.sqlite')
+        db.executescript('CREATE INDEX edge_src ON edges(src,ordinal); CREATE INDEX edge_dst ON edges(dst,ordinal);'
+                        'CREATE INDEX node_kind ON nodes(kind,id);')
+        add_nodes(db,[dict(id='isolated:'+str(i),type='Account') for i in range(20000)])
+        db.close()
+        q=template_query(CORES['D3'],'outgoing_maximum','a',0)
+        result=evaluate(q,self.index)
+        self.assertEqual(result['rows'],[dict(result='a',total=1),dict(result='b',total=3)])
+        scans=[r[3] for r in result['explain'] if 'SEARCH' in r[3] or 'SCAN' in r[3]]
+        self.assertTrue(any('e0' in s and 'edge_src' in s for s in scans),scans)
+        self.assertLess(next(i for i,s in enumerate(scans) if 'e0' in s),next(i for i,s in enumerate(scans) if 'n1' in s))
+        self.assertIn('CROSS JOIN edges e0 CROSS JOIN nodes n1',result['sql'])
+        # An untyped string inequality is not silently reinterpreted by SQL.
+        q['where'][1]['value_type']='scalar'
+        self.assertEqual(evaluate(q,self.index)['rows'],[])
+
     def test_split_structure_and_actual_candidate_ambiguity(self):
         for dataset,core in CORES.items():
             registries={p:set() for p in TEMPLATES}

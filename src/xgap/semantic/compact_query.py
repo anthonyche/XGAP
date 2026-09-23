@@ -35,7 +35,7 @@ def either(*items):
 REF = obj({'var': TEXT, 'property': either(TEXT, NULL)})
 LITERAL = obj({'value': either(TEXT, {'type':'number'}, BOOL, NULL, {'const':''})})
 PREDICATE = obj({'left': REF, 'op': {'enum':['eq','ne','lt','le','gt','ge']},
-    'right': either(REF, LITERAL), 'value_type': {'enum':['scalar','timestamp_ms']}})
+    'right': either(REF, LITERAL), 'value_type': {'enum':['scalar','timestamp_ms','lexical_string']}})
 EXPR = either(REF, obj({'aggregate': {'enum':['sum','count','min','max']},
     'field': either(REF, NULL), 'distinct': BOOL}))
 QUERY = obj({

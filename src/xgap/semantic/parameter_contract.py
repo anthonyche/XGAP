@@ -75,7 +75,7 @@ _DEFS["path_condition"] = _alternatives(
 )
 _DEFS["row_condition"] = _alternatives(
     *(_tagged("op", op, {"field": _TEXT, rhs: _ref("scalar") if rhs == "value" else _TEXT,
-        "value_type": {"const": "timestamp_ms"}}, ("field", rhs))
+        "value_type": {"enum": ["timestamp_ms", "lexical_string"]}}, ("field", rhs))
       for op in ("eq", "ne", "lt", "le", "gt", "ge") for rhs in ("value", "right_field")),
     *(_tagged("op", op, {"field": _TEXT}) for op in ("is_null", "is_not_null")),
     *(_tagged("op", op, {"args": _array(_ref("row_condition"), 1)}) for op in ("and", "or")),

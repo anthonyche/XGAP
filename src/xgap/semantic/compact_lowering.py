@@ -196,7 +196,7 @@ class _Lowerer:
         for pred in self.q['where']:
             right=pred['right'];condition={'op':pred['op'],'field':self.column(pred['left'])}
             condition.update({'right_field':self.column(right)} if 'var' in right else {'value':right['value']})
-            if pred['value_type']=='timestamp_ms':condition['value_type']='timestamp_ms'
+            if pred['value_type']!='scalar':condition['value_type']=pred['value_type']
             self.conditions.append(condition)
         anchors=[]
         if self.optimize:

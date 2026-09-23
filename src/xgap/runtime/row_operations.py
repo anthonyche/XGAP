@@ -31,7 +31,7 @@ def condition_fields(condition):
     rhs = "right_field" if "right_field" in condition else "value"
     keys = {"op", "field"} if unary else {"op", "field", rhs}
     if "value_type" in condition:
-        if unary or condition["value_type"] != "timestamp_ms":
+        if unary or condition["value_type"] not in ("timestamp_ms", "lexical_string"):
             raise ValueError("Unsupported row comparison value_type")
         keys.add("value_type")
     if (op not in ("eq", "ne", "lt", "le", "gt", "ge", "is_null", "is_not_null")
@@ -68,6 +68,14 @@ def _matches(row, c):
     right = row[c["right_field"]] if "right_field" in c else c["value"]
     if left is None or right is None:
         return False
+    if c.get("value_type") == "lexical_string":
+        # Explicit code-point ordering, never numeric coercion, URI ordering,
+        # locale collation, or language-tagged literal comparison.
+        left, right = value_key(left), value_key(right)
+        if left[0] != "2-string" or right[0] != "2-string":
+            return False
+        return {"eq": left == right, "ne": left != right, "lt": left < right,
+                "le": left <= right, "gt": left > right, "ge": left >= right}[op]
     if c.get("value_type") == "timestamp_ms":
         left, right = _timestamp(left), _timestamp(right)
         if left is None or right is None:

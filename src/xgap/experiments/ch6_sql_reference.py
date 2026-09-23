@@ -11,12 +11,11 @@ import time
 from xgap.experiments.ch6_fact_index import read_index
 
 
-def evaluate(query, index_receipt, *, seconds=60, row_cap=100000, scale='1'):
+def compile_reference(query, index_receipt, *, scale='1'):
     meta=json.loads(open(index_receipt).read());core=meta['core'];query=deepcopy(query)
     if any(n.get('entity') is not None for n in query['nodes']):
         raise ValueError('Independent SQL reference requires explicit ID literals')
     if scale not in ('1','.25','4'):raise ValueError('Unknown scale')
-    if seconds<=0 or row_cap<1:raise ValueError('Positive reference bounds required')
     if scale=='4':
         # Evaluating only replica zero is equivalent only when every connected
         # component is anchored there. Unanchored aggregates must not use this shortcut.
@@ -85,7 +84,20 @@ def evaluate(query, index_receipt, *, seconds=60, row_cap=100000, scale='1'):
         left=ref(condition['left']);right=condition['right']
         if 'var' in right:rhs=ref(right)
         else:rhs='?';params.append(right['value'])
-        conditions.append(left+op+rhs)
+        if condition['value_type']=='lexical_string':
+            conditions.append("typeof("+left+")='text'")
+            if 'var' in right:conditions.append("typeof("+rhs+")='text'")
+            elif type(right['value']) is not str:conditions.append('0')
+            conditions.append(left+' COLLATE BINARY '+op+rhs)
+        elif condition['value_type']=='scalar':
+            # SQL must not supply string order for the legacy numeric-only
+            # scalar inequality contract. IDs require explicit lexical_string.
+            if condition['op'] in ('lt','le','gt','ge'):
+                conditions.append("typeof("+left+") IN ('integer','real')")
+                if 'var' in right:conditions.append("typeof("+rhs+") IN ('integer','real')")
+                elif type(right['value']) not in (int,float):conditions.append('0')
+            conditions.append(left+op+rhs)
+        else:raise ValueError('Core SQL reference requires numeric epoch or explicit lexical strings')
     # Distinct complete bindings preserve parallel edge identities. A declared
     # contribution grain then removes existential witnesses before aggregation.
     selected=query['select'];retained=set(objects) if query['contribution_by'] is None else set(query['contribution_by'])
@@ -98,7 +110,26 @@ def evaluate(query, index_receipt, *, seconds=60, row_cap=100000, scale='1'):
         # Where-only values do not become extra contribution keys.
         if any((e if 'var' in e else e['field'])==dict(var=v,property=p) for e in selected.values()):
             name='c'+str(len(columns));columns[(v,p)]=name;base.append(expr+' AS '+name)
-    inner='SELECT DISTINCT '+','.join(base)+' FROM '+','.join(tables)+' WHERE '+' AND '.join(conditions)
+    # Explicit anchor/adjacency join order prevents a statistics-free SQLite
+    # planner scanning every node range before applying a selective edge join.
+    # This changes only the independent offline evaluator, not an XGAP plan.
+    order=[];seen=set()
+    def add(var):
+        if var not in seen:order.append(var);seen.add(var)
+    for p in query['where']:
+        if p['op']=='eq' and p['left']['property']=='id' and 'value' in p['right'] and p['left']['var'] in {n['var'] for n in query['nodes']}:
+            add(p['left']['var'])
+    if not order:add(query['nodes'][0]['var'])
+    pending=list(query['edges'])+([path] if path else [])
+    while pending:
+        connected=[e for e in pending if {e['source'],e['target']}&seen]
+        if not connected:raise ValueError('Reference requires a connected anchored graph')
+        edge=max(connected,key=lambda e:len({e['source'],e['target']}&seen))
+        add(edge['var']);add(edge['source']);add(edge['target']);pending.remove(edge)
+    for n in query['nodes']:add(n['var'])
+    table_by_alias={table.split()[-1]:table for table in tables}
+    ordered_tables=[table_by_alias[objects[v][1]] for v in order]
+    inner='SELECT DISTINCT '+','.join(base)+' FROM '+' CROSS JOIN '.join(ordered_tables)+' WHERE '+' AND '.join(conditions)
     plain=[];outer=[];has_aggregate=False
     for name,e in selected.items():
         alias=ident(name)
@@ -118,13 +149,31 @@ def evaluate(query, index_receipt, *, seconds=60, row_cap=100000, scale='1'):
     if query['limit'] is not None:
         if type(query['limit']) is not int or query['limit']<=0:raise ValueError('Bad query limit')
         sql+=' LIMIT '+str(query['limit'])
-    started=time.monotonic()
-    with read_index(meta['database']['path']) as db:
+    return dict(sql=sql,parameters=prefix_params+params,database=meta['database']['path'])
+
+
+class ReferenceExecutionError(RuntimeError):
+    def __init__(self, error, evidence):
+        super().__init__(str(error));self.evidence=evidence
+
+
+def evaluate(query, index_receipt, *, seconds=60, row_cap=100000, scale='1'):
+    if seconds<=0 or row_cap<1:raise ValueError('Positive reference bounds required')
+    compiled=compile_reference(query,index_receipt,scale=scale)
+    sql,parameters=compiled['sql'],compiled['parameters']
+    started=time.monotonic();explain=[]
+    with read_index(compiled['database']) as db:
+        explain=[list(r) for r in db.execute('EXPLAIN QUERY PLAN '+sql,parameters)]
         db.set_progress_handler(lambda:1 if time.monotonic()-started>seconds else 0,10000)
-        cursor=db.execute(sql,prefix_params+params);rows=[];names=[c[0] for c in cursor.description]
-        for r in cursor:
-            if len(rows)>=row_cap:raise ValueError('Reference output bound exceeded, not an empty answer')
-            rows.append(dict(zip(names,r)))
-    return dict(rows=rows,engine='independent_relational',sql=sql,parameters=prefix_params+params,
+        try:
+            cursor=db.execute(sql,parameters);rows=[];names=[c[0] for c in cursor.description]
+            for r in cursor:
+                if len(rows)>=row_cap:raise ValueError('Reference output bound exceeded, not an empty answer')
+                rows.append(dict(zip(names,r)))
+        except Exception as error:
+            if isinstance(error,ValueError):raise
+            raise ReferenceExecutionError(error,dict(**compiled,explain=explain,seconds=seconds,
+                elapsed_seconds=time.monotonic()-started,scale=scale)) from error
+    return dict(rows=rows,engine='independent_relational',sql=sql,parameters=parameters,explain=explain,
                 elapsed_seconds=time.monotonic()-started,scale=scale,
                 scale4_scope='Queries anchored in the original replica; disconnected renamed copies cannot contribute')
