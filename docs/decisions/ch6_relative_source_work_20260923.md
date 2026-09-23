@@ -416,3 +416,37 @@ portable SPARQL; nothing enables the extension for other backends by default.
 Local Jena 5.6.0 synthetic 32-key execution matches the previous exact one-row
 result (0.793 s including startup, not a speedup claim).
 Reference: https://jena.apache.org/documentation/query/lateral-join.html .
+
+
+3858371 completed the diagnostic suite (`formal-rdf-lateral-debug-v1`):
+16-key UNION 28.955 s / 198,606,848 bytes peak; subsequent 16-key LATERAL
+1.826 s / 192,094,208 bytes, with identical 16 actual rows/target keys.
+Both include fresh JVM startup, share an OS page cache and run in fixed order,
+so the ratio is not a controlled speedup. Full 567-key LATERAL hit the 60 s
+guard (60.139 s; 786,202,624 bytes); no complete result was emitted.
+No production LATERAL profile is enabled from these observations.
+
+A second failure-only diagnostic removes redundant nested projections and
+DISTINCT barriers from this scalar-free three-column witness relation, comparing
+flat 16/567-key LATERAL and flat 567-key UNION. All leaf guards/positive labels,
+actual edge identity and per-key LIMIT remain. The same local independent
+32-key synthetic result matches. This tests a separate physical compiler
+hypothesis without changing the held-out workload or online estimator.
+
+
+3858378 (`formal-rdf-flat-debug-v1`) completed: flat LATERAL 16 keys
+29.160 s / 187,265,024 bytes; flat LATERAL 567 keys still timed out at
+60.139 s / 748,445,696 bytes; flat portable UNION 567 keys completed at
+26.229 s / 1,985,552,384 bytes. Cache/order effects remain uncontrolled;
+this is evidence of feasible complete execution in a diagnostic session, not
+a speedup or a passed original 8-case gate.
+
+The production change retains portable SPARQL and flattens only the compiler's
+scalar-free leaf-witness query. Its inner projected n0/n1/e1 and source/target
+variables are aliases of the final three identity columns, making inner
+DISTINCTs redundant under the retained final DISTINCT. The directed compiler
+exports its own body, passed through the exact-text Match checkpoint; the leaf
+compiler uses that body instead of parsing arbitrary SPARQL. Scalar/OPTIONAL
+queries are not admitted, and old artifacts retain the previous fallback.
+Twenty-nine targeted tests pass, including min/sum/count full toy answers.
+The next original 8-case gate uses a fresh service copy and unchanged budgets.

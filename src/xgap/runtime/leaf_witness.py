@@ -142,7 +142,14 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
         # edge-to-leaf connection, producing endpoint-adjacency x all leaf IDs.
         # EXISTS cannot test this guard until the leaf is bound by the edge BGP.
         extra+='FILTER EXISTS { ?'+point['variables'][leaf_column]+' <'+id_iri+'> '+scalar+' .\nFILTER('+' && '.join(checks)+') }\n'
-    at=point['offset'];text=base.text[:at]+'\n'+extra+base.text[at:]
+    flat=point.get('flat_body')
+    if flat is not None:
+        # Keep one projection over the compiler-owned scalar-free relation.
+        # No OPTIONAL/scalar column is admitted above; all removed inner
+        # variables are exactly aliases of the three final identity columns.
+        text='SELECT DISTINCT ?entity ?source ?target WHERE {\n'+extra+'\n'.join(flat)+'\n}'
+    else:
+        at=point['offset'];text=base.text[:at]+'\n'+extra+base.text[at:]
     params={k:v for k,v in p.items() if k not in ('native_binding_checkpoint','rdf_binding_checkpoint')}
     params.update(bound_entity_parameter=parameter,bound_identity_column=column,
         binding_key_work_profile='scheduler-distinct-key-cap-v1',

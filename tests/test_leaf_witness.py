@@ -74,6 +74,8 @@ def test_correlated_leaf_guard_rejects_missing_or_unrelated_values():
         rdf_edge_encoding=encoding,source=NodePattern(label='User'),target=NodePattern(label='Movie'))
     proof=next(leaf_proofs(template_query(CORES['D2'],'incoming_minimum','user:1',0)))
     artifact=compile_rdf_leaf_bound(base,backend,proof,parameter='keys',max_bindings=4,max_bytes=20000)
+    assert artifact.text.count('SELECT DISTINCT')==1
+    assert 'flat_body' not in artifact.parameters
     for i in range(4):
         g.add((ns['u'+str(i)],RDF.type,ns.User));g.add((ns['m'+str(i)],RDF.type,ns.Movie))
     for u,value in [('u1','user:1'),('u2','user:1'),('u2','user:2'),('u3','unrelated')]:

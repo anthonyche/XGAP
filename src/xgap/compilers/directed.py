@@ -440,6 +440,10 @@ def _sparql(
     text = "SELECT DISTINCT " + " ".join("?" + name for name in columns) + " WHERE {\n"
     text += "\n".join("  " + line for line in body) + "\n}"
     return text, {
+        # Compiler-owned body for removing redundant one-edge subquery
+        # projections. Consumers must retain the final DISTINCT projection.
+        **({"rdf_single_edge_body": list(body)}
+           if rdf_edge_encoding is not None and shape.edge_count == 1 else {}),
         **({
             "rdf_edge_encoding_id": rdf_edge_encoding.encoding_id,
             "rdf_edge_encoding_sha256": rdf_edge_encoding.identity,
