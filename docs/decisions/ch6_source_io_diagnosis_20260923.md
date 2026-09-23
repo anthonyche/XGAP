@@ -112,3 +112,11 @@ bundle hashes remain; receipts distinguish `single_case_replay` and set
 case identities fail before serving. Its focused identity-selection test passes.
 This permits the next pipeline check to target the original fifth case instead
 of re-running the four already passing cases first.
+
+Pause handoff: 3859504 remained PENDING/Priority at the last evening check;
+its scheduler estimate was 2026-09-23 17:24:31 EDT (2026-09-24 05:24:31 Beijing),
+not an assured start. The user requested a pause after this milestone until
+September 24 10:00 Beijing. Code/tiny validation is complete, but full-source
+repair acceptance is not. Preserve this one bounded job to execute unattended;
+no further whole-bundle gate or repeated polling. See the
+[evidence and resume checklist](../report/ch6_storage_fix_pause_20260923.md).
