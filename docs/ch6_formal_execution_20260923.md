@@ -131,3 +131,20 @@ TS 没有同类 estimator 扰动接口，使用原配置参考。只有其最终
 软链接不能直接跨机器；远程挂载可用于文件浏览/传输，不把数据库文件经广域网挂载来计时。
 仅在全部支持时的 12000 个方法请求、平均每个 15 秒就约 50 小时，
 不含其他扫描；TS 每题多次模型调用，不能按“一题一次 API”估预算。
+
+### 封存后 cohort 汇总
+
+`aggregate_ch6_cohort.py --input-path INPUT --input-sha256 SHA --output NEW_DIR`
+读取 `xgap-ch6-cohort-input-v1`：cohort/dataset、support pin、case_metadata
+（case→family/question/stratum）、repetitions、trials
+（case/repeat/terminal/timing/manifest pins）与共同 trace_cost_weights。
+每次只汇总一个取样层。逐条核对 question、request、method、deployment 和 source version；
+输出五方法支持率、缺失重复、完成数、截断数、指标与同题同计时边界的配对比值。
+错误答案/方法失败保留评分；study censoring 从主数值中排除但保留计数和原始资源记录。
+重复先按 case 合并，CI 按模板族 bootstrap。该脚本不替代正式 release audit。
+
+在历史五方法 tiny 封存文件上完成零调用汇总验证：XGAP/NP/SH/GR 的已记录答案分数仍为 1，
+TS 保持 censored/null，不能因旧 raw terminal 中的 0 而改判错误。
+汇总产物：`/Users/anthonyche/xgap-data/ch6-cohort-aggregation-gate-20260923-v1/summary.json`，
+SHA-256 `3e94ad164e6d7665c8433ab6c3cbc0ad91478b071fe32684685af242bbeef864`。
+这是历史证据的汇总验收，未增加正式样本、模型调用或实验结果。
