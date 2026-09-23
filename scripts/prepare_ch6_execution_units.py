@@ -40,6 +40,8 @@ def prepare(spec_path,spec_sha256,output):
             or not 1<=spec['repetitions']<=10):raise ValueError('Explicit pre-result unit preparation required')
     bundle=load_pin(spec['bundle']);stores=load_pin(spec['prepared']);gate=load_pin(spec['backend_admission'])
     if (not stores.get('success') or not gate.get('success') or not gate.get('backend_roundtrip')
+            or gate.get('admission_scope','complete_bundle')!='complete_bundle'
+            or gate.get('full_bundle_admitted',True) is not True
             or gate['profile']['sha256']!=bundle['profile']['sha256']
             or stores['profile']['sha256']!=bundle['profile']['sha256']):
         raise ValueError('Cohort requires the actual admitted source deployment')
