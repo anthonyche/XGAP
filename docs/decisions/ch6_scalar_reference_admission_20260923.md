@@ -138,3 +138,23 @@ TDB2 native/mapped-index memory is outside the Java heap. The next offline build
 uses a 64 GiB CPU allocation, 8 GiB heap and 56 GiB sampled RSS cap with the same
 one-hour per-source deadline. This does not raise online method/source budgets.
 The old partial node-local path and durable failure logs remain identified.
+
+Unified admission v3 (3857752) still selected share-read and failed on the same
+preserved first pilot query. Its symbolic diagnostic executed no backend/model
+calls: anchor-bind was estimated at 660.56 work units, seed at 152.62 and share
+at 101.77. The old model's binding-key feature used all incoming row-work units,
+even though the runtime deduplicates keys and refuses lists above max_bindings.
+New unified bindings mark `scheduler-distinct-key-cap-v1`; that feature now uses
+min(incoming proxy, actual runtime key cap). Existing artifacts without the
+marker retain their old feature meaning. Upstream work is not discounted, edge
+fanout is not bounded, overflow remains a failure, and weights are unchanged.
+Targeted checks verify feature/version isolation, unknown-profile rejection and
+small-graph semantics. This does not by itself establish good D2 plan ranking:
+the transferred small-graph model also has weak/zero full-edge work coefficients;
+do not run another large replay merely because this feature fix was committed.
+
+The D1/D3 current-bank NL manifests were successfully prepared in job 3857763:
+three repetitions per case, source/config/request pins and method order frozen,
+0 model and 0 backend calls. `formal-prepared-units-v1/receipt.json` is successful
+but explicitly not a full formal release; global support, factors and budget
+still need their combined audit.

@@ -106,11 +106,22 @@ def extract_work_features(plan, statistics):
                         span = sum(max(1, v) for v in lengths)
                     mode = "bind" if node.kind is R.REMOTE_BIND_QUERY else "full"
                     records = float(source.total_rows) * span
+                    key_work = incoming
                     if mode == "bind":
                         limit = node.parameters.get("max_bindings")
                         if type(limit) is not int or limit <= 0:
                             raise ValueError("missing bind bound")
                         records = min(records, incoming, float(limit))
+                        key_profile=descriptor.get('binding_key_work_profile')
+                        if key_profile is not None:
+                            if key_profile!='scheduler-distinct-key-cap-v1':
+                                raise ValueError('unknown binding-key work profile')
+                            # The runtime deduplicates keys, then rejects overflow
+                            # before sending a request. Upstream row-processing
+                            # features stay intact; only transmitted key work is
+                            # capped. This does not bound edge fanout or certify
+                            # that a candidate can execute within its key limit.
+                            key_work=min(incoming,float(limit))
                     prefix = f"backend.{backend}.{family}.{mode}"
                     budget = budget_from_artifact(raw_artifact)
                     received = min(records, float(budget["fetch_rows"])) if budget else records
@@ -118,7 +129,7 @@ def extract_work_features(plan, statistics):
                     features[prefix + ".record_units"] += records
                     features[prefix + ".column_units"] += records * len(columns)
                     features[prefix + ".logical_byte_units"] += received * source.mean_row_bytes
-                    features[prefix + ".binding_units"] += incoming if mode == "bind" else 0.0
+                    features[prefix + ".binding_units"] += key_work if mode == "bind" else 0.0
                     # LIMIT bounds returned work, not the black-box scan/sort.
                     # Keep native record/column proxies; only bound transfer and
                     # the downstream input work, with the same executable cap.
@@ -259,6 +270,12 @@ class FrozenWorkEstimator:
                 "profile": "bounded-edge-relations-v1", "calibrated": False,
                 "weights_changed": False, "native_scan_discounted": False,
                 "scope": "compiled returned-row cap bounds transfer and downstream work proxies"}
+        if any(n.kind is R.REMOTE_BIND_QUERY and n.parameters['artifact']['parameters'].get(
+                'binding_key_work_profile')=='scheduler-distinct-key-cap-v1' for n in plan.nodes):
+            provenance['binding_work_extension']=dict(profile='scheduler-distinct-key-cap-v1',
+                weights_changed=False,calibrated=False,
+                scope='Capped transmitted distinct keys; upstream work unchanged; not edge fanout or success guarantee',
+                legacy_artifacts='Absent marker retains original incoming-row proxy')
         outside = ()
         status, estimate, residual = "unavailable_missing_features", None, None
         if not f.unknown_fields:

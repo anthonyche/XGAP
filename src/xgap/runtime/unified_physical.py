@@ -142,7 +142,7 @@ class PhysicalMoves:
                         if depends_on(plan,output,remote.node_id):continue
                         artifact,parameter = _bound_match_artifact(QueryArtifact.from_dict(remote.parameters['artifact']),
                             self.backends[remote.parameters['backend_id']],max_bindings=self.policy.max_bindings,
-                            max_binding_bytes=self.policy.max_binding_bytes,identity_column=column)
+                            max_binding_bytes=self.policy.max_binding_bytes,identity_column=column,capped_key_work=True)
                         bound = replace(remote,kind=R.REMOTE_BIND_QUERY,inputs=(output,),parameters={**remote.parameters,
                             'artifact':artifact.to_dict(),'bind_field':field,'parameter':parameter,'max_bindings':self.policy.max_bindings})
                         yield finish(plan,[bound if n.node_id==remote.node_id else n for n in plan.nodes],'entity_bind',

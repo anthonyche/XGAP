@@ -60,9 +60,12 @@ D1 `formal-core-v9/D1/factors` 的 28 个 N/u 实例通过后端/独立参考核
 
 恢复 OnDemand 登录后，准确版本 `7058d242844129fa7ab6cc277a6568fb52be982f`
 已通过增量包哈希校验部署：3857752 为查询回放（24 GiB CPU allocation），
-3857753 为 RDF 建库（64 GiB CPU allocation）。已观察到两者 RUNNING，
-分别位于 compt294/compt267。新目录分别为 `formal-unified-admission-v3`、
-`formal-core-v11/D2/rdf`；该状态不是完成回执。
+3857753 为 RDF 建库（64 GiB CPU allocation）。3857752 已返回失败：
+仍选择 share-read；零执行的候选诊断显示 anchor-bind/seed/share 的估计分别约为
+660.56 / 152.62 / 101.77 工作单位。这暴露的是候选排序问题，不能靠重复大图执行修复。
+绑定键成本现在按版本接入 scheduler 的 distinct-key cap，旧 artifact 口径保留；
+小图训练模型对 full-edge 的弱/零权重仍需处理，尚未宣称修复完成。
+新目录分别为 `formal-unified-admission-v3`、`formal-core-v11/D2/rdf`。
 
 ## 全量启动前仍需完成
 
@@ -76,6 +79,6 @@ D1 `formal-core-v9/D1/factors` 的 28 个 N/u 实例通过后端/独立参考核
 
 `prepare_ch6_execution_units.py` 已能在已准入 bundle 上按公开 finite family 发布
 不同模板的正确配置与重复 manifest；仅准备，零模型/后端调用。
-任务 3857763 正在为 D1/D3 当前 bank 准备三次重复的 NL 清单；不是启动这些请求，
+任务 3857763 已成功为 D1/D3 当前 bank 准备三次重复的 NL 清单；不是启动这些请求，
 也不是最终 n/全局预算已冻结。
 本轮针对必要键改写、发布配置、loader 的小图/合同检查通过；没有追加全库回归或消融。

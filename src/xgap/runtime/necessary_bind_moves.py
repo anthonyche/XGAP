@@ -28,7 +28,7 @@ def mandatory_anchor_bind(program,plan,backends,policy):
         if column is None or depends_on(reduced,key,remote.node_id):return None
         artifact,param=_bound_match_artifact(QueryArtifact.from_dict(remote.parameters['artifact']),
             backends[remote.parameters['backend_id']],max_bindings=policy.max_bindings,
-            max_binding_bytes=policy.max_binding_bytes,identity_column=column)
+            max_binding_bytes=policy.max_binding_bytes,identity_column=column,capped_key_work=True)
         replacements[remote.node_id]=replace(remote,kind=R.REMOTE_BIND_QUERY,inputs=(key,),
             parameters={**remote.parameters,'artifact':artifact.to_dict(),'bind_field':anchor['identity_field'],
                         'parameter':param,'max_bindings':policy.max_bindings})

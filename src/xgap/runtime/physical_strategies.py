@@ -209,7 +209,7 @@ def _target_match(identifier, field, operators, consumers, roots):
         identifier = op.input_ids[0]
 
 
-def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes, identity_column="entity"):
+def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes, identity_column="entity", capped_key_work=False):
     compiler = artifact.parameters.get("compiler")
     if compiler not in ("semantic_node_match_v1", "semantic_edge_match_v1"):
         raise _NotAdmitted("Target native artifact was not produced by the Match compiler")
@@ -244,6 +244,8 @@ def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes,
         parameters[namespace_parameter] = backend.resource_namespace
     parameters.update(physical_strategy_profile=STRATEGY_PROFILE,
                       bound_entity_parameter=parameter)
+    if capped_key_work:
+        parameters['binding_key_work_profile']='scheduler-distinct-key-cap-v1'
     if compiler == "semantic_edge_match_v1":
         parameters["bound_identity_column"] = identity_column
     return replace(artifact, artifact_id=artifact.artifact_id + "-entity-bind",

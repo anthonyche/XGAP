@@ -137,3 +137,35 @@ def test_training_bounds_and_excluded_identity_are_enforced(prepared):
     model = fit(prepared)
     assert model.to_dict()["training_provenance"]["fit_sweeps"] == 128
     assert model.to_dict()["training_provenance"]["algorithm"] == "fixed_sweep_nonnegative_relative_ridge_v1"
+
+
+def test_versioned_binding_cost_counts_transmitted_keys_not_all_driver_rows(prepared):
+    model=fit(prepared);before=model.to_dict()
+    plan=get(prepared,'WORK-TRAIN-PM-fuseki-neo4j-B')
+    nodes=[]
+    for node in plan.nodes:
+        if node.kind is R.REMOTE_BIND_QUERY:
+            node=replace(node,parameters={**node.parameters,'max_bindings':1})
+        nodes.append(node)
+    legacy=replace(plan,nodes=tuple(nodes))
+    raw=deepcopy(legacy.to_dict())
+    for node in raw['nodes']:
+        if node['kind']=='remote_bind_query':
+            node['parameters']['artifact']['parameters']['binding_key_work_profile']='scheduler-distinct-key-cap-v1'
+    current=FederatedExecutionPlan.from_dict(raw)
+    a=model.predict(legacy);b=model.predict(current)
+    assert a.status==b.status=='estimated'
+    assert 'binding_work_extension' not in a.provenance
+    assert b.provenance['binding_work_extension']['calibrated'] is False
+    changed=[]
+    for name,left,right in zip(a.features.names,a.features.values,b.features.values):
+        if left!=right:
+            assert name.endswith('.bind.binding_units') and left>right==1
+            changed.append(name)
+    assert changed and b.estimated_ms<=a.estimated_ms  # A frozen coefficient may be zero.
+    assert model.to_dict()==before  # No fit, weight change, or legacy reinterpretation.
+    for node in raw['nodes']:
+        if node['kind']=='remote_bind_query':
+            node['parameters']['artifact']['parameters']['binding_key_work_profile']='unknown-profile'
+    invalid=model.predict(FederatedExecutionPlan.from_dict(raw))
+    assert invalid.status=='unavailable_missing_features' and invalid.estimated_ms is None
