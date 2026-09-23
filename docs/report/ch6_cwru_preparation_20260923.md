@@ -22,8 +22,12 @@
   653.87 ms、17 input / 2 output tokens；这是连通性检查，不是性能结论。
 - 原版作者依赖已安装。3856623 的 Linux bootstrap 成功，复用阶段耗时 60.35 s。
   Mac 本地文件 URI、自检缺配置、环境目录别名检查等迁移失败已保留并定位；修复仅涉及环境/路径。
-- 作业 3856638：冻结官方 MovieLens 20M archive，并验收 Linux 上 tiny RDF/FedX/Redis/lookup。
-  使用已安装依赖，无模型调用。最终状态以对应 pinned receipts 为准。
+- 作业 3856638 的 Linux tiny RDF/FedX/Redis/lookup 验收成功：跨源结果 4 行，与独立参考完全一致；
+  6 次 source 请求、0 失败、0 模型调用，所有自建服务关闭。Slurm 总状态 FAILED 是同作业数据下载
+  阶段的 MD5 文本格式解析错误，不能改写成整作业成功。服务回执 SHA-256：
+  `8f470e779c7b91bded8c1cb496497de8d980e40f8c74c0a36b0137f2241af515`。
+- 官方 MovieLens 20M 的 BSD 格式 MD5 已核实并修正解析。仅数据下载作业 3856649 已提交；
+  不重复已成功的数据库/基线验收，旧失败完整保留。
 
 详细安装、路径、数据和作业证据见[CPU 迁移记录](../decisions/ch6_cwru_cpu_20260923.md)。
 

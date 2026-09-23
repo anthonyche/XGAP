@@ -3,7 +3,7 @@
 最新：五方法同题 dispatch 已实际运行并封存，四个内部方法正确完成，TS 用尽观测额度，
 按 study-censored 保留，不计成答案错误。已验证 CWRU 独立目录读写与现有 API 鉴权，
 CPU 作业 3856445 已在 compt302 验证现有 Qwen API（一次调用、19 tokens），
-Linux 数据库/基线依赖继续准备中；不申请 GPU。见[远程记录](decisions/ch6_cwru_cpu_20260923.md)。
+Linux RDF/FedX/Redis/lookup 已通过一次 4 行跨源查询验收且全部关闭；不申请 GPU。见[远程记录](decisions/ch6_cwru_cpu_20260923.md)。
 
 **2026-09-23 正式准备进行中。**五方法合同与逐格矩阵已实现，见
 [执行计划](ch6_formal_execution_20260923.md)。批处理接线、1024 候选/深度 10、
