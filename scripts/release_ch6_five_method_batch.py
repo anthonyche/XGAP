@@ -34,14 +34,22 @@ def publish(*,spec_path,spec_sha256,output):
     if not prepared.get('success'):raise ValueError('Frozen stores not ready')
     if spec['deployment']=='rdf':load_pin(spec['external_runtime'])
     base=load_pin(spec['base_configuration']);rng=random.Random(spec['order_seed'])
-    cells=[];bindings=[];configs={}
-    for label in tuple(METHODS)[:-1]:
-        pin=write_once(root/(label+'-config.json'),configuration_for(base,label));configs[label]=pin
-        _,_,settings,_=load_configuration(pin['path'],pin['sha256']);validate_method(METHODS[label],settings)
+    cells=[];bindings=[];config_cache={}
+    def configs_for(base):
+        key=json.dumps(base,sort_keys=True,separators=(',',':'))
+        if key not in config_cache:
+            ordinal=len(config_cache);configs={}
+            for label in tuple(METHODS)[:-1]:
+                name=label+'-config.json' if ordinal==0 else f'{label}-config-{ordinal}.json'
+                pin=write_once(root/name,configuration_for(base,label));configs[label]=pin
+                _,_,settings,_=load_configuration(pin['path'],pin['sha256']);validate_method(METHODS[label],settings)
+            config_cache[key]=configs
+        return config_cache[key]
     for case in spec['cases']:
         # Validate public/reference association only, no scoring or answer-based filtering.
         request=load_pin(case['request']);reference=load_pin(case['reference'])
         if request['question_id']!=reference['question_id']:raise ValueError('Case reference mismatch')
+        configs=configs_for(load_pin(case['base_configuration']) if 'base_configuration' in case else base)
         labels=list(METHODS);rng.shuffle(labels)
         for label in labels:
             if label=='TS' and (spec['deployment']=='native' or spec['input_track']=='controlled'):
@@ -63,6 +71,7 @@ def publish(*,spec_path,spec_sha256,output):
         exposure=spec['exposure'],input_track=spec['input_track'],order_seed=spec['order_seed'],
         method_results_read=0,formal_campaign_ready=False)
     write_once(root/'release.json',release);print(json.dumps(pin))
+    return release
 
 
 if __name__=='__main__':

@@ -35,11 +35,14 @@ def inputs(tmp_path, monkeypatch):
 
 def test_verified_node_local_copy_is_durable_and_reclaimed(tmp_path, monkeypatch):
     args = inputs(tmp_path, monkeypatch)
+    args['max_rss_bytes']=16*loader.GIB
     assert loader.prepare(**args) == 0
     receipt = json.loads((args['output'] / 'receipt.json').read_text())
     assert receipt['success'] and receipt['sources_unchanged']
     assert receipt['workspace']['reclaimed'] and not args['work_root'].exists()
     assert receipt['durable_store_bytes'] > 0
+    seal=json.loads(Path(receipt['input_seal']['path']).read_text())
+    assert seal['process_budget_per_source']['max_group_rss_bytes']==16*loader.GIB
     for store in receipt['stores'].values():
         seal = json.loads(Path(store['seal']['path']).read_text())
         assert Path(store['path']).is_relative_to(args['output'])

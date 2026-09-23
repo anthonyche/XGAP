@@ -174,3 +174,9 @@ cells，不创造新重复；F6 引用已测量、同 Q/单位的 terminal sensi
 检查实际配置的 D/H/epsilon、controlled-state N/u、实际物化的源数/规模。价格扫描
 绑定冻结的 `cost_reference`，只有指定信息价格改变；没有注册 probe 时必须标明
 `inactive_factor`，不能将无变化曲线解释为信息获取策略收益。
+
+`prepare_ch6_execution_units.py` 将已准入题包发布为有界重复的五方法 manifests，
+只准备、不执行。每题的 relaxable 名称来自公开有限族中的非 hard 坐标：W1 没有
+待松弛字段，W4 的 hard logical_scope 必须验证。共同 D/H/epsilon 与资源上限保留，
+不能把 W3 的字段清单直接用于其他题型。TS 的调用参数继续只有公共问题和独立评分
+参考的 supervisor pin，不向其传递 XGAP 配置、候选或私有用户。

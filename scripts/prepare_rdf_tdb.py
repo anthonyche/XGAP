@@ -38,7 +38,7 @@ class DiskBoundary:
         return self.status
 
 
-def prepare(*,profile,profile_sha256,output,java,fuseki_jar,max_store_bytes=10*GIB,load_seconds=900,heap_mib=2048,work_root=None):
+def prepare(*,profile,profile_sha256,output,java,fuseki_jar,max_store_bytes=10*GIB,load_seconds=900,heap_mib=2048,work_root=None,max_rss_bytes=None):
     started=time.perf_counter();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     receipt={'schema_version':'xgap-frozen-rdf-tdb2-v1','success':False,'stores':{},'loads':[],
         'model_calls':0,'query_calls':0,'catalog_builds':0,'estimator_fit_calls':0,'automatic_retries':0,
@@ -71,7 +71,9 @@ def prepare(*,profile,profile_sha256,output,java,fuseki_jar,max_store_bytes=10*G
         if working!=root and root.stat().st_dev==working.stat().st_dev and shutil.disk_usage(root).free<2*max_store_bytes+6*GIB:
             raise ValueError('Same-filesystem workspace needs capacity for both copies')
         jar=stream_pin(fuseki_jar);java_pin=stream_pin(java)
-        budget=ProcessBudget(wall_seconds=load_seconds,max_group_rss_bytes=(heap_mib+2048)*1024**2,max_log_bytes=4*1024**2,sample_seconds=.1)
+        rss_limit=(heap_mib+2048)*1024**2 if max_rss_bytes is None else max_rss_bytes
+        if type(rss_limit) is not int or rss_limit<heap_mib*1024**2:raise ValueError('Offline RSS bound must include the Java heap')
+        budget=ProcessBudget(wall_seconds=load_seconds,max_group_rss_bytes=rss_limit,max_log_bytes=4*1024**2,sample_seconds=.1)
         receipt.update(dataset=doc['dataset'],profile={'path':str(Path(profile).resolve()),'sha256':profile_sha256})
         receipt['input_seal']=write_once(root/'input-seal.json',{'profile':receipt['profile'],'sources':source_pins,
             'fuseki_jar':jar,'java':java_pin,'process_budget_per_source':asdict(budget),
@@ -130,4 +132,5 @@ if __name__=='__main__':
     p.add_argument('--load-seconds',type=int,default=900)
     p.add_argument('--heap-mib',type=int,default=2048)
     p.add_argument('--work-root',help='New private node-local loader workspace; sealed stores are copied to output')
+    p.add_argument('--max-rss-bytes',type=int,help='Explicit offline heap plus native/mapped-index RSS allowance')
     raise SystemExit(prepare(**vars(p.parse_args())))

@@ -7,11 +7,12 @@ from xgap.agent.intent_certificate import fingerprint
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.runtime.anchor_reduction import depends_on
 from xgap.runtime.contracts import RuntimeNodeKind as R
-from xgap.runtime.physical_strategies import _entity_lineage, _target_match, _bound_match_artifact
+from xgap.runtime.physical_strategies import _entity_lineage, _bound_match_artifact
 from xgap.runtime.shared_native_reads import _key
 from xgap.runtime.source_row_filters import prefilter_source_rows
 from xgap.semantic.compact_lowering import lower_compact_query
 from xgap.semantic.program import SemanticOperatorKind as S
+from xgap.runtime.necessary_bind_moves import mandatory_anchor_bind,nested_key_targets
 
 
 def identity(plan):
@@ -40,10 +41,26 @@ class PhysicalMoves:
         return self.programs[index]
 
     def neighbors(self, index, plan):
-        """At most O(nodes^2 + operators) one-rule proposals, lazily yielded."""
+        """At most O(nodes^2 + operators^2) distinct proposals, lazily yielded."""
+        seen=set()
+        for proposal in self._neighbors(index,plan):
+            key=identity(proposal)
+            if key not in seen:
+                seen.add(key);yield proposal
+
+    def _neighbors(self,index,plan):
         program = self.program(index)
         operators = {o.operator_id:o for o in program.operators}
         consumers = Counter(i for o in program.operators for i in o.input_ids)
+        # One proved macro transform turns a mandatory scalar anchor into a
+        # bounded native key reduction. The old equality/semijoin proof is reused;
+        # this does not generate or execute a Cartesian strategy space.
+        try:
+            anchored=mandatory_anchor_bind(program,plan,self.backends,self.policy)
+            if anchored is not None:
+                yield finish(plan,anchored.nodes,'entity_bind',dict(kind='mandatory_anchor_fanout',
+                    admission=anchored.metadata['anchor_reduction']),anchored.metadata)
+        except (ValueError,KeyError,StopIteration):pass
         from xgap.runtime.semantic_compiler import compile_semantic_source
         # Change one logical source placement. Recompile only its unchanged
         # fragment; transformed/shared fragments keep their independently valid seed.
@@ -117,18 +134,18 @@ class PhysicalMoves:
                 other = join.parameters['right_on' if side==0 else 'left_on']
                 try:
                     if not lineage(driver,field):continue
-                    match,chain,column = _target_match(target,other,operators,consumers,set(program.roots))
-                    remote = next(n for n in plan.nodes if n.node_id==match.operator_id+'/native')
-                    # Shared reads require a separate all-consumer proof and are not rebound.
-                    if remote.kind is not R.REMOTE_QUERY or len(remote.semantic_operator_ids)!=1:continue
-                    output = plan.metadata['operator_outputs'][driver]
-                    if depends_on(plan,output,remote.node_id):continue
-                    artifact,parameter = _bound_match_artifact(QueryArtifact.from_dict(remote.parameters['artifact']),
-                        self.backends[remote.parameters['backend_id']],max_bindings=self.policy.max_bindings,
-                        max_binding_bytes=self.policy.max_binding_bytes,identity_column=column)
-                    bound = replace(remote,kind=R.REMOTE_BIND_QUERY,inputs=(output,),parameters={**remote.parameters,
-                        'artifact':artifact.to_dict(),'bind_field':field,'parameter':parameter,'max_bindings':self.policy.max_bindings})
-                    yield finish(plan,[bound if n.node_id==remote.node_id else n for n in plan.nodes],'entity_bind',
-                        dict(join=join.operator_id,driver=driver,target=match.operator_id,chain=chain))
+                    for match,chain,column in nested_key_targets(target,other,operators,plan.metadata['schemas'],consumers,set(program.roots)):
+                        remote = next(n for n in plan.nodes if n.node_id==match.operator_id+'/native')
+                        # Shared reads require a separate all-consumer proof and are not rebound.
+                        if remote.kind is not R.REMOTE_QUERY or len(remote.semantic_operator_ids)!=1:continue
+                        output = plan.metadata['operator_outputs'][driver]
+                        if depends_on(plan,output,remote.node_id):continue
+                        artifact,parameter = _bound_match_artifact(QueryArtifact.from_dict(remote.parameters['artifact']),
+                            self.backends[remote.parameters['backend_id']],max_bindings=self.policy.max_bindings,
+                            max_binding_bytes=self.policy.max_binding_bytes,identity_column=column)
+                        bound = replace(remote,kind=R.REMOTE_BIND_QUERY,inputs=(output,),parameters={**remote.parameters,
+                            'artifact':artifact.to_dict(),'bind_field':field,'parameter':parameter,'max_bindings':self.policy.max_bindings})
+                        yield finish(plan,[bound if n.node_id==remote.node_id else n for n in plan.nodes],'entity_bind',
+                            dict(join=join.operator_id,driver=driver,target=match.operator_id,chain=chain))
                 except (ValueError,KeyError,StopIteration):
                     continue

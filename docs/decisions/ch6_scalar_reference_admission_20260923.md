@@ -108,3 +108,33 @@ retain failure logs, and reclaim only newly owned, successfully copied workspace
 files. This changes offline preprocessing, not online experiment accounting.
 Five focused checks passed for one-shot admission, durable-copy integrity,
 corruption rejection and workspace separation. Real repaired gates are still needed.
+
+The corrected D2 unified gate selected one share-read transform and then failed
+at a full RATED relation scan (Neo4j transaction memory). This is an actual
+selected-plan failure. Source loading and scalar reference publication succeeded;
+the gate is not upgraded or excluded from its record.
+
+Extend the shared XGAP physical neighborhood with necessary-key reductions:
+(1) reuse the audited mandatory scalar-anchor/fanout proof as one finite macro
+transform; (2) allow an outer inner-join key to restrict an exclusive nested
+Match leaf when its column provenance survives Projects, Filters, inner Joins
+or Unions. Keep final constraints and joins; reject shared answer roots,
+unproved provenance, already bound/shared reads and cyclic dependencies.
+The old protected seed, frozen estimator, source data, budgets and one-final-plan
+rule remain. No native result is used to rank alternatives; the external baseline
+is unchanged. This addresses missing alternatives, not a claimed optimal planner.
+
+For J joins and M operators, at most O(JM + V²) local alternatives are generated;
+provenance/dependency checks add polynomial O(JM(V+E)) work plus generated query
+bytes. The anchor macro touches at most M target reads. D stays fixed, existing
+search/representation/time caps apply, and duplicate executable DAGs are omitted.
+Portable checks compare the new alternatives to an independent small D2 SQL
+reference, including parallel contributing edges and a distinct-user witness.
+Real D2 replay is required before declaring this bottleneck resolved.
+
+The node-local loader reached 113 million triples in about 420 seconds, then its
+10 GiB sampled RSS guard fired. Declare heap and total process RSS separately:
+TDB2 native/mapped-index memory is outside the Java heap. The next offline build
+uses a 64 GiB CPU allocation, 8 GiB heap and 56 GiB sampled RSS cap with the same
+one-hour per-source deadline. This does not raise online method/source budgets.
+The old partial node-local path and durable failure logs remain identified.
