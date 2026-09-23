@@ -32,3 +32,24 @@ fixture deselected), covering coordinator/RDF lexical agreement, preserved old
 timestamp behavior, integer epoch lowering, contribution/parallel-edge references,
 paths, split isolation and a 20,000-isolated-node star reference. The real repaired
 D1/D3 replay remains required; no full campaign has started.
+
+Follow-up: v6 D1 RDF returned the independent answer in all 8 pilot cases. D3's
+8-case reference publication completed in 8.97 seconds. D1's overall gate still
+failed cleanup: JVM leaders were Z with empty sampled live groups, but the short
+reap window had not obtained an exit status. The observer was then left running.
+Use a bounded additional wait on the owned Popen handle and always stop the
+observer, preserving a separate failed source-quiescence status when necessary.
+
+The original core schema advertised replicated business IDs on every graph shard
+and on control. This incorrectly made graph-only questions read control and made
+the 8-source pilot exceed the 64-operator bound. `ch6_profile_revision.revise`
+publishes a new explicit profile: the first graph shard is the complete provider
+of ordinary node attributes; control supplies control attributes; all graph shards
+remain required for partitioned edges. This follows the source materializer's full
+node replication, with no query outcomes consulted. The raw stores, loader timings,
+source snapshots and estimator weights remain frozen. A derived store-binding
+receipt cites the original receipt; it is not another load. New source-schema
+identity and shared scalar prompt apply equally across all five methods; regenerate
+cohorts before dispatch. Two additional focused profile/routing checks passed,
+including 2/4/8-source pilot lowering within 64 operators and unchanged physical
+store references. One cleanup replay passed with both terminal/nonterminal cases.

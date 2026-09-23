@@ -89,9 +89,14 @@ class RdfTdbSession:
         for name,process in reversed(self.processes.owned):
             try:
                 cleanup=_stop_group(process,ProcessBudget())
-                if cleanup['complete'] and process.poll() is None:
-                    try:process.wait(timeout=2)
+                if process.poll() is None:
+                    # A Linux JVM leader can be Z while its final native threads
+                    # are still exiting. The 0.5-second guard reap can time out;
+                    # finish a bounded wait on our own child before certification.
+                    try:process.wait(timeout=3)
                     except subprocess.TimeoutExpired:pass
+                cleanup['post_stop_reap_returncode']=process.returncode
+                cleanup['complete']=not _group_sample(process.pid) and process.returncode is not None
                 try:state=psutil.Process(process.pid).status() if process.poll() is None else 'reaped'
                 except psutil.NoSuchProcess:state='absent'
                 rows.append({'name':name,'pid':process.pid,'returncode':process.poll(),'leader_state':state,
@@ -100,7 +105,10 @@ class RdfTdbSession:
                 rows.append({'name':name,'pid':process.pid,'returncode':process.poll(),'terminal':False,
                     'cleanup':{'complete':False,'error_type':type(error).__name__,'error':str(error)}})
         drained=all(row['cleanup']['complete'] for row in rows)
-        if self.observer and drained:self.observer.close()
+        # Stop accepting requests even when a source failed to terminate. An
+        # unclosed non-daemon observer would keep a failed Slurm job alive forever.
+        # This does not upgrade the separate source-quiescence certificate.
+        if self.observer:self.observer.close()
         for log in self.processes.logs:log.close()
         if self.ports:self.ports.close()
         result={'processes':rows,'owned_processes_terminal':all(r['terminal'] for r in rows),
