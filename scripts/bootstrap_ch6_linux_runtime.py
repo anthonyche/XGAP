@@ -84,7 +84,7 @@ def bootstrap(archive, archive_sha256, output, reuse_root=None):
                   model_calls=0, backend_calls=0, gpu_requested=False,
                   formal_campaign_ready=False, commands=[])
     env = dict(os.environ); env.pop('XGAP_EXTERNAL_LLM_API_KEY', None)
-    env.update(OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1', PIP_NO_CACHE_DIR='1')
+    env.update(OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1', PIP_NO_CACHE_DIR='1', PYTHONDONTWRITEBYTECODE='1')
     start = time.monotonic()
 
     def run(name, args, cwd=None, seconds=1200):
@@ -101,14 +101,27 @@ def bootstrap(archive, archive_sha256, output, reuse_root=None):
         transfer = pin(archive)
         if transfer['sha256'] != archive_sha256: raise ValueError('Transfer checksum mismatch')
         reused=Path(reuse_root).resolve() if reuse_root else None
+        reuse_python = False
         if reused:
             previous=json.loads((reused/'receipt.json').read_text())
-            if previous.get('error')!='Dependency stage failed: author-dependencies':
-                raise ValueError('Only the known installation-path failure is resumable')
+            if previous.get('error') not in ('Dependency stage failed: author-dependencies',
+                                              'Dependency stage failed: python-imports'):
+                raise ValueError('Only the known installation/import setup failures are resumable')
+            if previous.get('transfer',{}).get('sha256') != archive_sha256:
+                raise ValueError('Reused installation belongs to a different transfer')
             completed={c['name'] for c in previous['commands'] if c['returncode']==0}
-            if not {'java-version','redis-build','redis-version','checkout-aruqula','checkout-lookup','checkout-redis'}<=completed:
+            java_archive = reused/'temurin21-linux.tar.gz'
+            if previous.get('error') == 'Dependency stage failed: python-imports':
+                if not {'java-version','redis-version','author-dependencies','pip-check'} <= completed:
+                    raise ValueError('Python dependencies were not completely installed')
+                parent_pin = previous['reused_prerequisites']
+                if pin(parent_pin['path'])['sha256'] != parent_pin['sha256']:
+                    raise ValueError('Parent installation receipt changed')
+                java_archive = Path(parent_pin['path']).parent/'temurin21-linux.tar.gz'
+                reuse_python = True
+            elif not {'java-version','redis-build','redis-version','checkout-aruqula','checkout-lookup','checkout-redis'}<=completed:
                 raise ValueError('Prerequisite installation stages incomplete')
-            if pin(reused/'temurin21-linux.tar.gz')['sha256']!=JAVA_SHA:
+            if pin(java_archive)['sha256']!=JAVA_SHA:
                 raise ValueError('Reused Java archive changed')
             for name in ('inputs','java','aruqula','lookup','redis'):
                 (root/name).symlink_to(reused/name,target_is_directory=True)
@@ -152,16 +165,23 @@ def bootstrap(archive, archive_sha256, output, reuse_root=None):
             raise ValueError('Lookup JAR differs from verified transfer')
         classpath = root/'lookup-classpath.txt'
         classpath.write_text(':'.join(str(inputs/name) for name in manifest['classpath'])+'\n')
-        run('python-venv', [sys.executable, '-m', 'venv', root/'author-venv'])
+        if reuse_python:
+            (root/'author-venv').symlink_to(reused/'author-venv',target_is_directory=True)
+        else:
+            run('python-venv', [sys.executable, '-m', 'venv', root/'author-venv'])
         python = root/'author-venv/bin/python'
         # Preserve the admitted Mac dependency versions where portable; appnope
         # is an IPython macOS extra, never imported by the Linux author method.
         constraints = root/'linux-constraints.txt'
         constraints.write_text(portable_constraints((inputs/'mac-reference-packages.txt').read_text()))
-        run('author-dependencies', [python, '-m', 'pip', 'install', '--disable-pip-version-check',
-            '--no-cache-dir', '-r', inputs/'author-requirements.txt', '-c', constraints, 'psutil'], seconds=1500)
+        if not reuse_python:
+            run('author-dependencies', [python, '-m', 'pip', 'install', '--disable-pip-version-check',
+                '--no-cache-dir', '-r', inputs/'author-requirements.txt', '-c', constraints, 'psutil'], seconds=1500)
         run('pip-check', [python, '-m', 'pip', 'check'], seconds=30)
-        run('python-imports', [python, '-c', 'import chainlite,litellm,rdflib,redis,yaml,psutil'], seconds=60)
+        import_root = root/'import-check'; import_root.mkdir()
+        (import_root/'llm_config.yaml').write_text('llm_endpoints: []\nprompt_dirs: []\n')
+        run('python-imports', [python, '-c', 'import chainlite,litellm,rdflib,redis,yaml,psutil'],
+            cwd=import_root, seconds=90)
         packages = subprocess.check_output([str(python), '-m', 'pip', 'freeze'], text=True, env=env)
         (root/'linux-installed-packages.txt').write_text(packages)
         result.update(success=True, java=pin(java), python_command=str(python), python=pin(python),
@@ -182,5 +202,5 @@ def bootstrap(archive, archive_sha256, output, reuse_root=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('archive', 'archive-sha256', 'output'): parser.add_argument('--'+name, required=True)
-    parser.add_argument('--reuse-root',help='Reuse completed pre-Python stages from the retained path-failure receipt')
+    parser.add_argument('--reuse-root',help='Reuse completed stages from a retained installation/import setup failure')
     raise SystemExit(bootstrap(**vars(parser.parse_args())))
