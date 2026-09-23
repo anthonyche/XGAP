@@ -282,6 +282,9 @@ def run(args):
             regex_use_select_distinct_and_id_not_label=True,
             llm_extract_prediction_if_null=True))
         write(root / 'author-output.json', [json.loads(state_to_string(value)) for value in results])
+        author_bytes=(root/'author-output.json').read_bytes()
+        receipt['author_output']=dict(path=str(root/'author-output.json'),bytes=len(author_bytes),
+                                      sha256=hashlib.sha256(author_bytes).hexdigest())
         query = results[0].get('predicted_sparql')
         if not isinstance(query, str) or not query.strip():
             receipt['status'] = 'non_answer'

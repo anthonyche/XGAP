@@ -179,6 +179,10 @@ def audit_observation(row):
         raise ValueError('Measured metrics require sealed evidence')
     if row['status']=='fixed_reference' and not row.get('reference_key'):
         raise ValueError('Fixed reference requires the original observation identity')
+    low,high=row.get('ci_low'),row.get('ci_high')
+    if (low is None)!=(high is None):raise ValueError('Both confidence interval endpoints are required')
+    if low is not None and (value is None or any(type(v) not in (int,float) or not math.isfinite(v) for v in (low,high)) or low>high):
+        raise ValueError('Invalid confidence interval')
     if value is not None and row.get('population')=='predeclared_method_supported_subset':
         total=row.get('total_cases');supported=row.get('supported_cases')
         if (type(total) is not int or type(supported) is not int or not 0<supported<=total
