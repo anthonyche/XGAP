@@ -174,6 +174,23 @@ plans; comparing acquisition with execution additionally needs declared common
 numerical units. No regression to milliseconds is required. Uncalibrated priors,
 row estimates and prices must be labelled as assumptions, not measured facts.
 
+The opt-in Chapter 6 source-work ranker uses frozen complete source populations;
+v2 additionally separates relation/direction endpoint degree moments. Singleton
+and multi-key fanout use mean and size-biased mean proxies respectively. No
+current-query trial execution or answer participates. Unknown many-to-many joins
+are no longer assumed to preserve the larger input's row count. These estimates
+are relative work, not milliseconds or hard resource certificates.
+
+One checked physical move can reduce an existential degree-one leaf to one
+jointly satisfying witness per bound retained endpoint. It requires that both
+the edge and leaf disappear at the explicit contribution projection and that
+all their predicates are evaluated before representative selection. It declines
+unbound retained-variable dependencies and unsupported property/path cases.
+Cypher uses a correlated per-key subquery; RDF uses capped singleton UNION
+branches with a whole-request byte bound. Output cardinality is bounded by sent
+keys, but adjacency scan work remains estimated. The online controller selects
+one plan from symbolic estimates and executes it once.
+
 Only actual actions are charged to `realized_acquisition_cost_estimate`.
 `selected_execution_cost_estimate` remains a prediction; the NL report's
 `realized_trace_work_estimate` combines actual-path declared work, observed common

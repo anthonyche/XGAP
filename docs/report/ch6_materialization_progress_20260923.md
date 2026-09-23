@@ -11,7 +11,7 @@
 |域|逻辑核心|原始节点 / 边|数据库与答案准入|
 |---|---|---|---|
 |D1 SNB SF0.1|Person / knows|1,528 / 14,073|RDF 与原生均 8/8|
-|D2 MovieLens 20M|User、Movie / rating|165,771 / 20,000,263|Neo4j 物化完成；大图查询 gate 尚未通过|
+|D2 MovieLens 20M|User、Movie / rating|165,771 / 20,000,263|Neo4j/RDF 完整物化；大图查询 gate 尚未整体通过|
 |D3 FinBench SF0.1|Account / transfer|20,409 / 79,909|RDF 与原生均 8/8|
 
 时间视图会增加物理边/三元组，不能把视图副本计成原始独立事实。
@@ -121,3 +121,26 @@ D2 native 独立 test bank 准备任务 3858226 已失败：zigzag 的独立 SQL
 任务 3857763 已成功为 D1/D3 当前 bank 准备三次重复的 NL 清单；不是启动这些请求，
 也不是最终 n/全局预算已冻结。
 本轮针对必要键改写、发布配置、loader 的小图/合同检查通过；没有追加全库回归或消融。
+
+## 存在性见证修复：首个完整 D2 原生准入
+
+代码 `1941e77`、作业 `3858296`、收据
+`formal-unified-admission-v7/D2/native/receipt.json`：8/8 成功，全部 answer EM=1。
+仍使用完整 20M、原来的 8 个预选 pilot 查询、60 秒源请求上限、3 GiB worker /
+4 GiB source 采样保护线。没有试跑多计划再挑选赢家，也未增加在线资源预算。
+
+|原生 pilot 案例|父进程观测总时间（秒）|源进程采样峰值（bytes）|响应体（bytes）|
+|---|---:|---:|---:|
+|uniform incoming-minimum W1|8.429|1131962368|96346|
+|uniform incoming-minimum W2|4.913|1148076032|96346|
+|uniform incoming-minimum W3|4.717|1208553472|117503|
+|uniform incoming-minimum W4|2.497|1207603200|1929|
+|active-anchor incoming-minimum W2|3.508|1235505152|42643|
+|active-anchor incoming-minimum W3|2.831|1231843328|48576|
+|active-anchor incoming-minimum W4|2.263|1218187264|1932|
+|active-anchor outgoing-maximum W1|2.822|1222488064|18079|
+
+时间包括 worker 启动、文件读取及捕获开销，不能当作纯查询执行时间或最终 NL
+端到端时间。内存为采样进程 RSS 合计，不是精确物理内存峰值。旧 v4–v6 的首题
+超时原样保留，因此当前可以确认工程阻塞已解除，不能给出旧成功运行的配对提速比。
+RDF 同题回放、D2 正式题参考和统计量更新仍需单独准入；没有五方法正式结果。
