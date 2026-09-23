@@ -5,6 +5,7 @@ import time
 
 import psutil
 
+from xgap.experiments.linux_source_work import LinuxSourceWork
 from xgap.experiments.process_guard import ProcessBudget, _group_sample, _stop_group
 
 
@@ -23,6 +24,7 @@ class OwnedResources:
             raise ValueError('Live trials require explicit caller-owned method/source processes')
         if len({s.process.pid for s in self.services})!=len(self.services):raise ValueError('Duplicate owned process group')
         self.identities={};self.cpu_base={};self.cpu_last={};self.seen={};self.peak={'method':0,'source':0}
+        self.source_work=LinuxSourceWork()
         self.samples=0;self.status=None;self.started=time.perf_counter();self.rss_components={};self.components_at=0.
         for s in self.services:
             if s.process.poll() is not None:raise ValueError('Owned service is already terminal')
@@ -30,6 +32,7 @@ class OwnedResources:
             for p in _group_sample(s.process.pid):
                 cpu=psutil.Process(p['pid']).cpu_times();key=(p['pid'],p['created'],s.role)
                 self.cpu_base[key]=cpu.user+cpu.system
+                if s.role=='source':self.source_work.observe(p['pid'],p['created'],'source')
 
     def sample(self, worker_members):
         groups=[('method',p) for p in worker_members]
@@ -57,6 +60,8 @@ class OwnedResources:
             for role,p in groups:
                 try:
                     if psutil.Process(p['pid']).create_time()!=p['created']:continue
+                    if role=='source':
+                        self.source_work.observe(p['pid'],p['created'],'source')
                     fields={}
                     for line in Path('/proc/'+str(p['pid'])+'/status').read_text().splitlines():
                         name,_,value=line.partition(':')
@@ -75,6 +80,7 @@ class OwnedResources:
         return {'status':self.status or 'within_observed_budget','samples':self.samples,
             'sampled_peak_rss_bytes':self.peak,'limits':self.limits,'sampled_cpu_seconds':cpu,
             'last_linux_rss_components':self.rss_components,
+            'linux_source_work':self.source_work.summary(),
             'owned_groups':[{'name':s.name,'role':s.role,'pid':s.process.pid,'created':self.identities[s.process.pid]} for s in self.services],
             'scope':'method worker plus hosted method; source groups separately, remote LLM excluded',
             'limitations':'sampled group RSS may double-count shared pages; short-lived CPU/peaks may be missed; not an OS cap'}

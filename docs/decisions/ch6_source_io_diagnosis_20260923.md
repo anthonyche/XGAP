@@ -53,3 +53,23 @@ page counts are not yet instrumented. First isolate mapped versus direct buffere
 file access with the **same captured query** and same 60 s / 4 GiB bounds on the
 same node. Direct is Jena's file-access mode, not OS O_DIRECT. No new query rewrite,
 source facts, estimator, baseline algorithm or official deployment default changes.
+
+## Recurring measurement without rerunning a diagnostic suite
+
+Owned source resources now retain Linux minor/major fault and I/O counter deltas
+between first and last observations, on the existing 1 Hz RSS-component cadence.
+Only owned source identities are read. PID reuse, a single sample, unavailable
+fields and counter resets yield null, never a false zero; CPU/RSS guards stay
+unchanged. The measurements do not claim process I/O equals source-only file I/O,
+physical scans equal yielded tuples, or that wall-minus-CPU measures I/O waiting.
+Four parser/identity/delta tests and seven existing resource/common-trial tests
+pass. These counters have not yet been collected in a full-source online gate.
+
+Diagnostic evidence was downloaded and checksum-verified as
+`xgap-source-work-3859381.tar.gz`, SHA-256
+`6feb8cebdaeb89112db8935645cb68948323422c9489200215f016698e274cb8`.
+The server JAR SHA matches local pinned Jena 5.6.0 exactly:
+`d28c1eaf703122ee628895a460c20fa4aa60a892f435d403ea8c036f241da1f8`.
+Direct-access replay 3859447 keeps compt311, eight CPUs / 24 GiB allocation,
+query/heap/RSS budgets and original 567-key request. It started by backfill after
+an initially late scheduler estimate; no job was canceled, resubmitted or moved.
