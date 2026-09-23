@@ -31,12 +31,12 @@ def test_anchor_and_nested_witness_reductions_preserve_independent_gold(tmp_path
     _,graphs=fixture.generate(tmp_path/'facts',index)
     pp=publish(tmp_path/'facts/receipt.json',PARENT,PIN,tmp_path/'profile')
     profile=FrozenOneShotProfile.load(pp['path'],expected_sha256=pp['sha256'])
-    doc,_,_,sources,backends,_,modes=profile.materialize();schema=revise_schema(doc['source_schema'])
+    doc,estimator,_,sources,backends,_,modes=profile.materialize();schema=revise_schema(doc['source_schema'])
     q=template_query(CORES['D2'],'incoming_minimum','user:1',0,cross=False)
     expected=evaluate(q,index)['rows'];assert expected
     program,assignment=lower_compact_query(q,schema,version='v2',optimize=True)
     family=IntentFamily('complete',(IntentCandidate.create(fingerprint(q),q),),(),
-        snapshot_identity(sources,backends,schema),language_version='v2')
+        snapshot_identity(sources,backends,schema),language_version='v2',coverage_basis='authored complete correctness query')
     physical=replace(modes['performance'][0],max_parallelism=1)
     seed=_baseline(program,assignment,sources,backends,physical,optimize_reads=False)
     moves=PhysicalMoves(family,schema,backends,physical,sources)
@@ -59,3 +59,27 @@ def test_anchor_and_nested_witness_reductions_preserve_independent_gold(tmp_path
         result=scheduler.execute(plan)
         assert result.success,result
         assert list(result.final_rows)==expected,plan.metadata['unified_rewrite']
+
+    # A synthetic larger-population contract exercises one online selection;
+    # the executed correctness graph stays tiny. No observed result is a score.
+    from xgap.planning.relative_source_work import FrozenSourceWorkRanker
+    from xgap.planning.joint_cost import JointCostProfile
+    from xgap.agent.unified_family import run_unified_family,UnifiedSettings
+    from xgap.agent.scope_authority import ScopedQueryUser,private_query_intent
+    from xgap.experiments.one_shot_records import write_once
+    populations=tuple((s.backend_id,2000,998000 if s.source_id=='graph' else 0) for s in estimator.statistics.entries)
+    totals={b:n+e for b,n,e in populations}
+    stats=replace(estimator.statistics,entries=tuple(replace(s,total_rows=totals[s.backend_id]) for s in estimator.statistics.entries))
+    ranker=FrozenSourceWorkRanker(stats,populations,('id','xgap_id'),'fixture:independent-synthetic-counts')
+    question='frozen correctness request';private=write_once(tmp_path/'private.json',private_query_intent(question,q,language_version='v2'))
+    user=ScopedQueryUser(family,private['path'],private['sha256']);selected=[];executed=[]
+    def execute(plan):
+        selected.append(plan);result=scheduler.execute(plan)
+        executed.append(result)
+        return dict(success=result.success,answer_rows=list(result.final_rows))
+    report=run_unified_family(question,family,user,prepare_seed=lambda *_:seed,execute=execute,
+        costs=JointCostProfile(),settings=UnifiedSettings(),estimator=ranker,moves=moves)
+    assert report['success'] and len(selected)==report['final_plan_executions']==1,[(n.node_id,n.error) for r in executed for n in r.node_results if n.error]
+    assert list(executed[0].final_rows)==expected
+    assert report['external_calls_during_search']==0
+    assert any(n.kind.value=='remote_bind_query' for n in selected[0].nodes)

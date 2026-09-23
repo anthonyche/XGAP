@@ -67,7 +67,11 @@ def prefilter_source_rows(program: SemanticGraphProgram,plan: FederatedExecution
     nodes=[];applied=[];declined=[]
     for n in plan.nodes:
         candidates=[s for s in n.semantic_operator_ids if s in selected and n.node_id==s+'/native']
-        if n.kind not in (R.REMOTE_QUERY,R.REMOTE_BIND_QUERY) or len(candidates)!=1:
+        # A transformed read may now serve a second semantic Match whose
+        # consumers do not require this equality. The original program's
+        # single-source proof cannot restrict that shared physical relation.
+        if (n.kind not in (R.REMOTE_QUERY,R.REMOTE_BIND_QUERY) or len(candidates)!=1
+                or len(n.semantic_operator_ids)!=1):
             nodes.append(n);continue
         source=candidates[0]
         try:

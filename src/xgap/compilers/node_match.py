@@ -68,4 +68,5 @@ def compile_node_match(node: NodePattern, properties: dict[str, str], *, backend
     return QueryArtifact(artifact_id, language, text, kind="compiled", parameters={
         "required_features": list(required), **extra, "compiler": "semantic_node_match_v1",
         "condition_profile": BOOLEAN_PROFILE,
-        "target_backend_id": backend_id, "output_columns": columns})
+        "target_backend_id": backend_id, "output_columns": columns,
+        "scalar_properties": dict(properties)})

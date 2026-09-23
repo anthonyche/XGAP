@@ -39,8 +39,15 @@ class JointCostProfile:
             try:
                 prediction = estimator.predict(plan)
             except (ValueError, KeyError) as error:
+                if getattr(estimator,'strict_relative_units',False):
+                    raise ValueError('Relative-work model cannot score this plan; incompatible fallback units refused') from error
                 prediction = None
                 unavailable = dict(error_type=type(error).__name__, reason=str(error))
+            if prediction is not None and prediction.status=='ranked':
+                value=prediction.relative_cost
+                if not math.isfinite(value) or value<0:raise ValueError('Invalid frozen relative execution score')
+                return value,dict(basis='frozen_relative_work',prediction=prediction.to_dict(),
+                                  unit='declared_work_units',calibrated=False)
             if prediction is not None and prediction.status == 'estimated' and prediction.estimated_ms is not None:
                 value = prediction.estimated_ms / self.estimated_ms_per_unit
                 if not math.isfinite(value) or value < 0:
