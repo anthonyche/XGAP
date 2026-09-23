@@ -39,6 +39,7 @@ def install_fake_runtime(monkeypatch, *, fail_cell=None, interrupt_cell=None, cl
     class Session:
         def __init__(self,root,**kwargs):
             self.root=root;root.mkdir();self.observer=SimpleNamespace(generation=0);self.owned=[]
+            self.serving_root=kwargs.get('serving_root')
             self.profile=dict(path='/unused-profile',sha256='b'*64);self.closed=False;sessions.append(self)
         def start(self):pass
         def close(self):
@@ -65,6 +66,21 @@ def launch(root,manifest,*,max_new_cells=10000,name='run'):
     pin=write_once(root/(name+'.json'),manifest)
     args=dict(manifest_path=pin['path'],manifest_sha256=pin['sha256'],output=root/'batch')
     return batch.run(**args,max_new_cells=max_new_cells),args
+
+
+def test_declared_local_storage_is_shared_and_recorded(tmp_path,monkeypatch):
+    seen,sessions=install_fake_runtime(monkeypatch)
+    scratch=tmp_path/'scratch';scratch.mkdir()
+    monkeypatch.setenv('SLURM_JOB_ID','fixture-job');monkeypatch.setenv('SLURM_TMPDIR',str(scratch))
+    manifest=fixture(tmp_path);manifest['design']['source_storage']='node_local'
+    result,_=launch(tmp_path,manifest)
+    assert result['status']=='returned' and seen==['0','1','2'] and len(sessions)==1
+    assert scratch in sessions[0].serving_root.parents
+    record=json.loads((tmp_path/'batch/invocations/0001/source-workspace.json').read_text())
+    assert record['common_to_all_methods'] and record['storage_accounted']
+    assert Path(record['path'])==sessions[0].serving_root.parent
+    manifest['design']['source_storage']='untracked_mount'
+    with pytest.raises(ValueError,match='storage policy'):batch.validate(manifest)
 
 
 def test_resume_skips_success_and_failed_cells_without_private_or_reference_worker_access(tmp_path,monkeypatch):

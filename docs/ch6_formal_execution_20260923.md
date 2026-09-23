@@ -187,3 +187,10 @@ cells，不创造新重复；F6 引用已测量、同 Q/单位的 terminal sensi
 每段结束核对实际 usage；没有 terminal 的旧 cell 会阻止续跑，不能当作零成本跳过。
 每段开始保守预留该 unit 的完整受限 package 上限与其他 unit 已保留证据之和；
 不依赖未来删除来承诺存储空间。改变此分段只改变 harness，不改变方法算法或方法顺序。
+
+同一 manifest 可显式冻结 `design.source_storage=node_local`，将所有方法共享的源服务
+副本放入当前 Slurm allocation 的私有临时目录；默认历史配置仍是 evidence 目录。
+永久输入、请求、答案和关闭收据继续存研究存储；磁盘 guard 合并计算两个目录。
+节点本地服务副本没有成功回收时，下一次 invocation 必须先完成存储恢复，不能漏算。
+服务复制边读取边校验 SHA-256，不降低身份校验；setup 时间仍与 query latency 分开。
+不同存储配置的旧结果不混入同一配对比较，不把公共基础设施改善归因于某种方法。

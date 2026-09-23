@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""Frozen ordered batch for the current two modes. Resume unattempted cells only.
+"""Frozen ordered method batch; resume unattempted cells only.
 
-Native and RDF serving copies use the existing owned-session implementations.
-References are opened only after a common outcome is sealed. No baselines,
-profile rewrites, estimator fitting, automatic retries or acquisition replay.
+One shared native/RDF source session, independent workers and sealed scoring.
+Historical schemas remain readable; the formal schema dispatches all five
+current methods without profile fitting or automatic retries.
 """
 import argparse
 import fcntl
 import json
 import math
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
+import tempfile
 import time
 
 from native_store_session import NativeStoreSession
@@ -49,7 +51,9 @@ def validate(manifest):
     design=manifest['design']
     numeric=('total_wall_seconds','package_max_bytes','free_disk_reserve_bytes','method_wall_seconds',
              'method_rss_bytes','source_rss_bytes','startup_seconds')
-    if set(design)!=set(numeric)|{'source_budget'}:raise ValueError('Explicit batch budgets required')
+    if set(design)-{'source_storage'}!=set(numeric)|{'source_budget'}:raise ValueError('Explicit batch budgets required')
+    if design.get('source_storage','evidence') not in ('evidence','node_local'):
+        raise ValueError('Unknown common source storage policy')
     if any(type(design[k]) not in (int,float) or not math.isfinite(design[k]) or design[k]<=0 for k in numeric):
         raise ValueError('Invalid batch budgets')
     SourceObservationBudget(**design['source_budget'])
@@ -164,6 +168,9 @@ def _run(manifest,digest,commit,root,max_new_cells):
     for old in previous:
         if not (old/'receipt.json').exists() or not json.loads((old/'receipt.json').read_text()).get('all_owned_closed'):
             raise ValueError('Previous invocation lacks verified closure; explicit recovery required before resume')
+        if manifest['design'].get('source_storage')=='node_local' and any(
+                c.get('serving_copy_reclamation_complete') is False for c in json.loads((old/'receipt.json').read_text())['closures']):
+            raise ValueError('Prior node-local serving copies require explicit storage recovery')
     before=inventory(root,manifest['cells'])
     if not before['unattempted']:return dict(status='no_unattempted_cells',counts=before,new_cells=0)
     invocation=runs/f'{len(previous)+1:04}';invocation.mkdir()
@@ -171,6 +178,14 @@ def _run(manifest,digest,commit,root,max_new_cells):
     (root/'cells').mkdir(exist_ok=True);(root/'sessions').mkdir(exist_ok=True)
     design=manifest['design'];budget=BatchBudget(root,design,started);session=None;external=None;closures=[];attempts=0;error=None
     try:
+        workspace=None
+        if design.get('source_storage')=='node_local':
+            if not os.environ.get('SLURM_JOB_ID'):
+                raise ValueError('Node-local storage requires an explicit Slurm allocation')
+            workspace=Path(tempfile.mkdtemp(prefix='xgap-source-',dir=os.environ.get('SLURM_TMPDIR','/tmp')))
+            budget=BatchBudget(root,design,started,extra_roots=(workspace,))
+            write_once(invocation/'source-workspace.json',dict(path=str(workspace),job_id=os.environ['SLURM_JOB_ID'],
+                common_to_all_methods=True,storage_accounted=True))
         for cell in manifest['cells']:
             path=root/'cells'/cell['cell_id']
             if path.exists():continue
@@ -180,9 +195,11 @@ def _run(manifest,digest,commit,root,max_new_cells):
                 budget.status='study_insufficient_time_for_cell';break
             if session is None:
                 cls=NativeStoreSession if manifest['deployment']=='native' else RdfTdbSession
-                session=cls(root=root/'sessions'/f'{len(list((root/"sessions").iterdir()))+1:04}',
+                ordinal=f'{len(list((root/"sessions").iterdir()))+1:04}'
+                session=cls(root=root/'sessions'/ordinal,
                     prepared_path=manifest['prepared']['path'],prepared_sha256=manifest['prepared']['sha256'],
-                    discard_serving_copies=True,budget=SourceObservationBudget(**design['source_budget']))
+                    discard_serving_copies=True,budget=SourceObservationBudget(**design['source_budget']),
+                    serving_root=workspace/ordinal if workspace else None)
                 with deadline(design['startup_seconds']):session.start()
             if budget.sample([]):break
             if design['total_wall_seconds']-(time.time()-started)<design['method_wall_seconds']:
