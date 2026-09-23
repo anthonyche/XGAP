@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 
 from xgap.experiments.ch6_formal_protocol import load_pin,METHODS,FIGURES
+from xgap.experiments.ch6_support import validate_support
 
 
 def audit_release(release,*,free_bytes=None):
@@ -48,6 +49,11 @@ def audit_release(release,*,free_bytes=None):
                       ('independent_relational','independent_gold_sparql','independent_gold_cypher'))
                 input_keys[cid]=dict(request=case['request']['sha256'],reference=case['reference']['sha256'])
         check('nonempty_test',bool(case_ids))
+        support=validate_support(load_pin(release['support_contract']))
+        support_cases={c['case_id']:c for c in support['cases']}
+        check('support_covers_workload',set(support_cases)==case_ids)
+        for case in support['cases']:
+            for assessment in case['methods'].values():load_pin(assessment['evidence_pin'])
         check('disjoint_templates',not template_splits.get('test',set()) &
               (template_splits.get('development',set())|template_splits.get('pilot',set())))
         for d in ('D1','D2','D3'):
@@ -64,6 +70,12 @@ def audit_release(release,*,free_bytes=None):
                 methods.add(cell['method'])
                 public=load_pin(cell['request']);ref=load_pin(cell['reference'])
                 check('cell_reference_'+cell['cell_id'],public['question_id']==ref['question_id'])
+                cid=unit['cell_cases'][cell['cell_id']]
+                check('cell_frozen_input_'+cell['cell_id'],cid in input_keys and
+                      input_keys[cid]==dict(request=cell['request']['sha256'],reference=cell['reference']['sha256']))
+                label=next(k for k,v in METHODS.items() if v==cell['method'])
+                check('cell_supported_'+cell['cell_id'],support_cases[cid]['methods'][label]['status']=='supported'
+                      and support_cases[cid]['deployment']==manifest['deployment'])
             figures.update(unit['figures'])
         for support in release['support_exceptions']:
             check('honest_exception',support['status'] in ('unsupported_deployment','unsupported_interface','unscorable_metric')

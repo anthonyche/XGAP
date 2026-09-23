@@ -179,4 +179,9 @@ def audit_observation(row):
         raise ValueError('Measured metrics require sealed evidence')
     if row['status']=='fixed_reference' and not row.get('reference_key'):
         raise ValueError('Fixed reference requires the original observation identity')
+    if value is not None and row.get('population')=='predeclared_method_supported_subset':
+        total=row.get('total_cases');supported=row.get('supported_cases')
+        if (type(total) is not int or type(supported) is not int or not 0<supported<=total
+                or row.get('support_rate')!=supported/total or not row.get('support_contract')):
+            raise ValueError('Measured subset requires frozen support identity, counts and rate')
     return row

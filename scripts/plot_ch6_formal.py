@@ -43,6 +43,9 @@ def plot(matrix_path,output):
                     style='--' if series and all(r['configuration_kind']=='fixed_reference' for r in series) else '-'
                     ax.plot(positions,values,style,marker='o',label=method,color=COLORS[method])
                 missing=[r for r in series if r['value'] is None]
+                if numeric and group[0]=='mixed':
+                    notes.append(method+': support '+', '.join(str(r['x_value'])+'='+str(r['supported_cases'])+'/'+str(r['total_cases'])
+                                for r in series if r['value'] is not None))
                 if missing:
                     notes.append(method+': '+', '.join(sorted({r['status'] for r in missing})))
                 elif not series:notes.append(method+': see other input/deployment panel')
