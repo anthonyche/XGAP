@@ -1,5 +1,6 @@
 """Sample and retire only caller-owned live services around a method trial."""
 from dataclasses import dataclass
+from pathlib import Path
 import time
 
 import psutil
@@ -22,7 +23,7 @@ class OwnedResources:
             raise ValueError('Live trials require explicit caller-owned method/source processes')
         if len({s.process.pid for s in self.services})!=len(self.services):raise ValueError('Duplicate owned process group')
         self.identities={};self.cpu_base={};self.cpu_last={};self.seen={};self.peak={'method':0,'source':0}
-        self.samples=0;self.status=None;self.started=time.perf_counter()
+        self.samples=0;self.status=None;self.started=time.perf_counter();self.rss_components={};self.components_at=0.
         for s in self.services:
             if s.process.poll() is not None:raise ValueError('Owned service is already terminal')
             self.identities[s.process.pid]=psutil.Process(s.process.pid).create_time()
@@ -48,6 +49,21 @@ class OwnedResources:
         for role in totals:
             self.peak[role]=max(self.peak[role],totals[role])
             if totals[role]>self.limits[role]:self.status=role+'_rss_limit_observed'
+        # Linux diagnostics distinguish anonymous memory from resident mapped
+        # file pages. Both still count towards the declared total RSS guard.
+        # Read only caller-owned identities; missing fields stay unknown.
+        if time.monotonic()-self.components_at>=1 or self.status:
+            self.components_at=time.monotonic()
+            for role,p in groups:
+                try:
+                    if psutil.Process(p['pid']).create_time()!=p['created']:continue
+                    fields={}
+                    for line in Path('/proc/'+str(p['pid'])+'/status').read_text().splitlines():
+                        name,_,value=line.partition(':')
+                        if name in ('RssAnon','RssFile','RssShmem'):fields[name]=int(value.split()[0])*1024
+                    if fields:self.rss_components[str(p['pid'])]=dict(role=role,created=p['created'],bytes=fields,
+                        observed_after_ms=(time.perf_counter()-self.started)*1000)
+                except (OSError,ValueError,psutil.Error):pass
         if self.extra_monitor is not None:
             self.status=self.status or self.extra_monitor.sample(worker_members)
         self.samples+=1;return self.status
@@ -58,6 +74,7 @@ class OwnedResources:
             cpu['method' if role=='method_host' else role]+=max(0,value-self.cpu_base.get((pid,created,role),0))
         return {'status':self.status or 'within_observed_budget','samples':self.samples,
             'sampled_peak_rss_bytes':self.peak,'limits':self.limits,'sampled_cpu_seconds':cpu,
+            'last_linux_rss_components':self.rss_components,
             'owned_groups':[{'name':s.name,'role':s.role,'pid':s.process.pid,'created':self.identities[s.process.pid]} for s in self.services],
             'scope':'method worker plus hosted method; source groups separately, remote LLM excluded',
             'limitations':'sampled group RSS may double-count shared pages; short-lived CPU/peaks may be missed; not an OS cap'}

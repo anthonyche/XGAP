@@ -275,3 +275,26 @@ emits that mandatory triple, allowing the endpoint and edge patterns to join
 before global property expansion. Missing values still cannot pass. Ten focused
 leaf/bind tests pass, including complete RDF min/sum/count results against the
 independent evaluator. Actual large-source replay remains required.
+
+Replay 3858325 again hit the fifth-case aggregate source RSS guard at
+4,300,443,648 bytes. The OPTIONAL correction did not establish a large-source
+resource improvement. A read-only live observation of the owned graph JVM in
+3858326 reported RssAnon=639,280 KiB (about 624.3 MiB) and RssFile=2,535,900 KiB;
+the control JVM reported 160,752 / 24,296 KiB respectively. Thus aggregate RSS
+cannot be described as anonymous intermediate-result memory alone.
+
+The next **separate deployment diagnostic** preregisters a 16 GiB aggregate
+source RSS guard within the existing 24 GiB Slurm allocation: 3 GiB remains the
+worker guard and at least 5 GiB allocation headroom remains for orchestration.
+The 60 s source / 120 s worker timeouts, 1.5 GiB aggregate JVM heap, data, queries,
+default file mode and all byte/call caps stay unchanged. The historical 4 GiB
+failures remain. This is a declared resource-contract revision, not algorithmic
+speedup or evidence that the old contract passed. If adopted for formal runs,
+the same source policy must be frozen for **all five methods**. Full campaign
+budgets are not yet released. No GPU or larger Slurm allocation is requested.
+
+The resource monitor now records optional Linux anonymous/file/shared RSS
+components separately, with observation timing. File-backed pages still count
+in the total guard; unavailable diagnostics are unknown, not zero. Seven focused
+resource/common-trial tests pass. The admission default remains 4 GiB; the larger
+diagnostic requires an explicit argument that is sealed in its intent.

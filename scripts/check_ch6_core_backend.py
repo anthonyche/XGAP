@@ -86,11 +86,13 @@ def worker(bundle_pin, case_id, profile_pin, output, planning='fixed_scan'):
     return 0 if success else 2
 
 
-def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default'):
+def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     if planning not in ('fixed_scan','unified'):raise ValueError('Unknown admission planning profile')
     if rdf_file_mode not in ('default','direct'):raise ValueError('Unknown RDF serving file mode')
+    if type(source_rss_bytes) is not int or not 1024**3<=source_rss_bytes<=16*1024**3:
+        raise ValueError('Explicit aggregate source RSS budget must be 1..16 GiB')
     if type(startup_seconds) is not int or not 60<=startup_seconds<=3600:
         raise ValueError('Explicit offline serving startup limit required')
     bundle, prepared = load(bundle_pin), load(prepared_pin)
@@ -110,7 +112,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
     limits = dict(total_wall_seconds=3600, package_max_bytes=serving_bytes+2*1024**3,
                   free_disk_reserve_bytes=6*1024**3)
     write(root/'intent.json', dict(bundle=bundle_pin, prepared=prepared_pin, limits=limits,
-        planning=planning,worker_seconds=120, worker_rss_bytes=3*1024**3, source_rss_bytes=4*1024**3,
+        planning=planning,worker_seconds=120, worker_rss_bytes=3*1024**3, source_rss_bytes=source_rss_bytes,
         rdf_file_mode=rdf_file_mode,
         case_order=[c['case_id'] for c in bundle['cases']], model_calls=0, automatic_retries=0,
         serving_copy_bytes=serving_bytes, additional_output_budget_bytes=2*1024**3,
@@ -138,7 +140,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
             trial=root/f'case-{i:04d}'; trial.mkdir(); phase=f'admission:{i}'
             session.observer.set_phase(phase)
             resources=OwnedResources(session.owned, method_rss_bytes=3*1024**3,
-                source_rss_bytes=4*1024**3, extra_monitor=budget)
+                source_rss_bytes=source_rss_bytes, extra_monitor=budget)
             command=[sys.executable, str(Path(__file__).resolve()), '--worker',
                 '--bundle-path', bundle_pin['path'], '--bundle-sha256', bundle_pin['sha256'],
                 '--case-id', case['case_id'], '--profile-path', session.profile['path'],
@@ -192,12 +194,13 @@ if __name__ == '__main__':
     p.add_argument('--planning',choices=['fixed_scan','unified'],default='fixed_scan')
     p.add_argument('--serving-root');p.add_argument('--startup-seconds',type=int,default=300)
     p.add_argument('--rdf-file-mode',choices=['default','direct'],default='default')
+    p.add_argument('--source-rss-bytes',type=int,default=4*1024**3)
     a=p.parse_args(); bundle_pin=dict(path=a.bundle_path, sha256=a.bundle_sha256)
     if a.worker:
         raise SystemExit(worker(bundle_pin, a.case_id,
             dict(path=a.profile_path, sha256=a.profile_sha256), a.output,a.planning))
     if a.execute:
         raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning,
-            a.serving_root,a.startup_seconds,a.rdf_file_mode))
+            a.serving_root,a.startup_seconds,a.rdf_file_mode,a.source_rss_bytes))
     b=load(bundle_pin)
     print(json.dumps(dict(stage='dry_run', cases=len(b['cases']), model_calls=0, backend_calls=0)))
