@@ -135,11 +135,13 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
             ') = <http://www.w3.org/2001/XMLSchema#string>, '+left+op+right+', '+fallback+'), '+fallback+'), false)')
     extra=IRI_VALUES_MARKER+'\n'
     if checks:
-        # Every admitted guard returns false when this property is unbound.
-        # OPTIONAL followed by that filter is therefore an inner join. Expose
-        # it as one: an OPTIONAL before the edge BGP can enumerate *all* leaf
-        # properties before the bound endpoint is joined on a real TDB store.
-        extra+='?'+point['variables'][leaf_column]+' <'+id_iri+'> '+scalar+' .\nFILTER('+' && '.join(checks)+')\n'
+        # Only existence of a jointly satisfying local property value matters:
+        # its scalar is absent from the DISTINCT edge/endpoint projection.
+        # Keep that lookup correlated with the bound leaf. An early mandatory
+        # property triple lets ARQ's filter placement split the BGP BEFORE the
+        # edge-to-leaf connection, producing endpoint-adjacency x all leaf IDs.
+        # EXISTS cannot test this guard until the leaf is bound by the edge BGP.
+        extra+='FILTER EXISTS { ?'+point['variables'][leaf_column]+' <'+id_iri+'> '+scalar+' .\nFILTER('+' && '.join(checks)+') }\n'
     at=point['offset'];text=base.text[:at]+'\n'+extra+base.text[at:]
     params={k:v for k,v in p.items() if k not in ('native_binding_checkpoint','rdf_binding_checkpoint')}
     params.update(bound_entity_parameter=parameter,bound_identity_column=column,

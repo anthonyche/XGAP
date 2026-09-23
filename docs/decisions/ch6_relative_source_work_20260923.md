@@ -298,3 +298,32 @@ components separately, with observation timing. File-backed pages still count
 in the total guard; unavailable diagnostics are unknown, not zero. Seven focused
 resource/common-trial tests pass. The admission default remains 4 GiB; the larger
 diagnostic requires an explicit argument that is sealed in its intent.
+
+The updated-ranker replay 3858326 also failed the fifth case at 4,297,252,864
+source RSS bytes. The corresponding prior-ranker captured call 22 contains
+567 singleton witness UNION branches (685,933 UTF-8 query bytes; 967,185 HTTP
+body bytes). This identifies the failing operation, not its ultimate cause.
+Resource diagnostic 3858334 uses code 15ddf66 and the frozen endpoint-degree
+profile at `formal-endpoint-admission-v2/D2/rdf`, with the preregistered 16 GiB
+source limit. All historical trials remain separate; no campaign is launched.
+
+Further failure replay with the actual Jena 5.6.0 algebra optimizer exposed a
+compiler cause: placing the mandatory leaf-ID triple before the edge BGP lets
+ARQ move its filter onto a disconnected prefix consisting of only the constant
+endpoint edge pattern and **all** leaf IDs. The connecting edge-to-leaf triple
+then occurs after that filter. Removing OPTIONAL alone cannot prevent this.
+The compiler now expresses the jointly satisfying ID value as a correlated
+`FILTER EXISTS`. The ID scalar is absent from the DISTINCT edge/endpoint
+projection, so this is an exact semijoin, including multivalued properties;
+missing properties still fail. Jena's optimized algebra now binds the leaf
+through the edge before testing that local existence condition.
+
+Local diagnostic artifacts: `xgap-data/ch6-rdf-leaf-algebra-20260923-v1/`, with
+both queries and both optimized algebra dumps. This is a structural diagnostic,
+not a measured large-source speedup. Ten targeted tests pass, including complete
+min/sum/count answers against the independent reference. The follow-up replay
+will retain the original 4 GiB source guard to separate this compiler fix from
+the already-running resource diagnostic. No new dataset/case selection occurs.
+The [Jena optimizer documentation](https://jena.apache.org/documentation/tdb/optimizer.html)
+describes filter placement and algebra inspection; the observed algebra above,
+not the documentation alone, establishes this particular disconnected prefix.
