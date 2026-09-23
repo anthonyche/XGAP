@@ -95,3 +95,12 @@ owned RDF source, with compilation and hashes in offline setup. Default sessions
 remain default until real-source validation; this repairs an opt-in option, not
 an unvalidated blanket change. All methods sharing a source session receive the
 same storage configuration. No query/compiler rewrite or vendor Jena patch.
+
+The bootstrap also passed an actual local Fuseki HTTP check on the existing tiny
+TDB graph: service started, log attests `TDB=direct DBOE=direct`, and one captured
+constant-key SELECT returned the same normalized witness as the unmodified
+reference. Owned service was terminated/reaped after that check. This is a
+transport/configuration correctness check, not a full-source performance result.
+Fixed-node, unchanged-query DBOE-corrected replay is job 3859504. Source code is
+`81745b8`; its small standalone archive SHA-256 is
+`aeb2dda162ae470dfbebea7ff35a98411966edf0cc9a9890500ea575f3119e8e`.

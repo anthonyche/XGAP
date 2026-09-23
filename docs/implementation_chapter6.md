@@ -266,3 +266,11 @@ remain separate gates.
 不会增加每行多重性。不同标签约束均保留；OR/NOT 与多边编译继续使用原条件编译器。
 存在性叶节点的联合 ID 属性条件仍使用相关 EXISTS，避免提前跨接所有节点 ID。
 该编译优化不改变候选/估计器选择、不观察当前查询答案、不影响外部 baseline 编译。
+
+### DBOE 存储接线与源工作计量（2026-09-23）
+
+显式 direct RDF 会话现在通过 `XgapStorageMode` 在创建数据库前同时设置并核验
+SystemIndex 与 SystemTDB；仅传 TDB CLI context 不足以选择 Jena 5.6 的 B+tree
+访问方式。编译和摘要属于离线会话准备，所有共享 source 的方法使用同一配置。
+常规 owned-source 计量记录 Linux 缺页和 I/O 增量，未知值保留 null，不把
+CPU/wall 差值当作 I/O wait。详见[源诊断与证据边界](decisions/ch6_source_io_diagnosis_20260923.md)。
