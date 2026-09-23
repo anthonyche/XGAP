@@ -66,6 +66,24 @@ class HeldoutReferenceTests(unittest.TestCase):
         self.assertNotIn('e',choose_anchors(meta,stratum='active-anchor',size=4,seed=1))
         with self.assertRaises(ValueError):choose_anchors(meta,stratum='active-anchor',size=5,seed=1)
 
+    def test_set_projection_exists_matches_general_reference_and_keeps_coupled_edges(self):
+        from xgap.experiments.ch6_sql_reference import compile_reference
+        from xgap.experiments.ch6_fact_index import read_index
+        for name in ('window_edge','zigzag','ordered_star','cycle'):
+            for cross in (False,True):
+                for scale in ('1','.25','4'):
+                    q=template_query(CORES['D3'],name,'a',0,cross=cross);q['limit']=2
+                    optimized=compile_reference(q,self.index,scale=scale)
+                    general=compile_reference(q,self.index,scale=scale,projection_exists=False)
+                    self.assertTrue(optimized['sql'].startswith('SELECT DISTINCT'))
+                    with read_index(optimized['database']) as db:
+                        self.assertEqual(list(db.execute(optimized['sql'],optimized['parameters'])),
+                            list(db.execute(general['sql'],general['parameters'])))
+        q=template_query(CORES['D3'],'cycle','a',0)
+        q['where'].append(dict(left=dict(var='e',property='amount'),op='lt',
+            right=dict(var='f',property='amount'),value_type='scalar'))
+        self.assertTrue(compile_reference(q,self.index)['sql'].startswith('WITH RECURSIVE'))
+
     def test_star_reference_joins_edges_before_unanchored_node_ranges(self):
         db=sqlite3.connect(self.root/'facts.sqlite')
         db.executescript('CREATE INDEX edge_src ON edges(src,ordinal); CREATE INDEX edge_dst ON edges(dst,ordinal);'

@@ -6,8 +6,9 @@
 数据准备、数据库就绪、测试题就绪、正式结果四种状态分开记录。
 
 本轮最新进度见[准备记录](report/ch6_materialization_progress_20260923.md)：D1/D3 两部署
-真实 pilot、D1 N/u/source/scale 因子均准入；D2 大图查询与 RDF 建库仍待修复版验证。
-下一步优先完成这两个 gate，再补全三域发布/预算。不得把修复提交或准备 bank 当正式结果。
+真实 pilot、D1 N/u/source/scale 因子均准入；D2 两后端完整物化已封存。
+下一步优先完成 D2 实际查询准入与独立 test bank 的参考计算，再补全三域发布/预算。
+不得把修复提交、物化成功或准备 bank 当正式方法结果。
 
 最新补充：混合 workload，按事前冻结的各方法支持子集统计并报告支持率，保留同子集
 XGAP 配对结果。已授权直接使用 CWRU CPU/存储 + 现有外部 Qwen API，不申请 GPU。
