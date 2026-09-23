@@ -104,3 +104,11 @@ transport/configuration correctness check, not a full-source performance result.
 Fixed-node, unchanged-query DBOE-corrected replay is job 3859504. Source code is
 `81745b8`; its small standalone archive SHA-256 is
 `aeb2dda162ae470dfbebea7ff35a98411966edf0cc9a9890500ea575f3119e8e`.
+
+The backend admission command now accepts an explicit `--case-id` for failure
+replay without editing or replacing the frozen bundle. Original case indices and
+bundle hashes remain; receipts distinguish `single_case_replay` and set
+`full_bundle_admitted=false` even when that one case passes. Missing/duplicate
+case identities fail before serving. Its focused identity-selection test passes.
+This permits the next pipeline check to target the original fifth case instead
+of re-running the four already passing cases first.

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Offline gold-query backend admission; never an evaluated method or NL result.
 
-Use a complete presampled bundle, one compiled plan per intended query, and the
+Use a complete presampled bundle (or explicitly labeled single-case failure replay),
+one compiled plan per intended query, and the
 independent source-derived references. Stop on the first failure; do not replace
 cases, retry, tune method policies, or feed these observations to an estimator.
 """
@@ -86,7 +87,17 @@ def worker(bundle_pin, case_id, profile_pin, output, planning='fixed_scan'):
     return 0 if success else 2
 
 
-def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3):
+def selected_cases(bundle,case_id=None):
+    cases=list(enumerate(bundle['cases']))
+    if len({c['case_id'] for _,c in cases})!=len(cases):
+        raise ValueError('Duplicate case identity in frozen bundle')
+    if case_id is None:return cases
+    selected=[(i,c) for i,c in cases if c['case_id']==case_id]
+    if len(selected)!=1:raise ValueError('Replay case is absent from the frozen bundle')
+    return selected
+
+
+def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3,case_id=None):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     if planning not in ('fixed_scan','unified'):raise ValueError('Unknown admission planning profile')
@@ -101,6 +112,8 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
         raise ValueError('Frozen bundle/store identity mismatch')
     if not 1 <= len(bundle['cases']) <= 1024:
         raise ValueError('Admission requires 1..1024 preselected cases')
+    cases=selected_cases(bundle,case_id)
+    scope='single_case_replay' if case_id is not None else 'complete_bundle'
     root = Path(output).resolve(); root.mkdir(parents=True, exist_ok=False)
     from run_bounded_joint_batch import BatchBudget, source_commit
     from native_store_session import NativeStoreSession
@@ -114,7 +127,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
     write(root/'intent.json', dict(bundle=bundle_pin, prepared=prepared_pin, limits=limits,
         planning=planning,worker_seconds=120, worker_rss_bytes=3*1024**3, source_rss_bytes=source_rss_bytes,
         rdf_file_mode=rdf_file_mode,
-        case_order=[c['case_id'] for c in bundle['cases']], model_calls=0, automatic_retries=0,
+        case_order=[c['case_id'] for _,c in cases],admission_scope=scope,full_bundle_cases=len(bundle['cases']), model_calls=0, automatic_retries=0,
         serving_copy_bytes=serving_bytes, additional_output_budget_bytes=2*1024**3,
         serving_root=str(Path(serving_root).resolve()) if serving_root else None,startup_seconds=startup_seconds,
         scope='Offline compiler/backend/reference admission, not NL or policy evaluation'))
@@ -122,7 +135,8 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
     session = None; closure = None; outcomes = []; worker_attempts = 0
     result = dict(success=False, backend_roundtrip=False, bundle=bundle_pin,
         profile=bundle['profile'], prepared=prepared_pin, source_commit=commit,
-        model_calls=0, evaluated_method=False, formal_campaign_started=False)
+        model_calls=0, evaluated_method=False, formal_campaign_started=False,
+        admission_scope=scope,full_bundle_admitted=False)
     try:
         cls = NativeStoreSession if bundle['deployment'] == 'native' else RdfTdbSession
         session = cls(root=root/'session', prepared_path=prepared_pin['path'],
@@ -134,7 +148,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
                 phase_response_bytes=256*1024**2, timeout_seconds=60, capture_compression='gzip'))
         with deadline(startup_seconds):
             session.start()
-        for i, case in enumerate(bundle['cases']):
+        for i, case in cases:
             if budget.sample([]):
                 raise ValueError('Admission resource budget reached: '+budget.status)
             trial=root/f'case-{i:04d}'; trial.mkdir(); phase=f'admission:{i}'
@@ -175,10 +189,11 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
     finally:
         if session:
             closure=session.close()
-    result.update(cases=outcomes, attempted=worker_attempts, audited=len(outcomes), planned=len(bundle['cases']), closure=closure)
+    result.update(cases=outcomes, attempted=worker_attempts, audited=len(outcomes), planned=len(cases), full_bundle_cases=len(bundle['cases']), closure=closure)
     if closure is None or not all(closure.get(k) is True for k in
             ('owned_groups_drained', 'owned_processes_terminal', 'observer_stopped')):
         result.update(success=False, backend_roundtrip=False, closure_error='Unverified service cleanup')
+    result['full_bundle_admitted']=bool(result['success'] and scope=='complete_bundle')
     write(root/'receipt.json', result)
     print(json.dumps(dict(success=result['success'], attempted=worker_attempts, audited=len(outcomes), output=str(root), error=result.get('error'))))
     return 0 if result['success'] else 2
@@ -201,6 +216,8 @@ if __name__ == '__main__':
             dict(path=a.profile_path, sha256=a.profile_sha256), a.output,a.planning))
     if a.execute:
         raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning,
-            a.serving_root,a.startup_seconds,a.rdf_file_mode,a.source_rss_bytes))
+            a.serving_root,a.startup_seconds,a.rdf_file_mode,a.source_rss_bytes,a.case_id))
     b=load(bundle_pin)
-    print(json.dumps(dict(stage='dry_run', cases=len(b['cases']), model_calls=0, backend_calls=0)))
+    print(json.dumps(dict(stage='dry_run', cases=len(selected_cases(b,a.case_id)),
+        full_bundle_cases=len(b['cases']),admission_scope='single_case_replay' if a.case_id else 'complete_bundle',
+        model_calls=0,backend_calls=0)))
