@@ -52,19 +52,19 @@ class NativeStoreSession(RdfTdbSession):
                 parts=['data','transactions'] if name=='neo4j' else ['.']
                 if name=='neo4j' and (seal['parts']!=parts or store['parts']!=parts):
                     raise ValueError('Unexpected native store parts')
-                actual=[stream_pin(p) for part in parts for p in sorted((Path(store['path'])/part).rglob('*')) if p.is_file()]
-                if actual!=seal['files']:raise ValueError('Frozen native store changed: '+name)
-                if shutil.disk_usage(self.root).free<store['bytes']+6*1024**3:
+                if shutil.disk_usage(self.store_root).free<store['bytes']+6*1024**3:
                     raise ValueError('Insufficient native serving-copy reserve')
-                if name=='neo4j':
-                    for part in parts:shutil.copytree(Path(store['path'])/part,self.root/'neo4j'/part)
-                else:shutil.copytree(store['path'],self.root/'control-tdb2')
+                from xgap.experiments.verified_store_copy import copy_sealed_store
+                copied=copy_sealed_store(store['path'],self.store_root/('neo4j' if name=='neo4j' else 'control-tdb2'),
+                    seal['files'],parts=parts)
+                write_once(self.root/('copy-'+name+'.json'),copied)
             neo=Path(build['neo4j_root']);conf=self.root/'neo4j-conf';conf.mkdir()
-            for part in ('logs','run','import','plugins'):(self.root/'neo4j'/part).mkdir()
+            for part in ('logs','run','import','plugins'):(self.root/'neo4j'/part).mkdir(parents=True)
             self.ports=LoopbackPortReservations.acquire(3);np,bp,fp=self.ports.ports
             memory={'heap_initial_size':'256m','heap_max_size':'768m','pagecache_size':'128m'}
             (conf/'neo4j.conf').write_text(_neo4j_configuration(neo4j_root=neo,state_root=self.root,
-                http_port=np,bolt_port=bp,resource_profile=memory,query_timeout_seconds=self.budget.timeout_seconds))
+                http_port=np,bolt_port=bp,resource_profile=memory,query_timeout_seconds=self.budget.timeout_seconds,
+                data_root=self.store_root/'neo4j'))
             self.ports.release(0);self.ports.release(1)
             process=self.processes.start('source-neo4j',[str(neo/'bin/neo4j'),'console'],cwd=neo,
                 env={'JAVACMD':build['java']['path'],'NEO4J_CONF':str(conf),'NEO4J_HOME':str(neo)})
@@ -79,7 +79,7 @@ class NativeStoreSession(RdfTdbSession):
             dataset=fuseki[0]['client']['database'];self.ports.release(2)
             process=self.processes.start('source-control',[build['java']['path'],'-Xms128m','-Xmx768m',
                 '-jar',build['fuseki_jar']['path'],'--localhost','--port',str(fp),'--tdb2',
-                '--loc',str(self.root/'control-tdb2'),'/'+dataset],cwd=Path(build['fuseki_jar']['path']).parent,
+                '--loc',str(self.store_root/'control-tdb2'),'/'+dataset],cwd=Path(build['fuseki_jar']['path']).parent,
                 env={'FUSEKI_BASE':str(rdf)})
             self.owned.append(OwnedProcess('control','source',process));ready(process,fp)
             routes={'/db/neo4j/tx/commit':f'http://127.0.0.1:{np}/db/neo4j/tx/commit',

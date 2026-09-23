@@ -86,10 +86,12 @@ def worker(bundle_pin, case_id, profile_pin, output, planning='fixed_scan'):
     return 0 if success else 2
 
 
-def run(bundle_pin, prepared_pin, output, planning='fixed_scan'):
+def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     if planning not in ('fixed_scan','unified'):raise ValueError('Unknown admission planning profile')
+    if type(startup_seconds) is not int or not 60<=startup_seconds<=3600:
+        raise ValueError('Explicit offline serving startup limit required')
     bundle, prepared = load(bundle_pin), load(prepared_pin)
     if (bundle['schema_version'] not in ('xgap-ch6-heldout-cases-v1', 'xgap-ch6-factor-inputs-v1','xgap-ch6-deployment-factor-v1') or not prepared.get('success')
             or bundle['profile']['sha256'] != prepared['profile']['sha256']):
@@ -110,8 +112,9 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan'):
         planning=planning,worker_seconds=120, worker_rss_bytes=3*1024**3, source_rss_bytes=4*1024**3,
         case_order=[c['case_id'] for c in bundle['cases']], model_calls=0, automatic_retries=0,
         serving_copy_bytes=serving_bytes, additional_output_budget_bytes=2*1024**3,
+        serving_root=str(Path(serving_root).resolve()) if serving_root else None,startup_seconds=startup_seconds,
         scope='Offline compiler/backend/reference admission, not NL or policy evaluation'))
-    budget = BatchBudget(root, limits, time.time())
+    budget = BatchBudget(root, limits, time.time(),extra_roots=(serving_root,) if serving_root else ())
     session = None; closure = None; outcomes = []; worker_attempts = 0
     result = dict(success=False, backend_roundtrip=False, bundle=bundle_pin,
         profile=bundle['profile'], prepared=prepared_pin, source_commit=commit,
@@ -120,10 +123,11 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan'):
         cls = NativeStoreSession if bundle['deployment'] == 'native' else RdfTdbSession
         session = cls(root=root/'session', prepared_path=prepared_pin['path'],
             prepared_sha256=prepared_pin['sha256'], discard_serving_copies=True,
+            serving_root=serving_root,
             budget=SourceObservationBudget(max_calls=128, request_bytes=1024**2,
                 phase_request_bytes=16*1024**2, response_bytes=64*1024**2,
                 phase_response_bytes=256*1024**2, timeout_seconds=60, capture_compression='gzip'))
-        with deadline(300):
+        with deadline(startup_seconds):
             session.start()
         for i, case in enumerate(bundle['cases']):
             if budget.sample([]):
@@ -183,11 +187,13 @@ if __name__ == '__main__':
         p.add_argument('--'+n)
     p.add_argument('--execute', action='store_true'); p.add_argument('--worker', action='store_true')
     p.add_argument('--planning',choices=['fixed_scan','unified'],default='fixed_scan')
+    p.add_argument('--serving-root');p.add_argument('--startup-seconds',type=int,default=300)
     a=p.parse_args(); bundle_pin=dict(path=a.bundle_path, sha256=a.bundle_sha256)
     if a.worker:
         raise SystemExit(worker(bundle_pin, a.case_id,
             dict(path=a.profile_path, sha256=a.profile_sha256), a.output,a.planning))
     if a.execute:
-        raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning))
+        raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning,
+            a.serving_root,a.startup_seconds))
     b=load(bundle_pin)
     print(json.dumps(dict(stage='dry_run', cases=len(b['cases']), model_calls=0, backend_calls=0)))

@@ -86,16 +86,21 @@ def validate(manifest):
 
 class BatchBudget:
     """Sticky study censoring; wall budget includes time between invocations."""
-    def __init__(self,root,design,started):
+    def __init__(self,root,design,started,extra_roots=()):
         self.root=root;self.design=design;self.started=started;self.status=None;self.sampled=0;self.size=0;self.free=0
+        self.extra_roots=tuple(Path(p).resolve() for p in extra_roots)
+        roots=(Path(root).resolve(),*self.extra_roots)
+        if any(a==b or a in b.parents or b in a.parents for i,a in enumerate(roots) for b in roots[i+1:]):
+            raise ValueError('Budget roots must be disjoint')
 
     def sample(self,_):
         if self.status:return self.status
         if time.time()-self.started>=self.design['total_wall_seconds']:self.status='study_wall_budget'
         if time.monotonic()-self.sampled>1:
             self.sampled=time.monotonic()
-            self.size=sum(p.stat().st_size for p in self.root.rglob('*') if p.is_file())
-            self.free=shutil.disk_usage(self.root).free
+            roots=(self.root,*self.extra_roots)
+            self.size=sum(p.stat().st_size for root in roots for p in root.rglob('*') if p.is_file())
+            self.free=min(shutil.disk_usage(root).free for root in roots if root.exists())
             if self.size>=self.design['package_max_bytes']:self.status=self.status or 'study_disk_budget'
             if self.free<self.design['free_disk_reserve_bytes']:self.status=self.status or 'study_disk_reserve'
         return self.status

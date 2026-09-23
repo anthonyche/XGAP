@@ -98,3 +98,25 @@ old correct wrapper. Existing escaping, key/byte caps and overflow rejection are
 unchanged. Seventeen focused physical strategy/identity/necessary-bind tests
 passed, including actual tiny RDF answer equivalence and one-selected-plan
 execution. This does not substitute for the forthcoming real Fuseki gate.
+
+The v5 real gate (3858218, `9e56a15`) also failed at the first question.
+The last source call bound 197 movies and returned a partial 23,618-row response
+with `Neo.ClientError.Transaction.TransactionTimedOutClientConfiguration` at
+about 60.3 seconds. Do not use the partial rows as an answer. Thus the endpoint
+rewrite alone has not established the required large-source performance.
+
+The next infrastructure check uses a declared private node-local serving copy,
+with the same immutable stores, query, plan selection, heap, worker/transaction
+limits and answer reference. Frozen inputs and durable query/closure logs stay
+on research storage. Source storage is a common deployment parameter for all
+methods, not an XGAP-only advantage; old NFS timings are not paired speedup data.
+Setup may have a separately declared longer copy deadline; this is offline time,
+not a relaxation of the 60-second source query or 120-second worker bounds.
+
+`copy_sealed_store` verifies hashes while copying each source byte once, instead
+of a separate full verification read followed by copying. It checks exact member
+inventory, sizes and hashes, rejects links and non-new/disjoint destinations,
+and never starts a service on a failed copy. The guard counts durable evidence
+plus the separate serving directory and checks free space on both filesystems.
+Only reconstructable copies are removed after source quiescence; original stores
+and all evidence remain. Seven focused copy/cleanup/accounting checks pass.

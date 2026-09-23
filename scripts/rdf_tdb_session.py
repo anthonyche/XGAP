@@ -14,11 +14,12 @@ from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.owned_resources import OwnedProcess
 from xgap.experiments.process_guard import _group_sample, _stop_group, ProcessBudget
+from xgap.experiments.verified_store_copy import copy_sealed_store
 
 
 class RdfTdbSession:
     serving_copy_paths=('graph-tdb2','control-tdb2','fedup-host/serving-summary')
-    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False):
+    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False,serving_root=None):
         self.root=Path(root).resolve();self.root.mkdir(parents=True,exist_ok=False)
         self.prepared=json.loads(read_pinned(prepared_path,prepared_sha256))
         if not self.prepared.get('success'):raise ValueError('Successful frozen store preparation required')
@@ -29,6 +30,14 @@ class RdfTdbSession:
         self.budget=budget;self.processes=Processes(self.root);self.ports=None;self.observer=None;self.owned=[]
         self.profile=None;self.ready_pin=None
         self.discard_serving_copies=discard_serving_copies
+        self.store_root=self.root
+        if serving_root is not None:
+            candidate=Path(serving_root).resolve()
+            if candidate==self.root or self.root in candidate.parents or candidate in self.root.parents:
+                raise ValueError('Separate serving workspace must be disjoint from durable evidence')
+            candidate.mkdir(parents=True,exist_ok=False);self.store_root=candidate
+        write_once(self.root/'storage-placement.json',dict(evidence_root=str(self.root),serving_root=str(self.store_root),
+            separate=self.store_root!=self.root,shared_method_contract=True,query_warmup_calls=0))
 
     def start(self):
         at=time.perf_counter()
@@ -42,10 +51,9 @@ class RdfTdbSession:
             for name,store in self.prepared['stores'].items():
                 seal=json.loads(read_pinned(store['seal']['path'],store['seal']['sha256']))
                 if seal['source']['sha256']!=doc['offline']['rdf_loads'][name]['sha256']:raise ValueError('Store source mismatch')
-                actual=[stream_pin(p) for p in sorted(Path(store['path']).rglob('*')) if p.is_file()]
-                if actual!=seal['files']:raise ValueError('Frozen store changed: '+name)
-                if shutil.disk_usage(self.root).free<store['bytes']+6*1024**3:raise ValueError('Insufficient serving-copy reserve')
-                shutil.copytree(store['path'],self.root/(name+'-tdb2'))
+                if shutil.disk_usage(self.store_root).free<store['bytes']+6*1024**3:raise ValueError('Insufficient serving-copy reserve')
+                copied=copy_sealed_store(store['path'],self.store_root/(name+'-tdb2'),seal['files'])
+                write_once(self.root/('copy-'+name+'.json'),copied)
             names=sorted(self.prepared['stores'])
             if set(names)!=set(doc['offline']['rdf_loads']) or not 1<=len(names)<=8:
                 raise ValueError('Prepared and frozen source sets differ')
@@ -58,7 +66,7 @@ class RdfTdbSession:
                 (state/'config.ttl').write_text(_fuseki_server_configuration(query_timeout_seconds=self.budget.timeout_seconds))
                 self.ports.release(i)
                 process=self.processes.start('source-'+name,[java['path'],'-Xms64m',f'-Xmx{heap_mib}m','-jar',engine['path'],
-                    '--localhost','--port',str(port),'--tdb2','--loc',str(self.root/(name+'-tdb2')),'/'+name],
+                    '--localhost','--port',str(port),'--tdb2','--loc',str(self.store_root/(name+'-tdb2')),'/'+name],
                     cwd=Path(engine['path']).parent,env={'FUSEKI_BASE':str(state)})
                 self.owned.append(OwnedProcess(name,'source',process));ready(process,port)
                 routes['/'+name+'/sparql']=f'http://127.0.0.1:{port}/{name}/sparql'
@@ -117,7 +125,7 @@ class RdfTdbSession:
         if self.discard_serving_copies and result['owned_groups_drained'] and result['observer_stopped']:
             removed=[];retained=[]
             for relative in dict.fromkeys((*self.serving_copy_paths,*(n+'-tdb2' for n in self.prepared['stores']))):
-                path=self.root/relative
+                path=getattr(self,'store_root',self.root)/relative
                 if path.exists():
                     try:
                         if path.is_symlink():raise ValueError('Refuse to discard redirected serving copy')

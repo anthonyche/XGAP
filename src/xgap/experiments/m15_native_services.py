@@ -620,11 +620,13 @@ def _neo4j_configuration(
     bolt_port: int,
     resource_profile: Mapping[str, str],
     query_timeout_seconds: float | None,
+    data_root: Path | None = None,
 ) -> str:
     neo_state = state_root / "neo4j"
+    store_state = data_root if data_root is not None else neo_state
     values = {
-        "server.directories.data": neo_state / "data",
-        "server.directories.transaction.logs.root": neo_state / "transactions",
+        "server.directories.data": store_state / "data",
+        "server.directories.transaction.logs.root": store_state / "transactions",
         "server.directories.logs": neo_state / "logs",
         "server.directories.run": neo_state / "run",
         "server.directories.import": neo_state / "import",
