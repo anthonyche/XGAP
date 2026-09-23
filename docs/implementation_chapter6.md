@@ -193,6 +193,12 @@ a correlated existential test: their scalar is not projected. This prevents
 ARQ filter placement from splitting the edge-to-leaf connection and evaluating
 an endpoint-adjacency / global-property Cartesian prefix. Missing properties
 do not qualify; multiple values require one jointly satisfying value.
+The scalar-free, single-edge positive-label branch uses direct identity variables
+and a continuous triple pattern. Compiler-owned typed terms avoid renaming text
+inside IRIs/literals. Per-key SELECT/LIMIT needs no inner DISTINCT or redundant
+anchor; the combined relation retains DISTINCT. Composite predicates keep the
+audited fallback. This is semantic/compiler evidence; full-source admission and
+performance evidence are recorded separately in the current status report.
 The online controller selects
 one plan from symbolic estimates and executes it once.
 

@@ -134,6 +134,7 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
         checks.append('IF(BOUND('+scalar+'), IF(isLiteral('+scalar+'), IF(DATATYPE('+scalar+
             ') = <http://www.w3.org/2001/XMLSchema#string>, '+left+op+right+', '+fallback+'), '+fallback+'), false)')
     identity=point.get('identity_body')
+    constant_body=point.get('endpoint_bodies',{}).get(column) if identity is not None else None
     variables=({'entity':'entity','source':'source','target':'target'}
                if identity is not None else point['variables'])
     extra=IRI_VALUES_MARKER+'\n'
@@ -151,7 +152,7 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
         # distinct witnesses. The typed binder adds LIMIT 1 independently to
         # every key and retains DISTINCT over their combined identity rows.
         # Direct identity variables also remove Extend/alias scope barriers.
-        text='SELECT ?entity ?source ?target WHERE {\n'+extra+'\n'.join(identity)+'\n}'
+        text='SELECT ?entity ?source ?target WHERE {\n'+extra+'\n'.join(constant_body if constant_body is not None else identity)+'\n}'
     elif flat is not None:
         # Keep one projection over the compiler-owned scalar-free relation.
         # No OPTIONAL/scalar column is admitted above; all removed inner
@@ -164,6 +165,7 @@ def compile_rdf_leaf_bound(base,backend,proof,*,parameter,max_bindings,max_bytes
         binding_key_work_profile='scheduler-distinct-key-cap-v1',
         sparql_iri_binding=dict(parameter=parameter,variable=variables[column],max_bindings=max_bindings,max_bytes=max_bytes,
             **({'singleton_anchor':point['endpoint_anchors'][column]} if identity is None else {}),
+            **({'inline_singleton':True} if constant_body is not None else {}),
             per_key_limit=1,projection=p['output_columns']),
         leaf_witness=dict(profile=PROFILE,proof=proof,returned_rows_per_key_upper_bound=1,adjacency_scan_bound=None,max_bindings=max_bindings))
     return replace(base,text=text,parameters=params,artifact_id=base.artifact_id+'-leaf-witness')

@@ -10,6 +10,7 @@ from xgap.backends.rdf_terms import validate_iri
 
 IRI_VALUES_MARKER = "{{XGAP_IRI_VALUES}}"
 IRI_ROWS_MARKER = "{{XGAP_IRI_ROWS}}"
+IRI_SINGLETON_MARKER = "{{XGAP_IRI_SINGLETON}}"
 
 
 def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
@@ -20,7 +21,7 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
     spec = parameters.get("sparql_iri_binding")
     if spec is None:
         return text
-    if not isinstance(spec, Mapping) or set(spec)-{'singleton_anchor','per_key_limit','projection'} != {
+    if not isinstance(spec, Mapping) or set(spec)-{'singleton_anchor','per_key_limit','projection','inline_singleton'} != {
         "parameter", "variable", "max_bindings", "max_bytes"
     }:
         raise ValueError("Invalid SPARQL IRI binding specification")
@@ -65,6 +66,13 @@ def bind_sparql_iris(text: str, parameters: Mapping[str, Any]) -> str:
     # query syntax cannot change the declared VALUES column or query structure.
     encoded = " ".join(f"<{value}>" for value in sorted({validate_iri(v) for v in values}))
     clause = f"VALUES ?{spec['variable']} {{ {encoded} }}"
+    if 'inline_singleton' in spec:
+        if spec['inline_singleton'] is not True or len(set(values))!=1 or IRI_SINGLETON_MARKER not in text:
+            raise ValueError('Inline endpoint binding requires one resource and a compiler marker')
+        # Only compiler-emitted term positions carry this marker. Keep VALUES
+        # for the projected boundary column; make the BGP's endpoint constant
+        # independently of source-engine propagation through a table join.
+        text=text.replace(IRI_SINGLETON_MARKER,encoded)
     if 'singleton_anchor' in spec:
         anchor=spec['singleton_anchor']
         if (not isinstance(anchor,Mapping) or set(anchor)!={'subject','predicate'}

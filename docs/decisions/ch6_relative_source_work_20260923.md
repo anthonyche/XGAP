@@ -477,3 +477,38 @@ these diagnostic results and no external baseline compiler is changed.
 Thirty focused tests pass, including missing/multivalued properties, parallel
 edges, reverse direction, mapped IRIs containing variable-looking text, and
 independent min/sum/count final answers. Fresh-source admission remains required.
+
+3859176 (`023cfb8`) still timed out on case five: 64.148 s, source RSS
+3,983,081,472 bytes; first four answers match. The normalized sorted multiset
+of 567 branch bodies is identical to diagnostic 3858378 (SHA-256
+`aea342bc41e63829fd8f2e6d64c9739e08a928ff64906a2595d04139f22f71ed`).
+Cache/order, engine access and service-path differences remain, not a remaining
+branch-body integration discrepancy. No speedup or complete repair is claimed.
+Failure-only replay 3859189 explains one actual branch (20 s), then replays the
+captured full query directly against a verified private TDB copy (60 s), both
+4 GiB RSS. Its inherited intent field `per_query_seconds=20` is stale for the
+full replay; the submitted guarded command and per-invocation receipt declare
+the actual preselected 20/60 s limits. This metadata error is retained explicitly,
+not silently rewritten or interpreted as a 20 s full-query measurement.
+Jena's optimizer documentation describes source statistics and physical BGP
+reordering; missing statistics is a hypothesis, not yet a demonstrated cause:
+https://jena.apache.org/documentation/tdb/optimizer.html .
+
+3859189 completed its diagnostic wrapper, but **both queries timed out**:
+one explained branch 20.110 s / 131,936,256 bytes; captured 567-key query
+60.139 s / 254,238,720 bytes. Job COMPLETED is not query success. The actual
+algebra contains a VALUES table followed by a variable BGP, and explains the
+movie-type/target-edge access first. This alone does not measure its scanned
+cardinality or prove that VALUES reaches a selective index probe. It rules out
+an exclusively HTTP/coordinator failure. No source-statistics rewrite is adopted
+without further evidence, and the successful warm diagnostic remains qualified.
+
+The next narrowly scoped change places singleton resource constants in the
+compiler-owned endpoint term positions of every representative branch. VALUES
+still supplies the projected endpoint column, while endpoint/type triples have
+literal IRI terms independently of engine table-binding propagation. This is
+capture-avoiding substitution over typed triple components, not arbitrary query
+text rewriting. Full singleton-key UNION and per-key LIMIT remain; malformed
+keys fail, marker collision in a real logical label declines the optimization.
+Thirty focused tests pass, plus the six leaf tests rerun after adding literal
+marker-collision coverage. Final source admission remains pending.

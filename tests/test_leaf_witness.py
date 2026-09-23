@@ -87,6 +87,7 @@ def test_correlated_leaf_guard_rejects_missing_or_unrelated_values(reverse):
     assert artifact.text.count('SELECT')==1 and 'DISTINCT' not in artifact.text
     assert 'BIND(' not in artifact.text and '<https://test/User?n0>' in artifact.text
     assert 'singleton_anchor' not in artifact.parameters['sparql_iri_binding']
+    assert artifact.parameters['sparql_iri_binding']['inline_singleton'] is True
     assert 'flat_body' not in artifact.parameters
     for i in range(4):
         g.add((ns['u'+str(i)],RDF.type,ns['User?n0']));g.add((ns['m'+str(i)],RDF.type,ns.Movie))
@@ -95,11 +96,29 @@ def test_correlated_leaf_guard_rejects_missing_or_unrelated_values(reverse):
     for edge,u,m in [('e0','u0','m0'),('e1','u1','m1'),('e2','u2','m2'),('e3','u2','m2')]:
         for p,o in [(RDF.type,ns.Edge),(ns.source,ns[u]),(ns.target,ns[m]),(ns.edgeLabel,ns.RATED)]:
             g.add((ns[edge],p,o))
-    rows=list(g.query(bind_sparql_iris(artifact.text,{**artifact.parameters,
-                      'keys':[str(ns['m'+str(i)]) for i in range(4)]})))
+    bound=bind_sparql_iris(artifact.text,{**artifact.parameters,
+                      'keys':[str(ns['m'+str(i)]) for i in range(4)]})
+    assert '<https://test/m2> <'+str(RDF.type)+'> <https://test/Movie> .' in bound
+    assert '?entity <https://test/target> <https://test/m2> .' in bound
+    rows=list(g.query(bound))
     assert len(rows)==1
     assert (rows[0].source,rows[0].target)==((ns.m2,ns.u2) if reverse else (ns.u2,ns.m2))
     assert rows[0].entity in (ns.e2,ns.e3)
+    # A real label equal to the internal marker must remain literal data.
+    from xgap.backends.sparql_bindings import IRI_SINGLETON_MARKER
+    literal_encoding=replace(encoding,label_encoding='logical_string')
+    literal_base=compile_edge_match(EdgePattern(label=IRI_SINGLETON_MARKER,
+        direction=Direction.IN if reverse else Direction.OUT),{},backend_id='fuseki',backend_mapping=mapping,
+        rdf_edge_encoding=literal_encoding,source=NodePattern(label='Movie' if reverse else 'User'),
+        target=NodePattern(label='User' if reverse else 'Movie'))
+    literal_artifact=compile_rdf_leaf_bound(literal_base,replace(backend,rdf_edge_encoding=literal_encoding),
+        proof,parameter='keys',max_bindings=4,max_bytes=20000)
+    assert 'inline_singleton' not in literal_artifact.parameters['sparql_iri_binding']
+    for edge,_,_ in list(g.triples((None,ns.edgeLabel,None))):
+        g.set((edge,ns.edgeLabel,Literal(IRI_SINGLETON_MARKER)))
+    literal_rows=list(g.query(bind_sparql_iris(literal_artifact.text,
+        {**literal_artifact.parameters,'keys':[str(ns.m2)]})))
+    assert len(literal_rows)==1 and literal_rows[0].entity in (ns.e2,ns.e3)
 
 
 def test_many_witness_keys_have_bounded_algebra_depth_without_lost_keys():

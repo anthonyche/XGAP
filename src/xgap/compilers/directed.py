@@ -447,6 +447,7 @@ def _sparql(
     text = "SELECT DISTINCT " + " ".join("?" + name for name in columns) + " WHERE {\n"
     text += "\n".join("  " + line for line in body) + "\n}"
     identity_aliases = {'?e1': '?entity', '?n0': '?source', '?n1': '?target'}
+    from xgap.backends.sparql_bindings import IRI_SINGLETON_MARKER
     return text, {
         # Compiler-owned body for removing redundant one-edge subquery
         # projections. Consumers must retain the final DISTINCT projection.
@@ -456,6 +457,13 @@ def _sparql(
             f"{identity_aliases.get(s,s)} <{p}> {identity_aliases.get(o,o)} ."
             for s,p,o in identity_triples]}
            if identity_triples is not None else {}),
+        **({"rdf_single_edge_endpoint_bodies": {
+            column: [f"{IRI_SINGLETON_MARKER if s == variable else identity_aliases.get(s,s)} <{p}> "
+                     f"{IRI_SINGLETON_MARKER if o == variable else identity_aliases.get(o,o)} ."
+                     for s,p,o in identity_triples]
+            for column,variable in (('source','?n0'),('target','?n1'))}}
+           if identity_triples is not None and not any(
+               IRI_SINGLETON_MARKER in term for row in identity_triples for term in row) else {}),
         **({
             "rdf_edge_encoding_id": rdf_edge_encoding.encoding_id,
             "rdf_edge_encoding_sha256": rdf_edge_encoding.identity,

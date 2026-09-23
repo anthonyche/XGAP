@@ -60,6 +60,7 @@ def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend
                 *base.parameters['rdf_single_edge_body'], 'BIND(?e1 AS ?entity)']
         if not properties and 'rdf_single_edge_identity_body' in base.parameters:
             extra['rdf_binding_checkpoint']['identity_body']=base.parameters['rdf_single_edge_identity_body']
+            extra['rdf_binding_checkpoint']['endpoint_bodies']=base.parameters.get('rdf_single_edge_endpoint_bodies',{})
         # A redundant constant triple for a singleton key exposes source index
         # selectivity directly; VALUES alone may remain a late table join.
         from xgap.pattern.ast import Direction
@@ -68,7 +69,7 @@ def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend
             'source':dict(subject='e1',predicate=rdf_edge_encoding.source_predicate_iri if forward else rdf_edge_encoding.target_predicate_iri),
             'target':dict(subject='e1',predicate=rdf_edge_encoding.target_predicate_iri if forward else rdf_edge_encoding.source_predicate_iri)}
     return replace(base, text=text, parameters={
-        **{k:v for k,v in base.parameters.items() if k not in ('rdf_single_edge_body','rdf_single_edge_identity_body')}, **extra,
+        **{k:v for k,v in base.parameters.items() if k not in ('rdf_single_edge_body','rdf_single_edge_identity_body','rdf_single_edge_endpoint_bodies')}, **extra,
         "compiler": "semantic_edge_match_v1", "output_columns": columns,
         "edge_statistics_descriptor": {"label":edge.label,"direction":edge.direction.name},
         "branch_edge_counts": [1], "workload_lowering": "edge_match_as_one_edge_path_v1"})
