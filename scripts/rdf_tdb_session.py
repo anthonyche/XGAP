@@ -1,5 +1,6 @@
 """Owned disk-backed RDF serving session for consecutive campaign cells."""
 import json
+import os
 from pathlib import Path
 import shutil
 import time
@@ -56,6 +57,21 @@ class RdfTdbSession:
                 if shutil.disk_usage(self.store_root).free<store['bytes']+6*1024**3:raise ValueError('Insufficient serving-copy reserve')
                 copied=copy_sealed_store(store['path'],self.store_root/(name+'-tdb2'),seal['files'])
                 write_once(self.root/('copy-'+name+'.json'),copied)
+            # Configure the DBOE factory before any source dataset opens. TDB's CLI
+            # context alone does not control Jena 5.6 B+tree block access.
+            bootstrap=None
+            if self.file_mode=='direct':
+                source=Path(__file__).parent/'java/XgapStorageMode.java'
+                classes=self.root/'storage-bootstrap';classes.mkdir()
+                javac=Path(java['path']).with_name('javac')
+                with (classes/'compile.stdout').open('xb') as out,(classes/'compile.stderr').open('xb') as err:
+                    subprocess.run([str(javac),'-J-Xmx128m','-proc:none','--release','21',
+                        '-cp',engine['path'],'-d',str(classes),str(source)],
+                        stdout=out,stderr=err,check=True,timeout=45)
+                bootstrap=write_once(classes/'receipt.json',dict(source=stream_pin(source),
+                    javac=stream_pin(javac),compiled=stream_pin(classes/'XgapStorageMode.class'),
+                    engine=engine,requested_mode='direct',
+                    contract='SystemIndex and SystemTDB asserted before Fuseki dataset startup'))
             names=sorted(self.prepared['stores'])
             if set(names)!=set(doc['offline']['rdf_loads']) or not 1<=len(names)<=8:
                 raise ValueError('Prepared and frozen source sets differ')
@@ -68,7 +84,9 @@ class RdfTdbSession:
                 (state/'config.ttl').write_text(_fuseki_server_configuration(query_timeout_seconds=self.budget.timeout_seconds))
                 self.ports.release(i)
                 file_args=['--set=tdb2:fileMode=direct'] if self.file_mode=='direct' else []
-                process=self.processes.start('source-'+name,[java['path'],'-Xms64m',f'-Xmx{heap_mib}m','-jar',engine['path'],
+                entry=(['-cp',str(classes)+os.pathsep+engine['path'],'XgapStorageMode','direct']
+                    if bootstrap else ['-jar',engine['path']])
+                process=self.processes.start('source-'+name,[java['path'],'-Xms64m',f'-Xmx{heap_mib}m',*entry,
                     '--localhost','--port',str(port),'--tdb2','--loc',str(self.store_root/(name+'-tdb2')),*file_args,'/'+name],
                     cwd=Path(engine['path']).parent,env={'FUSEKI_BASE':str(state)})
                 self.owned.append(OwnedProcess(name,'source',process));ready(process,port)
@@ -82,13 +100,14 @@ class RdfTdbSession:
             doc['offline']['serving_endpoint_parent']=parent
             doc['offline']['prepared_stores']=self.prepared_pin
             doc['offline']['tdb2_serving_file_mode']=self.file_mode
+            if bootstrap:doc['offline']['tdb2_storage_bootstrap']=bootstrap
             self.profile=write_once(self.root/'profile.json',doc)
             FrozenOneShotProfile.load(self.profile['path'],expected_sha256=self.profile['sha256'])
             self.ready_pin=write_once(self.root/'ready.json',{'prepared':self.prepared_pin,'preparation_input':self.input_pin,'profile':self.profile,
                 'source_urls':routes,'observation_url':self.observer.base_url,'read_only_cli':True,
                 'query_timeout_seconds':self.budget.timeout_seconds,'offline_fresh_session_ms':(time.perf_counter()-at)*1000,
                 'aggregate_heap_mib':heap_mib*len(names),'per_source_heap_mib':heap_mib,
-                'tdb2_file_mode':self.file_mode,
+                'tdb2_file_mode':self.file_mode,'storage_bootstrap':bootstrap,
                 'scope':'store/engine verification, serving copies, startup, observer and profile reads; no warmup query',
                 'source_groups':[{'name':s.name,'pid':s.process.pid} for s in self.owned]})
             return self

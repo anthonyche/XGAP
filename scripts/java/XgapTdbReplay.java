@@ -20,6 +20,7 @@ public class XgapTdbReplay {
     static volatile long operationAt = System.nanoTime(), queryAt;
     static volatile long rows;
     static String fileMode;
+    static final Map<String,List<String>> blockManagers=new ConcurrentHashMap<>();
     static Path metrics;
     static Map<String,Long> baseline;
     static class Counts {
@@ -58,7 +59,19 @@ public class XgapTdbReplay {
     static void install(TupleTable table) {
         for(int i=0;i<table.numIndexes();i++) {
             TupleIndex index=table.getIndex(i);
-            if(index!=null) table.setTupleIndex(i,new CountIndex(index));
+            if(index!=null) {
+                TupleIndex base=index.baseTupleIndex();
+                if(base instanceof TupleIndexRecord record && record.getRangeIndex() instanceof org.apache.jena.dboe.trans.bplustree.BPlusTree tree) {
+                    List<String> chain=new ArrayList<>();
+                    org.apache.jena.dboe.base.block.BlockMgr mgr=tree.getRecordsMgr().getBlockMgr();
+                    for(int depth=0;depth<16;depth++) {
+                        chain.add(mgr.getClass().getName()+" "+mgr.toString());
+                        if(mgr instanceof org.apache.jena.dboe.base.block.BlockMgrWrapper wrap)mgr=wrap.getWrapped();else break;
+                    }
+                    blockManagers.put(index.getName(),chain);
+                }
+                table.setTupleIndex(i,new CountIndex(index));
+            }
         }
     }
     static String read(String name) {
@@ -82,6 +95,7 @@ public class XgapTdbReplay {
     static synchronized void snapshot() {
         try {
             Map<String,Object> out=new TreeMap<>();out.put("phase",phase);out.put("rows",rows);out.put("file_mode",fileMode);
+            out.put("index_block_managers",blockManagers);out.put("dboe_file_mode",org.apache.jena.dboe.sys.SystemIndex.fileMode().toString());
             out.put("jena_version", org.apache.jena.Jena.VERSION);out.put("linux_proc_available",Files.exists(Path.of("/proc/self/stat")));
             out.put("query_elapsed_ms",queryAt==0?null:(System.nanoTime()-queryAt)/1e6);
             out.put("operation",operation);out.put("operation_age_ms",(System.nanoTime()-operationAt)/1e6);
@@ -109,7 +123,7 @@ public class XgapTdbReplay {
     }
     public static void main(String[] args) throws Exception {
         if(args.length!=5 || !Set.of("mapped","direct").contains(args[4])) throw new IllegalArgumentException("store query metrics result-json mapped|direct");
-        org.apache.jena.tdb2.sys.SystemTDB.setFileMode(org.apache.jena.dboe.base.block.FileMode.valueOf(args[4]));
+        XgapStorageMode.configure(args[4]);
         fileMode=org.apache.jena.tdb2.sys.SystemTDB.fileMode().toString();
         if(!fileMode.equals(args[4]))throw new IllegalStateException("file mode not applied");
         metrics=Path.of(args[2]);if(Files.exists(metrics))throw new IllegalArgumentException("new output required");

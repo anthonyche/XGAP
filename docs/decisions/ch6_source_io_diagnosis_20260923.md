@@ -73,3 +73,25 @@ The server JAR SHA matches local pinned Jena 5.6.0 exactly:
 Direct-access replay 3859447 keeps compt311, eight CPUs / 24 GiB allocation,
 query/heap/RSS budgets and original 567-key request. It started by backfill after
 an initially late scheduler estimate; no job was canceled, resubmitted or moved.
+
+## Configuration wiring defect, not a successful direct-mode trial
+
+3859447 still timed out; final query sample 51.319 s / 8 witnesses / 121 index
+items, 2,530,865,152 storage bytes and 622 major faults. The diagnostic's
+`file_mode=direct` reports **SystemTDB only**, not the effective DBOE access mode.
+Do not interpret the field or historical CLI `--set=tdb2:fileMode=direct` as
+proof that the underlying B+trees used direct access.
+
+Pinned source/bytecode identifies a real wiring issue: TDB2's BPlusTreeFactory
+calls BlockMgrFactory without a FileMode; that factory consults **SystemIndex**,
+whose 64-bit default is mapped. SystemTDB's separate setting does not set it.
+`XgapStorageMode` now asserts BOTH settings before opening the store or starting
+Fuseki. The diagnostic additionally records actual block-manager descriptions.
+Tiny TDB validation produces the identical witness; all nine triple/quad index
+managers now explicitly show `BlockMgrCache ... BlockMgrFileAccess[8192 bytes]:Direct`.
+
+`RdfTdbSession(file_mode='direct')` uses the same pinned bootstrap for every
+owned RDF source, with compilation and hashes in offline setup. Default sessions
+remain default until real-source validation; this repairs an opt-in option, not
+an unvalidated blanket change. All methods sharing a source session receive the
+same storage configuration. No query/compiler rewrite or vendor Jena patch.

@@ -34,13 +34,13 @@ def main():
     write_once(o/'intent.json',dict(schema_version='xgap-rdf-source-work-replay-v1',
         purpose='offline failed-request diagnosis; no workload selection or paper latency',
         prepared=pin(prepared),captured=pin(capture),query_sha256=a.query_sha256,
-        java_source=pin(source),jar=pin(Path(a.jar)),query_count=1,
+        java_source=pin(source),storage_bootstrap=pin(source.with_name('XgapStorageMode.java')),jar=pin(Path(a.jar)),query_count=1,
         attempts=1,wall_seconds=60,max_rss_bytes=4*1024**3,java_heap='768m',
         os_cache='uncontrolled; verified copy is not a cold-cache guarantee',
         file_mode=a.file_mode,clock_ticks_per_second=os.sysconf('SC_CLK_TCK'),
         page_size_bytes=os.sysconf('SC_PAGE_SIZE'),model_calls=0,full_workload_run=False))
     classes=o/'classes';classes.mkdir();javac=Path(a.java).with_name('javac')
-    subprocess.run([str(javac),'-proc:none','--release','21','-cp',a.jar,'-d',str(classes),str(source)],check=True)
+    subprocess.run([str(javac),'-proc:none','--release','21','-cp',a.jar,'-d',str(classes),str(source),str(source.with_name('XgapStorageMode.java'))],check=True)
     write_once(o/'copy.json',copy_sealed_store(s['path'],work,seal['files']))
     query=o/'query.rq';query.write_text(q)
     outcome=run_guarded_command([a.java,'-Xmx768m','-cp',str(classes)+os.pathsep+a.jar,
