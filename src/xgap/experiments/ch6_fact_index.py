@@ -79,6 +79,16 @@ def add_edges(db, rows):
     return count
 
 
+def calendar_milliseconds(text):
+    # FinBench emits both whole-second and fractional-second strings. Keep the
+    # original precision; neither invent fractions nor silently truncate them.
+    if not re.fullmatch(r'\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d{1,6})?', text):
+        raise ValueError('Unexpected FinBench calendar timestamp')
+    instant=datetime.fromisoformat(text).replace(tzinfo=timezone.utc)
+    if instant.microsecond % 1000:raise ValueError('Sub-millisecond source precision is outside this core contract')
+    return int(instant.timestamp())*1000+instant.microsecond//1000
+
+
 def snb(db, source):
     root = Path(source); receipt = json.loads((root/'receipt.json').read_text())
     if not receipt['success'] or receipt['schema_version'] != 'xgap-ch6-snb-source-v1':
@@ -140,8 +150,7 @@ def finbench(db, source):
                            nickname=r['nickname']) for r in rows('Account.csv')))
         def edges():
             for index,r in enumerate(rows('AccountTransferAccount.csv'),2):
-                instant=datetime.strptime(r['createTime'],'%Y-%m-%d %H:%M:%S.%f').replace(tzinfo=timezone.utc)
-                stamp=int(instant.timestamp())*1000+instant.microsecond//1000
+                stamp=calendar_milliseconds(r['createTime'])
                 yield dict(id='AccountTransferAccount.csv:'+str(index),**{'from':'account:'+r['fromId'],'to':'account:'+r['toId']},
                            timestamp=stamp,value=float(r['amount']))
         count=add_edges(db,edges())

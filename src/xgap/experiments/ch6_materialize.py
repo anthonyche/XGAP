@@ -56,23 +56,25 @@ def materialize(index_receipt, output, *, scale='1', source_count=2):
         if shutil.disk_usage(root).free < 22*1024**3:raise ValueError('Need 16-GiB output allowance plus six-GiB reserve')
         write(root/'intent.json',receipt)
         node_types={};prop_types={};counts=dict(nodes=0,original_edges=0,view_edges=0);logical_hash=hashlib.sha256()
-        source_edges={n:0 for n in graphs};batch=[];batch_kind=None;batch_statement=None;batch_table=None;batch_count=0
+        source_edges={n:0 for n in graphs};buffers={};batch_count=0
         with read_index(meta['database']['path']) as db, ExitStack() as stack:
             rdfs={n:text_gzip(stack,root/(n+'.ttl.gz')) for n in names}
             native=text_gzip(stack,root/'load_neo4j_batches.jsonl.gz')
             for handle in rdfs.values(): handle.write(f'@prefix s: <{NS}> .\n@prefix r: <{RESOURCE}> .\n')
-            def flush():
+            def flush(key=None):
                 nonlocal batch_count
-                if not batch: return
-                content=dict(kind=batch_kind,source_table=batch_table,statement=batch_statement,parameters={'rows':batch})
-                content['batch_sha256']=hashlib.sha256(encoded(content).encode()).hexdigest()
-                native.write(encoded(content)+'\n');batch.clear();batch_count+=1
-                if batch_count>65536:raise ValueError('Native offline batch budget exceeded')
+                for k in list(buffers) if key is None else [key]:
+                    batch=buffers[k]
+                    if not batch:continue
+                    kind,table,statement=k
+                    content=dict(kind=kind,source_table=table,statement=statement,parameters={'rows':batch})
+                    content['batch_sha256']=hashlib.sha256(encoded(content).encode()).hexdigest()
+                    native.write(encoded(content)+'\n');batch.clear();batch_count+=1
+                    if batch_count>65536:raise ValueError('Native offline batch budget exceeded')
             def add(kind,table,statement,row):
-                nonlocal batch_kind,batch_statement,batch_table
-                if (kind,table,statement)!=(batch_kind,batch_table,batch_statement):flush()
-                batch_kind,batch_table,batch_statement=kind,table,statement;batch.append(row)
-                if len(batch)>=2500:flush()
+                key=(kind,table,statement);batch=buffers.setdefault(key,[]);batch.append(row)
+                if len(buffers)>16:raise ValueError('Unexpected native batch type fanout')
+                if len(batch)>=2500:flush(key)
             kinds=[r[0] for r in db.execute('SELECT DISTINCT kind FROM nodes ORDER BY kind')]
             csvs={};field_sets={}
             for kind in kinds:
@@ -102,6 +104,9 @@ def materialize(index_receipt, output, *, scale='1', source_count=2):
                     add('nodes',kind,f'UNWIND $rows AS row CREATE (n:{kind}) SET n = row.props',dict(id=business,props=ordinary))
                     csvs[kind].writerow([local,business,*[ordinary[k] for k in field_sets[kind][2:-1]],kind])
                     counts['nodes']+=1;logical_hash.update((encoded([replica,ident,kind,props])+'\n').encode())
+                # Nodes must precede relationship MATCH in the transactional
+                # fallback even when independent type buffers are not full.
+                flush()
                 for ordinal,ident,src,dst,stamp,value in db.execute('SELECT * FROM edges ORDER BY ordinal'):
                     if scale=='.25' and ordinal%4:continue
                     # A stable arithmetic partition avoids Python's randomized hash.

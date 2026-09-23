@@ -1,5 +1,11 @@
 # XGAP 当前状态
 
+2026-09-23 正式输入继续准备：官方 SNB SF0.1 与 MovieLens 20M archive 已封存。
+D1 完整 Person/knows 核心已流式物化（1,528 节点、14,073 原始边）；数据库装载
+尚待准入。D2 的完整 20M 核心正在 CPU 作业 3856726 处理。D3 时间格式差异已定位
+并补失败重放，保留原失败记录。详见[物化决定](decisions/ch6_formal_materialization_20260923.md)。
+本阶段无模型调用、无正式试验开跑；现有 allocation 3856566 未改动。
+
 最新：五方法同题 dispatch 已实际运行并封存，四个内部方法正确完成，TS 用尽观测额度，
 按 study-censored 保留，不计成答案错误。已验证 CWRU 独立目录读写与现有 API 鉴权，
 CPU 作业 3856445 已在 compt302 验证现有 Qwen API（一次调用、19 tokens），

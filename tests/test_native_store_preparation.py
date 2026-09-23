@@ -66,3 +66,18 @@ def test_silent_missing_relationships_prevent_store_acceptance(tmp_path, loader)
         loader.verify_counts(Client(), {'nodes': 2, 'relationships': 1}, tmp_path)
     assert len(calls) == 2
     assert json.loads((tmp_path/'integrity-relationships-result.json').read_text())['rows'] == [{'count': 0}]
+
+
+def test_compressed_core_load_uses_sealed_external_paths(tmp_path, loader):
+    import gzip
+    doc,native=source(tmp_path,loader)
+    compressed=tmp_path/'core.jsonl.gz'
+    with gzip.open(compressed,'wb') as f:f.write(native.read_bytes())
+    native_pin=loader.stream_pin(compressed)
+    control_pin=loader.stream_pin(tmp_path/'control.ttl')
+    doc['offline']['native_load_files']={'load_neo4j_batches.jsonl':native_pin,'control.ttl':control_pin}
+    sources,counts=loader.input_sources(doc)
+    assert counts=={'nodes':2,'relationships':1,'load_calls':3}
+    assert sources['load_neo4j_batches.jsonl']==native_pin
+    with compressed.open('ab') as f:f.write(b'changed')
+    with pytest.raises(ValueError,match='Native input changed'):loader.input_sources(doc)

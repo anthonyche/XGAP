@@ -46,7 +46,8 @@ class NativeStoreSession(RdfTdbSession):
             for name,source in (('neo4j','load_neo4j_batches.jsonl'),('control','control.ttl')):
                 store=self.prepared['stores'][name]
                 seal=json.loads(read_pinned(store['seal']['path'],store['seal']['sha256']))
-                if seal['source']['sha256']!=doc['offline']['load_files'][source]['sha256']:
+                loads=doc['offline'].get('native_load_files',doc['offline'].get('load_files',{}))
+                if seal['source']['sha256']!=loads[source]['sha256']:
                     raise ValueError('Native store source mismatch')
                 parts=['data','transactions'] if name=='neo4j' else ['.']
                 if name=='neo4j' and (seal['parts']!=parts or store['parts']!=parts):

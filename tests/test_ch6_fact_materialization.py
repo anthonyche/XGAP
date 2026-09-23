@@ -8,11 +8,15 @@ from unittest.mock import patch
 from collections import namedtuple
 from rdflib import Graph, Namespace, RDF
 
-from xgap.experiments.ch6_fact_index import CORES,add_nodes,add_edges,pin,write
+from xgap.experiments.ch6_fact_index import CORES,add_nodes,add_edges,pin,write,calendar_milliseconds
 from xgap.experiments.ch6_materialize import materialize,NS,RESOURCE
 
 
 class CoreMaterializationTest(unittest.TestCase):
+    def test_finbench_optional_fraction_replay(self):
+        self.assertEqual(calendar_milliseconds('2021-11-06 23:25:05'),calendar_milliseconds('2021-11-06 23:25:05.000'))
+        self.assertEqual(calendar_milliseconds('2021-11-06 23:25:05.814')-calendar_milliseconds('2021-11-06 23:25:05'),814)
+        with self.assertRaises(ValueError):calendar_milliseconds('2021-11-06 23:25:05.000001')
     def index(self, root):
         db=sqlite3.connect(root/'facts.sqlite')
         db.executescript('CREATE TABLE nodes(id TEXT PRIMARY KEY,kind TEXT,props TEXT);'
@@ -43,6 +47,7 @@ class CoreMaterializationTest(unittest.TestCase):
             self.assertEqual(len(list(g['graph'].triples((None,s.edgeLabel,s.RATED)))),4)
             self.assertEqual(len(list(g['graph'].triples((None,s.edgeLabel,s.RATED_EARLY)))),2)
             batches=[json.loads(line) for line in gzip.open(r['native_load']['path'],'rt')]
+            self.assertEqual(len([b for b in batches if b['kind']=='relationships']),3)
             edges=[v for b in batches if b['kind']=='relationships' for v in b['parameters']['rows']]
             self.assertEqual(len({e['props']['xgap_id'] for e in edges}),8)
             self.assertEqual(r['counts'],dict(nodes=3,original_edges=4,view_edges=8))
