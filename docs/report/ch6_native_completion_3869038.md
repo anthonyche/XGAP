@@ -89,7 +89,15 @@ Log: `reconcile-rdf8-<job>.out`; archive:
 `/home/hxc859/xgap-reconcile-rdf8-<job>.tar.gz`.
 Validation: `reconcile-rdf8-pack-c3437fc-v1/verification.json` in the local
 artifact root. The user validated the package and submitted **3869407**.
-Only submission is confirmed; running/terminal state remains unknown.
+The user reports FAILED/2:0, 444 s, compt311. RDF attempted=audited=3;
+the first failure is `D2-test-uniform-cycle-000-W2` (original index 4).
+Original indices 5–9 were not executed. The first two cases passed according
+to the stop-on-first-failure flow; their raw evidence remains unverified locally.
+The failure category and native plan comparison remain unknown until archive
+inspection. Do not infer timeout, memory exhaustion or incorrect answers from
+the job exit code. Archive: 667,528 bytes, SHA-256
+`8915a464ae4a40df47e58adf7885d430a04607c8b8c4b80f047121ac9c573d2a`.
+A null outer archive error is not evidence that the inner admission succeeded.
 Log: `reconcile-rdf8-3869407.out`; expected archive:
 `/home/hxc859/xgap-reconcile-rdf8-3869407.tar.gz`. Preserve the existing job,
 checkout and outputs; do not resubmit. The full formal campaign remains closed.
