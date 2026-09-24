@@ -1,6 +1,15 @@
-# 正式启动边界：RDF 单题修复通过，原生访问路径待诊断
+# 正式启动边界：RDF 单题通过，原生索引路径确认、执行待验
 
 2026-09-24，继续遵守“准备至可启动、不执行全量”的授权。旧结果和失败均保留。
+
+**最新原生诊断：**3866035 两次 EXPLAIN 成功，77,767 B 归档已本地 SHA 核验，
+两份压缩/原始响应分别校验、无错误/无数据行，服务和副本已关闭。原请求确为
+AllNodesScan，索引必要条件使其改为 NodeUniqueIndexSeek。估计基数不等于实际
+扫描量；不能由此宣称大图执行已通过或获得多少提速。
+原 zigzag/W1 单题复验包 `xgapnativec517451.zip` 已冻结，保持同一完整输入及预算；
+用户已校验并提交 **3867351**，最终回执待收取。不重跑成功前缀，不试跑择优。
+本地审计：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/native-explain-local-audit-3866035.json`。
+详见[原生索引证据和包身份](../decisions/native_identity_index_access_20260924.md)。
 
 **最新已核验结果：**3865967 COMPLETED / 0:0 / 4m59s / compt311。
 `D2-test-uniform-ordered_star-000-W1` EM=1，guard 21,653.441 ms，5 个源请求全成功，

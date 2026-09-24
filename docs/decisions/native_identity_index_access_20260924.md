@@ -52,3 +52,33 @@ local rewrite is not yet a large-data correctness or performance acceptance.
 Only after examining that evidence should the original failed case be replayed
 under its original caps. A large true intermediate may still require a separate
 semantics-preserving optimization; increasing caps or dropping rows is not a fix.
+
+## Full-source EXPLAIN accepted; single-case replay prepared
+
+3866035 completed the two EXPLAIN calls successfully. The downloaded 77,767-byte
+archive matches the server SHA-256
+`fcc2d522abddc917d7e3035748a2890a5579f0079982e355f1bb9e13b691e2e9`.
+Both compressed response pins and uncompressed body digests match; both bodies
+contain no errors and no data rows. Original and indexed requests use identical
+parameters (1,896 canonical keys). Service/process/copy closure is verified.
+
+On the full frozen D2 store, the original anchor is `AllNodesScan`, while the
+necessary-label/local-key form is `NodeUniqueIndexSeek`. Both retain the same
+incoming expansion, predicates, DISTINCT and projections. This confirms the
+access-path defect and its proposed index entry, not a completed query or speedup.
+In particular, estimated seek rows (~25) are not the actual 1,896 supplied keys;
+the sharply different estimated expansion cardinalities are not actual scans or
+evidence that the real fanout disappeared. EXPLAIN observations never feed online
+selection or estimator training.
+
+The unchanged failed `D2-test-uniform-zigzag-000-W1` is the next single-case gate.
+Package `xgapnativec517451.zip` pins source `c517451`, the original 24-case bundle,
+prepared store, failed receipt and EXPLAIN receipt. SHA-256:
+`efd44ea387e33a1c9c76a766225ce9c6af97cf3bd7a7c48f517b313c439ce3a0`.
+One final unified plan, no retries/LLM, worker 120s/3GiB, HTTP 60s, source 4GiB,
+same compt311 and node-local serving. It does not rerun the successful prefix.
+Output `formal-native-index-replay-v1/D2/native` remains diagnostic, never full
+admission. After browser upload became unavailable, the user completed the
+SHA-checked staging and returned unique job **3867351**. Final evidence is pending.
+Journal: `native-index-c517451/`; output log: `native-index-3867351.out`.
+Do not resubmit while awaiting this job or treat submission as successful execution.
