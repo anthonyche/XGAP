@@ -88,3 +88,28 @@ same full MovieLens20M snapshot and budgets, conditional on unchanged frozen
 estimator selecting this admitted move. Preserve 3868312; do not rerun W2 or the
 eight-case batch. Success is only single-case admission. Further native/RDF
 admission and release checks still precede a first-dataset formal run.
+
+## Single-case handoff
+
+Exact source `9fbcb8deb29bc0abc782f73d12116b7e663b4afe`.
+Package `/Users/anthonyche/Downloads/xgapsemijoin9fbcb8d-v2.zip`, 37,442 bytes,
+SHA `700b512bb2fe0c377b16248f714c5277856dc6ed5908f865661ae3256b361330`.
+Only v2 is the handoff; the unpublished first package failed a local schema check
+(case records do not carry query_sha256 directly) and must not be used.
+The v2 stage checks the query fingerprint from the pinned oracle instead.
+
+The stage validates prior sealed failure/closure, input and estimator pins,
+clones the existing 6169b8f checkout into a NEW checkout, verifies the delta bundle,
+and journals one no-requeue CPU submission (8 CPU, 24 GiB, compt311, one hour).
+Existing journal/output/checkout prevents resubmission. It never changes old runs.
+Before starting source services, a zero-call diagnostic must select the exact
+locally inspected plan hash and checked membership/prefix proof. Otherwise stop
+with zero query executions. If admitted, run only W3 once, keep original guards,
+compare actual selected plan with the diagnostic and archive inputs, model,
+responses, resources and cleanup. No model/GPU/full-campaign execution.
+
+Local verification passed: validate all gate inputs against archived evidence,
+reject a changed query hash, Python 3.6 stage grammar, shell syntax, bundle
+prerequisite verification and ZIP-member byte equality. No server job has yet
+been submitted for this package. OnDemand upload/terminal control has repeatedly
+failed earlier; manual handoff is needed rather than risking duplicate input.
