@@ -1,5 +1,7 @@
 # D2 native 24-case coverage and RDF continuation — 3869038
 
+2026-09-25 更新：3869407 原始归档已核验，RDF 2–3 正确，4 为可避免的过滤前取键引发的 source_timeout；native 静态比较也已完成。详见[后续取证及修复](../decisions/filtered_binding_driver_20260925.md)。以下保留包发布时的历史状态。
+
 2026-09-25. All 24 frozen native cases now have a locally verified successful
 record across preserved code versions. This completes cumulative native coverage;
 it does not certify all 24 on the final code, or start the formal five-method study.

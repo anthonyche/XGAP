@@ -70,10 +70,13 @@ def nested_key_targets(identifier,field,operators,schemas,consumers,roots,chain=
 
 
 def early_key_driver(identifier,field,program,plan):
-    """Use an already restricted Match instead of materializing a join for keys.
+    """Use a restricted Match's unary tail instead of materializing join keys.
 
     Its key domain is a superset of the original driver's domain. All original
     joins/filters remain, so this only changes the necessary bind restriction.
+    Retain intervening filters and identity-preserving projections before the
+    first multi-input operator. Dropping those filters can expand an empty key
+    set into expensive remote work even though no complete witness can remain.
     UNION branches cannot represent the whole domain and are excluded. A full
     unrestricted leaf is not selected merely for having a shallower lineage.
     """
@@ -90,9 +93,29 @@ def early_key_driver(identifier,field,program,plan):
             bool(native.parameters.get('artifact',{}).get('parameters',{}).get('necessary_row_filters')))
         if not restricted or len(native.semantic_operator_ids)!=1:continue
         name=match.parameters.get(column+'_field',column)
-        choices.append((len(chain),match.operator_id,output,name))
+        # Trace the requested key down this already checked exclusive path.
+        # A right JOIN input may have prefixed columns; PROJECT may rename it.
+        fields={identifier:field}
+        for parent,child in zip(chain,chain[1:]):
+            op=operators[parent];wanted=fields[parent]
+            if op.kind is S.PROJECT:
+                wanted=op.parameters['projections'][wanted]['field']
+            elif op.kind is S.JOIN and child==op.input_ids[1]:
+                left_fields=plan.metadata['schemas'][op.input_ids[0]]['fields'];p=op.parameters
+                wanted=next(original for original in plan.metadata['schemas'][child]['fields']
+                    if (p.get('right_prefix','right_')+original if original in left_fields
+                        and not original==p['left_on']==p['right_on'] else original)==wanted)
+            fields[child]=wanted
+        producer=match.operator_id
+        for ancestor in reversed(chain[:-1]):
+            if operators[ancestor].kind not in (S.FILTER,S.PROJECT):break
+            candidate=outputs.get(ancestor)
+            if candidate not in nodes:break
+            producer,output,name=ancestor,candidate,fields[ancestor]
+        choices.append((len(chain),match.operator_id,output,name,producer))
     if not choices:return outputs[identifier],field,None
-    _,match,output,name=min(choices)
+    _,match,output,name,producer=min(choices)
     return output,name,dict(profile='necessary-upstream-key-domain-v1',original_driver=identifier,
-        original_field=field,producer=match,producer_field=name,
+        original_field=field,producer=producer,producer_field=name,restricted_match=match,
+        unary_filters_preserved=True,
         relation='superset of required keys; original joins and filters retained')

@@ -1,5 +1,7 @@
 # Current architecture — unified lookahead v1
 
+2026-09-25 共享必要键绑定保留受限 Match 上方的 FILTER/PROJECT 一元链；字段来源与原始 join/filter 不变。见[正确性及验证边界](decisions/filtered_binding_driver_20260925.md)。
+
 [Closed endpoint access](decisions/native_closed_endpoints_20260925.md) resolves both logical node domains before closed-edge matching, preserving duplicate identities and the existing exact prefix proof. Full-source performance admission remains pending.
 
 [Binding NDV and streaming SPJ tails](decisions/binding_ndv_streaming_20260924.md) add a separately frozen v3 source-work model, proven earlier key drivers and an exact bounded-answer-memory runtime profile. Unsupported shapes retain the materialized evaluator; scanned work is not bounded by the result limit. Full-D2 admission of this version remains pending.
