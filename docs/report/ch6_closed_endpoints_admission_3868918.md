@@ -78,5 +78,9 @@ Server journal: `/home/hxc859/xgap-ch6-artifacts/native-next8-c3437fc-v1`.
 Output: `/home/hxc859/xgap-ch6-artifacts/formal-native-next8-closed-v1/D2`.
 Expected log: `native-next8-closed-<job>.out` in the journal.
 Expected archive: `/home/hxc859/xgap-native-next8-closed-<job>.tar.gz`.
-The user has been asked for upload/submission because automatic access remains
-unavailable. A new job number is not yet confirmed. Full formal launch is closed.
+The user successfully validated and submitted this package as **3868951**.
+Running/terminal state is not yet received. Log: `native-next8-closed-3868951.out`
+in the journal; expected archive: `/home/hxc859/xgap-native-next8-closed-3868951.tar.gz`.
+No duplicate submission or checkout change. Automatic access remains unavailable;
+the user has been asked for one read-only status/log query after completion.
+Full formal launch is closed.
