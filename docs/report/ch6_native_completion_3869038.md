@@ -88,5 +88,8 @@ Output: `/home/hxc859/xgap-ch6-artifacts/formal-reconcile-rdf8-v1/D2`.
 Log: `reconcile-rdf8-<job>.out`; archive:
 `/home/hxc859/xgap-reconcile-rdf8-<job>.tar.gz`.
 Validation: `reconcile-rdf8-pack-c3437fc-v1/verification.json` in the local
-artifact root. Package ready for manual handoff; no new job has been submitted.
-The full formal campaign remains closed.
+artifact root. The user validated the package and submitted **3869407**.
+Only submission is confirmed; running/terminal state remains unknown.
+Log: `reconcile-rdf8-3869407.out`; expected archive:
+`/home/hxc859/xgap-reconcile-rdf8-3869407.tar.gz`. Preserve the existing job,
+checkout and outputs; do not resubmit. The full formal campaign remains closed.
