@@ -258,12 +258,24 @@ output `formal-native-spj-connected-gate-v1/D2`, archive
 EXPLAIN; `native/receipt.json` and `gate-receipt.json` carry execution admission.
 
 OnDemand upload control returned `noWindowsAvailable` after a nonresponsive
-Upload button. Upload is unconfirmed; no new submission/job ID. Manual handoff
-is required because automatic terminal input has previously been unreliable.
+Upload button. The user then completed upload, hash verification and exact-source
+staging, submitting **3867524**. Its submission was also confirmed by read-only
+inspection of the OnDemand terminal. Do not repeat the stage command.
+Current scheduler state and final results remain unverified: binding the file
+tab timed out, and automatic terminal input remains unreliable. Requested a
+read-only `sacct` and log-tail handoff instead of retrying a submission.
 The local command file is
 `/Users/anthonyche/Downloads/xgapconnectede22a32e-v2-command.txt`.
-After uploading the v2 ZIP to `/home/hxc859`, run:
+Historical submission command (already executed, not a retry instruction):
 
 ```bash
 python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc859/xgapconnectede22a32e-v2.zip"); assert hashlib.sha256(p.read_bytes()).hexdigest()=="1b5fb7a8573547a8ee302b4b101aa6d1352c884d1c31c332bc98b8844a83787d"; exec(compile(zipfile.ZipFile(str(p)).read("stage.py"),"stage.py","exec"))'
 ```
+
+Existing job log:
+`/home/hxc859/xgap-ch6-artifacts/native-connected-e22a32e/native-connected-3867524.out`.
+Expected closed evidence archive:
+`/home/hxc859/xgap-spj-connected-3867524.tar.gz`.
+Submission is not proof of structural or query admission, and either singleton
+result is not whole-cohort admission. Inspect the final receipts before deciding
+on another targeted fix or advancing the remaining held-out gate.
