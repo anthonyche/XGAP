@@ -9,7 +9,8 @@ The sampled source RSS (1,567,068,160 bytes) stayed below 4 GiB. Sampled storage
 read_bytes and major faults were zero; this is not evidence of an I/O-wait fault.
 The archive (116,163 bytes, SHA-256
 `68822b58663d559590ea2586a8ad01cef972cd76b2dd443a2a38c86fb52db8c1`)
-is not yet downloaded. The exact allocating native operator is unverified;
+was initially unavailable locally; it has now been verified inside the 3868056
+archive (see completion below). The exact allocating native operator is unverified;
 the existing compiler does require full-tuple DISTINCT before top-K. The new
 transform removes that global tuple set without changing the answer contract.
 
@@ -141,9 +142,69 @@ elapsed time including source setup, not measured query latency.
 
 The archive is 209,955 bytes with server-reported SHA-256
 `68d2540e205134d901a0ce61ac60f4ad7273189a7269f5efc85fc6a3f34b4e8f`.
-Local bytes, detailed answer equality, execution latency, resource samples and
-closure remain to be audited. The file listing showed the archive, but the
-automated page became blank again; manual download to local Downloads was
-requested. No new job or repeated query was submitted. Stop rewriting this
-case; audit and freeze its evidence before choosing the remaining admission
-scope. This successful single-case gate does not establish full held-out admission.
+The user downloaded it after the automated file page became blank. Local SHA
+verification passed; 93 regular files, 828,986 uncompressed bytes, no traversal
+or link members. Local audit verified 22 available pinned artifacts and explicitly
+listed 22 external references not included locally; no claim of rehashing every
+large remote store. Reference rows were already available in the earlier frozen
+case archive and matched their pinned hash.
+
+Actual HTTP response rows, worker answer, and ordered frozen reference agree
+exactly: 20 rows, EM=1. Query/source identities are unchanged. The zero-call
+diagnostic selected exactly the actual plan under the frozen estimator, with
+41 prefix passes charged, zero fitting/current-query feedback. The full-source
+EXPLAIN has 3 anchor scans, 18 index seeks, 3 scalar DISTINCT, 2 SemiApply and no
+CartesianProduct, ValueHashJoin, unbounded Sort or eager aggregation.
+
+Measured once: native execution 9,063.374 ms; controller planning 113.980 ms
+(85.346 ms CPU); worker total 12,503.754 ms; source sampled RSS peak
+1,207,808,000 bytes; method peak 39,989,248 bytes. One final execution, one backend
+call, zero model calls. HTTP request/response bytes are 15,710/8,478; the worker's
+coordinator bytes_moved=0 must not be reported as zero network traffic. Fresh
+execution-session setup took 89,196.496 ms, separately accounted. Both EXPLAIN
+and execution source groups/observers were closed and serving copies reclaimed.
+
+The prior 3867524 archive hash and receipt were also verified. Its unsuccessful
+23.519-second execution is not a successful baseline for a speedup claim.
+Observed source RSS decreased from 1,567,068,160 to 1,207,808,000 bytes, but actual
+transaction peak and scan rows are not measured. Main-source rchar increased
+from 166,573,926 to 1,716,570,354 bytes; sampled read_bytes and major faults were
+zero in both. This supports removal of this case's memory failure under the
+same limits, not a claim of lower scanning/I/O or a general performance ratio.
+
+Audit file at local artifact root `ch6-release-boundary-20260924/`
+`prefix-gate-3868056-audit.json`, SHA-256
+`e626e6e9fe9a82919ae7b7da1e25ea4dabae1fa04c035501b82e8e3442522512`.
+Native receipt SHA `4ec8e10c4a87cd0e3f89216578d47580f1c4fbde6bf09e5204d738306c900532`;
+gate SHA `86d61dc8ae25f6b5e90febb45d0cea6c8546a0a2c4bd121b4d759c50a689effe`.
+Stop rewriting this case. This is a backend repair gate, not NL quality or a
+repeated five-method experiment; full_bundle_admitted remains false.
+
+## Next eight unattempted native cases
+
+Continue original cohort indices 5..12 inclusive, in frozen order: uniform
+zigzag W2/W3, ordered_star W2, cycle W1/W3/W4, witnessed_sum W4, then active-anchor
+window_edge W2. The original cohort had reached index 4 before failure. Do not
+repeat indices 0..4 or select cases using answers/latency. This is a bounded
+diagnostic subset, not complete-bundle admission; older passes still retain
+their original code identities.
+
+Reuse clean exact checkout `6169b8f`, frozen estimator/source/query/reference
+pins, 120-second/3-GiB worker and 60-second HTTP/64-MiB response/4-GiB source
+budgets. One source session for at most eight final executions, first error
+stops, no retries, no models or GPU. Zero-call planning records the selected
+plans first; actual plans must match, but no particular alternative is forced.
+No extra EXPLAINs or candidate trial execution. Copies of selected reference
+inputs are retained only as offline audit evidence, outside online planning.
+
+Package `/Users/anthonyche/Downloads/xgapnext8-6169b8f-v1.zip`, 5,349 bytes,
+SHA-256 `9ed6a9819753d0cfb5712b39fcd0f8c879b26ba1bf0b356e01793375419f5c88`.
+Stage verifies sealed prior success, resource closure, cohort/store/checkout,
+unique journal/output and member hashes before one CPU submission. Python 3.6
+stage grammar, driver syntax, shell syntax, eight-case order and receipt/member
+hash checks passed locally with zero external calls. No source changes or
+additional regression campaign were needed. Upload/submission unconfirmed.
+
+Journal `native-next8-6169b8f-v1`, log `native-next8-<job>.out`, output
+`formal-native-next8-v1/D2`, archive `/home/hxc859/xgap-native-next8-<job>.tar.gz`.
+Do not infer full admission by concatenating partial runs from different commits.
