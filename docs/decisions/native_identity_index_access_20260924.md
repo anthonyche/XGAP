@@ -42,7 +42,7 @@ relationship fanout still determine execution cost; no speed bound is claimed.
 including OUT/IN traversal, source/target binding, parallel edges, a self-loop,
 missing optional scalar values, foreign/duplicate keys and an empty key set.
 The script also checks original AllNodesScan versus indexed NodeUniqueIndexSeek
-on its declared tiny indexes. Both owned services are stopped after the gate.
+on its declared tiny indexes. The owned Neo4j process is stopped after the gate.
 
 The complete D2 source has a separate bounded diagnostic job **3866035**: two
 EXPLAIN calls, zero query executions and zero model calls. It compares the sealed
