@@ -29,6 +29,10 @@ def configuration_for(base,method):
 def publish(*,spec_path,spec_sha256,output):
     spec=load_pin(dict(path=spec_path,sha256=spec_sha256))
     if spec.get('schema_version')!='xgap-ch6-batch-input-v1':raise ValueError('Explicit batch input required')
+    selected_methods=spec.get('methods',list(METHODS))
+    if (not isinstance(selected_methods,list) or not selected_methods or len(selected_methods)!=len(set(selected_methods))
+            or any(method not in METHODS for method in selected_methods)):
+        raise ValueError('A nonempty unique subset of the five declared methods is required')
     commit=source_commit();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     prepared=load_pin(spec['prepared']);load_pin(prepared['profile'])
     if not prepared.get('success'):raise ValueError('Frozen stores not ready')
@@ -50,7 +54,7 @@ def publish(*,spec_path,spec_sha256,output):
         request=load_pin(case['request']);reference=load_pin(case['reference'])
         if request['question_id']!=reference['question_id']:raise ValueError('Case reference mismatch')
         configs=configs_for(load_pin(case['base_configuration']) if 'base_configuration' in case else base)
-        labels=list(METHODS);rng.shuffle(labels)
+        labels=[label for label in METHODS if label in selected_methods];rng.shuffle(labels)
         for label in labels:
             if label=='TS' and (spec['deployment']=='native' or spec['input_track']=='controlled'):
                 bindings.append(dict(case_id=case['case_id'],method=label,
@@ -68,6 +72,7 @@ def publish(*,spec_path,spec_sha256,output):
     validate(manifest);pin=write_once(root/'manifest.json',manifest)
     release=dict(schema_version='xgap-ch6-five-method-batch-release-v1',source_commit=commit,
         input=dict(path=spec_path,sha256=spec_sha256),manifest=pin,bindings=bindings,
+        methods=selected_methods,
         exposure=spec['exposure'],input_track=spec['input_track'],order_seed=spec['order_seed'],
         method_results_read=0,formal_campaign_ready=False)
     write_once(root/'release.json',release);print(json.dumps(pin))

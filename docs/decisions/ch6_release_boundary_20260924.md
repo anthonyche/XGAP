@@ -50,3 +50,7 @@ pins；服务关闭成功后才能冻结成本。`audit_ch6_cost_measurement.py`
 逐次 guard/worker、答案、成本、median、Z、误差扰动和关闭证据。发布检查要求 F6
 与明确的 D1 RDF unit 具有相同 prepared、源资源、存储、runtime 与观测合同。旧记录保留。
 四内部方法共享 terminal selector，允许重合；TS 仍不可评分，不优化基线结果。
+
+实际提交与结果已更新：D2 3865863 失败，F6 3865881 成功。RDF held-out 第二题的
+源超时需定点分析；详细状态、证据身份及接续边界见
+[准入记录](../report/ch6_release_gate_20260924.md)。本节此前“未取得提交回执”是历史状态。

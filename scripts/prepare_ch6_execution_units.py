@@ -70,6 +70,7 @@ def prepare(spec_path,spec_sha256,output):
             external_runtime=spec.get('external_runtime'),deployment=bundle['deployment'],
             input_track=spec['input_track'],exposure='test',order_seed=spec['order_seed']+repetition,
             base_configuration=cases[0]['base_configuration'],design=spec['design'],cases=cases)
+        if 'methods' in spec:inputs['methods']=spec['methods']
         ip=write_once(root/f'input-{repetition:02d}.json',inputs)
         result=publish(spec_path=ip['path'],spec_sha256=ip['sha256'],output=root/f'repeat-{repetition:02d}')
         units.append(dict(unit_id=spec['unit_prefix']+f'-r{repetition}',manifest=result['manifest'],

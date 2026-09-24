@@ -47,6 +47,15 @@ def test_actual_multi_family_manifest_and_repetitions_keep_hard_scope(tmp_path,m
             assert settings['relaxable']==([] if unit['cell_cases'][cell['cell_id']]=='W1' else ['anchor','control'])
             assert settings['limits']['horizon']==12 and settings['epsilon']=='1/3'
             assert settings['limits']['depth']==(1 if cell['method'].endswith(('shallow','myopic')) else 2)
+    # A fixed external NL reference is executed once and referenced across plots;
+    # it must not silently schedule the four internal NL methods again.
+    external_only={**spec,'methods':['TS'],'unit_prefix':'fixed-reference'}
+    ep=save('external-only',external_only)
+    reference_units=load_pin(prepare(ep['path'],ep['sha256'],tmp_path/'fixed-reference'))
+    for unit in reference_units['units']:
+        cells=load_pin(unit['manifest'])['cells']
+        assert len(cells)==2 and all(c['method']=='aruqula-fedx' for c in cells)
+        assert all(set(c)=={'cell_id','method','request','reference'} for c in cells)
     spec['backend_admission']=save('failed-gate',dict(success=False))
     bad=save('bad-input',spec)
     with pytest.raises(ValueError,match='actual admitted'):prepare(bad['path'],bad['sha256'],tmp_path/'bad')

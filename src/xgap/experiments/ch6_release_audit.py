@@ -23,6 +23,19 @@ def audit_release(release,*,free_bytes=None):
         for k in ('total_wall_seconds','package_max_bytes','free_disk_reserve_bytes','model_calls_cap',
                   'input_tokens_cap','output_tokens_cap','repetitions'):
             check('positive_budget_'+k,type(budget.get(k)) is int and budget[k]>0)
+        reservations=release.get('per_method_reservations',{})
+        check('five_method_budget_reservations',set(reservations)==set(METHODS.values()))
+        for method in METHODS.values():
+            reservation=reservations.get(method,{})
+            valid=all(type(reservation.get(k)) is int and reservation[k]>=0 for k in
+                      ('model_calls','input_tokens','output_tokens','wall_seconds'))
+            check('valid_reservation_'+method,valid)
+            if valid:
+                check('one_request_fits_budget_'+method,reservation['wall_seconds']>0 and
+                    reservation['wall_seconds']<=budget['total_wall_seconds'] and all(
+                        reservation[k]<=budget[k+'_cap'] for k in ('model_calls','input_tokens','output_tokens')))
+        check('bounded_source_session',type(release.get('max_cells_per_source_session')) is int
+              and 1<=release['max_cells_per_source_session']<=10000)
         output=Path(release['output_root'])
         probe=output
         while not probe.exists():probe=probe.parent
@@ -51,7 +64,8 @@ def audit_release(release,*,free_bytes=None):
                 check('private_question_'+cid,oracle['question_sha256']==hashlib.sha256(encoded.encode()).hexdigest())
                 check('reference_question_'+cid,ref['question_id']==request['question_id'])
                 check('independent_reference_'+cid,case.get('reference_engine') in
-                      ('independent_relational','independent_gold_sparql','independent_gold_cypher'))
+                      ('independent_relational','independent_ordered_adjacency',
+                       'independent_gold_sparql','independent_gold_cypher'))
                 if is_factor:
                     from xgap.experiments.controlled_state import read_state
                     family,_,actual=read_state(load_pin(case['controlled_state']),request['question'])
@@ -84,6 +98,8 @@ def audit_release(release,*,free_bytes=None):
         from run_bounded_joint_batch import validate,FORMAL_SCHEMA
         for unit in release['units']:
             check('unique_unit_'+unit['unit_id'],unit['unit_id'] not in units);units.add(unit['unit_id'])
+            check('declared_repetition_'+unit['unit_id'],type(unit.get('repetition')) is int
+                  and 0<=unit['repetition']<budget['repetitions'])
             manifest=load_pin(unit['manifest']);validate(manifest)
             check('formal_dispatch_'+unit['unit_id'],manifest['schema_version']==FORMAL_SCHEMA)
             preparation=load_pin(manifest['prepared']);check('stores_'+unit['unit_id'],preparation.get('success'))

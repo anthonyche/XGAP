@@ -21,7 +21,8 @@ def test_factor_release_checks_actual_family_and_keeps_overall_denominator(tmp_p
         source_snapshot_sha256='snapshot',stratum='uniform')
     def case(cid):return dict(common,case_id=cid,request=saved(cid+'-request',dict(question_id=cid,question=question)),
         reference=saved(cid+'-reference',dict(question_id=cid)))
-    primary=dict(case('main'),workload='W1');factor=dict(case('factor'),factor='N',level=2,actual_N=2,actual_u=1)
+    primary=dict(case('main'),workload='W1',reference_engine='independent_ordered_adjacency')
+    factor=dict(case('factor'),factor='N',level=2,actual_N=2,actual_u=1)
     overall=saved('overall',dict(schema_version='xgap-ch6-heldout-cases-v1',dataset='D1',split='test',
         method_outputs_used_for_selection=False,template_splits=dict(test=['test-shape'],development=[],pilot=[]),cases=[primary]))
     factors=saved('factors',dict(schema_version='xgap-ch6-factor-inputs-v1',dataset='D1',model_outputs_used=False,cases=[factor]))
@@ -37,6 +38,9 @@ def test_factor_release_checks_actual_family_and_keeps_overall_denominator(tmp_p
     result=audit_release(release,free_bytes=100)
     checked={c['check']:c['passed'] for c in result['checks']}
     assert checked['sample_D1_W1'] and checked['factor_actual_N_u_factor']
+    assert checked['independent_reference_main']
+    assert not checked['five_method_budget_reservations']
+    assert not checked['bounded_source_session']
     assert not result['success'] # Missing real factor levels, figures and dispatch are never ready.
     factor['actual_N']=1000
     release['factor_bundles']=[saved('tampered-factors',dict(schema_version='xgap-ch6-factor-inputs-v1',dataset='D1',model_outputs_used=False,cases=[factor]))]
