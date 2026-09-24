@@ -203,8 +203,20 @@ Stage verifies sealed prior success, resource closure, cohort/store/checkout,
 unique journal/output and member hashes before one CPU submission. Python 3.6
 stage grammar, driver syntax, shell syntax, eight-case order and receipt/member
 hash checks passed locally with zero external calls. No source changes or
-additional regression campaign were needed. Upload/submission unconfirmed.
+additional regression campaign were needed. The user confirmed checksum
+verification and submission as **3868312**. Scheduler state and final results
+have not yet been received; do not resubmit.
 
-Journal `native-next8-6169b8f-v1`, log `native-next8-<job>.out`, output
-`formal-native-next8-v1/D2`, archive `/home/hxc859/xgap-native-next8-<job>.tar.gz`.
+Journal `native-next8-6169b8f-v1`, log `native-next8-3868312.out`, output
+`formal-native-next8-v1/D2`, expected archive `/home/hxc859/xgap-native-next8-3868312.tar.gz`.
 Do not infer full admission by concatenating partial runs from different commits.
+
+If all eight pass, current `6169b8f` has nine distinct native case admissions
+including 3868056, out of the frozen 24. Four older successes remain historical
+evidence at their original commit, not current-version admission. Broader shape
+coverage would justify closing this repair loop and shifting to remaining
+admission/release checks, not another speculative optimization. Full launch
+still requires D2's outstanding native/RDF admission, consistent D1/D3 serving
+contracts, bound F6 evidence, and frozen method support/units/budgets with a
+passing release dry-run. Then start one dataset as the user requested before
+expanding to the full matrix; do not require baselines to produce good answers.
