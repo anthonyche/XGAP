@@ -18,6 +18,12 @@ def summarize(root):
     receipt_path=root/'receipt.json'
     receipt=json.loads(receipt_path.read_text()) if receipt_path.exists() else None
     return dict(status=receipt['guard']['status'] if receipt else 'running_or_unsealed',
+        guard_total_wall_ms=receipt['guard']['total_wall_ms'] if receipt else None,
+        sampled_peak_rss_bytes=receipt['guard']['sampled_peak_group_rss_bytes'] if receipt else None,
+        cleanup_complete=receipt['guard']['cleanup']['complete'] if receipt else None,
+        file_mode=last.get('file_mode'),dboe_file_mode=last.get('dboe_file_mode'),
+        range_implementation=last.get('range_implementation'),
+        mapped_range_invocations=last.get('mapped_range_invocations'),
         phase=last['phase'],sampled_query_ms=last['query_elapsed_ms'],rows=last['rows'],
         source_counters=last['query_proc_delta'],index_counters=last['indexes'],
         query_samples=len(query),samples_with_uninterruptible_thread=sum(bool(s['sampled_uninterruptible_threads']) for s in query),

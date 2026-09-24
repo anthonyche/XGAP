@@ -5,6 +5,8 @@ from pathlib import Path
 import shutil
 import time
 import subprocess
+import hashlib
+import zipfile
 import psutil
 
 from prepare_rdf_tdb import stream_pin
@@ -20,8 +22,10 @@ from xgap.experiments.verified_store_copy import copy_sealed_store
 
 class RdfTdbSession:
     serving_copy_paths=('graph-tdb2','control-tdb2','fedup-host/serving-summary')
-    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False,serving_root=None,file_mode='default'):
+    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False,serving_root=None,file_mode='default',experimental_lazy_range=False):
         if file_mode not in ('default','direct'):raise ValueError('Unknown TDB2 serving file mode')
+        if experimental_lazy_range and file_mode!='direct':raise ValueError('Experimental lazy ranges require admitted Direct bootstrap')
+        self.experimental_lazy_range=experimental_lazy_range
         self.file_mode=file_mode
         self.root=Path(root).resolve();self.root.mkdir(parents=True,exist_ok=False)
         self.prepared=json.loads(read_pinned(prepared_path,prepared_sha256))
@@ -62,15 +66,28 @@ class RdfTdbSession:
             bootstrap=None
             if self.file_mode=='direct':
                 source=Path(__file__).parent/'java/XgapStorageMode.java'
+                overlays=[];overlay_originals={}
+                if self.experimental_lazy_range:
+                    expected={'BPTreeRangeIterator':'cd48a47afe150e1b4cd2a8645e8c6ad6b6d1d758d7bf1708bdae6d17c80f696d',
+                        'BPTreeRangeIteratorMapper':'8dfbaeb5bec7a7c9312f87467a50b15634c0000bb98ddb88f4b96704ea7538c2'}
+                    with zipfile.ZipFile(engine['path']) as jar:
+                        for name,digest in expected.items():
+                            actual=hashlib.sha256(jar.read('org/apache/jena/dboe/trans/bplustree/'+name+'.class')).hexdigest()
+                            if actual!=digest:raise ValueError('Experimental range overlay requires exact pinned upstream classes')
+                            overlay_originals[name]=actual;overlays.append(source.parent/'jena_lazy_range'/(name+'.java'))
                 classes=self.root/'storage-bootstrap';classes.mkdir()
                 javac=Path(java['path']).with_name('javac')
                 with (classes/'compile.stdout').open('xb') as out,(classes/'compile.stderr').open('xb') as err:
                     subprocess.run([str(javac),'-J-Xmx128m','-proc:none','--release','21',
-                        '-cp',engine['path'],'-d',str(classes),str(source)],
+                        '-cp',engine['path'],'-d',str(classes),str(source),*[str(p) for p in overlays]],
                         stdout=out,stderr=err,check=True,timeout=45)
                 bootstrap=write_once(classes/'receipt.json',dict(source=stream_pin(source),
                     javac=stream_pin(javac),compiled=stream_pin(classes/'XgapStorageMode.class'),
                     engine=engine,requested_mode='direct',
+                    range_overlay=dict(revision='lazy-v2-both-paths',original_classes=overlay_originals,
+                        sources=[stream_pin(p) for p in overlays],
+                        compiled=[stream_pin(p) for p in sorted(classes.rglob('BPTreeRangeIterator*.class'))],
+                        scope='experimental read-only backend admission; shared by all sources/methods in this session; not upstream Jena') if overlays else None,
                     contract='SystemIndex and SystemTDB asserted before Fuseki dataset startup'))
             names=sorted(self.prepared['stores'])
             if set(names)!=set(doc['offline']['rdf_loads']) or not 1<=len(names)<=8:
@@ -86,7 +103,8 @@ class RdfTdbSession:
                 file_args=['--set=tdb2:fileMode=direct'] if self.file_mode=='direct' else []
                 entry=(['-cp',str(classes)+os.pathsep+engine['path'],'XgapStorageMode','direct']
                     if bootstrap else ['-jar',engine['path']])
-                process=self.processes.start('source-'+name,[java['path'],'-Xms64m',f'-Xmx{heap_mib}m',*entry,
+                overlay_args=['-Dxgap.rangeOverlay=lazy-v2'] if self.experimental_lazy_range else []
+                process=self.processes.start('source-'+name,[java['path'],'-Xms64m',f'-Xmx{heap_mib}m',*overlay_args,*entry,
                     '--localhost','--port',str(port),'--tdb2','--loc',str(self.store_root/(name+'-tdb2')),*file_args,'/'+name],
                     cwd=Path(engine['path']).parent,env={'FUSEKI_BASE':str(state)})
                 self.owned.append(OwnedProcess(name,'source',process));ready(process,port)
@@ -100,6 +118,7 @@ class RdfTdbSession:
             doc['offline']['serving_endpoint_parent']=parent
             doc['offline']['prepared_stores']=self.prepared_pin
             doc['offline']['tdb2_serving_file_mode']=self.file_mode
+            doc['offline']['experimental_lazy_range']=self.experimental_lazy_range
             if bootstrap:doc['offline']['tdb2_storage_bootstrap']=bootstrap
             self.profile=write_once(self.root/'profile.json',doc)
             FrozenOneShotProfile.load(self.profile['path'],expected_sha256=self.profile['sha256'])
@@ -108,6 +127,7 @@ class RdfTdbSession:
                 'query_timeout_seconds':self.budget.timeout_seconds,'offline_fresh_session_ms':(time.perf_counter()-at)*1000,
                 'aggregate_heap_mib':heap_mib*len(names),'per_source_heap_mib':heap_mib,
                 'tdb2_file_mode':self.file_mode,'storage_bootstrap':bootstrap,
+                'experimental_lazy_range':self.experimental_lazy_range,
                 'scope':'store/engine verification, serving copies, startup, observer and profile reads; no warmup query',
                 'source_groups':[{'name':s.name,'pid':s.process.pid} for s in self.owned]})
             return self

@@ -178,3 +178,29 @@ mapped invocations. Intermediate test-harness failures (mapper key-scratch
 contract) remain in local logs; corrected tests pass against both builds.
 Next is one same-query, same-budget v2 diagnosis; no full pilot or production
 overlay adoption. The first failed overlay remains sealed separately.
+
+3864137 (code `070e521`, same compt311) still hits the 60 s process guard, with
+cleanup complete and sampled peak RSS 212,021,248 bytes. Last query sample at
+49.868 s: 491 witnesses, 24,002,560 storage bytes, 0 major faults, 2,456 actual
+mapped-iterator invocations. POS completed API time 37.304 s; SPO fully bound
+11.220 s. The active stack now reaches internalSearch through the modified
+mapped path, not eager BPTreeNode.iterator. This establishes path coverage and
+more completed work in this diagnostic, not a completed answer or paper speedup.
+
+The parent 60 s diagnostic guard includes JVM/dataset startup; it allowed only
+about 50 s in the query phase. Real serving already separates offline startup
+from the unchanged 60 s HTTP request contract. Therefore the next useful check
+is the original fifth **single-case pipeline**, not another instrumented replay
+with an arbitrarily larger query allowance. It keeps the frozen 120 s worker,
+60 s request, 4 GiB source RSS, same node and original bundle/reference. No prior
+successful cases are rerun. This supersedes the earlier requirement for a fully
+completed standalone diagnostic before considering the pipeline; the measured
+timing-scope difference is the reason. A failure remains a failure.
+
+The service now has an explicit opt-in pinned overlay, disabled by default.
+The admission CLI only permits it for an explicitly named Direct RDF single case;
+it cannot label a full bundle admitted. All sources in that session receive the
+same engine overlay, with source/class/original digests in receipts and actual
+mapped invocation counts in shutdown logs. Formal campaign defaults remain
+upstream. Actual tiny Fuseki HTTP returns the identical witness and records three
+mapped invocations; five focused copy/selection checks pass. No LLM calls.
