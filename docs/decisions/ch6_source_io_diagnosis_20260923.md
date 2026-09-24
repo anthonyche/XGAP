@@ -120,3 +120,41 @@ September 24 10:00 Beijing. Code/tiny validation is complete, but full-source
 repair acceptance is not. Preserve this one bounded job to execute unattended;
 no further whole-bundle gate or repeated polling. See the
 [evidence and resume checklist](../report/ch6_storage_fix_pause_20260923.md).
+
+## September 24: actual Direct result and next bounded repair
+
+User resumed at 10:00 Beijing. 3859504 completed its diagnostic wrapper, but the
+query hit the 60 s guard (60.222 s including cleanup); sampled peak RSS 200,413,184
+bytes. Effective SystemIndex and all index block managers confirm Direct. The
+last query sample at 48.997 s has 29 witnesses, 436 index tuple yields, 14,827,520
+storage read bytes, 0 major / 26,462 minor faults. POS: 30 finds, 87 tuples,
+44.215 s completed index API time. Of 49 query samples, 48 show pread0 at stack
+top and 47 have an uninterruptible thread; wchan was hidden as `0`. These are
+sample observations, not a quantified wait duration. Source private copy and
+owned process cleanup completed. This is not full D2 admission or a paired
+speedup. Archive SHA-256 (both 3859447 and 3859504):
+`cd198876a328588b177a02a7d156e9ae84b8e7c8cd8936c7a4c00a726abfa6c3`.
+
+The remaining stack again includes BPTreeNode.iterator. Its eager child-page
+materialization happens before LIMIT can stop iteration. An **offline-only**
+overlay of the pinned Jena range iterator now snapshots child IDs and reads pages
+on demand, preserving comparator, range boundaries, order and caller transaction.
+It does not change the query, source population, planner, estimator or engine JAR.
+The original class digest is checked before compilation; runtime evidence names
+the actual overlay location. This is an experimental Jena modification, not an
+upstream release or XGAP planning claim. Formal deployment has not adopted it.
+
+Focused local checks: upstream source compiles to identical resolved instructions
+as the pinned JAR class; original and modified versions both pass 108 ranges
+against an independent integer oracle, deletion/exhaustion, a real TDB reader
+across concurrent commit, rollback and reopen. Logical record-page gets before
+the first record fall from 14 to 2 (includes cache hits, not disk-page counts).
+The existing captured-query tiny fixture returns the identical witness.
+
+Next admission is **one unchanged 567-key failed source request**, once, on a
+verified full-store copy, Direct plus the named overlay, compt311 with the same
+60 s / 4 GiB / 768 MiB heap and 20-minute allocation. No full pilot, query rewrite,
+extra warmup, full graph preprocessing, alternative-plan selection or LLM call.
+Only after successful result/guard/identity verification can the original fifth
+pipeline case be considered. A later common-backend adoption must pin and disclose
+this modified engine equally; no silent baseline substitution or output tuning.

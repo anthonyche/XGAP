@@ -20,6 +20,7 @@ public class XgapTdbReplay {
     static volatile long operationAt = System.nanoTime(), queryAt;
     static volatile long rows;
     static String fileMode;
+    static String rangeImplementation;
     static final Map<String,List<String>> blockManagers=new ConcurrentHashMap<>();
     static Path metrics;
     static Map<String,Long> baseline;
@@ -95,6 +96,7 @@ public class XgapTdbReplay {
     static synchronized void snapshot() {
         try {
             Map<String,Object> out=new TreeMap<>();out.put("phase",phase);out.put("rows",rows);out.put("file_mode",fileMode);
+            out.put("range_implementation",rangeImplementation);
             out.put("index_block_managers",blockManagers);out.put("dboe_file_mode",org.apache.jena.dboe.sys.SystemIndex.fileMode().toString());
             out.put("jena_version", org.apache.jena.Jena.VERSION);out.put("linux_proc_available",Files.exists(Path.of("/proc/self/stat")));
             out.put("query_elapsed_ms",queryAt==0?null:(System.nanoTime()-queryAt)/1e6);
@@ -124,6 +126,9 @@ public class XgapTdbReplay {
     public static void main(String[] args) throws Exception {
         if(args.length!=5 || !Set.of("mapped","direct").contains(args[4])) throw new IllegalArgumentException("store query metrics result-json mapped|direct");
         XgapStorageMode.configure(args[4]);
+        Class<?> range=Class.forName("org.apache.jena.dboe.trans.bplustree.BPTreeRangeIterator");
+        boolean lazy=Arrays.stream(range.getDeclaredMethods()).anyMatch(m->m.getName().equals("lazyPages"));
+        rangeImplementation=(lazy?"xgap-experimental-lazy-v1 ":"jena-original ")+range.getProtectionDomain().getCodeSource().getLocation();
         fileMode=org.apache.jena.tdb2.sys.SystemTDB.fileMode().toString();
         if(!fileMode.equals(args[4]))throw new IllegalStateException("file mode not applied");
         metrics=Path.of(args[2]);if(Files.exists(metrics))throw new IllegalArgumentException("new output required");
