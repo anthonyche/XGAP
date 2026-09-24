@@ -89,8 +89,22 @@ Native database execution itself has no new polynomial/data-size runtime claim.
   `49fedf2a583cfd2a26a822529d08727435f6fc4f8e0d6eb0a7ed7e6729451c9b`.
 
 No new server job has been submitted for this alternative. Next: freeze its
-single-case package, check selected-plan/EXPLAIN evidence and execute only the
+single-case package, check selected-plan evidence and execute only the
 unchanged original failure under existing caps. Do not rerun the successful
 prefix, change samples or raise limits. A successful singleton would still not
 admit all D2 held-out cases or authorize the full formal campaign. Cross-source
 fusion and aggregate fusion remain outside this initial physical alternative.
+
+The frozen single-case package is now prepared from exact source
+`ef50ee3898f5a6f22a6223543d3aa8834c836316`:
+`/Users/anthonyche/Downloads/xgapspjef50ee3.zip`, 26,091 bytes, SHA-256
+`7af7b9315fad48f9c0579ceeb12d448f135ea3f7205bcaad0c19218a13f10717`.
+It requires existing checkout c517451, verifies the original cohort/store and
+3867351 failed receipt, and creates a separate checkout/submission journal.
+Before starting sources it performs zero-call symbolic selection for this one
+case; if the frozen estimator does not select source contraction, it stops and
+archives the diagnosis. Otherwise it runs the existing single-case gate, with
+no changes to the full cohort, reference, source stores or caps. CPU batch on
+compt311, 8 CPUs/24 GiB, 40-minute allocation and no requeue. Stage Python 3.6,
+shell syntax and bundle prerequisites were checked locally. Upload/submission
+remain pending; do not invent a new job handle or repeat 3867351.
