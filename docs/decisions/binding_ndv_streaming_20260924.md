@@ -133,3 +133,21 @@ Log: `native-remaining6-5f94023/native-remaining6-3868824.out` under the artifac
 Validation report: local `native-remaining6-pack-5f94023/verification.json` under
 the evidence root above. Model/policy setup and source serving remain offline
 costs; this diagnostic is not a six-question NL result or a formal method campaign.
+
+
+## 3868824 terminal report (archive audit pending)
+
+The user supplied `FAILED/2:0`, 146 s, compt311 and attempted=audited=4.
+The first failing case is original index 10, `D2-test-uniform-cycle-000-W4`.
+By the frozen order/first-failure contract, ordered-star/W2 and cycle/W1/W3
+passed; witnessed-sum/W4 and active-anchor window-edge/W2 were not attempted.
+These are reported admission outcomes, pending individual raw-evidence checks.
+No failure category, latency improvement, memory improvement or estimator
+misranking is inferred from this summary.
+
+Archive: `/home/hxc859/xgap-native-remaining6-3868824.tar.gz`, 179,113 B, SHA-256
+`012935574200aa8605709d2842e8bc5a71184c579bdddc1baa4606d864e8230d`.
+Direct SSH again timed out. The user has been asked to download the archive;
+a bounded read-only audit is prepared locally. No new query/job is submitted.
+Preserve all three newly successful cases and inspect the failed worker, final
+plan, source responses and resource counters before changing implementation.
