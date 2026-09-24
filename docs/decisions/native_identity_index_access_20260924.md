@@ -83,7 +83,11 @@ SHA-checked staging and returned unique job **3867351**. It ran on compt311.
 The user then returned `success=false, attempted=1, audited=1` for the same case.
 Its 4,879,633-byte archive has reported SHA-256
 `76037e8d2ab5855796772152dba487a47975d60c955918384c0b101c3738f183`;
-raw records await local download/verification. Do not infer the new failure layer
-from the old timeout, and do not count index-path confirmation as execution success.
+raw records have now been downloaded and verified against that digest. The new
+failure is `harness_response_budget`: the 1,896-key incoming edge request crosses
+64 MiB in 13.476 s, before the time/memory limits. This is not a completed answer.
+See [bounded source contraction](native_spj_pushdown_20260924.md) for the next
+evidence-driven physical alternative. Index-path confirmation remains distinct
+from successful complete execution.
 Journal: `native-index-c517451/`; output log: `native-index-3867351.out`.
 Do not resubmit while awaiting this job or treat submission as successful execution.

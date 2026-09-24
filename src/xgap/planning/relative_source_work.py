@@ -90,7 +90,7 @@ class FrozenSourceWorkRanker:
         for node in plan.nodes:
             for parent in node.inputs:children[parent].append(node.node_id)
         queue=deque(sorted(k for k,v in degree.items() if v==0));rows={};unique={}
-        scan=transfer=local=keys=calls=risk=0.;details=[]
+        scan=transfer=local=keys=calls=risk=0.;details=[];source_join_work=0.
         total_population=sum(n+e for n,e in counts.values())
         degrees={r[:3]:r[3:] for r in self.endpoint_degrees}
 
@@ -109,6 +109,19 @@ class FrozenSourceWorkRanker:
                         'source_id':s.source_id,'snapshot_version':s.snapshot_version}:
                     raise ValueError('Relative work/source snapshot mismatch')
                 node_rows,edge_rows=counts[backend];a=p['artifact']['parameters'];compiler=a.get('compiler')
+                if compiler=='native-spj-final-topk-v1':
+                    from xgap.planning.native_spj_work import source_work
+                    if node.kind is not R.REMOTE_QUERY:
+                        raise ValueError('Native SPJ requires one unbound final query')
+                    work=source_work(a,backend,counts[backend],degrees,self.unique_node_properties)
+                    scan+=work['scan_records'];source_join_work+=work['join_records']
+                    out=work['output_records'];transfer+=out;calls+=1
+                    rows[node.node_id]=out;unique[node.node_id]=set()
+                    details.append(dict(node=node.node_id,estimated_rows=out,unique_fields=[],source_work=work))
+                    for child in children[node.node_id]:
+                        degree[child]-=1
+                        if degree[child]==0:queue.append(child)
+                    continue
                 node_read=compiler=='semantic_node_match_v1'
                 if not node_read and compiler!='semantic_edge_match_v1':
                     raise ValueError('Relative work v1 admits node and one-edge Match only')
@@ -185,11 +198,12 @@ class FrozenSourceWorkRanker:
                 degree[child]-=1
                 if degree[child]==0:queue.append(child)
         if len(rows)!=len(nodes):raise ValueError('Cyclic relative-work dependency')
-        score=calls+(scan+transfer+keys+risk)/self.record_quantum+local/(10*self.record_quantum)
+        score=calls+(scan+source_join_work+transfer+keys+risk)/self.record_quantum+local/(10*self.record_quantum)
         if not math.isfinite(score) or score<0:raise ValueError('Relative score overflow')
         return RelativePrediction(score,(time.perf_counter()-started)*1000,
             dict(model_sha256=self.model_sha256,source_statistics_sha256=self.statistics.sha256,
-                source_scan_record_units=scan,returned_record_proxy=transfer,transmitted_key_proxy=keys,
+                source_scan_record_units=scan,source_join_record_proxy=source_join_work,
+                returned_record_proxy=transfer,transmitted_key_proxy=keys,
                 coordinator_input_proxy=local,bind_overflow_risk_work=risk,remote_call_units=calls,nodes=details,
                 assumptions=('Endpoint-specific mean / size-biased degree; unknown many-many join uses capped Cartesian proxy (1e100); proxies, not bounds'
                              if self.endpoint_degrees else 'Uniform average degree, key-preserving joins, conservative identity equality; proxies, not bounds'),

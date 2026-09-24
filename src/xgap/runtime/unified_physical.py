@@ -6,7 +6,7 @@ import json
 from xgap.agent.intent_certificate import fingerprint
 from xgap.infrastructure.runtime import QueryArtifact
 from xgap.runtime.anchor_reduction import depends_on
-from xgap.runtime.contracts import RuntimeNodeKind as R
+from xgap.runtime.contracts import RuntimeNode, RuntimeNodeKind as R
 from xgap.runtime.physical_strategies import _entity_lineage, _bound_match_artifact
 from xgap.runtime.shared_native_reads import _key
 from xgap.runtime.source_row_filters import prefilter_source_rows
@@ -31,6 +31,7 @@ def finish(plan, nodes, rule, proof, metadata=None):
 class PhysicalMoves:
     def __init__(self, family, schema, backends, policy, sources=None):
         self.programs = {}
+        self.native_spj = {}
         self.family, self.schema, self.backends, self.policy = family, schema, backends, policy
         self.sources = sources or {}
 
@@ -49,9 +50,32 @@ class PhysicalMoves:
                 seen.add(key);yield proposal
 
     def _neighbors(self,index,plan):
+        if plan.metadata.get('native_spj_pushdown'):
+            return  # Complete source contraction has no coordinator rewrite ports.
         program = self.program(index)
         operators = {o.operator_id:o for o in program.operators}
         consumers = Counter(i for o in program.operators for i in o.input_ids)
+        # A single checked source contraction; no trial execution, candidate
+        # products, or intermediate LIMIT. All placed reads must share a backend.
+        placement=plan.metadata['source_bindings']
+        if len(set(placement.values()))==1:
+            from xgap.compilers.native_spj import compile_native_spj
+            backend=next(iter(placement.values()))
+            key=(index,tuple(sorted(placement.items())))
+            try:
+                if key not in self.native_spj:
+                    self.native_spj[key]=None
+                    self.native_spj[key]=compile_native_spj(program,self.backends[backend],self.schema,placement)[0]
+                artifact=self.native_spj[key]
+                if artifact is None:raise ValueError('Source contraction was not admitted')
+                root=plan.roots[0]
+                node=RuntimeNode(root,R.REMOTE_QUERY,parameters={'backend_id':backend,'artifact':artifact.to_dict()},
+                    semantic_operator_ids=tuple(o.operator_id for o in program.operators))
+                proof=artifact.parameters['source_pushdown']
+                yield finish(plan,[node],'native_spj_pushdown',proof,dict(native_spj_pushdown=proof,
+                    operator_outputs={program.roots[0]:root}))
+            except (ValueError,KeyError):
+                pass
         from xgap.runtime.leaf_witness import witness_neighbors
         for nodes,proof in witness_neighbors(json.loads(self.family.candidates[index].query_json),
                 program,plan,self.backends,self.policy):
