@@ -82,6 +82,16 @@ Chrome 扩展通道曾超时；通过原生窗口操作完成提交、结果读�
 checkout/输出目录运行显式 `--case-ids` 子集。保持 compt311、8 CPU/24 GiB/20 分钟
 分配及既有在线资源限制，按原序首错停止。不得重新运行 3864165。
 
+用户随后确认 Chrome/OnDemand 打开，原生终端短暂恢复，已读取冻结的第 6–8 题：
+`D2-pilot-active-anchor-outgoing_maximum-000-W2/W3/W4`。文件页已出现上述新 ZIP，
+但服务器 SHA 尚未复核，**仍未部署、未提交任何剩余子集作业**。Chrome 随后再次
+关闭，工具落在资料选择页；已请求确认实际使用的资料，不能猜测登录会话。
+本地一次性部署/提交脚本已准备并通过语法检查：
+`/Users/anthonyche/xgap-data/ch6-remaining-lazy-20260924/deploy_remaining_9d40ade.py`。
+它检查原 bundle、既有成功回执、旧 Slurm 模板及新代码包的 SHA，独立 checkout，
+固定只选上述三题，保存提交 stdout/stderr/exit code；任一目标已存在即拒绝重提。
+它的唯一提交目录为 `remaining-lazy-v1-submission/`（不是此前预估的 `.txt` 名称）。
+
 完整代码包 `xgap-rdf-single-lazy-f6ec1a0.zip` 上传 SHA-256：
 `f87459f66197e6a7adecf5709c8706f04015970fbd2f53ea2920bc2b065eb045`。
 没有缩小 MovieLens20M、申请 GPU、调用 LLM 或启动全量。
