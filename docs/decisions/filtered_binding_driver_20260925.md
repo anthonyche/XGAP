@@ -101,8 +101,13 @@ Journal: `/home/hxc859/xgap-ch6-artifacts/rdf-filtered-ac97d16`.
 Output: `/home/hxc859/xgap-ch6-artifacts/formal-rdf-filtered-driver-v1/D2`.
 Log `rdf-filtered-<job>.out`, archive `/home/hxc859/xgap-rdf-filtered-<job>.tar.gz`.
 The user verified the ZIP, staged the exact ac97d16 checkout and submitted
-**3869818**. Only submission is confirmed; queue/start/terminal state and result
-are not yet known. Do not resubmit or alter this checkout. Read the existing log
-`rdf-filtered-3869818.out`; expected archive
-`/home/hxc859/xgap-rdf-filtered-3869818.tar.gz`. Remote file/terminal control has
-been unavailable, so status/evidence handoff currently requires the user.
+**3869818**. The user reports COMPLETED/0:0 in 319 s on compt311,
+attempted=audited=1 and both admission/archive success=true. This is terminal
+evidence; the raw archive is not yet available locally. Do not infer query
+latency, source-call reductions or resource closure before raw verification.
+Do not resubmit. Log `rdf-filtered-3869818.out`; archive
+`/home/hxc859/xgap-rdf-filtered-3869818.tar.gz`: 464,781 bytes, SHA-256
+`09d85cb9d63cacd30063c9dc6c805c5da2520a4c88756ef03772fad53b75ad69`.
+Remote file/terminal control has been unavailable; archive handoff currently
+requires the user. After acceptance, continue the untouched frozen RDF suffix
+from index 5. No new batch or full campaign is submitted in this turn.
