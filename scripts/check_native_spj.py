@@ -1,5 +1,6 @@
 """Tiny real-Neo4j differential admission for native SPJ, never a paper result."""
 import argparse
+from copy import deepcopy
 from dataclasses import replace
 import json
 import os
@@ -45,18 +46,23 @@ def main():
         create="""CREATE (a:Actor {key:'a',name:'anchor'}), (c:Actor {key:'c',name:'other'}),
           (c2:Actor {key:'c',name:'otherCopy'}), (b:Item {key:'b',name:'apple'}),
           (d:Item {key:'d',name:'Ω'}), (e:Item {key:'e',name:'😀'}),
-          (f:Item {key:'f',name:''}), (n:Item {key:'n'}), (s:Actor:Item {key:'s',name:'self'}),
+          (f:Item {key:'f',name:''}), (n:Item {key:'n'}), (z:Actor {key:'z'}), (s:Actor:Item {key:'s',name:'self'}),
           (a)-[:LINK {key:'ab1',score:0}]->(b), (a)-[:LINK {key:'ab2',score:1.5}]->(b),
           (a)-[:LINK {key:'ab3'}]->(b), (a)-[:LINK {key:'an',score:2}]->(n),
           (c)-[:LINK {key:'cb'}]->(b), (c)-[:LINK {key:'cd'}]->(d),
           (c)-[:LINK {key:'ce'}]->(e), (c)-[:LINK {key:'cf'}]->(f),
           (c)-[:LINK {key:'cn'}]->(n), (c2)-[:LINK {key:'c2d'}]->(d),
-          (s)-[:LINK {key:'ss'}]->(s), (a)-[:LINK {key:'as',score:-1}]->(s)"""
+          (s)-[:LINK {key:'ss'}]->(s), (a)-[:LINK {key:'as',score:-1}]->(s),
+          (z)-[:LINK {key:'zb',score:2}]->(b), (z)-[:LINK {key:'zd',score:2}]->(d)"""
         loaded=client.execute(QueryArtifact('fixture','cypher',create));assert loaded.success,loaded.error
         registry=BackendPluginRegistry();registry.register(NativeBackendPlugin('neo4j',client))
         scheduler=FederatedScheduler(BackendInvokeTool(registry),retention='roots')
-        for name,q,s,b in native_cases():
-            artifact,original=compile_query(q,s,b)
+        cases=[(name,q,s,b,None) for name,q,s,b in native_cases()]
+        _,q,s,b,_=cases[0]
+        q=deepcopy(q);q['where']=q['where'][:1];q['limit']=1000
+        cases.extend((name,q,s,b,name) for name in ('not','or-null'))
+        for name,q,s,b,wrapper in cases:
+            artifact,original=compile_query(q,s,b,condition_wrapper=wrapper)
             fused=replace(original,nodes=(RuntimeNode(original.roots[0],RuntimeNodeKind.REMOTE_QUERY,
                 parameters=dict(backend_id='neo4j',artifact=artifact.to_dict())),))
             before=scheduler.execute(original);after=scheduler.execute(fused)

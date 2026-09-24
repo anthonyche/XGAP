@@ -25,9 +25,17 @@ def fixture():
     return query,schema,SemanticBackend('neo4j','https://tiny/',identity_property='key')
 
 
-def compile_query(query=None,schema=None,backend=None):
+def compile_query(query=None,schema=None,backend=None,condition_wrapper=None):
     q,s,b=fixture();query=q if query is None else query;schema=s if schema is None else schema;backend=backend or b
     p,sources=lower_compact_query(query,schema,version='v2',optimize=True)
+    if condition_wrapper:
+        def wrap(c):
+            if c['op']=='eq' and 'value' in c:
+                return (dict(op='not',arg=c) if condition_wrapper=='not' else
+                    dict(op='or',args=[c,dict(op='is_null',field=c['field'])]))
+            return {**c,'args':[wrap(x) for x in c['args']]} if 'args' in c else c
+        p=replace(p,operators=tuple(replace(o,parameters={'condition':wrap(o.parameters['condition'])})
+            if o.kind.value=='filter' else o for o in p.operators))
     return compile_native_spj(p,backend,schema,{op:backend.backend_id for op in sources})
 
 
@@ -40,6 +48,19 @@ def test_one_final_limit_parameters_and_no_dataset_dispatch():
     assert artifact.parameters['source_pushdown']['intermediate_limits']==0
     assert artifact.parameters['source_pushdown']['joins_use_logical_identity']
     assert len(bare.nodes)>1
+
+
+@pytest.mark.parametrize('wrapper',[None,'not','or-null'])
+def test_native_access_equalities_are_necessary_conjuncts(wrapper):
+    artifact,_=compile_query(condition_wrapper=wrapper)
+    proof=artifact.parameters['source_pushdown']
+    equalities=proof['access_equalities']
+    assert proof['nullable_predicates_retained'] and not proof['native_identity_coalescing']
+    assert 'coalesce(' in artifact.text
+    assert len([s for s in equalities if '.key = ' in s])==6
+    scalar=[s for s in equalities if '.name = ' in s]
+    assert bool(scalar)==(wrapper is None)
+    assert artifact.text.split('\nWHERE ',1)[1].startswith(' AND '.join(equalities)+' AND ')
 
 
 @pytest.mark.parametrize('change,reason',[

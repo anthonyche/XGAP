@@ -15,7 +15,12 @@ AllNodesScan，索引必要条件使其改为 NodeUniqueIndexSeek。估计基数
 及 4 组真实 Neo4j 小图有序结果对照通过。完整原题已通过零调用编译检查；用户
 已校验并提交单题作业 **3867410**（`ef50ee3`），OnDemand 终端提交记录已确认。
 随后用户贴回 FAILED/2:0、71 s、attempted/audited=1；同一原题未通过。
-38,301-byte 失败归档待校验/诊断，不能从摘要推断具体错误或将本地检查升级为大图准入。
+用户随后贴回 worker 原文：一次最终执行、一次后端调用，约 5.050 s 后触发 Neo4j
+事务内存上限（当前约 536.9 MiB，阈值 537.6 MiB），HTTP 错误正文 311 bytes；
+不是响应体积超限或超时。失败归档待完整下载校验。
+通用编译器已修复必需等值条件被 nullable 包装隐藏的问题。28 项定向检查、6 组
+真实小图有序答案对照通过；小图 EXPLAIN 原 6 个笛卡尔积/7 次标签扫描变为
+0 个笛卡尔积/7 次唯一索引查找。完整源的算子/内存表现尚未验证，下一步仅 EXPLAIN。
 见[语义证明与剩余边界](../decisions/native_spj_pushdown_20260924.md)。
 不重跑成功前缀、不重提同一失败、不试跑择优。
 本地审计：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/native-explain-local-audit-3866035.json`。

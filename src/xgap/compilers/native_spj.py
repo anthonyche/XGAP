@@ -56,6 +56,7 @@ def compile_native_spj(program, backend, schema, source_bindings):
     bare = compile_semantic_program(program, source_bindings=source_bindings,
         backends={backend.backend_id: backend}, max_remote_calls=64, max_parallelism=1)
     relations = {}; patterns = []; conditions = []; parameters = {}; predicate_count = 0
+    access_equalities = []
     work_graph = dict(nodes={}, edges=[], identity_equalities=[], constant_equalities=[])
     namespace = backend.resource_namespace
 
@@ -121,6 +122,12 @@ def compile_native_spj(program, backend, schema, source_bindings):
         else:
             a, b = (left.text, right.text) if left.kind == right.kind == 'identity' else (render(left), render(right))
             comparison = a + ' ' + {'eq': '=', 'ne': '<>', 'lt': '<', 'le': '<=', 'gt': '>', 'ge': '>='}[op] + ' ' + b
+            # A true guarded equality necessarily makes this equality true.
+            # Expose it to native index/join planning without removing any
+            # total nullable predicate. Never lift out of OR or NOT: those
+            # contexts need not make this particular equality true.
+            if guaranteed and op == 'eq':
+                access_equalities.append(comparison)
         return '(coalesce((' + render(left) + ' IS NOT NULL AND ' + render(right) + ' IS NOT NULL AND (' + comparison + ')), false))'
 
     for node in bare.nodes:
@@ -186,7 +193,8 @@ def compile_native_spj(program, backend, schema, source_bindings):
         raise ValueError('Native SPJ top-K order must cover every output column')
     if any(v.kind not in ('identity', 'string', 'boolean', 'integer') for v in values.values()):
         raise ValueError('Native SPJ final output excludes mixed floating representatives')
-    text = '\n'.join(patterns) + ('\nWHERE ' + ' AND '.join(conditions) if conditions else '')
+    access_equalities = list(dict.fromkeys(access_equalities))
+    text = '\n'.join(patterns) + ('\nWHERE ' + ' AND '.join(access_equalities + conditions) if conditions else '')
     text += '\nRETURN DISTINCT ' + ', '.join(render(v) + ' AS ' + ident(f) for f, v in values.items())
     order = []
     for o in ordering:
@@ -199,6 +207,8 @@ def compile_native_spj(program, backend, schema, source_bindings):
         scalar_semantics=dict(types), backend_id=backend.backend_id, required_matches=sorted(matches),
         final_output_limit=limit, intermediate_limits=0, independent_match_clauses=True,
         joins_use_logical_identity=True, final_distinct=True, order_covers_all_columns=True)
+    proof.update(access_profile='necessary-positive-equalities-v1', access_equalities=access_equalities,
+        nullable_predicates_retained=True, native_identity_coalescing=False)
     return QueryArtifact(PROFILE, 'cypher', text, kind='compiled', parameters={
         **parameters, 'compiler': PROFILE, 'target_backend_id': backend.backend_id,
         'output_columns': list(values), 'source_pushdown': proof, 'source_work_graph': work_graph}), bare

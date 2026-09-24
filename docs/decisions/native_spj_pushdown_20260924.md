@@ -93,8 +93,13 @@ The frozen single-case package has been submitted as **3867410**, exact source
 the OnDemand terminal. The user subsequently supplied Slurm FAILED/2:0,
 71 seconds, compt311, and attempted/audited=1 for the original failed case.
 This is a failed singleton gate, not evidence of successful large-source
-execution. The underlying error remains unclassified until raw evidence is read;
-job elapsed time alone does not establish a query timeout. The emitted archive
+execution. The user subsequently pasted the worker receipt: one selected final
+execution, one backend call, 5,050.138 ms, transaction memory limit reached
+(536.9 MiB in use, 537.6 MiB limit, another 2 MiB requested). The observer
+recorded a completed 311-byte response and no transport failure. Thus this is
+native transaction memory failure, not HTTP timeout or response-budget failure.
+Worker wall 7,696.819 ms and sampled worker RSS 39,690,240 bytes are separate
+from source transaction memory. The emitted archive
 is 38,301 bytes, SHA-256
 `b9deacdce5cd1f9bda83147a4ee93d58be64d6f5c6fb231dfe9153363c5479ff`;
 download verification is pending. Collect this existing evidence; do not submit
@@ -120,3 +125,36 @@ shell syntax and bundle prerequisites were checked locally. Journal:
 `native-spj-ef50ee3/`; log: `native-spj-3867410.out`; final archive when closed:
 `/home/hxc859/xgap-native-spj-3867410.tar.gz`. Neither 3867410 nor 3867351 should
 be resubmitted. Submitted is not the same as successfully admitted.
+
+## Necessary equality access repair
+
+The first compiler wrapped every identity join and anchor equality in a total
+nullable `coalesce` predicate. On a fresh tiny Neo4j 5.26.30 graph with declared
+unique indexes, EXPLAIN of the unchanged failed query text produced six
+CartesianProduct operators, seven NodeByLabelScan operators and no unique seek.
+Adding the necessary raw equalities as conjuncts produced zero CartesianProduct,
+zero label scan and seven NodeUniqueIndexSeek operators. This is local evidence
+about expression visibility, not the full D2 optimizer plan or measured speedup.
+No D2 query was executed during that diagnosis.
+
+The compiler now records `necessary-positive-equalities-v1` and emits equalities
+already entailed by mandatory positive conjunctions, while retaining every
+original nullable predicate. If the original predicate is true, both operands
+are nonnull and the emitted comparison is true; the new conjunct is therefore
+redundant semantically. Extraction is disabled inside OR/NOT and for rejected
+type comparisons. Physical variables are still independent; no unique logical
+ID assumption is added. DISTINCT, final limit, source snapshot and all budgets
+are unchanged. This does not imply bounded native execution memory.
+
+Validation: 28 focused tests; six real Neo4j ordered-row comparisons (2/0/20/5/
+64/44 rows) including duplicate IDs, parallel/reused edges, null disjunction and
+negation. Source cleanup passed. Receipt `native-spj-tiny-v5/receipt.json` SHA-256
+`9180be9b697db56d6a874f45262925f309ad09ad6345bdc04379ec45d1ff6a10`.
+Local diagnosis under `spj-sargability-explain-v1/`: original plan SHA-256
+`e4b944abc44d75681fb64e32e160aac1f5d33dbd5eb01a7f7a19b5672ee1cc61`,
+visible-equality plan SHA-256
+`b592b9a2a8619b0fa56e7d27528e1c9871e805c3de6048d1b8d55b7c8c39559e`.
+All paths are under the local `ch6-release-boundary-20260924` artifact root.
+Next gate: two bounded full-source EXPLAIN calls, zero result-query executions,
+no optimizer feedback to the frozen online estimator. Keep transaction budgets
+unchanged and investigate remaining source operators before another replay.
