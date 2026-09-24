@@ -1,6 +1,39 @@
-# 正式启动边界：F6 通过，D2 新测试题仍阻塞
+# 正式启动边界：RDF 单题修复通过，原生访问路径待诊断
 
 2026-09-24，继续遵守“准备至可启动、不执行全量”的授权。旧结果和失败均保留。
+
+**最新已核验结果：**3865967 COMPLETED / 0:0 / 4m59s / compt311。
+`D2-test-uniform-ordered_star-000-W1` EM=1，guard 21,653.441 ms，5 个源请求全成功，
+方法峰值 107,646,976 B、源峰值 766,353,408 B；原数据、HTTP 60s、worker 120s、
+source 4GiB 不变，无重试、一个最终计划、零模型调用。源与副本清理通过。
+这是单题修复验收，`full_bundle_admitted=false`；剩余 held-out 仍须准入。
+
+新归档 `xgap-node-domain-3865967.tar.gz` 为 1,094,441 B / 216 成员，服务器末行
+与本地 SHA 一致：`cdef0792a5620bb6d16977f808ae5104429dc73f32bf9a48e51df29c90e6965a`。
+只解包普通文件/目录。F6 独立参考已补齐，本地通过原审计器复核 47 次固定文件读取，
+包括全部 12 次实际答案、成本及冻结统计；重算审计字节与服务器原审计一致，SHA
+`2d43c684448283bf5f865749807c00f7620a5177c93d6b5779b84d17e6e84ee2`。无新查询。
+
+native 旧失败的第 15 号请求正文已读取：HTTP 200 中含
+`Neo.ClientError.Transaction.TransactionTimedOutClientConfiguration`，以及终止前
+15,106 行部分数据，不能当成有效完整答案。观察器随后回送时的 BrokenPipe 被分类
+为 `harness_transport`；它不能掩盖已存在的源事务超时。worker 在 `cq7/native`
+失败，绑定 1,896 个 Movie 身份，原语句以 namespace 拼接成员检查锚定后反向读 RATED。
+下一步只用 EXPLAIN 比较原请求与显式 Movie/本地身份索引条件的访问路径；不执行
+查询、不用于在线择优、不改变预算。索引假设尚未证实，更不能保证解决真实扇出。
+
+**索引接线进度：**只读诊断已唯一提交为 **3866035**，包 SHA
+`345b1cac3b5487dd1e2fada0bab600037786d3861f1cb74126d1261555447b97`，4,038 B。
+服务器传送 SHA 校验通过；只复用原冻结 native store、代码 da9329b，8 CPU / 24 GiB，
+node-local，worker 120s/3GiB、source 60s/4GiB，最多两个 EXPLAIN，不执行数据查询。
+结果因浏览器控制被窗口切换/剪贴板超时中断而待收取，不能重提。
+
+本地已实现有正向类型证明的身份索引入口；7 项定向检查及 4 组真实 Neo4j tiny
+等价对照通过。小图 EXPLAIN 明确从 AllNodesScan 变为 NodeUniqueIndexSeek，尚未
+外推大图收益。原 RDF 单题的 20 行答案也已在本地独立复核 EM=1。
+见[索引访问的语义证明与准入边界](../decisions/native_identity_index_access_20260924.md)。
+
+以下为历史阶段记录，以本段为准。
 
 **单题提交更新：**用户已完成包校验并提交 **3865967**，代码 `da9329b`；现场先后
 读到 RUNNING / compt311 / 16s 和 4m50s。尚未取得最终回执。终端与文件页随后显示

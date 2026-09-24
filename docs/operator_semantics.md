@@ -11,6 +11,11 @@ The opt-in [progressive binding](decisions/progressive_binding_v1.md) candidate
 composes existing entity semijoin restrictions. It preserves original joins,
 filters and aggregates; it introduces no algebra operator or approximate semantics.
 
+Bound native edge endpoints can expose compiler-proven labels and canonical
+local identities to existing indexes. This is an exact necessary-condition
+rewrite, with unchanged joins and results; see
+[identity index access](decisions/native_identity_index_access_20260924.md).
+
 
 `timestamp_ms` now compares equivalent local-calendar millisecond forms with zero
 to three fractional digits, while invalid calendar/timezone/submillisecond values

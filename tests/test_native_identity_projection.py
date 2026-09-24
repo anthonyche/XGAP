@@ -111,3 +111,25 @@ def test_rdf_singleton_anchor_uses_stored_direction_and_preserves_key_caps():
             assert triple not in bind_sparql_iris(bound.text,{**params,parameter:[key,key+'/second']})
             small={**params,'sparql_iri_binding':{**params['sparql_iri_binding'],'max_bytes':1}}
             with pytest.raises(ValueError,match='byte budget'):bind_sparql_iris(bound.text,small)
+
+
+@pytest.mark.parametrize('reverse',[False,True])
+def test_native_index_requires_mandatory_position_label_and_same_identity_view(reverse):
+    from xgap.pattern.ast import Direction
+    from xgap.runtime.semantic_compiler import SemanticBackend
+    backend=SemanticBackend('neo4j','https://test/',identity_property='xgap_id')
+    labels=('Movie','User') if reverse else ('User','Movie')
+    base=compile_edge_match(EdgePattern(label='RATED',direction=Direction.IN if reverse else Direction.OUT),{},
+        source=NodePattern(label=labels[0]),target=NodePattern(label=labels[1]),
+        backend_id='neo4j',identity_property='xgap_id')
+    for column,variable,label in [('source','n0',labels[0]),('target','n1',labels[1])]:
+        bound,_=_bound_match_artifact(base,backend,max_bindings=8,max_binding_bytes=4096,identity_column=column)
+        assert f'MATCH ({variable}:{label})' in bound.text
+        assert bound.parameters['native_identity_access']=='mandatory-label-local-key-membership-v1'
+        assert 'STARTS WITH $xgap_strategy_entity_namespace' in bound.text
+        assert f'($xgap_strategy_entity_namespace + {variable}.xgap_id) IN $xgap_strategy_entity_bindings' in bound.text
+        assert 'LIMIT' not in bound.text and 'USING INDEX' not in bound.text
+        for invalid in (replace(base,text='// wrapped\n'+base.text),
+                replace(base,parameters={k:v for k,v in base.parameters.items() if k=='native_binding_checkpoint' or not k.startswith('native_identity_')})):
+            fallback,_=_bound_match_artifact(invalid,backend,max_bindings=8,max_binding_bytes=4096,identity_column=column)
+            assert 'native_identity_access' not in fallback.parameters

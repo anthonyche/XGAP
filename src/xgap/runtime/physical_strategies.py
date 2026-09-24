@@ -269,10 +269,25 @@ def _bound_match_artifact(artifact, backend, *, max_bindings, max_binding_bytes,
                 prefix='CALL {\n'
                 if not native_text.startswith(prefix):raise _NotAdmitted('Unknown Match subquery boundary')
                 variable=_cypher_identifier(variable)
-                endpoint=('CALL {\nMATCH ('+variable+')\nWHERE ($'+namespace_parameter+' + '+variable+'.'
+                label=point.get('node_labels',{}).get(identity_column)
+                indexed=(label is not None and parameters.get('native_identity_projection')=='property-map-v1'
+                    and parameters.get('native_identity_property')==backend.identity_property)
+                pattern=variable+(':'+_cypher_identifier(label) if indexed else '')
+                # Admitted property identities are canonical strings. Strip the
+                # fixed namespace from keys, never from a source property, so a
+                # native index can seek the local identities. Keep the original
+                # identity and endpoint predicates as defensive checks. No key
+                # or answer truncation, batching, query execution or hinting.
+                key='xgap_bound_local_key'
+                necessary=(variable+'.'+_cypher_identifier(backend.identity_property)+' IN ['+key+' IN $'+parameter
+                    +' WHERE '+key+' STARTS WITH $'+namespace_parameter+' | substring('+key+', size($'
+                    +namespace_parameter+'))]\nAND ') if indexed else ''
+                endpoint=('CALL {\nMATCH ('+pattern+')\nWHERE '+necessary+'($'+namespace_parameter+' + '+variable+'.'
                     +_cypher_identifier(backend.identity_property)+') IN $'+parameter+'\nRETURN '+variable+'\n}\n')
                 native_text=prefix+endpoint+native_text[len(prefix):]
                 parameters['native_binding_placement']='endpoint-anchor-before-expand-v1'
+                if indexed:
+                    parameters['native_identity_access']='mandatory-label-local-key-membership-v1'
         text = ("CALL {\n" + native_text + "\n}\nWITH " + names
                 + "\nWHERE ($" + namespace_parameter + " + " + native_identity + "."
                 + _cypher_identifier(backend.identity_property) + ") IN $" + parameter

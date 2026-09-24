@@ -41,6 +41,12 @@ def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend
         if identity_property is not None:
             extra = {"native_identity_projection": "property-map-v1", "native_identity_property": identity_property}
         extra['native_binding_checkpoint']=binding_checkpoint(text,base.text,{'entity':'e1','source':'n0','target':'n1'})
+        # These are mandatory traversal-position labels from the typed input,
+        # not inferred labels or stored-edge orientation. A bound endpoint may
+        # expose the same label early to its native identity index.
+        extra['native_binding_checkpoint']['node_labels']={
+            column:node.label for column,node in (('source',source),('target',target))
+            if node is not None and node.label is not None}
     else:
         mapping = (backend_mapping if isinstance(backend_mapping, RdfBackendMapping)
                    else RdfBackendMapping.from_artifact(backend_mapping, backend_id=backend_id))
