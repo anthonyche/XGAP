@@ -111,3 +111,36 @@ Do not resubmit. Log `rdf-filtered-3869818.out`; archive
 Remote file/terminal control has been unavailable; archive handoff currently
 requires the user. After acceptance, continue the untouched frozen RDF suffix
 from index 5. No new batch or full campaign is submitted in this turn.
+
+## Raw acceptance of 3869818 and continuation status
+
+Archive SHA and all 75 members verified; 28 available pins, actual estimator,
+runtime/profile, five case inputs and three raw compressed/decoded responses
+checked. Ordered empty answer equals the frozen reference. Worker plan equals
+both the pre-source seal and local symbolic selection. Exactly one final plan,
+three source calls and zero model calls; closure and copy reclamation pass.
+Execution 25124.16 ms, worker 30556.84 ms, planning 430.91 ms (CPU 386.16 ms).
+Offline fresh-session setup 261778.68 ms; job wall 319 s is not query latency.
+HTTP responses total 30675950 bytes. Method/source sampled peaks are
+318001152/975073280 bytes. Old request identities 15,16,17 are absent; successful
+requests match old 12,13,14 exactly. This supports removal of the avoidable
+reverse-edge request, not an uncensored speedup ratio against the old failure.
+Full node reads remain and no general scan/I/O bound is claimed.
+
+RDF original indices 0–4 now have successful raw records across versions;
+indices 5–31 are unattempted. Native cumulative 24/24 remains cross-version.
+A local zero-call preflight selected plans for original RDF indices 5–12 using
+the unchanged model, with zero full edge reads and 4–5 bound reads per plan.
+This is not a guarantee of low join work or source completion.
+
+The user questions continuing serial per-case debugging and treating the
+60-second request cap as a planner requirement. No further job is submitted.
+The draft `xgaprdfnext8-ac97d16-v1.zip` is NOT released for submission: package
+validation and the next execution-policy decision are pending. It must not be
+mistaken for a new run instruction. The currently frozen 60-second source,
+120-second worker limits and original stop-on-first-failure semantics remain
+unchanged. Proposed next work: separate semantic/infrastructure blockers from
+resource-censored or method-timeout records; batch coverage with verified source
+quiescence after failures, then prioritize general defects. Changing timeout
+budgets or formal admission semantics requires a new explicit contract, retaining
+old failures; a timeout is not evidence of wrong answers or a defective planner.
