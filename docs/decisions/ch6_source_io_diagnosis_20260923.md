@@ -204,3 +204,36 @@ same engine overlay, with source/class/original digests in receipts and actual
 mapped invocation counts in shutdown logs. Formal campaign defaults remain
 upstream. Actual tiny Fuseki HTTP returns the identical witness and records three
 mapped invocations; five focused copy/selection checks pass. No LLM calls.
+
+### Original fifth pipeline case accepted; remaining suffix only
+
+3864165, exact `f6ec1a0`, completed on compt311 in 7m06s. The unchanged original
+fifth query passed with EM=1 (20 final rows), one final plan and no retries/LLM.
+All five HTTP requests completed: 17.282, .832, 1.118, 38.872, .063 seconds.
+The 38.872-second request has the exact original query SHA
+`26eb1410c89dac31234d77401afccc6e7cc47bc259a91aa651088abbd133ebb2`
+and returns all 567 witnesses. Worker execution is 57.671 s; parent guard is
+61.119 s. Fresh-session copying/verification/startup is 344.856 s offline,
+with no warmup request. Do not combine these timing scopes or call this an NL run.
+
+Observed source peak RSS: 768,208,896 B; method: 46,071,808 B. Graph-source
+first-to-last sampled storage reads: 55,820,288 B and zero major faults; these
+are whole-case source deltas, not directly comparable to the earlier one-query
+diagnostics. Actual mapped invocations: 143,115; both overlay locations and
+SystemIndex/SystemTDB Direct are attested. Cleanup completed. OS lsblk reports
+the local backing disk ROTA=1; this is deployment evidence, not a hardware model.
+The upstream JAR and source population remain unchanged; the overlay is disclosed.
+Uncontrolled cache/order and the changed measurement scope preclude a paper
+speedup ratio. Full-bundle admission and formal campaign remain false.
+
+Archive `xgap-d2-single-lazy-3864165.tar.gz` (94,767 B) downloaded and SHA verified:
+`7a2ab879b333afef3a34df08d560c00cf85e642352c20c49ed4286f38ccb6385`.
+All five compressed response hashes were independently verified after download.
+The next useful boundary is original frozen cases 6–8, not replaying cases 1–5.
+An explicit `--case-ids` selection permits at most eight distinct IDs, validates
+all IDs before serving, retains original bundle order/index and uses one shared
+session. It stops on the first failure and always records `diagnostic_subset`
+with `full_bundle_admitted=false`, even if every bundle ID is supplied.
+No edited/substitute bundle, larger online budget or alternative-plan trial.
+Four focused selector/release-boundary tests pass; formal overlay adoption remains
+a separate pinned common-backend decision after necessary admission evidence.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Offline gold-query backend admission; never an evaluated method or NL result.
 
-Use a complete presampled bundle (or explicitly labeled single-case failure replay),
+Use a complete presampled bundle (or an explicitly labeled bounded diagnostic subset),
 one compiled plan per intended query, and the
 independent source-derived references. Stop on the first failure; do not replace
 cases, retry, tune method policies, or feed these observations to an estimator.
@@ -87,17 +87,26 @@ def worker(bundle_pin, case_id, profile_pin, output, planning='fixed_scan'):
     return 0 if success else 2
 
 
-def selected_cases(bundle,case_id=None):
+def selected_cases(bundle,case_id=None,case_ids=None):
     cases=list(enumerate(bundle['cases']))
     if len({c['case_id'] for _,c in cases})!=len(cases):
         raise ValueError('Duplicate case identity in frozen bundle')
-    if case_id is None:return cases
-    selected=[(i,c) for i,c in cases if c['case_id']==case_id]
-    if len(selected)!=1:raise ValueError('Replay case is absent from the frozen bundle')
+    if case_id is not None and case_ids is not None:
+        raise ValueError('Choose a single case or diagnostic subset, never both')
+    if case_id is None and case_ids is None:return cases
+    requested=[case_id] if case_id is not None else list(case_ids)
+    if not 1<=len(requested)<=8 or len(set(requested))!=len(requested):
+        raise ValueError('Diagnostic subset requires 1..8 distinct frozen case IDs')
+    selected=[(i,c) for i,c in cases if c['case_id'] in requested]
+    if len(selected)!=len(requested):raise ValueError('Replay case is absent from the frozen bundle')
     return selected
 
 
-def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3,case_id=None,rdf_lazy_range=False):
+def admission_scope(case_id=None,case_ids=None):
+    return 'diagnostic_subset' if case_ids is not None else ('single_case_replay' if case_id is not None else 'complete_bundle')
+
+
+def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3,case_id=None,rdf_lazy_range=False,case_ids=None):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     if planning not in ('fixed_scan','unified'):raise ValueError('Unknown admission planning profile')
@@ -107,15 +116,15 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
     if type(startup_seconds) is not int or not 60<=startup_seconds<=3600:
         raise ValueError('Explicit offline serving startup limit required')
     bundle, prepared = load(bundle_pin), load(prepared_pin)
-    if rdf_lazy_range and (rdf_file_mode!='direct' or bundle['deployment']=='native' or case_id is None):
-        raise ValueError('Experimental range overlay is limited to explicit single-case Direct RDF diagnosis')
+    if rdf_lazy_range and (rdf_file_mode!='direct' or bundle['deployment']=='native' or (case_id is None and case_ids is None)):
+        raise ValueError('Experimental range overlay requires an explicit bounded Direct RDF diagnostic selection')
     if (bundle['schema_version'] not in ('xgap-ch6-heldout-cases-v1', 'xgap-ch6-factor-inputs-v1','xgap-ch6-deployment-factor-v1') or not prepared.get('success')
             or bundle['profile']['sha256'] != prepared['profile']['sha256']):
         raise ValueError('Frozen bundle/store identity mismatch')
     if not 1 <= len(bundle['cases']) <= 1024:
         raise ValueError('Admission requires 1..1024 preselected cases')
-    cases=selected_cases(bundle,case_id)
-    scope='single_case_replay' if case_id is not None else 'complete_bundle'
+    cases=selected_cases(bundle,case_id,case_ids)
+    scope=admission_scope(case_id,case_ids)
     root = Path(output).resolve(); root.mkdir(parents=True, exist_ok=False)
     from run_bounded_joint_batch import BatchBudget, source_commit
     from native_store_session import NativeStoreSession
@@ -207,20 +216,23 @@ if __name__ == '__main__':
         p.add_argument('--'+n, required=True)
     for n in ('prepared-path', 'prepared-sha256', 'profile-path', 'profile-sha256', 'case-id'):
         p.add_argument('--'+n)
+    p.add_argument('--case-ids',nargs='+',help='1..8 diagnostic cases; frozen bundle order retained, never full admission')
     p.add_argument('--execute', action='store_true'); p.add_argument('--worker', action='store_true')
     p.add_argument('--planning',choices=['fixed_scan','unified'],default='fixed_scan')
     p.add_argument('--serving-root');p.add_argument('--startup-seconds',type=int,default=300)
     p.add_argument('--rdf-file-mode',choices=['default','direct'],default='default')
-    p.add_argument('--rdf-lazy-range',action='store_true',help='Experimental pinned overlay; single-case offline diagnosis only')
+    p.add_argument('--rdf-lazy-range',action='store_true',help='Experimental pinned overlay; explicit bounded offline diagnosis only')
     p.add_argument('--source-rss-bytes',type=int,default=4*1024**3)
     a=p.parse_args(); bundle_pin=dict(path=a.bundle_path, sha256=a.bundle_sha256)
+    if a.case_ids is not None and (a.case_id is not None or a.worker):
+        p.error('--case-ids is for the diagnostic parent only and excludes --case-id')
     if a.worker:
         raise SystemExit(worker(bundle_pin, a.case_id,
             dict(path=a.profile_path, sha256=a.profile_sha256), a.output,a.planning))
     if a.execute:
         raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning,
-            a.serving_root,a.startup_seconds,a.rdf_file_mode,a.source_rss_bytes,a.case_id,a.rdf_lazy_range))
+            a.serving_root,a.startup_seconds,a.rdf_file_mode,a.source_rss_bytes,a.case_id,a.rdf_lazy_range,a.case_ids))
     b=load(bundle_pin)
-    print(json.dumps(dict(stage='dry_run', cases=len(selected_cases(b,a.case_id)),
-        full_bundle_cases=len(b['cases']),admission_scope='single_case_replay' if a.case_id else 'complete_bundle',
+    print(json.dumps(dict(stage='dry_run', cases=len(selected_cases(b,a.case_id,a.case_ids)),
+        full_bundle_cases=len(b['cases']),admission_scope=admission_scope(a.case_id,a.case_ids),
         model_calls=0,backend_calls=0)))
