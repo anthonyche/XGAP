@@ -237,3 +237,31 @@ with `full_bundle_admitted=false`, even if every bundle ID is supplied.
 No edited/substitute bundle, larger online budget or alternative-plan trial.
 Four focused selector/release-boundary tests pass; formal overlay adoption remains
 a separate pinned common-backend decision after necessary admission evidence.
+
+### Remaining-case job and formal integration boundary
+
+The user executed the SHA-checked one-time deployment script; job **3865081** is
+the unique cases-6–8 diagnosis at exact `9d40ade`. Slurm was observed RUNNING on
+compt311 (00:32 elapsed). The script validates the original successful receipt,
+source bundle, prepared store, original Slurm template and package, refusing any
+existing new deployment/submission target. Output:
+`formal-rdf-remaining-lazy-v1/D2/rdf`; journal: `remaining-lazy-v1-submission/`.
+Do not resubmit or treat RUNNING as answer evidence.
+
+A read-only audit while it runs identifies an explicit next boundary:
+`run_bounded_joint_batch.validate` currently accepts only the optional
+`design.source_storage` deployment field; `_run` constructs `RdfTdbSession`
+without Direct/lazy arguments. Thus the formal five-method runner still uses
+upstream defaults, irrespective of successful diagnostic receipts. The external
+ARUQULA→FedX session already receives that same shared source session, so the
+eventual fix belongs at the common session factory, never in a method-specific
+worker. No promotion or formal execution has happened in this audit.
+
+After the pending diagnosis, a promotion must freeze an explicit runtime identity
+and its engine/overlay pins in the manifest, reject native/RDF mismatches, carry
+the identity into admission and release checks, and keep it identical for all
+five methods in each comparison. Modified-engine verification is a deployment
+gate, not baseline algorithm tuning. Existing upstream receipts stay historical;
+do not merge different engine configurations into a paired speedup or use a
+successful diagnostic subset as complete admission. Offline F6 costs may only be
+reused if their execution deployment/runtime is the same as the measured pool.
