@@ -89,3 +89,42 @@ Zero-call D2 compilation artifact `native-prefix-d2-compile-v1.json`, SHA-256
 `453cbef759c93ba8183eb663caf306d64c07c1763ce7128c8e400d2d73a05a5f`.
 Exact frozen-model selection and full-source structure/execution admission
 remain required; neither compiled size nor tiny equivalence establishes them.
+
+One additional focused width-bound fallback check passed (16 compiler tests in
+the final subset; 32 distinct focused tests across the changed contracts).
+The unchanged D2 query also received ONE EXPLAIN on a fresh tiny graph with ONLY
+internal-identity indexes: 3 anchor label scans, 18 index seeks, 3 one-scalar
+DISTINCT operators, zero CartesianProduct/ValueHashJoin/unbounded Sort/Eager
+aggregation. No D2 result query was run locally. Receipt
+`spj-prefix-explain-v1/receipt.json`, SHA-256
+`355a93f3e74471d1c7fd836b72570893f508fc2b3ac9a4a0ba86826f9baad0a0`.
+
+## Frozen conditional single-case package
+
+Source `6169b8fa2b994be5877f180f5ec952d4ab1b240a` is pushed to GitHub.
+`/Users/anthonyche/Downloads/xgapprefix6169b8f.zip`, 22,092 bytes, SHA-256
+`54e87c6aa2fcc37e6abd039ca3e2895314a7993f0c93dcb5f32816c47f47a18c`.
+Requires the already-staged e22a32e checkout. Stage and driver verify the sealed
+3867524 archive, original bundle/store, previous selected-plan hash, closure,
+structural checks, single attempt and selected-artifact identity. They refuse
+existing journal/output paths; no automatic resubmission or query retry.
+
+Before starting any source, the existing zero-call selection diagnostic must
+select the prefix artifact under the frozen estimator. Otherwise the gate fails
+with zero final executions; it does not force a different plan. One full-source
+EXPLAIN must show one scalar DISTINCT per output column, only anchor scans,
+indexed bindings, no Cartesian product/value hash join/unbounded sort/eager
+aggregation. Only then a separate fresh source session executes the unchanged
+failed case once with the common independent answer check. All query/resource
+limits remain as 3867524 (CPU only, zero model calls); the allocation is 70
+minutes for two setup phases, not a larger query-time allowance.
+
+Stage Python 3.6 grammar, driver syntax, shell syntax, bundle prerequisite and
+member hashes were checked. Upload and submission remain unconfirmed: the
+file page became blank while attempting to collect the old archive; automatic
+terminal input remains disabled. Local one-line command file:
+`/Users/anthonyche/Downloads/xgapprefix6169b8f-command.txt`.
+
+Remote journal `native-prefix-6169b8f`, log `native-prefix-<job>.out`, output
+`formal-native-prefix-gate-v1/D2`, archive `/home/hxc859/xgap-prefix-gate-<job>.tar.gz`.
+A successful single-case gate would not establish full held-out admission.
