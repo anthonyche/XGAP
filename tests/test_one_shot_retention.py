@@ -149,7 +149,7 @@ def test_capture_pin_rejects_corruption_before_consuming_record(tmp_path,corrupt
         raw["artifact"]["text"] = "different query"
         records[0]["response_record"] = write_once(tmp_path/"wrong.json",raw)
     replay = BackendReplay("rdf",records)
-    with pytest.raises(ValueError,match="capture"):
+    with pytest.raises(ValueError,match="capture|Evidence stored size/hash mismatch"):
         replay.execute(artifact)
     assert replay.position == 0
 

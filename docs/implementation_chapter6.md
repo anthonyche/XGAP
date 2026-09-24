@@ -1,5 +1,7 @@
 # Chapter 6 implementation map — unified lookahead v1
 
+[Binding NDV and streaming SPJ tails](decisions/binding_ndv_streaming_20260924.md) add a separately frozen v3 source-work model, proven earlier key drivers and an exact bounded-answer-memory runtime profile. Unsupported shapes retain the materialized evaluator; scanned work is not bounded by the result limit. Full-D2 admission of this version remains pending.
+
 2026-09-24: `runtime/native_semijoin.py` adds one checked external-membership
 physical move to `PhysicalMoves`. `native_spj.py` places its parameterized key
 predicate before complete-witness prefix top-K; `relative_source_work.py` charges

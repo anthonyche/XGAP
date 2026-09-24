@@ -32,6 +32,8 @@ def test_complete_query_admission_executes_only_one_selected_plan(tmp_path,monke
     answer=json.loads((tmp_path/'worker/answer.json').read_text())
     assert result['success'] and result['final_plan_executions']==1 and result['model_calls']==0
     assert result['backend_calls']==len(calls)>0
+    assert result['execution_retention']['final_registered_rows']==len(answer['rows'])
+    assert 'streaming_topk' in result['execution_retention']
     assert answer['rows']==data['expected']
     if planning=='unified':
         assert predictions

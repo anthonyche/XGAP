@@ -1,5 +1,7 @@
 # Current architecture — unified lookahead v1
 
+[Binding NDV and streaming SPJ tails](decisions/binding_ndv_streaming_20260924.md) add a separately frozen v3 source-work model, proven earlier key drivers and an exact bounded-answer-memory runtime profile. Unsupported shapes retain the materialized evaluator; scanned work is not bounded by the result limit. Full-D2 admission of this version remains pending.
+
 The current entry is `xgap.api.answer_unified`. Lambda and epsilon configure one
 validation/loss contract; they are not two algorithms. A fixed-depth online
 controller replaces the historical full strong-policy construction.

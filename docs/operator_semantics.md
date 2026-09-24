@@ -1,5 +1,7 @@
 # Operator Semantics
 
+[Binding NDV and streaming SPJ tails](decisions/binding_ndv_streaming_20260924.md) add a separately frozen v3 source-work model, proven earlier key drivers and an exact bounded-answer-memory runtime profile. Unsupported shapes retain the materialized evaluator; scanned work is not bounded by the result limit. Full-D2 admission of this version remains pending.
+
 A checked [external membership reduction](decisions/native_external_semijoin_20260924.md)
 may retain a bound external node/filter branch and push the remaining native SPJ
 into Neo4j. External keys restrict complete witnesses before top-K; external

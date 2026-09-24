@@ -12,7 +12,7 @@ from xgap.runtime.shared_native_reads import _key
 from xgap.runtime.source_row_filters import prefilter_source_rows
 from xgap.semantic.compact_lowering import lower_compact_query
 from xgap.semantic.program import SemanticOperatorKind as S
-from xgap.runtime.necessary_bind_moves import mandatory_anchor_bind,nested_key_targets
+from xgap.runtime.necessary_bind_moves import mandatory_anchor_bind,nested_key_targets,early_key_driver
 
 
 def identity(plan):
@@ -188,15 +188,16 @@ class PhysicalMoves:
                         remote = next((n for n in plan.nodes if n.node_id==match.operator_id+'/native'),None)
                         # Shared reads require a separate all-consumer proof and are not rebound.
                         if remote is None or remote.kind is not R.REMOTE_QUERY or len(remote.semantic_operator_ids)!=1:continue
-                        output = plan.metadata['operator_outputs'][driver]
+                        output,binding_field,driver_proof=early_key_driver(driver,field,program,plan)
                         if depends_on(plan,output,remote.node_id):continue
                         artifact,parameter = _bound_match_artifact(QueryArtifact.from_dict(remote.parameters['artifact']),
                             self.backends[remote.parameters['backend_id']],max_bindings=self.policy.max_bindings,
                             max_binding_bytes=self.policy.max_binding_bytes,identity_column=column,capped_key_work=True)
                         bound = replace(remote,kind=R.REMOTE_BIND_QUERY,inputs=(output,),parameters={**remote.parameters,
-                            'artifact':artifact.to_dict(),'bind_field':field,'parameter':parameter,'max_bindings':self.policy.max_bindings})
+                            'artifact':artifact.to_dict(),'bind_field':binding_field,'parameter':parameter,'max_bindings':self.policy.max_bindings})
                         yield finish(plan,[bound if n.node_id==remote.node_id else n for n in plan.nodes],'entity_bind',
-                            dict(join=join.operator_id,driver=driver,target=match.operator_id,chain=chain))
+                            dict(join=join.operator_id,driver=driver,target=match.operator_id,chain=chain,
+                                 **({'early_driver':driver_proof} if driver_proof else {})))
                         bound_plan=replace(plan,nodes=tuple(bound if n.node_id==remote.node_id else n for n in plan.nodes))
                         if not plan.metadata.get('native_external_semijoin'):
                             from xgap.runtime.leaf_witness import witness_neighbors

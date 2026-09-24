@@ -67,3 +67,32 @@ def nested_key_targets(identifier,field,operators,schemas,consumers,roots,chain=
             renamed=p.get('right_prefix','right_')+original if original in left_fields and not original==p['left_on']==p['right_on'] else original
             if renamed==field:
                 yield from nested_key_targets(right,original,operators,schemas,consumers,roots,chain)
+
+
+def early_key_driver(identifier,field,program,plan):
+    """Use an already restricted Match instead of materializing a join for keys.
+
+    Its key domain is a superset of the original driver's domain. All original
+    joins/filters remain, so this only changes the necessary bind restriction.
+    UNION branches cannot represent the whole domain and are excluded. A full
+    unrestricted leaf is not selected merely for having a shallower lineage.
+    """
+    from collections import Counter
+    operators={o.operator_id:o for o in program.operators}
+    consumers=Counter(i for o in program.operators for i in o.input_ids)
+    nodes={n.node_id:n for n in plan.nodes};outputs=plan.metadata['operator_outputs']
+    choices=[]
+    for match,chain,column in nested_key_targets(identifier,field,operators,plan.metadata['schemas'],consumers,set(program.roots)):
+        if any(operators[i].kind is S.UNION for i in chain):continue
+        native=nodes.get(match.operator_id+'/native');output=outputs.get(match.operator_id)
+        if native is None or output not in nodes:continue
+        restricted=(native.kind is R.REMOTE_BIND_QUERY or
+            bool(native.parameters.get('artifact',{}).get('parameters',{}).get('necessary_row_filters')))
+        if not restricted or len(native.semantic_operator_ids)!=1:continue
+        name=match.parameters.get(column+'_field',column)
+        choices.append((len(chain),match.operator_id,output,name))
+    if not choices:return outputs[identifier],field,None
+    _,match,output,name=min(choices)
+    return output,name,dict(profile='necessary-upstream-key-domain-v1',original_driver=identifier,
+        original_field=field,producer=match,producer_field=name,
+        relation='superset of required keys; original joins and filters retained')

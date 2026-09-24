@@ -1,0 +1,100 @@
+# Distinct binding keys and streaming SPJ tails
+
+2026-09-24. General shared-runtime optimization following the verified original
+W3 repair (3868378). No dataset/template dispatch, answer-dependent selection,
+new semantic operator, online trial-plan executions or change to query budgets.
+Full D2 and all frozen questions/references remain intact.
+
+## Diagnosis and changes
+
+The binder sends distinct keys, but the old relative-work estimator charged
+incoming rows. A join can have 100 rows with only ten distinct binding keys.
+Conflating these quantities overprices binding and can falsely penalize its
+capacity risk. `xgap-relative-source-work-v3` propagates column NDV estimates
+through typed normalization, field projection, equality filters and joins, using
+existing frozen endpoint degrees and source populations. Unknown lineage falls
+back to incoming rows. Correlated tuple bindings also retain this fallback.
+Estimates are not safety bounds; actual key/byte overflow still fails, never
+truncates. No weights, source statistics, latency observations or held-out answers
+are fitted. v1/v2 loading, serialization and predictions remain available unchanged.
+`scripts/prepare_ch6_binding_work.py` freezes a separate model/profile/seal and
+reuses the existing stores; it cannot overwrite the parent or revise twice.
+
+A necessary dimension bind can now derive its keys from an earlier already
+restricted Match along proven identity lineage. Those keys may be a superset of
+the eventual joined domain. This is safe because the original joins and filters
+remain; an extra dimension row cannot create a result without its original
+witness. UNION branches cannot provide the entire domain and are excluded;
+unrestricted leaf reads and dependency cycles are not adopted. This avoids
+materializing a large join solely to find the binding keys needed by that join.
+
+`runtime/streaming_topk.py` evaluates eligible existing coordinator operators as
+one pipeline in root-only execution. It absorbs exclusive left-deep inner joins,
+filters and field-only projections into a root sort/limit (1 <= K <= 1000,
+at most 64 nodes). Shared consumers and intermediate roots are barriers. Before
+streaming, it verifies complete column schemas, unambiguous join columns,
+representation-compatible predicates and fully ordered string/null answer
+columns. Aggregates, partial ordering, calendar conversion, RDF terms, numeric
+answer representations and unsupported shapes keep their existing evaluator.
+
+Under this restricted set semantics, delaying intermediate duplicate elimination
+cannot change predicates or final answer representatives. The bounded heap keeps
+the K best distinct answers under the original ASC/DESC/null comparator. Once a
+key is evicted its rank cannot improve the monotonically improving threshold,
+so an unbounded set of previously seen answers is unnecessary. All original
+predicates still run before terminal selection. No intermediate arbitrary LIMIT
+is introduced. Required memory is input payloads plus right-side hash indexes
+plus O(K) answers, not all joined tuples. **The number of scanned pairs and CPU
+time remain unbounded by K.** Query execution is not promised polynomial in
+output size; fixed-D online planning retains its previous polynomial bounds.
+
+The execution receipt explicitly marks streamed intermediate counts as emitted
+occurrences, not materialized distinct cardinalities. Whole-pipeline time is
+charged at its root; per-node times are unavailable. These counts never train
+the current query's estimator. Backend calls/traffic remain separately observed.
+The admission worker now preserves compact retention/pipeline evidence without
+saving intermediate row payloads.
+
+## Verification and limits
+
+- 74 focused tests pass across changed runtime, key estimates, binding rules,
+  retained payloads and native SPJ/membership. The capture-corruption test was
+  updated for the existing evidence loader's more specific hash-error wording;
+  rejection and replay non-consumption remain required. Six additional focused
+  admission/selection tests pass, including one-execution and retention receipts.
+- A concrete 80-by-80 star produces 6,400 join occurrences. Registered row
+  payload peaks fall from at least 6,400 to at most 180 while the same 20 ordered
+  answers are returned. This metric excludes hash indexes, transient buffers and
+  process RSS; it is a development memory check, not a paper performance result.
+- Ten real private Neo4j 5.26.30/Fuseki 5.6.0 tiny cases pass ordered-answer
+  differential checks: the eight membership cases plus ascending/descending
+  stars. The two tiny stars each stream 49 pairs into three answers. Their
+  overall registered-payload peaks both remain 136 because an earlier dimension
+  dominates; no overall memory or latency advantage is claimed for these cases.
+  All owned services are stopped and reaped.
+- Source-only v3 static selection over original unattempted indices 7–12 has
+  zero backend/model calls, zero query executions and zero reference-row reads.
+  Star W2 now binds both dimensions from early keys and exposes the large join
+  tail to streaming. Cycle W1 selects one native query; W3/W4 retain external
+  membership with five remote nodes; witnessed sum retains contribution-aware
+  leaf-witness semantics. No full edge read is selected in these six plans.
+
+Local evidence root:
+`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/`.
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `streaming-star-tiny-v1/receipt.json` | `9343d8fbd058e3409f021ab56e8f10e4ed01a13d5a198658bdf4d79ce22baf55` |
+| `remaining-streaming-zero-call-v1/receipt.json` | `f7b6e3d3889391ad2c96055666579a9fb9eff2d7213058134ae7a0c34ba45751` |
+| `remaining-streaming-zero-call-v1/relative-work-v3.json` | `e89110803937f261ca5ca3268806685c1aa232f69027395f5034bd6c8c4374bf` |
+
+The zero-call receipt describes the working implementation before commit; the
+handoff seals exact code and plan pins. Static eligibility is not full-source
+resource admission. Next: original six still-unattempted cases, original order,
+one fresh CPU source session, one execution per case, stop on first failure,
+no repeats of W1/W2/W3 successes. Server byte/time/RSS caps are unchanged.
+After that, remaining complete native/RDF admission and formal input/support/
+budget checks still gate the first-dataset campaign. Historical F6 raw costs
+remain valid evidence for their original pool/model; new v3 estimates must be
+rebound/audited against that pool before being reported, not relabeled as v2.
+Full formal dispatch remains closed.

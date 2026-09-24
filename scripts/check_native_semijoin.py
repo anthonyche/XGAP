@@ -107,6 +107,28 @@ def run(runtime, fuseki, java, output):
             receipt['cases'].append(dict(name=name,rows=len(after.final_rows),ordered_rows_equal=True,
                 fused_traffic=traffic(records[fused_start:refined_start]),refined_traffic=traffic(records[refined_start:]),
                 byte_scope='serialized decoded result rows, not wire bytes; same tiny source and final answer'))
+        # A star exposes a Cartesian-size intermediate even though each edge
+        # input is small. Compare both physical binding and execution streaming.
+        from test_streaming_star import star_plans
+        for descending in (False,True):
+            original,refined,proofs=star_plans(descending=descending)
+            name='star-desc' if descending else 'star-asc';target=root/name;target.mkdir()
+            registry=BackendPluginRegistry();records=[];lock=threading.Lock()
+            registry.register(NativeBackendPlugin('neo4j',CapturingClient(neo,target,records,lock)))
+            tool=BackendInvokeTool(registry)
+            materialized=FederatedScheduler(tool,retention='roots',stream_topk=False)
+            before=materialized.execute(original);middle=materialized.execute(refined)
+            after=FederatedScheduler(tool,retention='roots').execute(refined)
+            assert before.success and middle.success and after.success
+            assert before.final_rows==middle.final_rows==after.final_rows
+            assert len(after.final_rows)==3 and after.retention['streaming_topk']
+            for label,plan,result in [('original',original,before),('refined',refined,middle),('streamed',refined,after)]:
+                write_once(target/(label+'-plan.json'),plan.to_dict());write_once(target/(label+'.json'),result.to_dict())
+            receipt['cases'].append(dict(name=name,rows=len(after.final_rows),ordered_rows_equal=True,
+                early_driver_proofs=[p['early_driver'] for p in proofs if 'early_driver' in p],
+                materialized_peak_registered_rows=middle.retention['peak_registered_rows'],
+                streamed_peak_registered_rows=after.retention['peak_registered_rows'],
+                streaming=after.retention['streaming_topk']))
         receipt['success']=True
     except Exception as error:receipt.update(error_type=type(error).__name__,error=str(error))
     finally:

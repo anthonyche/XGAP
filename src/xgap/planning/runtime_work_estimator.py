@@ -397,8 +397,8 @@ def fit_work_estimator(samples, *, statistics, training_id, model_version, train
 
 
 def frozen_estimator_from_dict(data):
-    from xgap.planning.relative_source_work import SCHEMA as RELATIVE_SCHEMA, DEGREE_SCHEMA, FrozenSourceWorkRanker
-    if data.get('schema_version') in (RELATIVE_SCHEMA,DEGREE_SCHEMA):return FrozenSourceWorkRanker.from_dict(data)
+    from xgap.planning.relative_source_work import SCHEMA as RELATIVE_SCHEMA, DEGREE_SCHEMA, KEY_SCHEMA, FrozenSourceWorkRanker
+    if data.get('schema_version') in (RELATIVE_SCHEMA,DEGREE_SCHEMA,KEY_SCHEMA):return FrozenSourceWorkRanker.from_dict(data)
     from xgap.planning.runtime_work_deployment import DEPLOYMENT_SCHEMA, FrozenWorkDeployment
     from xgap.planning.runtime_instance_work import INSTANCE_SCHEMA, FrozenInstanceWorkDeployment
     if data.get("schema_version") == INSTANCE_SCHEMA:

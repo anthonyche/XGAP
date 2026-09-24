@@ -14,6 +14,7 @@ from xgap.runtime.contracts import RuntimeNodeKind as R
 
 SCHEMA='xgap-relative-source-work-v1'
 DEGREE_SCHEMA='xgap-relative-source-work-v2'
+KEY_SCHEMA='xgap-relative-source-work-v3'
 REMOTE={R.REMOTE_QUERY,R.REMOTE_BIND_QUERY}
 
 
@@ -41,8 +42,10 @@ class FrozenSourceWorkRanker:
     record_quantum: int=1024
     # backend, edge label, stored endpoint role, rows, NDV, sum(degree^2), max
     endpoint_degrees: tuple=()
+    distinct_binding_keys: bool=False
 
     def __post_init__(self):
+        if type(self.distinct_binding_keys) is not bool:raise ValueError('Distinct binding-key profile must be boolean')
         if any(not isinstance(p,(tuple,list)) or len(p)!=3 or not isinstance(p[0],str)
                for p in self.populations):
             raise ValueError('Typed source population triples required')
@@ -69,17 +72,19 @@ class FrozenSourceWorkRanker:
     def model_sha256(self):return self.to_dict()['model_sha256']
 
     def to_dict(self):
-        body=dict(schema_version=DEGREE_SCHEMA if self.endpoint_degrees else SCHEMA,statistics=self.statistics.to_dict(),populations=self.populations,
+        body=dict(schema_version=KEY_SCHEMA if self.distinct_binding_keys else DEGREE_SCHEMA if self.endpoint_degrees else SCHEMA,statistics=self.statistics.to_dict(),populations=self.populations,
             unique_node_properties=self.unique_node_properties,preparation_ref=self.preparation_ref,
             record_quantum=self.record_quantum)
         if self.endpoint_degrees:body['endpoint_degrees']=self.endpoint_degrees
+        if self.distinct_binding_keys:body['distinct_binding_keys']=True
         return {**body,'model_sha256':_hash(body)}
 
     @classmethod
     def from_dict(cls,raw):
         doc=dict(raw);digest=doc.pop('model_sha256',None)
-        if doc.get('schema_version') not in (SCHEMA,DEGREE_SCHEMA) or _hash(doc)!=digest:raise ValueError('Relative work model hash/schema differs')
-        if (doc['schema_version']==DEGREE_SCHEMA)!=bool(doc.get('endpoint_degrees')):raise ValueError('Degree model schema differs')
+        if doc.get('schema_version') not in (SCHEMA,DEGREE_SCHEMA,KEY_SCHEMA) or _hash(doc)!=digest:raise ValueError('Relative work model hash/schema differs')
+        if (doc['schema_version']==KEY_SCHEMA)!=bool(doc.get('distinct_binding_keys')):raise ValueError('Binding-key model schema differs')
+        if doc['schema_version']!=KEY_SCHEMA and (doc['schema_version']==DEGREE_SCHEMA)!=bool(doc.get('endpoint_degrees')):raise ValueError('Degree model schema differs')
         doc.pop('schema_version');doc['statistics']=FrozenSourceStatistics.from_dict(doc['statistics'])
         return cls(**doc)
 
@@ -89,7 +94,7 @@ class FrozenSourceWorkRanker:
         children={k:[] for k in nodes};degree={k:len(n.inputs) for k,n in nodes.items()}
         for node in plan.nodes:
             for parent in node.inputs:children[parent].append(node.node_id)
-        queue=deque(sorted(k for k,v in degree.items() if v==0));rows={};unique={}
+        queue=deque(sorted(k for k,v in degree.items() if v==0));rows={};unique={};columns={}
         scan=transfer=local=keys=calls=risk=0.;details=[];source_join_work=0.
         total_population=sum(n+e for n,e in counts.values())
         degrees={r[:3]:r[3:] for r in self.endpoint_degrees}
@@ -102,6 +107,10 @@ class FrozenSourceWorkRanker:
         while queue:
             node=nodes[queue.popleft()];p=node.parameters
             incoming=sum(rows[i] for i in node.inputs);out=incoming
+            sent=None;key_input=incoming
+            if self.distinct_binding_keys and node.kind is R.REMOTE_BIND_QUERY:
+                from xgap.planning.binding_cardinality import bind_keys
+                key_input=bind_keys(node,rows,columns)
             fields=set(unique[node.inputs[0]]) if len(node.inputs)==1 else set();degree_evidence=None
             if node.kind in REMOTE:
                 backend=p['backend_id'];s=sources.get(backend)
@@ -119,8 +128,8 @@ class FrozenSourceWorkRanker:
                                 or not membership.get('before_complete_witness_and_topk')
                                 or type(cap) is not int or cap<=0):
                             raise ValueError('Native SPJ bind requires checked complete-query membership')
-                        keys+=min(incoming,float(cap))
-                        if incoming>cap:risk+=(incoming/cap)*total_population
+                        sent=min(key_input,float(cap));keys+=sent
+                        if key_input>cap:risk+=(key_input/cap)*total_population
                     elif membership:
                         raise ValueError('Native SPJ membership requires a bound key input')
                     work=source_work(a,backend,counts[backend],degrees,self.unique_node_properties)
@@ -128,6 +137,12 @@ class FrozenSourceWorkRanker:
                     out=work['output_records'];transfer+=out;calls+=1
                     rows[node.node_id]=out;unique[node.node_id]=set()
                     details.append(dict(node=node.node_id,estimated_rows=out,unique_fields=[],source_work=work))
+                    if self.distinct_binding_keys:
+                        from xgap.planning.binding_cardinality import propagate
+                        columns[node.node_id]=propagate(node,out,rows,columns,populations=counts,degrees=degrees,
+                            unique_properties=self.unique_node_properties,sent=sent)
+                        details[-1].update(column_ndv_proxy=columns[node.node_id],binding_input_rows=incoming,
+                            binding_distinct_key_proxy=key_input if node.kind is R.REMOTE_BIND_QUERY else None)
                     for child in children[node.node_id]:
                         degree[child]-=1
                         if degree[child]==0:queue.append(child)
@@ -143,7 +158,7 @@ class FrozenSourceWorkRanker:
                 if node.kind is R.REMOTE_BIND_QUERY:
                     cap=p.get('max_bindings')
                     if type(cap) is not int or cap<=0:raise ValueError('Typed runtime bind cap required')
-                    sent=min(incoming,float(cap));keys+=sent
+                    sent=min(key_input,float(cap));keys+=sent
                     # Uniform-degree proxy, not an assertion about a particular
                     # key or an upper bound. Full edge scans always have work.
                     fanout=1. if node_read else edge_rows/max(1,node_rows)
@@ -169,8 +184,8 @@ class FrozenSourceWorkRanker:
                         fields.add(a['bound_identity_column'])
                         # The output bound does NOT bound adjacency scanning;
                         # retain the unreduced scan-work proxy above.
-                    if incoming>cap:
-                        risk+=(incoming/cap)*total_population
+                    if key_input>cap:
+                        risk+=(key_input/cap)*total_population
                 for c in a.get('necessary_row_filters',{}).get('conditions',[]):
                     if singleton(c,fields):out=min(out,1.)
                 scan+=work;transfer+=out;calls+=1
@@ -204,6 +219,12 @@ class FrozenSourceWorkRanker:
             if not math.isfinite(out) or out<0:raise ValueError('Invalid relative row proxy')
             rows[node.node_id]=out;unique[node.node_id]=fields
             details.append(dict(node=node.node_id,estimated_rows=out,unique_fields=sorted(fields),endpoint_degree=degree_evidence))
+            if self.distinct_binding_keys:
+                from xgap.planning.binding_cardinality import propagate
+                columns[node.node_id]=propagate(node,out,rows,columns,populations=counts,degrees=degrees,
+                    unique_properties=self.unique_node_properties,sent=sent)
+                details[-1].update(column_ndv_proxy=columns[node.node_id],binding_input_rows=incoming if node.kind is R.REMOTE_BIND_QUERY else None,
+                    binding_distinct_key_proxy=key_input if node.kind is R.REMOTE_BIND_QUERY else None)
             for child in children[node.node_id]:
                 degree[child]-=1
                 if degree[child]==0:queue.append(child)
@@ -215,6 +236,6 @@ class FrozenSourceWorkRanker:
                 source_scan_record_units=scan,source_join_record_proxy=source_join_work,
                 returned_record_proxy=transfer,transmitted_key_proxy=keys,
                 coordinator_input_proxy=local,bind_overflow_risk_work=risk,remote_call_units=calls,nodes=details,
-                assumptions=('Endpoint-specific mean / size-biased degree; unknown many-many join uses capped Cartesian proxy (1e100); proxies, not bounds'
+                assumptions=('Column NDV propagated through typed lineage for deduplicated bind requests; unknown NDV falls back to rows; ' if self.distinct_binding_keys else '')+('Endpoint-specific mean / size-biased degree; unknown many-many join uses capped Cartesian proxy (1e100); proxies, not bounds'
                              if self.endpoint_degrees else 'Uniform average degree, key-preserving joins, conservative identity equality; proxies, not bounds'),
                 measured_latency=False,quality_bound=None,fit_calls=0,current_query_observation_calls=0))

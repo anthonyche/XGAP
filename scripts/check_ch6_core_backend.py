@@ -82,6 +82,7 @@ def worker(bundle_pin, case_id, profile_pin, output, planning='fixed_scan'):
         plan=plan_pin, answer=answer, execution_ms=result.elapsed_ms if result else None,
         backend_calls=result.total_remote_calls if result else 0, bytes_moved=result.total_bytes_moved if result else 0,
         failures=[dict(node_id=n.node_id, error=n.error) for n in result.node_results if n.error] if result else [],
+        execution_retention=dict(result.retention) if result else None,
         planning=planning,final_plan_executions=len(executions),policy_status=policy.get('status') if policy else None,
         model_calls=0, evaluated_method=False))
     return 0 if success else 2

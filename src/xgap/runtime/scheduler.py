@@ -45,11 +45,12 @@ def _deduplicate(rows: Iterable[Mapping[str, Any]]) -> tuple[JsonRow, ...]:
 class FederatedScheduler:
     """Execute independent remote nodes in parallel and local nodes deterministically."""
 
-    def __init__(self, backend_tool: BackendInvokeTool, *, retention: str = "all"):
+    def __init__(self, backend_tool: BackendInvokeTool, *, retention: str = "all", stream_topk: bool = True):
         if retention not in ("all", "roots"):
             raise RuntimePlanError("Unknown runtime retention mode")
         self._backend_tool = backend_tool
         self._retention = retention
+        self._stream_topk = stream_topk
 
     def execute(
         self,
@@ -73,6 +74,9 @@ class FederatedScheduler:
         retained_rows = sum(r.row_count for r in results.values())
         retained_bytes = sum(r.output_bytes for r in results.values())
         peak_rows, peak_bytes, released = retained_rows, retained_bytes, 0
+        from xgap.runtime.streaming_topk import islands,run as run_streaming_topk
+        pipelines=islands(plan) if self._retention=='roots' and self._stream_topk else []
+        disabled=set();pipeline_receipts=[]
 
         def release(node_id):
             nonlocal retained_rows, retained_bytes, released
@@ -87,7 +91,8 @@ class FederatedScheduler:
             nonlocal retained_rows, retained_bytes, peak_rows, peak_bytes
             results[node_id] = result
             pending.remove(node_id)
-            retained_rows += result.row_count; retained_bytes += result.output_bytes
+            if result.rows is not None:
+                retained_rows += result.row_count; retained_bytes += result.output_bytes
             peak_rows = max(peak_rows, retained_rows); peak_bytes = max(peak_bytes, retained_bytes)
             for input_id in nodes[node_id].inputs:
                 remaining[input_id] -= 1
@@ -119,10 +124,36 @@ class FederatedScheduler:
             if not pending:
                 break
 
+            held=set()
+            for pipeline in pipelines:
+                root=pipeline['root']
+                if root not in pending or root in disabled:continue
+                if any(i in results and results[i].status is not RuntimeNodeStatus.SUCCESS for i in pipeline['boundaries']):
+                    disabled.add(root);continue
+                if pipeline['boundaries']<=results.keys():
+                    began=time.perf_counter()
+                    streamed=run_streaming_topk(pipeline,nodes,results)
+                    if streamed is None:
+                        disabled.add(root);continue
+                    output,receipt=streamed;elapsed=(time.perf_counter()-began)*1000
+                    pipeline_receipts.append(receipt)
+                    for identifier in receipt['nodes']:
+                        terminal=identifier==root
+                        completed(identifier,RuntimeNodeResult(node_id=identifier,kind=nodes[identifier].kind,
+                            status=RuntimeNodeStatus.SUCCESS,rows=output if terminal else None,
+                            released_row_count=None if terminal else receipt['streamed_rows'].get(identifier,0),
+                            output_bytes=_encoded_size(output) if terminal else 0,
+                            elapsed_ms=elapsed if terminal else 0,
+                            metadata=dict(streaming_pipeline=root,intermediate_payload_materialized=False,
+                                timing_scope='whole fused tail at root; per-node timing unavailable',
+                                row_count_scope='distinct ordered answers' if terminal else 'streamed occurrences before terminal distinct')))
+                else:held.update(pipeline['nodes'])
+            if not pending:break
+
             ready = [
                 nodes[node_id]
                 for node_id in sorted(pending)
-                if all(
+                if node_id not in held and all(
                     input_id in results
                     and results[input_id].status is RuntimeNodeStatus.SUCCESS
                     for input_id in nodes[node_id].inputs
@@ -176,7 +207,7 @@ class FederatedScheduler:
                 "peak_registered_rows": peak_rows, "final_registered_rows": retained_rows,
                 "peak_registered_output_bytes": peak_bytes, "final_registered_output_bytes": retained_bytes,
                 "measurement_scope": "registered result payloads only; aliases may double-count; in-flight/temporary buffers and RSS excluded",
-                "final_rows_truncated": False} if self._retention == "roots" else {}),
+                "final_rows_truncated": False,"streaming_topk":pipeline_receipts} if self._retention == "roots" else {}),
         )
 
     @staticmethod
