@@ -28,3 +28,21 @@ def test_absence_requires_evidence_and_never_invents_a_zero(monkeypatch):
     assert all(c['passed'] for c in bindings.audit_bindings(release))
     release['figure_bindings'][0]['value']=0
     assert any(not c['passed'] for c in bindings.audit_bindings(release))
+
+
+def test_f6_cannot_relabel_old_storage_costs_as_current_runtime(monkeypatch):
+    row=next(r for r in matrix() if r['figure']=='F6' and r['method']=='XGAP')
+    monkeypatch.setattr(bindings,'matrix',lambda:[row])
+    docs={'manifest':dict(cells=[],prepared={'sha256':'prepared'},design=dict(source_storage='node_local',
+            source_rss_bytes=4,source_budget={'timeout_seconds':60})),
+        'scores':dict(schema_version='xgap-ch6-terminal-cost-sensitivity-v1',success=True,
+            rows=[dict(method='XGAP',eta=row['x_value'])],cost_audit='audit',pool={'sha256':'pool'},measurements={'sha256':'costs'}),
+        'audit':dict(schema_version='xgap-ch6-cost-measurement-audit-v1',success=True,pool={'sha256':'pool'},
+            frozen_costs={'sha256':'costs'},prepared={'sha256':'prepared'},source_storage='evidence',
+            source_rss_bytes=4,source_runtime=None,source_budget={'timeout_seconds':60})}
+    monkeypatch.setattr(bindings,'load_pin',lambda p:docs[p])
+    release=dict(units=[dict(unit_id='u',manifest='manifest')],figure_bindings=[
+        dict(figure='F6',method='XGAP',x_value=row['x_value'],status='offline_measured',evidence_pin='scores',source_unit_id='u')])
+    assert any(not c['passed'] and c['check'].startswith('offline_same_serving_contract') for c in bindings.audit_bindings(release))
+    docs['audit']['source_storage']='node_local'
+    assert all(c['passed'] for c in bindings.audit_bindings(release))

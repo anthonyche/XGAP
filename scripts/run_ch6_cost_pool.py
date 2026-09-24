@@ -5,7 +5,9 @@ import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 import time
+from dataclasses import asdict
 
 from xgap.agent.intent_execution import snapshot_identity
 from xgap.experiments.ch6_cost_pool import load,freeze,pin_identity
@@ -44,29 +46,40 @@ def worker(pool_pin,plan_id,profile_pin,output):
     return 0 if result.success else 2
 
 
-def run(pool_pin,prepared_pin,deployment,output):
+def run(pool_pin,prepared_pin,deployment,output,source_storage='evidence',source_runtime=None,startup_seconds=300):
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):raise ValueError('CPU-only allocation required')
+    if source_storage not in ('evidence','node_local') or not 60<=startup_seconds<=3600:raise ValueError('Explicit serving storage/startup contract required')
+    if source_runtime is not None and deployment!='rdf':raise ValueError('Repaired runtime is RDF only')
+    from ch6_source_runtime import session_options,validate_contract
+    if source_runtime is not None:validate_contract(load(source_runtime))
     pool=load(pool_pin);prepared=load(prepared_pin)
     if not prepared.get('success') or prepared['profile']['sha256']!=pool['profile']['sha256']:raise ValueError('Pool/store profile differs')
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     serving_bytes=sum(s['bytes'] for s in prepared['stores'].values())
     if type(serving_bytes) is not int or not 0<serving_bytes<=256*1024**3:raise ValueError('Bounded frozen serving-copy size required')
+    from run_bounded_joint_batch import BatchBudget,source_commit
+    commit=source_commit()
+    source_budget=SourceObservationBudget(max_calls=256,request_bytes=1024**2,phase_request_bytes=16*1024**2,
+        response_bytes=64*1024**2,phase_response_bytes=256*1024**2,timeout_seconds=60,capture_compression='gzip')
     write(root/'intent.json',dict(pool=pool_pin,prepared=prepared_pin,deployment=deployment,automatic_retries=0,
+                                 source_commit=commit,source_storage=source_storage,source_runtime=source_runtime,
+                                 source_budget=asdict(source_budget),startup_seconds=startup_seconds,
                                  serving_copy_bytes=serving_bytes,additional_output_budget_bytes=pool['budget']['output_bytes'],
                                  stage='offline measurement; no model calls and no formal method campaign'))
-    from run_bounded_joint_batch import BatchBudget,source_commit
-    source_commit()
     from native_store_session import NativeStoreSession
     from rdf_tdb_session import RdfTdbSession
+    workspace=Path(tempfile.mkdtemp(prefix='xgap-f6-',dir=os.environ.get('SLURM_TMPDIR','/tmp'))) if source_storage=='node_local' else None
     b=pool['budget'];budget=BatchBudget(root,dict(total_wall_seconds=b['total_seconds'],package_max_bytes=serving_bytes+b['output_bytes'],
-                                               free_disk_reserve_bytes=b['free_reserve_bytes']),time.time())
-    observations=[];session=None;closure=None;result=dict(success=False,model_calls=0,online_feedback=False)
+        free_disk_reserve_bytes=b['free_reserve_bytes']),time.time(),extra_roots=(workspace,) if workspace else ())
+    observations=[];session=None;closure=None;result=dict(success=False,model_calls=0,online_feedback=False,
+        pool=pool_pin,prepared=prepared_pin,source_commit=commit,intent=pin(root/'intent.json'))
     try:
         cls=NativeStoreSession if deployment=='native' else RdfTdbSession
         session=cls(root=root/'session',prepared_path=prepared_pin['path'],prepared_sha256=prepared_pin['sha256'],
-            discard_serving_copies=True,budget=SourceObservationBudget(max_calls=256,request_bytes=1024**2,phase_request_bytes=16*1024**2,
-                response_bytes=64*1024**2,phase_response_bytes=256*1024**2,timeout_seconds=60,capture_compression='gzip'))
-        with deadline(240):session.start()
+            discard_serving_copies=True,budget=source_budget,serving_root=workspace/'stores' if workspace else None,
+            **session_options(dict(contract=source_runtime) if source_runtime else None))
+        with deadline(startup_seconds):session.start()
+        result.update(source_ready=session.ready_pin,storage_placement=pin(root/'session/storage-placement.json'))
         for position,item in enumerate(pool['order']):
             if budget.sample([]):raise ValueError('Offline study budget reached: '+budget.status)
             directory=root/f'trial-{position:03d}';directory.mkdir();phase=f'cost-pool:{position}'
@@ -93,13 +106,15 @@ def run(pool_pin,prepared_pin,deployment,output):
                 worker=pin(child_path) if child else None,resources=monitor.summary())
             row,_=session.observer.persist_outcome(phase,directory/'outcome.json',row);observations.append(row)
             if not success or em!=1:raise ValueError('Prespecified plan failed admission; stop without pruning or retrying it')
-        freeze(pool,observations,root/'frozen-costs.json');result.update(success=True,frozen_costs=pin(root/'frozen-costs.json'))
+        result.update(success=True)
     except Exception as error:result.update(error_type=type(error).__name__,error=str(error))
     finally:
         if session:closure=session.close()
     result.update(observations=observations,closure=closure)
     if closure is None or not all(closure.get(k) is True for k in ('owned_groups_drained','owned_processes_terminal','observer_stopped')):
         result.update(success=False,closure_error='Owned sources did not close verifiably')
+    if result['success']:
+        freeze(pool,observations,root/'frozen-costs.json');result.update(frozen_costs=pin(root/'frozen-costs.json'))
     write(root/'receipt.json',result);print(json.dumps(dict(success=result['success'],observations=len(observations),output=str(root))))
     return 0 if result['success'] else 2
 
@@ -109,8 +124,15 @@ if __name__=='__main__':
     for n in ('pool-path','pool-sha256','output'):p.add_argument('--'+n,required=True)
     for n in ('prepared-path','prepared-sha256','profile-path','profile-sha256','plan-id'):p.add_argument('--'+n)
     p.add_argument('--deployment',choices=['native','rdf'],default='rdf');p.add_argument('--execute',action='store_true');p.add_argument('--worker',action='store_true')
+    p.add_argument('--source-storage',choices=['evidence','node_local'],default='evidence')
+    p.add_argument('--source-runtime-path');p.add_argument('--source-runtime-sha256')
+    p.add_argument('--startup-seconds',type=int,default=300)
     a=p.parse_args();pool_pin=dict(path=a.pool_path,sha256=a.pool_sha256)
     if a.worker:raise SystemExit(worker(pool_pin,a.plan_id,dict(path=a.profile_path,sha256=a.profile_sha256),a.output))
     if not a.execute:
         pool=load(pool_pin);print(json.dumps(dict(stage='dry_run',executions=len(pool['order']),budget=pool['budget'],model_calls=0)))
-    else:raise SystemExit(run(pool_pin,dict(path=a.prepared_path,sha256=a.prepared_sha256),a.deployment,a.output))
+    else:
+        if bool(a.source_runtime_path)!=bool(a.source_runtime_sha256):raise ValueError('Runtime path and digest are required together')
+        runtime=dict(path=a.source_runtime_path,sha256=a.source_runtime_sha256) if a.source_runtime_path else None
+        raise SystemExit(run(pool_pin,dict(path=a.prepared_path,sha256=a.prepared_sha256),a.deployment,a.output,
+            a.source_storage,runtime,a.startup_seconds))

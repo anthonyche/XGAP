@@ -29,6 +29,19 @@ def audit_bindings(release):
             records=[r for r in doc.get('rows',[]) if r['method']==row['method'] and r['eta']==row['x_value']]
             check('offline_terminal_pool_'+str(k),row['figure']=='F6' and doc.get('success') is True and
                   doc.get('schema_version')=='xgap-ch6-terminal-cost-sensitivity-v1' and len(records)==1)
+            audit=load_pin(doc['cost_audit']) if doc.get('cost_audit') else {}
+            check('offline_raw_cost_audit_'+str(k),audit.get('schema_version')=='xgap-ch6-cost-measurement-audit-v1'
+                and audit.get('success') is True and audit.get('pool',{}).get('sha256')==doc.get('pool',{}).get('sha256')
+                and audit.get('frozen_costs',{}).get('sha256')==doc.get('measurements',{}).get('sha256'))
+            source_units=[u for u in release['units'] if u['unit_id']==binding.get('source_unit_id')]
+            check('offline_source_unit_'+str(k),len(source_units)==1)
+            if len(source_units)==1:
+                source=load_pin(source_units[0]['manifest']);design=source['design']
+                check('offline_same_serving_contract_'+str(k),audit.get('prepared',{}).get('sha256')==source['prepared']['sha256']
+                    and audit.get('source_storage')==design.get('source_storage','evidence')
+                    and audit.get('source_rss_bytes')==design['source_rss_bytes']
+                    and audit.get('source_runtime')==design.get('source_runtime',{}).get('contract')
+                    and all(audit.get('source_budget',{}).get(key)==value for key,value in design['source_budget'].items()))
             continue
         check('plot_has_real_cells_'+str(k),bool(refs))
         if row['configuration_kind']=='fixed_reference':

@@ -21,6 +21,9 @@ def freeze(spec_path,spec_sha256,output):
         bundle=load(entry['bundle']);admission=load(entry['backend_admission']);stores=load(entry['prepared'])
         if not admission.get('success') or not admission.get('backend_roundtrip') or not stores.get('success'):
             raise ValueError('Compiler-only evidence cannot establish backend admission')
+        if (admission.get('admission_scope','complete_bundle')!='complete_bundle'
+                or admission.get('full_bundle_admitted',True) is not True):
+            raise ValueError('A diagnostic subset cannot establish complete deployment support')
         if admission['profile']['sha256']!=bundle['profile']['sha256'] or stores['profile']['sha256']!=bundle['profile']['sha256']:
             raise ValueError('Support gate and actual deployment differ')
         controlled=bundle.get('input_track')=='controlled'

@@ -24,3 +24,29 @@
 `8719ec8447907d53bfd5eff4cd47d0f122afa00078789bb81bca2b90c0f19798`。
 收集正式材料 JSON 元数据与已有 F6 证据，单文件 8 MiB / 合计 96 MiB 上限；
 排除数据库与源响应正文，不执行 backend/model，不提交 Slurm 作业。
+
+已下载并校验元数据包（1,107,488 bytes）：
+`1978c5223df126767885cd40882f7af3923a25ab0ac70666f4650d1ab74815f2`。
+1231 个 JSON 文件覆盖实际材料；collector 在最后追加调度信息时遇到登录节点
+Python 3.6 不接受 `text=True`，因此没有 inventory/调度附件。已写入的 tar 完整，
+本地逐成员安全解包；不把 collector 的整个流程报告为成功。
+
+实际 overall bank 为 D1 56、D2 56、D3 64 题，总计 176（不是初始每 W 200 的目标）。
+D1/D3 使用 v1 test，D2 使用 v5 test。D2 test 仍指向旧 relative profile；与已修复
+endpoint-degree profile 的差异只涉及 estimator、profile_id 和新增 offline provenance。
+`rebind_ch6_profile.py` 仅允许这一变换，保留每个 case 的输入/私有用户/参考哈希，
+拒绝任何源、语义或其他 offline 字段变化。局部测试 14 passed（含 runtime 合同）。
+
+D2 `0ac3f60` CPU 准入包已落盘，32 RDF + 24 native held-out queries，每题一个
+unified plan；无采集择优、无 LLM、无正式五方法调用。节点 compt311，8 CPU/24 GiB，
+source RSS 4 GiB、worker RSS 3 GiB、worker 120 s、HTTP 60 s，服务副本 node-local，
+离线启动 1800 s。RDF 冻结 Direct/lazy-v2；native 保留原 Neo4j/Fuseki。
+包有输入核验、独立 checkout 和唯一 submission journal；浏览器上传控制反复退出，
+截至本段尚未取得提交回执，不得推断已运行。
+
+F6 当前旧四计划×三重复成本来自 evidence/NFS 存储，不能直接改标签当作 node-local
+成本。新入口保留同一 Q、计划池、随机顺序和三重复，增加实际 engine/startup/storage
+pins；服务关闭成功后才能冻结成本。`audit_ch6_cost_measurement.py` 零执行地复核
+逐次 guard/worker、答案、成本、median、Z、误差扰动和关闭证据。发布检查要求 F6
+与明确的 D1 RDF unit 具有相同 prepared、源资源、存储、runtime 与观测合同。旧记录保留。
+四内部方法共享 terminal selector，允许重合；TS 仍不可评分，不优化基线结果。

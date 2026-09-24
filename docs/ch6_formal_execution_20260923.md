@@ -194,3 +194,10 @@ cells，不创造新重复；F6 引用已测量、同 Q/单位的 terminal sensi
 节点本地服务副本没有成功回收时，下一次 invocation 必须先完成存储恢复，不能漏算。
 服务复制边读取边校验 SHA-256，不降低身份校验；setup 时间仍与 query latency 分开。
 不同存储配置的旧结果不混入同一配对比较，不把公共基础设施改善归因于某种方法。
+
+F6 发布还要求原始测量审计：`audit_ch6_cost_measurement.py` 读取 pool 和 measurement
+回执，重新核对全部重复、逐次答案与成本、median/Z/eta、实际 ready 和服务关闭证明，
+不再次执行查询。`score_ch6_cost_sensitivity.py --audit-path ... --audit-sha256 ...`
+绑定该证据；每个 F6 `offline_measured` 图中位置指定 `source_unit_id`，发布检查核对
+其 prepared、source RSS、source observer、source storage 与 runtime 一致。未记录
+运行身份的历史测量不能通过补标签获得准入；同池重测必须保留旧版并披露原因。
