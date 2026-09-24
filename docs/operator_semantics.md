@@ -1,5 +1,7 @@
 # Operator Semantics
 
+[Closed endpoint access](decisions/native_closed_endpoints_20260925.md) resolves both logical node domains before closed-edge matching, preserving duplicate identities and the existing exact prefix proof. Full-source performance admission remains pending.
+
 [Binding NDV and streaming SPJ tails](decisions/binding_ndv_streaming_20260924.md) add a separately frozen v3 source-work model, proven earlier key drivers and an exact bounded-answer-memory runtime profile. Unsupported shapes retain the materialized evaluator; scanned work is not bounded by the result limit. Full-D2 admission of this version remains pending.
 
 A checked [external membership reduction](decisions/native_external_semijoin_20260924.md)

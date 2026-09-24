@@ -23,8 +23,10 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tests'))
 from test_native_semijoin import fixture, fused_plan, refine_driver
 
 
-def run(runtime, fuseki, java, output):
+def run(runtime, fuseki, java, output, closed_edges_only=False, only_case=None):
     import threading
+    if only_case is not None and not closed_edges_only:
+        raise ValueError('Single closed-edge case requires --closed-edges-only')
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     runtime=Path(runtime).resolve();fuseki=Path(fuseki).resolve();java=Path(java).resolve()
     ports=LoopbackPortReservations.acquire(3);http,bolt,rdfport=ports.ports
@@ -63,6 +65,22 @@ def run(runtime, fuseki, java, output):
           (c)-[:LINK {key:'c-n'}]->(n), (c)-[:LINK {key:'c-m'}]->(m),
           (alt)-[:LINK {key:'alt-copy'}]->(copy), (alt)-[:LINK {key:'alt-d'}]->(d)"""
         loaded=neo.execute(QueryArtifact('fixture','cypher',create));assert loaded.success,loaded.error
+        if closed_edges_only:
+            # Only duplicate-ID nodes carry the closing edge. Aliasing a
+            # previously bound native node would silently lose these answers.
+            adversary="""MATCH (a:Actor {key:'a'})-[r:LINK]->(d:Item {key:'d'}) DELETE r
+              CREATE (ac:Actor {key:'a',name:'anchorCopy'}),
+              (dc:Item {key:'d',name:'omegaCopy'}),
+              (ac)-[:LINK {key:'closure-1'}]->(dc),
+              (ac)-[:LINK {key:'closure-2'}]->(dc)"""
+            loaded=neo.execute(QueryArtifact('duplicate-endpoint-closure','cypher',adversary))
+            assert loaded.success,loaded.error
+            for label in ('Actor','Item'):
+                loaded=neo.execute(QueryArtifact('nonunique-key-index','cypher',
+                    'CREATE INDEX FOR (n:'+label+') ON (n.key)'))
+                assert loaded.success,loaded.error
+            loaded=neo.execute(QueryArtifact('await-indexes','cypher','CALL db.awaitIndexes(15)'))
+            assert loaded.success,loaded.error
         noise="UNWIND range(1,64) AS i CREATE (:Actor {key:'unused-a'+toString(i),name:'unused'}), (:Item {key:'unused-b'+toString(i),name:'unused'})"
         loaded=neo.execute(QueryArtifact('irrelevant-nodes','cypher',noise));assert loaded.success,loaded.error
         ttl=root/'control.ttl';ttl.write_text('''@prefix t: <https://tiny/> .
@@ -70,8 +88,11 @@ def run(runtime, fuseki, java, output):
           t:copy a t:Item; t:allowed true, false . t:n a t:Item .''')
         loaded=loader.load(ttl);assert loaded.success,loaded.to_dict()
         q=fixture()[0];cases=[]
-        for name in ('allowed','denied','early-exclusion-and-alternate-key','descending','empty','nullable-not-equal',
-                     'cycle-membership','cycle-empty'):
+        names=('cycle-membership','cycle-empty','cycle-descending','cycle-edge-identities') if closed_edges_only else (
+            'allowed','denied','early-exclusion-and-alternate-key','descending','empty','nullable-not-equal',
+            'cycle-membership','cycle-empty')
+        for name in names:
+            if only_case is not None and name!=only_case:continue
             case=deepcopy(q)
             if name=='denied':case['where'][-1]['right']['value']=False
             if name=='early-exclusion-and-alternate-key':case['limit']=1
@@ -80,6 +101,12 @@ def run(runtime, fuseki, java, output):
             if name=='nullable-not-equal':case['where'][-1]['op']='ne';case['where'][-1]['right']['value']=False
             if name.startswith('cycle-'):case['edges'].append(dict(var='h',type='LINK',source='a',target='d'))
             if name=='cycle-empty':case['where'][0]['right']['value']='absent'
+            if name=='cycle-descending':case['order_by'][0]['direction']='desc';case['limit']=1
+            if name=='cycle-edge-identities':
+                case['where'].append(dict(left=dict(var='d',property='name'),op='eq',
+                    right={'value':'omega'},value_type='scalar'))
+                case['select']['closing_edge']=dict(var='h',property=None)
+                case['order_by'].append(dict(field='closing_edge',direction='asc'));case['limit']=100
             cases.append((name,case))
         for name,q in cases:
             values,plan=fused_plan(q);original=values[4];refined=refine_driver(plan,values[-1]);target=root/name;target.mkdir()
@@ -101,16 +128,35 @@ def run(runtime, fuseki, java, output):
                 assert list(after.final_rows)==[dict(result='apple',other='aaa-alt',destination='omega')]
             if name in ('empty','cycle-empty'):assert not after.final_rows
             if name=='cycle-membership':assert after.final_rows
+            explanation=None
+            if closed_edges_only:
+                native=refined.nodes[-1];a=native.parameters['artifact']
+                # Keys come from this development fixture, never formal gold.
+                raw,_=FederatedScheduler._bind_artifact(native,a,[{native.parameters['bind_field']:'https://tiny/copy'}])
+                explanation=neo.explain(QueryArtifact.from_dict(raw))
+                assert explanation.success,explanation.error
+                write_once(target/'explain.json',explanation.to_dict())
+                def walk(n):
+                    yield n
+                    for child in n.get('children',[]):yield from walk(child)
+                edges={e['edge'] for e in a['parameters']['source_pushdown']['closed_endpoint_access']['edges']}
+                expansions=[n for n in walk(explanation.metadata['native_plan']['root'])
+                    if 'Expand' in n.get('operatorType','') and any('['+e+':' in n.get('Details','') for e in edges)]
+                assert expansions and all('Expand(Into)' in n['operatorType'] for n in expansions),expansions
+                if name=='cycle-edge-identities':
+                    assert {r['closing_edge'] for r in after.final_rows}=={'https://tiny/closure-1','https://tiny/closure-2'}
             def traffic(calls):
                 return dict(calls=len(calls),returned_rows=sum(len(r['execution']['rows']) for r in calls),
                     decoded_rows_json_bytes=sum(len(json.dumps(r['execution']['rows'],sort_keys=True).encode()) for r in calls))
             receipt['cases'].append(dict(name=name,rows=len(after.final_rows),ordered_rows_equal=True,
                 fused_traffic=traffic(records[fused_start:refined_start]),refined_traffic=traffic(records[refined_start:]),
                 byte_scope='serialized decoded result rows, not wire bytes; same tiny source and final answer'))
+            if explanation:
+                receipt['cases'][-1]['closing_edge_expand_into']=True
         # A star exposes a Cartesian-size intermediate even though each edge
         # input is small. Compare both physical binding and execution streaming.
         from test_streaming_star import star_plans
-        for descending in (False,True):
+        for descending in (() if closed_edges_only else (False,True)):
             original,refined,proofs=star_plans(descending=descending)
             name='star-desc' if descending else 'star-asc';target=root/name;target.mkdir()
             registry=BackendPluginRegistry();records=[];lock=threading.Lock()
@@ -147,4 +193,6 @@ def run(runtime, fuseki, java, output):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('runtime','fuseki','java','output'):parser.add_argument('--'+key,required=True)
+    parser.add_argument('--closed-edges-only',action='store_true')
+    parser.add_argument('--only-case',choices=('cycle-membership','cycle-empty','cycle-descending','cycle-edge-identities'))
     with deadline(300):raise SystemExit(run(**vars(parser.parse_args())))

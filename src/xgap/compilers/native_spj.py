@@ -63,9 +63,48 @@ def _connected_stages(patterns, pattern_variables, equalities, guards=None, cons
 def _render_stage(stage, predicates=(), imports=()):
     conditions=list(stage['predicates'])+list(predicates)
     text=stage['pattern']+('\nWHERE '+' AND '.join(conditions) if conditions else '')
+    # A closed edge has two independently bound logical identities. Resolve
+    # BOTH local node domains before matching the relationship. Leaving the
+    # second equality as a post-expansion filter can repeatedly scan the whole
+    # adjacency list. Separate node Matches preserve duplicate logical IDs;
+    # they never alias an outer physical node or assume uniqueness.
+    seeks=stage.get('endpoint_seeks',())
+    if seeks:
+        text='\n'.join('CALL {\nWITH '+s['outer']+'\n'+s['pattern']+
+            '\nWHERE '+s['equality']+'\nRETURN '+s['variable']+'\n}' for s in seeks)+'\n'+text
     if stage['first']:return text
     return ('CALL {\nWITH '+', '.join(sorted(set(stage['imports'])|set(imports)))+'\n'+text+
         '\nRETURN '+', '.join(stage['variables'])+'\n}')
+
+
+def _bind_closed_endpoints(stages, graph, identity_property):
+    """Attach necessary two-endpoint bindings, without changing stage order.
+
+    Only positive logical-identity equalities qualify. Scalar equality, OR,
+    NOT and a mere shared label do not establish a node identity binding.
+    All original Matches, joins and nullable predicates remain in the query.
+    """
+    edges={e['variable']:e for e in graph['edges']};bound=set();proof=[]
+    for stage in stages:
+        edge=next((edges[v] for v in stage['variables'] if v in edges),None)
+        seeks=[]
+        if edge:
+            for v in (edge['source'],edge['target']):
+                outer=sorted({b if a==v else a for a,b in graph['identity_equalities']
+                    if (a==v and b in bound or b==v and a in bound)
+                    and (b if a==v else a) in graph['nodes']})
+                if not outer:break
+                other=outer[0]
+                seeks.append(dict(variable=v,outer=other,
+                    pattern='MATCH ('+v+':'+ident(graph['nodes'][v])+')',
+                    equality=v+'.'+ident(identity_property)+' = '+other+'.'+ident(identity_property)))
+            if len(seeks)==2:
+                stage['endpoint_seeks']=seeks
+                stage['imports']=sorted(set(stage['imports'])|{s['outer'] for s in seeks})
+                proof.append(dict(pattern_index=stage['index'],edge=edge['variable'],
+                    bindings=[dict(variable=s['variable'],outer=s['outer']) for s in seeks]))
+        bound.update(stage['variables'])
+    return proof
 
 
 def _connected_matches(patterns, pattern_variables, equalities, guards=None, constant_variables=()):
@@ -316,8 +355,11 @@ def compile_native_spj(program, backend, schema, source_bindings, *, prefix_topk
         raise ValueError('Native SPJ top-K order must cover every output column')
     if any(v.kind not in ('identity', 'string', 'boolean', 'integer') for v in values.values()):
         raise ValueError('Native SPJ final output excludes mixed floating representatives')
-    text,pattern_order = _connected_matches(patterns,pattern_variables,access_equalities,guard_bindings,
+    stages=_connected_stages(patterns,pattern_variables,access_equalities,guard_bindings,
         [v for v,_ in work_graph['constant_equalities']])
+    endpoint_bindings=_bind_closed_endpoints(stages,work_graph,backend.identity_property)
+    text='\n'.join(_render_stage(stage) for stage in stages)
+    pattern_order=[stage['index'] for stage in stages]
     text += '\nWITH ' + ', '.join(v for variables in pattern_variables for v in variables)
     text += ('\nWHERE ' + ' AND '.join(conditions) if conditions else '')
     text += '\nRETURN DISTINCT ' + ', '.join(render(v) + ' AS ' + ident(f) for f, v in values.items())
@@ -333,14 +375,16 @@ def compile_native_spj(program, backend, schema, source_bindings, *, prefix_topk
         nullable_predicates_retained=True, native_identity_coalescing=False,
         join_order_profile='bound-connected-matches-v1',pattern_order=pattern_order,
         correlated_match_calls=len(patterns)-1,earliest_bound_predicates=True)
+    if endpoint_bindings:
+        proof['closed_endpoint_access']=dict(profile='independent-keyed-endpoints-v1',
+            edges=endpoint_bindings,logical_identity_domains_preserved=True,
+            both_endpoints_bound_before_edge=True,additional_node_matches=2*len(endpoint_bindings))
     if identity_membership is not None:
         proof['identity_membership'] = dict(profile='exact-external-key-semijoin-v1',
             match=match_id,parameter=membership_parameter,namespace=namespace,
             before_complete_witness_and_topk=True)
     if (prefix_topk and 1<=len(ordering)==len(values)<=8
             and all(v.origin and v.origin[0] in work_graph['nodes'] for v in values.values())):
-        stages=_connected_stages(patterns,pattern_variables,access_equalities,guard_bindings,
-            [v for v,_ in work_graph['constant_equalities']])
         candidate,prefix_proof=_prefix_topk(stages,values,ordering,conditions,render,limit)
         if len(candidate.encode())<=131072:
             text=candidate

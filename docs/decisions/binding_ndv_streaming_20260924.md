@@ -151,3 +151,14 @@ Direct SSH again timed out. The user has been asked to download the archive;
 a bounded read-only audit is prepared locally. No new query/job is submitted.
 Preserve all three newly successful cases and inspect the failed worker, final
 plan, source responses and resource counters before changing implementation.
+
+
+## Verified evidence and diagnostic continuation (2026-09-25)
+
+The raw archive is now verified; the earlier pending section is historical.
+Three empty ordered answers pass. Cycle/W4 times out on its fifth source request,
+with seven verified external membership keys and no observed RSS budget breach.
+The full-source single EXPLAIN job **3868871** is submitted on the same checkout.
+See [the full audit](../report/ch6_remaining6_diagnosis_3868824.md) for counters,
+limitations, unattempted cases and the observed model/compiler schedule mismatch.
+No production-code rewrite or answer-query rerun has occurred in this continuation.
