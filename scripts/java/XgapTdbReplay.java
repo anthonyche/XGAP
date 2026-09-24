@@ -21,6 +21,7 @@ public class XgapTdbReplay {
     static volatile long rows;
     static String fileMode;
     static String rangeImplementation;
+    static java.lang.reflect.Field mappedInvocations;
     static final Map<String,List<String>> blockManagers=new ConcurrentHashMap<>();
     static Path metrics;
     static Map<String,Long> baseline;
@@ -97,6 +98,7 @@ public class XgapTdbReplay {
         try {
             Map<String,Object> out=new TreeMap<>();out.put("phase",phase);out.put("rows",rows);out.put("file_mode",fileMode);
             out.put("range_implementation",rangeImplementation);
+            out.put("mapped_range_invocations",mappedInvocations==null?null:((AtomicLong)mappedInvocations.get(null)).get());
             out.put("index_block_managers",blockManagers);out.put("dboe_file_mode",org.apache.jena.dboe.sys.SystemIndex.fileMode().toString());
             out.put("jena_version", org.apache.jena.Jena.VERSION);out.put("linux_proc_available",Files.exists(Path.of("/proc/self/stat")));
             out.put("query_elapsed_ms",queryAt==0?null:(System.nanoTime()-queryAt)/1e6);
@@ -105,7 +107,7 @@ public class XgapTdbReplay {
             Map<String,Long> p=proc();out.put("proc_cumulative",p);
             Map<String,Long> delta=new TreeMap<>();if(baseline!=null) p.forEach((k,v)->{if(baseline.containsKey(k)) delta.put(k,v-baseline.get(k));});
             out.put("query_proc_delta",baseline==null?null:delta);
-            List<String> stack=new ArrayList<>();for(StackTraceElement e:queryThread.getStackTrace()) { if(stack.size()==18)break;stack.add(e.toString()); }
+            List<String> stack=new ArrayList<>();for(StackTraceElement e:queryThread.getStackTrace()) { if(stack.size()==32)break;stack.add(e.toString()); }
             out.put("query_thread_stack",stack);
             // Main-thread wchan is insufficient: Java's query thread is often another native TID.
             List<Map<String,String>> blocked=new ArrayList<>();
@@ -129,6 +131,10 @@ public class XgapTdbReplay {
         Class<?> range=Class.forName("org.apache.jena.dboe.trans.bplustree.BPTreeRangeIterator");
         boolean lazy=Arrays.stream(range.getDeclaredMethods()).anyMatch(m->m.getName().equals("lazyPages"));
         rangeImplementation=(lazy?"xgap-experimental-lazy-v1 ":"jena-original ")+range.getProtectionDomain().getCodeSource().getLocation();
+        Class<?> mapped=Class.forName("org.apache.jena.dboe.trans.bplustree.BPTreeRangeIteratorMapper");
+        try { mappedInvocations=mapped.getDeclaredField("xgapInvocations");mappedInvocations.setAccessible(true); }
+        catch(NoSuchFieldException original) { mappedInvocations=null; }
+        rangeImplementation+="; mapped="+(mappedInvocations==null?"jena-original ":"xgap-experimental-lazy-v2 ")+mapped.getProtectionDomain().getCodeSource().getLocation();
         fileMode=org.apache.jena.tdb2.sys.SystemTDB.fileMode().toString();
         if(!fileMode.equals(args[4]))throw new IllegalStateException("file mode not applied");
         metrics=Path.of(args[2]);if(Files.exists(metrics))throw new IllegalArgumentException("new output required");

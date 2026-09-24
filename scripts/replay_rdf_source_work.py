@@ -33,15 +33,21 @@ def main():
         raise ValueError('Insufficient diagnostic-copy space')
     source=Path(__file__).parent/'java/XgapTdbReplay.java'
     overlay=source.parent/'jena_lazy_range/BPTreeRangeIterator.java'
+    mapper=overlay.with_name('BPTreeRangeIteratorMapper.java')
     overlay_pin=None
     if a.lazy_range:
         # Do not silently apply an internal engine overlay to another Jena build.
         with zipfile.ZipFile(a.jar) as jar:
             original=jar.read('org/apache/jena/dboe/trans/bplustree/BPTreeRangeIterator.class')
+            original_mapper=jar.read('org/apache/jena/dboe/trans/bplustree/BPTreeRangeIteratorMapper.class')
         digest=hashlib.sha256(original).hexdigest()
         if digest!='cd48a47afe150e1b4cd2a8645e8c6ad6b6d1d758d7bf1708bdae6d17c80f696d':
             raise ValueError('Unadmitted Jena range implementation')
+        mapper_digest=hashlib.sha256(original_mapper).hexdigest()
+        if mapper_digest!='8dfbaeb5bec7a7c9312f87467a50b15634c0000bb98ddb88f4b96704ea7538c2':
+            raise ValueError('Unadmitted Jena mapped-range implementation')
         overlay_pin=dict(source=pin(overlay),original_class_sha256=digest,
+            mapper_source=pin(mapper),original_mapper_class_sha256=mapper_digest,revision='lazy-v2-both-paths',
             scope='offline read-only diagnostic; engine JAR unchanged; not an official Jena release')
     budget=ProcessBudget(wall_seconds=60,max_group_rss_bytes=4*1024**3,max_log_bytes=4*1024**2)
     write_once(o/'intent.json',dict(schema_version='xgap-rdf-source-work-replay-v1',
@@ -54,7 +60,7 @@ def main():
         page_size_bytes=os.sysconf('SC_PAGE_SIZE'),model_calls=0,full_workload_run=False))
     classes=o/'classes';classes.mkdir();javac=Path(a.java).with_name('javac')
     subprocess.run([str(javac),'-proc:none','--release','21','-cp',a.jar,'-d',str(classes),str(source),str(source.with_name('XgapStorageMode.java')),
-        *([str(overlay)] if a.lazy_range else [])],check=True)
+        *([str(overlay),str(mapper)] if a.lazy_range else [])],check=True)
     if a.lazy_range:
         write_once(o/'range-overlay.json',dict(input=overlay_pin,classes=[pin(f) for f in sorted(classes.rglob('BPTreeRangeIterator*.class'))]))
     write_once(o/'copy.json',copy_sealed_store(s['path'],work,seal['files']))

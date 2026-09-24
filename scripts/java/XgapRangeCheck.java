@@ -16,6 +16,12 @@ public class XgapRangeCheck {
     static void require(boolean b,String message) { if(!b)throw new AssertionError(message); }
     static Record key(int n) { return new Record(ByteBuffer.allocate(4).putInt(n).array(),null); }
     static int number(Record r) { return ByteBuffer.wrap(r.getKey()).getInt(); }
+    static final org.apache.jena.dboe.base.record.RecordMapper<Integer> INTEGER = (buffer,slot,keyBytes,factory)->{
+        Record r=factory.buildFrom(buffer,slot);
+        // RecordMapper owns the key scratch buffer used for exclusive upper bounds.
+        if(keyBytes!=null)System.arraycopy(r.getKey(),0,keyBytes,0,keyBytes.length);
+        return number(r);
+    };
     static class Reads extends BlockMgrWrapper {
         int reads;
         Reads(BlockMgr mgr) { super(mgr); }
@@ -25,16 +31,20 @@ public class XgapRangeCheck {
         Reads r=new Reads(mgr.getBlockMgr());
         Field f=PageBlockMgr.class.getDeclaredField("blockMgr");f.setAccessible(true);f.set(mgr,r);return r;
     }
-    static void bounds(BPlusTree tree,List<Integer> oracle,Integer lo,Integer hi) {
-        Iterator<Record> it=tree.iterator(lo==null?null:key(lo),hi==null?null:key(hi));
+    static void bounds(BPlusTree tree,List<Integer> oracle,Integer lo,Integer hi,boolean mapped) {
+        Iterator<Integer> it=mapped?tree.iterator(lo==null?null:key(lo),hi==null?null:key(hi),INTEGER):
+            org.apache.jena.atlas.iterator.Iter.map(tree.iterator(lo==null?null:key(lo),hi==null?null:key(hi)),XgapRangeCheck::number);
         List<Integer> got=new ArrayList<>();
-        while(it.hasNext()) { require(it.hasNext(),"hasNext not idempotent");got.add(number(it.next())); }
+        while(it.hasNext()) { require(it.hasNext(),"hasNext not idempotent");got.add(it.next()); }
         List<Integer> expected=oracle.stream().filter(v->(lo==null||v>=lo)&&(hi==null||v<hi)).toList();
         require(got.equals(expected),"range mismatch "+lo+".."+hi);
         try { it.next();throw new AssertionError("past-end next accepted"); }
         catch(NoSuchElementException expectedEnd) {}
     }
-    static int ranges() throws Exception {
+    static void bounds(BPlusTree tree,List<Integer> oracle,Integer lo,Integer hi) {
+        bounds(tree,oracle,lo,hi,false);bounds(tree,oracle,lo,hi,true);
+    }
+    static List<Integer> ranges() throws Exception {
         BPlusTree tree=BPlusTreeFactory.makeMem(8,4,0);
         tree.nonTransactional();
         List<Integer> oracle=new ArrayList<>();for(int i=0;i<4096;i++)oracle.add(i*2);
@@ -45,13 +55,18 @@ public class XgapRangeCheck {
         require(prefix.hasNext()&&number(prefix.next())==0,"first prefix record");
         int prefixReads=records.reads;
         if(prefix instanceof AutoCloseable closeable)closeable.close();
+        records.reads=0;
+        Iterator<Integer> mapped=tree.iterator(null,null,INTEGER);
+        require(mapped.hasNext()&&mapped.next()==0,"mapped prefix record");
+        int mappedReads=records.reads;
+        if(mapped instanceof AutoCloseable closeable)closeable.close();
         bounds(tree,oracle,null,null);bounds(tree,oracle,null,1);bounds(tree,oracle,8190,null);
         bounds(tree,oracle,9999,null);bounds(tree,oracle,4,4);bounds(tree,oracle,9,3);
         Random rng=new Random(717);
         for(int i=0;i<100;i++) { int lo=rng.nextInt(8300);bounds(tree,oracle,lo,lo+rng.nextInt(500)); }
         for(int n=0;n<8192;n+=14) { tree.delete(key(n));oracle.remove(Integer.valueOf(n)); }
         bounds(tree,oracle,null,null);bounds(tree,oracle,511,8191);tree.close();
-        return prefixReads;
+        return List.of(prefixReads,mappedReads);
     }
     static int query(Dataset d) {
         try(QueryExecution q=QueryExecutionFactory.create("SELECT ?s WHERE { ?s <urn:p> <urn:o> }",d)) {
@@ -89,7 +104,7 @@ public class XgapRangeCheck {
     }
     public static void main(String[] args) throws Exception {
         XgapStorageMode.configure("direct");
-        int reads=ranges();mvcc(Path.of(args[0]));
-        System.out.println("{\"success\":true,\"range_cases\":108,\"first_record_page_gets\":"+reads+",\"mvcc_and_reopen\":true}");
+        List<Integer> reads=ranges();mvcc(Path.of(args[0]));
+        System.out.println("{\"success\":true,\"range_cases_per_path\":108,\"paths\":2,\"first_record_page_gets\":"+reads+",\"mvcc_and_reopen\":true}");
     }
 }

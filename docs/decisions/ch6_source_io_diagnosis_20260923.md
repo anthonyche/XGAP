@@ -158,3 +158,23 @@ extra warmup, full graph preprocessing, alternative-plan selection or LLM call.
 Only after successful result/guard/identity verification can the original fifth
 pipeline case be considered. A later common-backend adoption must pin and disclose
 this modified engine equally; no silent baseline substitution or output tuning.
+
+### Mapped tuple path coverage correction
+
+3864057 completed its wrapper but the query timed out: final sample 53.501 s,
+30 witnesses, 15,175,680 storage bytes, 0 major faults. Cleanup completed. The
+ordinary range class was loaded, but the sampled stack still called the eager
+BPTreeNode.iterator. Pinned bytecode identifies the second path:
+TupleIndexRecord uses BPlusTree.iterator(..., RecordMapper), which invokes the
+separate BPTreeRangeIteratorMapper. The first overlay did not cover it; loading
+an overlay class was insufficient runtime attestation. No improvement is claimed.
+
+The v2 overlay covers both paths with the same lazy-page helper and adds a mapped
+invocation counter. Original mapped source compiled instructions match the pinned
+JAR. Both original and patched builds pass 108 integer-oracle ranges on EACH path
+and real TDB MVCC/rollback/reopen; first-record logical record-page gets are
+14/14 versus 2/2. The toy query returns the identical witness with three measured
+mapped invocations. Intermediate test-harness failures (mapper key-scratch
+contract) remain in local logs; corrected tests pass against both builds.
+Next is one same-query, same-budget v2 diagnosis; no full pilot or production
+overlay adoption. The first failed overlay remains sealed separately.

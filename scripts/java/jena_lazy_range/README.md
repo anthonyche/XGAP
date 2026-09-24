@@ -1,9 +1,13 @@
 # Experimental read-only Jena range overlay
 
-Derived from Apache Jena 5.6.0 `BPTreeRangeIterator.java` (Apache-2.0; included
+Derived from Apache Jena 5.6.0 `BPTreeRangeIterator.java` and
+`BPTreeRangeIteratorMapper.java` (Apache-2.0; included
 LICENSE.txt). Apache Jena is Copyright 2011–2025 The Apache Software Foundation.
 Upstream source:
 https://github.com/apache/jena/blob/jena-5.6.0/jena-db/jena-dboe-trans-data/src/main/java/org/apache/jena/dboe/trans/bplustree/BPTreeRangeIterator.java
+
+Mapped tuple path:
+https://github.com/apache/jena/blob/jena-5.6.0/jena-db/jena-dboe-trans-data/src/main/java/org/apache/jena/dboe/trans/bplustree/BPTreeRangeIteratorMapper.java
 
 XGAP modification, 2026-09-24: the range traversal snapshots child page IDs in
 the existing block read scope, then fetches each page only when consumed, under
@@ -26,8 +30,18 @@ Provenance checks:
 - Compiled upstream text has identical resolved javap instructions to the pinned
   class, ignoring constant-pool ordinals/debug line tables. No original methods
   were replaced from a different release.
+- Mapped original class SHA-256:
+  `8dfbaeb5bec7a7c9312f87467a50b15634c0000bb98ddb88f4b96704ea7538c2`;
+  normalized upstream text SHA-256:
+  `2cefed31e9cb694a0328c29c3b44fa84ae16b437e3caa1048573721627051f59`.
+  Its original compiled instructions also match. The mapped path calls the same
+  lazy-page helper; an offline counter attests actual mapped-iterator creation.
 
-`XgapRangeCheck` checks 108 ranges against an independent integer oracle,
+The initial v1 overlay covered only ordinary records; diagnostic 3864057 still
+used the upstream mapped tuple path and timed out. v2 covers both paths. Merely
+loading one modified class is not proof of active query-path coverage.
+
+`XgapRangeCheck` checks 108 ranges on EACH path against an independent integer oracle,
 including misses, exclusive upper bounds, deletion and exhaustion. It also
 checks a real TDB reader spanning a concurrent writer commit, rollback and reopen.
 The page-get count is a logical block-manager read count, including cache hits;

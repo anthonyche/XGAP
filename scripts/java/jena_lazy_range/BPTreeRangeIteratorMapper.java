@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// XGAP experimental patch, 2026-09-24: defer child page reads until consumed.
-// Derived from Apache Jena 5.6.0; see README.md. Read-only diagnostic use only.
 package org.apache.jena.dboe.trans.bplustree;
 
 import java.util.*;
+
+import org.apache.jena.dboe.base.record.RecordMapper;
 
 import org.apache.jena.atlas.iterator.Iter;
 import org.apache.jena.atlas.lib.InternalErrorException;
@@ -27,27 +27,38 @@ import org.apache.jena.dboe.base.record.Record;
 import org.apache.jena.dboe.trans.bplustree.AccessPath.AccessStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-/** Iterator over records that does not assume records block linkage */
-class BPTreeRangeIterator implements Iterator<Record> {
-    static Logger log = LoggerFactory.getLogger(BPTreeRangeIterator.class);
 
-    public static Iterator<Record> create(BPTreeNode node, Record minRec, Record maxRec) {
+// Temp - merge back into BPTreeRangeIterator
+
+// What about RecordRangeIterator
+/** Iterator that converts to X directly */
+class BPTreeRangeIteratorMapper<X> implements Iterator<X> {
+    static Logger log = LoggerFactory.getLogger(BPTreeRangeIteratorMapper.class);
+    public static <X> Iterator<X> create(BPTreeNode node, Record minRec, Record maxRec, int keyLength, RecordMapper<X> mapper) {
         if ( minRec != null && maxRec != null && Record.keyGE(minRec, maxRec) )
             return Iter.nullIter();
-        return new BPTreeRangeIterator(node, minRec, maxRec);
+        xgapInvocations.incrementAndGet();
+        return new BPTreeRangeIteratorMapper<>(node, minRec, maxRec, keyLength, mapper);
     }
+    // XGAP offline diagnostic: attest use of the mapped tuple path, not class presence alone.
+    static final java.util.concurrent.atomic.AtomicLong xgapInvocations = new java.util.concurrent.atomic.AtomicLong();
     // Convert path to a stack of iterators
-    private final Deque<Iterator<BPTreePage>> stack = new ArrayDeque<>();
+    final private Deque<Iterator<BPTreePage>> stack = new ArrayDeque<>();
     final private Record minRecord;
     final private Record maxRecord;
-    private Iterator<Record> current;
-    private Record slot = null;
+    final private RecordMapper<X> mapper;
+    private Iterator<X> current;
+    private X slot = null;
+    final private byte[] keySlot;
     private boolean finished = false;
-    BPTreeRangeIterator(BPTreeNode node, Record minRec, Record maxRec ) {
+    BPTreeRangeIteratorMapper(BPTreeNode node, Record minRec, Record maxRec, int keyLength, RecordMapper<X> mapper) {
         this.minRecord = minRec;
         this.maxRecord = maxRec;
+        this.mapper = mapper;
+        this.keySlot = new byte[keyLength];
+
         BPTreeRecords r = loadStack(node);
-        current = getRecordsIterator(r, minRecord, maxRecord);
+        current = getRecordsIterator(r, minRecord, maxRecord, mapper);
     }
     @Override
     public boolean hasNext() {
@@ -66,7 +77,7 @@ class BPTreeRangeIterator implements Iterator<Record> {
         return true;
     }
     // Move across the head of the stack until empty - then move next level.
-    private Iterator<Record> moveOnCurrent() {
+    private Iterator<X> moveOnCurrent() {
         Iterator<BPTreePage> iter = null;
         while(!stack.isEmpty()) {
             iter = stack.peek();
@@ -84,13 +95,13 @@ class BPTreeRangeIterator implements Iterator<Record> {
         else {
             r = (BPTreeRecords)p;
         }
-        return getRecordsIterator(r, minRecord, maxRecord);
+        return getRecordsIterator(r, minRecord, maxRecord, mapper);
     }
 
     // ---- Places we touch blocks.
-    private static Iterator<Record> getRecordsIterator(BPTreeRecords records, Record minRecord, Record maxRecord) {
+    private static<X>  Iterator<X> getRecordsIterator(BPTreeRecords records, Record minRecord, Record maxRecord, RecordMapper<X> mapper) {
         records.bpTree.startReadBlkMgr();
-        Iterator<Record> iter = records.getRecordBuffer().iterator(minRecord, maxRecord);
+        Iterator<X> iter = records.getRecordBuffer().iterator(minRecord, maxRecord, mapper);
         records.bpTree.finishReadBlkMgr();
         return iter;
     }
@@ -105,7 +116,7 @@ class BPTreeRangeIterator implements Iterator<Record> {
         List<AccessStep> steps = path.getPath();
         for ( AccessStep step : steps ) {
             BPTreeNode n = step.node;
-            Iterator<BPTreePage> it = lazyPages(n, minRecord, maxRecord);
+            Iterator<BPTreePage> it = BPTreeRangeIterator.lazyPages(n, minRecord, maxRecord);
             if ( it == null || ! it.hasNext() )
                 continue;
             BPTreePage p = it.next();
@@ -117,32 +128,6 @@ class BPTreeRangeIterator implements Iterator<Record> {
         node.bpTree.finishReadBlkMgr();
         return (BPTreeRecords)p;
     }
-    // Snapshot only page IDs while holding the original block-manager read scope.
-    // Fetch one page at a time in a new balanced read scope. MVCC transaction
-    // identity remains the caller's; no dataset, comparator, bounds or ordering changes.
-    static Iterator<BPTreePage> lazyPages(BPTreeNode node, Record min, Record max) {
-        if (min != null && max != null && Record.keyGE(min, max))
-            return Collections.emptyIterator();
-        int lo = min == null ? 0 : BPT.apply(node.findSlot(min));
-        int hi = max == null ? node.getCount() : BPT.apply(node.findSlot(max));
-        int[] ids = new int[hi - lo + 1];
-        for (int i = 0; i < ids.length; i++) ids[i] = node.getPtrBuffer().get(lo + i);
-        final int parent = node.getId();
-        final var tree = node.bpTree;
-        final org.apache.jena.dboe.base.page.PageBlockMgr<? extends BPTreePage> manager =
-            node.isLeaf() ? tree.getRecordsMgr() : tree.getNodeManager();
-        return new Iterator<BPTreePage>() {
-            int cursor;
-            public boolean hasNext() { return cursor < ids.length; }
-            public BPTreePage next() {
-                if (!hasNext()) throw new NoSuchElementException();
-                tree.startReadBlkMgr();
-                try { return manager.getRead(ids[cursor++], parent); }
-                finally { tree.finishReadBlkMgr(); }
-            }
-        };
-    }
-
     // ----
 
     private void end() {
@@ -158,10 +143,10 @@ class BPTreeRangeIterator implements Iterator<Record> {
     }
 
     @Override
-    public Record next() {
+    public X next() {
         if ( ! hasNext() )
             throw new NoSuchElementException();
-        Record r = slot;
+        X r = slot;
         if ( r == null )
             throw new InternalErrorException("Null slot after hasNext is true");
         slot = null;
