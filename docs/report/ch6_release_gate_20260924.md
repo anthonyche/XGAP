@@ -7,7 +7,10 @@
 AllNodesScan，索引必要条件使其改为 NodeUniqueIndexSeek。估计基数不等于实际
 扫描量；不能由此宣称大图执行已通过或获得多少提速。
 原 zigzag/W1 单题复验包 `xgapnativec517451.zip` 已冻结，保持同一完整输入及预算；
-用户已校验并提交 **3867351**，最终回执待收取。不重跑成功前缀，不试跑择优。
+用户已校验并提交 **3867351**；其单题仍失败（attempted=audited=1）。
+归档 4,879,633 B，SHA `76037e8d2ab5855796772152dba487a47975d60c955918384c0b101c3738f183`。
+原始证据待下载，暂不判定这次失败仍是源超时、响应体上限还是协调器资源问题。
+不重跑成功前缀、不重提同一失败、不试跑择优。
 本地审计：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/native-explain-local-audit-3866035.json`。
 详见[原生索引证据和包身份](../decisions/native_identity_index_access_20260924.md)。
 

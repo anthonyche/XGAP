@@ -79,6 +79,11 @@ One final unified plan, no retries/LLM, worker 120s/3GiB, HTTP 60s, source 4GiB,
 same compt311 and node-local serving. It does not rerun the successful prefix.
 Output `formal-native-index-replay-v1/D2/native` remains diagnostic, never full
 admission. After browser upload became unavailable, the user completed the
-SHA-checked staging and returned unique job **3867351**. Final evidence is pending.
+SHA-checked staging and returned unique job **3867351**. It ran on compt311.
+The user then returned `success=false, attempted=1, audited=1` for the same case.
+Its 4,879,633-byte archive has reported SHA-256
+`76037e8d2ab5855796772152dba487a47975d60c955918384c0b101c3738f183`;
+raw records await local download/verification. Do not infer the new failure layer
+from the old timeout, and do not count index-path confirmation as execution success.
 Journal: `native-index-c517451/`; output log: `native-index-3867351.out`.
 Do not resubmit while awaiting this job or treat submission as successful execution.
