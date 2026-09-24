@@ -55,3 +55,26 @@ source schema/statistics/policy and unchanged frozen v3 model. The pending gate
 permits one original W4 final execution, zero LLM calls and no cohort rerun.
 Full-source data, query, reference, source/worker RSS and 60-second HTTP timeout
 remain fixed. Passing one case does not grant full native/RDF release admission.
+
+
+## Frozen one-case handoff
+
+Code `c3437fc309ef54f35d51288a9c284abbe2323127` is committed and pushed.
+Local package `/Users/anthonyche/Downloads/xgapclosedc3437fc.zip`, 24,394 bytes,
+SHA-256 `9a28d6c42363bbe27f3e0ff76d8858990e9a2c72dc316b99af16e5ab7e9e7b44`.
+The delta requires the server's `5f94023` checkout and creates a new checkout;
+old versions and results are preserved. Stage validation passed against the
+actual downloaded archives; changed case/query/snapshot/estimator contracts
+are rejected. Python 3.6 staging syntax, shell syntax, bundle and ZIP members
+are verified. Zero remote calls/jobs were made by local validation.
+
+Only original native index 10, cycle/W4, is admitted, with at most one final-plan
+execution, no EXPLAIN or LLM calls. Source stores, frozen v3 model, reference and
+120-second worker / 60-second request / 3-GiB method / 4-GiB source caps stay fixed.
+Before source startup the server must reproduce the exact locally selected plan
+hash. Existing journal/checkout/output blocks repeat submission. Result archive
+is `xgap-native-closed-<job>.tar.gz`; journal is
+`/home/hxc859/xgap-ch6-artifacts/native-closed-c3437fc` and output is
+`/home/hxc859/xgap-ch6-artifacts/formal-native-closed-endpoints-v1/D2`.
+The user was asked to upload and stage it because automatic access is unavailable.
+Submission is not yet confirmed. Full formal launch remains closed.
