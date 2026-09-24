@@ -120,11 +120,30 @@ limits remain as 3867524 (CPU only, zero model calls); the allocation is 70
 minutes for two setup phases, not a larger query-time allowance.
 
 Stage Python 3.6 grammar, driver syntax, shell syntax, bundle prerequisite and
-member hashes were checked. Upload and submission remain unconfirmed: the
-file page became blank while attempting to collect the old archive; automatic
-terminal input remains disabled. Local one-line command file:
+member hashes were checked. The user confirmed upload, checksum verification,
+staging at exact source `6169b8f`, and submission as **3868056**. Do not resubmit.
+Automatic terminal input remains disabled after earlier control failures;
+the user has been asked for one read-only status/log query. Local command file
+retained for provenance (already executed, not a retry instruction):
 `/Users/anthonyche/Downloads/xgapprefix6169b8f-command.txt`.
 
-Remote journal `native-prefix-6169b8f`, log `native-prefix-<job>.out`, output
-`formal-native-prefix-gate-v1/D2`, archive `/home/hxc859/xgap-prefix-gate-<job>.tar.gz`.
-A successful single-case gate would not establish full held-out admission.
+Remote journal `native-prefix-6169b8f`, log `native-prefix-3868056.out`, output
+`formal-native-prefix-gate-v1/D2`, archive
+`/home/hxc859/xgap-prefix-gate-3868056.tar.gz`.
+
+## Server completion: 3868056
+
+The user supplied and the read-only OnDemand terminal independently displayed
+COMPLETED/0:0, compt311, elapsed 00:03:26. Native receipt summary reports
+success=true, attempted=audited=1, error=null; the final gate summary reports
+success=true, explain_success=true, attempted=1. The 206 seconds are allocation
+elapsed time including source setup, not measured query latency.
+
+The archive is 209,955 bytes with server-reported SHA-256
+`68d2540e205134d901a0ce61ac60f4ad7273189a7269f5efc85fc6a3f34b4e8f`.
+Local bytes, detailed answer equality, execution latency, resource samples and
+closure remain to be audited. The file listing showed the archive, but the
+automated page became blank again; manual download to local Downloads was
+requested. No new job or repeated query was submitted. Stop rewriting this
+case; audit and freeze its evidence before choosing the remaining admission
+scope. This successful single-case gate does not establish full held-out admission.
