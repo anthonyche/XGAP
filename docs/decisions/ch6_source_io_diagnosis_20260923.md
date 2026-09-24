@@ -248,6 +248,12 @@ existing new deployment/submission target. Output:
 `formal-rdf-remaining-lazy-v1/D2/rdf`; journal: `remaining-lazy-v1-submission/`.
 Do not resubmit or treat RUNNING as answer evidence.
 
+Subsequently the user returned sacct COMPLETED/0:0, elapsed 6m09s on compt311,
+and the wrapper's `success=true, attempted=3, audited=3, error=null`. In pinned
+`9d40ade` this entails EM=1 for each selected case and verified service closure;
+there was no retry. Per-case resource receipts are still being collected. This
+completes the previously blocked suffix diagnosis, not full-bundle/formal release.
+
 A read-only audit while it runs identifies an explicit next boundary:
 `run_bounded_joint_batch.validate` currently accepts only the optional
 `design.source_storage` deployment field; `_run` constructs `RdfTdbSession`
