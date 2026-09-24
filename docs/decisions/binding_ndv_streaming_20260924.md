@@ -98,3 +98,35 @@ budget checks still gate the first-dataset campaign. Historical F6 raw costs
 remain valid evidence for their original pool/model; new v3 estimates must be
 rebound/audited against that pool before being reported, not relabeled as v2.
 Full formal dispatch remains closed.
+
+## Frozen six-case handoff
+
+Implementation `5f9402384308ecf2a98a0a3baf40d92271439487` is pushed to
+`codex/m13e4-grailqa-semantic-paper-protocol`. Package:
+`/Users/anthonyche/Downloads/xgapremaining6-5f94023.zip`, 56,497 B, SHA-256
+`e959153455b3ae1ea1cfed3e5bb1b44018a5256572be868512ae6ec0f75634a2`.
+It contains an incremental Git bundle from the untouched `9fbcb8d` checkout,
+Python 3.6-compatible staging, CPU submission, exact pins and the admission driver.
+
+Local package verification checks the actual sealed 3868378 success/closure,
+3868312 attempted set, original bundle/prepared profile and six case pins.
+Mutated query, order and snapshot are rejected. ZIP members, Git prerequisites
+and shell syntax pass. The actual planning inspector, supplied the pinned
+materialized archived profile in place of unavailable host file paths, selects
+all six exact presealed plan hashes with zero calls/executions/reference reads.
+This isolates local file availability; server-side full profile validation remains
+mandatory before source startup.
+
+The driver freezes v3 separately, proves estimator-only rebinding leaves every
+case and execution input intact, then checks selected plan hashes before starting
+sources. Actual worker plans must match the same hashes. The first failure stops
+the sequence and retains its evidence. A journal/output/checkout already present
+rejects resubmission; no automatic retry. Original cases 7–12 keep their indices.
+
+Server intended journal: `/home/hxc859/xgap-ch6-artifacts/native-remaining6-5f94023`;
+output: `formal-native-remaining6-stream-v1/D2` beneath the same artifact root.
+This turn's SSH and browser control timed out. The user has been asked to upload
+and execute the verified package; **no new job ID or submission is confirmed**.
+Validation report: local `native-remaining6-pack-5f94023/verification.json` under
+the evidence root above. Model/policy setup and source serving remain offline
+costs; this diagnostic is not a six-question NL result or a formal method campaign.
