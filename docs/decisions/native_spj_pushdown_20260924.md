@@ -168,6 +168,10 @@ directories. The driver compares the old and newly compiled unchanged program
 using two EXPLAINs, no result-query executions, unchanged source/worker budgets
 and node-local storage. Its evidence archive includes the sealed 3867410 archive.
 Stage Python 3.6 syntax, driver syntax, shell syntax and bundle prerequisite passed.
-Upload/submission is pending; no new job ID has been created or inferred.
-Expected journal `native-access-f9a4837/`, log `native-access-<job>.out`, output
-`formal-native-spj-access-explain-v1/D2`, archive `xgap-spj-access-explain-<job>.tar.gz`.
+The user supplied successful exact-source staging and submission **3867481**.
+Running/terminal state and diagnostic outcome are pending; do not resubmit.
+Journal `native-access-f9a4837/`, log `native-access-3867481.out`, output
+`formal-native-spj-access-explain-v1/D2`, expected closed archive
+`/home/hxc859/xgap-spj-access-explain-3867481.tar.gz`.
+Successful EXPLAIN would not establish result correctness, execution latency,
+memory safety or full-bundle admission.

@@ -20,7 +20,8 @@ AllNodesScan，索引必要条件使其改为 NodeUniqueIndexSeek。估计基数
 不是响应体积超限或超时。失败归档待完整下载校验。
 通用编译器已修复必需等值条件被 nullable 包装隐藏的问题。28 项定向检查、6 组
 真实小图有序答案对照通过；小图 EXPLAIN 原 6 个笛卡尔积/7 次标签扫描变为
-0 个笛卡尔积/7 次唯一索引查找。完整源的算子/内存表现尚未验证，下一步仅 EXPLAIN。
+0 个笛卡尔积/7 次唯一索引查找。完整源的算子/内存表现尚未验证；用户已提交
+EXPLAIN-only 作业 **3867481**（精确 `f9a4837`），结果待收取，零原题执行。
 见[语义证明与剩余边界](../decisions/native_spj_pushdown_20260924.md)。
 不重跑成功前缀、不重提同一失败、不试跑择优。
 本地审计：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/native-explain-local-audit-3866035.json`。
