@@ -204,8 +204,8 @@ unique journal/output and member hashes before one CPU submission. Python 3.6
 stage grammar, driver syntax, shell syntax, eight-case order and receipt/member
 hash checks passed locally with zero external calls. No source changes or
 additional regression campaign were needed. The user confirmed checksum
-verification and submission as **3868312**. Scheduler state and final results
-have not yet been received; do not resubmit.
+verification and submission as **3868312**. It subsequently failed on the second
+attempted case; see the evidence boundary below. Do not resubmit.
 
 Journal `native-next8-6169b8f-v1`, log `native-next8-3868312.out`, output
 `formal-native-next8-v1/D2`, expected archive `/home/hxc859/xgap-native-next8-3868312.tar.gz`.
@@ -220,3 +220,20 @@ still requires D2's outstanding native/RDF admission, consistent D1/D3 serving
 contracts, bound F6 evidence, and frozen method support/units/budgets with a
 passing release dry-run. Then start one dataset as the user requested before
 expanding to the full matrix; do not require baselines to produce good answers.
+
+## Next-eight result: 3868312
+
+User-provided sacct/log output: FAILED/2:0, compt311, elapsed 00:01:43;
+attempted=audited=2, first failure `D2-test-uniform-zigzag-000-W3`.
+Under the frozen order and first-error-stop runner, the preceding W2 case
+passed; the remaining six were not executed. This does not establish whether
+W3 failed answer equality, a backend call or a resource limit. Allocation elapsed
+time is not query latency. No broad admission or repair-completion claim follows.
+
+Archive `/home/hxc859/xgap-native-next8-3868312.tar.gz`, 4,869,184 bytes,
+server-reported SHA-256
+`5819b5cf13e57f15d250da0efae5f8c3d064b9e53fdcc105aaeb0cb7c7c56892`.
+Local download/hash verification and detailed receipt/plan/response/resource
+inspection remain pending. Manual download was requested because automated
+file-page control has remained unreliable. Preserve this failed run, do not
+resubmit or adjust queries/budgets without diagnosing the actual failure.
