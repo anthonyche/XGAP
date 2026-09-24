@@ -60,7 +60,16 @@ def test_native_access_equalities_are_necessary_conjuncts(wrapper):
     assert len([s for s in equalities if '.key = ' in s])==6
     scalar=[s for s in equalities if '.name = ' in s]
     assert bool(scalar)==(wrapper is None)
-    assert artifact.text.split('\nWHERE ',1)[1].startswith(' AND '.join(equalities)+' AND ')
+    assert all(s in artifact.text for s in equalities)
+    assert proof['join_order_profile']=='bound-connected-matches-v1'
+    assert artifact.text.count('CALL {')==proof['correlated_match_calls']==6
+    assert len(set(proof['pattern_order']))==7
+
+
+def test_connected_access_declines_an_unbound_branch():
+    from xgap.compilers.native_spj import _connected_matches
+    with pytest.raises(ValueError,match='connected equality'):
+        _connected_matches(['MATCH (a:A)','MATCH (b:B)'],[('a',),('b',)],{'a.key = $p':frozenset(['a'])})
 
 
 @pytest.mark.parametrize('change,reason',[

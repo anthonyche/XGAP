@@ -91,6 +91,11 @@ Supported local actions each perform one change:
 - One necessary native row prefilter, preserving full query filters.
 - One bounded entity-bind restriction at an exclusive acyclic inner join,
   preserving the original join and all answer semantics.
+- One bounded same-source SPJ/final top-K contraction. Necessary positive
+  equalities remain visible; connected correlated Matches carry bound keys and
+  evaluate complete predicates as soon as their fields are available. This
+  preserves duplicate logical identities and introduces no intermediate LIMIT.
+  See the [native SPJ admission boundary](decisions/native_spj_pushdown_20260924.md).
 
 This is a polynomial local neighborhood, not all placements/join orders. Physical
 seeds are compiled before eligibility so later validation cannot leave a query

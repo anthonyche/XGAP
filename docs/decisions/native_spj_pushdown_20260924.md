@@ -169,9 +169,60 @@ using two EXPLAINs, no result-query executions, unchanged source/worker budgets
 and node-local storage. Its evidence archive includes the sealed 3867410 archive.
 Stage Python 3.6 syntax, driver syntax, shell syntax and bundle prerequisite passed.
 The user supplied successful exact-source staging and submission **3867481**.
-Running/terminal state and diagnostic outcome are pending; do not resubmit.
+Completed/0:0 in 76 seconds on compt311. Its archive was downloaded through
+OnDemand and verified locally; do not resubmit.
 Journal `native-access-f9a4837/`, log `native-access-3867481.out`, output
 `formal-native-spj-access-explain-v1/D2`, expected closed archive
 `/home/hxc859/xgap-spj-access-explain-3867481.tar.gz`.
 Successful EXPLAIN would not establish result correctness, execution latency,
 memory safety or full-bundle admission.
+
+## Full-source finding and connected correlation
+
+3867481 archive: 88,758 bytes, SHA-256
+`892c767a69d512b3c5ef582d0b65cca68f475197c0c0ea4b15c302ae114e7a92`.
+Two raw gzip responses were verified against capture hashes and stored EXPLAIN
+plans: zero result rows/data updates, exactly two EXPLAIN calls. Closure verified.
+The nested 3867410 failure archive also matches its published SHA; its memory
+error and single final execution are now verified locally, not only pasted text.
+Audit `native-spj-access-audit-3867481.json` SHA-256
+`e9a2186625f23af0ae7dacbb6d0344af77b3915b9972e1b1ea7f061af37200bc`.
+
+Full D2 plans differ from the earlier tiny graph: six CartesianProduct and
+seven label scans become ONE CartesianProduct, three label scans, four unique
+index seeks and a ValueHashJoin. The materialization declares unique indexes on
+internal identity only; the earlier tiny diagnostic also indexed business ID.
+No whole-query speedup or memory claim follows. The new full-source evidence
+shows a separately scanned branch being combined with the anchor branch; native
+estimated rows are not observed cardinalities.
+
+`bound-connected-matches-v1` now builds one deterministic connected order.
+Start with a Match having the most necessary constant equalities (stable tie
+break); then prefer a pending Match with the most identity links to bound
+variables (stable arity/input-order tie breaks). Each subsequent independent
+Match is a correlated `CALL { WITH <bound variables> MATCH ... RETURN ... }`.
+Only necessary equalities and whole mandatory predicates whose references are
+available enter that subquery. Top-level AND can be split; OR/NOT are retained
+whole. Complete nullable predicates remain at the final boundary as well.
+Imports include every bound variable needed by these predicates. Unsupported
+disconnected access graphs decline the alternative and retain the original seed.
+
+This preserves independent physical variables, duplicate logical IDs and edge
+reuse. Positive SPJ bag witnesses compose by correlated inner joins; final
+DISTINCT/order/LIMIT observes the same set. There is no intermediate truncation,
+schema/data/index change, probe, or measured-plan selection. The greedy schedule
+costs O(M^2 E) with at most M=64 patterns and E=512 bounded predicates and checked
+query-byte limits. It does NOT bound native expansions or DISTINCT memory.
+The frozen source-work estimator remains an estimate, not a memory certificate.
+
+29 focused checks passed; six real Neo4j ordered-row comparisons (2/0/20/5/64/44)
+passed with cleanup, including duplicate identities, relationship reuse, nulls,
+OR and NOT. `native-spj-tiny-v7/receipt.json` SHA-256 is
+`9180be9b697db56d6a874f45262925f309ad09ad6345bdc04379ec45d1ff6a10`.
+A fresh tiny EXPLAIN with ONLY internal-identity indexes has one anchor label
+scan, six unique seeks and no CartesianProduct; receipt
+`spj-correlated-explain-v2/receipt.json` SHA-256
+`546c35f577a4994dfcccf5cd28facc5b68fa27eacb5f9c9dc4e26477a433cb62`.
+This still is not full D2 execution admission. Next: an offline structural
+EXPLAIN gate, then at most one unchanged failed-case execution in a separate
+fresh source session if the gate passes; no estimator feedback, no raised caps.
