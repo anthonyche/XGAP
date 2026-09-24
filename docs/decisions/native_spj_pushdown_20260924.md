@@ -158,3 +158,16 @@ All paths are under the local `ch6-release-boundary-20260924` artifact root.
 Next gate: two bounded full-source EXPLAIN calls, zero result-query executions,
 no optimizer feedback to the frozen online estimator. Keep transaction budgets
 unchanged and investigate remaining source operators before another replay.
+
+Frozen EXPLAIN-only handoff: exact source `f9a4837e6df0fe9a26d9fa8dc4829f3705d4cb88`,
+package `/Users/anthonyche/Downloads/xgapaccessf9a4837.zip`, 14,428 bytes, SHA-256
+`1aa460575634910539547f11be140345a3d34f16ab3a10dd0290cb265081f863`.
+The stage requires `ef50ee3`, checks the old sealed failure archive, failed plan,
+original cohort and prepared store pins, and refuses existing submission/output
+directories. The driver compares the old and newly compiled unchanged program
+using two EXPLAINs, no result-query executions, unchanged source/worker budgets
+and node-local storage. Its evidence archive includes the sealed 3867410 archive.
+Stage Python 3.6 syntax, driver syntax, shell syntax and bundle prerequisite passed.
+Upload/submission is pending; no new job ID has been created or inferred.
+Expected journal `native-access-f9a4837/`, log `native-access-<job>.out`, output
+`formal-native-spj-access-explain-v1/D2`, archive `xgap-spj-access-explain-<job>.tar.gz`.
