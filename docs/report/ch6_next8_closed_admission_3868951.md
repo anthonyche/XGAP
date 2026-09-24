@@ -79,10 +79,16 @@ Log: `native-last5-closed-<job>.out` in that journal.
 Archive: `/home/hxc859/xgap-native-last5-closed-<job>.tar.gz`.
 Package validation: `native-last5-closed-pack-c3437fc-v1/verification.json`
 beneath the local artifact root. The user validated and submitted the package
-as **3869038**. Submission is confirmed; running/terminal state is not yet known.
+as **3869038**. The user reports COMPLETED/0:0, 96 s, compt311,
+attempted=audited=5 and success=true. Raw evidence remains pending download.
 Log: `native-last5-closed-3869038.out`; expected archive:
 `/home/hxc859/xgap-native-last5-closed-3869038.tar.gz`. Do not resubmit or
-change the checkout. Read the existing job and its result before further work.
+change the checkout. Archive: 160,649 bytes, SHA-256
+`7744db3c39e99e0337167b6abe7a1feae4fee3d3e0621486449d9796aad335d3`.
+Read-only audit prepared as `audit_last5_closed_3869038.py` beneath the local
+artifact root; it has not run because the archive is not yet local. The current
+evidence level is 19 verified cases plus five successful terminal reports.
+Do not infer query latency, answer rows or resource closure from job wall time.
 
 Full formal launch remains closed. Native version-impact reconciliation, remaining
 RDF admission and the release-factor/support/budget/F6 binding gates remain;
