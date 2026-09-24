@@ -78,8 +78,11 @@ Output: `/home/hxc859/xgap-ch6-artifacts/formal-native-last5-closed-v1/D2`.
 Log: `native-last5-closed-<job>.out` in that journal.
 Archive: `/home/hxc859/xgap-native-last5-closed-<job>.tar.gz`.
 Package validation: `native-last5-closed-pack-c3437fc-v1/verification.json`
-beneath the local artifact root. User upload/submission requested; no new job
-number is known. Do not resubmit without first checking that journal.
+beneath the local artifact root. The user validated and submitted the package
+as **3869038**. Submission is confirmed; running/terminal state is not yet known.
+Log: `native-last5-closed-3869038.out`; expected archive:
+`/home/hxc859/xgap-native-last5-closed-3869038.tar.gz`. Do not resubmit or
+change the checkout. Read the existing job and its result before further work.
 
 Full formal launch remains closed. Native version-impact reconciliation, remaining
 RDF admission and the release-factor/support/budget/F6 binding gates remain;
