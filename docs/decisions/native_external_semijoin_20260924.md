@@ -121,3 +121,13 @@ verified and v2 stage submitted. Current Slurm/answer status has not been fetche
 Do not resubmit or change this checkout. Subsequent zero-call shape review of the
 six unattempted cases is recorded in
 [resource preflight](resource_shape_preflight_20260924.md); it changes no in-flight input.
+
+## Verified completion: 3868378
+
+Archive hash and 30 available pins verified locally. The original W3 returns 20
+ordered reference-equal rows in 41.428 s; actual selected plan equals both offline
+diagnostics, and 1,256 membership keys match the actual filtered external response.
+Five successful backend calls, 14,267,466 response bytes, zero models. Budgets and
+source memory configuration unchanged; owned processes/observer/copies closed.
+This supersedes the earlier pending-status paragraphs, not the scope boundary:
+single-case admission only. See [full audit](../report/ch6_semijoin_admission_3868378.md).
