@@ -92,6 +92,15 @@ checkout/输出目录运行显式 `--case-ids` 子集。保持 compt311、8 CPU/
 固定只选上述三题，保存提交 stdout/stderr/exit code；任一目标已存在即拒绝重提。
 它的唯一提交目录为 `remaining-lazy-v1-submission/`（不是此前预估的 `.txt` 名称）。
 
+再恢复后，OnDemand 已登录，主页文件列表确认已上传
+`/home/hxc859/d2remaining9d40ade.py`（3,705 B，本地 SHA-256
+`c672c4fc389eeb9914021429a74cc9d7eaeee975d69fa0e38af164b4bf2bd145`）。
+它与上述一次性部署脚本内容相同。自动控制的粘贴超时、按键交付不可靠，最后窗口
+再次不可用；只读摘要查询未成功，**仍无部署/提交成功证据，不得认为已有新作业**。
+已请用户在原登录终端执行先 SHA 校验再运行脚本的一行命令，并返回 stdout 作业号
+或报错。收到答复后先读取 `remaining-lazy-v1-submission/`、Slurm 状态及
+`formal-rdf-remaining-lazy-v1/D2/rdf/receipt.json`，不能盲目重复运行部署脚本。
+
 完整代码包 `xgap-rdf-single-lazy-f6ec1a0.zip` 上传 SHA-256：
 `f87459f66197e6a7adecf5709c8706f04015970fbd2f53ea2920bc2b065eb045`。
 没有缩小 MovieLens20M、申请 GPU、调用 LLM 或启动全量。
