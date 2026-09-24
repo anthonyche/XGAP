@@ -2,6 +2,13 @@
 
 2026-09-24，继续遵守“准备至可启动、不执行全量”的授权。旧结果和失败均保留。
 
+**当前交接：**`e22a32e` 已同步 GitHub，条件单题验收包
+`xgapconnectede22a32e-v2.zip` 已冻结；上传控制返回 `noWindowsAvailable`，
+未确认上传、未提交新作业。服务器先验证完整源 EXPLAIN 结构，再在独立新会话
+执行原失败题至多一次。小图的 29 项定向检查和 6 组真实等价检查均通过，但完整
+D2 执行/内存准入仍待验证。包身份与预算见
+[交接记录](../decisions/native_spj_pushdown_20260924.md#conditional-single-case-handoff)。
+
 **最新原生诊断：**3866035 两次 EXPLAIN 成功，77,767 B 归档已本地 SHA 核验，
 两份压缩/原始响应分别校验、无错误/无数据行，服务和副本已关闭。原请求确为
 AllNodesScan，索引必要条件使其改为 NodeUniqueIndexSeek。估计基数不等于实际

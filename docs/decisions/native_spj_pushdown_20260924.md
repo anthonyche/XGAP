@@ -226,3 +226,44 @@ scan, six unique seeks and no CartesianProduct; receipt
 This still is not full D2 execution admission. Next: an offline structural
 EXPLAIN gate, then at most one unchanged failed-case execution in a separate
 fresh source session if the gate passes; no estimator feedback, no raised caps.
+
+## Conditional single-case handoff
+
+Exact source `e22a32e40d9110e2abcbccabc4d08b7770213f10` is pushed to GitHub.
+Package `/Users/anthonyche/Downloads/xgapconnectede22a32e-v2.zip`: 14,881 bytes,
+SHA-256 `1b5fb7a8573547a8ee302b4b101aa6d1352c884d1c31c332bc98b8844a83787d`.
+The earlier local v1 package was superseded before handoff; use v2 only.
+Stage checks the completed 3867481 receipt and original failure/source/plan pins,
+requires the existing `f9a4837` checkout, and refuses existing output/journal paths.
+Python 3.6 stage syntax, driver syntax, shell syntax and bundle prerequisites passed.
+
+One EXPLAIN must show no CartesianProduct/ValueHashJoin, exactly one label scan
+on a constant-equality anchor, and an index seek. Only after complete source
+closure does the common backend checker run the original failed case, at most
+once, in a separate fresh source session. It verifies the actual selected query
+against the explained artifact and uses the existing independent answer check.
+This is an offline structural repair gate, not measured candidate ranking or
+online estimator feedback. If execution started but failed before a receipt,
+the final-query count remains unknown rather than being incorrectly reported zero.
+
+CPU-only, 8 CPUs/24 GiB on compt311, no requeue. The 70-minute allocation allows
+two independent source-setup phases (up to 1,800 seconds each); it does not relax
+query budgets: worker 120 seconds/3 GiB, source 4 GiB, HTTP 60 seconds/64 MiB,
+Neo4j heap 768m and the existing transaction-memory threshold remain unchanged.
+Zero LLM calls; no full campaign or successful-prefix replay.
+
+Remote journal `native-connected-e22a32e/`, log `native-connected-<job>.out`,
+output `formal-native-spj-connected-gate-v1/D2`, archive
+`/home/hxc859/xgap-spj-connected-<job>.tar.gz`. `explain/receipt.json` only proves
+EXPLAIN; `native/receipt.json` and `gate-receipt.json` carry execution admission.
+
+OnDemand upload control returned `noWindowsAvailable` after a nonresponsive
+Upload button. Upload is unconfirmed; no new submission/job ID. Manual handoff
+is required because automatic terminal input has previously been unreliable.
+The local command file is
+`/Users/anthonyche/Downloads/xgapconnectede22a32e-v2-command.txt`.
+After uploading the v2 ZIP to `/home/hxc859`, run:
+
+```bash
+python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc859/xgapconnectede22a32e-v2.zip"); assert hashlib.sha256(p.read_bytes()).hexdigest()=="1b5fb7a8573547a8ee302b4b101aa6d1352c884d1c31c332bc98b8844a83787d"; exec(compile(zipfile.ZipFile(str(p)).read("stage.py"),"stage.py","exec"))'
+```

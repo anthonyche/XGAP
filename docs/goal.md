@@ -1,5 +1,11 @@
 # XGAP 当前 Goal
 
+2026-09-24 交接：精确 `e22a32e` 的条件单题验收包已冻结、校验并同步代码至 GitHub。
+`xgapconnectede22a32e-v2.zip`（14,881 B）先做一次完整源 EXPLAIN，结构门通过后才
+在新会话执行原失败题至多一次。浏览器上传再次返回 `noWindowsAvailable`；
+**上传未确认、没有新作业号**，需用户完成服务器交接，不重提 3867481。
+包 SHA、原预算及交接命令见[验收记录](decisions/native_spj_pushdown_20260924.md#conditional-single-case-handoff)。
+
 2026-09-24 当前：**3867481 完成并已下载核验**，同源两个 EXPLAIN 均成功，零原题执行。
 完整 D2 的修正表达仍有 1 个 CartesianProduct、3 个标签扫描、4 个唯一索引查找；
 不能使用小图的 0/0/7 代替完整源结果。旧 3867410 内存失败归档也已核验。
