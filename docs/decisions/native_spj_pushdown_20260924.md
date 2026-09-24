@@ -90,8 +90,15 @@ Native database execution itself has no new polynomial/data-size runtime claim.
 
 The frozen single-case package has been submitted as **3867410**, exact source
 `ef50ee3`, by the user. Its staging/submission output was also read directly from
-the OnDemand terminal. Running/terminal state and results are not yet confirmed.
-Collect this existing handle; do not submit the package again. The gate checks
+the OnDemand terminal. The user subsequently supplied Slurm FAILED/2:0,
+71 seconds, compt311, and attempted/audited=1 for the original failed case.
+This is a failed singleton gate, not evidence of successful large-source
+execution. The underlying error remains unclassified until raw evidence is read;
+job elapsed time alone does not establish a query timeout. The emitted archive
+is 38,301 bytes, SHA-256
+`b9deacdce5cd1f9bda83147a4ee93d58be64d6f5c6fb231dfe9153363c5479ff`;
+download verification is pending. Collect this existing evidence; do not submit
+the package again. The gate checks
 selected-plan evidence and executes only the unchanged original failure under
 existing caps. Do not rerun the successful
 prefix, change samples or raise limits. A successful singleton would still not

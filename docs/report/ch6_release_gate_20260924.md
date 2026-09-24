@@ -14,7 +14,8 @@ AllNodesScan，索引必要条件使其改为 NodeUniqueIndexSeek。估计基数
 通用单源 SPJ/最终 top-K 下推现已接入共享 planner 与源工作量估计，25 项局部检查
 及 4 组真实 Neo4j 小图有序结果对照通过。完整原题已通过零调用编译检查；用户
 已校验并提交单题作业 **3867410**（`ef50ee3`），OnDemand 终端提交记录已确认。
-结果尚待收取，不重提；尚未验证大图耗时/答案，不把单题或本地检查升级为完整准入。
+随后用户贴回 FAILED/2:0、71 s、attempted/audited=1；同一原题未通过。
+38,301-byte 失败归档待校验/诊断，不能从摘要推断具体错误或将本地检查升级为大图准入。
 见[语义证明与剩余边界](../decisions/native_spj_pushdown_20260924.md)。
 不重跑成功前缀、不重提同一失败、不试跑择优。
 本地审计：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/native-explain-local-audit-3866035.json`。
