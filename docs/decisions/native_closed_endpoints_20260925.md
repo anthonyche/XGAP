@@ -83,3 +83,26 @@ Log: `native-closed-3868918.out` in the journal above. Expected result archive:
 `/home/hxc859/xgap-native-closed-3868918.tar.gz`. Terminal state and raw results
 are pending. No repeat submission or checkout change is authorized by this
 receipt. Full formal launch remains closed.
+
+
+## 3868918 reported completion — raw audit pending
+
+The user reports COMPLETED/0:0, 160 s, compt311; both admission and outer gate
+report success=true, attempted=audited=1. This is the expected original W4 gate,
+not the full 24-case cohort. Job wall time includes setup and cannot be reported
+as query latency. Raw plan/answer/reference, counters and closure still require
+local verification before stronger claims.
+
+Archive `/home/hxc859/xgap-native-closed-3868918.tar.gz`, 73,374 bytes,
+SHA-256 `bd0c54fcaed1eb4caaad01a697b75bc872f34792385e56ff9eabdf621dd7af2a`.
+The user was asked to transfer this existing archive; no query was resubmitted.
+
+
+## Raw admission verified
+
+3868918's archive, 16 available pins and five captured responses are now verified.
+W4 returns all 20 frozen ordered rows, execution 47.742 s, final native request
+41.716 s, unchanged caps, complete resource closure. This closes this failure;
+it does not release the whole native/RDF cohort. Continue only unattempted
+indices 11–18; the next small package reuses the same code and estimator.
+See the [audit and handoff](../report/ch6_closed_endpoints_admission_3868918.md).
