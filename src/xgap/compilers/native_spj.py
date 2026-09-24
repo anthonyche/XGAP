@@ -124,7 +124,7 @@ def _prefix_topk(stages, values, ordering, conditions, render, limit):
         source_work_bounded_by_limit=False)
 
 
-def compile_native_spj(program, backend, schema, source_bindings, *, prefix_topk=False):
+def compile_native_spj(program, backend, schema, source_bindings, *, prefix_topk=False, identity_membership=None):
     """Compile only admitted meaning; unsupported input raises before execution."""
     raw = program.to_dict()
     if (program.holes or len(program.roots) != 1 or not 1 <= len(program.operators) <= 64
@@ -149,6 +149,11 @@ def compile_native_spj(program, backend, schema, source_bindings, *, prefix_topk
     matches = {o.operator_id: o for o in program.operators if o.kind is S.MATCH}
     if not matches or set(source_bindings) != set(matches) or set(source_bindings.values()) != {backend.backend_id}:
         raise ValueError('Every required Match must use the same placed backend')
+    if identity_membership is not None:
+        match_id, membership_parameter = identity_membership
+        if (match_id not in matches or 'edge' in matches[match_id].parameters
+                or membership_parameter != 'xgap_spj_membership_keys'):
+            raise ValueError('Native membership requires one declared node identity input')
     # Reuse semantic admission, column renaming, and the authoritative schemas.
     bare = compile_semantic_program(program, source_bindings=source_bindings,
         backends={backend.backend_id: backend}, max_remote_calls=64, max_parallelism=1)
@@ -270,6 +275,10 @@ def compile_native_spj(program, backend, schema, source_bindings, *, prefix_topk
                 patterns.append('MATCH ' + pattern); pattern_variables.append((entity,)); names = {'entity': entity}
             values.update({f: Value(v + '.' + ident(backend.identity_property), 'identity', (v, backend.identity_property)) for f, v in names.items()})
             values.update({f: prop(entity, name) for f, name in spec.get('properties', {}).items()})
+            if identity_membership is not None and op.operator_id == match_id:
+                membership = '(' + render(values['entity']) + ' IN $' + membership_parameter + ')'
+                conditions.append(membership)
+                guard_bindings[membership] = frozenset([entity])
         else:
             values = dict(relations[node.inputs[0]])
             if kind is R.NORMALIZE_NODE_BINDINGS:
@@ -324,6 +333,10 @@ def compile_native_spj(program, backend, schema, source_bindings, *, prefix_topk
         nullable_predicates_retained=True, native_identity_coalescing=False,
         join_order_profile='bound-connected-matches-v1',pattern_order=pattern_order,
         correlated_match_calls=len(patterns)-1,earliest_bound_predicates=True)
+    if identity_membership is not None:
+        proof['identity_membership'] = dict(profile='exact-external-key-semijoin-v1',
+            match=match_id,parameter=membership_parameter,namespace=namespace,
+            before_complete_witness_and_topk=True)
     if (prefix_topk and 1<=len(ordering)==len(values)<=8
             and all(v.origin and v.origin[0] in work_graph['nodes'] for v in values.values())):
         stages=_connected_stages(patterns,pattern_variables,access_equalities,guard_bindings,

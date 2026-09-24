@@ -50,7 +50,7 @@ class PhysicalMoves:
                 seen.add(key);yield proposal
 
     def _neighbors(self,index,plan):
-        if plan.metadata.get('native_spj_pushdown'):
+        if plan.metadata.get('native_spj_pushdown') or plan.metadata.get('native_external_semijoin'):
             return  # Complete source contraction has no coordinator rewrite ports.
         program = self.program(index)
         operators = {o.operator_id:o for o in program.operators}
@@ -77,6 +77,15 @@ class PhysicalMoves:
                     operator_outputs={program.roots[0]:root}))
             except (ValueError,KeyError):
                 pass
+        elif len(set(placement.values()))==2 and self.policy is not None:
+            from xgap.runtime.native_semijoin import semijoin_nodes
+            try:
+                contraction=semijoin_nodes(program,plan,self.backends,self.schema,self.policy,self.native_spj)
+                if contraction:
+                    nodes,proof=contraction
+                    yield finish(plan,nodes,'native_external_semijoin',proof,
+                        dict(native_external_semijoin=proof,operator_outputs={program.roots[0]:plan.roots[0]}))
+            except (ValueError,KeyError,StopIteration):pass
         from xgap.runtime.leaf_witness import witness_neighbors
         for nodes,proof in witness_neighbors(json.loads(self.family.candidates[index].query_json),
                 program,plan,self.backends,self.policy):

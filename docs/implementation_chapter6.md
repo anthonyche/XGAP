@@ -1,5 +1,11 @@
 # Chapter 6 implementation map — unified lookahead v1
 
+2026-09-24: `runtime/native_semijoin.py` adds one checked external-membership
+physical move to `PhysicalMoves`. `native_spj.py` places its parameterized key
+predicate before complete-witness prefix top-K; `relative_source_work.py` charges
+retained driver/key/native work. [Proof, limits and admission status](decisions/native_external_semijoin_20260924.md).
+Six real tiny Neo4j/Fuseki comparisons pass; full D2 W3 admission remains pending.
+
 2026-09-22 numbering note: this filename is retained for existing links. The
 user's current Chapter 6 is the [experimental study](ch6_experiment_plan_20260922.md);
 this document remains an implementation map, not the new chapter outline.

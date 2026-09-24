@@ -1,5 +1,11 @@
 # Operator Semantics
 
+A checked [external membership reduction](decisions/native_external_semijoin_20260924.md)
+may retain a bound external node/filter branch and push the remaining native SPJ
+into Neo4j. External keys restrict complete witnesses before top-K; external
+scalar output/cross-field comparisons are declined. This is exact set semantics,
+not approximate truncation or an extra semantic operator.
+
 > Current controller: [unified lookahead](decisions/unified_lookahead_migration_20260921.md).
 > Lambda/epsilon use the [finite structured-intent distance](decisions/finite_intent_discrepancy_v1.md)
 > with independent mandatory validations. Old Exact/Performance runs remain historical.

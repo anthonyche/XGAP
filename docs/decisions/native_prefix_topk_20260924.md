@@ -237,3 +237,12 @@ Local download/hash verification and detailed receipt/plan/response/resource
 inspection remain pending. Manual download was requested because automated
 file-page control has remained unreliable. Preserve this failed run, do not
 resubmit or adjust queries/budgets without diagnosing the actual failure.
+
+## Subsequent archived evidence and cross-source repair
+
+3868312 is now locally hash-verified: W2 has a correct ordered empty answer; W3
+failed its incoming-edge response at 64 MiB, not a transaction-memory exception.
+The archived driver and selected plan reveal a cross-source membership boundary
+that whole-single-source fusion cannot cover. See the
+[exact external semijoin decision](native_external_semijoin_20260924.md).
+The earlier pending-download paragraph records the earlier information boundary.

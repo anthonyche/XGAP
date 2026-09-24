@@ -111,8 +111,18 @@ class FrozenSourceWorkRanker:
                 node_rows,edge_rows=counts[backend];a=p['artifact']['parameters'];compiler=a.get('compiler')
                 if compiler=='native-spj-final-topk-v1':
                     from xgap.planning.native_spj_work import source_work
-                    if node.kind is not R.REMOTE_QUERY:
-                        raise ValueError('Native SPJ requires one unbound final query')
+                    membership=a.get('source_pushdown',{}).get('identity_membership')
+                    if node.kind is R.REMOTE_BIND_QUERY:
+                        cap=p.get('max_bindings')
+                        if (not membership or membership.get('profile')!='exact-external-key-semijoin-v1'
+                                or membership.get('parameter')!=p.get('parameter')
+                                or not membership.get('before_complete_witness_and_topk')
+                                or type(cap) is not int or cap<=0):
+                            raise ValueError('Native SPJ bind requires checked complete-query membership')
+                        keys+=min(incoming,float(cap))
+                        if incoming>cap:risk+=(incoming/cap)*total_population
+                    elif membership:
+                        raise ValueError('Native SPJ membership requires a bound key input')
                     work=source_work(a,backend,counts[backend],degrees,self.unique_node_properties)
                     scan+=work['scan_records'];source_join_work+=work['join_records']
                     out=work['output_records'];transfer+=out;calls+=1
