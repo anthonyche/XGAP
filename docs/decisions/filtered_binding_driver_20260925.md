@@ -81,3 +81,24 @@ static comparison and targeted justification, not blind whole-cohort replay.
 Local evidence root: `/Users/anthonyche/xgap-data/ch6-release-boundary-20260924`:
 `reconcile-rdf8-audit-3869407.json`, `filtered-driver-zero-call-v1/`,
 `filtered-driver-replay-v1.json`, plus immutable raw extraction.
+
+## Frozen replay package
+
+Code `ac97d161b2a251aad3b01df8e18cf12f66757e91` is pushed to the research branch.
+`/Users/anthonyche/Downloads/xgapfilterac97d16.zip`: 40,176 bytes, SHA-256
+`02e4ac48cd9a83001bf13ab3234bbb4f6d0bcde1b624d9ee2db940b16e468199`.
+The package contains the exact delta from existing c3437fc and stages a separate
+checkout; it rejects existing journal/output/checkout to prevent duplicate runs.
+All 13 actual available input pins, prior archive, scope/budget mutation guards,
+Python 3.6 stage syntax, shell syntax, Git bundle and ZIP members were validated.
+The frozen selected-plan hash and both filtered-driver dependencies are checked
+before any source startup. The final worker plan must match that seal.
+
+One CPU allocation (8 CPU, 24 GiB, 1 h, compt311); original RDF index 4 only,
+zero model calls, no EXPLAIN or retry. Archive includes the exact frozen estimator
+and profile copies as well as case inputs, raw responses and resource closure.
+Journal: `/home/hxc859/xgap-ch6-artifacts/rdf-filtered-ac97d16`.
+Output: `/home/hxc859/xgap-ch6-artifacts/formal-rdf-filtered-driver-v1/D2`.
+Log `rdf-filtered-<job>.out`, archive `/home/hxc859/xgap-rdf-filtered-<job>.tar.gz`.
+Not uploaded or submitted by the agent; manual handoff remains necessary because
+remote file/terminal control has been unavailable. No new job ID yet.
