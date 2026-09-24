@@ -55,8 +55,20 @@ def compile_node_match(node: NodePattern, properties: dict[str, str], *, backend
         mapping = (backend_mapping if isinstance(backend_mapping, RdfBackendMapping)
                    else RdfBackendMapping.from_artifact(backend_mapping, backend_id=backend_id))
         base, extra = _sparql(shape, profile, mapping)
-        domain = " ".join(f"<{validate_iri(iri)}>" for iri in rdf_node_classes)
-        base = base.replace("WHERE {", f"WHERE {{\n?n0 a ?nodeDomain . VALUES ?nodeDomain {{ {domain} }}", 1)
+        domain_iris = tuple(validate_iri(iri) for iri in rdf_node_classes)
+        label_iri = validate_iri(mapping.resolve(node.label, "node_labels").iri) if node.label is not None else None
+        if label_iri in domain_iris:
+            # The mandatory label already proves membership in the explicit
+            # node domain. Use its constant-object index rather than enumerating
+            # every rdf:type (including reified edges) and filtering afterwards.
+            # Retain all original predicates and DISTINCT/multivalue semantics.
+            domain_pattern = f"?n0 a <{label_iri}> ."
+        else:
+            # A label outside the declared domain can still be held by a node
+            # with another admitted type; do not silently broaden the domain.
+            domain = " ".join(f"<{iri}>" for iri in domain_iris)
+            domain_pattern = f"?n0 a ?nodeDomain . VALUES ?nodeDomain {{ {domain} }}"
+        base = base.replace("WHERE {", "WHERE {\n" + domain_pattern, 1)
         text = "SELECT DISTINCT " + " ".join("?" + c for c in columns) + " WHERE { {\n" + base + "\n}\n"
         text += "BIND(?source AS ?entity)\n"
         for name, prop in properties.items():
