@@ -88,9 +88,12 @@ Native database execution itself has no new polynomial/data-size runtime claim.
   answer reads. Artifact SHA-256
   `49fedf2a583cfd2a26a822529d08727435f6fc4f8e0d6eb0a7ed7e6729451c9b`.
 
-No new server job has been submitted for this alternative. Next: freeze its
-single-case package, check selected-plan evidence and execute only the
-unchanged original failure under existing caps. Do not rerun the successful
+The frozen single-case package has been submitted as **3867410**, exact source
+`ef50ee3`, by the user. Its staging/submission output was also read directly from
+the OnDemand terminal. Running/terminal state and results are not yet confirmed.
+Collect this existing handle; do not submit the package again. The gate checks
+selected-plan evidence and executes only the unchanged original failure under
+existing caps. Do not rerun the successful
 prefix, change samples or raise limits. A successful singleton would still not
 admit all D2 held-out cases or authorize the full formal campaign. Cross-source
 fusion and aggregate fusion remain outside this initial physical alternative.
@@ -106,5 +109,7 @@ case; if the frozen estimator does not select source contraction, it stops and
 archives the diagnosis. Otherwise it runs the existing single-case gate, with
 no changes to the full cohort, reference, source stores or caps. CPU batch on
 compt311, 8 CPUs/24 GiB, 40-minute allocation and no requeue. Stage Python 3.6,
-shell syntax and bundle prerequisites were checked locally. Upload/submission
-remain pending; do not invent a new job handle or repeat 3867351.
+shell syntax and bundle prerequisites were checked locally. Journal:
+`native-spj-ef50ee3/`; log: `native-spj-3867410.out`; final archive when closed:
+`/home/hxc859/xgap-native-spj-3867410.tar.gz`. Neither 3867410 nor 3867351 should
+be resubmitted. Submitted is not the same as successfully admitted.
