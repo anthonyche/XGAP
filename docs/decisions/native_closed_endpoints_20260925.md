@@ -77,4 +77,9 @@ is `xgap-native-closed-<job>.tar.gz`; journal is
 `/home/hxc859/xgap-ch6-artifacts/native-closed-c3437fc` and output is
 `/home/hxc859/xgap-ch6-artifacts/formal-native-closed-endpoints-v1/D2`.
 The user was asked to upload and stage it because automatic access is unavailable.
-Submission is not yet confirmed. Full formal launch remains closed.
+The user confirmed successful package validation, exact checkout and submission
+as **3868918**, then supplied squeue state RUNNING on compt311 (elapsed 10 s).
+Log: `native-closed-3868918.out` in the journal above. Expected result archive:
+`/home/hxc859/xgap-native-closed-3868918.tar.gz`. Terminal state and raw results
+are pending. No repeat submission or checkout change is authorized by this
+receipt. Full formal launch remains closed.
