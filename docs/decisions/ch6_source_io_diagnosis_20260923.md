@@ -251,7 +251,11 @@ Do not resubmit or treat RUNNING as answer evidence.
 Subsequently the user returned sacct COMPLETED/0:0, elapsed 6m09s on compt311,
 and the wrapper's `success=true, attempted=3, audited=3, error=null`. In pinned
 `9d40ade` this entails EM=1 for each selected case and verified service closure;
-there was no retry. Per-case resource receipts are still being collected. This
+there was no retry. The user subsequently read the case receipts: W2/W3/W4 all
+EM=1, guard wall times 11.824/7.610/6.885 s; source peak RSS
+797,806,592/1,064,828,928/1,133,219,840 B. All services/observer closed and both
+serving copies were reclaimed, preserving frozen inputs/evidence. These are
+user-returned receipt fields, not an independently downloaded suffix archive. This
 completes the previously blocked suffix diagnosis, not full-bundle/formal release.
 
 A read-only audit while it runs identifies an explicit next boundary:
@@ -271,3 +275,23 @@ gate, not baseline algorithm tuning. Existing upstream receipts stay historical;
 do not merge different engine configurations into a paired speedup or use a
 successful diagnostic subset as complete admission. Offline F6 costs may only be
 reused if their execution deployment/runtime is the same as the measured pool.
+
+### Shared formal runtime wiring implemented; no new remote execution
+
+`ch6_source_runtime.py` now freezes a named `jena-direct-lazy-v2` contract with
+engine/Java/javac/bootstrap/two overlay source digests and pinned original class
+digests. The optional manifest `design.source_runtime` contains contract and
+admission pins. Validation requires a complete, successful, closed same-store
+and same-runtime admission plus actual ready evidence and admitted public case
+coverage. Unit preparation also matches the exact bundle and admission pin.
+Diagnostic success cannot satisfy this boundary; nondefault admission cannot
+silently fall back to the default serving configuration.
+
+All five methods receive the same configured source session. Runtime file
+identity is checked before store copying; profile/ready/admission records retain
+the runtime pin. An explicit runtime contract enables a future complete-bundle
+admission invocation, while named diagnostic selections remain partial. Existing
+upstream manifests are unchanged. Focused tests exercise contract drift and
+sharing/false-admission boundaries. No new real service, query, Slurm job or
+formal campaign was launched. Server-side contract freeze, applicable admission,
+F6 runtime matching and the remaining release gates still precede formal results.

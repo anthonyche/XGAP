@@ -19,6 +19,7 @@ import time
 
 from native_store_session import NativeStoreSession
 from rdf_tdb_session import RdfTdbSession
+from ch6_source_runtime import validate_admission, session_options
 from xgap.experiments.bounded_joint_contract import METHODS
 from xgap.experiments.campaign_source_observer import SourceObservationBudget
 from xgap.experiments.common_method_trial import run_nl_trial
@@ -51,7 +52,7 @@ def validate(manifest):
     design=manifest['design']
     numeric=('total_wall_seconds','package_max_bytes','free_disk_reserve_bytes','method_wall_seconds',
              'method_rss_bytes','source_rss_bytes','startup_seconds')
-    if set(design)-{'source_storage'}!=set(numeric)|{'source_budget'}:raise ValueError('Explicit batch budgets required')
+    if set(design)-{'source_storage','source_runtime'}!=set(numeric)|{'source_budget'}:raise ValueError('Explicit batch budgets required')
     if design.get('source_storage','evidence') not in ('evidence','node_local'):
         raise ValueError('Unknown common source storage policy')
     if any(type(design[k]) not in (int,float) or not math.isfinite(design[k]) or design[k]<=0 for k in numeric):
@@ -86,6 +87,7 @@ def validate(manifest):
                 *([manifest['external_runtime']] if formal and manifest['external_runtime'] else [])]:
         if not isinstance(pin,dict) or not isinstance(pin.get('path'),str) or not Path(pin['path']).is_absolute() or not re.fullmatch(r'[a-f0-9]{64}',pin.get('sha256','')):
             raise ValueError('Absolute artifact paths and SHA-256 pins required')
+    validate_admission(design,manifest['deployment'],manifest['prepared'],cells=cells)
 
 
 class BatchBudget:
@@ -199,7 +201,8 @@ def _run(manifest,digest,commit,root,max_new_cells):
                 session=cls(root=root/'sessions'/ordinal,
                     prepared_path=manifest['prepared']['path'],prepared_sha256=manifest['prepared']['sha256'],
                     discard_serving_copies=True,budget=SourceObservationBudget(**design['source_budget']),
-                    serving_root=workspace/ordinal if workspace else None)
+                    serving_root=workspace/ordinal if workspace else None,
+                    **session_options(design.get('source_runtime')))
                 with deadline(design['startup_seconds']):session.start()
             if budget.sample([]):break
             if design['total_wall_seconds']-(time.time()-started)<design['method_wall_seconds']:

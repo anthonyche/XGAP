@@ -22,9 +22,12 @@ from xgap.experiments.verified_store_copy import copy_sealed_store
 
 class RdfTdbSession:
     serving_copy_paths=('graph-tdb2','control-tdb2','fedup-host/serving-summary')
-    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False,serving_root=None,file_mode='default',experimental_lazy_range=False):
+    def __init__(self,*,root,prepared_path,prepared_sha256,budget:SourceObservationBudget,prepared_input_sha256=None,discard_serving_copies=False,serving_root=None,file_mode='default',experimental_lazy_range=False,runtime_contract=None):
         if file_mode not in ('default','direct'):raise ValueError('Unknown TDB2 serving file mode')
         if experimental_lazy_range and file_mode!='direct':raise ValueError('Experimental lazy ranges require admitted Direct bootstrap')
+        if runtime_contract is not None and (file_mode!='direct' or not experimental_lazy_range):
+            raise ValueError('Pinned repaired runtime requires Direct and both lazy iterator paths')
+        self.runtime_contract=runtime_contract
         self.experimental_lazy_range=experimental_lazy_range
         self.file_mode=file_mode
         self.root=Path(root).resolve();self.root.mkdir(parents=True,exist_ok=False)
@@ -54,7 +57,11 @@ class RdfTdbSession:
             build=json.loads(read_pinned(self.input_pin['path'],self.input_pin['sha256']))
             if build['profile']!=parent:raise ValueError('Preparation engine/input identity mismatch')
             engine=build['fuseki_jar'];java=build['java']
-            if stream_pin(engine['path'])!=engine or stream_pin(java['path'])!=java:raise ValueError('Prepared engine changed')
+            if self.runtime_contract is not None:
+                from ch6_source_runtime import verify_current
+                verify_current(self.runtime_contract,build)
+            elif stream_pin(engine['path'])!=engine or stream_pin(java['path'])!=java:
+                raise ValueError('Prepared engine changed')
             for name,store in self.prepared['stores'].items():
                 seal=json.loads(read_pinned(store['seal']['path'],store['seal']['sha256']))
                 if seal['source']['sha256']!=doc['offline']['rdf_loads'][name]['sha256']:raise ValueError('Store source mismatch')
@@ -68,8 +75,8 @@ class RdfTdbSession:
                 source=Path(__file__).parent/'java/XgapStorageMode.java'
                 overlays=[];overlay_originals={}
                 if self.experimental_lazy_range:
-                    expected={'BPTreeRangeIterator':'cd48a47afe150e1b4cd2a8645e8c6ad6b6d1d758d7bf1708bdae6d17c80f696d',
-                        'BPTreeRangeIteratorMapper':'8dfbaeb5bec7a7c9312f87467a50b15634c0000bb98ddb88f4b96704ea7538c2'}
+                    from ch6_source_runtime import ORIGINALS
+                    expected=ORIGINALS
                     with zipfile.ZipFile(engine['path']) as jar:
                         for name,digest in expected.items():
                             actual=hashlib.sha256(jar.read('org/apache/jena/dboe/trans/bplustree/'+name+'.class')).hexdigest()
@@ -119,6 +126,7 @@ class RdfTdbSession:
             doc['offline']['prepared_stores']=self.prepared_pin
             doc['offline']['tdb2_serving_file_mode']=self.file_mode
             doc['offline']['experimental_lazy_range']=self.experimental_lazy_range
+            doc['offline']['source_runtime']=self.runtime_contract
             if bootstrap:doc['offline']['tdb2_storage_bootstrap']=bootstrap
             self.profile=write_once(self.root/'profile.json',doc)
             FrozenOneShotProfile.load(self.profile['path'],expected_sha256=self.profile['sha256'])
@@ -128,6 +136,7 @@ class RdfTdbSession:
                 'aggregate_heap_mib':heap_mib*len(names),'per_source_heap_mib':heap_mib,
                 'tdb2_file_mode':self.file_mode,'storage_bootstrap':bootstrap,
                 'experimental_lazy_range':self.experimental_lazy_range,
+                'source_runtime':self.runtime_contract,
                 'scope':'store/engine verification, serving copies, startup, observer and profile reads; no warmup query',
                 'source_groups':[{'name':s.name,'pid':s.process.pid} for s in self.owned]})
             return self

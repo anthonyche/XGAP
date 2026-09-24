@@ -9,6 +9,7 @@ from copy import deepcopy
 from pathlib import Path
 
 from release_ch6_five_method_batch import publish
+from ch6_source_runtime import validate_admission
 from xgap.agent.intent_strong import FamilyInformationPolicy
 from xgap.agent.unified_family import UnifiedSettings
 from xgap.agent.unified_lookahead import Limits
@@ -45,6 +46,12 @@ def prepare(spec_path,spec_sha256,output):
             or gate['profile']['sha256']!=bundle['profile']['sha256']
             or stores['profile']['sha256']!=bundle['profile']['sha256']):
         raise ValueError('Cohort requires the actual admitted source deployment')
+    runtime=validate_admission(spec['design'],bundle['deployment'],spec['prepared'],bundle_pin=spec['bundle'])
+    if runtime is not None:
+        if runtime['admission']['sha256']!=spec['backend_admission']['sha256']:
+            raise ValueError('Cohort and shared-runtime admission must be identical')
+    elif gate.get('source_runtime') or gate.get('rdf_file_mode','default')!='default' or gate.get('experimental_lazy_range'):
+        raise ValueError('Nondefault admission cannot silently release the default source runtime')
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     wanted=spec.get('case_ids');cases=bundle['cases']
     if wanted is not None:
