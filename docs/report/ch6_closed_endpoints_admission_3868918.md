@@ -84,3 +84,14 @@ in the journal; expected archive: `/home/hxc859/xgap-native-next8-closed-3868951
 No duplicate submission or checkout change. Automatic access remains unavailable;
 the user has been asked for one read-only status/log query after completion.
 Full formal launch is closed.
+
+
+## Next-eight job terminal report — 3868951
+
+The user reports COMPLETED/0:0, 87 s, compt311; both receipts success=true,
+attempted=audited=8. Archive: 223,355 bytes, SHA-256
+`4e2e37f1099c91ba303af1cff5426b245157cb8f32be10673fb3dee4e79fe0d0`.
+The archive has now been locally verified: eight correct ordered answers,
+seven empty references and one 20-row answer. See the
+[next-eight audit and last-five handoff](ch6_next8_closed_admission_3868951.md).
+Original indices 19–23 remain unattempted; do not rerun this successful batch.
