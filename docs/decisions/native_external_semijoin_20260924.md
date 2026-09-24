@@ -113,3 +113,11 @@ reject a changed query hash, Python 3.6 stage grammar, shell syntax, bundle
 prerequisite verification and ZIP-member byte equality. No server job has yet
 been submitted for this package. OnDemand upload/terminal control has repeatedly
 failed earlier; manual handoff is needed rather than risking duplicate input.
+
+## Submission received
+
+User terminal receipt confirms job **3868378**, exact source `9fbcb8d`, delta bundle
+verified and v2 stage submitted. Current Slurm/answer status has not been fetched.
+Do not resubmit or change this checkout. Subsequent zero-call shape review of the
+six unattempted cases is recorded in
+[resource preflight](resource_shape_preflight_20260924.md); it changes no in-flight input.
