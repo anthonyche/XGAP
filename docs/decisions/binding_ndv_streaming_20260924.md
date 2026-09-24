@@ -125,8 +125,11 @@ rejects resubmission; no automatic retry. Original cases 7–12 keep their indic
 
 Server intended journal: `/home/hxc859/xgap-ch6-artifacts/native-remaining6-5f94023`;
 output: `formal-native-remaining6-stream-v1/D2` beneath the same artifact root.
-This turn's SSH and browser control timed out. The user has been asked to upload
-and execute the verified package; **no new job ID or submission is confirmed**.
+The user subsequently supplied verified staging/checkout and **SUBMISSION
+3868824**. The exact checkout is `5f94023`; no version is changed in flight.
+A fresh SSH/browser read again timed out. Current Slurm state, attempted count
+and admission result remain unknown; submission is not evidence of success.
+Log: `native-remaining6-5f94023/native-remaining6-3868824.out` under the artifact root.
 Validation report: local `native-remaining6-pack-5f94023/verification.json` under
 the evidence root above. Model/policy setup and source serving remain offline
 costs; this diagnostic is not a six-question NL result or a formal method campaign.
