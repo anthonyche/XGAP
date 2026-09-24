@@ -25,6 +25,7 @@ from test_native_spj import compile_query, native_cases
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('runtime','java','output'):parser.add_argument('--'+key,required=True)
+    parser.add_argument('--prefix-topk',action='store_true')
     args=parser.parse_args();root=Path(args.output).resolve();root.mkdir(exist_ok=False)
     runtime=Path(args.runtime).resolve();java=Path(args.java).resolve()
     conf=root/'conf';conf.mkdir()
@@ -34,7 +35,7 @@ def main():
         resource_profile=dict(heap_initial_size='128m',heap_max_size='512m',pagecache_size='64m'),query_timeout_seconds=15))
     ports.release(0);ports.release(1)
     log=(root/'service.log').open('w');process=None
-    receipt=dict(success=False,cases=[],model_calls=0,paper_result=False)
+    receipt=dict(success=False,cases=[],model_calls=0,paper_result=False,prefix_topk_requested=args.prefix_topk)
     try:
         process=subprocess.Popen([str(runtime/'bin/neo4j'),'console'],cwd=runtime,stdout=log,stderr=subprocess.STDOUT,
             start_new_session=True,env={**os.environ,'JAVACMD':str(java),'NEO4J_CONF':str(conf),'NEO4J_HOME':str(runtime)})
@@ -61,8 +62,32 @@ def main():
         _,q,s,b,_=cases[0]
         q=deepcopy(q);q['where']=q['where'][:1];q['limit']=1000
         cases.extend((name,q,s,b,name) for name in ('not','or-null'))
+        if args.prefix_topk:
+            # A lexicographically earlier prefix exists locally but has no
+            # complete witness. A second equal-valued prefix has other valid
+            # witnesses that cannot be discarded by choosing one native node.
+            extra="""MATCH (a:Actor {key:'a'}), (d:Item {key:'d'})
+              CREATE (dead:Item {key:'dead',name:'000-dead'}),
+              (z:Actor {key:'dead-user',name:'000-other'}),
+              (a)-[:LINK {key:'a-dead',score:2}]->(dead),
+              (z)-[:LINK {key:'z-dead',score:2}]->(dead),
+              (copy:Item {key:'bCopy',name:'apple'}),
+              (alt:Actor {key:'alt',name:'aaa-alt'}),
+              (a)-[:LINK {key:'a-copy',score:2}]->(copy),
+              (alt)-[:LINK {key:'alt-copy',score:2}]->(copy),
+              (alt)-[:LINK {key:'alt-d',score:2}]->(d)"""
+            result=client.execute(QueryArtifact('prefix-adversaries','cypher',extra));assert result.success,result.error
+            from test_native_spj import fixture
+            q,s,b=fixture();q['limit']=1;cases.append(('dead-prefix-and-alternate-witness',q,s,b,None))
+            q=deepcopy(q);q['limit']=5
+            cases.append(('null-first-prefix',q,s,b,None))
+            q=fixture()[0];q['order_by']=list(reversed(q['order_by']));q['limit']=5
+            cases.append(('late-output-prefix',q,s,b,None))
+            q=fixture()[0];q['select']={'result':q['select']['result']};q['order_by']=q['order_by'][:1]
+            cases.append(('one-column-prefix',q,s,b,None))
         for name,q,s,b,wrapper in cases:
-            artifact,original=compile_query(q,s,b,condition_wrapper=wrapper)
+            artifact,original=compile_query(q,s,b,condition_wrapper=wrapper,prefix_topk=args.prefix_topk,
+                nulls='first' if name=='null-first-prefix' else None)
             fused=replace(original,nodes=(RuntimeNode(original.roots[0],RuntimeNodeKind.REMOTE_QUERY,
                 parameters=dict(backend_id='neo4j',artifact=artifact.to_dict())),))
             before=scheduler.execute(original);after=scheduler.execute(fused)
@@ -70,6 +95,11 @@ def main():
             assert after.success,after.to_dict()
             (root/(name+'-query.json')).write_text(json.dumps(artifact.to_dict(),indent=2))
             assert list(before.final_rows)==list(after.final_rows),(name,before.final_rows,after.final_rows)
+            if args.prefix_topk and name=='dead-prefix-and-alternate-witness':
+                assert dict(after.final_rows[0])=={'result':'apple','other':'aaa-alt','destination':'Ω'}
+            if args.prefix_topk and name=='zigzag':
+                explanation=client.explain(artifact);assert explanation.success,explanation.error
+                (root/'prefix-explain.json').write_text(json.dumps(explanation.to_dict(),indent=2))
             receipt['cases'].append(dict(name=name,rows=len(after.final_rows),ordered_rows_equal=True,
                 original_remote_calls=len([n for n in original.nodes if n.kind.value=='remote_query']),
                 fused_remote_calls=1))

@@ -56,7 +56,7 @@ class PhysicalMoves:
         operators = {o.operator_id:o for o in program.operators}
         consumers = Counter(i for o in program.operators for i in o.input_ids)
         # A single checked source contraction; no trial execution, candidate
-        # products, or intermediate LIMIT. All placed reads must share a backend.
+        # products, or unchecked intermediate LIMIT. All reads share a backend.
         placement=plan.metadata['source_bindings']
         if len(set(placement.values()))==1:
             from xgap.compilers.native_spj import compile_native_spj
@@ -65,7 +65,8 @@ class PhysicalMoves:
             try:
                 if key not in self.native_spj:
                     self.native_spj[key]=None
-                    self.native_spj[key]=compile_native_spj(program,self.backends[backend],self.schema,placement)[0]
+                    self.native_spj[key]=compile_native_spj(program,self.backends[backend],self.schema,placement,
+                        prefix_topk=True)[0]
                 artifact=self.native_spj[key]
                 if artifact is None:raise ValueError('Source contraction was not admitted')
                 root=plan.roots[0]

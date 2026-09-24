@@ -11,6 +11,11 @@ The opt-in [progressive binding](decisions/progressive_binding_v1.md) candidate
 composes existing entity semijoin restrictions. It preserves original joins,
 filters and aggregates; it introduces no algebra operator or approximate semantics.
 
+Single-source ordered SPJ can use [complete-prefix top-K](decisions/native_prefix_topk_20260924.md):
+only prefixes with a complete-query witness may be truncated. Its induction
+proof preserves the full DISTINCT ordered result, including alternate physical
+witnesses. It changes physical evaluation, not the query's semantic scope.
+
 Bound native edge endpoints can expose compiler-proven labels and canonical
 local identities to existing indexes. This is an exact necessary-condition
 rewrite, with unchanged joins and results; see

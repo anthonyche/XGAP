@@ -1,5 +1,9 @@
 # Bounded single-source SPJ pushdown
 
+Current follow-up: [completion-checked prefix top-K](native_prefix_topk_20260924.md)
+extends the historical final-only LIMIT strategy below. 3867524 passed its
+structural gate but still failed transaction memory; its failure remains retained.
+
 ## Evidence and motivation
 
 The downloaded 3867351 archive is 4,879,633 bytes, SHA-256
@@ -279,3 +283,13 @@ Expected closed evidence archive:
 Submission is not proof of structural or query admission, and either singleton
 result is not whole-cohort admission. Inspect the final receipts before deciding
 on another targeted fix or advancing the remaining held-out gate.
+
+Subsequent user/terminal result: FAILED/2:0, 167 seconds, compt311, EXPLAIN gate
+passed, attempted=audited=1. Worker: one final execution/call, 23,519.153 ms,
+Neo4j transaction memory (536.0 MiB used plus 2 MiB exceeds 537.6 MiB). Source
+sampled RSS is 1,567,068,160 bytes; storage read_bytes and major faults deltas are
+zero. These counters do not identify the allocating operator or prove zero
+unobserved I/O. Archive 116,163 bytes, SHA-256
+`68822b58663d559590ea2586a8ad01cef972cd76b2dd443a2a38c86fb52db8c1`;
+download verification still pending. No same-code retry. The prefix follow-up
+removes the full-tuple DISTINCT structure while preserving exact top-K semantics.

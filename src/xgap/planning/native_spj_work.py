@@ -47,7 +47,20 @@ def source_work(parameters, backend, populations, endpoint_degrees, unique_prope
         pending=[pair for pair in pending if pair[0]!=i]
         steps.append(dict(edge=e['variable'],label=e['label'],bound_endpoint=role,
             fanout_proxy=fanout,intermediate_rows_proxy=rows))
-    return dict(scan_records=scan,join_records=join_work,output_records=min(rows,limit),
-        profile='native-spj-source-work-v1',steps=steps,
-        assumptions='Frozen mean then size-biased degree; greedy connected join proxy, not native EXPLAIN or a bound; full scans charged; LIMIT caps output only',
+    prefix=proof.get('prefix_topk');passes=1
+    if prefix:
+        width=prefix.get('width');cap=prefix.get('maximum_prefixes')
+        if (prefix.get('profile')!='complete-prefix-topk-v1' or type(width) is not int
+                or not 1<=width<=8 or type(cap) is not int or cap!=limit
+                or prefix.get('maximum_prefix_subqueries')!=1+(width-1)*cap
+                or not prefix.get('completion_checks_before_limits')
+                or not prefix.get('value_prefix_regeneration')):
+            raise ValueError('Invalid exact-prefix source-work proof')
+        # Charge a full scan/join proxy per possible prefix subquery. EXISTS
+        # may stop early but no unmeasured benefit or K-capped edge work is assumed.
+        passes=prefix['maximum_prefix_subqueries']
+    return dict(scan_records=scan*passes,join_records=join_work*passes,output_records=min(rows,limit),
+        profile='native-prefix-source-work-v1' if prefix else 'native-spj-source-work-v1',steps=steps,
+        prefix_passes_charged=passes,
+        assumptions='Frozen mean then size-biased degree; greedy join proxy, not native EXPLAIN or a bound; full scan/join proxy charged per possible prefix subquery; no assumed EXISTS early-stop benefit',
         measured_latency=False,current_query_observation_calls=0)

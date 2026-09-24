@@ -2,7 +2,8 @@
 
 Independent MATCH clauses deliberately retain relationship reuse. Joins compare
 declared logical identity properties, not native object identity; duplicate IDs
-are therefore not silently assumed unique. No intermediate relation is limited.
+are therefore not silently assumed unique. The optional exact prefix profile
+limits only value prefixes already proved to have complete query witnesses.
 """
 from collections import Counter
 from dataclasses import dataclass
@@ -27,14 +28,14 @@ class Value:
     origin: tuple | None = None
 
 
-def _connected_matches(patterns, pattern_variables, equalities, guards=None, constant_variables=()):
+def _connected_stages(patterns, pattern_variables, equalities, guards=None, constant_variables=()):
     """Greedy connected order; each CALL imports only its proven join keys.
 
     Each comparison is already necessary for the whole relation. Correlation
     prevents an independent branch from being materialized before that binding
     is known. This is not a bound on expansion or final DISTINCT memory.
     """
-    remaining=set(range(len(patterns)));bound=set();ordered=[];clauses=[]
+    remaining=set(range(len(patterns)));bound=set();stages=[]
     used=set();guard_used=set();guards=guards or {};anchors=Counter(constant_variables)
     def local_constants(i):
         return sum(anchors[v] for v in pattern_variables[i])
@@ -51,18 +52,79 @@ def _connected_matches(patterns, pattern_variables, equalities, guards=None, con
         names=set(pattern_variables[i]);scope=bound|names
         selected=[text for text,refs in equalities.items() if text not in used and refs<=scope and refs&names]
         guarded=[text for text,refs in guards.items() if text not in guard_used and refs<=scope]
-        where='\nWHERE '+' AND '.join(selected+guarded) if selected or guarded else ''
-        if not bound:clauses.append(patterns[i]+where)
-        else:
-            imports=sorted(set().union(*(equalities[t] for t in selected),*(guards[t] for t in guarded))-names)
-            clauses.append('CALL {\nWITH '+', '.join(imports)+'\n'+patterns[i]+where+
-                '\nRETURN '+', '.join(pattern_variables[i])+'\n}')
-        ordered.append(i);remaining.remove(i);bound.update(names);used.update(selected);guard_used.update(guarded)
+        imports=sorted(set().union(*(equalities[t] for t in selected),*(guards[t] for t in guarded))-names)
+        stages.append(dict(index=i,pattern=patterns[i],variables=pattern_variables[i],
+            predicates=selected+guarded,imports=imports,first=not bound))
+        remaining.remove(i);bound.update(names);used.update(selected);guard_used.update(guarded)
     if used!=set(equalities) or guard_used!=set(guards):raise ValueError('Native SPJ predicate scope is incomplete')
-    return '\n'.join(clauses),ordered
+    return stages
 
 
-def compile_native_spj(program, backend, schema, source_bindings):
+def _render_stage(stage, predicates=(), imports=()):
+    conditions=list(stage['predicates'])+list(predicates)
+    text=stage['pattern']+('\nWHERE '+' AND '.join(conditions) if conditions else '')
+    if stage['first']:return text
+    return ('CALL {\nWITH '+', '.join(sorted(set(stage['imports'])|set(imports)))+'\n'+text+
+        '\nRETURN '+', '.join(stage['variables'])+'\n}')
+
+
+def _connected_matches(patterns, pattern_variables, equalities, guards=None, constant_variables=()):
+    stages=_connected_stages(patterns,pattern_variables,equalities,guards,constant_variables)
+    return '\n'.join(_render_stage(s) for s in stages),[s['index'] for s in stages]
+
+
+def _order_terms(field, spec):
+    null_direction='ASC' if spec.get('nulls','last')=='last' else 'DESC'
+    return ['('+field+' IS NULL) '+null_direction,field+' '+spec.get('direction','asc').upper()]
+
+
+def _prefix_topk(stages, values, ordering, conditions, render, limit):
+    """Exact lexicographic prefix restriction, AFTER complete-witness checks.
+
+    Regenerate by values at each level: a retained prefix can have multiple
+    physical witnesses. Keeping one such witness would be unsound.
+    """
+    all_variables=[v for s in stages for v in s['variables']]
+    producer={v:i for i,s in enumerate(stages) for v in s['variables']}
+    aliases=['spj_rank_'+str(i) for i in range(len(ordering))]
+    complete='WITH '+', '.join(all_variables)+('\nWHERE '+' AND '.join(conditions) if conditions else '')
+    parts=[];cuts=[]
+    for i,spec in enumerate(ordering):
+        value=values[spec['field']];cut=producer[value.origin[0]];cuts.append(cut)
+        prefixes=aliases[:i]
+        local=['CALL {']+(['WITH '+', '.join(prefixes)] if prefixes else [])
+        rendered=[]
+        for stage in stages:
+            predicates=[]
+            for j,previous in enumerate(ordering[:i]):
+                prior=values[previous['field']]
+                if prior.origin[0] in stage['variables']:
+                    x,y=render(prior),aliases[j]
+                    predicates.append('('+x+' = '+y+' OR ('+x+' IS NULL AND '+y+' IS NULL))')
+            rendered.append(_render_stage(stage,predicates,prefixes))
+        local.extend(rendered[:cut+1])
+        if cut+1<len(stages):
+            local.append('WITH '+', '.join(all_variables[:sum(len(s['variables']) for s in stages[:cut+1])]+prefixes))
+            local.append('WHERE EXISTS {\n'+'\n'.join(rendered[cut+1:])+'\n'+complete+'\nRETURN 1\n}')
+        else:local.append(complete)
+        local.extend(['RETURN DISTINCT '+render(value)+' AS '+aliases[i],
+            'ORDER BY '+', '.join(_order_terms(aliases[i],spec)), 'LIMIT '+str(limit), '}'])
+        parts.extend(local)
+        parts.extend(['WITH '+', '.join(aliases[:i+1]),
+            'ORDER BY '+', '.join(t for a,o in zip(aliases[:i+1],ordering[:i+1]) for t in _order_terms(a,o)),
+            'LIMIT '+str(limit)])
+    lookup={o['field']:a for o,a in zip(ordering,aliases)}
+    parts.extend(['RETURN '+', '.join(lookup[f]+' AS '+ident(f) for f in values),
+        'ORDER BY '+', '.join(t for o in ordering for t in _order_terms(ident(o['field']),o)),
+        'LIMIT '+str(limit)])
+    return '\n'.join(parts),dict(profile='complete-prefix-topk-v1',width=len(ordering),
+        generation_cuts=cuts,completion_checks_before_limits=True,value_prefix_regeneration=True,
+        maximum_prefixes=limit,maximum_prefix_subqueries=1+(len(ordering)-1)*limit,
+        local_distinct_columns=1,scalar_domain_memory_bound='node population, not K',
+        source_work_bounded_by_limit=False)
+
+
+def compile_native_spj(program, backend, schema, source_bindings, *, prefix_topk=False):
     """Compile only admitted meaning; unsupported input raises before execution."""
     raw = program.to_dict()
     if (program.holes or len(program.roots) != 1 or not 1 <= len(program.operators) <= 64
@@ -250,10 +312,7 @@ def compile_native_spj(program, backend, schema, source_bindings):
     text += '\nWITH ' + ', '.join(v for variables in pattern_variables for v in variables)
     text += ('\nWHERE ' + ' AND '.join(conditions) if conditions else '')
     text += '\nRETURN DISTINCT ' + ', '.join(render(v) + ' AS ' + ident(f) for f, v in values.items())
-    order = []
-    for o in ordering:
-        f = ident(o['field']); null_direction = 'ASC' if o.get('nulls', 'last') == 'last' else 'DESC'
-        order.extend(['(' + f + ' IS NULL) ' + null_direction, f + ' ' + o.get('direction', 'asc').upper()])
+    order = [t for o in ordering for t in _order_terms(ident(o['field']),o)]
     text += '\nORDER BY ' + ', '.join(order) + '\nLIMIT ' + str(limit)
     if len(text.encode()) > 131072:
         raise ValueError('Native SPJ query byte bound exceeded')
@@ -265,6 +324,15 @@ def compile_native_spj(program, backend, schema, source_bindings):
         nullable_predicates_retained=True, native_identity_coalescing=False,
         join_order_profile='bound-connected-matches-v1',pattern_order=pattern_order,
         correlated_match_calls=len(patterns)-1,earliest_bound_predicates=True)
+    if (prefix_topk and 1<=len(ordering)==len(values)<=8
+            and all(v.origin and v.origin[0] in work_graph['nodes'] for v in values.values())):
+        stages=_connected_stages(patterns,pattern_variables,access_equalities,guard_bindings,
+            [v for v,_ in work_graph['constant_equalities']])
+        candidate,prefix_proof=_prefix_topk(stages,values,ordering,conditions,render,limit)
+        if len(candidate.encode())<=131072:
+            text=candidate
+            proof.update(prefix_topk=prefix_proof,intermediate_limits=2*len(ordering),
+                final_distinct=False,complete_result_distinct=True)
     return QueryArtifact(PROFILE, 'cypher', text, kind='compiled', parameters={
         **parameters, 'compiler': PROFILE, 'target_backend_id': backend.backend_id,
         'output_columns': list(values), 'source_pushdown': proof, 'source_work_graph': work_graph}), bare

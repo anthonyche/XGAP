@@ -1,0 +1,91 @@
+# Exact completion-checked prefix top-K
+
+## Motivation and evidence boundary
+
+3867524 passed its full-source EXPLAIN structure gate and then failed the single
+unchanged D2 query. The user pasted a Neo4j transaction-memory error at 537.6 MiB,
+23,519.153 ms execution / 26,503.284 ms worker wall, one final query and one call.
+The sampled source RSS (1,567,068,160 bytes) stayed below 4 GiB. Sampled storage
+read_bytes and major faults were zero; this is not evidence of an I/O-wait fault.
+The archive (116,163 bytes, SHA-256
+`68822b58663d559590ea2586a8ad01cef972cd76b2dd443a2a38c86fb52db8c1`)
+is not yet downloaded. The exact allocating native operator is unverified;
+the existing compiler does require full-tuple DISTINCT before top-K. The new
+transform removes that global tuple set without changing the answer contract.
+
+## Admitted transformation and proof
+
+Keep the bounded single-source positive SPJ profile, complete typed output
+ordering and original K (1..1000). This additional profile admits 1..8 ordered
+output columns, each a field of a node Match. No node-identity uniqueness is
+assumed. Unsupported outputs retain the existing connected contraction/seed.
+
+Let R be the DISTINCT final result and P_i its DISTINCT prefixes of length i in
+the declared lexicographic order (including direction and explicit null order).
+Every prefix considered for truncation must have a witness for the COMPLETE
+original query, not just its locally generated partial path. For each retained
+prefix of length i-1, generate possible i-th values and check remaining query
+conditions using a correlated EXISTS. Retain its first K distinct values, then
+retain the first K resulting prefixes globally. Regenerate witnesses from the
+original patterns at the next level, constrained by retained VALUE prefixes;
+do not retain a single arbitrary physical witness for each prefix.
+
+Induction: a discarded parent prefix has K preceding completable parents, each
+contributing at least one complete result. A discarded child has K preceding
+completable children of the same parent. Neither can contribute to the first K
+full tuples. Global prefix truncation has the same argument. At full width the
+retained prefix set is exactly top-K(R). This fails without completion checks;
+an early lexicographic partial path may be a dead end. Rebuilding by values
+preserves alternate witnesses, duplicate logical identities and parallel edges.
+Null-safe equality binds prior prefixes; OR/NOT predicates remain whole and
+nullable predicate truth conditions are unchanged.
+
+## Implementation and cost boundary
+
+Compile one native query with nested CALL subqueries. Reuse the deterministic
+connected schedule and earliest predicate placement. For each output field,
+generate only through its producing Match; the suffix is a correlated EXISTS
+with complete predicates. Inner DISTINCT is on ONE scalar field per prefix,
+not the Cartesian set of all output tuples. Each outer boundary retains at
+most K prefixes; at most K^2 rows enter its Top operator. A local scalar-domain
+DISTINCT may still contain up to the node population, and EXISTS expansion may
+still be expensive. This is not a constant total-memory or time certificate.
+
+Code generation is O(W * M^2 * E + emitted bytes), W<=8, M<=64, E<=512,
+with a 128 KiB query cap. It emits one deterministic alternative, does not
+enumerate plans or read results during planning, and dispatches one final query.
+Frozen work estimates must explicitly charge repeated prefix passes; final K
+does not cap source scans or suffix witness work. Observed EXPLAIN/latency is
+not fed into the estimator. Keep all remote and source memory/time caps intact.
+
+## Admission still required
+
+First validate dead prefixes, duplicate value/identity witnesses, nulls,
+descending/Unicode ordering, OR/NOT and edge reuse on toy data against the
+unchanged coordinator. Inspect the generated native plan on toy data before
+any full-source replay. No new server submission or full campaign is authorized
+by the existence of this design document.
+
+Local implementation evidence: 31 focused compiler/work-model/controller checks
+passed. Tiny real Neo4j compares ten cases against the original coordinator;
+ordered results match with 2/0/23/7/76/56/1/5/5/1 rows. This fixture adds dead
+prefixes and alternate physical witnesses; counts are not the earlier fixture's
+six-case counts. Source closure passed. Receipt at local artifact root
+`ch6-release-boundary-20260924/native-prefix-tiny-v2/receipt.json`, SHA-256
+`7cdb88ebda01b934ca8b158fa4c3a0ed57dca1370e3e023613af61501d23dc26`.
+The earlier v1 gate retained seven successes and a harness error: compact NL
+order does not accept a `nulls` field. The v2 test sets null placement through
+the already-supported semantic OrderLimit layer; no NL grammar expansion.
+
+Tiny EXPLAIN has zero CartesianProduct and three one-field DISTINCT operators,
+each followed by a bounded Top; two SemiApply implement suffix existence checks.
+This is structural evidence, not measured big-source peak-memory attribution.
+The original D2 program compiles unchanged to 13,096 query bytes, three ordered
+columns, cuts [2,4,6], K=20 and at most 41 prefix subquery invocations. Full scan
+and join proxies are charged 41 times rather than pretending the suffix checks
+are free. This is deliberately conservative; it is neither a runtime nor a
+memory bound. The frozen model parameters and other plan scores are unchanged.
+Zero-call D2 compilation artifact `native-prefix-d2-compile-v1.json`, SHA-256
+`453cbef759c93ba8183eb663caf306d64c07c1763ce7128c8e400d2d73a05a5f`.
+Exact frozen-model selection and full-source structure/execution admission
+remain required; neither compiled size nor tiny equivalence establishes them.
