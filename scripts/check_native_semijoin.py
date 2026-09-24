@@ -20,7 +20,7 @@ from xgap.runtime.scheduler import FederatedScheduler
 from xgap.tools import BackendInvokeTool, BackendPluginRegistry, NativeBackendPlugin
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tests'))
-from test_native_semijoin import fixture, fused_plan
+from test_native_semijoin import fixture, fused_plan, refine_driver
 
 
 def run(runtime, fuseki, java, output):
@@ -29,7 +29,7 @@ def run(runtime, fuseki, java, output):
     runtime=Path(runtime).resolve();fuseki=Path(fuseki).resolve();java=Path(java).resolve()
     ports=LoopbackPortReservations.acquire(3);http,bolt,rdfport=ports.ports
     processes=Processes(root);receipt=dict(success=False,cases=[],model_calls=0,paper_result=False,
-        scope='tiny semantic equivalence only; two plans run for differential testing, not online plan selection')
+        scope='tiny semantic equivalence and driver traffic; three plans run for differential testing, not online plan selection')
     try:
         conf=root/'conf';conf.mkdir()
         for part in ('data','transactions','logs','run','import','plugins'):(root/'neo4j'/part).mkdir(parents=True)
@@ -57,39 +57,56 @@ def run(runtime, fuseki, java, output):
           (a)-[:LINK {key:'a-bad',score:1}]->(bad), (a)-[:LINK {key:'a-b',score:1}]->(b),
           (a)-[:LINK {key:'a-copy',score:1}]->(copy), (a)-[:LINK {key:'a-copy2',score:2}]->(copy),
           (a)-[:LINK {key:'a-n',score:1}]->(n), (a)-[:LINK {key:'a-m',score:1}]->(m),
+          (a)-[:LINK {key:'a-d',score:1}]->(d),
           (c)-[:LINK {key:'c-bad'}]->(bad), (c)-[:LINK {key:'c-b'}]->(b),
           (c)-[:LINK {key:'c-copy'}]->(copy), (c)-[:LINK {key:'c-d'}]->(d),
           (c)-[:LINK {key:'c-n'}]->(n), (c)-[:LINK {key:'c-m'}]->(m),
           (alt)-[:LINK {key:'alt-copy'}]->(copy), (alt)-[:LINK {key:'alt-d'}]->(d)"""
         loaded=neo.execute(QueryArtifact('fixture','cypher',create));assert loaded.success,loaded.error
+        noise="UNWIND range(1,64) AS i CREATE (:Actor {key:'unused-a'+toString(i),name:'unused'}), (:Item {key:'unused-b'+toString(i),name:'unused'})"
+        loaded=neo.execute(QueryArtifact('irrelevant-nodes','cypher',noise));assert loaded.success,loaded.error
         ttl=root/'control.ttl';ttl.write_text('''@prefix t: <https://tiny/> .
           t:bad a t:Item; t:allowed false . t:b a t:Item; t:allowed false .
           t:copy a t:Item; t:allowed true, false . t:n a t:Item .''')
         loaded=loader.load(ttl);assert loaded.success,loaded.to_dict()
         q=fixture()[0];cases=[]
-        for name in ('allowed','denied','early-exclusion-and-alternate-key','descending','empty','nullable-not-equal'):
+        for name in ('allowed','denied','early-exclusion-and-alternate-key','descending','empty','nullable-not-equal',
+                     'cycle-membership','cycle-empty'):
             case=deepcopy(q)
             if name=='denied':case['where'][-1]['right']['value']=False
             if name=='early-exclusion-and-alternate-key':case['limit']=1
             if name=='descending':case['order_by'][0]['direction']='desc';case['limit']=1000
             if name=='empty':case['where'][0]['right']['value']='absent'
             if name=='nullable-not-equal':case['where'][-1]['op']='ne';case['where'][-1]['right']['value']=False
+            if name.startswith('cycle-'):case['edges'].append(dict(var='h',type='LINK',source='a',target='d'))
+            if name=='cycle-empty':case['where'][0]['right']['value']='absent'
             cases.append((name,case))
         for name,q in cases:
-            values,plan=fused_plan(q);original=values[4];target=root/name;target.mkdir()
+            values,plan=fused_plan(q);original=values[4];refined=refine_driver(plan,values[-1]);target=root/name;target.mkdir()
             registry=BackendPluginRegistry();records=[];lock=threading.Lock()
             for b,client in [('neo4j',neo),('fuseki',rdf)]:
                 registry.register(NativeBackendPlugin(b,CapturingClient(client,target,records,lock)))
             scheduler=FederatedScheduler(BackendInvokeTool(registry),retention='roots')
-            before=scheduler.execute(original);after=scheduler.execute(plan)
+            before=scheduler.execute(original)
+            fused_start=len(records);after=scheduler.execute(plan)
+            refined_start=len(records);optimized=scheduler.execute(refined)
             write_once(target/'plan.json',plan.to_dict());write_once(target/'original.json',before.to_dict())
             write_once(target/'fused.json',after.to_dict())
+            write_once(target/'refined-plan.json',refined.to_dict());write_once(target/'refined.json',optimized.to_dict())
             assert before.success,before.to_dict();assert after.success,after.to_dict()
+            assert optimized.success,optimized.to_dict()
             assert list(before.final_rows)==list(after.final_rows),(name,before.final_rows,after.final_rows)
+            assert list(before.final_rows)==list(optimized.final_rows),(name,before.final_rows,optimized.final_rows)
             if name=='early-exclusion-and-alternate-key':
                 assert list(after.final_rows)==[dict(result='apple',other='aaa-alt',destination='omega')]
-            if name=='empty':assert not after.final_rows
-            receipt['cases'].append(dict(name=name,rows=len(after.final_rows),ordered_rows_equal=True))
+            if name in ('empty','cycle-empty'):assert not after.final_rows
+            if name=='cycle-membership':assert after.final_rows
+            def traffic(calls):
+                return dict(calls=len(calls),returned_rows=sum(len(r['execution']['rows']) for r in calls),
+                    decoded_rows_json_bytes=sum(len(json.dumps(r['execution']['rows'],sort_keys=True).encode()) for r in calls))
+            receipt['cases'].append(dict(name=name,rows=len(after.final_rows),ordered_rows_equal=True,
+                fused_traffic=traffic(records[fused_start:refined_start]),refined_traffic=traffic(records[refined_start:]),
+                byte_scope='serialized decoded result rows, not wire bytes; same tiny source and final answer'))
         receipt['success']=True
     except Exception as error:receipt.update(error_type=type(error).__name__,error=str(error))
     finally:

@@ -32,6 +32,10 @@ whole neighborhood as one action. `unified_information` invokes a registered
 read-only scalar metadata/statistics target only when selected. Its finite outcome
 category updates estimates or optional-rule prerequisites, not intent authority.
 Hypothetical lookahead never contacts a tool or executes a trial plan.
+The [membership composition rule](decisions/native_membership_composition_20260924.md)
+constructs one canonical prerequisite bind inside its checked contraction; it
+also retains the driver DAG for subsequent necessary-condition optimizations.
+This preserves fixed D and does not enumerate prerequisite combinations.
 
 On an optional deadline, keep a root action only after all of its outcomes have
 passed completion reservations and fixed-depth scoring; incomplete actions never

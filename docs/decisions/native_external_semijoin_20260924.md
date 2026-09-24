@@ -1,5 +1,7 @@
 # Exact external membership before native SPJ/top-K
 
+Latest extension: [membership composition and driver optimization](native_membership_composition_20260924.md) supersedes the original requirement to prepare a bound external read in a separate move, and admits harmless intermediate scalar projections using lineage checks. The original implementation and its verified 3868378 result below remain historical evidence.
+
 2026-09-24. This extends the shared unified planner, not a D2-specific query override.
 No dataset name, template family, query ID or observed answer is consulted by the rule.
 Full experiment launch remains closed.

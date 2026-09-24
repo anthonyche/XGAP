@@ -4,7 +4,11 @@
 physical move to `PhysicalMoves`. `native_spj.py` places its parameterized key
 predicate before complete-witness prefix top-K; `relative_source_work.py` charges
 retained driver/key/native work. [Proof, limits and admission status](decisions/native_external_semijoin_20260924.md).
-Six real tiny Neo4j/Fuseki comparisons pass; full D2 W3 admission remains pending.
+The original full D2 W3 passed in job 3868378. The subsequent
+[composition repair](decisions/native_membership_composition_20260924.md) retains
+driver rewrite ports, checks intermediate scalar aliases, and constructs the
+canonical bind prerequisite within one macro. 62 focused tests and eight real
+tiny comparisons pass; this newer version has no full-D2 execution admission yet.
 
 2026-09-22 numbering note: this filename is retained for existing links. The
 user's current Chapter 6 is the [experimental study](ch6_experiment_plan_20260922.md);

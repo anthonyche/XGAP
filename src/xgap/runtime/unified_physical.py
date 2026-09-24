@@ -50,11 +50,17 @@ class PhysicalMoves:
                 seen.add(key);yield proposal
 
     def _neighbors(self,index,plan):
-        if plan.metadata.get('native_spj_pushdown') or plan.metadata.get('native_external_semijoin'):
-            return  # Complete source contraction has no coordinator rewrite ports.
+        if plan.metadata.get('native_spj_pushdown'):
+            return  # A single complete source query has no coordinator ports.
         program = self.program(index)
         operators = {o.operator_id:o for o in program.operators}
         consumers = Counter(i for o in program.operators for i in o.input_ids)
+        if plan.metadata.get('native_external_semijoin'):
+            # The native answer is contracted, but its paid membership driver
+            # is still an ordinary DAG. Preserve its rewrite ports so choosing
+            # the contraction cannot freeze full-table driver reads in place.
+            yield from self._read_reductions(index,program,plan,operators,consumers)
+            return
         # A single checked source contraction; no trial execution, candidate
         # products, or unchecked intermediate LIMIT. All reads share a backend.
         placement=plan.metadata['source_bindings']
@@ -83,8 +89,10 @@ class PhysicalMoves:
                 contraction=semijoin_nodes(program,plan,self.backends,self.schema,self.policy,self.native_spj)
                 if contraction:
                     nodes,proof=contraction
+                    retained={n.node_id for n in nodes}
+                    outputs={k:v for k,v in plan.metadata['operator_outputs'].items() if v in retained}
                     yield finish(plan,nodes,'native_external_semijoin',proof,
-                        dict(native_external_semijoin=proof,operator_outputs={program.roots[0]:plan.roots[0]}))
+                        dict(native_external_semijoin=proof,operator_outputs={**outputs,program.roots[0]:plan.roots[0]}))
             except (ValueError,KeyError,StopIteration):pass
         from xgap.runtime.leaf_witness import witness_neighbors
         for nodes,proof in witness_neighbors(json.loads(self.family.candidates[index].query_json),
@@ -153,6 +161,10 @@ class PhysicalMoves:
                     for n in plan.nodes if n.node_id!=second.node_id]
                 outputs = {k:first.node_id if v==second.node_id else v for k,v in plan.metadata['operator_outputs'].items()}
                 yield finish(plan,nodes,'share_read',dict(keep=first.node_id,remove=second.node_id),{'operator_outputs':outputs})
+        yield from self._read_reductions(index,program,plan,operators,consumers)
+
+    def _read_reductions(self,index,program,plan,operators,consumers):
+        """One necessary-condition rewrite within existing, retained read ports."""
         # Reuse the existing equality proof, but apply only one native-node change.
         bare = replace(plan, metadata={k:v for k,v in plan.metadata.items() if k!='source_row_prefilters'})
         screened = prefilter_source_rows(program, bare)
@@ -173,9 +185,9 @@ class PhysicalMoves:
                 try:
                     if not lineage(driver,field):continue
                     for match,chain,column in nested_key_targets(target,other,operators,plan.metadata['schemas'],consumers,set(program.roots)):
-                        remote = next(n for n in plan.nodes if n.node_id==match.operator_id+'/native')
+                        remote = next((n for n in plan.nodes if n.node_id==match.operator_id+'/native'),None)
                         # Shared reads require a separate all-consumer proof and are not rebound.
-                        if remote.kind is not R.REMOTE_QUERY or len(remote.semantic_operator_ids)!=1:continue
+                        if remote is None or remote.kind is not R.REMOTE_QUERY or len(remote.semantic_operator_ids)!=1:continue
                         output = plan.metadata['operator_outputs'][driver]
                         if depends_on(plan,output,remote.node_id):continue
                         artifact,parameter = _bound_match_artifact(QueryArtifact.from_dict(remote.parameters['artifact']),
@@ -186,8 +198,10 @@ class PhysicalMoves:
                         yield finish(plan,[bound if n.node_id==remote.node_id else n for n in plan.nodes],'entity_bind',
                             dict(join=join.operator_id,driver=driver,target=match.operator_id,chain=chain))
                         bound_plan=replace(plan,nodes=tuple(bound if n.node_id==remote.node_id else n for n in plan.nodes))
-                        for nodes,proof in witness_neighbors(json.loads(self.family.candidates[index].query_json),
-                                program,bound_plan,self.backends,self.policy):
-                            yield finish(plan,nodes,'leaf_witness',dict(**proof,bind_driver=driver))
+                        if not plan.metadata.get('native_external_semijoin'):
+                            from xgap.runtime.leaf_witness import witness_neighbors
+                            for nodes,proof in witness_neighbors(json.loads(self.family.candidates[index].query_json),
+                                    program,bound_plan,self.backends,self.policy):
+                                yield finish(plan,nodes,'leaf_witness',dict(**proof,bind_driver=driver))
                 except (ValueError,KeyError,StopIteration):
                     continue

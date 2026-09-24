@@ -58,8 +58,83 @@ def test_membership_precedes_witness_and_topk_and_keeps_paid_driver():
     assert artifact['text'].index('IN $'+PARAMETER)<artifact['text'].index('LIMIT')
     assert artifact['parameters']['source_pushdown']['identity_membership']['before_complete_witness_and_topk']
     assert len(fused.nodes)<len(bound.nodes)
-    assert not list(moves.neighbors(0,fused))
-    assert not any(p.metadata.get('native_external_semijoin') for p in moves.neighbors(0,seed))
+    refinements=list(moves.neighbors(0,fused))
+    assert refinements
+    for refinement in refinements:
+        assert refinement.nodes[-1]==final
+        assert refinement.metadata['native_external_semijoin']==proof
+        assert refinement.metadata['unified_rewrite']['rule'] in ('prefilter','entity_bind')
+        assert {n.node_id for n in refinement.nodes}=={n.node_id for n in fused.nodes}
+    direct=next(p for p in moves.neighbors(0,seed) if p.metadata.get('native_external_semijoin'))
+    assert direct.metadata['native_external_semijoin']['external_bind_created']
+    assert direct.nodes==fused.nodes
+
+
+def refine_driver(plan,moves):
+    """Exercise successive checked rewrites; no observations or trial selection."""
+    for _ in range(16):
+        proposals=list(moves.neighbors(0,plan))
+        if not proposals:return plan
+        plan=proposals[0]
+    raise AssertionError('Tiny driver reductions did not terminate')
+
+
+def cycle_fixture():
+    q=fixture()[0]
+    q['edges'].append(dict(var='h',type='LINK',source='a',target='d'))
+    return fixture(q)
+
+
+def test_cycle_membership_removes_only_carried_external_scalar():
+    q,s,backends,program,seed,bound,moves=cycle_fixture()
+    artifact,proof=_reduction(program,seed.metadata['source_bindings'],backends,s)
+    assert proof['removed_intermediate_scalar_projections']
+    assert proof['external_output_absent']
+    assert artifact.parameters['output_columns']==list(q['select'])
+    _,plan=fused_plan(q)
+    refined=refine_driver(plan,moves)
+    assert refined.nodes[-1]==plan.nodes[-1]
+    # The native anchor is screened and the node dimension can be key-bound.
+    assert any(n.parameters.get('artifact',{}).get('parameters',{}).get('necessary_row_filters')
+        for n in refined.nodes)
+    assert len([n for n in refined.nodes if n.kind.value=='remote_query']) < len([
+        n for n in plan.nodes if n.kind.value=='remote_query'])
+
+
+@pytest.mark.parametrize('escape',['predicate','output','ordering','join-key',None])
+def test_external_scalar_aliases_cannot_escape_membership(escape):
+    from xgap.semantic.program import SemanticOperatorKind as S
+    _,s,backends,program,seed,_,_=cycle_fixture()
+    first=next(o for o in program.operators if o.kind is S.PROJECT)
+    scalar=next(k for k in first.parameters['projections'] if k in
+        next(o.parameters['properties'] for o in program.operators if seed.metadata['source_bindings'].get(o.operator_id)=='fuseki'))
+    seen=False;ops=[]
+    for o in program.operators:
+        p=deepcopy(dict(o.parameters))
+        if o==first:
+            p['projections']['alias_flag']=p['projections'].pop(scalar);seen=True
+        elif seen and o.kind is S.FILTER:
+            for c in p['condition']['args']:
+                if c.get('field')==scalar:
+                    c['field']='alias_flag'
+                    if escape=='predicate':c['value']=False
+        elif seen and o.kind is S.PROJECT and escape in ('output','ordering'):
+            p['projections']['flag']=dict(kind='field',field='alias_flag')
+        elif o.kind is S.ORDER_LIMIT and escape=='ordering':
+            p['order_by'].append(dict(field='flag',direction='asc'))
+        ops.append(replace(o,parameters=p))
+    if escape=='join-key':
+        # Feed a side scalar directly into its consuming join instead of identity.
+        side=next(o for o in program.operators if o.kind is S.MATCH and scalar in o.parameters.get('properties',{}))
+        tip=next(o for o in ops if o.kind is S.FILTER and o.input_ids==(side.operator_id,))
+        ops=[replace(o,parameters={**o.parameters,'right_on':scalar})
+            if o.kind is S.JOIN and tip.operator_id in o.input_ids else o for o in ops]
+    modified=replace(program,operators=tuple(ops))
+    if escape:
+        with pytest.raises(ValueError):_reduction(modified,seed.metadata['source_bindings'],backends,s)
+    else:
+        _,proof=_reduction(modified,seed.metadata['source_bindings'],backends,s)
+        assert proof['removed_intermediate_scalar_projections'][0]['fields']==['alias_flag']
 
 
 @pytest.mark.parametrize('change',['side-output','cross-field','two-dimensions','different-namespace','partial-order'])

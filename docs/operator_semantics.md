@@ -5,6 +5,9 @@ may retain a bound external node/filter branch and push the remaining native SPJ
 into Neo4j. External keys restrict complete witnesses before top-K; external
 scalar output/cross-field comparisons are declined. This is exact set semantics,
 not approximate truncation or an extra semantic operator.
+Intermediate external scalar aliases may be removed only with the
+[checked lineage and membership proof](decisions/native_membership_composition_20260924.md);
+final external scalar output, ordering, join keys and new predicates still decline.
 
 > Current controller: [unified lookahead](decisions/unified_lookahead_migration_20260921.md).
 > Lambda/epsilon use the [finite structured-intent distance](decisions/finite_intent_discrepancy_v1.md)
