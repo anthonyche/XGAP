@@ -31,6 +31,7 @@ from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.process_guard import ProcessBudget
 from xgap.experiments.query_loss_score import score_query_loss
 from xgap.experiments.ch6_direct import METHOD as DIRECT_METHOD
+from xgap.experiments.batch_cell_identity import validate_cell_id
 
 REPO=Path(__file__).resolve().parents[1]
 SCHEMA='xgap-bounded-joint-batch-v1'
@@ -75,8 +76,7 @@ def validate(manifest):
             if not manifest['external_runtime']:raise ValueError('Pinned original external runtime required')
         elif set(cell)-{'controlled_state'}!={'cell_id','method','request','scope','oracle','config','reference'}:
             raise ValueError('Invalid cell fields')
-        if not isinstance(cell['cell_id'],str) or not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}',cell['cell_id']):
-            raise ValueError('Invalid cell ID')
+        validate_cell_id(cell['cell_id'])
         if cell['method'] not in allowed:raise ValueError('Only current bounded joint methods are allowed')
         if cell['method']==DIRECT_METHOD and 'controlled_state' in cell:
             raise ValueError('Direct baseline requires a natural-language proposal, not controlled truth')

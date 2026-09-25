@@ -8,6 +8,7 @@ from collections import Counter
 import json
 
 from xgap.experiments.ch6_formal_protocol import DEFAULTS, METHOD_ORDER, matrix, load_pin
+from xgap.experiments.batch_cell_identity import validate_cell_id
 
 PARAMETERS = ('depth', 'horizon', 'epsilon', 'probe_price', 'clarification_price')
 
@@ -79,7 +80,7 @@ def build(spec, *, load=load_pin):
             for method in needed:
                 for repeat in range(3):
                     requests[key(cid, case, method, track, parameters, repeat)] = dict(
-                        unit_id=prefix + '-r' + str(repeat), cell_id=case['case_id'] + '-' + method,
+                        unit_id=prefix + '-r' + str(repeat), cell_id=validate_cell_id(case['case_id'] + '-' + method),
                         case_id=case['case_id'], method=method, input_track=track, repeat=repeat,
                         group=group)
 

@@ -16,6 +16,7 @@ from run_bounded_joint_batch import FORMAL_SCHEMA,validate,source_commit
 from xgap.experiments.ch6_formal_protocol import load_pin,METHODS
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.unified_contract import load_configuration,validate_method
+from xgap.experiments.batch_cell_identity import validate_cell_id
 
 
 def configuration_for(base,method):
@@ -33,6 +34,9 @@ def publish(*,spec_path,spec_sha256,output):
     if (not isinstance(selected_methods,list) or not selected_methods or len(selected_methods)!=len(set(selected_methods))
             or any(method not in METHODS for method in selected_methods)):
         raise ValueError('A nonempty unique subset of the five declared methods is required')
+    identities=[validate_cell_id(case['case_id']+'-'+method)
+                for case in spec['cases'] for method in selected_methods]
+    if len(identities)!=len(set(identities)):raise ValueError('Duplicate cell IDs')
     commit=source_commit();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     prepared=load_pin(spec['prepared']);load_pin(prepared['profile'])
     if not prepared.get('success'):raise ValueError('Frozen stores not ready')
