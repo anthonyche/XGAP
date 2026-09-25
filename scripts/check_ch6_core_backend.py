@@ -25,6 +25,7 @@ from xgap.experiments.process_guard import ProcessBudget, run_guarded_command
 from xgap.experiments.owned_resources import OwnedResources
 from xgap.experiments.campaign_source_observer import SourceObservationBudget
 from xgap.experiments.external_federation import deadline
+from xgap.experiments.ch6_admission_policy import AdmissionBudgets, classify
 from xgap.runtime.scheduler import FederatedScheduler
 from xgap.semantic.compact_lowering import lower_compact_query
 from xgap.tools import BackendPluginRegistry, NativeBackendPlugin, BackendInvokeTool
@@ -107,7 +108,8 @@ def admission_scope(case_id=None,case_ids=None):
     return 'diagnostic_subset' if case_ids is not None else ('single_case_replay' if case_id is not None else 'complete_bundle')
 
 
-def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3,case_id=None,rdf_lazy_range=False,case_ids=None,source_runtime=None):
+def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3,case_id=None,rdf_lazy_range=False,case_ids=None,source_runtime=None,source_timeout_seconds=60,worker_seconds=120):
+    timeouts = AdmissionBudgets(source_timeout_seconds, worker_seconds)
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     if planning not in ('fixed_scan','unified'):raise ValueError('Unknown admission planning profile')
@@ -142,7 +144,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
     limits = dict(total_wall_seconds=3600, package_max_bytes=serving_bytes+2*1024**3,
                   free_disk_reserve_bytes=6*1024**3)
     write(root/'intent.json', dict(bundle=bundle_pin, prepared=prepared_pin, limits=limits,
-        planning=planning,worker_seconds=120, worker_rss_bytes=3*1024**3, source_rss_bytes=source_rss_bytes,
+        planning=planning,**timeouts.to_dict(), worker_rss_bytes=3*1024**3, source_rss_bytes=source_rss_bytes,
         rdf_file_mode=rdf_file_mode,experimental_lazy_range=rdf_lazy_range,
         source_runtime=source_runtime,
         case_order=[c['case_id'] for _,c in cases],admission_scope=scope,full_bundle_cases=len(bundle['cases']), model_calls=0, automatic_retries=0,
@@ -155,7 +157,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
         profile=bundle['profile'], prepared=prepared_pin, source_commit=commit,
         model_calls=0, evaluated_method=False, formal_campaign_started=False,
         source_runtime=source_runtime,rdf_file_mode=rdf_file_mode,experimental_lazy_range=rdf_lazy_range,
-        admission_scope=scope,full_bundle_admitted=False)
+        admission_scope=scope,full_bundle_admitted=False,admission_budgets=timeouts.to_dict())
     try:
         cls = NativeStoreSession if bundle['deployment'] == 'native' else RdfTdbSession
         session = cls(root=root/'session', prepared_path=prepared_pin['path'],
@@ -164,7 +166,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
             **({'file_mode':rdf_file_mode,'experimental_lazy_range':rdf_lazy_range,'runtime_contract':source_runtime} if bundle['deployment']!='native' else {}),
             budget=SourceObservationBudget(max_calls=128, request_bytes=1024**2,
                 phase_request_bytes=16*1024**2, response_bytes=64*1024**2,
-                phase_response_bytes=256*1024**2, timeout_seconds=60, capture_compression='gzip'))
+                phase_response_bytes=256*1024**2, timeout_seconds=timeouts.source_timeout_seconds, capture_compression='gzip'))
         with deadline(startup_seconds):
             session.start()
         result['source_ready']=session.ready_pin
@@ -181,7 +183,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
                 '--profile-sha256', session.profile['sha256'], '--output', str(trial/'worker'),'--planning',planning]
             worker_attempts += 1
             guard=run_guarded_command(command, cwd=REPO, output=trial/'guard',
-                budget=ProcessBudget(wall_seconds=120, max_group_rss_bytes=3*1024**3), resource_monitor=resources)
+                budget=ProcessBudget(wall_seconds=timeouts.worker_seconds, max_group_rss_bytes=3*1024**3), resource_monitor=resources)
             observed=session.observer.seal_phase(phase)
             path=trial/'worker/receipt.json'; child=json.loads(path.read_text()) if path.exists() else None
             success=bool(guard['success'] and child and child['success'] and not observed['failed_requests'])
@@ -199,6 +201,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
                        normalize_rows(reference['rows'], reference['normalization']))
             row=dict(case_id=case['case_id'], success=success, answer_em=em, guard=guard,
                 worker=pin(path) if child else None, source_observations=observed, resources=resources.summary())
+            row['diagnostic_outcome']=classify(row)
             row,_=session.observer.persist_outcome(phase,trial/'outcome.json',row)
             outcomes.append(row)
             if not success or em != 1:
@@ -233,6 +236,8 @@ if __name__ == '__main__':
     p.add_argument('--rdf-lazy-range',action='store_true',help='Pinned overlay; bounded diagnosis or explicitly frozen runtime admission')
     p.add_argument('--source-runtime-path');p.add_argument('--source-runtime-sha256')
     p.add_argument('--source-rss-bytes',type=int,default=4*1024**3)
+    p.add_argument('--source-timeout-seconds',type=int,default=60)
+    p.add_argument('--worker-seconds',type=int,default=120)
     a=p.parse_args(); bundle_pin=dict(path=a.bundle_path, sha256=a.bundle_sha256)
     if bool(a.source_runtime_path)!=bool(a.source_runtime_sha256):
         p.error('Both source runtime path and SHA-256 are required')
@@ -246,7 +251,8 @@ if __name__ == '__main__':
             dict(path=a.profile_path, sha256=a.profile_sha256), a.output,a.planning))
     if a.execute:
         raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning,
-            a.serving_root,a.startup_seconds,a.rdf_file_mode,a.source_rss_bytes,a.case_id,a.rdf_lazy_range,a.case_ids,runtime_pin))
+            a.serving_root,a.startup_seconds,a.rdf_file_mode,a.source_rss_bytes,a.case_id,a.rdf_lazy_range,a.case_ids,runtime_pin,
+            a.source_timeout_seconds,a.worker_seconds))
     b=load(bundle_pin)
     print(json.dumps(dict(stage='dry_run', cases=len(selected_cases(b,a.case_id,a.case_ids)),
         full_bundle_cases=len(b['cases']),admission_scope=admission_scope(a.case_id,a.case_ids),

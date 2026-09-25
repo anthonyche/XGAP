@@ -33,7 +33,7 @@ class SourceObservationBudget:
         if self.capture_compression not in ('none','gzip'):
             raise ValueError('Capture compression must be none or gzip')
         caps={'max_calls':1000000,'request_bytes':16*MIB,'phase_request_bytes':1024*MIB,
-              'response_bytes':1024*MIB,'phase_response_bytes':4096*MIB,'timeout_seconds':120}
+              'response_bytes':1024*MIB,'phase_response_bytes':4096*MIB,'timeout_seconds':3600}
         for name,maximum in caps.items():
             value=getattr(self,name)
             if type(value) is not int or not 1<=value<=maximum:raise ValueError('Invalid observation budget: '+name)
