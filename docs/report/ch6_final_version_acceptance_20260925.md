@@ -1,7 +1,28 @@
 # 最终版本统一验收：D2 native + RDF 前缀
 
-2026-09-25。用户已校验包并提交为 **3875163**。当前仅有提交回执，运行节点、
-状态与终态尚待查询；不重复提交、不修改在途代码和预算。正式实验未启动。
+2026-09-25。用户终端确认 **3875163 COMPLETED / 0:0，21:04，compt317**。
+程序报告 native 原 24 题正确、新增 RDF 前缀 5 题正确，两份部署资格证书已生成。
+原始归档尚未本地下载校验，因此这里区分服务器报告与本地原始证据验收。
+不重提、不重跑；正式实验未启动，程序仍明确 `formal_campaign_ready=false`。
+
+## 本次终态与待收证据
+
+| 部署 | 本次日志报告 | 合并已有证据后的覆盖 |
+| --- | --- | --- |
+| native | complete=true，24 correct，remaining=[] | 同 4b80d3d 原 24 题 |
+| RDF | complete=true，5 correct，remaining=[] | 加上 3874144 的 24 correct + 3 source_timeout，共原 32 题 |
+
+native 资格证书 SHA-256：`8be76bc1e3b2d74d817d6a7be124388f0fb15f2fc72008aafcbf9e1e765e6480`。
+RDF 资格证书 SHA-256：`e83e0af9172f50002a4da58ac17b6729b2e3445476391ab6f8e2fbe2fba24669`。
+回传归档 `/home/hxc859/xgap-final-admission-3875163.tar.gz`，1,708,871 B，SHA-256：
+`6a33f25c8115961b27fbeac044659db8710f9666603daa700ffc7e1c625799b4`。
+
+下一步校验归档、冻结输入、实际计划/答案、源关闭和两份证书的原始证据重算。
+RDF 三个旧超时保留，不为获得全正确而重试或从分母中删除。
+compt317 的 21:04 是整个作业时长，含离线服务准备和证据封存；不能当作查询延迟，
+也不能与此前 compt304/compt311 的作业时长混算提速。
+终态交接已独立保存为本地 `final-admission-terminal-user-report-3875163.json`，
+不覆盖原提交记录。
 
 ## 补齐的证据
 
@@ -74,14 +95,14 @@ python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc8
 ```
 
 stage 先核验全部输入与既有 checkout，再创建唯一提交记录；旧 journal/output
-存在时拒绝重提。没有代码 bundle，也不访问 GitHub。当前作业号为 3875163，节点待查。
+存在时拒绝重提。没有代码 bundle，也不访问 GitHub。作业号为 3875163，节点 compt317。
 
 服务器 journal：`/home/hxc859/xgap-ch6-artifacts/final-admission-4b80d3d-v1`。
-日志：`final-admission-3875163.out`；预期归档：`/home/hxc859/xgap-final-admission-3875163.tar.gz`。
+日志：`final-admission-3875163.out`；已生成归档：`/home/hxc859/xgap-final-admission-3875163.tar.gz`。
 输出：`/home/hxc859/xgap-ch6-artifacts/formal-final-admission-4b80d3d-v1/D2`。
 
 本地提交记录：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/final-admission-submission-3875163.json`。
-已请求一次只读状态/日志回传；提交成功不等于验收完成。
+状态/日志已回传；下一步仅交接已生成的归档，服务器无需再执行查询。
 
 ## 剩余发布边界
 
