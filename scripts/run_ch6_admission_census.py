@@ -11,7 +11,7 @@ from collections import Counter
 from pathlib import Path
 import time
 
-from check_ch6_core_backend import run
+from check_ch6_core_backend import run, source_observation_budget
 from xgap.experiments.ch6_formal_protocol import load_pin
 from xgap.experiments.ch6_fact_index import pin
 from xgap.experiments.one_shot_records import write_once
@@ -19,9 +19,10 @@ from xgap.experiments.ch6_admission_policy import AdmissionBudgets, CONTINUABLE,
 
 
 def census(bundle_pin, prepared_pin, output, *, case_ids, segment_size=8,
-           max_census_seconds=3600, source_timeout_seconds=60, worker_seconds=120,
+           max_census_seconds=3600, source_timeout_seconds=60, worker_seconds=120, source_max_calls=128,
            **runtime):
     budgets = AdmissionBudgets(source_timeout_seconds, worker_seconds)
+    source_observation_budget(source_timeout_seconds, source_max_calls)
     bundle = load_pin(bundle_pin)
     frozen = [c['case_id'] for c in bundle['cases']]
     selected = list(case_ids)
@@ -45,7 +46,7 @@ def census(bundle_pin, prepared_pin, output, *, case_ids, segment_size=8,
     root.mkdir(parents=True, exist_ok=False)
     write_once(root/'intent.json', dict(bundle=bundle_pin, prepared=prepared_pin,
         case_order=selected, segment_size=segment_size, max_census_seconds=max_census_seconds,
-        admission_budgets=budgets.to_dict(), runtime=runtime, automatic_retries=0,
+        admission_budgets=budgets.to_dict(), source_max_calls=source_max_calls, runtime=runtime, automatic_retries=0,
         scope='diagnostic coverage only; no formal readiness claim'))
     start = time.monotonic()
     segments, outcomes, error, stop = [], [], None, None
@@ -68,7 +69,7 @@ def census(bundle_pin, prepared_pin, output, *, case_ids, segment_size=8,
                 settings['serving_root'] = Path(settings['serving_root'])/target.name
             requested = selected[cursor:cursor+size]
             code = run(bundle_pin, prepared_pin, target, case_ids=requested,
-                       **budgets.to_dict(), **settings)
+                       **budgets.to_dict(), source_max_calls=source_max_calls, **settings)
             receipt_pin = pin(target/'receipt.json')
             receipt = load_pin(receipt_pin)
             segments.append(dict(receipt=receipt_pin, exit_code=code, requested=requested))
@@ -81,6 +82,9 @@ def census(bundle_pin, prepared_pin, output, *, case_ids, segment_size=8,
             if code not in (0, 2) or (code == 0) != (receipt.get('success') is True):
                 raise ValueError('Segment exit status and receipt disagree')
             checked = checked_segment(receipt, requested)
+            if any(row.get('source_observations', {}).get('budget', {}).get('max_calls') != source_max_calls
+                   for row in receipt['cases']):
+                raise ValueError('Actual source call budget differs from frozen census')
             outcomes.extend(checked)
             cursor += len(checked)
             if any(r['outcome'] not in CONTINUABLE for r in checked):
@@ -93,7 +97,7 @@ def census(bundle_pin, prepared_pin, output, *, case_ids, segment_size=8,
         census_complete=cursor == len(selected) and stop is None,
         all_answers_correct=cursor == len(selected) and stop is None and counts.get('correct') == len(selected),
         full_bundle_admitted=False, formal_campaign_ready=False, evaluated_method=False,
-        bundle=bundle_pin, prepared=prepared_pin, admission_budgets=budgets.to_dict(),
+        bundle=bundle_pin, prepared=prepared_pin, admission_budgets=budgets.to_dict(), source_max_calls=source_max_calls,
         case_order=selected, runtime=runtime,
         cases=outcomes, classified=len(outcomes), remaining=selected[cursor:],
         segments=segments, counts=counts, stop_reason=stop, error=error,
@@ -109,6 +113,7 @@ if __name__ == '__main__':
         p.add_argument('--'+key, required=True)
     p.add_argument('--case-ids', nargs='+', required=True)
     p.add_argument('--source-timeout-seconds', type=int, default=60)
+    p.add_argument('--source-max-calls', type=int, default=128)
     p.add_argument('--worker-seconds', type=int, default=120)
     p.add_argument('--max-census-seconds', type=int, default=3600)
     p.add_argument('--segment-size', type=int, default=8)
@@ -124,7 +129,7 @@ if __name__ == '__main__':
     source_runtime = dict(path=a.source_runtime_path,sha256=a.source_runtime_sha256) if a.source_runtime_path else None
     result = census(dict(path=a.bundle_path,sha256=a.bundle_sha256),
         dict(path=a.prepared_path,sha256=a.prepared_sha256), a.output, case_ids=a.case_ids,
-        source_timeout_seconds=a.source_timeout_seconds, worker_seconds=a.worker_seconds,
+        source_timeout_seconds=a.source_timeout_seconds, worker_seconds=a.worker_seconds, source_max_calls=a.source_max_calls,
         max_census_seconds=a.max_census_seconds, segment_size=a.segment_size,
         startup_seconds=a.startup_seconds, serving_root=a.serving_root, planning=a.planning,
         rdf_file_mode=a.rdf_file_mode, rdf_lazy_range=a.rdf_lazy_range, source_runtime=source_runtime)

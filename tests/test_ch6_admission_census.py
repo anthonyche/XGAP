@@ -1,5 +1,6 @@
 """Classify bounded failures without skipping unknown work or retrying queries."""
 from pathlib import Path
+import json
 
 import pytest
 
@@ -35,16 +36,19 @@ def test_invalid_budget_pair_rejected(values):
     with pytest.raises(ValueError): AdmissionBudgets(*values)
 
 
-def fixture(tmp_path, monkeypatch, *, bad_closure=False, mismatch=False):
+def fixture(tmp_path, monkeypatch, *, bad_closure=False, mismatch=False, source_max_calls=128, reported_calls=None):
     bp = write_once(tmp_path/'bundle.json', dict(cases=[dict(case_id=k) for k in 'abcd']))
     calls = []
     def execute(bundle, prepared, target, *, case_ids, **kwargs):
         calls.append(list(case_ids))
         assert kwargs['source_timeout_seconds'] == 300 and kwargs['worker_seconds'] == 660
+        assert kwargs['source_max_calls'] == source_max_calls
         assert len(case_ids) <= 4  # bounded by the inner one-hour segment guard
         Path(target).mkdir(parents=True)
         first = len(calls) == 1
         rows = [row('a'), row('b','wrong' if mismatch else 'timeout')] if first else [row(k) for k in case_ids]
+        for item in rows:
+            item['source_observations']['budget'] = dict(max_calls=source_max_calls if reported_calls is None else reported_calls)
         closure = dict.fromkeys(CLOSURE_KEYS, True)
         if bad_closure: closure['owned_groups_drained'] = False
         write_once(Path(target)/'receipt.json', dict(bundle=bundle,
@@ -87,6 +91,39 @@ def test_reordered_selection_and_insufficient_budget_never_execute(tmp_path, mon
 
 def test_admission_budget_defaults_preserve_historical_caps():
     assert AdmissionBudgets().to_dict() == dict(source_timeout_seconds=60,worker_seconds=120)
+
+
+def test_frozen_call_cap_reaches_every_segment_and_is_attested(tmp_path, monkeypatch):
+    bp, calls = fixture(tmp_path,monkeypatch,source_max_calls=256)
+    result=load_pin(subject.census(bp,{},tmp_path/'census',case_ids=list('abcd'),
+        source_timeout_seconds=300,worker_seconds=660,max_census_seconds=10000,source_max_calls=256))
+    assert result['census_complete'] and result['source_max_calls']==256
+    assert calls==[list('abcd'),list('cd')]
+    assert json.loads((tmp_path/'census/intent.json').read_text())['source_max_calls']==256
+
+
+def test_call_cap_mismatch_blocks_continuation(tmp_path, monkeypatch):
+    bp,calls=fixture(tmp_path,monkeypatch,source_max_calls=256,reported_calls=128)
+    result=load_pin(subject.census(bp,{},tmp_path/'census',case_ids=list('abcd'),
+        source_timeout_seconds=300,worker_seconds=660,max_census_seconds=10000,source_max_calls=256))
+    assert len(calls)==1 and result['stop_reason']=='unverified_segment'
+    assert not result['census_complete'] and not result['remaining_safe_to_dispatch']
+
+
+@pytest.mark.parametrize('bad', [0,-1,True,256.0,1000001])
+def test_invalid_source_cap_never_creates_attempt(tmp_path, monkeypatch,bad):
+    bp,calls=fixture(tmp_path,monkeypatch)
+    with pytest.raises(ValueError):subject.census(bp,{},tmp_path/'census',case_ids=list('abcd'),source_max_calls=bad)
+    assert not calls and not (tmp_path/'census').exists()
+
+
+def test_f6_observer_budget_keeps_timeout_and_bytes_while_matching_call_cap():
+    from dataclasses import asdict
+    from check_ch6_core_backend import source_observation_budget
+    old=asdict(source_observation_budget());f6=asdict(source_observation_budget(source_max_calls=256))
+    assert old['max_calls']==128 and f6['max_calls']==256
+    assert {k for k in old if old[k]!=f6[k]}=={'max_calls'}
+    assert f6['timeout_seconds']==60 and f6['capture_compression']=='gzip'
 
 
 def test_long_request_budget_reaches_shared_transport_and_engine_configs(tmp_path):

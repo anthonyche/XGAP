@@ -108,8 +108,16 @@ def admission_scope(case_id=None,case_ids=None):
     return 'diagnostic_subset' if case_ids is not None else ('single_case_replay' if case_id is not None else 'complete_bundle')
 
 
-def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3,case_id=None,rdf_lazy_range=False,case_ids=None,source_runtime=None,source_timeout_seconds=60,worker_seconds=120):
+def source_observation_budget(source_timeout_seconds=60, source_max_calls=128):
+    """Keep legacy caps by default; allow a frozen evaluation/F6 call contract."""
+    return SourceObservationBudget(max_calls=source_max_calls, request_bytes=1024**2,
+        phase_request_bytes=16*1024**2, response_bytes=64*1024**2,
+        phase_response_bytes=256*1024**2, timeout_seconds=source_timeout_seconds, capture_compression='gzip')
+
+
+def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=None,startup_seconds=300,rdf_file_mode='default',source_rss_bytes=4*1024**3,case_id=None,rdf_lazy_range=False,case_ids=None,source_runtime=None,source_timeout_seconds=60,worker_seconds=120,source_max_calls=128):
     timeouts = AdmissionBudgets(source_timeout_seconds, worker_seconds)
+    observation_budget = source_observation_budget(timeouts.source_timeout_seconds, source_max_calls)
     if not os.environ.get('SLURM_JOB_ID') or os.environ.get('SLURM_JOB_GPUS'):
         raise ValueError('Explicit CPU-only allocation required')
     if planning not in ('fixed_scan','unified'):raise ValueError('Unknown admission planning profile')
@@ -144,7 +152,8 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
     limits = dict(total_wall_seconds=3600, package_max_bytes=serving_bytes+2*1024**3,
                   free_disk_reserve_bytes=6*1024**3)
     write(root/'intent.json', dict(bundle=bundle_pin, prepared=prepared_pin, limits=limits,
-        planning=planning,**timeouts.to_dict(), worker_rss_bytes=3*1024**3, source_rss_bytes=source_rss_bytes,
+        planning=planning,**timeouts.to_dict(), source_max_calls=source_max_calls,
+        worker_rss_bytes=3*1024**3, source_rss_bytes=source_rss_bytes,
         rdf_file_mode=rdf_file_mode,experimental_lazy_range=rdf_lazy_range,
         source_runtime=source_runtime,
         case_order=[c['case_id'] for _,c in cases],admission_scope=scope,full_bundle_cases=len(bundle['cases']), model_calls=0, automatic_retries=0,
@@ -164,9 +173,7 @@ def run(bundle_pin, prepared_pin, output, planning='fixed_scan',serving_root=Non
             prepared_sha256=prepared_pin['sha256'], discard_serving_copies=True,
             serving_root=serving_root,
             **({'file_mode':rdf_file_mode,'experimental_lazy_range':rdf_lazy_range,'runtime_contract':source_runtime} if bundle['deployment']!='native' else {}),
-            budget=SourceObservationBudget(max_calls=128, request_bytes=1024**2,
-                phase_request_bytes=16*1024**2, response_bytes=64*1024**2,
-                phase_response_bytes=256*1024**2, timeout_seconds=timeouts.source_timeout_seconds, capture_compression='gzip'))
+            budget=observation_budget)
         with deadline(startup_seconds):
             session.start()
         result['source_ready']=session.ready_pin
@@ -237,6 +244,7 @@ if __name__ == '__main__':
     p.add_argument('--source-runtime-path');p.add_argument('--source-runtime-sha256')
     p.add_argument('--source-rss-bytes',type=int,default=4*1024**3)
     p.add_argument('--source-timeout-seconds',type=int,default=60)
+    p.add_argument('--source-max-calls',type=int,default=128)
     p.add_argument('--worker-seconds',type=int,default=120)
     a=p.parse_args(); bundle_pin=dict(path=a.bundle_path, sha256=a.bundle_sha256)
     if bool(a.source_runtime_path)!=bool(a.source_runtime_sha256):
@@ -252,7 +260,7 @@ if __name__ == '__main__':
     if a.execute:
         raise SystemExit(run(bundle_pin, dict(path=a.prepared_path, sha256=a.prepared_sha256), a.output,a.planning,
             a.serving_root,a.startup_seconds,a.rdf_file_mode,a.source_rss_bytes,a.case_id,a.rdf_lazy_range,a.case_ids,runtime_pin,
-            a.source_timeout_seconds,a.worker_seconds))
+            a.source_timeout_seconds,a.worker_seconds,a.source_max_calls))
     b=load(bundle_pin)
     print(json.dumps(dict(stage='dry_run', cases=len(selected_cases(b,a.case_id,a.case_ids)),
         full_bundle_cases=len(b['cases']),admission_scope=admission_scope(a.case_id,a.case_ids),
