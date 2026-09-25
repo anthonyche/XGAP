@@ -76,3 +76,22 @@ manifest 和参考答案不覆盖。
 
 证据：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/D1-pilot-local-audit-v2.json`；
 来源材料：`/Users/anthonyche/xgap-data/ch6-benchmark-source-candidates-20260925-v1/receipt.json`。
+
+## 唯一服务器交接
+
+执行代码已提交为 `22dd334b8def63944fcdd542ad5ca16bc6c1a2b1`。
+包 `/Users/anthonyche/Downloads/xgappilotD1-22dd334-v1.zip`，30,696 B，
+SHA-256 `bd0b53bb1ea6fee461c2ec30afa134f42e360d145be766de95cd78b38b892029`。
+离线增量基于服务器已有 `39abb95`，不要求 GitHub 在线。源码包及五项部署生命周期
+检查通过：只提交一次、拒绝重复、拒绝篡改、密钥权限 0600、不向 Slurm 环境传密钥。
+这些是本地模拟检查，不宣称服务器作业已经提交或接口已经新执行。
+
+服务器 journal：`/home/hxc859/xgap-ch6-artifacts/pilot-D1-22dd334-v1`；结果目录：
+`/home/hxc859/xgap-ch6-artifacts/pilot-D1-one-repeat-22dd334-v1`。先在服务器核验真实
+可用磁盘、全部冻结输入、外部运行时身份，再唯一提交 CPU 作业。若服务器没有
+`XGAP_EXTERNAL_LLM_API_KEY` 环境变量，stage 在终端隐藏输入；包中没有密钥。
+队列期间密钥临时存于仅当前用户可读文件，作业启动读取后删除，不进入结果归档。
+作业输出 `pilot-<job_id>.out`，结束打包元数据，原始大响应保留在服务器并记录省略清单。
+
+本轮直接 SSH 超时，浏览器 `getState` 同样超时，尚未上传或提交。需要用户手动上传
+上述包到 `/home/hxc859` 后执行 stage；不能把连接超时当成作业已开始。
