@@ -1,6 +1,7 @@
 # 最终版本统一验收：D2 native + RDF 前缀
 
-2026-09-25。四题旧输入已交接，进入一次性版本验收准备。包尚未提交，正式实验未启动。
+2026-09-25。用户已校验包并提交为 **3875163**。当前仅有提交回执，运行节点、
+状态与终态尚待查询；不重复提交、不修改在途代码和预算。正式实验未启动。
 
 ## 补齐的证据
 
@@ -66,21 +67,44 @@ SHA-256：`69fed3f9706ec3086d5b71585814b0f4cbe386a219b51b15a4a3f2fd1fe03d70`。
 
 ## 服务器交接
 
-上传该 ZIP 到 `/home/hxc859`，只执行一次：
+以下提交已由用户完成，保留作复现记录，**不要再次执行**：
 
 ```bash
 python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc859/xgapfinal-admission-4b80d3d-v1.zip"); assert hashlib.sha256(p.read_bytes()).hexdigest()=="69fed3f9706ec3086d5b71585814b0f4cbe386a219b51b15a4a3f2fd1fe03d70"; exec(compile(zipfile.ZipFile(str(p)).read("stage.py"),"stage.py","exec"))'
 ```
 
 stage 先核验全部输入与既有 checkout，再创建唯一提交记录；旧 journal/output
-存在时拒绝重提。没有代码 bundle，也不访问 GitHub。需记录真实作业号和节点。
+存在时拒绝重提。没有代码 bundle，也不访问 GitHub。当前作业号为 3875163，节点待查。
 
 服务器 journal：`/home/hxc859/xgap-ch6-artifacts/final-admission-4b80d3d-v1`。
-日志：`final-admission-<JOBID>.out`；归档：`/home/hxc859/xgap-final-admission-<JOBID>.tar.gz`。
+日志：`final-admission-3875163.out`；预期归档：`/home/hxc859/xgap-final-admission-3875163.tar.gz`。
 输出：`/home/hxc859/xgap-ch6-artifacts/formal-final-admission-4b80d3d-v1/D2`。
+
+本地提交记录：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/final-admission-submission-3875163.json`。
+已请求一次只读状态/日志回传；提交成功不等于验收完成。
 
 ## 剩余发布边界
 
 本批完成后读取两份资格证书、源预算和真实运行节点；再绑定实际五方法执行单元、
 D1/D3 与正式因子输入、F6 固定池和全局 API/token/墙钟预算。先一个数据集的运行
 入口也须通过发布检查；不将本批准入成功当作整套 21 图矩阵已准备完整。
+
+### 等待期间已核对的材料
+
+本地只读复核 `xgap-release-audit-20260924.tar.gz` 中 1,231 个文件与现有副本，
+并沿相关材料验证 190 个可用文件 pin；2,201 个引用不在这份有意裁剪的归档中，
+不能据此认定服务器缺文件。本次零模型、零后端调用、零作业提交。
+这是归档材料核对，不是对当前服务器状态或查询正确性的重新验收。
+
+| 材料 | 已存在的证据 | 发布前仍需完成 |
+| --- | --- | --- |
+| D1、D3 正式 NL 输入清单 | D1 RDF/native 为 32/24 题，D3 为 32/32 题；四份清单各准备 3 次重复，RDF 含五方法、native 明示 TS 不支持 | 清单版本为 7058d24；更新最终配置、输入 pin、支持合同及资格证据。重复数尚非最终全局预算冻结 |
+| D1、D3 后端 | 四个部署均有 8 题 pilot 成功回执 | pilot 不能冒充最终版本 test 全覆盖；对照最终发布入口补齐必要证据 |
+| N/u 实际因子 | 28 个实例及旧版后端成功回执，覆盖正式 N/u 水平 | 绑定当前执行单元与对应资格，保留原实例和参考 |
+| 源数、规模 | 2/4/8 源、0.25/1/4 倍六份实际部署，每份两种锚点分层均有成功回执 | 绑定最终 source/runtime/预算合同；不重新造数据或按结果筛选 |
+| F6 | 已有节点本地、源内存 4 GiB 的固定池实测与成本核验 | 旧 D1/D3 清单为源内存 8 GiB，不能直接绑定该实测；生成配置一致的新清单后核对 |
+| 探测价格轴 | 旧执行单元明确 `probe_axis_active=false` | 如无真实已注册的探测动作，保留固定参考并说明参数不生效；不得人为增加探测制造 NP 差异 |
+
+本地审计：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/release-materials-audit-20260925-v1.json`。
+正式发布仍需最终支持范围、样本数、全局 API/token/墙钟预算和 21 图单元绑定。
+这些工作不能用一句“3875163 成功”代替，也不要求先优化掉所有合法超时。
