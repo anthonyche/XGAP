@@ -1,0 +1,86 @@
+# 最终版本统一验收：D2 native + RDF 前缀
+
+2026-09-25。四题旧输入已交接，进入一次性版本验收准备。包尚未提交，正式实验未启动。
+
+## 补齐的证据
+
+`xgap-native-prefix-inputs-final-v1.tar.gz` 共 5,532 B，SHA-256
+`24b75648e9d07d1e9b1cf9c92c4eb48a8fc379d8c199eff90475fe5855e27604`。
+四题各五个文件，共 20 个原始输入 pin 均匹配冻结 native bundle；未修改输入。
+本次只为原索引 0–3 生成 symbolic plan，其余 52 个比较复用已完成记录。
+全部 24 native 和 32 RDF 的选择现已可核对，零数据库/模型调用。
+
+native 19/24 的当前计划不同于各自早期实际执行版本；另 5 个相同。
+相较 c3437fc 的统一静态选择，18/24 不同，主要是已批准的过滤后绑定键域接线。
+这些不是 19 个新 bug；旧成功证据保留，但不当作改变后计划的实际执行结果。
+本次 census 的 RDF 27 个实际计划全部与当前选择相同。
+
+## 一次验收的范围
+
+| 部署 | 本次执行 | 保留证据 | 目的 |
+| --- | --- | --- | --- |
+| native | 原 24 题完整顺序，一题一个最终计划 | 历史成功/失败均保留 | 19 个改变后的计划需要实际验收；5 个未改变计划作为一次完整部署一致性检查 |
+| RDF | 仅原索引 0–4，共 5 题 | 3874144 的原索引 5–31：24 correct + 3 timeout，全部复用 | 与已有 27 题形成同源码、同预算的完整 32 题证据 |
+
+现有后端可评价合同要求同一诊断源码覆盖完整 bundle。为避免引入新的跨版本
+证明框架，只做这一次最终冻结版本验收；不逐题调参，不通过试跑选择物理计划。
+RDF 已完成的 27 题（含三个超时）不再执行。这里最多 29 次最终计划，不是五方法
+NL 矩阵，也不是全量正式实验。
+
+若所有证据满足合同，程序直接生成 native 和 RDF 的 `backend-eligibility.json`；
+后者从新前缀和保留的六段 census 原始回执重新计算。允许已声明资源截断，
+`eligible_for_evaluation` 不等于 `all_answers_correct`，仍不宣称正式全量 ready。
+未知错误、答案不一致或关闭不全停止，不自动重试。
+
+## 冻结配置
+
+- 执行 checkout：现有干净 `XGAP-4b80d3d`，精确
+  `4b80d3d128e57752dd5ef8dd845bc2d1eea9eb0a`；不改服务器代码。
+- native 既有 v3 estimator/profile 与完整 prepared stores；RDF 既有 Direct/lazy
+  runtime、原 estimator/profile 和完整源。数据、题目、参考、排序及预算均不变。
+- 每请求 60 s，每 worker 120 s，方法/源观察内存 3/4 GiB，源启动上限 1,800 s。
+  每段最多 8 题；只有核验关闭后才能接续。启动独立计量，无预热查询。
+- CPU batch：8 核、24 GiB、03:15:00、不绑定单一节点、no-requeue、不申请 GPU。
+  native/RDF census 调度上限分别 2/1 小时；这些是上限而非预计耗时。
+- 两个部署的待执行计划在任何后端启动前全部核对并封存。实际 worker 计划再次
+  对照冻结 SHA；变化则停止。
+- 资格审核器作为只读 sidecar，逐字节来自 `12f7a34` 的已测试模块。
+  4b80d3d 到该版本的差异仅在发布/图绑定检查；source-runtime 脚本的函数级差异
+  只有 `validate_admission`，planner/compiler/executor/estimator 与诊断入口未变。
+  不把 sidecar 所在版本冒充实际查询执行版本。
+
+## 包与本地验证
+
+`/Users/anthonyche/Downloads/xgapfinal-admission-4b80d3d-v1.zip`，13,105 B。
+
+SHA-256：`69fed3f9706ec3086d5b71585814b0f4cbe386a219b51b15a4a3f2fd1fe03d70`。
+
+本地校验覆盖 56 题的真实冻结输入、既有 27 题回执/计划、原 profile/估计器、
+包成员 SHA、Python 3.6 stage 语法及 Slurm shell 语法。预算变化、native 缩减、
+重复 RDF 后缀、错误 commit、伪造旧回执五类异常均在提交前拒绝。
+没有调用数据库或 LLM，没有重跑回归套件。
+
+本地工作目录：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/final-admission-pack-4b80d3d-v1`。
+只读比较：`final-prefix-selection-12f7a34-v1/receipt.json` 与
+`final-selection-reconciliation-83d972f-v3/receipt.json`。
+
+## 服务器交接
+
+上传该 ZIP 到 `/home/hxc859`，只执行一次：
+
+```bash
+python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc859/xgapfinal-admission-4b80d3d-v1.zip"); assert hashlib.sha256(p.read_bytes()).hexdigest()=="69fed3f9706ec3086d5b71585814b0f4cbe386a219b51b15a4a3f2fd1fe03d70"; exec(compile(zipfile.ZipFile(str(p)).read("stage.py"),"stage.py","exec"))'
+```
+
+stage 先核验全部输入与既有 checkout，再创建唯一提交记录；旧 journal/output
+存在时拒绝重提。没有代码 bundle，也不访问 GitHub。需记录真实作业号和节点。
+
+服务器 journal：`/home/hxc859/xgap-ch6-artifacts/final-admission-4b80d3d-v1`。
+日志：`final-admission-<JOBID>.out`；归档：`/home/hxc859/xgap-final-admission-<JOBID>.tar.gz`。
+输出：`/home/hxc859/xgap-ch6-artifacts/formal-final-admission-4b80d3d-v1/D2`。
+
+## 剩余发布边界
+
+本批完成后读取两份资格证书、源预算和真实运行节点；再绑定实际五方法执行单元、
+D1/D3 与正式因子输入、F6 固定池和全局 API/token/墙钟预算。先一个数据集的运行
+入口也须通过发布检查；不将本批准入成功当作整套 21 图矩阵已准备完整。
