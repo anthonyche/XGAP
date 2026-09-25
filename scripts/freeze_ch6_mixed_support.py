@@ -8,6 +8,7 @@ from xgap.experiments.ch6_cost_pool import load
 from xgap.experiments.ch6_fact_index import pin,write
 from xgap.experiments.ch6_support import validate_support
 from xgap.experiments.ch6_formal_protocol import METHOD_ORDER
+from xgap.experiments.ch6_backend_eligibility import eligible
 
 
 def freeze(spec_path,spec_sha256,output):
@@ -19,10 +20,9 @@ def freeze(spec_path,spec_sha256,output):
     cases=[];seen=set();counts={}
     for entry in spec['bundles']:
         bundle=load(entry['bundle']);admission=load(entry['backend_admission']);stores=load(entry['prepared'])
-        if not admission.get('success') or not admission.get('backend_roundtrip') or not stores.get('success'):
+        if not stores.get('success'):
             raise ValueError('Compiler-only evidence cannot establish backend admission')
-        if (admission.get('admission_scope','complete_bundle')!='complete_bundle'
-                or admission.get('full_bundle_admitted',True) is not True):
+        if not eligible(admission,bundle_pin=entry['bundle'],prepared_pin=entry['prepared']):
             raise ValueError('A diagnostic subset cannot establish complete deployment support')
         if admission['profile']['sha256']!=bundle['profile']['sha256'] or stores['profile']['sha256']!=bundle['profile']['sha256']:
             raise ValueError('Support gate and actual deployment differ')

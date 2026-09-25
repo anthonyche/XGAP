@@ -15,7 +15,8 @@ from xgap.experiments.campaign_source_observer import SourceObservationBudget
 from dataclasses import asdict
 
 
-def test_actual_multi_family_manifest_and_repetitions_keep_hard_scope(tmp_path,monkeypatch):
+@pytest.mark.parametrize('admission_mode',['legacy','eligible_with_timeout'])
+def test_actual_multi_family_manifest_and_repetitions_keep_hard_scope(tmp_path,monkeypatch,admission_mode):
     monkeypatch.setattr(batch,'source_commit',lambda:'fixture')
     def save(name,doc):return write_once(tmp_path/(name+'.json'),doc)
     profile=save('profile',{})
@@ -29,13 +30,20 @@ def test_actual_multi_family_manifest_and_repetitions_keep_hard_scope(tmp_path,m
         cases.append(dict(case_id=workload,request=save(workload+'-request',dict(question=question,question_id=workload)),
             controlled_state=save(workload+'-state',publish_state(question,family,q,semantic_choices=choices)),
             scope=save(workload+'-scope',scope.to_dict()),oracle=save(workload+'-private',private_query_intent(question,q,language_version='v2')),
-            reference=save(workload+'-reference',dict(question_id=workload,rows=[]))))
+            reference=save(workload+'-reference',dict(question_id=workload,rows=[],query_sha256='query-'+workload,
+                source_snapshot_sha256='snapshot',normalization=dict(schema_version='xgap-row-normalization-v1',fields={'n':'integer'})))))
     bundle=save('bundle',dict(cases=cases,dataset='D1',deployment='rdf',profile=profile))
     spec=dict(schema_version='xgap-ch6-unit-preparation-v1',method_results_read=0,input_track='nl',repetitions=2,
         bundle=bundle,prepared=prepared,backend_admission=gate,external_runtime=save('external',{}),
         order_seed=1,unit_prefix='test',figures=['E1'],design=dict(total_wall_seconds=3600,package_max_bytes=10**9,
         free_disk_reserve_bytes=10**9,method_wall_seconds=300,method_rss_bytes=10**9,source_rss_bytes=10**9,startup_seconds=120,
         source_budget=asdict(SourceObservationBudget())))
+    if admission_mode=='eligible_with_timeout':
+        from test_ch6_backend_eligibility import evidence
+        from xgap.experiments.ch6_backend_eligibility import assess
+        eligibility,_,design=evidence(tmp_path/'eligibility',bundle_pin=bundle,prepared_pin=prepared)
+        spec['backend_admission']=save('eligibility-gate',assess(save('eligibility-input',eligibility)))
+        spec['design'].update(design)
     ip=save('input',spec);receipt=load_pin(prepare(ip['path'],ip['sha256'],tmp_path/'units'))
     assert receipt['unique_cases']==2 and len(receipt['units'])==2
     for unit in receipt['units']:

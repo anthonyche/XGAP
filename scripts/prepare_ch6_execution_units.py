@@ -18,6 +18,7 @@ from xgap.experiments.controlled_state import read_state
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.unified_contract import configuration
 from xgap.planning.joint_cost import JointCostProfile
+from xgap.experiments.ch6_backend_eligibility import eligible, check_design
 
 
 def case_configuration(case,*,depth=2,horizon=12,epsilon='1/3',clarification_price=1,probe_price=1):
@@ -40,12 +41,11 @@ def prepare(spec_path,spec_sha256,output):
             or spec['input_track'] not in ('nl','controlled') or type(spec['repetitions']) is not int
             or not 1<=spec['repetitions']<=10):raise ValueError('Explicit pre-result unit preparation required')
     bundle=load_pin(spec['bundle']);stores=load_pin(spec['prepared']);gate=load_pin(spec['backend_admission'])
-    if (not stores.get('success') or not gate.get('success') or not gate.get('backend_roundtrip')
-            or gate.get('admission_scope','complete_bundle')!='complete_bundle'
-            or gate.get('full_bundle_admitted',True) is not True
+    if (not stores.get('success') or not eligible(gate,bundle_pin=spec['bundle'],prepared_pin=spec['prepared'])
             or gate['profile']['sha256']!=bundle['profile']['sha256']
             or stores['profile']['sha256']!=bundle['profile']['sha256']):
         raise ValueError('Cohort requires the actual admitted source deployment')
+    check_design(gate,spec['design'])
     runtime=validate_admission(spec['design'],bundle['deployment'],spec['prepared'],bundle_pin=spec['bundle'])
     if runtime is not None:
         if runtime['admission']['sha256']!=spec['backend_admission']['sha256']:

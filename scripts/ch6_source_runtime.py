@@ -11,6 +11,7 @@ import re
 from prepare_rdf_tdb import stream_pin
 from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
+from xgap.experiments.ch6_backend_eligibility import eligible, check_design, SCHEMA as ELIGIBILITY_SCHEMA
 
 SCHEMA = 'xgap-shared-source-runtime-v1'
 RUNTIME = 'jena-direct-lazy-v2'
@@ -81,14 +82,17 @@ def validate_admission(design, deployment, prepared_pin, *, bundle_pin=None, cel
         raise ValueError('Shared source runtime requires RDF contract and full admission')
     validate_contract(load(config['contract']))
     gate = load(config['admission'])
-    if (gate.get('success') is not True or gate.get('backend_roundtrip') is not True
-            or gate.get('admission_scope') != 'complete_bundle'
-            or gate.get('full_bundle_admitted') is not True
+    new = gate.get('schema_version') == ELIGIBILITY_SCHEMA
+    admitted = eligible(gate,bundle_pin=bundle_pin,prepared_pin=prepared_pin) if new else (
+        gate.get('success') is True and gate.get('backend_roundtrip') is True
+        and gate.get('admission_scope') == 'complete_bundle' and gate.get('full_bundle_admitted') is True)
+    if (not admitted
             or (gate.get('source_runtime') or {}).get('sha256') != config['contract']['sha256']
             or gate.get('prepared', {}).get('sha256') != prepared_pin['sha256']
             or not all(gate.get('closure', {}).get(k) is True for k in
                        ('owned_groups_drained', 'owned_processes_terminal', 'observer_stopped'))):
         raise ValueError('Matching complete shared-runtime admission required; diagnostics cannot release')
+    check_design(gate,design)
     ready = load(gate['source_ready'])
     if ((ready.get('source_runtime') or {}).get('sha256') != config['contract']['sha256']
             or ready.get('prepared', {}).get('sha256') != prepared_pin['sha256']
