@@ -4,9 +4,11 @@
 计划：[一天内收尾](../decisions/one_day_readiness_20260925.md)。
 用户已上传、校验、部署并提交 **3874119**，随后主动取消排队中的作业。用户贴回
 `CANCELLED`、`RunTime=00:00:00`、`AllocTRES=(null)`；27 题未开始执行。
-旧 stage 拒绝重复部署是预期行为。已交付保留旧目录的单次恢复命令，替代作业号待回传。
+旧 stage 拒绝重复部署是预期行为。用户已执行基于 sacct 历史记录的恢复命令，
+三个文件 SHA 均通过，替代作业 **3874144 已提交**；运行/终态待回收，不重复提交。
 尚未达到全量正式实验启动条件。
-日志：`/home/hxc859/xgap-ch6-artifacts/rdf-census27-4b80d3d-v2/rdf-census27-3874119.out`。
+当前日志：`/home/hxc859/xgap-ch6-artifacts/rdf-census27-4b80d3d-v2/rdf-census27-3874144.out`。
+预期归档：`/home/hxc859/xgap-rdf-census27-3874144.tar.gz`。
 以下上传步骤保留为历史交接记录，不要重复执行。
 
 ## 已完成
