@@ -7,7 +7,7 @@
 旧 stage 拒绝重复部署是预期行为。用户已执行基于 sacct 历史记录的恢复命令，
 三个文件 SHA 均通过，替代作业 **3874144 已 COMPLETED/0:0 于 compt304**，
 作业总耗时 43:09；用户日志报告 27/27 覆盖、24 correct、3 source_timeout、remaining=[]。
-原始归档待下载核验，不重复提交。见[结果及边界](ch6_census_terminal_3874144.md)。
+原始归档已完成 SHA、答案、计划、请求分类及六段关闭核验，不重复提交。见[结果及边界](ch6_census_terminal_3874144.md)。
 尚未达到全量正式实验启动条件。
 当前日志：`/home/hxc859/xgap-ch6-artifacts/rdf-census27-4b80d3d-v2/rdf-census27-3874144.out`。
 预期归档：`/home/hxc859/xgap-rdf-census27-3874144.tar.gz`。
@@ -52,7 +52,7 @@ python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc8
 
 ## 剩余启动条件
 
-1. 接收剩余题的真实执行证据，按共享缺陷分类处理；不因每个超时重新改写查询。
+1. 已完成 27 题原始证据验收（24 correct、3 source_timeout）；保留超时，不逐题改写。
 2. 完成版本影响核对及源运行配置冻结。
 3. 允许声明性能超限的[可评价合同](../decisions/backend_evaluation_eligibility_20260925.md)
    已实现并通过 28 项本地检查，实际完整部署证书仍待生成。保持旧严格准入字段
