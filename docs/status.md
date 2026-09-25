@@ -371,3 +371,4 @@ shallow/myopic 已接共享控制器，LLM-direct 本地入口已验证。
 新入口 `answer_unified`，旧 `answer(..., mode=...)` 仅供历史发布复现。
 第六章请用[当前实现图](implementation_chapter6.md)，不要引用历史 complete-policy
 搜索作为新算法。[此前状态全文](status_history_20260921_before_unified.md)。
+[2026-09-25] 预算/安全 census 工程已提交 4b80d3d，28 项定点检查通过；剩余 27 RDF 题零调用规划通过。批量诊断包 v2 已校验、未提交；见 [交接与剩余条件](report/readiness_census_handoff_20260925.md)。全量实验尚未启动。
