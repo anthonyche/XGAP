@@ -2,9 +2,9 @@
 
 2026-09-25 共享必要键绑定保留受限 Match 上方的 FILTER/PROJECT 一元链；字段来源与原始 join/filter 不变。见[正确性及验证边界](decisions/filtered_binding_driver_20260925.md)。
 
-[Closed endpoint access](decisions/native_closed_endpoints_20260925.md) resolves both logical node domains before closed-edge matching, preserving duplicate identities and the existing exact prefix proof. Full-source performance admission remains pending.
+[Closed endpoint access](decisions/native_closed_endpoints_20260925.md) resolves both logical node domains before closed-edge matching, preserving duplicate identities and the existing exact prefix proof. The final D2 deployment audit is complete: see [24 native correct, 29 RDF correct and three retained timeouts](report/ch6_final_version_acceptance_20260925.md). This is backend eligibility, not a five-method performance comparison.
 
-[Binding NDV and streaming SPJ tails](decisions/binding_ndv_streaming_20260924.md) add a separately frozen v3 source-work model, proven earlier key drivers and an exact bounded-answer-memory runtime profile. Unsupported shapes retain the materialized evaluator; scanned work is not bounded by the result limit. Full-D2 admission of this version remains pending.
+[Binding NDV and streaming SPJ tails](decisions/binding_ndv_streaming_20260924.md) add a separately frozen v3 source-work model, proven earlier key drivers and an exact bounded-answer-memory runtime profile. Unsupported shapes retain the materialized evaluator; scanned work is not bounded by the result limit. Final-revision D2 backend eligibility is verified; the declared budgets and three RDF timeouts remain in the evidence.
 
 2026-09-24: `runtime/native_semijoin.py` adds one checked external-membership
 physical move to `PhysicalMoves`. `native_spj.py` places its parameterized key
@@ -14,7 +14,7 @@ The original full D2 W3 passed in job 3868378. The subsequent
 [composition repair](decisions/native_membership_composition_20260924.md) retains
 driver rewrite ports, checks intermediate scalar aliases, and constructs the
 canonical bind prerequisite within one macro. 62 focused tests and eight real
-tiny comparisons pass; this newer version has no full-D2 execution admission yet.
+tiny comparisons pass; its composed final revision now has D2 backend eligibility, with the reported resource cuts retained.
 
 2026-09-22 numbering note: this filename is retained for existing links. The
 user's current Chapter 6 is the [experimental study](ch6_experiment_plan_20260922.md);
