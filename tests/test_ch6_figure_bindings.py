@@ -23,11 +23,16 @@ def test_bound_axis_uses_actual_depth_and_one_fixed_reference_set(monkeypatch):
 
 def test_absence_requires_evidence_and_never_invents_a_zero(monkeypatch):
     row=next(r for r in matrix() if r['figure']=='F6' and r['method']=='TS')
-    monkeypatch.setattr(bindings,'matrix',lambda:[row]);monkeypatch.setattr(bindings,'load_pin',lambda _:dict(success=True))
+    doc=dict(success=True,schema_version='xgap-ch6-terminal-cost-sensitivity-v1',rows=[
+        dict(method='TS',eta=row['x_value'],status='unscorable_metric',value=None,reason='No comparable selection interface')])
+    monkeypatch.setattr(bindings,'matrix',lambda:[row]);monkeypatch.setattr(bindings,'load_pin',lambda _:doc)
     release=dict(units=[],figure_bindings=[dict(figure='F6',method='TS',x_value=row['x_value'],status='unscorable_metric',reason='No comparable selection interface',value=None,evidence_pin='checked')])
     assert all(c['passed'] for c in bindings.audit_bindings(release))
     release['figure_bindings'][0]['value']=0
     assert any(not c['passed'] for c in bindings.audit_bindings(release))
+    release['figure_bindings'][0]['value']=None
+    doc['rows'][0].update(status='measured',value=0)
+    assert any(not c['passed'] and c['check'].startswith('offline_absence_matches_record') for c in bindings.audit_bindings(release))
 
 
 def test_f6_cannot_relabel_old_storage_costs_as_current_runtime(monkeypatch):
@@ -36,7 +41,7 @@ def test_f6_cannot_relabel_old_storage_costs_as_current_runtime(monkeypatch):
     docs={'manifest':dict(cells=[],prepared={'sha256':'prepared'},design=dict(source_storage='node_local',
             source_rss_bytes=4,source_budget={'timeout_seconds':60})),
         'scores':dict(schema_version='xgap-ch6-terminal-cost-sensitivity-v1',success=True,
-            rows=[dict(method='XGAP',eta=row['x_value'])],cost_audit='audit',pool={'sha256':'pool'},measurements={'sha256':'costs'}),
+            rows=[dict(method='XGAP',eta=row['x_value'],status='measured',value=0)],cost_audit='audit',pool={'sha256':'pool'},measurements={'sha256':'costs'}),
         'audit':dict(schema_version='xgap-ch6-cost-measurement-audit-v1',success=True,pool={'sha256':'pool'},
             frozen_costs={'sha256':'costs'},prepared={'sha256':'prepared'},source_storage='evidence',
             source_rss_bytes=4,source_runtime=None,source_budget={'timeout_seconds':60})}
@@ -46,3 +51,9 @@ def test_f6_cannot_relabel_old_storage_costs_as_current_runtime(monkeypatch):
     assert any(not c['passed'] and c['check'].startswith('offline_same_serving_contract') for c in bindings.audit_bindings(release))
     docs['audit']['source_storage']='node_local'
     assert all(c['passed'] for c in bindings.audit_bindings(release))
+    docs['audit']['source_budget']['max_calls']=128
+    assert any(not c['passed'] and c['check'].startswith('offline_same_serving_contract') for c in bindings.audit_bindings(release))
+    docs['manifest']['design']['source_budget']['max_calls']=128
+    assert all(c['passed'] for c in bindings.audit_bindings(release))
+    docs['scores']['rows'][0].update(status='unscorable_metric',value=None)
+    assert any(not c['passed'] and c['check'].startswith('offline_measured_record') for c in bindings.audit_bindings(release))

@@ -3,6 +3,7 @@
 This is a pre-run integrity check, not a plotter and not result imputation.
 """
 import json
+import math
 from copy import deepcopy
 from xgap.experiments.ch6_formal_protocol import matrix,load_pin,METHODS
 
@@ -23,12 +24,24 @@ def audit_bindings(release):
             'unsupported_deployment','unsupported_interface','unscorable_metric'))
         if status in ('unsupported_deployment','unsupported_interface','unscorable_metric'):
             check('honest_plot_absence_'+str(k),bool(binding.get('reason')) and binding.get('value') is None and not refs)
-            load_pin(binding['evidence_pin']);continue
+            doc=load_pin(binding['evidence_pin'])
+            if row['figure']=='F6':
+                records=[r for r in doc.get('rows',[]) if r['method']==row['method'] and r['eta']==row['x_value']]
+                check('offline_absence_matches_record_'+str(k),doc.get('success') is True and
+                    doc.get('schema_version')=='xgap-ch6-terminal-cost-sensitivity-v1' and len(records)==1
+                    and records[0].get('status')==status and records[0].get('value') is None
+                    and bool(records[0].get('reason')))
+            continue
         if status=='offline_measured':
             doc=load_pin(binding['evidence_pin'])
             records=[r for r in doc.get('rows',[]) if r['method']==row['method'] and r['eta']==row['x_value']]
             check('offline_terminal_pool_'+str(k),row['figure']=='F6' and doc.get('success') is True and
                   doc.get('schema_version')=='xgap-ch6-terminal-cost-sensitivity-v1' and len(records)==1)
+            record=records[0] if len(records)==1 else {}
+            value=record.get('value')
+            check('offline_measured_record_'+str(k),record.get('status')=='measured'
+                and type(value) in (int,float) and math.isfinite(value) and value>=0
+                and ('value' not in binding or binding['value']==value) and not refs)
             audit=load_pin(doc['cost_audit']) if doc.get('cost_audit') else {}
             check('offline_raw_cost_audit_'+str(k),audit.get('schema_version')=='xgap-ch6-cost-measurement-audit-v1'
                 and audit.get('success') is True and audit.get('pool',{}).get('sha256')==doc.get('pool',{}).get('sha256')
@@ -41,7 +54,7 @@ def audit_bindings(release):
                     and audit.get('source_storage')==design.get('source_storage','evidence')
                     and audit.get('source_rss_bytes')==design['source_rss_bytes']
                     and audit.get('source_runtime')==design.get('source_runtime',{}).get('contract')
-                    and all(audit.get('source_budget',{}).get(key)==value for key,value in design['source_budget'].items()))
+                    and audit.get('source_budget')==design['source_budget'])
             continue
         check('plot_has_real_cells_'+str(k),bool(refs))
         if row['configuration_kind']=='fixed_reference':
