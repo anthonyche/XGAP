@@ -1,5 +1,13 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-25 latest authorization: run existing D1's 56 authored cases as ONE
+development pilot (256 supported method requests, native/r0 then RDF/r0), while
+rebuilding a provenance-backed independent final workload. See
+`docs/decisions/ch6_pilot_workload_rebuild_20260925.md`. Preserve old artifacts and
+case IDs; do not label this pilot as an untouched final test or the full study.
+No full campaign is authorized. Token thresholds are observed after each method
+request; missing usage stops work, never silently becomes zero or a retry.
+
 2026-09-23 latest task: prepare ALL formal artifacts/workflows/scripts/matrices
 up to the launch boundary, not the full campaign itself. Current figure authority:
 `docs/ch6_formal_execution_20260923.md`: 21 figures, all XGAP/NP/SH/GR/TS;

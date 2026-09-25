@@ -145,17 +145,17 @@ def inventory(root,cells):
     return counts
 
 
-def run(manifest_path,manifest_sha256,output,*,max_new_cells=10000):
+def run(manifest_path,manifest_sha256,output,*,max_new_cells=10000,before_cell=None):
     if type(max_new_cells) is not int or not 1<=max_new_cells<=10000:raise ValueError('Invalid invocation cell bound')
     manifest=json.loads(read_pinned(manifest_path,manifest_sha256));validate(manifest)
     commit=source_commit();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=True)
     with (root/'.lock').open('a') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:raise ValueError('Another batch invocation owns this output') from None
-        return _run(manifest,manifest_sha256,commit,root,max_new_cells)
+        return _run(manifest,manifest_sha256,commit,root,max_new_cells,before_cell)
 
 
-def _run(manifest,digest,commit,root,max_new_cells):
+def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
     identity=dict(manifest_sha256=digest,source_commit=commit)
     marker=root/'identity.json'
     if marker.exists():
@@ -192,6 +192,14 @@ def _run(manifest,digest,commit,root,max_new_cells):
             path=root/'cells'/cell['cell_id']
             if path.exists():continue
             if attempts>=max_new_cells or budget.sample([]):break
+            # Supervisor accounting only. Check before opening services or
+            # journaling a new attempt; a stop still closes the shared session.
+            if before_cell is not None:
+                reason=before_cell(cell)
+                if reason is not None:
+                    if not isinstance(reason,str) or not reason:
+                        raise ValueError('Cell admission callback must return a reason or None')
+                    budget.status=reason;break
             needed=design['method_wall_seconds']+(design['startup_seconds'] if session is None or cell['method']==EXTERNAL_METHOD else 0)
             if design['total_wall_seconds']-(time.time()-started)<needed:
                 budget.status='study_insufficient_time_for_cell';break
