@@ -69,9 +69,17 @@ def audit_bindings(release):
             # TS fixed-NL references retain their distinct timing boundary.
             controlled='controlled_state' in cell
             check('plot_input_track_'+str(k),controlled==(row['input_track']=='controlled' and row['method']!='TS'))
-            if row['method']=='TS':continue
-            config=load_pin(cell['config']);settings=config['settings'];factor=row['x_factor']
+            # Deployment axes apply to TS too: its NL entry must use the actual
+            # factor snapshot, not a fixed two-source observation relabelled 4/8.
+            factor=row['x_factor']
             desired=row['defaults'].get(factor,row['x_value'])
+            if factor in ('sources','graph_scale'):
+                prepared=load_pin(manifest['prepared']);profile=load_pin(prepared['profile'])
+                materialization=load_pin(profile['offline']['materialization'])
+                measured=materialization['source_count'] if factor=='sources' else float(materialization['scale'])
+                check('plot_actual_materialization_'+str(k),measured==desired)
+            if row['method']=='TS':continue
+            config=load_pin(cell['config']);settings=config['settings']
             if factor in ('depth','horizon'):
                 check('plot_configuration_'+str(k),settings['limits'][factor]==desired)
             elif factor=='epsilon':check('plot_configuration_'+str(k),settings['epsilon']==str(desired))
@@ -80,14 +88,20 @@ def audit_bindings(release):
                 public=load_pin(cell['request']);_,_,state=read_state(load_pin(cell['controlled_state']),public['question'])
                 measured=state['initial_candidate_count' if factor=='candidates' else 'initial_ambiguity']
                 check('plot_actual_input_'+str(k),measured==desired)
-            elif factor in ('sources','graph_scale'):
-                prepared=load_pin(manifest['prepared']);profile=load_pin(prepared['profile'])
-                materialization=load_pin(profile['offline']['materialization'])
-                measured=materialization['source_count'] if factor=='sources' else float(materialization['scale'])
-                check('plot_actual_materialization_'+str(k),measured==desired)
             elif factor in ('probe_price','clarification_price'):
                 from release_ch6_five_method_batch import configuration_for
-                base=configuration_for(load_pin(binding['cost_reference']),row['method'])
+                # Different frozen families have different relaxable slots. A
+                # single figure-wide config cannot stand in for every case.
+                if 'cost_references' in binding:
+                    matches=[r for r in binding['cost_references'] if
+                        (r['unit_id'],r['cell_id'])==target]
+                    check('unique_case_cost_reference_'+str(k)+str(target),len(matches)==1)
+                    if len(matches)!=1:continue
+                    cost_reference=matches[0]['configuration']
+                else:cost_reference=binding['cost_reference']
+                base=configuration_for(load_pin(cost_reference),row['method'])
+                check('unit_price_reference_'+str(k),base['costs']['clarification_call']==1
+                    and base['costs']['disclosed_field']==.25)
                 expected_config=deepcopy(base)
                 if factor=='clarification_price':
                     for name in ('clarification_call','disclosed_field'):

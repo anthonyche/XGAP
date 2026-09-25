@@ -79,5 +79,10 @@ ZIP 成员/哈希、delta 前置提交、Python/Bash 语法及 F6 服务预算�
 除两个准入 harness 文件外，`src/` 和其他执行源码相对 cfb9f6d 完全相同。
 验证文件：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/remaining-releasegate-pack-v1/validation.json`。
 
-本轮尚未上传或提交新作业，下一项是服务器交接。其后仍须完成 21 图逐位置绑定及
+用户已上传、核验并提交为 **3875866**；终端确认 exact 92ee25d 与 delta 前置提交。
+当前只确认提交，不推断 RUNNING 或成功，也不重复提交。日志：
+`/home/hxc859/xgap-ch6-artifacts/remaining-releasegate-92ee25d-v1/remaining-releasegate-3875866.out`。
+等待期间继续本地 21 图绑定和预算准备。其后仍须完成 21 图逐位置绑定及
 最终全局预算检查；不能只凭该作业退出码宣布全量 ready。
+
+最新服务器回执：3875866 RUNNING 于 compt341，D1 native 24 correct、remaining=[]；完整归档待收取。并行本地已完成[21 图测量配方和 TS 部署参考接线](ch6_figure_recipes_20260925.md)，全量仍未启动。

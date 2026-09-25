@@ -57,3 +57,40 @@ def test_f6_cannot_relabel_old_storage_costs_as_current_runtime(monkeypatch):
     assert all(c['passed'] for c in bindings.audit_bindings(release))
     docs['scores']['rows'][0].update(status='unscorable_metric',value=None)
     assert any(not c['passed'] and c['check'].startswith('offline_measured_record') for c in bindings.audit_bindings(release))
+
+
+def test_ts_source_axis_requires_its_own_actual_materialization(monkeypatch):
+    row=next(r for r in matrix() if r['figure']=='S2' and r['method']=='TS' and r['x_value']==4)
+    monkeypatch.setattr(bindings,'matrix',lambda:[row])
+    docs={'manifest':dict(cells=[dict(cell_id='TS',method='aruqula-fedx')],prepared='prepared'),
+          'prepared':dict(profile='profile'),'profile':dict(offline=dict(materialization='materialization')),
+          'materialization':dict(source_count=2)}
+    monkeypatch.setattr(bindings,'load_pin',lambda p:docs[p])
+    release=dict(units=[dict(unit_id='u',manifest='manifest')],figure_bindings=[
+        dict(figure='S2',method='TS',x_value=4,status='scheduled',cells=[dict(unit_id='u',cell_id='TS')])])
+    assert any(not c['passed'] and c['check'].startswith('plot_actual_materialization') for c in bindings.audit_bindings(release))
+    docs['materialization']['source_count']=4
+    assert all(c['passed'] for c in bindings.audit_bindings(release))
+
+
+def test_price_sweep_preserves_each_familys_own_configuration(monkeypatch):
+    row=next(r for r in matrix() if r['figure']=='E8' and r['method']=='XGAP' and r['x_value']==2)
+    monkeypatch.setattr(bindings,'matrix',lambda:[row])
+    docs={};cells=[];references=[]
+    for i,slots in enumerate((['anchor'],['anchor','control'])):
+        base=configuration();base['settings']['relaxable']=slots
+        base['costs'].update(clarification_call=1,disclosed_field=.25)
+        actual=deepcopy(base);actual['costs'].update(clarification_call=2,disclosed_field=.5)
+        docs[f'base{i}']=base;docs[f'actual{i}']=actual
+        cells.append(dict(cell_id=str(i),method='xgap-unified-lookahead',config=f'actual{i}',controlled_state='state'))
+        references.append(dict(unit_id='u',cell_id=str(i),configuration=f'base{i}'))
+    docs['manifest']=dict(cells=cells)
+    monkeypatch.setattr(bindings,'load_pin',lambda p:docs[p])
+    release=dict(units=[dict(unit_id='u',manifest='manifest')],figure_bindings=[
+        dict(figure='E8',method='XGAP',x_value=2,status='scheduled',cost_references=references,
+             cells=[dict(unit_id='u',cell_id=str(i)) for i in range(2)])])
+    assert all(c['passed'] for c in bindings.audit_bindings(release))
+    references[1]['configuration']='base0'
+    assert any(not c['passed'] and c['check'].startswith('plot_price_configuration') for c in bindings.audit_bindings(release))
+    references[1]['configuration']='base1';references.append(references[1])
+    assert any(not c['passed'] and c['check'].startswith('unique_case_cost_reference') for c in bindings.audit_bindings(release))

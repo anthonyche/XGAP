@@ -19,6 +19,7 @@ from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.unified_contract import configuration
 from xgap.planning.joint_cost import JointCostProfile
 from xgap.experiments.ch6_backend_eligibility import eligible, check_design
+from freeze_ch6_mixed_support import validate_ts_nl_reference
 
 
 def case_configuration(case,*,depth=2,horizon=12,epsilon='1/3',clarification_price=1,probe_price=1):
@@ -41,6 +42,10 @@ def prepare(spec_path,spec_sha256,output):
             or spec['input_track'] not in ('nl','controlled') or type(spec['repetitions']) is not int
             or not 1<=spec['repetitions']<=10):raise ValueError('Explicit pre-result unit preparation required')
     bundle=load_pin(spec['bundle']);stores=load_pin(spec['prepared']);gate=load_pin(spec['backend_admission'])
+    if bundle.get('input_track')=='controlled' and spec['input_track']=='nl':
+        if spec.get('ts_nl_reference') is not True or spec.get('methods')!=['TS']:
+            raise ValueError('Controlled bundle NL entry requires an explicit TS-only deployment reference')
+        validate_ts_nl_reference(bundle)
     if (not stores.get('success') or not eligible(gate,bundle_pin=spec['bundle'],prepared_pin=spec['prepared'])
             or gate['profile']['sha256']!=bundle['profile']['sha256']
             or stores['profile']['sha256']!=bundle['profile']['sha256']):
@@ -81,6 +86,7 @@ def prepare(spec_path,spec_sha256,output):
         input=dict(path=spec_path,sha256=spec_sha256),unique_cases=len(cases),repetitions=spec['repetitions'],
         cases=[c['case_id'] for c in cases],model_calls=0,backend_calls=0,method_results_read=0,
         probe_axis_active=False,formal_campaign_ready=False,
+        ts_nl_reference=spec.get('ts_nl_reference',False),
         configuration_scope='Same parameter values; per-family non-hard relaxation names; no answer-based choice')
     return write_once(root/'receipt.json',receipt)
 
