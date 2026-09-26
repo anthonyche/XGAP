@@ -30,8 +30,14 @@ def prepare(spec_path,spec_sha256,output):
     units=[]
     for cohort in selection['cohorts']:
         name=cohort['dataset']+'-'+cohort['deployment'];folder=root/name;folder.mkdir();cases=[]
+        inherited_requests=({c['case_id']:c['original_request'] for row in verified['cohorts']
+            if (row['dataset'],row['deployment'])==(cohort['dataset'],cohort['deployment'])
+            for c in row['cases']} if migration else {})
         for i,case in enumerate(cohort['cases']):
-            original=case_configuration(case,**cohort.get('parameters',{}))
+            # Only public slot/configuration inheritance uses the original wording
+            # bound to the unchanged controlled state. All methods get new NL below.
+            config_case={**case,'request':inherited_requests[case['case_id']]} if migration else case
+            original=case_configuration(config_case,**cohort.get('parameters',{}))
             base_pin=write_once(folder/f'base-inherited-{i:02d}.json',original)
             _,information,settings,costs=load_configuration(base_pin['path'],base_pin['sha256'])
             settings=replace(settings,limits=replace(settings.limits,aggregation='expectation'),

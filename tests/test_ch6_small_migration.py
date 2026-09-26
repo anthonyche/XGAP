@@ -12,6 +12,9 @@ from xgap.experiments.ch6_formal_protocol import load_pin
 from xgap.experiments.compact_constraints_profile import PROOF_PROFILE
 from xgap.experiments.one_shot_records import write_once
 from xgap.semantic.intent_scope import ScopePolicy
+from xgap.experiments.ch6_fact_index import CORES
+from xgap.experiments.ch6_heldout import make_family
+from xgap.experiments.controlled_state import publish_state
 
 
 def migrate_fixture(tmp_path,monkeypatch):
@@ -28,6 +31,11 @@ def migrate_fixture(tmp_path,monkeypatch):
             case['scope']=write_once(tmp_path/f'{cid}-scope.json',ScopePolicy('public-family',(),language_version='v2').to_dict())
             case['oracle']=write_once(tmp_path/f'{cid}-private-v1.json',dict(query={'hidden':'sentinel-never-in-public'},nonce='a'*64,
                 question_sha256=fingerprint('List matching edges.')))
+            query,_,family=make_family(CORES[cohort['dataset']],'window_edge',['node:1','node:2'],
+                                      1000,case['workload'],'snapshot',cid)
+            case['controlled_state']=write_once(tmp_path/f'{cid}-state-v2.json',
+                publish_state('List matching edges.',family,query,semantic_choices=[
+                    dict(name=s.name,type='coordinate',slots=[s.name]) for s in family.slots]))
         cohort['bundle']=write_once(tmp_path/f"{cohort['dataset']}-{cohort['deployment']}-bundle-v2.json",
                                    dict(profile=profile,cases=cohort['cases']))
     selection=write_once(tmp_path/'parent-selection.json',parent)
@@ -99,7 +107,11 @@ def test_migrated_release_has_216_requests_all_methods_share_new_words(tmp_path,
     from xgap.agent.live_probe import LiveProbePolicy
     from xgap.experiments.unified_contract import configuration
     result=migrate_fixture(tmp_path,monkeypatch)
-    monkeypatch.setattr(publisher,'case_configuration',lambda *a,**k:configuration())
+    # Exercise the actual question/state identity guard, not a stubbed config.
+    from prepare_ch6_execution_units import case_configuration
+    first=load_pin(result['selection'])['cohorts'][0]['cases'][0]
+    with pytest.raises(ValueError,match='Controlled state identity'):
+        case_configuration(first)
     monkeypatch.setattr(publisher,'source_commit',lambda:'a'*40)
     monkeypatch.setattr(batch_publisher,'source_commit',lambda:'a'*40)
     monkeypatch.setattr(batch_publisher,'validate',lambda manifest:None)
