@@ -34,7 +34,7 @@ def fixture(root):
     return dict(schema_version=batch.SCHEMA,deployment='native',prepared=missing,design=design,cells=cells)
 
 
-def install_fake_runtime(monkeypatch, *, fail_cell=None, interrupt_cell=None, closure=True):
+def install_fake_runtime(monkeypatch, *, fail_cell=None, interrupt_cell=None, closure=True,outcomes=None):
     seen=[];sessions=[]
     class Session:
         def __init__(self,root,**kwargs):
@@ -54,6 +54,7 @@ def install_fake_runtime(monkeypatch, *, fail_cell=None, interrupt_cell=None, cl
         outcome=dict(schema_version='xgap-common-method-trial-v1',method=kwargs['method'],track=TRACK,
             dataset=DATASET,question_id='q',population='toy',exposure='development',
             request_sha256=kwargs['request_sha256'],success=success,status='returned' if success else 'budget_nonanswer',result=result)
+        outcome.update((outcomes or {}).get(cell,{}))
         pin=write_once(path/'receipt.json',outcome)
         return {**outcome,'receipt':pin,'can_continue_session':success}
     monkeypatch.setattr(batch,'source_commit',lambda:'source-v1')
@@ -86,7 +87,7 @@ def test_declared_local_storage_is_shared_and_recorded(tmp_path,monkeypatch):
 def test_resume_skips_success_and_failed_cells_without_private_or_reference_worker_access(tmp_path,monkeypatch):
     seen,sessions=install_fake_runtime(monkeypatch,fail_cell='1')
     first,args=launch(tmp_path,fixture(tmp_path),max_new_cells=2)
-    assert first['counts']==dict(sealed=2,execution_success=1,execution_failed=1,incomplete=0,unattempted=1)
+    assert first['counts']==dict(sealed=2,execution_success=1,execution_failed=1,study_censored=0,incomplete=0,unattempted=1)
     before=(tmp_path/'batch/cells/1/terminal.json').read_bytes()
     second=batch.run(**args)
     assert second['counts']['sealed']==3 and second['new_cells']==1

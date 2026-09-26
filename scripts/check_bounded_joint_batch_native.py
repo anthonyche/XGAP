@@ -68,7 +68,7 @@ def main(output,prepared_path,prepared_sha256):
             all(x['model_calls']==0 for x in result['cases']) and
             all(x.get('all_owned_closed') for x in result['invocations'][:2]) and
             result['invocations'][2]['status']=='no_unattempted_cells' and
-            result['invocations'][2]['counts']==dict(sealed=3,execution_success=2,execution_failed=1,incomplete=0,unattempted=0))
+            result['invocations'][2]['counts']==dict(sealed=3,execution_success=2,execution_failed=1,study_censored=0,incomplete=0,unattempted=0))
     except Exception as error:result.update(error_type=type(error).__name__,error=str(error))
     pin=write_once(root/'receipt.json',result)
     print(json.dumps(dict(success=result['success'],receipt=pin,cases=result['cases'],error=result.get('error'))))

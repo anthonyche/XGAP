@@ -123,7 +123,7 @@ def closed(receipt):
 
 
 def inventory(root,cells):
-    counts=dict(sealed=0,execution_success=0,execution_failed=0,incomplete=0,unattempted=0)
+    counts=dict(sealed=0,execution_success=0,execution_failed=0,study_censored=0,incomplete=0,unattempted=0)
     for cell in cells:
         path=root/'cells'/cell['cell_id']
         if not path.exists():counts['unattempted']+=1
@@ -142,6 +142,9 @@ def inventory(root,cells):
                     raise ValueError('Sealed query loss identity differs')
             counts['sealed']+=1
             counts['execution_success' if outcome['success'] else 'execution_failed']+=1
+            if (outcome.get('failure_scope')=='study_budget_censoring_not_method_incorrectness' or
+                    outcome['status']=='harness_budget_censored'):
+                counts['study_censored']+=1
     return counts
 
 
@@ -170,6 +173,8 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
     for old in previous:
         if not (old/'receipt.json').exists() or not json.loads((old/'receipt.json').read_text()).get('all_owned_closed'):
             raise ValueError('Previous invocation lacks verified closure; explicit recovery required before resume')
+        if json.loads((old/'receipt.json').read_text()).get('budget_status')=='study_harness_failure':
+            raise ValueError('Previous invocation has an unresolved harness failure; explicit recovery required before resume')
         if manifest['design'].get('source_storage')=='node_local' and any(
                 c.get('serving_copy_reclamation_complete') is False for c in json.loads((old/'receipt.json').read_text())['closures']):
             raise ValueError('Prior node-local serving copies require explicit storage recovery')
@@ -242,7 +247,7 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
                     observer=session.observer,owned_services=session.owned,budget=process_budget,
                     source_rss_bytes=design['source_rss_bytes'],package_monitor=budget)
             # Costly sources close before scoring a failed method. Never reuse a failed phase.
-            if not outcome['can_continue_session']:
+            if not outcome['can_continue_session'] or outcome['status']=='harness_budget_censored':
                 closure=session.close();closures.append(closure);session=None
                 if not closed(closure):raise ValueError('Failed trial sources did not close')
             ref=cell['reference']
@@ -252,15 +257,21 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
             if outcome.get('core') and cell['method']!=DIRECT_METHOD:
                 score_query_loss(receipt=outcome['receipt'],request=cell['request'],oracle=cell['oracle'],output=path/'query-loss.json')
                 loss_pin=file_pin(path/'query-loss.json')
+            answer_em=None if (outcome.get('failure_scope')=='study_budget_censoring_not_method_incorrectness' or
+                outcome['status'] in ('harness_budget_censored','harness_observation_failure','supervisor_failed','guard_monitor_failed')) else score['answer_em']
             write_once(path/'terminal.json',dict(cell_id=cell['cell_id'],outcome=outcome['receipt'],
                 score=file_pin(path/'score.json'),**({'query_loss':loss_pin} if loss_pin else {}),
-                execution_success=outcome['success'],answer_em=score['answer_em']))
-            summary=dict(cell_id=cell['cell_id'],status=outcome['status'],answer_em=score['answer_em'])
+                execution_success=outcome['success'],answer_em=answer_em))
+            summary=dict(cell_id=cell['cell_id'],status=outcome['status'],answer_em=answer_em)
             if outcome.get('proposal_failure_category'):
                 summary.update(proposal_failure_category=outcome['proposal_failure_category'],error=outcome.get('error'))
             print(json.dumps(summary),flush=True)
             if outcome['status'] in ('guard_monitor_failed','supervisor_failed','harness_observation_failure'):
                 budget.status='study_harness_failure';break
+            if outcome['status']=='harness_budget_censored' and cell['method']==EXTERNAL_METHOD:
+                from ch6_external_session import verified_budget_censoring
+                if not verified_budget_censoring(outcome):
+                    budget.status='study_harness_failure';break
     except (Exception,KeyboardInterrupt) as exc:
         error=dict(type=type(exc).__name__,message=str(exc))
     finally:
@@ -269,7 +280,7 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
         result=dict(schema_version='xgap-ch6-five-method-invocation-v1' if manifest['schema_version']==FORMAL_SCHEMA else 'xgap-unified-batch-invocation-v1' if manifest['schema_version']==UNIFIED_SCHEMA else 'xgap-bounded-joint-batch-invocation-v1',identity=identity,
             new_cells=attempts,counts=inventory(root,manifest['cells']),budget_status=budget.status,error=error,
             closures=closures,all_owned_closed=all(closed(c) for c in closures),automatic_retries=0,
-            scope='sealed counts include failed outcomes; incomplete intents are never retried; offline startup/scoring excluded from method latency')
+            scope='execution_failed counts unsuccessful executions, not algorithm quality; study_censored is a subset; incomplete intents are never retried; offline startup/scoring excluded from method latency')
         result['status']='failed' if error or not result['all_owned_closed'] else 'budget_stopped' if budget.status else 'returned'
         result['receipt']=write_once(invocation/'receipt.json',result)
     return result

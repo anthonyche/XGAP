@@ -1,5 +1,12 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-26 priority: small real evaluation, four cases per W1–W4 per domain;
+prepare meaningful paid-probe versus NP comparisons and preserve old results.
+See `docs/decisions/ch6_probe_small_workload_20260926.md`. Mockup v2 is a separate
+conditional simulation, never measured evidence. Pilot 3885860 ended at TS's
+256-source-call observer limit; local censoring continuation fix is not deployed.
+Do not silently change max to expectation or reuse priors for a different NL family.
+
 2026-09-25 latest authorization: run existing D1's 56 authored cases as ONE
 development pilot (256 supported method requests, native/r0 then RDF/r0), while
 rebuilding a provenance-backed independent final workload. See

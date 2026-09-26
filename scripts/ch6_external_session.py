@@ -27,9 +27,37 @@ from xgap.experiments.process_guard import run_guarded_command, ProcessBudget, _
 REPO=Path(__file__).resolve().parents[1]
 METHOD='aruqula-fedx'
 COMPATIBILITY='https-iris-action-schema-fedx-v2'
+HARNESS_BUDGET_CATEGORIES=frozenset(('harness_call_budget','harness_request_budget','harness_response_budget'))
 
 
 def load(pin):return json.loads(read_pinned(pin['path'],pin['sha256']))
+
+
+def verified_budget_censoring(result):
+    """A known observer limit with complete evidence, never an integrity error.
+
+    This permits closing a censored trial and advancing to another request. It
+    does not permit reusing its source session or repeating the censored trial.
+    The batch separately verifies shutdown of every owned service.
+    """
+    observed=result.get('observations') or {}
+    if (set(observed)!={'source','model','lookup','federation'} or
+            result.get('model_usage_complete') is not True or result.get('guard_status')!='completed' or
+            (result.get('quiescence') or {}).get('complete') is not True or
+            result.get('error_type') or result.get('observation_error_type')):
+        return False
+    categories={}
+    for summary in observed.values():
+        if (not summary.get('phase_seal') or summary.get('persistence_failures')!=0 or
+                summary.get('late_calls')!=0):return False
+        for category,count in summary.get('failure_categories',{}).items():
+            # A recorded HTTP response can be an original method/backend error.
+            # Transport faults and any unknown category require investigation.
+            if category not in HARNESS_BUDGET_CATEGORIES|{'upstream_http_failure'}:return False
+            if type(count) is not int or count<=0:return False
+            if category.startswith('harness_'):
+                categories[category]=categories.get(category,0)+count
+    return bool(categories)
 
 
 def verify_config(config,profile):
@@ -178,7 +206,7 @@ def run_trial(*,request,output,session,budget,source_rss_bytes,package_monitor=N
     except Exception as error:result.update(success=False,status='supervisor_failed',error_type=type(error).__name__)
     finally:
         if not result['success']:barrier=monitor.stop()
-        observed={}
+        observed={};harness={}
         try:
             for name in opened:observed[name]=observers[name].seal_phase(phase)
             usage=observed_model_usage(observers['model'])
@@ -188,7 +216,7 @@ def run_trial(*,request,output,session,budget,source_rss_bytes,package_monitor=N
                      if any(k.startswith('harness_') for k in summary.get('failure_categories',{}))}
             if harness:
                 result.update(success=False,status='harness_observation_failure',harness_failures=harness,
-                              failure_scope='study_budget_censoring_not_method_incorrectness')
+                              failure_scope='observation_integrity_failure_not_method_incorrectness')
                 if barrier is None:barrier=monitor.stop()
         except Exception as error:
             result.update(success=False,status='harness_observation_failure',observation_error_type=type(error).__name__)
@@ -198,7 +226,11 @@ def run_trial(*,request,output,session,budget,source_rss_bytes,package_monitor=N
         result.update(observations=observed,source_observations=observed.get('source'),resources=monitor.summary(),
             can_continue_session=result['success'],quiescence=barrier or dict(complete=True,kind='materialized_return'),
             decision_e2e_ms=(time.perf_counter()-started)*1000,paper_result=False)
-        if guard and guard['status'].startswith('study_'):
+        if harness and verified_budget_censoring(result):
+            result.update(status='harness_budget_censored',
+                          failure_scope='study_budget_censoring_not_method_incorrectness')
+        if (guard and guard['status'].startswith('study_') and
+                result['status'] not in ('harness_observation_failure','supervisor_failed')):
             result.update(status=guard['status'],success=False,can_continue_session=False,
                           failure_scope='study_budget_censoring_not_method_incorrectness')
         pin=write_once(root/'receipt.json',result)
