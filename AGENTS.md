@@ -1,5 +1,11 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-26 latest: eight public structures passed a real shared-entry gate, 8/8
+with one LLM proposal and one authoritative scope confirmation each. See
+`docs/report/ch6_entry8_acceptance_20260926.md`. This does not execute answers or
+replace old 17/48 results. Next freeze revised common inputs/profiles for the
+48-question five-method study; preserve domain/W/deployment strata and budgets.
+
 2026-09-26 latest: 3886776 is complete and its 2,970 archived files are verified.
 The TS supplement and three original queries are verified: all three fail the
 frozen RDF4J 5.1.2 parser before execution. Keep baseline query failures; change
