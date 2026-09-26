@@ -19,7 +19,7 @@ import time
 
 from native_store_session import NativeStoreSession
 from rdf_tdb_session import RdfTdbSession
-from ch6_source_runtime import validate_admission, session_options
+from ch6_source_runtime import validate_admission, session_options, entry_cohort, entry_serving_profile
 from xgap.experiments.bounded_joint_contract import METHODS
 from xgap.experiments.campaign_source_observer import SourceObservationBudget
 from xgap.experiments.common_method_trial import run_nl_trial
@@ -48,6 +48,11 @@ def load(pin):
 def validate(manifest):
     formal=manifest.get('schema_version')==FORMAL_SCHEMA
     expected={'schema_version','deployment','prepared','design','cells'}|({'external_runtime'} if formal else set())
+    entry_fields={'entry_migration','entry_profile'}
+    present=entry_fields.intersection(manifest)
+    if present and (not formal or present!=entry_fields):
+        raise ValueError('Formal entry migration and profile must be pinned together')
+    expected|=present
     if set(manifest)!=expected or manifest['schema_version'] not in (SCHEMA,UNIFIED_SCHEMA,FORMAL_SCHEMA):
         raise ValueError('Unexpected bounded joint manifest')
     if manifest['deployment'] not in ('native','rdf'):raise ValueError('Unknown deployment')
@@ -85,10 +90,12 @@ def validate(manifest):
     if len(ids)!=len(set(ids)):raise ValueError('Duplicate cell IDs')
     # Only pin syntax is inspected here, not private intent or reference contents.
     for pin in [manifest['prepared'],*(c[k] for c in cells for k in ('request','scope','oracle','config','reference','controlled_state') if k in c),
+                *(manifest[k] for k in entry_fields if k in manifest),
                 *([manifest['external_runtime']] if formal and manifest['external_runtime'] else [])]:
         if not isinstance(pin,dict) or not isinstance(pin.get('path'),str) or not Path(pin['path']).is_absolute() or not re.fullmatch(r'[a-f0-9]{64}',pin.get('sha256','')):
             raise ValueError('Absolute artifact paths and SHA-256 pins required')
-    validate_admission(design,manifest['deployment'],manifest['prepared'],cells=cells)
+    validate_admission(design,manifest['deployment'],manifest['prepared'],cells=cells,
+        entry_migration=manifest.get('entry_migration'),entry_profile=manifest.get('entry_profile'))
 
 
 class BatchBudget:
@@ -160,6 +167,8 @@ def run(manifest_path,manifest_sha256,output,*,max_new_cells=10000,before_cell=N
 
 
 def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
+    migration=entry_cohort(manifest.get('entry_migration'),manifest.get('entry_profile'),
+        manifest['prepared'],manifest['deployment'],cells=manifest['cells'])
     identity=dict(manifest_sha256=digest,source_commit=commit)
     marker=root/'identity.json'
     if marker.exists():
@@ -185,6 +194,7 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
     write_once(invocation/'intent.json',dict(identity=identity,max_new_cells=max_new_cells))
     (root/'cells').mkdir(exist_ok=True);(root/'sessions').mkdir(exist_ok=True)
     design=manifest['design'];budget=BatchBudget(root,design,started);session=None;external=None;closures=[];attempts=0;error=None
+    internal_profile=None
     try:
         workspace=None
         if design.get('source_storage')=='node_local':
@@ -218,6 +228,9 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
                     serving_root=workspace/ordinal if workspace else None,
                     **session_options(design.get('source_runtime')))
                 with deadline(design['startup_seconds']):session.start()
+                internal_profile=session.profile if migration is None else entry_serving_profile(
+                    serving_profile=session.profile,entry_profile=manifest['entry_profile'],cohort=migration,
+                    migration_pin=manifest['entry_migration'],output=session.root/'entry-profile.json')
             if budget.sample([]):break
             if design['total_wall_seconds']-(time.time()-started)<design['method_wall_seconds']:
                 budget.status='study_insufficient_time_for_cell';break
@@ -244,7 +257,7 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
                 if not closed(closure):raise ValueError('External method resources did not close')
             else:
                 outcome=run_nl_trial(**kwargs,method=cell['method'],output=path/'execution',
-                    profile_path=session.profile['path'],profile_sha256=session.profile['sha256'],
+                    profile_path=internal_profile['path'],profile_sha256=internal_profile['sha256'],
                     observer=session.observer,owned_services=session.owned,budget=process_budget,
                     source_rss_bytes=design['source_rss_bytes'],package_monitor=budget)
             # Costly sources close before scoring a failed method. Never reuse a failed phase.

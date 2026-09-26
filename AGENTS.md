@@ -1,5 +1,15 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-26 current authorization: freeze the repaired common inputs and RUN the
+48-case, five-method end-to-end evaluation once (216 supported requests, 24 TS
+native unsupported positions). See `docs/decisions/ch6_repaired_small48_20260926.md`.
+Keep the original cases, references, hidden intent, full sources and budgets.
+All five methods get the same public edge-role addendum; only internal providers
+use the proved public-constraint profile. Reuse prior structured-query source
+admission via explicit migration evidence; this does not pre-admit new NL output.
+Preserve 3886776. No new job has been submitted yet; package/source freeze precedes
+the one server handoff. Do not launch the full factor matrix under this authority.
+
 2026-09-26 latest: eight public structures passed a real shared-entry gate, 8/8
 with one LLM proposal and one authoritative scope confirmation each. See
 `docs/report/ch6_entry8_acceptance_20260926.md`. This does not execute answers or

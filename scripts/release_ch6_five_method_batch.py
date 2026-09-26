@@ -73,6 +73,8 @@ def publish(*,spec_path,spec_sha256,output):
             cells.append(cell);bindings.append(dict(case_id=case['case_id'],method=label,status='scheduled',cell_id=cid))
     manifest=dict(schema_version=FORMAL_SCHEMA,deployment=spec['deployment'],prepared=spec['prepared'],
         design=spec['design'],external_runtime=spec.get('external_runtime'),cells=cells)
+    for key in ('entry_migration','entry_profile'):
+        if key in spec:manifest[key]=spec[key]
     validate(manifest);pin=write_once(root/'manifest.json',manifest)
     release=dict(schema_version='xgap-ch6-five-method-batch-release-v1',source_commit=commit,
         input=dict(path=spec_path,sha256=spec_sha256),manifest=pin,bindings=bindings,

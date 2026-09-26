@@ -36,6 +36,12 @@ def validate_membership(selection,units,manifests):
                 or manifest['design']!=cohort['design']
                 or manifest.get('external_runtime')!=cohort.get('external_runtime')):
             raise ValueError('Original source deployment or budget changed')
+        if selection.get('entry_migration'):
+            if (manifest.get('entry_migration')!=selection['entry_migration']
+                    or manifest.get('entry_profile')!=cohort.get('entry_profile')):
+                raise ValueError('Public entry migration/profile differs from the frozen selection')
+        elif 'entry_migration' in manifest or 'entry_profile' in manifest:
+            raise ValueError('Undeclared public entry migration')
         wanted={(cid,label) for cid in cases for label in METHODS if label!='TS' or key[1]=='rdf'}
         actual=set()
         for cell in manifest['cells']:
@@ -81,6 +87,12 @@ def audit(release,*,free_bytes=None):
         capacity=shutil.disk_usage(root).free if free_bytes is None else free_bytes
         check('disk_capacity',capacity>=release['budget']['package_max_bytes']+release['budget']['free_disk_reserve_bytes'])
         selection=load_pin(release['selection']);manifests=[load_pin(u['manifest']) for u in release['units']]
+        migration=selection.get('entry_migration');original_selection=selection
+        if migration:
+            from xgap.experiments.ch6_small_migration import verify_migration,verify_selection,PROVIDER
+            verified=verify_migration(migration);verify_selection(selection,verified)
+            original_selection=load_pin(verified['parent_selection'])
+            check('shared_public_input_migration',True)
         support=validate_membership(selection,release['units'],manifests)
         check('exact_216_requests',len([s for s in support if s['status']=='supported'])==216)
         reservations=0;policy=load_pin(release['live_probe_policy'])
@@ -92,7 +104,9 @@ def audit(release,*,free_bytes=None):
             def same_pin(a,b):return all(a.get(k)==b.get(k) for k in ('path','sha256'))
             if not same_pin(parent['profile'],cohort['profile']) or not same_pin(load_pin(cohort['prepared'])['profile'],cohort['profile']):
                 raise ValueError('Selected cohort profile differs from its prepared parent')
-            for case in cohort['cases']:
+            source_cohort=next(c for c in original_selection['cohorts']
+                if (c['dataset'],c['deployment'])==(cohort['dataset'],cohort['deployment']))
+            for case in source_cohort['cases']:
                 original=parent_cases.get(case['case_id'])
                 if original is None or any(case[k]!=original[k] for k in
                         ('request','reference','oracle','scope','controlled_state')):
@@ -108,7 +122,7 @@ def audit(release,*,free_bytes=None):
                     reservations+=load_pin(manifest['external_runtime'])['model_budget']['max_calls'];continue
                 raw,_,settings,_=load_configuration(cell['config']['path'],cell['config']['sha256'])
                 validate_method(cell['method'],settings)
-                if raw['provider']!='frozen_compact_model_equivalence_v1':
+                if raw['provider']!=(PROVIDER if migration else 'frozen_compact_model_equivalence_v1'):
                     raise ValueError('Small study requires the frozen equivalent-public-input frontend adapter')
                 if settings.live_probe_policy is None or settings.candidate_weights is not None or settings.information_targets:
                     raise ValueError('Bind live probe and candidate priors after actual NL interpretation')

@@ -21,6 +21,10 @@ def prepare(spec_path,spec_sha256,output):
     spec=load_pin(dict(path=spec_path,sha256=spec_sha256))
     if spec.get('schema_version')!='xgap-ch6-small-release-input-v1':raise ValueError('Explicit small-study inputs required')
     selection=load_pin(spec['selection']);policy=policy_from_dict(load_pin(spec['live_probe_policy']))
+    migration=selection.get('entry_migration')
+    if migration:
+        from xgap.experiments.ch6_small_migration import verify_migration,verify_selection,PROVIDER
+        verified=verify_migration(migration);verify_selection(selection,verified)
     if policy is None:raise ValueError('A real live probe policy must be pinned')
     root=Path(output).resolve();root.mkdir(parents=True,exist_ok=False)
     units=[]
@@ -33,13 +37,14 @@ def prepare(spec_path,spec_sha256,output):
             settings=replace(settings,limits=replace(settings.limits,aggregation='expectation'),
                 information_targets=(),candidate_weights=None,live_probe_policy=policy)
             base=configuration(settings=settings,information=information,costs=costs,
-                               provider='frozen_compact_model_equivalence_v1')
+                               provider=PROVIDER if migration else 'frozen_compact_model_equivalence_v1')
             config=write_once(folder/f'base-live-{i:02d}.json',base)
             cases.append({**case,'base_configuration':config})
         inputs=dict(schema_version='xgap-ch6-batch-input-v1',prepared=cohort['prepared'],
             external_runtime=cohort.get('external_runtime'),deployment=cohort['deployment'],
             input_track='nl',exposure=EXPOSURE,order_seed=20260926,
             base_configuration=cases[0]['base_configuration'],design=cohort['design'],cases=cases,methods=list(METHODS))
+        if migration:inputs.update(entry_migration=migration,entry_profile=cohort['entry_profile'])
         inp=write_once(folder/'input.json',inputs)
         result=publish(spec_path=inp['path'],spec_sha256=inp['sha256'],output=folder/'unit')
         units.append(dict(unit_id=name+'-small-r0',dataset=cohort['dataset'],deployment=cohort['deployment'],

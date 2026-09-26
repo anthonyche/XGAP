@@ -4,6 +4,7 @@ The contract identifies the engine and local overlay sources. A successful
 diagnostic subset is deliberately insufficient to release a formal batch.
 """
 import argparse
+from copy import deepcopy
 import json
 from pathlib import Path
 import re
@@ -73,8 +74,66 @@ def freeze(prepared_pin, output):
     return write_once(Path(output).resolve(), current_contract(build))
 
 
-def validate_admission(design, deployment, prepared_pin, *, bundle_pin=None, cells=None):
-    """Inspect only public deployment/admission evidence, never private intent."""
+def entry_cohort(entry_migration, entry_profile, prepared_pin, deployment, *, cells=None):
+    """Verify a new wording/proof migration; never silently relax old admission."""
+    if entry_migration is None and entry_profile is None:
+        return None
+    if entry_migration is None or entry_profile is None:
+        raise ValueError('Entry migration and entry profile must be pinned together')
+    from xgap.experiments.ch6_small_migration import migration_cohort, original_cells
+    cohort = migration_cohort(entry_migration, prepared_pin=prepared_pin,
+                              entry_profile_pin=entry_profile)
+    if cohort['deployment'] != deployment:
+        raise ValueError('Entry migration deployment differs from the batch')
+    if cells is not None:
+        original_cells(cells, cohort)
+    return cohort
+
+
+def entry_serving_profile(*, serving_profile, entry_profile, cohort, migration_pin, output):
+    """Overlay only verified public constraints on the actual serving endpoints.
+
+    The original source session/profile remains unchanged for TS. The supervisor
+    retains migration/oracle provenance; workers receive only a public profile.
+    """
+    from xgap.experiments.compact_constraints_profile import load_public_compact_constraints
+    from xgap.experiments.ch6_small_migration import same_pin
+    doc = load(serving_profile)
+    if (not same_pin(doc['offline'].get('serving_endpoint_parent'), cohort['parent_profile'])
+            or not same_pin(doc['offline'].get('prepared_stores'), cohort['parent_prepared'])
+            or not same_pin(entry_profile, cohort['entry_profile'])):
+        raise ValueError('Entry profile is not derived from this serving session')
+    if doc['offline'].get('compact_public_constraints') is not None:
+        raise ValueError('Serving session already declares entry constraints')
+    public = load(entry_profile)
+    parent = Path(entry_profile['path']).parent
+    load_public_compact_constraints(public, profile_root=parent)
+    constraint_pin = deepcopy(public['offline']['compact_public_constraints'])
+    constraint_pin['path'] = str((parent / constraint_pin['path']).absolute())
+    effective = deepcopy(doc)
+    effective['offline']['compact_public_constraints'] = constraint_pin
+    # Keep relative serving-profile references in their original directory.
+    output = Path(output).resolve()
+    if output.parent != Path(serving_profile['path']).resolve().parent:
+        raise ValueError('Entry serving profile must retain the original reference root')
+    load_public_compact_constraints(effective, profile_root=output.parent)
+    pin = write_once(output, effective)
+    write_once(output.with_name(output.stem + '-receipt.json'), dict(
+        schema_version='xgap-ch6-entry-serving-profile-v1', original_profile=serving_profile,
+        effective_profile=pin, entry_profile=entry_profile, entry_migration=migration_pin,
+        changed_fields=['offline.compact_public_constraints'],
+        source_endpoints_and_runtime_unchanged=True, model_calls=0, backend_calls=0,
+        admission_scope='original structured queries under verified public wording migration; new NL interpretations are not pre-admitted'))
+    return pin
+
+
+def validate_admission(design, deployment, prepared_pin, *, bundle_pin=None, cells=None,
+                       entry_migration=None, entry_profile=None):
+    """Check source admission and an optional offline-verified entry migration."""
+    cohort = entry_cohort(entry_migration, entry_profile, prepared_pin, deployment, cells=cells)
+    if cohort is not None and cells is not None:
+        from xgap.experiments.ch6_small_migration import original_cells
+        cells = original_cells(cells, cohort)
     config = design.get('source_runtime')
     if config is None:
         return None
