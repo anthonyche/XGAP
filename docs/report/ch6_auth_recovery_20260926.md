@@ -35,5 +35,13 @@ python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc8
 `pilot-<job_id>.out`。结束后摘要归档会包含小型 core/interpretation 诊断；较大原始
 响应仍保留在服务器，省略项明确计量。
 
-目前尚无恢复作业号，尚未提交。真实证据记录、包及验证报告位于
+交接更新：用户终端已确认精确 `c402547`、1,558 项服务器审计通过、隐藏输入密钥，
+输出 `SUBMISSION 3885860`。旧状态“尚未提交”已由此更新；运行节点、计算节点的
+认证探针、实际完成请求和用量仍待读取。不重提、不改在途配置。只读查询为：
+
+```bash
+sacct -j 3885860 --format=JobID,State,ExitCode,Elapsed,NodeList -P; tail -n 4 /home/hxc859/xgap-ch6-artifacts/pilot-D1-auth-c402547-v1/pilot-3885860.out
+```
+
+真实证据记录、包及验证报告位于
 `/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/`。
