@@ -1,5 +1,9 @@
 # 48 题真实小批次交接
 
+用户已完成服务器部署、发布检查及隐藏输入，唯一作业号 **3886776**。
+当前提交确认，不等于运行或成功；六份清单哈希已按用户回执记录。
+本地记录为 `xgap-small-real-20260926-v1/submission-3886776-user-receipt.json`。
+
 代码已提交为 `b86ada52433b2fd1f82dbf0b77d893d35be7b006`。
 包：`/Users/anthonyche/Downloads/xgap-small48-b86ada5-v1.zip`，121,739 B。
 SHA-256：`bd3b2c2a9002a4a0dbae1347802a20cd55931fb7bb6a87409cf38cb149dbc00f`。
