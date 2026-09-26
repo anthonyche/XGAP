@@ -111,3 +111,11 @@ RDF reification、2 个涉及语言/字符串函数及无序 LIMIT；这些集�
 这些是保留语义所需的证明或显式派生修改，不要求 runtime 为它们扩张全部语言支持。
 后续还需领域映射、同 compact IR 的开发模板重叠检查、独立参考，不能把源码抽取成功
 算作正式 workload 就绪。此次无模型/后端调用，未读取方法结果、未改在途作业。
+
+3885715 的随后日志：首个 GR/W2 为 `proposal_failed`，1 个 sealed、0 个 unsealed，
+1 次模型调用但 `unknown_model_usage=true`；因此整个 pilot 以 `accounting_incomplete`
+停止。计量输出中的 token 零值仅为已知项之和，不是已核验的实际零值。剩余 255 个
+请求未执行。归档 `xgap-D1-pilot-3885715.tar.gz` 为 24,974 B，SHA-256
+`b4df49c9cfc4ccda86187ec72dbab3016469ee829c5299ca008c8ff40b2b01bf`。
+上述来自用户日志，原始归档未验；需查首个 worker 错误以区分连接、认证、响应结构
+和 usage 问题，不据此调整 planner 或调优 GR，不自动重跑。
