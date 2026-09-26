@@ -1,5 +1,11 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-26 current server handle: **3886776**, exact `b86ada5`, 48 questions /
+216 supported requests. Server publication audit passed; submission is confirmed,
+running state and results still pending. Do not resubmit or modify that checkout.
+Independent D4 preprocessing, D1 live-factor refresh and fixed-plan parallel
+preparation may proceed in new directories; none is a measured result.
+
 2026-09-26 latest: the downloaded 3885860 raw archive is verified (1,367 files).
 The next run is the frozen 48-case / 216-supported-request small real study,
 D1 then D3 then D2, with full source snapshots. Use the explicit compact-equivalence
@@ -13,7 +19,8 @@ and execution-parallelism work in scope, separately from the 48-query mean resul
 prepare meaningful paid-probe versus NP comparisons and preserve old results.
 See `docs/decisions/ch6_probe_small_workload_20260926.md`. Mockup v2 is a separate
 conditional simulation, never measured evidence. Pilot 3885860 ended at TS's
-256-source-call observer limit; local censoring continuation fix is not deployed.
+256-source-call observer limit; its censoring-continuation fix is in the submitted
+`b86ada5` package, whose execution results remain pending.
 Do not silently change max to expectation or reuse priors for a different NL family.
 
 2026-09-25 latest authorization: run existing D1's 56 authored cases as ONE

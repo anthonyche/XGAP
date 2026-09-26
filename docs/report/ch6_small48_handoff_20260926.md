@@ -23,7 +23,7 @@ SHA-256：`bd3b2c2a9002a4a0dbae1347802a20cd55931fb7bb6a87409cf38cb149dbc00f`。
 48/60 旧拒绝可通过修正后的编译，不等于新增 48 个正确答案。实际 probe 可用率、
 选择率及 NP 差别由新运行决定；已有公共符号分支没有选择 probe 的证据保留。
 
-上传此 ZIP 到 `/home/hxc859` 后执行一次：
+以下为已完成的部署记录，**3886776 已提交，不要再次执行**：
 
 ```bash
 python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc859/xgap-small48-b86ada5-v1.zip"); assert hashlib.sha256(p.read_bytes()).hexdigest()=="bd3b2c2a9002a4a0dbae1347802a20cd55931fb7bb6a87409cf38cb149dbc00f"; exec(compile(zipfile.ZipFile(str(p)).read("stage.py"),"stage.py","exec"))'
@@ -40,4 +40,14 @@ python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc8
 已有记录，不能假设一定成功生成归档。
 
 此包不启动每域 800 题或全套因子扫描。规模与并行代码/配方在同一提交中，实际
-D4 服务物化和后续扫描另行执行。本机没有提交新服务器作业，整体 Goal 未完成。
+D4 服务物化和后续扫描另行执行。当前唯一新作业为用户提交的 3886776，整体 Goal 未完成。
+
+提交后已独立准备 [D4 三规模预处理配方](../decisions/ch6_d4_preprocessing_recipe_20260926.md)
+和 [D1 live-probe 因子配置刷新](../decisions/ch6_factor_live_refresh_20260926.md)。
+后者生成七份新清单，160 个 controlled 请求及 20 个 TS 原 NL 参考链接；
+没有查询或提交。D4 尚未物化，因子清单尚未服务器准入/执行，E7 的 live-probe
+价格绑定仍需更新。这些工作不更改 3886776，也不构成规模实验结果。
+
+[固定计划并行度入口](../decisions/ch6_fixed_plan_parallel_20260926.md)也已补齐：
+保留 48×五方法位置，直接读取 sealed 最终计划，固定 query/source/plan 后扫描
+1/2/4/8。真实计划仍待本批归档；本地只验证旧原始计划解析及待结果配方，未执行测量。
