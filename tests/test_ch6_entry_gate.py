@@ -1,7 +1,5 @@
 from collections import Counter
 from copy import deepcopy
-import hashlib
-import json
 from types import SimpleNamespace
 
 import pytest
@@ -108,5 +106,6 @@ def test_unknown_calls_preserve_known_tokens_and_stop(tmp_path,monkeypatch):
 def test_authority_error_is_not_a_model_scope_quality_failure(tmp_path,monkeypatch):
     pin,_,_=_run_inputs(tmp_path,monkeypatch,[report()],ToolResult.error_result('user.confirm_scope','Pin mismatch'))
     result=gate.run(manifest_path=pin['path'],manifest_sha256=pin['sha256'],output=tmp_path/'results')
-    assert result['counts'] == {'scope_authority_failed':8}
-    assert result['usage']['user_calls'] == 8
+    assert result['counts'] == {'scope_authority_failed':1}
+    assert result['usage']['user_calls'] == 1
+    assert result['stop_reason'] == 'scope_authority_failed' and len(result['remaining']) == 7

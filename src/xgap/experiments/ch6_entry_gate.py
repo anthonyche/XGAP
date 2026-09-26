@@ -268,10 +268,13 @@ def run(*, manifest_path, manifest_sha256, output):
         row['receipt']=write_once(case_out/'receipt.json',dict(row))
         records.append(row)
         print(json.dumps({k:row[k] for k in ('case_id','status','model_calls','user_calls')}),flush=True)
-        if unknown_calls or unknown_tokens:
+        if unknown_calls or unknown_tokens or row['status'] == 'scope_authority_failed':
             break
     result=dict(schema_version=SCHEMA,purpose=manifest['purpose'],attempted=len(records),
         counts=dict(Counter(row['status'] for row in records)),completed_all=len(records)==8,
+        stop_reason=('unknown_usage' if unknown_calls or unknown_tokens else
+            'scope_authority_failed' if records and records[-1]['status']=='scope_authority_failed' else
+            'completed' if len(records)==8 else 'wall_budget'),
         remaining=[c['case_id'] for c in manifest['cases'][len(records):]],
         usage=dict(model_calls=calls if not unknown_calls else None,
                    input_tokens=input_tokens if not unknown_tokens else None,
