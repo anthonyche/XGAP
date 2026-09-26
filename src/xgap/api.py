@@ -71,7 +71,8 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
             report['error'] = interpreted.get('error')
             report['proposal_failure_category'] = interpreted.get('failure_category') or interpreted['status']
             return report
-        raw = interpreted.get('provenance', {}).get('raw_compact_response')
+        provenance = interpreted.get('provenance', {})
+        raw = provenance.get('canonical_compact_response', provenance.get('raw_compact_response'))
         if not isinstance(raw, dict) or not isinstance(raw.get('candidates'), list):
             raise ValueError('Current entry requires compact proposal provenance')
         admitted = {c['candidate_id'] for c in interpreted['candidates'] if c['status'] == 'admitted'}

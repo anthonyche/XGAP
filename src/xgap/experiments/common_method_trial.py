@@ -21,6 +21,25 @@ from xgap.experiments.ch6_direct import METHOD as DIRECT_METHOD, TRACK as DIRECT
 JOINT_METHODS=(*HISTORICAL_JOINT_METHODS,*unified_run.METHODS)
 
 
+def _idle_source_reusable(result, child, guard, observed, *, sealed=False):
+    """A terminal semantic rejection cannot taint a source it never contacted.
+
+    This is intentionally narrower than arbitrary method failure. All worker
+    descendants must be drained, the observed phase must be empty and healthy,
+    and the caller still checks owned services and releases the sealed phase.
+    """
+    return bool(child and guard and observed and
+        result.get('method') in unified_run.METHODS and
+        result.get('status') in ('proposal_failed','intent_outside_proposed_scope') and
+        child.get('status')==result['status'] and not result.get('success') and
+        guard.get('success') is True and guard.get('status')=='completed' and
+        (guard.get('cleanup') or {}).get('complete') is True and
+        child.get('backend_calls')==0 and child.get('final_plan_executions')==0 and
+        all(observed.get(k)==0 for k in ('requests','forwarded_requests','failed_requests',
+                                         'late_calls','persistence_failures')) and
+        observed.get('failure_categories')=={} and (not sealed or observed.get('phase_seal')))
+
+
 def _run_trial(*, track,request_path,request_sha256,method,output,owned_services,observer,
                profile_path=None,profile_sha256=None,endpoint=None,budget=ProcessBudget(),source_rss_bytes=2*1024**3,
                package_monitor=None,oracle_path=None,oracle_sha256=None,user_max_calls=9,
@@ -41,7 +60,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
         'success':False,'status':'preparing','result':None,'can_continue_session':False,
         'model_calls':None if nl else 0,'fit_calls':0,'probe_calls':0,'automatic_retries':0,'paper_result':False}
     if practical:r['input_scope']='pinned trusted template and declared binding authority; not unaided open-domain NL'
-    monitor=None;guard=None;child=None;observed=None;barrier=None
+    monitor=None;guard=None;child=None;observed=None;barrier=None;idle_reuse=False
     campaign_observer=callable(getattr(observer,'seal_phase',None));phase_opened=False
     phase=method+':'+q['question_id'];repo=Path(__file__).resolve().parents[3]
     try:
@@ -156,14 +175,20 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                 r[key]=child.get(key) if child else None
         if method in (*JOINT_METHODS,DIRECT_METHOD):
             for key in (*JOINT_METRICS,'core','search','user_observations','final_plan_executions',
-                        'backend_calls','proposal_kind','epsilon','error','error_type','proposal_failure_category','execution_cost_feedback',
+                        'backend_calls','proposal_kind','epsilon','error','error_type','proposal_failure_category',
+                        'interpretation_diagnostics','provider_adapter','execution_cost_feedback',
                         'controlled_processing_ms','initial_state',*unified_run.METRICS,'algorithm_profile','terminal_settings'):
                 r['method_cost_scope' if key=='cost_scope' else key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
     except Exception as error:
         r.update(success=False,status='supervisor_failed',error_type=type(error).__name__,error=str(error))
     finally:
-        if not r['success'] and monitor is not None:
+        if campaign_observer and phase_opened and monitor is not None:
+            idle_reuse=_idle_source_reusable(r,child,guard,observed)
+            if idle_reuse:
+                try:idle_reuse=monitor.sample([]) is None
+                except Exception:idle_reuse=False
+        if not r['success'] and not idle_reuse and monitor is not None:
             barrier=monitor.stop()
             try:observed=observer.snapshot(phase)
             except Exception as e:barrier.update(observer_settled=False,observer_error=str(e),complete=False)
@@ -171,15 +196,24 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             try:
                 observed=observer.seal_phase(phase)
                 if observed['failed_requests']:
+                    idle_reuse=False
                     r['source_failure']=classify_source_failure(observed)
                     r.update(success=False,status=r['source_failure']['status'])
                     if barrier is None and monitor is not None:barrier=monitor.stop()
             except Exception as error:
+                idle_reuse=False
                 r.update(success=False,status='harness_observation_failure',observation_seal_error=str(error))
                 if barrier is None and monitor is not None:barrier=monitor.stop()
-        r['can_continue_session']=r['success']
+        if idle_reuse and not _idle_source_reusable(r,child,guard,observed,sealed=True):
+            idle_reuse=False
+            if barrier is None and monitor is not None:barrier=monitor.stop()
+        r['can_continue_session']=r['success'] or idle_reuse
         r['quiescence']={'kind':'normal_materialized_return_and_observed_source_drain','complete':True} if r['success'] else barrier or {
             'kind':'unverified','complete':False,'new_serving_session_required':True}
+        if idle_reuse:
+            r['quiescence']=dict(kind='terminal_worker_and_sealed_zero_source_requests',complete=True,
+                                 new_serving_session_required=False)
+            r['source_session_retained_after_preexecution_rejection']=True
         r['recovery_ms']=(barrier or {}).get('recovery_ms',0)
         r['source_observations']=observed
         r['session_reuse_requires_release']=campaign_observer
@@ -199,7 +233,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             try:
                 if not observed or not observed.get('phase_seal'):raise ValueError('No valid source phase seal')
                 observer.release_phase(phase,pin)
-                finalization.update(records_released=True,can_continue_session=r['success'])
+                finalization.update(records_released=True,can_continue_session=r['can_continue_session'])
             except Exception as error:
                 finalization['release_error']=str(error)
                 if barrier is None and monitor is not None:

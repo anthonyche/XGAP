@@ -1,5 +1,14 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-26 latest: the downloaded 3885860 raw archive is verified (1,367 files).
+The next run is the frozen 48-case / 216-supported-request small real study,
+D1 then D3 then D2, with full source snapshots. Use the explicit compact-equivalence
+provider adapter and actual-public-family live probes; old profiles stay unchanged.
+Known budget censoring may continue only after verified cleanup/accounting;
+zero-source-call semantic rejections may retain healthy sealed source sessions.
+See `docs/decisions/ch6_small_real_execution_20260926.md`. Keep synthetic scale
+and execution-parallelism work in scope, separately from the 48-query mean results.
+
 2026-09-26 priority: small real evaluation, four cases per W1–W4 per domain;
 prepare meaningful paid-probe versus NP comparisons and preserve old results.
 See `docs/decisions/ch6_probe_small_workload_20260926.md`. Mockup v2 is a separate

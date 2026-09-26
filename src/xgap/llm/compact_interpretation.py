@@ -13,6 +13,7 @@ from xgap.experiments.hashing import content_hash
 from xgap.llm.interpretation import OpenAICompatibleInterpretationProvider
 from xgap.llm.openai_compatible import OpenAICompatibleProviderConfig
 from xgap.semantic.compact_lowering import lower_compact_query
+from xgap.semantic.compact_equivalence import PROFILE as EQUIVALENCE_PROFILE, canonicalize_compact_surface
 from xgap.semantic.compact_query import SCHEMA, LOWERING, SCHEMA_V2, LOWERING_V2, compact_schema
 from xgap.semantic.interpretation import InterpretationFailure
 from xgap.semantic.interpretation_candidates import SCHEMA as CANDIDATE_SCHEMA
@@ -20,23 +21,31 @@ from xgap.semantic.interpretation_candidates import SCHEMA as CANDIDATE_SCHEMA
 
 WIRE_PROFILE = 'compact-graph-schema-v1'
 WIRE_PROFILE_V2 = 'compact-graph-schema-v2'
+WIRE_PROFILE_EQUIVALENCE = 'compact-graph-schema-v2-equivalence-v1'
 
 
 @dataclass(frozen=True)
 class CompactInterpretationProviderConfig(OpenAICompatibleProviderConfig):
     language_version: str = 'v1'
+    normalization_profile: str | None = None
 
     def __post_init__(self):
         super().__post_init__()
+        if self.normalization_profile not in (None, EQUIVALENCE_PROFILE) or (
+                self.normalization_profile is not None and self.language_version != 'v2'):
+            raise ValueError('Unknown compact normalization profile or language')
         if self.structured_output_mode != 'json_schema' or self.max_repair_calls != 0:
             raise ValueError('Compact interpretation requires JSON schema and zero repairs')
         if content_hash(self.structured_schema) != content_hash(compact_schema(self.candidate_cap, version=self.language_version)):
             raise ValueError('Compact schema differs from its bounded wire contract')
 
     def safe_dict(self):
-        return {**super().safe_dict(), 'wire_profile': WIRE_PROFILE if self.language_version == 'v1' else WIRE_PROFILE_V2,
+        result = {**super().safe_dict(), 'wire_profile': WIRE_PROFILE if self.language_version == 'v1' else WIRE_PROFILE_V2,
             'compact_schema': self.compact_schema_version, 'lowering_profile': self.lowering_profile,
             'lowered_candidate_schema': CANDIDATE_SCHEMA}
+        if self.normalization_profile is not None:
+            result.update(wire_profile=WIRE_PROFILE_EQUIVALENCE, normalization_profile=self.normalization_profile)
+        return result
 
     @property
     def compact_schema_version(self):
@@ -90,6 +99,7 @@ class OpenAICompatibleCompactInterpretationProvider(OpenAICompatibleInterpretati
             raise InterpretationFailure('compact_envelope_invalid', 'Invalid compact envelope or candidate count',
                 usage=response.usage, provenance=provenance)
         candidates = []
+        canonical_candidates = []
         for index, item in enumerate(raw['candidates']):
             identifier = item.get('candidate_id') if isinstance(item, dict) else None
             quality = item.get('quality_proxy') if isinstance(item, dict) else None
@@ -102,15 +112,26 @@ class OpenAICompatibleCompactInterpretationProvider(OpenAICompatibleInterpretati
                     raise ValueError('Candidate ID must be nonblank and at most256 characters')
                 if quality is not None and (type(quality) not in (int, float) or not math.isfinite(quality) or not 0 <= quality <= 1):
                     raise ValueError('Quality proxy must lie in [0,1] or be null')
-                program, sources = lower_compact_query(item['query'], request.context['source_schema'],
+                query = item['query']
+                rewrites = []
+                if self.config.normalization_profile is not None:
+                    query, rewrites = canonicalize_compact_surface(query, request.context['source_schema'])
+                program, sources = lower_compact_query(query, request.context['source_schema'],
                     program_id='compact-'+str(index), version=self.config.language_version)
                 lowered.update(program=program.to_dict(), operator_sources=sources)
                 record.update(status='lowered', operators=len(program.operators), source_reads=len(sources))
+                if self.config.normalization_profile is not None:
+                    canonical_candidates.append({**item, 'query': query})
+                    record.update(normalization_profile=self.config.normalization_profile, equivalences=rewrites)
             except (ValueError, TypeError, KeyError, AttributeError, RecursionError) as error:
                 record['error'] = str(error)
             # Failed candidates remain invalid entries in the existing envelope;
             # duplicate IDs and output contracts still face ordinary admission.
             candidates.append(lowered)
             provenance['compact_lowering']['candidates'].append(record)
+        if self.config.normalization_profile is not None:
+            provenance['canonical_compact_response'] = {
+                'schema_version': self.config.compact_schema_version, 'candidates': canonical_candidates}
+            provenance['normalization_profile'] = self.config.normalization_profile
         finish()
         return replace(response, payload={'schema_version': CANDIDATE_SCHEMA, 'candidates': candidates}, provenance=provenance)

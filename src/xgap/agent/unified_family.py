@@ -31,6 +31,7 @@ class UnifiedSettings:
     information_targets: tuple = ()
     information_mode: str = 'all'
     action_objective: str = 'continuation'
+    live_probe_policy: object | None = None
 
     def __post_init__(self):
         rational(self.epsilon)
@@ -40,6 +41,7 @@ class UnifiedSettings:
                 or not isinstance(self.limits, Limits)):
             raise ValueError('Lambda must list distinct declared requirement names')
         from xgap.agent.unified_information import InformationTarget
+        from xgap.agent.live_probe import LiveProbePolicy
         from xgap.agent.unified_lookahead import cost
         cost(self.transform_cost)
         if self.decision_order not in ('joint','semantic_then_physical','two_stage'):raise ValueError('Unknown stage ordering')
@@ -57,6 +59,10 @@ class UnifiedSettings:
                 raise ValueError('Explicit bounded candidate prior required')
             for weight in self.candidate_weights:cost(weight)
             if any(w<=0 for w in self.candidate_weights):raise ValueError('Admitted family prior requires positive support')
+        if self.live_probe_policy is not None:
+            if (not isinstance(self.live_probe_policy,LiveProbePolicy) or self.limits.aggregation!='expectation'
+                    or self.candidate_weights is not None or self.information_targets):
+                raise ValueError('Live probe policy requires explicit expectation and no prebound prior/targets')
 
 
 @dataclass(frozen=True)
@@ -117,10 +123,11 @@ class FamilyDomain:
         return (seed,)+tuple(k for k in dict(state.pools).get(index,()) if k!=seed)
 
     def score(self,state,key):
-        plan=self.plans[key][1]
-        backend_ids={n.parameters.get('backend_id') for n in plan.nodes}
+        index,plan=self.plans[key]
+        candidate_id=self.contract.family.candidates[index].candidate_id
         facts=dict(state.facts)
-        relevant=tuple((t.identity,facts.get(t.name,'unknown')) for t in self.targets.values() if t.backend in backend_ids)
+        relevant=tuple((t.identity,facts.get(t.name,'unknown')) for t in self.targets.values()
+            if any(t.applies(candidate_id,n) for n in plan.nodes))
         cache_key=(key,relevant)
         if cache_key in self.estimate_cache:
             self.estimate_cache_hits+=1
@@ -129,9 +136,10 @@ class FamilyDomain:
         for target in self.targets.values():
             if target.kind!='probe':continue
             label=facts.get(target.name,'unknown')
-            rows=target.row_estimates[target.labels.index(label)]
+            rows=(target.prior_rows if label=='unknown' and target.prior_rows is not None
+                else target.row_estimates[target.labels.index(label)])
             for node in plan.nodes:
-                if node.parameters.get('backend_id')!=target.backend:continue
+                if not target.applies(candidate_id,node):continue
                 if node.kind is RuntimeNodeKind.REMOTE_QUERY:base+=rows*target.row_cost
                 elif node.kind is RuntimeNodeKind.REMOTE_BIND_QUERY:
                     base+=target.bind_startup+rows*target.row_cost*target.bind_fraction
@@ -145,7 +153,7 @@ class FamilyDomain:
         backends={n.parameters.get('backend_id') for n in plan.nodes}
         inherited=tuple(tuple(p) for p in plan.metadata.get('unified_required_facts',()))
         return tuple(sorted(set(inherited+tuple((t.name,t.gate_label) for t in self.targets.values()
-            if t.gates_rule==rewrite.get('rule') and t.backend in backends))))
+            if t.gates_rule is not None and t.gates_rule==rewrite.get('rule') and t.backend in backends))))
 
     def physical_actions(self,state):
         if self.moves is None or not self.settings.physical_moves or self.settings.plan_pool==1:return
@@ -400,6 +408,10 @@ def run_unified_family(question, family, user, *, prepare_seed, execute, costs, 
             seeds[i] = (plan, estimate, Resources(remote_calls=calls, bytes=None, peak_bytes=None))
         except (ValueError, TypeError, KeyError) as error:
             failures.append(dict(candidate_id=candidate.candidate_id, error_type=type(error).__name__, error=str(error)))
+    live_probe_binding=None
+    if settings.live_probe_policy is not None:
+        from xgap.agent.live_probe import bind_live_probes
+        settings,live_probe_binding=bind_live_probes(settings,family,seeds,sources)
     initialization_ms = (time.perf_counter()-started)*1000
     domain = FamilyDomain(question, contract, seeds, costs, authority_name=user.spec.name, authority_version=family.identity, settings=settings, moves=moves, estimator=estimator, information=information)
     registry = ToolRegistry()
@@ -486,5 +498,6 @@ def run_unified_family(question, family, user, *, prepare_seed, execute, costs, 
                   selected_facts=dict(actual.facts),
                   decision_order=settings.decision_order, fixed_candidate=actual.fixed_candidate,
                   information_mode=settings.information_mode, action_objective=settings.action_objective,
+                  live_probe_binding=live_probe_binding,
                   estimator_basis='frozen numerical model plus declared category work costs; not measured latency')
     return result

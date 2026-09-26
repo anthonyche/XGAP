@@ -29,21 +29,27 @@ def metric_values(core):
 
 def configuration(*,settings=UnifiedSettings(),information=FamilyInformationPolicy(),costs=JointCostProfile(),
                   provider='frozen_compact_model'):
-    return dict(schema_version='xgap-unified-run-config-v2',settings=asdict(settings),information=asdict(information),
+    data=asdict(settings)
+    version='xgap-unified-run-config-v3' if settings.live_probe_policy is not None else 'xgap-unified-run-config-v2'
+    if settings.live_probe_policy is None:data.pop('live_probe_policy')
+    return dict(schema_version=version,settings=data,information=asdict(information),
                 costs=asdict(costs),provider=provider)
 
 
 def load_configuration(path,sha256):
     raw=json.loads(read_pinned(path,sha256))
     if (set(raw)!={'schema_version','settings','information','costs','provider'}
-            or raw['schema_version'] not in ('xgap-unified-run-config-v1','xgap-unified-run-config-v2')
-            or raw['provider'] not in ('frozen_compact_model','development_toy_template')):
+            or raw['schema_version'] not in ('xgap-unified-run-config-v1','xgap-unified-run-config-v2','xgap-unified-run-config-v3')
+            or raw['provider'] not in ('frozen_compact_model','frozen_compact_model_equivalence_v1','development_toy_template')):
         raise ValueError('Invalid unified run configuration')
     def checked(cls,doc):
         if not isinstance(doc,dict) or set(doc)!={f.name for f in fields(cls)}:
             raise ValueError('Missing or unknown '+cls.__name__+' setting')
         return dict(doc)
     doc=dict(raw['settings'])
+    if raw['schema_version'] in ('xgap-unified-run-config-v1','xgap-unified-run-config-v2'):
+        if 'live_probe_policy' in doc:raise ValueError('Live probe policy needs a v3 configuration')
+        doc['live_probe_policy']=None
     if raw['schema_version']=='xgap-unified-run-config-v1':
         if set(doc)!={f.name for f in fields(UnifiedSettings)}-{'information_mode','action_objective'}:
             raise ValueError('Missing or unknown legacy UnifiedSettings setting')
@@ -53,6 +59,8 @@ def load_configuration(path,sha256):
     settings['limits']=Limits(**limits);settings['relaxable']=tuple(settings['relaxable'])
     if settings['candidate_weights'] is not None:settings['candidate_weights']=tuple(settings['candidate_weights'])
     settings['information_targets']=targets_from_dict(settings['information_targets'])
+    from xgap.agent.live_probe import policy_from_dict
+    settings['live_probe_policy']=policy_from_dict(settings['live_probe_policy'])
     information=checked(FamilyInformationPolicy,raw['information'])
     information['additional_scopes']=tuple(tuple(x) for x in information['additional_scopes'])
     return raw,FamilyInformationPolicy(**information),UnifiedSettings(**settings),JointCostProfile(**checked(JointCostProfile,raw['costs']))

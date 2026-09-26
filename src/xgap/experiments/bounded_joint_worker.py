@@ -16,6 +16,7 @@ from xgap.agent.scope_authority import QueryIntentAuthority, ScopedQueryUser
 from xgap.agent.intent_strong import FamilyInformationPolicy
 from xgap.agent.strong_planning import StrongSearchLimits
 from xgap.experiments.evidence_store import write_json_evidence
+from xgap.experiments.interpretation_diagnostics import summarize_interpretation
 from xgap.experiments.one_shot_profile import FrozenOneShotProfile, read_pinned, native_clients
 from xgap.experiments.one_shot_records import CapturingClient, write_once
 from xgap.experiments.one_shot_toy import _DurableRecordingProvider
@@ -75,6 +76,12 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         receipt['dataset']=doc['dataset']
         request=profile.request(raw,'performance',materialized)
         physical,provider=modes['performance']
+        if config.get('provider') == 'frozen_compact_model_equivalence_v1':
+            from xgap.experiments.compact_equivalence_profile import adapt_compact_provider
+            if not unified or provider_override is not None or controlled is not None:
+                raise ValueError('Compact equivalence adapter is for declared unified NL runs only')
+            provider, adapter = adapt_compact_provider(provider, doc['source_schema'], backends)
+            receipt['provider_adapter'] = adapter
         scope=ScopePolicy.from_dict(json.loads(read_pinned(scope_path,scope_sha256)))
         # No oracle preflight read: a scope confirmation is the first paid access.
         authority=QueryIntentAuthority(Path(oracle_path),oracle_sha256)
@@ -128,7 +135,8 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
             controlled_processing_ms=core.get('controlled_processing_ms'),
             execution_cost_feedback=config.get('execution_cost_feedback',True),
             error=core.get('error'),error_type=core.get('error_type'),
-            proposal_failure_category=core.get('proposal_failure_category'))
+            proposal_failure_category=core.get('proposal_failure_category'),
+            interpretation_diagnostics=summarize_interpretation(core))
         if unified:
             receipt.update(unified_run.metric_values(core))
             receipt.update(algorithm_profile='unified-lookahead-v1',terminal_settings=config.get('settings'),

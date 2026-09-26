@@ -20,7 +20,9 @@ from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.llm.candidate_interpretation import (CandidateInterpretationProviderConfig,
     OpenAICompatibleCandidateInterpretationProvider, candidate_interpretation_schema, WIRE_PROFILES)
 from xgap.llm.compact_interpretation import (CompactInterpretationProviderConfig,
-    OpenAICompatibleCompactInterpretationProvider, WIRE_PROFILE as COMPACT_WIRE, WIRE_PROFILE_V2 as COMPACT_WIRE_V2)
+    OpenAICompatibleCompactInterpretationProvider, WIRE_PROFILE as COMPACT_WIRE, WIRE_PROFILE_V2 as COMPACT_WIRE_V2,
+    WIRE_PROFILE_EQUIVALENCE as COMPACT_WIRE_EQUIVALENCE)
+from xgap.semantic.compact_equivalence import PROFILE as COMPACT_EQUIVALENCE, validate_identity_schema
 from xgap.semantic.compact_query import compact_schema
 from xgap.planning.runtime_work_estimator import frozen_estimator_from_dict
 from xgap.planning.equality_key_bounds import FrozenEqualityKeyBounds
@@ -115,9 +117,11 @@ def _provider(root, raw, policy):
     prompt = _file(root, raw["prompt"]).decode("utf-8")
     if type(raw["disable_thinking"]) is not bool or not 0 < raw["timeout_seconds"] <= 120:
         raise ValueError("Provider timeout/thinking contract invalid")
-    if raw['wire_profile'] in (COMPACT_WIRE, COMPACT_WIRE_V2):
+    if raw['wire_profile'] in (COMPACT_WIRE, COMPACT_WIRE_V2, COMPACT_WIRE_EQUIVALENCE):
         version = 'v1' if raw['wire_profile'] == COMPACT_WIRE else 'v2'
         output, schema_options = 'json_schema', {'language_version': version}
+        if raw['wire_profile'] == COMPACT_WIRE_EQUIVALENCE:
+            schema_options['normalization_profile'] = COMPACT_EQUIVALENCE
         schema = compact_schema(policy.candidate_cap, version=version)
         config_type, provider_type = CompactInterpretationProviderConfig, OpenAICompatibleCompactInterpretationProvider
     else:
@@ -214,6 +218,8 @@ class FrozenOneShotProfile:
             policy = OneShotPolicy(**spec["policy"])
             if policy.mode != name: raise ValueError("Mode/policy identity mismatch")
             modes[name] = (policy, _provider(self.root, spec["provider"], policy))
+            if spec['provider']['wire_profile'] == COMPACT_WIRE_EQUIVALENCE:
+                validate_identity_schema(raw['source_schema'], backends)
         return raw, estimator, bundle, sources, backends, clients, modes
 
     def request(self, raw, mode, materialized=None):

@@ -1,0 +1,235 @@
+{
+  "archive_sha256": "1f6eeb1aa7f4d0241f9df53bc682bb45a7dc38351cc32b86fc24ddf77c08c324",
+  "core_sha256": "f1093ec98c96906951a4287ec8b300f529dc1f34b45beb41d36a734a37234eef",
+  "evidence_kind": "recorded_real_model_response_no_reexecution",
+  "historical_lowering": [
+    {
+      "candidate_id": "c1",
+      "candidate_index": 0,
+      "error": "Use variable identity, not a raw technical identity property",
+      "status": "invalid"
+    }
+  ],
+  "historical_status": "proposal_failed",
+  "job_id": 3885860,
+  "raw_compact_response": {
+    "candidates": [
+      {
+        "candidate_id": "c1",
+        "quality_proxy": 0.5,
+        "query": {
+          "contribution_by": null,
+          "edges": [
+            {
+              "source": "a",
+              "target": "b",
+              "type": "KNOWS",
+              "var": "e1"
+            },
+            {
+              "source": "c",
+              "target": "b",
+              "type": "KNOWS",
+              "var": "e2"
+            },
+            {
+              "source": "c",
+              "target": "d",
+              "type": "KNOWS",
+              "var": "e3"
+            }
+          ],
+          "limit": 20,
+          "nodes": [
+            {
+              "entity": null,
+              "type": "Person",
+              "var": "a"
+            },
+            {
+              "entity": null,
+              "type": "Person",
+              "var": "b"
+            },
+            {
+              "entity": null,
+              "type": "Person",
+              "var": "c"
+            },
+            {
+              "entity": null,
+              "type": "Person",
+              "var": "d"
+            }
+          ],
+          "order_by": [
+            {
+              "direction": "asc",
+              "field": "result"
+            },
+            {
+              "direction": "asc",
+              "field": "other"
+            },
+            {
+              "direction": "asc",
+              "field": "destination"
+            }
+          ],
+          "path": null,
+          "select": {
+            "destination": {
+              "property": "id",
+              "var": "d"
+            },
+            "other": {
+              "property": "id",
+              "var": "c"
+            },
+            "result": {
+              "property": "id",
+              "var": "b"
+            }
+          },
+          "where": [
+            {
+              "left": {
+                "property": "id",
+                "var": "a"
+              },
+              "op": "eq",
+              "right": {
+                "value": "person:15393162790167"
+              },
+              "value_type": "scalar"
+            },
+            {
+              "left": {
+                "property": "xgap_id",
+                "var": "c"
+              },
+              "op": "ne",
+              "right": {
+                "property": "xgap_id",
+                "var": "a"
+              },
+              "value_type": "scalar"
+            },
+            {
+              "left": {
+                "property": "xgap_id",
+                "var": "d"
+              },
+              "op": "ne",
+              "right": {
+                "property": "xgap_id",
+                "var": "b"
+              },
+              "value_type": "scalar"
+            },
+            {
+              "left": {
+                "property": "timestamp",
+                "var": "e1"
+              },
+              "op": "ge",
+              "right": {
+                "value": 1324245446595
+              },
+              "value_type": "scalar"
+            },
+            {
+              "left": {
+                "property": "value",
+                "var": "e1"
+              },
+              "op": "ge",
+              "right": {
+                "value": 0
+              },
+              "value_type": "scalar"
+            }
+          ]
+        }
+      }
+    ],
+    "schema_version": "xgap-compact-graph-candidates-v2"
+  },
+  "source_commit": "c40254728151972252974d63eb4befb311068b3a",
+  "source_schema": {
+    "control": {
+      "description": "Same-snapshot control attributes, entity type and identity stubs only",
+      "edges": [],
+      "nodes": {
+        "Person": {
+          "properties": [
+            "xgap_id",
+            "gender"
+          ]
+        }
+      }
+    },
+    "graph": {
+      "description": "Stored directed core edges and ordinary node attributes. Temporal view relations are disjoint source subsets.",
+      "edges": [
+        {
+          "label": "KNOWS",
+          "properties": [
+            "id",
+            "xgap_id",
+            "timestamp",
+            "value"
+          ],
+          "source": "Person",
+          "target": "Person"
+        },
+        {
+          "label": "KNOWS_EARLY",
+          "properties": [
+            "id",
+            "xgap_id",
+            "timestamp",
+            "value"
+          ],
+          "source": "Person",
+          "target": "Person"
+        },
+        {
+          "label": "KNOWS_LATE",
+          "properties": [
+            "id",
+            "xgap_id",
+            "timestamp",
+            "value"
+          ],
+          "source": "Person",
+          "target": "Person"
+        }
+      ],
+      "nodes": {
+        "Person": {
+          "properties": [
+            "id",
+            "xgap_id",
+            "firstName"
+          ]
+        }
+      }
+    },
+    "identity_property": "xgap_id",
+    "replicated_node_coverage": {
+      "canonical_provider": "graph",
+      "edge_coverage": "all graph shards remain required; no edge source removed",
+      "profile": "ch6-explicit-scalars-canonical-node-provider-v1",
+      "proof": "ch6-core-materialization-v1 writes all nodes/ordinary attributes to each graph shard"
+    },
+    "scalar_semantics": {
+      "gender": "string",
+      "id": "string",
+      "parallel_edges": "distinct edge identity; bag multiplicity retained",
+      "timestamp": "integer milliseconds",
+      "value": "number"
+    },
+    "shared_identity_namespace": "https://xgap.dev/ch6/resource/"
+  }
+}

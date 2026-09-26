@@ -32,6 +32,10 @@ class InformationTarget:
     bind_startup: float = 0.25
     gates_rule: str | None = None
     gate_label: str | None = None
+    # Live registries bind a statistic to exact public candidate/operator pairs.
+    # Empty bindings retain the historical manually registered backend scope.
+    bindings: tuple[tuple[str, str], ...] = ()
+    prior_rows: float | None = None
 
     def __post_init__(self):
         if (not all(isinstance(s,str) and s for s in (self.name,self.backend,self.source_id,self.version,self.column))
@@ -58,9 +62,29 @@ class InformationTarget:
             raise ValueError('Metadata rule gate needs a supported non-unknown label')
         if self.gates_rule not in (None,'entity_bind','share_read','prefilter','source_placement'):
             raise ValueError('Unknown physical rule gate')
+        if (not isinstance(self.bindings,tuple) or len(self.bindings)>4096
+                or len(set(self.bindings))!=len(self.bindings)
+                or any(not isinstance(pair,tuple) or len(pair)!=2
+                    or any(not isinstance(v,str) or not v for v in pair) for pair in self.bindings)):
+            raise ValueError('Invalid candidate/operator information binding')
+        if self.prior_rows is not None:
+            cost(self.prior_rows)
+            if not self.bindings or self.probabilities is None:
+                raise ValueError('Prior row estimate needs scoped bindings and explicit outcome probabilities')
+
+    def applies(self,candidate_id,node):
+        if node.parameters.get('backend_id')!=self.backend:return False
+        # A contraction covering several operators has a different cost model;
+        # do not charge a fragment statistic against the entire contracted query.
+        return not self.bindings or (len(node.semantic_operator_ids)==1
+            and (candidate_id,node.semantic_operator_ids[0]) in self.bindings)
 
     @property
-    def identity(self):return fingerprint(asdict(self))
+    def identity(self):
+        raw=asdict(self)
+        if not self.bindings and self.prior_rows is None:
+            raw.pop('bindings');raw.pop('prior_rows')
+        return fingerprint(raw)
 
     def category(self,rows):
         if not isinstance(rows,list) or len(rows)!=1 or set(rows[0])!={self.column}:return 'unknown'
@@ -91,5 +115,6 @@ def targets_from_dict(items):
         raw=dict(item)
         for name in ('thresholds','labels','row_estimates','probabilities'):
             if raw.get(name) is not None:raw[name]=tuple(raw[name])
+        if 'bindings' in raw:raw['bindings']=tuple(tuple(pair) for pair in raw['bindings'])
         result.append(InformationTarget(**raw))
     return tuple(result)
