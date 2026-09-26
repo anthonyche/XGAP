@@ -29,13 +29,13 @@ def query_loss(selected,truth,slots):
     return Fraction(numerator,denominator or 1)
 
 
-def aligned_query_loss(selected,truth,family,*,language_version):
+def aligned_query_loss(selected,truth,family,*,language_version,constraints=None):
     """Post-seal alignment to original family coordinates, never certificate U."""
     version=family['language_version']
     if version!=language_version:raise ValueError('Private language version differs')
-    truth_key=representation_key(truth,version=version)
+    truth_key=representation_key(truth,version=version,constraints=constraints)
     matches=[json.loads(c['query_json']) for c in family['candidates']
-        if representation_key(json.loads(c['query_json']),version=version)==truth_key]
+        if representation_key(json.loads(c['query_json']),version=version,constraints=constraints)==truth_key]
     if len(matches)!=1:raise ValueError('Private query has no unique representation match in sealed family')
     return query_loss(selected,matches[0],family['slots'])
 
@@ -63,7 +63,20 @@ def score_query_loss(*,receipt,request,oracle,output):
             if canonical(selected)!=candidate['query_json']:raise ValueError('Selected query differs from policy candidate')
             # Align only proven representation equality after sealing. Keep the
             # family's original AST coordinates/denominator, not sorted copies.
-            loss=aligned_query_loss(selected,private['query'],family,language_version=private['language_version'])
+            constraints=None
+            if trial.get('public_compact_constraints') is not None:
+                from pathlib import Path
+                from xgap.experiments.compact_constraints_profile import load_public_compact_constraints
+                evidence=trial['public_compact_constraints'];profile_pin=evidence['profile']
+                if profile_pin['sha256']!=trial.get('profile_sha256'):
+                    raise ValueError('Public constraint profile differs from sealed trial')
+                doc=json.loads(read_pinned(profile_pin['path'],profile_pin['sha256']))
+                constraints=load_public_compact_constraints(doc,profile_root=Path(profile_pin['path']).parent)
+                if constraints is None or constraints.identity!=evidence['identity']:
+                    raise ValueError('Sealed public constraint identity differs')
+                result['public_constraints_sha256']=constraints.identity
+            loss=aligned_query_loss(selected,private['query'],family,
+                language_version=private['language_version'],constraints=constraints)
             upper=Fraction(cert['upper_bound']['numerator'],cert['upper_bound']['denominator'])
             epsilon=Fraction(cert['epsilon']['numerator'],cert['epsilon']['denominator'])
             result.update(status='measured',loss=float(loss) if loss is not None else None,

@@ -8,11 +8,15 @@ from copy import deepcopy
 from xgap.experiments.ch6_formal_protocol import matrix,load_pin,METHODS
 
 
-def audit_bindings(release):
+def audit_bindings(release, *, figures=None):
     checks=[]
     def check(name,value):checks.append(dict(check=name,passed=bool(value),detail=''))
     def key(row):return (row['figure'],row['method'],json.dumps(row['x_value'],sort_keys=True))
-    expected={key(r):r for r in matrix()};seen=set();fixed={};cells={}
+    rows = matrix()
+    if figures is not None:
+        if not figures or set(figures)-{r['figure'] for r in rows}: raise ValueError('Unknown figure audit scope')
+        rows = [r for r in rows if r['figure'] in figures]
+    expected={key(r):r for r in rows};seen=set();fixed={};cells={}
     for unit in release['units']:
         manifest=load_pin(unit['manifest'])
         for cell in manifest['cells']:cells[(unit['unit_id'],cell['cell_id'])]=(cell,manifest)
@@ -109,9 +113,26 @@ def audit_bindings(release):
                 elif row['method']!='NP':
                     for target in expected_config['settings']['information_targets']:
                         if target['kind']=='probe':target['action_cost']*=desired
+                    if expected_config['settings'].get('live_probe_policy') is not None:
+                        expected_config['settings']['live_probe_policy']['action_cost']*=desired
                 check('plot_price_configuration_'+str(k),config==expected_config)
                 if factor=='probe_price':
-                    active=any(t['kind']=='probe' for t in settings['information_targets'])
+                    live = base['settings'].get('live_probe_policy')
+                    if live is not None:
+                        from xgap.agent.live_probe import policy_from_dict
+                        policy_from_dict(live)
+                        check('live_probe_expectation_'+str(k), settings['limits']['aggregation']=='expectation')
+                        reference = matches[0] if 'cost_references' in binding and len(matches)==1 else {}
+                        identity = reference.get('base_cell') or {}
+                        origin = cells.get((identity.get('unit_id'),identity.get('cell_id')))
+                        check('live_probe_input_reference_'+str(k), origin is not None)
+                        if origin is not None:
+                            original_cell, original_manifest = origin
+                            check('live_probe_same_inputs_'+str(k),
+                                {n:v for n,v in cell.items() if n!='config'}=={n:v for n,v in original_cell.items() if n!='config'}
+                                and {n:v for n,v in manifest.items() if n!='cells'}=={n:v for n,v in original_manifest.items() if n!='cells'})
+                            check('live_probe_base_config_'+str(k), original_cell['config']==cost_reference)
+                    active=bool(live) or any(t['kind']=='probe' for t in settings['information_targets'])
                     check('inactive_probe_axis_declared_'+str(k),active or binding.get('inactive_factor') is True)
     check('all_plot_positions_bound',seen==set(expected))
     return checks

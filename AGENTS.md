@@ -1,5 +1,15 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-26 latest: 3886776 is complete and its 2,970 archived files are verified.
+All 216 supported requests are sealed; each internal method has 17 answered,
+27 scope rejections and 4 proposal failures; TS has 21 censored and 3 errors.
+XGAP actually probed seven times across five questions; NP never probed. No
+overall probe benefit is established. Public edge wording, source-proved identity
+and contribution COUNT equivalences, and the one-call typed frontend are opt-in
+repairs; verify source proof, never infer equality from hidden intent. See
+`docs/report/ch6_small48_terminal_3886776.md`. Old pins/results stay unchanged;
+no new batch is submitted. Earlier in-flight and raw-pending notes are history.
+
 2026-09-26 latest: partial 3886776 logs expose shared NL/scope rejections.
 The public edge-role selector and identity-v3 fixes are local, not deployed to
 the in-flight b86ada5. Preserve that run. Recover sealed raw evidence and use

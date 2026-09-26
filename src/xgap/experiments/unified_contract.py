@@ -40,7 +40,8 @@ def load_configuration(path,sha256):
     raw=json.loads(read_pinned(path,sha256))
     if (set(raw)!={'schema_version','settings','information','costs','provider'}
             or raw['schema_version'] not in ('xgap-unified-run-config-v1','xgap-unified-run-config-v2','xgap-unified-run-config-v3')
-            or raw['provider'] not in ('frozen_compact_model','frozen_compact_model_equivalence_v1','development_toy_template')):
+            or raw['provider'] not in ('frozen_compact_model','frozen_compact_model_equivalence_v1',
+                                      'frozen_compact_model_public_contract_v1','development_toy_template')):
         raise ValueError('Invalid unified run configuration')
     def checked(cls,doc):
         if not isinstance(doc,dict) or set(doc)!={f.name for f in fields(cls)}:

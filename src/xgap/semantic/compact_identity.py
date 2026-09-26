@@ -77,8 +77,13 @@ def _role_order(value):
         declarations.sort(key=lambda d: colors[d['var']])
 
 
-def representation_key(query, *, version='v1'):
+def representation_key(query, *, version='v1', constraints=None):
     value = deepcopy(validate_query(query, version=version))
+    if constraints is not None:
+        if version != 'v2':
+            raise ValueError('Public compact constraints require language v2')
+        from xgap.semantic.compact_constraints import canonicalize_with_constraints
+        value, _ = canonicalize_with_constraints(value, constraints)
     if version == 'v2' and all('var' in e for e in value['select'].values()):
         # Same exact rule as compact-safe-equivalence-v1, applied symmetrically
         # to authority and proposal. Final set projection removes witnesses.
@@ -126,10 +131,13 @@ def representation_key(query, *, version='v1'):
     encode = lambda item: json.dumps(item, sort_keys=True, separators=(',', ':'), allow_nan=False)
     value['where'].sort(key=encode)
     # Literal values, entities, output aliases/order, direction and semantics stay exact.
-    return encode(dict(identity_version=IDENTITY_VERSION, language_version=version, query=value))
+    result = dict(identity_version=IDENTITY_VERSION, language_version=version, query=value)
+    if constraints is not None:
+        result['public_constraints_sha256'] = constraints.identity
+    return encode(result)
 
 
-def matching_candidates(query, candidates, *, version='v1'):
-    key = representation_key(query, version=version)
+def matching_candidates(query, candidates, *, version='v1', constraints=None):
+    key = representation_key(query, version=version, constraints=constraints)
     return [i for i, candidate in enumerate(candidates)
-            if representation_key(json.loads(candidate.query_json), version=version) == key]
+            if representation_key(json.loads(candidate.query_json), version=version, constraints=constraints) == key]

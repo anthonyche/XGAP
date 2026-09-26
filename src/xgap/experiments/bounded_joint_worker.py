@@ -33,7 +33,7 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         method=None, joint_config_path=None, joint_config_sha256=None,controlled_state_path=None,controlled_state_sha256=None):
     unified=method in unified_run.METHODS
     root=Path(output);root.mkdir(parents=True,exist_ok=False)
-    started=time.perf_counter();captures=[];active=False;config={};controlled=None
+    started=time.perf_counter();captures=[];active=False;config={};controlled=None;constraints=None
     receipt=dict(schema_version='xgap-bounded-joint-worker-v1',success=False,status='preparing',mode=mode,
         request_sha256=request_sha256,profile_sha256=profile_sha256,scope_sha256=scope_sha256,
         oracle_sha256=oracle_sha256,model_calls=0,final_plan_executions=0,automatic_retries=0,
@@ -76,14 +76,28 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
         receipt['dataset']=doc['dataset']
         request=profile.request(raw,'performance',materialized)
         physical,provider=modes['performance']
-        if config.get('provider') == 'frozen_compact_model_equivalence_v1':
+        public_contract = config.get('provider') == 'frozen_compact_model_public_contract_v1'
+        equivalent_provider = config.get('provider') in (
+            'frozen_compact_model_equivalence_v1', 'frozen_compact_model_public_contract_v1')
+        if equivalent_provider:
             from xgap.experiments.compact_equivalence_profile import adapt_compact_provider
             if not unified or provider_override is not None or controlled is not None:
                 raise ValueError('Compact equivalence adapter is for declared unified NL runs only')
             provider, adapter = adapt_compact_provider(provider, doc['source_schema'], backends)
             receipt['provider_adapter'] = adapter
+        if public_contract:
+            from xgap.experiments.compact_constraints_profile import load_public_compact_constraints
+            from xgap.llm.public_typed_compact import adapt_public_typed_compact_provider, PROFILE
+            constraints = load_public_compact_constraints(doc, profile_root=profile.root)
+            if constraints is None:
+                raise ValueError('Public contract provider requires pinned source constraints')
+            provider = adapt_public_typed_compact_provider(provider)
+            receipt['public_compact_constraints'] = dict(
+                profile=dict(path=str(Path(profile_path).resolve()), sha256=profile_sha256),
+                identity=constraints.identity, request_schema_profile=PROFILE,
+                basis='verified frozen public materialization; no private intent or answer evidence')
         scope=ScopePolicy.from_dict(json.loads(read_pinned(scope_path,scope_sha256)))
-        if config.get('provider') == 'frozen_compact_model_equivalence_v1' and controlled is None:
+        if equivalent_provider and controlled is None:
             from xgap.semantic.intent_scope import upgrade_edge_type_domains
             from xgap.agent.intent_certificate import fingerprint
             effective_scope = upgrade_edge_type_domains(scope)
@@ -96,7 +110,7 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
                     private_inputs_used=False, model_calls=0, backend_calls=0)
                 scope = effective_scope
         # No oracle preflight read: a scope confirmation is the first paid access.
-        authority=QueryIntentAuthority(Path(oracle_path),oracle_sha256)
+        authority=QueryIntentAuthority(Path(oracle_path),oracle_sha256,constraints=constraints)
         if controlled is not None:
             receipt.update(proposal_kind='frozen_controlled_state',initial_state=controlled[2])
         elif provider_override is None:

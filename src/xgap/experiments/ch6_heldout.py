@@ -33,6 +33,7 @@ TEMPLATES = {
 }
 STRUCTURES = dict(window_edge='S01', zigzag='S02', ordered_star='S03', cycle='S04',
                   bounded_path='S05', witnessed_count='S06', witnessed_sum='S07', ranked_count='S08')
+QUESTION_VERSION = 'ch6-public-edge-roles-v2'
 
 
 def ref(var, prop='id'):
@@ -162,7 +163,42 @@ def make_family(core, name, anchors, cut, workload, snapshot, family_id):
     return q,policy,construct_scope([q],policy,snapshot)
 
 
-def question_text(core, name, query, policy):
+def _edge_role_text(query, policy):
+    logical=next((d for d in policy.domains if d.slot.name=='logical_scope'),None)
+    roles=[]
+    for i, edge in enumerate(query['edges']):
+        ambiguous=logical is not None and logical.slot.path==('edges',i,'type')
+        label=('one of the unresolved relations '+ ' or '.join(logical.values)
+               if ambiguous else 'the '+edge['type']+' relation')
+        roles.append(f"{edge['var']} is the directed edge from {edge['source']} to {edge['target']} using {label}")
+    parts=['Edge names used below: '+ '; '.join(roles)+'.'] if roles else []
+    if query['path']:
+        path=query['path']
+        parts.append(f"{path['var']} names the directed path from {path['source']} to {path['target']}.")
+    return ' '.join(parts)
+
+
+def public_edge_role_text(core, name, policy):
+    """Role addendum from public template/schema/domain metadata only.
+
+An explicit new request revision can append this without reading a private query,
+answer, or selected unresolved value. Old request bytes/hashes stay unchanged.
+"""
+    if name not in {n for names in TEMPLATES.values() for n in names}:
+        raise ValueError('Unknown public query template')
+    query=template_query(core,name,'public-role-placeholder',0)
+    logical=next((d for d in policy.domains if d.slot.name=='logical_scope'),None)
+    if logical is not None:
+        expected=('path','type') if query['path'] else ('edges',0,'type')
+        if (logical.slot.path != expected
+                or logical.values != (core['relation']+'_EARLY',core['relation']+'_LATE')):
+            raise ValueError('Public role addendum does not match the frozen logical scope')
+    return _edge_role_text(query,policy)
+
+
+def question_text(core, name, query, policy, *, version='v1'):
+    if version not in ('v1', QUESTION_VERSION):
+        raise ValueError('Unknown public question wording version')
     relation=core['relation'];measure=core['measure'];descriptions={
         'plain_edge':f'Follow outgoing {relation} edges from the start a to targets b.',
         'plain_count':f'Count distinct {relation} edge records from a to each target b.',
@@ -178,6 +214,11 @@ def question_text(core, name, query, policy):
         'outgoing_maximum':f'Find the maximum {measure} of outgoing {relation} records from a to each b for which a also reaches c and b has a lexically smaller ID than c.',
     }
     parts=[descriptions[name]];varying={d.slot.path:d for d in policy.domains}
+    if version == QUESTION_VERSION:
+        # These are the public template's roles, never a private selected value.
+        # A scope domain remains unresolved even when the public seed AST uses
+        # one representative value while constructing the question.
+        parts.append(_edge_role_text(query,policy))
     words={'eq':'equal to','ne':'different from','lt':'less than','le':'at most','gt':'greater than','ge':'at least'}
     for i,p in enumerate(query['where']):
         if 'value' not in p['right']:continue
@@ -196,7 +237,7 @@ def question_text(core, name, query, policy):
 
 
 def publish(*, index_receipt, profile_path, profile_sha256, output, split, anchors_per_template, seed=20260923,
-            deployment_selection='balanced',reference_workspace=None):
+            deployment_selection='balanced',reference_workspace=None, question_version=QUESTION_VERSION):
     if split not in TEMPLATES or not 1<=anchors_per_template<=100:raise ValueError('Explicit bounded split/size required')
     if deployment_selection not in ('balanced','all'):raise ValueError('Unknown predeclared deployment assignment')
     index=json.loads(Path(index_receipt).read_text());verify(index['database'])
@@ -247,7 +288,7 @@ def publish(*, index_receipt, profile_path, profile_sha256, output, split, ancho
                         q,policy,family=make_family(core,name,anchors[i:i+2],index['scope_cut_ms'],w,snapshot,case_id)
                         intended=random.Random(str(seed)+case_id).choice(family.candidates)
                         planned.append(dict(case_id=case_id,stratum=stratum,template=name,workload=w,
-                            template_family=structure_identity(q),question=question_text(core,name,q,policy),
+                            template_family=structure_identity(q),question=question_text(core,name,q,policy,version=question_version),
                             scope=policy.to_dict(),family=family.to_dict(),private_query=json.loads(intended.query_json)))
         # Balance independently within every frame/workload, before reference
         # reads. Two deployment publishers produce disjoint case IDs, not two
@@ -299,7 +340,7 @@ def publish(*, index_receipt, profile_path, profile_sha256, output, split, ancho
                     structures=[STRUCTURES.get(row['template'],'development')]))
             admissions.append(dict(case_id=cid,all_candidates_lowered=True,max_operators=maximum_ops,
                 reference_rows=len(normalized),reference_seconds=reference['elapsed_seconds'],backend_roundtrip='required'))
-        bundle=dict(schema_version='xgap-ch6-heldout-cases-v1',dataset=dataset,split=split,
+        bundle=dict(schema_version='xgap-ch6-heldout-cases-v1',dataset=dataset,split=split,question_version=question_version,
             template_splits={p:sorted(v) for p,v in registries.items()},cases=cases,method_outputs_used_for_selection=False,
             sampling_frames=['uniform','active-anchor'],excluded_templates=excluded,preselection=pin(root/'private-preselection.json'),
             profile=dict(path=str(Path(profile_path).resolve()),sha256=profile_sha256),scale=scale,

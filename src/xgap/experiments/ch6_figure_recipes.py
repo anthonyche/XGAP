@@ -11,6 +11,87 @@ from xgap.experiments.ch6_formal_protocol import DEFAULTS, METHOD_ORDER, matrix,
 from xgap.experiments.batch_cell_identity import validate_cell_id
 
 PARAMETERS = ('depth', 'horizon', 'epsilon', 'probe_price', 'clarification_price')
+PROBE_PRICES = (.1, .5, 1, 2, 5)
+
+
+def live_e7_configuration(base, policy, method, price):
+    """New explicit expected-cost study; change only price across its levels."""
+    from copy import deepcopy
+    from dataclasses import asdict
+    from xgap.agent.live_probe import LiveProbePolicy
+    if method not in ('XGAP','NP','SH','GR') or type(price) not in (int,float) or price not in PROBE_PRICES:
+        raise ValueError('Declared internal method and E7 price level required')
+    if not isinstance(policy, LiveProbePolicy) or policy.action_cost <= 0:
+        raise ValueError('A positive frozen base probe cost is required')
+    out = deepcopy(base); settings = out['settings']
+    frozen = json.loads(json.dumps(asdict(policy)))
+    if (out['provider'] != 'frozen_compact_model' or settings['information_targets']
+            or settings['candidate_weights'] is not None
+            or settings.get('live_probe_policy') not in (None, frozen)):
+        raise ValueError('Controlled E7 cannot replace another registry, prior or live policy')
+    if settings['information_mode'] != ('no_probe' if method == 'NP' else 'all'):
+        raise ValueError('E7 method permissions differ')
+    settings['limits']['aggregation'] = 'expectation'
+    settings['live_probe_policy'] = frozen
+    settings['live_probe_policy']['action_cost'] *= 1 if method == 'NP' else price
+    out['schema_version'] = 'xgap-unified-run-config-v3'
+    return out
+
+
+def build_live_e7(spec, *, load=load_pin):
+    """Separate E7 preparation; never alter/relabel the old inactive recipes."""
+    from xgap.agent.live_probe import policy_from_dict
+    from xgap.experiments.ch6_formal_protocol import METHODS
+    if (set(spec) != {'schema_version','method_results_read','aggregation','base_unit','ts_unit','live_probe_policy'}
+            or spec['schema_version'] != 'xgap-ch6-live-e7-input-v1'
+            or spec['method_results_read'] != 0 or spec['aggregation'] != 'expectation'):
+        raise ValueError('Explicit pre-result live E7 input required')
+    policy = policy_from_dict(load(spec['live_probe_policy']))
+    base, ts = load(spec['base_unit']), load(spec['ts_unit'])
+    bm, tm = load(base['manifest']), load(ts['manifest'])
+    if bm['deployment'] != 'rdf' or tm['deployment'] != 'rdf' or bm['prepared'] != tm['prepared']:
+        raise ValueError('Controlled E7 and TS reference require the identical RDF source deployment')
+    case_ids = sorted(set(base['cell_cases'].values()))
+    if not case_ids or len(case_ids) > 64: raise ValueError('Bounded frozen E7 cohort required')
+    pairs = {}; ts_cells = {}
+    for cell in bm['cells']:
+        label = next((k for k,v in METHODS.items() if v == cell['method']), None)
+        key = (base['cell_cases'][cell['cell_id']], label)
+        if label not in ('XGAP','NP','SH','GR') or key in pairs or 'controlled_state' not in cell:
+            raise ValueError('Exactly four controlled methods per frozen case required')
+        pairs[key] = cell['cell_id']
+        live_e7_configuration(load(cell['config']), policy, label, 1)
+    if set(pairs) != {(c,m) for c in case_ids for m in ('XGAP','NP','SH','GR')}:
+        raise ValueError('Incomplete four-method controlled cohort')
+    for cell in tm['cells']:
+        case = ts['cell_cases'][cell['cell_id']]
+        if cell['method'] == METHODS['TS'] and case in case_ids:
+            if case in ts_cells or 'controlled_state' in cell: raise ValueError('Invalid TS NL reference')
+            ts_cells[case] = cell['cell_id']
+    if set(ts_cells) != set(case_ids): raise ValueError('TS reference must retain every frozen E7 case')
+    units = [dict(unit_id='E7-live-price-'+str(p), price=p,
+        methods=['XGAP','NP','SH','GR'] if p == 1 else ['XGAP','SH','GR'], parent=spec['base_unit'])
+        for p in PROBE_PRICES]
+    units.append(dict(unit_id='E7-TS-fixed', price=None, methods=['TS'], parent=spec['ts_unit']))
+    recipes = []
+    for price in PROBE_PRICES:
+        for method in ('XGAP','NP','SH','GR','TS'):
+            unit = 'E7-TS-fixed' if method == 'TS' else 'E7-live-price-'+str(1 if method == 'NP' else price)
+            recipes.append(dict(figure='E7', method=method, x_value=price, value=None,
+                status='fixed_reference' if method in ('NP','TS') else 'planned',
+                timing_scope='nl_reference' if method=='TS' else 'controlled',
+                reason='Frozen NL reference; probe price is inapplicable.' if method=='TS' else
+                    'Probe disabled; reuse the same observation at every price.' if method=='NP' else
+                    'Only the declared acquisition price changes; actual probe selection is not forced.',
+                future_cells=[dict(unit_id=unit,cell_id=ts_cells[c] if method=='TS' else pairs[(c,method)]) for c in case_ids]))
+    return dict(schema_version='xgap-ch6-live-e7-recipes-v1', recipes=recipes, unit_requests=units,
+        case_ids=case_ids, live_probe_policy=spec['live_probe_policy'], probe_axis_active=True,
+        aggregation='expectation', method_results_read=0, model_calls=0, backend_calls=0,
+        submitted_jobs=0, formal_campaign_ready=False,
+        source_scope='Same frozen controlled inputs and RDF deployment; TS retains its separate NL timing boundary',
+        counts=dict(positions=25, unique_cases=len(case_ids), method_requests=17*len(case_ids)),
+        remaining=['Source/admission and cumulative API/token/wall budget launch audit',
+                   'Actual probe eligibility, selections, source work and method results remain unmeasured'])
 
 
 def build(spec, *, load=load_pin):

@@ -60,6 +60,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
         'success':False,'status':'preparing','result':None,'can_continue_session':False,
         'model_calls':None if nl else 0,'fit_calls':0,'probe_calls':0,'automatic_retries':0,'paper_result':False}
     if practical:r['input_scope']='pinned trusted template and declared binding authority; not unaided open-domain NL'
+    if nl:r['profile_sha256']=profile_sha256
     monitor=None;guard=None;child=None;observed=None;barrier=None;idle_reuse=False
     campaign_observer=callable(getattr(observer,'seal_phase',None));phase_opened=False
     phase=method+':'+q['question_id'];repo=Path(__file__).resolve().parents[3]
@@ -176,7 +177,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
         if method in (*JOINT_METHODS,DIRECT_METHOD):
             for key in (*JOINT_METRICS,'core','search','user_observations','final_plan_executions',
                         'backend_calls','proposal_kind','epsilon','error','error_type','proposal_failure_category',
-                        'interpretation_diagnostics','provider_adapter','scope_policy_adapter','execution_cost_feedback',
+                        'interpretation_diagnostics','provider_adapter','scope_policy_adapter','public_compact_constraints','execution_cost_feedback',
                         'controlled_processing_ms','initial_state',*unified_run.METRICS,'algorithm_profile','terminal_settings'):
                 r['method_cost_scope' if key=='cost_scope' else key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000

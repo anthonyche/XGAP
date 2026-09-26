@@ -11,6 +11,7 @@ from xgap.agent.intent_certificate import canonical, fingerprint
 from xgap.agent.intent_user import ScopedFamilyUser
 from xgap.semantic.compact_query import validate_query
 from xgap.semantic.compact_identity import IDENTITY_VERSION, matching_candidates
+from xgap.semantic.compact_constraints import PublicCompactConstraints
 from xgap.tools.contracts import ToolResult, ToolStatus
 
 
@@ -24,6 +25,13 @@ def private_query_intent(question, query, *, language_version='v1'):
 class QueryIntentAuthority:
     response_path: Path
     expected_sha256: str
+    constraints: PublicCompactConstraints | None = None
+
+    def _arguments(self, question, draft):
+        args = dict(question_sha256=fingerprint(question), proposed_scope_sha256=draft.identity)
+        if self.constraints is not None:
+            args['public_constraints_sha256'] = self.constraints.identity
+        return args
 
     def _query(self, question_sha256):
         with self.response_path.open('rb') as stream:
@@ -41,10 +49,11 @@ class QueryIntentAuthority:
     def confirm_scope(self, question, draft):
         """One metered query. A positive reply reveals containment, not a choice."""
         started = time.perf_counter()
-        args = dict(question_sha256=fingerprint(question), proposed_scope_sha256=draft.identity)
+        args = self._arguments(question, draft)
         try:
             query, version = self._query(args['question_sha256'])
-            matches = matching_candidates(query, draft.candidates, version=version) if version == draft.language_version else []
+            matches = matching_candidates(query, draft.candidates, version=version,
+                constraints=self.constraints) if version == draft.language_version else []
             if len(matches) > 1:
                 raise ValueError('Proposed scope contains duplicate equivalent intents')
             covered = len(matches) == 1
@@ -54,22 +63,27 @@ class QueryIntentAuthority:
         return ToolResult(result.tool_name, result.status, result.value, result.error,
             metrics=dict(user_calls=1, disclosed_coordinates=0, elapsed_ms=(time.perf_counter()-started)*1000,
                          reply_bytes=len(canonical(result.value).encode()) if result.value else 0,
-                         query_identity=IDENTITY_VERSION))
+                         query_identity=IDENTITY_VERSION,
+                         **({'public_constraints_sha256': self.constraints.identity}
+                            if self.constraints is not None else {})))
 
     def bind(self, question, draft, confirmation):
-        args = dict(question_sha256=fingerprint(question), proposed_scope_sha256=draft.identity, covered=True)
+        args = {**self._arguments(question, draft), 'covered': True}
         if (confirmation.status is not ToolStatus.SUCCESS
                 or confirmation.tool_name != 'user.confirm_scope' or confirmation.value != args):
             raise ValueError('Positive matching authoritative scope reply required')
         family = replace(draft, coverage_basis='private_user_scope_confirmation:' + fingerprint(args))
-        return family, ScopedQueryUser(family, self.response_path, self.expected_sha256)
+        return family, ScopedQueryUser(family, self.response_path, self.expected_sha256,
+                                      constraints=self.constraints)
 
 
 @dataclass(frozen=True)
 class ScopedQueryUser(ScopedFamilyUser):
+    constraints: PublicCompactConstraints | None = None
+
     def _load(self, question_sha256):
         query, version = QueryIntentAuthority(self.response_path, self.expected_sha256)._query(question_sha256)
-        matches = (matching_candidates(query, self.family.candidates, version=version)
+        matches = (matching_candidates(query, self.family.candidates, version=version, constraints=self.constraints)
                    if version == self.family.language_version else [])
         if len(matches) != 1:
             raise ValueError('User intent is outside the confirmed scope')
