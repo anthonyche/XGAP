@@ -66,6 +66,10 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
         report['model_calls'] = interpreted['external_calls'] if interpreted['external_call_count_complete'] else None
         if not interpreted['success']:
             report['status'] = 'proposal_failed'
+            # Keep provider/structural diagnostics visible without reclassifying
+            # the failure as a planner result or inventing missing token usage.
+            report['error'] = interpreted.get('error')
+            report['proposal_failure_category'] = interpreted.get('failure_category') or interpreted['status']
             return report
         raw = interpreted.get('provenance', {}).get('raw_compact_response')
         if not isinstance(raw, dict) or not isinstance(raw.get('candidates'), list):

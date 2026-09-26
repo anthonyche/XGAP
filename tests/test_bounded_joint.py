@@ -90,6 +90,30 @@ def test_public_scope_reaches_proposal_without_private_authority(tmp_path):
     assert set(request.context) == {'source_schema'}
 
 
+def test_unified_provider_failure_keeps_diagnostics_without_execution(tmp_path):
+    from xgap.api import answer_unified
+    from xgap.experiments.bounded_joint_toy import local_runtime
+    from xgap.semantic.interpretation import InterpretationFailure
+    data, options, calls = local_runtime()
+    schema = options.pop('source_schema')
+    attempts = []
+    message = 'External endpoint returned HTTP 401: {"error":"Unauthorized"}'
+    class RejectedProvider:
+        provider_id = 'controlled-authentication-failure'
+        def interpret(self, request):
+            attempts.append(request)
+            raise InterpretationFailure('provider_error', message,
+                usage={'external_calls': 1}, provenance={'usage_reported': False})
+    result = answer_unified(InterpretationRequest(QUESTION, {'source_schema': schema}),
+        RejectedProvider(), scope_policy=scope(), authority=user(tmp_path, data['query_template']), **options)
+    assert result['status'] == 'proposal_failed' and not result['success']
+    assert result['error'] == message and result['proposal_failure_category'] == 'provider_error'
+    assert result['input_tokens'] is None and result['output_tokens'] is None
+    assert len(attempts) == result['model_calls'] == 1
+    assert result['total_user_calls'] == result['final_plan_executions'] == result['automatic_retries'] == 0
+    assert calls == []
+
+
 def test_scope_confirmation_does_not_reveal_truth_or_repair_bad_structure(tmp_path):
     q=base_query();auth=user(tmp_path,q);draft=construct_scope([q],scope(),'tiny')
     reply=auth.confirm_scope(QUESTION,draft)

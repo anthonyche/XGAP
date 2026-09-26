@@ -162,7 +162,8 @@ def test_compressed_scoring_preserves_order_and_rejects_corrupt_payload(tmp_path
 
 
 @pytest.mark.parametrize('tamper',[False,True])
-def test_common_trial_checks_current_identities_and_exports_metrics(tmp_path,monkeypatch,tamper):
+@pytest.mark.parametrize('proposal_failure',[False,True])
+def test_common_trial_checks_current_identities_and_exports_metrics(tmp_path,monkeypatch,tamper,proposal_failure):
     manifest=fixture(tmp_path);cell=manifest['cells'][0];seen=[];stops=[]
     profile=write_once(tmp_path/'profile.json',dict(dataset=DATASET))
     class Resources:
@@ -182,6 +183,10 @@ def test_common_trial_checks_current_identities_and_exports_metrics(tmp_path,mon
             oracle_sha256=arg('oracle-sha256'),scope_sha256='bad' if tamper else arg('scope-sha256'),
             joint_config_sha256=arg('joint-config-sha256'),success=True,status='returned',planning_cpu_ms=7,
             certificate_ms=2,total_user_calls=2,final_plan_executions=1,model_calls=0)
+        if proposal_failure:
+            receipt.update(success=False,status='proposal_failed',model_calls=1,input_tokens=None,output_tokens=None,
+                final_plan_executions=0,error='External endpoint returned HTTP 401: Unauthorized',
+                proposal_failure_category='provider_error')
         write_once(root/'receipt.json',receipt)
         return dict(success=True,status='completed')
     monkeypatch.setattr(common,'OwnedResources',Resources);monkeypatch.setattr(common,'run_guarded_command',guarded)
@@ -190,6 +195,28 @@ def test_common_trial_checks_current_identities_and_exports_metrics(tmp_path,mon
         kwargs[arg+'_path']=cell[key]['path'];kwargs[arg+'_sha256']=cell[key]['sha256']
     outcome=common.run_nl_trial(**kwargs,profile_path=profile['path'],profile_sha256=profile['sha256'],
         method=cell['method'],output=tmp_path/'trial',observer=Observer(),owned_services=[SimpleNamespace(role='source')])
-    assert outcome['success'] is (not tamper) and len(seen)==1
+    assert outcome['success'] is (not tamper and not proposal_failure) and len(seen)==1
     if tamper:assert outcome['status']=='supervisor_failed' and stops and 'identity' in outcome['error']
+    elif proposal_failure:
+        assert outcome['status']=='proposal_failed' and outcome['proposal_failure_category']=='provider_error'
+        assert 'HTTP 401' in outcome['error'] and outcome['final_plan_executions']==0
+        assert outcome['model_calls']==1 and outcome['input_tokens'] is outcome['output_tokens'] is None
     else:assert outcome['planning_cpu_ms']==7 and outcome['certificate_ms']==2 and outcome['final_plan_executions']==1
+
+
+def test_batch_logs_proposal_diagnostics_without_repeating_attempt(tmp_path,monkeypatch,capsys):
+    seen,sessions=install_fake_runtime(monkeypatch,fail_cell='0')
+    original=batch.run_nl_trial
+    def trial(**kwargs):
+        outcome=original(**kwargs)
+        if not outcome['success']:
+            outcome.update(status='proposal_failed',proposal_failure_category='provider_error',
+                error='External endpoint returned HTTP 401: Unauthorized')
+        return outcome
+    monkeypatch.setattr(batch,'run_nl_trial',trial)
+    first,args=launch(tmp_path,fixture(tmp_path),max_new_cells=1)
+    line=json.loads(capsys.readouterr().out.strip())
+    assert line['proposal_failure_category']=='provider_error' and 'HTTP 401' in line['error']
+    assert line['status']=='proposal_failed' and first['counts']['execution_failed']==1
+    batch.run(**args)
+    assert seen==['0','1','2'] and all(s.closed for s in sessions)

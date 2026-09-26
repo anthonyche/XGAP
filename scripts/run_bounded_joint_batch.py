@@ -255,7 +255,10 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
             write_once(path/'terminal.json',dict(cell_id=cell['cell_id'],outcome=outcome['receipt'],
                 score=file_pin(path/'score.json'),**({'query_loss':loss_pin} if loss_pin else {}),
                 execution_success=outcome['success'],answer_em=score['answer_em']))
-            print(json.dumps(dict(cell_id=cell['cell_id'],status=outcome['status'],answer_em=score['answer_em'])),flush=True)
+            summary=dict(cell_id=cell['cell_id'],status=outcome['status'],answer_em=score['answer_em'])
+            if outcome.get('proposal_failure_category'):
+                summary.update(proposal_failure_category=outcome['proposal_failure_category'],error=outcome.get('error'))
+            print(json.dumps(summary),flush=True)
             if outcome['status'] in ('guard_monitor_failed','supervisor_failed','harness_observation_failure'):
                 budget.status='study_harness_failure';break
     except (Exception,KeyboardInterrupt) as exc:

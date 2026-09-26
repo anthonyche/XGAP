@@ -127,7 +127,8 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
             search=(core.get('joint_policy') or core).get('search'),
             controlled_processing_ms=core.get('controlled_processing_ms'),
             execution_cost_feedback=config.get('execution_cost_feedback',True),
-            error=core.get('error'),error_type=core.get('error_type'))
+            error=core.get('error'),error_type=core.get('error_type'),
+            proposal_failure_category=core.get('proposal_failure_category'))
         if unified:
             receipt.update(unified_run.metric_values(core))
             receipt.update(algorithm_profile='unified-lookahead-v1',terminal_settings=config.get('settings'),

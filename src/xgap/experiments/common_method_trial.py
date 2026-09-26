@@ -156,7 +156,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                 r[key]=child.get(key) if child else None
         if method in (*JOINT_METHODS,DIRECT_METHOD):
             for key in (*JOINT_METRICS,'core','search','user_observations','final_plan_executions',
-                        'backend_calls','proposal_kind','epsilon','error','error_type','execution_cost_feedback',
+                        'backend_calls','proposal_kind','epsilon','error','error_type','proposal_failure_category','execution_cost_feedback',
                         'controlled_processing_ms','initial_state',*unified_run.METRICS,'algorithm_profile','terminal_settings'):
                 r['method_cost_scope' if key=='cost_scope' else key]=child.get(key) if child else None
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
