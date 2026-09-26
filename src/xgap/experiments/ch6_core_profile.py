@@ -19,6 +19,26 @@ from xgap.planning.runtime_instance_work import FrozenInstanceWorkDeployment
 from xgap.planning.runtime_work_estimator import FrozenWorkEstimator,frozen_estimator_from_dict
 
 
+def source_catalog(meta, mapping):
+    """Reconstruct source-only catalog documents without query or graph reads."""
+    names=list(meta['rdf_loads'])
+    catalog=dict(schema_version='m15-e3-resolution-catalog-v1',catalog_id='ch6-core-schema',catalog_version=meta['logical_facts_sha256'],entries=[],
+        metadata=dict(offline=True,query_reads=0,answer_reads=0,authority='proposal only',
+                      entity_scope='Typed IDs are explicit query literals. This schema catalog makes no free-name entity coverage claim.'))
+    bindings={}
+    def add(kind,value,aliases=()):
+        key=kind+':'+hashlib.sha256(encoded(value).encode()).hexdigest()
+        catalog['entries'].append(dict(candidate_id=key,kind=kind,canonical_label=str(value).lower() if type(value) is bool else str(value),
+            aliases=list(aliases),authoritative_mentions=[],provenance=dict(source='frozen core schema')))
+        bindings[key]=dict(kind=kind,value=value)
+    terms=mapping['backend_mapping']['term_mappings'][names[0]]
+    for name,t in sorted(terms.items()):
+        if t['kind'] in ('class','relation'):add('type' if t['kind']=='class' else 'predicate',name)
+    for name in names:add('source',name)
+    for v in meta['core']['control_values']:add('constraint',v)
+    return catalog, bindings
+
+
 def publish(materialization, trained_profile, trained_profile_sha256, output, *, deployment='rdf'):
     meta=json.loads(Path(materialization).read_text())
     if not meta.get('success') or meta['schema_version']!='xgap-ch6-core-materialization-v1':
@@ -34,20 +54,8 @@ def publish(materialization, trained_profile, trained_profile_sha256, output, *,
     mapping=json.loads(Path(meta['mapping']['path']).read_text());schema=json.loads(Path(meta['source_schema']['path']).read_text())
     names=list(meta['rdf_loads']);graph_names=[n for n in names if n!='control']
     ids={n:('neo4j' if n=='graph' else 'fuseki') if deployment=='native' else 'rdf_'+n for n in names}
-    catalog=dict(schema_version='m15-e3-resolution-catalog-v1',catalog_id='ch6-core-schema',catalog_version=meta['logical_facts_sha256'],entries=[],
-        metadata=dict(offline=True,query_reads=0,answer_reads=0,authority='proposal only',
-                      entity_scope='Typed IDs are explicit query literals. This schema catalog makes no free-name entity coverage claim.'))
-    bindings={}
-    def add(kind,value,aliases=()):
-        key=kind+':'+hashlib.sha256(encoded(value).encode()).hexdigest()
-        catalog['entries'].append(dict(candidate_id=key,kind=kind,canonical_label=str(value).lower() if type(value) is bool else str(value),
-            aliases=list(aliases),authoritative_mentions=[],provenance=dict(source='frozen core schema')))
-        bindings[key]=dict(kind=kind,value=value)
+    catalog, bindings = source_catalog(meta, mapping)
     terms=mapping['backend_mapping']['term_mappings'][names[0]]
-    for name,t in sorted(terms.items()):
-        if t['kind'] in ('class','relation'):add('type' if t['kind']=='class' else 'predicate',name)
-    for name in names:add('source',name)
-    for v in meta['core']['control_values']:add('constraint',v)
     write(root/'catalog-input.json',catalog);write(root/'bindings-input.json',bindings)
     frozen=freeze_resolution_bundle(catalog=root/'catalog-input.json',bindings=root/'bindings-input.json',output=root/'catalog')
     # Reuse the existing faithful generic schema-to-label conversion, with its

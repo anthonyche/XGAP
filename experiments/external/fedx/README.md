@@ -33,10 +33,26 @@ See `docs/report/external_federation_preparation_20260912.md` in the repository.
 2026-09-22 baseline integration also accepts GET and form-encoded SELECT requests.
 `scripts/build_ch6_fedx_transport.py` can replace only the adapter classes inside
 the frozen distribution, checking that every external entry is byte-identical.
-The diagnostic JVM switch `xgap.fedx.debugErrors` emits private exception stacks.
+The historical diagnostic JVM switch `xgap.fedx.debugErrors` emitted exception
+stacks; the current source replaces that output with the bounded fields below.
 `xgap.fedx.disableOptionalBind` was tested against a NULL failure and did not fix
 it; the admitted baseline profile leaves it off and retains the original config.
 ARUQULA compatibility is in its separate worker overlay, not this engine. See the
 [frozen protocol](../../../docs/decisions/ch6_planner_external_followup_20260922.md).
 Successful HTTP execution and agreement with an independent answer are recorded
 separately; the adapter never deduplicates or corrects the engine's returned rows.
+
+2026-09-26 source-only diagnostics record the failure stage (protocol, connection,
+prepare, configure, evaluate, serialization callback, connection close, or HTTP
+response), exception class, bounded root-cause class and SHA-256 of the exact
+decoded query. They do not emit query text, messages, headers or response bodies.
+The existing HTTP status/body, JSON writer, query bytes and retry behavior stay
+unchanged. This change does not update any frozen jar or prior run manifest.
+
+For the focused offline contract check, set `XGAP_TEST_FEDX_JAR` to an existing
+frozen distribution and `XGAP_TEST_JAVA_HOME` to a Java21 JDK, then run
+`pytest -q tests/test_fedx_failure_diagnostics.py`. The check compiles only into
+its temporary directory, uses the real SPARQL parser with fake repository/HTTP
+boundaries, and executes no source query or network request. It checks parse and
+evaluation failure separation, serialization errors, HTTP compatibility, and
+unchanged decoded query text including special characters.

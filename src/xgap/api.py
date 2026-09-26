@@ -12,6 +12,23 @@ from xgap.semantic.interpretation_candidates import interpret_candidate_question
 from xgap.tools.contracts import ToolStatus
 
 
+def public_scope_request(request, scope_policy):
+    """Shared public proposal context; contains no authority-selected value."""
+    return replace(request, context={**request.context,
+        'public_scope_construction': {
+            'policy': scope_policy.to_dict(),
+            'instruction': (
+                'These are public alternative domains, not confirmed user values. '
+                'Produce a complete representative query containing every declared coordinate. '
+                'Use any one listed value for each unknown coordinate; the host expands all legal '
+                'alternatives and queries the user for authority. Do not omit an unknown predicate, '
+                'including a required boolean condition whose true/false value is unspecified. '
+                'Infer variable roles from the original question, never from array positions. '
+                'If the question requires each distinct edge to contribute once, name the '
+                'contributing edge variable in contribution_by. Do not invent other constraints.')
+        }})
+
+
 def answer(request, provider, *, mode=None, scope_policy, authority, physical_profile,
            sources, backends, backend_clients, epsilon='0', estimator=None,
            information=FamilyInformationPolicy(), limits=StrongSearchLimits(),
@@ -46,19 +63,7 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
         # Public alternatives, never the authority's selected value or query.
         # The compact wire requires complete proposals; an unknown predicate
         # must be represented by one point in its domain rather than omitted.
-        proposal_request = replace(request, context={**request.context,
-            'public_scope_construction': {
-                'policy': scope_policy.to_dict(),
-                'instruction': (
-                    'These are public alternative domains, not confirmed user values. '
-                    'Produce a complete representative query containing every declared coordinate. '
-                    'Use any one listed value for each unknown coordinate; the host expands all legal '
-                    'alternatives and queries the user for authority. Do not omit an unknown predicate, '
-                    'including a required boolean condition whose true/false value is unspecified. '
-                    'Infer variable roles from the original question, never from array positions. '
-                    'If the question requires each distinct edge to contribute once, name the '
-                    'contributing edge variable in contribution_by. Do not invent other constraints.')
-            }})
+        proposal_request = public_scope_request(request, scope_policy)
         report['interpretation'] = interpreted = interpret_candidate_question(proposal_request, provider,
             candidate_cap=physical_profile.candidate_cap)
         for key in ('input_tokens', 'output_tokens'):

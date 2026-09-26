@@ -1,6 +1,9 @@
 # XGAP research prototype — current engineering authority
 
 2026-09-26 latest: 3886776 is complete and its 2,970 archived files are verified.
+The TS supplement and three original queries are verified: all three fail the
+frozen RDF4J 5.1.2 parser before execution. Keep baseline query failures; change
+diagnostics only, never repair its SPARQL or overwrite the frozen JAR/results.
 All 216 supported requests are sealed; each internal method has 17 answered,
 27 scope rejections and 4 proposal failures; TS has 21 censored and 3 errors.
 XGAP actually probed seven times across five questions; NP never probed. No

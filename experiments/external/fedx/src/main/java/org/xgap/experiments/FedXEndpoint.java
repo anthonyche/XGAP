@@ -8,10 +8,15 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.List;
 import java.util.concurrent.Executors;
 import org.eclipse.rdf4j.federated.FedXConfig;
 import org.eclipse.rdf4j.federated.FedXFactory;
 import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.resultio.TupleQueryResultParserRegistry;
 import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONParserFactory;
 import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
@@ -22,6 +27,68 @@ import org.eclipse.rdf4j.repository.Repository;
 public final class FedXEndpoint {
     private static final int MAX_QUERY_BYTES = 1 << 20;
     private static final int MAX_RESULT_BYTES = 16 << 20;
+
+    /** Diagnostic state only: do not change the exception or client response. */
+    static final class FailureContext {
+        String stage = "protocol";
+        String callbackFailure;
+        String querySha256 = "unavailable";
+
+        void serialize(Runnable call) {
+            String previous = stage;
+            stage = "serialization";
+            try { call.run(); }
+            catch (RuntimeException error) { callbackFailure = stage; throw error; }
+            finally { stage = previous; }
+        }
+
+        String diagnostic(Exception error) {
+            Throwable root = error;
+            int depth = 0;
+            while (root.getCause() != null && root.getCause() != root && depth < 32) {
+                root = root.getCause();
+                depth++;
+            }
+            boolean bounded = root.getCause() != null && root.getCause() != root;
+            return "FedX failure diagnostic: stage=" + (callbackFailure == null ? stage : callbackFailure)
+                    + " exception_class=" + error.getClass().getName()
+                    + " root_cause_class=" + (bounded ? "unavailable" : root.getClass().getName())
+                    + " cause_depth_limit=" + bounded + " query_sha256=" + querySha256;
+        }
+    }
+
+    /** The same JSON writer and callbacks; only annotate a thrown callback. */
+    static final class DiagnosticWriter extends SPARQLResultsJSONWriter {
+        private final FailureContext context;
+        DiagnosticWriter(java.io.OutputStream output, FailureContext context) {
+            super(output);
+            this.context = context;
+        }
+        @Override public void startQueryResult(List<String> names) {
+            context.serialize(() -> super.startQueryResult(names));
+        }
+        @Override public void handleSolution(BindingSet solution) {
+            context.serialize(() -> super.handleSolution(solution));
+        }
+        @Override public void endQueryResult() {
+            context.serialize(() -> super.endQueryResult());
+        }
+        @Override public void handleBoolean(boolean value) {
+            context.serialize(() -> super.handleBoolean(value));
+        }
+        @Override public void handleLinks(List<String> links) {
+            context.serialize(() -> super.handleLinks(links));
+        }
+    }
+
+    private static String querySha256(String query) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(query.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException error) {
+            throw new IllegalStateException("Required SHA-256 unavailable", error);
+        }
+    }
 
     private static final class BoundedResult extends ByteArrayOutputStream {
         @Override public synchronized void write(int value) {
@@ -42,6 +109,7 @@ public final class FedXEndpoint {
 
     private static void query(HttpExchange exchange, Repository repository, int seconds) throws IOException {
         long started = System.nanoTime();
+        FailureContext failure = new FailureContext();
         try {
             String method = exchange.getRequestMethod();
             if (!exchange.getRequestURI().getPath().equals("/sparql")
@@ -86,19 +154,30 @@ public final class FedXEndpoint {
                 if (queryText == null) throw new IllegalArgumentException("Missing query parameter");
                 text = queryText;
             }
+            failure.querySha256 = querySha256(text);
+            failure.stage = "connection";
             try (var connection = repository.getConnection()) {
                 // Tuple-query admission rejects UPDATE, ASK and graph construction.
                 // Engine selection, source discovery and joins remain entirely FedX's.
+                failure.stage = "prepare";
                 var tuple = connection.prepareTupleQuery(QueryLanguage.SPARQL, text);
+                failure.stage = "configure";
                 tuple.setMaxExecutionTime(seconds);
-                tuple.evaluate(new SPARQLResultsJSONWriter(answer));
+                failure.stage = "serialization";
+                var writer = new DiagnosticWriter(answer, failure);
+                failure.stage = "evaluate";
+                tuple.evaluate(writer);
+                failure.stage = "connection_close";
             }
+            failure.stage = "http_response";
             exchange.getResponseHeaders().set("X-XGAP-Adapter-Millis", Double.toString((System.nanoTime() - started) / 1e6));
             respond(exchange, 200, "application/sparql-results+json", answer.toByteArray());
         } catch (Exception error) {
             // Never retry, emit partial successful JSON, or turn an error into empty rows.
             System.err.println("FedX request failed: " + error.getClass().getSimpleName());
-            if (Boolean.getBoolean("xgap.fedx.debugErrors")) error.printStackTrace(System.err);
+            // No exception message, query text, HTTP headers, response or secret.
+            // Full stack traces can include those fields, even behind a flag.
+            System.err.println(failure.diagnostic(error));
             respond(exchange, 500, "text/plain", ("FedX failure: " + error.getClass().getSimpleName()).getBytes(StandardCharsets.UTF_8));
         } finally {
             exchange.close();

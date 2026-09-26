@@ -17,7 +17,7 @@ def put(root, relative, value, raw=False):
     return {'path': str(collector.SERVER_ROOT / relative), 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
 
 
-def fixture(root, *, oversized=False, forbidden=False):
+def fixture(root, *, oversized=False, forbidden=False, query='SELECT * WHERE { ?s ?p ?o }'):
     case = 'D1-test-uniform-bounded_path-000-W4-TS'
     base = Path('small48-results-b86ada5-v1/units/D1-rdf-small-r0/cells') / case
     fed = base / 'external-services/federation-observations'
@@ -29,7 +29,8 @@ def fixture(root, *, oversized=False, forbidden=False):
     record = dict(index=0, phase=phase, generation=1, status='returned', http_status=500,
                   failure_category='upstream_http_failure', response_path=response['path'],
                   response_encoding='gzip', response_storage_pin=response,
-                  response_sha256=collector.sha(text), query='SELECT * WHERE { ?s ?p ?o }')
+                  response_sha256=collector.sha(text), query=query,
+                  headers={'Authorization': 'Bearer should-never-export-this-secret'})
     if forbidden:
         model = put(root, base / 'external-services/model-observations/0000-response.bin.gz',
                     gzip.compress(b'not permitted to read'), raw=True)
@@ -68,6 +69,8 @@ def test_pinned_typed_collection_preserves_raw_inputs_and_marks_truncation(tmp_p
     assert response['diagnostics']['exception_types'] == ['org.eclipse.rdf4j.query.QueryEvaluationException']
     assert response['diagnostics']['http_status_mentions'] == [500]
     assert not result['author_output']['content_read']
+    assert result['failed_records'][0]['query'] == 'SELECT * WHERE { ?s ?p ?o }'
+    assert report['public_query_texts_exported'] == 1
     assert 'should-never-export-this-secret' not in json.dumps(members)
     assert 'Authorization' not in json.dumps(members)
     assert sum(map(len, [collector.encoded(m) for m in members.values()])) < collector.MAX_EXPORT
@@ -96,3 +99,24 @@ def test_phase_missing_is_explicit_and_hash_changes_are_rejected(tmp_path):
     collector.path_at(root, case['worker']['path']).write_text('{}')
     with pytest.raises(ValueError, match='hash/size'):
         collector.collect(root, tmp_path/'changed.tar.gz', cases=[case], archive_index=index)
+
+
+def test_public_query_is_exact_not_url_decoded_or_repaired(tmp_path):
+    query = 'SELECT ?s WHERE { ?s <https://example.org/a%2Bb> "A+B & C 中文" . FILTER( }\n'
+    root = tmp_path/'sources'; case, index = fixture(root, query=query)
+    output = tmp_path/'query.tar.gz'
+    collector.collect(root, output, cases=[case], archive_index=index)
+    record = read_archive(output)['cases/'+case['case_id']+'.json']['failed_records'][0]
+    assert record['query'] == query
+    assert record['query_exported']
+    assert record['query_identity'] == {'sha256': collector.sha(query.encode()), 'bytes': len(query.encode())}
+
+
+def test_oversized_query_is_explicitly_unavailable_never_truncated(tmp_path):
+    root = tmp_path/'sources'
+    case, index = fixture(root, query='x' * (collector.MAX_QUERY_EXPORT + 1))
+    output = tmp_path/'query-cap.tar.gz'
+    collector.collect(root, output, cases=[case], archive_index=index)
+    record = read_archive(output)['cases/'+case['case_id']+'.json']['failed_records'][0]
+    assert not record['query_exported'] and 'query' not in record
+    assert record['query_unavailable_reason'] == 'query_export_cap'

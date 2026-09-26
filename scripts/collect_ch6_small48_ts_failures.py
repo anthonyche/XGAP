@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Read-only, bounded diagnostics for the three frozen 3886776 TS exceptions.
 
-No query, network, model record, credential or author-output content is read.
-Only federation observation results and capped response prefixes are inspected.
-The archive contains typed diagnostics, not arbitrary logs/headers/model text.
+No query is executed; no network, model record, credential or author-output is read.
+Federation observation results, their public SPARQL and capped response prefixes
+are inspected. Query text is retained exactly for offline parser diagnosis;
+arbitrary logs, headers and model transcripts are excluded.
 """
 import argparse
 import gzip
@@ -16,10 +17,11 @@ import tarfile
 
 
 SERVER_ROOT = Path('/home/hxc859/xgap-ch6-artifacts')
-DEFAULT_OUTPUT = Path('/home/hxc859/xgap-small48-ts-errors-3886776-v1.tar.gz')
+DEFAULT_OUTPUT = Path('/home/hxc859/xgap-small48-ts-errors-3886776-v2.tar.gz')
 MAX_EXPORT = 4 * 1024**2
 MAX_RESPONSE = 256 * 1024
 MAX_METADATA = 1024**2
+MAX_QUERY_EXPORT = 64 * 1024
 MAX_STORED_RESPONSE = 8 * 1024**2
 # Generated only from the verified archive's three method_error receipts.
 CASES = [{'case_id': 'D1-test-uniform-bounded_path-000-W4-TS', 'receipt': {'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D1-rdf-small-r0/cells/D1-test-uniform-bounded_path-000-W4-TS/execution/receipt.json', 'sha256': '410773ee40aa849731845a603cd2c93c0833983390328313211b74634d4968b3', 'bytes': 14078}, 'worker': {'bytes': 2312, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D1-rdf-small-r0/cells/D1-test-uniform-bounded_path-000-W4-TS/execution/worker/receipt.json', 'sha256': '05d2e7c43a8884f2450fcb048990d0510a52a9f856bc17a5ccf9a3f6e446c508'}, 'ledger_index': {'bytes': 1155, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D1-rdf-small-r0/cells/D1-test-uniform-bounded_path-000-W4-TS/external-services/federation-observations/phase-0001-index.json', 'sha256': '3c7577911f4fb30942ce65c49401680c74de08e916205f27f7de10c32145b6ec'}, 'phase_seal': {'bytes': 1392, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D1-rdf-small-r0/cells/D1-test-uniform-bounded_path-000-W4-TS/external-services/federation-observations/phase-0001-summary.json', 'sha256': '8dd15c4340587b0a0d810bb9769687915580ef29c068281dabf42d91974a82de'}}, {'case_id': 'D3-test-uniform-bounded_path-000-W1-TS', 'receipt': {'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D3-rdf-small-r0/cells/D3-test-uniform-bounded_path-000-W1-TS/execution/receipt.json', 'sha256': '21d708f220f99564600ce911dc775b8eda0a46eb9c31e2d6d0c84b6a7fad46b0', 'bytes': 13336}, 'worker': {'bytes': 2311, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D3-rdf-small-r0/cells/D3-test-uniform-bounded_path-000-W1-TS/execution/worker/receipt.json', 'sha256': '7828b3a285a018261a6e64faa94a810a440a6a6b338ec4702efae02a4e6194a0'}, 'ledger_index': {'bytes': 567, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D3-rdf-small-r0/cells/D3-test-uniform-bounded_path-000-W1-TS/external-services/federation-observations/phase-0001-index.json', 'sha256': '41ade3589db615ac6304acd71cf06ae05ffeef7069f7f411939de4fe51ab3612'}, 'phase_seal': {'bytes': 1385, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D3-rdf-small-r0/cells/D3-test-uniform-bounded_path-000-W1-TS/external-services/federation-observations/phase-0001-summary.json', 'sha256': 'c9bd8b5e58d4d2db165d9051257ff3904136f340deb174509443bdb77f460d45'}}, {'case_id': 'D3-test-uniform-cycle-000-W3-TS', 'receipt': {'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D3-rdf-small-r0/cells/D3-test-uniform-cycle-000-W3-TS/execution/receipt.json', 'sha256': '159a9a74e7abb0ab34ad357834e9acf14d89849e6ad40f017cd6505e934a6df6', 'bytes': 13408}, 'worker': {'bytes': 2582, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D3-rdf-small-r0/cells/D3-test-uniform-cycle-000-W3-TS/execution/worker/receipt.json', 'sha256': '6c0a70fc4fcc7b35cc28fd952db4b37966a9988d6431f10b8c027609e1d8ddc7'}, 'ledger_index': {'bytes': 926, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D3-rdf-small-r0/cells/D3-test-uniform-cycle-000-W3-TS/external-services/federation-observations/phase-0001-index.json', 'sha256': '8c45f79175d2e911c709bbfb0ff41fab594689105e2f79561d245bee386ba21c'}, 'phase_seal': {'bytes': 1373, 'path': '/home/hxc859/xgap-ch6-artifacts/small48-results-b86ada5-v1/units/D3-rdf-small-r0/cells/D3-test-uniform-cycle-000-W3-TS/external-services/federation-observations/phase-0001-summary.json', 'sha256': '8a0b22975ea10ab02ddca61caadab6cf428a233e3bf8b9cd08d0c91aed9bb73c'}}]
@@ -178,10 +180,21 @@ def collect_case(root, spec):
                 **selected(record, ('index', 'http_status', 'forwarded', 'response_complete',
                                     'observer_wall_ms', 'response_body_bytes')),
                 'error_diagnostics': diagnostics(str(record.get('error', '')))}
-            # Only hashes and sizes of SPARQL are needed to match a later review;
-            # request targets, headers, arbitrary literals and text are not exported.
+            # A hash alone cannot distinguish an author syntax error from a FedX
+            # internal query error. Preserve the exact public submitted SPARQL,
+            # never the request headers, model transcript or private intent.
             query = record.get('query')
-            if isinstance(query, str): result['query_identity'] = {'sha256': sha(query.encode()), 'bytes': len(query.encode())}
+            if isinstance(query, str):
+                query_raw = query.encode('utf-8')
+                result['query_identity'] = {'sha256': sha(query_raw), 'bytes': len(query_raw)}
+                result['query_exported'] = len(query_raw) <= MAX_QUERY_EXPORT
+                if result['query_exported']:
+                    result['query'] = query
+                else:
+                    result['query_unavailable_reason'] = 'query_export_cap'
+            else:
+                result['query_exported'] = False
+                result['query_unavailable_reason'] = 'no_recorded_query'
             result['response'] = response_summary(root, record, directory)
             report['failed_records'].append(result)
         except (OSError, ValueError, KeyError) as error:
@@ -202,22 +215,25 @@ def collect(root, output, *, cases=CASES, archive_index=ARCHIVE_INDEX):
         for name in ('receipt', 'worker', 'phase_seal'):
             if indexed.get(case[name]['path']) != case[name]:
                 raise ValueError('Case pins differ from the verified archive index')
-    members = {'manifest.json': encoded({'schema_version': 'xgap-small48-ts-error-manifest-v1',
+    members = {'manifest.json': encoded({'schema_version': 'xgap-small48-ts-error-manifest-v2',
         'job_id': '3886776', 'archive_index': archive_index, 'cases': cases,
         'archive_missing_coordinates': [c['ledger_index']['path'] for c in cases
             if c['ledger_index']['path'] not in indexed],
-        'read_scope': 'frozen trial/worker summaries; federation results and response prefixes only',
+        'read_scope': 'frozen trial/worker summaries; federation results, public SPARQL and response prefixes only',
         'excluded': ['model observations', 'credentials', 'headers', 'author-output content', 'query execution'],
-        'max_export_bytes': MAX_EXPORT, 'max_response_prefix_bytes': MAX_RESPONSE})}
+        'max_export_bytes': MAX_EXPORT, 'max_response_prefix_bytes': MAX_RESPONSE,
+        'max_query_export_bytes': MAX_QUERY_EXPORT})}
     reports = [collect_case(root, case) for case in cases]
     for report in reports:
         members['cases/' + report['case_id'] + '.json'] = encoded(report)
-    receipt = {'schema_version': 'xgap-small48-ts-error-collection-v1',
+    receipt = {'schema_version': 'xgap-small48-ts-error-collection-v2',
         'success': all(r.get('all_failed_records_collected', False) for r in reports),
         'cases': len(reports), 'failed_responses': sum(len(r['failed_records']) for r in reports),
         'unavailable': sum(len(r['unavailable']) for r in reports),
         'model_calls': 0, 'backend_calls': 0, 'network_calls': 0, 'submitted_jobs': 0,
         'raw_sources_modified': False, 'raw_response_exported': False,
+        'public_query_texts_exported': sum(bool(record.get('query_exported'))
+            for report in reports for record in report['failed_records']),
         'members': [{'path': name, 'bytes': len(raw), 'sha256': sha(raw)} for name, raw in members.items()]}
     members['receipt.json'] = encoded(receipt)
     if sum(map(len, members.values())) > MAX_EXPORT - 65536:

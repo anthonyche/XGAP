@@ -25,7 +25,34 @@ core 及 query-loss pins。应用 success 指处理结束，不能当作全部�
 TS 21 个预算截断的裸 score 为 0，但 terminal 和正式摘要正确显示 null；保留该
 掩蔽，不把观测上限截断改成答案错误。另三项方法异常为两个 RetryError 和一个
 HTTPError，均有 federation upstream HTTP failure，模型通道未报告认证失败。
-原精简归档省略失败响应明细，因此还不能断言是基线查询质量或 FedX 接口问题。
+原精简归档省略失败响应明细；后续补充归档和原查询回收已完成，见下节。
+
+### TS 三项异常的最终诊断
+
+补充包 `xgap-small48-ts-errors-3886776-v1.tar.gz`（3,483 B，SHA-256
+`47968c954b474dd686ea7028c2e55f8fe3437d4894b0f21eb6e98f82911b6484`）
+的四个成员 hash 全部通过，三组 trial/worker/phase seal 与主归档匹配。
+七个 HTTP 500 响应都完整返回 `MalformedQueryException`，单请求 27.982–56.708ms。
+两条探索查询各被同一作者过程重复提交三次，最终查询一次；wrapper retries 仍为零。
+
+首次补充包只保留查询 hash，不能据此区分入口解析与 FedX 内部错误。后续通过只读
+命令取回三个原查询，194/260/1,216 B 及 SHA 全部与冻结 observation 完全相同。
+用冻结的 RDF4J/FedX 5.1.2 JAR 进行本地 parser-only 验证，三条全部拒绝：
+
+| TS 请求 | 解析原因 | 查询 SHA-256 |
+|---|---|---|
+| D1 bounded_path/W4，探索阶段 | `ORDER BY ?cnt DESC` 结尾缺少 DESC 的括号表达式；EOF，line 6 col 36 | `5d2b2559f20eaed2d10bf04211a3157d5a22dcb16c7ccae2979a79a069fd6fc4` |
+| D3 bounded_path/W1，探索阶段 | `STRCONTAINS` 非合法内建函数语法；line 9 col 13 | `375d166bb3caaea8dbbb0e4793a7a996724758f0a35dfc7dca46532df867373b` |
+| D3 cycle/W3，最终查询 | 正文停在注释，查询未闭合；EOF，line 45 col 50 | `568fe0a0d126dad7c03d3859d6913e4615990e0fb53e1f96b3516ef143f0ae5e` |
+
+因此这三项不需要归因于数据库超时或内部联邦子查询；原始输入在执行前已经非法。
+接口还有独立的诊断缺口：bridge 的纯文本 500 未被作者代码识别，两个探索失败最后
+呈现为 `RetryError`。新增阶段/异常类/查询 hash 日志，保持 HTTP 状态、正文、查询
+和基线重试行为不变，不修正基线 SPARQL。采集器 v2 保留有界的原始公共 SPARQL，
+不再因只有 hash 而重复取证。旧 jar/运行结果均不覆盖。
+
+上述验证没有模型调用、没有答案查询。三项仍保留 method_error，其余 21 项仍为
+预算截断/null；不能把这三条的语法结论推广到其余未取得答案的 TS 请求。
 
 总调用 664，输入 token 1,110,753，输出 token 130,573，均已从原始记录重算一致。
 四内部方法各 48 调用，输入 124,007、输出 21,986 token；TS 使用剩余调用和 token。
@@ -94,8 +121,8 @@ XGAP 相对 NP execution 平均减少 0.987s，但 planning 增加 1.166s，E2E 
 1. 全部 192 个封存请求重放已完成，原成功题无回退，旧实验记录不修改。
 2. 对新的公开题意、类型请求及范围合同做最小真实接口验收，再冻结下一份共同
    小批次输入与预算；不以重跑旧 216 项的方式发现契约基础错误。
-3. 从服务器取现成 TS 三条 federation 错误响应，区分非法查询、网络与集成异常。
-   只修可证接口错误，保持基线算法、预算和全部旧失败。
+3. TS 三条原查询已经完成同版本解析核验：保留语法失败，仅补错误诊断，保持基线
+   算法、预算、查询文本和全部旧失败，无需重跑 TS 来定位这三项。
 4. 按已测单元更新 CSV；E7/scale/parallel 保持独立因素运行，不能从本批均值推曲线。
 
 原始验收：`/Users/anthonyche/xgap-data/outputs/xgap-small-real-20260926-v1/raw-audit-3886776-v1/audit.json`。
@@ -104,4 +131,4 @@ XGAP 相对 NP execution 平均减少 0.987s，但 planning 增加 1.166s，E2E 
 完整修复重放：`/Users/anthonyche/xgap-data/ch6-release-boundary-20260924/audit-small48-public-contracts-3886776-v1/audit.json`。
 归档精简时省略了服务器上 16,136 份细粒度文件（211,409,857 B）；它们不是已下载
 验收的一部分。本轮尚不能宣称全部实验 ready，主要剩余阻塞已收敛到共享入口新
-契约的真实验收与三条 TS 原始错误，而不是继续逐题优化后端。
+契约的真实验收；三条 TS 原始错误已定位，不再据此逐题优化后端。
