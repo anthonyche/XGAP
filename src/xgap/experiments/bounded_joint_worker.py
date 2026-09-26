@@ -83,6 +83,18 @@ def run(*, profile_path, profile_sha256, request_path, request_sha256, scope_pat
             provider, adapter = adapt_compact_provider(provider, doc['source_schema'], backends)
             receipt['provider_adapter'] = adapter
         scope=ScopePolicy.from_dict(json.loads(read_pinned(scope_path,scope_sha256)))
+        if config.get('provider') == 'frozen_compact_model_equivalence_v1' and controlled is None:
+            from xgap.semantic.intent_scope import upgrade_edge_type_domains
+            from xgap.agent.intent_certificate import fingerprint
+            effective_scope = upgrade_edge_type_domains(scope)
+            if effective_scope != scope:
+                receipt['scope_policy_adapter'] = dict(profile='public-edge-type-domain-v1',
+                    original_scope_sha256=scope_sha256,
+                    original_policy=scope.to_dict(), effective_policy=effective_scope.to_dict(),
+                    effective_policy_sha256=fingerprint(effective_scope.to_dict()),
+                    basis='only public frozen edge type-domain values; exactly one matching proposed edge required',
+                    private_inputs_used=False, model_calls=0, backend_calls=0)
+                scope = effective_scope
         # No oracle preflight read: a scope confirmation is the first paid access.
         authority=QueryIntentAuthority(Path(oracle_path),oracle_sha256)
         if controlled is not None:

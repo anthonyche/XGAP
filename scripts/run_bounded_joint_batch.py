@@ -24,6 +24,7 @@ from xgap.experiments.bounded_joint_contract import METHODS
 from xgap.experiments.campaign_source_observer import SourceObservationBudget
 from xgap.experiments.common_method_trial import run_nl_trial
 from xgap.experiments.common_row_score import score_trial
+from xgap.experiments.interpretation_diagnostics import batch_cell_summary
 from xgap.experiments.evidence_store import file_pin
 from xgap.experiments.external_federation import deadline
 from xgap.experiments.one_shot_profile import read_pinned
@@ -262,9 +263,7 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
             write_once(path/'terminal.json',dict(cell_id=cell['cell_id'],outcome=outcome['receipt'],
                 score=file_pin(path/'score.json'),**({'query_loss':loss_pin} if loss_pin else {}),
                 execution_success=outcome['success'],answer_em=answer_em))
-            summary=dict(cell_id=cell['cell_id'],status=outcome['status'],answer_em=answer_em)
-            if outcome.get('proposal_failure_category'):
-                summary.update(proposal_failure_category=outcome['proposal_failure_category'],error=outcome.get('error'))
+            summary=batch_cell_summary(cell['cell_id'],outcome,answer_em)
             print(json.dumps(summary),flush=True)
             if outcome['status'] in ('guard_monitor_failed','supervisor_failed','harness_observation_failure'):
                 budget.status='study_harness_failure';break

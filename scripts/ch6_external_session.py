@@ -199,7 +199,8 @@ def run_trial(*,request,output,session,budget,source_rss_bytes,package_monitor=N
                     or child.get('method')!=METHOD or child.get('question_id')!=q['question_id']):
                 raise ValueError('External worker identity differs')
             result.update(worker=pin,success=bool(guard['success'] and child['success']),status=child['status'],
-                final_plan_executions=child.get('final_query_submissions'),worker_ms=child.get('worker_ms'))
+                final_plan_executions=child.get('final_query_submissions'),worker_ms=child.get('worker_ms'),
+                method_error_type=child.get('error_type'))
             if result['success']:
                 result['result']=write_once(root/'result.json',dict(answer_format='sparql_json',answer=load(child['answer'])))
         else:result['status']='guard_'+guard['status']

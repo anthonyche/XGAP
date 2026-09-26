@@ -82,7 +82,7 @@ def test_external_trial_seals_distinct_budget_status_and_null_formal_quality(tmp
         worker=Path(arg('output'));worker.mkdir()
         write_once(worker/'receipt.json',dict(schema_version='xgap-ch7-aruqula-worker-v1',
             request_sha256=arg('request-sha256'),method=external.METHOD,question_id='q',
-            success=False,status='author_failed',final_query_submissions=1))
+            success=False,status='author_failed',final_query_submissions=1,error_type='KeyError'))
         return dict(success=guard_status=='completed',status=guard_status)
     profile=write_once(tmp_path/'profile.json',dict(dataset={'dataset_id':'toy','version':'v1'}))
     source=SimpleNamespace(profile=profile,observer=Observer('source'),owned=[])
@@ -100,6 +100,7 @@ def test_external_trial_seals_distinct_budget_status_and_null_formal_quality(tmp
                               else 'harness_observation_failure')
     assert stops and not outcome['success'] and not outcome['can_continue_session']
     assert outcome['observations']==observed and outcome['model_calls']==28
+    assert outcome['method_error_type']=='KeyError' and 'error_type' not in outcome
     score_trial(outcome['receipt']['path'],receipt_sha256=outcome['receipt']['sha256'],
         reference_path=cell['reference']['path'],reference_sha256=cell['reference']['sha256'],output=tmp_path/'score.json')
     from xgap.experiments.evidence_store import file_pin

@@ -14,6 +14,7 @@ class ScopeDomain:
     slot: IntentSlot
     values: tuple
     where_selector: dict | None = None
+    edge_selector: dict | None = None
 
     def __post_init__(self):
         if not isinstance(self.values, tuple) or not 1 <= len(self.values) <= MAX_FAMILY_CANDIDATES:
@@ -32,6 +33,18 @@ class ScopeDomain:
                     len(self.slot.path)<3 or self.slot.path[0]!='where' or
                     type(self.slot.path[1]) is not int or self.slot.path[2:] not in (('op',),('right','value'))):
                 raise ValueError('WHERE locator requires a property/operator selector and scalar or operator coordinate')
+        if self.edge_selector is not None:
+            selector = self.edge_selector
+            if (self.where_selector is not None or not isinstance(selector, dict)
+                    or set(selector) != {'types'} or not isinstance(selector['types'], list)
+                    or not selector['types'] or not all(isinstance(v, str) and v for v in selector['types'])
+                    or len(set(selector['types'])) != len(selector['types'])
+                    or not all(isinstance(v, str) and v for v in self.values)
+                    or set(selector['types']) != set(self.values)
+                    or len(self.slot.path) != 3 or self.slot.path[0] != 'edges'
+                    or type(self.slot.path[1]) is not int or self.slot.path[1] < 0
+                    or self.slot.path[2] != 'type'):
+                raise ValueError('Edge locator requires exactly its frozen type domain and an edge type coordinate')
 
 
 @dataclass(frozen=True)
@@ -60,6 +73,7 @@ class ScopePolicy:
         result={'schema_version': 'xgap-finite-scope-policy-v1', **asdict(self)}
         for item in result['domains']:
             if item['where_selector'] is None:del item['where_selector']
+            if item['edge_selector'] is None:del item['edge_selector']
         return result
 
     @classmethod
@@ -70,12 +84,30 @@ class ScopePolicy:
             raise ValueError('Invalid frozen scope policy')
         domains=[]
         for item in value['domains']:
-            if set(item)-{'where_selector'} != {'slot','values'} or set(item['slot']) != {'name','path','weight','hard'}:
+            if set(item)-{'where_selector','edge_selector'} != {'slot','values'} or set(item['slot']) != {'name','path','weight','hard'}:
                 raise ValueError('Invalid scope coordinate')
             slot=dict(item['slot']);slot['path']=tuple(slot['path'])
-            domains.append(ScopeDomain(IntentSlot(**slot),tuple(item['values']),item.get('where_selector')))
+            domains.append(ScopeDomain(IntentSlot(**slot),tuple(item['values']),item.get('where_selector'),item.get('edge_selector')))
         return cls(value['policy_id'],tuple(domains),value['max_candidates'],value['language_version'],
                    value.get('expansion','cartesian'))
+
+
+def upgrade_edge_type_domains(policy):
+    """Opt-in migration using public frozen domains only; never reads a proposal.
+
+    Old artifacts retain their positional behavior unless a new run explicitly
+    uses this returned policy. The selector's unique role is checked against
+    each actual proposal by construct_scope, before expanding any coordinates.
+    """
+    domains = []
+    changed = False
+    for domain in policy.domains:
+        path = domain.slot.path
+        if len(path) == 3 and path[0] == 'edges' and path[2] == 'type' and domain.edge_selector is None:
+            domain = replace(domain, edge_selector={'types': list(domain.values)})
+            changed = True
+        domains.append(domain)
+    return replace(policy, policy_id=policy.policy_id+':edge-type-domain-v1', domains=tuple(domains)) if changed else policy
 
 
 def construct_scope(proposals, policy, source_snapshot):
@@ -99,6 +131,11 @@ def construct_scope(proposals, policy, source_snapshot):
                     set(c['right'])=={'value'}]
                 if len(matches)!=1:raise ValueError('WHERE scope locator needs exactly one proposed predicate')
                 domain=replace(domain,slot=replace(domain.slot,path=('where',matches[0],*domain.slot.path[2:])))
+            if domain.edge_selector is not None:
+                matches = [i for i, edge in enumerate(base['edges']) if edge['type'] in domain.edge_selector['types']]
+                if len(matches) != 1:
+                    raise ValueError('Edge scope locator needs exactly one proposed edge in its frozen type domain')
+                domain = replace(domain, slot=replace(domain.slot, path=('edges', matches[0], 'type')))
             domains.append(domain)
         domains=tuple(domains)
         if resolved_domains is not None and domains!=resolved_domains:

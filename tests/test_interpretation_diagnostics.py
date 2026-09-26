@@ -1,7 +1,7 @@
 """Keep original NL failure evidence without repairing a query or issuing calls."""
 from copy import deepcopy
 
-from xgap.experiments.interpretation_diagnostics import summarize_interpretation
+from xgap.experiments.interpretation_diagnostics import summarize_interpretation, batch_cell_summary
 from xgap.experiments.compact_profile import load_compact_graph_provider
 from xgap.semantic.compact_query import SCHEMA_V2
 from xgap.semantic.interpretation import InterpretationRequest
@@ -73,3 +73,34 @@ def test_long_error_and_candidate_count_are_bounded_without_changing_original():
     assert len(result['candidates']) == 8
     assert all(len(c['error']) == 2048 and c['error_truncated'] for c in result['candidates'])
     assert len(report['candidates'][0]['error']) == 3000
+
+
+def test_batch_log_exposes_actual_rejection_and_budget_without_raw_payloads():
+    import json
+    outcome = dict(status='proposal_failed', proposal_failure_category='no_admissible_interpretation',
+        model_calls=1, final_plan_executions=0, interpretation_diagnostics=dict(
+            admitted_count=0, scope_covered=None, candidates=[dict(candidate_index=0,
+                failure_stage='compact_lowering', error='Unknown node type: RELATION')]),
+        raw_query='private-payload-must-not-appear', private_query='also-not-a-log-field')
+    before = deepcopy(outcome)
+    summary = batch_cell_summary('cell', outcome, 0.0)
+    assert summary['interpretation']['candidate_failures'][0]['error'] == 'Unknown node type: RELATION'
+    assert summary['final_plan_executions'] == 0 and outcome == before
+    assert 'private' not in json.dumps(summary)
+    outcome = dict(status='harness_budget_censored', failure_scope='study_budget_censoring_not_method_incorrectness',
+        observations={'source': dict(requests=276, forwarded_requests=256,
+            failure_categories={'harness_call_budget': 20}, request_body='not-copied')},
+        harness_failures={'source': {'harness_call_budget': 20}})
+    summary = batch_cell_summary('ts', outcome, None)
+    assert summary['answer_em'] is None and summary['source_forwarded'] == 256
+    assert summary['observation_failures'] == {'source': {'harness_call_budget': 20}}
+    assert 'not-copied' not in json.dumps(summary)
+
+
+def test_batch_scope_rejection_stays_separate_from_planning_or_model_failure():
+    outcome = dict(status='intent_outside_proposed_scope', model_calls=1, final_plan_executions=0,
+        interpretation_diagnostics=dict(admitted_count=1, scope_confirmation_status='success', scope_covered=False,
+            candidates=[dict(candidate_index=0, status='admitted', failure_stage=None)]))
+    summary = batch_cell_summary('scope', outcome, 0.0)
+    assert summary['interpretation'] == dict(admitted_count=1, scope_confirmation_status='success', scope_covered=False)
+    assert 'candidate_failures' not in summary['interpretation']

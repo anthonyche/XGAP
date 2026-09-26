@@ -55,3 +55,49 @@ possible rejection. Missing original stage information remains explicitly null.
         scope_confirmation_status=confirmation.get('status'),
         scope_covered=value.get('covered'),
         token_usage_complete=report.get('token_usage_complete'))
+
+
+def batch_cell_summary(cell_id, outcome, answer_em):
+    """Expose already recorded failure stages in the ordinary batch log.
+
+No oracle, raw query, prompt, response body or environment is copied. This is
+observability only: it neither changes failure classification nor retries work.
+"""
+    result = dict(cell_id=cell_id, status=outcome['status'], answer_em=answer_em)
+    for key in ('model_calls', 'final_plan_executions', 'probe_calls',
+                'clarification_calls', 'error_type', 'proposal_failure_category',
+                'failure_scope', 'guard_status', 'method_error_type'):
+        if outcome.get(key) is not None:
+            result[key] = outcome[key]
+    if isinstance(outcome.get('error'), str):
+        result['error'] = outcome['error'][:MAX_ERROR_CHARS]
+    diagnostic = outcome.get('interpretation_diagnostics')
+    if isinstance(diagnostic, dict):
+        result['interpretation'] = {k: diagnostic.get(k) for k in (
+            'admitted_count', 'scope_confirmation_status', 'scope_covered')}
+        failures = []
+        for item in (diagnostic.get('candidates') or [])[:MAX_CANDIDATES]:
+            if isinstance(item, dict) and item.get('failure_stage'):
+                failures.append({
+                    'candidate_index': item.get('candidate_index'),
+                    'stage': item['failure_stage'],
+                    'error': str(item.get('error') or '')[:MAX_ERROR_CHARS],
+                })
+        if failures:
+            result['interpretation']['candidate_failures'] = failures
+    observations = outcome.get('observations') or {}
+    source = outcome.get('source_observations') or observations.get('source') or {}
+    if source:
+        result['source_requests'] = source.get('requests')
+        result['source_forwarded'] = source.get('forwarded_requests')
+    failures = {}
+    for face, observation in observations.items():
+        if isinstance(observation, dict) and observation.get('failure_categories'):
+            failures[face] = observation['failure_categories']
+    if source.get('failure_categories'):
+        failures['source'] = source['failure_categories']
+    if failures:
+        result['observation_failures'] = failures
+    if outcome.get('harness_failures'):
+        result['harness_failures'] = outcome['harness_failures']
+    return result

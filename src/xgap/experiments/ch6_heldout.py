@@ -148,7 +148,8 @@ def make_family(core, name, anchors, cut, workload, snapshot, family_id):
             scopes=(core['relation']+'_EARLY',core['relation']+'_LATE')
             if q['path']:q['path']['type']=scopes[0]
             else:q['edges'][0]['type']=scopes[0]
-            domains.append(ScopeDomain(IntentSlot('logical_scope',path,hard=True),scopes))
+            domains.append(ScopeDomain(IntentSlot('logical_scope',path,hard=True),scopes,
+                edge_selector={'types':list(scopes)} if path[0]=='edges' else None))
         elif q['path']:
             domains.append(ScopeDomain(IntentSlot('path_depth',('path','max_hops')),(2,3)))
         else:

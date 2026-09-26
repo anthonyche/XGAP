@@ -1,5 +1,12 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-26 latest: partial 3886776 logs expose shared NL/scope rejections.
+The public edge-role selector and identity-v3 fixes are local, not deployed to
+the in-flight b86ada5. Preserve that run. Recover sealed raw evidence and use
+`scripts/audit_ch6_nl_failures.py` to group failures before another batch.
+See `docs/decisions/ch6_shared_entry_repair_20260926.md`. Never repair online
+proposals from hidden intent or convert offline replay into measured success.
+
 2026-09-26 current server handle: **3886776**, exact `b86ada5`, 48 questions /
 216 supported requests. Server publication audit passed; submission is confirmed,
 running state and results still pending. Do not resubmit or modify that checkout.

@@ -12,7 +12,7 @@ import json
 from xgap.semantic.compact_query import validate_query
 
 
-IDENTITY_VERSION = 'xgap-compact-representation-identity-v2'
+IDENTITY_VERSION = 'xgap-compact-representation-identity-v3'
 
 
 def _role_order(value):
@@ -44,12 +44,22 @@ def _role_order(value):
         left, right = predicate['left'], predicate['right']
         spec = [left['property'], predicate['op'], predicate['value_type']]
         if 'var' in right:
-            connect(left['var'], right['var'], ['predicate', spec, right['property']])
+            if predicate['op'] in ('eq', 'ne'):
+                # Equality is undirected, but the property belongs to its own
+                # endpoint. Normalize roles before alpha colors: sorting raw
+                # variable names here would make equality spelling-dependent.
+                for a, b in ((left, right), (right, left)):
+                    links[a['var']].append((['symmetric_predicate', predicate['op'],
+                        predicate['value_type'], a['property'], b['property']], b['var']))
+            else:
+                connect(left['var'], right['var'], ['predicate', spec, right['property']])
         else:
             features[left['var']].append(['predicate', spec, right])
     grain = value.get('contribution_by', value.get('deduplicate_by'))
-    for position, name in enumerate(grain or []):
-        features[name].append(['contribution', position])
+    for name in grain or []:
+        # A distinct tuple's key order changes neither its equivalence classes
+        # nor aggregate groups; output order remains separately explicit.
+        features[name].append(['contribution'])
     seeds = {name: encode(sorted(items, key=encode)) for name, items in features.items()}
 
     def ranks(signatures):
@@ -69,6 +79,10 @@ def _role_order(value):
 
 def representation_key(query, *, version='v1'):
     value = deepcopy(validate_query(query, version=version))
+    if version == 'v2' and all('var' in e for e in value['select'].values()):
+        # Same exact rule as compact-safe-equivalence-v1, applied symmetrically
+        # to authority and proposal. Final set projection removes witnesses.
+        value['contribution_by'] = None
     try:
         _role_order(value)
     except KeyError as error:
@@ -96,6 +110,10 @@ def representation_key(query, *, version='v1'):
         reference(predicate['left'])
         if 'var' in predicate['right']:
             reference(predicate['right'])
+            if predicate['op'] in ('eq', 'ne'):
+                encoded = lambda ref: json.dumps(ref, sort_keys=True, separators=(',', ':'))
+                if encoded(predicate['left']) > encoded(predicate['right']):
+                    predicate['left'], predicate['right'] = predicate['right'], predicate['left']
     for expression in value['select'].values():
         if 'aggregate' in expression:
             if expression['field'] is not None:
@@ -104,7 +122,7 @@ def representation_key(query, *, version='v1'):
             reference(expression)
     grain = 'deduplicate_by' if version == 'v1' else 'contribution_by'
     if value[grain] is not None:
-        value[grain] = [renamed(name) for name in value[grain]]
+        value[grain] = sorted(renamed(name) for name in value[grain])
     encode = lambda item: json.dumps(item, sort_keys=True, separators=(',', ':'), allow_nan=False)
     value['where'].sort(key=encode)
     # Literal values, entities, output aliases/order, direction and semantics stay exact.
