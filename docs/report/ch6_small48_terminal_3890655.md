@@ -72,6 +72,28 @@ provider配置一致；四个原失败保留，语义入口改进另行版本化
 重放、最后一项token未知及未封存阻断、补集顺序、旧成本继承和旧文件不变；没有
 真实LLM/后端调用。此验收不宣称剩余174项已执行或语义入口全部无缺陷。
 
+## 已生成的独立恢复包（尚未提交）
+
+- 源提交：`2a8e16e3b03bca4ef075454ef23c9eaff5631e8b`。
+- 本地包：`/Users/anthonyche/Downloads/xgapcontinue2a8e16e.zip`，8,548,684 bytes。
+- SHA-256：`ec381d0b633782b25d909c7c210a5b7e53b9d1fd9c59ee49d6d37460a69afb91`。
+- stage：`/home/hxc859/xgap-ch6-artifacts/small48-continue-2a8e16e-v1`。
+- 新结果：stage下`continuation/results`；父目录只读，不重用旧输出。
+- 日志：stage下`small48-continue-<job>.out`。
+- 归档：`/home/hxc859/xgap-small48-continue-<job>.tar.gz`。
+- 8 CPU、24 GiB、无固定节点、无GPU；研究恢复时限19632秒，Slurm上限5小时45分
+  包括启动/清理余量。沿用外部API，密钥隐藏输入，启动认证独立计量。
+- 空Git目录独立还原、对象完整性、无alternates依赖均已验证；核心agent/planner/
+  LLM/semantic及原batch dispatcher相对f40dfa9无变化。旧记录938文件将在服务器
+  再核验后才准许准备与提交。离线补集准备通过：42项旧、174项新、5个未完单元。
+- 本地证据：`/Users/anthonyche/xgap-data/outputs/xgap-small48-continuation-20260927-v1`。
+
+服务器执行（仅在上传对应包之后；同一stage只允许一次提交）：
+
+```bash
+python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc859/xgapcontinue2a8e16e.zip"); assert hashlib.sha256(p.read_bytes()).hexdigest()=="ec381d0b633782b25d909c7c210a5b7e53b9d1fd9c59ee49d6d37460a69afb91"; exec(compile(zipfile.ZipFile(str(p)).read("stage.py"),"stage.py","exec"))'
+```
+
 ## 源码检查发现与待决问题
 
 `scripts/ch6_external_session.py`的预算分类已包含harness_response_budget，且只有
