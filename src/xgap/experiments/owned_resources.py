@@ -89,10 +89,10 @@ class OwnedResources:
         started=time.perf_counter();records=[]
         for s in reversed(self.services):
             try:
-                # A live leader must still be the process the controller actually created.
-                if s.process.poll() is None and psutil.Process(s.process.pid).create_time()!=self.identities[s.process.pid]:
-                    raise ValueError('Refuse to stop a changed process identity')
-                records.append({'name':s.name,**_stop_group(s.process,ProcessBudget())})
+                # The guard checks the recorded identity around signal/reap and
+                # handles a leader disappearing before its Popen status updates.
+                records.append({'name':s.name,**_stop_group(s.process,ProcessBudget(),
+                    expected_created=self.identities[s.process.pid])})
             except Exception as e:records.append({'name':s.name,'complete':False,'error':type(e).__name__+': '+str(e)})
         return {'complete':all(r['complete'] for r in records),'groups':records,
             'recovery_ms':(time.perf_counter()-started)*1000,'new_serving_session_required':True}

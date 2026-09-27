@@ -60,10 +60,21 @@ def _group_sample(pgid):
     return members
 
 
-def _stop_group(process, budget):
+def _stop_group(process, budget, *, expected_created=None):
     """Only the fresh session created below; handle descendants after leader exit."""
+    import psutil
+    def verify_identity():
+        if expected_created is None:
+            return
+        try:
+            actual=psutil.Process(process.pid).create_time()
+        except psutil.NoSuchProcess:
+            return  # The owned handle must still be reaped below.
+        if actual!=expected_created:
+            raise ValueError('Refuse to stop a changed process identity')
     signals=[]; started=time.monotonic();resolved_permission_races=0
     for sig,seconds in [(signal.SIGTERM,budget.terminate_grace_seconds),(signal.SIGKILL,2.0)]:
+        verify_identity()
         if not _group_sample(process.pid):
             break
         try:
@@ -81,17 +92,25 @@ def _stop_group(process, budget):
             if not _group_sample(process.pid):
                 break
             time.sleep(min(.02,max(0,end-time.monotonic())))
-    # Darwin's group scan can stop seeing an exiting leader just before waitpid
-    # exposes its status. Reap our own Popen handle before sealing quiescence.
-    # An empty sampled group alone is not proof that the owned leader is terminal.
+    # Linux JVM leaders can already be zombies while final native threads exit;
+    # Darwin can also stop listing an exiting leader before waitpid exposes it.
+    # Reap only our own child, with a bounded cleanup allowance separate from
+    # query execution budgets. Empty/non-running samples alone are insufficient.
+    reap_wait_seconds=3.0
     if process.poll() is None:
         try:
-            process.wait(timeout=0.5)
+            process.wait(timeout=reap_wait_seconds)
         except subprocess.TimeoutExpired:
             pass
+    verify_identity()
     live=_group_sample(process.pid)
+    # The final group scan may itself take time; refresh waitpid after that scan
+    # rather than seal an earlier cached None even though our child has exited.
+    returncode=process.poll()
     return {'signals':signals,'live_pids':[p['pid'] for p in live],'resolved_permission_races':resolved_permission_races,
-        'elapsed_ms':(time.monotonic()-started)*1000,'complete':not live and process.returncode is not None}
+        'pid':process.pid,'expected_created':expected_created,'post_stop_reap_returncode':returncode,
+        'leader_reap_wait_seconds':reap_wait_seconds,
+        'elapsed_ms':(time.monotonic()-started)*1000,'complete':not live and returncode is not None}
 
 
 def run_guarded_command(command, *, cwd, output, budget=ProcessBudget(), environment=None, resource_monitor=None):

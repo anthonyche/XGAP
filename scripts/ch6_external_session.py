@@ -33,31 +33,50 @@ HARNESS_BUDGET_CATEGORIES=frozenset(('harness_call_budget','harness_request_budg
 def load(pin):return json.loads(read_pinned(pin['path'],pin['sha256']))
 
 
-def verified_budget_censoring(result):
-    """A known observer limit with complete evidence, never an integrity error.
+def budget_censoring_audit(result):
+    """Explain every failed continuation gate without weakening any of them.
 
-    This permits closing a censored trial and advancing to another request. It
-    does not permit reusing its source session or repeating the censored trial.
-    The batch separately verifies shutdown of every owned service.
+    A response budget can leave a deliberately incomplete payload. Its recorded
+    byte prefix is evidence of censoring, not a complete answer; continuation
+    still requires sealed accounting and verified shutdown of all owned work.
     """
     observed=result.get('observations') or {}
-    if (set(observed)!={'source','model','lookup','federation'} or
-            result.get('model_usage_complete') is not True or result.get('guard_status')!='completed' or
-            (result.get('quiescence') or {}).get('complete') is not True or
-            result.get('error_type') or result.get('observation_error_type')):
-        return False
-    categories={}
-    for summary in observed.values():
-        if (not summary.get('phase_seal') or summary.get('persistence_failures')!=0 or
-                summary.get('late_calls')!=0):return False
+    blockers=[];categories={}
+    if set(observed)!={'source','model','lookup','federation'}:blockers.append('observer_set_incomplete')
+    if result.get('model_usage_complete') is not True:blockers.append('model_usage_incomplete')
+    if result.get('guard_status')!='completed':blockers.append('worker_guard_not_completed')
+    if (result.get('quiescence') or {}).get('complete') is not True:blockers.append('quiescence_unverified')
+    if result.get('error_type'):blockers.append('supervisor_error')
+    if result.get('observation_error_type'):blockers.append('observation_error')
+    for name,summary in sorted(observed.items()):
+        if not summary.get('phase_seal'):blockers.append(name+':phase_not_sealed')
+        if summary.get('persistence_failures')!=0:blockers.append(name+':persistence_unverified')
+        if summary.get('late_calls')!=0:blockers.append(name+':late_calls_unverified')
         for category,count in summary.get('failure_categories',{}).items():
             # A recorded HTTP response can be an original method/backend error.
             # Transport faults and any unknown category require investigation.
-            if category not in HARNESS_BUDGET_CATEGORIES|{'upstream_http_failure'}:return False
-            if type(count) is not int or count<=0:return False
-            if category.startswith('harness_'):
+            if category not in HARNESS_BUDGET_CATEGORIES|{'upstream_http_failure'}:
+                blockers.append(name+':nonbudget_failure:'+category)
+            if type(count) is not int or count<=0:
+                blockers.append(name+':invalid_failure_count:'+category)
+                continue
+            if category in HARNESS_BUDGET_CATEGORIES:
                 categories[category]=categories.get(category,0)+count
-    return bool(categories)
+    if not categories:blockers.append('no_recorded_budget_exhaustion')
+    return dict(schema_version='xgap-external-budget-censoring-audit-v1',verified=not blockers,
+                blocking_reasons=blockers,budget_categories=categories,
+                observer_names=sorted(observed),unverified_owned_groups=[row.get('name')
+                    for row in (result.get('quiescence') or {}).get('groups',[])
+                    if row.get('complete') is not True])
+
+
+def verified_budget_censoring(result):
+    """Permit a new request after complete accounting, never reuse or retry.
+
+    The batch must separately verify shutdown of every owned service. A cached
+    diagnostic in a receipt is never trusted in place of checking its evidence.
+    """
+    return budget_censoring_audit(result)['verified']
 
 
 def verify_config(config,profile):
@@ -227,7 +246,9 @@ def run_trial(*,request,output,session,budget,source_rss_bytes,package_monitor=N
         result.update(observations=observed,source_observations=observed.get('source'),resources=monitor.summary(),
             can_continue_session=result['success'],quiescence=barrier or dict(complete=True,kind='materialized_return'),
             decision_e2e_ms=(time.perf_counter()-started)*1000,paper_result=False)
-        if harness and verified_budget_censoring(result):
+        if harness or result['status']=='harness_observation_failure':
+            result['budget_censoring_audit']=budget_censoring_audit(result)
+        if harness and result['budget_censoring_audit']['verified']:
             result.update(status='harness_budget_censored',
                           failure_scope='study_budget_censoring_not_method_incorrectness')
         if (guard and guard['status'].startswith('study_') and

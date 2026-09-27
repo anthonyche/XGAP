@@ -1,5 +1,19 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-27 terminal update: **3890655 FAILED (2:0), 32m48s, compt341**.
+All 938 archived files are verified. The 42 sealed method requests comprise 36
+correct answers, 4 shared ranked_count proposal failures, 1 TS method error and
+1 TS study censoring; zero unsealed cells, 65 model calls with complete usage.
+The stopping gate was lookup quiescence not confirmed at the first reap; later
+closed.json proves the same PID 3077878 reaped with returncode 143 and all owned
+resources closed. Do not weaken the required leader-reap/live-descendant checks.
+The explicit continuation preserves these 42 and derives 174 unattempted requests
+in the original order, with inherited call/token costs and a documented recovery
+wall policy. No new remote submission exists yet. Experimental algorithm/provider
+code and original inputs remain f40dfa9-equivalent; known ranked_count technical
+identity normalization is tracked separately, not silently patched mid-study.
+See `docs/report/ch6_small48_terminal_3890655.md`.
+
 2026-09-27 current job: **3890655**, exact experimental revision **f40dfa9**.
 The independent bundle was restored on Pioneer; all six manifests and the
 48-case / 216-request publication audit passed, and the user confirmed submission.

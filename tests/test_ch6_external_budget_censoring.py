@@ -40,6 +40,49 @@ def test_only_explicit_observer_budgets_with_complete_accounting_are_censoring(c
     outcome=censored_outcome()
     outcome['observations']['source']['failure_categories']={category:20}
     assert external.verified_budget_censoring(outcome)
+    audit=external.budget_censoring_audit(outcome)
+    assert audit['verified'] and audit['blocking_reasons']==[]
+    assert audit['budget_categories']=={category:20}
+
+
+def test_budget_audit_reports_all_blockers_and_never_trusts_stored_verdict():
+    outcome=censored_outcome()
+    outcome.update(model_usage_complete=False,budget_censoring_audit={'verified':True})
+    outcome['quiescence'].update(complete=False,groups=[dict(name='lookup',complete=False,live_pids=[])])
+    outcome['observations']['source'].update(persistence_failures=1,late_calls=1)
+    outcome['observations']['lookup'].pop('phase_seal')
+    audit=external.budget_censoring_audit(outcome)
+    assert set(audit['blocking_reasons'])=={'model_usage_incomplete','quiescence_unverified',
+        'source:persistence_unverified','source:late_calls_unverified','lookup:phase_not_sealed'}
+    assert audit['unverified_owned_groups']==['lookup']
+    assert not external.verified_budget_censoring(outcome)
+
+
+def test_response_censoring_requires_verified_shutdown_even_with_empty_live_pid_snapshot():
+    outcome=censored_outcome()
+    outcome['observations']['source'].update(failure_categories={'harness_response_budget':3},
+        requests=52,forwarded_requests=52,partial_response_bytes=3*(64*1024**2+1))
+    outcome['quiescence'].update(complete=False,groups=[dict(name='lookup',complete=False,live_pids=[])])
+    audit=external.budget_censoring_audit(outcome)
+    assert not audit['verified'] and audit['blocking_reasons']==['quiescence_unverified']
+    assert audit['unverified_owned_groups']==['lookup']
+
+
+@pytest.mark.parametrize('limit',[{'response_bytes':4},{'phase_response_bytes':4}])
+def test_real_response_limit_seals_partial_bytes_without_claiming_complete_answer(tmp_path,limit):
+    from test_campaign_source_observer import observer,call
+    with observer(tmp_path/'source',**limit) as proxy:
+        proxy.set_phase('response-budget')
+        assert call(proxy)[0]==502
+        sealed=proxy.seal_phase(proxy.phase)
+        raw=json.loads((proxy.root/'0000-result.json').read_text())
+        assert raw['failure_category']=='harness_response_budget' and not raw['response_complete']
+        assert sealed['partial_response_bytes']==len(Path(raw['response_path']).read_bytes())>4
+    outcome=censored_outcome();outcome['observations']['source']=sealed
+    audit=external.budget_censoring_audit(outcome)
+    assert audit['verified'] and audit['budget_categories']=={'harness_response_budget':1}
+    outcome['quiescence']['complete']=False
+    assert external.budget_censoring_audit(outcome)['blocking_reasons']==['quiescence_unverified']
 
 
 @pytest.mark.parametrize('change',[
@@ -101,6 +144,9 @@ def test_external_trial_seals_distinct_budget_status_and_null_formal_quality(tmp
     assert stops and not outcome['success'] and not outcome['can_continue_session']
     assert outcome['observations']==observed and outcome['model_calls']==28
     assert outcome['method_error_type']=='KeyError' and 'error_type' not in outcome
+    assert outcome['budget_censoring_audit']['verified']==(not integrity_error and guard_status=='completed')
+    saved=json.loads(Path(outcome['receipt']['path']).read_text())
+    assert saved['budget_censoring_audit']==outcome['budget_censoring_audit']
     score_trial(outcome['receipt']['path'],receipt_sha256=outcome['receipt']['sha256'],
         reference_path=cell['reference']['path'],reference_sha256=cell['reference']['sha256'],output=tmp_path/'score.json')
     from xgap.experiments.evidence_store import file_pin
@@ -140,8 +186,11 @@ def setup_batch(tmp_path,monkeypatch,*,source_closed=True,external_closed=True,o
     return manifest,seen,sessions
 
 
-def test_budget_censored_cell_stays_sealed_and_next_unattempted_cell_gets_fresh_session(tmp_path,monkeypatch,capsys):
-    manifest,seen,sessions=setup_batch(tmp_path,monkeypatch)
+@pytest.mark.parametrize('category',sorted(external.HARNESS_BUDGET_CATEGORIES))
+def test_budget_censored_cell_stays_sealed_and_next_unattempted_cell_gets_fresh_session(tmp_path,monkeypatch,capsys,category):
+    outcome=censored_outcome()
+    outcome['observations']['source']['failure_categories']={category:20}
+    manifest,seen,sessions=setup_batch(tmp_path,monkeypatch,outcome=outcome)
     first,args=launch(tmp_path,manifest,max_new_cells=2)
     assert first['status']=='returned' and first['all_owned_closed']
     assert first['counts']==dict(sealed=2,execution_success=1,execution_failed=1,study_censored=1,incomplete=0,unattempted=1)
