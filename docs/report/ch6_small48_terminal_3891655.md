@@ -82,3 +82,24 @@ invocation all_owned_closed=true且无error，临时serving副本已回收。
 新版本仅改变执行器计量与显式恢复，不修改语义入口、planner、方法配置、题目或源。
 
 本轮48题全部适用请求尚未执行完，规模/并行/参数扫描也不能由这些结果替代。
+
+## 已验证的39项接续包
+
+- 精确源码：`f1b2583e1b1c7068d6e335cfad60b525aaddf0b2`。
+- 本地包：`/Users/anthonyche/Downloads/xgapfinal39f1b2583.zip`，8,686,454 bytes。
+- SHA-256：`d932231d30b8cd691a7b1e594acdab59a33b419be5ee06391a386f7d285f9669`。
+- 新stage：`/home/hxc859/xgap-ch6-artifacts/small48-final39-f1b2583-v1`。
+- 预期日志：stage下`small48-final39-<job>.out`。
+- 新结果：stage下`continuation/results`；两批旧记录只读。
+- 预期归档：`/home/hxc859/xgap-small48-final39-<job>.tar.gz`。
+
+47项定向测试通过（计量/链式恢复36、生成交付脚本11）。实际归档离线检查核验
+第一接续561个证据pin及父批179个证据pin，确认177项原记录、39项补集和一处计量
+补记。新完整Git bundle已在空目录还原并检查对象完整、无alternates；6个包成员
+hash及三段Python编译通过，agent/planner/semantic/LLM算法目录相对f40dfa9未变。
+
+服务器stage先核验两份历史归档及索引文件，读取3891655唯一已终止Slurm记录，
+扣除旧1968秒和本次实际Elapsed后，把剩余额度向下取整为分钟；在其中预留900秒
+启动/收尾，其余作为研究执行预算。还会在密钥输入和提交前检查完整冻结输入。
+密钥输入为空会重新提示；唯一新输出和提交标记防止重复提交。
+当前包已生成并核验，尚未上传/提交，未发生新模型或源调用。
