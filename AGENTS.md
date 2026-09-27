@@ -1,5 +1,13 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-27 current job: **3890655**, exact experimental revision **f40dfa9**.
+The independent bundle was restored on Pioneer; all six manifests and the
+48-case / 216-request publication audit passed, and the user confirmed submission.
+Scheduler state, compute-node authentication and results remain unverified.
+Read this existing job only; do not resubmit or mutate its checkout/inputs.
+See `docs/report/ch6_small48_submission_3890655.md`. Earlier no-job notes below
+describe the pre-submission state and are superseded by this receipt.
+
 2026-09-27: repaired small48 source transfer failed before preparation/submission
 because repeated `git clone --shared` exceeded the alternates depth. Preserve the
 failed stage and checkout. Use the independent full-source recovery package for
