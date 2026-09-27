@@ -14,6 +14,9 @@ and 39-remaining notes are history.
 User explicitly approved an administrative cumulative batch wall cap of 8 hours
 (was 6). Preserve the original contract and record the amendment; subtract every
 prior allocation. All per-request limits and model/token ceilings are unchanged.
+The verified 34-cell handoff is `Downloads/xgaptail34a0bf92c.zip`, exact execution
+source a0bf92c1628341809ac7fc6af38a834984a279e0; 106 targeted tests and independent
+bundle restore passed. No new job exists yet. Read the linked report for hashes.
 
 2026-09-27 current remote handle: **3892875**, exact source **f1b2583**.
 User confirms successful independent restore, frozen-input/continuation preparation,

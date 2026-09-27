@@ -78,3 +78,26 @@ snapshot异常导致其日志probe默认显示0，其余指标丢失。SH/XGAP�
 未开始请求留存、源异常下指标保存、多轮有序接续、预算继承及包提交保护。独立审查
 通过；直接用三轮真实归档重新核算得到182项封存、34项补集和上述完整模型用量。
 本地验证没有启动模型调用、后端查询或Slurm作业。
+
+## 已冻结的34项交接包
+
+- 执行源版本：`a0bf92c1628341809ac7fc6af38a834984a279e0`。
+- 本地文件：`/Users/anthonyche/Downloads/xgaptail34a0bf92c.zip`，8,694,160字节。
+- SHA-256：`dec1640a2f216e7a55a85e5d6f0b5314047477035d4e13e38a170ee5c6572507`。
+- 服务器stage：`/home/hxc859/xgap-ch6-artifacts/small48-tail34-a0bf92c-v1`。
+- 新日志：该目录下 `small48-tail34-<jobid>.out`。
+- 新归档：`/home/hxc859/xgap-small48-tail34-<jobid>.tar.gz`。
+
+独立空对象库验证完整bundle成功，无alternates；包内各文件校验通过；三个生成脚本
+通过Python3.6语法检查。交接记录明确继承182项、仅34项待做、累计上限28,800秒。
+本地尚未执行提交。真实Slurm时长在服务器准备阶段读取；若旧作业仍未终止、证据
+不匹配、资源额度不足，程序在密钥/提交前停止。8核/24GiB CPU，不指定节点，不申请GPU。
+
+上传到 `/home/hxc859` 后执行：
+
+```bash
+python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc859/xgaptail34a0bf92c.zip"); assert hashlib.sha256(p.read_bytes()).hexdigest()=="dec1640a2f216e7a55a85e5d6f0b5314047477035d4e13e38a170ee5c6572507"; exec(compile(zipfile.ZipFile(str(p)).read("stage.py"),"stage.py","exec"))'
+```
+
+隐藏密钥提示出现后再输入。空输入会重问；保留已有目录及单次提交保护，不重复执行
+提交块。完成后回传作业号，读取该作业，不另开整批。
