@@ -1,5 +1,15 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-27 current remote handle: **3892875**, exact source **f1b2583**.
+User confirms successful independent restore, frozen-input/continuation preparation,
+hidden key entry and submission. Prepared contract SHA is
+`e33438bc6db3c2cfa7905feffe8346349aa17cbab0a878cdc2c55f362b445ee9` (203308 bytes).
+Only the 39 untouched D2-rdf requests are scheduled; preserve all 177 previous
+outcomes and cumulative accounting. Scheduler state, compute-node authentication
+and new results are not yet known. Do not resubmit or alter the frozen checkout.
+Earlier no-submission/current-3891655 entries are historical; see
+`docs/report/ch6_small48_terminal_3891655.md` for the current handoff.
+
 2026-09-27 latest evidence: **3891655 wrote accounting_incomplete and its archive**;
 2,057 indexed files verified. 135 new + 42 prior = 177 sealed requests, 39 untouched
 all D2-rdf. D1/D3 are complete; do not rerun them. Last worker's identity-bound

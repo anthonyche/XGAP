@@ -102,4 +102,16 @@ hash及三段Python编译通过，agent/planner/semantic/LLM算法目录相对f4
 扣除旧1968秒和本次实际Elapsed后，把剩余额度向下取整为分钟；在其中预留900秒
 启动/收尾，其余作为研究执行预算。还会在密钥输入和提交前检查完整冻结输入。
 密钥输入为空会重新提示；唯一新输出和提交标记防止重复提交。
-当前包已生成并核验，尚未上传/提交，未发生新模型或源调用。
+包生成阶段未提交或产生模型/源调用；提交状态更新见下节。
+
+## 已提交3892875
+
+用户2026-09-27回执确认：服务器还原精确`f1b2583`，prepare成功，隐藏输入密钥
+后返回`SUBMISSION 3892875`。本次不重试此前177项，只接续原顺序剩余39项。
+
+- 服务器合同：`/home/hxc859/xgap-ch6-artifacts/small48-final39-f1b2583-v1/continuation/continuation.json`。
+- 合同SHA-256：`e33438bc6db3c2cfa7905feffe8346349aa17cbab0a878cdc2c55f362b445ee9`，203,308 bytes。
+- 日志：`/home/hxc859/xgap-ch6-artifacts/small48-final39-f1b2583-v1/small48-final39-3892875.out`。
+- 预期归档：`/home/hxc859/xgap-small48-final39-3892875.tar.gz`。
+- 当前证据为准备/提交成功；作业运行状态、计算节点认证及新结果待收取。
+- 无需重新上传或执行stage，不修改已提交版本及冻结输入。
