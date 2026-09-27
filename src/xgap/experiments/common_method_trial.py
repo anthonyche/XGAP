@@ -152,6 +152,11 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                     or child.get('joint_config_sha256') != joint_config_sha256
                     or child.get('oracle_available_to_worker') is not False):
                 raise ValueError('Direct worker identity or private input boundary differs')
+        # Model accounting belongs to the validated, completed worker. A source
+        # drain may still fail below; that must not erase already durable usage.
+        if nl:
+            for key in ('model_calls','input_tokens','output_tokens'):
+                r[key]=child.get(key) if child else None
         observed=observer.snapshot(phase)
         r.update(success=bool(guard['success'] and child and child['success'] and observed['failed_requests']==0),
             status=child['status'] if guard['success'] and child else 'guard_'+guard['status'],
@@ -163,7 +168,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
             r['source_failure']=classify_source_failure(observed)
             r['status']=r['source_failure']['status']
         if nl:
-            for key in ('model_calls','input_tokens','output_tokens','frontend_ms','interpretation_ms','grounding_ms','compilation_ms'):
+            for key in ('frontend_ms','interpretation_ms','grounding_ms','compilation_ms'):
                 r[key]=child.get(key) if child else None
         if practical or method in (*NL_STRONG_METHODS,*NL_USER_METHODS,*NL_FAMILY_METHODS):
             for key in ('admission_ms','acquisition_ms','clarification_calls','strong_plan','semantic_validation',

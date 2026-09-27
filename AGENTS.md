@@ -1,5 +1,17 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-27 latest evidence: **3891655 wrote accounting_incomplete and its archive**;
+2,057 indexed files verified. 135 new + 42 prior = 177 sealed requests, 39 untouched
+all D2-rdf. D1/D3 are complete; do not rerun them. Last worker's identity-bound
+receipt/core/interpretation agree on 1 model call / 2649 input / 427 output tokens;
+outer source snapshot failed before copying this usage. Source execution remains
+failed; preserve old null fields and add explicit reconciliation only. Owned sources
+and phase were closed/sealed. Fix common trial usage transfer, prepare a fresh
+39-cell complement inheriting all usage and actual prior allocation time. Scheduler
+terminal accounting must be checked before submission; no replacement submitted.
+See `docs/report/ch6_small48_terminal_3891655.md`. Earlier running/submission notes
+are history, not current status.
+
 2026-09-27 current remote handle: **3891655**, continuation source **2a8e16e**.
 The user confirmed successful submission after recovering empty hidden-key input.
 The prepared continuation preserves 42 sealed requests and schedules only the
