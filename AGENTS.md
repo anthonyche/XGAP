@@ -1,5 +1,13 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-27: repaired small48 source transfer failed before preparation/submission
+because repeated `git clone --shared` exceeded the alternates depth. Preserve the
+failed stage and checkout. Use the independent full-source recovery package for
+exact f40dfa9, with fresh paths and pre-submission guards; no new job exists yet.
+Do not rebuild a chain of shared clones. See
+`docs/report/ch6_independent_source_recovery_20260927.md` (21 deployment checks,
+zero real queries/model calls/submissions). Experimental cases/budgets are unchanged.
+
 2026-09-26 current authorization: freeze the repaired common inputs and RUN the
 48-case, five-method end-to-end evaluation once (216 supported requests, 24 TS
 native unsupported positions). See `docs/decisions/ch6_repaired_small48_20260926.md`.
