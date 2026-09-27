@@ -72,7 +72,23 @@ provider配置一致；四个原失败保留，语义入口改进另行版本化
 重放、最后一项token未知及未封存阻断、补集顺序、旧成本继承和旧文件不变；没有
 真实LLM/后端调用。此验收不宣称剩余174项已执行或语义入口全部无缺陷。
 
-## 已生成的独立恢复包（尚未提交）
+## 独立恢复包与接续作业3891655
+
+2026-09-27更新：用户补录隐藏密钥后返回`SUBMISSION 3891655`。该回执证明提交
+成功，不证明计算节点认证或174项执行已完成。空密钥问题已恢复；不得再执行stage
+或密钥恢复命令。此前“未提交”文字描述恢复之前的状态。
+
+- 接续日志：`/home/hxc859/xgap-ch6-artifacts/small48-continue-2a8e16e-v1/small48-continue-3891655.out`。
+- 预期归档：`/home/hxc859/xgap-small48-continue-3891655.tar.gz`，尚未回收。
+- 仅接续原顺序174项，保留父作业42项；新结果及累计用量待核验。
+
+服务器交接更新：用户已还原精确2a8e16e并通过prepare；服务器continuation pin为
+`3dbd2de29056e35dc11fa64907a6725d038c71dea2fe6f32a28fc76c9631734a`，52641 bytes。
+随后隐藏输入读到空密钥，在写credential.once和调用sbatch前退出；未提交新作业。
+不要重跑stage或重新上传，只补录密钥和执行原已校验提交尾段。恢复命令存于
+`/Users/anthonyche/xgap-data/outputs/xgap-small48-continuation-20260927-v1/key-recovery-command.txt`，
+会核对原包、staged pins、continuation、checkout及未提交标记；输入为空会再次提示。
+本地原尾段的空输入/模拟单次提交/重入阻断已检查，没有真实服务器或模型调用。
 
 - 源提交：`2a8e16e3b03bca4ef075454ef23c9eaff5631e8b`。
 - 本地包：`/Users/anthonyche/Downloads/xgapcontinue2a8e16e.zip`，8,548,684 bytes。
@@ -88,7 +104,7 @@ provider配置一致；四个原失败保留，语义入口改进另行版本化
   再核验后才准许准备与提交。离线补集准备通过：42项旧、174项新、5个未完单元。
 - 本地证据：`/Users/anthonyche/xgap-data/outputs/xgap-small48-continuation-20260927-v1`。
 
-服务器执行（仅在上传对应包之后；同一stage只允许一次提交）：
+历史首次准备命令（已执行并成功提交3891655，不得重跑）：
 
 ```bash
 python3 -c 'from pathlib import Path; import hashlib,zipfile; p=Path("/home/hxc859/xgapcontinue2a8e16e.zip"); assert hashlib.sha256(p.read_bytes()).hexdigest()=="ec381d0b633782b25d909c7c210a5b7e53b9d1fd9c59ee49d6d37460a69afb91"; exec(compile(zipfile.ZipFile(str(p)).read("stage.py"),"stage.py","exec"))'

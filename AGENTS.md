@@ -1,5 +1,14 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-27 current remote handle: **3891655**, continuation source **2a8e16e**.
+The user confirmed successful submission after recovering empty hidden-key input.
+The prepared continuation preserves 42 sealed requests and schedules only the
+174 untouched requests, inheriting prior model/token usage. Scheduler state,
+compute-node authentication and new results are not yet verified. Read this job;
+do not rerun stage, resubmit, or mutate frozen inputs/code. The older current-job
+and no-submission entries below are historical. See
+`docs/report/ch6_small48_terminal_3890655.md` for the exact log and archive paths.
+
 2026-09-27 terminal update: **3890655 FAILED (2:0), 32m48s, compt341**.
 All 938 archived files are verified. The 42 sealed method requests comprise 36
 correct answers, 4 shared ranked_count proposal failures, 1 TS method error and
