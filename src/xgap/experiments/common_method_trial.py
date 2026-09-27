@@ -58,7 +58,7 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
     r={'schema_version':'xgap-common-method-trial-v1',**{k:q[k] for k in ('question_id','population','exposure')},
         'method':method,'track':track,'dataset':dataset,'request_sha256':request_sha256,
         'success':False,'status':'preparing','result':None,'can_continue_session':False,
-        'model_calls':None if nl else 0,'fit_calls':0,'probe_calls':0,'automatic_retries':0,'paper_result':False}
+        'model_calls':None if nl else 0,'fit_calls':0,'probe_calls':None if nl else 0,'automatic_retries':0,'paper_result':False}
     if practical:r['input_scope']='pinned trusted template and declared binding authority; not unaided open-domain NL'
     if nl:r['profile_sha256']=profile_sha256
     monitor=None;guard=None;child=None;observed=None;barrier=None;idle_reuse=False
@@ -152,21 +152,17 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                     or child.get('joint_config_sha256') != joint_config_sha256
                     or child.get('oracle_available_to_worker') is not False):
                 raise ValueError('Direct worker identity or private input boundary differs')
-        # Model accounting belongs to the validated, completed worker. A source
-        # drain may still fail below; that must not erase already durable usage.
+        # Durable worker telemetry is independent of source-drain observation.
+        # Copy it only after every worker identity check, before snapshot can
+        # fail. A result pin here is diagnostic; success still requires the
+        # guard and complete source observations below.
         if nl:
             for key in ('model_calls','input_tokens','output_tokens'):
                 r[key]=child.get(key) if child else None
-        observed=observer.snapshot(phase)
-        r.update(success=bool(guard['success'] and child and child['success'] and observed['failed_requests']==0),
-            status=child['status'] if guard['success'] and child else 'guard_'+guard['status'],
-            result=child.get('result') if child else None,
+        r.update(result=child.get('result') if child else None,
             top_level_attempts=child.get('top_level_attempts') if child else None,
             planning_ms=child.get('planning_ms') if child else None,
             execution_ms=child.get('execution_ms') if child else None)
-        if observed['failed_requests']:
-            r['source_failure']=classify_source_failure(observed)
-            r['status']=r['source_failure']['status']
         if nl:
             for key in ('frontend_ms','interpretation_ms','grounding_ms','compilation_ms'):
                 r[key]=child.get(key) if child else None
@@ -185,6 +181,12 @@ def _run_trial(*, track,request_path,request_sha256,method,output,owned_services
                         'interpretation_diagnostics','provider_adapter','scope_policy_adapter','public_compact_constraints','execution_cost_feedback',
                         'controlled_processing_ms','initial_state',*unified_run.METRICS,'algorithm_profile','terminal_settings'):
                 r['method_cost_scope' if key=='cost_scope' else key]=child.get(key) if child else None
+        observed=observer.snapshot(phase)
+        r.update(success=bool(guard['success'] and child and child['success'] and observed['failed_requests']==0),
+            status=child['status'] if guard['success'] and child else 'guard_'+guard['status'])
+        if observed['failed_requests']:
+            r['source_failure']=classify_source_failure(observed)
+            r['status']=r['source_failure']['status']
         r['decision_e2e_ms']=(time.perf_counter()-started)*1000
     except Exception as error:
         r.update(success=False,status='supervisor_failed',error_type=type(error).__name__,error=str(error))

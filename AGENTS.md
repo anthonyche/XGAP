@@ -1,5 +1,20 @@
 # XGAP research prototype — current engineering authority
 
+2026-09-27 latest verified closure: **3892875 application stopped at small_study_wall_budget**.
+134 indexed archive files verified; 5 new + 177 old = **182 sealed, 34 untouched D2-rdf**.
+Usage is complete: 497 model calls / 911698 input / 108792 output tokens. All owned
+services closed. The supervisor wrongly demanded 3900 seconds for a warm 300-second
+request, stopping with 3625.7994 seconds still available. Fix phase-aware admission
+and preserve validated worker telemetry before source snapshot; do not change query
+algorithms, source/per-method limits, failures, or original 48 inputs. Generalize the
+existing append-only continuation, inherit all usage and actual allocation durations;
+no new job has been submitted. Final Slurm elapsed must be read before the next
+submission. See docs/report/ch6_small48_terminal_3892875.md. Earlier submission-only
+and 39-remaining notes are history.
+User explicitly approved an administrative cumulative batch wall cap of 8 hours
+(was 6). Preserve the original contract and record the amendment; subtract every
+prior allocation. All per-request limits and model/token ceilings are unchanged.
+
 2026-09-27 current remote handle: **3892875**, exact source **f1b2583**.
 User confirms successful independent restore, frozen-input/continuation preparation,
 hidden key entry and submission. Prepared contract SHA is

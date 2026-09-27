@@ -187,7 +187,8 @@ def test_execution_inherits_ancestors_and_runs_no_old_cell(tmp_path,monkeypatch,
         for cell in manifest['cells']:
             path=root/'cells'/cell['cell_id']
             if path.exists():continue
-            assert kwargs['before_cell'](cell) is None
+            assert kwargs['before_cell_phase'](cell,dict(minimum_method_seconds=300,global_remaining_seconds=1000)) is None
+            assert kwargs['global_deadline_monotonic']>0
             path.mkdir(parents=True);seen.append(cell['cell_id']);count+=1
             last_new=len(seen)==39
             pin=write_once(path/'outcome.json',dict(model_calls=1,
@@ -207,4 +208,140 @@ def test_execution_inherits_ancestors_and_runs_no_old_cell(tmp_path,monkeypatch,
         assert result['status']=='accounting_incomplete'
         assert result['new_usage']['unknown_model_usage'] or result['new_usage']['unsealed_cells']==1
     assert last.name not in seen
+    with pytest.raises(FileExistsError):chain.execute(ref)
+
+
+def completed_fixture(tmp_path,monkeypatch):
+    parent,contract,last=fixture(tmp_path,monkeypatch)
+    prior=chain.prepare(parent_release=parent,first_contract=contract,output=tmp_path/'second',
+        source_commit='c'*40,prior_allocations_seconds=[1968,12002])
+    cfg=first.reader()[0](prior);root=Path(cfg['output_root']);root.mkdir()
+    write_once(root/'identity.json',dict(contract=prior,source_commit=cfg['source_commit']))
+    closed={k:True for k in first.CLOSED_FIELDS};closed['serving_copy_reclamation_complete']=True
+    paths=[]
+    for unit in cfg['units']:
+        manifest=first.reader()[0](unit['manifest']);u=root/'units'/unit['unit_id'];u.mkdir(parents=True)
+        identity=dict(source_commit=cfg['source_commit'],manifest_sha256=unit['manifest']['sha256'])
+        write_once(u/'identity.json',dict(identity=identity))
+        (u/'invocations/0001').mkdir(parents=True)
+        write_once(u/'invocations/0001/receipt.json',dict(identity=identity,all_owned_closed=True,error=None,closures=[closed]))
+        for cell in manifest['cells']:
+            if len(paths)==5:break
+            p=u/'cells'/cell['cell_id'];p.mkdir(parents=True);paths.append(p)
+            outcome=write_once(p/'outcome.json',dict(method=cell['method'],request_sha256=cell['request']['sha256'],
+                model_calls=1,input_tokens=10,output_tokens=2,status='execution_failed',success=False))
+            score=write_once(p/'score.json',dict(receipt_sha256=outcome['sha256'],reference_sha256=cell['reference']['sha256']))
+            write_once(p/'terminal.json',dict(cell_id=cell['cell_id'],outcome=outcome,score=score))
+            if cell['method']=='aruqula-fedx':
+                (p/'external-services').mkdir();write_once(p/'external-services/closed.json',closed)
+        if len(paths)==5:break
+    usage=dict(model_calls=5,input_tokens=50,output_tokens=10,sealed_cells=5,unsealed_cells=0,unknown_model_usage=False)
+    cumulative=dict(usage)
+    for k in (*first.USAGE_FIELDS,'sealed_cells'):cumulative[k]+=cfg['prior_usage'][k]
+    write_once(root/'receipt.json',dict(contract=prior,error=None,status='small_study_wall_budget',elapsed_seconds=1000.5,
+        parent_usage=cfg['prior_usage'],new_usage=usage,cumulative_usage=cumulative))
+    return parent,contract,prior,root,paths
+
+
+def test_completed_prefix_inherits_182_and_preserves_exact_34_suffix(tmp_path,monkeypatch):
+    parent,contract,prior,root,paths=completed_fixture(tmp_path,monkeypatch)
+    before={p:p.read_bytes() for p in tmp_path.rglob('*') if p.is_file()}
+    checked=chain.inspect_chain(parent,contract,completed_chain_contracts=[prior])
+    assert checked['inherited_usage']['sealed_cells']==182 and checked['remaining_cells']==34
+    assert checked['inherited_usage']['model_calls']==205
+    remaining={c['cell_id'] for unit in checked['units'] for c in unit['pending_cells']}
+    assert len(remaining)==34 and not remaining.intersection(p.name for p in paths)
+    pin=chain.prepare(parent_release=parent,first_contract=contract,completed_chain_contracts=[prior],
+        output=tmp_path/'third',source_commit='d'*40,prior_allocations_seconds=[1968,12002,1002],
+        batch_total_wall_seconds=28800)
+    cfg=first.reader()[0](pin)
+    assert cfg['original_budget']['total_wall_seconds']==21600
+    assert cfg['batch_total_wall_seconds']==28800 and cfg['recovery_wall_seconds']==13828
+    assert cfg['administrative_budget_amendment']==dict(kind='administrative_total_allocation_extension',
+        original_total_wall_seconds=21600,batch_total_wall_seconds=28800,per_request_and_model_token_budgets_unchanged=True)
+    assert all(p.read_bytes()==data for p,data in before.items())
+
+
+@pytest.mark.parametrize('damage',['output_identity','unsealed','order_gap','closure','invocation_identity','usage','extra_cell','duplicate_contract'])
+def test_completed_chain_corruption_is_rejected(tmp_path,monkeypatch,damage):
+    import shutil
+    parent,contract,prior,root,paths=completed_fixture(tmp_path,monkeypatch)
+    contracts=[prior]
+    if damage=='output_identity':
+        p=root/'identity.json';d=json.loads(p.read_text());d['source_commit']='wrong';rewrite(p,d)
+    elif damage=='unsealed':(paths[-1]/'terminal.json').unlink()
+    elif damage=='order_gap':shutil.rmtree(paths[0])
+    elif damage in ('closure','invocation_identity'):
+        p=next(root.glob('units/*/invocations/*/receipt.json'));d=json.loads(p.read_text())
+        if damage=='closure':d['all_owned_closed']=False
+        else:d['identity']['manifest_sha256']='e'*64
+        rewrite(p,d)
+    elif damage=='usage':
+        p=root/'receipt.json';d=json.loads(p.read_text());d['new_usage']['model_calls']+=1;rewrite(p,d)
+    elif damage=='extra_cell':(paths[-1].parent/'unrecorded-cell').mkdir()
+    else:contracts.append(prior)
+    with pytest.raises((ValueError,FileNotFoundError)):
+        chain.inspect_chain(parent,contract,completed_chain_contracts=contracts)
+
+
+@pytest.mark.parametrize('durations,total',[([1968,12002],28800),([1968,12003,1002],28800),
+    ([1968,12002,1000],28800),([1968,12002,1002],30000)])
+def test_completed_allocations_and_amendment_cannot_be_reset(tmp_path,monkeypatch,durations,total):
+    parent,contract,prior,root,paths=completed_fixture(tmp_path,monkeypatch)
+    with pytest.raises(ValueError,match='allocation|accounting'):
+        chain.prepare(parent_release=parent,first_contract=contract,completed_chain_contracts=[prior],
+            output=tmp_path/'third',source_commit='d'*40,prior_allocations_seconds=durations,batch_total_wall_seconds=total)
+    assert not (tmp_path/'third').exists()
+
+
+def test_actual_three_archives_have_182_sealed_and_34_untouched():
+    base=Path('/Users/anthonyche/xgap-data/outputs')
+    roots=[base/('xgap-small48-terminal-'+job+'-v1') for job in ('3890655','3891655','3892875')]
+    if not all(p.exists() for p in roots):pytest.skip('Optional three-attempt archived evidence unavailable')
+    parent=json.loads((roots[0]/'small48-fixed-f40dfa9-independent-v1/prepared.json').read_text())['release']
+    contract=json.loads((roots[1]/'small48-continue-2a8e16e-v1/prepared.json').read_text())['continuation']
+    latest=json.loads(next(roots[2].glob('*/prepared.json')).read_text())['continuation']
+    def mapper(p):
+        rel=Path(p).relative_to('/home/hxc859/xgap-ch6-artifacts')
+        return roots[2 if rel.parts[0].startswith('small48-final39-') else 1 if rel.parts[0].startswith('small48-continue-') else 0]/rel
+    checked=chain.inspect_chain(parent,contract,completed_chain_contracts=[latest],mapper=mapper)
+    assert checked['remaining_cells']==34
+    assert checked['inherited_usage']==dict(model_calls=497,input_tokens=911698,output_tokens=108792,
+        sealed_cells=182,unsealed_cells=0,unknown_model_usage=False)
+    assert len(checked['corrections'])==1
+
+
+def test_execution_completed_chain_only_runs_final_34_with_phase_budget(tmp_path,monkeypatch):
+    import run_bounded_joint_batch as batch
+    from xgap.experiments import ch6_small_release
+    parent,contract,prior,root,old_paths=completed_fixture(tmp_path,monkeypatch)
+    ref=chain.prepare(parent_release=parent,first_contract=contract,completed_chain_contracts=[prior],
+        output=tmp_path/'third',source_commit='d'*40,prior_allocations_seconds=[1968,12002,1002],
+        recovery_wall_seconds=350,batch_total_wall_seconds=28800)
+    monkeypatch.setattr(batch,'source_commit',lambda:'d'*40)
+    monkeypatch.setattr(ch6_small_release,'audit',lambda release:dict(success=True))
+    monkeypatch.setenv('XGAP_EXTERNAL_LLM_API_KEY','fixture-no-network')
+    seen=[];before={p:p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    def run(**kwargs):
+        manifest=first.reader()[0](dict(path=kwargs['manifest_path'],sha256=kwargs['manifest_sha256']))
+        target=Path(kwargs['output']);target.mkdir(parents=True,exist_ok=True);count=0
+        assert 'before_cell' not in kwargs and kwargs['global_deadline_monotonic']>0
+        for cell in manifest['cells']:
+            path=target/'cells'/cell['cell_id']
+            if path.exists():continue
+            assert kwargs['before_cell_phase'](cell,dict(minimum_method_seconds=300,global_remaining_seconds=350)) is None
+            assert kwargs['before_cell_phase'](cell,dict(minimum_method_seconds=300,global_remaining_seconds=299))=='small_study_wall_budget'
+            path.mkdir(parents=True);seen.append(cell['cell_id']);count+=1
+            pin=write_once(path/'outcome.json',dict(model_calls=1,input_tokens=10,output_tokens=2))
+            write_once(path/'terminal.json',dict(outcome=pin))
+            if count>=kwargs['max_new_cells']:break
+        return dict(status='returned',new_cells=count,receipt=None)
+    monkeypatch.setattr(batch,'run',run)
+    result=chain.execute(ref)
+    assert result['status']=='all_unattempted_requests_processed'
+    assert len(seen)==len(set(seen))==34
+    assert not set(seen).intersection(p.name for p in old_paths)
+    assert result['new_usage']['sealed_cells']==34 and result['cumulative_usage']['sealed_cells']==216
+    assert result['cumulative_usage']['model_calls']==239
+    assert all(p.read_bytes()==data for p,data in before.items())
     with pytest.raises(FileExistsError):chain.execute(ref)

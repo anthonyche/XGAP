@@ -26,7 +26,7 @@ from xgap.experiments.common_method_trial import run_nl_trial
 from xgap.experiments.common_row_score import score_trial
 from xgap.experiments.interpretation_diagnostics import batch_cell_summary
 from xgap.experiments.evidence_store import file_pin
-from xgap.experiments.external_federation import deadline
+from xgap.experiments.external_federation import DeadlineExceeded, deadline
 from xgap.experiments.one_shot_profile import read_pinned
 from xgap.experiments.one_shot_records import write_once
 from xgap.experiments.process_guard import ProcessBudget
@@ -100,8 +100,9 @@ def validate(manifest):
 
 class BatchBudget:
     """Sticky study censoring; wall budget includes time between invocations."""
-    def __init__(self,root,design,started,extra_roots=()):
+    def __init__(self,root,design,started,extra_roots=(),global_deadline_monotonic=None):
         self.root=root;self.design=design;self.started=started;self.status=None;self.sampled=0;self.size=0;self.free=0
+        self.global_deadline_monotonic=global_deadline_monotonic
         self.extra_roots=tuple(Path(p).resolve() for p in extra_roots)
         roots=(Path(root).resolve(),*self.extra_roots)
         if any(a==b or a in b.parents or b in a.parents for i,a in enumerate(roots) for b in roots[i+1:]):
@@ -109,6 +110,8 @@ class BatchBudget:
 
     def sample(self,_):
         if self.status:return self.status
+        if self.global_deadline_monotonic is not None and time.monotonic()>=self.global_deadline_monotonic:
+            self.status='study_global_wall_budget'
         if time.time()-self.started>=self.design['total_wall_seconds']:self.status='study_wall_budget'
         if time.monotonic()-self.sampled>1:
             self.sampled=time.monotonic()
@@ -118,6 +121,21 @@ class BatchBudget:
             if self.size>=self.design['package_max_bytes']:self.status=self.status or 'study_disk_budget'
             if self.free<self.design['free_disk_reserve_bytes']:self.status=self.status or 'study_disk_reserve'
         return self.status
+
+
+def cell_admission_context(design,cell,*,source_ready,external_ready=False,phase='before_cell'):
+    """Remaining phases, not cumulative charges or an estimated runtime.
+
+    Source startup is shared while its session is live. The external method has
+    a separate per-request startup; a cold external request needs both phases.
+    """
+    source=0 if source_ready else design['startup_seconds']
+    external=design['startup_seconds'] if cell['method']==EXTERNAL_METHOD and not external_ready else 0
+    method=design['method_wall_seconds']
+    return dict(phase=phase,source_ready=source_ready,external_ready=external_ready,
+        source_startup_seconds=source,external_startup_seconds=external,method_seconds=method,
+        minimum_method_seconds=method,maximum_startup_seconds=source+external,
+        needed_total_seconds=source+external+method)
 
 
 def source_commit():
@@ -156,17 +174,25 @@ def inventory(root,cells):
     return counts
 
 
-def run(manifest_path,manifest_sha256,output,*,max_new_cells=10000,before_cell=None):
+def run(manifest_path,manifest_sha256,output,*,max_new_cells=10000,before_cell=None,
+        before_cell_phase=None,global_deadline_monotonic=None):
     if type(max_new_cells) is not int or not 1<=max_new_cells<=10000:raise ValueError('Invalid invocation cell bound')
+    if before_cell is not None and before_cell_phase is not None:
+        raise ValueError('Choose the legacy or phase-aware admission callback, not both')
+    if global_deadline_monotonic is not None and (type(global_deadline_monotonic) not in (int,float) or
+            not math.isfinite(global_deadline_monotonic) or global_deadline_monotonic<=0):
+        raise ValueError('A finite positive global monotonic deadline is required')
     manifest=json.loads(read_pinned(manifest_path,manifest_sha256));validate(manifest)
     commit=source_commit();root=Path(output).resolve();root.mkdir(parents=True,exist_ok=True)
     with (root/'.lock').open('a') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:raise ValueError('Another batch invocation owns this output') from None
-        return _run(manifest,manifest_sha256,commit,root,max_new_cells,before_cell)
+        return _run(manifest,manifest_sha256,commit,root,max_new_cells,before_cell,
+                    before_cell_phase,global_deadline_monotonic)
 
 
-def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
+def _run(manifest,digest,commit,root,max_new_cells,before_cell=None,
+         before_cell_phase=None,global_deadline_monotonic=None):
     migration=entry_cohort(manifest.get('entry_migration'),manifest.get('entry_profile'),
         manifest['prepared'],manifest['deployment'],cells=manifest['cells'])
     identity=dict(manifest_sha256=digest,source_commit=commit)
@@ -193,7 +219,48 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
     invocation=runs/f'{len(previous)+1:04}';invocation.mkdir()
     write_once(invocation/'intent.json',dict(identity=identity,max_new_cells=max_new_cells))
     (root/'cells').mkdir(exist_ok=True);(root/'sessions').mkdir(exist_ok=True)
-    design=manifest['design'];budget=BatchBudget(root,design,started);session=None;external=None;closures=[];attempts=0;error=None
+    design=manifest['design'];budget=BatchBudget(root,design,started,global_deadline_monotonic=global_deadline_monotonic)
+    session=None;external=None;closures=[];attempts=0;error=None;admission_stop=None;provisional_cell=None;active_startup_limit=None
+    phase_aware=before_cell_phase is not None or global_deadline_monotonic is not None
+    def admit(cell,phase,*,check_callback=True):
+        nonlocal admission_stop
+        context=cell_admission_context(design,cell,source_ready=session is not None,
+            external_ready=external is not None,phase=phase)
+        context['unit_remaining_seconds']=design['total_wall_seconds']-(time.time()-started)
+        context['global_remaining_seconds']=(None if global_deadline_monotonic is None else
+            global_deadline_monotonic-time.monotonic())
+        # Startup is a cap, not a mandatory duration. With an enclosing deadline
+        # it may consume only the time left after a complete method grant.
+        required=(context['minimum_method_seconds'] if global_deadline_monotonic is not None else context['needed_total_seconds'])
+        context['admission_required_seconds']=required
+        reason=budget.sample([]) if check_callback else budget.status
+        if reason is None and check_callback and before_cell_phase is not None:reason=before_cell_phase(cell,dict(context))
+        if reason is not None and (not isinstance(reason,str) or not reason):
+            raise ValueError('Phase admission callback must return a reason or None')
+        # Accounting callbacks can inspect many sealed files. Their elapsed time
+        # is real work and cannot be spent twice using a stale admission grant.
+        context['unit_remaining_seconds']=design['total_wall_seconds']-(time.time()-started)
+        context['global_remaining_seconds']=(None if global_deadline_monotonic is None else
+            global_deadline_monotonic-time.monotonic())
+        if reason is None and context['unit_remaining_seconds']<required:
+            reason='study_insufficient_time_for_cell'
+        if reason is None and context['global_remaining_seconds'] is not None and context['global_remaining_seconds']<required:
+            reason='study_global_insufficient_time_for_cell'
+        if reason is None and global_deadline_monotonic is not None and context['maximum_startup_seconds']:
+            if min(context['unit_remaining_seconds'],context['global_remaining_seconds'])<=required:
+                reason='study_insufficient_startup_time'
+        if reason:
+            budget.status=reason;admission_stop=dict(cell_id=cell['cell_id'],reason=reason,context=context)
+        return reason
+    def startup_seconds():
+        nonlocal active_startup_limit
+        if global_deadline_monotonic is None:return design['startup_seconds']
+        remaining=min(global_deadline_monotonic-time.monotonic(),design['total_wall_seconds']-(time.time()-started))
+        available=remaining-design['method_wall_seconds']
+        active_startup_limit=dict(seconds=max(0,min(design['startup_seconds'],available)),
+            capped_by_study=available<design['startup_seconds'],reserved_method_seconds=design['method_wall_seconds'])
+        if available<=0:raise DeadlineExceeded('Study startup allowance exhausted; full method grant retained')
+        return active_startup_limit['seconds']
     internal_profile=None
     try:
         workspace=None
@@ -201,7 +268,7 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
             if not os.environ.get('SLURM_JOB_ID'):
                 raise ValueError('Node-local storage requires an explicit Slurm allocation')
             workspace=Path(tempfile.mkdtemp(prefix='xgap-source-',dir=os.environ.get('SLURM_TMPDIR','/tmp')))
-            budget=BatchBudget(root,design,started,extra_roots=(workspace,))
+            budget=BatchBudget(root,design,started,extra_roots=(workspace,),global_deadline_monotonic=global_deadline_monotonic)
             write_once(invocation/'source-workspace.json',dict(path=str(workspace),job_id=os.environ['SLURM_JOB_ID'],
                 common_to_all_methods=True,storage_accounted=True))
         for cell in manifest['cells']:
@@ -216,9 +283,13 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
                     if not isinstance(reason,str) or not reason:
                         raise ValueError('Cell admission callback must return a reason or None')
                     budget.status=reason;break
-            needed=design['method_wall_seconds']+(design['startup_seconds'] if session is None or cell['method']==EXTERNAL_METHOD else 0)
-            if design['total_wall_seconds']-(time.time()-started)<needed:
-                budget.status='study_insufficient_time_for_cell';break
+            if phase_aware:
+                if admit(cell,'before_cell'):break
+            else:
+                # Preserve the legacy invocation contract for existing callers.
+                needed=design['method_wall_seconds']+(design['startup_seconds'] if session is None or cell['method']==EXTERNAL_METHOD else 0)
+                if design['total_wall_seconds']-(time.time()-started)<needed:
+                    budget.status='study_insufficient_time_for_cell';break
             if session is None:
                 cls=NativeStoreSession if manifest['deployment']=='native' else RdfTdbSession
                 ordinal=f'{len(list((root/"sessions").iterdir()))+1:04}'
@@ -227,17 +298,34 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
                     discard_serving_copies=True,budget=SourceObservationBudget(**design['source_budget']),
                     serving_root=workspace/ordinal if workspace else None,
                     **session_options(design.get('source_runtime')))
-                with deadline(design['startup_seconds']):session.start()
+                with deadline(startup_seconds()):session.start()
+                active_startup_limit=None
                 internal_profile=session.profile if migration is None else entry_serving_profile(
                     serving_profile=session.profile,entry_profile=manifest['entry_profile'],cohort=migration,
                     migration_pin=manifest['entry_migration'],output=session.root/'entry-profile.json')
+                if phase_aware and admit(cell,'after_source_startup'):break
             if budget.sample([]):break
             if design['total_wall_seconds']-(time.time()-started)<design['method_wall_seconds']:
                 budget.status='study_insufficient_time_for_cell';break
-            path.mkdir();attempts+=1
+            # The preceding storage scan or profile setup can itself consume
+            # time. Refresh the grant without repeating accounting callbacks.
+            if phase_aware and admit(cell,'before_request_journal',check_callback=False):break
+            path.mkdir()
+            if phase_aware and cell['method']==EXTERNAL_METHOD:
+                # Setup can spend time but cannot run the author method. Keep it
+                # outside the attempted-cell ledger until the full method grant
+                # has been checked again. Interrupted setup is retained below.
+                provisional_cell=path
+                from ch6_external_session import ExternalSession
+                external=ExternalSession(root=path/'external-services',config_pin=manifest['external_runtime'],source_session=session)
+                with deadline(startup_seconds()):external.start()
+                active_startup_limit=None
+                if admit(cell,'after_external_startup'):break
+            attempts+=1
             # This journal is supervisor-only; the worker never receives reference pins.
             write_once(path/'intent.json',dict(identity=identity,cell=cell,session_root=str(session.root),
                 fresh_source_session=session.observer.generation==0,attempts=1))
+            provisional_cell=None
             kwargs={}
             for key,argument in (('request','request'),('scope','scope'),('oracle','oracle'),('config','joint_config')):
                 if cell['method']==EXTERNAL_METHOD:continue
@@ -249,8 +337,10 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
             process_budget=ProcessBudget(wall_seconds=design['method_wall_seconds'],max_group_rss_bytes=design['method_rss_bytes'])
             if cell['method']==EXTERNAL_METHOD:
                 from ch6_external_session import ExternalSession,run_trial as external_trial
-                external=ExternalSession(root=path/'external-services',config_pin=manifest['external_runtime'],source_session=session)
-                with deadline(design['startup_seconds']):external.start()
+                if external is None:
+                    external=ExternalSession(root=path/'external-services',config_pin=manifest['external_runtime'],source_session=session)
+                    with deadline(startup_seconds()):external.start()
+                    active_startup_limit=None
                 outcome=external_trial(request=cell['request'],output=path/'execution',session=external,
                     budget=process_budget,source_rss_bytes=design['source_rss_bytes'],package_monitor=budget)
                 closure=external.close();closures.append(closure);external=None
@@ -285,14 +375,34 @@ def _run(manifest,digest,commit,root,max_new_cells,before_cell=None):
                 if not verified_budget_censoring(outcome):
                     budget.status='study_harness_failure';break
     except (Exception,KeyboardInterrupt) as exc:
-        error=dict(type=type(exc).__name__,message=str(exc))
+        if isinstance(exc,DeadlineExceeded) and active_startup_limit and active_startup_limit['capped_by_study']:
+            budget.status='study_startup_wall_budget'
+        elif isinstance(exc,DeadlineExceeded) and global_deadline_monotonic is not None and time.monotonic()>=global_deadline_monotonic:
+            budget.status='study_global_wall_budget'
+        else:error=dict(type=type(exc).__name__,message=str(exc))
     finally:
         if external:closures.append(external.close())
         if session:closures.append(session.close())
+        unstarted_setup=None
+        if provisional_cell is not None and all(closed(c) for c in closures):
+            if (provisional_cell/'intent.json').exists() or (provisional_cell/'execution').exists():
+                raise ValueError('Cannot release a cell with a method attempt')
+            destination=invocation/'unstarted-setups'/provisional_cell.name
+            destination.parent.mkdir(exist_ok=True)
+            original=str(provisional_cell);provisional_cell.rename(destination)
+            unstarted_setup=write_once(destination/'unstarted.json',dict(cell_id=provisional_cell.name,
+                source_identity=identity,original_path=original,retained_path=str(destination),setup_attempts=1,
+                method_attempts=0,model_calls=0,answer_query_executions=0,
+                stop_reason=budget.status,error=error,all_owned_closed=True,
+                evidence_path_semantics='Setup records retain original absolute paths; no method or cell intent was started'))
         result=dict(schema_version='xgap-ch6-five-method-invocation-v1' if manifest['schema_version']==FORMAL_SCHEMA else 'xgap-unified-batch-invocation-v1' if manifest['schema_version']==UNIFIED_SCHEMA else 'xgap-bounded-joint-batch-invocation-v1',identity=identity,
             new_cells=attempts,counts=inventory(root,manifest['cells']),budget_status=budget.status,error=error,
             closures=closures,all_owned_closed=all(closed(c) for c in closures),automatic_retries=0,
             scope='execution_failed counts unsuccessful executions, not algorithm quality; study_censored is a subset; incomplete intents are never retried; offline startup/scoring excluded from method latency')
+        if phase_aware:result.update(admission_stop=admission_stop,unstarted_setup=unstarted_setup,
+            stopped_startup_limit=active_startup_limit,
+            global_deadline_monotonic=global_deadline_monotonic,
+            global_deadline_scope='Work deadline; verified resource shutdown and ledger sealing remain mandatory after stopping work')
         result['status']='failed' if error or not result['all_owned_closed'] else 'budget_stopped' if budget.status else 'returned'
         result['receipt']=write_once(invocation/'receipt.json',result)
     return result
