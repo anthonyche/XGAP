@@ -1,0 +1,2042 @@
+[
+  {
+    "id": "V01",
+    "nl": "对全部人员非空整数 amount 求和，保留大于 2^53 的精度。",
+    "program": {
+      "program_id": "V01",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "amount": "amount"
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "total": {
+                "op": "sum",
+                "field": "amount"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "total": 9007199254740995
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V01.cypher",
+      "fuseki": "targets/V01.rq"
+    },
+    "reference_columns": [
+      "total"
+    ]
+  },
+  {
+    "id": "V02",
+    "nl": "对全部人员高精度 credit 求和，保持 decimal。",
+    "program": {
+      "program_id": "V02",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "credit": "credit"
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "total": {
+                "op": "sum",
+                "field": "credit"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "credit"
+    },
+    "source_bindings": {
+      "people": "fuseki"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "total": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "10000000000000000000000.25"
+        }
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "fuseki": "targets/V02.rq"
+    },
+    "reference_columns": [
+      "total"
+    ]
+  },
+  {
+    "id": "V03",
+    "nl": "分别统计人员数、非空 score 数及不同 score 值数；bool 与数值区分。",
+    "program": {
+      "program_id": "V03",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "people": {
+                "op": "count"
+              },
+              "present": {
+                "op": "count",
+                "field": "score"
+              },
+              "unique": {
+                "op": "count",
+                "field": "score",
+                "distinct": true
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "people": 5,
+        "present": 4,
+        "unique": 3
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V03.cypher",
+      "fuseki": "targets/V03.rq"
+    },
+    "reference_columns": [
+      "people",
+      "present",
+      "unique"
+    ]
+  },
+  {
+    "id": "V04",
+    "nl": "按 score 的值分组计数，1 与 1.0 同组；空值、字符串和 bool 分组。",
+    "program": {
+      "program_id": "V04",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [
+              "score"
+            ],
+            "aggregations": {
+              "n": {
+                "op": "count"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "score": null,
+        "n": 1
+      },
+      {
+        "score": 1,
+        "n": 2
+      },
+      {
+        "score": "1",
+        "n": 1
+      },
+      {
+        "score": true,
+        "n": 1
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V04.cypher",
+      "fuseki": "targets/V04.rq"
+    },
+    "reference_columns": [
+      "score",
+      "n"
+    ]
+  },
+  {
+    "id": "V05",
+    "nl": "按跨源一致的标量顺序排序，方向 asc，空值 last。",
+    "program": {
+      "program_id": "V05",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "ordered",
+          "kind": "order_limit",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "order_by": [
+              {
+                "field": "score",
+                "direction": "asc",
+                "nulls": "last"
+              },
+              {
+                "field": "person",
+                "direction": "asc"
+              }
+            ],
+            "limit": 10
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "ordered"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_sort_limit",
+      "coordinator_row_project"
+    ],
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/a"
+      },
+      {
+        "person": "https://xgap.test/toy/b"
+      },
+      {
+        "person": "https://xgap.test/toy/d"
+      },
+      {
+        "person": "https://xgap.test/toy/c"
+      },
+      {
+        "person": "https://xgap.test/toy/z"
+      }
+    ],
+    "ordered": true,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V05.cypher",
+      "fuseki": "targets/V05.rq"
+    },
+    "reference_columns": [
+      "person"
+    ]
+  },
+  {
+    "id": "V06",
+    "nl": "按跨源一致的标量顺序排序，方向 desc，空值 first。",
+    "program": {
+      "program_id": "V06",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "ordered",
+          "kind": "order_limit",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "order_by": [
+              {
+                "field": "score",
+                "direction": "desc",
+                "nulls": "first"
+              },
+              {
+                "field": "person",
+                "direction": "asc"
+              }
+            ],
+            "limit": 10
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "ordered"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_sort_limit",
+      "coordinator_row_project"
+    ],
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/z"
+      },
+      {
+        "person": "https://xgap.test/toy/c"
+      },
+      {
+        "person": "https://xgap.test/toy/d"
+      },
+      {
+        "person": "https://xgap.test/toy/a"
+      },
+      {
+        "person": "https://xgap.test/toy/b"
+      }
+    ],
+    "ordered": true,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V06.cypher",
+      "fuseki": "targets/V06.rq"
+    },
+    "reference_columns": [
+      "person"
+    ]
+  },
+  {
+    "id": "V07",
+    "nl": "求混合 score 的最小与最大非空值：数值先于字符串，再先于 bool。",
+    "program": {
+      "program_id": "V07",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "low": {
+                "op": "min",
+                "field": "score"
+              },
+              "high": {
+                "op": "max",
+                "field": "score"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "low": 1,
+        "high": true
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V07.cypher",
+      "fuseki": "targets/V07.rq"
+    },
+    "reference_columns": [
+      "low",
+      "high"
+    ]
+  },
+  {
+    "id": "V08",
+    "nl": "先按 binding 数值相等 score=1 过滤，再求 amount 和人数。",
+    "program": {
+      "program_id": "V08",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score",
+              "amount": "amount"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "condition": {
+              "op": "eq",
+              "field": "score",
+              "value": 1
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "total": {
+                "op": "sum",
+                "field": "amount"
+              },
+              "n": {
+                "op": "count"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_filter",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "total": 9007199254740995,
+        "n": 2
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V08.cypher",
+      "fuseki": "targets/V08.rq"
+    },
+    "reference_columns": [
+      "total",
+      "n"
+    ]
+  },
+  {
+    "id": "V09",
+    "nl": "按 score 跨库连接人员；数值1与1.0连接，bool不冒充1，空值不连接。",
+    "program": {
+      "program_id": "V09",
+      "operators": [
+        {
+          "operator_id": "left",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "right",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "joined",
+          "kind": "join",
+          "input_ids": [
+            "left",
+            "right"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "score",
+            "right_on": "score",
+            "right_prefix": "right."
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "joined"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "left": {
+                "kind": "field",
+                "field": "person"
+              },
+              "right": {
+                "kind": "field",
+                "field": "right.person"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "left": "core",
+      "right": "core"
+    },
+    "source_bindings": {
+      "left": "neo4j",
+      "right": "fuseki"
+    },
+    "path_subqueries": {
+      "left": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      },
+      "right": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_row_project",
+      "coordinator_join",
+      "coordinator_row_project"
+    ],
+    "expected_rows": [
+      {
+        "left": "https://xgap.test/toy/a",
+        "right": "https://xgap.test/toy/a"
+      },
+      {
+        "left": "https://xgap.test/toy/a",
+        "right": "https://xgap.test/toy/b"
+      },
+      {
+        "left": "https://xgap.test/toy/b",
+        "right": "https://xgap.test/toy/a"
+      },
+      {
+        "left": "https://xgap.test/toy/b",
+        "right": "https://xgap.test/toy/b"
+      },
+      {
+        "left": "https://xgap.test/toy/c",
+        "right": "https://xgap.test/toy/c"
+      },
+      {
+        "left": "https://xgap.test/toy/d",
+        "right": "https://xgap.test/toy/d"
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "neo4j": "targets/V09.cypher",
+      "fuseki": "targets/V09.rq"
+    },
+    "reference_columns": [
+      "left",
+      "right"
+    ]
+  },
+  {
+    "id": "V10",
+    "nl": "合并两个来源的 score 集合，按数值等价去重，保留空值。",
+    "program": {
+      "program_id": "V10",
+      "operators": [
+        {
+          "operator_id": "left",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "right",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "left_values",
+          "kind": "project",
+          "input_ids": [
+            "left"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "score": {
+                "kind": "field",
+                "field": "score"
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "right_values",
+          "kind": "project",
+          "input_ids": [
+            "right"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "score": {
+                "kind": "field",
+                "field": "score"
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "union",
+          "input_ids": [
+            "left_values",
+            "right_values"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {}
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "left": "core",
+      "right": "core"
+    },
+    "source_bindings": {
+      "left": "neo4j",
+      "right": "fuseki"
+    },
+    "path_subqueries": {
+      "left": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      },
+      "right": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_row_project",
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_row_project",
+      "merge"
+    ],
+    "expected_rows": [
+      {
+        "score": 1
+      },
+      {
+        "score": "1"
+      },
+      {
+        "score": true
+      },
+      {
+        "score": null
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "neo4j": "targets/V10.cypher",
+      "fuseki": "targets/V10.rq"
+    },
+    "reference_columns": [
+      "score"
+    ]
+  },
+  {
+    "id": "V11",
+    "nl": "过滤正数 score 后对不同数值求和，1与1.0只累计一次。",
+    "program": {
+      "program_id": "V11",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "condition": {
+              "op": "gt",
+              "field": "score",
+              "value": 0
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "total": {
+                "op": "sum",
+                "field": "score",
+                "distinct": true
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_filter",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "total": 1.0
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V11.cypher",
+      "fuseki": "targets/V11.rq"
+    },
+    "reference_columns": [
+      "total"
+    ]
+  },
+  {
+    "id": "V12",
+    "nl": "验收空输入的全局聚合。",
+    "program": {
+      "program_id": "V12",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "properties": {
+                "id": "missing"
+              }
+            },
+            "entity_field": "person",
+            "properties": {
+              "amount": "amount"
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "rows": {
+                "op": "count"
+              },
+              "present": {
+                "op": "count",
+                "field": "amount"
+              },
+              "total": {
+                "op": "sum",
+                "field": "amount"
+              },
+              "low": {
+                "op": "min",
+                "field": "amount"
+              },
+              "high": {
+                "op": "max",
+                "field": "amount"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {
+            "properties": {
+              "id": "missing"
+            }
+          },
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"missing\"]\n      Nodes",
+        "expected_paths": []
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "rows": 0,
+        "present": 0,
+        "total": 0,
+        "low": null,
+        "high": null
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V12.cypher",
+      "fuseki": "targets/V12.rq"
+    },
+    "reference_columns": [
+      "rows",
+      "present",
+      "total",
+      "low",
+      "high"
+    ]
+  },
+  {
+    "id": "V13",
+    "nl": "在 Neo4j 选择 Alice，再连接 Fuseki 中的 credit 并求精确和。",
+    "program": {
+      "program_id": "V13",
+      "operators": [
+        {
+          "operator_id": "eligible",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "properties": {
+                "id": "a"
+              }
+            },
+            "entity_field": "person",
+            "properties": {}
+          }
+        },
+        {
+          "operator_id": "credits",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "credit": "credit"
+            }
+          }
+        },
+        {
+          "operator_id": "joined",
+          "kind": "join",
+          "input_ids": [
+            "eligible",
+            "credits"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "joined"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "total": {
+                "op": "sum",
+                "field": "credit"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "eligible": "core",
+      "credits": "credit"
+    },
+    "source_bindings": {
+      "eligible": "neo4j",
+      "credits": "fuseki"
+    },
+    "path_subqueries": {
+      "eligible": {
+        "query": {
+          "path_var": null,
+          "source": {
+            "properties": {
+              "id": "a"
+            }
+          },
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Nodes",
+        "expected_paths": [
+          "a"
+        ]
+      },
+      "credits": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_row_project",
+      "coordinator_join",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "total": {
+          "type": "literal",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "value": "10000000000000000000000.1"
+        }
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "fuseki": "targets/V13.rq"
+    },
+    "reference_columns": [
+      "total"
+    ]
+  },
+  {
+    "id": "V14",
+    "nl": "按高精度 credit 升序排列人员，缺失值放最后。",
+    "program": {
+      "program_id": "V14",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "credit": "credit"
+            }
+          }
+        },
+        {
+          "operator_id": "ordered",
+          "kind": "order_limit",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "order_by": [
+              {
+                "field": "credit",
+                "direction": "asc",
+                "nulls": "last"
+              },
+              {
+                "field": "person",
+                "direction": "asc"
+              }
+            ],
+            "limit": 10
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "ordered"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "credit"
+    },
+    "source_bindings": {
+      "people": "fuseki"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_sort_limit",
+      "coordinator_row_project"
+    ],
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/d"
+      },
+      {
+        "person": "https://xgap.test/toy/b"
+      },
+      {
+        "person": "https://xgap.test/toy/a"
+      },
+      {
+        "person": "https://xgap.test/toy/c"
+      },
+      {
+        "person": "https://xgap.test/toy/z"
+      }
+    ],
+    "ordered": true,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "fuseki": "targets/V14.rq"
+    },
+    "reference_columns": [
+      "person"
+    ]
+  },
+  {
+    "id": "V15",
+    "nl": "验收全空列的全局聚合。",
+    "program": {
+      "program_id": "V15",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "vacant": "vacant"
+            }
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "aggregate",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "grouped_bindings",
+          "parameters": {
+            "group_by": [],
+            "aggregations": {
+              "rows": {
+                "op": "count"
+              },
+              "present": {
+                "op": "count",
+                "field": "vacant"
+              },
+              "total": {
+                "op": "sum",
+                "field": "vacant"
+              },
+              "low": {
+                "op": "min",
+                "field": "vacant"
+              },
+              "high": {
+                "op": "max",
+                "field": "vacant"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ]
+    },
+    "operator_sources": {
+      "people": "core"
+    },
+    "source_bindings": {
+      "people": "neo4j"
+    },
+    "path_subqueries": {
+      "people": {
+        "query": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {}
+            },
+            "min_repeats": 0,
+            "max_repeats": 0
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL"
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        },
+        "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Nodes",
+        "expected_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      }
+    },
+    "expected_runtime_kinds": [
+      "remote_query",
+      "normalize_node_bindings",
+      "coordinator_group_aggregate"
+    ],
+    "expected_rows": [
+      {
+        "rows": 5,
+        "present": 0,
+        "total": 0,
+        "low": null,
+        "high": null
+      }
+    ],
+    "ordered": false,
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/V15.cypher",
+      "fuseki": "targets/V15.rq"
+    },
+    "reference_columns": [
+      "rows",
+      "present",
+      "total",
+      "low",
+      "high"
+    ]
+  }
+]

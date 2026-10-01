@@ -1,0 +1,71 @@
+{
+  "schema_version": "m15-f2c9-direct-estimate-source-v1",
+  "evidence_kind": "controlled_preexecution_fixture",
+  "evidence_id": "m15-f2c9-controlled-estimates-v1",
+  "records": [
+    {
+      "changed_slot_ids": [],
+      "physical_strategy": "parallel_hash_join",
+      "estimated_latency_ms": 110.0,
+      "estimated_resource_cost_units": 110.0
+    },
+    {
+      "changed_slot_ids": [],
+      "physical_strategy": "risk_first_bind_join",
+      "estimated_latency_ms": 100.0,
+      "estimated_resource_cost_units": 100.0
+    },
+    {
+      "changed_slot_ids": [
+        "risk-level"
+      ],
+      "physical_strategy": "parallel_hash_join",
+      "estimated_latency_ms": 100.0,
+      "estimated_resource_cost_units": 130.0
+    },
+    {
+      "changed_slot_ids": [
+        "risk-level"
+      ],
+      "physical_strategy": "risk_first_bind_join",
+      "estimated_latency_ms": 90.0,
+      "estimated_resource_cost_units": 120.0
+    },
+    {
+      "changed_slot_ids": [
+        "transfer-predicate"
+      ],
+      "physical_strategy": "parallel_hash_join",
+      "estimated_latency_ms": 106.0,
+      "estimated_resource_cost_units": 107.0
+    },
+    {
+      "changed_slot_ids": [
+        "transfer-predicate"
+      ],
+      "physical_strategy": "risk_first_bind_join",
+      "estimated_latency_ms": 96.0,
+      "estimated_resource_cost_units": 97.0
+    },
+    {
+      "changed_slot_ids": [
+        "risk-level",
+        "transfer-predicate"
+      ],
+      "physical_strategy": "parallel_hash_join",
+      "estimated_latency_ms": 70.0,
+      "estimated_resource_cost_units": 80.0
+    },
+    {
+      "changed_slot_ids": [
+        "risk-level",
+        "transfer-predicate"
+      ],
+      "physical_strategy": "risk_first_bind_join",
+      "estimated_latency_ms": 60.0,
+      "estimated_resource_cost_units": 70.0
+    }
+  ],
+  "automatic_retries": 0,
+  "paper_result": false
+}

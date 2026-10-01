@@ -29,6 +29,7 @@ from xgap.algebra.ops import (
     QuantifiedCheckOp,
     RecursiveMode,
     RecursiveOp,
+    ReverseOp,
     SelectionOp,
     UnionOp,
 )
@@ -43,6 +44,8 @@ def evaluate(op: object, graph: PropertyGraph) -> EvaluationResult:
         return graph.nodes_as_paths()
     if isinstance(op, EdgesOp):
         return graph.edges_as_paths()
+    if isinstance(op, ReverseOp):
+        return PathSet(Path(tuple(reversed(path.sequence))) for path in evaluate_pathset(op.child, graph))
     if isinstance(op, SelectionOp):
         child_paths = evaluate_pathset(op.child, graph)
         return PathSet(path for path in child_paths if op.condition.evaluate(path, graph))
@@ -113,15 +116,30 @@ def _join_path_sets(left_paths: PathSet, right_paths: PathSet) -> PathSet:
 
 def _evaluate_recursive(op: RecursiveOp, graph: PropertyGraph) -> PathSet:
     _validate_recursive_depth(op)
-    child_paths = evaluate_pathset(op.child, graph)
+    return recursive_paths(evaluate_pathset(op.child, graph), op.mode, op.max_depth)
+
+
+def join_paths(left: PathSet, right: PathSet) -> PathSet:
+    """Apply existing concatenation to materialized paths, including native inputs."""
+    return _join_path_sets(left, right)
+
+
+def recursive_paths(child_paths: PathSet, mode: RecursiveMode, max_depth: int | None) -> PathSet:
+    """Apply existing Recursive semantics without requiring a graph or logical child."""
+    op = RecursiveOp(NodesOp(), mode, max_depth=max_depth)
+    _validate_recursive_depth(op)
     if op.mode is RecursiveMode.SHORTEST:
         return _evaluate_shortest_recursive(child_paths, op.max_depth)
     return _evaluate_bounded_or_frontier_recursive(child_paths, op.mode, op.max_depth)
 
 
 def _evaluate_group_by(op: GroupByOp, graph: PropertyGraph) -> SolutionSpace:
-    group_key = op.group_key()
-    paths = evaluate_pathset(op.child, graph)
+    key = op.group_key()
+    return group_paths(evaluate_pathset(op.child, graph), key)
+
+
+def group_paths(paths: PathSet, group_key: GroupKey) -> SolutionSpace:
+    """Apply GroupBy to materialized paths, including native runtime inputs."""
 
     partitions: set[PartitionId] = set()
     groups: set[GroupId] = set()
@@ -171,8 +189,12 @@ def _group_by_keys(group_key: GroupKey, path: Path) -> tuple[tuple[object, ...],
 
 
 def _evaluate_order_by(op: OrderByOp, graph: PropertyGraph) -> SolutionSpace:
-    order_key = op.order_key()
-    solution_space = evaluate_solution_space(op.child, graph)
+    key = op.order_key()
+    return order_paths(evaluate_solution_space(op.child, graph), key)
+
+
+def order_paths(solution_space: SolutionSpace, order_key: OrderKey) -> SolutionSpace:
+    """Apply the same rank semantics to a materialized SolutionSpace."""
 
     partition_ranks = dict(solution_space.partition_ranks)
     group_ranks = dict(solution_space.group_ranks)
@@ -236,25 +258,33 @@ def _evaluate_projection(op: ProjectionOp, graph: PropertyGraph) -> PathSet:
     _validate_projection_limit(op.num_partitions, "num_partitions")
     _validate_projection_limit(op.num_groups, "num_groups")
     _validate_projection_limit(op.num_paths, "num_paths")
+    return project_paths(evaluate_solution_space(op.child, graph),
+                         op.num_partitions, op.num_groups, op.num_paths)
 
-    solution_space = evaluate_solution_space(op.child, graph)
+
+def project_paths(solution_space: SolutionSpace, num_partitions: int | None = None,
+                  num_groups: int | None = None, num_paths: int | None = None) -> PathSet:
+    """Project using the audited partition/group/path ordering and limits."""
+    _validate_projection_limit(num_partitions, "num_partitions")
+    _validate_projection_limit(num_groups, "num_groups")
+    _validate_projection_limit(num_paths, "num_paths")
     result = PathSet()
 
     partitions = sorted(
         solution_space.partitions,
         key=lambda partition: (solution_space.rank(partition), partition.key),
     )
-    for partition in _limit(partitions, op.num_partitions):
+    for partition in _limit(partitions, num_partitions):
         groups = sorted(
             solution_space.groups_for_partition(partition),
             key=lambda group: (solution_space.rank(group), group.partition.key, group.key),
         )
-        for group in _limit(groups, op.num_groups):
+        for group in _limit(groups, num_groups):
             paths = sorted(
                 solution_space.paths_for_group(group),
                 key=lambda path: (solution_space.rank(path), path.sequence),
             )
-            for path in _limit(paths, op.num_paths):
+            for path in _limit(paths, num_paths):
                 result.add(path)
 
     return result

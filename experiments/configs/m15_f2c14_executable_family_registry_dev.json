@@ -1,0 +1,154 @@
+{
+  "schema_version": "m15-f2c14-executable-family-registry-v1",
+  "registry_id": "m15-f2c14-executable-family-development-v1",
+  "agent_contract": {
+    "environment": {
+      "coordinator": "xgap",
+      "backends": [
+        {
+          "backend_id": "neo4j",
+          "boundary": "black_box_public_interface"
+        },
+        {
+          "backend_id": "fuseki",
+          "boundary": "black_box_public_interface"
+        }
+      ],
+      "optional_inputs": [
+        "catalog",
+        "llm",
+        "ontology"
+      ]
+    },
+    "tools": [
+      {
+        "tool_id": "backend.execute.neo4j",
+        "kind": "backend",
+        "operations": [
+          "execute_registered_cypher"
+        ]
+      },
+      {
+        "tool_id": "backend.execute.fuseki",
+        "kind": "backend",
+        "operations": [
+          "execute_registered_sparql"
+        ]
+      },
+      {
+        "tool_id": "coordinator.federate",
+        "kind": "coordinator",
+        "operations": [
+          "align",
+          "bind",
+          "exchange",
+          "hash_join",
+          "project"
+        ]
+      },
+      {
+        "tool_id": "memory.family",
+        "kind": "memory",
+        "operations": [
+          "freeze_training_view",
+          "predict_physical_cost"
+        ]
+      },
+      {
+        "tool_id": "semantic.direct",
+        "kind": "semantic",
+        "operations": [
+          "enumerate_bounded_interpretations",
+          "compile_typed_program",
+          "construct_physical_candidates",
+          "pareto_epsilon_k_select"
+        ]
+      }
+    ],
+    "allowed_actions": [
+      "compile_family",
+      "enumerate_semantics",
+      "predict_from_family_memory",
+      "select_semantic_frontier",
+      "execute_registered_fragments",
+      "coordinate_federated_result"
+    ],
+    "forbidden_actions": [
+      "change_hard_constraints",
+      "emit_unregistered_native_query",
+      "inspect_backend_internals",
+      "read_answer_oracle_before_execution",
+      "retry_automatically"
+    ]
+  },
+  "families": [
+    {
+      "family_id": "financial-risk-transfer-to-company",
+      "evaluation_role": "seen_family",
+      "sources": {
+        "workload_spec": {
+          "path": "experiments/configs/m15_f2c_parameterized_workload_dev.json",
+          "sha256": "d7f0901be056ecbeaa82d8d6e1ebcf1ffa74c853a2a8dbc10f776d475188f520"
+        },
+        "query_template": {
+          "path": "experiments/configs/m15_f2c_parameterized_financial_risk_v2.json",
+          "sha256": "647b390362ec6d5419a5dcab939b2fc7735797e38d6446e6afe7fbc8210a5fcd"
+        },
+        "semantic_catalog": {
+          "path": "experiments/configs/m15_f2c6_semantic_relaxation_dev.json",
+          "sha256": "e55ab1bfacd3645902e856de946b5726a7e83ea2eccabc7687b2f7d0dbe4d808"
+        },
+        "predicate_mapping": {
+          "path": "experiments/configs/m15_f2c8_predicate_mapping_dev.json",
+          "sha256": "16ca299fe14ad33ebf2aea811f3f759b44f6d6bcd84efa789540d4b3335ade7e"
+        },
+        "semantic_workload_policy": {
+          "path": "experiments/configs/m15_f2c10_direct_semantic_workload_dev.json",
+          "sha256": "26f860fdd8536c0e140e998d0f5d1e8e117a97890ef2299139a43bd12503324d"
+        },
+        "family_memory_policy": {
+          "path": "experiments/configs/m15_f2c10_family_memory_predictor_dev.json",
+          "sha256": "2f895c0f1240447e9fb46e9fd2c76927dbf85be3f6e3ac8757dbe3d8847321d2"
+        },
+        "neo4j_full_template": {
+          "path": "experiments/templates/m15_f2c_financial_risk/neo4j_full.cypher.tmpl",
+          "sha256": "62066817edc9e09384d28ab979b12512e1f5968169948bef8ea0bdb57710e318"
+        },
+        "neo4j_bound_template": {
+          "path": "experiments/templates/m15_f2c_financial_risk/neo4j_bound.cypher.tmpl",
+          "sha256": "807d24c3c37980023dc5d26e591585c5862795de9379128d405d2b8849c48485"
+        },
+        "fuseki_risk_template": {
+          "path": "experiments/templates/m15_f2c_financial_risk/fuseki_risk.rq.tmpl",
+          "sha256": "e41809bc8b534611aa7390799304fccb4fffdbd3a6c77f91ff4aeceacd0b2d2f"
+        }
+      },
+      "expected": {
+        "family_compatibility_sha256": "34d432efccebd8d4000d52f910a25746b01e6d884f99eb41de6cbe846c13dfec",
+        "base_bundle_content_sha256": "b06b1c4b4e630e37cbea8d4cf5d81bbc31c4a2280b97a64f5a4a9efed0d434e7",
+        "direct_manifest_sha256": "69d46964cae4d3455e49c54e48f57c305116c597edac5a44bf355158f356b10b",
+        "direct_bundle_content_sha256": "983cdbea795f27d479e83daa9a76bf8b57760d404ae0d7761d20146b9af069de",
+        "training_view_sha256": "932552017c6e043404368ab72b8b46b2526fb54ddf4c7a7c42b05c8f3ced4e0b",
+        "heldout_view_sha256": "bdb314cd940ba2ec2269ea78a106c87ca17a89275a97a2bf2ca718626e538720",
+        "evaluation_registry_sha256": "bece47275a341d80a186d65076ffab312080c0ffe56fb1a1e34525a1447f8f84",
+        "operator_count": 7,
+        "base_query_instances": 6,
+        "training_base_queries": 4,
+        "heldout_base_queries": 2,
+        "direct_semantic_tasks": 28,
+        "training_semantic_tasks": 18,
+        "heldout_semantic_tasks": 10,
+        "physical_candidates": 56
+      }
+    }
+  ],
+  "paper_target": {
+    "minimum_families": 3,
+    "minimum_query_instances": 30,
+    "maximum_query_instances": 50,
+    "heldout_family_required": true,
+    "inferential_analysis_preregistered": false
+  },
+  "automatic_retries": 0,
+  "paper_result": false
+}

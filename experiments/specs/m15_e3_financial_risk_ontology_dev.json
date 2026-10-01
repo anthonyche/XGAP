@@ -1,0 +1,109 @@
+{
+  "schema_version": "m15-e3-resolution-ontology-v1",
+  "ontology_id": "financial-risk-resolution-ontology",
+  "ontology_version": "dev-v1",
+  "concepts": [
+    {
+      "candidate_id": "predicate:transferred_to",
+      "kind": "predicate",
+      "labels": [
+        "transferred to",
+        "密切资金往来"
+      ],
+      "provenance": {
+        "evidence": "controlled-development-concept",
+        "record_id": "concept-predicate-001"
+      }
+    },
+    {
+      "candidate_id": "predicate:paid_to",
+      "kind": "predicate",
+      "labels": [
+        "paid to",
+        "密切资金往来"
+      ],
+      "provenance": {
+        "evidence": "controlled-development-concept",
+        "record_id": "concept-predicate-002"
+      }
+    },
+    {
+      "candidate_id": "type:HighRiskCompany",
+      "kind": "type",
+      "labels": [
+        "high-risk company",
+        "高风险公司"
+      ],
+      "provenance": {
+        "evidence": "controlled-development-concept",
+        "record_id": "concept-type-001"
+      }
+    },
+    {
+      "candidate_id": "type:MediumRiskCompany",
+      "kind": "type",
+      "labels": [
+        "medium-risk company",
+        "中风险公司"
+      ],
+      "provenance": {
+        "evidence": "controlled-development-concept",
+        "record_id": "concept-type-002"
+      }
+    },
+    {
+      "candidate_id": "type:LowRiskCompany",
+      "kind": "type",
+      "labels": [
+        "low-risk company",
+        "低风险公司"
+      ],
+      "provenance": {
+        "evidence": "controlled-development-concept",
+        "record_id": "concept-type-003"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "source_id": "predicate:transferred_to",
+      "target_id": "predicate:paid_to",
+      "relation": "sibling",
+      "deviation": 0.25,
+      "bidirectional": true,
+      "provenance": {
+        "evidence": "controlled-development-relation",
+        "record_id": "relation-predicate-001"
+      }
+    },
+    {
+      "source_id": "type:HighRiskCompany",
+      "target_id": "type:MediumRiskCompany",
+      "relation": "adjacent-risk-level",
+      "deviation": 0.3333333333333333,
+      "bidirectional": true,
+      "provenance": {
+        "evidence": "controlled-development-relation",
+        "record_id": "relation-risk-001"
+      }
+    },
+    {
+      "source_id": "type:MediumRiskCompany",
+      "target_id": "type:LowRiskCompany",
+      "relation": "adjacent-risk-level",
+      "deviation": 0.3333333333333333,
+      "bidirectional": true,
+      "provenance": {
+        "evidence": "controlled-development-relation",
+        "record_id": "relation-risk-002"
+      }
+    }
+  ],
+  "metadata": {
+    "artifact_class": "controlled-development-ontology",
+    "reasoning_depth": 1,
+    "entity_resolution_allowed": false,
+    "domain_truth_claim": false,
+    "paper_result": false
+  }
+}

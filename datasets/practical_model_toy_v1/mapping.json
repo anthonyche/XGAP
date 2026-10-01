@@ -1,0 +1,51 @@
+{
+  "mapping_id": "practical-model-toy-v1",
+  "version": "1",
+  "backends": {
+    "fuseki": {
+      "namespace": "https://xgap.test/toy/",
+      "compiler_tokens": {
+        "node_labels": {
+          "Person": "Person"
+        },
+        "edge_labels": {
+          "KNOWS": "KNOWS",
+          "FOLLOWS": "FOLLOWS"
+        },
+        "properties": {
+          "id": "id",
+          "name": "name",
+          "age": "age"
+        }
+      }
+    }
+  },
+  "term_mappings": {
+    "fuseki": {
+      "Person": {
+        "kind": "class",
+        "representation": "https://xgap.test/toy/Person"
+      },
+      "KNOWS": {
+        "kind": "relation",
+        "representation": "https://xgap.test/toy/KNOWS"
+      },
+      "id": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/id"
+      },
+      "name": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/name"
+      },
+      "age": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/age"
+      },
+      "FOLLOWS": {
+        "kind": "relation",
+        "representation": "https://xgap.test/toy/FOLLOWS"
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+@prefix ex: <http://example.org/fin/> .
+ex:bob ex:status "active" ; ex:name "Bob" .
+ex:carol ex:status "active" ; ex:name "Carol" ; ex:alert "high" .

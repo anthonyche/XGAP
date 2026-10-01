@@ -6,7 +6,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$REPO_ROOT"
 
 PYTHON="${PYTHON:-python}"
-SOURCE_MANIFEST="$REPO_ROOT/experiments/artifacts/grailqa_m13d_sources.json"
+SOURCE_MANIFEST="$REPO_ROOT/experiments/sources/grailqa_m13d_sources.json"
 SPEC="$REPO_ROOT/experiments/specs/grailqa_semantic_pilot_v1.json"
 if [ -n "${XGAP_ARTIFACT_CACHE:-}" ]; then
   CACHE_ROOT="$XGAP_ARTIFACT_CACHE"

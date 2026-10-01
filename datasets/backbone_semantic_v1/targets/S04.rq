@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?person WHERE { ?person a t:Person ; t:age ?age . FILTER(?age < 25 || ?age >= 40) }

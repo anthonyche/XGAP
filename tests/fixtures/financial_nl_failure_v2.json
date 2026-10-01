@@ -1,0 +1,209 @@
+{
+  "schema_version": "xgap-financial-nl-failure-replay-v1",
+  "source_record_sha256": "c9c99903fd796709daf0fa4a9871674fbc7b67d246d8f4dfbee5f1a336254566",
+  "request": {
+    "schema_version": "xgap-semantic-interpretation-v1",
+    "question": "Find transfers sent directly from accounts owned by Alice to blocked accounts owned by companies, between 2020-01-01 00:00:00.000 and 2020-01-04 00:00:00.000 inclusive. Sum the transfer amounts for each destination account and its owning company, counting parallel transfers separately. Return all rows with company_id and account_id as their business IDs and total_amount as the sum. Sort by total_amount descending, then company_id and account_id ascending.",
+    "context": {
+      "query_id": "FINANCIAL-NL-01",
+      "source_schema": {
+        "control": {
+          "description": "Entity type and identity stubs plus control attributes. No relationship edges or graph profile fields.",
+          "edges": [],
+          "nodes": {
+            "XGAPFinBenchAccount": {
+              "properties": [
+                "id",
+                "xgap_id",
+                "isBlocked",
+                "accountType",
+                "frequentLoginType",
+                "accountLevel"
+              ]
+            },
+            "XGAPFinBenchCompany": {
+              "properties": [
+                "id",
+                "xgap_id",
+                "isBlocked",
+                "country",
+                "city",
+                "business"
+              ]
+            },
+            "XGAPFinBenchMedium": {
+              "properties": [
+                "id",
+                "xgap_id",
+                "isBlocked",
+                "mediumType",
+                "riskLevel"
+              ]
+            },
+            "XGAPFinBenchPerson": {
+              "properties": [
+                "id",
+                "xgap_id",
+                "isBlocked",
+                "gender",
+                "country",
+                "city"
+              ]
+            }
+          }
+        },
+        "graph": {
+          "description": "Entity types, business IDs, profile attributes and all stored directed edges; no control attributes.",
+          "edges": [
+            {
+              "label": "OWNS_ACCOUNT",
+              "properties": [
+                "xgap_id",
+                "createTime"
+              ],
+              "source": "XGAPFinBenchPerson",
+              "target": "XGAPFinBenchAccount"
+            },
+            {
+              "label": "OWNS_ACCOUNT",
+              "properties": [
+                "xgap_id",
+                "createTime"
+              ],
+              "source": "XGAPFinBenchCompany",
+              "target": "XGAPFinBenchAccount"
+            },
+            {
+              "label": "TRANSFERRED_TO",
+              "properties": [
+                "xgap_id",
+                "amount",
+                "createTime",
+                "orderNum",
+                "comment",
+                "payType",
+                "goodsType"
+              ],
+              "source": "XGAPFinBenchAccount",
+              "target": "XGAPFinBenchAccount"
+            },
+            {
+              "label": "SIGNED_IN_TO",
+              "properties": [
+                "xgap_id",
+                "createTime",
+                "location"
+              ],
+              "source": "XGAPFinBenchMedium",
+              "target": "XGAPFinBenchAccount"
+            }
+          ],
+          "nodes": {
+            "XGAPFinBenchAccount": {
+              "properties": [
+                "id",
+                "xgap_id",
+                "createTime",
+                "nickname",
+                "phonenum",
+                "email",
+                "lastLoginTime"
+              ]
+            },
+            "XGAPFinBenchCompany": {
+              "properties": [
+                "id",
+                "xgap_id",
+                "companyName",
+                "createTime",
+                "description",
+                "url"
+              ]
+            },
+            "XGAPFinBenchMedium": {
+              "properties": [
+                "id",
+                "xgap_id",
+                "createTime",
+                "lastLoginTime"
+              ]
+            },
+            "XGAPFinBenchPerson": {
+              "properties": [
+                "id",
+                "xgap_id",
+                "personName",
+                "createTime",
+                "birthday"
+              ]
+            }
+          }
+        },
+        "identity_property": "xgap_id",
+        "identity_semantics": "Canonical node identity joins across stores; id is a raw string business ID, not canonical identity.",
+        "scalar_semantics": {
+          "amount": "number",
+          "createTime": "calendar string YYYY-MM-DD HH:MM:SS.mmm; order with timestamp_ms",
+          "id": "string",
+          "isBlocked": "boolean",
+          "missing_fields": "Missing nullable properties return null; no implicit lookup in another source.",
+          "parallel_edges": "Each edge has a separate canonical identity, even for equal endpoints and values."
+        },
+        "shared_identity_namespace": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/"
+      },
+      "one_shot_profile": {
+        "schema_version": "xgap-one-shot-policy-v1",
+        "mode": "performance",
+        "candidate_cap": 1,
+        "max_operators": 64,
+        "max_holes": 16,
+        "max_candidates_per_hole": 8,
+        "use_ontology": false,
+        "max_local_options": 64,
+        "max_physical_candidates": 256,
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "max_bindings": 10000,
+        "max_binding_bytes": 1048576,
+        "quality_penalty_ms": 0.0,
+        "unknown_quality_proxy": 0.5,
+        "quality_proxy_calibrated": false,
+        "final_plan_executions": 1,
+        "online_profile_calls": 0,
+        "automatic_retries": 0
+      },
+      "runtime": {
+        "resolution_bundle": {
+          "schema_version": "xgap-frozen-resolution-bundle-v1",
+          "bundle_hash": "797726fad22aa0e40b3d6e56f313444d336fb8ab24676333e98dee955ec323cc",
+          "catalog_id": "financial-tiny-nl-v1",
+          "catalog_version": "1",
+          "ontology_source": null
+        },
+        "sources": {
+          "control": {
+            "version": "financial-tiny-v1",
+            "replicas": [
+              "fuseki"
+            ]
+          },
+          "graph": {
+            "version": "financial-tiny-v1",
+            "replicas": [
+              "neo4j"
+            ]
+          }
+        }
+      }
+    },
+    "required_constraints": [],
+    "max_response_bytes": 1048576
+  },
+  "raw_response": "{\"schema_version\": \"xgap-semantic-interpretation-candidates-v2\", \"candidates\": [{\"candidate_id\": \"c1\", \"quality_proxy\": 0.9, \"program\": {\"program_id\": \"p1\", \"operators\": [{\"operator_id\": \"m_alice\", \"kind\": \"match\", \"input_ids\": [], \"input_kinds\": [], \"output_kind\": \"binding_set\", \"parameters\": {\"node\": {\"label\": \"XGAPFinBenchPerson\", \"properties\": {\"personName\": {\"$hole\": \"h_alice\"}}}, \"entity_field\": \"person_id\", \"properties\": {}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"m_src_acct\", \"kind\": \"match\", \"input_ids\": [], \"input_kinds\": [], \"output_kind\": \"binding_set\", \"parameters\": {\"node\": {\"label\": \"XGAPFinBenchAccount\"}, \"entity_field\": \"src_acct_id\", \"properties\": {}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"m_owns_src\", \"kind\": \"match\", \"input_ids\": [], \"input_kinds\": [], \"output_kind\": \"binding_set\", \"parameters\": {\"edge\": {\"label\": \"OWNS_ACCOUNT\", \"properties\": {}}, \"source\": {\"label\": \"XGAPFinBenchPerson\"}, \"target\": {\"label\": \"XGAPFinBenchAccount\"}, \"entity_field\": \"owns_src_edge_id\", \"source_field\": \"owner_id\", \"target_field\": \"src_acct_id\", \"properties\": {}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"m_dest_acct\", \"kind\": \"match\", \"input_ids\": [], \"input_kinds\": [], \"output_kind\": \"binding_set\", \"parameters\": {\"node\": {\"label\": \"XGAPFinBenchAccount\"}, \"entity_field\": \"dest_acct_id\", \"properties\": {\"id\": \"dest_acct_id\", \"isBlocked\": \"dest_is_blocked\"}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"m_company\", \"kind\": \"match\", \"input_ids\": [], \"input_kinds\": [], \"output_kind\": \"binding_set\", \"parameters\": {\"node\": {\"label\": \"XGAPFinBenchCompany\"}, \"entity_field\": \"company_id\", \"properties\": {\"id\": \"company_id\"}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"m_owns_dest\", \"kind\": \"match\", \"input_ids\": [], \"input_kinds\": [], \"output_kind\": \"binding_set\", \"parameters\": {\"edge\": {\"label\": \"OWNS_ACCOUNT\", \"properties\": {}}, \"source\": {\"label\": \"XGAPFinBenchCompany\"}, \"target\": {\"label\": \"XGAPFinBenchAccount\"}, \"entity_field\": \"owns_dest_edge_id\", \"source_field\": \"company_id\", \"target_field\": \"dest_acct_id\", \"properties\": {}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"m_transfer\", \"kind\": \"match\", \"input_ids\": [], \"input_kinds\": [], \"output_kind\": \"binding_set\", \"parameters\": {\"edge\": {\"label\": \"TRANSFERRED_TO\", \"properties\": {}}, \"source\": {\"label\": \"XGAPFinBenchAccount\"}, \"target\": {\"label\": \"XGAPFinBenchAccount\"}, \"entity_field\": \"transfer_id\", \"source_field\": \"src_acct_id\", \"target_field\": \"dest_acct_id\", \"properties\": {\"amount\": \"amount\", \"createTime\": \"createTime\"}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"j1\", \"kind\": \"join\", \"input_ids\": [\"m_alice\", \"m_owns_src\"], \"input_kinds\": [\"binding_set\", \"binding_set\"], \"output_kind\": \"binding_set\", \"parameters\": {\"left_on\": \"person_id\", \"right_on\": \"owner_id\"}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"j2\", \"kind\": \"join\", \"input_ids\": [\"j1\", \"m_src_acct\"], \"input_kinds\": [\"binding_set\", \"binding_set\"], \"output_kind\": \"binding_set\", \"parameters\": {\"left_on\": \"src_acct_id\", \"right_on\": \"src_acct_id\"}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"j3\", \"kind\": \"join\", \"input_ids\": [\"j2\", \"m_transfer\"], \"input_kinds\": [\"binding_set\", \"binding_set\"], \"output_kind\": \"binding_set\", \"parameters\": {\"left_on\": \"src_acct_id\", \"right_on\": \"src_acct_id\"}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"j4\", \"kind\": \"join\", \"input_ids\": [\"j3\", \"m_dest_acct\"], \"input_kinds\": [\"binding_set\", \"binding_set\"], \"output_kind\": \"binding_set\", \"parameters\": {\"left_on\": \"dest_acct_id\", \"right_on\": \"dest_acct_id\"}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"j5\", \"kind\": \"join\", \"input_ids\": [\"j4\", \"m_owns_dest\"], \"input_kinds\": [\"binding_set\", \"binding_set\"], \"output_kind\": \"binding_set\", \"parameters\": {\"left_on\": \"dest_acct_id\", \"right_on\": \"dest_acct_id\"}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"j6\", \"kind\": \"join\", \"input_ids\": [\"j5\", \"m_company\"], \"input_kinds\": [\"binding_set\", \"binding_set\"], \"output_kind\": \"binding_set\", \"parameters\": {\"left_on\": \"company_id\", \"right_on\": \"company_id\"}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"f1\", \"kind\": \"filter\", \"input_ids\": [\"j6\"], \"input_kinds\": [\"binding_set\"], \"output_kind\": \"binding_set\", \"parameters\": {\"condition\": {\"op\": \"and\", \"conditions\": [{\"op\": \"eq\", \"field\": \"dest_is_blocked\", \"value\": true}, {\"op\": \"ge\", \"field\": \"createTime\", \"value\": \"2020-01-01 00:00:00.000\", \"value_type\": \"timestamp_ms\"}, {\"op\": \"le\", \"field\": \"createTime\", \"value\": \"2020-01-04 00:00:00.000\", \"value_type\": \"timestamp_ms\"}]}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"p1\", \"kind\": \"project\", \"input_ids\": [\"f1\"], \"input_kinds\": [\"binding_set\"], \"output_kind\": \"binding_set\", \"parameters\": {\"projections\": {\"company_id\": {\"kind\": \"field\", \"field\": \"company_id\"}, \"account_id\": {\"kind\": \"field\", \"field\": \"dest_acct_id\"}, \"amount\": {\"kind\": \"field\", \"field\": \"amount\"}}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"agg1\", \"kind\": \"aggregate\", \"input_ids\": [\"p1\"], \"input_kinds\": [\"binding_set\"], \"output_kind\": \"grouped_bindings\", \"parameters\": {\"group_by\": [\"company_id\", \"account_id\"], \"aggregations\": {\"total_amount\": {\"op\": \"sum\", \"field\": \"amount\", \"distinct\": false}}}, \"constraints\": [], \"required_capabilities\": []}, {\"operator_id\": \"ol1\", \"kind\": \"order_limit\", \"input_ids\": [\"agg1\"], \"input_kinds\": [\"grouped_bindings\"], \"output_kind\": \"grouped_bindings\", \"parameters\": {\"order_by\": [{\"field\": \"total_amount\", \"direction\": \"desc\"}, {\"field\": \"company_id\", \"direction\": \"asc\"}, {\"field\": \"account_id\", \"direction\": \"asc\"}], \"limit\": null}, \"constraints\": [], \"required_capabilities\": []}], \"roots\": [\"ol1\"], \"holes\": [{\"hole_id\": \"h_alice\", \"kind\": \"entity\", \"mention\": \"Alice\", \"required\": true, \"candidates\": [], \"is_resolved\": false}], \"metadata\": {}}, \"operator_sources\": {\"m_alice\": \"graph\", \"m_src_acct\": \"graph\", \"m_owns_src\": \"graph\", \"m_dest_acct\": \"control\", \"m_company\": \"graph\", \"m_owns_dest\": \"graph\", \"m_transfer\": \"graph\"}}]}",
+  "observed_usage": {
+    "external_calls": 1,
+    "input_tokens": 4065,
+    "output_tokens": 1869
+  },
+  "outcome": "no_admissible_interpretation"
+}

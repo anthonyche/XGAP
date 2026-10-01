@@ -164,7 +164,8 @@ def _parse_regex(data: Mapping[str, Any]) -> RegexExpr:
         return Bounded(
             _parse_regex(_mapping(data.get("child"), "child")),
             min_repeats=_positive_or_zero_int(data.get("min_repeats"), "min_repeats"),
-            max_repeats=_optional_positive_int(data.get("max_repeats"), "max_repeats"),
+            max_repeats=(_positive_or_zero_int(data["max_repeats"], "max_repeats")
+                         if data.get("max_repeats") is not None else None),
         )
     raise PlannerSchemaError(f"Unsupported regex kind {kind!r}.")
 

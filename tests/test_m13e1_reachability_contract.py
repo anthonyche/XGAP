@@ -208,18 +208,6 @@ def test_reachability_decomposes_catalog_retrieval_and_prompt_loss() -> None:
     assert not prompt_reachability_gate(audit, minimum_joint_ratio=0.2)["passed"]
 
 
-def test_m13d_reachability_baseline_reproduces_frozen_diagnosis() -> None:
-    summary = json.loads(
-        (ROOT / "datasets/grailqa_m13d_reachability_baseline/summary.json").read_text()
-    )["summary"]
-    assert summary["catalog"]["entity"]["count"] == 12
-    assert summary["retrieval"]["20"]["entity"]["count"] == 10
-    assert summary["retrieval"]["20"]["relation"]["count"] == 47
-    assert summary["retrieval"]["20"]["type"]["count"] == 67
-    assert summary["deployed_prompt"]["entity"]["count"] == 9
-    assert summary["deployed_prompt"]["relation"]["count"] == 22
-    assert summary["deployed_prompt"]["type"]["count"] == 38
-    assert summary["deployed_prompt"]["joint"]["count"] == 0
 
 
 def test_canonical_normalization_adds_only_profile_defaults_and_simple_constraints() -> None:

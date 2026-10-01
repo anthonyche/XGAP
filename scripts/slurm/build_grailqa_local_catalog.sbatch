@@ -31,6 +31,15 @@ echo "repo_id=CleverThis/freebase"
 echo "revision=dbb1931c2698295653effe9b980a02ab29f004e0"
 echo "No GPU or Qwen process is used by this job."
 
+if ! PYTHON=python bash scripts/server/fetch_grailqa_m13d_artifacts.sh \
+  --verify-only; then
+  echo "Frozen GrailQA runtime artifacts are unavailable." >&2
+  echo "Upload both frozen datasets directories or first submit:" >&2
+  echo "  sbatch --export=ALL,XGAP_REPO_ROOT=$REPO_ROOT scripts/slurm/prepare_grailqa_m13d_artifacts.sbatch" >&2
+  echo "The 32 GB Freebase scan was not started." >&2
+  exit 2
+fi
+
 SCRIPT_ARGS=()
 if [[ "${XGAP_LOCAL_CATALOG_AUDIT_ONLY:-0}" == "1" ]]; then
   SCRIPT_ARGS=(--audit-only)

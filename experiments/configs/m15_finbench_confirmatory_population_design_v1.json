@@ -1,0 +1,64 @@
+{
+  "schema_version": "m15-finbench-confirmatory-population-design-v1",
+  "design_id": "m15-finbench-answer-independent-crossfit-options-v1",
+  "candidate_total_sizes": [
+    36,
+    48,
+    60
+  ],
+  "family_ids": [
+    "f1_direct_transfer_control",
+    "f2_temporal_path_control",
+    "f3_aggregate_risk_ranking"
+  ],
+  "equal_family_allocation": true,
+  "strata_per_family": 4,
+  "crossfit_fold_count": 4,
+  "sampling_seed": "m15-sigmod2027-finbench-population-v1",
+  "selection_rule": "within_public_structural_stratum_sha256_rank_without_replacement",
+  "nested_size_options": true,
+  "f1_eligibility": "person_with_at_least_one_transfer_from_person_owned_account_to_company_owned_account",
+  "f1_stratification_feature": "structural_degree",
+  "f2_eligibility": "account_with_out_degree_between_2_and_32_inclusive",
+  "f2_stratification_feature": "out_degree",
+  "f3_suffix_window_count": 10,
+  "f3_parameter_domain": "cartesian_product_of_source_risk_levels_and_predeclared_suffix_windows",
+  "seen_family_ids": [
+    "f1_direct_transfer_control",
+    "f2_temporal_path_control"
+  ],
+  "cold_family_ids": [
+    "f3_aggregate_risk_ranking"
+  ],
+  "source_fields_allowed_for_sampling": [
+    "person.personId",
+    "account.accountId",
+    "person_own_account.personId",
+    "person_own_account.accountId",
+    "company_own_account.accountId",
+    "account_transfer_account.fromId",
+    "account_transfer_account.toId",
+    "account_transfer_account.createTime",
+    "medium.riskLevel"
+  ],
+  "fields_forbidden_for_sampling": [
+    "account.isBlocked",
+    "medium.isBlocked",
+    "sealed_oracles",
+    "answer_rows",
+    "elapsed_ms",
+    "total_bytes_moved",
+    "observed_winner",
+    "profile_result"
+  ],
+  "query_instance_is_inferential_unit": true,
+  "repetitions_are_not_independent_units": true,
+  "selection_uses_answer_content": false,
+  "selection_uses_observed_execution_cost": false,
+  "current_query_profile_calls": 0,
+  "backend_calls": 0,
+  "llm_calls": 0,
+  "ontology_service_calls": 0,
+  "automatic_retries": 0,
+  "paper_result": false
+}

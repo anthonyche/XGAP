@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT (COUNT(?person) AS ?n) WHERE { ?person a t:Person ; t:id "missing" . }

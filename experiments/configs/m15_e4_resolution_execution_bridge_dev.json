@@ -1,0 +1,234 @@
+{
+  "schema_version": "m15-e4-resolution-execution-bridge-spec-v1",
+  "bridge_id": "financial-risk-intake-to-f2c-family-dev-v1",
+  "source_artifacts": {
+    "intake_template": {
+      "path": "experiments/configs/m15_e3_financial_risk_intake_dev.json",
+      "sha256": "03e4e540588c25ff4fc7abfc1623dde286e1755876699952192be061d8619718"
+    },
+    "resolution_catalog": {
+      "path": "experiments/specs/m15_e3_financial_risk_catalog_dev.json",
+      "sha256": "a55b05b1f92c0f202e3860df235d2c6b65a276cc69694e56e9a660b3e15c58c8"
+    },
+    "resolution_ontology": {
+      "path": "experiments/specs/m15_e3_financial_risk_ontology_dev.json",
+      "sha256": "6e8e74235923cf6a5c186849156a26d6e5ec577bab60069f3a49a51b97ad6961"
+    },
+    "executable_family_registry": {
+      "path": "experiments/configs/m15_f2c14_executable_family_registry_dev.json",
+      "sha256": "06d100834a7dd3ba710712556a09aeb439f106d4d43219cdfa3e7ecc060b0a4a"
+    },
+    "neo4j_full_window_template": {
+      "path": "experiments/templates/m15_e4_financial_risk_window/neo4j_full.cypher.tmpl",
+      "sha256": "35d1a0ffe8d156998125f0464f03152819b5f8551dbedb97e86353ace477cd7b"
+    },
+    "neo4j_bound_window_template": {
+      "path": "experiments/templates/m15_e4_financial_risk_window/neo4j_bound.cypher.tmpl",
+      "sha256": "11b1b91a9818078e3a6aaad51512b7f6633b5ee9509f626b7fe5745a2300d4f2"
+    }
+  },
+  "resolution_contract": {
+    "intake_template_id": "financial-risk-direct-intake",
+    "required_holes": [
+      "company-risk-type",
+      "person-identity",
+      "relationship-strength",
+      "transfer-predicate"
+    ],
+    "required_hard_constraints": [
+      {
+        "constraint_id": "clarified-person-identity-is-hard",
+        "expression": "resolved(person-identity) is immutable after user clarification",
+        "required_capabilities": [
+          "entity.exact-binding"
+        ],
+        "target_bindings": {}
+      },
+      {
+        "constraint_id": "one-month-window",
+        "expression": "occurred_on >= 2026-08-01 AND occurred_on < 2026-09-01",
+        "required_capabilities": [
+          "time.lower-inclusive",
+          "time.upper-exclusive"
+        ],
+        "target_bindings": {
+          "time-lower-bound": "2026-08-01",
+          "time-upper-bound": "2026-09-01"
+        }
+      }
+    ],
+    "fixed_semantics": {
+      "path-shape": {
+        "value": "direct",
+        "required_capabilities": [
+          "path.direct"
+        ],
+        "target_bindings": {
+          "path-shape": "direct"
+        }
+      }
+    }
+  },
+  "candidate_mappings": [
+    {
+      "hole_id": "person-identity",
+      "hole_kind": "entity",
+      "candidate_id": "person:alice-smith",
+      "semantic_parameters": {
+        "resolved_entity_id": "person:alice-smith"
+      },
+      "required_capabilities": [
+        "entity.exact-binding"
+      ],
+      "target_bindings": {
+        "person-identity": "person-alice-smith"
+      }
+    },
+    {
+      "hole_id": "transfer-predicate",
+      "hole_kind": "predicate",
+      "candidate_id": "predicate:transferred_to",
+      "semantic_parameters": {
+        "predicate": "transferred_to"
+      },
+      "required_capabilities": [
+        "predicate.transfer-to-company"
+      ],
+      "target_bindings": {
+        "transfer-predicate": "transfer_to_company"
+      }
+    },
+    {
+      "hole_id": "transfer-predicate",
+      "hole_kind": "predicate",
+      "candidate_id": "predicate:paid_to",
+      "semantic_parameters": {
+        "predicate": "paid_to"
+      },
+      "required_capabilities": [
+        "predicate.payment-to-company"
+      ],
+      "target_bindings": {
+        "transfer-predicate": "payment_to_company"
+      }
+    },
+    {
+      "hole_id": "relationship-strength",
+      "hole_kind": "constraint",
+      "candidate_id": "constraint:amount-at-least-50000",
+      "semantic_parameters": {
+        "aggregation": "window_total_amount",
+        "currency": "USD",
+        "lower_bound": 50000
+      },
+      "required_capabilities": [
+        "relationship.window-total-amount-lower-bound"
+      ],
+      "target_bindings": {}
+    },
+    {
+      "hole_id": "relationship-strength",
+      "hole_kind": "constraint",
+      "candidate_id": "constraint:single-transfer-at-least-50000",
+      "semantic_parameters": {
+        "aggregation": "qualifying_single_transfer",
+        "currency": "USD",
+        "lower_bound": 50000
+      },
+      "required_capabilities": [
+        "relationship.edge-amount-lower-bound"
+      ],
+      "target_bindings": {
+        "amount-lower-bound": 50000
+      }
+    },
+    {
+      "hole_id": "relationship-strength",
+      "hole_kind": "constraint",
+      "candidate_id": "constraint:frequency-at-least-3",
+      "semantic_parameters": {
+        "aggregation": "window_transfer_count",
+        "lower_bound": 3
+      },
+      "required_capabilities": [
+        "relationship.window-transfer-count-lower-bound"
+      ],
+      "target_bindings": {}
+    },
+    {
+      "hole_id": "company-risk-type",
+      "hole_kind": "type",
+      "candidate_id": "type:HighRiskCompany",
+      "semantic_parameters": {
+        "risk_level": "HIGH"
+      },
+      "required_capabilities": [
+        "risk.level"
+      ],
+      "target_bindings": {
+        "risk-level": "HIGH"
+      }
+    }
+  ],
+  "executable_family": {
+    "family_id": "financial-risk-transfer-to-company",
+    "family_compatibility_sha256": "34d432efccebd8d4000d52f910a25746b01e6d884f99eb41de6cbe846c13dfec",
+    "available_capabilities": [
+      {
+        "capability_id": "entity.exact-binding",
+        "evidence_kind": "hard_constraint",
+        "evidence_id": "resolved-person-identity"
+      },
+      {
+        "capability_id": "time.lower-inclusive",
+        "evidence_kind": "hard_constraint",
+        "evidence_id": "time-lower-bound"
+      },
+      {
+        "capability_id": "time.upper-exclusive",
+        "evidence_kind": "extension_template_pair",
+        "evidence_id": "time-upper-bound"
+      },
+      {
+        "capability_id": "relationship.edge-amount-lower-bound",
+        "evidence_kind": "hard_constraint",
+        "evidence_id": "amount-lower-bound"
+      },
+      {
+        "capability_id": "predicate.transfer-to-company",
+        "evidence_kind": "predicate_mapping_source",
+        "evidence_id": "transfer_to_company"
+      },
+      {
+        "capability_id": "predicate.payment-to-company",
+        "evidence_kind": "predicate_mapping_target",
+        "evidence_id": "payment_to_company"
+      },
+      {
+        "capability_id": "risk.level",
+        "evidence_kind": "binding_slot",
+        "evidence_id": "risk-level"
+      },
+      {
+        "capability_id": "path.direct",
+        "evidence_kind": "binding_slot",
+        "evidence_id": "path-shape"
+      }
+    ],
+    "physical_strategy_ids": [
+      "parallel_hash_join",
+      "risk_first_bind_join"
+    ]
+  },
+  "missing_capability_reasons": {
+    "relationship.window-total-amount-lower-bound": "registered family filters each edge amount and cannot enforce a window-level SUM threshold",
+    "relationship.window-transfer-count-lower-bound": "registered family has no window-level COUNT/HAVING operator or backend template",
+    "time.upper-exclusive": "registered family has no time-upper-bound slot or backend parameter"
+  },
+  "limits": {
+    "maximum_raw_semantic_classes": 8,
+    "maximum_physical_candidates_per_class": 2
+  },
+  "automatic_retries": 0,
+  "paper_result": false
+}

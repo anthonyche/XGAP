@@ -7,7 +7,7 @@
     "version": "controlled-v1",
     "bundle": "datasets/financial_risk_dev"
   },
-  "cases_artifact": "experiments/calibration/financial_risk_complete_plans.jsonl",
+  "cases_artifact": "experiments/workloads/financial_risk_complete_plans.jsonl",
   "descriptor_dir": "descriptors/backends",
   "backend_ids": ["neo4j", "fuseki"],
   "splits": {

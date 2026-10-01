@@ -115,7 +115,7 @@ def test_invalid_candidate_json_fails_explicitly() -> None:
         plan_response_from_question(request.question, provider=provider)
 
 
-def test_validation_reports_lowering_stage_for_unsupported_regex_placeholder() -> None:
+def test_optional_provider_candidate_reaches_a_valid_logical_plan() -> None:
     payload = candidate_payload()
     candidate = payload["candidates"][0]  # type: ignore[index]
     pattern_query = candidate["pattern_query"]  # type: ignore[index]
@@ -127,9 +127,9 @@ def test_validation_reports_lowering_stage_for_unsupported_regex_placeholder() -
 
     result = validate_candidate(plan_from_question("Question?", provider=provider)[0])
 
-    assert result.ok is False
-    assert result.stage == "lowering"
-    assert "OptionalExpr lowering is not implemented" in result.message
+    assert result.ok is True
+    assert result.stage == "validated"
+    assert "Union" in result.formatted_plan and "Nodes" in result.formatted_plan
 
 
 def test_rel_json_remains_existing_path_pattern_ast_not_new_operator() -> None:

@@ -1,0 +1,26 @@
+{
+  "schema_version": "m15-f2c10-direct-semantic-workload-policy-v1",
+  "policy_id": "preserve-all-catalog-adjacent-direct-v1",
+  "preserve_all_catalog_adjacent_interpretations": true,
+  "executable_path_shapes": [
+    "direct"
+  ],
+  "expected_direct_semantic_classes_by_base_risk": {
+    "HIGH": 4,
+    "LOW": 4,
+    "MEDIUM": 6
+  },
+  "physical_strategies": [
+    "parallel_hash_join",
+    "risk_first_bind_join"
+  ],
+  "physical_candidates_per_class": 2,
+  "post_enumeration_bound": "physical_then_pareto_then_epsilon_then_k",
+  "hard_slot_ids": [
+    "amount-lower-bound",
+    "person-identity",
+    "time-lower-bound"
+  ],
+  "automatic_retries": 0,
+  "paper_result": false
+}

@@ -1,0 +1,127 @@
+{
+  "schema_version": "m15-e3-resolution-catalog-v1",
+  "catalog_id": "financial-risk-resolution-catalog",
+  "catalog_version": "dev-v1",
+  "entries": [
+    {
+      "candidate_id": "person:alice-smith",
+      "kind": "entity",
+      "canonical_label": "Alice Smith",
+      "aliases": [
+        "Alice"
+      ],
+      "authoritative_mentions": [
+        "Alice Smith"
+      ],
+      "provenance": {
+        "evidence": "controlled-development-entity-record",
+        "record_id": "person-001"
+      }
+    },
+    {
+      "candidate_id": "person:alice-jones",
+      "kind": "entity",
+      "canonical_label": "Alice Jones",
+      "aliases": [
+        "Alice"
+      ],
+      "authoritative_mentions": [
+        "Alice Jones"
+      ],
+      "provenance": {
+        "evidence": "controlled-development-entity-record",
+        "record_id": "person-002"
+      }
+    },
+    {
+      "candidate_id": "predicate:transferred_to",
+      "kind": "predicate",
+      "canonical_label": "transferred to",
+      "aliases": [
+        "密切资金往来",
+        "close financial relationship"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-schema-mapping",
+        "record_id": "predicate-001"
+      }
+    },
+    {
+      "candidate_id": "predicate:paid_to",
+      "kind": "predicate",
+      "canonical_label": "paid to",
+      "aliases": [
+        "密切资金往来",
+        "close financial relationship"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-schema-mapping",
+        "record_id": "predicate-002"
+      }
+    },
+    {
+      "candidate_id": "constraint:amount-at-least-50000",
+      "kind": "constraint",
+      "canonical_label": "total amount at least 50000 USD",
+      "aliases": [
+        "密切",
+        "close"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-strength-definition",
+        "record_id": "constraint-001"
+      }
+    },
+    {
+      "candidate_id": "constraint:single-transfer-at-least-50000",
+      "kind": "constraint",
+      "canonical_label": "at least one transfer of at least 50000 USD",
+      "aliases": [
+        "密切",
+        "close"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-strength-definition",
+        "record_id": "constraint-003"
+      }
+    },
+    {
+      "candidate_id": "constraint:frequency-at-least-3",
+      "kind": "constraint",
+      "canonical_label": "at least three transfers",
+      "aliases": [
+        "密切",
+        "close"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-strength-definition",
+        "record_id": "constraint-002"
+      }
+    },
+    {
+      "candidate_id": "type:HighRiskCompany",
+      "kind": "type",
+      "canonical_label": "high-risk company",
+      "aliases": [
+        "高风险公司",
+        "high-risk companies"
+      ],
+      "authoritative_mentions": [],
+      "provenance": {
+        "evidence": "controlled-development-risk-taxonomy",
+        "record_id": "type-001"
+      }
+    }
+  ],
+  "metadata": {
+    "artifact_class": "controlled-development-catalog",
+    "matching": "exact-normalized-mention-only",
+    "domain_truth_claim": false,
+    "paper_result": false
+  }
+}

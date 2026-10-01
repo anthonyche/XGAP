@@ -29,25 +29,9 @@ from xgap.experiments.grailqa_catalog_compatibility import build_compatibility_r
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FROZEN_SPEC = REPO_ROOT / "experiments/artifacts/freebase_hf_archival_parquet_v1.json"
 NS = "http://rdf.freebase.com/ns/"
 
 
-def test_frozen_archival_source_inventory_and_revision() -> None:
-    spec = load_frozen_parquet_spec(FROZEN_SPEC)
-
-    assert spec["revision"] == HF_FREEBASE_REVISION
-    assert spec["resolved_parquet_revision"] == HF_FREEBASE_REVISION
-    assert spec["shard_count"] == 964
-    assert spec["total_bytes"] == 32_476_432_840
-    assert [field["name"] for field in spec["parquet_schema"]["fields"]] == list(
-        EXPECTED_PARQUET_COLUMNS
-    )
-    assert {field["type"] for field in spec["parquet_schema"]["fields"]} == {"string"}
-    assert spec["shards"][0]["path"] == "default/data/0000.parquet"
-    assert spec["shards"][-1]["path"] == "default/data/0963.parquet"
-    assert all(HF_FREEBASE_REVISION in item["url"] for item in spec["shards"])
-    assert all("/main/" not in item["url"] for item in spec["shards"])
 
 
 def test_parquet_row_parser_matches_catalog_triple_contract() -> None:

@@ -5,15 +5,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "xgap"
 version = "0.1.0"
-description = "Ambiguity-aware natural-language-to-graph-query planner"
+description = "Cost-aware agentic federated graph-query system"
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
 test = ["pytest"]
+test-sparql = ["pytest", "rdflib==7.1.4"]
+entity-answers = ["jsonschema==4.26.0"]
 parquet = ["pyarrow>=15"]
+experiment-harness = ["psutil==7.0.0"]
+
+[project.scripts]
+xgap-local-ui = "xgap.ui.local_app:main"
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "scripts"]
 testpaths = ["tests"]
 
 [tool.setuptools.packages.find]

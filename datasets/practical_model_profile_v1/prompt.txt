@@ -1,0 +1,1 @@
+Select the single candidate ID that best matches the requested semantic slot. Use only the supplied candidate IDs. Return a JSON object with hole_id and candidate_ids. Never return a native query or claim semantic authority.

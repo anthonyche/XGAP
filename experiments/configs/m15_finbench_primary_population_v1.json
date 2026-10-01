@@ -1,0 +1,105 @@
+{
+  "schema_version": "m15-finbench-primary-population-spec-v1",
+  "population_id": "m15-finbench-v010-primary-3family-v1",
+  "source_artifact_id": "ldbc-finbench-v0.1.0-sf0.01",
+  "partition_schema_version": "m15-finbench-source-partition-v2",
+  "benchmark_claim": "finbench_derived_heterogeneous_workload_not_a_conformant_finbench_result",
+  "families": [
+    {
+      "family_id": "f1_direct_transfer_control",
+      "derived_from": [
+        "LDBC FinBench v0.1.0 Transaction Complex Read 12"
+      ],
+      "instance_count": 12,
+      "selection_rule": "structural-degree quantiles among persons with at least one nonempty exact blocked-company-account answer",
+      "split_rule": "stratified positions 3,6,9,12 held out; remaining positions train",
+      "physical_strategies": [
+        "graph_first_hash",
+        "control_first_bind"
+      ],
+      "hard_constraints": [
+        "person_id",
+        "inclusive_time_window",
+        "company_account_ownership",
+        "destination_account_is_blocked_true",
+        "transfer_direction",
+        "sum_amount_by_company_and_account",
+        "output_schema"
+      ],
+      "relaxable_slots": [
+        "transfer_predicate",
+        "destination_control_category"
+      ]
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "derived_from": [
+        "LDBC FinBench v0.1.0 Transaction Complex Read 1",
+        "LDBC FinBench v0.1.0 Transaction Complex Read 5"
+      ],
+      "instance_count": 12,
+      "selection_rule": "out-degree quantiles among accounts with an exact one-hop blocked-medium answer and degree between 2 and 32",
+      "split_rule": "stratified positions 3,6,9,12 held out; remaining positions train",
+      "physical_strategies": [
+        "path_first_hash",
+        "control_first_bound_path"
+      ],
+      "max_hops": 3,
+      "hard_constraints": [
+        "start_account_id",
+        "inclusive_time_window",
+        "transfer_direction",
+        "strictly_increasing_transfer_timestamps",
+        "cycle_free_account_path",
+        "max_hops_3",
+        "medium_is_blocked_true",
+        "output_schema"
+      ],
+      "relaxable_slots": [
+        "transfer_predicate",
+        "medium_control_category"
+      ]
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "derived_from": [
+        "LDBC FinBench v0.1.0 Transaction Complex Read 12",
+        "LDBC FinBench v0.1.0 Transaction Complex Read 6",
+        "LDBC FinBench v0.1.0 Transaction Complex Read 7"
+      ],
+      "instance_count": 12,
+      "selection_rule": "cartesian product of four suffix windows anchored at equal temporal quartiles and three predeclared medium risk categories",
+      "split_rule": "entire family held out from family-memory training",
+      "physical_strategies": [
+        "aggregate_first_hash",
+        "control_first_bound_aggregate"
+      ],
+      "risk_levels": [
+        "Low risk",
+        "High risk",
+        "Critical risk"
+      ],
+      "top_k": 10,
+      "hard_constraints": [
+        "closed_open_time_window",
+        "company_account_ownership",
+        "exact_medium_risk_category",
+        "transfer_direction",
+        "sum_amount_by_company",
+        "descending_amount_then_company_order",
+        "top_k_10",
+        "output_schema"
+      ],
+      "relaxable_slots": [
+        "transfer_predicate",
+        "medium_risk_category"
+      ],
+      "cold_start_fallback": "aggregate_first_hash"
+    }
+  ],
+  "automatic_retries": 0,
+  "backend_calls": 0,
+  "llm_calls": 0,
+  "ontology_service_calls": 0,
+  "paper_result": false
+}

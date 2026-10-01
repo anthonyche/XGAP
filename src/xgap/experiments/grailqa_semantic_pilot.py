@@ -17,6 +17,11 @@ import time
 from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence
 
 from xgap.experiments.bundles import ModelBundle
+from xgap.experiments.grailqa_candidate_grounding import (
+    LEGACY_GROUNDING_POLICY, SEMANTIC_GROUNDING_POLICY,
+    ground_canonical_candidates, validate_grounding_policy,
+)
+from xgap.llm.candidate_assessment import assess_candidate
 from xgap.experiments.grailqa_catalog import (
     GrailQAInferenceCatalog,
     RetrievalResult,
@@ -43,7 +48,7 @@ from xgap.llm.parser import (
     parse_planner_response,
     path_pattern_query_to_dict,
 )
-from xgap.llm.schemas import PlannerRequest
+from xgap.llm.schemas import PlannerRequest, PlannerResponse
 from xgap.llm.validation import validate_candidate
 from xgap.pattern.ast import Alt, Bounded, OptionalExpr, Plus, RegexExpr, Rel, Seq, Star
 
@@ -196,9 +201,14 @@ class SemanticPilotProvider(Protocol):
 @dataclass
 class LiveSemanticPilotProvider:
     model: ModelBundle
+    response_parser: Callable[
+        [Mapping[str, Any], PlannerRequest], PlannerResponse
+    ] = parse_planner_response
 
     def __post_init__(self) -> None:
-        self._provider = build_openai_compatible_provider(self.model)
+        self._provider = build_openai_compatible_provider(
+            self.model, response_parser=self.response_parser
+        )
 
     @property
     def provider_id(self) -> str:
@@ -645,6 +655,41 @@ def _infer_one(
     candidate_cap: int,
     prompt_candidates_per_slot: int = 4,
     response_parser: Callable[[Mapping[str, Any], PlannerRequest], Any] = parse_planner_response,
+    grounding_policy: str = LEGACY_GROUNDING_POLICY,
+) -> dict[str, Any]:
+    # Reject an unknown policy before retrieval or any provider action. The
+    # explicit development policy tags every outcome, including early failure.
+    validate_grounding_policy(grounding_policy)
+    state = _infer_one_impl(
+        question=question, catalog=catalog, provider=provider, semantic=semantic,
+        retrieval_k=retrieval_k, candidate_cap=candidate_cap,
+        prompt_candidates_per_slot=prompt_candidates_per_slot,
+        response_parser=response_parser, grounding_policy=grounding_policy,
+    )
+    if grounding_policy != LEGACY_GROUNDING_POLICY:
+        state["schema_version"] = (
+            "grailqa-semantic-capability-query-state-v1"
+            if grounding_policy == SEMANTIC_GROUNDING_POLICY
+            else "grailqa-canonical-grounding-query-state-v1"
+        )
+        state["candidate_grounding_policy"] = grounding_policy
+        raw = state.get("structured_response")
+        candidates = raw.get("candidates") if isinstance(raw, Mapping) else None
+        state["returned_candidate_count"] = len(candidates) if isinstance(candidates, list) else 0
+    return state
+
+
+def _infer_one_impl(
+    *,
+    question: Mapping[str, Any],
+    catalog: GrailQAInferenceCatalog,
+    provider: SemanticPilotProvider,
+    semantic: DirectionalOntologyDeviation,
+    retrieval_k: int,
+    candidate_cap: int,
+    prompt_candidates_per_slot: int = 4,
+    response_parser: Callable[[Mapping[str, Any], PlannerRequest], Any] = parse_planner_response,
+    grounding_policy: str = LEGACY_GROUNDING_POLICY,
 ) -> dict[str, Any]:
     strict_inference_leakage_audit(question)
     started = time.perf_counter()
@@ -706,10 +751,16 @@ def _infer_one(
             "generation_miss",
             "Structured response contained no candidates.",
         )
+    grounding_failures = {}
     try:
-        grounded = parse_grounded_planner_response(
-            generation.structured_response, parsed, view
-        )
+        if grounding_policy != LEGACY_GROUNDING_POLICY:
+            batch = ground_canonical_candidates(generation.structured_response, parsed, view)
+            grounded = batch.grounded
+            grounding_failures = batch.failures
+        else:
+            grounded = parse_grounded_planner_response(
+                generation.structured_response, parsed, view
+            )
     except RuntimeAlignmentError as error:
         category = (
             "entity_grounding_failure"
@@ -723,7 +774,8 @@ def _infer_one(
     semantic_rows: list[dict[str, Any]] = []
     first_candidate_failure: tuple[str, str] | None = None
     for candidate in parsed.candidates:
-        validation = validate_candidate(candidate)
+        assessment = assess_candidate(candidate) if grounding_policy == SEMANTIC_GROUNDING_POLICY else None
+        validation = assessment.semantic_validation if assessment is not None else validate_candidate(candidate)
         row = {
             "question_id": question["question_id"],
             "candidate_id": candidate.candidate_id,
@@ -734,9 +786,20 @@ def _infer_one(
             "grounded": False,
             "semantic_admissible": False,
         }
+        if assessment is not None:
+            row["logical_lowering"] = assessment.logical_lowering.to_dict()
+        grounding_issue = grounding_failures.get(candidate.candidate_id)
+        if grounding_issue is not None:
+            row["grounding_failure"] = grounding_issue.to_dict()
+            row["grounding_error"] = grounding_issue.message
         if not validation.ok:
             if first_candidate_failure is None:
                 first_candidate_failure = ("type_check_failure", validation.message)
+            candidate_rows.append(row)
+            continue
+        if grounding_issue is not None:
+            if first_candidate_failure is None:
+                first_candidate_failure = (grounding_issue.category, grounding_issue.message)
             candidate_rows.append(row)
             continue
         grounded_candidate = grounded.candidate(candidate.candidate_id)

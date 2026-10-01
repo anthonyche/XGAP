@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT (STR(?a) AS ?left) (STR(?b) AS ?right) WHERE { ?a a t:Person ; t:score ?x . ?b a t:Person ; t:score ?y . FILTER(COALESCE((isNumeric(?x) && isNumeric(?y) && ?x=?y) || (DATATYPE(?x)=DATATYPE(?y) && ?x=?y),false)) }

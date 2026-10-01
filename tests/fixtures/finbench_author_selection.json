@@ -1,0 +1,23 @@
+{
+  "schema_version": "m15-finbench-paper-author-selection-v1",
+  "selection_id": "synthetic-test-selection",
+  "authority_source_id": "author:synthetic-test",
+  "base_protocol_sha256": "0faf3f64cc4eb84fa54a4de205d8b246fb885a38a7febd50c24b5a7f15ee9984",
+  "decisions": {
+    "confirmatory_population": "48_answer_independent_crossfit",
+    "primary_scale": "sf0_1",
+    "robustness_scale": "sf1_if_feasible_by_2026-09-12_else_omit",
+    "training_repetitions_per_plan": "7",
+    "selected_serving_repetitions": "7",
+    "shadow_repetitions_per_plan": "7",
+    "infrastructure_replacement_limit": "1",
+    "semantic_track": "grailqa_primary",
+    "external_validation": "fedshop_if_ready_by_2026-09-24_else_omit"
+  },
+  "selection_basis": "explicit_author_choice_A_before_confirmatory_measurement",
+  "confirmatory_workload_compilation_authorized": true,
+  "confirmatory_execution_authorized": false,
+  "automatic_retries": 0,
+  "paper_result": false,
+  "selection_sha256": "d63435bfbc2183fb6388523f70870ed9bd6963d5777f739bdca1db6273da1434"
+}

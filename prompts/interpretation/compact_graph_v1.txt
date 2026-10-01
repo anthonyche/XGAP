@@ -1,0 +1,47 @@
+Interpret the original question as one to candidate_cap alternative compact graph
+queries. Return one JSON object with schema_version xgap-compact-graph-candidates-v1
+and candidates. Each candidate has a unique candidate_id, quality_proxy (an
+uncalibrated preference in [0,1] or null), and query. Return fewer candidates when
+extra meanings are unjustified. Do not duplicate meanings or invent constraints.
+
+Describe logical graph meaning only. Use declared types, directed relation labels
+and stored property names in context.source_schema. Do not output native queries,
+physical plans, source assignments, intermediate columns, answers or resolved IDs.
+The compiler allocates aliases, reads required attributes and joins identities.
+
+Every query has nodes, edges, path, where, select, deduplicate_by, order_by, limit.
+Every node has var, type, entity. entity is an original named mention or null;
+the frozen catalog handles identity binding. Every edge has var, type, source,
+target. Endpoints name node variables. All node/edge/path variable names are unique.
+
+A field reference is {"var":"variable","property":"stored_property"}.
+Use property:null for canonical identity; business IDs use the stored id property.
+Never write resolved canonical IDs or technical identity-property predicates.
+where is a list of AND predicates, each with left (a reference), op
+(eq/ne/lt/le/gt/ge), right (a reference or {"value":literal}), and value_type
+(scalar or timestamp_ms). Timestamp ordering uses timestamp_ms explicitly.
+Do not add a condition to a different entity merely because it has the same field.
+
+select maps output aliases to references or aggregate expressions. Aggregates have
+aggregate (sum/count/min/max), field (a reference, or null only for count), distinct
+(boolean). Nonaggregate select expressions define grouping fields automatically.
+Keep parallel edge instances separate unless the question explicitly requests
+distinct values. deduplicate_by is null or a list of retained node/edge variables:
+it removes redundant witness matches before aggregation, keeping their identities
+and selected property values. Every selected property must belong to a retained
+variable when deduplicate_by is used. It does not perform SUM(DISTINCT amount).
+
+path is null or one component with var,type,source,target,min_hops,max_hops,mode,time.
+Bounds are integers1..3. Both endpoints have the same node type. mode is ACYCLIC
+(no repeated node, including no closing repeat) or WALK (repeats allowed). time is
+null or has property, lower, upper, lower_inclusive, upper_inclusive, increasing.
+Bounds are calendar strings or null; inclusivity/increasing are booleans. The
+window applies to every edge; increasing means strictly increasing edge times.
+The component produces distinct (source,target,length) reachability, not every
+individual path. Its only field is {"var":"path_variable","property":"length"}.
+
+order_by is a list of {"field":"selected_alias","direction":"asc" or "desc"}.
+limit is null for all rows or an integer1..1000 with explicit ordering. Final
+projection is set-valued. Preserve requested fields, order, bounds and aggregation.
+Queries must be connected, with at most8 nodes,12 explicit edges,32 predicates,
+16 selected aliases and one bounded path. Invalid forms fail without repair.

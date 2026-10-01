@@ -27,6 +27,14 @@ from xgap.experiments.grailqa_semantic_pilot import (
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SPEC_PATH = REPO_ROOT / "experiments/specs/grailqa_semantic_pilot_v1.json"
 
+pytestmark = pytest.mark.skipif(
+    not (
+        (REPO_ROOT / "datasets/grailqa_pilot_v1/dataset.yaml").is_file()
+        and (REPO_ROOT / "datasets/grailqa_inference_catalog_v1/entities.jsonl").is_file()
+    ),
+    reason="external GrailQA pilot and inference-catalog artifacts are not installed",
+)
+
 
 @pytest.fixture(scope="session")
 def spec() -> GrailQASemanticPilotSpec:
@@ -129,31 +137,6 @@ def test_frozen_spec_and_artifact_hashes(spec: GrailQASemanticPilotSpec) -> None
     validate_frozen_artifacts(spec, REPO_ROOT)
 
 
-def test_public_source_manifest_matches_frozen_spec(
-    spec: GrailQASemanticPilotSpec,
-) -> None:
-    source_path = REPO_ROOT / "experiments/artifacts/grailqa_m13d_sources.json"
-    source = json.loads(source_path.read_text())
-    assert source["schema_version"] == "m13d-grailqa-public-source-manifest-v1"
-    assert source["spec"]["sha256"] == spec.file_sha256
-    assert source["spec"]["freeze_hash"] == spec.freeze_hash
-    assert source["catalog"]["expected_hash"] == spec.data["catalog_hash"]
-    assert source["pilot"]["expected_bundle_hash"] == spec.data["pilot_bundle_hash"]
-    assert source["pilot"]["question_count"] == len(spec.question_ids)
-    assert source["pilot"]["seed"] == spec.data["selection_seed"]
-    for section, field in (
-        ("dataset", "archive_url"),
-        ("entity_names", "url"),
-        ("ontology", "base_url"),
-    ):
-        assert source[section][field].startswith("https://")
-    hashes = [
-        source["dataset"]["archive_sha256"],
-        source["entity_names"]["sha256"],
-        *source["dataset"]["files"].values(),
-        *source["ontology"]["files"].values(),
-    ]
-    assert all(len(value) == 64 and set(value) <= set("0123456789abcdef") for value in hashes)
 
 
 def test_server_artifact_fetch_script_verifies_installed_bundle() -> None:

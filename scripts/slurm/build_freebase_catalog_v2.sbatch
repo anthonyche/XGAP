@@ -12,7 +12,7 @@ export XGAP_FREEBASE_RAW_DIR="${XGAP_FREEBASE_RAW_DIR:-$HOME/xgap-data/freebase/
 export XGAP_FREEBASE_SOURCE_MODE="${XGAP_FREEBASE_SOURCE_MODE:-hf_archival_parquet}"
 export XGAP_FREEBASE_PARQUET_ROOT="${XGAP_FREEBASE_PARQUET_ROOT:-$XGAP_FREEBASE_RAW_DIR/hf-archival-parquet}"
 export XGAP_FREEBASE_SOURCE_MANIFEST="${XGAP_FREEBASE_SOURCE_MANIFEST:-$XGAP_FREEBASE_RAW_DIR/source_manifest.json}"
-export XGAP_FREEBASE_PARQUET_SPEC="${XGAP_FREEBASE_PARQUET_SPEC:-$REPO_ROOT/experiments/artifacts/freebase_hf_archival_parquet_v1.json}"
+export XGAP_FREEBASE_PARQUET_SPEC="${XGAP_FREEBASE_PARQUET_SPEC:-$REPO_ROOT/experiments/sources/freebase_hf_archival_parquet_v1.json}"
 export XGAP_FREEBASE_CATALOG_DIR="${XGAP_FREEBASE_CATALOG_DIR:-$HOME/xgap-data/freebase/catalog-v2}"
 export XGAP_GRAILQA_REACHABILITY_V2="${XGAP_GRAILQA_REACHABILITY_V2:-$HOME/xgap-data/freebase/grailqa-reachability-v2}"
 

@@ -1,0 +1,243 @@
+{
+  "schema_version": "m15-e3-semantic-intake-template-v1",
+  "template_id": "practical-model-toy",
+  "template_version": "1",
+  "holes": [
+    {
+      "hole_id": "person",
+      "kind": "entity",
+      "phrases": [
+        "Alice",
+        "Bob",
+        "Alex"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "predicate",
+      "kind": "predicate",
+      "phrases": [
+        "熟人"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "type",
+      "kind": "type",
+      "phrases": [
+        "people"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "age",
+      "kind": "constraint",
+      "phrases": [
+        "30",
+        "45"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "source",
+      "kind": "source",
+      "phrases": [
+        "toy graph"
+      ],
+      "required": true
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_id": "resolved source identity",
+      "expression": "resolved source identity",
+      "policy": "hard",
+      "predicate": {
+        "kind": "property_equals",
+        "ref": {
+          "kind": "node",
+          "position": "first"
+        },
+        "property": "id",
+        "value": {
+          "$hole": "person"
+        }
+      },
+      "operator_id": "paths",
+      "phrases": [
+        "查找"
+      ],
+      "required": true
+    },
+    {
+      "constraint_id": "minimum target age",
+      "expression": "minimum target age",
+      "policy": "hard",
+      "predicate": {
+        "op": "ge",
+        "field": "age",
+        "value": {
+          "$hole": "age"
+        }
+      },
+      "operator_id": "eligible",
+      "phrases": [
+        "年龄至少"
+      ],
+      "required": true
+    }
+  ],
+  "operators": [
+    {
+      "operator_id": "paths",
+      "kind": "traverse",
+      "input_ids": [],
+      "input_kinds": [],
+      "output_kind": "path_set",
+      "parameters": {
+        "path_pattern": {
+          "path_var": null,
+          "source": {},
+          "expr": {
+            "kind": "rel",
+            "edge": {
+              "label": {
+                "$hole": "predicate"
+              },
+              "direction": "OUT",
+              "properties": {}
+            }
+          },
+          "target": {},
+          "selector": {
+            "kind": "ALL",
+            "k": null
+          },
+          "restrictor": "WALK",
+          "condition": null,
+          "max_depth": null
+        }
+      },
+      "required_capabilities": [],
+      "hole_ids": [
+        "person",
+        "predicate",
+        "source"
+      ]
+    },
+    {
+      "operator_id": "reached",
+      "kind": "project",
+      "input_ids": [
+        "paths"
+      ],
+      "input_kinds": [
+        "path_set"
+      ],
+      "output_kind": "binding_set",
+      "parameters": {
+        "projections": {
+          "person": {
+            "kind": "path_node",
+            "position": "last"
+          },
+          "edge": {
+            "kind": "path_edge",
+            "position": 1
+          }
+        }
+      },
+      "required_capabilities": [],
+      "hole_ids": []
+    },
+    {
+      "operator_id": "people",
+      "kind": "match",
+      "input_ids": [],
+      "input_kinds": [],
+      "output_kind": "binding_set",
+      "parameters": {
+        "node": {
+          "label": {
+            "$hole": "type"
+          },
+          "properties": {}
+        },
+        "entity_field": "person",
+        "properties": {
+          "age": "age"
+        }
+      },
+      "required_capabilities": [],
+      "hole_ids": [
+        "type"
+      ]
+    },
+    {
+      "operator_id": "eligible",
+      "kind": "filter",
+      "input_ids": [
+        "people"
+      ],
+      "input_kinds": [
+        "binding_set"
+      ],
+      "output_kind": "binding_set",
+      "parameters": {},
+      "required_capabilities": [],
+      "hole_ids": [
+        "age"
+      ]
+    },
+    {
+      "operator_id": "join",
+      "kind": "join",
+      "input_ids": [
+        "reached",
+        "eligible"
+      ],
+      "input_kinds": [
+        "binding_set",
+        "binding_set"
+      ],
+      "output_kind": "binding_set",
+      "parameters": {
+        "left_on": "person",
+        "right_on": "person"
+      },
+      "required_capabilities": [],
+      "hole_ids": []
+    },
+    {
+      "operator_id": "answer",
+      "kind": "project",
+      "input_ids": [
+        "join"
+      ],
+      "input_kinds": [
+        "binding_set"
+      ],
+      "output_kind": "binding_set",
+      "parameters": {
+        "projections": {
+          "person": {
+            "kind": "field",
+            "field": "person"
+          },
+          "edge": {
+            "kind": "field",
+            "field": "edge"
+          }
+        }
+      },
+      "required_capabilities": [],
+      "hole_ids": []
+    }
+  ],
+  "roots": [
+    "answer"
+  ],
+  "metadata": {
+    "development_only": true
+  }
+}

@@ -1,0 +1,295 @@
+{
+  "schema_version": "m15-finbench-paper-protocol-draft-v1",
+  "protocol_id": "m15-finbench-sigmod2027-physical-confirmatory-draft-v1",
+  "source_artifacts": [
+    {
+      "artifact_id": "finbench-v010-sf0_1-source-lock",
+      "path": "experiments/sources/m15_finbench_v010_sf0_1_sources.json",
+      "sha256": "07f788fbedf43765d1585cd4b1a49915248425cf041b7100f1eba9879a38ae8d"
+    },
+    {
+      "artifact_id": "finbench-sf0_1-primary-population",
+      "path": "experiments/configs/m15_finbench_sf0_1_primary_population_v1.json",
+      "sha256": "2294a8edb2ff59624a2ea2080c44e7620a6975e5de59f20d930f8d70e3d2dde1"
+    },
+    {
+      "artifact_id": "finbench-development-campaign",
+      "path": "experiments/configs/m15_finbench_family_campaign_dev_v1.json",
+      "sha256": "c7ed457b5c35b513720d454c4764259de57d6c06ceaa68b7795e4cff7f4b19c9"
+    },
+    {
+      "artifact_id": "finbench-family-memory-policy",
+      "path": "experiments/configs/m15_finbench_family_memory_policy_v1.json",
+      "sha256": "605cc968d09955683b94b764eb0663d7a1315a1dd46d223abd3828e16bdb7760"
+    }
+  ],
+  "scope": {
+    "venue": "ACM_SIGMOD_2027_research_round_4",
+    "submission_deadline_aoe": "2026-10-17T23:59:00-12:00",
+    "study_kind": "confirmatory_physical_optimizer_evaluation",
+    "primary_artifact": "LDBC_FinBench_v0.1.0_derived_heterogeneous_workload",
+    "benchmark_conformance_claim": false,
+    "primary_family_ids": [
+      "f1_direct_transfer_control",
+      "f2_temporal_path_control",
+      "f3_aggregate_risk_ranking"
+    ],
+    "semantic_track": "separate_GrailQA_protocol",
+    "external_validation": "separate_cutoff_bounded_FedShop_protocol"
+  },
+  "research_questions": [
+    {
+      "rq_id": "RQ-P1",
+      "role": "primary",
+      "population": "heldout_instances_from_seen_F1_F2_families",
+      "treatment": "family_memory_zero_profile",
+      "comparator": "current_query_dual_profile",
+      "estimand": "geometric_mean_within_query_end_to_end_latency_ratio",
+      "metric": "selection_plus_serving_elapsed_ms",
+      "cost_boundary": "include_current_query_acquisition_exclude_offline_training_report_training_separately",
+      "directional_expectation": "ratio_below_one",
+      "inferential_test": "two_sided_paired_sign_flip_randomization_on_query_log_ratios"
+    },
+    {
+      "rq_id": "RQ-P2",
+      "role": "secondary",
+      "population": "heldout_instances_from_seen_F1_F2_families",
+      "treatment": "family_memory_zero_profile",
+      "comparator": "fixed_routes_family_global_and_current_query_dual_profile",
+      "estimand": "query_level_selection_quality_and_resource_regret",
+      "metric": "winner_accuracy_latency_regret_bytes_regret_frontier_jaccard",
+      "cost_boundary": "serving_only_and_selection_plus_serving_both_reported",
+      "directional_expectation": "descriptive",
+      "inferential_test": "holm_adjusted_secondary_paired_tests_where_defined"
+    },
+    {
+      "rq_id": "RQ-P3",
+      "role": "descriptive_cold_start",
+      "population": "entirely_heldout_F3_family",
+      "treatment": "predeclared_family_fallback",
+      "comparator": "fixed_routes_current_query_dual_profile_and_observed_oracle",
+      "estimand": "cold_family_serving_cost_and_regret",
+      "metric": "latency_bytes_winner_accuracy_regret",
+      "cost_boundary": "never_relabel_cold_start_as_family_memory_prediction",
+      "directional_expectation": "descriptive",
+      "inferential_test": "none_separate_stratum"
+    }
+  ],
+  "methods": {
+    "online_methods": [
+      "family_memory_zero_profile",
+      "predeclared_family_fallback",
+      "current_query_dual_profile"
+    ],
+    "analysis_controls": [
+      "family_global_no_instance_features",
+      "fixed_route_a",
+      "fixed_route_b",
+      "observed_oracle_upper_bound"
+    ],
+    "oracle_role": "postexecution_regret_only",
+    "current_query_profile_calls_for_family_memory": 0
+  },
+  "population_design": {
+    "sampling_must_be_answer_independent": true,
+    "sampling_must_be_cost_independent": true,
+    "query_instance_is_inferential_unit": true,
+    "repetitions_are_not_independent_units": true,
+    "training_queries_excluded_from_confirmatory_effect_estimates": true,
+    "seen_family_predictions_must_be_out_of_sample": true,
+    "cold_family_reported_separately": true
+  },
+  "execution_design": {
+    "backend_boundary": "black_box_public_interfaces_only",
+    "backends": [
+      "neo4j",
+      "fuseki"
+    ],
+    "remote_calls_per_complete_plan": 2,
+    "method_order": "deterministic_counterbalanced_within_query_and_block",
+    "service_lifecycle": "fresh_job_owned_services_per_measurement_block",
+    "cache_policy": "all_completed_measurements_retained_and_cache_state_reported",
+    "selection_sealed_before_serving": true,
+    "shadow_starts_after_all_selection_seals": true,
+    "oracle_opened_after_all_plan_runs": true,
+    "backend_timeout_seconds": 60,
+    "automatic_retries": 0
+  },
+  "analysis_design": {
+    "primary_alpha": 0.05,
+    "confidence_level": 0.95,
+    "query_level_repetition_aggregation": "median",
+    "primary_effects": [
+      "geometric_mean_ratio",
+      "paired_median_difference_ms"
+    ],
+    "confidence_interval": "query_cluster_bootstrap_10000_resamples",
+    "confidence_interval_seed": "m15-sigmod2027-finbench-ci-v1",
+    "primary_test": "paired_sign_flip_randomization_100000_draws_or_exact_if_smaller",
+    "primary_test_seed": "m15-sigmod2027-finbench-randomization-v1",
+    "primary_hypothesis_count": 1,
+    "secondary_multiplicity": "holm_familywise_alpha_0.05",
+    "missing_measurements": "no_imputation",
+    "report_effect_size_and_interval_regardless_of_p_value": true,
+    "report_per_query_values": true,
+    "report_all_attempts": true,
+    "report_training_cost_and_amortization_separately": true
+  },
+  "failure_policy": {
+    "query_timeout_is_method_outcome": true,
+    "query_timeout_is_not_replacement_eligible": true,
+    "infrastructure_failure_requires_no_valid_measurement_in_block": true,
+    "replacement_reuses_frozen_schedule": true,
+    "failed_attempts_remain_reported": true,
+    "automatic_retries": 0
+  },
+  "author_decisions": [
+    {
+      "decision_id": "confirmatory_population",
+      "allowed_values": [
+        "36_answer_independent_crossfit",
+        "48_answer_independent_crossfit",
+        "60_answer_independent_crossfit"
+      ],
+      "recommended_value": "48_answer_independent_crossfit",
+      "selected_value": null
+    },
+    {
+      "decision_id": "primary_scale",
+      "allowed_values": [
+        "sf0_1",
+        "sf1"
+      ],
+      "recommended_value": "sf0_1",
+      "selected_value": null
+    },
+    {
+      "decision_id": "robustness_scale",
+      "allowed_values": [
+        "sf0_01",
+        "sf1_if_feasible_by_2026-09-12_else_omit",
+        "omit"
+      ],
+      "recommended_value": "sf1_if_feasible_by_2026-09-12_else_omit",
+      "selected_value": null
+    },
+    {
+      "decision_id": "training_repetitions_per_plan",
+      "allowed_values": [
+        "4",
+        "5",
+        "7"
+      ],
+      "recommended_value": "7",
+      "selected_value": null
+    },
+    {
+      "decision_id": "selected_serving_repetitions",
+      "allowed_values": [
+        "5",
+        "7",
+        "10"
+      ],
+      "recommended_value": "7",
+      "selected_value": null
+    },
+    {
+      "decision_id": "shadow_repetitions_per_plan",
+      "allowed_values": [
+        "5",
+        "7",
+        "10"
+      ],
+      "recommended_value": "7",
+      "selected_value": null
+    },
+    {
+      "decision_id": "infrastructure_replacement_limit",
+      "allowed_values": [
+        "0",
+        "1",
+        "2"
+      ],
+      "recommended_value": "1",
+      "selected_value": null
+    },
+    {
+      "decision_id": "semantic_track",
+      "allowed_values": [
+        "grailqa_primary",
+        "grailqa_reduced",
+        "defer"
+      ],
+      "recommended_value": "grailqa_primary",
+      "selected_value": null
+    },
+    {
+      "decision_id": "external_validation",
+      "allowed_values": [
+        "fedshop_if_ready_by_2026-09-24_else_omit",
+        "omit"
+      ],
+      "recommended_value": "fedshop_if_ready_by_2026-09-24_else_omit",
+      "selected_value": null
+    }
+  ],
+  "implementation_requirements": [
+    {
+      "requirement_id": "answer_independent_confirmatory_population_compiler",
+      "scope": "physical_confirmatory",
+      "status": "ready",
+      "evidence": {
+        "path": "experiments/artifacts/m15_finbench_confirmatory_population_cwru_3793727_receipt.json",
+        "sha256": "e535feae80af7e41b5ad6c4c951fcf79841c13c966e881726f750cf0bf7fb91a"
+      }
+    },
+    {
+      "requirement_id": "out_of_sample_family_memory_runner",
+      "scope": "physical_confirmatory",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "requirement_id": "confirmatory_statistics_analyzer",
+      "scope": "physical_confirmatory",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "requirement_id": "confirmatory_evidence_auditor",
+      "scope": "physical_confirmatory",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "requirement_id": "grailqa_semantic_protocol",
+      "scope": "paper_complete",
+      "status": "missing",
+      "evidence": null
+    },
+    {
+      "requirement_id": "fedshop_external_validation_protocol",
+      "scope": "paper_complete",
+      "status": "missing",
+      "evidence": null
+    }
+  ],
+  "required_development_evidence": [
+    "sf0_1_correctness_audit",
+    "sf0_1_family_campaign_audit"
+  ],
+  "approval": {
+    "status": "pending_author_decision",
+    "authority_source_id": null,
+    "approved_subject_sha256": null
+  },
+  "claim_boundary": {
+    "artifact_class": "result_blind_confirmatory_protocol_draft",
+    "contains_measurements": false,
+    "author_approved": false,
+    "confirmatory_run_authorized": false,
+    "paper_result": false
+  },
+  "automatic_retries": 0,
+  "paper_result": false
+}

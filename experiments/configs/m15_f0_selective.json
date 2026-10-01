@@ -1,0 +1,12 @@
+{
+  "schema_version": "m15-f0-workload-spec-v1",
+  "workload_id": "selective-dev-v1",
+  "seed": "xgap-m15-f0-selective-v1",
+  "company_count": 200,
+  "transfer_count": 5000,
+  "high_risk_company_count": 20,
+  "hot_company_count": 20,
+  "hot_transfer_count": 4000,
+  "high_risk_placement": "cold_first",
+  "max_bindings": 200
+}

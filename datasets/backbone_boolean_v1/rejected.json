@@ -1,0 +1,57 @@
+[
+  {
+    "id": "invalid-variable-position",
+    "nl": "从 Alice 在三步以内先为每对端点选最短 KNOWS 路径，再过滤：(node(2).id = \"b\" OR node(2).id = \"d\")",
+    "query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS"
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "c"
+        }
+      },
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "SHORTEST",
+      "condition": {
+        "kind": "or",
+        "conditions": [
+          {
+            "kind": "property_equals",
+            "ref": {
+              "kind": "node",
+              "position": 2
+            },
+            "property": "id",
+            "value": "b"
+          },
+          {
+            "kind": "property_equals",
+            "ref": {
+              "kind": "node",
+              "position": 2
+            },
+            "property": "id",
+            "value": "d"
+          }
+        ]
+      },
+      "max_depth": 3
+    },
+    "expected_error": "Numeric condition references require a fixed-length path expression."
+  }
+]

@@ -1,0 +1,73 @@
+{
+  "schema_version": "xgap-resolved-strong-modes-v1",
+  "profile_id": "resolved-strong-development-v1",
+  "scope": "initial frozen development settings; fully resolved physical track; no paper default or superiority claim",
+  "modes": {
+    "exact": {
+      "semantic": {
+        "mode": "exact",
+        "allowed_unvalidated": [],
+        "epsilon": null,
+        "improve_physical": true
+      },
+      "search": {
+        "max_depth": 0,
+        "max_states": 1,
+        "max_actions": 0,
+        "max_outcomes": 1,
+        "max_terminals_per_state": 2,
+        "planning_ms": 2000,
+        "improvement_actions": 0,
+        "resources": {
+          "model_calls": 0,
+          "tokens": 0,
+          "remote_calls": 16
+        }
+      },
+      "physical": {
+        "max_operators": 64,
+        "max_holes": 16,
+        "max_local_options": 64,
+        "max_physical_candidates": 256,
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "max_bindings": 10000,
+        "max_binding_bytes": 1048576
+      },
+      "actions": {}
+    },
+    "performance": {
+      "semantic": {
+        "mode": "performance",
+        "allowed_unvalidated": [],
+        "epsilon": null,
+        "improve_physical": true
+      },
+      "search": {
+        "max_depth": 0,
+        "max_states": 1,
+        "max_actions": 0,
+        "max_outcomes": 1,
+        "max_terminals_per_state": 2,
+        "planning_ms": 100,
+        "improvement_actions": 0,
+        "resources": {
+          "model_calls": 0,
+          "tokens": 0,
+          "remote_calls": 16
+        }
+      },
+      "physical": {
+        "max_operators": 64,
+        "max_holes": 16,
+        "max_local_options": 64,
+        "max_physical_candidates": 64,
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "max_bindings": 10000,
+        "max_binding_bytes": 1048576
+      },
+      "actions": {}
+    }
+  }
+}

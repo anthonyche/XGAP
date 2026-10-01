@@ -1,0 +1,20 @@
+{
+  "schema_version": "xgap-practical-model-toy-v1",
+  "nodes": 5,
+  "edges": 9,
+  "bundle_hash": "fa5dc75ed97981b89adb4202e29286ab4f158db0a2b9257f731b734a31de7901",
+  "files": {
+    "bindings.json": "e2eb6f3a7d12c2a42ff5e7c46c94aa9d6806a70c60806c2614039167b4c5b0c4",
+    "catalog.json": "2202ddce6be206479a40cbfba31d8a49172093b0828bbe2b0f151d53e20994ee",
+    "gold.json": "cb09a5693e96aac3191aede4c013c46752072301a5ce76890a6ddb1ff296d054",
+    "graph.json": "74e7f66e825e21638f0a35131b21cb9e3b5815615cd1277ea4a3f93eac06a424",
+    "intake.json": "a9cffbaea8894e7fe6ad5604cbdfd74f55b04ad224325550370d7187302f9597",
+    "load.cypher": "6f0509b8a8efa8951e86d67a740e2ffc74089d75b03bf40aa3d1298fffa87048",
+    "load.ttl": "f5899adfe3596d152dbcc2fca9cdf09b2a58a6f77171ce2781e988f523f3d49d",
+    "mapping.json": "61874bfaf7fd8ae1b2aa62c69e52d594e97c16e66043aa85c7569024886139d7",
+    "request.json": "c5c72caa563be6173aaa224ef1d380de523ece33a84d31bb86728b3aed6e5a52",
+    "snapshot/bindings.json": "e2eb6f3a7d12c2a42ff5e7c46c94aa9d6806a70c60806c2614039167b4c5b0c4",
+    "snapshot/catalog.json": "2202ddce6be206479a40cbfba31d8a49172093b0828bbe2b0f151d53e20994ee",
+    "snapshot/manifest.json": "4a8f45387c45dad2d10143d77ed23f6a654ce5d849ad959658adda30ea1dbd9d"
+  }
+}

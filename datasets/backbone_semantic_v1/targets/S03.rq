@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT ?path WHERE { t:b a t:Person . ?edge a t:Edge ; t:source t:b ; t:target ?q ; t:label "KNOWS" ; t:id ?eid . ?q t:id ?qid . BIND(CONCAT("b/",?eid,"/",?qid) AS ?path) }

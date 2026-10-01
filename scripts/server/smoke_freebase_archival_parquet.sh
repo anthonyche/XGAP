@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 RAW_DIR="${XGAP_FREEBASE_RAW_DIR:-${XGAP_FREEBASE_SOURCE_ROOT:-$HOME/xgap-data/freebase/raw}}"
 PARQUET_ROOT="${XGAP_FREEBASE_PARQUET_ROOT:-$RAW_DIR/hf-archival-parquet}"
-FROZEN_SPEC="${XGAP_FREEBASE_PARQUET_SPEC:-$REPO_ROOT/experiments/artifacts/freebase_hf_archival_parquet_v1.json}"
+FROZEN_SPEC="${XGAP_FREEBASE_PARQUET_SPEC:-$REPO_ROOT/experiments/sources/freebase_hf_archival_parquet_v1.json}"
 PYTHON="${PYTHON:-python}"
 
 cd "$REPO_ROOT"

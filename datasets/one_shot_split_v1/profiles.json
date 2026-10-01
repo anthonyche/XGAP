@@ -1,0 +1,37 @@
+{
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Person",
+      "properties": {
+        "name": "Nora",
+        "age": 41
+      }
+    },
+    {
+      "id": "b",
+      "label": "Person",
+      "properties": {
+        "name": "Leon",
+        "age": 22
+      }
+    },
+    {
+      "id": "c",
+      "label": "Person",
+      "properties": {
+        "name": "Mira",
+        "age": 37
+      }
+    },
+    {
+      "id": "d",
+      "label": "Person",
+      "properties": {
+        "name": "Oren",
+        "age": 17
+      }
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,131 @@
+{
+  "schema_version": "m15-f2c13-paired-physical-comparison-protocol-v1",
+  "protocol_id": "m15-f2c13-development-paired-physical-comparison-v1",
+  "development_population_id": "m15-f2c10-direct-six-query-development-v1",
+  "research_question": "Within one allocation and one held-out semantic task, how does sealed family-memory physical selection with zero current-query profiling compare with dual-current-query profiling when acquisition, training, serving, and evaluation costs are reported separately?",
+  "source_contracts": {
+    "family_protocol_sha256": "b30cf4ee308adf4cae04b07a23e12480839c7ac33651e6403dc0befa1517e2fa",
+    "family_predictor_sha256": "ee4c4ab09aaf86d06784a928e0a52ffa99d6de53f233440a3573976e96baf89b",
+    "profile_protocol_sha256": "fe6c64f82fd6588f257f4bdd496c6a6ce67c6ca4b085f4aba42f89da3b0dc496"
+  },
+  "phase_order": [
+    "schedule_seal",
+    "training_measurement",
+    "family_memory_selection_seal",
+    "current_query_profile_acquisition",
+    "current_query_profile_selection_seal",
+    "paired_selected_execution",
+    "postselection_shadow_evaluation",
+    "analysis"
+  ],
+  "methods": {
+    "primary": [
+      "family_memory",
+      "current_query_dual_profile"
+    ],
+    "evaluation_only_controls": [
+      "fixed_parallel_hash",
+      "fixed_risk_first_bind",
+      "observed_oracle_upper_bound"
+    ]
+  },
+  "scope": {
+    "training_semantic_task_count": 18,
+    "training_physical_plan_count": 36,
+    "training_repetitions_per_plan": 4,
+    "heldout_base_query_count": 2,
+    "heldout_semantic_task_count": 10,
+    "heldout_physical_plan_count": 20,
+    "shadow_repetitions_per_plan": 4
+  },
+  "selection_boundaries": {
+    "family_memory_input": "sealed_training_family_memory_only",
+    "family_selection_sealed_before_current_query_profile_acquisition": true,
+    "profile_input": "sealed_current_query_profile_costs_only",
+    "profile_selection_sealed_before_selected_execution": true,
+    "answer_oracle_opened_before_both_selection_seals": false,
+    "selected_or_shadow_measurements_used_for_selection": false,
+    "selection_scope": "within_one_semantic_class"
+  },
+  "selected_execution": {
+    "methods": [
+      "family_memory",
+      "current_query_dual_profile"
+    ],
+    "repetitions_per_method_task": 1,
+    "task_order": "sha256_seeded",
+    "method_order": "per_task_ab_ba_counterbalanced",
+    "schedule_seed": "m15-f2c13-paired-selected-execution-v1",
+    "execute_duplicate_choice_per_method": true
+  },
+  "cost_accounting": {
+    "historical_training_cost_reported_separately": true,
+    "profile_acquisition_cost_reported_separately": true,
+    "selected_execution_cost_reported_per_method": true,
+    "shadow_cost_excluded_from_method_cost": true,
+    "training_cost_not_silently_amortized": true,
+    "count_based_training_break_even_future_tasks": 72,
+    "lifecycle_break_even_descriptive_only": true
+  },
+  "execution": {
+    "backend_timeout_seconds": 60,
+    "slurm_timeout_minutes": 45,
+    "remote_calls_per_plan": 2,
+    "failure_policy": "stop_on_first_failure",
+    "automatic_retries": 0
+  },
+  "analysis": {
+    "per_plan_aggregation": "median_over_four_shadow_repetitions",
+    "observed_physical_winner_order": [
+      "median_elapsed_ms",
+      "median_total_bytes_moved",
+      "plan_id"
+    ],
+    "metrics": [
+      "physical_winner_accuracy",
+      "selected_plan_latency_regret_ms",
+      "selected_plan_bytes_regret",
+      "paired_profile_minus_memory_latency_regret_ms",
+      "paired_profile_minus_memory_bytes_regret",
+      "current_query_acquisition_latency_ms",
+      "current_query_acquisition_bytes",
+      "selected_execution_latency_ms",
+      "selected_execution_bytes",
+      "historical_training_latency_ms",
+      "historical_training_bytes",
+      "count_based_training_break_even_future_tasks"
+    ],
+    "paired_unit": "heldout_semantic_task",
+    "confirmatory_statistics": false
+  },
+  "input_boundary": {
+    "family_memory_current_query_profile_operations_per_task": 0,
+    "profile_method_current_query_profile_operations_per_task": 2,
+    "current_query_sample_operations_per_task": 0,
+    "current_query_explain_operations_per_task": 0,
+    "llm_calls": 0,
+    "ontology_service_calls": 0,
+    "cross_method_selection_leakage_allowed": false
+  },
+  "expected_counts": {
+    "training_plan_runs": 144,
+    "profile_acquisition_plan_runs": 20,
+    "paired_selected_plan_runs": 20,
+    "evaluation_shadow_plan_runs": 80,
+    "total_plan_runs": 264,
+    "training_backend_calls": 288,
+    "profile_acquisition_backend_calls": 40,
+    "paired_selected_backend_calls": 40,
+    "evaluation_shadow_backend_calls": 160,
+    "total_backend_calls": 528
+  },
+  "claim_boundary": {
+    "physical_selection_within_semantic_class_only": true,
+    "semantic_frontier_quality_claim": false,
+    "development_protocol_only": true,
+    "confirmatory_statistics": false,
+    "live_execution_authorized": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

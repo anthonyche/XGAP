@@ -1,0 +1,68 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE { {
+SELECT DISTINCT ?path ?src ?dst ?length WHERE {
+{ SELECT DISTINCT ?lpath ?lsrc ?ldst ?llength WHERE {
+{ SELECT DISTINCT ?lpath ?lsrc ?ldst ?llength WHERE {
+{ SELECT DISTINCT ?lpath ?lsrc ?ldst ?llength WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1) AS ?lpath)
+BIND(?nid0 AS ?lsrc)
+BIND(?nid1 AS ?ldst)
+BIND(1 AS ?llength)
+} }
+UNION
+{ SELECT DISTINCT ?lpath ?lsrc ?ldst ?llength WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 ; t:source ?n1 ; t:target ?n2 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+?n2 t:id ?nid2 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1, "/", ?eid2, "/", ?nid2) AS ?lpath)
+BIND(?nid0 AS ?lsrc)
+BIND(?nid2 AS ?ldst)
+BIND(2 AS ?llength)
+} }
+} }
+{ SELECT ?lsrc ?ldst (MIN(?cost) AS ?best) WHERE { { SELECT DISTINCT ?lpath ?lsrc ?ldst ?cost WHERE {
+{ SELECT DISTINCT ?lpath ?lsrc ?ldst ?cost WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1) AS ?lpath)
+BIND(?nid0 AS ?lsrc)
+BIND(?nid1 AS ?ldst)
+BIND(1 AS ?cost)
+} }
+UNION
+{ SELECT DISTINCT ?lpath ?lsrc ?ldst ?cost WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 ; t:source ?n1 ; t:target ?n2 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+?n2 t:id ?nid2 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1, "/", ?eid2, "/", ?nid2) AS ?lpath)
+BIND(?nid0 AS ?lsrc)
+BIND(?nid2 AS ?ldst)
+BIND(2 AS ?cost)
+} }
+} } } GROUP BY ?lsrc ?ldst }
+FILTER(?llength = ?best)
+} }
+{ SELECT DISTINCT ?rpath ?rsrc ?rdst ?rlength WHERE {
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n1 ; t:target ?n0 .
+?n0 t:id ?nid0 .
+?n1 t:id ?nid1 .
+BIND(CONCAT(?nid0, "/", ?eid1, "/", ?nid1) AS ?rpath)
+BIND(?nid0 AS ?rsrc)
+BIND(?nid1 AS ?rdst)
+BIND(1 AS ?rlength)
+} }
+FILTER(?ldst = ?rsrc)
+BIND(CONCAT(?lpath, SUBSTR(?rpath, STRLEN(?rsrc)+1)) AS ?path)
+BIND(?lsrc AS ?src)
+BIND(?rdst AS ?dst)
+BIND((?llength + ?rlength) AS ?length)
+}
+} FILTER(?src = "a" && ?dst = "b" && ?length = 3) }

@@ -1,0 +1,1 @@
+MATCH (n:Person) WHERE n.score IS NOT NULL WITH n ORDER BY CASE WHEN n.score IS NULL THEN 3 WHEN n.score IS :: INTEGER NOT NULL OR n.score IS :: FLOAT NOT NULL THEN 0 WHEN n.score IS :: STRING NOT NULL THEN 1 ELSE 2 END, n.score, n.id WITH collect(n.score) AS values RETURN head(values) AS low, last(values) AS high

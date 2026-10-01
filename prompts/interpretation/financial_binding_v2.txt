@@ -1,0 +1,59 @@
+Financial binding syntax v2: complete row-operator guidance for the existing
+xgap-semantic-parameters-v2 contract. The wire grammar checks the envelope only;
+local admission checks every operator parameter. No query example or answer is
+provided here. These rules apply to every question and dataset using this profile.
+
+Choose executable reads for the fields required by the question. Match with
+edge:{label:...,properties:{...}} returns scalar properties using its explicit
+properties:{alias:property_name} map, plus entity_field, source_field and
+target_field identities. A Traverse followed by Project path_edge returns an
+edge identity only. Neither node nor edge identity is an object from which
+"identity.property" can be read later. Filter and Aggregate field names must be
+actual input column names from explicit upstream reads, never dot dereferences.
+Use edge Match when edge property values are needed. Retain an edge identity
+through distinct projections when separate parallel edges must contribute.
+
+For node Match, entity_field and properties output aliases must also be distinct.
+Keep canonical identity and business ID in separate columns: entity_field is the
+canonical join key; properties maps another alias to the raw id property. Join
+canonical identity to canonical identity, not to a raw business ID. Named entity
+mentions require an entity hole referenced in node.properties or an endpoint's
+properties under the schema's identity_property. A name-property string filter
+does not perform that identity grounding. Do not write a resolved identity.
+
+Respect the source schema for every property and edge in a Match/Traverse.
+Choose a logical source containing the required facts. When attributes and edges
+live in different sources, use separate reads and an identity join. A source's
+identity stub does not imply that its profile attributes or edges are present.
+Only apply each NL condition to the entity or edge it qualifies; do not add a
+condition to another entity just because that entity also has such a property.
+
+The complete remaining row-operator syntax is:
+- Filter: one binding_set input and output; condition is a row condition. For
+  ordered calendar comparisons use value_type:"timestamp_ms" on each comparison.
+- Join: two binding_set inputs and binding_set output; parameters left_on and
+  right_on are input column names. Optional right_prefix controls collisions.
+- Project: projections maps each output name to {kind:"field",field:"input_name"}
+  or another admitted projection kind. Project cannot aggregate. There is no
+  projection kind "aggregate", no projection func, and no embedded expression.
+- Aggregate: one binding_set input, output_kind:"grouped_bindings". parameters
+  contains group_by:["input_key",...] and aggregations:{"output_name":
+  {"op":"sum","field":"input_value","distinct":false}}. Use op sum/min/max or
+  count. Count can omit field to count rows. Its output columns are exactly the
+  grouping keys and aggregation output names. distinct:true deduplicates values;
+  it does not mean count different edge identities when their values are equal.
+- OrderLimit: one input; input_kinds and output_kind both equal that input's kind
+  (including grouped_bindings after Aggregate). parameters order_by contains
+  {"field":"output_name","direction":"asc"} or direction:"desc"; limit:null
+  keeps all rows, a positive integer implements requested top K. Include every
+  requested tie breaker and use the NL-requested directions.
+- Union: two same-kind inputs and matching output kind; parameters {}.
+- Align: one binding_set input/output; parameters field, output_field, mapping
+  and on_missing (error/drop/keep). This is an explicit declared mapping only;
+  do not invent it to replace missing catalog identity grounding.
+
+Audit the complete candidate before returning it: all NL conditions and final
+sorting are represented, each referenced scalar was read, each source has those
+facts, every join uses compatible identities, holes are declared and used, and
+the final columns have exactly the requested meanings. The downstream system
+will not rewrite an invalid response, fetch implicit properties or retry it.

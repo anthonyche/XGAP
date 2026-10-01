@@ -1,0 +1,99 @@
+{
+  "schema_version": "m15-f2c10d-direct-family-pilot-protocol-v1",
+  "protocol_id": "m15-f2c10d-development-pilot-option-a-v1",
+  "development_population_id": "m15-f2c10-direct-six-query-development-v1",
+  "phase_order": [
+    "training_measurement",
+    "family_memory_freeze",
+    "heldout_prediction",
+    "selection_seal",
+    "online_selected_execution",
+    "postselection_shadow_evaluation",
+    "analysis"
+  ],
+  "training": {
+    "semantic_task_count": 18,
+    "physical_plan_count": 36,
+    "repetitions_per_plan": 4,
+    "task_order": "sha256_seeded_per_block",
+    "strategy_order": "per_task_alternating_ab_ba_counterbalanced",
+    "schedule_seed": "m15-f2c10d-option-a-training-v1"
+  },
+  "selection": {
+    "predictor": "strategy_conditioned_family_memory",
+    "heldout_semantic_task_count": 10,
+    "heldout_physical_plan_count": 20,
+    "online_cardinality": {
+      "mode": "per_query_frontier",
+      "minimum_total": 2,
+      "maximum_total": 8,
+      "maximum_per_query": 4
+    },
+    "current_query_observation_operations": [],
+    "seal_before_oracle_and_execution": true,
+    "post_execution_measurements_used": false
+  },
+  "online": {
+    "repetitions_per_returned_plan": 1,
+    "execution_role": "online_selected_plan",
+    "selection_input": false,
+    "memory_writes_allowed": false
+  },
+  "shadow": {
+    "semantic_task_count": 10,
+    "physical_plan_count": 20,
+    "repetitions_per_plan": 4,
+    "starts_after_selection_seal": true,
+    "selection_input": false,
+    "memory_writes_allowed": false,
+    "task_order": "sha256_seeded_per_block",
+    "strategy_order": "per_task_alternating_ab_ba_counterbalanced",
+    "schedule_seed": "m15-f2c10d-option-a-shadow-v1"
+  },
+  "execution": {
+    "backend_timeout_seconds": 60,
+    "slurm_timeout_minutes": 45,
+    "remote_calls_per_plan": 2,
+    "failure_policy": "stop_on_first_failure",
+    "automatic_retries": 0
+  },
+  "analysis": {
+    "per_plan_aggregation": "median_over_four_shadow_repetitions",
+    "physical_winner_tie_break": [
+      "median_elapsed_ms",
+      "median_total_bytes_moved",
+      "plan_id"
+    ],
+    "frontier_observed_costs": "per_plan_shadow_medians",
+    "metrics": [
+      "prediction_error",
+      "physical_winner_accuracy",
+      "latency_regret",
+      "bytes_regret",
+      "predicted_observed_frontier_overlap"
+    ],
+    "confirmatory_statistics": false
+  },
+  "expected_counts": {
+    "training_plan_runs": 144,
+    "online_selected_plan_runs": {
+      "minimum": 2,
+      "maximum": 8
+    },
+    "evaluation_shadow_plan_runs": 80,
+    "total_plan_runs": {
+      "minimum": 226,
+      "maximum": 232
+    },
+    "total_backend_calls": {
+      "minimum": 452,
+      "maximum": 464
+    }
+  },
+  "claim_boundary": {
+    "development_pilot_only": true,
+    "paper_scale_query_count": "30_to_50_after_pilot_validation",
+    "paper_result": false
+  },
+  "paper_result": false
+}

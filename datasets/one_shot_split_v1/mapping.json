@@ -1,0 +1,46 @@
+{
+  "mapping_id": "one-shot-split-v1",
+  "version": "1",
+  "backends": {
+    "fuseki": {
+      "namespace": "https://xgap.test/split/",
+      "compiler_tokens": {
+        "node_labels": {
+          "Person": "Person"
+        },
+        "edge_labels": {
+          "KNOWS": "KNOWS"
+        },
+        "properties": {
+          "id": "id",
+          "name": "name",
+          "age": "age"
+        }
+      }
+    }
+  },
+  "term_mappings": {
+    "fuseki": {
+      "Person": {
+        "kind": "class",
+        "representation": "https://xgap.test/split/Person"
+      },
+      "KNOWS": {
+        "kind": "relation",
+        "representation": "https://xgap.test/split/KNOWS"
+      },
+      "id": {
+        "kind": "property",
+        "representation": "https://xgap.test/split/id"
+      },
+      "name": {
+        "kind": "property",
+        "representation": "https://xgap.test/split/name"
+      },
+      "age": {
+        "kind": "property",
+        "representation": "https://xgap.test/split/age"
+      }
+    }
+  }
+}

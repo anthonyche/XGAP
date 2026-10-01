@@ -1,0 +1,1094 @@
+[
+  {
+    "id": "T01",
+    "nl": "列出所有人，包括没有关系的人；返回零长度路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {}
+      },
+      "expr": {
+        "kind": "star",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "length_equals",
+        "value": 0
+      },
+      "max_depth": 1
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [len() = 0]\n      Union\n        Nodes\n        Recursive [mode=WALK, max_depth=1]\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "z"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T01.cypher",
+      "fuseki": "targets/T01.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        0
+      ],
+      "anchor": null,
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T02",
+    "nl": "列出全部 KNOWS 边，保留不同边的身份。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {}
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [label(edge(1)) = \"KNOWS\"]\n      Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e4/c",
+      "a/e7/b",
+      "b/e2/c",
+      "b/e8/d",
+      "c/e3/a",
+      "c/e5/d",
+      "d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T02.cypher",
+      "fuseki": "targets/T02.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1
+      ],
+      "anchor": null,
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T03",
+    "nl": "Alice 通过一条 KNOWS 边认识谁？保留平行边。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Selection [label(edge(1)) = \"KNOWS\"]\n        Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e4/c",
+      "a/e7/b"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T03.cypher",
+      "fuseki": "targets/T03.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T04",
+    "nl": "Alice 通过一条 KNOWS 边认识哪些年龄至少30的人？",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_gte",
+        "ref": {
+          "kind": "node",
+          "position": "last"
+        },
+        "property": "age",
+        "value": 30
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.age >= 30]\n      Selection [first.id = \"a\"]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e4/c"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T04.cypher",
+      "fuseki": "targets/T04.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": "age",
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T05",
+    "nl": "从 Alice 出发恰好走两条 KNOWS 边，返回所有路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b/e2/c",
+      "a/e1/b/e8/d",
+      "a/e4/c/e3/a",
+      "a/e4/c/e5/d",
+      "a/e7/b/e2/c",
+      "a/e7/b/e8/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T05.cypher",
+      "fuseki": "targets/T05.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        2
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T06",
+    "nl": "从 Alice 出发走一条或者两条 KNOWS 边，合并路径并去重。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "alt",
+        "left": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        },
+        "right": {
+          "kind": "seq",
+          "left": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          },
+          "right": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Union\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Join\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e1/b/e2/c",
+      "a/e1/b/e8/d",
+      "a/e4/c",
+      "a/e4/c/e3/a",
+      "a/e4/c/e5/d",
+      "a/e7/b",
+      "a/e7/b/e2/c",
+      "a/e7/b/e8/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T06.cypher",
+      "fuseki": "targets/T06.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1,
+        2
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T07",
+    "nl": "从 Alice 出发沿 KNOWS 走1到3步，使用 WALK 语义，保留路径身份。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=WALK, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e1/b/e2/c",
+      "a/e1/b/e2/c/e3/a",
+      "a/e1/b/e2/c/e5/d",
+      "a/e1/b/e8/d",
+      "a/e1/b/e8/d/e6/d",
+      "a/e4/c",
+      "a/e4/c/e3/a",
+      "a/e4/c/e3/a/e1/b",
+      "a/e4/c/e3/a/e4/c",
+      "a/e4/c/e3/a/e7/b",
+      "a/e4/c/e5/d",
+      "a/e4/c/e5/d/e6/d",
+      "a/e7/b",
+      "a/e7/b/e2/c",
+      "a/e7/b/e2/c/e3/a",
+      "a/e7/b/e2/c/e5/d",
+      "a/e7/b/e8/d",
+      "a/e7/b/e8/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T07.cypher",
+      "fuseki": "targets/T07.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1,
+        2,
+        3
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T08",
+    "nl": "从 Alice 出发沿 KNOWS 走1到3步，使用 TRAIL 语义，保留路径身份。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "TRAIL",
+      "condition": null,
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=TRAIL, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e1/b/e2/c",
+      "a/e1/b/e2/c/e3/a",
+      "a/e1/b/e2/c/e5/d",
+      "a/e1/b/e8/d",
+      "a/e1/b/e8/d/e6/d",
+      "a/e4/c",
+      "a/e4/c/e3/a",
+      "a/e4/c/e3/a/e1/b",
+      "a/e4/c/e3/a/e7/b",
+      "a/e4/c/e5/d",
+      "a/e4/c/e5/d/e6/d",
+      "a/e7/b",
+      "a/e7/b/e2/c",
+      "a/e7/b/e2/c/e3/a",
+      "a/e7/b/e2/c/e5/d",
+      "a/e7/b/e8/d",
+      "a/e7/b/e8/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T08.cypher",
+      "fuseki": "targets/T08.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1,
+        2,
+        3
+      ],
+      "anchor": "a",
+      "mode": "TRAIL",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T09",
+    "nl": "从 Alice 出发沿 KNOWS 走1到3步，使用 ACYCLIC 语义，保留路径身份。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "ACYCLIC",
+      "condition": null,
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=ACYCLIC, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e1/b/e2/c",
+      "a/e1/b/e2/c/e5/d",
+      "a/e1/b/e8/d",
+      "a/e4/c",
+      "a/e4/c/e5/d",
+      "a/e7/b",
+      "a/e7/b/e2/c",
+      "a/e7/b/e2/c/e5/d",
+      "a/e7/b/e8/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T09.cypher",
+      "fuseki": "targets/T09.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1,
+        2,
+        3
+      ],
+      "anchor": "a",
+      "mode": "ACYCLIC",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T10",
+    "nl": "从 Alice 出发沿 KNOWS 走1到3步，使用 SIMPLE 语义，保留路径身份。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SIMPLE",
+      "condition": null,
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=SIMPLE, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e1/b/e2/c",
+      "a/e1/b/e2/c/e3/a",
+      "a/e1/b/e2/c/e5/d",
+      "a/e1/b/e8/d",
+      "a/e4/c",
+      "a/e4/c/e3/a",
+      "a/e4/c/e5/d",
+      "a/e7/b",
+      "a/e7/b/e2/c",
+      "a/e7/b/e2/c/e3/a",
+      "a/e7/b/e2/c/e5/d",
+      "a/e7/b/e8/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T10.cypher",
+      "fuseki": "targets/T10.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1,
+        2,
+        3
+      ],
+      "anchor": "a",
+      "mode": "SIMPLE",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T11",
+    "nl": "从 Alice 出发沿 KNOWS 走1到3步，使用 SHORTEST 语义，保留路径身份。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": null,
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=SHORTEST, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e1/b/e8/d",
+      "a/e4/c",
+      "a/e4/c/e3/a",
+      "a/e4/c/e5/d",
+      "a/e7/b",
+      "a/e7/b/e8/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T11.cypher",
+      "fuseki": "targets/T11.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1,
+        2,
+        3
+      ],
+      "anchor": "a",
+      "mode": "SHORTEST",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T12",
+    "nl": "从 Alice 出发，在最多3步的 WALK 中，对每个终点返回全部最短路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL_SHORTEST",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, 1, *]\n  OrderBy [GROUP]\n    GroupBy [SOURCE_TARGET_LENGTH]\n      Selection [first.id = \"a\"]\n        Recursive [mode=WALK, max_depth=3]\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e1/b/e8/d",
+      "a/e4/c",
+      "a/e4/c/e3/a",
+      "a/e4/c/e5/d",
+      "a/e7/b",
+      "a/e7/b/e8/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T12.cypher",
+      "fuseki": "targets/T12.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1,
+        2,
+        3
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ALL_SHORTEST",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T13",
+    "nl": "从 Alice 出发走两步，对每个终点按稳定路径键取一条路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ANY",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, 1]\n  GroupBy [SOURCE_TARGET]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b/e2/c",
+      "a/e1/b/e8/d",
+      "a/e4/c/e3/a"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T13.cypher",
+      "fuseki": "targets/T13.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        2
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ANY",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T14",
+    "nl": "从 Alice 出发走两步，对每个终点按稳定路径键最多取两条路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ANY_K",
+        "k": 2
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, 2]\n  GroupBy [SOURCE_TARGET]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b/e2/c",
+      "a/e1/b/e8/d",
+      "a/e4/c/e3/a",
+      "a/e4/c/e5/d",
+      "a/e7/b/e2/c"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T14.cypher",
+      "fuseki": "targets/T14.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        2
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ANY_K",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T15",
+    "nl": "Bob 沿入向 KNOWS 边一步可以到谁？保留路径方向与边身份。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "IN",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "semantic.Traverse [source.id=\"b\", KNOWS IN, fixed_length=1, ALL]\n  semantic.Project [path identities]",
+    "logical_plan_layer": "semantic DAG (M5 direction gap)",
+    "expected_paths": [
+      "b/e1/a",
+      "b/e7/a"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T15.cypher",
+      "fuseki": "targets/T15.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1
+      ],
+      "anchor": "b",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": true
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T16",
+    "nl": "从 Alice 出发走两步，排除终点与起点相同的路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "node_not_equals",
+        "left": {
+          "kind": "node",
+          "position": "first"
+        },
+        "right": {
+          "kind": "node",
+          "position": "last"
+        }
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first != last]\n      Selection [first.id = \"a\"]\n        Join\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e1/b/e2/c",
+      "a/e1/b/e8/d",
+      "a/e4/c/e5/d",
+      "a/e7/b/e2/c",
+      "a/e7/b/e8/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T16.cypher",
+      "fuseki": "targets/T16.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        2
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": "different",
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T17",
+    "nl": "Zoe 通过一条 KNOWS 边认识谁？",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "z"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"z\"]\n      Selection [label(edge(1)) = \"KNOWS\"]\n        Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [],
+    "reference_target_queries": {
+      "neo4j": "targets/T17.cypher",
+      "fuseki": "targets/T17.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1
+      ],
+      "anchor": "z",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": null,
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  },
+  {
+    "id": "T18",
+    "nl": "用 Neo4j 中的关系和 Fuseki 中的年龄，找出 Alice 一步认识且年龄至少30的人。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_gte",
+        "ref": {
+          "kind": "node",
+          "position": "last"
+        },
+        "property": "age",
+        "value": 30
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.age >= 30]\n      Selection [first.id = \"a\"]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "logical_plan_layer": "path algebra",
+    "expected_paths": [
+      "a/e4/c"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/T18.cypher",
+      "fuseki": "targets/T18.rq"
+    },
+    "reference_query_spec": {
+      "lengths": [
+        1
+      ],
+      "anchor": "a",
+      "mode": "WALK",
+      "selector": "ALL",
+      "condition": "age",
+      "incoming": false
+    },
+    "interpretation": "gold fixture injected; no model call"
+  }
+]

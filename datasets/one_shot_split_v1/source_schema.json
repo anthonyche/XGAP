@@ -1,0 +1,27 @@
+{
+  "shared_identity_namespace": "https://xgap.test/split/",
+  "identity_property": "id",
+  "profiles": {
+    "description": "Person profiles, including identity, name and age. No relationship facts.",
+    "node_types": [
+      "Person"
+    ],
+    "properties": [
+      "id",
+      "name",
+      "age"
+    ]
+  },
+  "relations": {
+    "description": "Directed KNOWS relationships and endpoint identities only; no person types, names or ages.",
+    "node_types": [
+      "Entity"
+    ],
+    "properties": [
+      "id"
+    ],
+    "edge_types": [
+      "KNOWS"
+    ]
+  }
+}

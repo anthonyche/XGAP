@@ -157,21 +157,19 @@ def test_star_lowers_to_union_nodes_recursive_and_includes_zero_length_paths() -
     assert Path(("n1", "e1", "n2", "e2", "n3")) in result
 
 
-def test_empty_relation_label_and_unsupported_regex_nodes_are_rejected() -> None:
+def test_empty_relation_label_and_unbounded_minimum_without_depth_are_rejected() -> None:
     with pytest.raises(ValueError):
         EdgePattern(label="")
 
     with pytest.raises(LoweringError):
-        lower_regex(OptionalExpr(Rel(EdgePattern(label="Knows"))), RecursiveMode.TRAIL)
-
-    with pytest.raises(LoweringError):
-        lower_regex(Bounded(Rel(EdgePattern(label="Knows")), 1, 2), RecursiveMode.TRAIL)
+        lower_regex(Bounded(Rel(EdgePattern(label="Knows")), 2, None), RecursiveMode.TRAIL)
 
 
-def test_in_and_undirected_directions_are_rejected_by_lowering() -> None:
+def test_in_and_undirected_directions_have_valid_orientation_plans() -> None:
     for direction in (Direction.IN, Direction.UNDIRECTED):
-        with pytest.raises(LoweringError):
-            lower_path_pattern(pattern_query(expr=Rel(EdgePattern(label="Knows", direction=direction))))
+        plan = lower_path_pattern(pattern_query(expr=Rel(EdgePattern(label="Knows", direction=direction))))
+        validate_plan(plan)
+        assert "Reverse" in format_plan(plan)
 
 
 def test_descriptor_lowering_filters_source_and_target() -> None:

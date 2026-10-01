@@ -1,0 +1,273 @@
+[
+  {
+    "id": "M01",
+    "nl": "返回不满足 score 等于 1 的人员，包括缺失 score。 返回身份、score 和 flag。",
+    "program": {
+      "program_id": "M01",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score",
+              "flag": "flag"
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "boolean",
+              "expression": "返回不满足 score 等于 1 的人员，包括缺失 score。",
+              "policy": "hard",
+              "predicate": {
+                "kind": "not",
+                "condition": {
+                  "kind": "property_equals",
+                  "ref": {
+                    "kind": "node",
+                    "position": "first"
+                  },
+                  "property": "score",
+                  "value": 1
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "roots": [
+        "people"
+      ]
+    },
+    "source_bindings": {
+      "people": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/d",
+        "score": "1",
+        "flag": 0
+      },
+      {
+        "person": "https://xgap.test/toy/z",
+        "score": null,
+        "flag": null
+      }
+    ],
+    "expected_remote_calls": 1,
+    "ordered": false,
+    "path_case": "C03"
+  },
+  {
+    "id": "M02",
+    "nl": "返回 score 等于 1 或 note 为 open 的人员。 返回身份、score 和 flag。",
+    "program": {
+      "program_id": "M02",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score",
+              "flag": "flag"
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "boolean",
+              "expression": "返回 score 等于 1 或 note 为 open 的人员。",
+              "policy": "hard",
+              "predicate": {
+                "kind": "or",
+                "conditions": [
+                  {
+                    "kind": "property_equals",
+                    "ref": {
+                      "kind": "node",
+                      "position": "first"
+                    },
+                    "property": "score",
+                    "value": 1
+                  },
+                  {
+                    "kind": "property_equals",
+                    "ref": {
+                      "kind": "node",
+                      "position": "first"
+                    },
+                    "property": "note",
+                    "value": "open"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "roots": [
+        "people"
+      ]
+    },
+    "source_bindings": {
+      "people": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/a",
+        "score": 1,
+        "flag": true
+      },
+      {
+        "person": "https://xgap.test/toy/b",
+        "score": 1.0,
+        "flag": false
+      },
+      {
+        "person": "https://xgap.test/toy/c",
+        "score": true,
+        "flag": 1
+      },
+      {
+        "person": "https://xgap.test/toy/d",
+        "score": "1",
+        "flag": 0
+      }
+    ],
+    "expected_remote_calls": 1,
+    "ordered": false,
+    "path_case": "C04"
+  },
+  {
+    "id": "M03",
+    "nl": "返回数值 score 大于零的人员；布尔与字符串不参与数值排序。 返回身份、score 和 flag。",
+    "program": {
+      "program_id": "M03",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score",
+              "flag": "flag"
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "boolean",
+              "expression": "返回数值 score 大于零的人员；布尔与字符串不参与数值排序。",
+              "policy": "hard",
+              "predicate": {
+                "kind": "property_gt",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "property": "score",
+                "value": 0
+              }
+            }
+          ]
+        }
+      ],
+      "roots": [
+        "people"
+      ]
+    },
+    "source_bindings": {
+      "people": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/a",
+        "score": 1,
+        "flag": true
+      },
+      {
+        "person": "https://xgap.test/toy/b",
+        "score": 1.0,
+        "flag": false
+      }
+    ],
+    "expected_remote_calls": 1,
+    "ordered": false,
+    "path_case": "C06"
+  },
+  {
+    "id": "M04",
+    "nl": "返回 flag 等于 false 或数值零的人员。 返回身份、score 和 flag。",
+    "program": {
+      "program_id": "M04",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {},
+            "entity_field": "person",
+            "properties": {
+              "score": "score",
+              "flag": "flag"
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "boolean",
+              "expression": "返回 flag 等于 false 或数值零的人员。",
+              "policy": "hard",
+              "predicate": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "property": "flag",
+                "value": false
+              }
+            }
+          ]
+        }
+      ],
+      "roots": [
+        "people"
+      ]
+    },
+    "source_bindings": {
+      "people": "fuseki"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/b",
+        "score": 1.0,
+        "flag": false
+      },
+      {
+        "person": "https://xgap.test/toy/d",
+        "score": "1",
+        "flag": 0
+      }
+    ],
+    "expected_remote_calls": 1,
+    "ordered": false,
+    "path_case": "C18"
+  }
+]

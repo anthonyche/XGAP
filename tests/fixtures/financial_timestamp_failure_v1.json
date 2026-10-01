@@ -1,0 +1,114 @@
+{
+  "end_time": "2022-11-18 01:39:25.097",
+  "expected_missing_totals": {
+    "1099511628006": "22572432.13",
+    "10995116280816": "2086294.53",
+    "12094627907136": "1522195.79",
+    "13194139534646": "3265032.04",
+    "7696581397233": "9904741.11",
+    "9895604651946": "9176779.16"
+  },
+  "exposure": "evaluation failure; diagnostic-only, never fresh evaluation",
+  "offline_input_verified_ids": [
+    "edge_041e3679a6f15cf069a2b0e83b57b3c00ab81e1e1ac7a03d2fe106121a664c39",
+    "edge_72fac5a351316d2798ddd9f68e8e4bf06d14ef67a154c9ee025acad5af32ee9e",
+    "edge_ae332947e48f54d19f30560f4bf8b69a8031d5fe1ea8d2d7b812bb6bfb3da607",
+    "edge_f47b81ce086b834da8a5f158823430107e499215a4d0063c19435bd301373216",
+    "edge_10ec8169140a735e166bc04470af909b20ba6568241c326718a1f481e77bf585",
+    "edge_8e7ff3102af871a44517f38fae48e4dc1d56d8ae40ea960f135bb59ef318815f",
+    "edge_03fab74873dac0ec959c82a2f0c55268bd904fbfe628e309edeb3f47612952c0",
+    "edge_96cb2747c4bbfadfd1265851f7f5a2f2149f16d5989dc92521d6fd19bed7635c",
+    "edge_3d240308b424442cc6319bd819c748d13110cbc8adc59bf37da8ced82570382b",
+    "edge_313955811757f6c2572f8bfbd99afc2cb385f9d40a34bf2a633d4b36a63c04d7"
+  ],
+  "question_id": "FBNS-3-b61bf8687d7cfd3f",
+  "rows": [
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323430393432353830303634333237373130",
+      "amount": 9904741.11,
+      "company_id": "7696581397233",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323932313731303235383235363637373334",
+      "timestamp": "2022-11-13 00:31:03.14",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_96cb2747c4bbfadfd1265851f7f5a2f2149f16d5989dc92521d6fd19bed7635c"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323536313432323238383036373033363834",
+      "amount": 2086294.53,
+      "company_id": "10995116280816",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_313839393935363039323739373030323836",
+      "timestamp": "2022-11-16 01:49:42.04",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_313955811757f6c2572f8bfbd99afc2cb385f9d40a34bf2a633d4b36a63c04d7"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323736313236393532313533313537383533",
+      "amount": 9176779.16,
+      "company_id": "9895604651946",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323735353634303032313939373335353633",
+      "timestamp": "2022-11-10 12:55:51.82",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_f47b81ce086b834da8a5f158823430107e499215a4d0063c19435bd301373216"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323737353334333237303336373130323936",
+      "amount": 1522195.79,
+      "company_id": "12094627907136",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_34363337383633313931323631343936333238",
+      "timestamp": "2022-11-08 09:14:52.02",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_041e3679a6f15cf069a2b0e83b57b3c00ab81e1e1ac7a03d2fe106121a664c39"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323838323330333736313531373134363338",
+      "amount": 3265032.04,
+      "company_id": "13194139534646",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323736313236393532313533313537353539",
+      "timestamp": "2022-11-09 08:25:34.38",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_72fac5a351316d2798ddd9f68e8e4bf06d14ef67a154c9ee025acad5af32ee9e"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_3939303739313931383032313531333938",
+      "amount": 3149334.84,
+      "company_id": "1099511628006",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323634303233353238313534353936323930",
+      "timestamp": "2022-11-12 09:56:29.37",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_8e7ff3102af871a44517f38fae48e4dc1d56d8ae40ea960f135bb59ef318815f"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_3939303739313931383032313531333938",
+      "amount": 4854346.92,
+      "company_id": "1099511628006",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323533363038393534303136333032303632",
+      "timestamp": "2022-11-10 06:51:02.37",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_ae332947e48f54d19f30560f4bf8b69a8031d5fe1ea8d2d7b812bb6bfb3da607"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_3939303739313931383032313531333938",
+      "amount": 5186725.36,
+      "company_id": "1099511628006",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323934313431333530363632363336363034",
+      "timestamp": "2022-11-15 03:08:56.6",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_3d240308b424442cc6319bd819c748d13110cbc8adc59bf37da8ced82570382b"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_3939303739313931383032313531333938",
+      "amount": 8487621.07,
+      "company_id": "1099511628006",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323738363630323236393433353530343030",
+      "timestamp": "2022-11-10 22:10:25.32",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_10ec8169140a735e166bc04470af909b20ba6568241c326718a1f481e77bf585"
+    },
+    {
+      "account": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_3939303739313931383032313531333938",
+      "amount": 894403.94,
+      "company_id": "1099511628006",
+      "sender": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/account_323737383135383032303133343138353730",
+      "timestamp": "2022-11-12 23:29:36.53",
+      "transfers_edge": "https://xgap.dev/benchmark/finbench/v0.1.0/resource/one-shot/edge_03fab74873dac0ec959c82a2f0c55268bd904fbfe628e309edeb3f47612952c0"
+    }
+  ],
+  "schema_version": "xgap-saved-timestamp-filter-failure-v1",
+  "source_execution": {
+    "bytes": 129605745,
+    "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-010-0/execution/worker/execution.json",
+    "sha256": "95f1ba421613043d73db4ddfbe1d404f77db094964cd1eaa984020c3d4e683e6"
+  },
+  "start_time": "2022-11-07 00:26:06.638"
+}

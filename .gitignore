@@ -52,3 +52,39 @@ datasets/grailqa_pilot_v1/*
 !datasets/grailqa_pilot_v1/inference_manifest.json
 !datasets/grailqa_pilot_v1/pilot_ids.json
 datasets/*.pre-m13d-*
+
+# Local research evidence and operational state are never release inputs.
+/docs/report/
+/docs/decisions/
+/docs/goal.md
+/docs/status.md
+/docs/roadmap.md
+**/*_history_*
+/prompts/sprints/
+/experiments/artifacts/
+/experiments/handoffs/
+/experiments/replays/
+/experiments/calibration/
+results/
+outputs/
+*.log
+*.out
+*.zip
+*.tar
+*.tar.gz
+.env.*
+*.egg-info/
+build/
+dist/
+node_modules/
+**/.openai/
+
+# Generated benchmark audit summaries are local evidence, not fixtures.
+/datasets/grailqa_audit/
+/datasets/grailqa_audit_v2/
+/datasets/kqapro_audit/
+/datasets/grailqa_reachability_v2/
+/datasets/grailqa_m13d_reachability_baseline/
+
+# Manuscript exports stay outside the implementation repository.
+/*.pdf

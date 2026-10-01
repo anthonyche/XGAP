@@ -1,0 +1,18 @@
+{
+  "schema_version": "xgap-finbench-one-shot-population-design-v1",
+  "population_id": "finbench-v010-sf01-one-shot-120-v1",
+  "seed": "xgap-approved-one-shot-finbench-20260912-v1",
+  "source_lock_sha256": "07f788fbedf43765d1585cd4b1a49915248425cf041b7100f1eba9879a38ae8d",
+  "excluded_public_sha256": "e49302d6cce2122c0a75181ce33fbcbb9fdf2465f072a8be508b9cbad7285542",
+  "time_bins": 80,
+  "strata": 4,
+  "per_stratum_split_counts": {"development": 2, "estimator_training": 4, "evaluation": 4},
+  "near_duplicate_interval_iou": "0.8",
+  "max_hops": 3,
+  "top_k": 10,
+  "sampling_uses_method_outputs": false,
+  "sampling_uses_answer_nonemptiness": false,
+  "normalization": "three decimal places, ROUND_HALF_UP; preserve order and multiplicity",
+  "whole_population_claim": "FinBench-derived heterogeneous workload; not conformant official FinBench scores",
+  "formal_campaign_ready": false
+}

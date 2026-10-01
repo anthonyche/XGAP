@@ -1,0 +1,26 @@
+{
+  "schema_version": "m15-f2-query-bound-campaign-registry-v1",
+  "registry_id": "m15-f2-development-query-bindings-v1",
+  "campaign_id": "m15-f2-development-protocol-v1",
+  "base_campaign_config": "experiments/configs/m15_f2_campaign_dev.json",
+  "expected_base_campaign_spec_sha256": "3669a8909943a4106a5f7a2bf0bd98d24715d08e53d3997336bb163bd2dd973a",
+  "expected_base_schedule_sha256": "fbc3e216d532ae59c4ada45fe9605ff9e3ba4b86371ebddc46a8c76803f7e154",
+  "bindings": [
+    {
+      "workload_label": "selective",
+      "query_id": "financial-risk-alice-high-risk",
+      "query_spec_path": "experiments/configs/m15_f2_query_contract_dev.json",
+      "expected_query_spec_sha256": "7522f4cc2cd093a8ff5225771c402f24d41c761fcff4538ef0efa9f047297871",
+      "expected_query_contract_sha256": "c65b0ab6e23ecdefe229aeb992173f271af31b85d8d5c21ce2493edced199899"
+    },
+    {
+      "workload_label": "broad_hot",
+      "query_id": "financial-risk-alice-high-risk",
+      "query_spec_path": "experiments/configs/m15_f2_query_contract_dev.json",
+      "expected_query_spec_sha256": "7522f4cc2cd093a8ff5225771c402f24d41c761fcff4538ef0efa9f047297871",
+      "expected_query_contract_sha256": "a8c0b9babf376e7f2da9065394631cbd8e5ee7210b5d701234af38d4eef14d5d"
+    }
+  ],
+  "automatic_retries": 0,
+  "paper_result": false
+}

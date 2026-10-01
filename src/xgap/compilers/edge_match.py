@@ -1,0 +1,81 @@
+"""One directed edge plus its scalar attributes, using audited path predicates."""
+
+from dataclasses import replace
+import re
+
+from xgap.backends.mapping import RdfBackendMapping
+from xgap.backends.rdf_terms import RDF_TERMS_V1, validate_iri
+from xgap.compilers.cypher import _cypher_identifier
+from xgap.compilers.directed import compile_directed_rows, _identifier_safe
+from xgap.compilers.features import default_profile
+from xgap.compilers.match_identity import identity_projection,binding_checkpoint,rdf_binding_checkpoint
+from xgap.pattern.ast import EdgePattern, NodePattern, Rel, PathPatternQuery, Selector, SelectorKind, PathMode
+
+
+def compile_edge_match(edge: EdgePattern, properties: dict[str, str], *, backend_id,
+        source=None, target=None, backend_mapping=None, rdf_edge_encoding=None,
+        profile=None, artifact_id="semantic-edge-match", condition=None, identity_property=None):
+    reserved = {"entity", "source", "target", "n0", "n1", "e1"}
+    if any(not isinstance(name, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name)
+           or name in reserved for name in properties):
+        raise ValueError("Edge Match property aliases must be identifiers distinct from native identity columns")
+    profile = profile or default_profile(backend_id)
+    for prop in properties.values():
+        _identifier_safe(prop, profile)
+    if profile.language.lower() == "sparql" and rdf_edge_encoding is None:
+        raise ValueError("Edge Match requires an explicit reified RDF edge encoding")
+    query = PathPatternQuery(None, source or NodePattern(), Rel(edge), target or NodePattern(),
+        Selector(SelectorKind.ALL), PathMode.WALK, condition=condition)
+    base = compile_directed_rows(query, backend_id=backend_id, profile=profile,
+        backend_mapping=backend_mapping, rdf_edge_encoding=rdf_edge_encoding,
+        artifact_id=artifact_id)
+    columns = ["entity", "source", "target", *properties]
+    extra = {}
+    if base.language == "cypher":
+        projected = [identity_projection(var, identity_property, profile) + ' AS ' + alias
+                     for var, alias in (('e1', 'entity'), ('source', 'source'), ('target', 'target'))]
+        # Preserve the exact legacy query when no identity view is declared.
+        fields = ', '.join(projected) if identity_property is not None else 'e1 AS entity, source, target'
+        text = "CALL {\n" + base.text + "\n}\nRETURN DISTINCT " + fields
+        text += "".join(f", e1.{_cypher_identifier(prop)} AS {alias}" for alias, prop in properties.items())
+        if identity_property is not None:
+            extra = {"native_identity_projection": "property-map-v1", "native_identity_property": identity_property}
+        extra['native_binding_checkpoint']=binding_checkpoint(text,base.text,{'entity':'e1','source':'n0','target':'n1'})
+        # These are mandatory traversal-position labels from the typed input,
+        # not inferred labels or stored-edge orientation. A bound endpoint may
+        # expose the same label early to its native identity index.
+        extra['native_binding_checkpoint']['node_labels']={
+            column:node.label for column,node in (('source',source),('target',target))
+            if node is not None and node.label is not None}
+    else:
+        mapping = (backend_mapping if isinstance(backend_mapping, RdfBackendMapping)
+                   else RdfBackendMapping.from_artifact(backend_mapping, backend_id=backend_id))
+        text = "SELECT DISTINCT " + " ".join("?" + c for c in columns) + " WHERE { {\n" + base.text + "\n}\n"
+        text += "BIND(?e1 AS ?entity)\n"
+        for alias, prop in properties.items():
+            iri = validate_iri(mapping.resolve(prop, "properties").iri)
+            text += f"OPTIONAL {{ ?e1 <{iri}> ?{alias} . }}\n"
+        text += "}"
+        extra = {"rdf_result_encoding": RDF_TERMS_V1, "expected_result_columns": columns}
+        extra['rdf_binding_checkpoint']=rdf_binding_checkpoint(text,base.text,{'entity':'e1','source':'n0','target':'n1'})
+        if not properties and 'rdf_single_edge_body' in base.parameters:
+            # Scalar-free edge identity and its two endpoints determine every
+            # inner projected variable. Intermediate DISTINCTs are redundant
+            # under the final DISTINCT of these same three identities.
+            extra['rdf_binding_checkpoint']['flat_body']=[
+                *base.parameters['rdf_single_edge_body'], 'BIND(?e1 AS ?entity)']
+        if not properties and 'rdf_single_edge_identity_body' in base.parameters:
+            extra['rdf_binding_checkpoint']['identity_body']=base.parameters['rdf_single_edge_identity_body']
+            extra['rdf_binding_checkpoint']['endpoint_bodies']=base.parameters.get('rdf_single_edge_endpoint_bodies',{})
+        # A redundant constant triple for a singleton key exposes source index
+        # selectivity directly; VALUES alone may remain a late table join.
+        from xgap.pattern.ast import Direction
+        forward=edge.direction is Direction.OUT
+        extra['rdf_binding_checkpoint']['endpoint_anchors']={
+            'source':dict(subject='e1',predicate=rdf_edge_encoding.source_predicate_iri if forward else rdf_edge_encoding.target_predicate_iri),
+            'target':dict(subject='e1',predicate=rdf_edge_encoding.target_predicate_iri if forward else rdf_edge_encoding.source_predicate_iri)}
+    return replace(base, text=text, parameters={
+        **{k:v for k,v in base.parameters.items() if k not in ('rdf_single_edge_body','rdf_single_edge_identity_body','rdf_single_edge_endpoint_bodies')}, **extra,
+        "compiler": "semantic_edge_match_v1", "output_columns": columns,
+        "edge_statistics_descriptor": {"label":edge.label,"direction":edge.direction.name},
+        "branch_edge_counts": [1], "workload_lowering": "edge_match_as_one_edge_path_v1"})

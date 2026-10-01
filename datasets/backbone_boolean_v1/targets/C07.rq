@@ -1,0 +1,9 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE {
+?n a t:Person ; t:id ?nid .
+OPTIONAL { ?n t:score ?score . }
+OPTIONAL { ?n t:note ?note . }
+OPTIONAL { ?n t:flag ?flag . }
+FILTER(!COALESCE(isNumeric(?score) && ?score > 0, false))
+BIND(?nid AS ?path)
+}

@@ -1,0 +1,370 @@
+{
+  "schema_version": "xgap-parameter-failure-replay-observation-v1",
+  "description": "Exact saved request and response payload. Provenance limited to profile and schema identity; no repair, new inference, or answer fields.",
+  "original_recording": "one-shot-native-20260912-b008775/one-shot/interpretation.json",
+  "original_recording_sha256": "42912607c4f5f5098e2b646ae69b69546dc42781aa867143b890ae687ca0f9e3",
+  "payload_sha256": "a803cd11a33d5113287bd538dc467581b89a7ae1e15e6c7c12bcabdd529e472f",
+  "historical_outcome": {
+    "status": "no_executable_interpretation",
+    "admitted_count": 1,
+    "candidate_status": "admitted",
+    "grounding_status": "grounding_failed"
+  },
+  "recording": {
+    "schema_version": "xgap-interpretation-recording-v1",
+    "provider_id": "xgap-one-shot-toy-development-v1:precision:qwen3.8-27b",
+    "records": [
+      {
+        "request": {
+          "schema_version": "xgap-semantic-interpretation-v1",
+          "question": "在 toy graph 中查找 Alice knows 的 people，年龄至少 30，返回人员和边。",
+          "context": {
+            "query_profile": "bounded-core-v1",
+            "requested_output": {
+              "kind": "binding_set",
+              "fields": [
+                "person",
+                "edge"
+              ]
+            },
+            "query_id": "B01",
+            "one_shot_profile": {
+              "schema_version": "xgap-one-shot-policy-v1",
+              "mode": "precision",
+              "candidate_cap": 3,
+              "max_operators": 64,
+              "max_holes": 16,
+              "max_candidates_per_hole": 64,
+              "use_ontology": true,
+              "max_local_options": 64,
+              "max_physical_candidates": 256,
+              "max_remote_calls": 16,
+              "max_parallelism": 4,
+              "max_bindings": 10000,
+              "max_binding_bytes": 1048576,
+              "quality_penalty_ms": 1000.0,
+              "unknown_quality_proxy": 0.5,
+              "quality_proxy_calibrated": false,
+              "final_plan_executions": 1,
+              "online_profile_calls": 0,
+              "automatic_retries": 0
+            },
+            "runtime": {
+              "resolution_bundle": {
+                "schema_version": "xgap-frozen-resolution-bundle-v1",
+                "bundle_hash": "8cfb17e9dd780546f3dedb2accc924055bc8a67d930c385f39882a826b0734bf",
+                "catalog_id": "backbone-binding",
+                "catalog_version": "v1",
+                "ontology_source": null
+              },
+              "sources": {
+                "toy": {
+                  "version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699",
+                  "replicas": [
+                    "neo4j",
+                    "fuseki"
+                  ]
+                }
+              }
+            }
+          },
+          "required_constraints": [
+            {
+              "operator_id": "paths",
+              "constraint": {
+                "constraint_id": "resolved source identity",
+                "expression": "resolved source identity",
+                "policy": "hard",
+                "predicate": {
+                  "kind": "property_equals",
+                  "ref": {
+                    "kind": "node",
+                    "position": "first"
+                  },
+                  "property": "id",
+                  "value": {
+                    "$hole": "person"
+                  }
+                }
+              }
+            },
+            {
+              "operator_id": "eligible",
+              "constraint": {
+                "constraint_id": "minimum target age",
+                "expression": "minimum target age",
+                "policy": "hard",
+                "predicate": {
+                  "op": "ge",
+                  "field": "age",
+                  "value": {
+                    "$hole": "age"
+                  }
+                }
+              }
+            }
+          ],
+          "max_response_bytes": 1048576
+        },
+        "response": {
+          "payload": {
+            "schema_version": "xgap-semantic-interpretation-candidates-v2",
+            "candidates": [
+              {
+                "candidate_id": "c1",
+                "quality_proxy": 0.9,
+                "program": {
+                  "program_id": "p1",
+                  "operators": [
+                    {
+                      "operator_id": "paths",
+                      "kind": "traverse",
+                      "input_ids": [],
+                      "input_kinds": [],
+                      "output_kind": "path_set",
+                      "parameters": {
+                        "path_pattern": {
+                          "path_var": null,
+                          "source": {},
+                          "expr": {
+                            "kind": "rel",
+                            "edge": {
+                              "label": {
+                                "$hole": "knows"
+                              },
+                              "direction": "OUT",
+                              "properties": {}
+                            },
+                            "target": {},
+                            "selector": {
+                              "kind": "ALL",
+                              "k": null
+                            },
+                            "restrictor": "WALK",
+                            "condition": null,
+                            "max_depth": null
+                          }
+                        },
+                        "constraints": [
+                          {
+                            "constraint_id": "resolved source identity",
+                            "expression": "resolved source identity",
+                            "policy": "hard",
+                            "predicate": {
+                              "kind": "property_equals",
+                              "ref": {
+                                "kind": "node",
+                                "position": "first"
+                              },
+                              "property": "id",
+                              "value": {
+                                "$hole": "person"
+                              }
+                            }
+                          }
+                        ],
+                        "required_capabilities": []
+                      },
+                      "constraints": [
+                        {
+                          "constraint_id": "resolved source identity",
+                          "expression": "resolved source identity",
+                          "policy": "hard",
+                          "predicate": {
+                            "kind": "property_equals",
+                            "ref": {
+                              "kind": "node",
+                              "position": "first"
+                            },
+                            "property": "id",
+                            "value": {
+                              "$hole": "person"
+                            }
+                          }
+                        }
+                      ],
+                      "required_capabilities": []
+                    },
+                    {
+                      "operator_id": "proj",
+                      "kind": "project",
+                      "input_ids": [
+                        "paths"
+                      ],
+                      "input_kinds": [
+                        "path_set"
+                      ],
+                      "output_kind": "binding_set",
+                      "parameters": {
+                        "projections": {
+                          "person": {
+                            "kind": "path_node",
+                            "position": "last"
+                          },
+                          "edge": {
+                            "kind": "path_edge",
+                            "position": 1
+                          }
+                        }
+                      },
+                      "constraints": [],
+                      "required_capabilities": []
+                    },
+                    {
+                      "operator_id": "people",
+                      "kind": "match",
+                      "input_ids": [],
+                      "input_kinds": [],
+                      "output_kind": "binding_set",
+                      "parameters": {
+                        "node": {
+                          "label": {
+                            "$hole": "person_type"
+                          },
+                          "properties": {}
+                        },
+                        "entity_field": "person",
+                        "properties": {
+                          "age": "age"
+                        }
+                      },
+                      "constraints": [],
+                      "required_capabilities": []
+                    },
+                    {
+                      "operator_id": "eligible",
+                      "kind": "filter",
+                      "input_ids": [
+                        "people"
+                      ],
+                      "input_kinds": [
+                        "binding_set"
+                      ],
+                      "output_kind": "binding_set",
+                      "parameters": {},
+                      "constraints": [
+                        {
+                          "constraint_id": "minimum target age",
+                          "expression": "minimum target age",
+                          "policy": "hard",
+                          "predicate": {
+                            "op": "ge",
+                            "field": "age",
+                            "value": {
+                              "$hole": "age"
+                            }
+                          }
+                        }
+                      ],
+                      "required_capabilities": []
+                    },
+                    {
+                      "operator_id": "joined",
+                      "kind": "join",
+                      "input_ids": [
+                        "proj",
+                        "eligible"
+                      ],
+                      "input_kinds": [
+                        "binding_set",
+                        "binding_set"
+                      ],
+                      "output_kind": "binding_set",
+                      "parameters": {
+                        "left_on": "person",
+                        "right_on": "person"
+                      },
+                      "constraints": [],
+                      "required_capabilities": []
+                    },
+                    {
+                      "operator_id": "final",
+                      "kind": "project",
+                      "input_ids": [
+                        "joined"
+                      ],
+                      "input_kinds": [
+                        "binding_set"
+                      ],
+                      "output_kind": "binding_set",
+                      "parameters": {
+                        "projections": {
+                          "person": {
+                            "kind": "field",
+                            "field": "person"
+                          },
+                          "edge": {
+                            "kind": "field",
+                            "field": "edge"
+                          }
+                        }
+                      },
+                      "constraints": [],
+                      "required_capabilities": []
+                    }
+                  ],
+                  "roots": [
+                    "final"
+                  ],
+                  "holes": [
+                    {
+                      "hole_id": "person",
+                      "kind": "entity",
+                      "mention": "Alice",
+                      "required": true,
+                      "candidates": [],
+                      "is_resolved": false
+                    },
+                    {
+                      "hole_id": "knows",
+                      "kind": "predicate",
+                      "mention": "knows",
+                      "required": true,
+                      "candidates": [],
+                      "is_resolved": false
+                    },
+                    {
+                      "hole_id": "person_type",
+                      "kind": "type",
+                      "mention": "people",
+                      "required": true,
+                      "candidates": [],
+                      "is_resolved": false
+                    },
+                    {
+                      "hole_id": "age",
+                      "kind": "constraint",
+                      "mention": "30",
+                      "required": true,
+                      "candidates": [],
+                      "is_resolved": false
+                    }
+                  ],
+                  "metadata": {}
+                },
+                "operator_sources": {
+                  "paths": "toy",
+                  "people": "toy"
+                }
+              }
+            ]
+          },
+          "usage": {
+            "external_calls": 1,
+            "input_tokens": 2077,
+            "output_tokens": 920
+          },
+          "provenance": {
+            "kind": "immutable_recording_snapshot",
+            "config": {
+              "provider_id": "xgap-one-shot-toy-development-v1:precision:qwen3.8-27b",
+              "structured_schema_hash": "31415283e165b204a1b3cec38f069e9ea4773585a3ebb6a30f553bd282d1099f",
+              "prompt_hash": "9efd87367299f457bf5812a5c04ec5fee6a198d1720a0b7341105d7aeb0df8d7"
+            },
+            "original_recording_sha256": "42912607c4f5f5098e2b646ae69b69546dc42781aa867143b890ae687ca0f9e3"
+          }
+        }
+      }
+    ]
+  }
+}

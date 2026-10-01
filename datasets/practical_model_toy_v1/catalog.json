@@ -1,0 +1,107 @@
+{
+  "schema_version": "m15-e3-resolution-catalog-v1",
+  "catalog_id": "practical-model-toy",
+  "catalog_version": "v1",
+  "entries": [
+    {
+      "candidate_id": "entity:alice",
+      "kind": "entity",
+      "canonical_label": "Alice",
+      "aliases": [
+        "Alex"
+      ],
+      "authoritative_mentions": [
+        "Alice"
+      ],
+      "provenance": {
+        "fixture": "backbone_toy_v1",
+        "authority": "fixture author"
+      }
+    },
+    {
+      "candidate_id": "entity:bob",
+      "kind": "entity",
+      "canonical_label": "Bob",
+      "aliases": [
+        "Alex"
+      ],
+      "authoritative_mentions": [
+        "Bob"
+      ],
+      "provenance": {
+        "fixture": "backbone_toy_v1",
+        "authority": "fixture author"
+      }
+    },
+    {
+      "candidate_id": "predicate:knows",
+      "kind": "predicate",
+      "canonical_label": "knows",
+      "aliases": [],
+      "authoritative_mentions": [],
+      "provenance": {
+        "fixture": "backbone_toy_v1",
+        "authority": "fixture author"
+      }
+    },
+    {
+      "candidate_id": "type:person",
+      "kind": "type",
+      "canonical_label": "people",
+      "aliases": [],
+      "authoritative_mentions": [],
+      "provenance": {
+        "fixture": "backbone_toy_v1",
+        "authority": "fixture author"
+      }
+    },
+    {
+      "candidate_id": "source:toy",
+      "kind": "source",
+      "canonical_label": "toy graph",
+      "aliases": [],
+      "authoritative_mentions": [],
+      "provenance": {
+        "fixture": "backbone_toy_v1",
+        "authority": "fixture author"
+      }
+    },
+    {
+      "candidate_id": "constraint:30",
+      "kind": "constraint",
+      "canonical_label": "30",
+      "aliases": [],
+      "authoritative_mentions": [],
+      "provenance": {
+        "fixture": "backbone_toy_v1",
+        "authority": "fixture author"
+      }
+    },
+    {
+      "candidate_id": "constraint:45",
+      "kind": "constraint",
+      "canonical_label": "45",
+      "aliases": [],
+      "authoritative_mentions": [],
+      "provenance": {
+        "fixture": "backbone_toy_v1",
+        "authority": "fixture author"
+      }
+    },
+    {
+      "candidate_id": "predicate:follows",
+      "kind": "predicate",
+      "canonical_label": "follows",
+      "aliases": [],
+      "authoritative_mentions": [],
+      "provenance": {
+        "fixture": "practical_model_toy_v1",
+        "authority": "fixture author"
+      }
+    }
+  ],
+  "metadata": {
+    "scope": "tiny controlled development only",
+    "offline_authored": true
+  }
+}

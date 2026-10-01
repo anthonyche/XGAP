@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import datetime, timezone
-import hashlib
 import json
 import os
 from pathlib import Path, PurePath
@@ -30,6 +29,10 @@ from xgap.experiments.freebase_sources import (
     verify_parquet_source_manifest,
 )
 from xgap.experiments.grailqa_catalog import normalized_label, sha256_file
+from xgap.experiments.grailqa_local_catalog_types import (
+    InferenceQuestion,
+    LocalCandidateMatch,
+)
 from xgap.experiments.grailqa_catalog_v2 import (
     CATALOG_V2_SCHEMA_VERSION,
     GrailQAInferenceCatalogV2,
@@ -71,6 +74,9 @@ from xgap.infrastructure.descriptors import load_yaml_mapping
 
 
 LOCAL_CATALOG_SCHEMA_VERSION = "m13e3b-grailqa-local-catalog-v1"
+LOCAL_ELIGIBLE_CATALOG_SCHEMA_VERSION = "m13e3b-grailqa-local-catalog-v2"
+LEGACY_CANDIDATE_SELECTION = "legacy_topk_v1"
+ELIGIBLE_CANDIDATE_SELECTION = "canonical_eligible_topk_v2"
 LOCAL_AUDIT_SCHEMA_VERSION = "m13e3b4-grailqa-local-reachability-v2"
 ANCHOR_EXTRACTION_VERSION = "m13e3b-contiguous-normalized-spans-v1"
 NORMALIZATION_VERSION = "catalog-v2-normalized-label-v1"
@@ -132,40 +138,6 @@ _STOPWORDS = frozenset(
         "with",
     }
 )
-
-
-@dataclass(frozen=True)
-class InferenceQuestion:
-    question_id: str
-    text: str
-
-    @property
-    def question_hash(self) -> str:
-        return hashlib.sha256(self.text.encode("utf-8")).hexdigest()
-
-
-@dataclass(frozen=True)
-class LocalCandidateMatch:
-    question_id: str
-    entity_id: str
-    matched_label: str
-    normalized_label: str
-    match_type: str
-    score: float
-    source_shard: str
-    rank: int = 0
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "question_id": self.question_id,
-            "entity_id": self.entity_id,
-            "matched_label": self.matched_label,
-            "normalized_label": self.normalized_label,
-            "match_type": self.match_type,
-            "lexical_score": self.score,
-            "source_shard": str(self.source_shard),
-            "rank": self.rank,
-        }
 
 
 def extract_query_anchors(
@@ -284,10 +256,25 @@ def build_local_catalog(
     anchor_max_tokens: int = 8,
     omit_stopword_only: bool = True,
     force: bool = False,
+    candidate_selection: str = LEGACY_CANDIDATE_SELECTION,
 ) -> dict[str, Any]:
     """Build one question-only local catalog; no evaluation artifact is accepted."""
 
     started = time.monotonic()
+    if candidate_selection not in {
+        LEGACY_CANDIDATE_SELECTION, ELIGIBLE_CANDIDATE_SELECTION
+    }:
+        raise ValueError("Unsupported local candidate selection policy.")
+    eligibility_first = candidate_selection == ELIGIBLE_CANDIDATE_SELECTION
+    requested_output = Path(output_root).absolute()
+    if eligibility_first:
+        # This version is a new construction, never an in-place evidence repair.
+        if force:
+            raise ValueError("Eligibility-first construction does not permit force.")
+        if requested_output.exists() or requested_output.is_symlink():
+            raise FileExistsError("Eligibility-first construction requires a fresh output.")
+        if any(part.is_symlink() for part in requested_output.parents):
+            raise ValueError("Eligibility-first output ancestors must not be symlinks.")
     output = Path(output_root).resolve()
     parquet_root = Path(freebase_parquet_root).resolve()
     source_manifest_file = Path(source_manifest_path).resolve()
@@ -297,6 +284,14 @@ def build_local_catalog(
     if not 1 <= max_candidates_per_query <= 900:
         raise ValueError("max_candidates_per_query must be within [1, 900].")
     questions = load_inference_questions(inference_questions_path, question_ids=question_ids)
+    if eligibility_first:
+        from xgap.experiments.grailqa_eligible_candidates import _validate_questions_and_bounds
+
+        _validate_questions_and_bounds(
+            questions, max_candidates_per_query=max_candidates_per_query,
+            anchor_min_tokens=anchor_min_tokens, anchor_max_tokens=anchor_max_tokens,
+            omit_stopword_only=omit_stopword_only,
+        )
     question_set_hash = content_hash([item.question_id for item in questions])
     question_text_hash = content_hash(
         [{"question_id": item.question_id, "text": item.text} for item in questions]
@@ -336,7 +331,8 @@ def build_local_catalog(
             "ontology",
         )
         if (
-            existing.get("catalog_id") == artifact_id
+            existing.get("local_catalog_schema_version") == LOCAL_CATALOG_SCHEMA_VERSION
+            and existing.get("catalog_id") == artifact_id
             and existing.get("question_set_sha256") == question_set_hash
             and existing.get("question_text_sha256") == question_text_hash
             and existing.get("workload_name") == workload_name
@@ -368,14 +364,31 @@ def build_local_catalog(
         statistics=pass1_statistics,
         predicates=(NAME_PREDICATE, ALIAS_PREDICATE),
     )
-    candidates = select_query_candidates(
-        questions,
-        pass1,
-        max_candidates_per_query=max_candidates_per_query,
-        anchor_min_tokens=anchor_min_tokens,
-        anchor_max_tokens=anchor_max_tokens,
-        omit_stopword_only=omit_stopword_only,
-    )
+    selection_options = {
+        "max_candidates_per_query": max_candidates_per_query,
+        "anchor_min_tokens": anchor_min_tokens,
+        "anchor_max_tokens": anchor_max_tokens,
+        "omit_stopword_only": omit_stopword_only,
+    }
+    selection_diagnostics = None
+    selection_resources = None
+    if eligibility_first:
+        from xgap.experiments.grailqa_eligible_candidates import (
+            select_eligible_query_candidates,
+        )
+
+        selector_staging = Path(
+            staging_root or os.environ.get("TMPDIR") or tempfile.gettempdir()
+        ).resolve()
+        selector_staging.mkdir(parents=True, exist_ok=True)
+        selection = select_eligible_query_candidates(
+            questions, pass1, staging_root=selector_staging, **selection_options
+        )
+        candidates = selection.candidates
+        selection_diagnostics = dict(selection.diagnostics)
+        selection_resources = selection_diagnostics.pop("resource_usage")
+    else:
+        candidates = select_query_candidates(questions, pass1, **selection_options)
     candidate_ids = tuple(
         sorted({item.entity_id for values in candidates.values() for item in values})
     )
@@ -389,17 +402,29 @@ def build_local_catalog(
             subject_ids=candidate_ids,
         ),
         allowed_entity_ids=candidate_ids,
+        require_materializable_canonical=eligibility_first,
     )
-    candidates = _drop_entities_without_canonical_names(candidates, metadata)
+    if eligibility_first:
+        missing = set(candidate_ids) - set(metadata.canonical_names)
+        if missing:
+            raise ValueError(
+                "Selected canonical eligibility changed during metadata enrichment: "
+                + ", ".join(sorted(missing)[:5])
+            )
+    else:
+        candidates = _drop_entities_without_canonical_names(candidates, metadata)
 
     scratch_parent = Path(
         staging_root or os.environ.get("TMPDIR") or tempfile.gettempdir()
     ).resolve()
     scratch_parent.mkdir(parents=True, exist_ok=True)
-    scratch = scratch_parent / f"xgap-{artifact_id}-{os.getpid()}"
-    if scratch.exists():
-        raise FileExistsError(f"Local staging path already exists: {scratch}")
-    scratch.mkdir()
+    if eligibility_first:
+        scratch = Path(tempfile.mkdtemp(prefix="xgap-eligible-catalog-", dir=scratch_parent))
+    else:
+        scratch = scratch_parent / f"xgap-{artifact_id}-{os.getpid()}"
+        if scratch.exists():
+            raise FileExistsError(f"Local staging path already exists: {scratch}")
+        scratch.mkdir()
     try:
         counts, integrity = _materialize_subset(
             output=scratch,
@@ -423,12 +448,21 @@ def build_local_catalog(
             "local_queries.jsonl",
             "query_entity_candidates.jsonl",
         )
+        if selection_diagnostics is not None:
+            _write_json(scratch / "selection_diagnostics.json", selection_diagnostics)
+            files += ("selection_diagnostics.json",)
         file_hashes = {name: sha256_file(scratch / name) for name in files}
+        local_schema = (
+            LOCAL_ELIGIBLE_CATALOG_SCHEMA_VERSION
+            if eligibility_first else LOCAL_CATALOG_SCHEMA_VERSION
+        )
         catalog_hash = content_hash(
             {
-                "schema_version": LOCAL_CATALOG_SCHEMA_VERSION,
+                "schema_version": local_schema,
                 "source_manifest_sha256": source_manifest_hash,
                 "question_text_sha256": question_text_hash,
+                **({"candidate_selection": candidate_selection,
+                    "anchor_extraction": anchor_contract} if eligibility_first else {}),
                 "content_file_hashes": {
                     key: value
                     for key, value in file_hashes.items()
@@ -440,7 +474,7 @@ def build_local_catalog(
         wall_seconds = time.monotonic() - started
         manifest = {
             "schema_version": CATALOG_V2_SCHEMA_VERSION,
-            "local_catalog_schema_version": LOCAL_CATALOG_SCHEMA_VERSION,
+            "local_catalog_schema_version": local_schema,
             "catalog_id": artifact_id,
             "status": "complete",
             "catalog_hash": catalog_hash,
@@ -534,11 +568,27 @@ def build_local_catalog(
                 "No factual edges or k-hop backend snapshot are retained.",
             ],
         }
+        if eligibility_first:
+            manifest["candidate_selection"] = candidate_selection
+            manifest["paper_result"] = False
+            manifest["construction"]["selection_resource_usage"] = selection_resources
+            manifest["construction"]["staging_policy"] = (
+                "node-local build; exclusive output claim; manifest-last publication"
+            )
+            manifest["provenance_notes"].append(
+                "English canonical-name eligibility precedes Top-K in a disk-backed scan; "
+                "this new catalog is not admitted by historical preflight/paper audits."
+            )
         (scratch / "manifest.json").write_text(
             json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
         validate_local_catalog(scratch)
-        _publish_catalog(scratch, output, force=force)
+        if eligibility_first:
+            from xgap.experiments.grailqa_eligible_catalog_validation import publish_fresh_catalog
+
+            publish_fresh_catalog(scratch, output, validate_local_catalog)
+        else:
+            _publish_catalog(scratch, output, force=force)
         validate_local_catalog(output)
         return manifest
     finally:
@@ -588,12 +638,18 @@ def validate_local_catalog(root: str | Path) -> dict[str, Any]:
     catalog_root = Path(root)
     report = validate_catalog_v2(catalog_root)
     manifest = json.loads((catalog_root / "manifest.json").read_text(encoding="utf-8"))
-    if manifest.get("local_catalog_schema_version") != LOCAL_CATALOG_SCHEMA_VERSION:
+    if manifest.get("local_catalog_schema_version") not in {
+        LOCAL_CATALOG_SCHEMA_VERSION, LOCAL_ELIGIBLE_CATALOG_SCHEMA_VERSION
+    }:
         raise ValueError("Unsupported query-local catalog schema.")
     if manifest.get("gold_used_for_construction") is not False:
         raise ValueError("Local catalog must attest gold_used_for_construction=false.")
     if manifest.get("requires_query_entity_filter") is not True:
         raise ValueError("Local catalog must enforce per-query candidate filtering.")
+    if (manifest["local_catalog_schema_version"] == LOCAL_CATALOG_SCHEMA_VERSION
+            and (manifest.get("candidate_selection") == ELIGIBLE_CANDIDATE_SELECTION
+                 or "selection_diagnostics.json" in manifest.get("file_hashes", {}))):
+        raise ValueError("Eligibility-first artifacts cannot be relabeled as a legacy catalog.")
     connection = sqlite3.connect(
         f"file:{catalog_root / 'catalog.sqlite3'}?mode=ro", uri=True
     )
@@ -617,6 +673,10 @@ def validate_local_catalog(root: str | Path) -> dict[str, Any]:
         )
         if cross_query_orphans:
             raise ValueError("Local query candidate assignments contain orphan rows.")
+        if manifest["local_catalog_schema_version"] == LOCAL_ELIGIBLE_CATALOG_SCHEMA_VERSION:
+            from xgap.experiments.grailqa_eligible_catalog_validation import validate_selection
+
+            validate_selection(catalog_root, manifest, connection)
     finally:
         connection.close()
     return {**report, "local_query_filter": "ok"}
@@ -898,7 +958,11 @@ def _collect_candidate_metadata(
     records: Iterable[ParquetTripleRecord],
     *,
     allowed_entity_ids: Iterable[str] | None = None,
+    require_materializable_canonical: bool = False,
 ) -> _CandidateMetadata:
+    if require_materializable_canonical:
+        from xgap.experiments.grailqa_eligible_candidates import canonical_name_is_materializable
+
     allowed = None if allowed_entity_ids is None else frozenset(allowed_entity_ids)
     canonical_names: dict[str, str] = {}
     aliases: dict[str, set[tuple[str, str]]] = {}
@@ -911,6 +975,11 @@ def _collect_candidate_metadata(
             if language != "en":
                 continue
             kind = "canonical" if predicate == NAME_PREDICATE else "alias"
+            if (require_materializable_canonical and kind == "canonical"
+                    and not canonical_name_is_materializable(value)):
+                # Match the final SQLite integrity rule before choosing a name.
+                # Do not let a blank canonical override a usable later name.
+                continue
             aliases.setdefault(subject, set()).add((value, kind))
             if kind == "canonical":
                 canonical_names.setdefault(subject, value)
@@ -1341,6 +1410,12 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--staging-root", default=os.environ.get("TMPDIR"))
     parser.add_argument("--force", action="store_true")
+    parser.add_argument(
+        "--candidate-selection",
+        choices=(LEGACY_CANDIDATE_SELECTION, ELIGIBLE_CANDIDATE_SELECTION),
+        default=LEGACY_CANDIDATE_SELECTION,
+        help="v2 is a fresh, build-only development artifact; frozen defaults stay v1",
+    )
     parser.add_argument("--full-catalog")
     parser.add_argument("--full-audit")
     return parser
@@ -1348,7 +1423,22 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    if args.candidate_selection == ELIGIBLE_CANDIDATE_SELECTION:
+        if args.command != "build" or args.force:
+            raise ValueError("Eligibility-first v2 permits fresh build only, without force.")
+        explicit_args = tuple(sys.argv[1:] if argv is None else argv)
+        if not any(arg == "--local-root" or arg.startswith("--local-root=")
+                   for arg in explicit_args):
+            raise ValueError("Eligibility-first v2 requires an explicit --local-root.")
+        requested_root = Path(args.local_root).absolute()
+        if any(part.is_symlink() for part in (requested_root, *requested_root.parents)):
+            raise ValueError("Eligibility-first local root and ancestors must not be symlinks.")
     context = _command_context(args)
+    if args.candidate_selection == ELIGIBLE_CANDIDATE_SELECTION:
+        context["artifact_id"] += "-eligible-v2"
+        context["output"] = context["output"].with_name(
+            context["output"].name + "-eligible-v2"
+        )
     if args.command in {"build", "run"}:
         if not args.parquet_root or not args.source_manifest:
             raise ValueError("Parquet root and source manifest are required for construction.")
@@ -1368,6 +1458,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             anchor_max_tokens=context["anchor_max_tokens"],
             omit_stopword_only=context["omit_stopword_only"],
             force=args.force,
+            candidate_selection=args.candidate_selection,
         )
         print(f"Local catalog ready: {context['output']}")
     if args.command in {"audit", "run"}:

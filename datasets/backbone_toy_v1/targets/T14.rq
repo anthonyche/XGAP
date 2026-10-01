@@ -1,0 +1,24 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT ?path WHERE { { SELECT DISTINCT ?path ?start ?finish ?length WHERE { {
+?n0 a t:Person ; t:id ?id0 .
+FILTER(?id0 = "a")
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?n1 t:id ?id1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 ; t:source ?n1 ; t:target ?n2 .
+?n2 t:id ?id2 .
+BIND(CONCAT(?id0, "/", ?eid1, "/", ?id1, "/", ?eid2, "/", ?id2) AS ?path)
+BIND(?id0 AS ?start)
+BIND(?id2 AS ?finish)
+BIND(2 AS ?length)
+} } } { SELECT DISTINCT ?pathOther ?startOther ?finishOther ?lengthOther WHERE { {
+?n0Other a t:Person ; t:id ?id0Other .
+FILTER(?id0Other = "a")
+?e1Other a t:Edge ; t:label "KNOWS" ; t:id ?eid1Other ; t:source ?n0Other ; t:target ?n1Other .
+?n1Other t:id ?id1Other .
+?e2Other a t:Edge ; t:label "KNOWS" ; t:id ?eid2Other ; t:source ?n1Other ; t:target ?n2Other .
+?n2Other t:id ?id2Other .
+BIND(CONCAT(?id0Other, "/", ?eid1Other, "/", ?id1Other, "/", ?eid2Other, "/", ?id2Other) AS ?pathOther)
+BIND(?id0Other AS ?startOther)
+BIND(?id2Other AS ?finishOther)
+BIND(2 AS ?lengthOther)
+} } } FILTER(?startOther = ?start && ?finishOther = ?finish && STR(?pathOther) <= STR(?path)) } GROUP BY ?path HAVING(COUNT(?pathOther) <= 2) ORDER BY ?path

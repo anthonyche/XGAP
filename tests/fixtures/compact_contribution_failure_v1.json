@@ -1,0 +1,126 @@
+{
+  "scope": "One deterministically selected saved response for local rejection replay only; all four originals remain in audit; no query execution or rescoring.",
+  "audit": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-prompt-v2/third-group-audit.json",
+    "sha256": "4f109ec66ea5fab0fbe25ee5504e27d4a4f9a382e32bfcef8cf26899f42d572b"
+  },
+  "response_key": "8f730924c302ce207ab213a0bdc575e21c31626de1b2b11f9684c0bd7490ea86",
+  "raw_response": {
+    "candidates": [
+      {
+        "candidate_id": "c1",
+        "quality_proxy": 0.9,
+        "query": {
+          "deduplicate_by": [
+            "c",
+            "a"
+          ],
+          "edges": [
+            {
+              "source": "c",
+              "target": "a",
+              "type": "OWNS_ACCOUNT",
+              "var": "e1"
+            },
+            {
+              "source": "m",
+              "target": "a",
+              "type": "SIGNED_IN_TO",
+              "var": "e2"
+            },
+            {
+              "source": "src",
+              "target": "a",
+              "type": "TRANSFERRED_TO",
+              "var": "e3"
+            }
+          ],
+          "limit": 10,
+          "nodes": [
+            {
+              "entity": null,
+              "type": "XGAPFinBenchCompany",
+              "var": "c"
+            },
+            {
+              "entity": null,
+              "type": "XGAPFinBenchAccount",
+              "var": "a"
+            },
+            {
+              "entity": null,
+              "type": "XGAPFinBenchMedium",
+              "var": "m"
+            },
+            {
+              "entity": null,
+              "type": "XGAPFinBenchAccount",
+              "var": "src"
+            }
+          ],
+          "order_by": [
+            {
+              "direction": "desc",
+              "field": "total_amount"
+            },
+            {
+              "direction": "asc",
+              "field": "company_id"
+            }
+          ],
+          "path": null,
+          "select": {
+            "company_id": {
+              "property": "id",
+              "var": "c"
+            },
+            "total_amount": {
+              "aggregate": "sum",
+              "distinct": false,
+              "field": {
+                "property": "amount",
+                "var": "e3"
+              }
+            }
+          },
+          "where": [
+            {
+              "left": {
+                "property": "riskLevel",
+                "var": "m"
+              },
+              "op": "eq",
+              "right": {
+                "value": "Significant risk"
+              },
+              "value_type": "scalar"
+            },
+            {
+              "left": {
+                "property": "createTime",
+                "var": "e3"
+              },
+              "op": "ge",
+              "right": {
+                "value": "2020-09-13 09:41:16.029"
+              },
+              "value_type": "timestamp_ms"
+            },
+            {
+              "left": {
+                "property": "createTime",
+                "var": "e3"
+              },
+              "op": "lt",
+              "right": {
+                "value": "2020-09-24 10:54:34.488"
+              },
+              "value_type": "timestamp_ms"
+            }
+          ]
+        }
+      }
+    ],
+    "schema_version": "xgap-compact-graph-candidates-v1"
+  }
+}

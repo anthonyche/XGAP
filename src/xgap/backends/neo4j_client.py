@@ -15,6 +15,9 @@ from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport, QueryArtifact
 
 
+_MAX_HTTP_ERROR_BODY_BYTES = 64 * 1024
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -25,6 +28,43 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, list):
         return [_jsonable(item) for item in value]
     return value
+
+
+def _neo4j_http_error_message(error: urllib.error.HTTPError) -> str:
+    """Return bounded structured Neo4j error evidence instead of a generic 500."""
+
+    try:
+        raw = error.read(_MAX_HTTP_ERROR_BODY_BYTES + 1)
+    except (OSError, ValueError):
+        raw = b""
+    truncated = len(raw) > _MAX_HTTP_ERROR_BODY_BYTES
+    raw = raw[:_MAX_HTTP_ERROR_BODY_BYTES]
+    text = raw.decode("utf-8", errors="replace").strip()
+    details: list[str] = []
+    if text:
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError:
+            payload = None
+        if isinstance(payload, dict) and isinstance(payload.get("errors"), list):
+            for item in payload["errors"]:
+                if not isinstance(item, dict):
+                    continue
+                code = str(item.get("code", "")).strip()
+                message = str(item.get("message", "")).strip()
+                detail = ": ".join(value for value in (code, message) if value)
+                if detail:
+                    details.append(detail)
+        if not details:
+            details.append(" ".join(text.split()))
+    detail_text = "; ".join(details)
+    if len(detail_text) > 8192:
+        detail_text = detail_text[:8192] + "..."
+        truncated = True
+    suffix = " [response truncated]" if truncated else ""
+    if detail_text:
+        return f"Neo4j HTTP {error.code}: {detail_text}{suffix}"
+    return f"Neo4j HTTP {error.code}: {error.reason}"
 
 
 class Neo4jClient:
@@ -128,10 +168,106 @@ class Neo4jClient:
             metadata={"transport": "neo4j-http", "database": self.database},
         )
 
-    def _post_statement(self, statement: str, parameters: dict[str, Any]) -> dict[str, Any]:
+    def explain(self, artifact: QueryArtifact) -> ExecutionReport:
+        """Obtain Neo4j's plan for a catalog-registered read-only query."""
+
+        return self._observe_plan(artifact, prefix="EXPLAIN", plan_key="plan")
+
+    def profile(self, artifact: QueryArtifact) -> ExecutionReport:
+        """Execute and profile a catalog-registered read-only query."""
+
+        return self._observe_plan(artifact, prefix="PROFILE", plan_key="profile")
+
+    def _observe_plan(
+        self,
+        artifact: QueryArtifact,
+        *,
+        prefix: str,
+        plan_key: str,
+    ) -> ExecutionReport:
+        if artifact.kind not in {"native", "compiled"} or artifact.language.lower() != "cypher":
+            return ExecutionReport(
+                backend_id=self.backend_id,
+                artifact_id=artifact.artifact_id,
+                language=artifact.language,
+                success=False,
+                error="Neo4j observation requires native or compiled Cypher",
+            )
+        query = artifact.text.lstrip()
+        if query.upper().startswith(("EXPLAIN ", "PROFILE ")):
+            return ExecutionReport(
+                backend_id=self.backend_id,
+                artifact_id=artifact.artifact_id,
+                language=artifact.language,
+                success=False,
+                error="observation catalog queries must not include EXPLAIN or PROFILE",
+            )
+
+        started_at = _now()
+        started = time.perf_counter()
+        try:
+            response = self._post_statement(
+                f"{prefix} {artifact.text}",
+                artifact.parameters,
+                include_stats=True,
+            )
+            rows = self._rows_from_response(response)
+            results = response.get("results", [])
+            first = results[0] if results and isinstance(results[0], dict) else {}
+            native_plan = first.get(plan_key)
+            if not isinstance(native_plan, dict):
+                alternate_key = "profile" if plan_key == "plan" else "plan"
+                native_plan = first.get(alternate_key)
+            if not isinstance(native_plan, dict):
+                raise ValueError(f"Neo4j {prefix} returned no native plan")
+            metadata = {
+                "transport": "neo4j-http",
+                "database": self.database,
+                "observation": prefix.lower(),
+                "native_plan": _jsonable(native_plan),
+                "stats": _jsonable(first.get("stats", {})),
+            }
+            success = True
+            error = None
+        except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
+            rows = []
+            metadata = {
+                "transport": "neo4j-http",
+                "database": self.database,
+                "observation": prefix.lower(),
+            }
+            success = False
+            error = str(exc)
+        return ExecutionReport(
+            backend_id=self.backend_id,
+            artifact_id=artifact.artifact_id,
+            language=artifact.language,
+            success=success,
+            rows=rows,
+            elapsed_ms=(time.perf_counter() - started) * 1000,
+            error=error,
+            started_at=started_at,
+            ended_at=_now(),
+            metadata=metadata,
+        )
+
+    def _post_statement(
+        self,
+        statement: str,
+        parameters: dict[str, Any],
+        *,
+        include_stats: bool = False,
+    ) -> dict[str, Any]:
         url = f"{self.http_url}/db/{self.database}/tx/commit"
+        statement_payload: dict[str, Any] = {
+            "statement": statement,
+            "parameters": parameters,
+        }
+        if include_stats:
+            statement_payload["includeStats"] = True
+            statement_payload["resultDataContents"] = ["row"]
         payload = json.dumps(
-            {"statements": [{"statement": statement, "parameters": parameters}]}
+            {"statements": [statement_payload]}
         ).encode("utf-8")
         auth = base64.b64encode(f"{self.user}:{self.password}".encode("utf-8")).decode(
             "ascii"
@@ -146,8 +282,13 @@ class Neo4jClient:
             },
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-            body = response.read().decode("utf-8")
+        try:
+            with urllib.request.urlopen(
+                request, timeout=self.timeout_seconds
+            ) as response:
+                body = response.read().decode("utf-8")
+        except urllib.error.HTTPError as exc:
+            raise ValueError(_neo4j_http_error_message(exc)) from exc
         parsed = json.loads(body)
         errors = parsed.get("errors", [])
         if errors:

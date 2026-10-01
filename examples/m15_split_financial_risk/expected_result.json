@@ -1,0 +1,10 @@
+[
+  {
+    "amount": 120000,
+    "company": "Redstone Analytics",
+    "currency": "USD",
+    "occurred_on": "2026-08-20",
+    "person": "Alice Smith",
+    "risk": "HIGH"
+  }
+]

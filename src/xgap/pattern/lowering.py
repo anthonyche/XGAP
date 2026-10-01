@@ -22,6 +22,7 @@ from xgap.algebra.ops import (
     ProjectionOp,
     RecursiveMode,
     RecursiveOp,
+    ReverseOp,
     SelectionOp,
     UnionOp,
 )
@@ -42,7 +43,7 @@ from xgap.pattern.ast import (
     Seq,
     Star,
 )
-from xgap.pattern.typecheck import type_check_path_pattern
+from xgap.pattern.typecheck import _check_bounded, type_check_path_pattern
 
 
 class LoweringError(ValueError):
@@ -84,9 +85,34 @@ def lower_regex(
             ),
         )
     if isinstance(regex, OptionalExpr):
-        raise LoweringError("OptionalExpr lowering is not implemented in M5.")
+        return UnionOp(NodesOp(), lower_regex(regex.child, restrictor, max_depth))
     if isinstance(regex, Bounded):
-        raise LoweringError("Bounded regex lowering is not implemented in M5.")
+        _check_bounded(regex)
+        minimum, maximum = regex.min_repeats, regex.max_repeats
+        if maximum is None and minimum <= 1:
+            wrapper = Star if minimum == 0 else Plus
+            return lower_regex(wrapper(regex.child), restrictor, max_depth)
+        if maximum is None:
+            maximum = max_depth
+        if maximum is None:
+            raise LoweringError("Bounded lower bound >=2 requires a finite upper bound or max_depth")
+        if type(maximum) is not int:
+            raise LoweringError("Bounded max_depth must be an integer")
+        if maximum < minimum:
+            raise LoweringError("Bounded max_depth must cover its minimum repetition count")
+        if maximum == 0:
+            return NodesOp()
+        child = lower_regex(regex.child, restrictor, max_depth)
+        power, positive = child, None
+        for count in range(1, maximum + 1):
+            if count > 1:
+                power = JoinOp(power, child)
+            if count >= max(1, minimum):
+                positive = power if positive is None else UnionOp(positive, power)
+        # One Recursive step applies the mode to exactly the admitted powers.
+        # It neither adds another repetition nor confuses counts with edge length.
+        selected = RecursiveOp(positive, restrictor, max_depth=1)
+        return UnionOp(NodesOp(), selected) if minimum == 0 else selected
     raise LoweringError(f"Unsupported regex expression {type(regex).__name__}.")
 
 
@@ -152,8 +178,6 @@ def lower_to_logical_plan(query: PathPatternQuery) -> AlgebraOp:
 
 
 def _lower_rel(edge: EdgePattern) -> AlgebraOp:
-    if edge.direction is not Direction.OUT:
-        raise LoweringError(f"M5 lowering supports only OUT edges, got {edge.direction.name}.")
     conditions: list[Condition] = []
     if edge.label is not None:
         if not edge.label:
@@ -165,9 +189,14 @@ def _lower_rel(edge: EdgePattern) -> AlgebraOp:
         conditions.append(PropertyEquals(EdgeRef(1), name, value))
 
     condition = _and_conditions(conditions)
-    if condition is None:
-        return EdgesOp()
-    return SelectionOp(condition, EdgesOp())
+    forward = EdgesOp() if condition is None else SelectionOp(condition, EdgesOp())
+    if edge.direction is Direction.OUT:
+        return forward
+    if edge.direction is Direction.IN:
+        return ReverseOp(forward)
+    if edge.direction is Direction.UNDIRECTED:
+        return UnionOp(forward, ReverseOp(forward))
+    raise LoweringError("Unknown edge direction")
 
 
 def _node_descriptor_condition(pattern: NodePattern, ref: NodeRef) -> Condition | None:

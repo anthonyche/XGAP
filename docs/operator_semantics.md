@@ -1,21 +1,7 @@
-# Operator Semantics
+# Operator semantics
 
-XGAP contains two deterministic logical support layers:
-
-1. the path algebra, whose primary objects are `PathSet` and
-   `SolutionSpace`;
-2. the M6 focused binding layer, whose object is `BindingRelation`.
-<!-- 
-The focused binding layer consumes path-algebra results but does not
-change the semantics of the existing path operators.
-
-XGAP's logical operator vocabulary is path-based. The primary data object is PathSet. The secondary data object is SolutionSpace, used only by selector-style extended algebra operators.
-
-The logical algebra is organized into:
-
-Core path algebra
-Recursive path algebra
-Extended path algebra -->
+The typed logical operators below are shared by the compiler and runtime.
+Physical rewrites must preserve their result semantics.
 
 ## Data Objects
 ## Path
@@ -63,6 +49,26 @@ Returns a `PathSet` containing one zero-length `Path` for every node in graph `G
 Implemented.
 
 Returns a `PathSet` containing one one-length `Path` for every edge in graph `G`. Each path has the form `source, edge, target`.
+
+## Reverse(P) — XGAP orientation extension
+
+`ReverseOp` consumes and returns a PathSet. It reverses each alternating
+traversal sequence without changing graph storage, edge identity or properties.
+A reversed one-edge path is `stored target, edge, stored source`. Zero-length
+paths stay unchanged. This explicit XGAP extension does not redefine Edges(G)
+or claim an additional operator in the original paper algebra. See
+the versioned semantic decision.
+
+Reversal is involutive and preserves lengths; it distributes over Union and
+reverses the input order of Join. Node/edge position references outside Reverse
+refer to the resulting traversal sequence. It accepts PathSet only; it does not
+reverse SolutionSpace ranks or BindingRelation rows.
+
+IN relations lower to Reverse of the corresponding filtered OUT relation.
+UNDIRECTED relations lower to the Union of both orientations. Self-loop paths
+deduplicate, parallel edge IDs remain distinct, and existing recursive modes
+apply unchanged to the resulting sequences. Traversing one edge in opposite
+directions repeats that edge identity and therefore violates TRAIL.
 
 ## Selection
 
@@ -116,6 +122,12 @@ Evaluates both children and returns the deduplicated set union of their paths.
 
 ## Join
 
+The federated runtime can place existing path concatenation and Recursive over
+materialized native PathSets in `CoordinatorPathCompose`. It does not evaluate
+against a hidden local graph or add a logical operator. Nested scopes are kept
+before enclosing filters and selectors; see
+scoped execution.
+
 Implemented.
 
 Evaluates both children and concatenates every pair of paths `p1`, `p2` where `p1.last() == p2.first()`. The shared node appears once in the concatenated path.
@@ -135,6 +147,14 @@ Modes:
 - `ACYCLIC`: rejects paths with repeated nodes. Without `max_depth`, evaluation terminates by deduplication and frontier exhaustion on finite graphs.
 - `SIMPLE`: rejects repeated nodes except that the first node may equal the last node as the closing repeat of a cycle. Without `max_depth`, evaluation terminates by deduplication and frontier exhaustion on finite graphs.
 - `SHORTEST`: returns shortest paths per source-target pair, where shortest means minimum `Path` length. If multiple paths tie for shortest length for the same source-target pair, all tied shortest paths are kept. If `max_depth` is provided, search is bounded by it; otherwise evaluation still terminates on finite graphs.
+
+The higher-level finite Bounded regex reuses this operator with max_depth=1
+over a union of exact child powers: the repetition range is constructed first,
+then mode filtering/shortest selection runs once. Optional is Union(Nodes,child).
+These are lowering compositions, not new algebra operators. A zero-length child
+path inside positive SHORTEST recursion competes with positive cycles; the
+separate Nodes branch for Star/Bounded(min=0) lies outside that competition.
+See finite repetition semantics.
 
 ## GroupBy
 
@@ -510,3 +530,58 @@ node and edge bindings.
 - arbitrary path bindings
 - general GPC assignments
 - cross-query correlation
+
+
+## M15 Federated Runtime Operators
+
+These coordinator operators consume JSON-row relations. They are execution
+nodes, not additions to the path algebra and not aliases for backend-internal
+physical operators.
+
+`RemoteQuery(backend, artifact)` invokes one complete native artifact through
+the selected black-box backend plugin.
+
+`RemoteBindQuery(input, backend, artifact, bind_field, parameter,
+max_bindings)` extracts non-null JSON-scalar values from `bind_field`, removes
+duplicates deterministically, and injects the bounded list into the named
+artifact parameter. It fails before invocation when the input is malformed or
+exceeds `max_bindings`. An empty binding set succeeds without a remote call.
+
+`Exchange(input)` marks rows as crossing the backend/coordinator boundary and
+charges their encoded byte size exactly once at that node.
+
+`CoordinatorJoin(left, right, left_on, right_on)` is a deterministic equality
+hash join. Conflicting right fields receive the declared right prefix and
+duplicate output rows are removed.
+
+`CoordinatorSemiJoin(left, right, left_on, right_on)` returns each distinct
+left row whose key occurs in the right input; it never adds right-side fields.
+
+`CoordinatorPathSelect(input, identity_encoding, selector)` reconstructs
+complete paths from declared native position bindings and applies the existing
+GroupBy/OrderBy/Projection semantics. For a bounded recursive SHORTEST stage it
+first keeps all tied shortest positive paths per endpoint pair, preserving
+Star's separate zero paths, then applies deferred length filters and selectors.
+Its output is JSON rows containing alternating-ID `path` arrays. Missing or
+incompatible identities are errors, not empty answers. This is a physical
+adapter over existing path/SolutionSpace values, not a new path-algebra operator.
+
+`Align`, `Merge`, and coordinator `Project` retain the M15-B semantics. Any
+error causes all transitive descendants to be marked skipped. A plan validates
+its DAG, maximum remote calls, and parallelism before execution.
+
+
+## Modern native Boolean condition placement
+
+The modern fixed/bounded path and semantic Match compilers share the existing
+AND/OR/NOT truth rules. Atomic property equality and inequality are false when
+the property is absent; outer NOT complements that result. Python scalar
+equality retains True=1 and False=0; numeric ordering excludes booleans and
+non-numeric data. RDF properties use explicitly mapped single scalar values.
+Property tests stay local to EXISTS so a missing disjunct does not remove the
+whole row. These rules do not change the audited Selection operator.
+
+Only endpoint predicates commute with local SHORTEST. Standalone length
+conjuncts use the final length filter; Boolean length trees retain their outer
+placement through the finite scoped planner. Original semantic reference
+validation still applies, including the fixed-length numeric-position boundary.

@@ -1,0 +1,10 @@
+CALL {
+MATCH (n0)-[e1:KNOWS]->(n1)
+MATCH (n1)-[e2:KNOWS]->(n2)
+WHERE n0.id = "a" AND n2.id = "c"
+RETURN n0.id + "/" + e1.id + "/" + n1.id + "/" + e2.id + "/" + n2.id AS path, n0.id AS src, n2.id AS dst, 2 AS length
+}
+WITH src, dst, min(length) AS minimum, collect({path:path, length:length}) AS candidates
+UNWIND candidates AS candidate
+WITH candidate, minimum WHERE candidate.length = minimum
+RETURN DISTINCT candidate.path AS path

@@ -1,0 +1,24 @@
+{
+  "schema_version": "m15-f2c10-family-memory-predictor-policy-v1",
+  "policy_id": "direct-semantic-family-memory-knn-dev-v1",
+  "model_version": "m15-f2c10-weighted-knn-development-v1",
+  "neighbor_count": 3,
+  "feature_weights": {
+    "amount-lower-bound": 1.0,
+    "person-identity": 1.0,
+    "risk-level": 1.0,
+    "time-lower-bound": 1.0,
+    "transfer-predicate": 1.0
+  },
+  "metric_aggregation": "median_per_plan_over_raw_repetitions",
+  "uncertainty": "neighbor_weighted_mean_absolute_deviation",
+  "resource_cost_metric": "total_bytes_moved",
+  "training_admission": "successful_exact_counterbalanced_repetitions_only",
+  "minimum_repetitions_per_plan": 2,
+  "cold_start_policy": "fail_closed",
+  "current_query_observation_operations": [],
+  "oracle_inputs": [],
+  "post_execution_measurements_used": false,
+  "automatic_retries": 0,
+  "paper_result": false
+}
