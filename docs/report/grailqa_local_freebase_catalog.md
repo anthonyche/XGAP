@@ -89,6 +89,27 @@ export XGAP_FREEBASE_SOURCE_MANIFEST="$XGAP_FREEBASE_RAW_DIR/source_manifest.jso
 export XGAP_GRAILQA_LOCAL_CATALOG_ROOT="$HOME/xgap-data/freebase/grailqa-local-catalog-v1"
 ```
 
+The query bodies and query-independent inference catalog are ignored by Git.
+Verify that they are installed before submitting either workload:
+
+```bash
+PYTHON="$HOME/venvs/xgap-core/bin/python" \
+  bash scripts/server/fetch_grailqa_m13d_artifacts.sh --verify-only
+```
+
+If they are unavailable, either transfer the two already verified dataset
+directories into the checkout or submit the CPU-only preparation job:
+
+```bash
+sbatch --parsable \
+  --export=ALL,XGAP_REPO_ROOT="$PWD",XGAP_PYTHON="$HOME/venvs/xgap-core/bin/python" \
+  scripts/slurm/prepare_grailqa_m13d_artifacts.sbatch
+```
+
+The preparation job does not scan the Freebase parquet source. The catalog
+wrapper repeats `--verify-only` and refuses to begin the 32 GB scan when this
+prerequisite is missing or changed.
+
 Build and audit the 18-query artifact first:
 
 ```bash

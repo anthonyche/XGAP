@@ -576,6 +576,9 @@ def test_local_slurm_job_is_cpu_only_separate_and_has_no_qwen() -> None:
     assert "module load Miniconda3" in slurm
     assert "XGAP_LOCAL_CATALOG_AUDIT_ONLY" in slurm
     assert "python --version" in slurm
+    assert "fetch_grailqa_m13d_artifacts.sh" in slurm
+    assert "--verify-only" in slurm
+    assert "The 32 GB Freebase scan was not started." in slurm
     assert "#SBATCH --gres" not in slurm
     assert "DASHSCOPE" not in slurm
     assert "vllm" not in slurm.casefold()

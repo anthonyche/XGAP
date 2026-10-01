@@ -1,0 +1,88 @@
+{
+  "automatic_retries": 0,
+  "backend_calls": 0,
+  "bootstrap_resamples_executed": 0,
+  "checked_count": 14,
+  "checks": [
+    {
+      "name": "balanced-00:sealed_input_sha",
+      "passed": true
+    },
+    {
+      "name": "balanced-01:sealed_input_sha",
+      "passed": true
+    },
+    {
+      "name": "balanced-02:sealed_input_sha",
+      "passed": true
+    },
+    {
+      "name": "balanced-03:sealed_input_sha",
+      "passed": true
+    },
+    {
+      "name": "balanced-04:sealed_input_sha",
+      "passed": true
+    },
+    {
+      "name": "balanced-05:sealed_input_sha",
+      "passed": true
+    },
+    {
+      "name": "complete_original48_six_repeats_three_methods",
+      "passed": true
+    },
+    {
+      "name": "analysis_success_and_matching_population",
+      "passed": true
+    },
+    {
+      "details": {
+        "compared_pairs": 144,
+        "maximum_absolute_difference_ms": 0.0
+      },
+      "name": "all144_query_method_medians_match",
+      "passed": true
+    },
+    {
+      "name": "paid_selection/fixed_hash:single_original32_comparison",
+      "passed": true
+    },
+    {
+      "name": "paid_selection/fixed_hash:paired_query_ratio_and_gmean_match",
+      "passed": true
+    },
+    {
+      "name": "paid_selection/fixed_bind:single_original32_comparison",
+      "passed": true
+    },
+    {
+      "name": "paid_selection/fixed_bind:paired_query_ratio_and_gmean_match",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_declared_levels_unit_seed_and_resamples",
+      "passed": true
+    }
+  ],
+  "elapsed_seconds": 2.64153325,
+  "error": {
+    "message": "'SEED'",
+    "type": "KeyError"
+  },
+  "finished_at": "2026-09-12T04:21:23.485734+00:00",
+  "limitations": [
+    "Only point estimates and all query/method medians are numerically recomputed; the 10,000 bootstrap draws and reported interval endpoints are not rerun.",
+    "Bootstrap unit, seed, repetitions, strata and percentile levels are checked from saved metadata and the actual analyzer source.",
+    "Original oracle content is not read; this audit does not repeat exact-answer evaluation.",
+    "Ratios describe prepared-plan methods in the shared mixed-cache six-block run; they do not establish ordinary P1/A3, cold-cache or unseen-family performance."
+  ],
+  "model_calls": 0,
+  "original_oracle_content_read": false,
+  "passed_count": 14,
+  "schema_version": "xgap-finbench-balanced-statistical-crosscheck-v1",
+  "service_starts": 0,
+  "software_tests_run": 0,
+  "started_at": "2026-09-12T04:21:20.844243+00:00",
+  "success": false
+}

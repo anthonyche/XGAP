@@ -1,0 +1,4 @@
+question_id,mode,answer_em,status,source_calls,online_ms,model_calls,role_contract_match,input_tokens,output_tokens,planning_ms,grounding_lookups,final_plan_attempts,source_bytes
+ROLE-NAME-01,precision,1.0,answered,3,2340.9465420991182,1,True,2102,180,33.10158383101225,1,1,2167
+ROLE-ID-01,performance,1.0,answered,10,3523.8386252894998,1,True,2202,548,89.37883283942938,0,1,7953
+ROLE-VARIABLE-01,precision,1.0,answered,3,1451.0967498645186,1,True,2100,167,32.902917824685574,0,1,2648

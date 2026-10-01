@@ -1,0 +1,1002 @@
+{
+  "schema_version": "d203-historical-execution-admission-v1",
+  "source_path": "/Users/anthonyche/Downloads/query_states.jsonl",
+  "source_sha256": "f207a5d4e3563e391274ebc0109ce2906a5ea2a007b27f4b362823c1bd887c18",
+  "source_bytes": 1777857,
+  "historical_job_id": "3796877",
+  "goal_requirements": {
+    "require_entity_anchor": true,
+    "answer_position": "last",
+    "required_bindings": []
+  },
+  "model_calls": 0,
+  "backend_calls": 0,
+  "paper_result": false,
+  "questions": [
+    {
+      "question_id": "2100226013000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "2100226013000",
+      "question": "olla podrida is served as part of what cuisine?",
+      "prompt_view_sha256": "f75e74254e360effd4e6a9cedacb1026e29bb058e37da0b91beee9d2f46f1a33",
+      "raw_response_sha256": "03ee61aba8d1ff3dfbbea500e87b5ec13e1b88567017c63cc9698dc9db494b2f",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "cfe040485d4368f3171cda0acde38a1a22030927f6073ee567c05980d5186e4d",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "component_term_mismatch",
+            "message": "Declared term 'base.type_ontology.abstract' does not match actual component 'source': ('class', 'base.ovguide.spanish_cuisine_dishes').",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "de6581000f3ddc02e53e4a36a46a2f350cd5285db96150b57a445228f0ef0708",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "component_term_mismatch",
+            "message": "Declared term 'base.type_ontology.abstract' does not match actual component 'source': ('class', 'base.foodiefieldguide.street_food').",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "1dab2aec574ff81077bed5d81a814e68bbf497d3e169cfc92ca1109582a34996",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "component_term_mismatch",
+            "message": "Declared term 'base.type_ontology.inanimate' does not match actual component 'source': ('class', 'base.ovguide.spanish_cuisine_dishes').",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "2102933007000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "2102933007000",
+      "question": "american airlines, inc.'s hub is within which airport?",
+      "prompt_view_sha256": "048edb14f201004590c90e70c425b66c2adbf3bb8bbedd9d79af26074fff4d8b",
+      "raw_response_sha256": "0db53034a8b3a54bea81e44959149c73c02ca3d4c8a5240ee30084d5ac1196c4",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "aac0417a07a94ed728e0a2349f04765449818efc41080d13dc5bcd8bfb6b073a",
+          "grounded_candidate_sha256": "0721853dd2ff7d05a585f776be58c58915b61384200c0f23b5d08c4e9a0fa73e",
+          "semantic_validation": {
+            "candidate_id": "c1",
+            "ok": true,
+            "stage": "semantic_validated",
+            "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+            "formatted_plan": null,
+            "metadata": {
+              "profile": "typed_path_semantics_v1"
+            }
+          },
+          "stage": "execution_unavailable",
+          "error_type": "CandidateExecutionUnavailable",
+          "code": "required_entity_anchor_missing",
+          "message": "The goal requires an entity anchor, but no node has a positive type.object.id equality. Declared entity_ids alone do not constrain execution; use an explicitly selected visible ID in the AST."
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "8d704893f687ec1a9122578ecc1bc532f0f2fbcff801522f154a396b83b17e47",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate target type 'aviation.airport' is neither explicitly prompt-visible nor an exact endpoint type of its selected relation path.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "0f88095d904d25729ba46a25a781439553d7a6ff78395d77bf5afbadb684b06c",
+          "grounded_candidate_sha256": "d0ac8948785b63d696be4a2c6f013162677a4af8254d5b493b6ec06570699f40",
+          "semantic_validation": {
+            "candidate_id": "c3",
+            "ok": true,
+            "stage": "semantic_validated",
+            "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+            "formatted_plan": null,
+            "metadata": {
+              "profile": "typed_path_semantics_v1"
+            }
+          },
+          "stage": "execution_unavailable",
+          "error_type": "CandidateExecutionUnavailable",
+          "code": "required_entity_anchor_missing",
+          "message": "The goal requires an entity anchor, but no node has a positive type.object.id equality. Declared entity_ids alone do not constrain execution; use an explicitly selected visible ID in the AST."
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "2100270004000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "2100270004000",
+      "question": "the national hockey league draft is in which sports league?",
+      "prompt_view_sha256": "ee852f535c6a62298a362d242efe9b702b2866943cad66d33cff13746383dc92",
+      "raw_response_sha256": "f5bf0075375e621b11f4a92ed8cba9d256ef043d642885e300b70a371a162cbc",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "108f8f720fef47c345b16c3e295df0d33111bc5eee60dd08d11c6ae28a2bcb7f",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.properties.picks' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "dc46c0e0bdd2a5fa4a4d9c8efe32b80d1cfe721e78baf82f750a9130426dcddd",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.properties.picks' has kind 'property', not ontology kind 'relation'.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "5596867cb8c805ad247fa6bce64b590788c6912f53260cbaad063b90d596a7b0",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.properties.picks' has kind 'property', not ontology kind 'relation'.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "2103421006000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "2103421006000",
+      "question": "wmbd-tv is distributed by what distributor?",
+      "prompt_view_sha256": "8b82d953a9a36120e0da17d1f5e0d857d5bad05e6d9d349c049cee47cb66941e",
+      "raw_response_sha256": "8c76bd8cb67dcc8b8c542edc491ca1acf821140e006e1971d0d0285afc55873f",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "candidate-1",
+          "raw_candidate_sha256": "53f76a8256636d3d2301dbe3e5f3fffe48569dcb16144ea30aa9ec3867be57c1",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate source type 'WMBD-TV' is neither explicitly prompt-visible nor an exact endpoint type of its selected relation path.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "candidate-2",
+          "raw_candidate_sha256": "3c8d5d046b15eb79c8907e433ce29d46315a17598a0ec0dea023d01a16580bb5",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate source type 'WMBD-TV' is neither explicitly prompt-visible nor an exact endpoint type of its selected relation path.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "candidate-3",
+          "raw_candidate_sha256": "4b73f7de787c2e5180db299ff5ac9b764981bff5af247fa6889b7f82e6bc7a37",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate source type 'WMBD-TV' is neither explicitly prompt-visible nor an exact endpoint type of its selected relation path.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "3206065001000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "3206065001000",
+      "question": "find all ships built by hyundai with imo/ir number after 7528611",
+      "prompt_view_sha256": "4ed41e67caac551faaca61f6a020cb2f7c1522e0260cc058539eaf068b401306",
+      "raw_response_sha256": "1db265fbc043317a2761b1c4a793be199b5428bedf6578505c5fd9bf746dd9a0",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "ac60b8761ea76bd97e77e27c96e49fa182ea03dabdb2c3bbaeb18951975e3ed8",
+          "stage": "grounding_envelope_rejected",
+          "error_type": "RuntimeAlignmentError",
+          "message": "Query anchor 'boats.ship' is not visible for slot 'retrieved-type'."
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false,
+      "failure": {
+        "stage": "grounding_envelope_rejected",
+        "error_type": "RuntimeAlignmentError",
+        "message": "Query anchor 'boats.ship' is not visible for slot 'retrieved-type'."
+      }
+    },
+    {
+      "question_id": "2100855004000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "2100855004000",
+      "question": "what is the name of the amusement ride includes film of arthur and the invisibles?",
+      "prompt_view_sha256": "0ec0cca4f72de44938579542cd238d0b0b5ac25fb0cbd00aeba13e53bcbcd094",
+      "raw_response_sha256": "f1d4853646198ed699f274eb608ddce9a040733923fb14008dce5fc4f7679ed3",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "466014bcabc26bee9ddeca31f47afa48da02cbf6e5da1c01c17770ccfecdf29b",
+          "stage": "grounding_envelope_rejected",
+          "error_type": "RuntimeAlignmentError",
+          "message": "Query anchor 'film.film' is not visible for slot 'relation-hop-2'."
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "ea83e8eef8c8929275d7d12a089fa857831874aae0c9647f405b4138d63c2415",
+          "stage": "grounding_envelope_rejected",
+          "error_type": "RuntimeAlignmentError",
+          "message": "Query anchor 'film.film' is not visible for slot 'relation-hop-2'."
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "64fb7f6544813403a3c001da517cbfad5f49ddcbc558688e5af21ec67c1f56cf",
+          "stage": "grounding_envelope_rejected",
+          "error_type": "RuntimeAlignmentError",
+          "message": "Query anchor 'film.film' is not visible for slot 'relation-hop-2'."
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false,
+      "failure": {
+        "stage": "grounding_envelope_rejected",
+        "error_type": "RuntimeAlignmentError",
+        "message": "Query anchor 'film.film' is not visible for slot 'relation-hop-2'."
+      }
+    },
+    {
+      "question_id": "2100164007000",
+      "question": "which zoo exhibit is at the downtown aquarium, houston?",
+      "stage": "provider_failed",
+      "failure": {
+        "category": "malformed_output",
+        "message": "Token budget check denied repair: input_budget_exceeded.",
+        "question_id": "2100164007000",
+        "schema_version": "m13d-first-failure-v1"
+      },
+      "candidates": []
+    },
+    {
+      "question_id": "2101116003000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "2101116003000",
+      "question": "which cricket match has the toss winner of knight riders?",
+      "prompt_view_sha256": "b26ae388821d0b488708e9501a2fcc4a039cb93e28bc3a1271aa8024cbab04ad",
+      "raw_response_sha256": "ad09d18107056f4638577d5571334e13245c578dd304db8dde62a969f1d50709",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "7188c707de6d07ef7b7e39f962294b68fceeca406d9ed10f28eb294060926713",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'expr.edge.right' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "d370cca3299cc877f5350970a04a8d8daebc837ad46c381be805254a7107ddbc",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'expr.edge.right' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "cf3ebe371d131b4ecd7caf4966f778e06610fc1db4b69505e6eb1b1778450872",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'expr.edge.right' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "2100840007000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "2100840007000",
+      "question": "white-faced whistling duck is an exhibit at what zoo?",
+      "prompt_view_sha256": "c11f058f3328212fbe499fccc35ad9d8d881919061f0ed204a41154bc0f7b2ba",
+      "raw_response_sha256": "17a9c065ac19c3bcbe809301800a90272cef60f254426139ed0152d8496bed10",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "0d3f0391998af26134353965493d991a4c466e3daddd5631b1d05212fc9129e4",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate 'c1' must ground each ordered relation component through its corresponding relation-hop slot.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "b2e1d1cad98e3ab5843e7d856917e825b0fcd4218d2130acd08cfef9a33e3816",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate 'c2' must ground each ordered relation component through its corresponding relation-hop slot.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "b274c5f0ea6cb573d1c6bcb563075da3c1e5a469e25e6b2d7529e618f6eaa165",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate 'c3' must ground each ordered relation component through its corresponding relation-hop slot.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "2101661019000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "2101661019000",
+      "question": "which meteorological service has forecast zones in lundy?",
+      "prompt_view_sha256": "dafd611ab31b7fd0cb8d94328f4d75e450abb98d7a168a87c7f6c4716e7de679",
+      "raw_response_sha256": "fd572a41391ed2ba0f57873868d28947d48f3ab457b99ffc5438991d48e584b8",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "e30e175abcb1f1f27ac53c52d0fb43c8f8626a4e2cd902093081062cf6436025",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target' has kind 'class', not ontology kind 'relation'.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "ba242db3f7224a1caf9fcba91f7e3e842a9d56075d6c180abc6e1652be33a80c",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "nonvisible_ast_term",
+            "message": "Actual property term 'name' at 'condition.conditions.0' is not prompt-visible.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "962e892743c98c00bcb2bea1d2900a8b40424e1a2e7635a9131321c609a3ef6c",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "nonvisible_ast_term",
+            "message": "Actual property term 'name' at 'condition.conditions.1' is not prompt-visible.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "3200799010000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "3200799010000",
+      "question": "what other language family is in the same language family that indo-european language group are in?",
+      "prompt_view_sha256": "5741fe4a3db08b538c8c788bd557232ee2718c579e17d8554e9aa953ff02918b",
+      "raw_response_sha256": "79d69d51e98467cca8d66773ef8df256fe261609c4c3249d3b82d9338410392e",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "b020248f35f42dceaeef63a6743db1ada54bfbe57f1691f51d38ae27d9cb1156",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate 'c1' must ground each ordered relation component through its corresponding relation-hop slot.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "c7fa71f93117a42fbcab9977dd00ddbd87abb7a297615146a05f130a6b56eec6",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate 'c2' must ground each ordered relation component through its corresponding relation-hop slot.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "8ad65f6dd2a01a4e466a9a1e2ac463e7346b98e2248777809a9f44a8b428777f",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate 'c3' must ground each ordered relation component through its corresponding relation-hop slot.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "3205285001000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "3205285001000",
+      "question": "what are the other inventions that are associated with the same patent as a simple method to form crystalline compound semiconductors on silicon substrates is?",
+      "prompt_view_sha256": "31bdfcb734eda1315a673c7ff04deff9ac48fbd86f009835ad291062a96fcae9",
+      "raw_response_sha256": "78b1ba06b6ebd71bc860aa79dd373ada440f8ba6100e00e8c9ff78647faa276f",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "e0c228f5f28d5c06d664b0f242013049146c01edf4a3d76c7268b857c6e67be1",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target' has kind 'class', not ontology kind 'relation'.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "a37cb06929415773671a87f851527e4b9172a13d304ca672327ede1d6236cf01",
+          "grounded_candidate_sha256": "517dfc4d55e25e32d942ba245e55f9f4615a34ca7592e202015a0c9ff00151d3",
+          "semantic_validation": {
+            "candidate_id": "c2",
+            "ok": true,
+            "stage": "semantic_validated",
+            "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+            "formatted_plan": null,
+            "metadata": {
+              "profile": "typed_path_semantics_v1"
+            }
+          },
+          "stage": "execution_unavailable",
+          "error_type": "CandidateExecutionUnavailable",
+          "code": "required_entity_anchor_missing",
+          "message": "The goal requires an entity anchor, but no node has a positive type.object.id equality. Declared entity_ids alone do not constrain execution; use an explicitly selected visible ID in the AST."
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "a6cfba129aac7e0a355ac33b6d992f251caf4be60206ff5b22cd7c6b70487bc1",
+          "grounded_candidate_sha256": "68b633d98e34acdaf6f7110c91674719afffc53ce551ae12a4edec9b04ca3e46",
+          "semantic_validation": {
+            "candidate_id": "c3",
+            "ok": true,
+            "stage": "semantic_validated",
+            "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+            "formatted_plan": null,
+            "metadata": {
+              "profile": "typed_path_semantics_v1"
+            }
+          },
+          "stage": "execution_unavailable",
+          "error_type": "CandidateExecutionUnavailable",
+          "code": "required_entity_anchor_missing",
+          "message": "The goal requires an entity anchor, but no node has a positive type.object.id equality. Declared entity_ids alone do not constrain execution; use an explicitly selected visible ID in the AST."
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "3205274004000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "3205274004000",
+      "question": "who is the founding figure whose religion is featured by saint george's day?",
+      "prompt_view_sha256": "211ee747e6c2af82f8a5040904cb6aeea867410594f6e4cd2557e78411a18b29",
+      "raw_response_sha256": "cb1ed20ddf1a45ba432a5941d853080e0ced3d04697882a8f04b410cfe0c21c5",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "fcca949037ebd49ee93cd3c08a7e9d2de264642b02cfcdd5c1e7a67748c8f014",
+          "stage": "grounding_envelope_rejected",
+          "error_type": "RuntimeAlignmentError",
+          "message": "Query anchor 'religion.religion.sacred_sites' is not visible for slot 'relation-hop-3'."
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "8e94f690834ecc7c7be89919cdb05c128705e1dc2c9e5091418909d74c5369c1",
+          "stage": "grounding_envelope_rejected",
+          "error_type": "RuntimeAlignmentError",
+          "message": "Query anchor 'religion.religion.sacred_sites' is not visible for slot 'relation-hop-3'."
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "1801f94ed9fd2d20140dc3dd20c3f96a59e827434b5f71349d10d4d7f0ca138e",
+          "stage": "grounding_envelope_rejected",
+          "error_type": "RuntimeAlignmentError",
+          "message": "Query anchor 'religion.religion.sacred_sites' is not visible for slot 'relation-hop-3'."
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false,
+      "failure": {
+        "stage": "grounding_envelope_rejected",
+        "error_type": "RuntimeAlignmentError",
+        "message": "Query anchor 'religion.religion.sacred_sites' is not visible for slot 'relation-hop-3'."
+      }
+    },
+    {
+      "question_id": "3203168013000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "3203168013000",
+      "question": "who is the transport operator of helicoptor?",
+      "prompt_view_sha256": "ddbfeb45e18655337d90542de1e693f9aa3f4cc4eb1f17074c6a2258d51afab9",
+      "raw_response_sha256": "51999a1b903521bcd622b92a7f1f8f88a3067ae9ef4cf30a1336273ca13915ee",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "c435a3a606d7b19000e15945e88a7e8f80eafde50ff9fc0894233100bad0228d",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "73e5d5128f73b421a6ded46e84d2be2b0908bf5edfd34c54cee94f27a59f3604",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "482c24178b19b4e7e9d2789aa10dcf12b7195768442b9cc0eaa3ba351b10ca86",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "3203374006000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "3203374006000",
+      "question": "rd-135 design is featured on what rocket engines?",
+      "prompt_view_sha256": "8a9d187327922433aebb606821cce23f41d5e9446f242bdd9f9a6c4ffddb17e6",
+      "raw_response_sha256": "c15997ff28994d0ae9fbaed3897bc73d2ffa46be102805398da5ad0820d843cd",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "bd831b7f4961af9a47bfb422ea70f6d662a01c4eeadd559ed3d7ed9a973bcc08",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "48bbb194b96f5279ca8594fee2bc6e3010fc7bb7cbf921baeb7e29475495951a",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Ontology term 'spaceflight.rocket_engine' was not prompt-visible.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "fe6b0ce2e9522a307357baca0d78d352b799a4da0279a852f8be88ac25759214",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "3201275011000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "3201275011000",
+      "question": "which periodical editor majored in civil engineering? ",
+      "prompt_view_sha256": "8a47b8f746ee13e9af95371197f7827f7c3bd9bcaefad291a548a8d9a1d7be58",
+      "raw_response_sha256": "a71b6e93f20244b59bb5f06a2ce30aaf40e4e98222d36755bea86265e29d0eb3",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "1e22fb9d9875a5f2be4acaa9565342d4fac350cee9bd782b9aba727af2476762",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "f32538a428815c118107ecf5e2f2123f827a1976cac58e78578b3336646cc311",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "ab8254454f77f8a444fed5e51bb6cafe869ece6162d74d75061000ef84d40ff2",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "3203284000000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "3203284000000",
+      "question": "radians per second is an measurement system which includes which charge unit?",
+      "prompt_view_sha256": "aed29a8828b880b0dec229cf0a5479c3c7188f29cf1f27bf5ace8b504eb6195c",
+      "raw_response_sha256": "ba83c8b0445751303a951979fe68af9780f2e7802f66f60aa70480a80d3a8279",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "e19f821998862292dce055c22b21ad9443e48e6dbc2030313bf90b444c1c003a",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "e70cc70438423d1b0dc9a8bcd1d7f5f39b939c304671b01c92e8ef03405aeb47",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "8f795e146cdb30d19f3c1b7d11b327f8475747224b727240cfbba815274a4cef",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'source.label' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    },
+    {
+      "question_id": "4301690002000",
+      "schema_version": "grounded-candidate-execution-v1",
+      "task_id": "4301690002000",
+      "question": "who creates comics similar to showcase?",
+      "prompt_view_sha256": "1a596517956bf8b33c46f846031ea8a8779d49ec5ee3ddb0697819a0a20a8866",
+      "raw_response_sha256": "b7bb7f35b19c93404adfa454e11ba9c788442b0a26afa915cd49dc3b393ea8fb",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {},
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "execution_requirements": {
+        "require_entity_anchor": true,
+        "answer_position": "last",
+        "required_bindings": []
+      },
+      "candidates": [
+        {
+          "candidate_index": 1,
+          "candidate_id": "c1",
+          "raw_candidate_sha256": "fa19402c7e8c953c1929d4c35d76f6ebe9b38f48fb08616c31aa47a6fdffd599",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target.properties.freebase_topic_s' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 2,
+          "candidate_id": "c2",
+          "raw_candidate_sha256": "b38e15313dda17bec169997328851a3c0935f8e382d2fed76d3a001db671e1a8",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target.properties.freebase_topic_s' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        },
+        {
+          "candidate_index": 3,
+          "candidate_id": "c3",
+          "raw_candidate_sha256": "576f321041a8f55cede72022e32004e23ca35bbc8bddd6a80c809bc4662c8918",
+          "stage": "grounding_rejected",
+          "failure": {
+            "code": "slot_grounding",
+            "message": "Candidate component_ref 'target.properties.similar_freebase_topic_s' does not identify a PathPatternQuery component.",
+            "category": "relation_grounding_failure"
+          }
+        }
+      ],
+      "prepared_count": 0,
+      "paper_result": false
+    }
+  ],
+  "counts": {
+    "questions": 18,
+    "raw_candidates": 49,
+    "candidate_stages": {
+      "grounding_rejected": 38,
+      "execution_unavailable": 4,
+      "grounding_envelope_rejected": 7
+    },
+    "execution_unavailable_codes": {
+      "required_entity_anchor_missing": 4
+    },
+    "prepared": 0
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "artifact_id": "m15-f2c5-cwru-native-family-transfer-3787610",
+  "artifact_role": "cwru_live_family_transfer_mechanism_acceptance_not_performance_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "user_returned_cwru_scheduler_run_summary_and_independent_audit",
+  "slurm": {
+    "elapsed": "00:01:09",
+    "exit_code": "0:0",
+    "job_id": "3787610",
+    "node": "compt298",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "30214cbacb5495e32da73700353a2830b3dd060d"
+  },
+  "run": {
+    "remote_root": "runs/cwru-m15-native-family-transfer-3787610",
+    "status": "success",
+    "workload_mode": "parameterized_family_transfer",
+    "runtime_removed": true,
+    "cleanup_error": null,
+    "automatic_retries": 0
+  },
+  "family_transfer": {
+    "seed_task_count": 4,
+    "seed_plan_runs": 8,
+    "memory_commit_count": 4,
+    "heldout_task_count": 2,
+    "heldout_online_plan_runs": 2,
+    "evaluation_shadow_plan_runs": 2,
+    "calibration_remote_calls": 16,
+    "online_remote_calls": 4,
+    "evaluation_shadow_remote_calls": 4,
+    "observed_selection_count": 2,
+    "selected_observed_winner_count": 0,
+    "validation_passed": true,
+    "answer_oracle_used_for_selection": false,
+    "answer_oracle_used_for_post_execution_validation": true,
+    "evaluation_shadow_influenced_selection": false,
+    "memory_transfer_scope": "same_method_same_family_same_runtime",
+    "cross_family_transfer_enabled": false,
+    "llm_calls_made": 0,
+    "ontology_calls_made": 0,
+    "paper_result": false
+  },
+  "heldout_diagnostics": {
+    "financial-risk-alice-jun-medium-v2": {
+      "selected_strategy": "parallel_hash_join",
+      "observed_winner": "risk_first_bind_join",
+      "selected_observed_winner": false,
+      "observed_elapsed_regret_ms": 15.243574976921082,
+      "observed_bytes_regret": 6844,
+      "selected_exact": true
+    },
+    "financial-risk-bob-may-low-v2": {
+      "selected_strategy": "risk_first_bind_join",
+      "observed_winner": "parallel_hash_join",
+      "selected_observed_winner": false,
+      "observed_elapsed_regret_ms": 15.220999717712402,
+      "observed_bytes_regret": 0,
+      "selected_exact": true
+    }
+  },
+  "independent_read_only_audit": {
+    "schema_version": "m15-f2c5-family-transfer-native-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-f2c5-family-transfer-3787610-audit.json",
+    "success": true,
+    "check_count": 278,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "claim_boundary": {
+    "result_class": "real_backend_family_transfer_mechanism_acceptance",
+    "family_memory_persisted": true,
+    "heldout_plan_selection_executed": true,
+    "all_selected_answers_exact": true,
+    "selected_observed_winner_rate": "0/2",
+    "winner_rate_is_order_confounded_diagnostic": true,
+    "transfer_benefit_supported": false,
+    "latency_ranking_supported": false,
+    "comparative": false,
+    "paper_result": false
+  },
+  "limitations": [
+    "one development family with four seed and two held-out instances",
+    "the development KNN selected neither post hoc observed latency winner",
+    "evaluation shadows always ran after selected plans and are order-confounded",
+    "the KNN policy and cost features are not paper-frozen",
+    "no counterbalanced repetitions or preregistered inferential analysis",
+    "not a transfer-benefit latency ranking or comparative result"
+  ],
+  "paper_result": false
+}

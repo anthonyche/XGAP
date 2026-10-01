@@ -1,0 +1,544 @@
+{
+  "audit": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/first-five-audit.json",
+    "sha256": "5f903af41f24eedbf0145722da7b4c9ae226726fbf30ff21bade6863ab781afc",
+    "bytes": 16617
+  },
+  "schema_version": "xgap-real-rdf-fixed-prefix-v1",
+  "scope": "first block prefix; five frozen evaluation groups; not full evaluation",
+  "rows": [
+    {
+      "group": 1,
+      "question_id": "FBNS-2-a0baa0e6711f9de3",
+      "query_type": "\u6709\u754c\u65f6\u95f4\u8def\u5f84\u4e0e\u63a7\u5236\u7b5b\u9009",
+      "method": "xgap-rdf",
+      "harness_epoch": 0,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 53112.221624702215,
+      "planning_ms": 22.999750450253487,
+      "execution_ms": 45248.07641655207,
+      "source_requests": 6,
+      "source_response_bytes": 112485527,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 1,
+      "question_id": "FBNS-2-a0baa0e6711f9de3",
+      "query_type": "\u6709\u754c\u65f6\u95f4\u8def\u5f84\u4e0e\u63a7\u5236\u7b5b\u9009",
+      "method": "fedx",
+      "harness_epoch": 0,
+      "status": "upstream_source_failure",
+      "classification": "harness_port_exhaustion",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 13438.555500470102,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 8198,
+      "source_response_bytes": 24780652,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 1,
+      "question_id": "FBNS-2-a0baa0e6711f9de3",
+      "query_type": "\u6709\u754c\u65f6\u95f4\u8def\u5f84\u4e0e\u63a7\u5236\u7b5b\u9009",
+      "method": "fedup",
+      "harness_epoch": 0,
+      "status": "supervisor_failed",
+      "classification": "harness_dead_session_unexecuted",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 725.4807921126485,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 0,
+      "source_response_bytes": 0,
+      "model_calls": 0,
+      "top_level_method_queries": 0
+    },
+    {
+      "group": 2,
+      "question_id": "FBNS-1-cdc6f66be3016baf",
+      "query_type": "\u76f4\u63a5\u8f6c\u8d26\u6c47\u603b",
+      "method": "fedx",
+      "harness_epoch": 1,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 1078.0461253598332,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 45,
+      "source_response_bytes": 6344,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 2,
+      "question_id": "FBNS-1-cdc6f66be3016baf",
+      "query_type": "\u76f4\u63a5\u8f6c\u8d26\u6c47\u603b",
+      "method": "fedup",
+      "harness_epoch": 1,
+      "status": "external_failed",
+      "classification": "native_query_http_failure",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 2085.652749054134,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 0,
+      "source_response_bytes": 0,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 2,
+      "question_id": "FBNS-1-cdc6f66be3016baf",
+      "query_type": "\u76f4\u63a5\u8f6c\u8d26\u6c47\u603b",
+      "method": "xgap-rdf",
+      "harness_epoch": 1,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 32057.147666811943,
+      "planning_ms": 20.744708366692066,
+      "execution_ms": 27054.935375228524,
+      "source_requests": 5,
+      "source_response_bytes": 62250369,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 3,
+      "question_id": "FBNS-3-ba8a93f050468448",
+      "query_type": "\u98ce\u9669\u5206\u7ec4\u4e0e\u6392\u5e8f",
+      "method": "fedup",
+      "harness_epoch": 1,
+      "status": "external_failed",
+      "classification": "native_query_http_failure",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 1993.1509159505367,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 0,
+      "source_response_bytes": 0,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 3,
+      "question_id": "FBNS-3-ba8a93f050468448",
+      "query_type": "\u98ce\u9669\u5206\u7ec4\u4e0e\u6392\u5e8f",
+      "method": "xgap-rdf",
+      "harness_epoch": 1,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 33113.99995815009,
+      "planning_ms": 21.06187492609024,
+      "execution_ms": 28262.69912533462,
+      "source_requests": 5,
+      "source_response_bytes": 74994136,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 3,
+      "question_id": "FBNS-3-ba8a93f050468448",
+      "query_type": "\u98ce\u9669\u5206\u7ec4\u4e0e\u6392\u5e8f",
+      "method": "fedx",
+      "harness_epoch": 1,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 1157.4891675263643,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 41,
+      "source_response_bytes": 7542,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 4,
+      "question_id": "FBNS-3-8e6cf05a873620a1",
+      "query_type": "\u98ce\u9669\u5206\u7ec4\u4e0e\u6392\u5e8f",
+      "method": "fedup",
+      "harness_epoch": 1,
+      "status": "external_failed",
+      "classification": "native_query_http_failure",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 2096.382292918861,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 0,
+      "source_response_bytes": 0,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 4,
+      "question_id": "FBNS-3-8e6cf05a873620a1",
+      "query_type": "\u98ce\u9669\u5206\u7ec4\u4e0e\u6392\u5e8f",
+      "method": "fedx",
+      "harness_epoch": 1,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 3247.876708395779,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 170,
+      "source_response_bytes": 182726,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 4,
+      "question_id": "FBNS-3-8e6cf05a873620a1",
+      "query_type": "\u98ce\u9669\u5206\u7ec4\u4e0e\u6392\u5e8f",
+      "method": "xgap-rdf",
+      "harness_epoch": 1,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 32444.720375351608,
+      "planning_ms": 20.77245805412531,
+      "execution_ms": 27502.006124705076,
+      "source_requests": 5,
+      "source_response_bytes": 74986024,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 5,
+      "question_id": "FBNS-1-c0641cd0810fbb55",
+      "query_type": "\u76f4\u63a5\u8f6c\u8d26\u6c47\u603b",
+      "method": "xgap-rdf",
+      "harness_epoch": 1,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 30181.294165551662,
+      "planning_ms": 20.161250606179237,
+      "execution_ms": 24977.34925057739,
+      "source_requests": 5,
+      "source_response_bytes": 62250367,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 5,
+      "question_id": "FBNS-1-c0641cd0810fbb55",
+      "query_type": "\u76f4\u63a5\u8f6c\u8d26\u6c47\u603b",
+      "method": "fedup",
+      "harness_epoch": 1,
+      "status": "external_failed",
+      "classification": "native_query_http_failure",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 1969.724458642304,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 0,
+      "source_response_bytes": 0,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    },
+    {
+      "group": 5,
+      "question_id": "FBNS-1-c0641cd0810fbb55",
+      "query_type": "\u76f4\u63a5\u8f6c\u8d26\u6c47\u603b",
+      "method": "fedx",
+      "harness_epoch": 2,
+      "status": "returned",
+      "classification": "returned_correct_empty",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 1132.9227089881897,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_requests": 46,
+      "source_response_bytes": 8193,
+      "model_calls": 0,
+      "top_level_method_queries": 1
+    }
+  ],
+  "evidence": [
+    {
+      "cell_id": "fixed_semantics-00-000-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/receipt.json",
+        "sha256": "ddb8b9ea0e5f439d1bab8adf35b058db1127e50b904184e016cf95720142593c",
+        "bytes": 7192
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/score.json",
+        "sha256": "408302ac78e4c5af99e2dea83e47be660278dd07da682aaf2a7d091b390a7dae",
+        "bytes": 1099
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-000-1",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-1/execution/receipt.json",
+        "sha256": "e223d5a4c9f1f7fcdb3fc0a956750de807cbcb627573f26007921a2e11a31e42",
+        "bytes": 4848
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/first-group-audit/fedx-reconciled-score.json",
+        "sha256": "e90e1d5f7d631a52ca2e9036a10f93991058860b471f9a7d68d7bbe9e4355d54",
+        "bytes": 1114
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-000-2",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-2/execution/receipt.json",
+        "sha256": "ba5b78c9e831f60ec3d480876bc2288a70cb1f93d15b47d6b78e6b2915a69654",
+        "bytes": 1146
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-2/execution/score.json",
+        "sha256": "cb5005bfdb1e625c11f78c3679512f0cc9183aad5b064ac40d9c4a59e8638b61",
+        "bytes": 1110
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-001-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-0/execution/receipt.json",
+        "sha256": "8eff7ec2786bed09f531d5242e62262a24215512423416883c009f373c2aea03",
+        "bytes": 4392
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-0/execution/score.json",
+        "sha256": "a1a1d897b0452f42b4b2f21dde7e040af21eea6be5558f33d61474f1bc8c5f04",
+        "bytes": 1080
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-001-1",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-1/execution/receipt.json",
+        "sha256": "7e0474355704f8889a5e428d77be77dba1a79178cf54e2b9696949336bbb8e48",
+        "bytes": 4785
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-1/execution/score.json",
+        "sha256": "9764f49fd68e71f85abb549e3e445cad465ffa2d331644610107649fc8c670c5",
+        "bytes": 1093
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-001-2",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-2/execution/receipt.json",
+        "sha256": "2c98938199019977ce1875f3bd21d265e94fd476c20cc63277b01b8274dd4d9a",
+        "bytes": 6885
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-2/execution/score.json",
+        "sha256": "c2395de47414f31e4aea00df6da7cb38a0f3264718dbc80f611e8bd5b1b1216a",
+        "bytes": 1084
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-002-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-0/execution/receipt.json",
+        "sha256": "ddcac9eec5a4f99878f3bacdb8d2360e2dba659cdfda99a0b67690434a03216f",
+        "bytes": 4783
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-0/execution/score.json",
+        "sha256": "1fc1a49c84cf96e6e3e982c23de52d94a064ba04acb199f128e7b68e09202b9a",
+        "bytes": 1070
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-002-1",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-1/execution/receipt.json",
+        "sha256": "9af959706b4a95b5119d9f66d514814da237a249391562627df3f6a1b577772d",
+        "bytes": 6885
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-1/execution/score.json",
+        "sha256": "be83f2ccfb593d4f99c5237253baa9b7da51af81da97650d1a8e11fb62304211",
+        "bytes": 1063
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-002-2",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-2/execution/receipt.json",
+        "sha256": "d6e2712eea5522b8f9dfc6914cde8ee019bb5455fa30cd0a98014e465c442a7c",
+        "bytes": 4392
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-2/execution/score.json",
+        "sha256": "f86229bc571c34548a255c14fda463e797d1aaed302f5228c3d8cdb823e6ac6d",
+        "bytes": 1058
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-003-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-0/execution/receipt.json",
+        "sha256": "e2fef1ca5d1191e8ad5744771235eab1b6774601f0cf00b628e305ef4c99549b",
+        "bytes": 4783
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-0/execution/score.json",
+        "sha256": "70db483eb36d25a1c3efdc5124877f13316b468e4b3de6d959f6ca8f95b20a40",
+        "bytes": 1070
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-003-1",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-1/execution/receipt.json",
+        "sha256": "e91208caea509a236784e36a9b9fa5babed0939116dbc29e5f79034fb0fff91f",
+        "bytes": 4413
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-1/execution/score.json",
+        "sha256": "4974d18e2aa4b5947b2ddbd3d687e7e19f60bff2fae773dce95d79d0c0e12b7e",
+        "bytes": 1058
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-003-2",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-2/execution/receipt.json",
+        "sha256": "92c651ce7f1a7c5899c543a1d04c45200f36e18b5538b8a86540b0fd4b4a3607",
+        "bytes": 6896
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-2/execution/score.json",
+        "sha256": "3f0b3964bf7586dd3815f27ee81d6bb678b58cf0127dc42f542a2f22dbe75021",
+        "bytes": 1061
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-004-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-0/execution/receipt.json",
+        "sha256": "5c70757fe39c1bae88d9fe444bb327357de9d7b4c7ab28600ac85a4981dd3b99",
+        "bytes": 6897
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-0/execution/score.json",
+        "sha256": "5409fdf26264b702550dd9861954a40df8ef7672056eb5138175778d0e064656",
+        "bytes": 1084
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-004-1",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-1/execution/receipt.json",
+        "sha256": "bd831f48876e4c1333e56abff7eea918d983d8e6bd7b9d523adaa04ba2aac659",
+        "bytes": 4776
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-1/execution/score.json",
+        "sha256": "9b2fe8c01934ce599efb75d0215d54b46c0b7501c39b93807fa42ec0ad8d4c40",
+        "bytes": 1093
+      }
+    },
+    {
+      "cell_id": "fixed_semantics-00-004-2",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-2/execution/receipt.json",
+        "sha256": "091c5b81923934f293effc8fab13f0d1922c04fafd4f3eca0a1ca0b855933574",
+        "bytes": 4388
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-2/execution/score.json",
+        "sha256": "e667ad6b5e26889873f2e2bd19461d04017bd5391c7025e3547ccd38b0b73322",
+        "bytes": 1080
+      }
+    }
+  ],
+  "processed_cell_intents": 15,
+  "actual_top_level_method_queries": 14,
+  "model_calls": 0,
+  "completed_group_positions": 5,
+  "total_evaluation_groups": 48,
+  "total_fixed_cell_schedule": 432,
+  "total_nl_cell_schedule": 192,
+  "all_five_reference_results_empty": true,
+  "unchanged_evaluation_population": {
+    "empty": 33,
+    "nonempty": 15
+  },
+  "summary_preparation": {
+    "path": "/Users/anthonyche/xgap-data/fedup-summary-sf01-20260913-v1/receipt.json",
+    "sha256": "9e1c74ab35ab621cee128cdbbc4a452616aa43661887c3105583f3af3b6c8852",
+    "bytes": 4769
+  },
+  "run_receipts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0000/receipt.json",
+      "sha256": "3bb330647472b60cf50f3e7a8269e8c9fe4486a1cafe1644777858fe9d28922d",
+      "bytes": 2814
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0001/receipt.json",
+      "sha256": "1d51a679b2799db59c5fa3a4f3189c525b9e092e57d50430bd0119bedfa3aafb",
+      "bytes": 3718
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0002/receipt.json",
+      "sha256": "966fa36f8e74a588ca5c4a6c0ecad07a022f0d8831db9e4ea46af62bdcb04f1e",
+      "bytes": 6477
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0003/receipt.json",
+      "sha256": "6cd2fb6c3da90337e0d41d87d977f497cfb412b64034560d3b7556c0574a27ff",
+      "bytes": 2962
+    }
+  ],
+  "manual_retirement_recovery": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-fixed-campaign-20260913-v1/runs/run-0002/session-003/external-retirement-recovery.json",
+    "sha256": "3dc7512c1478edc3a07562add2dead877fdfbee95a828cc8d66200d4708303eb",
+    "bytes": 490
+  },
+  "all_observed_queries_terminal": true,
+  "last_controller_exit": 0,
+  "old_hung_controller_exit": 143,
+  "query_retries": 0,
+  "baseline_algorithm_changes": 0,
+  "current_harness_commit": "1a122d1",
+  "validity": "First group baseline observations are harness-censored; do not pool epoch timings silently. Empty answers do not establish nonempty or NL accuracy."
+}

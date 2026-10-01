@@ -1,0 +1,140 @@
+{
+  "schema_version": "xgap-work-estimator-native-checkpoint-v2",
+  "source_commit": "a2c19080220d46f1313270951352c5f81721a526",
+  "raw_root": "/Users/anthonyche/xgap-data/work-estimator-v2-native-20260912-a2c1908",
+  "success": true,
+  "paper_result": false,
+  "training_plan_count": 28,
+  "training_backend_calls": 46,
+  "warmup_calls": 2,
+  "external_model_calls": 0,
+  "offline": {
+    "preparation_ms": 311.06374971568584,
+    "service_setup_ms": 7379.44879103452,
+    "fixture_load_ms": 247.5482076406479,
+    "collection_elapsed_ms": 852.007083594799,
+    "collection_remote_calls": 46,
+    "estimator_reload_ms": 0.8336659520864487,
+    "fit": {
+      "collection_elapsed_ms": 852.007083594799,
+      "collection_remote_calls": 46,
+      "cost_scope": "one-time independent collection and fit",
+      "fit_elapsed_ms": 22.965082898736
+    },
+    "model_sha256": "33badbbe8e8ecea1e69c5318902a809219a96d5d4a775e36fd06750070eee177"
+  },
+  "feature_count": 72,
+  "training_log_rmse": 0.8651203320133581,
+  "training_relative_rmse": 0.43517734408586584,
+  "fit_sweeps": 128,
+  "all_coefficients_nonnegative": true,
+  "heldout": {
+    "query_id": "WORK-HOLDOUT-01",
+    "input_scope": "declared semantic program through ordinary performance entry; not model interpretation",
+    "within_trained_template_family": true,
+    "success": true,
+    "answer_exact": true,
+    "answer_rows": [
+      {
+        "person": "https://xgap.test/toy/a",
+        "edge": "https://xgap.test/toy/e3"
+      }
+    ],
+    "selection": {
+      "candidate_id": "declared",
+      "strategy_id": "placement-2/coordinator",
+      "plan_id": "oneshot:51496cc3d36d1b911297",
+      "estimated_ms": 9.52411278186214,
+      "quality_proxy": null,
+      "ranking_quality_proxy": 0.5,
+      "quality_fallback_used": true,
+      "quality_proxy_calibrated": false,
+      "objective_ms": 9.52411278186214,
+      "interpretation_options": [
+        {
+          "candidate_id": "declared",
+          "strategy_id": "placement-2/coordinator",
+          "plan_id": "oneshot:51496cc3d36d1b911297",
+          "estimated_ms": 9.52411278186214,
+          "quality_proxy": null,
+          "ranking_quality_proxy": 0.5,
+          "quality_fallback_used": true,
+          "quality_proxy_calibrated": false,
+          "objective_ms": 9.52411278186214
+        }
+      ],
+      "proxy_frontier": [
+        "declared"
+      ],
+      "frontier_is_actual_quality": false,
+      "algorithm": "estimated_argmin_per_interpretation_then_quality_cost_argmin_v1",
+      "optimality_scope": "estimated compatible admitted neighborhood; no global physical or answer guarantee",
+      "selection_uses_execution_observations": false
+    },
+    "source_bindings": {
+      "profiles": "fuseki",
+      "walk": "neo4j"
+    },
+    "final_plan_executions": 1,
+    "remote_calls": 2,
+    "observation_calls": 0,
+    "scheduler_ms": 18.694874830543995,
+    "prediction_ms": 9.52411278186214,
+    "multiplicative_error": 1.962899354378372,
+    "out_of_training_range": [],
+    "timings_ms": {
+      "catalog_load_ms": 1.2533748522400856,
+      "grounding_ms": 0.16579031944274902,
+      "planning_ms": 37.28737588971853,
+      "execution_ms": 18.90575047582388,
+      "end_to_end_ms": 58.464834466576576
+    }
+  },
+  "input_fingerprints_count": 434,
+  "input_unchanged": true,
+  "old_model_unchanged": true,
+  "owned_processes_terminal": true,
+  "owned_pids": [
+    9247,
+    9206
+  ],
+  "audit_errors": [],
+  "artifacts": {
+    "receipt.json": {
+      "sha256": "93dbc36f9181ce842509db52aaba14c26770d8a2e06c88bfef195b7d8fa981d7",
+      "bytes": 15276
+    },
+    "manifest.json": {
+      "sha256": "efc9ebccd5ed16b08c3b92f2222444f43296134cff844a42938256eb52a3a729",
+      "bytes": 471266
+    },
+    "training_collection.json": {
+      "sha256": "e7e6789d3fb3bb393a245ada678afd8fae799ca0259f42693b46344f784f9fdc",
+      "bytes": 11912
+    },
+    "frozen_work_estimator.json": {
+      "sha256": "d5911144fe20e762d0ad409feed52343753b40e69444f5a026663045d657ab6a",
+      "bytes": 12433
+    },
+    "offline_receipt.json": {
+      "sha256": "7187b241d22adc27700ab2114576e4870e8e7253770ff92ea31155d882d8af46",
+      "bytes": 529
+    },
+    "heldout_result.json": {
+      "sha256": "7338507d4a2f6a95143ea8a4a2eb5a27015c49b9f103a4e3f49b66517e735eb0",
+      "bytes": 105181
+    },
+    "heldout_evaluation.json": {
+      "sha256": "3948955fbb8a4200d25155f402112b2dd03b49fa546e315b792394e6672ea364",
+      "bytes": 340
+    }
+  },
+  "limitations": [
+    "One within-family excluded query, not generalization or ranking quality",
+    "No alternative final plans timed on this query",
+    "Replicated toy snapshot on both backends; not required data partitioning",
+    "Coarse work proxies omit query selectivity and cardinalities",
+    "Training cache/order/JIT effects retained, no retries or label correction",
+    "No live model interpretation in this deterministic gate"
+  ]
+}

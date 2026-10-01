@@ -1,0 +1,35 @@
+{
+  "schema_version": "xgap-practical-profile-evidence-v1",
+  "source_base": "abb6fba",
+  "execution_kind": "offline_config_and_replay",
+  "new_model_calls": 0,
+  "new_source_calls": 0,
+  "fit_calls": 0,
+  "new_test_cases": 14,
+  "affected_test_cases": 2,
+  "evidence": {
+    "verification.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-profile-20260914-v2/verification.json",
+      "sha256": "aaf3ad94064d33641af19434bc6b301a544a2710543f5d9bdfbeed8047a5ccc5"
+    },
+    "published-profile.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-profile-20260914-v2/published-profile.json",
+      "sha256": "1c77b3c9dc495f8e83b88bc73df3ca2efa2aa35b15fbd6271cd946743d356f93"
+    },
+    "replay/receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-profile-20260914-v2/replay/receipt.json",
+      "sha256": "683c3505dbc476694eebaa039a29550c395e5a114a8f4847d76ab54a3fbc0ce6"
+    },
+    "replay/result.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-profile-20260914-v2/replay/result.json",
+      "sha256": "85a781a6f6bececd01bd96c5353ffa2d14cead28e87c70d57baa4b0a071e9f6a"
+    }
+  },
+  "report": "docs/report/practical_profile_20260914.md",
+  "limitations": [
+    "trusted template and caller-authoritative binding scope",
+    "development endpoints unserved; not native deployment",
+    "frozen weights transfer uncalibrated",
+    "not formal evaluation or performance claim"
+  ]
+}

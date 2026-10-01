@@ -1,0 +1,96 @@
+{
+  "schema": "research-directed-milestone-evidence-v1",
+  "milestone": "A4",
+  "date": "2026-09-11",
+  "base_commit": "2b8c96b6fcf8ea409b5cab038ebed4f39a19008d",
+  "research_question": "R-C",
+  "experiments": [
+    "E2",
+    "E3",
+    "INT preparation"
+  ],
+  "source_sha256": {
+    "src/xgap/runtime/semantic_forecast.py": "203f8cfc131299787909d9cc1d81d83a01974662100457845e0a1f5e8e04ea50",
+    "src/xgap/runtime/semantic_acquisition.py": "0989edc7565d89e4323f964f23ed969231a1b1300368f2c4201fcbe0009c1c21",
+    "src/xgap/runtime/semantic_planning.py": "16dcf7587e268f102cdbd3942f9de225338fc81c316d53ac6a7abccca63851bd",
+    "src/xgap/agent/semantic_execution.py": "13788dd2295cd5dca18825b72f5aba0c12793fb872e2b5130b32ee2451120294",
+    "scripts/server/collect_xgap_int_workpack.py": "2f82e456c1914c6cb5c40b2fd386269fbf46b58ba7803159aaaa26f943fefca8",
+    "tests/test_semantic_forecast.py": "d85ad387c4b70e43f653b48d8dc302dee0080ace1ee2d9ec66c8fbde25188ba7",
+    "tests/test_collect_xgap_int_workpack.py": "c4a56b320032f5e2903876b3ef6767355e7e172b5d1ecb7de272923e566bdf69"
+  },
+  "implementation": "offline exact-request empirical preparation; actual runtime episode admission; separate reselection/scoring times",
+  "verification": [
+    {
+      "scope": "initial preparation cases",
+      "result": "8 passed",
+      "seconds": 0.35,
+      "tool_chunk": "833773"
+    },
+    {
+      "scope": "new split timing plus affected legacy zero-gain case",
+      "result": "2 passed",
+      "seconds": 0.3,
+      "tool_chunk": "0968ad"
+    },
+    {
+      "command": "python -m pytest -q tests/test_semantic_forecast.py tests/test_semantic_acquisition.py::test_positive_net_gain_and_forecast_budget_jointly_control_the_action[494-1000-stop-0]",
+      "result": "18 passed, 1 failed",
+      "seconds": 0.64,
+      "tool_session": 67295,
+      "exit_code": 1,
+      "failure": "new assertion read successful output on an ordinary agent failure; fixed assertion only"
+    },
+    {
+      "command": "python -m pytest -q tests/test_semantic_forecast.py::test_prepared_forecast_ordinary_entry_uses_the_current_memory_episode",
+      "result": "1 passed",
+      "seconds": 0.4,
+      "tool_chunk": "24fdb8",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 tests/test_collect_xgap_int_workpack.py",
+      "result": "7 tests OK",
+      "seconds": 0.065,
+      "executor": "review_separability bounded subagent",
+      "server_calls": 0,
+      "slurm_status_calls": "mocked"
+    }
+  ],
+  "unique_new_forecast_cases_with_passing_evidence": 18,
+  "affected_existing_cases_with_passing_evidence": 1,
+  "collector_new_cases_with_passing_evidence": 7,
+  "readonly_review": "all five identified provenance/admission risks repaired; no further material findings",
+  "new_native_runs": 0,
+  "model_calls": 0,
+  "large_dataset_runs": 0,
+  "broad_regression_runs": 0,
+  "forecast_fixture": "explicitly synthetic; tiny answers evaluated through RDFLib; no workload-speed or calibration claim",
+  "historical_native_source_audit": {
+    "path": "/Users/anthonyche/xgap-data/a1-refresh-native-20260911/result.json",
+    "sha256": "8ad37c894e5bb956f34e8744d5b79dd370fca478bd31df8857b1d8755b39382a",
+    "reused_as_training": false,
+    "reason": "no prior training/preparation declaration; old selection_ms combines reselection and final scoring"
+  },
+  "deliverable": {
+    "path": "/Users/anthonyche/Developer/XGAP-deliverables/xgap-int-workpack-collector-2f82e456c191.zip",
+    "bytes": 5060,
+    "sha256": "1e80404d418ca8b9e3015b4971800af5a6bdca8050bb768d1bf91caad99de49c",
+    "script_sha256": "2f82e456c1914c6cb5c40b2fd386269fbf46b58ba7803159aaaa26f943fefca8",
+    "remote_collection_performed": false
+  },
+  "remote_model_job": {
+    "id": "3804011",
+    "last_user_observed_state": "PENDING",
+    "new_observation": null,
+    "new_submission": false
+  },
+  "remaining": [
+    "actual prior preparation source audit/calibration",
+    "original FinBench workpack and real fact/load artifacts",
+    "independent real-data answers",
+    "true-model LINK",
+    "frozen real-data E1-E5 comparisons"
+  ],
+  "paper_result": false,
+  "goal_complete": false
+}

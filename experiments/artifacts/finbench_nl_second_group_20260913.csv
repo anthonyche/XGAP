@@ -1,0 +1,5 @@
+group_index,method,question_id,status,answer_em,expected_rows,actual_rows,model_calls,input_tokens,output_tokens,online_ms,final_plan_attempts,source_calls,admitted_interpretations,first_unresolved_mention,catalog_entries_visited,catalog_match_count,response_content_sha256,implementation
+1,xgap-performance,FBNS-1-cdc6f66be3016baf,no_executable_interpretation,0.0,0,,1,2585,560,9086.263999342918,0,0,1,person,59587,0,1591db15d4447745d74b625669e5b090634b493e4635702a14f87f94dbe62706,08eb4f0
+1,fedx,FBNS-1-cdc6f66be3016baf,no_grounded_interpretation,0.0,0,,1,2589,560,8658.995624631643,0,0,1,person,59587,0,f7a9537843ef9604f14bc7d46f7e96bd29e943b53dbe5a1e63d6b096f00e0e61,08eb4f0
+1,xgap-precision,FBNS-1-cdc6f66be3016baf,no_executable_interpretation,0.0,0,,1,2589,560,8943.229082040489,0,0,1,person,59587,0,f7a9537843ef9604f14bc7d46f7e96bd29e943b53dbe5a1e63d6b096f00e0e61,08eb4f0
+1,fedup,FBNS-1-cdc6f66be3016baf,no_grounded_interpretation,0.0,0,,1,2589,560,9228.117083199322,0,0,1,person,59587,0,f7a9537843ef9604f14bc7d46f7e96bd29e943b53dbe5a1e63d6b096f00e0e61,08eb4f0

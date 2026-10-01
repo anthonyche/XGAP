@@ -138,7 +138,39 @@ Success means:
   `jointly_reachable_subset` separately;
 - cleanup has stopped the recorded vLLM PID.
 
-## 7. Failure And Re-run Policy
+## 7. Independently Audit A Completed Run
+
+The preflight's successful process exit is not itself evidence that the live
+interpretation metrics are internally consistent. Run the read-only auditor
+from the exact producer commit and place its output outside the source run
+tree:
+
+```bash
+cd "$HOME/XGAP"
+RUN_ROOT="$PWD/runs/cwru-grailqa-preflight-v2-${JOB_ID}"
+AUDIT="$PWD/runs/audits/cwru-grailqa-preflight-v2-${JOB_ID}-audit.json"
+mkdir -p "$PWD/runs/audits"
+
+PYTHONPATH="$PWD/src" "$HOME/venvs/xgap-core/bin/python" \
+  -m xgap.experiments.grailqa_preflight_evidence \
+  --run-root "$RUN_ROOT" \
+  --repo-root "$PWD" \
+  --expected-commit "$(git rev-parse HEAD)" \
+  --output "$AUDIT" \
+  > "$AUDIT.stdout"
+```
+
+The auditor rehashes the static CWRU inventory, binds the clean commit, H100,
+model bundle, deployment contract, exact 18-query set, query-local catalog and
+reachability audit, generation/repair ledger, and the declared one-to-three
+candidate boundary. It independently recomputes overall metrics and the
+five-question jointly reachable subset from row-level artifacts. Its
+`diagnostic` section explicitly reports whether provider failures confound the
+observed Candidate Recall. It never writes inside the source run tree and
+always retains `paper_result=false`: this is a development preflight, not a
+confirmatory KGQA result.
+
+## 8. Failure And Re-run Policy
 
 The 18-query preflight is intentionally not resumed into a partial directory.
 After diagnosing a failed job, submit it again; the new Slurm job ID creates a

@@ -1,0 +1,82 @@
+{
+  "audit": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-v1/first-group-audit.json",
+    "sha256": "e811f822556eac8a58799f7bfef1975ac1f1e134c47ff530506bcc1c055aff88",
+    "bytes": 8858
+  },
+  "rows": [
+    {
+      "method": "xgap-precision",
+      "question_id": "FBNS-2-a0baa0e6711f9de3",
+      "status": "no_admissible_interpretation",
+      "model_calls": 1,
+      "input_tokens": 2629,
+      "output_tokens": 541,
+      "interpretation_ms": 3063.909917138517,
+      "top_level_attempts": 0,
+      "source_calls": 0,
+      "source_bytes": 0,
+      "online_ms": 8404.823041521013,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "answer_em": 0.0,
+      "raw_compact_content_sha256": "1ac2194ecbd474a1ea3fa69557e34846e572bd7d5ed443edc790d02189a8fb76",
+      "lowering_error": "Deduplication requires distinct node/edge variables"
+    },
+    {
+      "method": "xgap-performance",
+      "question_id": "FBNS-2-a0baa0e6711f9de3",
+      "status": "no_admissible_interpretation",
+      "model_calls": 1,
+      "input_tokens": 2625,
+      "output_tokens": 541,
+      "interpretation_ms": 3026.346708647907,
+      "top_level_attempts": 0,
+      "source_calls": 0,
+      "source_bytes": 0,
+      "online_ms": 8846.321707591414,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "answer_em": 0.0,
+      "raw_compact_content_sha256": "1ac2194ecbd474a1ea3fa69557e34846e572bd7d5ed443edc790d02189a8fb76",
+      "lowering_error": "Deduplication requires distinct node/edge variables"
+    },
+    {
+      "method": "fedup",
+      "question_id": "FBNS-2-a0baa0e6711f9de3",
+      "status": "no_admissible_interpretation",
+      "model_calls": 1,
+      "input_tokens": 2629,
+      "output_tokens": 541,
+      "interpretation_ms": 3081.4277911558747,
+      "top_level_attempts": 0,
+      "source_calls": 0,
+      "source_bytes": 0,
+      "online_ms": 9185.822584666312,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "answer_em": 0.0,
+      "raw_compact_content_sha256": "1ac2194ecbd474a1ea3fa69557e34846e572bd7d5ed443edc790d02189a8fb76",
+      "lowering_error": "Deduplication requires distinct node/edge variables"
+    },
+    {
+      "method": "fedx",
+      "question_id": "FBNS-2-a0baa0e6711f9de3",
+      "status": "no_admissible_interpretation",
+      "model_calls": 1,
+      "input_tokens": 2629,
+      "output_tokens": 541,
+      "interpretation_ms": 2945.9359580650926,
+      "top_level_attempts": 0,
+      "source_calls": 0,
+      "source_bytes": 0,
+      "online_ms": 8669.421750120819,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "answer_em": 0.0,
+      "raw_compact_content_sha256": "1ac2194ecbd474a1ea3fa69557e34846e572bd7d5ed443edc790d02189a8fb76",
+      "lowering_error": "Deduplication requires distinct node/edge variables"
+    }
+  ],
+  "all_raw_compact_responses_identical": true
+}

@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT (SUM(COALESCE(?credit,0)) AS ?total) WHERE { ?n a t:Person . OPTIONAL { ?n t:credit ?credit } }

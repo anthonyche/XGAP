@@ -1,0 +1,5 @@
+cell_id,method,status,answer_em,total_online_ms,reconciled_model_calls,reconciled_input_tokens,reconciled_output_tokens,source_calls,source_response_bytes
+natural_language-00-006-0,fedx,harness_budget_censored,0.0,14806.81158322841,1,3076,505,1071,553115644
+natural_language-00-006-1,fedup,external_failed,0.0,9371.42579164356,1,3076,505,0,0
+natural_language-00-006-2,xgap-performance,guard_method_rss_limit_observed,0.0,135455.5231668055,1,3072,504,14,325110752
+natural_language-00-006-3,xgap-precision,guard_method_rss_limit_observed,0.0,125129.90533467382,1,3076,505,14,325110752

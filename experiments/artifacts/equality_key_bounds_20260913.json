@@ -1,0 +1,120 @@
+{
+  "schema_version": "xgap-equality-bounds-milestone-v1",
+  "engineering_commits": [
+    "630d802",
+    "e9acb6b"
+  ],
+  "unique_new_cases_passed": 16,
+  "initial_exporter_failure": "Explicit backend capability profile was optional; fixed by validated client engine before native execution",
+  "native_receipt": {
+    "path": "/Users/anthonyche/xgap-data/equality-bounds-native-20260913-v1/receipt.json",
+    "sha256": "73910e88262827304bb88d6f846dd4377ec3c86050bd75420207fe7449e59705",
+    "bytes": 2280
+  },
+  "native_outcome": {
+    "path": "/Users/anthonyche/xgap-data/equality-bounds-native-20260913-v1/outcome.json",
+    "sha256": "d58c5ac20132def55a6c75755a23ec0de2fae0f9aa3cbe415c3ca1cf32db740d",
+    "bytes": 2702
+  },
+  "native_score": {
+    "path": "/Users/anthonyche/xgap-data/equality-bounds-native-20260913-v1/score.json",
+    "sha256": "ff8cab241abdf1212a65132f33b272a642b7785c3389f630df62b5b681ee385c",
+    "bytes": 981
+  },
+  "native_answer_em": 1,
+  "native_selected_strategy": "placement-0/coordinator",
+  "native_source_calls": 14,
+  "native_response_bytes": 18606,
+  "native_planning_ms": 118.95025055855513,
+  "native_execution_ms": 1270.914833061397,
+  "native_online_ms_before_seal": 1412.2360832989216,
+  "native_final_plan_executions": 1,
+  "closures": [
+    {
+      "discarded_reconstructable_serving_copies": [
+        "neo4j/data",
+        "neo4j/transactions",
+        "control-tdb2"
+      ],
+      "frozen_inputs_and_all_query_artifacts_retained": true,
+      "observer_stopped": true,
+      "owned_groups_drained": true,
+      "owned_processes_terminal": true,
+      "processes": [
+        {
+          "cleanup": {
+            "complete": true,
+            "elapsed_ms": 429.3067092075944,
+            "live_pids": [],
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM"
+            ]
+          },
+          "leader_state": "reaped",
+          "name": "source-control",
+          "pid": 86522,
+          "returncode": 143,
+          "terminal": true
+        },
+        {
+          "cleanup": {
+            "complete": true,
+            "elapsed_ms": 502.8306245803833,
+            "live_pids": [],
+            "resolved_permission_races": 0,
+            "signals": [
+              "SIGTERM",
+              "SIGKILL"
+            ]
+          },
+          "leader_state": "reaped",
+          "name": "source-neo4j",
+          "pid": 86500,
+          "returncode": -9,
+          "terminal": true
+        }
+      ]
+    }
+  ],
+  "full_source_preparation": {
+    "path": "/Users/anthonyche/xgap-data/finbench-equality-bounds-20260913-v1/receipt.json",
+    "sha256": "59a6e20e14317366c83c9176d1115108801521c807ae4f3e28a1f4ad9444f42f",
+    "bytes": 2333
+  },
+  "full_one_time_ms": 9205.649582669139,
+  "full_source_entities_each": 55604,
+  "original_routing_diagnostic": {
+    "path": "/Users/anthonyche/xgap-data/finbench-equality-bounds-20260913-v1/original-routing-ranking.json",
+    "sha256": "4e7cc919c6041c67691a52f0691585cdff0f6a0145e001bc8b7067af9af75819",
+    "bytes": 198398
+  },
+  "old_fanout_estimated_ms": 12842.692122369328,
+  "new_fanout_estimated_ms": 777.9694883670753,
+  "coordinator_estimated_ms": 834.6124171610303,
+  "preserved_separate_rerouted_diagnostic": {
+    "path": "/Users/anthonyche/xgap-data/finbench-equality-bounds-20260913-v1/ranking-replay.json",
+    "sha256": "f5fc279aa3e77770423e084eb41cb9525baaba56334f3a677cba05ce43192679",
+    "bytes": 99988
+  },
+  "new_profile": {
+    "bytes": 69415,
+    "path": "/Users/anthonyche/xgap-data/finbench-equality-bounds-20260913-v1/profile.json",
+    "sha256": "943cae9ac9f7d313e6fff732c975a197d2077873cc9af19257bcaf6f5a490b2e"
+  },
+  "campaign_association": {
+    "path": "/Users/anthonyche/xgap-data/finbench-equality-bounds-20260913-v1/associations/receipt.json",
+    "sha256": "c9fbe49c2878a3ffc659f117880bb7469f993b2bf4e927b8bb14f70e05703f2c",
+    "bytes": 1492
+  },
+  "model_calls_for_these_gates": 0,
+  "backend_calls_in_statistics_and_ranking": 0,
+  "fit_calls": 0,
+  "catalog_builds": 0,
+  "baseline_changes": false,
+  "paper_speedup_claim": false,
+  "new_real_group7": {
+    "scope": "separately recorded four first-attempt real outcomes; both XGAP modes correct empty, no overall claim",
+    "artifact": "experiments/artifacts/equality_campaign_group7_20260913.json"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "xgap-normalized-row-reference-v1",
+  "dataset": {"dataset_id": "financial-binding-tiny", "version": "financial-tiny-v1"},
+  "question_id": "FINANCIAL-NL-01",
+  "ordered": true,
+  "rows": [
+    {"company_id": "1", "account_id": "2", "total_amount": 66.0},
+    {"company_id": "1", "account_id": "3", "total_amount": 9.0}
+  ],
+  "derivation": "Independent fixture arithmetic: Alice owns account1; transfers to blocked company1-owned account2 sum 10.125+5.875+50=66 and to account3 sum 9. The end timestamp is inclusive; account4 receives no direct transfer from account1. No execution or model result was used."
+}

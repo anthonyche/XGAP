@@ -1,0 +1,80 @@
+{
+  "schema_version": "xgap-engineering-milestone-evidence-v1",
+  "milestone": "frozen-one-shot-evaluation-interface-v1",
+  "parent_code_commit": "f0d88d3",
+  "scope": "offline interface integration, not a new native or paper benchmark",
+  "live_model_calls": 0,
+  "live_backend_calls": 0,
+  "fit_calls": 0,
+  "training_calls": 0,
+  "unique_new_risk_cases_passed": 9,
+  "test_events": [
+    {
+      "tool_chunk": "5e9d48",
+      "passed": 7,
+      "failed": 1,
+      "seconds": 0.53,
+      "note": "Mock omitted required provider metadata; existing admission correctly refused it."
+    },
+    {
+      "tool_chunk": "df33d0",
+      "passed": 1,
+      "failed": 0,
+      "seconds": 0.26,
+      "note": "Only corrected mock case rerun."
+    },
+    {
+      "tool_chunk": "e72ebe",
+      "passed": 6,
+      "failed": 0,
+      "seconds": 0.41,
+      "note": "Only affected/new replay identity and drift cases; overlaps earlier passing cases."
+    }
+  ],
+  "cli_preflight": {
+    "tool_chunk": "4fbd31",
+    "exit_code": 0,
+    "status": "preflight_passed",
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/one-shot-profile-interface-20260912/cli-preflight/receipt.json",
+      "sha256": "2341ec5fe1731971b326ac221ebf78d55665650c7b67d9a7423227e6850d9b8d",
+      "bytes": 2895
+    }
+  },
+  "prepared_profile": {
+    "path": "/Users/anthonyche/xgap-data/one-shot-profile-interface-20260912/profile.json",
+    "sha256": "5415165d4fcee71376ddc4ccf36c596326e848fc632bcc28e5da4113b454cc9d",
+    "bytes": 6161
+  },
+  "prepared_request": {
+    "path": "/Users/anthonyche/xgap-data/one-shot-profile-interface-20260912/request.json",
+    "sha256": "dc21043f6fe1aae05e075facbf72895bcb9da7f17701b6a61abd5f68362947de",
+    "bytes": 268
+  },
+  "replay_fixtures": [
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/tests/fixtures/one_shot_record_replay/estimator.json",
+      "sha256": "8f81638e94b82534cf781058b426529048d12c6a4be7ca9e6678955d743b39b3",
+      "bytes": 15298
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/tests/fixtures/one_shot_record_replay/success.json",
+      "sha256": "865d36ffa7cf00da6e0436b90d19a8477babd3f2693d2367823587d6a6d0bfe0",
+      "bytes": 28243
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/tests/fixtures/one_shot_record_replay/failure.json",
+      "sha256": "145b58965ce10e6853525e86c590b32363658e6065b0e84978391b5d69546a45",
+      "bytes": 22827
+    }
+  ],
+  "native_evidence_reused": "experiments/artifacts/one_shot_split_native_20260912.json",
+  "limitations": [
+    "Native database snapshot not verified by runner",
+    "Preflight endpoint placeholders must not be executed live",
+    "Current estimator still returns milliseconds; ordering/regret unmeasured",
+    "Replay timings and synthetic test usage are not live results",
+    "Evaluation campaigns require protocol discussion"
+  ],
+  "paper_result": false
+}

@@ -1,0 +1,84 @@
+{
+  "artifact_sha256": "918a9fc002f9ba45518d5ac346dc06095f0c6144109ad3aaa8166e48c7d346f2",
+  "authoritatively_bound_single_transfer": {
+    "counts": {
+      "anchored_relaxation_frontiers": 0,
+      "clarification_requests": 0,
+      "executable_interpretation_classes": 2,
+      "family_cost_predictions": 4,
+      "interpretation_classes": 6,
+      "physical_candidates": 4,
+      "physical_representatives": 2,
+      "returned_interpretation_plans": 2,
+      "unavailable_interpretation_classes": 4
+    },
+    "execution_eligible": true,
+    "hierarchical_frontier_sha256": "f9f023f3bbae7374ee536e160a1394120e0c3ad01ae99b4f3dd3cb3bed0cbeb6",
+    "returned_interpretation_class_ids": [
+      "m15-e4-class-5fe5eee1f1d164c0bb57ecd1",
+      "m15-e4-class-a36fcf626f49f25d9e56122f"
+    ],
+    "returned_predicate_candidate_ids": [
+      "predicate:transferred_to",
+      "predicate:paid_to"
+    ],
+    "selected_physical_plan_ids": [
+      "m15-f2c-financial-risk-alice-aug-high-v2-risk-first-bind-window-e4",
+      "m15-f2c-financial-risk-alice-aug-high-v2-relaxed-b3cf0ee1b03a3bf46874629c-risk-first-bind-window-e4"
+    ],
+    "status": "ready_with_bounded_representatives"
+  },
+  "backend_calls_made": 0,
+  "bridge_plan_sha256": "6782d7d0675d6caaf321e136949d0e289cd1d874f132165d0d79df35425c0ed9",
+  "claim_boundary": {
+    "all_bounded_interpretations_preserved": true,
+    "answer_oracle_used_for_selection": false,
+    "artifact_class": "offline_hierarchical_interpretation_mechanism",
+    "automatic_retries": 0,
+    "backend_calls_made": 0,
+    "current_query_profile_calls": 0,
+    "development_artifacts_only": true,
+    "hard_constraints_preserved": true,
+    "llm_calls_made": 0,
+    "native_query_text_emitted": false,
+    "ontology_service_calls_made": 0,
+    "paper_result": false,
+    "post_execution_measurements_used": false,
+    "unavailable_interpretations_preserved": true
+  },
+  "evidence_kind": "controlled_local_nonmeasurement_mechanism",
+  "family_cost_prediction_source_sha256": "bb723bce38c9c7850940553ffde50be40b866cd9394c6273ef8e10c8973e4acd",
+  "focused_tests": "18 passed",
+  "full_suite_before_final_evidence_commit": "1020 passed, 36 skipped",
+  "git_commit": "b2d89c4385e2f3cad138e71708cdc9ed8beae6e9",
+  "interpretation_policy_sha256": "18b5311d22fb3819fc1675eea38a8b479afbec761465e5a7919c5ed7d7a800a7",
+  "paper_result": false,
+  "schema_version": "m15-e5-local-hierarchical-interpretation-evidence-v1",
+  "training_memory_view_sha256": "3fd2931d1fa4c1f5a96cee767f5c23c5fc36ccb0872b45bc97d4ade6a9c97540",
+  "unresolved": {
+    "clarification_hole_ids": [
+      "relationship-strength"
+    ],
+    "counts": {
+      "anchored_relaxation_frontiers": 0,
+      "clarification_requests": 1,
+      "executable_interpretation_classes": 2,
+      "family_cost_predictions": 4,
+      "interpretation_classes": 6,
+      "physical_candidates": 4,
+      "physical_representatives": 2,
+      "returned_interpretation_plans": 0,
+      "unavailable_interpretation_classes": 4
+    },
+    "execution_eligible": false,
+    "hierarchical_frontier_sha256": "3edf41027ab420092aec575d41b11c13a7b2b597e4b18401960ba8d520355375",
+    "status": "clarification_required",
+    "varying_structural_dimensions": [
+      "aggregation_operator",
+      "quantification",
+      "answer_meaning",
+      "output_contract",
+      "executable_capability"
+    ]
+  }
+}

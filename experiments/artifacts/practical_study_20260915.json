@@ -1,0 +1,23 @@
+{
+  "schema_version": "xgap-practical-study-evidence-v1",
+  "source_commit": "82dd2adb34c64e6bf09194646355f838811359cc",
+  "new_test_cases": 6,
+  "test_seconds": 0.41,
+  "test_exit_code": 0,
+  "new_model_calls": 0,
+  "new_source_calls": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "old_campaign_changed": false,
+  "native_study_verified": false,
+  "paper_result": false,
+  "evidence": {
+    "tests/test_practical_study.py": {
+      "sha256": "d75a831c32df412d92036371494ded8fd86ceb0cc5e88e9aff3e3f6f83c33495"
+    },
+    "src/xgap/experiments/practical_study.py": {
+      "sha256": "3f613f8692040da0e5622555a570bbb68d1a2c106be2da4580fd4ce5d412e2c5"
+    }
+  },
+  "report": "docs/report/practical_study_20260915.md"
+}

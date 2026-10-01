@@ -1,0 +1,940 @@
+[
+  {
+    "id": "C01",
+    "nl": "返回 score 等于数值 1 的人员，保留既有布尔与数字相等规则。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_equals",
+        "ref": {
+          "kind": "node",
+          "position": "first"
+        },
+        "property": "score",
+        "value": 1
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.score = 1]\n      Nodes",
+    "expected_paths": [
+      "a",
+      "b",
+      "c"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C01.cypher",
+      "fuseki": "targets/C01.rq"
+    }
+  },
+  {
+    "id": "C02",
+    "nl": "返回具有 score 且 score 不等于 1 的人员。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_not_equals",
+        "ref": {
+          "kind": "node",
+          "position": "first"
+        },
+        "property": "score",
+        "value": 1
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.score != 1]\n      Nodes",
+    "expected_paths": [
+      "d"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C02.cypher",
+      "fuseki": "targets/C02.rq"
+    }
+  },
+  {
+    "id": "C03",
+    "nl": "返回不满足 score 等于 1 的人员，包括缺失 score。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "not",
+        "condition": {
+          "kind": "property_equals",
+          "ref": {
+            "kind": "node",
+            "position": "first"
+          },
+          "property": "score",
+          "value": 1
+        }
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(NOT first.score = 1)]\n      Nodes",
+    "expected_paths": [
+      "d",
+      "z"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C03.cypher",
+      "fuseki": "targets/C03.rq"
+    }
+  },
+  {
+    "id": "C04",
+    "nl": "返回 score 等于 1 或 note 为 open 的人员。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "or",
+        "conditions": [
+          {
+            "kind": "property_equals",
+            "ref": {
+              "kind": "node",
+              "position": "first"
+            },
+            "property": "score",
+            "value": 1
+          },
+          {
+            "kind": "property_equals",
+            "ref": {
+              "kind": "node",
+              "position": "first"
+            },
+            "property": "note",
+            "value": "open"
+          }
+        ]
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(first.score = 1 OR first.note = \"open\")]\n      Nodes",
+    "expected_paths": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C04.cypher",
+      "fuseki": "targets/C04.rq"
+    }
+  },
+  {
+    "id": "C05",
+    "nl": "返回既不满足 score 等于 1，也不满足 note 为 open 的人员。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "and",
+        "conditions": [
+          {
+            "kind": "not",
+            "condition": {
+              "kind": "property_equals",
+              "ref": {
+                "kind": "node",
+                "position": "first"
+              },
+              "property": "score",
+              "value": 1
+            }
+          },
+          {
+            "kind": "not",
+            "condition": {
+              "kind": "property_equals",
+              "ref": {
+                "kind": "node",
+                "position": "first"
+              },
+              "property": "note",
+              "value": "open"
+            }
+          }
+        ]
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [((NOT first.score = 1) AND (NOT first.note = \"open\"))]\n      Nodes",
+    "expected_paths": [
+      "z"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C05.cypher",
+      "fuseki": "targets/C05.rq"
+    }
+  },
+  {
+    "id": "C06",
+    "nl": "返回数值 score 大于零的人员；布尔与字符串不参与数值排序。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_gt",
+        "ref": {
+          "kind": "node",
+          "position": "first"
+        },
+        "property": "score",
+        "value": 0
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.score > 0]\n      Nodes",
+    "expected_paths": [
+      "a",
+      "b"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C06.cypher",
+      "fuseki": "targets/C06.rq"
+    }
+  },
+  {
+    "id": "C07",
+    "nl": "返回不满足数值 score 大于零的人员。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "not",
+        "condition": {
+          "kind": "property_gt",
+          "ref": {
+            "kind": "node",
+            "position": "first"
+          },
+          "property": "score",
+          "value": 0
+        }
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(NOT first.score > 0)]\n      Nodes",
+    "expected_paths": [
+      "c",
+      "d",
+      "z"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C07.cypher",
+      "fuseki": "targets/C07.rq"
+    }
+  },
+  {
+    "id": "C08",
+    "nl": "返回非 Person 或 score 为字符串 1 的节点。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "or",
+        "conditions": [
+          {
+            "kind": "not",
+            "condition": {
+              "kind": "label_equals",
+              "ref": {
+                "kind": "node",
+                "position": "first"
+              },
+              "value": "Person"
+            }
+          },
+          {
+            "kind": "property_equals",
+            "ref": {
+              "kind": "node",
+              "position": "first"
+            },
+            "property": "score",
+            "value": "1"
+          }
+        ]
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [((NOT label(first) = \"Person\") OR first.score = \"1\")]\n      Nodes",
+    "expected_paths": [
+      "d"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C08.cypher",
+      "fuseki": "targets/C08.rq"
+    }
+  },
+  {
+    "id": "C09",
+    "nl": "返回 weight 等于 1 或边标签不是 KNOWS 的一步路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "rel",
+        "edge": {}
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "or",
+        "conditions": [
+          {
+            "kind": "property_equals",
+            "ref": {
+              "kind": "edge",
+              "index": 1
+            },
+            "property": "weight",
+            "value": 1
+          },
+          {
+            "kind": "not",
+            "condition": {
+              "kind": "label_equals",
+              "ref": {
+                "kind": "edge",
+                "index": 1
+              },
+              "value": "KNOWS"
+            }
+          }
+        ]
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(edge(1).weight = 1 OR (NOT label(edge(1)) = \"KNOWS\"))]\n      Edges",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e7/b",
+      "b/e2/c"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C09.cypher",
+      "fuseki": "targets/C09.rq"
+    }
+  },
+  {
+    "id": "C10",
+    "nl": "返回不满足 weight 等于 1 的一步路径，包含缺失 weight。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "rel",
+        "edge": {}
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "not",
+        "condition": {
+          "kind": "property_equals",
+          "ref": {
+            "kind": "edge",
+            "index": 1
+          },
+          "property": "weight",
+          "value": 1
+        }
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(NOT edge(1).weight = 1)]\n      Edges",
+    "expected_paths": [
+      "a/e4/c",
+      "b/e8/d",
+      "c/e3/a",
+      "c/e5/d",
+      "d/e6/d"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C10.cypher",
+      "fuseki": "targets/C10.rq"
+    }
+  },
+  {
+    "id": "C11",
+    "nl": "返回存在 weight 且不等于 1 的一步路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "rel",
+        "edge": {}
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_not_equals",
+        "ref": {
+          "kind": "edge",
+          "index": 1
+        },
+        "property": "weight",
+        "value": 1
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [edge(1).weight != 1]\n      Edges",
+    "expected_paths": [
+      "b/e8/d",
+      "c/e3/a",
+      "c/e5/d"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C11.cypher",
+      "fuseki": "targets/C11.rq"
+    }
+  },
+  {
+    "id": "C12",
+    "nl": "返回数值 weight 至少零的一步路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "rel",
+        "edge": {}
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_gte",
+        "ref": {
+          "kind": "edge",
+          "index": 1
+        },
+        "property": "weight",
+        "value": 0
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [edge(1).weight >= 0]\n      Edges",
+    "expected_paths": [
+      "a/e1/b",
+      "a/e7/b",
+      "c/e5/d"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C12.cypher",
+      "fuseki": "targets/C12.rq"
+    }
+  },
+  {
+    "id": "C13",
+    "nl": "返回首尾节点并非不同的一步路径，即自环。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "rel",
+        "edge": {}
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "not",
+        "condition": {
+          "kind": "node_not_equals",
+          "left": {
+            "kind": "node",
+            "position": "first"
+          },
+          "right": {
+            "kind": "node",
+            "position": "last"
+          }
+        }
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(NOT first != last)]\n      Edges",
+    "expected_paths": [
+      "d/e6/d"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C13.cypher",
+      "fuseki": "targets/C13.rq"
+    }
+  },
+  {
+    "id": "C14",
+    "nl": "从 Alice 在三步以内先为每对端点选最短 KNOWS 路径，再过滤：(len() = 2 OR len() = 3)",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS"
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "c"
+        }
+      },
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "SHORTEST",
+      "condition": {
+        "kind": "or",
+        "conditions": [
+          {
+            "kind": "length_equals",
+            "value": 2
+          },
+          {
+            "kind": "length_equals",
+            "value": 3
+          }
+        ]
+      },
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(len() = 2 OR len() = 3)]\n      Selection [last.id = \"c\"]\n        Selection [first.id = \"a\"]\n          Recursive [mode=SHORTEST, max_depth=3]\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [],
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "neo4j": "targets/C14.cypher",
+      "fuseki": "targets/C14.rq"
+    }
+  },
+  {
+    "id": "C15",
+    "nl": "从 Alice 在三步以内先为每对端点选最短 KNOWS 路径，再过滤：(NOT len() = 2)",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS"
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "SHORTEST",
+      "condition": {
+        "kind": "not",
+        "condition": {
+          "kind": "length_equals",
+          "value": 2
+        }
+      },
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(NOT len() = 2)]\n      Selection [last.id = \"d\"]\n        Selection [first.id = \"a\"]\n          Recursive [mode=SHORTEST, max_depth=3]\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [],
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "neo4j": "targets/C15.cypher",
+      "fuseki": "targets/C15.rq"
+    }
+  },
+  {
+    "id": "C16",
+    "nl": "从 Alice 在三步以内先为每对端点选最短 KNOWS 路径，再过滤：(last.id = \"c\" OR last.id = \"z\")",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS"
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "SHORTEST",
+      "condition": {
+        "kind": "or",
+        "conditions": [
+          {
+            "kind": "property_equals",
+            "ref": {
+              "kind": "node",
+              "position": "last"
+            },
+            "property": "id",
+            "value": "c"
+          },
+          {
+            "kind": "property_equals",
+            "ref": {
+              "kind": "node",
+              "position": "last"
+            },
+            "property": "id",
+            "value": "z"
+          }
+        ]
+      },
+      "max_depth": 3
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(last.id = \"c\" OR last.id = \"z\")]\n      Selection [first.id = \"a\"]\n        Recursive [mode=SHORTEST, max_depth=3]\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "expected_paths": [
+      "a/e4/c"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C16.cypher",
+      "fuseki": "targets/C16.rq"
+    }
+  },
+  {
+    "id": "C17",
+    "nl": "返回不是 Ghost 类型的节点，包含孤立节点。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "not",
+        "condition": {
+          "kind": "label_equals",
+          "ref": {
+            "kind": "node",
+            "position": "first"
+          },
+          "value": "Ghost"
+        }
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(NOT label(first) = \"Ghost\")]\n      Nodes",
+    "expected_paths": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "z"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C17.cypher",
+      "fuseki": "targets/C17.rq"
+    }
+  },
+  {
+    "id": "C18",
+    "nl": "返回 flag 等于 false 或数值零的人员。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_equals",
+        "ref": {
+          "kind": "node",
+          "position": "first"
+        },
+        "property": "flag",
+        "value": false
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.flag = False]\n      Nodes",
+    "expected_paths": [
+      "b",
+      "d"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C18.cypher",
+      "fuseki": "targets/C18.rq"
+    }
+  },
+  {
+    "id": "C19",
+    "nl": "返回不满足 flag 等于 false 的人员。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "not",
+        "condition": {
+          "kind": "property_equals",
+          "ref": {
+            "kind": "node",
+            "position": "first"
+          },
+          "property": "flag",
+          "value": false
+        }
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [(NOT first.flag = False)]\n      Nodes",
+    "expected_paths": [
+      "a",
+      "c",
+      "z"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C19.cypher",
+      "fuseki": "targets/C19.rq"
+    }
+  },
+  {
+    "id": "C20",
+    "nl": "返回 floor 数值至少为有符号 64 位整数最小值的人员。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {},
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "rel",
+          "edge": {}
+        },
+        "min_repeats": 0,
+        "max_repeats": 0
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL"
+      },
+      "restrictor": "WALK",
+      "condition": {
+        "kind": "property_gte",
+        "ref": {
+          "kind": "node",
+          "position": "first"
+        },
+        "property": "floor",
+        "value": -9223372036854775808
+      },
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.floor >= -9223372036854775808]\n      Nodes",
+    "expected_paths": [
+      "a"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/C20.cypher",
+      "fuseki": "targets/C20.rq"
+    }
+  }
+]

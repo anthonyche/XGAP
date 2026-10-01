@@ -1,0 +1,8 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE {
+?e a t:Edge ; t:source ?n ; t:target ?m ; t:id ?eid ; t:label ?edgeLabel .
+?n t:id ?nid . ?m t:id ?mid .
+OPTIONAL { ?e t:weight ?weight . }
+FILTER(BOUND(?weight) && !(COALESCE(?weight = 1, false) || COALESCE(?weight = true, false)))
+BIND(CONCAT(?nid, "/", ?eid, "/", ?mid) AS ?path)
+}

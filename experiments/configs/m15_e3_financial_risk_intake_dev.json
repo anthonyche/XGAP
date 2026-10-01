@@ -1,0 +1,176 @@
+{
+  "schema_version": "m15-e3-semantic-intake-template-v1",
+  "template_id": "financial-risk-direct-intake",
+  "template_version": "dev-v1",
+  "holes": [
+    {
+      "hole_id": "person-identity",
+      "kind": "entity",
+      "phrases": [
+        "Alice Smith",
+        "Alice"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "transfer-predicate",
+      "kind": "predicate",
+      "phrases": [
+        "密切资金往来",
+        "close financial relationship"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "relationship-strength",
+      "kind": "constraint",
+      "phrases": [
+        "密切",
+        "close"
+      ],
+      "required": true
+    },
+    {
+      "hole_id": "company-risk-type",
+      "kind": "type",
+      "phrases": [
+        "高风险公司",
+        "high-risk companies"
+      ],
+      "required": true
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_id": "clarified-person-identity-is-hard",
+      "operator_id": "match-transfers",
+      "expression": "resolved(person-identity) is immutable after user clarification",
+      "policy": "hard",
+      "phrases": [
+        "Alice Smith",
+        "Alice"
+      ],
+      "required": true
+    },
+    {
+      "constraint_id": "one-month-window",
+      "operator_id": "match-transfers",
+      "expression": "occurred_on >= 2026-08-01 AND occurred_on < 2026-09-01",
+      "policy": "hard",
+      "phrases": [
+        "过去一个月",
+        "past month"
+      ],
+      "required": true
+    },
+    {
+      "constraint_id": "relationship-strength-definition",
+      "operator_id": "match-transfers",
+      "expression": "relationship-strength may use only a declared bounded condition",
+      "policy": "relaxable",
+      "phrases": [
+        "密切",
+        "close"
+      ],
+      "required": true
+    },
+    {
+      "constraint_id": "risk-type-adjacency-only",
+      "operator_id": "match-risk",
+      "expression": "company-risk-type may use only declared ontology-adjacent alternatives",
+      "policy": "relaxable",
+      "phrases": [
+        "高风险公司",
+        "high-risk companies"
+      ],
+      "required": true
+    }
+  ],
+  "operators": [
+    {
+      "operator_id": "match-transfers",
+      "kind": "match",
+      "input_ids": [],
+      "input_kinds": [],
+      "output_kind": "binding_set",
+      "parameters": {
+        "semantic_role": "person-transfer-fragment"
+      },
+      "required_capabilities": [
+        "property_graph.read"
+      ],
+      "hole_ids": [
+        "person-identity",
+        "transfer-predicate",
+        "relationship-strength"
+      ]
+    },
+    {
+      "operator_id": "match-risk",
+      "kind": "match",
+      "input_ids": [],
+      "input_kinds": [],
+      "output_kind": "binding_set",
+      "parameters": {
+        "semantic_role": "company-risk-fragment"
+      },
+      "required_capabilities": [
+        "rdf_graph.read"
+      ],
+      "hole_ids": [
+        "company-risk-type"
+      ]
+    },
+    {
+      "operator_id": "federated-join",
+      "kind": "join",
+      "input_ids": [
+        "match-transfers",
+        "match-risk"
+      ],
+      "input_kinds": [
+        "binding_set",
+        "binding_set"
+      ],
+      "output_kind": "binding_set",
+      "parameters": {
+        "join_role": "aligned-company-identity"
+      },
+      "required_capabilities": [
+        "coordinator.join"
+      ],
+      "hole_ids": []
+    },
+    {
+      "operator_id": "project-answer",
+      "kind": "project",
+      "input_ids": [
+        "federated-join"
+      ],
+      "input_kinds": [
+        "binding_set"
+      ],
+      "output_kind": "binding_set",
+      "parameters": {
+        "fields": [
+          "company",
+          "risk",
+          "amount",
+          "occurred_on"
+        ]
+      },
+      "required_capabilities": [],
+      "hole_ids": []
+    }
+  ],
+  "roots": [
+    "project-answer"
+  ],
+  "metadata": {
+    "artifact_class": "controlled-development-template",
+    "backend_independent": true,
+    "cross_platform_environment": true,
+    "general_nl_parser": false,
+    "paper_result": false
+  }
+}

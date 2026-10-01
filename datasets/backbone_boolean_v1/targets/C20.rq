@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE { ?n a t:Person ; t:id ?path ; t:floor ?floor . FILTER(isNumeric(?floor) && ?floor >= -9223372036854775808) }

@@ -1,0 +1,6 @@
+{
+  "cross_ordered":{"head":{"vars":["account","status"]},"results":{"bindings":[{"account":{"type":"uri","value":"http://example.org/fin/carol"},"status":{"type":"literal","value":"active"}},{"account":{"type":"uri","value":"http://example.org/fin/bob"},"status":{"type":"literal","value":"active"}}]}},
+  "duplicate_bag":{"head":{"vars":["status"]},"results":{"bindings":[{"status":{"type":"literal","value":"active"}},{"status":{"type":"literal","value":"active"}}]}},
+  "empty":{"head":{"vars":["account"]},"results":{"bindings":[]}},
+  "aggregate_rank":{"head":{"vars":["status","count","weight"]},"results":{"bindings":[{"status":{"type":"literal","value":"active"},"count":{"type":"literal","value":"2","datatype":"http://www.w3.org/2001/XMLSchema#integer"},"weight":{"type":"literal","value":"3","datatype":"http://www.w3.org/2001/XMLSchema#integer"}}]}}
+}

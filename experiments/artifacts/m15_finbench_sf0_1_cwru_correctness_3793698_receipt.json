@@ -1,0 +1,54 @@
+{
+  "schema_version": "m15-finbench-sf0-1-correctness-external-receipt-v1",
+  "record_id": "m15-finbench-sf0-1-correctness-cwru-3793698",
+  "recorded_date": "2026-09-07",
+  "evidence_source": "author_returned_cwru_terminal_output",
+  "source_artifact": {
+    "artifact_id": "ldbc-finbench-v0.1.0-sf0.1",
+    "archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60"
+  },
+  "producer": {
+    "slurm_job_id": "3793698",
+    "git_commit": "bc57a9de57a52529f24f2cc11408a9b83aa56dcf",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "00:02:32",
+    "node": "compt329",
+    "outer_status": "success",
+    "workload_mode": "finbench_correctness",
+    "runtime_removed": true,
+    "cleanup_error": null
+  },
+  "independent_audit": {
+    "expected_producer_commit": "bc57a9de57a52529f24f2cc11408a9b83aa56dcf",
+    "output_basename": "cwru-m15-finbench-correctness-3793698-audit.json",
+    "exit_code": 0,
+    "success": true,
+    "check_count": 368,
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "verified_properties": [
+      "all_physical_plans_match_their_query_oracle",
+      "both_physical_strategies_are_equivalent_within_each_query",
+      "oracle_opened_only_after_all_correctness_plan_runs"
+    ]
+  },
+  "selection_admission_boundary": {
+    "role": "development_plan_family_semantic_contract_evidence",
+    "applies_to_families": [
+      "f1_direct_transfer_control",
+      "f2_temporal_path_control"
+    ],
+    "current_confirmatory_query_oracle_observed": false,
+    "final_confirmatory_oracle_remains_authoritative": true
+  },
+  "claim_boundary": {
+    "real_public_benchmark_data": true,
+    "native_neo4j_and_fuseki": true,
+    "benchmark_conformance_claim": false,
+    "comparative": false,
+    "confirmatory": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

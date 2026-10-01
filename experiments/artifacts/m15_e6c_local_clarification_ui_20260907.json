@@ -1,0 +1,95 @@
+{
+  "artifact_id": "m15-e6c-local-clarification-ui-20260907",
+  "artifact_role": "local_interactive_clarification_working_surface_readiness_not_paper_result",
+  "observed_at_utc": "2026-09-07",
+  "git": {
+    "implementation_commit": "3291f4505706f475678b9ff8c637d0ce4a45121c"
+  },
+  "accepted_inputs": {
+    "e5d_slurm_job_id": "3793365",
+    "e5d_execution_commit": "52fe4d8d626604e40bdcc1c3f336c22e2eb61313",
+    "training_memory_view_sha256": "7ed39e1097e3138666b87ec9c8ea82ed135d77a8e12e9f2893931892ba0b7e57",
+    "resolution_question_hash_required": true,
+    "input_artifacts_present_in_local_operator_environment": false
+  },
+  "validation": {
+    "full_repository_command": "./scripts/run_acceptance.sh",
+    "collected": 1111,
+    "passed": 1075,
+    "skipped": 36,
+    "failed": 0,
+    "focused_controller_server_passed": 34,
+    "frontend_build_command": "pnpm build",
+    "frontend_build_passed": true,
+    "page_static_check_command": "pnpm exec oxlint app/page.tsx app/layout.tsx",
+    "page_static_check_passed": true,
+    "local_http_response_observed": true,
+    "external_calls_made": 0
+  },
+  "local_control_contract": {
+    "bind_address": "127.0.0.1",
+    "default_port": 8765,
+    "allowed_browser_origins": [
+      "http://127.0.0.1:3000",
+      "http://localhost:3000"
+    ],
+    "request_body_limit_bytes": 16384,
+    "routes": [
+      "GET /health",
+      "GET /api/session",
+      "POST /api/clarification",
+      "POST /api/submit"
+    ],
+    "authority_event_store_content_hashed": true,
+    "restart_reconstruction_tested": true,
+    "display_query_bound_to_resolution_question_sha256": true,
+    "clarification_requires_session_and_question_hashes": true,
+    "explicit_confirmation_required": true,
+    "authority_source_configured_server_side": true,
+    "free_text_is_authority": false
+  },
+  "remote_submission_contract": {
+    "enabled_by_default": false,
+    "typed_tool": "remote.executor",
+    "operation": "submit_job",
+    "fixed_script": "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch",
+    "browser_receives_remote_payload": false,
+    "browser_controls_environment_values": false,
+    "credentials_exposed_to_browser": false,
+    "native_query_text_exposed": false,
+    "one_attempt_only": true,
+    "automatic_retry_after_uncertain_result": false,
+    "live_remote_submission_verified": false
+  },
+  "interactive_page": {
+    "framework": "vinext_react",
+    "route_count": 1,
+    "clarification_stages": 2,
+    "candidate_confirmation_dialog": true,
+    "remote_submit_confirmation_dialog": true,
+    "sealed_plan_preview": true,
+    "generic_environment_editor": false,
+    "direct_backend_or_model_access": false,
+    "deployed": false
+  },
+  "model_context_tools": {
+    "declared": [
+      "commit_clarification_choice",
+      "submit_selected_session"
+    ],
+    "use_same_visible_ui_actions": true,
+    "additional_authority": false,
+    "supported_runtime_registration_verified": false
+  },
+  "claim_boundary": {
+    "evidence_class": "controlled_local_interactive_ui_readiness",
+    "cwru_job_submitted": false,
+    "real_backend_result": false,
+    "model_or_ontology_call": false,
+    "performance_claim": false,
+    "semantic_quality_claim": false,
+    "user_utility_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

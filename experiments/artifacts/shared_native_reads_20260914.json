@@ -1,0 +1,34 @@
+{
+  "schema_version": "xgap-shared-native-read-evidence-v1",
+  "source_commit": "33cd8b03e77cc559898453e135e99b619e73a12f",
+  "native_success": true,
+  "new_test_cases": 11,
+  "affected_test_cases": 1,
+  "new_source_calls": 11,
+  "new_model_calls": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "answer_rows": 4,
+  "answer_em": 1,
+  "paper_result": false,
+  "paired_speed_claim": false,
+  "evidence": {
+    "receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/shared-native-reads-20260914-v1/receipt.json",
+      "sha256": "0dd2af47bb72a53d85fd4febbad175c6f8783c5bb7fa55792ee62dc981185e22"
+    },
+    "result.json": {
+      "path": "/Users/anthonyche/xgap-data/shared-native-reads-20260914-v1/result.json",
+      "sha256": "4dc0f5bd33a8652f7e7d835c15e4df223a66f3fca03e3f5f23231055d7e343a8"
+    },
+    "analysis.json": {
+      "path": "/Users/anthonyche/xgap-data/shared-native-reads-20260914-v1/analysis.json",
+      "sha256": "1d484b4a92aeee20b580fd954ec37227cdf46d9ad82c4637e4ef2d55a8495fc3"
+    },
+    "score.json": {
+      "path": "/Users/anthonyche/xgap-data/shared-native-reads-20260914-v1/score.json",
+      "sha256": "77c0bc03c5633c69be1adb4d4aba8355b247c9500dce0a63893bbc71d355daf2"
+    }
+  },
+  "report": "docs/report/shared_native_reads_20260914.md"
+}

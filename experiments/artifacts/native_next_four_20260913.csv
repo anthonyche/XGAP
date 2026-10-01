@@ -1,0 +1,5 @@
+cell_id,question_id,status,answer_em,expected_rows,actual_rows,model_calls,final_plans,alternative_executions,candidate_count,selected_strategy,source_calls,source_bytes,online_ms,method_peak_rss_bytes
+fixed_semantics-00-016-0,FBNS-2-b9cc00e6e4ac22e7,returned,1.0,0,0,0,1,0,6,placement-0/coordinator,6,54128923,30163.810083642602,1769750528
+fixed_semantics-00-017-0,FBNS-3-447b4d9ec52c9afd,returned,1.0,1,1,0,1,0,6,placement-0/coordinator,5,31190659,17923.306999728084,922484736
+fixed_semantics-00-018-0,FBNS-3-a74dd7933c988262,returned,1.0,1,1,0,1,0,6,placement-0/coordinator,5,31196611,16498.118749819696,854851584
+fixed_semantics-00-019-0,FBNS-2-e5c40c7f9db803c0,returned,1.0,0,0,0,1,0,6,placement-0/coordinator,6,54128387,29103.84808294475,1656504320

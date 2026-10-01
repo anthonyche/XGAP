@@ -1,0 +1,10 @@
+[
+  {"id":"C01","base_case":"S01","requirements":{"paths":["native.cypher","property_graph.read","coordinator.path_select"],"people":["native.sparql","rdf_graph.read"],"join":["coordinator.join"],"answer":["coordinator.project"]},"expected_placements":[{"paths":"neo4j","people":"fuseki"}]},
+  {"id":"C02","base_case":"S02","requirements":{"count":["coordinator.aggregate"],"rank":["coordinator.order_limit"],"eligible":["coordinator.filter"]},"expected_placements":[{"paths":"neo4j","people":"neo4j"},{"paths":"neo4j","people":"fuseki"},{"paths":"fuseki","people":"neo4j"},{"paths":"fuseki","people":"fuseki"}]},
+  {"id":"C03","base_case":"S03","requirements":{"anchor":["native.sparql"],"paths":["coordinator.semi_join","coordinator.path_select","coordinator.project"]},"expected_placements":[{"anchor":"fuseki","paths":"neo4j"},{"anchor":"fuseki","paths":"fuseki"}]},
+  {"id":"C04","base_case":"S04","requirements":{"young":["coordinator.filter"],"old":["coordinator.filter"],"union":["coordinator.union"],"answer":["coordinator.project"]},"expected_placements":[{"people":"neo4j"},{"people":"fuseki"}]},
+  {"id":"C05","base_case":"S05","requirements":{"people":["rdf_graph.read"],"count":["coordinator.aggregate"]},"expected_placements":[{"people":"fuseki"}]},
+  {"id":"C06","base_case":"S06","requirements":{"left":["property_graph.read"],"external":["rdf_graph.read"],"aligned":["coordinator.align"],"join":["equality_join"]},"expected_placements":[{"left":"neo4j","external":"fuseki"}]},
+  {"id":"C07","base_case":"S07","requirements":{"join":["coordinator.join","equality_join"]},"expected_placements":[{"left":"neo4j","right":"neo4j"},{"left":"neo4j","right":"fuseki"},{"left":"fuseki","right":"neo4j"},{"left":"fuseki","right":"fuseki"}]},
+  {"id":"C08","base_case":"S08","requirements":{"paths":["native.sparql"],"people":["native.cypher"],"join":["coordinator.join"]},"expected_placements":[{"paths":"fuseki","people":"neo4j"}]}
+]

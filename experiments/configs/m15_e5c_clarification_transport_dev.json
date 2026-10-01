@@ -1,0 +1,54 @@
+{
+  "schema_version": "m15-e5c-clarification-transport-policy-v1",
+  "policy_id": "m15-e5c-option-a-resumable-authority-transport-v1",
+  "purpose": "anchored_relaxation_execution",
+  "authority_event": {
+    "source_kind": "explicit_user_input",
+    "candidate_must_be_in_pending_question": true,
+    "conversation_text_is_authoritative": false,
+    "replay_binding": "session_sequence_question_sha256"
+  },
+  "stages": [
+    {
+      "sequence": 1,
+      "hole_id": "relationship-strength",
+      "role": "structural_r1_clarification"
+    },
+    {
+      "sequence": 2,
+      "hole_id": "transfer-predicate",
+      "role": "predicate_base_authority_for_anchored_relaxation"
+    }
+  ],
+  "predicate_anchor_question": {
+    "question": "在‘单笔金额’含义下，哪个 predicate 是要保持不变的基准语义？另一个只会作为 ontology sibling relaxation。",
+    "options": [
+      {
+        "candidate_id": "predicate:transferred_to",
+        "label": "transferred_to"
+      },
+      {
+        "candidate_id": "predicate:paid_to",
+        "label": "paid_to"
+      }
+    ]
+  },
+  "terminal_behavior": {
+    "selected_structure_unavailable": "stop_without_execution",
+    "ready": "build_hash_bound_selected_execution_handoff"
+  },
+  "execution_handoff": {
+    "allowed_tools": [
+      "runtime.execute_plan"
+    ],
+    "plan_source": "anchored_frontier.returned_interpretation_plans",
+    "maximum_returned_plans": 4,
+    "native_query_text_emitted": false
+  },
+  "current_query_profile_calls": 0,
+  "backend_calls_made": 0,
+  "llm_calls_made": 0,
+  "ontology_service_calls_made": 0,
+  "automatic_retries": 0,
+  "paper_result": false
+}

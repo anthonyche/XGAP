@@ -1,0 +1,106 @@
+{
+  "schema_version": "xgap-anchor-source-bind-evidence-v1",
+  "component_receipt": {
+    "path": "/Users/anthonyche/xgap-data/anchor-source-bind-native-20260913-v1/receipt.json",
+    "sha256": "f7f38c6dcdecce544f64278ca953fe6fe5c388b8ce65c71c3444d355e073c4e5"
+  },
+  "source_commit": "88fe5776eee252206cf25d1ecd46ab5b50b7f0fe",
+  "rows": [
+    {
+      "answer_em": 1,
+      "deployment": "native",
+      "execution_ms": 1210.5061654001474,
+      "outcome": {
+        "bytes": 2147,
+        "path": "/Users/anthonyche/xgap-data/anchor-source-bind-native-20260913-v1/native/outcome.json",
+        "sha256": "c4c30ade0bd24eef46cc468aa4c4ea81769a9c8b17852c018f45f6dc8e6cd115"
+      },
+      "response_bytes": 17157,
+      "score": {
+        "bytes": 949,
+        "path": "/Users/anthonyche/xgap-data/anchor-source-bind-native-20260913-v1/native/score.json",
+        "sha256": "31f6a727194d0a25855998dcca589c8ebcb059e6ba967d0f7922eafcac40d8f3"
+      },
+      "source_calls": 14,
+      "success": true,
+      "online_ms_before_outcome_seal": 1340.462458319962,
+      "ordinary_estimated_winner": "placement-0/coordinator",
+      "construction_bound": 18,
+      "candidate_count": 9,
+      "strategy_details": {
+        "combination_enumeration": false,
+        "driver": "cq33/anchor_reduction/keys",
+        "driver_field": "v0",
+        "extra_remote_call_slots": 0,
+        "max_bindings": 10000,
+        "rewrite_count": 3,
+        "sparql_max_binding_bytes": 1048576,
+        "target_matches": [
+          "cq1",
+          "cq4",
+          "cq9"
+        ]
+      }
+    },
+    {
+      "answer_em": 1,
+      "deployment": "rdf",
+      "execution_ms": 205.16687538474798,
+      "outcome": {
+        "bytes": 2132,
+        "path": "/Users/anthonyche/xgap-data/anchor-source-bind-native-20260913-v1/rdf/outcome.json",
+        "sha256": "3b3c15c18a7022090a716bcb6c4863960ff693f0feda939bdf9d508694d0306b"
+      },
+      "response_bytes": 26552,
+      "score": {
+        "bytes": 949,
+        "path": "/Users/anthonyche/xgap-data/anchor-source-bind-native-20260913-v1/rdf/score.json",
+        "sha256": "31f6a727194d0a25855998dcca589c8ebcb059e6ba967d0f7922eafcac40d8f3"
+      },
+      "source_calls": 14,
+      "success": true,
+      "online_ms_before_outcome_seal": 266.1879165098071,
+      "ordinary_estimated_winner": "placement-0/coordinator",
+      "construction_bound": 18,
+      "candidate_count": 9,
+      "strategy_details": {
+        "combination_enumeration": false,
+        "driver": "cq33/anchor_reduction/keys",
+        "driver_field": "v0",
+        "extra_remote_call_slots": 0,
+        "max_bindings": 10000,
+        "rewrite_count": 3,
+        "sparql_max_binding_bytes": 1048576,
+        "target_matches": [
+          "cq1",
+          "cq4",
+          "cq9"
+        ]
+      }
+    }
+  ],
+  "model_calls": 0,
+  "fit_calls": 0,
+  "data_loads": 0,
+  "catalog_builds": 0,
+  "baseline_calls": 0,
+  "final_component_executions": 2,
+  "all_owned_groups_terminal": true,
+  "paper_result": false,
+  "selection_scope": "predeclared anchor_fanout_bind component gate, not online estimated selection",
+  "full_query_retries": 0,
+  "new_full_evaluation_questions": 0,
+  "checks": {
+    "selected_cases": 8,
+    "elapsed_seconds": 1.13,
+    "in_process_rdf_gate": {
+      "expected_rows": 6,
+      "calls_each": 8,
+      "first_hop_rows_before": 24,
+      "first_hop_rows_after": 12,
+      "logical_exchange_bytes_before": 9410,
+      "logical_exchange_bytes_after": 7286,
+      "HTTP_measured": false
+    }
+  }
+}

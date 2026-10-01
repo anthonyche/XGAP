@@ -1,0 +1,2651 @@
+{
+  "schema_version": "xgap-finbench-paid-balanced-report-v1",
+  "protocol_id": "finbench-paid-balanced-20260912-v1",
+  "date": "2026-09-12",
+  "raw_root": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912",
+  "parent_commit": "9d8cf2ebd79f79f8ea2c78b4bbcf13d94fde7b45",
+  "native_driver_sha256": "2c588371acb253f4e48da7e55a6de798bb50ad41857f63706b3799719d370568",
+  "analyzer_sha256": "ce3f25dfd7e2f295b2f79ad5f6b85133ddcb8371cf4367845a76e7a9eb064bc6",
+  "status": "real_prepared_plan_comparison_complete",
+  "user_requested_pause": true,
+  "full_paper_system_complete": false,
+  "ordinary_P1_exercised": false,
+  "A3_exercised": false,
+  "model_calls": 0,
+  "automatic_retries": 0,
+  "counts": {
+    "attempted_final_count": 864,
+    "attempted_acquisition_count": 576,
+    "attempted_plan_count": 1440,
+    "exact_final_count": 864,
+    "exact_acquisition_count": 576,
+    "exact_plan_count": 1440,
+    "indeterminate_final_count": 0,
+    "indeterminate_acquisition_count": 0,
+    "indeterminate_plan_count": 0,
+    "not_attempted_final_count": 0,
+    "not_attempted_acquisition_count": 0,
+    "not_attempted_plan_count": 0
+  },
+  "population": [
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": true,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-01",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-02",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-03",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-04",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-05",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-06",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-07",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-08",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-09",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-10",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-11",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-12",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-13",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-14",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-15",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f1-16",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": true,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-01",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-02",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-03",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-04",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-05",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-06",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-07",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-08",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-09",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-10",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-11",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-12",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-13",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-14",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-15",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f2-16",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": true,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-01",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-02",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-03",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-04",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-05",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-06",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-07",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-08",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-09",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-10",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-11",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-12",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-13",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-14",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-15",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "measurement_status": {
+        "balanced-00": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-01": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-02": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-03": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-04": [
+          "completed",
+          "completed",
+          "completed"
+        ],
+        "balanced-05": [
+          "completed",
+          "completed",
+          "completed"
+        ]
+      },
+      "query_id": "m15-fb-confirmatory-48-f3-16",
+      "split_role": "heldout_family"
+    }
+  ],
+  "comparisons": [
+    {
+      "population": "original32_seen",
+      "comparison": "paid_selection/fixed_hash",
+      "query_denominator": 32,
+      "complete_positive_pairs": 32,
+      "missing_pair_ids": [],
+      "per_query_ratios": {
+        "m15-fb-confirmatory-48-f1-01": 3.2016844304478727,
+        "m15-fb-confirmatory-48-f1-02": 3.243136285650412,
+        "m15-fb-confirmatory-48-f1-03": 3.1220602940232207,
+        "m15-fb-confirmatory-48-f1-04": 3.2297104941420787,
+        "m15-fb-confirmatory-48-f1-05": 3.245049962971741,
+        "m15-fb-confirmatory-48-f1-06": 3.1475216152321748,
+        "m15-fb-confirmatory-48-f1-07": 3.242540055377315,
+        "m15-fb-confirmatory-48-f1-08": 2.6872901451768274,
+        "m15-fb-confirmatory-48-f1-09": 3.2516488786885165,
+        "m15-fb-confirmatory-48-f1-10": 3.240971179484506,
+        "m15-fb-confirmatory-48-f1-11": 3.1389983465041307,
+        "m15-fb-confirmatory-48-f1-12": 3.4329031721288574,
+        "m15-fb-confirmatory-48-f1-13": 3.503465683195006,
+        "m15-fb-confirmatory-48-f1-14": 3.211750140822243,
+        "m15-fb-confirmatory-48-f1-15": 3.1616537148908126,
+        "m15-fb-confirmatory-48-f1-16": 3.2609506969880178,
+        "m15-fb-confirmatory-48-f2-01": 3.5601818458404573,
+        "m15-fb-confirmatory-48-f2-02": 3.1874350592484215,
+        "m15-fb-confirmatory-48-f2-03": 3.2861755718572363,
+        "m15-fb-confirmatory-48-f2-04": 3.3065803905185276,
+        "m15-fb-confirmatory-48-f2-05": 3.3406061688552113,
+        "m15-fb-confirmatory-48-f2-06": 3.4110019593576473,
+        "m15-fb-confirmatory-48-f2-07": 3.2312266732599046,
+        "m15-fb-confirmatory-48-f2-08": 3.9074951374620754,
+        "m15-fb-confirmatory-48-f2-09": 3.1965723864538402,
+        "m15-fb-confirmatory-48-f2-10": 3.238015258446471,
+        "m15-fb-confirmatory-48-f2-11": 2.956404680217073,
+        "m15-fb-confirmatory-48-f2-12": 3.353469190665943,
+        "m15-fb-confirmatory-48-f2-13": 3.3343791230238136,
+        "m15-fb-confirmatory-48-f2-14": 3.393560493488448,
+        "m15-fb-confirmatory-48-f2-15": 3.34695437796533,
+        "m15-fb-confirmatory-48-f2-16": 3.2056135708991285
+      },
+      "gmean_ratio": 3.262467426143871,
+      "percentile_interval_97_5": [
+        3.1883208924310793,
+        3.334390354440679
+      ],
+      "interpretation": "conditional stratified query bootstrap; Bonferroni two-comparison convention"
+    },
+    {
+      "population": "original32_seen",
+      "comparison": "paid_selection/fixed_bind",
+      "query_denominator": 32,
+      "complete_positive_pairs": 32,
+      "missing_pair_ids": [],
+      "per_query_ratios": {
+        "m15-fb-confirmatory-48-f1-01": 2.44846459810997,
+        "m15-fb-confirmatory-48-f1-02": 2.7485908358484306,
+        "m15-fb-confirmatory-48-f1-03": 2.5261298582457976,
+        "m15-fb-confirmatory-48-f1-04": 2.809778277576872,
+        "m15-fb-confirmatory-48-f1-05": 2.7756369216972203,
+        "m15-fb-confirmatory-48-f1-06": 2.695776694135442,
+        "m15-fb-confirmatory-48-f1-07": 2.7499171685425923,
+        "m15-fb-confirmatory-48-f1-08": 2.7017639407748364,
+        "m15-fb-confirmatory-48-f1-09": 2.7696840615487157,
+        "m15-fb-confirmatory-48-f1-10": 2.6948233355729982,
+        "m15-fb-confirmatory-48-f1-11": 2.508842264732192,
+        "m15-fb-confirmatory-48-f1-12": 2.6892225762967445,
+        "m15-fb-confirmatory-48-f1-13": 2.785686810805445,
+        "m15-fb-confirmatory-48-f1-14": 2.754567620362962,
+        "m15-fb-confirmatory-48-f1-15": 2.5078645990576622,
+        "m15-fb-confirmatory-48-f1-16": 2.6564097249849876,
+        "m15-fb-confirmatory-48-f2-01": 2.6439816920449,
+        "m15-fb-confirmatory-48-f2-02": 2.5195136572549384,
+        "m15-fb-confirmatory-48-f2-03": 2.601309643746229,
+        "m15-fb-confirmatory-48-f2-04": 2.498412250750279,
+        "m15-fb-confirmatory-48-f2-05": 2.7155537636551497,
+        "m15-fb-confirmatory-48-f2-06": 2.6852621253183298,
+        "m15-fb-confirmatory-48-f2-07": 2.3575624380004494,
+        "m15-fb-confirmatory-48-f2-08": 2.8540389106649773,
+        "m15-fb-confirmatory-48-f2-09": 2.397193768705061,
+        "m15-fb-confirmatory-48-f2-10": 2.3086890089392096,
+        "m15-fb-confirmatory-48-f2-11": 2.586534604892227,
+        "m15-fb-confirmatory-48-f2-12": 2.6559102667109866,
+        "m15-fb-confirmatory-48-f2-13": 2.473056379109601,
+        "m15-fb-confirmatory-48-f2-14": 2.37079232467637,
+        "m15-fb-confirmatory-48-f2-15": 2.468302715222597,
+        "m15-fb-confirmatory-48-f2-16": 2.4180063040058175
+      },
+      "gmean_ratio": 2.6012774960834606,
+      "percentile_interval_97_5": [
+        2.549968036451219,
+        2.652161203801462
+      ],
+      "interpretation": "conditional stratified query bootstrap; Bonferroni two-comparison convention"
+    },
+    {
+      "population": "original16_heldout",
+      "comparison": "paid_selection/fixed_hash",
+      "query_denominator": 16,
+      "complete_positive_pairs": 16,
+      "missing_pair_ids": [],
+      "per_query_ratios": {
+        "m15-fb-confirmatory-48-f3-01": 1.7771759667765084,
+        "m15-fb-confirmatory-48-f3-02": 1.747111571547764,
+        "m15-fb-confirmatory-48-f3-03": 2.030114172833874,
+        "m15-fb-confirmatory-48-f3-04": 2.0981187776844363,
+        "m15-fb-confirmatory-48-f3-05": 1.672038640273557,
+        "m15-fb-confirmatory-48-f3-06": 1.9689357693995948,
+        "m15-fb-confirmatory-48-f3-07": 2.02740298998907,
+        "m15-fb-confirmatory-48-f3-08": 2.0310356919487593,
+        "m15-fb-confirmatory-48-f3-09": 1.7668654490789242,
+        "m15-fb-confirmatory-48-f3-10": 1.8035259763876927,
+        "m15-fb-confirmatory-48-f3-11": 1.8576052057792525,
+        "m15-fb-confirmatory-48-f3-12": 1.9169094323081999,
+        "m15-fb-confirmatory-48-f3-13": 1.5073228153062954,
+        "m15-fb-confirmatory-48-f3-14": 2.0578932884716976,
+        "m15-fb-confirmatory-48-f3-15": 1.658112337092973,
+        "m15-fb-confirmatory-48-f3-16": 1.7327622169658858
+      },
+      "gmean_ratio": 1.845652785556653,
+      "percentile_interval_97_5": null,
+      "interpretation": "below 1 favors paid; descriptive"
+    },
+    {
+      "population": "original16_heldout",
+      "comparison": "paid_selection/fixed_bind",
+      "query_denominator": 16,
+      "complete_positive_pairs": 16,
+      "missing_pair_ids": [],
+      "per_query_ratios": {
+        "m15-fb-confirmatory-48-f3-01": 4.824756625821692,
+        "m15-fb-confirmatory-48-f3-02": 4.678287687057625,
+        "m15-fb-confirmatory-48-f3-03": 4.804924536079209,
+        "m15-fb-confirmatory-48-f3-04": 5.38831347805655,
+        "m15-fb-confirmatory-48-f3-05": 4.39563728153322,
+        "m15-fb-confirmatory-48-f3-06": 4.364097339165371,
+        "m15-fb-confirmatory-48-f3-07": 4.841622628542703,
+        "m15-fb-confirmatory-48-f3-08": 5.162009526343087,
+        "m15-fb-confirmatory-48-f3-09": 4.650242941849031,
+        "m15-fb-confirmatory-48-f3-10": 4.326864660923479,
+        "m15-fb-confirmatory-48-f3-11": 4.534679111708251,
+        "m15-fb-confirmatory-48-f3-12": 4.92527626573499,
+        "m15-fb-confirmatory-48-f3-13": 4.414649562921259,
+        "m15-fb-confirmatory-48-f3-14": 4.5697643228120866,
+        "m15-fb-confirmatory-48-f3-15": 4.33040880678863,
+        "m15-fb-confirmatory-48-f3-16": 4.3425281921397065
+      },
+      "gmean_ratio": 4.649911815618836,
+      "percentile_interval_97_5": null,
+      "interpretation": "below 1 favors paid; descriptive"
+    },
+    {
+      "population": "predeclared30_unexposed_seen",
+      "comparison": "paid_selection/fixed_hash",
+      "query_denominator": 30,
+      "complete_positive_pairs": 30,
+      "missing_pair_ids": [],
+      "per_query_ratios": {
+        "m15-fb-confirmatory-48-f1-02": 3.243136285650412,
+        "m15-fb-confirmatory-48-f1-03": 3.1220602940232207,
+        "m15-fb-confirmatory-48-f1-04": 3.2297104941420787,
+        "m15-fb-confirmatory-48-f1-05": 3.245049962971741,
+        "m15-fb-confirmatory-48-f1-06": 3.1475216152321748,
+        "m15-fb-confirmatory-48-f1-07": 3.242540055377315,
+        "m15-fb-confirmatory-48-f1-08": 2.6872901451768274,
+        "m15-fb-confirmatory-48-f1-09": 3.2516488786885165,
+        "m15-fb-confirmatory-48-f1-10": 3.240971179484506,
+        "m15-fb-confirmatory-48-f1-11": 3.1389983465041307,
+        "m15-fb-confirmatory-48-f1-12": 3.4329031721288574,
+        "m15-fb-confirmatory-48-f1-13": 3.503465683195006,
+        "m15-fb-confirmatory-48-f1-14": 3.211750140822243,
+        "m15-fb-confirmatory-48-f1-15": 3.1616537148908126,
+        "m15-fb-confirmatory-48-f1-16": 3.2609506969880178,
+        "m15-fb-confirmatory-48-f2-02": 3.1874350592484215,
+        "m15-fb-confirmatory-48-f2-03": 3.2861755718572363,
+        "m15-fb-confirmatory-48-f2-04": 3.3065803905185276,
+        "m15-fb-confirmatory-48-f2-05": 3.3406061688552113,
+        "m15-fb-confirmatory-48-f2-06": 3.4110019593576473,
+        "m15-fb-confirmatory-48-f2-07": 3.2312266732599046,
+        "m15-fb-confirmatory-48-f2-08": 3.9074951374620754,
+        "m15-fb-confirmatory-48-f2-09": 3.1965723864538402,
+        "m15-fb-confirmatory-48-f2-10": 3.238015258446471,
+        "m15-fb-confirmatory-48-f2-11": 2.956404680217073,
+        "m15-fb-confirmatory-48-f2-12": 3.353469190665943,
+        "m15-fb-confirmatory-48-f2-13": 3.3343791230238136,
+        "m15-fb-confirmatory-48-f2-14": 3.393560493488448,
+        "m15-fb-confirmatory-48-f2-15": 3.34695437796533,
+        "m15-fb-confirmatory-48-f2-16": 3.2056135708991285
+      },
+      "gmean_ratio": 3.2550243339622535,
+      "percentile_interval_97_5": null,
+      "interpretation": "below 1 favors paid; descriptive"
+    },
+    {
+      "population": "predeclared30_unexposed_seen",
+      "comparison": "paid_selection/fixed_bind",
+      "query_denominator": 30,
+      "complete_positive_pairs": 30,
+      "missing_pair_ids": [],
+      "per_query_ratios": {
+        "m15-fb-confirmatory-48-f1-02": 2.7485908358484306,
+        "m15-fb-confirmatory-48-f1-03": 2.5261298582457976,
+        "m15-fb-confirmatory-48-f1-04": 2.809778277576872,
+        "m15-fb-confirmatory-48-f1-05": 2.7756369216972203,
+        "m15-fb-confirmatory-48-f1-06": 2.695776694135442,
+        "m15-fb-confirmatory-48-f1-07": 2.7499171685425923,
+        "m15-fb-confirmatory-48-f1-08": 2.7017639407748364,
+        "m15-fb-confirmatory-48-f1-09": 2.7696840615487157,
+        "m15-fb-confirmatory-48-f1-10": 2.6948233355729982,
+        "m15-fb-confirmatory-48-f1-11": 2.508842264732192,
+        "m15-fb-confirmatory-48-f1-12": 2.6892225762967445,
+        "m15-fb-confirmatory-48-f1-13": 2.785686810805445,
+        "m15-fb-confirmatory-48-f1-14": 2.754567620362962,
+        "m15-fb-confirmatory-48-f1-15": 2.5078645990576622,
+        "m15-fb-confirmatory-48-f1-16": 2.6564097249849876,
+        "m15-fb-confirmatory-48-f2-02": 2.5195136572549384,
+        "m15-fb-confirmatory-48-f2-03": 2.601309643746229,
+        "m15-fb-confirmatory-48-f2-04": 2.498412250750279,
+        "m15-fb-confirmatory-48-f2-05": 2.7155537636551497,
+        "m15-fb-confirmatory-48-f2-06": 2.6852621253183298,
+        "m15-fb-confirmatory-48-f2-07": 2.3575624380004494,
+        "m15-fb-confirmatory-48-f2-08": 2.8540389106649773,
+        "m15-fb-confirmatory-48-f2-09": 2.397193768705061,
+        "m15-fb-confirmatory-48-f2-10": 2.3086890089392096,
+        "m15-fb-confirmatory-48-f2-11": 2.586534604892227,
+        "m15-fb-confirmatory-48-f2-12": 2.6559102667109866,
+        "m15-fb-confirmatory-48-f2-13": 2.473056379109601,
+        "m15-fb-confirmatory-48-f2-14": 2.37079232467637,
+        "m15-fb-confirmatory-48-f2-15": 2.468302715222597,
+        "m15-fb-confirmatory-48-f2-16": 2.4180063040058175
+      },
+      "gmean_ratio": 2.6051179241515197,
+      "percentile_interval_97_5": null,
+      "interpretation": "below 1 favors paid; descriptive"
+    }
+  ],
+  "bootstrap": {
+    "seed": 2026091212,
+    "resamples": 10000,
+    "percentiles": [
+      1.25,
+      98.75
+    ],
+    "unit": "paired query, stratified within the two fixed seen families; six repeats reduced to median",
+    "limitation": "Conditional sampling assumptions; no exact finite-sample coverage or unseen-family guarantee."
+  },
+  "method_costs": {
+    "fixed_hash": {
+      "method_slot_denominator": 288,
+      "status_counts": {
+        "completed": 288
+      },
+      "observed_method_wall_ms": 11443.57786886394,
+      "unavailable_method_wall_slots": 0,
+      "query_calls": {
+        "known": 576,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 576,
+        "status": "complete"
+      },
+      "logical_exchange_bytes": {
+        "known": 29523132,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 29523132,
+        "status": "complete"
+      },
+      "charged_scheduler_ms": {
+        "known": 9552.901451475918,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 9552.901451475918,
+        "status": "complete"
+      },
+      "acquisition_scheduler_ms": {
+        "known": 0,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 0,
+        "status": "not_applicable"
+      },
+      "persistence_included_ms": 1064.2184233292937,
+      "persistence_known_included_ms": 1064.2184233292937,
+      "persistence_unobserved_included_ms_slots": 0,
+      "persistence_excluded_ms": 117.80867259949446,
+      "persistence_known_excluded_ms": 117.80867259949446,
+      "persistence_unobserved_excluded_ms_slots": 0,
+      "persistence_included_bytes": 65452165,
+      "persistence_known_included_bytes": 65452165,
+      "persistence_unobserved_included_bytes_slots": 0,
+      "persistence_excluded_bytes": 257473,
+      "persistence_known_excluded_bytes": 257473,
+      "persistence_unobserved_excluded_bytes_slots": 0
+    },
+    "fixed_bind": {
+      "method_slot_denominator": 288,
+      "status_counts": {
+        "completed": 288
+      },
+      "observed_method_wall_ms": 6573.554675094783,
+      "unavailable_method_wall_slots": 0,
+      "query_calls": {
+        "known": 576,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 576,
+        "status": "complete"
+      },
+      "logical_exchange_bytes": {
+        "known": 9226824,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 9226824,
+        "status": "complete"
+      },
+      "charged_scheduler_ms": {
+        "known": 5678.599095903337,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 5678.599095903337,
+        "status": "complete"
+      },
+      "acquisition_scheduler_ms": {
+        "known": 0,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 0,
+        "status": "not_applicable"
+      },
+      "persistence_included_ms": 623.9339038729668,
+      "persistence_known_included_ms": 623.9339038729668,
+      "persistence_unobserved_included_ms_slots": 0,
+      "persistence_excluded_ms": 116.52503535151482,
+      "persistence_known_excluded_ms": 116.52503535151482,
+      "persistence_unobserved_excluded_ms_slots": 0,
+      "persistence_included_bytes": 19925119,
+      "persistence_known_included_bytes": 19925119,
+      "persistence_unobserved_included_bytes_slots": 0,
+      "persistence_excluded_bytes": 261164,
+      "persistence_known_excluded_bytes": 261164,
+      "persistence_unobserved_excluded_bytes_slots": 0
+    },
+    "paid_selection": {
+      "method_slot_denominator": 288,
+      "status_counts": {
+        "completed": 288
+      },
+      "observed_method_wall_ms": 24396.907594054937,
+      "unavailable_method_wall_slots": 0,
+      "query_calls": {
+        "known": 1728,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 1728,
+        "status": "complete"
+      },
+      "logical_exchange_bytes": {
+        "known": 48040964,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 48040964,
+        "status": "complete"
+      },
+      "charged_scheduler_ms": {
+        "known": 20662.31949813664,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 20662.31949813664,
+        "status": "complete"
+      },
+      "acquisition_scheduler_ms": {
+        "known": 15672.08429146558,
+        "unknown_action_count": 0,
+        "not_attempted_or_missing_action_count": 0,
+        "total": 15672.08429146558,
+        "status": "complete"
+      },
+      "persistence_included_ms": 2320.6334691494703,
+      "persistence_known_included_ms": 2320.6334691494703,
+      "persistence_unobserved_included_ms_slots": 0,
+      "persistence_excluded_ms": 120.2454213052988,
+      "persistence_known_excluded_ms": 120.2454213052988,
+      "persistence_unobserved_excluded_ms_slots": 0,
+      "persistence_included_bytes": 107494829,
+      "persistence_known_included_bytes": 107494829,
+      "persistence_unobserved_included_bytes_slots": 0,
+      "persistence_excluded_bytes": 650495,
+      "persistence_known_excluded_bytes": 650495,
+      "persistence_unobserved_excluded_bytes_slots": 0
+    }
+  },
+  "block_persistence": [
+    {
+      "block_id": "balanced-00",
+      "journal": {
+        "automatic_retries": 0,
+        "bytes_complete": true,
+        "bytes_written": 32424072,
+        "callback_count": 818,
+        "core_record_mutated": false,
+        "error": null,
+        "excluded_bytes": 194858,
+        "excluded_ms": 63.264197669923306,
+        "excluded_rule": "terminal method summary after method wall; initial/final block callbacks unattributed",
+        "included_bytes": 32145004,
+        "included_ms": 692.3880325630307,
+        "included_rule": "callback enters while method.status is started",
+        "initialization_ms": 0.27241744101047516,
+        "progress_path": "events.jsonl",
+        "schema_version": "xgap-finbench-paid-journal-v1",
+        "success": true,
+        "timing_scope": "callback indexing, serialization, hashing, synchronous writes and fsync",
+        "unattributed_bytes": 84210,
+        "unattributed_ms": 1.9516265019774437,
+        "write_failure_bytes": "known write-return bytes only; partial failed writes may add unknown bytes",
+        "receipt_file": "block-01/journal_receipt.json",
+        "immutable_file_count": 288
+      },
+      "full_ledger_seal_ms": 2265.2675416320562,
+      "full_ledger_seal_bytes": 90036753,
+      "full_ledger_seal_in_method_wall": false
+    },
+    {
+      "block_id": "balanced-01",
+      "journal": {
+        "automatic_retries": 0,
+        "bytes_complete": true,
+        "bytes_written": 32424782,
+        "callback_count": 818,
+        "core_record_mutated": false,
+        "error": null,
+        "excluded_bytes": 194865,
+        "excluded_ms": 58.297839015722275,
+        "excluded_rule": "terminal method summary after method wall; initial/final block callbacks unattributed",
+        "included_bytes": 32145707,
+        "included_ms": 659.7574939951301,
+        "included_rule": "callback enters while method.status is started",
+        "initialization_ms": 4.662083461880684,
+        "progress_path": "events.jsonl",
+        "schema_version": "xgap-finbench-paid-journal-v1",
+        "success": true,
+        "timing_scope": "callback indexing, serialization, hashing, synchronous writes and fsync",
+        "unattributed_bytes": 84210,
+        "unattributed_ms": 3.1974585726857185,
+        "write_failure_bytes": "known write-return bytes only; partial failed writes may add unknown bytes",
+        "receipt_file": "block-02/journal_receipt.json",
+        "immutable_file_count": 288
+      },
+      "full_ledger_seal_ms": 2362.600291147828,
+      "full_ledger_seal_bytes": 90038556,
+      "full_ledger_seal_in_method_wall": false
+    },
+    {
+      "block_id": "balanced-02",
+      "journal": {
+        "automatic_retries": 0,
+        "bytes_complete": true,
+        "bytes_written": 32424436,
+        "callback_count": 818,
+        "core_record_mutated": false,
+        "error": null,
+        "excluded_bytes": 194849,
+        "excluded_ms": 58.812590315937996,
+        "excluded_rule": "terminal method summary after method wall; initial/final block callbacks unattributed",
+        "included_bytes": 32145377,
+        "included_ms": 687.578353099525,
+        "included_rule": "callback enters while method.status is started",
+        "initialization_ms": 0.3624996170401573,
+        "progress_path": "events.jsonl",
+        "schema_version": "xgap-finbench-paid-journal-v1",
+        "success": true,
+        "timing_scope": "callback indexing, serialization, hashing, synchronous writes and fsync",
+        "unattributed_bytes": 84210,
+        "unattributed_ms": 8.188040927052498,
+        "write_failure_bytes": "known write-return bytes only; partial failed writes may add unknown bytes",
+        "receipt_file": "block-03/journal_receipt.json",
+        "immutable_file_count": 288
+      },
+      "full_ledger_seal_ms": 2258.692833594978,
+      "full_ledger_seal_bytes": 90037612,
+      "full_ledger_seal_in_method_wall": false
+    },
+    {
+      "block_id": "balanced-03",
+      "journal": {
+        "automatic_retries": 0,
+        "bytes_complete": true,
+        "bytes_written": 32424748,
+        "callback_count": 818,
+        "core_record_mutated": false,
+        "error": null,
+        "excluded_bytes": 194846,
+        "excluded_ms": 61.82925309985876,
+        "excluded_rule": "terminal method summary after method wall; initial/final block callbacks unattributed",
+        "included_bytes": 32145692,
+        "included_ms": 676.199946552515,
+        "included_rule": "callback enters while method.status is started",
+        "initialization_ms": 0.4282072186470032,
+        "progress_path": "events.jsonl",
+        "schema_version": "xgap-finbench-paid-journal-v1",
+        "success": true,
+        "timing_scope": "callback indexing, serialization, hashing, synchronous writes and fsync",
+        "unattributed_bytes": 84210,
+        "unattributed_ms": 3.0888328328728676,
+        "write_failure_bytes": "known write-return bytes only; partial failed writes may add unknown bytes",
+        "receipt_file": "block-04/journal_receipt.json",
+        "immutable_file_count": 288
+      },
+      "full_ledger_seal_ms": 2319.7597907856107,
+      "full_ledger_seal_bytes": 90038519,
+      "full_ledger_seal_in_method_wall": false
+    },
+    {
+      "block_id": "balanced-04",
+      "journal": {
+        "automatic_retries": 0,
+        "bytes_complete": true,
+        "bytes_written": 32423729,
+        "callback_count": 818,
+        "core_record_mutated": false,
+        "error": null,
+        "excluded_bytes": 194865,
+        "excluded_ms": 56.620581075549126,
+        "excluded_rule": "terminal method summary after method wall; initial/final block callbacks unattributed",
+        "included_bytes": 32144654,
+        "included_ms": 644.4894382730126,
+        "included_rule": "callback enters while method.status is started",
+        "initialization_ms": 0.3899587318301201,
+        "progress_path": "events.jsonl",
+        "schema_version": "xgap-finbench-paid-journal-v1",
+        "success": true,
+        "timing_scope": "callback indexing, serialization, hashing, synchronous writes and fsync",
+        "unattributed_bytes": 84210,
+        "unattributed_ms": 3.522791899740696,
+        "write_failure_bytes": "known write-return bytes only; partial failed writes may add unknown bytes",
+        "receipt_file": "block-05/journal_receipt.json",
+        "immutable_file_count": 288
+      },
+      "full_ledger_seal_ms": 2328.0830420553684,
+      "full_ledger_seal_bytes": 90035828,
+      "full_ledger_seal_in_method_wall": false
+    },
+    {
+      "block_id": "balanced-05",
+      "journal": {
+        "automatic_retries": 0,
+        "bytes_complete": true,
+        "bytes_written": 32424738,
+        "callback_count": 818,
+        "core_record_mutated": false,
+        "error": null,
+        "excluded_bytes": 194849,
+        "excluded_ms": 55.754668079316616,
+        "excluded_rule": "terminal method summary after method wall; initial/final block callbacks unattributed",
+        "included_bytes": 32145679,
+        "included_ms": 648.3725318685174,
+        "included_rule": "callback enters while method.status is started",
+        "initialization_ms": 0.3853747621178627,
+        "progress_path": "events.jsonl",
+        "schema_version": "xgap-finbench-paid-journal-v1",
+        "success": true,
+        "timing_scope": "callback indexing, serialization, hashing, synchronous writes and fsync",
+        "unattributed_bytes": 84210,
+        "unattributed_ms": 2.753334119915962,
+        "write_failure_bytes": "known write-return bytes only; partial failed writes may add unknown bytes",
+        "receipt_file": "block-06/journal_receipt.json",
+        "immutable_file_count": 288
+      },
+      "full_ledger_seal_ms": 2279.3714590370655,
+      "full_ledger_seal_bytes": 90038509,
+      "full_ledger_seal_in_method_wall": false
+    }
+  ],
+  "separate_shared_costs": {
+    "preparation_elapsed_seconds": 0.8205193756148219,
+    "compilation_ms": 474.0745825693011,
+    "setup_elapsed_seconds": 20.685908957384527,
+    "native_overall_seconds": 95.58473958447576,
+    "client_attempts": {
+      "fuseki": {
+        "all": 1440,
+        "fixture_load": 0,
+        "query": 1440
+      },
+      "neo4j": {
+        "all": 1634,
+        "fixture_load": 194,
+        "query": 1440
+      }
+    },
+    "scope": "Shared preparation/startup/load/cleanup are not added to each method or pooled from earlier runs."
+  },
+  "full_ledger_seal_total_ms": 13813.774958252907,
+  "full_ledger_seal_total_bytes": 540225777,
+  "hardware": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "sysctl_fields": [
+      "cpu_brand",
+      "memory_bytes",
+      "physical_cpus",
+      "logical_cpus"
+    ],
+    "sysctl_exit_code": 0,
+    "sysctl_values": [
+      "Apple M2 Pro",
+      "17179869184",
+      "10",
+      "10"
+    ],
+    "sysctl_error": ""
+  },
+  "peak_sampled_rss_bytes": 1994407936,
+  "source_pins": {
+    "source_archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+    "source_partition_sha256": "0ee8b18d3289ddb11fd78308f14584d20f073deaa50f72cfad74b1a379cdab2b",
+    "workload_sha256": "63a8ef36bc7576033db93caa2aa486409bc90ecfc699385b61e7d02be4320a5f"
+  },
+  "frozen_order": {
+    "path": "/Users/anthonyche/Developer/XGAP/experiments/protocols/finbench_paid_balanced_v1.json",
+    "sha256": "b6f0d3dcb981b1f2c66a49fb8c601ce73dfec453f2a39911e3ef256d3912380e",
+    "size_bytes": 89406
+  },
+  "frozen_protocol": {
+    "path": "/Users/anthonyche/Developer/XGAP/docs/decisions/finbench_paid_balanced_v1.md",
+    "sha256": "1407d3983d4a61bfe2e7a14e66987ab6792b9c55911b96d3ff5096b8c4d01a8a",
+    "size_bytes": 7859
+  },
+  "source_and_input_snapshot_count": 362,
+  "source_and_inputs_unchanged": true,
+  "owned_state_removed": true,
+  "service_pids_confirmed_absent": [
+    73063,
+    73129
+  ],
+  "focused_checks": {
+    "new_checks": 12,
+    "first_run_passed": true,
+    "pytest_seconds": 0.66,
+    "unchanged_checks_rerun": false
+  },
+  "audit": {
+    "artifact_checks_passed": 102,
+    "artifact_checks_total": 102,
+    "statistical_numeric_checks_passed": 14,
+    "statistical_initial_receipt_status": "failed_at_static_tuple_constant_intake_after_numeric_checks",
+    "static_completion_checks_passed": 8,
+    "bootstrap_rerun": false,
+    "oracle_reread": false
+  },
+  "analysis_input_artifact_count": 1752,
+  "cost_scope": "Method wall already includes online persistence and both paid acquisitions. Scheduler elapsed is per plan, not summed parallel nodes. Bytes are logical exchange bytes, not wire traffic. No overhead subtraction.",
+  "limitations": [
+    "Prepared-plan comparison; no P1/A3, model, memory-transfer or scalability claim.",
+    "One evolving-cache deployment with frozen balanced order; not isolated cold/warm latency.",
+    "Full-population ratios require all six completed and exact actions for each paired method.",
+    "Heldout16 and unexposed30 are separate descriptive views; primary denominator stays 32.",
+    "Measured cost-only choice does not establish next-run latency optimality or a total-paid-cost bound."
+  ],
+  "conclusion": "All prepared-plan answers exact; full-plan paid acquisition has higher total method wall than either fixed baseline on this workload. This is not a P1/A3 advantage claim.",
+  "evidence": {
+    "native_intent.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native_intent.json",
+      "sha256": "82e0d84c1e9ee417cf95322a73cb390c5ba025c61c7536ff374dce23ad110461",
+      "size_bytes": 1402
+    },
+    "native_receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native_receipt.json",
+      "sha256": "5f8ac92cc22d7a22a2fc89f808963e7ed97a2a338b8125f11d3c972425ba087c",
+      "size_bytes": 140
+    },
+    "native_stdout.txt": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native_stdout.txt",
+      "sha256": "de499789720bdb803749252573f0a76cc6a31900fa4343347a24eff977efb896",
+      "size_bytes": 582
+    },
+    "native_stderr.txt": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native_stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "focused-first/receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/focused-first/receipt.json",
+      "sha256": "501bd25b9136a5f1767259aab68db7352dd37b6062a21ba3453c6521e0a10af5",
+      "size_bytes": 2472
+    },
+    "focused-first/stdout.txt": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/focused-first/stdout.txt",
+      "sha256": "5af02ab3ce1a4a1e85f4e75799d1fddbdf29350ca4034adfd7a4df3ecbb835f3",
+      "size_bytes": 99
+    },
+    "focused-first/stderr.txt": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/focused-first/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "analysis_intent.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/analysis_intent.json",
+      "sha256": "cb5e7cc1cd139f17bb998969671c07e362c7f058857707647a45e9dd1d334e19",
+      "size_bytes": 521
+    },
+    "analysis_receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/analysis_receipt.json",
+      "sha256": "c2c6a86573b814fc3efb224ef47268998002cf65a79b595239f661fad2b849ca",
+      "size_bytes": 141
+    },
+    "analysis/analysis.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/analysis/analysis.json",
+      "sha256": "2d62926917382b1431f05837da45d8b0169a3526a74562e77f82d9d35aec87b4",
+      "size_bytes": 2381668
+    },
+    "analysis/per_query.csv": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/analysis/per_query.csv",
+      "sha256": "1842e245a277077bf1ace9c739c54844e851d6cdbe258e7945190e60ff4de62d",
+      "size_bytes": 227621
+    },
+    "independent_audit.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/independent_audit.json",
+      "sha256": "0c996410be162fd8da286fdf425679afc5e12345703257ce9d02ab84d276797a",
+      "size_bytes": 12670
+    },
+    "statistical_crosscheck.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/statistical_crosscheck.json",
+      "sha256": "26e7df5fb6796b907bc6c49fb2bac153e0bd0003846a6d18b6ea7af40ad229d1",
+      "size_bytes": 2532
+    },
+    "statistical_crosscheck_static_completion.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/statistical_crosscheck_static_completion.json",
+      "sha256": "91dc8e0cdb20735dbcdfea4a1e90d70fe5c238f63e058ab159496864bff89bdd",
+      "size_bytes": 3143
+    },
+    "native-run/native_run.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native-run/native_run.json",
+      "sha256": "ccc560a3fbc9f956edf4176797869db8bc07cfa1a50a8178c93fde11f1b56eb5",
+      "size_bytes": 50380
+    },
+    "native-run/prepared_inputs.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native-run/prepared_inputs.json",
+      "sha256": "64ca467dcb0adc571434a4b318ad3208dbfee3a3826cc39b48428d8f0bd523e3",
+      "size_bytes": 1212152
+    },
+    "native-run/campaign_sealed.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native-run/campaign_sealed.json",
+      "sha256": "6b3c92aca2254ed7729501deb71c7e2f79ff2fd0802ffabae7a8b54ebc4f7f5b",
+      "size_bytes": 375307
+    },
+    "native-run/evaluation.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native-run/evaluation.json",
+      "sha256": "6dcdccdd07adfc7216d9c6bca823e5a88a0c249133fd505bda4ade693858fc44",
+      "size_bytes": 1426690
+    },
+    "native-run/source_after.json": {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/native-run/source_after.json",
+      "sha256": "8a1e18f39de5e8b571b671da31d94379a01d508101b0617175ce5875fe28264e",
+      "size_bytes": 68290
+    }
+  },
+  "versioned_products": {
+    "independent_audit.json": {
+      "path": "/Users/anthonyche/Developer/XGAP/experiments/artifacts/finbench_paid_balanced_20260912/independent_audit.json",
+      "sha256": "0c996410be162fd8da286fdf425679afc5e12345703257ce9d02ab84d276797a",
+      "size_bytes": 12670
+    },
+    "paid_cost.png": {
+      "path": "/Users/anthonyche/Developer/XGAP/experiments/artifacts/finbench_paid_balanced_20260912/paid_cost.png",
+      "sha256": "0322fc022ffbc0da0b4fefc877809b1d55e23271340d64f116708fd713f04811",
+      "size_bytes": 185188
+    },
+    "paid_cost.svg": {
+      "path": "/Users/anthonyche/Developer/XGAP/experiments/artifacts/finbench_paid_balanced_20260912/paid_cost.svg",
+      "sha256": "1c9a716eec44aad97a3e143688cb7a6726238587fbf21f113fcd85a4ed80ae49",
+      "size_bytes": 46373
+    },
+    "per_query.csv": {
+      "path": "/Users/anthonyche/Developer/XGAP/experiments/artifacts/finbench_paid_balanced_20260912/per_query.csv",
+      "sha256": "1842e245a277077bf1ace9c739c54844e851d6cdbe258e7945190e60ff4de62d",
+      "size_bytes": 227621
+    },
+    "plot_receipt.json": {
+      "path": "/Users/anthonyche/Developer/XGAP/experiments/artifacts/finbench_paid_balanced_20260912/plot_receipt.json",
+      "sha256": "30b1c519ac60c524f7fe563a3edde2be9b4c1dd4e1c7881108ce8af31a8f3147",
+      "size_bytes": 1014
+    },
+    "statistical_crosscheck.json": {
+      "path": "/Users/anthonyche/Developer/XGAP/experiments/artifacts/finbench_paid_balanced_20260912/statistical_crosscheck.json",
+      "sha256": "26e7df5fb6796b907bc6c49fb2bac153e0bd0003846a6d18b6ea7af40ad229d1",
+      "size_bytes": 2532
+    },
+    "statistical_crosscheck_static_completion.json": {
+      "path": "/Users/anthonyche/Developer/XGAP/experiments/artifacts/finbench_paid_balanced_20260912/statistical_crosscheck_static_completion.json",
+      "sha256": "91dc8e0cdb20735dbcdfea4a1e90d70fe5c238f63e058ab159496864bff89bdd",
+      "size_bytes": 3143
+    }
+  }
+}

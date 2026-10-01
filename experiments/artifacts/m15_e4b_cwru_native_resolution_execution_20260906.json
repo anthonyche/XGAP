@@ -1,0 +1,68 @@
+{
+  "artifact_id": "m15-e4b-cwru-native-resolution-execution-3792349",
+  "artifact_role": "cwru_resolution_to_execution_mechanism_acceptance_not_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "user_returned_cwru_run_status_and_independent_read_only_audit",
+  "slurm": {
+    "elapsed": "00:01:34",
+    "exit_code": "0:0",
+    "job_id": "3792349",
+    "node": "compt292",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "execution_commit": "8056ee4899455adc37bfab9172cb904cc0f6d101",
+    "audit_fix_commit": "aed12e38830c992bfe962517628dc0e57ca0f32b"
+  },
+  "run": {
+    "remote_root": "runs/cwru-m15-native-resolution-execution-bridge-3792349",
+    "status": "success",
+    "workload_mode": "resolution_execution_bridge",
+    "runtime_removed": true,
+    "cleanup_error": null
+  },
+  "execution_contract": {
+    "raw_interpretations": 6,
+    "semantic_equivalence_classes": 6,
+    "executable_semantic_classes": 2,
+    "unavailable_semantic_classes": 4,
+    "physical_plan_runs": 4,
+    "backend_execute_calls": 8,
+    "current_query_profile_calls": 0,
+    "llm_calls": 0,
+    "ontology_service_calls": 0,
+    "automatic_retries": 0,
+    "all_executed_plan_answers_exact": true,
+    "hard_constraints_preserved": true,
+    "unavailable_classes_executed": false
+  },
+  "independent_read_only_audit": {
+    "schema_version": "m15-e4b-native-resolution-execution-bridge-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-e4b-resolution-execution-3792349-audit-v2.json",
+    "success": true,
+    "check_count": 152,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "audit_correction": {
+    "initial_output": "runs/audits/cwru-m15-e4b-resolution-execution-3792349-audit.json",
+    "initial_check_count": 151,
+    "initial_failed_check_ids": [
+      "service.plan.loopback_only"
+    ],
+    "cause": "the initial auditor expected a synthetic loopback_only field absent from the real NativeServicePlan schema",
+    "correction": "derive loopback isolation from public_ports, all service URLs, the Fuseki localhost argument, and the persisted Neo4j listen and advertised addresses",
+    "experiment_rerun": false,
+    "original_failed_audit_preserved": true
+  },
+  "claim_boundary": {
+    "result_class": "real_backend_resolution_to_execution_engineering_gate",
+    "semantic_quality_evaluated": false,
+    "cost_frontier_evaluated": false,
+    "generalization_claim": false,
+    "performance_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

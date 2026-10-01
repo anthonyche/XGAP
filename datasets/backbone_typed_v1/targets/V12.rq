@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT (COUNT(*) AS ?rows) (COUNT(?v) AS ?present) (SUM(COALESCE(?v,0)) AS ?total) (MIN(?v) AS ?low) (MAX(?v) AS ?high) WHERE { ?n a t:Person . FILTER(?n=t:missing) OPTIONAL { ?n t:amount ?v } }

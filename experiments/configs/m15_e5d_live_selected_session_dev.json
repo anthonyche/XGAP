@@ -1,0 +1,27 @@
+{
+  "schema_version": "m15-e5d-live-selected-session-policy-v1",
+  "policy_id": "m15-e5d-r1-family-memory-selected-execution-v1",
+  "purpose": "execute_only_user_authorized_semantic_frontier_plans",
+  "selection_source": "sealed_e5c_clarification_transport_handoff",
+  "prediction_source": "historical_family_memory_only",
+  "authority_source_kind": "explicit_user_input",
+  "required_structural_candidate": "constraint:single-transfer-at-least-50000",
+  "allowed_predicate_candidates": [
+    "predicate:transferred_to",
+    "predicate:paid_to"
+  ],
+  "allowed_tools": [
+    "runtime.execute_plan"
+  ],
+  "one_goal_per_session": true,
+  "execution_order": "selection_rank",
+  "stop_after_first_failed_plan": true,
+  "backend_timeout_seconds": 60,
+  "sealed_before_service_start": true,
+  "answer_oracle_opened_after_all_successful_executions": true,
+  "current_query_profile_calls": 0,
+  "llm_calls_made": 0,
+  "ontology_service_calls_made": 0,
+  "automatic_retries": 0,
+  "paper_result": false
+}

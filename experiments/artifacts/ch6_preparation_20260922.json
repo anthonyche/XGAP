@@ -1,0 +1,147 @@
+{
+  "schema_version": "xgap-ch6-preparation-evidence-v1",
+  "date": "2026-09-22",
+  "source_base_commit": "7461415a5674cf64f6a4da1ae6c943420a95c449",
+  "formal_result": false,
+  "paid_model_calls": 0,
+  "backend_network_calls": 0,
+  "development_preparation": {
+    "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/preparation_receipt.json",
+    "bytes": 1134,
+    "sha256": "4b972d8a4998dde87b3c5704bd83e74aa1e350bc60c29a9387110cd951f61d50"
+  },
+  "failed_initial_mapping_gate": {
+    "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/local_reference_gate.json",
+    "bytes": 4908,
+    "sha256": "b087cd2ce19f3e238acbdbc1fb07dabe8bf58c593e329ed24f7b7405fb7d924c"
+  },
+  "corrected_mapping_gate": {
+    "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/local_reference_gate_v2.json",
+    "bytes": 5583,
+    "sha256": "f837f920e6749975e6cbac052604ff2ba0b1ee0536055b22ececda89532831e5"
+  },
+  "pilot": {
+    "inventory.json": {
+      "path": "/Users/anthonyche/xgap-data/ch6-pilot-proposal-20260922-v1/inventory.json",
+      "bytes": 10663,
+      "sha256": "16680012c02d7b22a1542c3611623ab345dc1e242e613219ff35b3e1e5c42106"
+    },
+    "pilot_manifest.json": {
+      "path": "/Users/anthonyche/xgap-data/ch6-pilot-proposal-20260922-v1/pilot_manifest.json",
+      "bytes": 4401,
+      "sha256": "383e3c293be624c7c1f1d8940e5ca5da86bab1da1aab9ca5603b232a27b82fc1"
+    },
+    "budget_estimate.json": {
+      "path": "/Users/anthonyche/xgap-data/ch6-pilot-proposal-20260922-v1/budget_estimate.json",
+      "bytes": 1224,
+      "sha256": "7f80f44328db9f9839b6e1dc50eddd5e5857850c09bd0b257ebc53cfdfeff163"
+    },
+    "figure_registry.json": {
+      "path": "/Users/anthonyche/xgap-data/ch6-pilot-proposal-20260922-v1/figure_registry.json",
+      "bytes": 6084,
+      "sha256": "4d15631f52b32299c67b917f8cc276bd47409a1494a52fad7a3c75ebee9e3e61"
+    }
+  },
+  "focused_tests": {
+    "distinct_passed": 38,
+    "post_review_recheck_passed": 8,
+    "post_review_recheck_is_not_additional_distinct_tests": true
+  },
+  "datasets": {
+    "D1": {
+      "manifest": {
+        "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/D1/dataset_manifest.json",
+        "bytes": 2032,
+        "sha256": "60315b262958d242019380fcb09d85bc9b7e3e53e75149eb62a7efa478ed080c"
+      },
+      "seal": {
+        "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/D1/seal.json",
+        "bytes": 1781,
+        "sha256": "a4dccb17959e62262f2e533587c8e49ba73a4020e39552670fd14c177063120c"
+      },
+      "nodes": 54,
+      "base_edges": 64,
+      "development_cases": 9,
+      "template_families": 8
+    },
+    "D2": {
+      "manifest": {
+        "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/D2/dataset_manifest.json",
+        "bytes": 2562,
+        "sha256": "03ecb8add8943e9ed8156021bbac1ce52d037de8fa0c25799f6c99454616f20f"
+      },
+      "seal": {
+        "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/D2/seal.json",
+        "bytes": 1882,
+        "sha256": "1d7af3dfa69a10127b9ac58c00cd87b123b70cd58d5b7282a7fe18330746bfff"
+      },
+      "nodes": 67,
+      "base_edges": 64,
+      "development_cases": 10,
+      "template_families": 6
+    },
+    "D3": {
+      "manifest": {
+        "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/D3/dataset_manifest.json",
+        "bytes": 2240,
+        "sha256": "1879df397ec2cb81be05e857c50daa0a43ff8d34c50eb0cbb98e5c67ebfc7eb6"
+      },
+      "seal": {
+        "path": "/Users/anthonyche/xgap-data/ch6-development-20260922-v1/D3/seal.json",
+        "bytes": 1882,
+        "sha256": "02061872094da67907942afae461a7365e5401938bc5a71fc412545934b062cc"
+      },
+      "nodes": 105,
+      "base_edges": 64,
+      "development_cases": 10,
+      "template_families": 9
+    }
+  },
+  "actual_data_uploaded_to_git": false,
+  "local_evaluation": {
+    "engine": "RDFLib portable adapter, not Neo4j/Fuseki service",
+    "passed": 29,
+    "total": 29,
+    "empty_reference": 11
+  },
+  "existing_full_finbench_materialization": {
+    "entity_count": 55604,
+    "relationship_count": 309577,
+    "source_archive": {
+      "filename": "sf0.1.tar.gz",
+      "sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+      "size_bytes": 66710298
+    },
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/finbench-sf01-serving-20260913-v1/rdf/manifest.json",
+      "bytes": 1939,
+      "sha256": "efc39b8f4aca3f6bcdb8f64c355b004167535d62adecf14bc48bc3fc78f5d75a"
+    }
+  },
+  "lcquad_structure_extraction_v2": {
+    "path": "/Users/anthonyche/xgap-data/ch6-lcquad-structures-20260922-v2/receipt.json",
+    "sha256": "8ebb9a236b848680a1e4e54b6c03f0ea6c49ba7686424e73fac4786fe1edb93f",
+    "summary": {
+      "source": "ba1500efe6308ba86af7f91033e184778204dca7ba358c77222626ae6bd3454d",
+      "source_rows": 128,
+      "query_counts": {
+        "extracted_pending_domain_admission": 124,
+        "rejected": 132
+      },
+      "categories_including_rejected": {
+        "S03": 91,
+        "S02": 34,
+        "S01": 30,
+        "S08": 4,
+        "S06": 13
+      },
+      "rejection_reasons": {
+        "outside_initial_structure_catalog": 98,
+        "statement_or_qualifier": 35,
+        "parse_or_translation_failed": 1
+      },
+      "selection": "published prefix for development, no outcome-based filtering",
+      "extracted_means": "AST/typed structure only; requires domain-specific compiler/reference admission"
+    }
+  }
+}

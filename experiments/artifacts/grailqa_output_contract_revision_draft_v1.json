@@ -1,0 +1,131 @@
+{
+  "base_implementation_commit": "2379069135ee971a770429323889d17ec0f29639",
+  "changed_behavior": "Only the serialized system prompt is clarified; model generation effects are not yet measured.",
+  "claim_boundary": {
+    "accuracy_improvement_measured": false,
+    "author_review_receipt_created": false,
+    "full_150_run_authorized": false,
+    "new_live_execution_authorized": false,
+    "offline_contract_preparation_only": true,
+    "original_negative_result_preserved": true,
+    "paper_result": false
+  },
+  "external_calls": {
+    "backend": 0,
+    "model": 0,
+    "ontology_service": 0
+  },
+  "old_model_bundle_hash": "ed9fa4db9f0981e7307ef7323415159fdeb5117c8ab308218d1c8d282360bd6e",
+  "paper_result": false,
+  "preserved_files": [
+    {
+      "path": "models/qwen3_32b_vllm_cwru_m13e2/model_config.json",
+      "sha256": "1f1504c5057b7edad00970334f8b81a860bffd63219e8b009f69628714e54214"
+    },
+    {
+      "path": "models/qwen3_32b_vllm_cwru_m13e2/prompt.json",
+      "sha256": "984b2330e071a0af621a03b605eca34ba535a304e16dfc920a27eedc5a53a882"
+    },
+    {
+      "path": "models/qwen3_32b_vllm_cwru_m13e2/structured_schema.json",
+      "sha256": "1b772e5342db1e1d29b63ade2ba9bf822a1f870ddf073b81e5e20a4e033bc871"
+    },
+    {
+      "path": "experiments/specs/grailqa_semantic_preflight_v2_cwru_qwen3_32b.json",
+      "sha256": "416abed165ddfbf0830da6601ea6bb63b7debd1ce1094f6dab9251e7e35e4f0b"
+    },
+    {
+      "path": "experiments/specs/grailqa_semantic_paper_run_cwru_qwen3_32b.json",
+      "sha256": "6faac0138c22c4e5e11da174843c96a58b898f8a40198b4cf2447345dab8986e"
+    },
+    {
+      "path": "experiments/configs/grailqa_semantic_paper_protocol_draft_v2.json",
+      "sha256": "9cf4002588d4ac8d16302ddab0f0c73073281eab6e1d5a354666a2adfabec304"
+    },
+    {
+      "path": "experiments/artifacts/grailqa_semantic_paper_protocol_readiness_draft_v2.json",
+      "sha256": "17d89201baa6a40ad204001972b7a1ed6007d79f9aa95db6462665182ae19fc6"
+    },
+    {
+      "path": "src/xgap/experiments/runtime_alignment.py",
+      "sha256": "8b47751b24b0992710f681844bea3abb492f6522f32403749580bf5e64fb7c90"
+    },
+    {
+      "path": "src/xgap/experiments/interpretation_contract.py",
+      "sha256": "c4000d4185b2aac898a5fb0355ce8a70670a1eff3cf6ac9c9a6a8dd2b9f69f64"
+    },
+    {
+      "path": "src/xgap/experiments/grailqa_semantic_pilot.py",
+      "sha256": "8e752c0d2f9e30cd6fce933af28db1a1d2d7b815ae3855d4ac8f76e3137e7490"
+    },
+    {
+      "path": "src/xgap/experiments/grailqa_preflight.py",
+      "sha256": "167400137710e26e9cbd6624aa4c217533c82eaa8a7ec0708c7814a9d49d330c"
+    },
+    {
+      "path": "src/xgap/llm/openai_compatible.py",
+      "sha256": "0469e675a94df177c4cd5598e823ff2fd9ef5c8a92ae9dc3dfbec3642f7c98c8"
+    },
+    {
+      "path": "scripts/slurm/run_grailqa_semantic_preflight_v2.sbatch",
+      "sha256": "e0c012522d34fa7fd963a019b5f312c68b7b2be85c9da15509e4f45adc0ae226"
+    },
+    {
+      "path": "scripts/slurm/run_grailqa_semantic_paper.sbatch",
+      "sha256": "669dfc65c22b2cc86dae7d83822364e8bc9d96f28411653989fd31012678dcbc"
+    },
+    {
+      "path": "scripts/slurm/finalize_grailqa_semantic_paper.sbatch",
+      "sha256": "e1262cf1bd2537a9e914e6aaf8bdcb1df9c93afdadcf579d8d0b8ddafc1e8c8a"
+    },
+    {
+      "path": "scripts/server/submit_grailqa_semantic_paper_pipeline.sh",
+      "sha256": "87c732d017f15cc73eccc9416911aef27409e89b615aa7a4779a336b2662ae2b"
+    }
+  ],
+  "proposed_files": [
+    {
+      "path": "models/qwen3_32b_vllm_cwru_grailqa_contract_v1/model_config.json",
+      "sha256": "8c673453ff2e543edf29afa4ecbc4839f40f5b3d800b529a8a43b14dbeff38a9"
+    },
+    {
+      "path": "models/qwen3_32b_vllm_cwru_grailqa_contract_v1/prompt.json",
+      "sha256": "89f16a43c2c88c1ebc0e0d1ec551b988c065960fa8148bd0cb34acea6bdee0b1"
+    },
+    {
+      "path": "models/qwen3_32b_vllm_cwru_grailqa_contract_v1/structured_schema.json",
+      "sha256": "1b772e5342db1e1d29b63ade2ba9bf822a1f870ddf073b81e5e20a4e033bc871"
+    },
+    {
+      "path": "experiments/specs/grailqa_semantic_preflight_output_contract_v1_cwru_qwen3_32b.json",
+      "sha256": "e8606751a819582ce8565734522716934c738f1f056d13a0132fd306558e0a75"
+    }
+  ],
+  "proposed_model_bundle_hash": "07f3fd0547ff2ed1a3ce1bbbded1d3c83af150ad4d3cfc9be1cef578eb729c13",
+  "proposed_preflight_freeze_hash": "a4dee64d522108b8ae27f91fa2425dbfa125ba40e43dfc1a717844d08efae50a",
+  "proposed_prompt_hash": "d79fbd221c1614d83e345019dcec540bdc5500157862f6312dd62be5c9ff7d1f",
+  "review_sha256": "9a0c317ff51c01d47bdcb83a39f827bb1de546462647c4ada2da42150eff3e5d",
+  "review_status": "awaiting_author_review_and_exact_live_scope",
+  "schema_version": "m13e4-grailqa-output-contract-review-draft-v1",
+  "source_raw_ledgers_sha256": {
+    "llm_requests.jsonl": "6060078b189fa11a0fbf3840960f372b61d4306e004855c52093a3cf278363d0",
+    "llm_responses.jsonl": "557d5b250d299cd7fff3d7ffe4f13537a00f4e3bd3843b41c6731c110a3c12ce"
+  },
+  "token_budget": {
+    "actual_new_request_tokenization": "not_measured",
+    "input": 8192,
+    "output": 4096,
+    "reason": "Pinned Qwen tokenizer is not available in the local cache. Context reservation arithmetic is not proof that the serialized request fits.",
+    "reservation_arithmetic_valid": true,
+    "reserved_context": 12288
+  },
+  "unchanged_boundaries": [
+    "raw ledgers and the audited 18-query negative result",
+    "schema grammar and deterministic normalization/grounding",
+    "model, sampling, candidate/token/repair/timeout budgets",
+    "question identities and order, catalog/retrieval/visibility, epsilon and metrics",
+    "paper protocol v2, author choices, review and exact-run authority",
+    "all existing preflight and paper shell defaults",
+    "admitted FinBench physical evidence"
+  ]
+}

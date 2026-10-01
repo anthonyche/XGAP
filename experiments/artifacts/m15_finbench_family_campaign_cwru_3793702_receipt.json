@@ -1,0 +1,37 @@
+{
+  "schema_version": "m15-finbench-family-campaign-external-receipt-v1",
+  "record_id": "m15-finbench-family-campaign-cwru-3793702",
+  "recorded_date": "2026-09-07",
+  "evidence_source": "author_returned_cwru_terminal_output",
+  "producer": {
+    "slurm_job_id": "3793702",
+    "git_commit": "c00c3894f98af566ae6d92ccebe3772c8cfcf0a6",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "00:03:00",
+    "node": "compt329",
+    "outer_status": "success",
+    "workload_mode": "finbench_family_campaign",
+    "runtime_removed": true,
+    "cleanup_error": null
+  },
+  "independent_audit": {
+    "auditor_git_commit": "455b47b4ed7dd9e3f582ba43f3269783e1a85104",
+    "expected_producer_commit": "c00c3894f98af566ae6d92ccebe3772c8cfcf0a6",
+    "output_basename": "cwru-m15-finbench-family-campaign-3793702-audit-v2.json",
+    "exit_code": 0,
+    "success": true,
+    "check_count": 92,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "claim_boundary": {
+    "real_public_benchmark_data": true,
+    "native_neo4j_and_fuseki": true,
+    "same_allocation_development_comparison": true,
+    "confirmatory_statistics": false,
+    "generalization_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

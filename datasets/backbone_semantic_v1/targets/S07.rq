@@ -1,0 +1,2 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT ?left_age ?right_age WHERE { t:a a t:Person ; t:age ?left_age . t:a t:age ?right_age . }

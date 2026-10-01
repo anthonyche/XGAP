@@ -1,0 +1,8 @@
+{
+  "schema_version": "xgap-frozen-resolution-bundle-v1",
+  "files": {
+    "catalog.json": "0e0a512b53b10f6a3eb9a633a68c0c67e7d39880eb9756c5cd9587de34f5530c",
+    "bindings.json": "af2f3d3f85529061ca9a63d40cd7ae90e87694343ea0955a78fd3adea18d35f1"
+  },
+  "bundle_hash": "8cfb17e9dd780546f3dedb2accc924055bc8a67d930c385f39882a826b0734bf"
+}

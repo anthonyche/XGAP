@@ -6,9 +6,12 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
 PYTHON="${PYTHON:-python}"
+export PYTHONPATH="$REPO_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 
 "$PYTHON" scripts/check_harness.py
 "$PYTHON" -m pytest
+
+"$PYTHON" examples/toy_backbone_demo.py
 
 if [ -f examples/core_algebra_demo.py ]; then
   "$PYTHON" examples/core_algebra_demo.py
@@ -69,3 +72,23 @@ fi
 if [ -f examples/m12d_experiment_matrix_demo.py ]; then
   "$PYTHON" examples/m12d_experiment_matrix_demo.py
 fi
+
+if [ -f examples/m15_goal_loop_demo.py ]; then
+  "$PYTHON" examples/m15_goal_loop_demo.py
+fi
+
+if [ -f examples/m15_federated_vertical_slice_demo.py ]; then
+  "$PYTHON" examples/m15_federated_vertical_slice_demo.py
+fi
+
+if [ -f examples/m15_semantic_intake_demo.py ]; then
+  "$PYTHON" examples/m15_semantic_intake_demo.py
+fi
+
+if [ -f examples/m15_resolution_execution_bridge_demo.py ]; then
+  "$PYTHON" examples/m15_resolution_execution_bridge_demo.py
+fi
+
+"$PYTHON" examples/freebase_typed_fact_demo.py
+"$PYTHON" examples/grounded_candidate_execution_demo.py
+"$PYTHON" examples/freebase_question_demo.py

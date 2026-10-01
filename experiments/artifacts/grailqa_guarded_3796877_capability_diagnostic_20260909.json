@@ -1,0 +1,38 @@
+{
+  "schema_version": "grailqa-semantic-capability-offline-diagnostic-v1",
+  "producer_job_id": "3796877",
+  "producer_commit": "8bcf919883eb6bcc0081154bcb34863c56f16e8c",
+  "input_sha256": {
+    "query_states.jsonl": "f207a5d4e3563e391274ebc0109ce2906a5ea2a007b27f4b362823c1bd887c18"
+  },
+  "candidate_grounding_policy": "grailqa_canonical_semantic_grounding_v2",
+  "semantic_validation_profile": "typed_path_semantics_v1",
+  "request_identities_verified": 18,
+  "counts": {
+    "raw_candidates": 49,
+    "no_structured_response_queries": 1,
+    "shared_grounding_refusal_queries": 3,
+    "unassessed_candidates": 7,
+    "grounding_rejected_candidates": 38,
+    "grounded_candidates": 4,
+    "grounded_query_count": 2,
+    "semantic_contract_valid_grounded_candidates": 4,
+    "logical_lowering_available": 3,
+    "logical_lowering_unavailable": 1
+  },
+  "unavailable_candidate": {
+    "question_id": "2102933007000",
+    "candidate_id": "c3",
+    "issue": "direction_in_unsupported",
+    "component_ref": "expr.right.left.edge"
+  },
+  "external_calls": 0,
+  "source_mutated": false,
+  "reference_content_opened": false,
+  "semantic_scores_recomputed": false,
+  "answer_accuracy_measured": false,
+  "backend_execution_verified": false,
+  "independent_producer_audit": false,
+  "full_150_run_authorized": false,
+  "paper_result": false
+}

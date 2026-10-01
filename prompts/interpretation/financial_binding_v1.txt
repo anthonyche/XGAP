@@ -1,0 +1,36 @@
+Additional generic syntax contract: financial binding profile v1.
+
+Use the shared parameter schema as the executable contract. Node Match keeps its
+node descriptor. Edge Match instead uses edge:{label,properties}, optional source
+and target node descriptors, entity_field for edge identity, source_field and
+target_field for endpoint identities, and properties:{output_alias:edge_property}.
+Do not mix node and edge forms. Edge Match reads stored OUT edges. All identity
+output fields and property aliases must be distinct. It returns one row per edge,
+including parallel transfers, with requested edge properties in the same read.
+Use joins to fetch properties from the logical sources named by source_schema.
+Do not invent physical replicas, current-query probes or native query strings.
+
+Named entities use entity holes and constrain node identity in node.properties
+or edge Match's source.properties/target.properties. Use the identity property
+declared by the frozen source schema; do not assume it is id. Raw business IDs
+are properties, and may differ from canonical identity. Schema/predicate holes
+must occur in their executable descriptors; predicted identities are not gold.
+
+Filter can compare field to an exclusive value or right_field. Default ordered
+comparisons are numeric. For valid source calendar strings formatted exactly
+YYYY-MM-DD HH:MM:SS.mmm, explicitly use value_type:timestamp_ms. Do not assume
+arbitrary string ordering or timezone conversion. A sequence of transfer times
+must compare adjacent fields when NL requires increasing time. Preserve hard
+conditions, cycle restrictions, time-window inclusivity and requested outputs.
+
+Project accepts field, literal, path_length, path_node and path_edge expressions.
+A literal is a finite scalar, not native code. Row projection is DISTINCT: keep
+edge keys until intentional aggregation or duplicate elimination. Match rows are
+bindings, not paths; path_length/path_node/path_edge need a Traverse path input.
+Finite joins can express a fixed-length edge chain. No unbounded combination
+search is required. For ordering without an answer limit, use OrderLimit with
+limit:null; only NL-requested top K should truncate the sorted result.
+
+These are language semantics, not an answer template. No question-specific
+operator IDs, source assignment, resolved entity IDs or expected answers are
+provided by this appendix. Choose the program from the actual question and schema.

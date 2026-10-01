@@ -1,0 +1,67 @@
+{
+  "schema_version": "m15-finbench-sf0-1-cwru-load-failure-v2",
+  "recorded_at_utc": "2026-09-07",
+  "job": {
+    "slurm_job_id": "3793681",
+    "git_commit": "6d9925fcd72b1de6afcbdffa5dbf06cb291b047c",
+    "node": "compt268",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed": "00:10:21",
+    "requested_memory": "16G",
+    "batch_max_rss_kib": 2058628
+  },
+  "input": {
+    "artifact_id": "ldbc-finbench-v0.1.0-sf0.1",
+    "archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+    "source_rows": 365181,
+    "neo4j_statement_count": 194,
+    "neo4j_load_bytes": 91934990,
+    "fuseki_triple_count": 282426,
+    "fuseki_load_bytes": 30972563
+  },
+  "failure": {
+    "stage": "neo4j_fixture_load",
+    "failed_statement_index": 46,
+    "operations_attempted": 46,
+    "successful_statements_before_failure": 45,
+    "bytes_sent_through_failed_attempt": 12903300,
+    "elapsed_ms": 536888.3269215003,
+    "reported_error": "HTTP Error 500: Server Error"
+  },
+  "failure_location_inference": {
+    "basis": "deterministic generator order and statement counts",
+    "failed_batch_role": "first account_transfer_account relationship batch",
+    "failed_batch_size": 2000,
+    "inference_not_server_root_cause": true
+  },
+  "neo4j_service_evidence": {
+    "version": "5.26.30",
+    "http_listen_address": "127.0.0.1:39975",
+    "bolt_listen_address": "127.0.0.1:48011",
+    "heap_initial_size": "256m",
+    "heap_max_size": "512m",
+    "pagecache_size": "256m",
+    "console_log_contains_crash_or_oom": false,
+    "shutdown_initiated_by_request": true,
+    "console_log_absence_does_not_establish_root_cause": true
+  },
+  "boundary": {
+    "neo4j_service_healthy": true,
+    "fuseki_service_healthy": true,
+    "plan_catalog_sealed": true,
+    "physical_plan_runs": 0,
+    "backend_query_calls": 0,
+    "fuseki_fixture_load_started": false,
+    "answer_oracle_opened": false,
+    "automatic_retries": 0,
+    "runtime_removed": true,
+    "slurm_oom_supported": false
+  },
+  "claim_boundary": {
+    "engineering_failure_evidence": true,
+    "performance_result": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

@@ -1,0 +1,390 @@
+[
+  {
+    "id": "D01",
+    "nl": "从 Bob 沿 KNOWS 反向一步。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "IN",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"b\"]\n      Reverse\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+    "expected_paths": [
+      "b/e1/a",
+      "b/e7/a"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/D01.cypher",
+      "fuseki": "targets/D01.rq"
+    }
+  },
+  {
+    "id": "D02",
+    "nl": "从 Bob 先反向再正向各一步到 Cara。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "IN",
+            "properties": {}
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "c"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"c\"]\n      Selection [first.id = \"b\"]\n        Join\n          Reverse\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "expected_paths": [
+      "b/e1/a/e4/c",
+      "b/e7/a/e4/c"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/D02.cypher",
+      "fuseki": "targets/D02.rq"
+    }
+  },
+  {
+    "id": "D03",
+    "nl": "Dan 上的无向一步自环只返回一次。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "UNDIRECTED",
+          "properties": {}
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Union\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges\n          Reverse\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [
+      "d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/D03.cypher",
+      "fuseki": "targets/D03.rq"
+    }
+  },
+  {
+    "id": "D04",
+    "nl": "从 Bob 沿 KNOWS 任一方向走一步，保留两条平行边。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "UNDIRECTED",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"b\"]\n      Union\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Reverse\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "expected_paths": [
+      "b/e1/a",
+      "b/e2/c",
+      "b/e7/a",
+      "b/e8/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/D04.cypher",
+      "fuseki": "targets/D04.rq"
+    }
+  },
+  {
+    "id": "D05",
+    "nl": "Bob 无向 KNOWS 正闭包，最多两次连接，WALK，返回 Bob。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "UNDIRECTED",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"b\"]\n      Selection [first.id = \"b\"]\n        Recursive [mode=WALK, max_depth=2]\n          Union\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges\n            Reverse\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges",
+    "expected_paths": [
+      "b/e1/a/e1/b",
+      "b/e1/a/e7/b",
+      "b/e2/c/e2/b",
+      "b/e7/a/e1/b",
+      "b/e7/a/e7/b",
+      "b/e8/d/e8/b"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/D05.cypher",
+      "fuseki": "targets/D05.rq"
+    }
+  },
+  {
+    "id": "D06",
+    "nl": "Bob 无向 KNOWS 正闭包，最多两次连接，TRAIL，返回 Bob。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "UNDIRECTED",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "TRAIL",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"b\"]\n      Selection [first.id = \"b\"]\n        Recursive [mode=TRAIL, max_depth=2]\n          Union\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges\n            Reverse\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges",
+    "expected_paths": [
+      "b/e1/a/e7/b",
+      "b/e7/a/e1/b"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/D06.cypher",
+      "fuseki": "targets/D06.rq"
+    }
+  },
+  {
+    "id": "D07",
+    "nl": "Bob 无向 KNOWS 正闭包，最多两次连接，ACYCLIC，返回 Bob。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "UNDIRECTED",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "ACYCLIC",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"b\"]\n      Selection [first.id = \"b\"]\n        Recursive [mode=ACYCLIC, max_depth=2]\n          Union\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges\n            Reverse\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges",
+    "expected_paths": [],
+    "reference_target_queries": {
+      "neo4j": "targets/D07.cypher",
+      "fuseki": "targets/D07.rq"
+    }
+  },
+  {
+    "id": "D08",
+    "nl": "Bob 无向 KNOWS 正闭包，最多两次连接，SHORTEST，返回 Bob。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "UNDIRECTED",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"b\"]\n      Selection [first.id = \"b\"]\n        Recursive [mode=SHORTEST, max_depth=2]\n          Union\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges\n            Reverse\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges",
+    "expected_paths": [
+      "b/e1/a/e1/b",
+      "b/e1/a/e7/b",
+      "b/e2/c/e2/b",
+      "b/e7/a/e1/b",
+      "b/e7/a/e7/b",
+      "b/e8/d/e8/b"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/D08.cypher",
+      "fuseki": "targets/D08.rq"
+    }
+  },
+  {
+    "id": "D09",
+    "nl": "孤立 Zoe 上的反向星闭包包含零长度路径。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "z"
+        }
+      },
+      "expr": {
+        "kind": "star",
+        "child": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "IN",
+            "properties": {}
+          }
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"z\"]\n      Union\n        Nodes\n        Recursive [mode=WALK, max_depth=2]\n          Reverse\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [
+      "z"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/D09.cypher",
+      "fuseki": "targets/D09.rq"
+    }
+  }
+]

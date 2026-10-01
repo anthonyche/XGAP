@@ -1,0 +1,114 @@
+{
+  "artifact_id": "m15-f2c10a-local-direct-semantic-workload-v1",
+  "artifact_role": "local_preserve_all_variable_cardinality_workload_and_split_contract_not_live_or_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "deterministic_zero_external_call_compilation_and_full_local_acceptance",
+  "author_decisions": {
+    "primary_estimator": "family_memory_prediction",
+    "semantic_cardinality_policy": "preserve_all_catalog_adjacent_direct_interpretations",
+    "medium_direction_pruned": false,
+    "medium_queries_excluded": false
+  },
+  "inputs": {
+    "base_workload_bundle_content_sha256": "b06b1c4b4e630e37cbea8d4cf5d81bbc31c4a2280b97a64f5a4a9efed0d434e7",
+    "semantic_catalog": "experiments/configs/m15_f2c6_semantic_relaxation_dev.json",
+    "predicate_mapping": "experiments/configs/m15_f2c8_predicate_mapping_dev.json",
+    "cardinality_policy": "experiments/configs/m15_f2c10_direct_semantic_workload_dev.json"
+  },
+  "artifact_hashes": {
+    "direct_semantic_manifest_sha256": "69d46964cae4d3455e49c54e48f57c305116c597edac5a44bf355158f356b10b",
+    "cardinality_policy_sha256": "3a2dbeac892cfddbae9eb868568fa4676f8a276fb4e54deffb6a5f15307a26f3",
+    "direct_workload_bundle_content_sha256": "983cdbea795f27d479e83daa9a76bf8b57760d404ae0d7761d20146b9af069de",
+    "training_selection_view_sha256": "932552017c6e043404368ab72b8b46b2526fb54ddf4c7a7c42b05c8f3ced4e0b",
+    "heldout_selection_view_sha256": "bdb314cd940ba2ec2269ea78a106c87ca17a89275a97a2bf2ca718626e538720",
+    "evaluation_registry_sha256": "bece47275a341d80a186d65076ffab312080c0ffe56fb1a1e34525a1447f8f84"
+  },
+  "compiled_population": {
+    "base_query_instances": 6,
+    "training_base_queries": 4,
+    "heldout_base_queries": 2,
+    "exact_semantic_tasks": 6,
+    "relaxed_semantic_tasks": 22,
+    "direct_semantic_tasks": 28,
+    "training_semantic_tasks": 18,
+    "heldout_semantic_tasks": 10,
+    "physical_candidates": 56,
+    "unavailable_multihop_semantic_classes": 56,
+    "payment_edges": 720
+  },
+  "cardinality_contract": {
+    "high_direct_semantic_classes": 4,
+    "high_physical_candidates": 8,
+    "low_direct_semantic_classes": 4,
+    "low_physical_candidates": 8,
+    "medium_direct_semantic_classes": 6,
+    "medium_physical_candidates": 12,
+    "physical_candidates_per_class": 2,
+    "post_enumeration_bound": "physical_then_pareto_then_epsilon_then_k",
+    "max_returned_semantic_plans": 4
+  },
+  "split_and_leakage_guards": {
+    "base_query_split_inherited_by_every_interpretation": true,
+    "training_and_heldout_base_query_ids_disjoint": true,
+    "training_selection_view_contains_answer_artifacts": false,
+    "heldout_selection_view_contains_answer_artifacts": false,
+    "evaluation_registry_separate_from_selection": true,
+    "entity_time_and_amount_hard_bindings_preserved": true,
+    "multihop_classes_materialized": false,
+    "automatic_retries": 0
+  },
+  "backward_compatibility": {
+    "f2c9_v1_candidate_set_sha256": "807433b49895ac00f1f46446f49987f7cb19b92b58db70c58974082398217e02",
+    "f2c9_v1_estimate_snapshot_sha256": "6bf27a10fa46f4f176a9cc05cf5d8dddc8154c17d51abb4f6a3e24db2f7123a5",
+    "f2c9_v1_frontier_sha256": "e915ffdc4a19a21377cf18134024cbae47dbdaa80f8609296b52d28e41b8517a",
+    "all_frozen_hashes_unchanged": true
+  },
+  "variable_frontier_examples": {
+    "high": {
+      "declared_semantic_classes": 12,
+      "executable_direct_semantic_classes": 4,
+      "physical_candidates": 8,
+      "returned_semantic_plans_under_controlled_test_predictions": 3
+    },
+    "medium": {
+      "declared_semantic_classes": 18,
+      "executable_direct_semantic_classes": 6,
+      "physical_candidates": 12,
+      "returned_semantic_plans_under_controlled_test_predictions": 3,
+      "both_high_and_low_adjacent_risk_directions_present": true
+    }
+  },
+  "local_verification": {
+    "focused_new_and_adjacent_tests": {
+      "passed": 30,
+      "failed": 0
+    },
+    "full_pytest": {
+      "passed": 862,
+      "skipped": 36,
+      "failed": 0
+    },
+    "acceptance_script": "passed",
+    "harness_check": "passed",
+    "all_existing_examples": "passed",
+    "patch_whitespace_check": "passed"
+  },
+  "claim_boundary": {
+    "result_class": "local_unexecuted_development_workload_and_selection_contract",
+    "backend_calls_made": 0,
+    "llm_calls_made": 0,
+    "ontology_service_calls_made": 0,
+    "contains_measurements": false,
+    "semantic_user_utility_supported": false,
+    "performance_superiority_supported": false,
+    "generalization_supported": false,
+    "comparative": false,
+    "paper_result": false
+  },
+  "next_gate": {
+    "milestone": "M15-F2C10B",
+    "purpose": "compile_leakage_safe_family_memory_predictions_for_every_variable_cardinality_physical_candidate",
+    "cwru_dispatch_authorized": false
+  },
+  "paper_result": false
+}

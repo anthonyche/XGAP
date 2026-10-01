@@ -1,0 +1,4166 @@
+{
+  "milestone": "T1 typed binding values",
+  "date": "2026-09-11",
+  "base_commit": "400f0cf99fd56ff3b0e590934b3dc22cf69896b8",
+  "status": "accepted",
+  "live_llm": false,
+  "paper_result": false,
+  "native_runs": [
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-typed-binding-native-20260911/result.json",
+      "sha256": "86ed1e6dedcb2534a43e3cea6884adc7697a8bb944db9b78d7031928b4e126b2",
+      "success": false,
+      "phase": "typed-reference-V01-fuseki",
+      "error": "RuntimeError: Typed independent reference failed: V01/fuseki; no retry",
+      "programs": 1,
+      "programs_passed": 1,
+      "candidates": 2,
+      "candidates_passed": 2,
+      "reference_attempts": 2,
+      "reference_passed": 1,
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "old_slice": null,
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 47763,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 47725,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "source_sha256": {
+        "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+        "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+        "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+        "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+        "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+        "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+        "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+        "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+        "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+        "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+        "scripts/run_toy_backbone_native.py": "9860591f7c59644e003478965d38ba47291dc7355739f5703a988c76f33fd073",
+        "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+        "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+        "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+        "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+        "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+        "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+        "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+        "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+        "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+        "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+        "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+        "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+        "src/xgap/runtime/scalars.py": "ef268924687ca7ae960a41141a418dac1acca415e17ab3b952a9066a11b26583",
+        "src/xgap/runtime/binding_operations.py": "6ff247a0bb59dcdc2c3b739f59d620104cdb7c442ba520390256d585fae20b66",
+        "src/xgap/experiments/toy_typed.py": "83ae31825e3ca24e3e4ba1021b38bb136c0f2842c436ce560d61b3342c25bdd8",
+        "src/xgap/compilers/boolean_conditions.py": "b686f1e97517f2ba3ac88ace5617b32c59c666dae80464e10149b962c917f747"
+      },
+      "source_delta_from_final": [
+        "scripts/run_toy_backbone_native.py"
+      ],
+      "failed_references": [
+        {
+          "query_id": "V01",
+          "backend": "fuseki",
+          "success": false,
+          "artifact": {
+            "artifact_id": "V01-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?amount) AS ?total) WHERE { ?n a t:Person . OPTIONAL { ?n t:amount ?amount } }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "total"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V01-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {}
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 11.197167448699474,
+            "error": null,
+            "started_at": "2026-09-11T05:02:31.760874+00:00",
+            "ended_at": "2026-09-11T05:02:31.772069+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-typed-binding-native-final-20260911/result.json",
+      "sha256": "ef762b7f96167c60ada8b320cdd7db5f682111b982ac4f5435a93b596a79abe0",
+      "success": false,
+      "phase": "typed-reference-V06-fuseki",
+      "error": "RuntimeError: Typed independent reference failed: V06/fuseki; no retry",
+      "programs": 6,
+      "programs_passed": 6,
+      "candidates": 11,
+      "candidates_passed": 11,
+      "reference_attempts": 11,
+      "reference_passed": 10,
+      "observation_calls": 11,
+      "serving_calls": 6,
+      "validation_calls": 5,
+      "old_slice": null,
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 48261,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 48224,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "source_sha256": {
+        "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+        "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+        "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+        "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+        "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+        "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+        "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+        "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+        "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+        "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+        "scripts/run_toy_backbone_native.py": "9860591f7c59644e003478965d38ba47291dc7355739f5703a988c76f33fd073",
+        "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+        "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+        "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+        "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+        "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+        "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+        "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+        "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+        "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+        "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+        "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+        "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+        "src/xgap/runtime/scalars.py": "ef268924687ca7ae960a41141a418dac1acca415e17ab3b952a9066a11b26583",
+        "src/xgap/runtime/binding_operations.py": "6ff247a0bb59dcdc2c3b739f59d620104cdb7c442ba520390256d585fae20b66",
+        "src/xgap/experiments/toy_typed.py": "83ae31825e3ca24e3e4ba1021b38bb136c0f2842c436ce560d61b3342c25bdd8",
+        "src/xgap/compilers/boolean_conditions.py": "b686f1e97517f2ba3ac88ace5617b32c59c666dae80464e10149b962c917f747"
+      },
+      "source_delta_from_final": [
+        "scripts/run_toy_backbone_native.py"
+      ],
+      "failed_references": [
+        {
+          "query_id": "V06",
+          "backend": "fuseki",
+          "success": false,
+          "artifact": {
+            "artifact_id": "V06-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (STR(?n) AS ?person) WHERE { ?n a t:Person . OPTIONAL { ?n t:score ?score } BIND(IF(!BOUND(?score),3,IF(isNumeric(?score),0,IF(DATATYPE(?score)=xsd:string,1,2))) AS ?category) } ORDER BY DESC(?category) DESC(?score) ASC(?person) LIMIT 10\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "person"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V06-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/z",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/c",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/d",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "row_count": 5,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 5.742666311562061,
+            "error": null,
+            "started_at": "2026-09-11T05:04:07.089920+00:00",
+            "ended_at": "2026-09-11T05:04:07.095665+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/z"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-typed-binding-native-followup-20260911/result.json",
+      "sha256": "051d4999ca7fe749c290d28aba146b468a406904a922af3ee2fc1e56bbb15a6b",
+      "success": false,
+      "phase": "typed-reference-V06-fuseki",
+      "error": "RuntimeError: Typed independent reference failed: V06/fuseki; no retry",
+      "programs": 2,
+      "programs_passed": 2,
+      "candidates": 4,
+      "candidates_passed": 4,
+      "reference_attempts": 4,
+      "reference_passed": 3,
+      "observation_calls": 4,
+      "serving_calls": 2,
+      "validation_calls": 2,
+      "old_slice": null,
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 48640,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 48606,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "source_sha256": {
+        "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+        "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+        "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+        "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+        "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+        "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+        "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+        "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+        "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+        "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+        "scripts/run_toy_backbone_native.py": "167fd0bada7ffe426c8b056d6982f4faef4b1e264767412df6c5d00cd9f30861",
+        "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+        "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+        "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+        "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+        "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+        "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+        "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+        "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+        "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+        "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+        "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+        "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+        "src/xgap/runtime/scalars.py": "ef268924687ca7ae960a41141a418dac1acca415e17ab3b952a9066a11b26583",
+        "src/xgap/runtime/binding_operations.py": "6ff247a0bb59dcdc2c3b739f59d620104cdb7c442ba520390256d585fae20b66",
+        "src/xgap/experiments/toy_typed.py": "83ae31825e3ca24e3e4ba1021b38bb136c0f2842c436ce560d61b3342c25bdd8",
+        "src/xgap/compilers/boolean_conditions.py": "b686f1e97517f2ba3ac88ace5617b32c59c666dae80464e10149b962c917f747"
+      },
+      "source_delta_from_final": [],
+      "failed_references": [
+        {
+          "query_id": "V06",
+          "backend": "fuseki",
+          "success": false,
+          "artifact": {
+            "artifact_id": "V06-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (STR(?n) AS ?person) WHERE { ?n a t:Person . OPTIONAL { ?n t:score ?score } BIND(IF(!BOUND(?score),3,IF(isNumeric(?score),0,IF(DATATYPE(?score)=xsd:string,1,2))) AS ?category) BIND(IF(isNumeric(?score),xsd:double(?score),?score) AS ?sortvalue) } ORDER BY DESC(?category) DESC(?sortvalue) ASC(?person) LIMIT 10\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "person"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V06-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/z",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/c",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/d",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "row_count": 5,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 6.5512098371982574,
+            "error": null,
+            "started_at": "2026-09-11T05:05:44.926626+00:00",
+            "ended_at": "2026-09-11T05:05:44.933186+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/z"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-typed-binding-native-completion-20260911/result.json",
+      "sha256": "98528a3df7a26cf10ed0035a2d343b4cfdc53c6fe5744c22fb9cd026fc612b45",
+      "success": true,
+      "phase": "completed",
+      "error": null,
+      "programs": 11,
+      "programs_passed": 11,
+      "candidates": 25,
+      "candidates_passed": 25,
+      "reference_attempts": 20,
+      "reference_passed": 20,
+      "observation_calls": 26,
+      "serving_calls": 14,
+      "validation_calls": 21,
+      "old_slice": {
+        "success": true,
+        "actual_paths": [
+          "a/e4/c"
+        ],
+        "expected_paths": [
+          "a/e4/c"
+        ],
+        "plan": {
+          "plan_id": "toy-T18",
+          "nodes": [
+            {
+              "node_id": "paths",
+              "kind": "remote_query",
+              "inputs": [],
+              "parameters": {
+                "backend_id": "neo4j",
+                "artifact": {
+                  "artifact_id": "m15-fragment-paths-neo4j",
+                  "language": "cypher",
+                  "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE type(e1) = \"KNOWS\"\n  AND n0.id = \"a\"\nRETURN DISTINCT n0 AS source, n1 AS target, [n0, n1] AS nodes, [e1] AS edges\n}\nRETURN DISTINCT source.id + \"/\" + edges[0].id + \"/\" + target.id AS path, target.id AS target",
+                  "kind": "compiled",
+                  "source_path": null,
+                  "parameters": {
+                    "compiler": "m9_minimal_compiler",
+                    "target_backend_id": "neo4j",
+                    "result_model": "row_bindings",
+                    "required_features": [
+                      "graph_model.directed_edges",
+                      "graph_model.edge_labels",
+                      "graph_model.labeled_property_graph",
+                      "graph_model.scalar_property_predicates",
+                      "native.cypher",
+                      "path_algebra.Edges",
+                      "path_algebra.Selection",
+                      "pattern.PathPatternQuery",
+                      "result_model.row_bindings"
+                    ],
+                    "semantic_assumptions": [
+                      "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                      "Neo4j node labels represent XGAP node-label predicates.",
+                      "Neo4j relationship types represent XGAP edge-label predicates.",
+                      "Missing properties and non-numeric values follow Cypher WHERE null-elimination for this fragment."
+                    ]
+                  }
+                }
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "eligible",
+              "kind": "remote_query",
+              "inputs": [],
+              "parameters": {
+                "backend_id": "fuseki",
+                "artifact": {
+                  "artifact_id": "m15-fragment-eligible-fuseki",
+                  "language": "sparql",
+                  "text": "SELECT DISTINCT ?eligible WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 <https://xgap.test/toy/age> ?v0 .\n  FILTER(?v0 >= 30)\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n} ?source <https://xgap.test/toy/id> ?eligible . }",
+                  "kind": "compiled",
+                  "source_path": null,
+                  "parameters": {
+                    "compiler": "m9_minimal_compiler",
+                    "target_backend_id": "fuseki",
+                    "result_model": "row_bindings",
+                    "required_features": [
+                      "graph_model.directed_edges",
+                      "graph_model.rdf_graph",
+                      "graph_model.scalar_property_predicates",
+                      "native.sparql",
+                      "path_algebra.Nodes",
+                      "path_algebra.Selection",
+                      "result_model.row_bindings"
+                    ],
+                    "semantic_assumptions": [
+                      "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                      "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                      "RDF type triples represent XGAP node-label predicates.",
+                      "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                    ],
+                    "backend_mapping": {
+                      "mapping_id": "backbone-typed-v1",
+                      "version": "1",
+                      "mapping_hash": "03e44e227e96905576ce7050f9ff00d12151d3f48359dc4f637e9f40291792b4",
+                      "relevant_mapped_iris": [
+                        {
+                          "logical_token": "age",
+                          "canonical_term_id": "age",
+                          "kind": "property",
+                          "iri": "https://xgap.test/toy/age"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "join",
+              "kind": "coordinator_join",
+              "inputs": [
+                "paths",
+                "eligible"
+              ],
+              "parameters": {
+                "left_on": "target",
+                "right_on": "eligible"
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "answer",
+              "kind": "project",
+              "inputs": [
+                "join"
+              ],
+              "parameters": {
+                "fields": [
+                  "path"
+                ]
+              },
+              "semantic_operator_ids": []
+            }
+          ],
+          "roots": [
+            "answer"
+          ],
+          "max_remote_calls": 2,
+          "max_parallelism": 1,
+          "metadata": {}
+        },
+        "runtime": {
+          "plan_id": "toy-T18",
+          "success": true,
+          "root_rows": {
+            "answer": [
+              {
+                "path": "a/e4/c"
+              }
+            ]
+          },
+          "final_rows": [
+            {
+              "path": "a/e4/c"
+            }
+          ],
+          "node_results": [
+            {
+              "node_id": "paths",
+              "kind": "remote_query",
+              "status": "success",
+              "rows": [
+                {
+                  "path": "a/e1/b",
+                  "target": "b"
+                },
+                {
+                  "path": "a/e4/c",
+                  "target": "c"
+                },
+                {
+                  "path": "a/e7/b",
+                  "target": "b"
+                }
+              ],
+              "row_count": 3,
+              "elapsed_ms": 82.740250043571,
+              "input_bytes": 0,
+              "output_bytes": 94,
+              "bytes_moved": 0,
+              "remote_calls": 1,
+              "error": null,
+              "metadata": {
+                "backend_id": "neo4j",
+                "tool_metrics": {
+                  "elapsed_ms": 82.6827920973301,
+                  "row_count": 3.0
+                }
+              }
+            },
+            {
+              "node_id": "eligible",
+              "kind": "remote_query",
+              "status": "success",
+              "rows": [
+                {
+                  "eligible": "c"
+                },
+                {
+                  "eligible": "a"
+                },
+                {
+                  "eligible": "z"
+                }
+              ],
+              "row_count": 3,
+              "elapsed_ms": 10.844124481081963,
+              "input_bytes": 0,
+              "output_bytes": 52,
+              "bytes_moved": 0,
+              "remote_calls": 1,
+              "error": null,
+              "metadata": {
+                "backend_id": "fuseki",
+                "tool_metrics": {
+                  "elapsed_ms": 10.797791182994843,
+                  "row_count": 3.0
+                }
+              }
+            },
+            {
+              "node_id": "join",
+              "kind": "coordinator_join",
+              "status": "success",
+              "rows": [
+                {
+                  "path": "a/e4/c",
+                  "target": "c",
+                  "eligible": "c"
+                }
+              ],
+              "row_count": 1,
+              "elapsed_ms": 0.05075056105852127,
+              "input_bytes": 146,
+              "output_bytes": 47,
+              "bytes_moved": 0,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {}
+            },
+            {
+              "node_id": "answer",
+              "kind": "project",
+              "status": "success",
+              "rows": [
+                {
+                  "path": "a/e4/c"
+                }
+              ],
+              "row_count": 1,
+              "elapsed_ms": 0.01641642302274704,
+              "input_bytes": 47,
+              "output_bytes": 19,
+              "bytes_moved": 0,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {}
+            }
+          ],
+          "elapsed_ms": 93.8971247524023,
+          "total_remote_calls": 2,
+          "total_bytes_moved": 0
+        },
+        "live_llm": false,
+        "paper_result": false
+      },
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 49324,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 49283,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "source_sha256": {
+        "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+        "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+        "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+        "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+        "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+        "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+        "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+        "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+        "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+        "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+        "scripts/run_toy_backbone_native.py": "167fd0bada7ffe426c8b056d6982f4faef4b1e264767412df6c5d00cd9f30861",
+        "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+        "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+        "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+        "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+        "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+        "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+        "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+        "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+        "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+        "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+        "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+        "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+        "src/xgap/runtime/scalars.py": "ef268924687ca7ae960a41141a418dac1acca415e17ab3b952a9066a11b26583",
+        "src/xgap/runtime/binding_operations.py": "6ff247a0bb59dcdc2c3b739f59d620104cdb7c442ba520390256d585fae20b66",
+        "src/xgap/experiments/toy_typed.py": "83ae31825e3ca24e3e4ba1021b38bb136c0f2842c436ce560d61b3342c25bdd8",
+        "src/xgap/compilers/boolean_conditions.py": "b686f1e97517f2ba3ac88ace5617b32c59c666dae80464e10149b962c917f747"
+      },
+      "source_delta_from_final": [],
+      "failed_references": []
+    }
+  ],
+  "accepted_cases": [
+    {
+      "id": "V01",
+      "expected_rows": [
+        {
+          "total": 9007199254740995
+        }
+      ],
+      "actual_rows": [
+        {
+          "total": 9007199254740995
+        }
+      ],
+      "selected_plan_sha256": "82fbce6ed7c61f4bab040dc99306991830cf3878acf48ff4ac7044377e6edd71",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V01/e0138e3a550c12755411",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "total": 9007199254740995
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V01/0e4f6d35fcb3637cd5d0",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "total": 9007199254740995
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V01",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V01-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) RETURN sum(n.amount) AS total\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V01-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "total": 9007199254740995
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 73.6320000141859,
+            "error": null,
+            "started_at": "2026-09-11T05:04:06.501098+00:00",
+            "ended_at": "2026-09-11T05:04:06.574724+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": 9007199254740995
+            }
+          ]
+        },
+        {
+          "query_id": "V01",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V01-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(COALESCE(?amount,0)) AS ?total) WHERE { ?n a t:Person . OPTIONAL { ?n t:amount ?amount } }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "total"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V01-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "total": {
+                  "type": "literal",
+                  "value": "9007199254740995",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 13.731792569160461,
+            "error": null,
+            "started_at": "2026-09-11T05:04:06.576927+00:00",
+            "ended_at": "2026-09-11T05:04:06.590655+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": 9007199254740995
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V02",
+      "expected_rows": [
+        {
+          "total": {
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+            "value": "10000000000000000000000.25"
+          }
+        }
+      ],
+      "actual_rows": [
+        {
+          "total": {
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+            "value": "10000000000000000000000.25"
+          }
+        }
+      ],
+      "selected_plan_sha256": "aa1405e07e01ddacde412c33f4a303ec4ed7a8289986fbfe2f6a8f1700375343",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 1,
+      "serving_calls": 1,
+      "validation_calls": 0,
+      "candidate_checks": [
+        {
+          "plan_id": "V02/eba24897ca33d1074382",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "total": {
+                "type": "literal",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                "value": "10000000000000000000000.25"
+              }
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V02",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V02-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(COALESCE(?credit,0)) AS ?total) WHERE { ?n a t:Person . OPTIONAL { ?n t:credit ?credit } }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "total"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V02-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "total": {
+                  "type": "literal",
+                  "value": "10000000000000000000000.25",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 5.303459241986275,
+            "error": null,
+            "started_at": "2026-09-11T05:04:06.610928+00:00",
+            "ended_at": "2026-09-11T05:04:06.616232+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": {
+                "type": "literal",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                "value": "10000000000000000000000.25"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V03",
+      "expected_rows": [
+        {
+          "people": 5,
+          "present": 4,
+          "unique": 3
+        }
+      ],
+      "actual_rows": [
+        {
+          "people": 5,
+          "present": 4,
+          "unique": 3
+        }
+      ],
+      "selected_plan_sha256": "42e9d8c373201b4a323de3c9d075b337c5dae9f4127300bd2b1f4107ac8df8ea",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V03/b55b6e30488ff8deb4a7",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "people": 5,
+              "present": 4,
+              "unique": 3
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V03/3ddaa39f9c0da46f6b62",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "people": 5,
+              "present": 4,
+              "unique": 3
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V03",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V03-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) RETURN count(*) AS people, count(n.score) AS present, count(DISTINCT n.score) AS unique\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V03-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "people": 5,
+                "present": 4,
+                "unique": 3
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 37.1837904676795,
+            "error": null,
+            "started_at": "2026-09-11T05:04:06.689654+00:00",
+            "ended_at": "2026-09-11T05:04:06.726834+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "people": 5,
+              "present": 4,
+              "unique": 3
+            }
+          ]
+        },
+        {
+          "query_id": "V03",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V03-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?people) (COUNT(?score) AS ?present) (COUNT(DISTINCT ?canonical) AS ?unique) WHERE { ?n a t:Person . OPTIONAL { ?n t:score ?score } BIND(IF(isNumeric(?score),xsd:integer(FLOOR(xsd:decimal(?score))),?score) AS ?canonical) }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "people",
+                "present",
+                "unique"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V03-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "people": {
+                  "type": "literal",
+                  "value": "5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "present": {
+                  "type": "literal",
+                  "value": "4",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "unique": {
+                  "type": "literal",
+                  "value": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 10.664875619113445,
+            "error": null,
+            "started_at": "2026-09-11T05:04:06.731565+00:00",
+            "ended_at": "2026-09-11T05:04:06.742231+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "people": 5,
+              "present": 4,
+              "unique": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V04",
+      "expected_rows": [
+        {
+          "score": null,
+          "n": 1
+        },
+        {
+          "score": 1,
+          "n": 2
+        },
+        {
+          "score": "1",
+          "n": 1
+        },
+        {
+          "score": true,
+          "n": 1
+        }
+      ],
+      "actual_rows": [
+        {
+          "score": null,
+          "n": 1
+        },
+        {
+          "score": 1,
+          "n": 2
+        },
+        {
+          "score": "1",
+          "n": 1
+        },
+        {
+          "score": true,
+          "n": 1
+        }
+      ],
+      "selected_plan_sha256": "4fb07ca3224890a7a53474199e5a32a65ea67eab9593392bb936cbb03f5fd57e",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V04/53b63710fc5df7a7d3d1",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "score": null,
+              "n": 1
+            },
+            {
+              "score": 1,
+              "n": 2
+            },
+            {
+              "score": "1",
+              "n": 1
+            },
+            {
+              "score": true,
+              "n": 1
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V04/830d4c0f0f08c133494f",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "score": null,
+              "n": 1
+            },
+            {
+              "score": 1,
+              "n": 2
+            },
+            {
+              "score": "1",
+              "n": 1
+            },
+            {
+              "score": true,
+              "n": 1
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V04",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V04-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (p:Person) WITH CASE WHEN p.score IS :: INTEGER NOT NULL OR p.score IS :: FLOAT NOT NULL THEN toInteger(p.score) ELSE p.score END AS score RETURN score, count(*) AS n\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V04-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "score": 1,
+                "n": 2
+              },
+              {
+                "score": true,
+                "n": 1
+              },
+              {
+                "score": "1",
+                "n": 1
+              },
+              {
+                "score": null,
+                "n": 1
+              }
+            ],
+            "row_count": 4,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 59.05758310109377,
+            "error": null,
+            "started_at": "2026-09-11T05:04:06.785663+00:00",
+            "ended_at": "2026-09-11T05:04:06.844715+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "score": 1,
+              "n": 2
+            },
+            {
+              "score": true,
+              "n": 1
+            },
+            {
+              "score": "1",
+              "n": 1
+            },
+            {
+              "score": null,
+              "n": 1
+            }
+          ]
+        },
+        {
+          "query_id": "V04",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V04-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?score (COUNT(*) AS ?n) WHERE { ?p a t:Person . OPTIONAL { ?p t:score ?raw } BIND(IF(isNumeric(?raw),xsd:integer(FLOOR(xsd:decimal(?raw))),?raw) AS ?score) } GROUP BY ?score\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "score",
+                "n"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V04-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "n": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "score": {
+                  "type": "literal",
+                  "value": "true",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+                },
+                "n": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "score": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "n": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "score": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "n": {
+                  "type": "literal",
+                  "value": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ],
+            "row_count": 4,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 5.6396666914224625,
+            "error": null,
+            "started_at": "2026-09-11T05:04:06.850748+00:00",
+            "ended_at": "2026-09-11T05:04:06.856390+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "score": null,
+              "n": 1
+            },
+            {
+              "score": true,
+              "n": 1
+            },
+            {
+              "score": "1",
+              "n": 1
+            },
+            {
+              "score": 1,
+              "n": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V05",
+      "expected_rows": [
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        },
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/z"
+        }
+      ],
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        },
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/z"
+        }
+      ],
+      "selected_plan_sha256": "922236e785324a276bccc1391fbd8e9bbf7c192a8fe44996662bbd865435a36e",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V05/531c75ce240b3a9f8334",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/z"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V05/caed84045284127faaf7",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/z"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V05",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V05-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) RETURN \"https://xgap.test/toy/\" + n.id AS person ORDER BY CASE WHEN n.score IS NULL THEN 3 WHEN n.score IS :: INTEGER NOT NULL OR n.score IS :: FLOAT NOT NULL THEN 0 WHEN n.score IS :: STRING NOT NULL THEN 1 ELSE 2 END asc, n.score asc, person ASC LIMIT 10\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V05-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "person": "https://xgap.test/toy/a"
+              },
+              {
+                "person": "https://xgap.test/toy/b"
+              },
+              {
+                "person": "https://xgap.test/toy/d"
+              },
+              {
+                "person": "https://xgap.test/toy/c"
+              },
+              {
+                "person": "https://xgap.test/toy/z"
+              }
+            ],
+            "row_count": 5,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 190.91845862567425,
+            "error": null,
+            "started_at": "2026-09-11T05:08:44.451606+00:00",
+            "ended_at": "2026-09-11T05:08:44.642518+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/z"
+            }
+          ]
+        },
+        {
+          "query_id": "V05",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V05-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (STR(?n) AS ?person) WHERE { ?n a t:Person . OPTIONAL { ?n t:score ?score } BIND(IF(!BOUND(?score),3,IF(isNumeric(?score),0,IF(DATATYPE(?score)=xsd:string,1,2))) AS ?category) BIND(IF(isNumeric(?score),xsd:integer(FLOOR(xsd:decimal(?score))),?score) AS ?sortvalue) } ORDER BY ASC(?category) ASC(?sortvalue) ASC(?person) LIMIT 10\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "person"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V05-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/d",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/c",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/z",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "row_count": 5,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 16.077416948974133,
+            "error": null,
+            "started_at": "2026-09-11T05:08:44.645636+00:00",
+            "ended_at": "2026-09-11T05:08:44.661713+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V06",
+      "expected_rows": [
+        {
+          "person": "https://xgap.test/toy/z"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        }
+      ],
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/z"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        }
+      ],
+      "selected_plan_sha256": "0fba0fafdc4fb1a251a066c78f0d4d4ba60fe9e41530758c4ab8a0e1e6ad8e19",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V06/82ffe94bfca130cf60c0",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/z"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V06/5bc63d199527d0e202d4",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/z"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V06",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V06-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) RETURN \"https://xgap.test/toy/\" + n.id AS person ORDER BY CASE WHEN n.score IS NULL THEN 3 WHEN n.score IS :: INTEGER NOT NULL OR n.score IS :: FLOAT NOT NULL THEN 0 WHEN n.score IS :: STRING NOT NULL THEN 1 ELSE 2 END desc, n.score desc, person ASC LIMIT 10\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V06-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "person": "https://xgap.test/toy/z"
+              },
+              {
+                "person": "https://xgap.test/toy/c"
+              },
+              {
+                "person": "https://xgap.test/toy/d"
+              },
+              {
+                "person": "https://xgap.test/toy/a"
+              },
+              {
+                "person": "https://xgap.test/toy/b"
+              }
+            ],
+            "row_count": 5,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 46.668125316500664,
+            "error": null,
+            "started_at": "2026-09-11T05:08:44.708778+00:00",
+            "ended_at": "2026-09-11T05:08:44.755440+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/z"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            }
+          ]
+        },
+        {
+          "query_id": "V06",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V06-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (STR(?n) AS ?person) WHERE { ?n a t:Person . OPTIONAL { ?n t:score ?score } BIND(IF(!BOUND(?score),3,IF(isNumeric(?score),0,IF(DATATYPE(?score)=xsd:string,1,2))) AS ?category) BIND(IF(isNumeric(?score),xsd:integer(FLOOR(xsd:decimal(?score))),?score) AS ?sortvalue) } ORDER BY DESC(?category) DESC(?sortvalue) ASC(?person) LIMIT 10\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "person"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V06-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/z",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/c",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/d",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "row_count": 5,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 6.585666909813881,
+            "error": null,
+            "started_at": "2026-09-11T05:08:44.759584+00:00",
+            "ended_at": "2026-09-11T05:08:44.766170+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/z"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V07",
+      "expected_rows": [
+        {
+          "low": 1,
+          "high": true
+        }
+      ],
+      "actual_rows": [
+        {
+          "low": 1,
+          "high": true
+        }
+      ],
+      "selected_plan_sha256": "5daefd1abe7d30433eec67445c7020f13dcf793bcd1ee764c0f9ea15e8778a7c",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V07/05f63ccc1eff13cf09b6",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "low": 1,
+              "high": true
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V07/30fba73bb783a29ee530",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "low": 1,
+              "high": true
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V07",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V07-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) WHERE n.score IS NOT NULL WITH n ORDER BY CASE WHEN n.score IS NULL THEN 3 WHEN n.score IS :: INTEGER NOT NULL OR n.score IS :: FLOAT NOT NULL THEN 0 WHEN n.score IS :: STRING NOT NULL THEN 1 ELSE 2 END, n.score, n.id WITH collect(n.score) AS values RETURN head(values) AS low, last(values) AS high\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V07-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "low": 1,
+                "high": true
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 114.37512468546629,
+            "error": null,
+            "started_at": "2026-09-11T05:08:44.809489+00:00",
+            "ended_at": "2026-09-11T05:08:44.923855+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "low": 1,
+              "high": true
+            }
+          ]
+        },
+        {
+          "query_id": "V07",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V07-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?low ?high WHERE { { SELECT (xsd:integer(FLOOR(?s)) AS ?low) WHERE { ?n a t:Person ; t:score ?s . FILTER(isNumeric(?s)) } ORDER BY ?s LIMIT 1 } { SELECT ?high WHERE { ?n a t:Person ; t:score ?high . FILTER(DATATYPE(?high)=xsd:boolean) } ORDER BY DESC(?high) LIMIT 1 } }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "low",
+                "high"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V07-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "low": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "high": {
+                  "type": "literal",
+                  "value": "true",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 12.812667526304722,
+            "error": null,
+            "started_at": "2026-09-11T05:08:44.930051+00:00",
+            "ended_at": "2026-09-11T05:08:44.942862+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "low": 1,
+              "high": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V08",
+      "expected_rows": [
+        {
+          "total": 9007199254740995,
+          "n": 2
+        }
+      ],
+      "actual_rows": [
+        {
+          "total": 9007199254740995,
+          "n": 2
+        }
+      ],
+      "selected_plan_sha256": "e04cb843a52cea2b4514ce78d3e373607bd789465ea06a15ebe631a0a98eec6a",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V08/76e6a3fe2dd6e5d7e947",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "total": 9007199254740995,
+              "n": 2
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V08/cf52d849c984aa824712",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "total": 9007199254740995,
+              "n": 2
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V08",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V08-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) WHERE n.score = 1 RETURN sum(n.amount) AS total, count(*) AS n\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V08-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "total": 9007199254740995,
+                "n": 2
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 39.32512458413839,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.021621+00:00",
+            "ended_at": "2026-09-11T05:08:45.060943+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": 9007199254740995,
+              "n": 2
+            }
+          ]
+        },
+        {
+          "query_id": "V08",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V08-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(COALESCE(?amount,0)) AS ?total) (COUNT(*) AS ?n) WHERE { ?person a t:Person ; t:score ?score . FILTER(isNumeric(?score) && ?score=1) OPTIONAL { ?person t:amount ?amount } }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "total",
+                "n"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V08-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "total": {
+                  "type": "literal",
+                  "value": "9007199254740995",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "n": {
+                  "type": "literal",
+                  "value": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 8.883541449904442,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.068302+00:00",
+            "ended_at": "2026-09-11T05:08:45.077187+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": 9007199254740995,
+              "n": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V09",
+      "expected_rows": [
+        {
+          "left": "https://xgap.test/toy/a",
+          "right": "https://xgap.test/toy/a"
+        },
+        {
+          "left": "https://xgap.test/toy/a",
+          "right": "https://xgap.test/toy/b"
+        },
+        {
+          "left": "https://xgap.test/toy/b",
+          "right": "https://xgap.test/toy/a"
+        },
+        {
+          "left": "https://xgap.test/toy/b",
+          "right": "https://xgap.test/toy/b"
+        },
+        {
+          "left": "https://xgap.test/toy/c",
+          "right": "https://xgap.test/toy/c"
+        },
+        {
+          "left": "https://xgap.test/toy/d",
+          "right": "https://xgap.test/toy/d"
+        }
+      ],
+      "actual_rows": [
+        {
+          "left": "https://xgap.test/toy/a",
+          "right": "https://xgap.test/toy/a"
+        },
+        {
+          "left": "https://xgap.test/toy/a",
+          "right": "https://xgap.test/toy/b"
+        },
+        {
+          "left": "https://xgap.test/toy/b",
+          "right": "https://xgap.test/toy/a"
+        },
+        {
+          "left": "https://xgap.test/toy/b",
+          "right": "https://xgap.test/toy/b"
+        },
+        {
+          "left": "https://xgap.test/toy/c",
+          "right": "https://xgap.test/toy/c"
+        },
+        {
+          "left": "https://xgap.test/toy/d",
+          "right": "https://xgap.test/toy/d"
+        }
+      ],
+      "selected_plan_sha256": "fa86ae0cf592d677dd35daf0b29f83f28af7e46166b3b41851093e90f7ae2fcf",
+      "source_bindings": {
+        "left": "fuseki",
+        "right": "fuseki"
+      },
+      "observation_calls": 4,
+      "serving_calls": 2,
+      "validation_calls": 6,
+      "candidate_checks": [
+        {
+          "plan_id": "V09/9cfd0c3005535572b4a7",
+          "source_bindings": {
+            "left": "fuseki",
+            "right": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/c",
+              "right": "https://xgap.test/toy/c"
+            },
+            {
+              "left": "https://xgap.test/toy/d",
+              "right": "https://xgap.test/toy/d"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V09/d8bf7433f20ec212f920",
+          "source_bindings": {
+            "left": "fuseki",
+            "right": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/c",
+              "right": "https://xgap.test/toy/c"
+            },
+            {
+              "left": "https://xgap.test/toy/d",
+              "right": "https://xgap.test/toy/d"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "V09/0540bbc839aceae37b30",
+          "source_bindings": {
+            "left": "neo4j",
+            "right": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/c",
+              "right": "https://xgap.test/toy/c"
+            },
+            {
+              "left": "https://xgap.test/toy/d",
+              "right": "https://xgap.test/toy/d"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "V09/a0ef70d905d541104cae",
+          "source_bindings": {
+            "left": "neo4j",
+            "right": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/c",
+              "right": "https://xgap.test/toy/c"
+            },
+            {
+              "left": "https://xgap.test/toy/d",
+              "right": "https://xgap.test/toy/d"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V09",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V09-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (a:Person),(b:Person) WHERE a.score = b.score RETURN \"https://xgap.test/toy/\" + a.id AS left, \"https://xgap.test/toy/\" + b.id AS right\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V09-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "left": "https://xgap.test/toy/a",
+                "right": "https://xgap.test/toy/a"
+              },
+              {
+                "left": "https://xgap.test/toy/b",
+                "right": "https://xgap.test/toy/a"
+              },
+              {
+                "left": "https://xgap.test/toy/a",
+                "right": "https://xgap.test/toy/b"
+              },
+              {
+                "left": "https://xgap.test/toy/b",
+                "right": "https://xgap.test/toy/b"
+              },
+              {
+                "left": "https://xgap.test/toy/c",
+                "right": "https://xgap.test/toy/c"
+              },
+              {
+                "left": "https://xgap.test/toy/d",
+                "right": "https://xgap.test/toy/d"
+              }
+            ],
+            "row_count": 6,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 54.779957979917526,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.174373+00:00",
+            "ended_at": "2026-09-11T05:08:45.229149+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/c",
+              "right": "https://xgap.test/toy/c"
+            },
+            {
+              "left": "https://xgap.test/toy/d",
+              "right": "https://xgap.test/toy/d"
+            }
+          ]
+        },
+        {
+          "query_id": "V09",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V09-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (STR(?a) AS ?left) (STR(?b) AS ?right) WHERE { ?a a t:Person ; t:score ?x . ?b a t:Person ; t:score ?y . FILTER(COALESCE((isNumeric(?x) && isNumeric(?y) && ?x=?y) || (DATATYPE(?x)=DATATYPE(?y) && ?x=?y),false)) }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "left",
+                "right"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V09-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "left": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/c",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "right": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/c",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "left": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "right": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "left": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "right": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "left": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/d",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "right": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/d",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "left": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "right": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "left": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "right": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "row_count": 6,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 6.942916661500931,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.240484+00:00",
+            "ended_at": "2026-09-11T05:08:45.247427+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "left": "https://xgap.test/toy/c",
+              "right": "https://xgap.test/toy/c"
+            },
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/a",
+              "right": "https://xgap.test/toy/b"
+            },
+            {
+              "left": "https://xgap.test/toy/d",
+              "right": "https://xgap.test/toy/d"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/a"
+            },
+            {
+              "left": "https://xgap.test/toy/b",
+              "right": "https://xgap.test/toy/b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V10",
+      "expected_rows": [
+        {
+          "score": 1
+        },
+        {
+          "score": "1"
+        },
+        {
+          "score": true
+        },
+        {
+          "score": null
+        }
+      ],
+      "actual_rows": [
+        {
+          "score": "1"
+        },
+        {
+          "score": 1
+        },
+        {
+          "score": null
+        },
+        {
+          "score": true
+        }
+      ],
+      "selected_plan_sha256": "9ae12075b68b7e95a4a796bc72472d1bb84dd243788975b3bc20459bc188e219",
+      "source_bindings": {
+        "left": "fuseki",
+        "right": "fuseki"
+      },
+      "observation_calls": 4,
+      "serving_calls": 2,
+      "validation_calls": 6,
+      "candidate_checks": [
+        {
+          "plan_id": "V10/82f09aeafd2c9df53d6c",
+          "source_bindings": {
+            "left": "fuseki",
+            "right": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "score": "1"
+            },
+            {
+              "score": 1
+            },
+            {
+              "score": null
+            },
+            {
+              "score": true
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V10/a57a2d4bee61a1a9ab4b",
+          "source_bindings": {
+            "left": "fuseki",
+            "right": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "score": "1"
+            },
+            {
+              "score": 1
+            },
+            {
+              "score": null
+            },
+            {
+              "score": true
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "V10/8397ba58c8358beda42b",
+          "source_bindings": {
+            "left": "neo4j",
+            "right": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "score": "1"
+            },
+            {
+              "score": 1
+            },
+            {
+              "score": null
+            },
+            {
+              "score": true
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "V10/fe4d4241371c25bb432a",
+          "source_bindings": {
+            "left": "neo4j",
+            "right": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "score": "1"
+            },
+            {
+              "score": 1
+            },
+            {
+              "score": null
+            },
+            {
+              "score": true
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V10",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V10-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) RETURN DISTINCT CASE WHEN n.score IS :: INTEGER NOT NULL OR n.score IS :: FLOAT NOT NULL THEN toInteger(n.score) ELSE n.score END AS score\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V10-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "score": 1
+              },
+              {
+                "score": true
+              },
+              {
+                "score": "1"
+              },
+              {
+                "score": null
+              }
+            ],
+            "row_count": 4,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 30.758874490857124,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.353947+00:00",
+            "ended_at": "2026-09-11T05:08:45.384701+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "score": 1
+            },
+            {
+              "score": true
+            },
+            {
+              "score": "1"
+            },
+            {
+              "score": null
+            }
+          ]
+        },
+        {
+          "query_id": "V10",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V10-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?score WHERE { ?n a t:Person . OPTIONAL { ?n t:score ?raw } BIND(IF(isNumeric(?raw),xsd:integer(FLOOR(xsd:decimal(?raw))),?raw) AS ?score) }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "score"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V10-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "score": {
+                  "type": "literal",
+                  "value": "true",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+                }
+              },
+              {
+                "score": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "score": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {}
+            ],
+            "row_count": 4,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 5.449540913105011,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.399011+00:00",
+            "ended_at": "2026-09-11T05:08:45.404461+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "score": true
+            },
+            {
+              "score": 1
+            },
+            {
+              "score": "1"
+            },
+            {
+              "score": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V11",
+      "expected_rows": [
+        {
+          "total": 1.0
+        }
+      ],
+      "actual_rows": [
+        {
+          "total": 1.0
+        }
+      ],
+      "selected_plan_sha256": "261797b306ebd6c4767f42d4782b48e8ef49c31ffa9acbd5f6c680bdeb8e071b",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V11/9e1d2a577c2e462efff7",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "total": 1.0
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V11/0de677312b060f9281ec",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "total": 1.0
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V11",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V11-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) WHERE CASE WHEN n.score IS :: INTEGER NOT NULL OR n.score IS :: FLOAT NOT NULL THEN n.score>0 ELSE false END RETURN sum(DISTINCT toFloat(n.score)) AS total\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V11-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "total": 1.0
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 32.712250016629696,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.465071+00:00",
+            "ended_at": "2026-09-11T05:08:45.497777+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": 1.0
+            }
+          ]
+        },
+        {
+          "query_id": "V11",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V11-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(DISTINCT ?value) AS ?total) WHERE { ?n a t:Person ; t:score ?raw . FILTER(isNumeric(?raw) && ?raw>0) BIND(xsd:double(xsd:integer(FLOOR(xsd:decimal(?raw)))) AS ?value) }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "total"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V11-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "total": {
+                  "type": "literal",
+                  "value": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 5.776999518275261,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.514021+00:00",
+            "ended_at": "2026-09-11T05:08:45.519801+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": 1.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V12",
+      "expected_rows": [
+        {
+          "rows": 0,
+          "present": 0,
+          "total": 0,
+          "low": null,
+          "high": null
+        }
+      ],
+      "actual_rows": [
+        {
+          "rows": 0,
+          "present": 0,
+          "total": 0,
+          "low": null,
+          "high": null
+        }
+      ],
+      "selected_plan_sha256": "7bd62e36f60d5546740df6e969d41b86c822f32bee17e6859a23bec7f6b1c70c",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V12/f86fdc44d88bcd285615",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "rows": 0,
+              "present": 0,
+              "total": 0,
+              "low": null,
+              "high": null
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V12/ca830afb4a0b07dc5983",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "rows": 0,
+              "present": 0,
+              "total": 0,
+              "low": null,
+              "high": null
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V12",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V12-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) WHERE n.id = \"missing\" RETURN count(*) AS rows, count(n.amount) AS present, sum(n.amount) AS total, min(n.amount) AS low, max(n.amount) AS high\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V12-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "rows": 0,
+                "present": 0,
+                "total": 0,
+                "low": null,
+                "high": null
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 28.71858235448599,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.615478+00:00",
+            "ended_at": "2026-09-11T05:08:45.644192+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "rows": 0,
+              "present": 0,
+              "total": 0,
+              "low": null,
+              "high": null
+            }
+          ]
+        },
+        {
+          "query_id": "V12",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V12-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?rows) (COUNT(?v) AS ?present) (SUM(COALESCE(?v,0)) AS ?total) (MIN(?v) AS ?low) (MAX(?v) AS ?high) WHERE { ?n a t:Person . FILTER(?n=t:missing) OPTIONAL { ?n t:amount ?v } }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "rows",
+                "present",
+                "total",
+                "low",
+                "high"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V12-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "rows": {
+                  "type": "literal",
+                  "value": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "present": {
+                  "type": "literal",
+                  "value": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "total": {
+                  "type": "literal",
+                  "value": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 7.861250080168247,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.661498+00:00",
+            "ended_at": "2026-09-11T05:08:45.669361+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "rows": 0,
+              "present": 0,
+              "total": 0,
+              "low": null,
+              "high": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V13",
+      "expected_rows": [
+        {
+          "total": {
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+            "value": "10000000000000000000000.1"
+          }
+        }
+      ],
+      "actual_rows": [
+        {
+          "total": {
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+            "value": "10000000000000000000000.1"
+          }
+        }
+      ],
+      "selected_plan_sha256": "46a1b9c079adcdfefbd0b6ce9705836c392d39c344f098b72094e678d72bcb00",
+      "source_bindings": {
+        "credits": "fuseki",
+        "eligible": "fuseki"
+      },
+      "observation_calls": 3,
+      "serving_calls": 2,
+      "validation_calls": 2,
+      "candidate_checks": [
+        {
+          "plan_id": "V13/f7616e5ab66aec445e16",
+          "source_bindings": {
+            "credits": "fuseki",
+            "eligible": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "total": {
+                "type": "literal",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                "value": "10000000000000000000000.1"
+              }
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V13/f2e641d9b15832a1c788",
+          "source_bindings": {
+            "credits": "fuseki",
+            "eligible": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "total": {
+                "type": "literal",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                "value": "10000000000000000000000.1"
+              }
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V13",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V13-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(COALESCE(?credit,0)) AS ?total) WHERE { t:a a t:Person ; t:credit ?credit }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "total"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V13-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "total": {
+                  "type": "literal",
+                  "value": "10000000000000000000000.10",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 4.426458850502968,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.768592+00:00",
+            "ended_at": "2026-09-11T05:08:45.773020+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "total": {
+                "type": "literal",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                "value": "10000000000000000000000.1"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V14",
+      "expected_rows": [
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        },
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/z"
+        }
+      ],
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        },
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/z"
+        }
+      ],
+      "selected_plan_sha256": "c20c1579b1a91b09907bee5198673e118bbd1b95ff78daeda1b6d1fafadb2775",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 1,
+      "serving_calls": 1,
+      "validation_calls": 0,
+      "candidate_checks": [
+        {
+          "plan_id": "V14/b0d52ff5751d44860f82",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/z"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V14",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V14-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (STR(?n) AS ?person) WHERE { ?n a t:Person . OPTIONAL { ?n t:credit ?credit } BIND(IF(BOUND(?credit),0,1) AS ?missing) } ORDER BY ?missing ?credit ?person LIMIT 10\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "person"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V14-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/d",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/b",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/c",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              },
+              {
+                "person": {
+                  "type": "literal",
+                  "value": "https://xgap.test/toy/z",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "row_count": 5,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 5.221916362643242,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.825119+00:00",
+            "ended_at": "2026-09-11T05:08:45.830342+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/a"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V15",
+      "expected_rows": [
+        {
+          "rows": 5,
+          "present": 0,
+          "total": 0,
+          "low": null,
+          "high": null
+        }
+      ],
+      "actual_rows": [
+        {
+          "rows": 5,
+          "present": 0,
+          "total": 0,
+          "low": null,
+          "high": null
+        }
+      ],
+      "selected_plan_sha256": "1adae9d3c3cf8c7f290e3db68414185c9696bb3fa8a717aaed347a086c9242f9",
+      "source_bindings": {
+        "people": "fuseki"
+      },
+      "observation_calls": 2,
+      "serving_calls": 1,
+      "validation_calls": 1,
+      "candidate_checks": [
+        {
+          "plan_id": "V15/614628d0b0c8cf48ab8d",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "rows": 5,
+              "present": 0,
+              "total": 0,
+              "low": null,
+              "high": null
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "V15/ba4da40fb861ce1d2cba",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "rows": 5,
+              "present": 0,
+              "total": 0,
+              "low": null,
+              "high": null
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "references": [
+        {
+          "query_id": "V15",
+          "backend": "neo4j",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V15-reference-neo4j",
+            "language": "cypher",
+            "text": "MATCH (n:Person) RETURN count(*) AS rows, count(n.vacant) AS present, sum(n.vacant) AS total, min(n.vacant) AS low, max(n.vacant) AS high\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {}
+          },
+          "execution": {
+            "backend_id": "neo4j",
+            "artifact_id": "V15-reference-neo4j",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "rows": 5,
+                "present": 0,
+                "total": 0,
+                "low": null,
+                "high": null
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 21.56058419495821,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.921412+00:00",
+            "ended_at": "2026-09-11T05:08:45.942970+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          "actual_rows": [
+            {
+              "rows": 5,
+              "present": 0,
+              "total": 0,
+              "low": null,
+              "high": null
+            }
+          ]
+        },
+        {
+          "query_id": "V15",
+          "backend": "fuseki",
+          "success": true,
+          "artifact": {
+            "artifact_id": "V15-reference-fuseki",
+            "language": "sparql",
+            "text": "PREFIX t: <https://xgap.test/toy/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?rows) (COUNT(?v) AS ?present) (SUM(COALESCE(?v,0)) AS ?total) (MIN(?v) AS ?low) (MAX(?v) AS ?high) WHERE { ?n a t:Person . OPTIONAL { ?n t:vacant ?v } }\n",
+            "kind": "native",
+            "source_path": null,
+            "parameters": {
+              "rdf_result_encoding": "rdf_terms_v1",
+              "expected_result_columns": [
+                "rows",
+                "present",
+                "total",
+                "low",
+                "high"
+              ]
+            }
+          },
+          "execution": {
+            "backend_id": "fuseki",
+            "artifact_id": "V15-reference-fuseki",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "rows": {
+                  "type": "literal",
+                  "value": "5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "present": {
+                  "type": "literal",
+                  "value": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "total": {
+                  "type": "literal",
+                  "value": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 5.61899971216917,
+            "error": null,
+            "started_at": "2026-09-11T05:08:45.965170+00:00",
+            "ended_at": "2026-09-11T05:08:45.970785+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "toy",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          "actual_rows": [
+            {
+              "rows": 5,
+              "present": 0,
+              "total": 0,
+              "low": null,
+              "high": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "current_plan_identity": [
+    {
+      "id": "V01",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V02",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V03",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V04",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V05",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V06",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V07",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V08",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V09",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V10",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V11",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V12",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V13",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V14",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    },
+    {
+      "id": "V15",
+      "selected_plan_identical": true,
+      "candidate_ids_identical": true
+    }
+  ],
+  "retained_totals": {
+    "programs": 15,
+    "candidate_answers": 32,
+    "reference_answers": 27,
+    "observation_calls": 33,
+    "serving_calls": 18,
+    "extra_validation_calls": 24,
+    "old_slice_calls": 2
+  },
+  "final_source_sha256": {
+    "scripts/run_toy_backbone_native.py": "167fd0bada7ffe426c8b056d6982f4faef4b1e264767412df6c5d00cd9f30861",
+    "scripts/run_toy_development.sh": "ceeb48d0d3ba08eedc4ba26329eb674b66a47b6970035dcad680fdd186e648b2",
+    "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+    "src/xgap/compilers/boolean_conditions.py": "b686f1e97517f2ba3ac88ace5617b32c59c666dae80464e10149b962c917f747",
+    "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+    "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+    "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+    "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/experiments/toy_typed.py": "83ae31825e3ca24e3e4ba1021b38bb136c0f2842c436ce560d61b3342c25bdd8",
+    "src/xgap/runtime/binding_operations.py": "6ff247a0bb59dcdc2c3b739f59d620104cdb7c442ba520390256d585fae20b66",
+    "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+    "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+    "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+    "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+    "src/xgap/runtime/scalars.py": "ef268924687ca7ae960a41141a418dac1acca415e17ab3b952a9066a11b26583",
+    "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+    "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+    "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+    "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "tests/test_typed_binding_execution.py": "d146749a556e4057836c000f78f70e3e926c153418fc25ca9fc05767057b6343",
+    "tests/test_typed_binding_values.py": "293dcacaabaa3ff2f98f8b695053ac673b5ad842cdc60f2ac40eb8de48122fca"
+  },
+  "final_fixture_sha256": {
+    "README.md": "7ddfad569a442374bb6643e626a5d229a64ae2c7e70f71ff1cd6693d1fe987c2",
+    "cases.json": "25bd74538f17bfefb555dcb5b0d2a7bcff8bec9a127f44f8e6f2fc4ce8fc6e03",
+    "graph.json": "b13cb9a9be2b062f4c7dd9f3befb0827d548b82fb869d5c1dde74fbdefbed5b7",
+    "load.cypher": "51742690720f25efaed14a8ec9ed23b57a59ef78e8e0d435f1c0cd3ad54d2541",
+    "load.ttl": "65b6cb0d7a9b3b374f7be22de9bc0f364035ed57efe8fb48536166c4db939be7",
+    "mapping.json": "c725f4f234a46a101aea7482bc0a901c77a1c4e8627487245b0b18ac63091272",
+    "sources.json": "f63eca67e0b0b76dc23ea2ec080a7813e2ee99cfba2f7669f22925adbfd5d39a",
+    "targets/V01.cypher": "34978a2cd88a16127a2c2ec7ec6162b651ba34ec4615cc2c43627de7ddf277f3",
+    "targets/V01.rq": "c320b34589b3666fe2c19e7dec685da23b3485f0fd8a58aebb81c2b7e710bce3",
+    "targets/V02.rq": "bca1ed8fd1e8219e55333ef23d260d6837c5a77b93c5862ba5587a839ec049f6",
+    "targets/V03.cypher": "cc9fa5437a4ac1dd51a6a88acf1d9fa1a9d1af170abd6f95f79f9858a651b366",
+    "targets/V03.rq": "aec9feccf8fadcee16eeeba41109ea5f034cc3be08ac3f5493c83eac086086b2",
+    "targets/V04.cypher": "c4d04c9405e477a4419c1670ba33aa32a1b5fcb4153a96084f9b0c3f22ee0310",
+    "targets/V04.rq": "182b956a5b497cf6b578bc214108fe9249edeae59a161004447a3d778e719091",
+    "targets/V05.cypher": "e9a06f5021ec397e9d3fd815d437c50e88133284ff564e83bfd82497838d530e",
+    "targets/V05.rq": "5c52b1515720b748a49842667c1f3610531935be0cd4acc28cf9b041ce5ffc75",
+    "targets/V06.cypher": "127291b127da98156fb66e2ffc760f07315ba8f987705234069656413072da79",
+    "targets/V06.rq": "b22ff767f310e51f0654ec707efda8db9bcc392b40a185501df8e33efd92674b",
+    "targets/V07.cypher": "e4868a4a0515e7a776e384d4efb2c073ddea63d4a2697cdecbaa68bba6f31217",
+    "targets/V07.rq": "8dfe1923ea186feeeff5bc53839e35f8b57e47ae13f09b17de00a71d46b6d192",
+    "targets/V08.cypher": "781330abbd8c2258729b3f607ff06ced43c3d8fe11f681c2176320e6dc425e4b",
+    "targets/V08.rq": "f3e393390585952aa3f1936854eca9e0b4e63f5b9740327f0ec14a3e2bf06b64",
+    "targets/V09.cypher": "96fa703860861cf823dd2d00d9380ef9dfcc7bff5fbe6efe65994c7ea1ff1c54",
+    "targets/V09.rq": "266ce7974f1730aa0cc05a21252bc17ee0ed3ebf6309b057e3821b79c214a4ae",
+    "targets/V10.cypher": "8b88999d28284913d85d8c12812fe15d7185e5c2a631808568348cec2dc44d4f",
+    "targets/V10.rq": "c69d10f2eb1be92bda11d6f36af24a9368cbdecf27170522fd7ace62b85a248a",
+    "targets/V11.cypher": "a31d817491461b6f079a06c5fbdda141398b0c76d3a96a6236ae39eb85404ce8",
+    "targets/V11.rq": "f9a98e02151137523a866291dcdbb34b58cb8a1dc9c7224bf2ced89a1c25bc6a",
+    "targets/V12.cypher": "b961dc924e65f5629cce357890c0901fbefe4e74ea63ea65691f6531498857a9",
+    "targets/V12.rq": "dc1d19bd45e6a0df8b3e680aaf6dc41c9fff1113c0009fa082b3965f56b7714d",
+    "targets/V13.rq": "28ffa9eb21160156e6fb7c3419da3de9c4dadcc8956283317816a430735e7dc4",
+    "targets/V14.rq": "fdc051055601d698815f50036c59f670cb3e306075b2c65fb8e8510c95879df6",
+    "targets/V15.cypher": "f4bce0212343dcfc83b2ea70d2f7edd92d03699993f415877e934efe3c129dcb",
+    "targets/V15.rq": "33a677b45339d8f9222ad999645c2349091fe9717da2658df4708af4340c2be4"
+  },
+  "jena_arq_reference_checks": [
+    {
+      "id": "V01",
+      "success": true,
+      "rows": [
+        {
+          "total": 9007199254740995
+        }
+      ]
+    },
+    {
+      "id": "V02",
+      "success": true,
+      "rows": [
+        {
+          "total": {
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+            "value": "10000000000000000000000.25"
+          }
+        }
+      ]
+    },
+    {
+      "id": "V03",
+      "success": true,
+      "rows": [
+        {
+          "people": 5,
+          "present": 4,
+          "unique": 3
+        }
+      ]
+    },
+    {
+      "id": "V04",
+      "success": true,
+      "rows": [
+        {
+          "score": null,
+          "n": 1
+        },
+        {
+          "score": true,
+          "n": 1
+        },
+        {
+          "score": "1",
+          "n": 1
+        },
+        {
+          "score": 1,
+          "n": 2
+        }
+      ]
+    },
+    {
+      "id": "V05",
+      "success": true,
+      "rows": [
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        },
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/z"
+        }
+      ]
+    },
+    {
+      "id": "V06",
+      "success": true,
+      "rows": [
+        {
+          "person": "https://xgap.test/toy/z"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        }
+      ]
+    },
+    {
+      "id": "V07",
+      "success": true,
+      "rows": [
+        {
+          "low": 1,
+          "high": true
+        }
+      ]
+    },
+    {
+      "id": "V08",
+      "success": true,
+      "rows": [
+        {
+          "total": 9007199254740995,
+          "n": 2
+        }
+      ]
+    },
+    {
+      "id": "V09",
+      "success": true,
+      "rows": [
+        {
+          "left": "https://xgap.test/toy/d",
+          "right": "https://xgap.test/toy/d"
+        },
+        {
+          "left": "https://xgap.test/toy/c",
+          "right": "https://xgap.test/toy/c"
+        },
+        {
+          "left": "https://xgap.test/toy/b",
+          "right": "https://xgap.test/toy/b"
+        },
+        {
+          "left": "https://xgap.test/toy/b",
+          "right": "https://xgap.test/toy/a"
+        },
+        {
+          "left": "https://xgap.test/toy/a",
+          "right": "https://xgap.test/toy/b"
+        },
+        {
+          "left": "https://xgap.test/toy/a",
+          "right": "https://xgap.test/toy/a"
+        }
+      ]
+    },
+    {
+      "id": "V10",
+      "success": true,
+      "rows": [
+        {
+          "score": null
+        },
+        {
+          "score": "1"
+        },
+        {
+          "score": true
+        },
+        {
+          "score": 1
+        }
+      ]
+    },
+    {
+      "id": "V11",
+      "success": true,
+      "rows": [
+        {
+          "total": 1.0
+        }
+      ]
+    },
+    {
+      "id": "V12",
+      "success": true,
+      "rows": [
+        {
+          "rows": 0,
+          "present": 0,
+          "total": 0,
+          "low": null,
+          "high": null
+        }
+      ]
+    },
+    {
+      "id": "V13",
+      "success": true,
+      "rows": [
+        {
+          "total": {
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+            "value": "10000000000000000000000.1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "V14",
+      "success": true,
+      "rows": [
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        },
+        {
+          "person": "https://xgap.test/toy/a"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/z"
+        }
+      ]
+    },
+    {
+      "id": "V15",
+      "success": true,
+      "rows": [
+        {
+          "rows": 5,
+          "present": 0,
+          "total": 0,
+          "low": null,
+          "high": null
+        }
+      ]
+    }
+  ],
+  "gates": {
+    "focused": {
+      "session": 2033,
+      "exit_code": 0,
+      "passed": 208,
+      "seconds": 5.48
+    },
+    "daily": {
+      "session": 7865,
+      "exit_code": 0,
+      "passed": 489,
+      "seconds": 26.35,
+      "demo_cases": 18
+    },
+    "reference_replay": {
+      "session": 60153,
+      "exit_code": 0,
+      "passed": 53,
+      "seconds": 1.19
+    },
+    "broad": {
+      "session": 24384,
+      "exit_code": 0,
+      "passed": 3334,
+      "skipped": 38,
+      "seconds": 670.66,
+      "harness_example_entrypoints": 24,
+      "log": "/tmp/xgap-t1-typed-binding-acceptance.log"
+    }
+  },
+  "legacy_toy_boolean_files_unchanged_from_base": true,
+  "limitations": [
+    "Tiny correctness only, not a performance or NL-accuracy claim",
+    "Explicit logical property views; no source completeness inference",
+    "No arbitrary-precision decimal property replica declared for Neo4j",
+    "PathSet and focused-binding algebra unchanged; broader T1/T2/T3 unfinished"
+  ],
+  "gate_logs": {
+    "focused": {
+      "path": "/tmp/xgap-t1-typed-binding-focused3.log",
+      "sha256": "80cdcc178f527bfbe6067eeb898f14e7f8621f6d33c5818383a3472c1c74146f"
+    },
+    "daily": {
+      "path": "/tmp/xgap-t1-typed-binding-daily.log",
+      "sha256": "3668458179660292844af768cda0a8f682d4d3a33a6a54e88cd5cc266c66892b"
+    },
+    "final_reference_replay": {
+      "path": "/tmp/xgap-t1-typed-binding-final-replay.log",
+      "sha256": "dee329fb82faa06e57b25dc577f6a35fe573e5530e067726015f8ab467c2b55c"
+    },
+    "broad": {
+      "path": "/tmp/xgap-t1-typed-binding-acceptance.log",
+      "sha256": "e91c31c92c7359cc0704044cd3bc5e357a8a738a854a1104ffe356245e6feeb6"
+    }
+  },
+  "all_handles_terminal": true,
+  "source_test_changes_after_final_broad_launch": false
+}

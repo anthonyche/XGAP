@@ -1,0 +1,84 @@
+{
+  "schema_version": "m15-f2-query-spec-v1",
+  "query_id": "financial-risk-alice-high-risk",
+  "resolved_intent": "Find transfers from the resolved Alice Smith identity during the fixed recent-time window to companies whose exact risk level is HIGH.",
+  "hard_constraints": [
+    {
+      "constraint_id": "resolved-person-identity",
+      "kind": "entity_id",
+      "value": "person-alice-smith",
+      "relaxable": false
+    },
+    {
+      "constraint_id": "time-lower-bound",
+      "kind": "date_gte",
+      "value": "2026-08-05",
+      "relaxable": false
+    },
+    {
+      "constraint_id": "amount-lower-bound",
+      "kind": "integer_gte",
+      "value": 50000,
+      "relaxable": false
+    },
+    {
+      "constraint_id": "risk-level",
+      "kind": "enum_eq",
+      "value": "HIGH",
+      "relaxable": false
+    }
+  ],
+  "semantic_operator_ids": [
+    "resolved-person",
+    "recent-large-transfers",
+    "high-risk-companies",
+    "align-transfer-company",
+    "align-risk-company",
+    "federated-company-join",
+    "answer-projection"
+  ],
+  "output_fields": [
+    "person",
+    "company",
+    "amount",
+    "currency",
+    "occurred_on",
+    "risk"
+  ],
+  "artifacts": [
+    {
+      "role": "neo4j_full",
+      "backend_id": "neo4j",
+      "language": "cypher",
+      "filename": "query_recent_transfers.cypher",
+      "artifact_id_template": "m15-f0-{workload_id}-neo4j-full",
+      "parameters": {}
+    },
+    {
+      "role": "neo4j_bound",
+      "backend_id": "neo4j",
+      "language": "cypher",
+      "filename": "query_recent_transfers_bound.cypher",
+      "artifact_id_template": "m15-f0-{workload_id}-neo4j-bound",
+      "parameters": {
+        "company_ids": {
+          "type": "array[string]",
+          "required": true,
+          "max_items_from": "workload.max_bindings"
+        }
+      }
+    },
+    {
+      "role": "fuseki_risk",
+      "backend_id": "fuseki",
+      "language": "sparql",
+      "filename": "query_high_risk.rq",
+      "artifact_id_template": "m15-f0-{workload_id}-fuseki-risk",
+      "parameters": {}
+    }
+  ],
+  "source_oracle_filename": "expected_source_results.json",
+  "final_oracle_filename": "expected_result.json",
+  "automatic_retries": 0,
+  "paper_result": false
+}

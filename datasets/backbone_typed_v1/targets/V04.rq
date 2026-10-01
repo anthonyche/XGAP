@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?score (COUNT(*) AS ?n) WHERE { ?p a t:Person . OPTIONAL { ?p t:score ?raw } BIND(IF(isNumeric(?raw),xsd:integer(FLOOR(xsd:decimal(?raw))),?raw) AS ?score) } GROUP BY ?score

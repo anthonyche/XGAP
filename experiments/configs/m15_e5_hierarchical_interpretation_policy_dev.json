@@ -1,0 +1,60 @@
+{
+  "schema_version": "m15-e5-hierarchical-interpretation-policy-v1",
+  "policy_id": "m15-e5-option-a-r1-development-v1",
+  "clarification_rule": {
+    "rule_id": "semantic-structure-gate-r1",
+    "decisive_dimensions": [
+      "aggregation_operator",
+      "path_structure",
+      "quantification",
+      "answer_meaning",
+      "output_contract",
+      "executable_capability"
+    ],
+    "structural_hole_ids": [
+      "relationship-strength"
+    ],
+    "representative_hole_ids": [
+      "transfer-predicate"
+    ],
+    "question_templates": {
+      "relationship-strength": "这里的‘密切资金往来’是指单笔达到阈值、时间窗口内累计金额达到阈值，还是时间窗口内转账频率达到阈值？"
+    },
+    "execution_when_structurally_unresolved": false
+  },
+  "physical_reduction": {
+    "objective": "lexicographic_estimated_latency_then_bytes_then_plan_id",
+    "representatives_per_interpretation": 1,
+    "estimate_source": "sealed_same_family_strategy_conditioned_memory",
+    "current_query_profile_calls": 0
+  },
+  "semantic_reduction": {
+    "unresolved_semantic_deviation": null,
+    "anchored_relaxations_only": true,
+    "epsilon_dominance": "not_applicable_without_anchored_relaxations",
+    "maximum_returned_interpretation_plans": 4
+  },
+  "clarification_options": {
+    "relationship-strength": [
+      {
+        "candidate_id": "constraint:single-transfer-at-least-50000",
+        "label": "单笔金额"
+      },
+      {
+        "candidate_id": "constraint:amount-at-least-50000",
+        "label": "累计金额"
+      },
+      {
+        "candidate_id": "constraint:frequency-at-least-3",
+        "label": "转账频率"
+      }
+    ]
+  },
+  "oracle_inputs": [],
+  "post_execution_measurements_used": false,
+  "backend_calls_made": 0,
+  "llm_calls_made": 0,
+  "ontology_service_calls_made": 0,
+  "automatic_retries": 0,
+  "paper_result": false
+}

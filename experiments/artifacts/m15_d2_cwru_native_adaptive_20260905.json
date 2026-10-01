@@ -1,0 +1,98 @@
+{
+  "artifact_id": "m15-d2-cwru-native-adaptive-3787152",
+  "artifact_role": "cwru_engineering_acceptance_not_paper_performance_result",
+  "observed_at_utc": "2026-09-05",
+  "slurm": {
+    "elapsed": "00:01:36",
+    "exit_code": "0:0",
+    "job_id": "3787152",
+    "node": "compt336",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "247e714b3ffb94d303804531b195c856e123fe92"
+  },
+  "runtime": {
+    "filesystem_type": "xfs",
+    "java_major": 17,
+    "java_module": "Java/17.0.6",
+    "runtime_removed": true,
+    "automatic_retries": 0,
+    "service_restarts": 0
+  },
+  "services": {
+    "neo4j": {
+      "version": "5.26.30",
+      "readiness_attempts": 42,
+      "readiness_elapsed_ms": 22131.274677813053,
+      "shutdown_success": true,
+      "shutdown_escalated_to_kill": false
+    },
+    "fuseki": {
+      "version": "5.6.0",
+      "readiness_attempts": 5,
+      "readiness_elapsed_ms": 2232.106503099203,
+      "shutdown_success": true,
+      "shutdown_escalated_to_kill": false
+    }
+  },
+  "adaptive_validation": {
+    "planning_observation_calls": 3,
+    "tool_sequence": [
+      "profile",
+      "profile",
+      "profile",
+      "execute",
+      "execute"
+    ],
+    "observation_elapsed_ms": {
+      "neo4j_full": 163.22622820734978,
+      "neo4j_bound": 238.0443438887596,
+      "fuseki_risk_wall_clock_fallback": 13.354353606700897
+    },
+    "memory_versions": [
+      "profile-task-0",
+      "query-task-1"
+    ],
+    "memory_record_count": 2,
+    "initial_plan_id": "m15-parallel-hash",
+    "post_probe_plan_id": "m15-parallel-hash",
+    "executed_plan_id": "m15-parallel-hash",
+    "replan_count": 0,
+    "replan_reasons": [],
+    "query_elapsed_ms": 29.536012560129166,
+    "query_remote_calls": 2,
+    "query_transferred_bytes": 530,
+    "reused_node_ids": [
+      "align-risk",
+      "exchange-risk",
+      "high-risk"
+    ],
+    "exact_answer": [
+      {
+        "amount": 120000,
+        "company": "Redstone Analytics",
+        "currency": "USD",
+        "occurred_on": "2026-08-20",
+        "person": "Alice Smith",
+        "risk": "HIGH"
+      }
+    ],
+    "paper_result": false
+  },
+  "read_only_audit": {
+    "schema_version": "m15-b2d-native-evidence-audit-v1",
+    "success": true,
+    "check_count": 173,
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "remote_output": "runs/cwru-m15-native-adaptive-evidence-3787152/audit.json"
+  },
+  "limitations": [
+    "single tiny deterministic synthetic fixture",
+    "fixed uncalibrated cost model",
+    "no observed replan was warranted on this live run",
+    "not a latency, throughput, scalability, or comparative performance result"
+  ]
+}

@@ -1,0 +1,332 @@
+{
+  "schema_version": "xgap-information-cost-basis-evidence-v1",
+  "receipts": {
+    "preflight": {
+      "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/preflight/receipt.json",
+      "sha256": "9903bce414ac3ddff7377ed0ff532a8c3710d7b371cbdbc670e45c2c78aa6e2a"
+    },
+    "measurement": {
+      "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/receipt.json",
+      "sha256": "3ea23f67312fd27156666a38b5abe2dba3b8afc3b0c1e0375034d5653653f59b"
+    },
+    "publication": {
+      "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/receipt.json",
+      "sha256": "c1fef30dc8ec282176d4fd2b76b937369e3a69f148ac2b5156b4de36a471a156"
+    }
+  },
+  "measurement_commit": "d810eeffec2e33f5baf8becc5f12bde1ce49697a",
+  "search_order_commit": "97d05ca",
+  "policy_commit": "fb365a2",
+  "policy": {
+    "path": "/Users/anthonyche/Developer/XGAP/experiments/protocols/partial_strong_cost_informed_v1.json",
+    "sha256": "8ad829c757cac9866137e3d34e04f5b08b444138699e71cf6381438c1891cee4"
+  },
+  "model_attempts": 3,
+  "authority_attempts": 3,
+  "reported_tokens": 1242,
+  "model_samples": [
+    {
+      "action_id": "llm:relation",
+      "capture": {
+        "bytes": 1139,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-0/acquisition-0000-result.json",
+        "sha256": "1f3233cb1a3ee898bfb7ac3ce6299feeb45d78fcc4e6ac29be78df147f56dc4f"
+      },
+      "family": "f1_direct_transfer_control",
+      "invocation": {
+        "bytes": 830,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-0/model-invocation.json",
+        "sha256": "ab36a104731c2476e375dc008d9cbf0ef4dd41fb11871d447b1704f232341e4d"
+      },
+      "measured_wall_ms": 441.17683358490467,
+      "question_id": "FBNS-1-eeb7a157eba85fce",
+      "reported_metrics": {
+        "elapsed_ms": 439.55491576343775,
+        "model_calls": 1,
+        "remote_calls": 1,
+        "tokens": 396
+      },
+      "status": "success",
+      "value": {
+        "candidate_id": "predicate:OWNS_ACCOUNT",
+        "program_sha256": "2bc3ffd2e26f19ab4f72f039fadba70d98755a015c5e1d8363c5bc516b454554",
+        "slot": "relation",
+        "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+        "version": "e7788ca97bd71185d962593fb3a869d7a45e0f8d91ddff97bc31e9abcde50d00"
+      }
+    },
+    {
+      "action_id": "clarification:relation",
+      "capture": {
+        "bytes": 989,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-0/acquisition-0001-result.json",
+        "sha256": "cbc1a47c9c48618d2cfaf10a09e685af0d6a5c663ad331354c3277d21d4ba23c"
+      },
+      "family": "f1_direct_transfer_control",
+      "measured_wall_ms": 2.673249691724777,
+      "question_id": "FBNS-1-eeb7a157eba85fce",
+      "reported_metrics": {
+        "clarification_calls": 1,
+        "elapsed_ms": 0.8624577894806862,
+        "model_calls": 0,
+        "remote_calls": 0,
+        "tokens": 0
+      },
+      "status": "success",
+      "value": {
+        "candidate_id": "predicate:OWNS_ACCOUNT",
+        "program_sha256": "2bc3ffd2e26f19ab4f72f039fadba70d98755a015c5e1d8363c5bc516b454554",
+        "slot": "relation",
+        "source_id": "finbench-authored-semantic-annotation",
+        "version": "4e9a7ef63ef0775e98ce7c5cf33d45aef7324fba8f38657fe5c522b5ba6019bb"
+      }
+    },
+    {
+      "action_id": "clarification:relation",
+      "capture": {
+        "bytes": 991,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-1/acquisition-0000-result.json",
+        "sha256": "26d44e3b25e90dbbd86a62ce921195e8adc588d56604182037009dcb81413b13"
+      },
+      "family": "f2_temporal_path_control",
+      "measured_wall_ms": 1.9030002877116203,
+      "question_id": "FBNS-2-e232ac0c7df2b3a5",
+      "reported_metrics": {
+        "clarification_calls": 1,
+        "elapsed_ms": 0.6985841318964958,
+        "model_calls": 0,
+        "remote_calls": 0,
+        "tokens": 0
+      },
+      "status": "success",
+      "value": {
+        "candidate_id": "predicate:TRANSFERRED_TO",
+        "program_sha256": "e29eb05d82490db502f9597fd2c2a521491206aabdf1760f88b48af795955ddf",
+        "slot": "relation",
+        "source_id": "finbench-authored-semantic-annotation",
+        "version": "2d96f0644b5a59781c53a67ee2322c7a867110ce2222888bfe72ba116d3aba7b"
+      }
+    },
+    {
+      "action_id": "llm:relation",
+      "capture": {
+        "bytes": 1140,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-1/acquisition-0001-result.json",
+        "sha256": "6fc52af91fbc105e71f145ce3ffa5190a57596d53fcf33ece648b43cb72e79b8"
+      },
+      "family": "f2_temporal_path_control",
+      "invocation": {
+        "bytes": 830,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-1/model-invocation.json",
+        "sha256": "f7aad894d70052718a2c2eda9c20fd73eb48290a7a24fcdae8c2c783775df333"
+      },
+      "measured_wall_ms": 323.17562587559223,
+      "question_id": "FBNS-2-e232ac0c7df2b3a5",
+      "reported_metrics": {
+        "elapsed_ms": 320.3501673415303,
+        "model_calls": 1,
+        "remote_calls": 1,
+        "tokens": 440
+      },
+      "status": "success",
+      "value": {
+        "candidate_id": "predicate:TRANSFERRED_TO",
+        "program_sha256": "e29eb05d82490db502f9597fd2c2a521491206aabdf1760f88b48af795955ddf",
+        "slot": "relation",
+        "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+        "version": "e7788ca97bd71185d962593fb3a869d7a45e0f8d91ddff97bc31e9abcde50d00"
+      }
+    },
+    {
+      "action_id": "llm:relation",
+      "capture": {
+        "bytes": 1138,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-2/acquisition-0000-result.json",
+        "sha256": "a5b3a2e43ef6d9feabe912ab1f69857d4e25cfc965535a8aa8527e5862d7b7b5"
+      },
+      "family": "f3_aggregate_risk_ranking",
+      "invocation": {
+        "bytes": 830,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-2/model-invocation.json",
+        "sha256": "a720085d51c081b0a4e6b3e0311d9291b62d1468aeedf3e28f3602895908890b"
+      },
+      "measured_wall_ms": 329.38550040125847,
+      "question_id": "FBNS-3-33bc9c0ac5b05e5f",
+      "reported_metrics": {
+        "elapsed_ms": 326.4837088063359,
+        "model_calls": 1,
+        "remote_calls": 1,
+        "tokens": 406
+      },
+      "status": "success",
+      "value": {
+        "candidate_id": "predicate:SIGNED_IN_TO",
+        "program_sha256": "e6c394891874642a53083e6cec3e9f5b24c41a5a0b95e65068572aa3ace5e7dd",
+        "slot": "relation",
+        "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+        "version": "e7788ca97bd71185d962593fb3a869d7a45e0f8d91ddff97bc31e9abcde50d00"
+      }
+    },
+    {
+      "action_id": "clarification:relation",
+      "capture": {
+        "bytes": 989,
+        "path": "/Users/anthonyche/xgap-data/practical-information-cost-20260915-v1/measurement/question-2/acquisition-0001-result.json",
+        "sha256": "b66e59fcc7fa61cc4ab81b01cd4dcee683fa7c4fb2fe7db9fd9a07a5c0c3198a"
+      },
+      "family": "f3_aggregate_risk_ranking",
+      "measured_wall_ms": 3.7767915055155754,
+      "question_id": "FBNS-3-33bc9c0ac5b05e5f",
+      "reported_metrics": {
+        "clarification_calls": 1,
+        "elapsed_ms": 0.8693747222423553,
+        "model_calls": 0,
+        "remote_calls": 0,
+        "tokens": 0
+      },
+      "status": "success",
+      "value": {
+        "candidate_id": "predicate:SIGNED_IN_TO",
+        "program_sha256": "e6c394891874642a53083e6cec3e9f5b24c41a5a0b95e65068572aa3ace5e7dd",
+        "slot": "relation",
+        "source_id": "finbench-authored-semantic-annotation",
+        "version": "8196b9988ad9bf87b932599220c9e6b40bafa76d22d4ffb00ef8abe5adc5efed"
+      }
+    }
+  ],
+  "cost_samples": {
+    "clarification:relation": {
+      "complete": true,
+      "expected_attempts": 3,
+      "max_wall_ms": 3.7767915055155754,
+      "median_wall_ms": 2.673249691724777,
+      "min_wall_ms": 1.9030002877116203,
+      "scope": "development invocation including capture overhead, not general calibration",
+      "successful_attempts": 3
+    },
+    "llm:relation": {
+      "complete": true,
+      "expected_attempts": 3,
+      "max_wall_ms": 441.17683358490467,
+      "median_wall_ms": 329.38550040125847,
+      "min_wall_ms": 323.17562587559223,
+      "scope": "development invocation including capture overhead, not general calibration",
+      "successful_attempts": 3
+    }
+  },
+  "development_slot_agreement": [
+    {
+      "agrees": true,
+      "question_id": "FBNS-1-eeb7a157eba85fce"
+    },
+    {
+      "agrees": true,
+      "question_id": "FBNS-2-e232ac0c7df2b3a5"
+    },
+    {
+      "agrees": true,
+      "question_id": "FBNS-3-33bc9c0ac5b05e5f"
+    }
+  ],
+  "manifests": {
+    "native": {
+      "bytes": 203348,
+      "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/manifest.json",
+      "sha256": "50f2de117d5e4825fbd82975a2b89d9735dc752604f38bcdc340349e5132eb18"
+    },
+    "rdf": {
+      "bytes": 201536,
+      "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/rdf/manifest.json",
+      "sha256": "ad16cd915ce496f4e7ad43580b5f39fa3364bc0aab4f1467f30fba0c9e16d657"
+    }
+  },
+  "offline_development_checks": [
+    {
+      "actual_search_order": [
+        "clarification:relation",
+        "llm:relation"
+      ],
+      "expanded_states": 4,
+      "family": "f1_direct_transfer_control",
+      "generated_actions": 1,
+      "mode": "performance",
+      "original_declaration_order": [
+        "llm:relation",
+        "clarification:relation"
+      ],
+      "question_id": "FBNS-1-eeb7a157eba85fce",
+      "result": {
+        "bytes": 6978,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/f1_direct_transfer_control-performance.json",
+        "sha256": "d0c338579c4aa16f462df07077dd2fe7fa5e1afa2a2b68c59f2197f44e002cde"
+      },
+      "root_action": "clarification:relation",
+      "search_ms": 85.07441636174917,
+      "selected_estimated_cost": 65.58961659735925,
+      "strong": true
+    },
+    {
+      "actual_search_order": [
+        "clarification:relation",
+        "llm:relation"
+      ],
+      "expanded_states": 4,
+      "family": "f2_temporal_path_control",
+      "generated_actions": 1,
+      "mode": "performance",
+      "original_declaration_order": [
+        "llm:relation",
+        "clarification:relation"
+      ],
+      "question_id": "FBNS-2-e232ac0c7df2b3a5",
+      "result": {
+        "bytes": 6985,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/f2_temporal_path_control-performance.json",
+        "sha256": "ac5dc1eaadedb987f54faf7b7b7d49f40224a232497659bae9005f78fbbf5c62"
+      },
+      "root_action": "clarification:relation",
+      "search_ms": 111.71545833349228,
+      "selected_estimated_cost": 377.6186547966249,
+      "strong": true
+    },
+    {
+      "actual_search_order": [
+        "clarification:relation",
+        "llm:relation"
+      ],
+      "expanded_states": 4,
+      "family": "f3_aggregate_risk_ranking",
+      "generated_actions": 1,
+      "mode": "performance",
+      "original_declaration_order": [
+        "llm:relation",
+        "clarification:relation"
+      ],
+      "question_id": "FBNS-3-33bc9c0ac5b05e5f",
+      "result": {
+        "bytes": 6978,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/f3_aggregate_risk_ranking-performance.json",
+        "sha256": "7ea03dbaa63eeb655eaffed7f87db7a8e080f4fdafbf585f7e062a1766c21edd"
+      },
+      "root_action": "clarification:relation",
+      "search_ms": 85.92770807445049,
+      "selected_estimated_cost": 65.58961659735925,
+      "strong": true
+    }
+  ],
+  "targeted_checks": {
+    "new_passed": 3,
+    "affected_passed": 2,
+    "full_regression": false
+  },
+  "source_calls": 0,
+  "final_plan_executions": 0,
+  "baseline_changes": false,
+  "paper_result": false,
+  "limitations": [
+    "Three exposed development requests, not overall accuracy",
+    "Invocation time includes durable capture overhead; no general calibration or significance",
+    "New profile remains a development candidate, no end-to-end dataset execution",
+    "Cheap authority may make PERFORMANCE choose validated bindings; do not force a tradeoff"
+  ]
+}

@@ -20,6 +20,7 @@ from xgap.algebra.ops import (
     QuantifiedCheckOp,
     RecursiveMode,
     RecursiveOp,
+    ReverseOp,
     SelectionOp,
     UnionOp,
 )
@@ -31,6 +32,11 @@ class ValidationError(ValueError):
 
 def validate_plan(plan: object) -> None:
     if isinstance(plan, (NodesOp, EdgesOp)):
+        return
+
+    if isinstance(plan, ReverseOp):
+        _require_path_set(plan.child, "Reverse child")
+        validate_plan(plan.child)
         return
 
     if isinstance(plan, SelectionOp):

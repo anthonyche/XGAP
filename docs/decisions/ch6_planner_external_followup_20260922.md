@@ -1,0 +1,211 @@
+# 有界规划与外部接口后续验收
+
+用户“请继续推进”授权在当前研究范围内推进。此批只针对已发现的瓶颈与接口，
+不恢复 LD、不把内部变体称为 Two-stage、不展开全量矩阵。
+
+## 已定位的工程问题与修复契约
+
+1. `choose` 若在后续动作超时，原先会丢弃已经完整评价的根动作。现在仅在某根动作的
+   **全部 outcome** 都通过完成资源预留、并完成固定深度评分后保存它；后续截断时可
+   返回已保存的改进选择。未完整评分的动作不参与决定，原完成路径始终保留。
+   实际执行仍重新验证资格/资源。无完整搜索最优、全局最优或 gap 声明。
+2. 小图 CPU 剖析显示种子计划身份被反复序列化，完成路径被反复构造。种子身份只在
+   入池时固定；terminal/completion/state-key 缓存各最多 128 个状态，仅本次请求内使用。
+   键包含全部 bindings/receipts、facts、plan pools、披露量及固定候选；不跨快照复用。
+   预算、概率零分支、unknown、硬语义检查不移除。原算法的固定 D/表示边界继续适用。
+3. 旧外部组合脚本未使用 profile 的 `rdf_loads`，误装载了重叠的原始文件。
+   修复为读取所声明的去重表示和 SHA-256，并拒绝重复事实；不根据输出修改查询或
+   原作者算法。原失败收据保留，不能改写为新表示的结果。
+4. 原版 ARUQULA 发 GET；现有 FedX 外壳只接收 raw POST。只增加标准 GET/form 解码，
+   不改查询文本、解码参数、搜索或 FedX 算法。重建 JAR 时验证所有非 XGAP 条目逐字节
+   不变。仍仅接受 SELECT；UPDATE/ASK/构图不自动转写。
+
+## 预先冻结的执行边界
+
+- 先做 8 节点开发图 transport gate：作者原 VALUES 查询和固定跨源查询，GET、form、
+  raw POST 各一次；独立 RDFLib 参考保留 bag/term 语义，金融聚合沿用已固定的共同数值
+  规范（如 decimal 66 与 double 66.0 金额等价），不要求序列化词法相同。共 6 条 SELECT + 1 条 UPDATE
+  拒绝检查；0 模型调用；总时限 180 s，源调用上限 128。所有退出路径关闭服务。
+- gate 通过后，原版 **ARUQULA → FedX 5.1.2** 独立组合验收一次：仍使用此前公开的
+  tiny 问题、作者仓库/lookup/模型配置，不调 prompt 或算法。遵守已有 300 s worker、
+  900 s study、最多 64 模型 HTTP attempt / 256 source attempt 上限；原算法可能多调用，
+  不把它称为 one-call，也不预言 token 用量。原 ARUQULA+FedUP 失败单独保留。
+  原始结果、失败、tokens、全部探索调用均保存；只有完整回答才能做答案评分。
+- XGAP 真数据只取上批三个模板各自的第一个 uniform case（00、02、04），公开受控
+  初态、同快照/config/估计器、同 1500 ms 可选时限。3 次单计划执行、0 模型调用，
+  study 900 s；保留旧结果，新输出不覆盖。样本是已暴露工程实例，不作正式泛化或
+  重复性能 speedup 声明。每次调用先写代码/输入/预算的固定记录。
+
+这些是已声明的接口兼容和工程效率工作，不变更研究问题。后续正式 Two-stage
+必须在相同 RDF 表示、相同事实/metadata 下与 XGAP 比较，当前 native pilot 不用于
+跨部署相对加速。新外部组合是否可用于论文主比较，由实际验收证据决定。
+
+## Transport v2 后续
+
+第一轮完整 ARUQULA→FedX 在 300 s 截止，4 个模型调用、2 个 lookup、2 个联邦查询、
+29 个源查询均 HTTP 成功，但没有最终回答。服务组已关闭，收据原样保留。
+只读检查发现原版 Python 进程把 loopback 请求也交给 macOS 系统代理，且相关连接
+已关闭；这不是已证实的唯一卡住原因。新外壳只为本地 observers 设置 `NO_PROXY`，
+远端模型仍由 observer 使用原有系统代理；修正 worker 的实际组合 ID，并在截止前
+保存一次线程栈以定位卡住位置。原算法、prompt、调用次数/时限不变。
+据此允许新版本独立 tiny 验收一次，不覆盖或重启旧输出；若仍失败，按证据定位，
+不通过放宽算法/提示词或挑选答对的重跑结果取得“成功”。
+
+## 基线可运行与适用范围：用户后续澄清
+
+继续把原方法支持的流程接通，不能把保留一次失败当作接入完成；也不替作者优化算法、
+prompt、解码或输出。分别报告 W1/W2 单源和 W3/W4 跨源，保留部署类型和失败阶段。
+如果实际仅单源完成，就报告该能力边界；不能把模型格式或安装失败推断为联邦不支持。
+FedX 的独立跨源查询通过，也不等于 NL 前端串接已完成。明确的原生异构不支持记 N/A，
+不计零耗时；在已声明适用条件下的实际失败保留在该层分母。
+
+下一次 tiny 准入在调用前固定为 `single-source`：只注册原 graph 数据源及既有公开
+metadata，列出全部账户 business ID，输出 account_id、升序、不截断。参考为 1–4 的
+四个字符串值，仅由 evaluator 在方法结果封存后读取。其作用是 W1 接口验收，不是
+从旧跨源失败中挑题，也不和那一道不同复杂度的问题作因果性能比较。
+沿用原 300 s worker / 900 s study / 64 model / 256 source 上限，不修改原模型、
+prompt、搜索和后处理。旧跨源题和失败原样保留，新题使用独立 ID/目录，一次尝试。
+额外的 formatter wire 检查只用本地模拟 HTTP 返回，0 真实模型/数据源调用。
+
+### 单源 v1 之后：HTTPS 数据集接口兼容
+
+原版单源试验已封存：8 次成功模型调用后，`get_property_examples` 把完整 HTTPS
+属性 IRI 拼成 `dbo:https://…`，三个同样的原生重试均语法失败。作者函数仅对 `http:`
+加 `<…>`，没有识别 `https:`。这是绝对 IRI 编码兼容问题，不是跨源能力问题。
+
+用户要求让 baseline work 的范围包括这项必要的数据接口修复：保留作者原 checkout，
+在独立、留哈希的模块副本中只将该函数的 `startswith("http:")` 扩为
+`startswith(("http:", "https:"))`。启用时显式标记 `https-property-iris-v1`，
+记录 1 个 source compatibility patch，不再声称该次作者源代码逐字节原版；
+算法/prompt/解码/动作输出和最终 query 不修补。已有 HTTP/dbo 行为保持一致。
+离线重放原实际函数后，对同一单源题新建 v2、沿用同预算一次验收。v1 不覆盖。
+
+### 单源 v2 之后：显式动作 envelope 兼容版本
+
+v2 在 4 次成功模型调用后再次因 `thought` 缺失失败，尚未走到 HTTPS 工具调用。
+单独的 `https-property-iris-qwen-key-v1` 配置仅在 JSON 恰有 `>`、`action_name`、
+`action_argument` 三个字符串字段时，将 `>` 的原文本按原样放到 `thought`。
+不生成 thought 内容，不更改动作名称/参数，不补缺失动作，也不修最终查询或答案。
+该文本会进入作者后续历史，故不是可忽略的日志处理；每次别名转换记录前后哈希及次数。
+原始模型响应完整保留。原版解析器仍负责构造动作，其他格式错误仍按原版失败。
+
+这是显式披露的接口适配配置，不与未适配原版混合成一个试验版本。对捕获失败离线
+重放后，在同单源题、同预算、独立 v3 目录做一次准入；不从多次原样运行挑最好结果。
+
+若 v3 完整结束并产生可评分的答案，即使用完全相同兼容配置对旧跨源题做一次独立
+v3 准入，沿用原预算。两题复杂度不同，只判别端到端是否完成及具体失败阶段，不作
+“跨源导致慢/失败”的因果比较。结果正负均封存，不新增基线 federation 策略。
+
+### v3 之后：原生单端点与联邦组件能力分开
+
+单源 v3 的实体探测仍把 HTTPS 拼成 dbr 前缀。完整模块审查只找到属性和实体两处
+此类 HTTP-only 判断；`https-iris-qwen-key-v2` 对两处统一做地址编码兼容，保留 v1。
+零模型工具重放进一步定位：即使地址合法，RDF4J/FedX 仍拒绝作者查询的 `COALESCE()`，
+原解析器错误为遇到 NIL。之前通过的 VALUES/聚合 gate 并未覆盖这个表达式。
+不改写 COALESCE、不补联邦算法，也不把该发现描述为“所有跨源查询都不支持”。
+
+故暂停此前条件性的跨源重试。新增一次同题的原生单端点诊断 `aruqula-single-fuseki`：
+原前端直接通过其 endpoint 配置访问唯一 graph Fuseki；兼容配置固定为上述 v2，
+同 300/900 s、64 model/256 source 预算。它不是外部 Two-stage 成功，也不是联邦实现。
+同一完整查询不能通过合并两个源伪装成“单源基线已支持跨源”。不修改主比较方法定义。
+工具 gate 的 RDFLib oracle 遇到 COALESCE 空表达式序列化失败；该诊断改为明确的
+transport/JSON 检查，不能声称答案正确性验收。最终 NL 答案仍用独立四行参考评分。
+
+原生单端点 v1 在 300 s 截止，8 个模型/4 个源请求均成功，没有最终回答。
+原客户端 16 次本地调用循环成功；完整前端用已捕获响应离线重放，也能到达第 9 个
+模型请求，故未重现固定的算法死锁。仍不能确认远端路径的停顿根因。
+接下来仅将模型 observer 的下游连接设为明确 `Connection: close`，源连接池不变，
+请求/响应 body 不改、不加重试。此配置单独封存，计入实际传输开销；不能称为已证明
+keepalive 是唯一原因。小型双请求接口测试后，同一原生单源题 v2、同预算验收一次。
+
+原生单端点 v2 已推进到 29 模型/9 源请求，均 HTTP 成功；随后 formatter 将 thought
+键写成 `, ` 而失败。此前仅接受 `>` 的规则过于特定。显式 v3 适配合同只接受恰好
+三个字符串字段，action_name/action_argument 两键完整且 thought 缺失时，重命名
+唯一多余键为 thought；保留其文本和两个动作字段。缺动作、缺参数、多个多余键、
+非字符串或已有 thought 时均不推断/覆盖。仍只修封装，不改作者决策和答案。
+在同一道单源题、同预算，原生单端点 v3 验收一次，v2 保留失败；不按成绩调题或 prompt。
+
+### 当前里程碑：baseline 端到端产出与模型模板对齐
+
+用户进一步明确：本轮目标是把 baseline 接通并正常产出结果，必要中间管道均获授权。
+允许有记录的协议、序列化和服务配置适配；保留原方法决策、独立评分及既往失败，
+不把“接通”与“答对”混为一谈。后续必须推进到实际结果，不能仅以失败归档结束。
+
+原生 v3 的 formatter 返回了把整个 action JSON 塞入单一键的对象，动作字段缺失，
+严格适配器没有猜测动作。审查发现 XGAP 显式关闭 Qwen thinking 模板，而原
+ARUQULA 配置继承服务默认。新 `https-iris-nonthinking-v1` 保留两处 HTTPS 适配，
+对全部模型调用设置 `chat_template_kwargs.enable_thinking=false`，与 XGAP 对齐，
+并禁用所有 thought-key 输出修补。原 prompt、temperature、top_p、max_tokens、
+JSON response_format 不变。真实 wire 的离线检查已经通过，零真实模型/源调用。
+此配置是否解决故障仍待真实验证；同题、同预算、独立原生 v4 目录进行一次验收。
+
+### baseline 接通优先：固定字段输出与等价工具语法
+
+原生 v4 在第十个 HTTP 成功响应后再次出现 formatter 将整个对象编码为单一键，
+因此关闭 thinking 不是充分修复。新 `https-iris-action-schema-v1` 对原作者
+`format_actions.prompt` 的精确 system instruction 匹配后，才将 json_object
+替换为严格的三个字符串字段 schema。控制器、pruner 等请求不套此 schema；
+原 prompt、采样数值、token 上限及调用次数策略不变。此项属于结构化解码接口
+适配，必须披露，不再声称 JSON response_format 与原版相同。没有字段别名修补，
+没有动作白名单枚举、答案/约束注入，也不利用 gold。
+
+同配置仅将原作者实体工具模板的一处 `COALESCE()` 改为 `COALESCE(1/0)`。
+两者均求值为 expression error，外层 IF/BIND 的值/未绑定语义不变，原 FedX
+优化器和执行器不修改。依据：[SPARQL 1.1 §17.4.1.3](https://www.w3.org/TR/sparql11-query/#func-coalesce)。
+改写仅发生于已知工具模板，不改最终模型查询。单独的零模型验证对原始 Jena
+与适配后 FedX 比较完整工具结果及 IF/外层 COALESCE 的成功、错误、回退分支，
+不是以 HTTP 200 代替正确性证明。
+
+通过上述 gate 后，在同一单源题、同预算、独立 FedX 单源 v4 目录验证端到端。
+成功返回答案后，以同配置对既有跨源题再做一次独立验证。保持不同 source strata，
+分别报告接通、答案评分及调用成本，不把接通失败重新解释为能力边界。
+
+空 COALESCE 适配后的 replay 进一步触发原 FedX 的空指针，位于
+`QueryStringUtil.selectQueryStringBoundJoinVALUES`，由 OPTIONAL 的未绑定值导致。
+该异常与模型无关。对新兼容 profile 固定使用原生
+`FedXConfig.withEnableOptionalAsBindJoin(false)`，不改 external jar classes，
+其他 batching/workers 保持原值。禁用的是故障优化路径，继续由原 FedX 执行
+普通 left join；这属于公开披露的配置变更，不是保持默认配置的结果。
+等价工具 gate 追加独立 v3，之前两个失败保留。实际单源/跨源同用此固定配置。
+
+原生 OPTIONAL 配置开关仍触发同类 NULL 绑定错误，因此不保留为正式兼容配置，
+不通过调连接参数继续试成绩。结构化输出接通与联邦故障隔离：
+`https-iris-action-schema-v1` 仅含 HTTPS + nonthinking + action schema，
+先以原生单源 v5 验证前端完整产出，不依赖 FedX 修复；
+`https-iris-action-schema-fedx-v1` 才包含工具 COALESCE 适配，尚未准入。
+以上为首次真实 schema 调用前的最终 profile 定义；失败配置的 gate 保留。
+
+### Native output admitted; fixed FedX tool bridge
+
+Native single v5 completed: 46 model calls, one final query, four returned rows,
+115.70 s worker time. EM/F1 are both zero: the method chose internal IDs instead
+of business IDs. Preserve that outcome without correcting its interpretation.
+All owned services closed.
+
+The final FedX profile uses an equivalent entity-tool template. OPTIONAL obtains
+English labels for non-rdf:type properties into a fresh temporary variable;
+the final BIND uses IF(type, "is a", temporary) to produce pLabel. In the original
+type branch the plain literal "is a" cannot satisfy LANG(...)=en; the other branch
+retains all English labels or an unbound value. vLabel and projection stay intact.
+The temporary variable must be absent from the original source. Two exact source
+fragments change; final model queries and the author checkout remain untouched.
+
+The same Jena fixture produces identical original/adapted results in 4/4 cases.
+FedX executes all 12 GET/form/raw requests. Its entity probe returns 27 rows
+against Jena's 15, including extra duplicates. Retain this engine behavior: do not
+deduplicate or improve baseline results. Rewrite equivalence and engine answer
+correctness are separate fields; 12/12 transport success is not 12/12 correctness.
+FedX uses its default OPTIONAL configuration again.
+
+Freeze https-iris-action-schema-fedx-v1 plus transport build v4 for single-source
+FedX v4, followed, if answered, by the existing cross-source case in v3. Each has
+the unchanged 300 s / 64 model / 256 source admission limits.
+
+FedX single-source v4 reached 35 model responses but its last formatter response
+ended with finish_reason=length at 700 tokens. The controller's complete query
+was truncated during serialization; the original method retried that malformed
+query and failed. Freeze v2 with ONLY the exact formatter's maximum increased
+to 2048; controller/pruner/reporter budgets and prompts are unchanged. This is a
+disclosed serialization capacity change, not a claim of identical decoding.
+Use single-source v5, followed if answered by cross-source v3, each once under
+the existing admission limits. Preserve v4 and its truncation as a failed profile.

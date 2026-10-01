@@ -1,0 +1,116 @@
+{
+  "artifact_id": "m15-f2c9b-local-native-direct-frontier-readiness-v1",
+  "artifact_role": "local_native_direct_frontier_mechanism_readiness_not_live_or_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "controlled_preexecution_estimates_native_backend_doubles_read_only_reconstruction_audit_and_full_local_acceptance",
+  "inputs": {
+    "base_query_id": "financial-risk-alice-aug-high-v2",
+    "base_workload_bundle_content_sha256": "b06b1c4b4e630e37cbea8d4cf5d81bbc31c4a2280b97a64f5a4a9efed0d434e7",
+    "predicate_mapping_sha256": "0151ae7782842e1ce74ae9d56452cadda77759502bcc4897401ee624940f05c2",
+    "predicate_overlay_sha256": "18b1a729926f6e2c9dce970513e72adce2cfab861a62eedaffb6d562b66a7668",
+    "estimate_source_id": "m15-f2c9-controlled-estimates-v1",
+    "estimate_source_sha256": "1b9aa57ccab22e865a13a45793f5822c0ee0a6ffe2d84c7ea1b5543202b5cec1"
+  },
+  "artifact_hashes": {
+    "candidate_set_sha256": "807433b49895ac00f1f46446f49987f7cb19b92b58db70c58974082398217e02",
+    "estimate_snapshot_sha256": "6bf27a10fa46f4f176a9cc05cf5d8dddc8154c17d51abb4f6a3e24db2f7123a5",
+    "frontier_sha256": "e915ffdc4a19a21377cf18134024cbae47dbdaa80f8609296b52d28e41b8517a"
+  },
+  "frontier_protocol": {
+    "declared_semantic_classes": 12,
+    "executable_direct_semantic_classes": 4,
+    "unavailable_multihop_semantic_classes": 8,
+    "physical_candidates": 8,
+    "physical_representatives": 4,
+    "pareto_semantic_plans": 4,
+    "epsilon_frontier_semantic_plans": 3,
+    "returned_semantic_plans": 3,
+    "selection_sealed_before_oracle_and_backend_access": true,
+    "exact_semantics_retained_first": true,
+    "returned_changed_slot_sets_in_rank_order": [
+      [],
+      [
+        "risk-level",
+        "transfer-predicate"
+      ],
+      [
+        "risk-level"
+      ]
+    ],
+    "blocked_multihop_classes_executed": false
+  },
+  "controlled_native_double_execution": {
+    "physical_plan_runs": 3,
+    "total_backend_calls": 6,
+    "backend_order": [
+      "fuseki",
+      "neo4j",
+      "fuseki",
+      "neo4j",
+      "fuseki",
+      "neo4j"
+    ],
+    "final_row_counts_in_rank_order": [
+      11,
+      9,
+      11
+    ],
+    "all_answers_equal_independent_oracles": true,
+    "unselected_semantic_plans_executed": false,
+    "automatic_retries": 0
+  },
+  "native_boundary": {
+    "workload_mode": "semantic_direct_frontier",
+    "dedicated_slurm_wrapper": "scripts/slurm/run_m15_native_semantic_direct_frontier.sbatch",
+    "remote_executor_allowlisted": true,
+    "fresh_loopback_only_services_required": true,
+    "fixture_revalidated_before_query_execution": true,
+    "allocation_local_runtime_cleanup_required": true,
+    "first_external_failure_stops_execution": true
+  },
+  "independent_read_only_audit": {
+    "success": true,
+    "check_count": 211,
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "answer_tamper_detected": true,
+    "frontier_tamper_detected": true,
+    "output_overwrite_rejected": true
+  },
+  "local_verification": {
+    "focused_direct_frontier_native_tests": {
+      "passed": 47,
+      "failed": 0
+    },
+    "full_pytest": {
+      "passed": 853,
+      "skipped": 36,
+      "failed": 0
+    },
+    "acceptance_script": "passed",
+    "harness_check": "passed",
+    "all_existing_examples": "passed",
+    "shell_syntax_check": "passed",
+    "patch_whitespace_check": "passed"
+  },
+  "claim_boundary": {
+    "result_class": "local_native_direct_frontier_mechanism_readiness",
+    "live_neo4j_fuseki_frontier_execution_supported": false,
+    "costs_are_controlled_predictions_not_observed_execution": true,
+    "answer_oracle_used_for_selection": false,
+    "answer_oracle_used_only_for_post_execution_validation": true,
+    "llm_calls_made": 0,
+    "ontology_calls_made": 0,
+    "semantic_user_utility_supported": false,
+    "performance_superiority_supported": false,
+    "comparative": false,
+    "paper_result": false
+  },
+  "next_gate": {
+    "authorized_cwru_runs": 1,
+    "purpose": "verify sealed_frontier_to_selected_only_native_execution_and_read_only_audit",
+    "repeat_or_comparative_dispatch_authorized": false,
+    "multihop_execution_authorized": false
+  },
+  "paper_result": false
+}

@@ -35,6 +35,7 @@ from xgap.algebra.ops import (
     QuantifiedCheckOp,
     RecursiveMode,
     RecursiveOp,
+    ReverseOp,
     SelectionOp,
     UnionOp,
 )
@@ -78,6 +79,7 @@ __all__ = [
     "PropertyGraph",
     "RecursiveMode",
     "RecursiveOp",
+    "ReverseOp",
     "SelectionOp",
     "SolutionSpace",
     "UnionOp",

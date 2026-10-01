@@ -1,0 +1,178 @@
+{
+  "schema_version": "xgap-finbench-population-audit-v1",
+  "success": true,
+  "audited_at": "2026-09-12T15:42:16.235471+00:00",
+  "code_commit": "49aaff005ed59ba4a951a81273f3298751e7f026",
+  "root": "/Users/anthonyche/xgap-data/finbench-one-shot-population-20260912-v1",
+  "manifest_sha256": "181c1426752fbed9a287ba76b50a05834bfe910c07789eeac145a3c3fd520fba",
+  "selection_sha256": "2cb81d785fc6d5784ba8e0415c1e23319c0f19e8fb91d06a2ae7378580e311c2",
+  "design_sha256": "23d06a5b1f476edbcaf79a164f5986eca91c7d9f820c892170c4e530d54c82e7",
+  "source_archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+  "verified_artifact_count": 361,
+  "instance_count": 120,
+  "split_counts": {
+    "development": 24,
+    "estimator_training": 48,
+    "evaluation": 48
+  },
+  "source_only_summary": {
+    "excluded_accounts": 16,
+    "excluded_near_duplicate_intervals": 0,
+    "excluded_people": 16,
+    "frames": [
+      {
+        "candidate_count": 6987,
+        "family": "f1_direct_transfer_control",
+        "frame_sha256": "9eaa4743fa33f422ba6df8be4c55313e83b0424206580dcdfaca71961563566a",
+        "selected_count": 40,
+        "stratum_sizes": [
+          1747,
+          1747,
+          1747,
+          1746
+        ]
+      },
+      {
+        "candidate_count": 20393,
+        "family": "f2_temporal_path_control",
+        "frame_sha256": "4d5e11fc06cf5b6c3262b9b4d1730034e9ce1de9bea59ce5253f69782f95a383",
+        "selected_count": 40,
+        "stratum_sizes": [
+          5099,
+          5098,
+          5098,
+          5098
+        ]
+      },
+      {
+        "candidate_count": 80,
+        "family": "f3_aggregate_risk_ranking",
+        "frame_sha256": "e6a04541915b52417055b5c48a7045f9479a1dac7ef431a06ecaea70d8a9bbf1",
+        "selected_count": 40,
+        "stratum_sizes": [
+          20,
+          20,
+          20,
+          20
+        ]
+      }
+    ]
+  },
+  "emptiness": [
+    {
+      "count": 8,
+      "empty": true,
+      "family": "f1_direct_transfer_control",
+      "split": "development"
+    },
+    {
+      "count": 16,
+      "empty": true,
+      "family": "f1_direct_transfer_control",
+      "split": "estimator_training"
+    },
+    {
+      "count": 16,
+      "empty": true,
+      "family": "f1_direct_transfer_control",
+      "split": "evaluation"
+    },
+    {
+      "count": 8,
+      "empty": true,
+      "family": "f2_temporal_path_control",
+      "split": "development"
+    },
+    {
+      "count": 3,
+      "empty": false,
+      "family": "f2_temporal_path_control",
+      "split": "estimator_training"
+    },
+    {
+      "count": 13,
+      "empty": true,
+      "family": "f2_temporal_path_control",
+      "split": "estimator_training"
+    },
+    {
+      "count": 4,
+      "empty": false,
+      "family": "f2_temporal_path_control",
+      "split": "evaluation"
+    },
+    {
+      "count": 12,
+      "empty": true,
+      "family": "f2_temporal_path_control",
+      "split": "evaluation"
+    },
+    {
+      "count": 5,
+      "empty": false,
+      "family": "f3_aggregate_risk_ranking",
+      "split": "development"
+    },
+    {
+      "count": 3,
+      "empty": true,
+      "family": "f3_aggregate_risk_ranking",
+      "split": "development"
+    },
+    {
+      "count": 9,
+      "empty": false,
+      "family": "f3_aggregate_risk_ranking",
+      "split": "estimator_training"
+    },
+    {
+      "count": 7,
+      "empty": true,
+      "family": "f3_aggregate_risk_ranking",
+      "split": "estimator_training"
+    },
+    {
+      "count": 11,
+      "empty": false,
+      "family": "f3_aggregate_risk_ranking",
+      "split": "evaluation"
+    },
+    {
+      "count": 5,
+      "empty": true,
+      "family": "f3_aggregate_risk_ranking",
+      "split": "evaluation"
+    }
+  ],
+  "reference_row_counts_by_family": {
+    "f1_direct_transfer_control": 0,
+    "f2_temporal_path_control": 14,
+    "f3_aggregate_risk_ranking": 126
+  },
+  "checks": [
+    "360 request/reference/gold hashes and selection hash",
+    "120 unique IDs and family groups",
+    "24/48/48 split and 2/4/4 in every family stratum",
+    "old F1/F2 anchors excluded",
+    "F3 time intervals disjoint and no old same-risk IoU >= 0.8",
+    "NL-only request schema with gold kept separate",
+    "references normalized without sorting or deduplicating",
+    "emptiness counted after selection and preserved",
+    "zero method/model/backend/fit calls"
+  ],
+  "offline_preparation_ms": 5400.26562474668,
+  "evaluation_empty_count": 33,
+  "evaluation_nonempty_count": 15,
+  "all_empty_count": 88,
+  "all_nonempty_count": 32,
+  "model_calls": 0,
+  "backend_calls": 0,
+  "fit_calls": 0,
+  "method_runs": 0,
+  "formal_campaign_ready": false,
+  "limitations": [
+    "Independent CSV reference construction and tiny evaluator tests, not 120 native method successes",
+    "F1 all 40 references empty; evaluation overall 33/48 empty, making aggregate EM alone inadequate",
+    "Business-ID anchors and three shared semantic templates do not test ambiguous-name or held-out-template generalization"
+  ]
+}

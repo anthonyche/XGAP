@@ -11,10 +11,21 @@ if [[ -x "$VLLM_ENV/bin/python" ]]; then
 fi
 cd "$XGAP_REPO_ROOT"
 
+if [[ ! -f "$XGAP_VLLM_PID_FILE" ]]; then
+  echo "Owned vLLM PID file is missing: $XGAP_VLLM_PID_FILE" >&2
+  exit 2
+fi
+XGAP_READY_PID="$(tr -d '[:space:]' < "$XGAP_VLLM_PID_FILE")"
+if [[ ! "$XGAP_READY_PID" =~ ^[1-9][0-9]*$ ]]; then
+  echo "Owned vLLM PID is invalid." >&2
+  exit 2
+fi
+
 if PYTHONPATH=src python -m xgap.experiments.cwru_vllm check-ready \
   --base-url "$XGAP_LLM_BASE_URL" \
   --model "$XGAP_LLM_MODEL" \
   --api-key "$XGAP_LLM_API_KEY" \
+  --server-pid "$XGAP_READY_PID" \
   --timeout "${XGAP_VLLM_READY_TIMEOUT:-900}" \
   --interval "${XGAP_VLLM_READY_INTERVAL:-5}"; then
   exit 0

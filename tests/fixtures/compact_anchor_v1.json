@@ -1,0 +1,150 @@
+{
+  "schema_version": "xgap-compact-anchor-fixture-v1",
+  "population": "tiny-anchor-development",
+  "exposure": "Authored tiny business-ID query after saved memory failure; no held-out or paper-result claim.",
+  "derivation": "Existing frozen eight-node financial fixture: account1 reaches account2 directly with media1/2 and account3 directly or via account2 with medium1. Return to account1 is disallowed; timestamps must increase; endpoint/length/medium output is distinct.",
+  "cases": [
+    {
+      "id": "ANCHOR-01",
+      "mode": "performance",
+      "question": "From account business ID 1, follow one to three outgoing transfers within Jan1 through Jan4 2020 inclusive, with strictly increasing times and no repeated account. Return reachable account IDs, distance, and each blocked sign-in medium ID/type.",
+      "gold_compact": {
+        "nodes": [
+          {
+            "var": "start",
+            "type": "XGAPFinBenchAccount",
+            "entity": null
+          },
+          {
+            "var": "other",
+            "type": "XGAPFinBenchAccount",
+            "entity": null
+          },
+          {
+            "var": "medium",
+            "type": "XGAPFinBenchMedium",
+            "entity": null
+          }
+        ],
+        "edges": [
+          {
+            "var": "signin",
+            "type": "SIGNED_IN_TO",
+            "source": "medium",
+            "target": "other"
+          }
+        ],
+        "path": {
+          "var": "reach",
+          "type": "TRANSFERRED_TO",
+          "source": "start",
+          "target": "other",
+          "min_hops": 1,
+          "max_hops": 3,
+          "mode": "ACYCLIC",
+          "time": {
+            "property": "createTime",
+            "lower": "2020-01-01 00:00:00.000",
+            "upper": "2020-01-04 00:00:00.000",
+            "lower_inclusive": true,
+            "upper_inclusive": true,
+            "increasing": true
+          }
+        },
+        "where": [
+          {
+            "left": {
+              "var": "start",
+              "property": "id"
+            },
+            "op": "eq",
+            "right": {
+              "value": "1"
+            },
+            "value_type": "scalar"
+          },
+          {
+            "left": {
+              "var": "medium",
+              "property": "isBlocked"
+            },
+            "op": "eq",
+            "right": {
+              "value": true
+            },
+            "value_type": "scalar"
+          }
+        ],
+        "select": {
+          "other_id": {
+            "var": "other",
+            "property": "id"
+          },
+          "account_distance": {
+            "var": "reach",
+            "property": "length"
+          },
+          "medium_id": {
+            "var": "medium",
+            "property": "id"
+          },
+          "medium_type": {
+            "var": "medium",
+            "property": "mediumType"
+          }
+        },
+        "contribution_by": null,
+        "order_by": [
+          {
+            "field": "account_distance",
+            "direction": "asc"
+          },
+          {
+            "field": "other_id",
+            "direction": "asc"
+          },
+          {
+            "field": "medium_id",
+            "direction": "asc"
+          }
+        ],
+        "limit": null
+      },
+      "expected_rows": [
+        {
+          "other_id": "2",
+          "account_distance": 1,
+          "medium_id": "1",
+          "medium_type": "PHONE"
+        },
+        {
+          "other_id": "2",
+          "account_distance": 1,
+          "medium_id": "2",
+          "medium_type": "PHONE"
+        },
+        {
+          "other_id": "3",
+          "account_distance": 1,
+          "medium_id": "1",
+          "medium_type": "PHONE"
+        },
+        {
+          "other_id": "3",
+          "account_distance": 2,
+          "medium_id": "1",
+          "medium_type": "PHONE"
+        }
+      ],
+      "normalization": {
+        "schema_version": "xgap-row-normalization-v1",
+        "fields": {
+          "other_id": "text",
+          "account_distance": "integer",
+          "medium_id": "text",
+          "medium_type": "text"
+        }
+      }
+    }
+  ]
+}

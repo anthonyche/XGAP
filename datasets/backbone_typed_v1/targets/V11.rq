@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT (SUM(DISTINCT ?value) AS ?total) WHERE { ?n a t:Person ; t:score ?raw . FILTER(isNumeric(?raw) && ?raw>0) BIND(xsd:double(xsd:integer(FLOOR(xsd:decimal(?raw)))) AS ?value) }

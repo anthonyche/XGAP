@@ -1,0 +1,116 @@
+{
+  "schema_version": "m15-finbench-confirmatory-campaign-readiness-v1",
+  "artifact_id": "m15-finbench-confirmatory-campaign-local-readiness-v1",
+  "base_git_commit": "2f7ed50558f5281fe416a34b10bdaac69e1bb8d5",
+  "accepted_freeze": {
+    "slurm_job_id": "3793747",
+    "producer_commit": "c242d45be43783053b61e999f5c95743aa3ee85f",
+    "independent_audit_check_count": 44,
+    "schedule_sha256": "27b7c1391fb507ec83bd84fcf559e40f0572100190205052f0f26243cdac2298",
+    "workload_sha256": "63a8ef36bc7576033db93caa2aa486409bc90ecfc699385b61e7d02be4320a5f"
+  },
+  "implementation": {
+    "campaign_coordinator": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_campaign.py",
+      "file_sha256": "0af8d823d53c1be52b618be91d0c53042a13611e680af53d89d6e1275e0801c7"
+    },
+    "independent_campaign_auditor": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_campaign_evidence.py",
+      "file_sha256": "cb98f3280a10142657b39ff82a03b226f613ec4d5f5abff4ad17a8af966dba50"
+    },
+    "submission_helper": {
+      "path": "scripts/server/submit_m15_finbench_confirmatory_campaign.sh",
+      "file_sha256": "afa21ec5c72a649af050eae4404647d79d2ff4bec32f5801b547c67704adca4d"
+    },
+    "block_wrapper": {
+      "path": "scripts/slurm/run_m15_finbench_confirmatory_campaign_block.sbatch",
+      "file_sha256": "9531382786715dd78df71bd122f17aa2e43512c1561569ae9409a3e037873d61"
+    },
+    "selection_wrapper": {
+      "path": "scripts/slurm/run_m15_finbench_confirmatory_selection.sbatch",
+      "file_sha256": "a8e616093d0f322dac5241934923fcf0d0ea4a3eb2c8f0d00f685681c2b81128"
+    },
+    "finalize_wrapper": {
+      "path": "scripts/slurm/run_m15_finbench_confirmatory_finalize.sbatch",
+      "file_sha256": "c87794b1b9c24117dc9bb7111a3531470c8334303e8915f2ee1888821adfde25"
+    },
+    "audit_wrapper": {
+      "path": "scripts/slurm/run_m15_finbench_confirmatory_campaign_audit.sbatch",
+      "file_sha256": "bd77b4dd1004d9cbdb9aa1f8fafaedaf6c2423e694abdc938332fbf940e62977"
+    },
+    "campaign_tests": {
+      "path": "tests/test_m15_finbench_confirmatory_campaign.py",
+      "file_sha256": "24207837840d9372ea6ae4d866a297a916d6932abe66089a67061908584f661f"
+    }
+  },
+  "staged_dependency_graph": {
+    "preselection": [
+      "crossfit_training_measurement[1-7%1]",
+      "current_query_profile_acquisition[1]"
+    ],
+    "selection_afterok": [
+      "crossfit_training_measurement",
+      "current_query_profile_acquisition"
+    ],
+    "postselection_afterok": [
+      "paired_selected_serving[1-7%1]",
+      "postselection_shadow_evaluation[1-7%1]"
+    ],
+    "delayed_oracle_afterok": [
+      "paired_selected_serving",
+      "postselection_shadow_evaluation"
+    ],
+    "independent_audit_afterany": [
+      "delayed_oracle"
+    ]
+  },
+  "acceptance": {
+    "focused_tests": {
+      "passed": 62,
+      "failed": 0,
+      "elapsed_seconds": 30.48
+    },
+    "campaign_tests": {
+      "passed": 5,
+      "failed": 0
+    },
+    "full_tests": {
+      "command": "pytest -q",
+      "passed": 1181,
+      "skipped": 36,
+      "failed": 0,
+      "elapsed_seconds": 436.64
+    },
+    "bash_syntax_passed": true,
+    "compileall_passed": true,
+    "git_diff_check_passed": true
+  },
+  "scientific_boundary": {
+    "measurement_block_count": 22,
+    "total_plan_runs": 1888,
+    "maximum_backend_calls": 3776,
+    "query_instance_is_inferential_unit": true,
+    "repetitions_are_independent_units": false,
+    "method_timeout_seconds": 60,
+    "transport_timeout_seconds": 65,
+    "automatic_retries": 0,
+    "infrastructure_replacement_limit": 1,
+    "replacement_requires_independent_audit": true,
+    "replacement_requires_zero_measurements": true,
+    "method_timeout_replacement_eligible": false,
+    "partial_measurement_replacement_eligible": false,
+    "missing_measurements": "no_imputation",
+    "current_confirmatory_query_oracle_opened": false,
+    "final_confirmatory_oracle_is_authoritative": true,
+    "producer_may_set_paper_result_true": false,
+    "independent_campaign_audit_required": true
+  },
+  "execution_boundary": {
+    "formal_measurements_submitted": false,
+    "execution_request_created": false,
+    "confirmatory_execution_authority_created": false,
+    "confirmatory_execution_authorized": false,
+    "next_action": "bind the final clean pushed commit into a non-authorizing execution request and ask the author for a separate explicit decision"
+  },
+  "paper_result": false
+}

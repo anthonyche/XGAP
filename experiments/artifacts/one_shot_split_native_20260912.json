@@ -1,0 +1,192 @@
+{
+  "schema_version": "xgap-split-nl-evidence-v1",
+  "implementation_commit": "6833e19",
+  "attempt": "nl-only-identity-v1",
+  "evidence_root": "/Users/anthonyche/xgap-data/one-shot-split-native-20260912-6833e19",
+  "status": "answered",
+  "answer_exact": true,
+  "answer_rows": [
+    {
+      "person": "https://xgap.test/split/c",
+      "edge": "https://xgap.test/split/r2"
+    }
+  ],
+  "model_calls": 1,
+  "input_tokens": 2500,
+  "output_tokens": 815,
+  "current_query_probe_calls": 0,
+  "training_calls": 0,
+  "fit_calls": 0,
+  "final_plan_executions": 1,
+  "backend_calls": 2,
+  "actual_backend_rows": {
+    "fuseki": 2,
+    "neo4j": 4
+  },
+  "grounding_lookups": 4,
+  "entity_authority": false,
+  "selection": {
+    "candidate_id": "c1",
+    "strategy_id": "placement-0/coordinator",
+    "plan_id": "oneshot:fd8c7e48f15c00f061d3",
+    "estimated_ms": 12.87995032021396,
+    "quality_proxy": 0.9,
+    "ranking_quality_proxy": 0.9,
+    "quality_fallback_used": false,
+    "quality_proxy_calibrated": false,
+    "objective_ms": 12.87995032021396,
+    "interpretation_options": [
+      {
+        "candidate_id": "c1",
+        "strategy_id": "placement-0/coordinator",
+        "plan_id": "oneshot:fd8c7e48f15c00f061d3",
+        "estimated_ms": 12.87995032021396,
+        "quality_proxy": 0.9,
+        "ranking_quality_proxy": 0.9,
+        "quality_fallback_used": false,
+        "quality_proxy_calibrated": false,
+        "objective_ms": 12.87995032021396
+      }
+    ],
+    "proxy_frontier": [
+      "c1"
+    ],
+    "frontier_is_actual_quality": false,
+    "algorithm": "estimated_argmin_per_interpretation_then_quality_cost_argmin_v1",
+    "optimality_scope": "estimated compatible admitted neighborhood; no global physical or answer guarantee",
+    "selection_uses_execution_observations": false
+  },
+  "candidate_count": 2,
+  "planning_ms": 25.27416590601206,
+  "execution_ms": 172.06108290702105,
+  "scheduler_ms": 171.7995833605528,
+  "end_to_end_ms": 4524.5216665789485,
+  "logical_exchange_bytes": 748,
+  "actual_rank_quality": null,
+  "actual_selection_regret": null,
+  "rank_quality_scope": "Only selected plan measured; no runtime regression/calibration requirement",
+  "selected_prediction_out_of_range": [
+    "kind.exchange.input_units"
+  ],
+  "deployment_sha256": "a2c547d33531e0043a496e98b421232e083badfb8988d1c3bdce1f47dac7872a",
+  "parent_model_sha256": "33badbbe8e8ecea1e69c5318902a809219a96d5d4a775e36fd06750070eee177",
+  "deployment_transfer_calibrated": false,
+  "provider_config": {
+    "provider_id": "xgap-one-shot-toy-development-v2:performance:qwen3.8-27b:envelope-schema-v1:nl-only-identity-v1",
+    "base_url": "http://112.95.75.67:9018/v1",
+    "api_key_env": "XGAP_EXTERNAL_LLM_API_KEY",
+    "model": "qwen3.8-27b",
+    "temperature": 0,
+    "top_p": 1,
+    "max_tokens": 4096,
+    "candidate_cap": 1,
+    "timeout_seconds": 120,
+    "structured_output_mode": "json_schema",
+    "structured_schema_hash": "ef073ad8020168b68f5ac2fecceadebedaef263f063ec2c192487a7767192aad",
+    "prompt_hash": "d7891fc7cbccadcc480976f8b3518e97ed2407eca723ecdd839b267ba938d385",
+    "seed": null,
+    "seed_supported": false,
+    "max_repair_calls": 0,
+    "extra_parameters": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      }
+    },
+    "schema_profile": "envelope-v1",
+    "wire_profile": "envelope-schema-v1",
+    "wire_schema_hash": "ef073ad8020168b68f5ac2fecceadebedaef263f063ec2c192487a7767192aad",
+    "local_admission_schema_hash": "ea658d7102638cb51827db49b7864a18437c0501a67e0b3cf37ff477e60e18e5",
+    "parameter_contract_version": "xgap-semantic-parameters-v1"
+  },
+  "serving_statistics": {
+    "statistics_id": "split-logical-source-records",
+    "version": "v1",
+    "entries": [
+      {
+        "backend_id": "fuseki",
+        "source_id": "relations",
+        "snapshot_version": "647bfdbed1cd0deb7b51dbafce95446170c0046c24e0b49548b78d0e6ece6777",
+        "total_rows": 7,
+        "mean_row_bytes": 47.285714285714285,
+        "provenance_ref": "fixture:relations.json#sha256=cf2faa9c59aa4c74c1941511872251753bfcb6cfa779dcf195b8b400eafb2bde;logical-records"
+      },
+      {
+        "backend_id": "neo4j",
+        "source_id": "profiles",
+        "snapshot_version": "5e71276daac8580b0552ff6029bfa8d87d5e19d1668fe43af240f31285154c1d",
+        "total_rows": 4,
+        "mean_row_bytes": 65.0,
+        "provenance_ref": "fixture:profiles.json#sha256=cc12992af24a3191a3036f135c32e27bdbf5907685daa46cf0c9c8bd829d24ed;logical-records"
+      }
+    ]
+  },
+  "input_count": 455,
+  "input_unchanged": true,
+  "input_request_scope": "Original NL plus source schema; no prepared operators, hard constraints, output structure or gold",
+  "shutdown": [
+    {
+      "service_id": "fuseki",
+      "pid": 13537,
+      "initial_exit_code": null,
+      "final_exit_code": 143,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    },
+    {
+      "service_id": "neo4j",
+      "pid": 13503,
+      "initial_exit_code": null,
+      "final_exit_code": 0,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    }
+  ],
+  "owned_processes_terminal": true,
+  "offline": {
+    "deployment_prepare_reload_ms": 4.91662509739399,
+    "deployment_model_sha256": "a2c547d33531e0043a496e98b421232e083badfb8988d1c3bdce1f47dac7872a",
+    "parent_model_sha256": "33badbbe8e8ecea1e69c5318902a809219a96d5d4a775e36fd06750070eee177",
+    "training_cost_scope": "historical parent collection/fit; not incurred again",
+    "catalog_preparation_ms": null,
+    "catalog_cost_scope": "previous offline fixture publication; unmeasured separately",
+    "preparation_ms": 140.8533751964569,
+    "service_setup_ms": 7411.979749798775,
+    "fixture_load_ms": 190.73408469557762
+  },
+  "exposure": "Same tiny question after one prior failed real model response and generic prompt correction; development only",
+  "real_attempt_history": {
+    "attempts": 2,
+    "exact_answers": 1,
+    "interpretation_failures": 1,
+    "model_calls": 2,
+    "query_calls": 2,
+    "input_tokens": 4661,
+    "output_tokens": 1616
+  },
+  "new_checks": {
+    "deployment_partition": {
+      "passed": 4,
+      "elapsed_seconds": 0.42,
+      "tool_chunk": "1c48a6"
+    },
+    "nl_identity_replay": {
+      "passed": 2,
+      "elapsed_seconds": 0.22,
+      "tool_chunk": "46f843"
+    }
+  },
+  "files": {
+    "manifest.json": "cf553df808656a204859328372331aaff0ff7b3210267a5554dd999e011fd634",
+    "interpretation.json": "9b1aefed0c476b71a3eb31653ba333a4bbc700546f860deee18112f7307cf9e2",
+    "result.json": "3f018e8c2b424bd36687786ea338165ff2bfb4a85d82c286c3deb780c7a26886",
+    "evaluation.json": "49f54c5909647eeb88099fa08012cb9f577a4e12e0998fcdb61e0e454dd138b8",
+    "receipt.json": "d39dd03c57296470d60704250a9def8255c17f140a0cba35b92a1855e62aaecd",
+    "frozen_deployment.json": "8f81638e94b82534cf781058b426529048d12c6a4be7ca9e6678955d743b39b3"
+  },
+  "audit_errors": [],
+  "paper_result": false
+}

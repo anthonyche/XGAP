@@ -1,108 +1,226 @@
-cat > AGENTS.md <<'EOF'
-# XGAP Agent Harness
+# XGAP research prototype — current engineering authority
 
-## Project identity
+2026-09-27 latest verified closure: **3892875 application stopped at small_study_wall_budget**.
+134 indexed archive files verified; 5 new + 177 old = **182 sealed, 34 untouched D2-rdf**.
+Usage is complete: 497 model calls / 911698 input / 108792 output tokens. All owned
+services closed. The supervisor wrongly demanded 3900 seconds for a warm 300-second
+request, stopping with 3625.7994 seconds still available. Fix phase-aware admission
+and preserve validated worker telemetry before source snapshot; do not change query
+algorithms, source/per-method limits, failures, or original 48 inputs. Generalize the
+existing append-only continuation, inherit all usage and actual allocation durations;
+no new job has been submitted. Final Slurm elapsed must be read before the next
+submission. See docs/report/ch6_small48_terminal_3892875.md. Earlier submission-only
+and 39-remaining notes are history.
+User explicitly approved an administrative cumulative batch wall cap of 8 hours
+(was 6). Preserve the original contract and record the amendment; subtract every
+prior allocation. All per-request limits and model/token ceilings are unchanged.
+The verified 34-cell handoff is `Downloads/xgaptail34a0bf92c.zip`, exact execution
+source a0bf92c1628341809ac7fc6af38a834984a279e0; 106 targeted tests and independent
+bundle restore passed. No new job exists yet. Read the linked report for hashes.
 
-You are working on XGAP, an ambiguity-aware natural-language-to-graph-query planner.
+2026-09-27 current remote handle: **3892875**, exact source **f1b2583**.
+User confirms successful independent restore, frozen-input/continuation preparation,
+hidden key entry and submission. Prepared contract SHA is
+`e33438bc6db3c2cfa7905feffe8346349aa17cbab0a878cdc2c55f362b445ee9` (203308 bytes).
+Only the 39 untouched D2-rdf requests are scheduled; preserve all 177 previous
+outcomes and cumulative accounting. Scheduler state, compute-node authentication
+and new results are not yet known. Do not resubmit or alter the frozen checkout.
+Earlier no-submission/current-3891655 entries are historical; see
+`docs/report/ch6_small48_terminal_3891655.md` for the current handoff.
 
-XGAP's logical planning layer must align with the path algebra from the paper "Path-based Algebraic Foundations of Graph Query Languages".
+2026-09-27 latest evidence: **3891655 wrote accounting_incomplete and its archive**;
+2,057 indexed files verified. 135 new + 42 prior = 177 sealed requests, 39 untouched
+all D2-rdf. D1/D3 are complete; do not rerun them. Last worker's identity-bound
+receipt/core/interpretation agree on 1 model call / 2649 input / 427 output tokens;
+outer source snapshot failed before copying this usage. Source execution remains
+failed; preserve old null fields and add explicit reconciliation only. Owned sources
+and phase were closed/sealed. Fix common trial usage transfer, prepare a fresh
+39-cell complement inheriting all usage and actual prior allocation time. Scheduler
+terminal accounting must be checked before submission; no replacement submitted.
+See `docs/report/ch6_small48_terminal_3891655.md`. Earlier running/submission notes
+are history, not current status.
 
-The full pipeline is:
+2026-09-27 current remote handle: **3891655**, continuation source **2a8e16e**.
+The user confirmed successful submission after recovering empty hidden-key input.
+The prepared continuation preserves 42 sealed requests and schedules only the
+174 untouched requests, inheriting prior model/token usage. Scheduler state,
+compute-node authentication and new results are not yet verified. Read this job;
+do not rerun stage, resubmit, or mutate frozen inputs/code. The older current-job
+and no-submission entries below are historical. See
+`docs/report/ch6_small48_terminal_3890655.md` for the exact log and archive paths.
 
-Natural language question
-  -> candidate path-pattern query
-  -> deterministic lowering to path-algebra logical plan
-  -> logical optimization
-  -> compilation to target query languages: GQL, Cypher, SPARQL
-  -> optional backend execution and evaluation
+2026-09-27 terminal update: **3890655 FAILED (2:0), 32m48s, compt341**.
+All 938 archived files are verified. The 42 sealed method requests comprise 36
+correct answers, 4 shared ranked_count proposal failures, 1 TS method error and
+1 TS study censoring; zero unsealed cells, 65 model calls with complete usage.
+The stopping gate was lookup quiescence not confirmed at the first reap; later
+closed.json proves the same PID 3077878 reaped with returncode 143 and all owned
+resources closed. Do not weaken the required leader-reap/live-descendant checks.
+The explicit continuation preserves these 42 and derives 174 unattempted requests
+in the original order, with inherited call/token costs and a documented recovery
+wall policy. No new remote submission exists yet. Experimental algorithm/provider
+code and original inputs remain f40dfa9-equivalent; known ranked_count technical
+identity normalization is tracked separately, not silently patched mid-study.
+See `docs/report/ch6_small48_terminal_3890655.md`.
 
-## Required reading before every task
+2026-09-27 current job: **3890655**, exact experimental revision **f40dfa9**.
+The independent bundle was restored on Pioneer; all six manifests and the
+48-case / 216-request publication audit passed, and the user confirmed submission.
+Scheduler state, compute-node authentication and results remain unverified.
+Read this existing job only; do not resubmit or mutate its checkout/inputs.
+See `docs/report/ch6_small48_submission_3890655.md`. Earlier no-job notes below
+describe the pre-submission state and are superseded by this receipt.
 
-Before changing code, read these files:
+2026-09-27: repaired small48 source transfer failed before preparation/submission
+because repeated `git clone --shared` exceeded the alternates depth. Preserve the
+failed stage and checkout. Use the independent full-source recovery package for
+exact f40dfa9, with fresh paths and pre-submission guards; no new job exists yet.
+Do not rebuild a chain of shared clones. See
+`docs/report/ch6_independent_source_recovery_20260927.md` (21 deployment checks,
+zero real queries/model calls/submissions). Experimental cases/budgets are unchanged.
 
-1. docs/architecture.md
-2. docs/roadmap.md
-3. docs/status.md
-4. docs/operator_semantics.md
-5. docs/decisions.md, if it exists
-6. The sprint prompt under prompts/sprints/, if provided
+2026-09-26 current authorization: freeze the repaired common inputs and RUN the
+48-case, five-method end-to-end evaluation once (216 supported requests, 24 TS
+native unsupported positions). See `docs/decisions/ch6_repaired_small48_20260926.md`.
+Keep the original cases, references, hidden intent, full sources and budgets.
+All five methods get the same public edge-role addendum; only internal providers
+use the proved public-constraint profile. Reuse prior structured-query source
+admission via explicit migration evidence; this does not pre-admit new NL output.
+Preserve 3886776. No new job has been submitted yet; package/source freeze precedes
+the one server handoff. Do not launch the full factor matrix under this authority.
 
-After reading them, briefly state:
-- current milestone
-- allowed files to modify
-- forbidden changes
-- acceptance criteria
+2026-09-26 latest: eight public structures passed a real shared-entry gate, 8/8
+with one LLM proposal and one authoritative scope confirmation each. See
+`docs/report/ch6_entry8_acceptance_20260926.md`. This does not execute answers or
+replace old 17/48 results. Next freeze revised common inputs/profiles for the
+48-question five-method study; preserve domain/W/deployment strata and budgets.
 
-## Core algebra invariants
+2026-09-26 latest: 3886776 is complete and its 2,970 archived files are verified.
+The TS supplement and three original queries are verified: all three fail the
+frozen RDF4J 5.1.2 parser before execution. Keep baseline query failures; change
+diagnostics only, never repair its SPARQL or overwrite the frozen JAR/results.
+All 216 supported requests are sealed; each internal method has 17 answered,
+27 scope rejections and 4 proposal failures; TS has 21 censored and 3 errors.
+XGAP actually probed seven times across five questions; NP never probed. No
+overall probe benefit is established. Public edge wording, source-proved identity
+and contribution COUNT equivalences, and the one-call typed frontend are opt-in
+repairs; verify source proof, never infer equality from hidden intent. See
+`docs/report/ch6_small48_terminal_3886776.md`. Old pins/results stay unchanged;
+no new batch is submitted. Earlier in-flight and raw-pending notes are history.
 
-The logical algebra must only use:
+2026-09-26 latest: partial 3886776 logs expose shared NL/scope rejections.
+The public edge-role selector and identity-v3 fixes are local, not deployed to
+the in-flight b86ada5. Preserve that run. Recover sealed raw evidence and use
+`scripts/audit_ch6_nl_failures.py` to group failures before another batch.
+See `docs/decisions/ch6_shared_entry_repair_20260926.md`. Never repair online
+proposals from hidden intent or convert offline replay into measured success.
 
-- Nodes(G)
-- Edges(G)
-- Selection
-- Union
-- Join
-- Recursive with modes WALK, TRAIL, ACYCLIC, SIMPLE, SHORTEST
-- GroupBy
-- OrderBy
-- Projection
+2026-09-26 current server handle: **3886776**, exact `b86ada5`, 48 questions /
+216 supported requests. Server publication audit passed; submission is confirmed,
+running state and results still pending. Do not resubmit or modify that checkout.
+Independent D4 preprocessing, D1 live-factor refresh and fixed-plan parallel
+preparation may proceed in new directories; none is a measured result.
 
-Do not introduce other logical operator names such as:
+2026-09-26 latest: the downloaded 3885860 raw archive is verified (1,367 files).
+The next run is the frozen 48-case / 216-supported-request small real study,
+D1 then D3 then D2, with full source snapshots. Use the explicit compact-equivalence
+provider adapter and actual-public-family live probes; old profiles stay unchanged.
+Known budget censoring may continue only after verified cleanup/accounting;
+zero-source-call semantic rejections may retain healthy sealed source sessions.
+See `docs/decisions/ch6_small_real_execution_20260926.md`. Keep synthetic scale
+and execution-parallelism work in scope, separately from the 48-query mean results.
 
-- NodeScan
-- EntityLookup
-- EdgeExpand
-- PathExpand
-- Filter
-- Aggregate
-- Rank
-- Project
+2026-09-26 priority: small real evaluation, four cases per W1–W4 per domain;
+prepare meaningful paid-probe versus NP comparisons and preserve old results.
+See `docs/decisions/ch6_probe_small_workload_20260926.md`. Mockup v2 is a separate
+conditional simulation, never measured evidence. Pilot 3885860 ended at TS's
+256-source-call observer limit; its censoring-continuation fix is in the submitted
+`b86ada5` package, whose execution results remain pending.
+Do not silently change max to expectation or reuse priors for a different NL family.
 
-Entity grounding belongs outside the logical algebra.
+2026-09-25 latest authorization: run existing D1's 56 authored cases as ONE
+development pilot (256 supported method requests, native/r0 then RDF/r0), while
+rebuilding a provenance-backed independent final workload. See
+`docs/decisions/ch6_pilot_workload_rebuild_20260925.md`. Preserve old artifacts and
+case IDs; do not label this pilot as an untouched final test or the full study.
+No full campaign is authorized. Token thresholds are observed after each method
+request; missing usage stops work, never silently becomes zero or a retry.
 
-The primary data object is PathSet.
-The secondary data object is SolutionSpace, used only for selector-style operations.
+2026-09-23 latest task: prepare ALL formal artifacts/workflows/scripts/matrices
+up to the launch boundary, not the full campaign itself. Current figure authority:
+`docs/ch6_formal_execution_20260923.md`: 21 figures, all XGAP/NP/SH/GR/TS;
+retain fixed references for inapplicable knobs and explicit unsupported/missing
+statuses. F6 is five-method cost sensitivity. No fabricated curves or zero fill.
+Preparation completeness is distinct from actual held-out/data readiness.
+Latest user clarification: use a mixed workload and report each method only on
+its predeclared supported subset, with support counts/rates and paired XGAP
+numbers on that same subset. Unsupported is not failed; never infer support from
+answer quality or timeouts. TS supports RDF federation, not native heterogeneity.
 
-## Scope
+2026-09-22: current authority is `docs/ch6_experiment_plan_20260922.md`,
+`docs/query_structure_spec_20260922.md`, and `docs/coding_agent_brief_20260922.md`.
+The latest user instruction, “请继续推进得到实验结果”, authorizes bounded actual
+model/backend pilot execution. Freeze inputs and execution budgets before calls;
+the first release is `docs/decisions/ch6_first_real_pilot_20260922.md`. Do not
+resume old automations, launch the full matrix, or relabel historical results.
+Latest correction: `docs/decisions/ch6_external_twostage_20260922.md` overrides
+method definitions. Two-stage means an actual external-method composition.
+No further LLM-direct cells or internal-two-stage main comparisons are authorized.
+The user also authorized replacing D2 with a usable alternative: see
+`docs/decisions/ch6_dataset_and_methods_20260922.md` (MovieLens development intake;
+stable 20M proposed for evaluation, no fabricated Wikidata mappings).
 
-The MVP supports path-centric graph queries and regular path queries.
+Current entry: `xgap.api.answer_unified`; controlled entry:
+`xgap.api.answer_unified_controlled`; contract:
+`docs/decisions/unified_lookahead_migration_20260921.md`.
+Read `docs/goal.md`, `docs/status.md`, `docs/architecture.md`,
+`docs/implementation_chapter6.md`, `docs/operator_semantics.md`, and relevant
+linked decisions before changes. Read `docs/roadmap.md` for remaining work.
 
-Do not claim or implement arbitrary conjunctive graph pattern matching in the core algebra unless a future milestone explicitly adds it.
+The user authorizes necessary tiny development gates, legacy isolation,
+compressed evidence, faithful baseline integration and GitHub synchronization.
+Current baseline milestone is complete on tiny single/two-source data; see
+`docs/report/ch6_baseline_admission_20260922.md`. Do not tune its answer quality.
+The next boundary is formal batch dispatch and same-RDF workload/budget freezing,
+not another baseline correctness-improvement loop. No full matrix is released yet.
+This is a bounded research prototype. Do not expand universal NL support or
+build general open-source-product features instead of advancing the experiment.
 
-## Implementation rules
+## Invariants
 
-- Python 3.10+
-- Use dataclasses and type hints.
-- Keep modules small and testable.
-- Use pytest.
-- Do not introduce heavy dependencies in the algebra core.
-- Do not rely on an LLM for deterministic lowering, validation, or evaluation.
-- Unimplemented future features must raise NotImplementedError.
-- Never silently return empty results for unimplemented behavior.
-- Do not implement future milestones unless explicitly asked.
+- One fixed-D online controller; Lambda/epsilon are validation/loss parameters.
+  Do not restore separate Exact/Performance algorithms or search a full H tree.
+- Preserve audited algebra/compiler semantics. No invented low-level operators.
+- Model/catalog output proposes; it cannot attest intent or scope completeness.
+  Only the metered authoritative user tool may disclose private intent online.
+- Mandatory validation is independent of singleton candidates and zero loss.
+  Fixed fields/hard coordinates never relax. The current distance is structured
+  query discrepancy, not output-F1 or open-NL error.
+- Before optional work, preserve a compact completion witness for EVERY outcome,
+  including unknown/probability-zero outcomes. Completion-aware leaf scores are
+  estimates, not resource certificates. Retain protected seeds and suppress
+  repeated no-progress work. Unknown bounds are never zero.
+- PTime needs fixed D and explicit candidate/action/outcome/plan/representation
+  bounds, plus polynomial local operations. No global-optimum/whole-policy ratio.
+- Use frozen estimates or declared work models, never current-query trial plans
+  to choose a winner. Physical moves are individual checked transformations.
+- Execute at most one final plan. Only selected actions enter the paid ledger;
+  hypothetical work, actual calls/tokens/bytes, declared cost units and offline
+  preprocessing are reported separately. No invented measurements.
+- Preserve old commits, frozen/failed trials, jobs and historical method IDs.
+  Do not retry/cancel/switch an existing run without authority.
+- Baselines run faithfully. Fix environment/transport integration only; do not
+  tune their algorithms, prompts, outputs or decoding to improve their results.
+  User clarification requires making supported workflows run and reporting
+  single-source/cross-source strata separately. Explicit compatibility profiles
+  for HTTPS IRIs, action-envelope serialization and equivalent tool syntax are
+  recorded in `docs/decisions/ch6_planner_external_followup_20260922.md`; preserve
+  raw responses and unadapted failures, never inject reference answers or change intended action values/final queries,
+  and never label an adapted profile as byte-identical author code.
+- Test changed contracts on portable toy data and necessary real tiny boundaries.
+  No blanket regression/ablation campaign or GrailQA preprocessing in development.
+- Keep credentials/private intent/large artifacts out of Git. Push without
+  rewriting remote history. Shared compiler/runtime code is not disposable legacy.
 
-## Work protocol
-
-For every sprint:
-
-1. Read the required project docs.
-2. Inspect the relevant source and tests.
-3. Produce a short implementation plan.
-4. Implement only the current milestone.
-5. Add or update tests.
-6. Run pytest.
-7. Run examples if the sprint requires them.
-8. Update docs/status.md.
-9. Report changed files, tests, commands run, results, and limitations.
-
-## Definition of done
-
-A milestone is DONE only if:
-
-- implemented behavior matches docs/operator_semantics.md
-- pytest passes
-- required examples run
-- docs/status.md is updated
-- no future feature is faked
-- no unrelated refactor is introduced
-EOF
+Historical instructions: `AGENTS_history_20260921_before_unified.md` and
+`docs/agent_harness_history_20260917.md`; neither is current work authorization.

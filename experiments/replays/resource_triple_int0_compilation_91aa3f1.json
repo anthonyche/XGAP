@@ -1,0 +1,704 @@
+{
+  "actual_answers": null,
+  "actual_fact_snapshot": null,
+  "evaluation_only_controlled_reference": true,
+  "external_calls": 0,
+  "input_path": "/Users/anthonyche/xgap-data/int0-grailqa-pilot150-20260911/int0_diagnostic.json",
+  "input_sha256": "c510e7fced051230ed743c065100bdb3632f339b8071c72bdb26665b1abf5ad4",
+  "paper_result": false,
+  "rows": [
+    {
+      "backend": "neo4j",
+      "plan": {
+        "max_parallelism": 4,
+        "max_remote_calls": 16,
+        "metadata": {
+          "binding_value_profile": "typed_binding_values_v1",
+          "compiler": "semantic_dag_v1",
+          "operator_outputs": {
+            "answer": "answer/project",
+            "traverse": "traverse/paths"
+          },
+          "schemas": {
+            "answer": {
+              "fields": [
+                "answer"
+              ],
+              "kind": "binding_set",
+              "path_namespace": null
+            },
+            "traverse": {
+              "fields": [
+                "path"
+              ],
+              "kind": "path_set",
+              "path_namespace": "http://rdf.freebase.com/ns/"
+            }
+          },
+          "semantic_program_sha256": "a6b2338c9bd5d517b30510298dfc85cae5541f65b7c048014e25e4b08b903b36",
+          "source_bindings": {
+            "traverse": "neo4j"
+          }
+        },
+        "nodes": [
+          {
+            "inputs": [],
+            "kind": "remote_query",
+            "node_id": "traverse/candidates",
+            "parameters": {
+              "artifact": {
+                "artifact_id": "resource-triple-paths",
+                "kind": "compiled",
+                "language": "cypher",
+                "parameters": {
+                  "backend_execution_verified": false,
+                  "backend_profile_sha256": "f3c85b2e8f1d3c2be8d3389f27dffa50dd42d2b2487fdbd81053d36194b86878",
+                  "branch_count": 1,
+                  "compiler": "resource_triple_paths_v1",
+                  "condition_profile": "total_scalar_boolean_v1",
+                  "directions": [
+                    "OUT"
+                  ],
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "n1",
+                    "e1"
+                  ],
+                  "input_pattern_sha256": "f23b036999f223df22b8e9433d71bf8551f1fde83edf46017e084367713144ad",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "n1",
+                    "e1"
+                  ],
+                  "p0": "http://rdf.freebase.com/ns/type.object.type",
+                  "p1": "http://rdf.freebase.com/ns/protected_sites.site_listing_category",
+                  "p2": "http://rdf.freebase.com/ns/type.object.type",
+                  "p3": "http://rdf.freebase.com/ns/protected_sites.natural_or_cultural_site_designation",
+                  "p4": "http://rdf.freebase.com/ns/m.09qx9m",
+                  "p5": "http://rdf.freebase.com/ns/protected_sites.site_listing_category.category_of",
+                  "path_selection": {
+                    "directions": [
+                      "OUT"
+                    ],
+                    "identity_property": "type.object.id",
+                    "input_model": "rdf-resource-triples-v1",
+                    "language": "cypher",
+                    "max_edges": 1,
+                    "max_rows": 10000,
+                    "resource_namespace": "http://rdf.freebase.com/ns/",
+                    "selector": "ALL"
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.node_identity_predicates",
+                    "graph_model.node_labels",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "resource_snapshot_id": "unbound-fact-snapshot-compile-only",
+                  "resource_triple_encoding_sha256": "02248a6114c1a3b99e3e350168a132feff37540c9b2e0794cfcc4d1641394ad5",
+                  "result_model": "resource_triple_rows",
+                  "semantic_assumptions": [
+                    "Default RDF graph set of canonical URI resource triples; Neo4j mirror preserves that set",
+                    "Fixed one-to-three-hop ALL; explicit constraints; triple edge identity is constructed by the shared decoder",
+                    "LIMIT plus one detects overflow; no truncated success"
+                  ],
+                  "target_backend_id": "neo4j"
+                },
+                "source_path": null,
+                "text": "MATCH (n0:XgapRdfResource)-[e1:XGAP_RDF_RESOURCE_EDGE]->(n1:XgapRdfResource)\nWHERE EXISTS { MATCH (n0)-[:XGAP_RDF_RESOURCE_EDGE {predicate: $p0}]->(:XgapRdfResource {iri: $p1}) } AND EXISTS { MATCH (n1)-[:XGAP_RDF_RESOURCE_EDGE {predicate: $p2}]->(:XgapRdfResource {iri: $p3}) } AND n1.iri = $p4 AND e1.predicate = $p5 AND n0.iri <> n1.iri\nRETURN DISTINCT 1 AS length, n0.iri AS n0, n1.iri AS n1, e1.predicate AS e1 LIMIT 10001"
+              },
+              "backend_id": "neo4j"
+            },
+            "semantic_operator_ids": [
+              "traverse"
+            ]
+          },
+          {
+            "inputs": [
+              "traverse/candidates"
+            ],
+            "kind": "coordinator_path_select",
+            "node_id": "traverse/paths",
+            "parameters": {
+              "directions": [
+                "OUT"
+              ],
+              "identity_property": "type.object.id",
+              "input_model": "rdf-resource-triples-v1",
+              "language": "cypher",
+              "max_edges": 1,
+              "max_rows": 10000,
+              "resource_namespace": "http://rdf.freebase.com/ns/",
+              "selector": "ALL"
+            },
+            "semantic_operator_ids": [
+              "traverse"
+            ]
+          },
+          {
+            "inputs": [
+              "traverse/paths"
+            ],
+            "kind": "coordinator_row_project",
+            "node_id": "answer/project",
+            "parameters": {
+              "projections": {
+                "answer": {
+                  "kind": "path_node",
+                  "position": 1
+                }
+              },
+              "resource_namespace": "http://rdf.freebase.com/ns/"
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "plan_id": "int0-controlled-reference-2100061004000",
+        "roots": [
+          "answer/project"
+        ]
+      },
+      "question_id": "2100061004000",
+      "status": "compiled"
+    },
+    {
+      "backend": "fuseki",
+      "plan": {
+        "max_parallelism": 4,
+        "max_remote_calls": 16,
+        "metadata": {
+          "binding_value_profile": "typed_binding_values_v1",
+          "compiler": "semantic_dag_v1",
+          "operator_outputs": {
+            "answer": "answer/project",
+            "traverse": "traverse/paths"
+          },
+          "schemas": {
+            "answer": {
+              "fields": [
+                "answer"
+              ],
+              "kind": "binding_set",
+              "path_namespace": null
+            },
+            "traverse": {
+              "fields": [
+                "path"
+              ],
+              "kind": "path_set",
+              "path_namespace": "http://rdf.freebase.com/ns/"
+            }
+          },
+          "semantic_program_sha256": "a6b2338c9bd5d517b30510298dfc85cae5541f65b7c048014e25e4b08b903b36",
+          "source_bindings": {
+            "traverse": "fuseki"
+          }
+        },
+        "nodes": [
+          {
+            "inputs": [],
+            "kind": "remote_query",
+            "node_id": "traverse/candidates",
+            "parameters": {
+              "artifact": {
+                "artifact_id": "resource-triple-paths",
+                "kind": "compiled",
+                "language": "sparql",
+                "parameters": {
+                  "backend_execution_verified": false,
+                  "backend_mapping": {
+                    "mapping_hash": "79b7486a04ae98db76bc038e1006536291bc1e22396b679d4e12b78a0ccb3484",
+                    "mapping_id": "freebase-resource-triple-compile-check",
+                    "relevant_mapped_iris": [
+                      {
+                        "canonical_term_id": "protected_sites.site_listing_category.category_of",
+                        "iri": "http://rdf.freebase.com/ns/protected_sites.site_listing_category.category_of",
+                        "kind": "relation",
+                        "logical_token": "protected_sites.site_listing_category.category_of"
+                      },
+                      {
+                        "canonical_term_id": "protected_sites.natural_or_cultural_site_designation",
+                        "iri": "http://rdf.freebase.com/ns/protected_sites.natural_or_cultural_site_designation",
+                        "kind": "class",
+                        "logical_token": "protected_sites.natural_or_cultural_site_designation"
+                      },
+                      {
+                        "canonical_term_id": "protected_sites.site_listing_category",
+                        "iri": "http://rdf.freebase.com/ns/protected_sites.site_listing_category",
+                        "kind": "class",
+                        "logical_token": "protected_sites.site_listing_category"
+                      }
+                    ],
+                    "version": "02248a6114c1a3b99e3e350168a132feff37540c9b2e0794cfcc4d1641394ad5"
+                  },
+                  "backend_profile_sha256": "914eea50fb000c34f981f26071c54caf0961a8339a6ffa56fbc16956d6a8bd8d",
+                  "branch_count": 1,
+                  "compiler": "resource_triple_paths_v1",
+                  "condition_profile": "total_scalar_boolean_v1",
+                  "directions": [
+                    "OUT"
+                  ],
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "n1",
+                    "e1"
+                  ],
+                  "input_pattern_sha256": "f23b036999f223df22b8e9433d71bf8551f1fde83edf46017e084367713144ad",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "n1",
+                    "e1"
+                  ],
+                  "path_selection": {
+                    "directions": [
+                      "OUT"
+                    ],
+                    "identity_property": "type.object.id",
+                    "input_model": "rdf-resource-triples-v1",
+                    "language": "sparql",
+                    "max_edges": 1,
+                    "max_rows": 10000,
+                    "resource_namespace": "http://rdf.freebase.com/ns/",
+                    "selector": "ALL"
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "rdf_row_encoding_id": "freebase-resource-triple-compile-check",
+                  "rdf_row_encoding_sha256": "2b612cdce9d7856639610a265f094561a9899d4efe7e146271b3169c68abeb8a",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.node_identity_predicates",
+                    "graph_model.node_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "resource_snapshot_id": "unbound-fact-snapshot-compile-only",
+                  "resource_triple_encoding_sha256": "02248a6114c1a3b99e3e350168a132feff37540c9b2e0794cfcc4d1641394ad5",
+                  "result_model": "resource_triple_rows",
+                  "semantic_assumptions": [
+                    "Default RDF graph set of canonical URI resource triples; Neo4j mirror preserves that set",
+                    "Fixed one-to-three-hop ALL; explicit constraints; triple edge identity is constructed by the shared decoder",
+                    "LIMIT plus one detects overflow; no truncated success"
+                  ],
+                  "target_backend_id": "fuseki"
+                },
+                "source_path": null,
+                "text": "SELECT DISTINCT ?length ?n0 ?n1 ?e1 WHERE { {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  BIND(<http://rdf.freebase.com/ns/protected_sites.site_listing_category.category_of> AS ?e1)\n  ?n0 <http://rdf.freebase.com/ns/protected_sites.site_listing_category.category_of> ?n1 .\n  FILTER(EXISTS { ?n0 <http://rdf.freebase.com/ns/type.object.type> <http://rdf.freebase.com/ns/protected_sites.site_listing_category> . })\n  FILTER(EXISTS { ?n1 <http://rdf.freebase.com/ns/type.object.type> <http://rdf.freebase.com/ns/protected_sites.natural_or_cultural_site_designation> . })\n  FILTER(sameTerm(?n1, <http://rdf.freebase.com/ns/m.09qx9m>))\n  FILTER(sameTerm(?e1, <http://rdf.freebase.com/ns/protected_sites.site_listing_category.category_of>))\n  FILTER((!sameTerm(?n0, ?n1)))\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n} BIND(1 AS ?length) FILTER(isIRI(?n0) && isIRI(?n1) && isIRI(?e1)) } LIMIT 10001"
+              },
+              "backend_id": "fuseki"
+            },
+            "semantic_operator_ids": [
+              "traverse"
+            ]
+          },
+          {
+            "inputs": [
+              "traverse/candidates"
+            ],
+            "kind": "coordinator_path_select",
+            "node_id": "traverse/paths",
+            "parameters": {
+              "directions": [
+                "OUT"
+              ],
+              "identity_property": "type.object.id",
+              "input_model": "rdf-resource-triples-v1",
+              "language": "sparql",
+              "max_edges": 1,
+              "max_rows": 10000,
+              "resource_namespace": "http://rdf.freebase.com/ns/",
+              "selector": "ALL"
+            },
+            "semantic_operator_ids": [
+              "traverse"
+            ]
+          },
+          {
+            "inputs": [
+              "traverse/paths"
+            ],
+            "kind": "coordinator_row_project",
+            "node_id": "answer/project",
+            "parameters": {
+              "projections": {
+                "answer": {
+                  "kind": "path_node",
+                  "position": 1
+                }
+              },
+              "resource_namespace": "http://rdf.freebase.com/ns/"
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "plan_id": "int0-controlled-reference-2100061004000",
+        "roots": [
+          "answer/project"
+        ]
+      },
+      "question_id": "2100061004000",
+      "status": "compiled"
+    },
+    {
+      "backend": "neo4j",
+      "plan": {
+        "max_parallelism": 4,
+        "max_remote_calls": 16,
+        "metadata": {
+          "binding_value_profile": "typed_binding_values_v1",
+          "compiler": "semantic_dag_v1",
+          "operator_outputs": {
+            "answer": "answer/project",
+            "traverse": "traverse/paths"
+          },
+          "schemas": {
+            "answer": {
+              "fields": [
+                "answer"
+              ],
+              "kind": "binding_set",
+              "path_namespace": null
+            },
+            "traverse": {
+              "fields": [
+                "path"
+              ],
+              "kind": "path_set",
+              "path_namespace": "http://rdf.freebase.com/ns/"
+            }
+          },
+          "semantic_program_sha256": "8f2b14672218841d025def45b205df01392f4304fd8f2c039c4eebe45d095c81",
+          "source_bindings": {
+            "traverse": "neo4j"
+          }
+        },
+        "nodes": [
+          {
+            "inputs": [],
+            "kind": "remote_query",
+            "node_id": "traverse/candidates",
+            "parameters": {
+              "artifact": {
+                "artifact_id": "resource-triple-paths",
+                "kind": "compiled",
+                "language": "cypher",
+                "parameters": {
+                  "backend_execution_verified": false,
+                  "backend_profile_sha256": "f3c85b2e8f1d3c2be8d3389f27dffa50dd42d2b2487fdbd81053d36194b86878",
+                  "branch_count": 1,
+                  "compiler": "resource_triple_paths_v1",
+                  "condition_profile": "total_scalar_boolean_v1",
+                  "directions": [
+                    "OUT"
+                  ],
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "n1",
+                    "e1"
+                  ],
+                  "input_pattern_sha256": "33ba613449da5e1acc15de7a1f57e3f10c2f2e583ebc08d2a07a0b3c0de46de4",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "n1",
+                    "e1"
+                  ],
+                  "p0": "http://rdf.freebase.com/ns/type.object.type",
+                  "p1": "http://rdf.freebase.com/ns/rail.rail_gauge",
+                  "p2": "http://rdf.freebase.com/ns/type.object.type",
+                  "p3": "http://rdf.freebase.com/ns/rail.locomotive_class",
+                  "p4": "http://rdf.freebase.com/ns/m.052dz1",
+                  "p5": "http://rdf.freebase.com/ns/rail.rail_gauge.locomotive_classes",
+                  "path_selection": {
+                    "directions": [
+                      "OUT"
+                    ],
+                    "identity_property": "type.object.id",
+                    "input_model": "rdf-resource-triples-v1",
+                    "language": "cypher",
+                    "max_edges": 1,
+                    "max_rows": 10000,
+                    "resource_namespace": "http://rdf.freebase.com/ns/",
+                    "selector": "ALL"
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.node_identity_predicates",
+                    "graph_model.node_labels",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "resource_snapshot_id": "unbound-fact-snapshot-compile-only",
+                  "resource_triple_encoding_sha256": "02248a6114c1a3b99e3e350168a132feff37540c9b2e0794cfcc4d1641394ad5",
+                  "result_model": "resource_triple_rows",
+                  "semantic_assumptions": [
+                    "Default RDF graph set of canonical URI resource triples; Neo4j mirror preserves that set",
+                    "Fixed one-to-three-hop ALL; explicit constraints; triple edge identity is constructed by the shared decoder",
+                    "LIMIT plus one detects overflow; no truncated success"
+                  ],
+                  "target_backend_id": "neo4j"
+                },
+                "source_path": null,
+                "text": "MATCH (n0:XgapRdfResource)-[e1:XGAP_RDF_RESOURCE_EDGE]->(n1:XgapRdfResource)\nWHERE EXISTS { MATCH (n0)-[:XGAP_RDF_RESOURCE_EDGE {predicate: $p0}]->(:XgapRdfResource {iri: $p1}) } AND EXISTS { MATCH (n1)-[:XGAP_RDF_RESOURCE_EDGE {predicate: $p2}]->(:XgapRdfResource {iri: $p3}) } AND n1.iri = $p4 AND e1.predicate = $p5 AND n0.iri <> n1.iri\nRETURN DISTINCT 1 AS length, n0.iri AS n0, n1.iri AS n1, e1.predicate AS e1 LIMIT 10001"
+              },
+              "backend_id": "neo4j"
+            },
+            "semantic_operator_ids": [
+              "traverse"
+            ]
+          },
+          {
+            "inputs": [
+              "traverse/candidates"
+            ],
+            "kind": "coordinator_path_select",
+            "node_id": "traverse/paths",
+            "parameters": {
+              "directions": [
+                "OUT"
+              ],
+              "identity_property": "type.object.id",
+              "input_model": "rdf-resource-triples-v1",
+              "language": "cypher",
+              "max_edges": 1,
+              "max_rows": 10000,
+              "resource_namespace": "http://rdf.freebase.com/ns/",
+              "selector": "ALL"
+            },
+            "semantic_operator_ids": [
+              "traverse"
+            ]
+          },
+          {
+            "inputs": [
+              "traverse/paths"
+            ],
+            "kind": "coordinator_row_project",
+            "node_id": "answer/project",
+            "parameters": {
+              "projections": {
+                "answer": {
+                  "kind": "path_node",
+                  "position": 1
+                }
+              },
+              "resource_namespace": "http://rdf.freebase.com/ns/"
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "plan_id": "int0-controlled-reference-2100063002000",
+        "roots": [
+          "answer/project"
+        ]
+      },
+      "question_id": "2100063002000",
+      "status": "compiled"
+    },
+    {
+      "backend": "fuseki",
+      "plan": {
+        "max_parallelism": 4,
+        "max_remote_calls": 16,
+        "metadata": {
+          "binding_value_profile": "typed_binding_values_v1",
+          "compiler": "semantic_dag_v1",
+          "operator_outputs": {
+            "answer": "answer/project",
+            "traverse": "traverse/paths"
+          },
+          "schemas": {
+            "answer": {
+              "fields": [
+                "answer"
+              ],
+              "kind": "binding_set",
+              "path_namespace": null
+            },
+            "traverse": {
+              "fields": [
+                "path"
+              ],
+              "kind": "path_set",
+              "path_namespace": "http://rdf.freebase.com/ns/"
+            }
+          },
+          "semantic_program_sha256": "8f2b14672218841d025def45b205df01392f4304fd8f2c039c4eebe45d095c81",
+          "source_bindings": {
+            "traverse": "fuseki"
+          }
+        },
+        "nodes": [
+          {
+            "inputs": [],
+            "kind": "remote_query",
+            "node_id": "traverse/candidates",
+            "parameters": {
+              "artifact": {
+                "artifact_id": "resource-triple-paths",
+                "kind": "compiled",
+                "language": "sparql",
+                "parameters": {
+                  "backend_execution_verified": false,
+                  "backend_mapping": {
+                    "mapping_hash": "d1fc466ac651d1edd84e3abe90bdcb9f0986e1958be72ab66ac8f2b0ab9003ff",
+                    "mapping_id": "freebase-resource-triple-compile-check",
+                    "relevant_mapped_iris": [
+                      {
+                        "canonical_term_id": "rail.rail_gauge.locomotive_classes",
+                        "iri": "http://rdf.freebase.com/ns/rail.rail_gauge.locomotive_classes",
+                        "kind": "relation",
+                        "logical_token": "rail.rail_gauge.locomotive_classes"
+                      },
+                      {
+                        "canonical_term_id": "rail.locomotive_class",
+                        "iri": "http://rdf.freebase.com/ns/rail.locomotive_class",
+                        "kind": "class",
+                        "logical_token": "rail.locomotive_class"
+                      },
+                      {
+                        "canonical_term_id": "rail.rail_gauge",
+                        "iri": "http://rdf.freebase.com/ns/rail.rail_gauge",
+                        "kind": "class",
+                        "logical_token": "rail.rail_gauge"
+                      }
+                    ],
+                    "version": "02248a6114c1a3b99e3e350168a132feff37540c9b2e0794cfcc4d1641394ad5"
+                  },
+                  "backend_profile_sha256": "914eea50fb000c34f981f26071c54caf0961a8339a6ffa56fbc16956d6a8bd8d",
+                  "branch_count": 1,
+                  "compiler": "resource_triple_paths_v1",
+                  "condition_profile": "total_scalar_boolean_v1",
+                  "directions": [
+                    "OUT"
+                  ],
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "n1",
+                    "e1"
+                  ],
+                  "input_pattern_sha256": "33ba613449da5e1acc15de7a1f57e3f10c2f2e583ebc08d2a07a0b3c0de46de4",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "n1",
+                    "e1"
+                  ],
+                  "path_selection": {
+                    "directions": [
+                      "OUT"
+                    ],
+                    "identity_property": "type.object.id",
+                    "input_model": "rdf-resource-triples-v1",
+                    "language": "sparql",
+                    "max_edges": 1,
+                    "max_rows": 10000,
+                    "resource_namespace": "http://rdf.freebase.com/ns/",
+                    "selector": "ALL"
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "rdf_row_encoding_id": "freebase-resource-triple-compile-check",
+                  "rdf_row_encoding_sha256": "2b612cdce9d7856639610a265f094561a9899d4efe7e146271b3169c68abeb8a",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.node_identity_predicates",
+                    "graph_model.node_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "resource_snapshot_id": "unbound-fact-snapshot-compile-only",
+                  "resource_triple_encoding_sha256": "02248a6114c1a3b99e3e350168a132feff37540c9b2e0794cfcc4d1641394ad5",
+                  "result_model": "resource_triple_rows",
+                  "semantic_assumptions": [
+                    "Default RDF graph set of canonical URI resource triples; Neo4j mirror preserves that set",
+                    "Fixed one-to-three-hop ALL; explicit constraints; triple edge identity is constructed by the shared decoder",
+                    "LIMIT plus one detects overflow; no truncated success"
+                  ],
+                  "target_backend_id": "fuseki"
+                },
+                "source_path": null,
+                "text": "SELECT DISTINCT ?length ?n0 ?n1 ?e1 WHERE { {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  BIND(<http://rdf.freebase.com/ns/rail.rail_gauge.locomotive_classes> AS ?e1)\n  ?n0 <http://rdf.freebase.com/ns/rail.rail_gauge.locomotive_classes> ?n1 .\n  FILTER(EXISTS { ?n0 <http://rdf.freebase.com/ns/type.object.type> <http://rdf.freebase.com/ns/rail.rail_gauge> . })\n  FILTER(EXISTS { ?n1 <http://rdf.freebase.com/ns/type.object.type> <http://rdf.freebase.com/ns/rail.locomotive_class> . })\n  FILTER(sameTerm(?n1, <http://rdf.freebase.com/ns/m.052dz1>))\n  FILTER(sameTerm(?e1, <http://rdf.freebase.com/ns/rail.rail_gauge.locomotive_classes>))\n  FILTER((!sameTerm(?n0, ?n1)))\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n} BIND(1 AS ?length) FILTER(isIRI(?n0) && isIRI(?n1) && isIRI(?e1)) } LIMIT 10001"
+              },
+              "backend_id": "fuseki"
+            },
+            "semantic_operator_ids": [
+              "traverse"
+            ]
+          },
+          {
+            "inputs": [
+              "traverse/candidates"
+            ],
+            "kind": "coordinator_path_select",
+            "node_id": "traverse/paths",
+            "parameters": {
+              "directions": [
+                "OUT"
+              ],
+              "identity_property": "type.object.id",
+              "input_model": "rdf-resource-triples-v1",
+              "language": "sparql",
+              "max_edges": 1,
+              "max_rows": 10000,
+              "resource_namespace": "http://rdf.freebase.com/ns/",
+              "selector": "ALL"
+            },
+            "semantic_operator_ids": [
+              "traverse"
+            ]
+          },
+          {
+            "inputs": [
+              "traverse/paths"
+            ],
+            "kind": "coordinator_row_project",
+            "node_id": "answer/project",
+            "parameters": {
+              "projections": {
+                "answer": {
+                  "kind": "path_node",
+                  "position": 1
+                }
+              },
+              "resource_namespace": "http://rdf.freebase.com/ns/"
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "plan_id": "int0-controlled-reference-2100063002000",
+        "roots": [
+          "answer/project"
+        ]
+      },
+      "question_id": "2100063002000",
+      "status": "compiled"
+    }
+  ],
+  "schema_version": "int1-original-input-compilation-v1"
+}

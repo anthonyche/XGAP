@@ -1,0 +1,49 @@
+{
+  "schema_version": "grailqa-guarded-development-offline-diagnostic-v1",
+  "producer_job_id": "3796877",
+  "producer_commit": "8bcf919883eb6bcc0081154bcb34863c56f16e8c",
+  "input_sha256": {
+    "query_states.jsonl": "f207a5d4e3563e391274ebc0109ce2906a5ea2a007b27f4b362823c1bd887c18",
+    "guard_diagnostics.jsonl": "e988450a253847ed864893b56fbebbfc31c21b9f2e64e3e8df9d30fdb1047a86"
+  },
+  "source": "user_uploaded_original_jsonl_records",
+  "source_files_mutated": false,
+  "request_response_payload_and_prompt_view_identity_verified": true,
+  "question_count": 18,
+  "raw_candidate_count": 49,
+  "legacy_replay": {
+    "grounding_passed_query_count": 1,
+    "grounding_rejected_query_count": 16,
+    "provider_failed_query_count": 1
+  },
+  "candidate_grounding_policy": "grailqa_canonical_ast_grounding_v1",
+  "offline_policy_replay": {
+    "candidate_local_validation_query_count": 14,
+    "shared_grounding_refusal_query_count": 3,
+    "no_structured_response_query_count": 1,
+    "unassessed_shared_envelope_candidate_count": 7,
+    "grounding_rejected_candidate_count": 38,
+    "grounding_accepted_candidate_count": 4,
+    "validated_grounded_candidate_count": 3,
+    "validated_grounded_query_count": 2,
+    "grounded_but_unsupported_IN_lowering_candidate_count": 1,
+    "legacy_finite_score_candidate_rejected_for_actual_declared_type_mismatch": true
+  },
+  "guard_refusal": {
+    "question_id": "2100164007000",
+    "generation_calls": 1,
+    "input_tokens": 4800,
+    "output_tokens": 4096,
+    "finish_reason": "length",
+    "raw_output_characters": 121184,
+    "denied_call_kind": "repair",
+    "denial_reason": "input_budget_exceeded",
+    "repair_calls": 0
+  },
+  "external_calls_during_diagnostic": 0,
+  "evaluation_reference_content_opened": false,
+  "new_semantic_accuracy_measured": false,
+  "independent_producer_audit": false,
+  "full_150_run_authorized": false,
+  "paper_result": false
+}

@@ -1,0 +1,93 @@
+{
+  "schema_version": "xgap-ch6-first-real-evidence-index-v1",
+  "report": "docs/report/ch6_first_real_20260922.md",
+  "method_registry": "experiments/ch6_method_registry_20260922.json",
+  "formal_or_comparative_result": false,
+  "unique_cases": 6,
+  "xgap_cells": 12,
+  "observed_runtime_commit": "d0ae7e3dfa757b47df8bd84017721f2d61ddb6d2",
+  "continuation_commit": "8a7d4e3d676ea906b8895b8dc7885a2e91bc4d69",
+  "runtime_src_diff_between_commits": false,
+  "source_archive": {
+    "path": "/Users/anthonyche/Downloads/finbench-sf0.1.tar.gz",
+    "bytes": 66710298,
+    "sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60"
+  },
+  "releases": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-first-real-20260922-v3/release.json",
+      "sha256": "1b7299cd10adf1de3f284728070057b65b0959d7354dfa4369a9e558b63eb447",
+      "bytes": 6857
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-xgap-continuation-20260922-v1/release.json",
+      "sha256": "d8825bcbd68f8ce28f3815334f8497520b6087feb58991286a57c52aa0c9efd7",
+      "bytes": 3215
+    }
+  ],
+  "manifests": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-first-real-20260922-v3/manifest.json",
+      "sha256": "b95bfa3ae2f66522575879db183c4d797adf0775c1760caa78ebe0adc0d7116a",
+      "bytes": 36886
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-xgap-continuation-20260922-v1/manifest.json",
+      "sha256": "d3fd49effe6d80b6b8d92550f88ceff526961ca6d5c6761c23ce853bd5e07737",
+      "bytes": 2953
+    }
+  ],
+  "invocation_closure_receipts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-first-real-20260922-v3/batch/invocations/0001/receipt.json",
+      "sha256": "37f989e1c7eef8ffd6bc05bece5e17a8ffcad121050ef4fedf5481936afa03ea",
+      "bytes": 1362
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-first-real-20260922-v3/batch/invocations/0002/receipt.json",
+      "sha256": "29cff8c955e7720b45349fa3f600be4baf6fce2ec57d1ffcdf9608115bd99511",
+      "bytes": 1373
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-xgap-continuation-20260922-v1/batch/invocations/0001/receipt.json",
+      "sha256": "22cf9bc18fc51d8690e9a06766d0f6e5ddbbc01a00b7f55f849c12fa26e71a11",
+      "bytes": 1359
+    }
+  ],
+  "sealed_external_failure": {
+    "path": "/Users/anthonyche/xgap-data/unified-external-admission-20260921-v5/receipt.json",
+    "sha256": "a6f64621d334561fc076af3b40e240a658436e1de42e75f8360188cd9244760c",
+    "bytes": 10913
+  },
+  "derived": [
+    {
+      "path": "docs/report/assets/ch6_first_real_20260922/cells.csv",
+      "sha256": "0fd4b2f300991bb9ed89265a6cc8aaf478e570ef1f5578b057595cdd43cbd176",
+      "bytes": 4610
+    },
+    {
+      "path": "docs/report/assets/ch6_first_real_20260922/summary.json",
+      "sha256": "90dda7b2f9af9bf2736c3edf6b3698ad3040d451163d7f58a9d289d7671e8ece",
+      "bytes": 7006
+    },
+    {
+      "path": "docs/report/assets/ch6_first_real_20260922/xgap_first_real.png",
+      "sha256": "e15e95bb8daa878c059e6b046f6e4c0557b79b96c262e18d91e495287b9fb03c",
+      "bytes": 159680
+    },
+    {
+      "path": "docs/report/assets/ch6_first_real_20260922/xgap_first_real.pdf",
+      "sha256": "a13c5fec56b467238cc74b70e4f325baab8e24ea38bc55a653319187944f55be",
+      "bytes": 26056
+    }
+  ],
+  "measurements_unchanged_from_result_v1": true,
+  "all_owned_closed": true,
+  "historical_exclusions": {
+    "internal_two_stage_sealed": 11,
+    "llm_direct_sealed": 4,
+    "llm_direct_interrupted_without_usage_receipt": 1,
+    "remaining_retired_cells_not_run": 2
+  },
+  "summaries_only_no_private_intent_or_model_content": true
+}

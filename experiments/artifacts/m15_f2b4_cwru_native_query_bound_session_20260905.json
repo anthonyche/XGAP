@@ -1,0 +1,83 @@
+{
+  "artifact_id": "m15-f2b4-cwru-native-query-bound-session-3787430",
+  "artifact_role": "cwru_live_query_contract_identity_acceptance_not_comparative_result",
+  "observed_at_utc": "2026-09-05",
+  "evidence_origin": "user_returned_cwru_run_manifest_and_independent_audit_summary",
+  "slurm": {
+    "elapsed": "00:01:13",
+    "exit_code": "0:0",
+    "job_id": "3787430",
+    "node": "compt348",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "d795fac78eb6c426b86655d2233d67cbdf1b0271"
+  },
+  "run": {
+    "remote_root": "runs/cwru-m15-native-query-bound-session-3787430",
+    "status": "success",
+    "workload_mode": "scaled_query_bound_session",
+    "workload_profile": "selective",
+    "runtime_removed": true,
+    "cleanup_error": null,
+    "automatic_retries": 0,
+    "service_restarts": 0
+  },
+  "query_bound_session": {
+    "schema_version": "m15-f2-live-query-bound-session-v1",
+    "session_id": "m15-f2-development-protocol-v1.selective.b01.s01",
+    "registry_spec_sha256": "9547c000d3d652837657ea75ba62ea9fcbaca4c03f8befbe0293d25d2ee44d23",
+    "query_bound_schedule_sha256": "cf2a5aead7fc4378213fa0ff48da6271553005c86b19e1f8951086732db1c746",
+    "workload_id": "selective-dev-v1",
+    "query_count": 1,
+    "method_count": 6,
+    "all_methods_exact": true,
+    "total_tool_invocations": 18,
+    "automatic_retries": 0,
+    "paper_result": false
+  },
+  "services": {
+    "public_ports": false,
+    "neo4j": {
+      "version": "5.26.30",
+      "health_success": true,
+      "shutdown_success": true,
+      "escalated_to_kill": false
+    },
+    "fuseki": {
+      "version": "5.6.0",
+      "health_success": true,
+      "shutdown_success": true,
+      "escalated_to_kill": false
+    }
+  },
+  "independent_read_only_audit": {
+    "schema_version": "m15-b2d-native-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-f2b4-query-bound-3787430-audit.json",
+    "success": true,
+    "check_count": 377,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "claim_boundary": {
+    "result_class": "real_backend_query_bound_identity_chain_acceptance",
+    "registry_recompiled": true,
+    "live_bundle_query_contract_recompiled": true,
+    "compiled_order_drove_execution": true,
+    "counterbalance_complete": false,
+    "cross_task_memory_measured": false,
+    "comparative": false,
+    "latency_ranking_supported": false
+  },
+  "limitations": [
+    "one selective development workload and one resolved query",
+    "one of twelve development sessions was executed",
+    "a single sequence does not complete Williams counterbalancing",
+    "query families and parameterized instances were not executed",
+    "cross-task family-local memory reuse was not measured",
+    "coordinator cost parameters were not calibrated",
+    "not a latency, throughput, scalability, or comparative performance result"
+  ],
+  "paper_result": false
+}

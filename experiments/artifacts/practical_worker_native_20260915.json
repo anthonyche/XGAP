@@ -1,0 +1,42 @@
+{
+  "schema_version": "xgap-practical-worker-native-evidence-v1",
+  "source_commit": "919fd5c96fa3b71019e74d3bb21ef87bc3aaf4e3",
+  "new_test_cases": 1,
+  "new_native_requests": 1,
+  "new_source_calls": 11,
+  "new_model_calls": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "catalog_builds": 0,
+  "data_loads": 0,
+  "answer_em": 1,
+  "final_plan_executions": 1,
+  "source_rows": 61,
+  "response_bytes": 15820,
+  "online_ms": 1711.462166160345,
+  "combined_live_success_verified": true,
+  "paper_result": false,
+  "evidence": {
+    "receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/receipt.json",
+      "sha256": "778acf9ac9fbea9a390633444291979e1e3c72ac87788f9acb16c23b450d342d"
+    },
+    "trial/receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/trial/receipt.json",
+      "sha256": "c7a7dff312915dabb7b6ec543c7ef17881d2592129d0b0a385a5a5a475c60c33"
+    },
+    "trial/timing.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/trial/timing.json",
+      "sha256": "8461b416f94ec95cfbd08cb500bff01f81fbda4e70f35daac60dd23bdf6fb823"
+    },
+    "trial/worker/core/result.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/trial/worker/core/result.json",
+      "sha256": "0499787522c3b2c26d84ac2f5eb2bf1e00b493e30cc40641d382401ed6d4b352"
+    },
+    "score.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-worker-native-20260915-v1/score.json",
+      "sha256": "e52b72eb574dee61da8127da3956e02f1457220a11750583a218464dbd0b6e39"
+    }
+  },
+  "report": "docs/report/practical_worker_native_20260915.md"
+}

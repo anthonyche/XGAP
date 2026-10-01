@@ -1,0 +1,79 @@
+{
+  "schema_version": "xgap-ch7-primary-report-copy-v1",
+  "original_root": "/Users/anthonyche/xgap-data/ch7-finbench-primary-20260921-v1",
+  "measurement_commit": "bc6fdbb5b71823bb3b1cd13c0fc37c51963dc150",
+  "analysis_sha256": "5b7b1a6f371eefe3e58fbf8edf965e94ea584390e3392f31ec1bde6a194aecdd",
+  "figures_manifest_sha256": "0628632d05a01703ddf3c4be280fec556f6309a2c15c06ac003614a01f297969",
+  "files": [
+    {
+      "path": "metrics.csv",
+      "sha256": "497deb09f986ced23ab2e8b0fe6bb8a0e5643008aa0855df77a834037a227f32",
+      "bytes": 35648
+    },
+    {
+      "path": "summary.json",
+      "sha256": "5b7b1a6f371eefe3e58fbf8edf965e94ea584390e3392f31ec1bde6a194aecdd",
+      "bytes": 129878
+    },
+    {
+      "path": "E1_FinBench_native.csv",
+      "sha256": "d391d2230e97043bee4e49bff34c20745ee05140226cee4aca4038e57d649038",
+      "bytes": 1222
+    },
+    {
+      "path": "E1_FinBench_native.pdf",
+      "sha256": "a193698880ccf2b2aa29b9cf6df1a4022dc02519eb035e800d873e46979ed025",
+      "bytes": 14371
+    },
+    {
+      "path": "E1_FinBench_native.png",
+      "sha256": "81c81fb2d051947e5e9f395a436ec91a90caeebe380d00d3c9f48471ee22ab25",
+      "bytes": 43189
+    },
+    {
+      "path": "E2_FinBench_native.csv",
+      "sha256": "a3ee4bc56b607aac330764c660d2985f860a11f42fd76eeee84cb8e102a46ed6",
+      "bytes": 1301
+    },
+    {
+      "path": "E2_FinBench_native.pdf",
+      "sha256": "c423643b826e386fc89f9f528ffe418c9912eb052cede863c2e3fd54a33865f9",
+      "bytes": 14007
+    },
+    {
+      "path": "E2_FinBench_native.png",
+      "sha256": "a900b393988ed8164d0881019000760d3dd37d610db95cbbe777ea285449b2be",
+      "bytes": 46012
+    },
+    {
+      "path": "E7_FinBench_native.csv",
+      "sha256": "4ed1bd7a58f2278fead80b52a9f44f4edb99ff181734d77f8186e127af65ac86",
+      "bytes": 1175
+    },
+    {
+      "path": "E7_FinBench_native.pdf",
+      "sha256": "82385edd6376ce9d8bd924a4641de239f8fc8cee598ad8f23bad1c4ba11613c3",
+      "bytes": 14448
+    },
+    {
+      "path": "E7_FinBench_native.png",
+      "sha256": "603f26be0787f60f64df6d799d6927186638a4adc842d1438c4ecb61bf2907bc",
+      "bytes": 45136
+    },
+    {
+      "path": "E8_FinBench_native.csv",
+      "sha256": "a634ec157557679950acd433a9f49f4d65fe212f7f797de3f6b007f79d5b37d3",
+      "bytes": 1103
+    },
+    {
+      "path": "E8_FinBench_native.pdf",
+      "sha256": "db88a576c54962fcdc61d9e0842dc1506463affb8e59616fd5020e015f9b0017",
+      "bytes": 14893
+    },
+    {
+      "path": "E8_FinBench_native.png",
+      "sha256": "6234d5c65cd52a5fcb92b2ea8187f784a89ad1b43147693c459175b33bce88a2",
+      "bytes": 44569
+    }
+  ]
+}

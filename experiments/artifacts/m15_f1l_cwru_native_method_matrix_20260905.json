@@ -1,0 +1,137 @@
+{
+  "artifact_id": "m15-f1l-cwru-native-method-matrix-3787267",
+  "artifact_role": "cwru_live_method_mechanism_acceptance_not_comparative_result",
+  "observed_at_utc": "2026-09-05",
+  "evidence_origin": "user_returned_cwru_run_and_independent_audit_summaries",
+  "slurm": {
+    "elapsed": "00:01:32",
+    "exit_code": "0:0",
+    "job_id": "3787267",
+    "node": "compt336",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "6aafafd957ff37808e9c2a917e8668657d37bb3c"
+  },
+  "run": {
+    "remote_root": "runs/cwru-m15-native-method-matrix-3787267",
+    "status": "success",
+    "workload_mode": "scaled_method_matrix",
+    "workload_profile": "selective",
+    "runtime_removed": true,
+    "cleanup_error": null,
+    "automatic_retries": 0
+  },
+  "matrix": {
+    "status": "success",
+    "validation_passed": true,
+    "failed_validation_checks": [],
+    "method_order": [
+      "static_parallel_hash",
+      "static_risk_first_bind",
+      "no_memory",
+      "no_profile_probe",
+      "no_replan",
+      "full_agent"
+    ],
+    "order_policy": "fixed_engineering_gate_not_counterbalanced",
+    "cache_state": "shared_unknown_not_reset_between_methods",
+    "common_calibration_profile_calls": 3,
+    "total_tool_invocations": 18,
+    "phase_call_counts": {
+      "calibration": 3,
+      "static_parallel_hash": 2,
+      "static_risk_first_bind": 2,
+      "no_memory": 5,
+      "no_profile_probe": 2,
+      "no_replan": 2,
+      "full_agent": 2
+    },
+    "isolated_memory_files": [
+      "full_agent.jsonl",
+      "no_profile_probe.jsonl",
+      "no_replan.jsonl"
+    ],
+    "all_methods_exact": true
+  },
+  "method_outcomes": {
+    "static_parallel_hash": {
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 0,
+      "query_remote_calls": 2,
+      "executed_plan_id": "m15-f0-selective-dev-v1-parallel-hash",
+      "replan_count": 0,
+      "exact_answer": true
+    },
+    "static_risk_first_bind": {
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 0,
+      "query_remote_calls": 2,
+      "executed_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "replan_count": 0,
+      "exact_answer": true
+    },
+    "no_memory": {
+      "planning_profile_calls": 3,
+      "probe_remote_calls": 0,
+      "query_remote_calls": 2,
+      "executed_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "replan_count": 0,
+      "exact_answer": true
+    },
+    "no_profile_probe": {
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 0,
+      "query_remote_calls": 2,
+      "executed_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "replan_count": 0,
+      "exact_answer": true
+    },
+    "no_replan": {
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 1,
+      "query_remote_calls": 2,
+      "initial_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "post_probe_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "executed_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "replan_count": 0,
+      "exact_answer": true
+    },
+    "full_agent": {
+      "planning_profile_calls": 0,
+      "probe_remote_calls": 1,
+      "query_remote_calls": 2,
+      "initial_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "post_probe_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "executed_plan_id": "m15-f0-selective-dev-v1-risk-first-bind",
+      "replan_count": 0,
+      "exact_answer": true
+    }
+  },
+  "independent_read_only_audit": {
+    "schema_version": "m15-b2d-native-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-f1l-selective-3787267-audit.json",
+    "success": true,
+    "check_count": 326,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "claim_boundary": {
+    "result_class": "real_backend_live_method_mechanism_acceptance",
+    "calibrated": false,
+    "counterbalanced": false,
+    "comparative": false,
+    "latency_ranking_supported": false,
+    "observed_full_agent_replan": false
+  },
+  "limitations": [
+    "one selective development workload and one execution of each method",
+    "fixed method order",
+    "shared backend cache state was not reset between methods",
+    "fixed uncalibrated coordinator cost parameters",
+    "full_agent observed no plan change because both snapshots selected risk-first bind",
+    "not a latency, throughput, scalability, or comparative performance result"
+  ],
+  "paper_result": false
+}

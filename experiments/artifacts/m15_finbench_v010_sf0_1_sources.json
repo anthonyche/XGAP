@@ -1,0 +1,228 @@
+{
+  "schema_version": "m15-finbench-artifact-lock-v1",
+  "artifact": {
+    "artifact_id": "ldbc-finbench-v0.1.0-sf0.1",
+    "benchmark": "LDBC FinBench",
+    "version": "v0.1.0",
+    "scale_factor": "0.1",
+    "filename": "sf0.1.tar.gz",
+    "url": "https://datasets.ldbcouncil.org/finbench/sf0.1.tar.gz",
+    "size_bytes": 66710298,
+    "digest": {
+      "algorithm": "sha256",
+      "value": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60"
+    },
+    "archive_format": "tar.gz",
+    "archive_root": "sf0.1",
+    "source_page": "https://ldbcouncil.org/benchmarks/finbench/datasets/",
+    "specification_repository": "https://github.com/ldbc/ldbc_finbench_docs",
+    "specification_ref": "v0.1.0",
+    "specification_commit": "d3ec7036bf6919df8cd3eeaa3a986048e779ea02",
+    "claim_boundary": "finbench_derived_heterogeneous_workload_not_a_conformant_finbench_result",
+    "redistribution_terms_status": "verify_before_redistributing_downloaded_data"
+  },
+  "snapshot_tables": [
+    {
+      "table_id": "person",
+      "member": "sf0.1/snapshot/Person.csv",
+      "columns": [
+        "personId",
+        "personName",
+        "isBlocked",
+        "createTime",
+        "gender",
+        "birthday",
+        "country",
+        "city"
+      ]
+    },
+    {
+      "table_id": "account",
+      "member": "sf0.1/snapshot/Account.csv",
+      "columns": [
+        "accountId",
+        "createTime",
+        "isBlocked",
+        "accoutType",
+        "nickname",
+        "phonenum",
+        "email",
+        "freqLoginType",
+        "lastLoginTime",
+        "accountLevel"
+      ]
+    },
+    {
+      "table_id": "company",
+      "member": "sf0.1/snapshot/Company.csv",
+      "columns": [
+        "companyId",
+        "companyName",
+        "isBlocked",
+        "createTime",
+        "country",
+        "city",
+        "business",
+        "description",
+        "url"
+      ]
+    },
+    {
+      "table_id": "medium",
+      "member": "sf0.1/snapshot/Medium.csv",
+      "columns": [
+        "mediumId",
+        "mediumType",
+        "isBlocked",
+        "createTime",
+        "lastLoginTime",
+        "riskLevel"
+      ]
+    },
+    {
+      "table_id": "person_own_account",
+      "member": "sf0.1/snapshot/PersonOwnAccount.csv",
+      "columns": [
+        "personId",
+        "accountId",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "company_own_account",
+      "member": "sf0.1/snapshot/CompanyOwnAccount.csv",
+      "columns": [
+        "companyId",
+        "accountId",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "account_transfer_account",
+      "member": "sf0.1/snapshot/AccountTransferAccount.csv",
+      "columns": [
+        "fromId",
+        "toId",
+        "amount",
+        "createTime",
+        "orderNum",
+        "comment",
+        "payType",
+        "goodsType"
+      ]
+    },
+    {
+      "table_id": "medium_sign_in_account",
+      "member": "sf0.1/snapshot/MediumSignInAccount.csv",
+      "columns": [
+        "mediumId",
+        "accountId",
+        "createTime",
+        "location"
+      ]
+    },
+    {
+      "table_id": "person_guarantee_person",
+      "member": "sf0.1/snapshot/PersonGuaranteePerson.csv",
+      "columns": [
+        "fromId",
+        "toId",
+        "createTime",
+        "relation"
+      ]
+    },
+    {
+      "table_id": "person_apply_loan",
+      "member": "sf0.1/snapshot/PersonApplyLoan.csv",
+      "columns": [
+        "personId",
+        "loanId",
+        "createTime",
+        "org"
+      ]
+    },
+    {
+      "table_id": "loan_deposit_account",
+      "member": "sf0.1/snapshot/LoanDepositAccount.csv",
+      "columns": [
+        "loanId",
+        "accountId",
+        "amount",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "company_apply_loan",
+      "member": "sf0.1/snapshot/CompanyApplyLoan.csv",
+      "columns": [
+        "companyId",
+        "loanId",
+        "createTime",
+        "org"
+      ]
+    },
+    {
+      "table_id": "loan",
+      "member": "sf0.1/snapshot/Loan.csv",
+      "columns": [
+        "loanId",
+        "loanAmount",
+        "balance",
+        "createTime",
+        "loanUsage",
+        "interestRate"
+      ]
+    },
+    {
+      "table_id": "account_withdraw_account",
+      "member": "sf0.1/snapshot/AccountWithdrawAccount.csv",
+      "columns": [
+        "fromId",
+        "toId",
+        "amount",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "account_repay_loan",
+      "member": "sf0.1/snapshot/AccountRepayLoan.csv",
+      "columns": [
+        "accountId",
+        "loanId",
+        "amount",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "company_invest_company",
+      "member": "sf0.1/snapshot/CompanyInvestCompany.csv",
+      "columns": [
+        "investorId",
+        "companyId",
+        "ratio",
+        "createTime"
+      ]
+    },
+    {
+      "table_id": "company_guarantee_company",
+      "member": "sf0.1/snapshot/CompanyGuaranteeCompany.csv",
+      "columns": [
+        "fromId",
+        "toId",
+        "createTime",
+        "relation"
+      ]
+    },
+    {
+      "table_id": "person_invest_company",
+      "member": "sf0.1/snapshot/PersonInvestCompany.csv",
+      "columns": [
+        "investorId",
+        "companyId",
+        "ratio",
+        "createTime"
+      ]
+    }
+  ],
+  "paper_result": false
+}

@@ -31,6 +31,7 @@ from xgap.algebra.ops import (
     BindingJoinOp,
     BindingProjectOp,
     EdgesOp,
+    ReverseOp,
     FocusProjectionOp,
     GroupByOp,
     JoinOp,
@@ -291,6 +292,8 @@ def extract_m9_path_shape(plan: AlgebraOp, *, backend_id: str, language: str) ->
         return M9PathShape(edge_count=0)
     if isinstance(plan, EdgesOp):
         return M9PathShape(edge_count=1)
+    if isinstance(plan, ReverseOp):
+        _raise_unsupported_operator(backend_id, language, "xgap.orientation.Reverse")
     if isinstance(plan, SelectionOp):
         _ensure_m9_condition(plan.condition, backend_id=backend_id, language=language)
         return extract_m9_path_shape(
@@ -355,6 +358,8 @@ def _features_for_plan(plan: AlgebraOp) -> tuple[str, ...]:
         return ("path_algebra.Nodes",)
     if isinstance(plan, EdgesOp):
         return ("path_algebra.Edges",)
+    if isinstance(plan, ReverseOp):
+        return ("xgap.orientation.Reverse", *_features_for_plan(plan.child))
     if isinstance(plan, SelectionOp):
         return (
             "path_algebra.Selection",

@@ -1,0 +1,3203 @@
+{
+  "milestone": "T0",
+  "date": "2026-09-10",
+  "status": "t0_fixtures_and_first_native_slice_accepted",
+  "fixture": {
+    "root": "datasets/backbone_toy_v1",
+    "nodes": 5,
+    "edges": 8,
+    "queries": 18
+  },
+  "native_result": {
+    "success": true,
+    "scope": "T0 tiny native development fixture",
+    "live_llm": false,
+    "paper_result": false,
+    "java": {
+      "command": "/opt/homebrew/opt/openjdk@21/bin/java",
+      "major": 21,
+      "version_output": "openjdk version \"21.0.10\" 2026-01-20\nOpenJDK Runtime Environment Homebrew (build 21.0.10)\nOpenJDK 64-Bit Server VM Homebrew (build 21.0.10, mixed mode, sharing)"
+    },
+    "nodes": 5,
+    "edges": 8,
+    "query_ids": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T13",
+      "T14",
+      "T15",
+      "T16",
+      "T17",
+      "T18"
+    ],
+    "fixture_sha256": {
+      "load.cypher": "2892f0d12746501a208cbf1fbd6e9c494892790149ef373659d4653521d3875d",
+      "load.ttl": "9732faf79aa80559b5e2d737177599421061bd787d006226ec7438db69904c24",
+      "queries.json": "535616a42a1e3bfd857b9385d74fbe176f931f59a54d26798c20511000e31f89",
+      "README.md": "52ff92bcea2b6caba5129ad91c3b206fa4acebc1df862d50d5be56c46e3ef486",
+      "mapping.json": "651d44578283f4f2e5a5f016380c5b784a2dcdda2bf5b27491d6a947c168eb2d",
+      "graph.json": "b72a0a97d3dbf8919c3303ffd2b9c6121659f4e19d6059b72cd55a75f4f7f82e",
+      "targets/T05.rq": "e87318bcc0b3d672d65c4aae9e505603c29ba8976e106e9dd8d7af09ae4dd7d5",
+      "targets/T15.rq": "1db62fe203183958305b2a9e0fbba8efca2de8d1e3e9e42a9fe1059b654f52f3",
+      "targets/T01.rq": "a00b5bd4917e76a1c15f8f865c347c195f83d02b072c9576a04bebd33d47a0f0",
+      "targets/T11.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744",
+      "targets/T06.cypher": "afeaa20cc69e0897cfd688f9237f27266cba612bfa63c597bf71b5f821d15875",
+      "targets/T18.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+      "targets/T14.cypher": "0e514c6476c01fb70d28090456cc28521821a29d79e1892f7b1e0809b5eec5a0",
+      "targets/T08.cypher": "6c5253698a126ada92f72732069cd6a5979b7192580a9e33aa4776f30023d75f",
+      "targets/T10.rq": "3f9a4681586298ec4d9297c2d81627999b8af15238979b9ea5bee54a88a6c57b",
+      "targets/T16.cypher": "61960fc15e0d8fb9fb71165f7f6b3c65380d53413289914e8e8a4be948cd5490",
+      "targets/T04.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+      "targets/T04.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+      "targets/T14.rq": "033de848d509b48fd6c1d66f1c751e515a3fd77a1abdbc784a7baacbf43bc757",
+      "targets/T12.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+      "targets/T10.cypher": "e1b26267c63ce1a677a7a851a28df92fba3745cb5c20a24d8744238c01e36d4f",
+      "targets/T02.cypher": "d86bc59390e1fff6bb779265d51ee77a7d583542eb039be09c2dbde1cffb4fc5",
+      "targets/T07.cypher": "07d23b2b6b08ab61e95a2c8ea4094a4324434a17e05516375f91931f535b5f81",
+      "targets/T09.rq": "73e9ac1bd8dfa90e8582a1985df374269282fedddcb4ad8d760f78d9997598c3",
+      "targets/T15.cypher": "7f0703bdb9c1bc1847d4b52e09293b79727bfadc9ba1e492a9831877bad75a0d",
+      "targets/T17.cypher": "bfda0b91e68e9cf8e342b66fad4b92a00f0b4f1c1596fcaee9550a3752576352",
+      "targets/T09.cypher": "245dd0a9f89b1fb5dbf8fe716606d0e0256df10f836317faeba17cbf5edfadb9",
+      "targets/T08.rq": "044340291081f454b6e889b65b434771e9d900f4884a435cb27bea79036ab888",
+      "targets/T05.cypher": "3ec22f5c5ed0908fce931b5c057ad4d8802676f978fe68b368b085ca28564660",
+      "targets/T18.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+      "targets/T03.rq": "67eabd839fda760f33e256957d3ab8329677a13a03c2d19635388dc77e54193b",
+      "targets/T13.rq": "c9ffd69f3126b145f896857bd5a6d01c11bdd1ef14b42f09cd64314686fd6d37",
+      "targets/T07.rq": "7a94f0c71ba0313126c0db8905b54f223bd3c6efa30037152fc536c07c56e15d",
+      "targets/T01.cypher": "e049929f9ec5d2f31f00eb5438c91bcb0655597a0dc8960c3edb323bbdb0207e",
+      "targets/T17.rq": "92f269b29867f27ed67c12495bec6aced2a06e1c9109440c8d9a34d197cb6d64",
+      "targets/T13.cypher": "bc3f51702531287a7e5709402958aebf972c2fca3227cdf53e1174ae0dff52ce",
+      "targets/T06.rq": "a71c2a539116458ede6ed456c61003a92aecd0984e59b80e18da413275653867",
+      "targets/T16.rq": "ac91a127dc7c1e35aadf2f443adbe502c7dc024f563e24b2d8c45068998d7963",
+      "targets/T11.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+      "targets/T03.cypher": "6614e75e6687d07d2daa85b71b80c35d85f5509f6fbaea2bb360eaac878bb048",
+      "targets/T02.rq": "ab050b118a1f6533502a985d7ed74c2eb6e80c610c39e52240d2cc4bbf169181",
+      "targets/T12.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744"
+    },
+    "source_sha256": {
+      "src/xgap/experiments/toy_backbone.py": "bf6927a12362992b89f6f591108ed946c1502fd282aa4e312f9301776c0363ff",
+      "scripts/run_toy_backbone_native.py": "a2f2eba55ee6acddb83eb957230f26a8fcfee2d4383cb57f578435da9d2635ee"
+    },
+    "health": [
+      {
+        "service_id": "neo4j",
+        "success": true,
+        "attempts": 13,
+        "elapsed_ms": 6811.235999688506,
+        "http_status": 200,
+        "process_exit_code": null,
+        "last_error": null
+      },
+      {
+        "service_id": "fuseki",
+        "success": true,
+        "attempts": 3,
+        "elapsed_ms": 1078.777958638966,
+        "http_status": 200,
+        "process_exit_code": null,
+        "last_error": null
+      }
+    ],
+    "loads": [
+      {
+        "backend_id": "neo4j",
+        "artifact_id": "toy-create",
+        "language": "cypher",
+        "success": true,
+        "rows": [],
+        "row_count": 0,
+        "result_status": "execution_success_empty",
+        "elapsed_ms": 252.12929211556911,
+        "error": null,
+        "started_at": "2026-09-10T09:46:35.383612+00:00",
+        "ended_at": "2026-09-10T09:46:35.636388+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      {
+        "backend_id": "fuseki",
+        "success": true,
+        "operations_attempted": 1,
+        "bytes_sent": 1063,
+        "elapsed_ms": 35.0893335416913,
+        "error": null,
+        "metadata": {
+          "strategy": "graph_store_post",
+          "dataset": "toy",
+          "endpoint": "http://127.0.0.1:50703/toy/data?default",
+          "http_status": 200
+        }
+      }
+    ],
+    "targets": [
+      {
+        "query_id": "T01",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T01-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a"
+            },
+            {
+              "path": "b"
+            },
+            {
+              "path": "c"
+            },
+            {
+              "path": "d"
+            },
+            {
+              "path": "z"
+            }
+          ],
+          "row_count": 5,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 167.81416721642017,
+          "error": null,
+          "started_at": "2026-09-10T09:46:35.672999+00:00",
+          "ended_at": "2026-09-10T09:46:35.840819+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      },
+      {
+        "query_id": "T01",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T01-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a"
+            },
+            {
+              "path": "b"
+            },
+            {
+              "path": "c"
+            },
+            {
+              "path": "d"
+            },
+            {
+              "path": "z"
+            }
+          ],
+          "row_count": 5,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 53.63958328962326,
+          "error": null,
+          "started_at": "2026-09-10T09:46:35.841727+00:00",
+          "ended_at": "2026-09-10T09:46:35.895361+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      },
+      {
+        "query_id": "T02",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T02-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "b/e2/c"
+            },
+            {
+              "path": "b/e8/d"
+            },
+            {
+              "path": "c/e3/a"
+            },
+            {
+              "path": "c/e5/d"
+            },
+            {
+              "path": "d/e6/d"
+            }
+          ],
+          "row_count": 8,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 114.35870919376612,
+          "error": null,
+          "started_at": "2026-09-10T09:46:35.896299+00:00",
+          "ended_at": "2026-09-10T09:46:36.010655+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e4/c",
+          "a/e7/b",
+          "b/e2/c",
+          "b/e8/d",
+          "c/e3/a",
+          "c/e5/d",
+          "d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T02",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T02-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "b/e2/c"
+            },
+            {
+              "path": "b/e8/d"
+            },
+            {
+              "path": "c/e3/a"
+            },
+            {
+              "path": "c/e5/d"
+            },
+            {
+              "path": "d/e6/d"
+            }
+          ],
+          "row_count": 8,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 17.210333608090878,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.011814+00:00",
+          "ended_at": "2026-09-10T09:46:36.029013+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e4/c",
+          "a/e7/b",
+          "b/e2/c",
+          "b/e8/d",
+          "c/e3/a",
+          "c/e5/d",
+          "d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T03",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T03-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e7/b"
+            }
+          ],
+          "row_count": 3,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 95.51641624420881,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.030074+00:00",
+          "ended_at": "2026-09-10T09:46:36.125587+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e4/c",
+          "a/e7/b"
+        ]
+      },
+      {
+        "query_id": "T03",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T03-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e7/b"
+            }
+          ],
+          "row_count": 3,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 23.5598748549819,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.126768+00:00",
+          "ended_at": "2026-09-10T09:46:36.150327+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e4/c",
+          "a/e7/b"
+        ]
+      },
+      {
+        "query_id": "T04",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T04-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e4/c"
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 90.3004165738821,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.151742+00:00",
+          "ended_at": "2026-09-10T09:46:36.242041+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e4/c"
+        ]
+      },
+      {
+        "query_id": "T04",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T04-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e4/c"
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 15.480333007872105,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.243341+00:00",
+          "ended_at": "2026-09-10T09:46:36.258813+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e4/c"
+        ]
+      },
+      {
+        "query_id": "T05",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T05-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 6,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 85.37862449884415,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.260167+00:00",
+          "ended_at": "2026-09-10T09:46:36.345542+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T05",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T05-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 6,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 15.354459173977375,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.346753+00:00",
+          "ended_at": "2026-09-10T09:46:36.362106+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T06",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T06-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 9,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 131.1767501756549,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.367044+00:00",
+          "ended_at": "2026-09-10T09:46:36.498220+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T06",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T06-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 9,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 17.690458334982395,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.499493+00:00",
+          "ended_at": "2026-09-10T09:46:36.517182+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T07",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T07-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e1/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e1/b/e8/d/e6/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e3/a/e1/b"
+            },
+            {
+              "path": "a/e4/c/e3/a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a/e7/b"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e4/c/e5/d/e6/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e7/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            },
+            {
+              "path": "a/e7/b/e8/d/e6/d"
+            }
+          ],
+          "row_count": 19,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 205.84649965167046,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.518644+00:00",
+          "ended_at": "2026-09-10T09:46:36.724490+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e1/b/e8/d/e6/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e3/a/e1/b",
+          "a/e4/c/e3/a/e4/c",
+          "a/e4/c/e3/a/e7/b",
+          "a/e4/c/e5/d",
+          "a/e4/c/e5/d/e6/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d",
+          "a/e7/b/e8/d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T07",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T07-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e1/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e1/b/e8/d/e6/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e3/a/e1/b"
+            },
+            {
+              "path": "a/e4/c/e3/a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a/e7/b"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e4/c/e5/d/e6/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e7/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            },
+            {
+              "path": "a/e7/b/e8/d/e6/d"
+            }
+          ],
+          "row_count": 19,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 22.339791990816593,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.726068+00:00",
+          "ended_at": "2026-09-10T09:46:36.748404+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e1/b/e8/d/e6/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e3/a/e1/b",
+          "a/e4/c/e3/a/e4/c",
+          "a/e4/c/e3/a/e7/b",
+          "a/e4/c/e5/d",
+          "a/e4/c/e5/d/e6/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d",
+          "a/e7/b/e8/d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T08",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T08-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e1/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e1/b/e8/d/e6/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e3/a/e1/b"
+            },
+            {
+              "path": "a/e4/c/e3/a/e7/b"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e4/c/e5/d/e6/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e7/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            },
+            {
+              "path": "a/e7/b/e8/d/e6/d"
+            }
+          ],
+          "row_count": 18,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 178.77691611647606,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.750187+00:00",
+          "ended_at": "2026-09-10T09:46:36.928963+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e1/b/e8/d/e6/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e3/a/e1/b",
+          "a/e4/c/e3/a/e7/b",
+          "a/e4/c/e5/d",
+          "a/e4/c/e5/d/e6/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d",
+          "a/e7/b/e8/d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T08",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T08-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e1/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e1/b/e8/d/e6/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e3/a/e1/b"
+            },
+            {
+              "path": "a/e4/c/e3/a/e7/b"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e4/c/e5/d/e6/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e7/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            },
+            {
+              "path": "a/e7/b/e8/d/e6/d"
+            }
+          ],
+          "row_count": 18,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 18.6815420165658,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.930652+00:00",
+          "ended_at": "2026-09-10T09:46:36.949334+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e1/b/e8/d/e6/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e3/a/e1/b",
+          "a/e4/c/e3/a/e7/b",
+          "a/e4/c/e5/d",
+          "a/e4/c/e5/d/e6/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d",
+          "a/e7/b/e8/d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T09",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T09-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 10,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 159.12291686981916,
+          "error": null,
+          "started_at": "2026-09-10T09:46:36.951100+00:00",
+          "ended_at": "2026-09-10T09:46:37.110211+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T09",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T09-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 10,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 12.63362541794777,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.112325+00:00",
+          "ended_at": "2026-09-10T09:46:37.124958+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T10",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T10-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e1/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e7/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 13,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 145.08312474936247,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.127065+00:00",
+          "ended_at": "2026-09-10T09:46:37.272148+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T10",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T10-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e1/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e2/c/e3/a"
+            },
+            {
+              "path": "a/e7/b/e2/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 13,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 16.47520810365677,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.274387+00:00",
+          "ended_at": "2026-09-10T09:46:37.290865+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T11",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T11-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 7,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 164.7280426695943,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.293264+00:00",
+          "ended_at": "2026-09-10T09:46:37.457991+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T11",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T11-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 7,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 39.61970843374729,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.460242+00:00",
+          "ended_at": "2026-09-10T09:46:37.499860+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T12",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T12-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 7,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 9.863958694040775,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.502105+00:00",
+          "ended_at": "2026-09-10T09:46:37.511969+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T12",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T12-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 7,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 36.24533303081989,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.514068+00:00",
+          "ended_at": "2026-09-10T09:46:37.550309+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T13",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T13-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            }
+          ],
+          "row_count": 3,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 66.18824973702431,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.552809+00:00",
+          "ended_at": "2026-09-10T09:46:37.618994+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a"
+        ]
+      },
+      {
+        "query_id": "T13",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T13-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            }
+          ],
+          "row_count": 3,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 18.116707913577557,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.621574+00:00",
+          "ended_at": "2026-09-10T09:46:37.639691+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a"
+        ]
+      },
+      {
+        "query_id": "T14",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T14-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            }
+          ],
+          "row_count": 5,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 31.424582935869694,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.642102+00:00",
+          "ended_at": "2026-09-10T09:46:37.673522+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c"
+        ]
+      },
+      {
+        "query_id": "T14",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T14-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c/e3/a"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            }
+          ],
+          "row_count": 5,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 14.55525029450655,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.676343+00:00",
+          "ended_at": "2026-09-10T09:46:37.690900+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c"
+        ]
+      },
+      {
+        "query_id": "T15",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T15-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "b/e1/a"
+            },
+            {
+              "path": "b/e7/a"
+            }
+          ],
+          "row_count": 2,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 38.43858279287815,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.693304+00:00",
+          "ended_at": "2026-09-10T09:46:37.731738+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "b/e1/a",
+          "b/e7/a"
+        ]
+      },
+      {
+        "query_id": "T15",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T15-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "b/e1/a"
+            },
+            {
+              "path": "b/e7/a"
+            }
+          ],
+          "row_count": 2,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 10.33933274447918,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.734605+00:00",
+          "ended_at": "2026-09-10T09:46:37.744945+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "b/e1/a",
+          "b/e7/a"
+        ]
+      },
+      {
+        "query_id": "T16",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T16-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 5,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 47.53658268600702,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.747453+00:00",
+          "ended_at": "2026-09-10T09:46:37.794986+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T16",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T16-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e1/b/e2/c"
+            },
+            {
+              "path": "a/e1/b/e8/d"
+            },
+            {
+              "path": "a/e4/c/e5/d"
+            },
+            {
+              "path": "a/e7/b/e2/c"
+            },
+            {
+              "path": "a/e7/b/e8/d"
+            }
+          ],
+          "row_count": 5,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 12.903583236038685,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.797551+00:00",
+          "ended_at": "2026-09-10T09:46:37.810452+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T17",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T17-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [],
+          "row_count": 0,
+          "result_status": "execution_success_empty",
+          "elapsed_ms": 13.927167281508446,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.813230+00:00",
+          "ended_at": "2026-09-10T09:46:37.827156+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": []
+      },
+      {
+        "query_id": "T17",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T17-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [],
+          "row_count": 0,
+          "result_status": "execution_success_empty",
+          "elapsed_ms": 6.154250353574753,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.829945+00:00",
+          "ended_at": "2026-09-10T09:46:37.836100+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": []
+      },
+      {
+        "query_id": "T18",
+        "backend": "neo4j",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "neo4j",
+          "artifact_id": "T18-reference-neo4j",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e4/c"
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 8.87562520802021,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.838993+00:00",
+          "ended_at": "2026-09-10T09:46:37.847869+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        "actual_paths": [
+          "a/e4/c"
+        ]
+      },
+      {
+        "query_id": "T18",
+        "backend": "fuseki",
+        "status": "completed",
+        "success": true,
+        "execution": {
+          "backend_id": "fuseki",
+          "artifact_id": "T18-reference-fuseki",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "path": "a/e4/c"
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 7.113457657396793,
+          "error": null,
+          "started_at": "2026-09-10T09:46:37.851042+00:00",
+          "ended_at": "2026-09-10T09:46:37.858144+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "toy"
+          }
+        },
+        "actual_paths": [
+          "a/e4/c"
+        ]
+      }
+    ],
+    "shutdown": [
+      {
+        "service_id": "fuseki",
+        "pid": 60602,
+        "initial_exit_code": null,
+        "final_exit_code": 143,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      },
+      {
+        "service_id": "neo4j",
+        "pid": 60562,
+        "initial_exit_code": null,
+        "final_exit_code": 0,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      }
+    ],
+    "automatic_retries": 0,
+    "services": [
+      {
+        "service_id": "neo4j",
+        "product": "neo4j",
+        "version": "5.26.30",
+        "command": [
+          "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime/neo4j-community-5.26.30/bin/neo4j",
+          "console"
+        ],
+        "working_directory": "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime/neo4j-community-5.26.30",
+        "environment": {
+          "JAVACMD": "/opt/homebrew/opt/openjdk@21/bin/java",
+          "NEO4J_CONF": "/Users/anthonyche/xgap-data/t0-native-20260910/state/neo4j-conf",
+          "NEO4J_HOME": "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime/neo4j-community-5.26.30"
+        },
+        "health_url": "http://127.0.0.1:50701/db/neo4j/tx/commit",
+        "log_path": "/Users/anthonyche/xgap-data/t0-native-20260910/neo4j.log"
+      },
+      {
+        "service_id": "fuseki",
+        "product": "fuseki",
+        "version": "5.6.0",
+        "command": [
+          "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime/apache-jena-fuseki-5.6.0/fuseki-server",
+          "--localhost",
+          "--ping",
+          "--port",
+          "50703",
+          "--update",
+          "--mem",
+          "/toy"
+        ],
+        "working_directory": "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime/apache-jena-fuseki-5.6.0",
+        "environment": {
+          "JAVA": "/opt/homebrew/opt/openjdk@21/bin/java",
+          "FUSEKI_HOME": "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/runtime/apache-jena-fuseki-5.6.0",
+          "FUSEKI_BASE": "/Users/anthonyche/xgap-data/t0-native-20260910/state/fuseki",
+          "JVM_ARGS": "-Xms128m -Xmx512m"
+        },
+        "health_url": "http://127.0.0.1:50703/$/ping",
+        "log_path": "/Users/anthonyche/xgap-data/t0-native-20260910/fuseki.log"
+      }
+    ],
+    "phase": "completed",
+    "vertical_slice": {
+      "success": true,
+      "actual_paths": [
+        "a/e4/c"
+      ],
+      "expected_paths": [
+        "a/e4/c"
+      ],
+      "plan": {
+        "plan_id": "toy-T18",
+        "nodes": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "m15-fragment-paths-neo4j",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE type(e1) = \"KNOWS\"\n  AND n0.id = \"a\"\nRETURN DISTINCT n0 AS source, n1 AS target, [n0, n1] AS nodes, [e1] AS edges\n}\nRETURN DISTINCT source.id + \"/\" + edges[0].id + \"/\" + target.id AS path, target.id AS target",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "m9_minimal_compiler",
+                  "target_backend_id": "neo4j",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "path_algebra.Edges",
+                    "path_algebra.Selection",
+                    "pattern.PathPatternQuery",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "Neo4j node labels represent XGAP node-label predicates.",
+                    "Neo4j relationship types represent XGAP edge-label predicates.",
+                    "Missing properties and non-numeric values follow Cypher WHERE null-elimination for this fragment."
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "eligible",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "m15-fragment-eligible-fuseki",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?eligible WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 <https://xgap.test/toy/age> ?v0 .\n  FILTER(?v0 >= 30)\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n} ?source <https://xgap.test/toy/id> ?eligible . }",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "m9_minimal_compiler",
+                  "target_backend_id": "fuseki",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                    "RDF type triples represent XGAP node-label predicates.",
+                    "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                  ],
+                  "backend_mapping": {
+                    "mapping_id": "backbone-toy-v1",
+                    "version": "1",
+                    "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                    "relevant_mapped_iris": [
+                      {
+                        "logical_token": "age",
+                        "canonical_term_id": "age",
+                        "kind": "property",
+                        "iri": "https://xgap.test/toy/age"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "join",
+            "kind": "coordinator_join",
+            "inputs": [
+              "paths",
+              "eligible"
+            ],
+            "parameters": {
+              "left_on": "target",
+              "right_on": "eligible"
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "inputs": [
+              "join"
+            ],
+            "parameters": {
+              "fields": [
+                "path"
+              ]
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "answer"
+        ],
+        "max_remote_calls": 2,
+        "max_parallelism": 1,
+        "metadata": {}
+      },
+      "runtime": {
+        "plan_id": "toy-T18",
+        "success": true,
+        "root_rows": {
+          "answer": [
+            {
+              "path": "a/e4/c"
+            }
+          ]
+        },
+        "final_rows": [
+          {
+            "path": "a/e4/c"
+          }
+        ],
+        "node_results": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "status": "success",
+            "rows": [
+              {
+                "path": "a/e1/b",
+                "target": "b"
+              },
+              {
+                "path": "a/e4/c",
+                "target": "c"
+              },
+              {
+                "path": "a/e7/b",
+                "target": "b"
+              }
+            ],
+            "row_count": 3,
+            "elapsed_ms": 70.12229226529598,
+            "input_bytes": 0,
+            "output_bytes": 94,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "neo4j",
+              "tool_metrics": {
+                "elapsed_ms": 70.06941642612219,
+                "row_count": 3.0
+              }
+            }
+          },
+          {
+            "node_id": "eligible",
+            "kind": "remote_query",
+            "status": "success",
+            "rows": [
+              {
+                "eligible": "c"
+              },
+              {
+                "eligible": "a"
+              },
+              {
+                "eligible": "z"
+              }
+            ],
+            "row_count": 3,
+            "elapsed_ms": 12.045583687722683,
+            "input_bytes": 0,
+            "output_bytes": 52,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "fuseki",
+              "tool_metrics": {
+                "elapsed_ms": 11.977292597293854,
+                "row_count": 3.0
+              }
+            }
+          },
+          {
+            "node_id": "join",
+            "kind": "coordinator_join",
+            "status": "success",
+            "rows": [
+              {
+                "path": "a/e4/c",
+                "target": "c",
+                "eligible": "c"
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.045542605221271515,
+            "input_bytes": 146,
+            "output_bytes": 47,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "status": "success",
+            "rows": [
+              {
+                "path": "a/e4/c"
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.011874362826347351,
+            "input_bytes": 47,
+            "output_bytes": 19,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          }
+        ],
+        "elapsed_ms": 82.60725066065788,
+        "total_remote_calls": 2,
+        "total_bytes_moved": 0
+      },
+      "live_llm": false,
+      "paper_result": false
+    }
+  },
+  "native_source_path": "/Users/anthonyche/xgap-data/t0-native-20260910/result.json",
+  "native_result_sha256": "cf4af73e12f14e1f5a642eb1c487258b861d6475ab904841209d9b4db4d960f5",
+  "reference": [
+    {
+      "query_id": "T01",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [len() = 0]\n      Union\n        Nodes\n        Recursive [mode=WALK, max_depth=1]\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+      "actual_paths": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "z"
+      ]
+    },
+    {
+      "query_id": "T02",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [label(edge(1)) = \"KNOWS\"]\n      Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e4/c",
+        "a/e7/b",
+        "b/e2/c",
+        "b/e8/d",
+        "c/e3/a",
+        "c/e5/d",
+        "d/e6/d"
+      ]
+    },
+    {
+      "query_id": "T03",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Selection [label(edge(1)) = \"KNOWS\"]\n        Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e4/c",
+        "a/e7/b"
+      ]
+    },
+    {
+      "query_id": "T04",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.age >= 30]\n      Selection [first.id = \"a\"]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e4/c"
+      ]
+    },
+    {
+      "query_id": "T05",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b/e2/c",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T06",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Union\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Join\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T07",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=WALK, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e2/c/e3/a",
+        "a/e1/b/e2/c/e5/d",
+        "a/e1/b/e8/d",
+        "a/e1/b/e8/d/e6/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e3/a/e1/b",
+        "a/e4/c/e3/a/e4/c",
+        "a/e4/c/e3/a/e7/b",
+        "a/e4/c/e5/d",
+        "a/e4/c/e5/d/e6/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e2/c/e3/a",
+        "a/e7/b/e2/c/e5/d",
+        "a/e7/b/e8/d",
+        "a/e7/b/e8/d/e6/d"
+      ]
+    },
+    {
+      "query_id": "T08",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=TRAIL, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e2/c/e3/a",
+        "a/e1/b/e2/c/e5/d",
+        "a/e1/b/e8/d",
+        "a/e1/b/e8/d/e6/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e3/a/e1/b",
+        "a/e4/c/e3/a/e7/b",
+        "a/e4/c/e5/d",
+        "a/e4/c/e5/d/e6/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e2/c/e3/a",
+        "a/e7/b/e2/c/e5/d",
+        "a/e7/b/e8/d",
+        "a/e7/b/e8/d/e6/d"
+      ]
+    },
+    {
+      "query_id": "T09",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=ACYCLIC, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e2/c/e5/d",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e2/c/e5/d",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T10",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=SIMPLE, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e2/c/e3/a",
+        "a/e1/b/e2/c/e5/d",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e2/c/e3/a",
+        "a/e7/b/e2/c/e5/d",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T11",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=SHORTEST, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T12",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, 1, *]\n  OrderBy [GROUP]\n    GroupBy [SOURCE_TARGET_LENGTH]\n      Selection [first.id = \"a\"]\n        Recursive [mode=WALK, max_depth=3]\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T13",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, 1]\n  GroupBy [SOURCE_TARGET]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c/e3/a"
+      ]
+    },
+    {
+      "query_id": "T14",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, 2]\n  GroupBy [SOURCE_TARGET]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b/e2/c"
+      ]
+    },
+    {
+      "query_id": "T15",
+      "reference_passed": false,
+      "logical_plan_passed": false,
+      "gap": "LoweringError: M5 lowering supports only OUT edges, got IN."
+    },
+    {
+      "query_id": "T16",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first != last]\n      Selection [first.id = \"a\"]\n        Join\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c/e5/d",
+        "a/e7/b/e2/c",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T17",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"z\"]\n      Selection [label(edge(1)) = \"KNOWS\"]\n        Edges",
+      "actual_paths": []
+    },
+    {
+      "query_id": "T18",
+      "reference_passed": true,
+      "logical_plan_passed": true,
+      "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.age >= 30]\n      Selection [first.id = \"a\"]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+      "actual_paths": [
+        "a/e4/c"
+      ]
+    }
+  ],
+  "independent_sparql_targets": [
+    {
+      "query_id": "T01",
+      "success": true,
+      "actual_paths": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "z"
+      ]
+    },
+    {
+      "query_id": "T02",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e4/c",
+        "a/e7/b",
+        "b/e2/c",
+        "b/e8/d",
+        "c/e3/a",
+        "c/e5/d",
+        "d/e6/d"
+      ]
+    },
+    {
+      "query_id": "T03",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e4/c",
+        "a/e7/b"
+      ]
+    },
+    {
+      "query_id": "T04",
+      "success": true,
+      "actual_paths": [
+        "a/e4/c"
+      ]
+    },
+    {
+      "query_id": "T05",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b/e2/c",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T06",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T07",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e2/c/e3/a",
+        "a/e1/b/e2/c/e5/d",
+        "a/e1/b/e8/d",
+        "a/e1/b/e8/d/e6/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e3/a/e1/b",
+        "a/e4/c/e3/a/e4/c",
+        "a/e4/c/e3/a/e7/b",
+        "a/e4/c/e5/d",
+        "a/e4/c/e5/d/e6/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e2/c/e3/a",
+        "a/e7/b/e2/c/e5/d",
+        "a/e7/b/e8/d",
+        "a/e7/b/e8/d/e6/d"
+      ]
+    },
+    {
+      "query_id": "T08",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e2/c/e3/a",
+        "a/e1/b/e2/c/e5/d",
+        "a/e1/b/e8/d",
+        "a/e1/b/e8/d/e6/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e3/a/e1/b",
+        "a/e4/c/e3/a/e7/b",
+        "a/e4/c/e5/d",
+        "a/e4/c/e5/d/e6/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e2/c/e3/a",
+        "a/e7/b/e2/c/e5/d",
+        "a/e7/b/e8/d",
+        "a/e7/b/e8/d/e6/d"
+      ]
+    },
+    {
+      "query_id": "T09",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e2/c/e5/d",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e2/c/e5/d",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T10",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e2/c",
+        "a/e1/b/e2/c/e3/a",
+        "a/e1/b/e2/c/e5/d",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e2/c",
+        "a/e7/b/e2/c/e3/a",
+        "a/e7/b/e2/c/e5/d",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T11",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T12",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b",
+        "a/e1/b/e8/d",
+        "a/e4/c",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T13",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c/e3/a"
+      ]
+    },
+    {
+      "query_id": "T14",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c/e3/a",
+        "a/e4/c/e5/d",
+        "a/e7/b/e2/c"
+      ]
+    },
+    {
+      "query_id": "T15",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a",
+        "b/e7/a"
+      ]
+    },
+    {
+      "query_id": "T16",
+      "success": true,
+      "actual_paths": [
+        "a/e1/b/e2/c",
+        "a/e1/b/e8/d",
+        "a/e4/c/e5/d",
+        "a/e7/b/e2/c",
+        "a/e7/b/e8/d"
+      ]
+    },
+    {
+      "query_id": "T17",
+      "success": true,
+      "actual_paths": []
+    },
+    {
+      "query_id": "T18",
+      "success": true,
+      "actual_paths": [
+        "a/e4/c"
+      ]
+    }
+  ],
+  "compiler_availability": {
+    "T01": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T02": {
+      "m9_cypher": true,
+      "m9_sparql": true,
+      "directed_cypher": true,
+      "directed_sparql": true
+    },
+    "T03": {
+      "m9_cypher": true,
+      "m9_sparql": true,
+      "directed_cypher": true,
+      "directed_sparql": true
+    },
+    "T04": {
+      "m9_cypher": true,
+      "m9_sparql": true,
+      "directed_cypher": true,
+      "directed_sparql": true
+    },
+    "T05": {
+      "m9_cypher": true,
+      "m9_sparql": true,
+      "directed_cypher": true,
+      "directed_sparql": true
+    },
+    "T06": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T07": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T08": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T09": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T10": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T11": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T12": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T13": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T14": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": false,
+      "directed_sparql": false
+    },
+    "T15": {
+      "m9_cypher": false,
+      "m9_sparql": false,
+      "directed_cypher": true,
+      "directed_sparql": true
+    },
+    "T16": {
+      "m9_cypher": true,
+      "m9_sparql": true,
+      "directed_cypher": true,
+      "directed_sparql": true
+    },
+    "T17": {
+      "m9_cypher": true,
+      "m9_sparql": true,
+      "directed_cypher": true,
+      "directed_sparql": true
+    },
+    "T18": {
+      "m9_cypher": true,
+      "m9_sparql": true,
+      "directed_cypher": true,
+      "directed_sparql": true
+    }
+  },
+  "compiled_rdf_probe": [
+    {
+      "query_id": "T02",
+      "expected_complete_path_count": 8,
+      "actual_compiled_binding_count": 7,
+      "edge_binding_examples": [
+        "https://xgap.test/toy/KNOWS"
+      ],
+      "note": "ordinary RDF predicate identity, not the unique reified edge ID; this is a compiler/data-encoding diagnostic"
+    },
+    {
+      "query_id": "T03",
+      "expected_complete_path_count": 3,
+      "actual_compiled_binding_count": 2,
+      "edge_binding_examples": [
+        "https://xgap.test/toy/KNOWS"
+      ],
+      "note": "ordinary RDF predicate identity, not the unique reified edge ID; this is a compiler/data-encoding diagnostic"
+    },
+    {
+      "query_id": "T04",
+      "expected_complete_path_count": 1,
+      "actual_compiled_binding_count": 1,
+      "edge_binding_examples": [
+        "https://xgap.test/toy/KNOWS"
+      ],
+      "note": "ordinary RDF predicate identity, not the unique reified edge ID; this is a compiler/data-encoding diagnostic"
+    },
+    {
+      "query_id": "T05",
+      "expected_complete_path_count": 6,
+      "actual_compiled_binding_count": 4,
+      "edge_binding_examples": [
+        "https://xgap.test/toy/KNOWS"
+      ],
+      "note": "ordinary RDF predicate identity, not the unique reified edge ID; this is a compiler/data-encoding diagnostic"
+    },
+    {
+      "query_id": "T15",
+      "expected_complete_path_count": 2,
+      "actual_compiled_binding_count": 1,
+      "edge_binding_examples": [
+        "https://xgap.test/toy/KNOWS"
+      ],
+      "note": "ordinary RDF predicate identity, not the unique reified edge ID; this is a compiler/data-encoding diagnostic"
+    },
+    {
+      "query_id": "T16",
+      "expected_complete_path_count": 5,
+      "actual_compiled_binding_count": 3,
+      "edge_binding_examples": [
+        "https://xgap.test/toy/KNOWS"
+      ],
+      "note": "ordinary RDF predicate identity, not the unique reified edge ID; this is a compiler/data-encoding diagnostic"
+    },
+    {
+      "query_id": "T17",
+      "expected_complete_path_count": 0,
+      "actual_compiled_binding_count": 0,
+      "edge_binding_examples": [],
+      "note": "ordinary RDF predicate identity, not the unique reified edge ID; this is a compiler/data-encoding diagnostic"
+    },
+    {
+      "query_id": "T18",
+      "expected_complete_path_count": 1,
+      "actual_compiled_binding_count": 1,
+      "edge_binding_examples": [
+        "https://xgap.test/toy/KNOWS"
+      ],
+      "note": "ordinary RDF predicate identity, not the unique reified edge ID; this is a compiler/data-encoding diagnostic"
+    }
+  ],
+  "focused": {
+    "session_id": 76238,
+    "exit_code": 0,
+    "passed": 76,
+    "elapsed_seconds": 7.73,
+    "log_sha256": "5cd4f358682ced75adfc6d9955f5657982f239b0a7947a1263d3cca02118ae4b"
+  },
+  "examples": [
+    {
+      "entrypoint": "scripts/check_harness.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.04
+    },
+    {
+      "entrypoint": "examples/core_algebra_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.077
+    },
+    {
+      "entrypoint": "examples/plan_print_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.075
+    },
+    {
+      "entrypoint": "examples/recursive_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.075
+    },
+    {
+      "entrypoint": "examples/solution_space_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.076
+    },
+    {
+      "entrypoint": "examples/semantic_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.074
+    },
+    {
+      "entrypoint": "examples/lowering_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.07
+    },
+    {
+      "entrypoint": "examples/pattern_lowering_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.076
+    },
+    {
+      "entrypoint": "examples/quantified_pattern_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.071
+    },
+    {
+      "entrypoint": "examples/compiler_mvp_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.075
+    },
+    {
+      "entrypoint": "examples/llm_boundary_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.133
+    },
+    {
+      "entrypoint": "examples/m11_physical_planner_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.185
+    },
+    {
+      "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.179
+    },
+    {
+      "entrypoint": "examples/m12_experiment_contract_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.235
+    },
+    {
+      "entrypoint": "examples/m12c_calibration_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.235
+    },
+    {
+      "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 6.113
+    },
+    {
+      "entrypoint": "examples/m15_goal_loop_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.073
+    },
+    {
+      "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.128
+    },
+    {
+      "entrypoint": "examples/m15_semantic_intake_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.077
+    },
+    {
+      "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.632
+    },
+    {
+      "entrypoint": "examples/freebase_typed_fact_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.679
+    },
+    {
+      "entrypoint": "examples/grounded_candidate_execution_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.185
+    },
+    {
+      "entrypoint": "examples/freebase_question_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.348
+    },
+    {
+      "entrypoint": "examples/toy_backbone_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.179
+    }
+  ],
+  "full": {
+    "session_id": 63579,
+    "exit_code": 0,
+    "passed": 2963,
+    "skipped": 38,
+    "elapsed_seconds": 657.9,
+    "log_sha256": "837b59b30c44f1a64f9edf7aeb54df549674f7276144eeb97e32fe429d88ab91"
+  },
+  "limits": [
+    "T15 remains an old-lowerer IN gap.",
+    "Reference target execution is distinct from production compilation.",
+    "Full native operator coverage, general partitioning, interpretation and failure replay are incomplete.",
+    "Only README usage documentation changed among the sealed native fixture files after the real run; graph, queries, targets and measured source bytes are unchanged.",
+    "No LLM, GrailQA catalog, large source snapshot or GPU was used."
+  ],
+  "paper_result": false,
+  "full_backbone_complete": false
+}

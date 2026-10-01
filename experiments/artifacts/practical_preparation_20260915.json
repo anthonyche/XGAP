@@ -1,0 +1,34 @@
+{
+  "schema_version": "xgap-practical-preparation-evidence-v1",
+  "source_commit": "28d733f",
+  "new_test_cases": 5,
+  "affected_test_cases": 2,
+  "bundle_loads_before": 4,
+  "bundle_loads_after": 1,
+  "new_model_calls": 0,
+  "new_source_calls": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "replay_match": true,
+  "paper_result": false,
+  "speed_claim": false,
+  "evidence": {
+    "before": {
+      "path": "/Users/anthonyche/xgap-data/practical-preparation-audit-20260914-before/preparation_audit.json",
+      "sha256": "83a653e39f9521efbdee0b645fd28540b1b1cf9b834dbe5a3fa26cd2dadb2533"
+    },
+    "after": {
+      "path": "/Users/anthonyche/xgap-data/practical-preparation-audit-20260915-after/preparation_audit.json",
+      "sha256": "525e0fae101c5eeb68aa706e6f59468b00fdcb2bd9e2d55c2677a221bf212efe"
+    },
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/practical-preparation-audit-20260915-after/receipt.json",
+      "sha256": "b95aac4fefd6fb60c950784c2c15eceab0c3ebd811a2d3e8683f56c2f0b61c7f"
+    },
+    "result": {
+      "path": "/Users/anthonyche/xgap-data/practical-preparation-audit-20260915-after/result.json",
+      "sha256": "ba376c6171cc118007e85098ddc572922263355d206c2514c5ac566761525e7b"
+    }
+  },
+  "report": "docs/report/practical_preparation_20260915.md"
+}

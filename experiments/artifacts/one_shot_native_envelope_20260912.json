@@ -1,0 +1,146 @@
+{
+  "schema_version": "xgap-one-shot-native-checkpoint-v1",
+  "source_commit": "41a3ccac8156d517c8229da4a6263e12f8cc6ea5",
+  "raw_root": "/Users/anthonyche/xgap-data/one-shot-native-20260912-41a3cca",
+  "paper_result": false,
+  "wire_profile": "envelope-schema-v1",
+  "status": "answered",
+  "request_scope": "B01 NL plus declared output fields and prepared hard constraints/operator IDs",
+  "answer_rows": [
+    {
+      "person": "https://xgap.test/toy/c",
+      "edge": "https://xgap.test/toy/e4"
+    }
+  ],
+  "evaluation": {
+    "query_id": "B01",
+    "scope": "independent original tiny gold",
+    "execution_completed": true,
+    "answer_exact": true,
+    "inference_result_sealed_sha256": "c68c397fb19f6299348f2d97e3edab89f04f3dbc3ff62105389e17987f6f786e",
+    "paper_result": false
+  },
+  "model_request_attempts": 1,
+  "input_tokens": 2150,
+  "output_tokens": 847,
+  "token_usage_complete": true,
+  "candidate_cap": 3,
+  "candidates_returned": 1,
+  "candidates_admitted": 1,
+  "selection": {
+    "candidate_id": "c1",
+    "strategy_id": "placement-0/entity_bind/join/left_to_right",
+    "plan_id": "oneshot:41af12401c214249585b",
+    "estimated_ms": 0.005412420668671847,
+    "quality_proxy": 0.9,
+    "ranking_quality_proxy": 0.9,
+    "quality_fallback_used": false,
+    "quality_proxy_calibrated": false,
+    "objective_ms": 100.00541242066865,
+    "interpretation_options": [
+      {
+        "candidate_id": "c1",
+        "strategy_id": "placement-0/entity_bind/join/left_to_right",
+        "plan_id": "oneshot:41af12401c214249585b",
+        "estimated_ms": 0.005412420668671847,
+        "quality_proxy": 0.9,
+        "ranking_quality_proxy": 0.9,
+        "quality_fallback_used": false,
+        "quality_proxy_calibrated": false,
+        "objective_ms": 100.00541242066865
+      }
+    ],
+    "proxy_frontier": [
+      "c1"
+    ],
+    "frontier_is_actual_quality": false,
+    "algorithm": "estimated_argmin_per_interpretation_then_quality_cost_argmin_v1",
+    "optimality_scope": "estimated compatible admitted neighborhood; no global physical or answer guarantee",
+    "selection_uses_execution_observations": false
+  },
+  "source_bindings": {
+    "match": "fuseki",
+    "paths": "fuseki"
+  },
+  "final_plan_executions": 1,
+  "online_backend_calls": 2,
+  "observation_calls": 0,
+  "offline_current": {
+    "input_preparation_ms": 14.836834743618965,
+    "service_setup_ms": 6948.643749579787,
+    "fixture_load_ms": 262.3137077316642,
+    "estimator_mode": "reuse_frozen",
+    "training_reused": true,
+    "training_collection_ms": 0.0,
+    "training_remote_calls": 0,
+    "fit_ms": 0.0,
+    "fit_calls": 0,
+    "estimator_reload_ms": 0.5254996940493584,
+    "estimator_file": {
+      "path": "/Users/anthonyche/xgap-data/one-shot-native-20260912-b008775/frozen_estimator.json",
+      "bytes": 5622,
+      "sha256": "1fe0550849753eaeadbb9f64f287bcf38d12155c2ab1f38ca24e6f9163b69f14"
+    },
+    "estimator_model_sha256": "4ee5473d8f1987b11415275da2251fb408c786415e178677054d53647f1d3ea7"
+  },
+  "input_unchanged": true,
+  "input_fingerprint_count": 432,
+  "owned_processes_terminal": true,
+  "owned_pids": [
+    5551,
+    5516
+  ],
+  "timings_ms": {
+    "catalog_load_ms": 0.3865426406264305,
+    "grounding_ms": 0.7329573854804039,
+    "planning_ms": 48.665416426956654,
+    "execution_ms": 79.17341683059931,
+    "end_to_end_ms": 4583.866249769926
+  },
+  "interpretation_ms": 4454.744249582291,
+  "lifecycle_ms": 23518.708249554038,
+  "limitations": [
+    "Not NL-only: explicit request constraints/operator IDs provided",
+    "Selected placement uses Fuseki for both queries; not cross-store execution",
+    "Estimator trained on four independent Match plans only; out-of-training-range strategy features and severe underprediction",
+    "One tiny developer question, not general accuracy/speedup evidence"
+  ],
+  "artifacts": {
+    "receipt.json": {
+      "sha256": "00532eba1349b72be56c64742c51f509dc4493a3a877651d6a7dfc95a7559e03",
+      "bytes": 8178
+    },
+    "offline_receipt.json": {
+      "sha256": "a7ca4aa3101c22e358e8b732cbed067aa50fc257d86073752a3163dc08d441a4",
+      "bytes": 657
+    },
+    "reused_estimator_receipt.json": {
+      "sha256": "157080bff6448db46c8dc36130f4457fea2872c890e2cd883cf96914b3901fdb",
+      "bytes": 2199
+    },
+    "one-shot/result.json": {
+      "sha256": "c68c397fb19f6299348f2d97e3edab89f04f3dbc3ff62105389e17987f6f786e",
+      "bytes": 159202
+    },
+    "one-shot/interpretation.json": {
+      "sha256": "c9656b706ccfb7bc0d92ede440e73fb5e003178a3dec96d1bc3dabac61fb79b0",
+      "bytes": 39382
+    },
+    "one-shot/evaluation.json": {
+      "sha256": "56312001d4a94ea150457547abe80540882e204046c137057cc7a6d86acb6952",
+      "bytes": 253
+    }
+  },
+  "independent_read_only_audit": {
+    "source_placements": 3,
+    "admitted_physical_plans": 6,
+    "construction_bound": 9,
+    "rejected_reverse_bind_strategies": 3,
+    "scheduler_elapsed_ms": 78.932459,
+    "selected_out_of_training_range_features": 12,
+    "result_gold_seal_receipt_sha256_match": true,
+    "estimator_representation_gap": "Swapping Path and Match between backends can produce identical feature vectors; operator/backend/workload association is missing",
+    "no_refit_prediction_rerun_or_execution_in_audit": true
+  },
+  "independent_ps_check": "no owned PID present; ps exit1"
+}

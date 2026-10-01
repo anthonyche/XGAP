@@ -1,0 +1,252 @@
+{
+  "schema_version": "xgap-semantic-execution-memory-evidence-v1",
+  "date": "2026-09-11",
+  "base_commit": "8db41faf55366a79f3b7b1f30f3b3ada72858f64",
+  "status": "accepted_development_evidence",
+  "paper_result": false,
+  "live_llm": false,
+  "native_record": "/Users/anthonyche/xgap-data/t3b-memory-native-20260911/result.json",
+  "native_sha256": "de86081ed879c82eba5c87eaeb422f0fe21c1c9e7bd5693f08db550840d043cb",
+  "native_source_hashes": 37,
+  "source_sha256": {
+    "scripts/run_toy_backbone_native.py": "f197d998dab7c54219aa0d240d6c945a3542ff002f921df906c9fd488e83d838",
+    "scripts/run_toy_development.sh": "9fb10b3bc2414f4d7d25395a51f8051407e0385ca58cd8d3dd23132ccafca3a9",
+    "src/xgap/agent/loop.py": "cb0aec6d416ed856d94a677233c6d565e0f525cc15e5c73e15998b593699b1f8",
+    "src/xgap/agent/memory.py": "3fc9a374422458ccf6524bb656dfbb62d0eaf42c59a7a4135c6a848f5d292616",
+    "src/xgap/agent/question.py": "3ccf6a00342d0b4b8086c89bf222f31d7e685d6e472f982d61cc9bd1fbd00cb2",
+    "src/xgap/agent/resolution.py": "0ddab00073176c20ca737eafe0b175e1bab9aeba56ba380671405814af425f2c",
+    "src/xgap/agent/semantic_execution.py": "5c006816ae5aae776a0eb898dfabe4b6a2e7370fbfb53c0a221228f300a9ba62",
+    "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+    "src/xgap/catalog/bundle.py": "2d3bc522873b2c508426b4dee92b82d5020a568e69ccc9c92fabef44269cd624",
+    "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+    "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+    "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+    "src/xgap/experiments/toy_binding.py": "25fd25616924d3ffb707f3ca886ea59b94f2228d4519f0fccfe5f0196bcf0514",
+    "src/xgap/experiments/toy_planning.py": "ad1e0fe0cb0df13e63263a80e5475e9b0c131711266225e455bd8b03fc483fa9",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+    "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+    "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+    "src/xgap/runtime/row_operations.py": "3cc91d96c860af17536c676d1f6979cc542da22846c760d37ff33c295ea1ce37",
+    "src/xgap/runtime/scheduler.py": "bb61d9f05c50dc0873c7c49e04af325f7bae804db26fbbd6b6807c346794f957",
+    "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+    "src/xgap/runtime/semantic_compiler.py": "3fe9cc2cfe30857312ca5567d40c1f200a0111c5d4a249cf4543ac71ee74026b",
+    "src/xgap/runtime/semantic_memory.py": "af10e7523a96b46dc981771893aea76b834ce2867a1f965d1e1b51b2d340fb3e",
+    "src/xgap/runtime/semantic_planning.py": "c000ad750160fe05f177a6958810cd5076b667a6aac7ef72e4ab2dd6cbd9054b",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/semantic/binding.py": "f2f2daf77ed787580619f1e03fbfcfedc49e92162bc786b7001b27452a7d9ec3",
+    "src/xgap/semantic/intake.py": "0d69b581faba5d01761342b1fab6361ec3c46e8019586c05241f9bb1ff473534",
+    "src/xgap/semantic/interpretation.py": "27d1994d127b45937e667241fae064925c63ab85e7090630ff493b27a5d3e07e",
+    "src/xgap/semantic/interpretation_replay.py": "d451f5aaaf62e19710ffcc042abdbd4ad9165423af73376483c9152a73aa41da",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/tools/artifact_resolution.py": "18d4da7a14212f35397d39cc7dbccf2e24bceb500865289340cc59c0409c8c58",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/tools/resolution.py": "5046f009a3d0b612e3d4425bec33a41de715a158b87858805ae6e6af8bd89127",
+    "tests/test_semantic_execution_memory.py": "616b3d65dcadeb7d9f768af4fd70d027957bb06b8d51fad5363d6756b0b5ed2a"
+  },
+  "native_cold_programs": 5,
+  "native_warm_programs": 5,
+  "native_candidate_answers": 18,
+  "independent_native_targets": 10,
+  "old_slice_passed": true,
+  "queries": [
+    {
+      "query_id": "B01",
+      "cold_success": true,
+      "warm_success": true,
+      "candidate_answers": 4,
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e4"
+        }
+      ],
+      "cold_observation_calls": 4,
+      "cold_execution_calls": 2,
+      "warm_observation_calls": 0,
+      "warm_execution_calls": 2,
+      "historical_acquisition": {
+        "elapsed_ms": 370.79349998384714,
+        "goal_id": "semantic-query:toy-path:c493ea9ae8f6a03b",
+        "remote_calls": 4
+      },
+      "memory_key": "semantic-observation/ee07bdc366dfad6dfe60d3d0e82b3d0fcdc15b96144044c7e296b67ca6f1e214",
+      "cold_end_to_end_ms": 420.844916254282,
+      "warm_end_to_end_ms": 66.9533321633935,
+      "memory_store_reload_ms": 0.17883442342281342
+    },
+    {
+      "query_id": "B02",
+      "cold_success": true,
+      "warm_success": true,
+      "candidate_answers": 4,
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e2"
+        }
+      ],
+      "cold_observation_calls": 4,
+      "cold_execution_calls": 2,
+      "warm_observation_calls": 0,
+      "warm_execution_calls": 2,
+      "historical_acquisition": {
+        "elapsed_ms": 68.37933231145144,
+        "goal_id": "semantic-query:toy-path:b9f47308b165726c",
+        "remote_calls": 4
+      },
+      "memory_key": "semantic-observation/2fb7fd57cea8fa03ef29a0bb5b000796e65c02ffc524460c8a846a80f1e5c1de",
+      "cold_end_to_end_ms": 116.38799961656332,
+      "warm_end_to_end_ms": 36.99225001037121,
+      "memory_store_reload_ms": 0.3065420314669609
+    },
+    {
+      "query_id": "B03",
+      "cold_success": true,
+      "warm_success": true,
+      "candidate_answers": 4,
+      "actual_rows": [],
+      "cold_observation_calls": 4,
+      "cold_execution_calls": 2,
+      "warm_observation_calls": 0,
+      "warm_execution_calls": 2,
+      "historical_acquisition": {
+        "elapsed_ms": 31.372583471238613,
+        "goal_id": "semantic-query:toy-path:2709ad3e1d5013fb",
+        "remote_calls": 4
+      },
+      "memory_key": "semantic-observation/1a804414905fbe12a6fd7e592f1bad662fb79a201d0d2a74d28fa2ab018132cc",
+      "cold_end_to_end_ms": 65.42858388274908,
+      "warm_end_to_end_ms": 35.2524584159255,
+      "memory_store_reload_ms": 0.20095892250537872
+    },
+    {
+      "query_id": "B04",
+      "cold_success": true,
+      "warm_success": true,
+      "candidate_answers": 2,
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/a",
+          "age": 30
+        }
+      ],
+      "cold_observation_calls": 2,
+      "cold_execution_calls": 1,
+      "warm_observation_calls": 0,
+      "warm_execution_calls": 1,
+      "historical_acquisition": {
+        "elapsed_ms": 96.57212439924479,
+        "goal_id": "semantic-query:toy-node:d299aecf7ae50bba",
+        "remote_calls": 2
+      },
+      "memory_key": "semantic-observation/27db66b3d818c48a28b2eb84fbafc14c176d12d64ef0b12fcb1fa2e55f043891",
+      "cold_end_to_end_ms": 121.5383755043149,
+      "warm_end_to_end_ms": 14.348750002682209,
+      "memory_store_reload_ms": 0.27962494641542435
+    },
+    {
+      "query_id": "B05",
+      "cold_success": true,
+      "warm_success": true,
+      "candidate_answers": 4,
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e2"
+        }
+      ],
+      "cold_observation_calls": 4,
+      "cold_execution_calls": 2,
+      "warm_observation_calls": 0,
+      "warm_execution_calls": 2,
+      "historical_acquisition": {
+        "elapsed_ms": 24.65137466788292,
+        "goal_id": "semantic-query:toy-path:be226a79a19bb64a",
+        "remote_calls": 4
+      },
+      "memory_key": "semantic-observation/59de6cc7aef0364beea7f3b6b32dba997ed283ba276ee127510c79e82675c8a1",
+      "cold_end_to_end_ms": 56.4117506146431,
+      "warm_end_to_end_ms": 34.85162556171417,
+      "memory_store_reload_ms": 0.3583338111639023
+    }
+  ],
+  "shutdown": [
+    {
+      "service_id": "fuseki",
+      "pid": 94034,
+      "initial_exit_code": null,
+      "final_exit_code": 143,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    },
+    {
+      "service_id": "neo4j",
+      "pid": 93927,
+      "initial_exit_code": null,
+      "final_exit_code": 0,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    }
+  ],
+  "gates": {
+    "initial_local_command": {
+      "exit_code": 4,
+      "reason": "nonexistent test_m15_memory.py; no tests ran"
+    },
+    "first_focused": {
+      "session": 96791,
+      "exit_code": 0,
+      "passed": 112,
+      "seconds": 5.53
+    },
+    "final_focused": {
+      "session": 10840,
+      "exit_code": 0,
+      "passed": 148,
+      "seconds": 7.5
+    },
+    "native": {
+      "session": 8381,
+      "exit_code": 0,
+      "log": "/tmp/xgap-t3b-memory-native.log"
+    },
+    "broad": {
+      "session": 90283,
+      "status": "completed",
+      "log": "/tmp/xgap-t3b-memory-acceptance.log",
+      "exit_code": 0,
+      "passed": 3481,
+      "skipped": 38,
+      "seconds": 691.2,
+      "harness_example_entrypoints": 24,
+      "log_sha256": "8e89f74f2b27d9b492069c182a4210e1134e8bbf863a403b77b8726f9056f820"
+    }
+  },
+  "call_accounting": {
+    "cold_planning": 18,
+    "cold_execution": 9,
+    "warm_planning": 0,
+    "warm_execution": 9,
+    "candidate_validation_extra": 25,
+    "independent_reference_queries": 10,
+    "retained_slice_queries": 2,
+    "total_test_queries": 73,
+    "excludes_service_data_and_memory_store_initialization": true
+  },
+  "limitations": [
+    "Exact-context repeated-query observation reuse, not result caching or family transfer",
+    "No latency effect claim; fixed cold-then-warm order and candidate validation affect backend caches",
+    "Finite age and caller environment episode cannot detect all within-episode drift",
+    "Existing adaptive executor and paper protocols remain separate; no full-agent completion claim"
+  ]
+}

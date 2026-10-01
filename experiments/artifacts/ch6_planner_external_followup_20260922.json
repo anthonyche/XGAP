@@ -1,0 +1,248 @@
+{
+  "schema_version": "xgap-ch6-planner-external-followup-evidence-v1",
+  "report": "docs/report/ch6_planner_external_followup_20260922.md",
+  "formal_or_comparative_result": false,
+  "unique_exposed_planner_cases": 3,
+  "repetitions_per_version": 1,
+  "same_query_speedup_claim": false,
+  "model_calls_planner_followup": 0,
+  "planner_release": {
+    "path": "/Users/anthonyche/xgap-data/ch6-planner-followup-20260922-v1/release.json",
+    "sha256": "96adf2e1c92194ee28ea1f776cc29785aac0d1e7afe3238c3586d0a3d8e6801e",
+    "bytes": 3881
+  },
+  "planner_manifest": {
+    "path": "/Users/anthonyche/xgap-data/ch6-planner-followup-20260922-v1/manifest.json",
+    "sha256": "47cd5b716b45533671044808b9fa6fb43e7342a1c53c3f693b72c0244da6f0ab",
+    "bytes": 4755
+  },
+  "closure_receipts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-planner-followup-20260922-v1/batch/invocations/0001/receipt.json",
+      "sha256": "5c29e139ff4504f11cb0e7437d3b7b68f6422fc23d2ad0970363a3d20d99cdcb",
+      "bytes": 1359
+    }
+  ],
+  "fedx_transport_build": {
+    "path": "/Users/anthonyche/xgap-data/ch6-fedx-transport-build-20260922-v2/receipt.json",
+    "sha256": "1b3d964d54da3e9759ec1cd24c4fd676c6832ccd8df78b2b98272b423e4fd278",
+    "bytes": 774
+  },
+  "fedx_protocol_gate": {
+    "path": "/Users/anthonyche/xgap-data/ch6-fedx-protocol-20260922-v4/receipt.json",
+    "sha256": "96ff679dea8a7422f51161d5f303f6e42434cf39bb9f2f0896a3aa78ffb2f345",
+    "bytes": 2734
+  },
+  "external_method_attempts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v1/receipt.json",
+      "sha256": "01b2373f38da21b2af0c30cab2dbbedf567f6605e3c7966e8b9788d7c823df8b",
+      "bytes": 9520
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v2/receipt.json",
+      "sha256": "492442f486f42fbb376e81a46b055e3c689e0080802e05c2f40afc6fe6395639",
+      "bytes": 10949
+    }
+  ],
+  "offline_parser_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v2/offline-parser-replay.json",
+    "sha256": "5eb9267cdd4e5d698b3bbec3808c16819560083c43c34dec34026a818195b74b",
+    "bytes": 428
+  },
+  "offline_formatter_wire": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-format-wire-20260922-v2/receipt.json",
+    "sha256": "0261e78442c607663a918b8f6a1a9487ec4d3186a2e18a3790a4b38ef30f31f4",
+    "bytes": 754
+  },
+  "derived": [
+    {
+      "path": "docs/report/assets/ch6_planner_followup_20260922/cells.csv",
+      "sha256": "0dfb45382b8d419eabba841005d5fbde3b717cebf56aad582ac5b2fb5438be1e",
+      "bytes": 1651
+    },
+    {
+      "path": "docs/report/assets/ch6_planner_followup_20260922/planner_followup.pdf",
+      "sha256": "befc75b1e50300d6825eecfb06c4dbe2dedf359fbb5a89499b14ccbf012999e8",
+      "bytes": 33954
+    },
+    {
+      "path": "docs/report/assets/ch6_planner_followup_20260922/planner_followup.png",
+      "sha256": "ce7fbd27d06f08c2002b6a68ef8fcd695fdf7a7d95ce5b78f3a168ac1ffd9722",
+      "bytes": 84972
+    },
+    {
+      "path": "docs/report/assets/ch6_planner_followup_20260922/summary.json",
+      "sha256": "ce50c3cb9d25892eedf5f7f292155d2cabd68ca1a0869e55b19cc026efce7063",
+      "bytes": 12420
+    }
+  ],
+  "all_owned_closed": true,
+  "summaries_only_no_private_intent_or_model_content": true,
+  "csv_public_copy_line_endings": "LF; cell values identical to sealed derived CSV",
+  "single_source_admissions": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v1/receipt.json",
+      "sha256": "9b7c98b27bef64a909a3f25ae543b3ed7d30ef304562e7e3264abd9b8bcf748e",
+      "bytes": 10900
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v2/receipt.json",
+      "sha256": "d6d48c925922eafa75cb97eeacb19cefd1124948ff6505fca2040eca29fb64a7",
+      "bytes": 10690
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v3/receipt.json",
+      "sha256": "75b0b3ae75af5a646b1f8d882a373b3cad847c27fd6b84cb727a0f6d462344bc",
+      "bytes": 11329
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v4/receipt.json",
+      "sha256": "ee6dc79b117ec139f0910dd2e53aec9f96ffe39b108bc11cd515b26c7ae3e00a",
+      "bytes": 13184
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v5/receipt.json",
+      "sha256": "2a4cf5a823ff8edf4cd91612ab561537d52d0c6387f858696ba56dfb78709237",
+      "bytes": 12433
+    }
+  ],
+  "offline_https_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-https-replay-20260922-v2/receipt.json",
+    "sha256": "d68bcf01da7ba830d27f18baad975d9236fff7cd031cc2e817d312fab9255430",
+    "bytes": 2373
+  },
+  "action_key_alias_offline_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-action-alias-replay-20260922-v1/receipt.json",
+    "sha256": "af63834b05f304db4a2c9b108d8fade457a4f3fb76d5ad154fb7b348c5d3039a",
+    "bytes": 704
+  },
+  "author_tool_replay_manifest": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-https-all-replay-20260922-v1/manifest.json",
+    "sha256": "e79c1d78ec69343defb0be8aa017ba4782e249c1ad887f88ad0bfdc1b4c3f391",
+    "bytes": 1193
+  },
+  "author_tool_transport_gate": {
+    "path": "/Users/anthonyche/xgap-data/ch6-fedx-author-tools-20260922-v2/receipt.json",
+    "sha256": "bf60cbaca08c59da95f17aa8cc2a963fbea031ea4e0ec8a8657dee346bf369db",
+    "bytes": 1294
+  },
+  "rdf4j_original_parser_failure": {
+    "path": "/Users/anthonyche/xgap-data/ch6-fedx-author-tools-20260922-v2/parser-receipt.json",
+    "sha256": "236cccce0618bb9aca942981704ee6a01d4d516eb883cdb1bbad803a096c482b",
+    "bytes": 542
+  },
+  "native_single_admissions": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v1/receipt.json",
+      "sha256": "e958353aeb3d7e9dc7454b1b3f5f61a02eaa1794413d931fe2977c96945993e2",
+      "bytes": 9602
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v2/receipt.json",
+      "sha256": "d9ab90bc8fb7b9a10673b92d87717f678e070dda41e36adc3ea87647ce9bd93a",
+      "bytes": 12241
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v3/receipt.json",
+      "sha256": "8efeca45d4fa98cbb94b9e40c125290f9be0b46c0ea5f4746d82ae85e4a33867",
+      "bytes": 12355
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v4/receipt.json",
+      "sha256": "0a82beb5d372778fa2528c7c5faaf73901ef76257a02875bf338c6484be28ed2",
+      "bytes": 10841
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v5/receipt.json",
+      "sha256": "905b2a4a7b82bd2f1bcc3e6402d085b7eb4254ce39384c757fe4aa3668f21fc6",
+      "bytes": 14000
+    }
+  ],
+  "client_loopback_diagnostic": {
+    "path": "/Users/anthonyche/xgap-data/ch6-client-loopback-20260922-v1/receipt.json",
+    "sha256": "828fe9094837ad59377c6bb1914ae318633c14c07c4febda40dc6fe667f3d4a6",
+    "bytes": 1314
+  },
+  "captured_native_client_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-native-client-replay-20260922-v1/receipt.json",
+    "sha256": "a20d76c6f2df23a39d623ce960bb293adc8ce69efd5251788829d320d309459e",
+    "bytes": 2600
+  },
+  "sole_reasoning_field_replay": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-envelope-replay-20260922-v1/receipt.json",
+    "sha256": "4401df300713eca1b7f706c2f91e3beef4b1f80deb8b42844a31b83db6999d2f",
+    "bytes": 231
+  },
+  "diagnostic_scripts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-client-loopback-diagnostic.py",
+      "sha256": "1b832e649d3c4885b8c569c8e198eee7d25b9f54ceea34e18a4bc9b44e400c1f",
+      "bytes": 3974
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/replay-ch6-native-single.py",
+      "sha256": "42066781890d5e17e34c30391f5c2777a7c9059ba1d356ade17d54ba5effe870",
+      "bytes": 3702
+    }
+  ],
+  "nonthinking_wire_diagnostic": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-format-wire-20260922-v3/receipt.json",
+    "sha256": "f60813cf6808f575e268c0dca23a34a55a84a944cf61df70a0050bcba4fc1d60",
+    "bytes": 821
+  },
+  "action_schema_wire": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-format-wire-20260922-v4/receipt.json",
+    "sha256": "10a0c68e7637f150d1f543bee8eefb0718ab24dc47bab952d9a200d55b343efd",
+    "bytes": 1350
+  },
+  "fedx_tool_compatibility": {
+    "build": {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-transport-build-20260922-v4/receipt.json",
+      "sha256": "2e08ca01685ea2ebbab3208844974f852a88f3a1dc72ca111b7999022ce629ba",
+      "bytes": 774
+    },
+    "manifest": {
+      "path": "/Users/anthonyche/xgap-data/ch6-aruqula-entity-label-replay-20260922-v1/manifest.json",
+      "sha256": "c0b1e99516e2581b200607ecbc87d1aa6ed46b1aab770f2cf3e976734841f932",
+      "bytes": 1829
+    },
+    "replay": {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-entity-label-equivalence-20260922-v2/receipt.json",
+      "sha256": "9f432f9d716f66149691a5bd2a33e533a365f403366149378700954e271dc8ef",
+      "bytes": 4626
+    }
+  },
+  "cross_source_admitted": {
+    "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v3/receipt.json",
+    "sha256": "712250cba9869e0300d0c9362eb3cf2cab5b4ca4a0bd569342a36fb4760d05f9",
+    "bytes": 14637
+  },
+  "baseline_admission_public_summary": {
+    "path": "docs/report/assets/ch6_baseline_admission_20260922/summary.json",
+    "sha256": "bc9f5a86c365507d25f116782916c08e64977995e9cea01d075b6f147c1eb0da",
+    "bytes": 3336
+  },
+  "preserved_tool_diagnostic_failures": [
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-coalesce-equivalence-20260922-v1/receipt.json",
+      "sha256": "ae14248353d10c3fad5145cdfc8f2291d8b483b903c4b3e73bda7340770ff917",
+      "bytes": 1403
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-coalesce-equivalence-20260922-v2/receipt.json",
+      "sha256": "42e06e3906adb57ea9d7b3137be656cac363d746693694cb8346fa69e02892c2",
+      "bytes": 1403
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-coalesce-equivalence-20260922-v3/receipt.json",
+      "sha256": "ac756c674c56950a3fc0c89755906eb469a272a24e4ded7f852fbf0696d00b94",
+      "bytes": 1403
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/ch6-fedx-entity-label-equivalence-20260922-v1/receipt.json",
+      "sha256": "c613d4e796a424b1f79ed0c1062bbe5410bb761823db445a0784e2d60f1c7058",
+      "bytes": 1521
+    }
+  ]
+}

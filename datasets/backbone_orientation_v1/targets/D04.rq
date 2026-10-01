@@ -1,0 +1,5 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT (CONCAT(?nid0, "/", ?eid1, "/", ?nid1) AS ?path) WHERE { VALUES ?n0 {t:b} 
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 . { ?e1 t:source ?n0 ; t:target ?n1 . } UNION { ?e1 t:source ?n1 ; t:target ?n0 . }
+?n0 t:id ?nid0 . ?n1 t:id ?nid1 .
+ }

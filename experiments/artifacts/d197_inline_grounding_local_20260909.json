@@ -1,0 +1,179 @@
+{
+  "schema": "xgap_local_acceptance_v1",
+  "date": "2026-09-09",
+  "milestone": "D197",
+  "base_commit": "13dd4ba31f593488f74ef7d14d94342923a8d77d",
+  "claim_scope": "Opt-in inline grounding preserves model semantic choices through the existing guarded provider, inference and evaluation path. Original wire and materialized content remain separately attributable and successful materializations are recomputed by diagnostic replay. No measured real-model effectiveness, serving-schema compatibility, real token fit, backend answers or paper result.",
+  "focused": {
+    "passed": 297,
+    "skipped": 0,
+    "seconds": 2.28,
+    "exit_code": 0,
+    "paths": [
+      "tests/test_inline_grounding.py",
+      "tests/test_grailqa_output_contract_revision.py",
+      "tests/test_grailqa_candidate_feedback.py",
+      "tests/test_grailqa_candidate_grounding.py",
+      "tests/test_grailqa_guarded_environment.py",
+      "tests/test_grailqa_guarded_preflight.py",
+      "tests/test_grailqa_preflight_replay.py",
+      "tests/test_m13e2_cwru_vllm.py",
+      "tests/test_token_budget_provider.py"
+    ]
+  },
+  "full_suite": {
+    "command": "PYTHONPATH=src python -m pytest -q",
+    "passed": 2546,
+    "skipped": 37,
+    "seconds": 608.62,
+    "exit_code": 0
+  },
+  "prior_failed_acceptance": {
+    "passed": 2545,
+    "failed": 1,
+    "skipped": 37,
+    "seconds": 609.4,
+    "failure": "tests/test_grailqa_output_contract_revision.py::test_review_record_binds_exact_sources_but_cannot_grant_authority",
+    "resolution": "Historical review binds provider source from its declared base commit, not current evolved source. Only the test was corrected; historical review hashes and all prior inputs are unchanged."
+  },
+  "runtime": {
+    "python": "3.10.19",
+    "pytest": "9.0.2",
+    "rdflib": "7.1.4",
+    "jsonschema": "4.26.0"
+  },
+  "examples": [
+    {
+      "entrypoint": "scripts/check_harness.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.041
+    },
+    {
+      "entrypoint": "examples/core_algebra_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.073
+    },
+    {
+      "entrypoint": "examples/plan_print_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.075
+    },
+    {
+      "entrypoint": "examples/recursive_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.075
+    },
+    {
+      "entrypoint": "examples/solution_space_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.075
+    },
+    {
+      "entrypoint": "examples/semantic_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.074
+    },
+    {
+      "entrypoint": "examples/lowering_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.071
+    },
+    {
+      "entrypoint": "examples/pattern_lowering_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.075
+    },
+    {
+      "entrypoint": "examples/quantified_pattern_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.076
+    },
+    {
+      "entrypoint": "examples/compiler_mvp_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.13
+    },
+    {
+      "entrypoint": "examples/llm_boundary_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.132
+    },
+    {
+      "entrypoint": "examples/m11_physical_planner_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.181
+    },
+    {
+      "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.182
+    },
+    {
+      "entrypoint": "examples/m12_experiment_contract_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.293
+    },
+    {
+      "entrypoint": "examples/m12c_calibration_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.234
+    },
+    {
+      "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 6.093
+    },
+    {
+      "entrypoint": "examples/m15_goal_loop_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.071
+    },
+    {
+      "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.126
+    },
+    {
+      "entrypoint": "examples/m15_semantic_intake_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.07
+    },
+    {
+      "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.342
+    }
+  ],
+  "selected_model_bundle_hash": "9d0b78d63bd14fefc3e39c1495e08d2cec73a29a2b65509b58db73e797a5a4d8",
+  "selected_spec_freeze_hash": "0d3e89524b3422f7d8816e383b7ea7483265f61f531586a8a80a516edfa223e7",
+  "source_sha256": {
+    "src/xgap/llm/inline_grounding.py": "3f8426b53cc9334201d03157fd9c59708ff06b7ac98d86ec7711d380907f31c1",
+    "src/xgap/llm/openai_compatible.py": "b77fa879d278859f1fe844699d37e1524b93f5044869790688bde96c1b0805bf",
+    "src/xgap/experiments/live_run.py": "3f6cc6850015701a9a97bf915c9aeefe6f8b1d0668da51fb1867a50b18d3c119",
+    "src/xgap/experiments/grailqa_guarded_environment.py": "339c48871cc3d04b8c308901c3b4011e3bc0bafd88e00bf48c7daad94f8716d4",
+    "src/xgap/experiments/grailqa_guarded_provider.py": "c695b2d6d420dbb644b7e47c05e0c13a642a9aff70a46934f8241516bdff339f",
+    "src/xgap/experiments/grailqa_candidate_feedback.py": "caa5fdb9bb5afc2cba2a1a9b70f43644699b9d8853f6144569ea08a9dbcac081",
+    "src/xgap/experiments/grailqa_preflight_replay.py": "63056fed83785c2ac05960be4af2b8a9eb575e9a950e55d9d666dc3a1ec1297a",
+    "tests/test_inline_grounding.py": "11270fe178e46af5e0078b9adf2fd9215e5c25c3b905d5fd29bcfc04c1454507",
+    "tests/test_grailqa_output_contract_revision.py": "2b4aee3ff23a745510b72ab886be1830b98bc975af27b040e3401f16411fd307",
+    "experiments/specs/grailqa_semantic_preflight_inline_grounding_v1_cwru_qwen3_32b.json": "48d1dea95ec2810e3e962fe9196971b8091033d30c85948199d1583edc6a6082",
+    "models/qwen3_32b_vllm_cwru_grailqa_inline_v1/model_config.json": "0c27f91bd776ca4a8ae5f8ba5e78633b8dfc0156640c18ec45b05d8af4107949",
+    "models/qwen3_32b_vllm_cwru_grailqa_inline_v1/prompt.json": "a304f538605c82064d0f97258114e70517c5d9c7b9451063617272bce9da2f5b",
+    "models/qwen3_32b_vllm_cwru_grailqa_inline_v1/structured_schema.json": "380f1a41573b5982da2977f34c009d64085eb7ebf1e704cc964c9bc2cdc5a4f2"
+  },
+  "local_log_sha256": {
+    "focused-final.log": "02f686e4efbbb44d1d832d051c6a3f4396edc60035596e9e3cc0987731bc5a44",
+    "full-regression.log": "16cb04f3fc19ad60f8a5d956cfdd6ad9e40ef26bddfb509134c90ce1ff61cbc3",
+    "full-regression-final.log": "c787edae9de41720399dc6a05ccd1d0538e6f60fb0f616f135f8462a4b669eef",
+    "examples.json": "225a26295e5c5a1bcd49b8a4cef973e6f1c505bfa99139d871d5023be9d40e1a",
+    "examples.log": "d731a6d9ee2dcda9945bda88e3b86d819c397060c784722333f7751057c16c45"
+  },
+  "live_execution": false,
+  "remote_jobs_submitted": 0,
+  "remaining_gates": [
+    "Restore CWRU login for fresh read-only observation of 3796988; do not duplicate it.",
+    "Select one catalog from the existing CPU evidence before changing the inference request.",
+    "Verify new vLLM schema and actual request fit, and complete new-contract result-verification admission.",
+    "Only then measure the separately bounded 18-query interface comparison; no full150 authority or scientific population change."
+  ]
+}

@@ -1,0 +1,335 @@
+{
+  "schema_version": "xgap-frozen-practical-profile-v1",
+  "profile_id": "practical-model-toy:published-modes-v1",
+  "dataset": {
+    "dataset_id": "practical_model_toy_v1",
+    "version": "74e7f66e825e21638f0a35131b21cb9e3b5815615cd1277ea4a3f93eac06a424"
+  },
+  "intake": {
+    "path": "../practical_model_toy_v1/intake.json",
+    "sha256": "a9cffbaea8894e7fe6ad5604cbdfd74f55b04ad224325550370d7187302f9597"
+  },
+  "operator_sources": {
+    "paths": {
+      "$hole": "source"
+    },
+    "people": "toy-people"
+  },
+  "catalog": {
+    "path": "../practical_model_toy_v1/snapshot",
+    "bundle_hash": "fa5dc75ed97981b89adb4202e29286ab4f158db0a2b9257f731b734a31de7901"
+  },
+  "estimator": {
+    "path": "estimator.json",
+    "sha256": "2674be229dfa2a6c9ff40d191910a3ae84ed28aebf125507511975102f5808d2"
+  },
+  "sources": {
+    "toy": {
+      "version": "74e7f66e825e21638f0a35131b21cb9e3b5815615cd1277ea4a3f93eac06a424",
+      "replicas": [
+        "neo4j"
+      ]
+    },
+    "toy-people": {
+      "version": "74e7f66e825e21638f0a35131b21cb9e3b5815615cd1277ea4a3f93eac06a424",
+      "replicas": [
+        "fuseki"
+      ]
+    }
+  },
+  "backends": {
+    "neo4j": {
+      "semantic": {
+        "backend_id": "neo4j",
+        "resource_namespace": "https://xgap.test/toy/",
+        "identity_property": "id",
+        "backend_mapping": {
+          "mapping_id": "practical-model-toy-v1",
+          "version": "1",
+          "backends": {
+            "fuseki": {
+              "namespace": "https://xgap.test/toy/",
+              "compiler_tokens": {
+                "node_labels": {
+                  "Person": "Person"
+                },
+                "edge_labels": {
+                  "KNOWS": "KNOWS",
+                  "FOLLOWS": "FOLLOWS"
+                },
+                "properties": {
+                  "id": "id",
+                  "name": "name",
+                  "age": "age"
+                }
+              }
+            }
+          },
+          "term_mappings": {
+            "fuseki": {
+              "Person": {
+                "kind": "class",
+                "representation": "https://xgap.test/toy/Person"
+              },
+              "KNOWS": {
+                "kind": "relation",
+                "representation": "https://xgap.test/toy/KNOWS"
+              },
+              "id": {
+                "kind": "property",
+                "representation": "https://xgap.test/toy/id"
+              },
+              "name": {
+                "kind": "property",
+                "representation": "https://xgap.test/toy/name"
+              },
+              "age": {
+                "kind": "property",
+                "representation": "https://xgap.test/toy/age"
+              },
+              "FOLLOWS": {
+                "kind": "relation",
+                "representation": "https://xgap.test/toy/FOLLOWS"
+              }
+            }
+          }
+        },
+        "rdf_edge_encoding": {
+          "encoding_id": "backbone-toy-edges-v1",
+          "edge_class_iri": "https://xgap.test/toy/Edge",
+          "source_predicate_iri": "https://xgap.test/toy/source",
+          "target_predicate_iri": "https://xgap.test/toy/target",
+          "label_predicate_iri": "https://xgap.test/toy/label",
+          "label_encoding": "logical_string",
+          "class_predicate_iri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "rdf_node_classes": [
+          "https://xgap.test/toy/Person"
+        ],
+        "profile": null,
+        "rdf_resource_encoding": null
+      },
+      "client": {
+        "engine": "neo4j",
+        "url": "http://127.0.0.1:1",
+        "database": "neo4j",
+        "timeout_seconds": 20,
+        "auth": null
+      }
+    },
+    "fuseki": {
+      "semantic": {
+        "backend_id": "fuseki",
+        "resource_namespace": "https://xgap.test/toy/",
+        "identity_property": "id",
+        "backend_mapping": {
+          "mapping_id": "practical-model-toy-v1",
+          "version": "1",
+          "backends": {
+            "fuseki": {
+              "namespace": "https://xgap.test/toy/",
+              "compiler_tokens": {
+                "node_labels": {
+                  "Person": "Person"
+                },
+                "edge_labels": {
+                  "KNOWS": "KNOWS",
+                  "FOLLOWS": "FOLLOWS"
+                },
+                "properties": {
+                  "id": "id",
+                  "name": "name",
+                  "age": "age"
+                }
+              }
+            }
+          },
+          "term_mappings": {
+            "fuseki": {
+              "Person": {
+                "kind": "class",
+                "representation": "https://xgap.test/toy/Person"
+              },
+              "KNOWS": {
+                "kind": "relation",
+                "representation": "https://xgap.test/toy/KNOWS"
+              },
+              "id": {
+                "kind": "property",
+                "representation": "https://xgap.test/toy/id"
+              },
+              "name": {
+                "kind": "property",
+                "representation": "https://xgap.test/toy/name"
+              },
+              "age": {
+                "kind": "property",
+                "representation": "https://xgap.test/toy/age"
+              },
+              "FOLLOWS": {
+                "kind": "relation",
+                "representation": "https://xgap.test/toy/FOLLOWS"
+              }
+            }
+          }
+        },
+        "rdf_edge_encoding": {
+          "encoding_id": "backbone-toy-edges-v1",
+          "edge_class_iri": "https://xgap.test/toy/Edge",
+          "source_predicate_iri": "https://xgap.test/toy/source",
+          "target_predicate_iri": "https://xgap.test/toy/target",
+          "label_predicate_iri": "https://xgap.test/toy/label",
+          "label_encoding": "logical_string",
+          "class_predicate_iri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        "rdf_node_classes": [
+          "https://xgap.test/toy/Person"
+        ],
+        "profile": null,
+        "rdf_resource_encoding": null
+      },
+      "client": {
+        "engine": "fuseki",
+        "url": "http://127.0.0.1:1",
+        "database": "toy",
+        "timeout_seconds": 20,
+        "auth": null
+      }
+    }
+  },
+  "acquisitions": {
+    "predicate-model": {
+      "kind": "model",
+      "slot": "predicate",
+      "candidate_ids": [
+        "predicate:knows",
+        "predicate:follows"
+      ],
+      "provider": {
+        "provider_id": "practical-live-slot-v1",
+        "base_url": "http://112.95.75.67:9018/v1",
+        "model": "qwen3.8-27b",
+        "api_key_env": "XGAP_EXTERNAL_LLM_API_KEY",
+        "prompt": {
+          "path": "prompt.txt",
+          "sha256": "e14bf228e64340f607b6dd1490754b2984b890bae4dd26af44943d1a7aa616c8"
+        },
+        "temperature": 0,
+        "top_p": 1,
+        "max_tokens": 512,
+        "timeout_seconds": 45,
+        "disable_thinking": true
+      }
+    },
+    "predicate-clarification": {
+      "kind": "clarification",
+      "slot": "predicate",
+      "candidate_ids": [
+        "predicate:knows",
+        "predicate:follows"
+      ],
+      "source_id": "toy-predicate-clarification",
+      "version": "v1",
+      "failed_outcomes": []
+    }
+  },
+  "modes": {
+    "exact": {
+      "semantic": {
+        "mode": "exact",
+        "allowed_unvalidated": [],
+        "epsilon": null,
+        "improve_physical": true
+      },
+      "search": {
+        "max_depth": 4,
+        "max_states": 128,
+        "max_actions": 128,
+        "max_outcomes": 16,
+        "max_terminals_per_state": 8,
+        "planning_ms": 2000.0,
+        "improvement_actions": 2,
+        "resources": {
+          "model_calls": 1,
+          "tokens": 4096,
+          "remote_calls": 32
+        }
+      },
+      "physical": {
+        "max_operators": 64,
+        "max_holes": 16,
+        "max_local_options": 64,
+        "max_physical_candidates": 256,
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "max_bindings": 10000,
+        "max_binding_bytes": 1048576
+      },
+      "actions": {
+        "predicate-clarification": {
+          "search_priority": 0,
+          "estimated_ms": null,
+          "token_budget": 0
+        }
+      }
+    },
+    "performance": {
+      "semantic": {
+        "mode": "performance",
+        "allowed_unvalidated": [
+          "predicate"
+        ],
+        "epsilon": null,
+        "improve_physical": false
+      },
+      "search": {
+        "max_depth": 2,
+        "max_states": 32,
+        "max_actions": 8,
+        "max_outcomes": 4,
+        "max_terminals_per_state": 1,
+        "planning_ms": 500,
+        "improvement_actions": 0,
+        "resources": {
+          "model_calls": 1,
+          "tokens": 4096,
+          "remote_calls": 8
+        }
+      },
+      "physical": {
+        "max_operators": 64,
+        "max_holes": 16,
+        "max_local_options": 64,
+        "max_physical_candidates": 64,
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "max_bindings": 10000,
+        "max_binding_bytes": 1048576
+      },
+      "actions": {
+        "predicate-clarification": {
+          "search_priority": 1,
+          "estimated_ms": null,
+          "token_budget": 0
+        },
+        "predicate-model": {
+          "search_priority": 0,
+          "estimated_ms": null,
+          "token_budget": 4096
+        }
+      }
+    }
+  },
+  "offline": {
+    "scope": "development configuration; endpoints deliberately unserved; publish a deployment before real execution",
+    "parent_estimator": {
+      "path": "/Users/anthonyche/Developer/XGAP/tests/fixtures/one_shot_record_replay/estimator.json",
+      "sha256": "8f81638e94b82534cf781058b426529048d12c6a4be7ca9e6678955d743b39b3"
+    },
+    "weights_changed": false,
+    "fit_calls": 0,
+    "graph_records_read": 14,
+    "statistics_scope": "logical JSON records; uncalibrated transfer; not accuracy or latency certification",
+    "formal_campaign_release": false
+  }
+}

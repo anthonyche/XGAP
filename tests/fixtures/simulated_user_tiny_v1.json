@@ -1,0 +1,128 @@
+{
+  "schema_version": "xgap-simulated-user-tiny-v1",
+  "question_id": "USER-PATH-01",
+  "population": "tiny-development",
+  "exposure": "known eight-node facts; authored semantic intent and independent saved reference; not paper evaluation",
+  "question": "Starting from account 1, find other accounts reachable by one to three acyclic transfers with strictly increasing creation times between 2020-01-01 00:00:00.000 and 2020-01-04 00:00:00.000, both inclusive. For each, list blocked media that signed in to it. Return other_id, account_distance, medium_id and medium_type, ordered by account_distance, other_id and medium_id ascending.",
+  "gold_compact": {
+    "nodes": [
+      {
+        "var": "start",
+        "type": "XGAPFinBenchAccount",
+        "entity": "account 1"
+      },
+      {
+        "var": "other",
+        "type": "XGAPFinBenchAccount",
+        "entity": null
+      },
+      {
+        "var": "medium",
+        "type": "XGAPFinBenchMedium",
+        "entity": null
+      }
+    ],
+    "edges": [
+      {
+        "var": "signin",
+        "type": "SIGNED_IN_TO",
+        "source": "medium",
+        "target": "other"
+      }
+    ],
+    "path": {
+      "var": "reach",
+      "type": "TRANSFERRED_TO",
+      "source": "start",
+      "target": "other",
+      "min_hops": 1,
+      "max_hops": 3,
+      "mode": "ACYCLIC",
+      "time": {
+        "property": "createTime",
+        "lower": "2020-01-01 00:00:00.000",
+        "upper": "2020-01-04 00:00:00.000",
+        "lower_inclusive": true,
+        "upper_inclusive": true,
+        "increasing": true
+      }
+    },
+    "where": [
+      {
+        "left": {
+          "var": "medium",
+          "property": "isBlocked"
+        },
+        "op": "eq",
+        "right": {
+          "value": true
+        },
+        "value_type": "scalar"
+      }
+    ],
+    "select": {
+      "other_id": {
+        "var": "other",
+        "property": "id"
+      },
+      "account_distance": {
+        "var": "reach",
+        "property": "length"
+      },
+      "medium_id": {
+        "var": "medium",
+        "property": "id"
+      },
+      "medium_type": {
+        "var": "medium",
+        "property": "mediumType"
+      }
+    },
+    "deduplicate_by": null,
+    "order_by": [
+      {
+        "field": "account_distance",
+        "direction": "asc"
+      },
+      {
+        "field": "other_id",
+        "direction": "asc"
+      },
+      {
+        "field": "medium_id",
+        "direction": "asc"
+      }
+    ],
+    "limit": null
+  },
+  "private_entity_bindings": {
+    "start": "account_31"
+  },
+  "expected_rows": [
+    {
+      "other_id": "2",
+      "account_distance": 1,
+      "medium_id": "1",
+      "medium_type": "PHONE"
+    },
+    {
+      "other_id": "2",
+      "account_distance": 1,
+      "medium_id": "2",
+      "medium_type": "PHONE"
+    },
+    {
+      "other_id": "3",
+      "account_distance": 1,
+      "medium_id": "1",
+      "medium_type": "PHONE"
+    },
+    {
+      "other_id": "3",
+      "account_distance": 2,
+      "medium_id": "1",
+      "medium_type": "PHONE"
+    }
+  ],
+  "derivation": "Existing eight-node independent temporal-reachability fixture; gold semantic intent private to the simulated user; reference withheld from worker."
+}

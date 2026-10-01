@@ -1,0 +1,26 @@
+Additional contract for ordinary natural-language input without prepared operators:
+
+When required_constraints is empty, choose your own operator IDs and represent
+all conditions from the natural language in executable parameters. Do not rely
+on a caller to have supplied an identity constraint. Entity name mentions must
+be declared as entity holes and referenced where they constrain node identity.
+
+For a named starting entity in Traverse, use this node descriptor shape:
+source: {"properties": {"id": {"$hole": "entity_hole"}}}
+and declare entity_hole with kind "entity", mention equal to the exact original
+name, required true, candidates [] and is_resolved false. The hole ID is your
+own symbol; the example supplies no entity value. Frozen grounding resolves it.
+Use target.properties for a named ending entity. Match identities similarly use
+node.properties. This profile uses the declared source identity property "id".
+
+Path source and target descriptors accept only var, label and properties.
+They do not have a condition field. A path condition, if needed, belongs to
+path_pattern.condition as one typed object, never a list. A person's name is
+not a resolved identity; do not invent an ID or substitute a name filter for
+the required entity hole. Relation-only sources may have endpoint identity
+without names, ages or Person types. Respect context.source_schema when choosing
+which logical source supplies each property/type/relation. Joining identities
+does not fetch properties. Output column requirements come from the actual NL.
+
+This is generic syntax guidance. It supplies no answer program, source placement,
+query-specific operator ID, entity binding, threshold value or expected answer.

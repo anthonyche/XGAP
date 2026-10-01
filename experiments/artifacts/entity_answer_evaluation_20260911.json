@@ -1,0 +1,120 @@
+{
+  "schema_version": "xgap-entity-answer-evaluation-acceptance-v1",
+  "date": "2026-09-11",
+  "research_gate": "R-E/E1-B scoring and INT-5 existing-source recovery",
+  "test_run": {
+    "base_commit": "72aeea7e6d28363d892b4d6aaa1eb6ba212ff881",
+    "command": [
+      "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+      "-m",
+      "pytest",
+      "-vv",
+      "tests/test_entity_answer_evaluation.py"
+    ],
+    "environment_override": {
+      "PYTHONPATH": "src:tests"
+    },
+    "source_sha256": {
+      "src/xgap/experiments/entity_answer_evaluation.py": "0da189a02b4c504de4d474d30e90fd5c1ac042c79b17d725fb45e855bc216a8c",
+      "tests/test_entity_answer_evaluation.py": "a87859ee6b04baabdbf6f40a2ce5eb9239e52a60b9481ca127b8bee87a1f76af",
+      "docs/decisions/entity_answer_evaluation_v1.md": "f79d6749ca664c8088ed70a82d18483536e318cff231fb553ce19aec9934294c",
+      "src/xgap/experiments/inferred_entity_answers.py": "b23d45592e25511daf25d8279a0c82321fa925d61d1e1b3b74ffe5f6d20ac69e",
+      "tests/test_inferred_entity_answers.py": "9173c98cc6d5801768ffff86a6f3e17b20e2d63d2b3cbcbe054fd941b9342b48"
+    },
+    "started_at": "2026-09-11T14:46:29.586703+00:00",
+    "actual_model_calls": 0,
+    "native_services_started": 0,
+    "large_dataset": false,
+    "exit_code": 0,
+    "wall_seconds": 0.9835141245275736,
+    "source_unchanged": true,
+    "passed": 18,
+    "failed": 0,
+    "skipped": 0,
+    "pytest_reported_seconds": 0.45,
+    "tool_chunk_id": "ee7bca"
+  },
+  "raw_files": {
+    "/Users/anthonyche/xgap-data/e1b-entity-answer-evaluation-20260911/pytest.log": {
+      "bytes": 2834,
+      "sha256": "29a82a834a264ddaf2a16accff9d1f27803ff83e713060206edd8d52f5ee4540"
+    },
+    "/Users/anthonyche/xgap-data/e1b-entity-answer-evaluation-20260911/test_receipt.json": {
+      "bytes": 1123,
+      "sha256": "d01fb7f586694cc8f04487e889cb950349f52ec5aafbfef43b7bd05db945c3ab"
+    },
+    "/Users/anthonyche/xgap-data/e1b-entity-answer-evaluation-20260911/original150_unrun_intake.json": {
+      "bytes": 58549,
+      "sha256": "0a83f71394cc34384be54a90ae7e064e5b8975bb060fd7b45420b509c0b48d86"
+    },
+    "/Users/anthonyche/xgap-data/e1b-entity-answer-evaluation-20260911/original150_intake_receipt.json": {
+      "bytes": 1010,
+      "sha256": "6f9bad9c1f7f5f85b184eb066e6a0e2f5101b0cb944fbc7495d019a4049bac91"
+    },
+    "/Users/anthonyche/xgap-data/int5-freebase-first-shard-20260911/migration_receipt.json": {
+      "bytes": 22858,
+      "sha256": "89d84f4fae4ef72b797319fb68e7323e890ed7c9c8a6ef5af7453924f8bd6deb"
+    }
+  },
+  "original150_reference_intake": {
+    "schema_version": "xgap-entity-evaluation-reference-intake-v1",
+    "checked_at": "2026-09-11T14:47:16.095636+00:00",
+    "elapsed_seconds": 0.05572249926626682,
+    "success": true,
+    "verified_original_files": {
+      "/Users/anthonyche/Developer/XGAP/datasets/grailqa_pilot_v1/pilot_ids.json": {
+        "bytes": 3902,
+        "sha256": "60ef62d9aad5c81eec177c498860f12d9b18f4cfd5ac2f8ad97fb65ad0c0ee81"
+      },
+      "/Users/anthonyche/xgap-data/int0-grailqa-pilot150-20260911/gold_answers.jsonl": {
+        "bytes": 288012,
+        "sha256": "9bb55509cdc4a2603db9a31ff8587298941f8d2bf8c4ef13f86c75c76dd55c6c"
+      }
+    },
+    "original_manifest_sha256": "42b743d719decf65142218ce88eb0a43c91c887a5de6157692e53502be0c0edf",
+    "question_count": 150,
+    "terminal_count": 0,
+    "reference_unsupported_count": 0,
+    "accuracy_measured": false,
+    "model_calls": 0,
+    "backend_calls": 0,
+    "source_fact_scan": false,
+    "scope": "Original evaluation reference format intake only; all150 not_run, no candidate or score is fabricated"
+  },
+  "migration": {
+    "schema_version": "xgap-existing-first-shard-migration-v1",
+    "success": true,
+    "source_root": "/private/var/folders/78/2hb19nqj0jv_l0vgmp084ht80000gn/T/xgap-d201-source-b2ymubis",
+    "target_root": "/Users/anthonyche/xgap-data/int5-freebase-first-shard-20260911/original",
+    "copied_files": 24,
+    "copied_total_bytes": 436303952,
+    "selected_fact_bytes": 420940219,
+    "selected_fact_occurrences": 3247670,
+    "selection": {
+      "kind": "existing_first_frozen_inventory_shard",
+      "selected_shards": 1,
+      "inventory_shards": 964,
+      "query_or_gold_based_selection": false,
+      "full_freebase_completeness_claimed": false
+    },
+    "pinned_manifest_hashes": {
+      "facts/manifest.json": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+      "source_manifest.json": "20704dbe877df83ee1e11d9e85b0578ef7c475df50dc7974ce17c59d91ec1765"
+    },
+    "copied_payloads_verified_against_frozen_hashes": true,
+    "source_history_paths_rewritten": false,
+    "old_files_modified_or_deleted": false,
+    "old_database_files_copied_or_verified": false,
+    "current_database_availability_verified": false,
+    "elapsed_seconds": 0.9594306659999999
+  },
+  "limitations": [
+    "Entity-set scores only; general scalar/official benchmark equivalence not claimed",
+    "Scorer cannot prove caller sealed inference before opening gold; actual run orchestration must enforce it",
+    "Original150 all not_run: no quality/latency result fabricated",
+    "D201 first-shard facts are query-independent but only1/964; full GrailQA fact coverage remains missing",
+    "No actual model/native service, old gate, benchmark, source rebuild or external action ran",
+    "All150/48 and prior negative outcomes unchanged"
+  ],
+  "paper_result": false
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": "m15-e5b-anchored-relaxation-policy-v1",
+  "policy_id": "m15-e5b-anchored-predicate-sibling-development-v1",
+  "anchor": {
+    "hole_id": "transfer-predicate",
+    "authoritative_source_required": true,
+    "base_semantic_deviation": 0.0
+  },
+  "ontology_relaxation": {
+    "source_artifact_role": "resolution_ontology",
+    "ontology_id": "financial-risk-resolution-ontology",
+    "ontology_version": "dev-v1",
+    "candidate_kind": "predicate",
+    "allowed_relations": [
+      "sibling"
+    ],
+    "maximum_hops": 1,
+    "deviation_source": "declared_ontology_relation",
+    "reverse_traversal_requires_bidirectional": true
+  },
+  "frontier_policy": {
+    "objectives": [
+      "semantic_deviation",
+      "estimated_latency_ms",
+      "estimated_total_bytes_moved"
+    ],
+    "epsilon_dominance": "semantic_preserving_minimum_cost_gain",
+    "minimum_latency_gain_ratio": 0.05,
+    "minimum_resource_gain_ratio": 0.05,
+    "maximum_returned_plans": 4,
+    "representative_selection": "exact_then_cost_extremes_then_maxmin"
+  },
+  "current_query_profile_calls": 0,
+  "oracle_inputs": [],
+  "post_execution_measurements_used": false,
+  "backend_calls_made": 0,
+  "llm_calls_made": 0,
+  "ontology_service_calls_made": 0,
+  "automatic_retries": 0,
+  "paper_result": false
+}

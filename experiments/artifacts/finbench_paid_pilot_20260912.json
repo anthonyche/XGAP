@@ -1,0 +1,2158 @@
+{
+  "schema_version": "xgap-finbench-paid-pilot-evidence-v1",
+  "date": "2026-09-12",
+  "parent_commit": "0f741fb9e90193c4d4729f61196482fd15d33977",
+  "implementation_identity": "fingerprinted dirty source recorded in prepared_inputs.json; committed with this report",
+  "research_question": "R-C / E2: total cost of acquiring information before choosing a federated strategy",
+  "scope": "prepared-plan cost baseline integration on three already-exposed original questions",
+  "integration_accepted": true,
+  "paper_performance_result": false,
+  "ordinary_P1_exercised": false,
+  "A3_exercised": false,
+  "interpretation_exercised": false,
+  "independent_question_count": 3,
+  "original_population_count": 48,
+  "original_split_counts": {
+    "crossfit_seen_family": 32,
+    "heldout_family": 16
+  },
+  "selected_query_ids": [
+    "m15-fb-confirmatory-48-f1-01",
+    "m15-fb-confirmatory-48-f2-01",
+    "m15-fb-confirmatory-48-f3-01"
+  ],
+  "source_pins": {
+    "source_archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+    "source_partition_sha256": "0ee8b18d3289ddb11fd78308f14584d20f073deaa50f72cfad74b1a379cdab2b",
+    "workload_sha256": "63a8ef36bc7576033db93caa2aa486409bc90ecfc699385b61e7d02be4320a5f"
+  },
+  "new_model_calls": 0,
+  "query_calls": 30,
+  "plan_runs": 15,
+  "exact_final_count": 9,
+  "exact_acquisition_count": 6,
+  "methods": [
+    {
+      "query_id": "m15-fb-confirmatory-48-f1-01",
+      "method": "fixed_hash",
+      "exact_final": true,
+      "answer_row_count": 0,
+      "method_wall_ms": 278.92949990928173,
+      "sum_charged_scheduler_ms": 264.9719584733248,
+      "sum_scheduler_call_wall_ms": 265.96833299845457,
+      "non_call_wall_ms": 12.96116691082716,
+      "query_calls": 2,
+      "logical_exchange_bytes": 37980,
+      "selected_strategy": "graph_first_hash"
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f1-01",
+      "method": "fixed_bind",
+      "exact_final": true,
+      "answer_row_count": 0,
+      "method_wall_ms": 153.17554213106632,
+      "sum_charged_scheduler_ms": 122.34495766460896,
+      "sum_scheduler_call_wall_ms": 123.49287513643503,
+      "non_call_wall_ms": 29.68266699463129,
+      "query_calls": 2,
+      "logical_exchange_bytes": 37890,
+      "selected_strategy": "control_first_bind"
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f1-01",
+      "method": "paid_selection",
+      "exact_final": true,
+      "answer_row_count": 0,
+      "method_wall_ms": 235.14658305794,
+      "sum_charged_scheduler_ms": 62.901124358177185,
+      "sum_scheduler_call_wall_ms": 65.57595729827881,
+      "non_call_wall_ms": 169.5706257596612,
+      "query_calls": 6,
+      "logical_exchange_bytes": 113850,
+      "selected_strategy": "graph_first_hash"
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f2-01",
+      "method": "fixed_hash",
+      "exact_final": true,
+      "answer_row_count": 1,
+      "method_wall_ms": 152.43941638618708,
+      "sum_charged_scheduler_ms": 11.626583524048328,
+      "sum_scheduler_call_wall_ms": 12.221374548971653,
+      "non_call_wall_ms": 140.21804183721542,
+      "query_calls": 2,
+      "logical_exchange_bytes": 25098,
+      "selected_strategy": "path_first_hash"
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f2-01",
+      "method": "fixed_bind",
+      "exact_final": true,
+      "answer_row_count": 1,
+      "method_wall_ms": 260.4302503168583,
+      "sum_charged_scheduler_ms": 161.47712524980307,
+      "sum_scheduler_call_wall_ms": 162.15520817786455,
+      "non_call_wall_ms": 98.27504213899374,
+      "query_calls": 2,
+      "logical_exchange_bytes": 24928,
+      "selected_strategy": "control_first_bound_path"
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f2-01",
+      "method": "paid_selection",
+      "exact_final": true,
+      "answer_row_count": 1,
+      "method_wall_ms": 433.7158342823386,
+      "sum_charged_scheduler_ms": 117.8280832245946,
+      "sum_scheduler_call_wall_ms": 119.58320997655392,
+      "non_call_wall_ms": 314.1326243057847,
+      "query_calls": 6,
+      "logical_exchange_bytes": 74954,
+      "selected_strategy": "control_first_bound_path"
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f3-01",
+      "method": "fixed_hash",
+      "exact_final": true,
+      "answer_row_count": 10,
+      "method_wall_ms": 447.08549976348877,
+      "sum_charged_scheduler_ms": 105.33466655761003,
+      "sum_scheduler_call_wall_ms": 111.8394173681736,
+      "non_call_wall_ms": 335.24608239531517,
+      "query_calls": 2,
+      "logical_exchange_bytes": 249974,
+      "selected_strategy": "aggregate_first_hash"
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f3-01",
+      "method": "fixed_bind",
+      "exact_final": true,
+      "answer_row_count": 10,
+      "method_wall_ms": 475.93112476170063,
+      "sum_charged_scheduler_ms": 49.153707921504974,
+      "sum_scheduler_call_wall_ms": 50.53349956870079,
+      "non_call_wall_ms": 425.39762519299984,
+      "query_calls": 2,
+      "logical_exchange_bytes": 35836,
+      "selected_strategy": "control_first_bound_aggregate"
+    },
+    {
+      "query_id": "m15-fb-confirmatory-48-f3-01",
+      "method": "paid_selection",
+      "exact_final": true,
+      "answer_row_count": 10,
+      "method_wall_ms": 1064.4433330744505,
+      "sum_charged_scheduler_ms": 406.118000857532,
+      "sum_scheduler_call_wall_ms": 416.1501247435808,
+      "non_call_wall_ms": 648.2932083308697,
+      "query_calls": 6,
+      "logical_exchange_bytes": 321646,
+      "selected_strategy": "control_first_bound_aggregate"
+    }
+  ],
+  "complete_population_evaluation": [
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": true,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_row_count": 0,
+          "actual_rows": [],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 0,
+          "method_id": "fixed_hash",
+          "physical_strategy": "graph_first_hash",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f1-01-graph_first_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_row_count": 0,
+          "actual_rows": [],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 0,
+          "method_id": "fixed_bind",
+          "physical_strategy": "control_first_bind",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f1-01-control_first_bind"
+        },
+        {
+          "acquisitions": [
+            {
+              "actual_row_count": 0,
+              "actual_rows": [],
+              "exact": true,
+              "execution_status": "completed",
+              "expected_row_count": 0,
+              "physical_strategy": "graph_first_hash",
+              "plan_id": "m15-finbench-m15-fb-confirmatory-48-f1-01-graph_first_hash"
+            },
+            {
+              "actual_row_count": 0,
+              "actual_rows": [],
+              "exact": true,
+              "execution_status": "completed",
+              "expected_row_count": 0,
+              "physical_strategy": "control_first_bind",
+              "plan_id": "m15-finbench-m15-fb-confirmatory-48-f1-01-control_first_bind"
+            }
+          ],
+          "actual_row_count": 0,
+          "actual_rows": [],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 0,
+          "method_id": "paid_selection",
+          "physical_strategy": "graph_first_hash",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f1-01-graph_first_hash"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-01",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-02",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-03",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-04",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-05",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-06",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-07",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-08",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-09",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-10",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-11",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-12",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-13",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-14",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-15",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f1_direct_transfer_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f1-16",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": true,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_row_count": 1,
+          "actual_rows": [
+            {
+              "account_distance": 3,
+              "medium_id": "17592186047723",
+              "medium_type": "WIFI",
+              "other_id": "4886968545650414835"
+            }
+          ],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 1,
+          "method_id": "fixed_hash",
+          "physical_strategy": "path_first_hash",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f2-01-path_first_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_row_count": 1,
+          "actual_rows": [
+            {
+              "account_distance": 3,
+              "medium_id": "17592186047723",
+              "medium_type": "WIFI",
+              "other_id": "4886968545650414835"
+            }
+          ],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 1,
+          "method_id": "fixed_bind",
+          "physical_strategy": "control_first_bound_path",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f2-01-control_first_bound_path"
+        },
+        {
+          "acquisitions": [
+            {
+              "actual_row_count": 1,
+              "actual_rows": [
+                {
+                  "account_distance": 3,
+                  "medium_id": "17592186047723",
+                  "medium_type": "WIFI",
+                  "other_id": "4886968545650414835"
+                }
+              ],
+              "exact": true,
+              "execution_status": "completed",
+              "expected_row_count": 1,
+              "physical_strategy": "control_first_bound_path",
+              "plan_id": "m15-finbench-m15-fb-confirmatory-48-f2-01-control_first_bound_path"
+            },
+            {
+              "actual_row_count": 1,
+              "actual_rows": [
+                {
+                  "account_distance": 3,
+                  "medium_id": "17592186047723",
+                  "medium_type": "WIFI",
+                  "other_id": "4886968545650414835"
+                }
+              ],
+              "exact": true,
+              "execution_status": "completed",
+              "expected_row_count": 1,
+              "physical_strategy": "path_first_hash",
+              "plan_id": "m15-finbench-m15-fb-confirmatory-48-f2-01-path_first_hash"
+            }
+          ],
+          "actual_row_count": 1,
+          "actual_rows": [
+            {
+              "account_distance": 3,
+              "medium_id": "17592186047723",
+              "medium_type": "WIFI",
+              "other_id": "4886968545650414835"
+            }
+          ],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 1,
+          "method_id": "paid_selection",
+          "physical_strategy": "control_first_bound_path",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f2-01-control_first_bound_path"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-01",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-02",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-03",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-04",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-05",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-06",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-07",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-08",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-09",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-10",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-11",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-12",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-13",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-14",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-15",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f2_temporal_path_control",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f2-16",
+      "split_role": "crossfit_seen_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": true,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_row_count": 10,
+          "actual_rows": [
+            {
+              "company_id": "1099511628006",
+              "total_amount": "1712939701.150"
+            },
+            {
+              "company_id": "2199023257110",
+              "total_amount": "599251790.580"
+            },
+            {
+              "company_id": "7696581397233",
+              "total_amount": "240172090.040"
+            },
+            {
+              "company_id": "5497558139604",
+              "total_amount": "211834598.810"
+            },
+            {
+              "company_id": "9895604650966",
+              "total_amount": "102484207.800"
+            },
+            {
+              "company_id": "8796093024164",
+              "total_amount": "99133727.220"
+            },
+            {
+              "company_id": "3298534886621",
+              "total_amount": "89680838.240"
+            },
+            {
+              "company_id": "5497558140788",
+              "total_amount": "83050046.550"
+            },
+            {
+              "company_id": "3143",
+              "total_amount": "72155412.720"
+            },
+            {
+              "company_id": "6597069768998",
+              "total_amount": "72094250.950"
+            }
+          ],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 10,
+          "method_id": "fixed_hash",
+          "physical_strategy": "aggregate_first_hash",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f3-01-aggregate_first_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_row_count": 10,
+          "actual_rows": [
+            {
+              "company_id": "1099511628006",
+              "total_amount": "1712939701.150"
+            },
+            {
+              "company_id": "2199023257110",
+              "total_amount": "599251790.580"
+            },
+            {
+              "company_id": "7696581397233",
+              "total_amount": "240172090.040"
+            },
+            {
+              "company_id": "5497558139604",
+              "total_amount": "211834598.810"
+            },
+            {
+              "company_id": "9895604650966",
+              "total_amount": "102484207.800"
+            },
+            {
+              "company_id": "8796093024164",
+              "total_amount": "99133727.220"
+            },
+            {
+              "company_id": "3298534886621",
+              "total_amount": "89680838.240"
+            },
+            {
+              "company_id": "5497558140788",
+              "total_amount": "83050046.550"
+            },
+            {
+              "company_id": "3143",
+              "total_amount": "72155412.720"
+            },
+            {
+              "company_id": "6597069768998",
+              "total_amount": "72094250.950"
+            }
+          ],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 10,
+          "method_id": "fixed_bind",
+          "physical_strategy": "control_first_bound_aggregate",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f3-01-control_first_bound_aggregate"
+        },
+        {
+          "acquisitions": [
+            {
+              "actual_row_count": 10,
+              "actual_rows": [
+                {
+                  "company_id": "1099511628006",
+                  "total_amount": "1712939701.150"
+                },
+                {
+                  "company_id": "2199023257110",
+                  "total_amount": "599251790.580"
+                },
+                {
+                  "company_id": "7696581397233",
+                  "total_amount": "240172090.040"
+                },
+                {
+                  "company_id": "5497558139604",
+                  "total_amount": "211834598.810"
+                },
+                {
+                  "company_id": "9895604650966",
+                  "total_amount": "102484207.800"
+                },
+                {
+                  "company_id": "8796093024164",
+                  "total_amount": "99133727.220"
+                },
+                {
+                  "company_id": "3298534886621",
+                  "total_amount": "89680838.240"
+                },
+                {
+                  "company_id": "5497558140788",
+                  "total_amount": "83050046.550"
+                },
+                {
+                  "company_id": "3143",
+                  "total_amount": "72155412.720"
+                },
+                {
+                  "company_id": "6597069768998",
+                  "total_amount": "72094250.950"
+                }
+              ],
+              "exact": true,
+              "execution_status": "completed",
+              "expected_row_count": 10,
+              "physical_strategy": "aggregate_first_hash",
+              "plan_id": "m15-finbench-m15-fb-confirmatory-48-f3-01-aggregate_first_hash"
+            },
+            {
+              "actual_row_count": 10,
+              "actual_rows": [
+                {
+                  "company_id": "1099511628006",
+                  "total_amount": "1712939701.150"
+                },
+                {
+                  "company_id": "2199023257110",
+                  "total_amount": "599251790.580"
+                },
+                {
+                  "company_id": "7696581397233",
+                  "total_amount": "240172090.040"
+                },
+                {
+                  "company_id": "5497558139604",
+                  "total_amount": "211834598.810"
+                },
+                {
+                  "company_id": "9895604650966",
+                  "total_amount": "102484207.800"
+                },
+                {
+                  "company_id": "8796093024164",
+                  "total_amount": "99133727.220"
+                },
+                {
+                  "company_id": "3298534886621",
+                  "total_amount": "89680838.240"
+                },
+                {
+                  "company_id": "5497558140788",
+                  "total_amount": "83050046.550"
+                },
+                {
+                  "company_id": "3143",
+                  "total_amount": "72155412.720"
+                },
+                {
+                  "company_id": "6597069768998",
+                  "total_amount": "72094250.950"
+                }
+              ],
+              "exact": true,
+              "execution_status": "completed",
+              "expected_row_count": 10,
+              "physical_strategy": "control_first_bound_aggregate",
+              "plan_id": "m15-finbench-m15-fb-confirmatory-48-f3-01-control_first_bound_aggregate"
+            }
+          ],
+          "actual_row_count": 10,
+          "actual_rows": [
+            {
+              "company_id": "1099511628006",
+              "total_amount": "1712939701.150"
+            },
+            {
+              "company_id": "2199023257110",
+              "total_amount": "599251790.580"
+            },
+            {
+              "company_id": "7696581397233",
+              "total_amount": "240172090.040"
+            },
+            {
+              "company_id": "5497558139604",
+              "total_amount": "211834598.810"
+            },
+            {
+              "company_id": "9895604650966",
+              "total_amount": "102484207.800"
+            },
+            {
+              "company_id": "8796093024164",
+              "total_amount": "99133727.220"
+            },
+            {
+              "company_id": "3298534886621",
+              "total_amount": "89680838.240"
+            },
+            {
+              "company_id": "5497558140788",
+              "total_amount": "83050046.550"
+            },
+            {
+              "company_id": "3143",
+              "total_amount": "72155412.720"
+            },
+            {
+              "company_id": "6597069768998",
+              "total_amount": "72094250.950"
+            }
+          ],
+          "exact": true,
+          "execution_status": "completed",
+          "expected_row_count": 10,
+          "method_id": "paid_selection",
+          "physical_strategy": "control_first_bound_aggregate",
+          "plan_id": "m15-finbench-m15-fb-confirmatory-48-f3-01-control_first_bound_aggregate"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-01",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-02",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-03",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-04",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-05",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-06",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-07",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-08",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-09",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-10",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-11",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-12",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-13",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-14",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-15",
+      "split_role": "heldout_family"
+    },
+    {
+      "family_id": "f3_aggregate_risk_ranking",
+      "integration_exposed": false,
+      "methods": [
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_hash"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "fixed_bind"
+        },
+        {
+          "acquisitions": [],
+          "actual_rows": null,
+          "exact": null,
+          "execution_status": "not_attempted",
+          "method_id": "paid_selection"
+        }
+      ],
+      "query_id": "m15-fb-confirmatory-48-f3-16",
+      "split_role": "heldout_family"
+    }
+  ],
+  "frozen_orders": {
+    "schema_version": "xgap-finbench-paid-selection-order-v1",
+    "block_id": "integration-pilot-0",
+    "role": "three previously integration-exposed original queries; descriptive only",
+    "query_ids": [
+      "m15-fb-confirmatory-48-f1-01",
+      "m15-fb-confirmatory-48-f2-01",
+      "m15-fb-confirmatory-48-f3-01"
+    ],
+    "method_orders": {
+      "m15-fb-confirmatory-48-f1-01": [
+        "fixed_hash",
+        "fixed_bind",
+        "paid_selection"
+      ],
+      "m15-fb-confirmatory-48-f2-01": [
+        "fixed_bind",
+        "paid_selection",
+        "fixed_hash"
+      ],
+      "m15-fb-confirmatory-48-f3-01": [
+        "paid_selection",
+        "fixed_hash",
+        "fixed_bind"
+      ]
+    },
+    "acquisition_orders": {
+      "m15-fb-confirmatory-48-f1-01": [
+        "graph_first_hash",
+        "control_first_bind"
+      ],
+      "m15-fb-confirmatory-48-f2-01": [
+        "control_first_bound_path",
+        "path_first_hash"
+      ],
+      "m15-fb-confirmatory-48-f3-01": [
+        "aggregate_first_hash",
+        "control_first_bound_aggregate"
+      ]
+    },
+    "workload_sha256": "63a8ef36bc7576033db93caa2aa486409bc90ecfc699385b61e7d02be4320a5f",
+    "source_partition_sha256": "0ee8b18d3289ddb11fd78308f14584d20f073deaa50f72cfad74b1a379cdab2b",
+    "source_archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+    "maximum_plan_runs": 15,
+    "maximum_query_calls": 30,
+    "fixed_population_size": 48,
+    "integration_exposed_ids": [
+      "m15-fb-confirmatory-48-f1-01",
+      "m15-fb-confirmatory-48-f2-01",
+      "m15-fb-confirmatory-48-f3-01"
+    ],
+    "cache_policy": "Fresh owned databases, one source load, no query warmup; sequential queries and method order as listed. Paid acquisition necessarily warms its final execution.",
+    "statistical_scope": "Each method occupies each position across these three different queries, but no within-query counterbalancing or repetitions. No speedup or population inference.",
+    "timing_scope": "Prepared-plan decision-time baseline. Common compilation and fixture/service setup separately reported; paid method includes both acquisition runs, selection, final run, and intervening journal persistence.",
+    "automatic_retries": 0,
+    "new_model_calls": 0
+  },
+  "preparation_compilation_ms": 38.4082505479455,
+  "preparation_elapsed_seconds": 0.3399645844474435,
+  "setup_elapsed_seconds": 20.536545333452523,
+  "measurement_elapsed_ms": 4067.719624377787,
+  "native_elapsed_seconds": 37.267857749946415,
+  "peak_sampled_rss_bytes": 1716469760,
+  "load_reports": {
+    "fuseki": {
+      "backend_id": "fuseki",
+      "bytes_sent": 30972563,
+      "elapsed_ms": 1212.9627913236618,
+      "error": null,
+      "metadata": {
+        "dataset": "xgap",
+        "endpoint": "http://127.0.0.1:64128/xgap/data?default",
+        "http_status": 200,
+        "strategy": "graph_store_post"
+      },
+      "operations_attempted": 1,
+      "success": true
+    },
+    "neo4j": {
+      "backend_id": "neo4j",
+      "bytes_sent": 96915224,
+      "elapsed_ms": 12114.393707364798,
+      "error": null,
+      "metadata": {
+        "automatic_retries": 0,
+        "batch_count": 194,
+        "format_schema_version": "m15-finbench-neo4j-parameterized-batch-v1",
+        "mutation_semantics": "create_into_empty_job_owned_database",
+        "strategy": "streamed_parameterized_jsonl_batches"
+      },
+      "operations_attempted": 194,
+      "success": true
+    }
+  },
+  "client_attempts": {
+    "fuseki": {
+      "all": 15,
+      "fixture_load": 0,
+      "query": 15
+    },
+    "neo4j": {
+      "all": 209,
+      "fixture_load": 194,
+      "query": 15
+    }
+  },
+  "shutdown": [
+    {
+      "error": null,
+      "escalated_to_kill": false,
+      "final_exit_code": 143,
+      "initial_exit_code": null,
+      "pid": 66664,
+      "service_id": "fuseki",
+      "signal_sent": "SIGTERM",
+      "success": true
+    },
+    {
+      "error": null,
+      "escalated_to_kill": false,
+      "final_exit_code": 0,
+      "initial_exit_code": null,
+      "pid": 66620,
+      "service_id": "neo4j",
+      "signal_sent": "SIGTERM",
+      "success": true
+    }
+  ],
+  "owned_pids_absent": {
+    "pids": [
+      66620,
+      66664
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  "source_and_input_file_count": 361,
+  "source_and_inputs_unchanged": true,
+  "audit_checks": {
+    "native_success_and_outer_exit_zero": true,
+    "prepared_input_file_identity": true,
+    "immutable_measurement_file_identity": true,
+    "core_canonical_seal": true,
+    "original_order_bytes_unchanged": true,
+    "source_and_frozen_inputs_unchanged": true,
+    "48_original_unique_ids": true,
+    "split_counts_32_seen_16_heldout": true,
+    "only_original_three_exposed_selected": true,
+    "45_unattempted_retained": true,
+    "9_final_and6_acquisition_exact": true,
+    "15_completed_plan_runs_30_calls": true,
+    "logical_bytes_total_matches_actions": true,
+    "complete_population_in_evaluation": true,
+    "paid_selection_cost_only_sealed_before_fresh_final": true,
+    "query_attempt_journals_match_30": true,
+    "client_query_counts_match_30": true,
+    "no_new_model_no_retry_no_download": true,
+    "all_sources_loaded_once": true,
+    "all_owned_services_stopped": true,
+    "owned_pids_absent": true,
+    "owned_state_removed": true,
+    "within_native_budgets": true
+  },
+  "focused_checks": [
+    {
+      "count": 12,
+      "pytest_seconds": 0.55,
+      "receipt": {
+        "exit_code": 0,
+        "elapsed_seconds": 1.0103560825809836,
+        "before": {
+          "/Users/anthonyche/Developer/XGAP/src/xgap/experiments/finbench_paid_selection.py": "2da2cdbb4c121ab48dc1be3c837d8c41477374821a0fdcd0f3c9ea34b60d680c",
+          "/Users/anthonyche/Developer/XGAP/tests/test_finbench_paid_selection.py": "7a1be9ac2318625006254de07c012d3137cb534e7e6c004f5cc4b658c4f327ac",
+          "/Users/anthonyche/Developer/XGAP/src/xgap/experiments/m15_finbench_federation.py": "2e7ae25dc3b5c0c076d871aad0a9e8080ba5940c63b029189d67aefde7b5baa0",
+          "/Users/anthonyche/Developer/XGAP/tests/test_m15_finbench_federation.py": "96899830e27f3417770cb85d66578f06ec3183e7f6af3ee37907779fe7882422"
+        },
+        "after": {
+          "/Users/anthonyche/Developer/XGAP/src/xgap/experiments/finbench_paid_selection.py": "2da2cdbb4c121ab48dc1be3c837d8c41477374821a0fdcd0f3c9ea34b60d680c",
+          "/Users/anthonyche/Developer/XGAP/tests/test_finbench_paid_selection.py": "7a1be9ac2318625006254de07c012d3137cb534e7e6c004f5cc4b658c4f327ac",
+          "/Users/anthonyche/Developer/XGAP/src/xgap/experiments/m15_finbench_federation.py": "2e7ae25dc3b5c0c076d871aad0a9e8080ba5940c63b029189d67aefde7b5baa0",
+          "/Users/anthonyche/Developer/XGAP/tests/test_m15_finbench_federation.py": "96899830e27f3417770cb85d66578f06ec3183e7f6af3ee37907779fe7882422"
+        },
+        "model_calls": 0,
+        "native_services_started": 0,
+        "source_unchanged": true
+      }
+    },
+    {
+      "count": 2,
+      "pytest_seconds": 0.19,
+      "receipt": {
+        "exit_code": 0,
+        "elapsed_seconds": 0.6103453747928143,
+        "before": {
+          "/Users/anthonyche/Developer/XGAP/scripts/run_finbench_paid_selection_native.py": "0aecd4ace958e7eed73d1245d3b3258a683f4fabf343cb78f6dfb98b5358dfb4",
+          "/Users/anthonyche/Developer/XGAP/tests/test_finbench_paid_selection_native_evaluation.py": "829d491a6e649c07926db36ddfa73adbb36382d71a901ea0d7b947b12b7ce329",
+          "/Users/anthonyche/Developer/XGAP/src/xgap/experiments/finbench_paid_selection.py": "2da2cdbb4c121ab48dc1be3c837d8c41477374821a0fdcd0f3c9ea34b60d680c"
+        },
+        "after": {
+          "/Users/anthonyche/Developer/XGAP/scripts/run_finbench_paid_selection_native.py": "0aecd4ace958e7eed73d1245d3b3258a683f4fabf343cb78f6dfb98b5358dfb4",
+          "/Users/anthonyche/Developer/XGAP/tests/test_finbench_paid_selection_native_evaluation.py": "829d491a6e649c07926db36ddfa73adbb36382d71a901ea0d7b947b12b7ce329",
+          "/Users/anthonyche/Developer/XGAP/src/xgap/experiments/finbench_paid_selection.py": "2da2cdbb4c121ab48dc1be3c837d8c41477374821a0fdcd0f3c9ea34b60d680c"
+        },
+        "model_calls": 0,
+        "native_services_started": 0,
+        "source_unchanged": true
+      }
+    }
+  ],
+  "raw_artifacts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native-run/prepared_inputs.json",
+      "bytes": 141839,
+      "sha256": "8b1a21ad2c6716a856b68ede1b0468fecfae47b75becf70726ab45caae6f406b"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native-run/measurement_sealed.json",
+      "bytes": 5800018,
+      "sha256": "c974288721b7b26edffb2e69f414134d087a0ef012189051b41c0a0293658b20"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native-run/evaluation.json",
+      "bytes": 49751,
+      "sha256": "2254c5d47209547469819be776255f46ea940f26d454c897f9de7deccdb0e708"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native-run/native_run.json",
+      "bytes": 22010,
+      "sha256": "98477a93cd1c437face58ed832aac6a8e3016ce17147c057cbc1289c222bf931"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native-run/source_after.json",
+      "bytes": 68100,
+      "sha256": "f46f7d9100df5c591723113e0ee51ec4deed240b7c8b5df004e31e6281863c04"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native-run/neo4j-executions.jsonl",
+      "bytes": 778357,
+      "sha256": "d5333eb766a98efb27e6fdbae545165f27e23e497ce8c9ca0e8aba3642f84d9d"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native-run/fuseki-executions.jsonl",
+      "bytes": 540649,
+      "sha256": "7e8125bf0f6d2e90c4814a7bff47606b64b2907de1492e4ed0007ec205cff4b2"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/orders.json",
+      "bytes": 2166,
+      "sha256": "4498035c8cac35a1b5c7ed65112ccf15fa6d12242761d41b15c5d7669164b423"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/analysis.json",
+      "bytes": 7023,
+      "sha256": "6509097cb7e4e013fadf3fece98356dfdad9f81a7b556cd5cd03da8e7ff1fb9a"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native_intent.json",
+      "bytes": 963,
+      "sha256": "30abc0cb2f42e869ab26d63e0fd46d70c13228bb8e6bd235810b1930e1205425"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-paid-pilot-20260912/native_receipt.json",
+      "bytes": 140,
+      "sha256": "3d0f4996ba8a5c338606b9edae9b35c0514ad4e3b29a36494582b2c2737690ef"
+    }
+  ],
+  "limitations": [
+    "Three exposed independent questions, one block; 15 plan outcomes are not 15 independent samples.",
+    "Whole SF0.1 loaded, but remaining 45 original query records are not_attempted.",
+    "Method wall includes synchronous rewriting of a growing full ledger and result rows. It is not a clean paper performance estimate.",
+    "Scheduler elapsed and client-call wall are separately retained; subtracting residual overhead does not repair the comparison.",
+    "No query warmup; order is only rotated across three different questions, with no within-question counterbalancing.",
+    "Paid acquisition warms its fresh final execution; measured costs are not unbiased predictions of alternate future executions.",
+    "Logical exchange bytes are not HTTP wire bytes. Common preparation/service/load costs are separately reported.",
+    "No model, P1 strategy bridge, A3 calibration, full-workload accuracy or scalability claim."
+  ],
+  "next_gate": "Persist each action result once and use a small durable progress/selection index; measure persistence explicitly while charging online work. Then freeze within-query balanced repeat blocks over the original 48, preserving exposure and all failures; do not rerun this accepted pilot or subtract estimated overhead from it."
+}

@@ -1,0 +1,81 @@
+{
+  "schema_version": "m15-finbench-confirmatory-reporting-readiness-v1",
+  "artifact_id": "m15-finbench-confirmatory-reporting-local-readiness-v1",
+  "frozen_formal_runner_commit": "cf622cbc024e3aa945213df68e177d2cc1eb7d8a",
+  "reporting_branch": "codex/m15-finbench-confirmatory-reporting",
+  "formal_request": {
+    "selection_admission_sha256": "5f76bd576b0a7f7252ba8fcceacd78aa3ce3c7e9a611b6c4a7666f5ce1f04b9e",
+    "execution_request_sha256": "4b83e2732120cde085fa6e847818440bda9ab1f22288650bed7165098dbde2a5",
+    "measurement_block_count": 22,
+    "total_plan_runs": 1888,
+    "maximum_backend_calls": 3776,
+    "method_timeout_seconds": 60,
+    "automatic_retries": 0,
+    "authorization_status": "awaiting_explicit_author_decision",
+    "confirmatory_execution_authorized": false
+  },
+  "implementation": {
+    "paper_report": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_report.py",
+      "file_sha256": "a8bd1b1b1c9904081747323a255978dc5c2114dcbc17653d72f435c40d7d506e"
+    },
+    "report_tests": {
+      "path": "tests/test_m15_finbench_confirmatory_report.py",
+      "file_sha256": "ce65c73d68bec0f2b59e343afc08a926c276a9eeac75653bf1a6e9d317cf411e"
+    },
+    "documentation": {
+      "status_sha256": "778f373898e6441889831ff57df27cdd9d5a7d354bc72fa8421ca358ab78a874",
+      "roadmap_sha256": "ce3f0fc75e4e49d53b98ce35d6b20a5dd32758e7eb59aa6aba1c5006e452be17",
+      "decisions_sha256": "6e31384fcca67e6e5259f8e206fae38abbfee1261a0f312dc0647cfc804b5c9e",
+      "remote_loop_sha256": "b1ebbc802a3b3f45baec78604355e53ef83ba3af0ab89e5a6241b30a9ad5cbf1"
+    }
+  },
+  "acceptance": {
+    "focused_report_tests": {
+      "passed": 7,
+      "failed": 0
+    },
+    "combined_report_campaign_analysis_tests": {
+      "passed": 23,
+      "failed": 0,
+      "elapsed_seconds": 12.78
+    },
+    "full_tests": {
+      "command": "pytest -q",
+      "passed": 1188,
+      "skipped": 36,
+      "failed": 0,
+      "elapsed_seconds": 436.01
+    },
+    "compileall_passed": true,
+    "git_diff_check_passed": true
+  },
+  "reporting_boundary": {
+    "requires_successful_final_campaign_audit": true,
+    "requires_confirmatory_result_admitted": true,
+    "requires_source_hash_chain": true,
+    "recomputes_inferential_statistics": false,
+    "query_instance_is_inferential_unit": true,
+    "repetitions_are_independent_units": false,
+    "cold_start_family_is_descriptive_only": true,
+    "offline_training_cost_reported_separately": true,
+    "output_must_be_outside_immutable_campaign_tree": true,
+    "source_tree_mutation_allowed": false,
+    "supported_claim": "FinBench heterogeneous physical-plan optimization comparison",
+    "unsupported_claims": [
+      "semantic ambiguity resolution effectiveness",
+      "ontology effectiveness",
+      "general KGQA effectiveness"
+    ]
+  },
+  "execution_boundary": {
+    "formal_runner_changed_by_reporting_layer": false,
+    "formal_request_changed_by_reporting_layer": false,
+    "reporting_branch_authorizes_execution": false,
+    "confirmatory_measurements_submitted": false,
+    "confirmatory_execution_authority_created": false,
+    "confirmatory_execution_authorized": false,
+    "next_action": "obtain a separate explicit author decision on the exact non-authorizing execution request before creating authority or submitting the campaign"
+  },
+  "paper_result": false
+}

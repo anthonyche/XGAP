@@ -1,0 +1,29 @@
+{
+  "schema_version": "xgap-cooperative-planning-budget-evidence-v1",
+  "source_commit": "8f01b2e7195e9cafa85df4da01f434ded81c1b36",
+  "new_test_cases": 6,
+  "affected_test_cases": 1,
+  "test_exit_code": 0,
+  "test_seconds": 0.6,
+  "tool_session_id": 89080,
+  "new_model_calls": 0,
+  "new_source_network_calls": 0,
+  "new_tokens": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "hard_real_time_bound": false,
+  "paper_result": false,
+  "test_output_source": "Observed completed tool result; successful checks were not rerun for artifact generation",
+  "evidence": {
+    "tests/test_cooperative_planning_budget.py": {
+      "sha256": "11ade0aa492b10d84977032c7e6d9e4ffd20ad49d247910f6c9420b3670a5bc2"
+    },
+    "docs/decisions/cooperative_planning_budget_v1.md": {
+      "sha256": "6c0b90c2138e3564457178aa69b297925c456b2e5456a1ae551f3c00b6ae9ce1"
+    },
+    "src/xgap/runtime/planning_budget.py": {
+      "sha256": "83e14540b6da05cf0813e658d130b4f1c509ebfdcbfa53b4f8cfce3989b2b50e"
+    }
+  },
+  "report": "docs/report/cooperative_planning_budget_20260915.md"
+}

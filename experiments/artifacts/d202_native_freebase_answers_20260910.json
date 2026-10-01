@@ -1,0 +1,3702 @@
+{
+  "additional_exploratory_queries": {
+    "data_reloaded": false,
+    "lifecycle": {
+      "elapsed_seconds": 20.806896541267633,
+      "health": [
+        {
+          "attempts": 13,
+          "elapsed_ms": 6798.531708307564,
+          "http_status": 200,
+          "last_error": null,
+          "process_exit_code": null,
+          "service_id": "neo4j",
+          "success": true
+        },
+        {
+          "attempts": 3,
+          "elapsed_ms": 1078.9781250059605,
+          "http_status": 200,
+          "last_error": null,
+          "process_exit_code": null,
+          "service_id": "fuseki",
+          "success": true
+        }
+      ],
+      "queries": [
+        {
+          "query": {
+            "anchor": "http://rdf.freebase.com/ns/book.book",
+            "language": "en",
+            "literal_predicate": "http://rdf.freebase.com/ns/type.object.name",
+            "steps": [
+              {
+                "direction": "IN",
+                "predicate": "http://rdf.freebase.com/ns/type.object.type"
+              }
+            ]
+          },
+          "rows": 6,
+          "success": true
+        },
+        {
+          "query": {
+            "anchor": "http://rdf.freebase.com/ns/people.person",
+            "language": "en",
+            "literal_predicate": "http://rdf.freebase.com/ns/type.object.name",
+            "steps": [
+              {
+                "direction": "IN",
+                "predicate": "http://rdf.freebase.com/ns/type.object.type"
+              }
+            ]
+          },
+          "rows": 202,
+          "success": true
+        }
+      ],
+      "shutdown": [
+        {
+          "error": null,
+          "escalated_to_kill": false,
+          "final_exit_code": 143,
+          "initial_exit_code": null,
+          "pid": 11036,
+          "service_id": "fuseki",
+          "signal_sent": "SIGTERM",
+          "success": true
+        },
+        {
+          "error": null,
+          "escalated_to_kill": false,
+          "final_exit_code": 0,
+          "initial_exit_code": null,
+          "pid": 11001,
+          "service_id": "neo4j",
+          "signal_sent": "SIGTERM",
+          "success": true
+        }
+      ],
+      "success": true
+    },
+    "queries": [
+      {
+        "answer_rows": 6,
+        "answers": [
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Adieu, vive clarté--",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1237d7lp"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dina's Book",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122r7cyq"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "L'Amour monstre, roman",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1219y2vn"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Opus pistorum",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121g7dzg"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "The malediction",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1229bnhk"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Tu, mio",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1214g81k"
+            }
+          }
+        ],
+        "baseline_ms": 12.362875044345856,
+        "federated_ms": 460.8716666698456,
+        "query": {
+          "anchor": "http://rdf.freebase.com/ns/book.book",
+          "language": "en",
+          "literal_predicate": "http://rdf.freebase.com/ns/type.object.name",
+          "steps": [
+            {
+              "direction": "IN",
+              "predicate": "http://rdf.freebase.com/ns/type.object.type"
+            }
+          ]
+        },
+        "remote_calls": 2,
+        "source_equal": true
+      },
+      {
+        "answer_rows": 202,
+        "answers": [
+          {
+            "answer": {
+              "type": "literal",
+              "value": "'Yaar' Kannan",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc17zsqc"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Aaron Lee",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1gg94l"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Abdullahi Maje Karofi",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11c3hvc9jt"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Adamo Volpi",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122jxcf_"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Agnes of Mecklenburg",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11c3hvcbkv"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Alain Simard",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121yn5rj"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Alby Samuels",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttmxg7n"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Alex Demirovic",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1213tvkk"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Alex Tsentides",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttllvrr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Alfred Drabits",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122vwy86"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Alice Loftus",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byb6z5c2"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Alison Schmutz",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15_xpb"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Allan Nilsson",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11dym0hyg"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Anatol Slissenko",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15l7r8"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Angelo D'Alessandro",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122rv880"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Anna Franziska Eugenia of Horne",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byb645gv"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Antonina Baron",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc140qy5"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Antonio Martelli",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc16p_kb"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Antonio Sánchez-Barbudo",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121qg1sp"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Arthur Moreno",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttqp4bc"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Astrid Schult",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121c9qc9"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Aunofo Siuli Atuilagi",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc17zslj"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Ba Tha",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc16kwfz"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Baroness Victoria",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1ggd3p"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Ben Fennel",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc18lh1b"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Ben Owusu",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11btzw0dnd"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Bianca d'Este",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc4mrhm_"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Bienvenida Angeles Chua",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc150w_9"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Björn Glasner",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121kwcd8"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Blondy",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b6dv1czb"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Bohdan Paszkowski",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122kcq0w"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Brunhild Decking-Schwill",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122nbl46"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Cao Ju",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121dpncw"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Carin Thiel",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11dyj0klv"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Carly Humphries",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b7xsfkj4"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Caroline Fisk",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15bcvr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Cathy Lagrimas",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bcfcw0s9"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Cenni di Francesco di Ser Cenni",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121p639x"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Chico Amaral",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1216ftq3"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Chris Jones",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11c3kkjzpm"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Christian Bach",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b6c8zc4b"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Claudia Greve",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15l7y0"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Claudio Carini",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1235kprc"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Clemuel Ricketts \"Clement\" Woodin",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc14t09w"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Colette Nicollin",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1ggb3b"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Cornelia Franchoys",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15n8z8"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Count Otto-Luitpold",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc13vmg1"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Countess Siliva",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b7_jtzrn"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dan Merrill",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bv382pd8"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Daria Menshikova",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byb7c48t"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dave Ihlenfeld",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1ggb92"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dennis Steinmetz",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byb6rwkd"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Denzelle Good",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byjkjlq3"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Deuntem Salitul",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1228l_2c"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dietmar Franke",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122fjctl"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dietrich Rusche",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121dv769"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dimo Kolarov",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122dls02"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dmitry Protzko",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122kznft"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Dr Frederic Poynton Weaver",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15t0rq"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Duchess Christiane of Mecklenburg",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11dyjy32k"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Edgar Henry Brown, Jr.",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15t0w6"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Eivind Sander",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121tyk_t"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Elena Curicheru",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15l7d1"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Emanuel Rambour",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1233fcgt"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Emily Peden",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bcfcmdnd"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Endre Fejes",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120_g90m"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Eric Romasanta",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bcfcqlds"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Erich Tschöp",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122whgg6"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Erik Stenstadvold",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1237_wn9"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Even de Tissot",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1216x13w"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Filippino Gonzaga",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc13vmt8"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Göran Sonesson",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122hp8p7"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Günter Schlipper",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121_4h2r"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Gaye Gross Moelis",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byb3q2bg"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Gerhard Trampusch",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1234t00c"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Gian Luigi Rizzi",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.12195ygs"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Graham Gilligan",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bcfc_59k"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Guusje Kaayk",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121yyf9_"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Héctor Jaramillo",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120qwb9w"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Halim Şefik Güzelson",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121rpxtt"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Hans Siemens",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1238xvt1"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Harold Attyberry",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11c3k65771"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Harris Birkeland",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122kcpxj"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Heinrich Augustin",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122z2gvf"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Hewavitharana Dingiri Appuhamy",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc168pcy"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Hiromi Wada",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1239jnzr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Hiroyoshi Sejima",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1fkw5l"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Holger Meitinger",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122z_gm3"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Holly Schlesinger",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc14vhs0"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Hongding",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc14t0r3"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Ibuki",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120mh_37"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Jack Hamel",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122xfcxz"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "James \"Bo\" Wallace",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11btmq1nvw"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Janet Gallogly",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bv3tnxgy"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Janet Kassner",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttqp48j"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Jason Tregebov",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bv1mdcn7"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Jennifer Opdyke Wihelm",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1ggfd7"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Joey Duin",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122fjprv"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "John J. Wasmuth",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc14r4nt"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Jon Schroeder",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15k071"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "José López-Rey",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.124xw1pq6"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Jose Elizondo",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bv1n4fpv"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Joseph Lavallée",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122tpf02"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Jukka Iisakkila",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121m7k39"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Julian Benjamin",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121m2nct"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Julie Wiggen",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121jch8r"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Kalin Arsov",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1239jc4w"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Kamala Maiya Shrestha",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byb714ds"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Kaneda",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b7ns34_q"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Kari Vepsä",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.12340v3s"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Kathrin Marchand",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.119x72pzn"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Katja Wirth",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120j31dr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Ken Ograjenšek",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121pkdqb"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Larry Hensley",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11btzx_bn1"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Lisa Feulner",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.123213r6"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Lisa Pevaroff Cohn",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1fk3c4"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Louann George",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc158hdl"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Louise Conte",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122kcm1n"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Louise von Rothschild",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byb3jwk6"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Médine Moussounga Keener",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc13rqnd"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Magdalena Stupkiewicz-Dobosz",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122bxt34"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Marco Berrini",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.12148s8q"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Margit Schaumäker",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11vjpcw91"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Maria Umboh",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121v7l60"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Marie Louise Wanamaker",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11byb67x3b"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Marisa Colomber",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121vxn4j"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Mary Elixzabeth Russell Owens",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11c3hvc7kt"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Mathias Mégard",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122zkcbl"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Mattias Lönnebo",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11dykl278"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Maurice Frydland",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1223q95s"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Mayu Fukunoue",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120z6_xm"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Merle Dean Crain",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bybb6jnz"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Mevaip Mustafi",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttly9wp"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Michael A. Savageau",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11dyjzgjr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Michael Benvenga",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11btzxdggc"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Michael Wollitz",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120lqcnl"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Michel Carson",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1fb8nr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Mietall Waluś",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122bxt3l"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Milena Medvešek",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc16kwvq"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Miltinho",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122hcylr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Molly Reed",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttjkqmx"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Nathan Drummond",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bx_f87_4"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Nathan Pezzimenti",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1fkk00"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Nelson Costello",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc13cl7v"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Nina Ritter",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1234n430"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Nino Nutrizio",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122kjj99"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Nunzio Favia",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120yrf1c"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Ofovwe Imoukhuede",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc16rpd6"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Ootaki, Yuuko",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.112yfxf28"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Ove Wolf",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11dyl5kr8"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Pablo Tice",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttl96sh"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Paul Röttger",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1213_c5j"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Paula Ninčić",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15l7kc"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Pengiran Anak Puteri Bongsu",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc4ms1r_"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Phil Dillon",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11btzwk10n"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Pierre Erwan Guillaume",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b7nwjrxk"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Pream Busala-Khamvong",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.123923dy"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Prince Albert of Schaumburg-Lippe",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc4ms57c"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Princess Qinghe",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120htl04"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Princess Susan",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc16p_p4"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Randy Oxford",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b822ccpr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Rei Asami",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121zcrqn"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "René Bezard",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11x7vn61k"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Reut Alon",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1473xg"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Rigobert Gruber",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.120vbj60"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Robert Buijtenhuijs",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.12391_0z"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Robert Misch",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121p0_zp"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Rogério Jacques",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.12214jvbt"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Rok Gradisnik",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1218flpk"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Roman Kartsev",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121sfpxk"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Rukiye Sultan",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc158hfn"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Sal Baglio",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bcfcm41z"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Sally Rappaport",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc15cylr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Sam Cagney",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11btzxlh99"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Samuel Trott",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc16p_92"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Secthdamon",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1225km8k"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Shankaraiah Narra",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc14r512"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Smitha Vijay",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttc8360"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Solomon Shapira",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc14f482"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Sophie Robert",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11mvrqxdg"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Sridevi Kesavan",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc16t9nr"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Stefan Ambrosius",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122zk41n"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Stefan Barucha",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.121c9r1l"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Steven Heddle",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttmsqd9"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Taiberson",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b6ln58lg"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Tamara Wallace",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b7_lk27r"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Tara Sue Me",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b77z7tz1"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Theodor Hampe",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122qm724"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Thyrza Beer",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc16b9x8"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Tina Maria Sharp Green",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11by3cj1fh"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Torsten Friedrich",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122qxpss"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Vaino Haapalainen",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11_p4rccl"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Valery Fedosov",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122j3s0_"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Viola Kiesinger Wentzel",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc18jjlq"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Vyacheslav Slanko",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.1237k90_"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Wolfram Dix",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122pkzn8"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Yūto Takahama",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b6wpy343"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Yehudit Yekutieli",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1gg9vp"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Yelena Aminova",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.122vrdwg"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Yemima Peretz Gabay",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bc1gg8dv"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "Yukiko Makioka",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.12182kcl"
+            }
+          },
+          {
+            "answer": {
+              "type": "literal",
+              "value": "\"Jimi\" James Tanney",
+              "xml:lang": "en"
+            },
+            "entity": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11bttqnv4k"
+            }
+          }
+        ],
+        "baseline_ms": 46.422540210187435,
+        "federated_ms": 554.4531252235174,
+        "query": {
+          "anchor": "http://rdf.freebase.com/ns/people.person",
+          "language": "en",
+          "literal_predicate": "http://rdf.freebase.com/ns/type.object.name",
+          "steps": [
+            {
+              "direction": "IN",
+              "predicate": "http://rdf.freebase.com/ns/type.object.type"
+            }
+          ]
+        },
+        "remote_calls": 2,
+        "source_equal": true
+      }
+    ],
+    "root": "/Users/anthonyche/xgap-data/d202-domain-queries-20260910",
+    "scope": "additional typed entity-class checks, not model or benchmark accuracy"
+  },
+  "answer_rows": 103,
+  "answers": [
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Architectural style",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.architecture2.structure2.architectural_style"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Arrondissement",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.aareas.schema.ht.commune.administrative_parent"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Author",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.braziliangovt.brazilian_governmental_proposal.author"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Bibliographic Reference",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.aptamer.experiment.has_bibliographic_reference"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Breeding location(s)",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.litcentral.breeding_taxon.breeding_location_s"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Capital",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.aareas.schema.am.province.capital"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Capital",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.aareas.schema.wf.kingdom.capital"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Card in set",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.collectiblecards.trading_card_set.card_in_set"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Category",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/business.product_line.category"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Cause of death",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/freebase.apps.hosts.z.appspot.acre.topics.person2.cause_of_death"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Cause",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.disaster2.automobile_accident.cause"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Child Classifications",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/biology.organism_classification.child_classifications"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Citytowns and Municipalities",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.aareas.schema.cz.district.administrative_children"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Closest airports",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.usnationalparks.us_national_park.closest_airports"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Cocktails with this garnish",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.cocktails.cocktail_garnish.cocktails_with_this_garnish"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Communes",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.aareas.schema.pf.subdivision.administrative_children"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Computer",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/computer.os_compatibility.computer"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Consoles",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.gamecollection.owner.consoles"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Construction began",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.convictsydney.building.construction_began"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Country used in",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.testcards.test_card.country_used_in"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Credit unions",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.services.bank_services.credit_unions"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Descendant Weapon",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.iceandfire.notable_weapon.descendant_weapon"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Discoveries",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/astronomy.astronomical_observatory.discoveries"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Driver",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.formula1.formula_1_championship_standing.driver"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Engine Type",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/automotive.engine.engine_type"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Examples",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/biology.animal_breed.examples"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Exhibited work(s)",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.armoryshow1913.exhibited_artist.exhibited_work"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "FDIC Certificate #",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.banking.retail_bank.fdic_certificate"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Favorite Domains",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/freebase.user_profile.favorite_domains"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Film",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/film.film_song_relationship.film"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "First Responders",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.virginiabroadband.stimulus_request.first_responders"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "First flight",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/aviation.aircraft.first_flight"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Foaled",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.thoroughbredracing.thoroughbred_racehorse.foaled"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Formula",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.wikipedia.infobox_mineral.formula"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "From",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/food.licensee_tenure.from"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Fuel Tank Capacity",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/automotive.body_style.fuel_tank_capacity"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Incode",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.ukpostcodes.uk_postcode.incode"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Instruments serviced",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.services.music_shop.instruments_serviced"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Introduced by",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.legislation.bill.introduced_by"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Language",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.webvideo.internet_video_series.language"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Location",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.infection.biosafety_facility.location"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Location",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.litcentral.source_feature_taxa.location"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Mass",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.schemastaging.star_system_body_extra.mass"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Matches (or rubbers or legs)",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.tournaments.tournament_group.matches_or_rubbers_or_legs"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Maximum Number of Passengers",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/automotive.trim_level.max_passengers"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Merged with",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.datedlocationtest.dated_location_test.merged_with"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Number of lawyers",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.crime.law_firm.number_of_lawyers"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Objective(s)",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.abcbirds.conservation_project.objective_s"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Parent",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.mediaasset.provider.parent"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Part of Series",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.dimenovels.dime_novel_issue.part_of_series"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Participated as a wildcard invitee in this race event",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.peleton.cycling_team_professional.participated_as_a_wildcard_invitee_in_this_race_event"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Performer",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.musiteca.video.performer"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Pertains",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.wordnet.word_sense.pertains"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Price",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/freebase.apps.hosts.com.freebaseapps.glamourapartments.item.price"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Production venue relationship",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.stage_performance.stage_production.production_venue_relationship"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Products",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/business.product_category.products"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Quadrant",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.vancouver.city_street.quadrant"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "RGB Value",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.cars_refactor.exterior_color.rgb_value"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Recipes",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/food.dish.recipes"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Release date",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.schemastaging.application_version.release_date"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Released",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.wikipedia_infobox.video_game.released"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Rounds",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.tournaments.tournament.rounds"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Screens",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.services.movie_theater.screens"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Service Description",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.electromagneticspectrum.service.service_description"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Size",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/engineering.battery.size"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Specialty",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.crime.lawyer.specialty"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Spin offs",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.americancomedy.tv_show.spin_offs"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Spirit axiom",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.torgbase.reality.spirit_axiom"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Start Date",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/boats.warship_service_period.start_date"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Start",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.conservationaction.program_coordination.start"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Started Operation",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/dataworld.mass_data_operation.started_operation"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Stat property",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.trixtypes.stat.stat_property"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "State color",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.usstatesymbols.state_symbols.state_color"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "State vegetable",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.usstatesymbols.state_symbols.state_vegetable"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Subject topics",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.visleg.collaboration.subject_topics"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Tanning services",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.services.tanning_salon.tanning_services"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Team Member",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.x2009hackdayprojects.hack_day_project.team_member"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Team",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/baseball.baseball_team_stats.team"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Testing available here",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.services.medical_laboratory.testing_available_here"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Textile Designer",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.textiles.textile.textile_designer"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Tickets",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/freebase.software_product_milestone.tickets"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "To",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/broadcast.radio_affiliation_duration.to_date"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Topics live",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/freebase.user_activity.topics_live"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Topics of interest",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.visleg.collaborator.topics_of_interest"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Types of recycling",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.services.recycling_service.types_of_recycling"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Unit",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.militaryinfiction.military_command_in_fiction.unit"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Videos Directed",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.webvideo.internet_video_director.videos_directed"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Width",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/freebase.apps.content_template.width"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Written by",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.thingy.thingy.written_by"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "Year",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.contractbridge.bridge_tournament_standings.year"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "active_start",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.graphapi.global_properties.music_active_start"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "book edition",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.bookpf.author.book_edition"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "cost 1 day",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.cadata.weapons.cost_1"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "description for element catalog",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.sa3base.sa3_textual.description_for_element_catalog"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "end",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.hotelbooking.stay.end"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "footballdb ID",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/american_football.football_player.footballdb_id"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "gender",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.tang1.wuzhenyu.gender"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "reality",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.torgbase.character_s_reality.reality"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "runtime",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.svocab.movie.runtime"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "startDate",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.svocab.tvseries.startdate"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "status",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.art_retailer.market_offer.status"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "timespan minted",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.coinsdaily.coin_type.timespan_minted"
+      }
+    },
+    {
+      "answer": {
+        "type": "literal",
+        "value": "to view",
+        "xml:lang": "en"
+      },
+      "entity": {
+        "type": "uri",
+        "value": "http://rdf.freebase.com/ns/base.vwmtbase.vw_data_representation_2_view.to_view"
+      }
+    }
+  ],
+  "answers_match_independent_source": true,
+  "artifact_id": "d202-native-freebase-answers-20260910",
+  "automatic_retries": 0,
+  "baseline_ms": 16.762499697506428,
+  "broad_tests": {
+    "elapsed_seconds": 596.81,
+    "log": "/tmp/xgap-d202-full.log",
+    "passed": 2782,
+    "skipped": 38,
+    "status": "passed"
+  },
+  "catalog_rebuilds": 0,
+  "evidence_files": {
+    "/Users/anthonyche/xgap-data/d202-domain-queries-20260910/answer-0.json": "cf6a29b963bbfcdc1e7053f299ef870fe679260034fe13c175b02eb4242223d7",
+    "/Users/anthonyche/xgap-data/d202-domain-queries-20260910/answer-1.json": "bbe5ef9569aa61cdf5438af5ed2b1f4c33071e154572457e21133014f0f5690b",
+    "/Users/anthonyche/xgap-data/d202-domain-queries-20260910/request.json": "32f550cffeb06574bbe573daee263e9319aff69d1212e52a9e0109ad925f8b3f",
+    "/Users/anthonyche/xgap-data/d202-domain-queries-20260910/result.json": "5a2cf63e333b71474872c9d4559954456f30af74f72dab0ace310a21eab6cb33",
+    "/Users/anthonyche/xgap-data/d202-domain-queries-20260910/source-answer-0.json": "5630579d327ae0b1a73aa5d3a6c47b425ed73fbc113ff92e25072c41fdda81c8",
+    "/Users/anthonyche/xgap-data/d202-domain-queries-20260910/source-answer-1.json": "e5dee2d14cc960d0a21bf164ba08167ac7514b1141e7970a92dc41fbbad83131",
+    "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/answers.json": "83b6868a66ff5a50a44f0208bc332b411536cfe4a7f0050b949d2865f83f8435",
+    "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/baseline.json": "1bc64914bcf63b7651b830f924a78b467338da46a77614ac9d263779652c2d41",
+    "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/load/operations.jsonl": "e56aa70cb2d5311c9f29973c901783099790a1d1d5d37f1d1131a41db2feb72a",
+    "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/load/result.json": "1b0ab98a7b5ffc08b7d085460eddd743760af04f432601fbbb4dd5e5fa3721cb",
+    "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/plan.json": "514999e21d2511438583f8176e6fe1ac80e833970fdc0a0b11f6d3be8f15cc0c",
+    "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/result.json": "2e700a20cace3432fd353bd163996a132fdab94e98e3e395dfce74f13ea39a2a",
+    "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2/source_distinct_counts.json": "0058b2e8269cd3e71c9cfbd020ef261aec5b56ab56d069a48c47c8907d40d0ae",
+    "/Users/anthonyche/xgap-data/d202-source-query-20260910.json": "c36efb20863e979845c747d9236208f7cede5d1d1ab0096259ccdd031e344018",
+    "/tmp/xgap-d202-examples.json": "23e9c41fb649789c3f7d074c66c9714630b0aa9d9ab5c5b5768122d68ffbf893",
+    "/tmp/xgap-d202-examples.log": "28d3653b8780bb99ad59cbea40fefe37dcc8fd5e3229ceb21f90c2aa6c444460",
+    "/tmp/xgap-d202-focused.log": "e66a4207e69721dddc48d3a1784fd3cbe0c1c53273905f21bb1fa31b6f3e0a6e",
+    "/tmp/xgap-d202-full.log": "f6f93a5ae34c33990d67007555692eac61affa5dfceae496c3ab4c3fb8443e1b"
+  },
+  "federated_ms": 204.8327075317502,
+  "federated_remote_calls": 2,
+  "first_prelaunch_failure": {
+    "reason": "Fuseki help TerminationException exit 1 misclassified before any service started",
+    "root": "/Users/anthonyche/xgap-data/d202-local-native-20260910"
+  },
+  "focused_tests": {
+    "passed": 241,
+    "skipped": 2
+  },
+  "harness_and_examples": {
+    "passed": 20,
+    "total": 20
+  },
+  "java": {
+    "command": "/opt/homebrew/opt/openjdk@21/bin/java",
+    "major": 21,
+    "version_output": "openjdk version \"21.0.10\" 2026-01-20\nOpenJDK Runtime Environment Homebrew (build 21.0.10)\nOpenJDK 64-Bit Server VM Homebrew (build 21.0.10, mixed mode, sharing)"
+  },
+  "limits": [
+    "Partial first shard, not complete Freebase",
+    "Typed query, not real LLM/GrailQA prediction",
+    "One ordered local mechanism observation, not controlled performance",
+    "No date-filter validation or full native literal identity comparison"
+  ],
+  "load": {
+    "automatic_retries": 0,
+    "batch_rows": 4096,
+    "elapsed_seconds": 64.3932141661644,
+    "encoding": "rdf-resource-edge-mirror-v1",
+    "fact_occurrences": 3247670,
+    "fuseki_counts": [
+      {
+        "triples": "3233752"
+      }
+    ],
+    "literal_occurrences": 2705993,
+    "max_operations": 2000,
+    "neo4j_counts": [
+      {
+        "resource_edges": 541675
+      }
+    ],
+    "operations_attempted": 159,
+    "paper_result": false,
+    "partial_target": false,
+    "resource_occurrences": 541677,
+    "schema_version": "freebase-backend-load-v1",
+    "snapshot_manifest_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+    "snapshot_root": "/private/var/folders/78/2hb19nqj0jv_l0vgmp084ht80000gn/T/xgap-d201-source-b2ymubis/facts",
+    "success": true
+  },
+  "model_calls": 0,
+  "native_run_root": "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2",
+  "native_success": true,
+  "producer_parent_commit": "61923b6c0d2f32c7aea92cf96eef6a336eddabe6",
+  "producer_source_sha256": {
+    "src/xgap/backends/fuseki_client.py": "90413b0f57b379038d0cfc457cb992c3040c1c2de75d038ce9e0a06a6a1bc7f4",
+    "src/xgap/backends/sparql_bindings.py": "eee85bedbf5d60a6d6e15124ec509974265fe95ad9ca7512b5a63ff4302ea6d7",
+    "src/xgap/compilers/directed.py": "7e1710e1b6f687e351882eb31bda6bca41828c478da920063a8ab623c826cab6",
+    "src/xgap/experiments/freebase_backend_loading.py": "2e02d69d40ceb36a592d5dcaf16c91b2deb6f6a1b039745779374b07f6452d80",
+    "src/xgap/experiments/freebase_local_native.py": "088c5004f5705fd12d2297c5322219ca6e3e090137e7fb180abf9e2d2ebe981a",
+    "src/xgap/experiments/freebase_native_answers.py": "a2b4275a59f990871a10faf3a08a4342ddede2f50bbf6051c06bdb943bdc3411",
+    "src/xgap/runtime/scheduler.py": "42432cea01711ac1f93635e9437a0c1cc159250147d3d276797a48a5ec5c0346"
+  },
+  "query": {
+    "anchor": "http://rdf.freebase.com/ns/type.property",
+    "language": "en",
+    "literal_predicate": "http://rdf.freebase.com/ns/type.object.name",
+    "steps": [
+      {
+        "direction": "IN",
+        "predicate": "http://rdf.freebase.com/ns/type.object.type"
+      }
+    ]
+  },
+  "remote_cwru_submissions": 0,
+  "role": "local-partial-source-development-not-paper-result",
+  "row_bytes_are_not_http_wire_measurements": true,
+  "row_encoding_bytes": {
+    "answer": 17924,
+    "literals": 17924,
+    "resources": 9044
+  },
+  "shutdown": [
+    {
+      "error": null,
+      "escalated_to_kill": false,
+      "final_exit_code": 143,
+      "initial_exit_code": null,
+      "pid": 6322,
+      "service_id": "fuseki",
+      "signal_sent": "SIGTERM",
+      "success": true
+    },
+    {
+      "error": null,
+      "escalated_to_kill": false,
+      "final_exit_code": 0,
+      "initial_exit_code": null,
+      "pid": 6292,
+      "service_id": "neo4j",
+      "signal_sent": "SIGTERM",
+      "success": true
+    }
+  ],
+  "source_distinct_check": {
+    "distinct_rdf_facts": 3233752,
+    "distinct_resource_facts": 541675,
+    "duplicate_occurrences": 13918,
+    "duplicate_resource_occurrences": 2,
+    "elapsed_seconds": 2.297661207616329,
+    "method": "Arrow distinct six-field RDF identity, including implicit string/langString datatypes",
+    "native_counts_equal": true,
+    "peak_process_rss_bytes_macos": 2327035904,
+    "source_rows": 3247670
+  },
+  "source_snapshot_manifest_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+  "uncontrolled_baseline_after_federation": true
+}

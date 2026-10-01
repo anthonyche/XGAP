@@ -1,0 +1,201 @@
+# T7: approved experiment delivery within 72 hours
+
+Material Passport: experiment execution, existing approved RQ1–RQ5/E1–E20 plan,
+research prototype, real measurements only. User authorized goal execution on
+2026-09-20. Start: 2026-09-20 20:30 Asia/Shanghai. Target complete delivery:
+2026-09-23 20:30; useful measured results should be available by 48 hours.
+The app goal was created as ACTIVE on this authorization; the previous stale
+paused-goal note in the T6 report is historical.
+
+## Execution order
+
+1. 0–8 hours: repaired live-model/native admission; freeze and run a new FinBench
+   SF0.1 24-case development pilot. Seal selection before reference evaluation;
+   no answer-nonempty selection and no reuse of T3 campaign results.
+2. 8–24 hours: freeze FinBench formal configuration from its pilot; complete bounded
+   Freebase/FedShop data and method admission; pursue unmodified ARUQULA+FedUP
+   configuration/lookup/dependencies. An unresolved external method does not stop
+   XGAP measurements on an independently admitted dataset.
+3. 24–48 hours: execute admitted primary method/epsilon/ambiguity comparisons;
+   retain all attempted failures, non-answers and censoring. Freeze remaining
+   pilot-informed sample sizes before opening formal outcomes.
+4. 48–66 hours: finish approved feedback/cost-contrast and scale comparisons;
+   prioritize complete paired cohorts and source-coverage correctness.
+5. 66–72 hours: seal measured tables, family-cluster uncertainty, figures and
+   observed policy cases; check visual/metric provenance and publish reproducible
+   report with every missing panel explicitly identified.
+
+These are execution targets, not a promise that unresolved dependencies will
+work. Scope remains the approved three datasets and E1–E20. Missing panels are
+unfinished work, not evidence of completion or zero-valued results. Do not shrink
+or change research claims to conceal them.
+
+## Resource and integrity bounds
+
+- Use the existing authorized Qwen service only; no new paid services. The first
+  repaired admission allows two new generations in a new code/version directory.
+- Each dataset's pilot has 24 unique base cases, 2 current modes, one initial
+  measurement per cell; at most 48 NL model generations per dataset. Controlled
+  cells make no model calls. Repeat/scan release is frozen after pilot, not automatic.
+- Initial pilot process: 90 seconds per method, 1 GiB worker RSS observation,
+  2 GiB owned sources RSS observation, 64 backend calls, 20 seconds/backend call,
+  64 MiB/response and 256 MiB/phase; two-hour batch ceiling. Record censoring.
+- Keep at least 6 GiB disk free; at most 8 GiB new retained experiment artifacts
+  across the 72-hour effort. Prepare/serve datasets serially on this machine.
+- Complete formal manifests must declare cell/model/time caps before launch;
+  nested per-run budgets cannot silently replenish a study-wide resource budget.
+- Only blocker fixes and focused contract tests. Preserve raw failures and code
+  pins; new-version diagnostic attempts are separately labelled. No baseline
+  prompt/search/repair tuning, no repeated broad regression, no advantage-driven
+  workload selection or significance-driven sample extension.
+
+The simulator remains private and metered. Operational query loss retains the
+full declared coordinate denominator and is independent of answer EM/F1. Offline
+reference/catalog/load costs stay separate. Native/RDF panels cannot mix speedups.
+
+## Immediate output checkpoints
+
+- Fresh model/native readiness receipt after representation fix.
+- FinBench public request/family manifest, private intent/reference pins, disjoint
+  pilot/formal grouping, sampling evidence, and 48 attempted paired pilot cells.
+- Dataset and baseline capability table updated from actual setup/execution.
+- Formal release and analysis ready per admitted dataset; never wait for a perfect
+  general-purpose implementation before producing the first real results.
+
+## First FinBench pilot release
+
+The first 24-case pilot uses the already admitted outgoing temporal path + blocked
+sign-in pattern (compact-v2, depth 1 or 2, two boundary-inclusivity choices). This
+is a grounded-family development cohort, not the entire final workload. A family
+contains the legal intents for a fixed account/window; every window/intent sharing
+an account belongs to the same pilot/formal fold. Both template ID and grounded
+family/group IDs are recorded; templates are shared, so this cannot support an
+unseen-template generalization claim. Structural/template breadth remains a
+separate workload requirement rather than inflating the independent sample count.
+
+Choose 24 distinct accounts uniformly from the deterministic pilot fold, then
+uniformly choose one of four equal-duration source-time windows and one of eight
+legal intents. Seal the complete private selection before calculating any CSV
+reference answer. Do not inspect degree, answer existence, latency or method
+output when selecting. The public NL carries the fixed bounds/IDs and all open
+conventions; the private truth index is not in worker/model inputs.
+
+Twelve cases test live NL and twelve test controlled initial state with path depth
+already supplied. Each runs both current modes, epsilon 0.5 for Performance; first
+method order is balanced within each track. This yields 48 method cells and at most
+24 new model generations. The two timing tracks are analyzed separately. These
+pilot observations do not count as the formal sample, and no output is relabelled
+as a new independent case or template.
+
+Repaired two-call live native admission passed on code `9c05901`:
+`ch7-nl-native-20260920-v2/receipt.json`, SHA-256
+`5a27cab8fb38f4460e19b6ede93b2d267c4e5b31cf83347e7757c3b3f5eb34fa`.
+Both modes executed once; Exact EM=1; both certificates passed; all services closed.
+
+## Post-pilot execution blocker: equivalent Match projections
+
+The first frozen pilot selected three full transfer-edge reads differing only in
+output aliases. The current sharing pass now optionally proves equivalence from
+the original semantic Match and backend compiler: both source artifact and
+normalizer must exactly match recompilation; a canonical projection is compiled
+for comparison only. Keep the original representative native query and decoder;
+replace each redundant decoder with a bijective column projection of the shared
+normalized relation. All consumers, identities, nulls and final predicates remain.
+Constraints, binding queries, modified decoders/artifacts, different sources or
+snapshots, and retrieval limits are conservatively excluded from this new pass.
+The existing identical-read pass remains available without compiler context.
+No new semantic operator, extra execution or cross-query cache is introduced.
+
+At most two source recompilations per eligible Match per physical candidate,
+followed by keyed grouping and linear graph rewriting: the existing polynomial
+input/compilation bound is preserved. Baseline and optional candidates share this
+optimization before cost estimation, for both terminal modes.
+
+Acceptance uses focused independent RDF edge-pair answers and a new native
+diagnostic release with frozen pilot cases P01 and P13, each in both modes.
+P13 is the pilot's sole nonempty reference; selecting it is an explicit development
+correctness check, not a revised evaluation sample. P01 supplies the empty case.
+Reuse their controlled inputs and original references; no model calls, no repair,
+at most four executions, 600 s batch wall time, 1 GiB artifact cap, same per-method
+and source limits, and the existing 6 GiB free-disk reserve. Preserve the original
+pilot runs and label all new timings development diagnostics, not formal speedups.
+
+## 2026-09-21 resumed shape admission
+
+The user explicitly resumed at 10:00 Asia/Shanghai. Before publishing a broader
+formal workload, admit the three new finite shapes on the existing eight-node
+snapshot. Each has 16 intents; all 48 have independently tabulated reference
+answers compared against the portable RDF executor. The new gate is three fixed
+development questions, each in both modes, first controlled then live NL: at most
+12 final plans and six model calls, zero retries, 1,800 s wall, 1 GiB retained
+package, 6 GiB free-disk reserve and existing worker/source limits. It is not a
+formal sample, repeat or a new code-selected replacement for a failed old cell.
+The controlled phase must finish correctly before the six NL calls are launched.
+References/private queries are not provided to the NL model. Both modes use the
+same compact-v2 frontend, source snapshot, scope domains and budget. No LLM calls
+or catalog/data rebuilds are needed for the controlled admission.
+
+GitHub connectivity recovered and all prior local commits through `7a764a1` were
+successfully pushed. The exact official LiteLLM 1.37.19 source tag was recovered;
+the baseline's 300 s dependency-install attempt is preserved as budget-stopped,
+not an algorithm failure. No baseline source changed or model call occurred.
+
+The resumed tiny gate completed all 12 cells: six controlled answers correct;
+six live NL proposals failed before scope confirmation because an unspecified
+boolean predicate was omitted. Retain all six failures. The representative
+compact proposal needs the public finite-domain construction contract at its
+frontend: it must contain each unknown coordinate, without treating its arbitrary
+representative as authoritative. Forward only the public ScopePolicy and this
+instruction, never the private query/outcome. All compared methods must have the
+same public scope metadata available; neither source assignments nor gold intent
+are introduced. An external method may use its own native way of consuming it;
+do not change its prompts/algorithm to exploit it.
+
+Model output also reordered node/edge declarations. Representation identity v2
+uses finite structural-role color refinement, not permutation enumeration; it
+compares the full renamed AST, so identical colors alone cannot authorize scope.
+Unresolved symmetry retains declaration order and may conservatively reject.
+Directions, literal values, ordering, aggregate and contribution grain remain
+exact. No missing condition is inserted into a saved proposal. Existing failed
+records keep their original identities and code pins.
+
+After focused checks, allow a separate three-call NL-Exact development diagnostic
+(one per shape, shared frontend). Same questions/data and limits, new code and
+directory, no automatic retry or replacement of the failed six cells. This tests
+the frontend contract, not an improved model-quality score or formal result.
+
+The corrected three-call NL gate passed on `1913fc4`: all three shapes returned
+the exact independent answer with one model call, one clarification and one
+execution each, query loss zero and no certificate violation. Services closed.
+The intermediate v2 gate has a preserved release-selector bug: it ran three
+controlled cells (all correct, zero model calls) and left nine unattempted; it is
+not NL admission. The selector bug was fixed before the separate v3 gate.
+
+### Three-shape SF0.1 development cohort, frozen before answers
+
+This addresses missing structural coverage in the original single-template pilot,
+not a relabelled formal result. Choose eight families uniformly per new shape;
+use 16 distinct account anchors across the account shapes and eight distinct
+company anchors. Keep the original account pilot/formal split; company groups
+use a type-qualified deterministic split. All windows/intents for an anchor have
+one fold. Within each family choose one of four source-time quarters and one of
+16 legal intents uniformly, without reading reference answers or degree. No
+answer-based resampling. The same structural templates remain shared with formal.
+
+Each shape has four NL and four controlled cases. Controlled cases have the
+structural choice (depth/aggregate) and lower boundary already supplied as public
+initial evidence; blocked-recipient status and upper inclusivity remain unknown.
+The full four-coordinate denominator stays six. NL cases start without those
+initial clues. Method order is balanced within shape and track. Thus 24 distinct
+base cases, 48 cells, at most 24 new model calls, zero retries; this is additional
+development work needed after the first pilot exposed its coverage limitation.
+
+Use the existing admitted SF0.1 stores, same frozen estimator, 90 s/method,
+1 GiB worker and 2 GiB source bounds, 3 GiB package/6 GiB free-disk reserve,
+one-hour batch wall limit. No baseline install or data preparation may overlap
+measured execution. Preserve all failures, empty references and original pilot
+results. Formal cohorts/repeats/budgets are still to be frozen after this admission.
+
+## Approved dual sampling frames and completed coverage pilot
+
+2026-09-21 the user approved separately reported all-ID and source-structural-active frames. Follow [the precise frame definitions](chapter7_sampling_strata_20260921.md); do not modify any frozen pilot. The three-shape pilot sealed all 48 cells, 24/24 Exact and 23/24 Performance answers correct, no certificate violation or retry, all owned services closed. Performance saved a controlled clarification but did not reduce measured time. Formal sample sizes and study caps remain to be frozen. See [the measured report](../report/chapter7_three_shape_pilot_20260921.md).

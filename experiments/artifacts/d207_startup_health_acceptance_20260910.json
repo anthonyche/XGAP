@@ -1,0 +1,205 @@
+{
+  "milestone": "D207",
+  "observed_date": "2026-09-10",
+  "status": "software_acceptance_passed",
+  "parent_commit": "6b353ea68df2f98b34de368445deebdfe18a95f1",
+  "source_sha256": {
+    "src/xgap/experiments/cwru_gpu_profile.py": "1592c2b96b167593fffc2fa4707edead870b51acfb1b4282757379e12ffa1487",
+    "src/xgap/experiments/cwru_vllm.py": "6a2070477203963a091d8e25caf170c95a11c5f68f6b8f5f4b54e77750c479eb",
+    "scripts/cwru/check_vllm_ready.sh": "96b6e4f711f7061fe7269eb0f680b8991592a2ac79f8043b4675991562290cf2",
+    "scripts/cwru/launch_vllm_qwen3_32b.sh": "57b5fc400f602b88e7afcb31faa90265b1f2fb1ee9e9d80707fb89b56d715e41",
+    "tests/test_cwru_gpu_profile.py": "1b634d76d2520cd795828750825c80e06c0dcace52c376564db34a7f9012e837",
+    "tests/test_cwru_startup_health.py": "7aaf27eb197884a392ac151bfb32cf0623f0fbe80859b212091a7ac5975ef14a"
+  },
+  "focused": {
+    "session_id": 17451,
+    "exit_code": 0,
+    "passed": 51,
+    "elapsed_seconds": 20.58,
+    "log_sha256": "cab3be1deb0994c27e8f3ee9a9b3428a72a4b4b613681876276e5df81c706635"
+  },
+  "full": {
+    "session_id": 60312,
+    "exit_code": 0,
+    "passed": 2922,
+    "skipped": 38,
+    "elapsed_seconds": 673.86,
+    "log_sha256": "3fe3ac19fb40c3ad91e8d1536b441fd308bf66a52061b5cbccf639d347e138b6",
+    "final_summary": "2922 passed, 38 skipped in 673.86s (0:11:13)"
+  },
+  "harness_examples": [
+    {
+      "entrypoint": "scripts/check_harness.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.024
+    },
+    {
+      "entrypoint": "examples/core_algebra_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.045
+    },
+    {
+      "entrypoint": "examples/plan_print_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.045
+    },
+    {
+      "entrypoint": "examples/recursive_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.043
+    },
+    {
+      "entrypoint": "examples/solution_space_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.043
+    },
+    {
+      "entrypoint": "examples/semantic_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.044
+    },
+    {
+      "entrypoint": "examples/lowering_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.049
+    },
+    {
+      "entrypoint": "examples/pattern_lowering_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.052
+    },
+    {
+      "entrypoint": "examples/quantified_pattern_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.063
+    },
+    {
+      "entrypoint": "examples/compiler_mvp_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.072
+    },
+    {
+      "entrypoint": "examples/llm_boundary_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.128
+    },
+    {
+      "entrypoint": "examples/m11_physical_planner_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.161
+    },
+    {
+      "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.145
+    },
+    {
+      "entrypoint": "examples/m12_experiment_contract_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.252
+    },
+    {
+      "entrypoint": "examples/m12c_calibration_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.381
+    },
+    {
+      "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 6.178
+    },
+    {
+      "entrypoint": "examples/m15_goal_loop_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.093
+    },
+    {
+      "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.155
+    },
+    {
+      "entrypoint": "examples/m15_semantic_intake_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.08
+    },
+    {
+      "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.411
+    },
+    {
+      "entrypoint": "examples/freebase_typed_fact_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.809
+    },
+    {
+      "entrypoint": "examples/grounded_candidate_execution_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.19
+    },
+    {
+      "entrypoint": "examples/freebase_question_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.349
+    }
+  ],
+  "submission_helper_fixtures": {
+    "controlled_process_stubs": true,
+    "real_slurm": false,
+    "cases": [
+      {
+        "case": "normal",
+        "passed": true,
+        "submission_attempts": 1
+      },
+      {
+        "case": "active_xgap",
+        "passed": true,
+        "submission_attempts": 0
+      },
+      {
+        "case": "predecessor_changed",
+        "passed": true,
+        "submission_attempts": 0
+      },
+      {
+        "case": "excluded_node_returned",
+        "passed": true,
+        "submission_attempts": 0
+      },
+      {
+        "case": "resource_rejected",
+        "passed": true,
+        "submission_attempts": 0
+      },
+      {
+        "case": "submission_uncertain",
+        "passed": true,
+        "submission_attempts": 1
+      },
+      {
+        "case": "prior_attempt",
+        "passed": true,
+        "submission_attempts": 0
+      }
+    ]
+  },
+  "live_gpu_health_verified": false,
+  "corrected_remote_submission": false,
+  "new_question_inference_results": false,
+  "paper_result": false,
+  "retained_predecessor": {
+    "job_id": "3799649",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "node": "gput069",
+    "root_error": "CUDA error: uncorrectable ECC error encountered"
+  },
+  "limits": [
+    "CUDA and model responses in focused tests are controlled stand-ins.",
+    "Skipped live behavior remains unverified.",
+    "Submission helper fixtures do not create real Slurm jobs.",
+    "No source edits followed the full-suite launch; documentation and this receipt were finalized afterward."
+  ]
+}

@@ -1,0 +1,253 @@
+{
+  "schema_version": "m13e4-grailqa-semantic-paper-protocol-draft-v1",
+  "protocol_id": "m13e4-grailqa-sigmod2027-semantic-draft-v2",
+  "source_artifacts": [
+    {
+      "artifact_id": "grailqa-pilot-artifact-manifest",
+      "path": "datasets/grailqa_pilot_v1/artifact_manifest.json",
+      "sha256": "42b743d719decf65142218ce88eb0a43c91c887a5de6157692e53502be0c0edf"
+    },
+    {
+      "artifact_id": "grailqa-pilot-selection",
+      "path": "datasets/grailqa_pilot_v1/pilot_ids.json",
+      "sha256": "60ef62d9aad5c81eec177c498860f12d9b18f4cfd5ac2f8ad97fb65ad0c0ee81"
+    },
+    {
+      "artifact_id": "qwen3-32b-model-config",
+      "path": "models/qwen3_32b_vllm_cwru_m13e2/model_config.json",
+      "sha256": "1f1504c5057b7edad00970334f8b81a860bffd63219e8b009f69628714e54214"
+    },
+    {
+      "artifact_id": "qwen3-32b-prompt",
+      "path": "models/qwen3_32b_vllm_cwru_m13e2/prompt.json",
+      "sha256": "984b2330e071a0af621a03b605eca34ba535a304e16dfc920a27eedc5a53a882"
+    },
+    {
+      "artifact_id": "qwen3-32b-structured-schema",
+      "path": "models/qwen3_32b_vllm_cwru_m13e2/structured_schema.json",
+      "sha256": "1b772e5342db1e1d29b63ade2ba9bf822a1f870ddf073b81e5e20a4e033bc871"
+    },
+    {
+      "artifact_id": "grailqa-preflight18-spec",
+      "path": "experiments/specs/grailqa_semantic_preflight_v2_cwru_qwen3_32b.json",
+      "sha256": "416abed165ddfbf0830da6601ea6bb63b7debd1ce1094f6dab9251e7e35e4f0b"
+    },
+    {
+      "artifact_id": "grailqa-paper-run-spec",
+      "path": "experiments/specs/grailqa_semantic_paper_run_cwru_qwen3_32b.json",
+      "sha256": "6faac0138c22c4e5e11da174843c96a58b898f8a40198b4cf2447345dab8986e"
+    }
+  ],
+  "scope": {
+    "venue": "ACM_SIGMOD_2027_research_round_4",
+    "submission_deadline_aoe": "2026-10-17T23:59:00-12:00",
+    "study_kind": "result_blind_semantic_interpretation_evaluation",
+    "primary_artifact": "GrailQA_v1_0_frozen_150_query_pilot",
+    "physical_track_separate": "LDBC_FinBench_confirmatory",
+    "semantic_track_backend_execution": false
+  },
+  "dataset_contract": {
+    "dataset_id": "grailqa_pilot_v1",
+    "license": "CC_BY_SA_4_0",
+    "pilot_question_count": 150,
+    "train_question_count": 120,
+    "dev_question_count": 30,
+    "selection_uses_xgap_outcomes": false,
+    "inference_questions_sha256": "34f9c667c975796f11c2fd9688b39cd2ebdbb1fd2dc4f6011d5fc6ba7e6b16a2",
+    "reference_interpretations_sha256": "908b8acb2fdfa43d334527cf3bb949daabee430db25678fee013105abaa3b3e9",
+    "ontology_sha256": "80d1b42a221327b8704b029b20589dad265cdabe4fa831d9f465dc132523f5d4",
+    "gold_opened_after_all_inference": true
+  },
+  "inference_contract": {
+    "model_bundle_root": "models/qwen3_32b_vllm_cwru_m13e2",
+    "model_bundle_hash": "ed9fa4db9f0981e7307ef7323415159fdeb5117c8ab308218d1c8d282360bd6e",
+    "model": "Qwen/Qwen3-32B",
+    "provider": "vllm_openai_compatible",
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 0,
+    "maximum_repair_calls": 1,
+    "retrieval_k": 20,
+    "prompt_candidates_per_slot": 4,
+    "candidate_cap": 3,
+    "native_query_generation": false,
+    "backend_execution": false
+  },
+  "methods": {
+    "treatment": "ontology_bounded_c_sem_epsilon_frontier",
+    "primary_comparator": "model_confidence_top1_same_grounded_candidate_set",
+    "shared_candidate_generation": true,
+    "shared_grounding_and_validation": true,
+    "ontology_ablation": "exact_only_zero_deviation_ranking",
+    "equivalence_ablation": "no_semantic_equivalence_merge",
+    "frontier_pruning_ablation": "no_epsilon_or_K_pruning",
+    "oracle_upper_bound": "postinference_gold_simulated_clarification_only"
+  },
+  "outcomes": {
+    "primary": "exact_canonical_structural_interpretation_match",
+    "candidate_recall": "reference_supported_candidate_in_top3",
+    "coverage": "nonempty_admissible_return_set",
+    "hard_constraint_violations": "count_and_query_rate",
+    "frontier_size": "returned_interpretations_after_equivalence_epsilon_K",
+    "system_cost": "provider_calls_repairs_tokens_and_latency",
+    "reachability_stratum": "jointly_prompt_reachable_queries_reported_separately"
+  },
+  "analysis_design": {
+    "inferential_unit": "query",
+    "repetitions_are_independent_units": false,
+    "primary_test": "exact_two_sided_McNemar_on_paired_query_correctness",
+    "confidence_interval": "query_paired_bootstrap_percentile",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": "m13e4-grailqa-semantic-ci-v1",
+    "alpha": 0.05,
+    "secondary_multiplicity": "holm_familywise_alpha_0_05",
+    "report_per_query": true,
+    "report_all_attempts": true,
+    "missing_measurements": "no_imputation_failure_handled_by_selected_estimand"
+  },
+  "failure_policy": {
+    "automatic_retries": 0,
+    "provider_failure": "retained_as_query_outcome",
+    "malformed_output": "retained_as_query_outcome",
+    "grounding_failure": "retained_as_query_outcome",
+    "empty_admissible_set": "retained_as_query_outcome",
+    "completer_only_analysis": "secondary_diagnostic_only",
+    "repair_call_limit": 1
+  },
+  "evaluation_isolation": {
+    "gold_forbidden_during_inference": true,
+    "reference_opened_after_all_inference": true,
+    "preflight_outcomes_forbidden_from_parameter_selection": true,
+    "candidate_generation_reused_across_methods": true,
+    "catalog_reachability_is_paper_semantic_baseline": false,
+    "simulated_clarification_is_treatment": false
+  },
+  "preflight_gate": {
+    "independent_audit_required": true,
+    "author_review_required": true,
+    "parameter_tuning_from_preflight_forbidden": true,
+    "full_150_execution_requires_separate_authority": true
+  },
+  "author_decisions": [
+    {
+      "decision_id": "primary_reporting_population",
+      "allowed_values": [
+        "all_150_plus_joint_reachability_stratum",
+        "jointly_reachable_only",
+        "defer_semantic_track"
+      ],
+      "recommended_value": "all_150_plus_joint_reachability_stratum",
+      "selected_value": null
+    },
+    {
+      "decision_id": "primary_epsilon",
+      "allowed_values": [
+        "0.0",
+        "0.1",
+        "0.25"
+      ],
+      "recommended_value": "0.1",
+      "selected_value": null
+    },
+    {
+      "decision_id": "primary_comparator",
+      "allowed_values": [
+        "model_confidence_top1_same_candidate_set",
+        "first_valid_grounded_candidate"
+      ],
+      "recommended_value": "model_confidence_top1_same_candidate_set",
+      "selected_value": null
+    },
+    {
+      "decision_id": "inference_failure_estimand",
+      "allowed_values": [
+        "all_queries_failures_count_incorrect",
+        "available_case_primary_with_all_query_sensitivity"
+      ],
+      "recommended_value": "all_queries_failures_count_incorrect",
+      "selected_value": null
+    },
+    {
+      "decision_id": "interactive_clarification_role",
+      "allowed_values": [
+        "oracle_upper_bound_only",
+        "exclude_from_grailqa"
+      ],
+      "recommended_value": "oracle_upper_bound_only",
+      "selected_value": null
+    }
+  ],
+  "implementation_requirements": [
+    {
+      "requirement_id": "preflight18_independent_audit",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_preflight_evidence.py",
+        "sha256": "bbf2d066a6e52ce670c77ceea16a9d23c78ed79cc8686251bedc95e90eb297ed"
+      }
+    },
+    {
+      "requirement_id": "pilot150_query_local_catalog",
+      "status": "pending_live_evidence",
+      "evidence": null
+    },
+    {
+      "requirement_id": "preexecution_admission_chain",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_admission.py",
+        "sha256": "5e2bcf8513e483c0d1d14e5fb3fe15027e832f8aba1eafc14dafb24c1dfa8d0a"
+      }
+    },
+    {
+      "requirement_id": "paper_semantic_runner",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_run.py",
+        "sha256": "060115b3bb785a90d75dc8b3fc05ceba90e1b4259f30c54ce0cbbf3f55204ad9"
+      }
+    },
+    {
+      "requirement_id": "query_level_statistics_analyzer",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_analysis.py",
+        "sha256": "65ebf5fe898e0b42d5e728c09577396a51fef88882f4a62a8b791f2be1f9fab1"
+      }
+    },
+    {
+      "requirement_id": "independent_semantic_evidence_auditor",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_analysis_evidence.py",
+        "sha256": "af4899602d7f780df681ce9befcc535c5170bf90d78774e1d5a491681a5dcabf"
+      }
+    },
+    {
+      "requirement_id": "independent_semantic_run_evidence_auditor",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_run_evidence.py",
+        "sha256": "55bd5cc4248ced3105afc13bf39b1a52a0029d377d2c6f5654224f650b143c8d"
+      }
+    },
+    {
+      "requirement_id": "semantic_paper_result_admission",
+      "status": "ready",
+      "evidence": {
+        "path": "src/xgap/experiments/grailqa_semantic_paper_result.py",
+        "sha256": "5760495d028a299501bfd8ccaecc12ae9422dcb2fb6aa7b847c8b41c30b64ca5"
+      }
+    }
+  ],
+  "claim_boundary": {
+    "artifact_class": "result_blind_semantic_protocol_draft",
+    "contains_measurements": false,
+    "author_approved": false,
+    "full_150_run_authorized": false,
+    "paper_result": false
+  },
+  "automatic_retries": 0,
+  "paper_result": false,
+  "freeze_hash": "7dbd3295c07ca81b10171fc9c3fa63e25d5c6ed8d0a517d5f2f927449aac4957"
+}

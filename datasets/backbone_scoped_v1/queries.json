@@ -1,0 +1,862 @@
+[
+  {
+    "id": "N01",
+    "nl": "从 Dan 开始，先在一到两次 KNOWS 子路径内应用 TRAIL，再反向走一步回到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "bounded",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          },
+          "min_repeats": 1,
+          "max_repeats": 2
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "IN",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "TRAIL",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Join\n          Recursive [mode=TRAIL, max_depth=1]\n            Union\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n              Join\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n          Reverse\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [
+      "d/e6/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N01.cypher",
+      "fuseki": "targets/N01.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N02",
+    "nl": "从 Dan 开始，先在一到两次 KNOWS 子路径内应用 ACYCLIC，再反向走一步回到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "bounded",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          },
+          "min_repeats": 1,
+          "max_repeats": 2
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "IN",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "ACYCLIC",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Join\n          Recursive [mode=ACYCLIC, max_depth=1]\n            Union\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n              Join\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n          Reverse\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [],
+    "reference_target_queries": {
+      "neo4j": "targets/N02.cypher",
+      "fuseki": "targets/N02.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N03",
+    "nl": "从 Dan 开始，先在一到两次 KNOWS 子路径内应用 SIMPLE，再反向走一步回到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "bounded",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          },
+          "min_repeats": 1,
+          "max_repeats": 2
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "IN",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SIMPLE",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Join\n          Recursive [mode=SIMPLE, max_depth=1]\n            Union\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n              Join\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n          Reverse\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [
+      "d/e6/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N03.cypher",
+      "fuseki": "targets/N03.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N04",
+    "nl": "从 Dan 开始，先在一到两次 KNOWS 子路径内应用 SHORTEST，再反向走一步回到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "bounded",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          },
+          "min_repeats": 1,
+          "max_repeats": 2
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "IN",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Join\n          Recursive [mode=SHORTEST, max_depth=1]\n            Union\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n              Join\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n          Reverse\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [
+      "d/e6/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N04.cypher",
+      "fuseki": "targets/N04.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N05",
+    "nl": "两段拼接成整体后再施加 TRAIL，不可重复同一自环边。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "seq",
+          "left": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {
+                "label": "KNOWS",
+                "direction": "OUT",
+                "properties": {}
+              }
+            },
+            "min_repeats": 1,
+            "max_repeats": 1
+          },
+          "right": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          }
+        },
+        "min_repeats": 1,
+        "max_repeats": 1
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "TRAIL",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Recursive [mode=TRAIL, max_depth=1]\n          Join\n            Recursive [mode=TRAIL, max_depth=1]\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [],
+    "reference_target_queries": {
+      "neo4j": "targets/N05.cypher",
+      "fuseki": "targets/N05.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N06",
+    "nl": "从 Dan 可选一段至多重复两次的最短 KNOWS 子路径，到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "optional",
+        "child": {
+          "kind": "plus",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Union\n          Nodes\n          Recursive [mode=SHORTEST, max_depth=2]\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [
+      "d",
+      "d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N06.cypher",
+      "fuseki": "targets/N06.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N07",
+    "nl": "从 Dan 走零次或一段最短子路径，再走一步到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "star",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Join\n          Union\n            Nodes\n            Recursive [mode=SHORTEST, max_depth=2]\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "expected_paths": [
+      "d/e6/d",
+      "d/e6/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N07.cypher",
+      "fuseki": "targets/N07.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N08",
+    "nl": "每次可走一边或两边，重复一到两次后从 Alice 到 Cara，取最短。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "alt",
+          "left": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          },
+          "right": {
+            "kind": "seq",
+            "left": {
+              "kind": "rel",
+              "edge": {
+                "label": "KNOWS",
+                "direction": "OUT",
+                "properties": {}
+              }
+            },
+            "right": {
+              "kind": "rel",
+              "edge": {
+                "label": "KNOWS",
+                "direction": "OUT",
+                "properties": {}
+              }
+            }
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "c"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"c\"]\n      Selection [first.id = \"a\"]\n        Recursive [mode=SHORTEST, max_depth=2]\n          Union\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges\n            Join\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges",
+    "expected_paths": [
+      "a/e4/c"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N08.cypher",
+      "fuseki": "targets/N08.rq"
+    },
+    "expected_remote_calls": 2
+  },
+  {
+    "id": "N09",
+    "nl": "从 Alice 先选择最多两次 KNOWS 的最短子路径，再反向一步到 Bob。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "plus",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "IN",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"b\"]\n      Selection [first.id = \"a\"]\n        Join\n          Recursive [mode=SHORTEST, max_depth=2]\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges\n          Reverse\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [
+      "a/e1/b/e8/d/e8/b",
+      "a/e4/c/e2/b",
+      "a/e4/c/e5/d/e8/b",
+      "a/e7/b/e8/d/e8/b"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N09.cypher",
+      "fuseki": "targets/N09.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N10",
+    "nl": "先完成最短子路径选择与反向拼接，再只保留 Alice 到 Bob 的三边答案。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "plus",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "IN",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": {
+        "kind": "length_equals",
+        "value": 3
+      },
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [len() = 3]\n      Selection [last.id = \"b\"]\n        Selection [first.id = \"a\"]\n          Join\n            Recursive [mode=SHORTEST, max_depth=2]\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n            Reverse\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges",
+    "expected_paths": [
+      "a/e1/b/e8/d/e8/b",
+      "a/e4/c/e5/d/e8/b",
+      "a/e7/b/e8/d/e8/b"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N10.cypher",
+      "fuseki": "targets/N10.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N11",
+    "nl": "Dan 的一步路径，或 TRAIL 子路径拼接反向一步；对两分支取并集。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "alt",
+        "left": {
+          "kind": "seq",
+          "left": {
+            "kind": "bounded",
+            "child": {
+              "kind": "rel",
+              "edge": {
+                "label": "KNOWS",
+                "direction": "OUT",
+                "properties": {}
+              }
+            },
+            "min_repeats": 1,
+            "max_repeats": 2
+          },
+          "right": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "IN",
+              "properties": {}
+            }
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "TRAIL",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Union\n          Join\n            Recursive [mode=TRAIL, max_depth=1]\n              Union\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n                Join\n                  Selection [label(edge(1)) = \"KNOWS\"]\n                    Edges\n                  Selection [label(edge(1)) = \"KNOWS\"]\n                    Edges\n            Reverse\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "expected_paths": [
+      "d/e6/d",
+      "d/e6/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N11.cypher",
+      "fuseki": "targets/N11.rq"
+    },
+    "expected_remote_calls": 4
+  },
+  {
+    "id": "N12",
+    "nl": "Dan 可先走一段无重复节点的子路径，也可不走，然后走一步回到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "optional",
+          "child": {
+            "kind": "plus",
+            "child": {
+              "kind": "rel",
+              "edge": {
+                "label": "KNOWS",
+                "direction": "OUT",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "ACYCLIC",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Join\n          Union\n            Nodes\n            Recursive [mode=ACYCLIC, max_depth=2]\n              Selection [label(edge(1)) = \"KNOWS\"]\n                Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "expected_paths": [
+      "d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N12.cypher",
+      "fuseki": "targets/N12.rq"
+    },
+    "expected_remote_calls": 4
+  },
+  {
+    "id": "N13",
+    "nl": "先选择一到两次 KNOWS 中的最短子路径，恰好拼接两段，再选最短，Dan 到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "bounded",
+        "child": {
+          "kind": "bounded",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          },
+          "min_repeats": 1,
+          "max_repeats": 2
+        },
+        "min_repeats": 2,
+        "max_repeats": 2
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "SHORTEST",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Recursive [mode=SHORTEST, max_depth=1]\n          Join\n            Recursive [mode=SHORTEST, max_depth=1]\n              Union\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n                Join\n                  Selection [label(edge(1)) = \"KNOWS\"]\n                    Edges\n                  Selection [label(edge(1)) = \"KNOWS\"]\n                    Edges\n            Recursive [mode=SHORTEST, max_depth=1]\n              Union\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n                Join\n                  Selection [label(edge(1)) = \"KNOWS\"]\n                    Edges\n                  Selection [label(edge(1)) = \"KNOWS\"]\n                    Edges",
+    "expected_paths": [
+      "d/e6/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N13.cypher",
+      "fuseki": "targets/N13.rq"
+    },
+    "expected_remote_calls": 2
+  },
+  {
+    "id": "N14",
+    "nl": "从 Bob 反向两步，在该子路径内应用 TRAIL，再正向一步到 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "seq",
+        "left": {
+          "kind": "bounded",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "IN",
+              "properties": {}
+            }
+          },
+          "min_repeats": 2,
+          "max_repeats": 2
+        },
+        "right": {
+          "kind": "rel",
+          "edge": {
+            "label": "KNOWS",
+            "direction": "OUT",
+            "properties": {}
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "TRAIL",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"b\"]\n        Join\n          Recursive [mode=TRAIL, max_depth=1]\n            Join\n              Reverse\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n              Reverse\n                Selection [label(edge(1)) = \"KNOWS\"]\n                  Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+    "expected_paths": [
+      "b/e1/a/e3/c/e5/d",
+      "b/e7/a/e3/c/e5/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N14.cypher",
+      "fuseki": "targets/N14.rq"
+    },
+    "expected_remote_calls": 3
+  },
+  {
+    "id": "N15",
+    "nl": "内外两层均最多重复两次，WALK 模式从 Dan 返回 Dan。",
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "expr": {
+        "kind": "plus",
+        "child": {
+          "kind": "plus",
+          "child": {
+            "kind": "rel",
+            "edge": {
+              "label": "KNOWS",
+              "direction": "OUT",
+              "properties": {}
+            }
+          }
+        }
+      },
+      "target": {
+        "properties": {
+          "id": "d"
+        }
+      },
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": 2
+    },
+    "expected_logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.id = \"d\"]\n      Selection [first.id = \"d\"]\n        Recursive [mode=WALK, max_depth=2]\n          Recursive [mode=WALK, max_depth=2]\n            Selection [label(edge(1)) = \"KNOWS\"]\n              Edges",
+    "expected_paths": [
+      "d/e6/d",
+      "d/e6/d/e6/d",
+      "d/e6/d/e6/d/e6/d",
+      "d/e6/d/e6/d/e6/d/e6/d"
+    ],
+    "reference_target_queries": {
+      "neo4j": "targets/N15.cypher",
+      "fuseki": "targets/N15.rq"
+    },
+    "expected_remote_calls": 1
+  }
+]

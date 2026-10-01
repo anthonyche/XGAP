@@ -1,0 +1,300 @@
+{
+  "accepted_offline_checks": 11,
+  "actual_fedx_shared_nl": {
+    "answer_em": 0.0,
+    "bag_f1": 0.0,
+    "input_tokens": 2087,
+    "method": "fedx",
+    "model_calls": 1,
+    "observer_stopped": true,
+    "offline_fresh_serving_ms": 1967.4657918512821,
+    "outcome_recorded": true,
+    "output_tokens": 550,
+    "owned_processes_terminal": true,
+    "processes": [
+      {
+        "name": "source-graph",
+        "pid": 41443,
+        "returncode": 143
+      },
+      {
+        "name": "source-control",
+        "pid": 41454,
+        "returncode": 143
+      },
+      {
+        "name": "fedx",
+        "pid": 41460,
+        "returncode": 143
+      }
+    ],
+    "quiescence": {
+      "complete": true,
+      "groups": [
+        {
+          "complete": true,
+          "elapsed_ms": 29.479416087269783,
+          "live_pids": [],
+          "name": "fedx",
+          "signals": [
+            "SIGTERM"
+          ]
+        },
+        {
+          "complete": true,
+          "elapsed_ms": 440.0793332606554,
+          "live_pids": [],
+          "name": "control",
+          "signals": [
+            "SIGTERM"
+          ]
+        },
+        {
+          "complete": true,
+          "elapsed_ms": 429.5622492209077,
+          "live_pids": [],
+          "name": "graph",
+          "signals": [
+            "SIGTERM"
+          ]
+        }
+      ],
+      "new_serving_session_required": true,
+      "recovery_ms": 899.2977924644947
+    },
+    "recovery_ms": 899.2977924644947,
+    "resources": {
+      "limitations": "sampled group RSS may double-count shared pages; short-lived CPU/peaks may be missed; not an OS cap",
+      "limits": {
+        "method": 2147483648,
+        "source": 2147483648
+      },
+      "owned_groups": [
+        {
+          "created": 1789282562.214556,
+          "name": "graph",
+          "pid": 41443,
+          "role": "source"
+        },
+        {
+          "created": 1789282563.181857,
+          "name": "control",
+          "pid": 41454,
+          "role": "source"
+        },
+        {
+          "created": 1789282563.944579,
+          "name": "fedx",
+          "pid": 41460,
+          "role": "method_host"
+        }
+      ],
+      "sampled_cpu_seconds": {
+        "method": 1.846611998,
+        "source": 2.4101756320000005
+      },
+      "sampled_peak_rss_bytes": {
+        "method": 157024256,
+        "source": 981303296
+      },
+      "samples": 73,
+      "scope": "method worker plus hosted method; source groups separately, remote LLM excluded",
+      "status": "within_observed_budget"
+    },
+    "source_ask_requests": 173,
+    "source_requests": 261,
+    "status": "observed_source_failure",
+    "success": false,
+    "total_online_ms": 5307.914542034268,
+    "trial_receipt": {
+      "bytes": 377255,
+      "path": "/Users/anthonyche/xgap-data/shared-nl-native-20260913-fedx-first-query/fedx/trial/receipt.json",
+      "sha256": "0c1194b5a2c7ff74c10fba8bdd2bf80845839a79b515dd5079f28cbedcf402d3"
+    }
+  },
+  "actual_model_calls_total": 2,
+  "actual_source_requests_total": 270,
+  "actual_top_level_executions_total": 2,
+  "actual_xgap_rdf_nl": {
+    "answer_em": 1.0,
+    "bag_f1": 1.0,
+    "input_tokens": 2083,
+    "method": "xgap-performance",
+    "model_calls": 1,
+    "observer_stopped": true,
+    "offline_fresh_serving_ms": 1761.715667322278,
+    "outcome_recorded": true,
+    "output_tokens": 550,
+    "owned_processes_terminal": true,
+    "processes": [
+      {
+        "name": "source-graph",
+        "pid": 41039,
+        "returncode": 143
+      },
+      {
+        "name": "source-control",
+        "pid": 41052,
+        "returncode": 143
+      }
+    ],
+    "quiescence": {
+      "complete": true,
+      "kind": "normal_materialized_return_and_observed_source_drain"
+    },
+    "recovery_ms": 0,
+    "resources": {
+      "limitations": "sampled group RSS may double-count shared pages; short-lived CPU/peaks may be missed; not an OS cap",
+      "limits": {
+        "method": 2147483648,
+        "source": 2147483648
+      },
+      "owned_groups": [
+        {
+          "created": 1789282399.466417,
+          "name": "graph",
+          "pid": 41039,
+          "role": "source"
+        },
+        {
+          "created": 1789282400.549649,
+          "name": "control",
+          "pid": 41052,
+          "role": "source"
+        }
+      ],
+      "sampled_cpu_seconds": {
+        "method": 0.292298088,
+        "source": 0.9828378480000002
+      },
+      "sampled_peak_rss_bytes": {
+        "method": 40763392,
+        "source": 419495936
+      },
+      "samples": 61,
+      "scope": "method worker plus hosted method; source groups separately, remote LLM excluded",
+      "status": "within_observed_budget"
+    },
+    "source_ask_requests": 0,
+    "source_requests": 9,
+    "status": "answered",
+    "success": true,
+    "total_online_ms": 3638.1637919694185,
+    "trial_receipt": {
+      "bytes": 21341,
+      "path": "/Users/anthonyche/xgap-data/shared-nl-native-20260913-v1/xgap-performance/trial/receipt.json",
+      "sha256": "f91e758d22faa5fb90f2181ce42c240490b59a65226d5b84d4186446041bdcb0"
+    }
+  },
+  "all_owned_pids_absent": [
+    41039,
+    41052,
+    41078,
+    41085,
+    41091,
+    41443,
+    41454,
+    41460
+  ],
+  "audit": {
+    "bytes": 8117,
+    "path": "/Users/anthonyche/xgap-data/shared-nl-native-20260913-fedx-first-query/acceptance_audit.json",
+    "sha256": "ce228d4dd07a782a705181818a0af1289bcc0d60293cd5c0b7f1daade1fe4455"
+  },
+  "baseline_algorithm_changes": 0,
+  "catalog_rebuilds": 0,
+  "code_commits": [
+    "a0d5ebfd24873a152f77fbef8f8c8554622eee5a",
+    "fd47ea356ef497f6c4ae1c4d53f4dbe1caf3d9b5"
+  ],
+  "failure_archives": [
+    "/Users/anthonyche/xgap-data/global-compiler-20260913-first-failure",
+    "/Users/anthonyche/xgap-data/shared-frontend-20260913-first-failure"
+  ],
+  "fedx_offline_diagnostic": {
+    "bytes": 589,
+    "path": "/Users/anthonyche/xgap-data/shared-nl-native-20260913-fedx-first-query/offline-emitted-query-diagnostic.json",
+    "sha256": "ebd4753316c6b2bfe6947a2042c17365669cf6efbe5c9631cfb4a45877bb3b8c"
+  },
+  "fedx_outcome_category": "harness_budget_censored; no native answer observed, not native semantic or planner failure",
+  "fit_calls": 0,
+  "formal_campaign_ready": false,
+  "forwarded_source_requests_total": 265,
+  "new_unique_offline_checks": 11,
+  "next": "publish full RDF derivative offline; declare shared formal budgets independently of tiny 256-call cap; complete serving/controller",
+  "query_retries": 0,
+  "receipts": [
+    {
+      "bytes": 2460,
+      "path": "/Users/anthonyche/xgap-data/shared-nl-native-20260913-v1/receipt.json",
+      "sha256": "f7d475d949abca338e1a47528401dd1a723389009786a76dd89f37e80f6891c6"
+    },
+    {
+      "bytes": 2605,
+      "path": "/Users/anthonyche/xgap-data/shared-nl-native-20260913-fedx-first-query/receipt.json",
+      "sha256": "5ddef57ab8dc860990e562ba4b9df4b1da2688b9c8c829610eaa922ee37f08f3"
+    }
+  ],
+  "schema_version": "xgap-shared-nl-boundary-audit-v1",
+  "successful_gate_reruns": 0,
+  "summary_rebuilds": 0,
+  "test_history": [
+    {
+      "failed": 4,
+      "file": "test_global_semantic_sparql.py",
+      "passed": 1,
+      "seconds": 54.02
+    },
+    {
+      "deselected": 1,
+      "passed": 4,
+      "scope": "only failed compiler checks after bounded flattening/test observation fix",
+      "seconds": 3.67
+    },
+    {
+      "failed": 1,
+      "file": "test_shared_external_frontend.py",
+      "passed": 2,
+      "seconds": 0.62
+    },
+    {
+      "failed": 1,
+      "passed": 0,
+      "scope": "only failed controlled RDFLib diagnostic, before fake-transport serialization",
+      "seconds": 0.47
+    },
+    {
+      "deselected": 2,
+      "passed": 4,
+      "scope": "failed fake transport plus three not-yet-run checks",
+      "seconds": 0.73
+    }
+  ],
+  "toy_observer_denied_requests": 5,
+  "unstarted_fedx_cell": {
+    "error": "Service exited during startup",
+    "error_type": "RuntimeError",
+    "method": "fedx",
+    "observer_stopped": true,
+    "outcome_recorded": false,
+    "owned_processes_terminal": true,
+    "processes": [
+      {
+        "name": "source-graph",
+        "pid": 41078,
+        "returncode": 143
+      },
+      {
+        "name": "source-control",
+        "pid": 41085,
+        "returncode": 143
+      },
+      {
+        "name": "fedx",
+        "pid": 41091,
+        "returncode": 1
+      }
+    ],
+    "success": false
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": "xgap-campaign-observation-acceptance-v1",
+  "unique_checks_passed": 10,
+  "live_model_calls": 0,
+  "native_database_queries": 0,
+  "baseline_queries": 0,
+  "legacy_success_gates_repeated": 0,
+  "automatic_external_retries": 0,
+  "formal_campaign_ready": false,
+  "runs": [
+    {
+      "command": "pytest tests/test_campaign_source_observer.py -q --tb=short",
+      "passed": 7,
+      "failed": 1,
+      "elapsed_seconds": 0.77,
+      "failure": "Saved replay fixture path omitted trial/; no external action"
+    },
+    {
+      "command": "pytest tests/test_campaign_source_observer.py::test_saved_legacy_cap_failure_is_replay_only -q --tb=short",
+      "passed": 1,
+      "elapsed_seconds": 0.2,
+      "scope": "only failed local replay"
+    },
+    {
+      "command": "pytest tests/test_campaign_source_observer.py::test_truncated_response_is_partial_transport_evidence tests/test_campaign_source_observer.py::test_failed_phase_is_sealed_and_cannot_reuse_common_session -q --tb=short",
+      "passed": 2,
+      "elapsed_seconds": 0.44,
+      "scope": "two additional transport/failure-finalization risks"
+    }
+  ],
+  "legacy_evidence": "/Users/anthonyche/xgap-data/shared-nl-native-20260913-fedx-first-query/fedx/trial/receipt.json",
+  "legacy_classification": {
+    "status": "harness_budget_censored",
+    "denied_source_calls": 5,
+    "baseline_intrinsic_error_established": false
+  }
+}

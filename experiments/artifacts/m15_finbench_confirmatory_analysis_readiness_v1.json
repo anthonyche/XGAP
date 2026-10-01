@@ -1,0 +1,59 @@
+{
+  "schema_version": "m15-finbench-confirmatory-analysis-readiness-v1",
+  "artifact_id": "m15-finbench-confirmatory-analysis-local-readiness-v1",
+  "protocol": {
+    "path": "experiments/configs/m15_finbench_paper_protocol_draft_v1.json",
+    "file_sha256": "77775b45ab92a3eec566d48ef06cd7f530e3681506de0fadfedacbf5a7ba4108"
+  },
+  "author_selection": {
+    "path": "experiments/artifacts/m15_finbench_paper_protocol_author_selection_a_v1.json",
+    "file_sha256": "c0f89f893f223caeb6801c24694c51a191dea4f28e69212900074bb67429249a"
+  },
+  "implementation": {
+    "path": "src/xgap/experiments/m15_finbench_confirmatory_analysis.py",
+    "file_sha256": "91d83a1d11bb04ec0528a0973cc9d53f33ed61ebc764e010f518182bc8f5b820",
+    "measurement_ledger_schema": "m15-finbench-confirmatory-measurement-ledger-v1",
+    "analysis_schema": "m15-finbench-confirmatory-analysis-v1"
+  },
+  "acceptance": {
+    "focused_tests": {
+      "command": "pytest -q tests/test_m15_finbench_confirmatory_population.py tests/test_m15_finbench_paper_protocol.py tests/test_m15_finbench_confirmatory_analysis.py",
+      "passed": 33,
+      "failed": 0
+    },
+    "full_tests": {
+      "command": "pytest -q",
+      "passed": 1160,
+      "skipped": 36,
+      "failed": 0,
+      "elapsed_seconds": 444.40
+    },
+    "test_path": "tests/test_m15_finbench_confirmatory_analysis.py",
+    "test_file_sha256": "3db7cf5bfd79f3a23b984b0611b648f8ec5037587bc412349be46c116a7923fb",
+    "git_diff_check_passed": true
+  },
+  "scientific_boundary": {
+    "inferential_query_count": 32,
+    "within_query_repetitions": 7,
+    "repetitions_are_independent_units": false,
+    "cold_start_query_count": 16,
+    "query_timeout_is_method_outcome": true,
+    "missing_measurements": "no_imputation",
+    "bootstrap_resamples": 10000,
+    "randomization_draws": 100000,
+    "secondary_multiplicity": "holm_familywise_alpha_0.05"
+  },
+  "external_calls": {
+    "backend_calls": 0,
+    "current_query_profile_calls": 0,
+    "llm_calls": 0,
+    "ontology_service_calls": 0
+  },
+  "claim_boundary": {
+    "local_implementation_readiness": true,
+    "confirmatory_execution_authorized": false,
+    "independent_live_evidence_audit_required": true,
+    "paper_result": false
+  },
+  "paper_result": false
+}

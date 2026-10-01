@@ -1,0 +1,81 @@
+{
+  "schema_version": "xgap-one-shot-native-checkpoint-v1",
+  "source_commit": "b008775",
+  "raw_root": "/Users/anthonyche/xgap-data/one-shot-native-20260912-b008775",
+  "paper_result": false,
+  "status": "no_executable_interpretation",
+  "model_calls": 1,
+  "tokens": {
+    "input": 2077,
+    "output": 920
+  },
+  "candidate_returned": 1,
+  "candidate_structurally_admitted_at_run": 1,
+  "final_plan_executions": 0,
+  "online_backend_calls": 0,
+  "independent_training_count": 4,
+  "independent_training_successes": 4,
+  "training_backend_calls": 4,
+  "offline": {
+    "input_preparation_ms": 18.50887481123209,
+    "service_setup_ms": 8406.497749499977,
+    "fixture_load_ms": 273.4603751450777,
+    "training_collection_ms": 286.5701671689749,
+    "training_remote_calls": 4,
+    "fit_ms": 1.2539997696876526,
+    "estimator_reload_ms": 0.34799985587596893,
+    "estimator_file": {
+      "path": "/Users/anthonyche/xgap-data/one-shot-native-20260912-b008775/frozen_estimator.json",
+      "bytes": 5622,
+      "sha256": "1fe0550849753eaeadbb9f64f287bcf38d12155c2ab1f38ca24e6f9163b69f14"
+    },
+    "estimator_model_sha256": "4ee5473d8f1987b11415275da2251fb408c786415e178677054d53647f1d3ea7"
+  },
+  "core_online_ms": 5766.313709318638,
+  "lifecycle_ms": 26316.888082772493,
+  "input_unchanged": true,
+  "input_fingerprint_count": 430,
+  "owned_processes_terminal": true,
+  "owned_pids": [
+    1150,
+    1193
+  ],
+  "independent_ps_check": "no owned PID present; ps exit1",
+  "failure_stage": "grounding_before_planning",
+  "failure_reason": "Entity hole repeated in a non-executable constraints field under parameters; path fields also incorrectly nested in expr",
+  "catalog_lookups_succeeded": 4,
+  "artifacts": {
+    "receipt.json": {
+      "sha256": "f95ae33ff548621e9a6b3d6b16acb945b9ecb02999a45359cbd02aaba5d79589",
+      "bytes": 7488
+    },
+    "offline_receipt.json": {
+      "sha256": "52cb4cd9a668584beeeddd646ca55462f70e0e07d024d347e83ec032a2de836b",
+      "bytes": 605
+    },
+    "training_collection.json": {
+      "sha256": "040a094d3e2d41b36bcaf82982c5debb812453da4f7e4dd44beeb9fa4fdf568a",
+      "bytes": 2070
+    },
+    "frozen_estimator.json": {
+      "sha256": "1fe0550849753eaeadbb9f64f287bcf38d12155c2ab1f38ca24e6f9163b69f14",
+      "bytes": 5622
+    },
+    "one-shot/receipt.json": {
+      "sha256": "216aecc7e7cb5c08a118c6b8b352c495f8d7c77270efef7626f8d62885131adb",
+      "bytes": 1280
+    },
+    "one-shot/result.json": {
+      "sha256": "2e63dd2f182d92b11a6fe4bc714b22429b00de87842a28b15207053bfddc171f",
+      "bytes": 68803
+    },
+    "one-shot/interpretation.json": {
+      "sha256": "42912607c4f5f5098e2b646ae69b69546dc42781aa867143b890ae687ca0f9e3",
+      "bytes": 39751
+    },
+    "one-shot/evaluation.json": {
+      "sha256": "8613a8e31fcff1f7df5cf1150dce29b078bf804af17a12a440fe1fab55d6b768",
+      "bytes": 255
+    }
+  }
+}

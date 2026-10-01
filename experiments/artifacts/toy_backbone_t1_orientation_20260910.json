@@ -1,0 +1,3454 @@
+{
+  "schema_version": "xgap-toy-orientation-gate-v1",
+  "date": "2026-09-10",
+  "paper_result": false,
+  "live_llm": false,
+  "raw_result": "/Users/anthonyche/xgap-data/t1-orientation-native-20260910/result.json",
+  "raw_result_sha256": "611d013fed10ecbfbe2053f08f4820372442484e5a04cfa597d5c462b028089c",
+  "native_session": 67522,
+  "native_exit_code": 0,
+  "success": true,
+  "source_sha256": {
+    "src/xgap/experiments/toy_backbone.py": "341ed4fa3f16770b46e7b58634a7dca7c75de5d61f4f0bf821a98a90f3d09e4a",
+    "src/xgap/compilers/directed.py": "c51078ad7cd6c4160716e7171be77267510d146b49b616974745136d74da81ea",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/compilers/bounded_paths.py": "d16b0f2eec6d33791863091403307fc676e1f944704d3f4915273d642d7d1c04",
+    "src/xgap/runtime/bounded_paths.py": "0fbb4e803aba5bd13b569c60345f6cc66b983bb35ee21b580bf0b9fa9e12ce37",
+    "src/xgap/runtime/path_selection.py": "bbb646b7d0fd02548cbe2d20a4e284f9ec915bd12b465abba237fea07ac43368",
+    "src/xgap/runtime/contracts.py": "556bd32b8be7fe930c91ae94c0d78560f30616d3029346049f7ef201341e9891",
+    "src/xgap/runtime/scheduler.py": "4cdcafd8e24d86fa466c1460a6dd0d8fa1b551ac270d9cafa1bc7521984f3a90",
+    "src/xgap/algebra/evaluator.py": "f178b30fc9067ca1fbc26ebeaedb6a16f704c9a7ab45d91f131b378d84cb61e7",
+    "scripts/run_toy_backbone_native.py": "55fc6f8cd34ef782955ce9c15c5a732ec65bf4e29f8f7feccbeeb52ad0fd2001",
+    "src/xgap/algebra/ops.py": "3a4d89a3ef0b0c8a53309371fd08b95285e3bfc2d66f7d7cbb71487c66dcdd3d",
+    "src/xgap/algebra/validation.py": "5b58233b79909e2f34fdb5c32f3f97df99e390e283e670854458c45b01c30861",
+    "src/xgap/pattern/lowering.py": "a8ac3e110509550a80143fd20c50e155ef81ba66e4930c90f896a5b514fc22d4",
+    "src/xgap/compilers/features.py": "49398c534feea0b89d9f51a52e68965220a0ab1fbf25504f661ad2175a0b9c00",
+    "src/xgap/experiments/toy_orientation.py": "0000ccc76725e712ddc7eb77b0644a8ca90bf2f522068e36d1092af94e2677c9"
+  },
+  "original_fixture_sha256": {
+    "load.cypher": "2892f0d12746501a208cbf1fbd6e9c494892790149ef373659d4653521d3875d",
+    "load.ttl": "9732faf79aa80559b5e2d737177599421061bd787d006226ec7438db69904c24",
+    "queries.json": "535616a42a1e3bfd857b9385d74fbe176f931f59a54d26798c20511000e31f89",
+    "README.md": "b2f55b283799f5d8507374c0db95b9263dd85733bbacd40e30d9b43efabbd171",
+    "mapping.json": "651d44578283f4f2e5a5f016380c5b784a2dcdda2bf5b27491d6a947c168eb2d",
+    "graph.json": "b72a0a97d3dbf8919c3303ffd2b9c6121659f4e19d6059b72cd55a75f4f7f82e",
+    "targets/T05.rq": "e87318bcc0b3d672d65c4aae9e505603c29ba8976e106e9dd8d7af09ae4dd7d5",
+    "targets/T15.rq": "1db62fe203183958305b2a9e0fbba8efca2de8d1e3e9e42a9fe1059b654f52f3",
+    "targets/T01.rq": "a00b5bd4917e76a1c15f8f865c347c195f83d02b072c9576a04bebd33d47a0f0",
+    "targets/T11.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744",
+    "targets/T06.cypher": "afeaa20cc69e0897cfd688f9237f27266cba612bfa63c597bf71b5f821d15875",
+    "targets/T18.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+    "targets/T14.cypher": "0e514c6476c01fb70d28090456cc28521821a29d79e1892f7b1e0809b5eec5a0",
+    "targets/T08.cypher": "6c5253698a126ada92f72732069cd6a5979b7192580a9e33aa4776f30023d75f",
+    "targets/T10.rq": "3f9a4681586298ec4d9297c2d81627999b8af15238979b9ea5bee54a88a6c57b",
+    "targets/T16.cypher": "61960fc15e0d8fb9fb71165f7f6b3c65380d53413289914e8e8a4be948cd5490",
+    "targets/T04.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+    "targets/T04.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+    "targets/T14.rq": "033de848d509b48fd6c1d66f1c751e515a3fd77a1abdbc784a7baacbf43bc757",
+    "targets/T12.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+    "targets/T10.cypher": "e1b26267c63ce1a677a7a851a28df92fba3745cb5c20a24d8744238c01e36d4f",
+    "targets/T02.cypher": "d86bc59390e1fff6bb779265d51ee77a7d583542eb039be09c2dbde1cffb4fc5",
+    "targets/T07.cypher": "07d23b2b6b08ab61e95a2c8ea4094a4324434a17e05516375f91931f535b5f81",
+    "targets/T09.rq": "73e9ac1bd8dfa90e8582a1985df374269282fedddcb4ad8d760f78d9997598c3",
+    "targets/T15.cypher": "7f0703bdb9c1bc1847d4b52e09293b79727bfadc9ba1e492a9831877bad75a0d",
+    "targets/T17.cypher": "bfda0b91e68e9cf8e342b66fad4b92a00f0b4f1c1596fcaee9550a3752576352",
+    "targets/T09.cypher": "245dd0a9f89b1fb5dbf8fe716606d0e0256df10f836317faeba17cbf5edfadb9",
+    "targets/T08.rq": "044340291081f454b6e889b65b434771e9d900f4884a435cb27bea79036ab888",
+    "targets/T05.cypher": "3ec22f5c5ed0908fce931b5c057ad4d8802676f978fe68b368b085ca28564660",
+    "targets/T18.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+    "targets/T03.rq": "67eabd839fda760f33e256957d3ab8329677a13a03c2d19635388dc77e54193b",
+    "targets/T13.rq": "c9ffd69f3126b145f896857bd5a6d01c11bdd1ef14b42f09cd64314686fd6d37",
+    "targets/T07.rq": "7a94f0c71ba0313126c0db8905b54f223bd3c6efa30037152fc536c07c56e15d",
+    "targets/T01.cypher": "e049929f9ec5d2f31f00eb5438c91bcb0655597a0dc8960c3edb323bbdb0207e",
+    "targets/T17.rq": "92f269b29867f27ed67c12495bec6aced2a06e1c9109440c8d9a34d197cb6d64",
+    "targets/T13.cypher": "bc3f51702531287a7e5709402958aebf972c2fca3227cdf53e1174ae0dff52ce",
+    "targets/T06.rq": "a71c2a539116458ede6ed456c61003a92aecd0984e59b80e18da413275653867",
+    "targets/T16.rq": "ac91a127dc7c1e35aadf2f443adbe502c7dc024f563e24b2d8c45068998d7963",
+    "targets/T11.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+    "targets/T03.cypher": "6614e75e6687d07d2daa85b71b80c35d85f5509f6fbaea2bb360eaac878bb048",
+    "targets/T02.rq": "ab050b118a1f6533502a985d7ed74c2eb6e80c610c39e52240d2cc4bbf169181",
+    "targets/T12.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744"
+  },
+  "orientation_fixture_sha256": {
+    "queries.json": "7c31e2d2ae05970c84e236a0269f4f8c7ba797fddcb75106979a8465f1f2ba54",
+    "README.md": "335c201e874fc858d580162b944894af2a751711611b64157bba362d888082ec",
+    "legacy_logical_plans.json": "470eca2890d0d351775c36314861482ba6223587938cf04efc67d17fedc0478d",
+    "targets/D03.cypher": "17453df61f198699164905e21a53cb0a662e6fe8365cea7898f7ae12396c3e0b",
+    "targets/D08.rq": "128495d9b7f58cec9e1801126288c286fcd928538258bc44d8c03f18b6cee5b9",
+    "targets/D01.cypher": "94015b2824bfd0d183fd07fb30f0de000e519494dcdf1e14956c0a76dc3bc561",
+    "targets/D09.rq": "89d488dddb70d06cfc72a2be609a374b0094ef9af0d55e45e481b01709ff4e98",
+    "targets/D05.cypher": "94a860c69907d6434ea2fe3a0edac39dfbcf1aa7c7142b4a7fa84c1ae6ee6340",
+    "targets/D06.rq": "a8f1d732b930418c37d62ec59967f92e4fa06c0acc76d2a27ecefe406b62c68d",
+    "targets/D09.cypher": "10cb1a6216595baed0879c52f1deb39261de704bc53879673b096f2a62e239f0",
+    "targets/D02.rq": "62eb6c878eafa54456d76149f5d4fa159bab56737bb2fca01b9d58cc022195c1",
+    "targets/D03.rq": "f367212f83a35c9f3b082883b0827fe0555ed54d508f260ddb14784814e14224",
+    "targets/D07.rq": "567c9fef660a2cc7cb00ecfc7bcb87e6e5f2da71282a0711a5143bf395180df1",
+    "targets/D07.cypher": "46dc2e3368c593a363e94e7c006715e33ed0dc192c5e369917c1861e4db3f3c4",
+    "targets/D02.cypher": "75a888ef99e51a5fb01de2d4bee86084f0609150bfca45b61919255bf3c42ff9",
+    "targets/D04.rq": "98d1025eac8ebde7c2cc7a78148b41bb6e57633057677a9656800325d7f7f2bf",
+    "targets/D05.rq": "128495d9b7f58cec9e1801126288c286fcd928538258bc44d8c03f18b6cee5b9",
+    "targets/D01.rq": "717e2d351ffbc50ddb6cb9eee43bb670d67d071870a46f045f435589e3e83c58",
+    "targets/D04.cypher": "790d8586b2b72f296d4ca2d9c368ea78f13cb6120c0248213162c22c0c87cdf9",
+    "targets/D08.cypher": "94a860c69907d6434ea2fe3a0edac39dfbcf1aa7c7142b4a7fa84c1ae6ee6340",
+    "targets/D06.cypher": "bcce1c6e438e6ee684dec110582236fae492d978eb4cfe50a3c1a1486b84a775"
+  },
+  "nodes": 5,
+  "edges": 8,
+  "health": [
+    {
+      "service_id": "neo4j",
+      "success": true,
+      "attempts": 12,
+      "elapsed_ms": 6387.686249800026,
+      "http_status": 200,
+      "process_exit_code": null,
+      "last_error": null
+    },
+    {
+      "service_id": "fuseki",
+      "success": true,
+      "attempts": 3,
+      "elapsed_ms": 1076.724291779101,
+      "http_status": 200,
+      "process_exit_code": null,
+      "last_error": null
+    }
+  ],
+  "shutdown": [
+    {
+      "service_id": "fuseki",
+      "pid": 2413,
+      "initial_exit_code": null,
+      "final_exit_code": 143,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    },
+    {
+      "service_id": "neo4j",
+      "pid": 2285,
+      "initial_exit_code": null,
+      "final_exit_code": 0,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    }
+  ],
+  "automatic_retries": 0,
+  "logical_reference": {
+    "original_query_count": 18,
+    "logical_plan_passed": 18,
+    "reference_passed": 18,
+    "independent_sparql_targets_passed": 18,
+    "logical_expectations_override": {
+      "T15": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"b\"]\n      Reverse\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges"
+    },
+    "per_query": [
+      {
+        "query_id": "T01",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [len() = 0]\n      Union\n        Nodes\n        Recursive [mode=WALK, max_depth=1]\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+        "actual_paths": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "z"
+        ]
+      },
+      {
+        "query_id": "T02",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [label(edge(1)) = \"KNOWS\"]\n      Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e4/c",
+          "a/e7/b",
+          "b/e2/c",
+          "b/e8/d",
+          "c/e3/a",
+          "c/e5/d",
+          "d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T03",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Selection [label(edge(1)) = \"KNOWS\"]\n        Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e4/c",
+          "a/e7/b"
+        ]
+      },
+      {
+        "query_id": "T04",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.age >= 30]\n      Selection [first.id = \"a\"]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e4/c"
+        ]
+      },
+      {
+        "query_id": "T05",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T06",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Union\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Join\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T07",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=WALK, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e1/b/e8/d/e6/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e3/a/e1/b",
+          "a/e4/c/e3/a/e4/c",
+          "a/e4/c/e3/a/e7/b",
+          "a/e4/c/e5/d",
+          "a/e4/c/e5/d/e6/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d",
+          "a/e7/b/e8/d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T08",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=TRAIL, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e1/b/e8/d/e6/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e3/a/e1/b",
+          "a/e4/c/e3/a/e7/b",
+          "a/e4/c/e5/d",
+          "a/e4/c/e5/d/e6/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d",
+          "a/e7/b/e8/d/e6/d"
+        ]
+      },
+      {
+        "query_id": "T09",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=ACYCLIC, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T10",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=SIMPLE, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e2/c",
+          "a/e1/b/e2/c/e3/a",
+          "a/e1/b/e2/c/e5/d",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e2/c",
+          "a/e7/b/e2/c/e3/a",
+          "a/e7/b/e2/c/e5/d",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T11",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"a\"]\n      Recursive [mode=SHORTEST, max_depth=3]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T12",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, 1, *]\n  OrderBy [GROUP]\n    GroupBy [SOURCE_TARGET_LENGTH]\n      Selection [first.id = \"a\"]\n        Recursive [mode=WALK, max_depth=3]\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+        "actual_paths": [
+          "a/e1/b",
+          "a/e1/b/e8/d",
+          "a/e4/c",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T13",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, 1]\n  GroupBy [SOURCE_TARGET]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a"
+        ]
+      },
+      {
+        "query_id": "T14",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, 2]\n  GroupBy [SOURCE_TARGET]\n    Selection [first.id = \"a\"]\n      Join\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e3/a",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c"
+        ]
+      },
+      {
+        "query_id": "T15",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"b\"]\n      Reverse\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "b/e1/a",
+          "b/e7/a"
+        ]
+      },
+      {
+        "query_id": "T16",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first != last]\n      Selection [first.id = \"a\"]\n        Join\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges\n          Selection [label(edge(1)) = \"KNOWS\"]\n            Edges",
+        "actual_paths": [
+          "a/e1/b/e2/c",
+          "a/e1/b/e8/d",
+          "a/e4/c/e5/d",
+          "a/e7/b/e2/c",
+          "a/e7/b/e8/d"
+        ]
+      },
+      {
+        "query_id": "T17",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [first.id = \"z\"]\n      Selection [label(edge(1)) = \"KNOWS\"]\n        Edges",
+        "actual_paths": []
+      },
+      {
+        "query_id": "T18",
+        "reference_passed": true,
+        "logical_plan_passed": true,
+        "logical_plan": "Projection [*, *, *]\n  GroupBy [NONE]\n    Selection [last.age >= 30]\n      Selection [first.id = \"a\"]\n        Selection [label(edge(1)) = \"KNOWS\"]\n          Edges",
+        "actual_paths": [
+          "a/e4/c"
+        ]
+      }
+    ],
+    "cli_exit_code": 0,
+    "cli_session": 63085,
+    "raw": "/tmp/xgap-t1-orientation-logical.json",
+    "raw_sha256": "bcc1c50d1173abe021271fe9bad81f5c62ab8ea474c5179eb31bfdeba50f1efe"
+  },
+  "tests": {
+    "initial": {
+      "status": "collection_error",
+      "log": "/tmp/xgap-t1-orientation-focused-initial.log",
+      "reason": "test imported GroupKey from a namespace that does not export it; no query ran",
+      "log_sha256": "74a5d73d0b92bd851b04f6570103597dc214b24a67956e168d66726db7cf667c"
+    },
+    "focused": {
+      "passed": 212,
+      "seconds": 9.35,
+      "session": 11123,
+      "log": "/tmp/xgap-t1-orientation-focused2.log",
+      "log_sha256": "80cc771f79157c81448792eab8c44223d24a39c817f27e362d710ef7d0168c37"
+    },
+    "fast": {
+      "passed": 180,
+      "seconds": 12.1,
+      "session": 58672,
+      "log": "/tmp/xgap-t1-orientation-fast-final.log",
+      "log_sha256": "436b20f1dbd819e3e7f4d30a552543ed7ac973251a0e838aeb60978c6db44eae"
+    },
+    "broad_initial": {
+      "status": "completed",
+      "session": 61777,
+      "log": "/tmp/xgap-t1-orientation-acceptance.log",
+      "exit_code": 1,
+      "passed": 3114,
+      "failed": 3,
+      "skipped": 38,
+      "seconds": 670.13,
+      "log_sha256": "997159e315d5a31ac467b925c306de6f4b879f9aab7e0c7ae9395a00ba773553"
+    },
+    "capability_consumers": {
+      "passed": 261,
+      "skipped": 20,
+      "seconds": 3.18,
+      "session": 14689,
+      "exit_code": 0,
+      "log": "/tmp/xgap-t1-orientation-capability-final2.log",
+      "log_sha256": "534b9cd23e31c46043fa179c982eb5390398e16e215494abf6092b9f7db68d0c"
+    },
+    "capability_replay_logs": [
+      "/tmp/xgap-t1-orientation-capability-replay.log",
+      "/tmp/xgap-t1-orientation-capability-replay2.log",
+      "/tmp/xgap-t1-orientation-capability-final.log"
+    ],
+    "broad": {
+      "status": "completed",
+      "session": 96124,
+      "log": "/tmp/xgap-t1-orientation-acceptance-final.log",
+      "exit_code": 0,
+      "passed": 3117,
+      "skipped": 38,
+      "seconds": 662.26,
+      "harness_example_entrypoints_passed": 24,
+      "log_sha256": "aaa898325e7c18d95e8bfebd8d5774007f74a56559976b01d76db4b241b8832a"
+    },
+    "daily_final": {
+      "passed": 272,
+      "seconds": 12.56,
+      "session": 97917,
+      "exit_code": 0,
+      "log": "/tmp/xgap-t1-orientation-fast-with-capabilities.log",
+      "log_sha256": "ed6fbda79c47813444f78a51411b1a80940495a8d26b61e0c851e80b71ec0176"
+    }
+  },
+  "native_targets": [
+    {
+      "query_id": "D01",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a",
+        "b/e7/a"
+      ],
+      "expected_paths": [
+        "b/e1/a",
+        "b/e7/a"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D01",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)<-[e1]-(n1)\nWHERE n0.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 1,
+                  "branch_edge_counts": [
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 1,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 212.96679228544235,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D01",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a",
+        "b/e7/a"
+      ],
+      "expected_paths": [
+        "b/e1/a",
+        "b/e7/a"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D01",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 1,
+                  "branch_edge_counts": [
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 1,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 53.648208267986774,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D02",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a/e4/c",
+        "b/e7/a/e4/c"
+      ],
+      "expected_paths": [
+        "b/e1/a/e4/c",
+        "b/e7/a/e4/c"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D02",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"c\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 1,
+                  "branch_edge_counts": [
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 1,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 92.17275027185678,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D02",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a/e4/c",
+        "b/e7/a/e4/c"
+      ],
+      "expected_paths": [
+        "b/e1/a/e4/c",
+        "b/e7/a/e4/c"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D02",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 ?e2 ?n2 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"c\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 1,
+                  "branch_edge_counts": [
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 1,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 14.265958219766617,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D03",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [
+        "d/e6/d"
+      ],
+      "expected_paths": [
+        "d/e6/d"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D03",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE n0.id = \"d\"\n  AND n1.id = \"d\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nWHERE n0.id = \"d\"\n  AND n1.id = \"d\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 2,
+                  "branch_edge_counts": [
+                    1,
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 2,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 104.22654170542955,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D03",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [
+        "d/e6/d"
+      ],
+      "expected_paths": [
+        "d/e6/d"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D03",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"d\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"d\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"d\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"d\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 2,
+                  "branch_edge_counts": [
+                    1,
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 2,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 15.744541771709919,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D04",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a",
+        "b/e2/c",
+        "b/e7/a",
+        "b/e8/d"
+      ],
+      "expected_paths": [
+        "b/e1/a",
+        "b/e2/c",
+        "b/e7/a",
+        "b/e8/d"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D04",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE n0.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nWHERE n0.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 2,
+                  "branch_edge_counts": [
+                    1,
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 2,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 59.806457720696926,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D04",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a",
+        "b/e2/c",
+        "b/e7/a",
+        "b/e8/d"
+      ],
+      "expected_paths": [
+        "b/e1/a",
+        "b/e2/c",
+        "b/e7/a",
+        "b/e8/d"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D04",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 2,
+                  "branch_edge_counts": [
+                    1,
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 2,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 13.812124729156494,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D05",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "expected_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D05",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE n0.id = \"b\"\n  AND n1.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nWHERE n0.id = \"b\"\n  AND n1.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)-[e1]->(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)-[e1]->(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 6,
+                  "branch_edge_counts": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 6,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 216.46579261869192,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D05",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "expected_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D05",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 ?e2 ?n2 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 6,
+                  "branch_edge_counts": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 6,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 27.730084024369717,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D06",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ],
+      "expected_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D06",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE n0.id = \"b\"\n  AND n1.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nWHERE n0.id = \"b\"\n  AND n1.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)-[e1]->(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nWITH * WHERE e1 <> e2\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)-[e1]->(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nWITH * WHERE e1 <> e2\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nWITH * WHERE e1 <> e2\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nWITH * WHERE e1 <> e2\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 6,
+                  "branch_edge_counts": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 6,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 208.37687514722347,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D06",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ],
+      "expected_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D06",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 ?e2 ?n2 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nFILTER(?e1 != ?e2)\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nFILTER(?e1 != ?e2)\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nFILTER(?e1 != ?e2)\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nFILTER(?e1 != ?e2)\nBIND(2 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 6,
+                  "branch_edge_counts": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 6,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 19.00862529873848,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D07",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [],
+      "expected_paths": [],
+      "plan": {
+        "plan_id": "bounded-toy-D07",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE n0.id = \"b\"\n  AND n1.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nWITH * WHERE n0 <> n1\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nWHERE n0.id = \"b\"\n  AND n1.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nWITH * WHERE n0 <> n1\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)-[e1]->(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nWITH * WHERE n0 <> n1 AND n0 <> n2 AND n1 <> n2\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)-[e1]->(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nWITH * WHERE n0 <> n1 AND n0 <> n2 AND n1 <> n2\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nWITH * WHERE n0 <> n1 AND n0 <> n2 AND n1 <> n2\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nWITH * WHERE n0 <> n1 AND n0 <> n2 AND n1 <> n2\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 6,
+                  "branch_edge_counts": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 6,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 166.9092494994402,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D07",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [],
+      "expected_paths": [],
+      "plan": {
+        "plan_id": "bounded-toy-D07",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 ?e2 ?n2 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nFILTER(?n0 != ?n1)\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nFILTER(?n0 != ?n1)\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nFILTER(?n0 != ?n1 && ?n0 != ?n2 && ?n1 != ?n2)\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nFILTER(?n0 != ?n1 && ?n0 != ?n2 && ?n1 != ?n2)\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nFILTER(?n0 != ?n1 && ?n0 != ?n2 && ?n1 != ?n2)\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nFILTER(?n0 != ?n1 && ?n0 != ?n2 && ?n1 != ?n2)\nBIND(2 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 6,
+                  "branch_edge_counts": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 6,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 18.30954197794199,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D08",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "expected_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D08",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE n0.id = \"b\"\n  AND n1.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nWHERE n0.id = \"b\"\n  AND n1.id = \"b\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)-[e1]->(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)-[e1]->(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)-[e2]->(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"b\"\n  AND n2.id = \"b\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 6,
+                  "branch_edge_counts": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": true,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": true,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 6,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 15.34291636198759,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D08",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "expected_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D08",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 ?e2 ?n2 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n1 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n1 .\n  ?e2 <https://xgap.test/toy/target> ?n2 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  ?n2 <https://xgap.test/toy/id> ?v1 .\n  FILTER(?v1 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 6,
+                  "branch_edge_counts": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": true,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": true,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 6,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 14.502542093396187,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D09",
+      "backend": "neo4j",
+      "success": true,
+      "actual_paths": [
+        "z"
+      ],
+      "expected_paths": [
+        "z"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D09",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)\nWHERE n0.id = \"z\"\nRETURN DISTINCT n0 AS source, n0 AS target, n0 AS n0\n}\nRETURN DISTINCT 0 AS length, n0 AS n0, null AS e1, null AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nWHERE n0.id = \"z\"\n  AND type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1, null AS e2, null AS n2\nUNION\nCALL {\nMATCH (n0)<-[e1]-(n1)\nMATCH (n1)<-[e2]-(n2)\nWHERE n0.id = \"z\"\n  AND type(e1) = \"KNOWS\"\n  AND type(e2) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n2 AS target, n0 AS n0, n1 AS n1, n2 AS n2, e1 AS e1, e2 AS e2\n}\nRETURN DISTINCT 2 AS length, n0 AS n0, e1 AS e1, n1 AS n1, e2 AS e2, n2 AS n2",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 3,
+                  "branch_edge_counts": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 3,
+          "selector_placement": "coordinator",
+          "candidate_placement": "neo4j"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 62.57245782762766,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    },
+    {
+      "query_id": "D09",
+      "backend": "fuseki",
+      "success": true,
+      "actual_paths": [
+        "z"
+      ],
+      "expected_paths": [
+        "z"
+      ],
+      "plan": {
+        "plan_id": "bounded-toy-D09",
+        "nodes": [
+          {
+            "node_id": "candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 ?e2 ?n2 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  ?n0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?nodeClass . VALUES ?nodeClass { <https://xgap.test/toy/Person> }\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"z\")\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n}\nBIND(0 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"z\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\nUNION\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n1 .\n  ?e1 <https://xgap.test/toy/target> ?n0 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?e2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e2 <https://xgap.test/toy/source> ?n2 .\n  ?e2 <https://xgap.test/toy/target> ?n1 .\n  ?e2 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"z\")\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n}\nBIND(2 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "branch_count": 3,
+                  "branch_edge_counts": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 2,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1",
+                    "e2",
+                    "n2"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "candidates"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 2,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "paths"
+        ],
+        "max_remote_calls": 1,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "bounded_native_paths_v1",
+          "branch_count": 3,
+          "selector_placement": "coordinator",
+          "candidate_placement": "fuseki"
+        }
+      },
+      "runtime_metrics": {
+        "success": true,
+        "elapsed_ms": 11.825749650597572,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 0
+      }
+    }
+  ],
+  "independent_references": [
+    {
+      "query_id": "D01",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D01-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e7/a"
+          },
+          {
+            "path": "b/e1/a"
+          }
+        ],
+        "row_count": 2,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 84.38229188323021,
+        "error": null,
+        "started_at": "2026-09-10T12:50:59.272952+00:00",
+        "ended_at": "2026-09-10T12:50:59.357327+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a",
+        "b/e7/a"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D01",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D01-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e7/a"
+          },
+          {
+            "path": "b/e1/a"
+          }
+        ],
+        "row_count": 2,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 12.551624327898026,
+        "error": null,
+        "started_at": "2026-09-10T12:50:59.417442+00:00",
+        "ended_at": "2026-09-10T12:50:59.429989+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a",
+        "b/e7/a"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D02",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D02-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e7/a/e4/c"
+          },
+          {
+            "path": "b/e1/a/e4/c"
+          }
+        ],
+        "row_count": 2,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 81.4965832978487,
+        "error": null,
+        "started_at": "2026-09-10T12:50:59.527869+00:00",
+        "ended_at": "2026-09-10T12:50:59.609360+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a/e4/c",
+        "b/e7/a/e4/c"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D02",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D02-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e7/a/e4/c"
+          },
+          {
+            "path": "b/e1/a/e4/c"
+          }
+        ],
+        "row_count": 2,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 16.40504039824009,
+        "error": null,
+        "started_at": "2026-09-10T12:50:59.630234+00:00",
+        "ended_at": "2026-09-10T12:50:59.646637+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a/e4/c",
+        "b/e7/a/e4/c"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D03",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D03-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [
+          {
+            "path": "d/e6/d"
+          }
+        ],
+        "row_count": 1,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 38.19754160940647,
+        "error": null,
+        "started_at": "2026-09-10T12:50:59.757724+00:00",
+        "ended_at": "2026-09-10T12:50:59.795917+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [
+        "d/e6/d"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D03",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D03-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "path": "d/e6/d"
+          }
+        ],
+        "row_count": 1,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 8.48441757261753,
+        "error": null,
+        "started_at": "2026-09-10T12:50:59.820215+00:00",
+        "ended_at": "2026-09-10T12:50:59.828697+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [
+        "d/e6/d"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D04",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D04-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e8/d"
+          },
+          {
+            "path": "b/e7/a"
+          },
+          {
+            "path": "b/e2/c"
+          },
+          {
+            "path": "b/e1/a"
+          }
+        ],
+        "row_count": 4,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 38.87595888227224,
+        "error": null,
+        "started_at": "2026-09-10T12:50:59.896179+00:00",
+        "ended_at": "2026-09-10T12:50:59.935052+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a",
+        "b/e2/c",
+        "b/e7/a",
+        "b/e8/d"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D04",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D04-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e7/a"
+          },
+          {
+            "path": "b/e2/c"
+          },
+          {
+            "path": "b/e1/a"
+          },
+          {
+            "path": "b/e8/d"
+          }
+        ],
+        "row_count": 4,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 8.730083703994751,
+        "error": null,
+        "started_at": "2026-09-10T12:50:59.957817+00:00",
+        "ended_at": "2026-09-10T12:50:59.966547+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a",
+        "b/e2/c",
+        "b/e7/a",
+        "b/e8/d"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D05",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D05-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e8/d/e8/b"
+          },
+          {
+            "path": "b/e7/a/e7/b"
+          },
+          {
+            "path": "b/e1/a/e7/b"
+          },
+          {
+            "path": "b/e2/c/e2/b"
+          },
+          {
+            "path": "b/e7/a/e1/b"
+          },
+          {
+            "path": "b/e1/a/e1/b"
+          }
+        ],
+        "row_count": 6,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 51.313040778040886,
+        "error": null,
+        "started_at": "2026-09-10T12:51:00.193030+00:00",
+        "ended_at": "2026-09-10T12:51:00.244336+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D05",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D05-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e7/a/e7/b"
+          },
+          {
+            "path": "b/e7/a/e1/b"
+          },
+          {
+            "path": "b/e2/c/e2/b"
+          },
+          {
+            "path": "b/e1/a/e7/b"
+          },
+          {
+            "path": "b/e1/a/e1/b"
+          },
+          {
+            "path": "b/e8/d/e8/b"
+          }
+        ],
+        "row_count": 6,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 11.375457979738712,
+        "error": null,
+        "started_at": "2026-09-10T12:51:00.312298+00:00",
+        "ended_at": "2026-09-10T12:51:00.323673+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D06",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D06-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e1/a/e7/b"
+          },
+          {
+            "path": "b/e7/a/e1/b"
+          }
+        ],
+        "row_count": 2,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 46.34445905685425,
+        "error": null,
+        "started_at": "2026-09-10T12:51:00.544134+00:00",
+        "ended_at": "2026-09-10T12:51:00.590472+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D06",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D06-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e7/a/e1/b"
+          },
+          {
+            "path": "b/e1/a/e7/b"
+          }
+        ],
+        "row_count": 2,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 12.22966704517603,
+        "error": null,
+        "started_at": "2026-09-10T12:51:00.622036+00:00",
+        "ended_at": "2026-09-10T12:51:00.634262+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a/e7/b",
+        "b/e7/a/e1/b"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D07",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D07-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [],
+        "row_count": 0,
+        "result_status": "execution_success_empty",
+        "elapsed_ms": 36.24762408435345,
+        "error": null,
+        "started_at": "2026-09-10T12:51:00.814516+00:00",
+        "ended_at": "2026-09-10T12:51:00.850761+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [],
+      "success": true
+    },
+    {
+      "query_id": "D07",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D07-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [],
+        "row_count": 0,
+        "result_status": "execution_success_empty",
+        "elapsed_ms": 6.686166860163212,
+        "error": null,
+        "started_at": "2026-09-10T12:51:00.882883+00:00",
+        "ended_at": "2026-09-10T12:51:00.889567+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [],
+      "success": true
+    },
+    {
+      "query_id": "D08",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D08-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e8/d/e8/b"
+          },
+          {
+            "path": "b/e7/a/e7/b"
+          },
+          {
+            "path": "b/e1/a/e7/b"
+          },
+          {
+            "path": "b/e2/c/e2/b"
+          },
+          {
+            "path": "b/e7/a/e1/b"
+          },
+          {
+            "path": "b/e1/a/e1/b"
+          }
+        ],
+        "row_count": 6,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 7.400874979794025,
+        "error": null,
+        "started_at": "2026-09-10T12:51:00.918739+00:00",
+        "ended_at": "2026-09-10T12:51:00.926137+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D08",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D08-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "path": "b/e7/a/e7/b"
+          },
+          {
+            "path": "b/e7/a/e1/b"
+          },
+          {
+            "path": "b/e2/c/e2/b"
+          },
+          {
+            "path": "b/e1/a/e7/b"
+          },
+          {
+            "path": "b/e1/a/e1/b"
+          },
+          {
+            "path": "b/e8/d/e8/b"
+          }
+        ],
+        "row_count": 6,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 7.341957651078701,
+        "error": null,
+        "started_at": "2026-09-10T12:51:00.956470+00:00",
+        "ended_at": "2026-09-10T12:51:00.963810+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [
+        "b/e1/a/e1/b",
+        "b/e1/a/e7/b",
+        "b/e2/c/e2/b",
+        "b/e7/a/e1/b",
+        "b/e7/a/e7/b",
+        "b/e8/d/e8/b"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D09",
+      "backend": "neo4j",
+      "execution": {
+        "backend_id": "neo4j",
+        "artifact_id": "D09-reference-neo4j",
+        "language": "cypher",
+        "success": true,
+        "rows": [
+          {
+            "path": "z"
+          }
+        ],
+        "row_count": 1,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 32.55220875144005,
+        "error": null,
+        "started_at": "2026-09-10T12:51:01.041128+00:00",
+        "ended_at": "2026-09-10T12:51:01.073677+00:00",
+        "metadata": {
+          "transport": "neo4j-http",
+          "database": "neo4j"
+        }
+      },
+      "actual_paths": [
+        "z"
+      ],
+      "success": true
+    },
+    {
+      "query_id": "D09",
+      "backend": "fuseki",
+      "execution": {
+        "backend_id": "fuseki",
+        "artifact_id": "D09-reference-fuseki",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "path": "z"
+          }
+        ],
+        "row_count": 1,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 7.906749844551086,
+        "error": null,
+        "started_at": "2026-09-10T12:51:01.102304+00:00",
+        "ended_at": "2026-09-10T12:51:01.110210+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "toy"
+        }
+      },
+      "actual_paths": [
+        "z"
+      ],
+      "success": true
+    }
+  ],
+  "retained_vertical_slice": {
+    "success": true,
+    "actual_paths": [
+      "a/e4/c"
+    ],
+    "expected_paths": [
+      "a/e4/c"
+    ],
+    "plan": {
+      "plan_id": "toy-T18",
+      "nodes": [
+        {
+          "node_id": "paths",
+          "kind": "remote_query",
+          "inputs": [],
+          "parameters": {
+            "backend_id": "neo4j",
+            "artifact": {
+              "artifact_id": "m15-fragment-paths-neo4j",
+              "language": "cypher",
+              "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE type(e1) = \"KNOWS\"\n  AND n0.id = \"a\"\nRETURN DISTINCT n0 AS source, n1 AS target, [n0, n1] AS nodes, [e1] AS edges\n}\nRETURN DISTINCT source.id + \"/\" + edges[0].id + \"/\" + target.id AS path, target.id AS target",
+              "kind": "compiled",
+              "source_path": null,
+              "parameters": {
+                "compiler": "m9_minimal_compiler",
+                "target_backend_id": "neo4j",
+                "result_model": "row_bindings",
+                "required_features": [
+                  "graph_model.directed_edges",
+                  "graph_model.edge_labels",
+                  "graph_model.labeled_property_graph",
+                  "graph_model.scalar_property_predicates",
+                  "native.cypher",
+                  "path_algebra.Edges",
+                  "path_algebra.Selection",
+                  "pattern.PathPatternQuery",
+                  "result_model.row_bindings"
+                ],
+                "semantic_assumptions": [
+                  "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                  "Neo4j node labels represent XGAP node-label predicates.",
+                  "Neo4j relationship types represent XGAP edge-label predicates.",
+                  "Missing properties and non-numeric values follow Cypher WHERE null-elimination for this fragment."
+                ]
+              }
+            }
+          },
+          "semantic_operator_ids": []
+        },
+        {
+          "node_id": "eligible",
+          "kind": "remote_query",
+          "inputs": [],
+          "parameters": {
+            "backend_id": "fuseki",
+            "artifact": {
+              "artifact_id": "m15-fragment-eligible-fuseki",
+              "language": "sparql",
+              "text": "SELECT DISTINCT ?eligible WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 <https://xgap.test/toy/age> ?v0 .\n  FILTER(?v0 >= 30)\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n} ?source <https://xgap.test/toy/id> ?eligible . }",
+              "kind": "compiled",
+              "source_path": null,
+              "parameters": {
+                "compiler": "m9_minimal_compiler",
+                "target_backend_id": "fuseki",
+                "result_model": "row_bindings",
+                "required_features": [
+                  "graph_model.directed_edges",
+                  "graph_model.rdf_graph",
+                  "graph_model.scalar_property_predicates",
+                  "native.sparql",
+                  "path_algebra.Nodes",
+                  "path_algebra.Selection",
+                  "result_model.row_bindings"
+                ],
+                "semantic_assumptions": [
+                  "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                  "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                  "RDF type triples represent XGAP node-label predicates.",
+                  "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                ],
+                "backend_mapping": {
+                  "mapping_id": "backbone-toy-v1",
+                  "version": "1",
+                  "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                  "relevant_mapped_iris": [
+                    {
+                      "logical_token": "age",
+                      "canonical_term_id": "age",
+                      "kind": "property",
+                      "iri": "https://xgap.test/toy/age"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "semantic_operator_ids": []
+        },
+        {
+          "node_id": "join",
+          "kind": "coordinator_join",
+          "inputs": [
+            "paths",
+            "eligible"
+          ],
+          "parameters": {
+            "left_on": "target",
+            "right_on": "eligible"
+          },
+          "semantic_operator_ids": []
+        },
+        {
+          "node_id": "answer",
+          "kind": "project",
+          "inputs": [
+            "join"
+          ],
+          "parameters": {
+            "fields": [
+              "path"
+            ]
+          },
+          "semantic_operator_ids": []
+        }
+      ],
+      "roots": [
+        "answer"
+      ],
+      "max_remote_calls": 2,
+      "max_parallelism": 1,
+      "metadata": {}
+    },
+    "runtime": {
+      "plan_id": "toy-T18",
+      "success": true,
+      "root_rows": {
+        "answer": [
+          {
+            "path": "a/e4/c"
+          }
+        ]
+      },
+      "final_rows": [
+        {
+          "path": "a/e4/c"
+        }
+      ],
+      "node_results": [
+        {
+          "node_id": "paths",
+          "kind": "remote_query",
+          "status": "success",
+          "rows": [
+            {
+              "path": "a/e1/b",
+              "target": "b"
+            },
+            {
+              "path": "a/e4/c",
+              "target": "c"
+            },
+            {
+              "path": "a/e7/b",
+              "target": "b"
+            }
+          ],
+          "row_count": 3,
+          "elapsed_ms": 65.46508241444826,
+          "input_bytes": 0,
+          "output_bytes": 94,
+          "bytes_moved": 0,
+          "remote_calls": 1,
+          "error": null,
+          "metadata": {
+            "backend_id": "neo4j",
+            "tool_metrics": {
+              "elapsed_ms": 65.4169162735343,
+              "row_count": 3.0
+            }
+          }
+        },
+        {
+          "node_id": "eligible",
+          "kind": "remote_query",
+          "status": "success",
+          "rows": [
+            {
+              "eligible": "c"
+            },
+            {
+              "eligible": "a"
+            },
+            {
+              "eligible": "z"
+            }
+          ],
+          "row_count": 3,
+          "elapsed_ms": 12.366833165287971,
+          "input_bytes": 0,
+          "output_bytes": 52,
+          "bytes_moved": 0,
+          "remote_calls": 1,
+          "error": null,
+          "metadata": {
+            "backend_id": "fuseki",
+            "tool_metrics": {
+              "elapsed_ms": 12.32704147696495,
+              "row_count": 3.0
+            }
+          }
+        },
+        {
+          "node_id": "join",
+          "kind": "coordinator_join",
+          "status": "success",
+          "rows": [
+            {
+              "path": "a/e4/c",
+              "target": "c",
+              "eligible": "c"
+            }
+          ],
+          "row_count": 1,
+          "elapsed_ms": 0.04666578024625778,
+          "input_bytes": 146,
+          "output_bytes": 47,
+          "bytes_moved": 0,
+          "remote_calls": 0,
+          "error": null,
+          "metadata": {}
+        },
+        {
+          "node_id": "answer",
+          "kind": "project",
+          "status": "success",
+          "rows": [
+            {
+              "path": "a/e4/c"
+            }
+          ],
+          "row_count": 1,
+          "elapsed_ms": 0.012375414371490479,
+          "input_bytes": 47,
+          "output_bytes": 19,
+          "bytes_moved": 0,
+          "remote_calls": 0,
+          "error": null,
+          "metadata": {}
+        }
+      ],
+      "elapsed_ms": 78.12995929270983,
+      "total_remote_calls": 2,
+      "total_bytes_moved": 0
+    },
+    "live_llm": false,
+    "paper_result": false
+  },
+  "limits": [
+    "Correctness evidence on the frozen tiny graph, not model or paper quality",
+    "Explicit XGAP orientation extension; existing Edges source unchanged",
+    "M9 still rejects Reverse; bounded native compiler is a separate supported profile",
+    "Remaining path/typed semantics, T2 catalog/replay and T3 real evaluation incomplete"
+  ],
+  "logical_capability_profile": "m5_path_algebra_orientation_v1",
+  "logical_capability_source_sha256": "45a3620386c730e05b24f45e77349b3159a17a164a7a4a78865c204682e4e4dd",
+  "production_source_unchanged_after_final_broad_launch": true,
+  "after_broad_change": "Daily fast-harness wiring only, tested separately; no native/core production change",
+  "formatting_note": "Git whitespace check reports trailing spaces in eight frozen independent SPARQL targets. Their measured bytes are intentionally retained; this is not a query/test failure."
+}

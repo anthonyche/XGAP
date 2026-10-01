@@ -1,0 +1,64 @@
+{
+  "schema_version": "xgap-resource-entity-answer-acceptance-v1",
+  "date": "2026-09-11",
+  "research_gate": "R-E/E1 deterministic answer boundary / INT-4",
+  "test_run": {
+    "base_commit": "ed2a7c3d0e454b3f32e10d08c8b9083fa100e4ec",
+    "command": [
+      "/tmp/xgap-directed-tests.qU2YfW/venv/bin/python",
+      "-m",
+      "pytest",
+      "-vv",
+      "tests/test_resource_entity_answers.py"
+    ],
+    "environment_override": {
+      "PYTHONPATH": "src:tests"
+    },
+    "source_sha256": {
+      "src/xgap/experiments/resource_entity_answers.py": "76bd70d64e0b9e8ee042f4e4f19f795847760b22a94cc32fdb78ee55a63bc9f5",
+      "tests/test_resource_entity_answers.py": "5d448fd85f201ced689d8c1a446045beeeb075564704ff0338fd9688a3b52f00",
+      "docs/decisions/resource_entity_answers_v1.md": "ed76b4f84fa8648addab8271d0dc566a4c21a8b58553ee7e49d6fe6d560749ad"
+    },
+    "started_at": "2026-09-11T13:25:19.995467+00:00",
+    "native_services_started": 0,
+    "model_calls": 0,
+    "large_dataset": false,
+    "exit_code": 0,
+    "wall_seconds": 1.1491248747333884,
+    "source_unchanged": true,
+    "passed": 16,
+    "failed": 0,
+    "pytest_reported_seconds": 0.66,
+    "tool_chunk_id": "623284"
+  },
+  "raw_files": {
+    "/Users/anthonyche/xgap-data/int4-resource-entity-answers-20260911/pytest.log": {
+      "bytes": 2539,
+      "sha256": "fb483a5bd5e2805d9884d33fd28aab2ad3bc63aa2a23988407555c2ba54bbfc6"
+    },
+    "/Users/anthonyche/xgap-data/int4-resource-entity-answers-20260911/test_receipt.json": {
+      "bytes": 876,
+      "sha256": "9b016f444b5b8bcbe1d2e549d9a579776fb09c271f1ff83befed8fe2dc69ebc7"
+    }
+  },
+  "implemented": "Explicit prepared Traverse→Project(answer:path_node) through ordinary agent binding/P1/backend runtime to strict typed entity terms",
+  "tiny_checks": [
+    "Explicit first/last/interior answer positions and incoming direction with compiled SPARQL on RDFLib",
+    "Distinct paths and duplicate facts do not multiply entity answers",
+    "Successful empty result remains a complete empty answer",
+    "Missing/nonentity/out-of-range projection and nested reference metadata rejected before backend calls",
+    "Every replica has the declared snapshot and resource encoding",
+    "Observation and selected-execution failures retain attempts without retry",
+    "Answer row budget precedes adapter deduplication; duplicate-row injection follows an actual tiny agent run"
+  ],
+  "limitations": [
+    "Prepared meanings, not model interpretation or GrailQA accuracy",
+    "No real Neo4j/Fuseki services used; RDFLib executes SPARQL through a transport override",
+    "Legacy150 inference answer contract and real query-independent facts remain missing",
+    "Snapshot matching verifies declarations, not actual endpoint contents",
+    "Existing planner guarantees remain model-relative and do not cover answer conversion or observed latency",
+    "No frozen dataset, oracle, model package, original failed response, or prior accepted gate changed"
+  ],
+  "remote_submission_receipt": "experiments/artifacts/cwru_toy_model_v2_submission_20260911.json",
+  "paper_result": false
+}

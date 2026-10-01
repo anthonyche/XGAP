@@ -1,0 +1,101 @@
+{
+  "artifact_hashes": {
+    "direct_semantic_workload_sha256": "69d46964cae4d3455e49c54e48f57c305116c597edac5a44bf355158f356b10b",
+    "prediction_suite_sha256": "488512825df73342b5933bc16456c218576e027ee6e709533b5b3bc5b484ddd1",
+    "selection_seal_sha256": "aa5c6ef4e8babdee3de65f29c7c4a6a7e68a919b1d8485af53e7b5a442eb04f1",
+    "training_memory_view_sha256": "dbb60ba450b83493ff724cdbe582bd5f468e3bacf0e32ce7cb355bd2b4e5565a"
+  },
+  "audit": {
+    "check_count": 134,
+    "expected_commit": "4fe396a47b91c4df17ebeecbf8a5d4cf9d1bb52f",
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "schema_version": "m15-f2c10c-direct-family-validation-evidence-audit-v1",
+    "success": true
+  },
+  "boundary": {
+    "answer_oracle_used_for_post_execution_validation": true,
+    "answer_oracle_used_for_selection": false,
+    "automatic_retries": 0,
+    "current_query_profile_calls": 0,
+    "deterministic_backend_doubles": true,
+    "heldout_measurements_collected": false,
+    "paper_result": false,
+    "selection_sealed_before_oracle_access": true,
+    "training_values_are_controlled_nonmeasurements": true
+  },
+  "claim_boundary": "Local deterministic reconstruction gate only; not native-backend, prediction-accuracy, latency, resource, semantic-utility, generalization, ontology, LLM, or paper evidence.",
+  "recorded_date": "2026-09-06",
+  "run_schema_version": "m15-f2c10c-direct-family-validation-run-v1",
+  "runtime_compatibility_sha256": "67f866c2546309e4ffd5454cc7ecb234f36a594970953806e4ac449e05d8b913",
+  "schema_version": "m15-f2c10c-local-controlled-family-memory-validation-evidence-v1",
+  "selected_plans": [
+    {
+      "base_query_id": "financial-risk-alice-jun-medium-v2",
+      "changed_slot_ids": [],
+      "exact_oracle_answer": true,
+      "physical_strategy": "risk_first_bind_join",
+      "plan_id": "m15-f2c-financial-risk-alice-jun-medium-v2-risk-first-bind",
+      "query_id": "financial-risk-alice-jun-medium-v2",
+      "selection_rank": 1,
+      "semantic_class_id": "m15-class-9fb0fa0a0b29dd1a859c4304",
+      "semantic_deviation": 0.0
+    },
+    {
+      "base_query_id": "financial-risk-alice-jun-medium-v2",
+      "changed_slot_ids": [
+        "risk-level",
+        "transfer-predicate"
+      ],
+      "exact_oracle_answer": true,
+      "physical_strategy": "risk_first_bind_join",
+      "plan_id": "m15-f2c-financial-risk-alice-jun-medium-v2-relaxed-ac01383209bedfca7ca4e99c-risk-first-bind",
+      "query_id": "financial-risk-alice-jun-medium-v2-relaxed-ac01383209bedfca7ca4e99c",
+      "selection_rank": 2,
+      "semantic_class_id": "m15-class-ac01383209bedfca7ca4e99c",
+      "semantic_deviation": 0.6666666666666666
+    },
+    {
+      "base_query_id": "financial-risk-alice-jun-medium-v2",
+      "changed_slot_ids": [
+        "transfer-predicate"
+      ],
+      "exact_oracle_answer": true,
+      "physical_strategy": "risk_first_bind_join",
+      "plan_id": "m15-f2c-financial-risk-alice-jun-medium-v2-relaxed-4429ca002ea889cb557fb573-risk-first-bind",
+      "query_id": "financial-risk-alice-jun-medium-v2-relaxed-4429ca002ea889cb557fb573",
+      "selection_rank": 3,
+      "semantic_class_id": "m15-class-4429ca002ea889cb557fb573",
+      "semantic_deviation": 0.3333333333333333
+    },
+    {
+      "base_query_id": "financial-risk-bob-may-low-v2",
+      "changed_slot_ids": [],
+      "exact_oracle_answer": true,
+      "physical_strategy": "risk_first_bind_join",
+      "plan_id": "m15-f2c-financial-risk-bob-may-low-v2-risk-first-bind",
+      "query_id": "financial-risk-bob-may-low-v2",
+      "selection_rank": 1,
+      "semantic_class_id": "m15-class-f076f63fce5319b7dd76c348",
+      "semantic_deviation": 0.0
+    }
+  ],
+  "source_commit": "4fe396a47b91c4df17ebeecbf8a5d4cf9d1bb52f",
+  "source_commit_clean": true,
+  "summary": {
+    "final_row_counts": [
+      11,
+      9,
+      12,
+      7
+    ],
+    "heldout_physical_prediction_count": 20,
+    "heldout_semantic_task_count": 10,
+    "physical_plan_run_count": 4,
+    "returned_semantic_plan_count": 4,
+    "total_bytes_moved": 14614,
+    "total_remote_calls": 8,
+    "training_physical_plan_count": 36,
+    "training_semantic_task_count": 18
+  }
+}

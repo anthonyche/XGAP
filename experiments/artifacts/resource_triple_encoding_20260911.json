@@ -1,0 +1,192 @@
+{
+  "calls_attempted": 12,
+  "encoding": {
+    "class_predicate_iri": "http://rdf.freebase.com/ns/type.object.type",
+    "encoding_id": "int1-resource-triples-v1",
+    "identity": "b3f82927fb543953b121a2b7024dcede2ddb71f4f1f511dbcfc055c3d19a7f6c",
+    "identity_property": "type.object.id",
+    "max_rows": 100,
+    "resource_namespace": "http://rdf.freebase.com/ns/",
+    "snapshot_id": "sha256:44e452da2ad6cdf9d23e964b9182521423879c9783312549f61b61a9d8d2ea54"
+  },
+  "exit_code": 0,
+  "external_automatic_retries": 0,
+  "fixed_real_input_compile_replay": "experiments/replays/resource_triple_int0_compilation_91aa3f1.json",
+  "implementation_parent": "91aa3f189160cdc2aaceb1f4ef0f184a864b10ed",
+  "native_runs": [
+    {
+      "backend_id": "neo4j",
+      "case_id": "RT01",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "fuseki",
+      "case_id": "RT01",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "neo4j",
+      "case_id": "RT02",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "fuseki",
+      "case_id": "RT02",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "neo4j",
+      "case_id": "RT03",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "fuseki",
+      "case_id": "RT03",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "neo4j",
+      "case_id": "RT04",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "fuseki",
+      "case_id": "RT04",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "neo4j",
+      "case_id": "RT05",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    },
+    {
+      "backend_id": "fuseki",
+      "case_id": "RT05",
+      "checks": {
+        "execution_success": true,
+        "gold_endpoints": true,
+        "gold_paths": true,
+        "one_remote_call": true
+      },
+      "status": "success"
+    }
+  ],
+  "native_session_id": 67378,
+  "paper_result": false,
+  "raw_result": {
+    "path": "/Users/anthonyche/xgap-data/int1-resource-native-20260911/result.json",
+    "sha256": "679730fb106dfcf3b06dabf0e5729486c61c9209efaff00287273311720446df"
+  },
+  "real_data_answers_measured": false,
+  "real_input_compilation_count": 4,
+  "schema_version": "int1-resource-triple-evidence-v1",
+  "shutdown": [
+    {
+      "error": null,
+      "escalated_to_kill": false,
+      "final_exit_code": 143,
+      "initial_exit_code": null,
+      "pid": 23588,
+      "service_id": "fuseki",
+      "signal_sent": "SIGTERM",
+      "success": true
+    },
+    {
+      "error": null,
+      "escalated_to_kill": false,
+      "final_exit_code": 0,
+      "initial_exit_code": null,
+      "pid": 23552,
+      "service_id": "neo4j",
+      "signal_sent": "SIGTERM",
+      "success": true
+    }
+  ],
+  "snapshot": {
+    "input_triple_count": 11,
+    "path": "/Users/anthonyche/xgap-data/int1-resource-native-20260911/gate/source_triples.json",
+    "sha256": "44e452da2ad6cdf9d23e964b9182521423879c9783312549f61b61a9d8d2ea54",
+    "turtle_path": "/Users/anthonyche/xgap-data/int1-resource-native-20260911/gate/source_triples.ttl",
+    "turtle_sha256": "b01165580b0f21cf6492e0403107408215f1286d297f35f502e1ad57324b7360",
+    "unique_triple_count": 10
+  },
+  "source_fingerprints_checked": 334,
+  "source_fingerprints_match": true,
+  "source_sha256": {
+    "scripts/check_resource_triple_native.py": "acb9bee0e934b9cac5ba4c36fc18d635ce18fe93b98eb17f015544e2e93084eb",
+    "src/xgap/compilers/rdf_encoding.py": "9965cf2cf0b53637be8ed22db69e1f385eb21fdb6cd4dd21c774911ee5208f00",
+    "src/xgap/compilers/resource_triples.py": "c3132c09f17c6963fd3c1e16dcb53c8f83ed01267fc82692d24c843fe5e4d9dc",
+    "src/xgap/runtime/bounded_paths.py": "7e941999487b38fab73c23ecbd9ffb9d3a90634bf71ff6f534a1707649c5540d",
+    "src/xgap/runtime/path_selection.py": "f1f16243d2992f630cfb5a66709174391c8a34999f94836add387e4e594da6e8",
+    "src/xgap/runtime/semantic_compiler.py": "739d8e7ab9a70f53d5d2c984bb6f9e9e64fba6fc6255bd0a7532fbba32e20798",
+    "tests/test_resource_triple_compilation.py": "5a7ec5eb3a939e1d9c8b80c17ff9f93012ce08bb593375c87a774c4d7fe20c00",
+    "tests/test_resource_triple_decoding.py": "9f954653558a8e1f3ef2e51c9d7fd56a76718fcbeda67ca1781f4ba84e386c18"
+  },
+  "success": true,
+  "tests": {
+    "affected_existing": "3 passed in0.28s",
+    "broad_regression": false,
+    "compiler_run_history": [
+      "initial collection import error, no execution",
+      "1 passed /4 failed in0.31s (test exception/result assertions)",
+      "3 passed /1 failed in0.30s (remaining result nesting assertion)",
+      "1 passed in0.23s (affected remaining case)"
+    ],
+    "new_compiler_unique_cases": 5,
+    "new_decoder": "23 passed in0.13s"
+  }
+}

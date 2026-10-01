@@ -1,0 +1,89 @@
+{
+  "artifact_id": "m15-f2c8b-cwru-native-predicate-relaxation-v1",
+  "artifact_role": "accepted_live_predicate_relaxation_mechanism_gate_not_semantic_utility_or_performance_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "user_returned_cwru_slurm_run_and_independent_read_only_audit",
+  "execution_identity": {
+    "git_commit": "2d39c3ca2f1baab57ad6fbff6dcbe08793a83d69",
+    "git_branch": "codex/m15-f2c8-predicate-relaxation",
+    "git_clean_before_submission": true,
+    "slurm_job_id": "3790680",
+    "node": "compt295",
+    "elapsed": "00:01:36",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "workload_mode": "semantic_predicate_relaxation",
+    "runtime_removed": true,
+    "cleanup_error": null
+  },
+  "live_summary": {
+    "semantic_class_count": 2,
+    "physical_plan_run_count": 2,
+    "semantic_deviations": [
+      0.3333333333333333,
+      0.6666666666666666
+    ],
+    "final_row_counts": [
+      6,
+      9
+    ],
+    "total_remote_calls": 4,
+    "total_bytes_moved": 6262,
+    "validation_passed": true,
+    "automatic_retries": 0
+  },
+  "semantic_class_results": [
+    {
+      "semantic_class_id": "m15-class-b3cf0ee1b03a3bf46874629c",
+      "changed_slot_ids": [
+        "transfer-predicate"
+      ],
+      "semantic_deviation": 0.3333333333333333,
+      "physical_strategy": "risk_first_bind_join",
+      "exact_oracle_answer": true,
+      "final_row_count": 6,
+      "remote_calls": 2,
+      "bytes_moved": 2767
+    },
+    {
+      "semantic_class_id": "m15-class-fcee94caee862d244dc5f3f2",
+      "changed_slot_ids": [
+        "risk-level",
+        "transfer-predicate"
+      ],
+      "semantic_deviation": 0.6666666666666666,
+      "physical_strategy": "risk_first_bind_join",
+      "exact_oracle_answer": true,
+      "final_row_count": 9,
+      "remote_calls": 2,
+      "bytes_moved": 3495
+    }
+  ],
+  "independent_audit": {
+    "module": "xgap.experiments.m15_predicate_relaxation_native_evidence",
+    "success": true,
+    "check_count": 150,
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "expected_commit": "2d39c3ca2f1baab57ad6fbff6dcbe08793a83d69"
+  },
+  "claim_boundary": {
+    "result_class": "live_predicate_relaxation_mechanism_gate",
+    "hard_bindings_preserved": true,
+    "oracle_used_for_post_execution_validation_only": true,
+    "physical_strategy_comparison_enabled": false,
+    "memory_enabled": false,
+    "llm_calls_made": 0,
+    "ontology_calls_made": 0,
+    "semantic_user_utility_supported": false,
+    "latency_ranking_supported": false,
+    "comparative": false,
+    "paper_result": false
+  },
+  "remaining_blockers": [
+    "all eight multihop semantic classes remain unavailable",
+    "semantic-plan Pareto selection is not connected to live execution",
+    "the predicate mapping remains a development fixture rather than validated ontology truth"
+  ],
+  "paper_result": false
+}

@@ -1,0 +1,76 @@
+{
+  "mapping_id": "backbone-boolean-v1",
+  "version": "1",
+  "backends": {
+    "fuseki": {
+      "namespace": "https://xgap.test/toy/",
+      "compiler_tokens": {
+        "node_labels": {
+          "Person": "Person",
+          "Ghost": "Ghost"
+        },
+        "edge_labels": {
+          "KNOWS": "KNOWS"
+        },
+        "properties": {
+          "id": "id",
+          "name": "name",
+          "age": "age",
+          "score": "score",
+          "note": "note",
+          "flag": "flag",
+          "weight": "weight",
+          "floor": "floor"
+        }
+      }
+    }
+  },
+  "term_mappings": {
+    "fuseki": {
+      "Person": {
+        "kind": "class",
+        "representation": "https://xgap.test/toy/Person"
+      },
+      "KNOWS": {
+        "kind": "relation",
+        "representation": "https://xgap.test/toy/KNOWS"
+      },
+      "id": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/id"
+      },
+      "name": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/name"
+      },
+      "age": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/age"
+      },
+      "score": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/score"
+      },
+      "note": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/note"
+      },
+      "flag": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/flag"
+      },
+      "weight": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/weight"
+      },
+      "Ghost": {
+        "kind": "class",
+        "representation": "https://xgap.test/toy/Ghost"
+      },
+      "floor": {
+        "kind": "property",
+        "representation": "https://xgap.test/toy/floor"
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+MATCH (n:Person) RETURN "https://xgap.test/toy/" + n.id AS person ORDER BY CASE WHEN n.score IS NULL THEN 3 WHEN n.score IS :: INTEGER NOT NULL OR n.score IS :: FLOAT NOT NULL THEN 0 WHEN n.score IS :: STRING NOT NULL THEN 1 ELSE 2 END asc, n.score asc, person ASC LIMIT 10

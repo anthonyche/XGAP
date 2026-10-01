@@ -1,0 +1,124 @@
+{
+  "schema_version": "xgap-refined-modes-milestone-v1",
+  "paper_result": false,
+  "commits": [
+    "84b222e",
+    "aa86c79c71e750fb99acf6cb01c204290b63d458"
+  ],
+  "native_receipt": {
+    "path": "/Users/anthonyche/xgap-data/refined-modes-native-20260914-v1/receipt.json",
+    "sha256": "21daac865526a4a6e2e8e3a273ed4ba4497b82feaa533e66649125146c61eff8",
+    "bytes": 9175
+  },
+  "native_wiring_success": true,
+  "native_scope": "new account2 NL, frozen 8 entities/16 relationships, actual model and Neo4j/Fuseki",
+  "new_checks": {
+    "precision": {
+      "cases": 7,
+      "seconds": 0.69
+    },
+    "anchor_budget": {
+      "cases": 4,
+      "first_run_seconds": 1.19,
+      "corrected_three_seconds": 0.98
+    },
+    "profile_publication": {
+      "cases": 1,
+      "corrected_run_seconds": 0.27
+    },
+    "affected_estimator_case_passed": true
+  },
+  "test_corrections": [
+    "late-anchor expected URI fixture namespace",
+    "full-gold unchanged; active capped fanout checked for witnessed subset, not guaranteed full recall",
+    "compare persisted JSON instead of pre-serialization fixture tuples"
+  ],
+  "tiny_anchor_results": [
+    {
+      "anchor": "a",
+      "budget": 2,
+      "source_rows_before": 54,
+      "source_rows_after": 39,
+      "answer_rows": 3,
+      "full_gold_rows": 6
+    },
+    {
+      "anchor": "e",
+      "budget": 1,
+      "source_rows_before": 54,
+      "source_rows_after": 33,
+      "answer_rows": 5,
+      "full_gold_rows": 5,
+      "ordinary_selected_strategy": "placement-0/anchor_fanout_bind",
+      "ordinary_source_calls": 8
+    }
+  ],
+  "native_cases": [
+    {
+      "mode": "precision",
+      "answer_em": 1.0,
+      "model_calls": 1,
+      "source_calls": 14,
+      "source_response_bytes": 18312,
+      "input_tokens": 2422,
+      "output_tokens": 487,
+      "online_ms": 5077.96320784837,
+      "final_plan_executions": 1,
+      "selected_strategy": "placement-0/coordinator",
+      "admitted_interpretations": 1,
+      "planning_ms": 132.55604170262814,
+      "execution_ms": 1361.2984577193856,
+      "grounding_ms": 1.196875236928463,
+      "interpretation_ms": 3271.6924995183945,
+      "grounding_lookups": 0,
+      "bounded_fragments": 0,
+      "source_rows_omitted": false
+    },
+    {
+      "mode": "performance",
+      "answer_em": 1.0,
+      "model_calls": 1,
+      "source_calls": 14,
+      "source_response_bytes": 18312,
+      "input_tokens": 2418,
+      "output_tokens": 486,
+      "online_ms": 3919.9166242033243,
+      "final_plan_executions": 1,
+      "selected_strategy": "placement-0/coordinator",
+      "admitted_interpretations": 1,
+      "planning_ms": 235.63058394938707,
+      "execution_ms": 202.82474998384714,
+      "grounding_ms": 0.7898332551121712,
+      "interpretation_ms": 3237.3369159176946,
+      "grounding_lookups": 0,
+      "bounded_fragments": 0,
+      "source_rows_omitted": false
+    }
+  ],
+  "model_calls": 2,
+  "input_tokens": 4840,
+  "output_tokens": 973,
+  "data_loads": 0,
+  "catalog_builds": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "probe_calls": 0,
+  "automatic_retries": 0,
+  "all_services_terminal": true,
+  "offline_full_statistics_projection": {
+    "path": "/Users/anthonyche/xgap-data/refined-modes-native-20260914-v1/frozen-full-statistics-projection.json",
+    "sha256": "0d1de9587ba048694f34c3119135cbeec022a7abaae6e7f7f6005690d7095f2d",
+    "bytes": 3857
+  },
+  "projection_scope": "tiny query structure, frozen full-source statistics, zero data execution/fit; not real full-size latency",
+  "speedup_claim": false,
+  "real_model_accuracy_uplift_claim": false,
+  "formal_campaign_release": false,
+  "next_engineering": "one deterministic progressive binding candidate to avoid repeated full later-hop relationship reads, with Ptime and exact/approx scope",
+  "evaluation_frontier": {
+    "rdf_nl_next_group": 11,
+    "preserved_outcomes": 44,
+    "native_fixed_next_group": 20,
+    "rdf_fixed_next_group": 5
+  }
+}

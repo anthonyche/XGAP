@@ -1,0 +1,75 @@
+{
+  "schema_version": "xgap-progressive-binding-evidence-v1",
+  "base_commit": "3cdae2b",
+  "local_gate_passed": true,
+  "milestone_complete": false,
+  "new_distinct_checks": 6,
+  "affected_prior_checks": 1,
+  "live_source_calls": 0,
+  "live_model_calls": 0,
+  "fit_calls": 0,
+  "large_queries": 0,
+  "baseline_changes": false,
+  "files": [
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/runtime/progressive_binding.py",
+      "sha256": "4fff5952ca0b0807c479d0eae2b74903217a213c52ed4d4c211986090377f817"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/runtime/physical_strategies.py",
+      "sha256": "a648787341aaecf4c676014af0802da1b966bca4a7a3ba18ad5cd5b64e759921"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/runtime/one_shot_planning.py",
+      "sha256": "8485aa037006191f50fe4d3fdb8668eb180a45af65a3ec6d48533fb045e79d1f"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_planning.py",
+      "sha256": "f21fa687e00e5278f070941cc8cc159860060e39f77e722f2075b1ccecad2f86"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/tests/test_progressive_binding.py",
+      "sha256": "040a10231bd446064e239f05dfdfb2cc505e0206083d6ce4034d239dea53bb0a"
+    }
+  ],
+  "runs": [
+    {
+      "passed": 4,
+      "failed": 1,
+      "seconds": 0.84,
+      "note": "Query-text identity assertion too strict for distinct plan nodes; no implementation failure"
+    },
+    {
+      "passed": 3,
+      "failed": 0,
+      "seconds": 0.48,
+      "note": "Empty/overflow artifact-identity tracking and affected missing-estimator fallback"
+    },
+    {
+      "passed": 1,
+      "failed": 0,
+      "seconds": 0.35,
+      "note": "Independent parallel/self-loop bag count 7"
+    }
+  ],
+  "component": {
+    "independent_gold_rows": 6,
+    "source_calls_each": 8,
+    "later_hop_rows": [
+      24,
+      19
+    ],
+    "logical_exchange_bytes": [
+      7286,
+      6401
+    ],
+    "bag_count": 7,
+    "speed_claim": false,
+    "execution": "in-process real SPARQL"
+  },
+  "frozen_model_gate": {
+    "path": "/Users/anthonyche/xgap-data/progressive-binding-offline-20260914/estimator.json",
+    "sha256": "fc84ffaa378694cb1a547ca8aac4fbf2cddcb61063e6089a07457d3c482e5179"
+  },
+  "next": "New candidate real native tiny component, then actual ranking/cost assessment; no large campaign."
+}

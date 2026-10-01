@@ -1,0 +1,16 @@
+id: m15_split_financial_risk
+name: M15 Split Financial Risk
+description: "Vertically partitioned two-engine correctness fixture for the M15 coordinator."
+expected_fields: [person, company, amount, currency, occurred_on, risk]
+expected_non_empty: true
+backends:
+  neo4j:
+    language: cypher
+    load_files:
+      - examples/m15_split_financial_risk/load_neo4j.cypher
+    query_file: examples/m15_split_financial_risk/query_recent_transfers.cypher
+  fuseki:
+    language: sparql
+    load_files:
+      - examples/m15_split_financial_risk/load_fuseki.ttl
+    query_file: examples/m15_split_financial_risk/query_high_risk.rq

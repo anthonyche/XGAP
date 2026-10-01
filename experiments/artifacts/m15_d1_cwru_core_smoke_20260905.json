@@ -1,0 +1,75 @@
+{
+  "artifact_id": "m15-d1-cwru-core-smoke-3787126",
+  "artifact_role": "cwru_engineering_acceptance_not_paper_performance_result",
+  "observed_at_utc": "2026-09-05",
+  "slurm": {
+    "elapsed": "00:00:28",
+    "exit_code": "0:0",
+    "job_id": "3787126",
+    "node": "compt331",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "4c26eea06c94c4ac0d650c56cf50b8da051a91bb"
+  },
+  "runtime": {
+    "backend_runtime": "none",
+    "hostname": "compt331",
+    "python_module": "Miniconda3",
+    "python_version": "3.11.5"
+  },
+  "validation": {
+    "automatic_retries": 0,
+    "focused_tests_passed": 128,
+    "gated_tests_skipped": 2,
+    "adaptive_replanning": {
+      "exact_answer": true,
+      "executed_plan_id": "m15-risk-first-bind",
+      "initial_plan_id": "m15-parallel-hash",
+      "no_duplicate_probe_call": true,
+      "paper_result": false,
+      "post_probe_plan_id": "m15-risk-first-bind",
+      "replan_count": 1,
+      "total_remote_calls": 2
+    },
+    "plan_selection": {
+      "paper_result": false,
+      "same_exact_answer": true,
+      "selection_flipped": true,
+      "slow_bind_selected_plan_id": "m15-parallel-hash",
+      "transfer_sensitive_selected_plan_id": "m15-risk-first-bind"
+    },
+    "vertical_slice": {
+      "exact_answer": [
+        {
+          "amount": 1200,
+          "company": "C1",
+          "company_id": "neo:C1",
+          "person": "Alice Smith",
+          "right.company_id": "rdf:C1",
+          "risk": "high"
+        }
+      ],
+      "remote_calls": 2,
+      "success": true,
+      "transferred_bytes": 206
+    }
+  },
+  "remote_artifact_root": "runs/cwru-m15-core-smoke-3787126",
+  "remote_artifacts": [
+    "adaptive_replanning.json",
+    "environment.txt",
+    "job.log",
+    "plan_selection.json",
+    "pytest.txt",
+    "run_status.json",
+    "vertical_slice.json"
+  ],
+  "limitations": [
+    "offline fake-backend and contract smoke rather than a live Neo4j-plus-Fuseki run",
+    "single deterministic synthetic fixture",
+    "fixed uncalibrated cost configurations",
+    "not a latency, throughput, or scalability benchmark"
+  ]
+}

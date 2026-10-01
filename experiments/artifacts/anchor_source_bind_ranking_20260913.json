@@ -1,0 +1,95 @@
+{
+  "schema_version": "xgap-saved-anchor-ranking-diagnostic-v1",
+  "profile": {
+    "path": "/Users/anthonyche/xgap-data/finbench-compact-contribution-v2-20260913/rdf/profile.json",
+    "sha256": "8ef2888f8c1ba9abc994015a8387ca4a2701320710671e9083240dc518373496"
+  },
+  "original_outcome": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-006-2/execution/receipt.json",
+    "sha256": "1ed4f0a1134ad5af4cf6914b479a01a7609ddf0fe94e875c545c02150741c04a"
+  },
+  "query_execution": false,
+  "model_calls": 0,
+  "backend_calls": 0,
+  "fit_calls": 0,
+  "weights_changed": false,
+  "original_score_changed": false,
+  "role": "post-exposure diagnosis only, not training or a held-out score",
+  "coordinator_estimated_ms": 834.6124171610303,
+  "fanout_estimated_ms": 12842.692122369328,
+  "top_work_contribution_deltas": [
+    {
+      "feature": "backend.fuseki.path.bind.record_units",
+      "coordinator_units": 0.0,
+      "fanout_units": 30000.0,
+      "estimated_ms_delta": 11468.807762754232
+    },
+    {
+      "feature": "backend.fuseki.path.bind.column_units",
+      "coordinator_units": 0.0,
+      "fanout_units": 120000.0,
+      "estimated_ms_delta": 488.05772416283855
+    },
+    {
+      "feature": "kind.merge.input_units",
+      "coordinator_units": 6652909.0,
+      "fanout_units": 4877004.0,
+      "estimated_ms_delta": -190.03399293407102
+    },
+    {
+      "feature": "backend.fuseki.path.bind.calls",
+      "coordinator_units": 0.0,
+      "fanout_units": 3.0,
+      "estimated_ms_delta": 137.19457973563541
+    },
+    {
+      "feature": "backend.fuseki.path.bind.logical_byte_units",
+      "coordinator_units": 0.0,
+      "fanout_units": 10254940.645871498,
+      "estimated_ms_delta": 104.92023199493819
+    },
+    {
+      "feature": "backend.fuseki.path.bind.binding_units",
+      "coordinator_units": 0.0,
+      "fanout_units": 1262355.0,
+      "estimated_ms_delta": 12.788341111698827
+    },
+    {
+      "feature": "backend.fuseki.path.full.calls",
+      "coordinator_units": 7.0,
+      "fanout_units": 4.0,
+      "estimated_ms_delta": -10.526432205561898
+    },
+    {
+      "feature": "kind.remote_query.count",
+      "coordinator_units": 14.0,
+      "fanout_units": 11.0,
+      "estimated_ms_delta": -3.1285094114093086
+    }
+  ],
+  "saved_complete_property_reads": [
+    {
+      "source_result": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-006-2/execution/worker/core/backend-0005-result.json",
+        "sha256": "337b638fcbae6321cb0576053ef178d43654180975d158a52304f0a4d9e78ad5"
+      },
+      "operator_id": "cq19",
+      "backend": "rdf_graph",
+      "returned_rows": 20409,
+      "matching_distinct_keys": 1
+    },
+    {
+      "source_result": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-006-2/execution/worker/core/backend-0004-result.json",
+        "sha256": "f6886bf76e9e46e3d17368e93713930cb3cf16c292ec4bc31832783410e3b724"
+      },
+      "operator_id": "cq18",
+      "backend": "rdf_control",
+      "returned_rows": 20409,
+      "matching_distinct_keys": 1
+    }
+  ],
+  "observed_distinct_anchor_keys": 1,
+  "claim": "Existing cumulative work units do not represent selective key cardinality. Add independently frozen key statistics or a versioned estimator mechanism; do not feed this held-out observation back as a label.",
+  "next_gate": "tiny offline equality-multiplicity statistics and key-count propagation, with old weights and original predictions preserved"
+}

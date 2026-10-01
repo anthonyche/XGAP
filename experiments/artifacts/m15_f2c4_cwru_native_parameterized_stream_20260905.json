@@ -1,0 +1,70 @@
+{
+  "artifact_id": "m15-f2c4-cwru-native-parameterized-stream-3787592",
+  "artifact_role": "cwru_live_parameterized_exact_execution_acceptance_not_comparative_result",
+  "observed_at_utc": "2026-09-05",
+  "evidence_origin": "user_returned_cwru_scheduler_state_and_independent_audit_summary",
+  "slurm": {
+    "elapsed": "00:01:09",
+    "exit_code": "0:0",
+    "job_id": "3787592",
+    "node": "compt298",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "clean": true,
+    "commit": "66327a47be1d29e4cabd6f188d2ff4b7894d824b"
+  },
+  "run": {
+    "remote_root": "runs/cwru-m15-native-parameterized-stream-3787592",
+    "status": "success",
+    "workload_mode": "parameterized_stream",
+    "runtime_removed": true,
+    "cleanup_error": null,
+    "automatic_retries": 0
+  },
+  "parameterized_stream": {
+    "family_compatibility_sha256": "34d432efccebd8d4000d52f910a25746b01e6d884f99eb41de6cbe846c13dfec",
+    "workload_bundle_sha256": "b06b1c4b4e630e37cbea8d4cf5d81bbc31c4a2280b97a64f5a4a9efed0d434e7",
+    "query_instance_count": 6,
+    "seed_task_count": 4,
+    "heldout_instance_count": 2,
+    "candidate_strategy_count": 2,
+    "strategy_run_count": 12,
+    "exact_answer_count": 12,
+    "fixture_source_query_count": 12,
+    "total_tool_invocations": 24,
+    "semantic_deviation": 0,
+    "memory_enabled": false,
+    "llm_calls_made": 0,
+    "ontology_calls_made": 0,
+    "automatic_retries": 0,
+    "paper_result": false
+  },
+  "independent_read_only_audit": {
+    "schema_version": "m15-f2c4-native-evidence-audit-v1",
+    "output": "runs/audits/cwru-m15-f2c4-parameterized-stream-3787592-audit.json",
+    "success": true,
+    "check_count": 172,
+    "failed_check_ids": [],
+    "run_tree_mutated": false
+  },
+  "claim_boundary": {
+    "result_class": "real_backend_parameterized_exact_execution_acceptance",
+    "parameterized_instances_executed": true,
+    "both_exact_strategies_executed_per_instance": true,
+    "all_answers_exact": true,
+    "cross_task_memory_measured": false,
+    "semantic_relaxation_measured": false,
+    "comparative": false,
+    "latency_ranking_supported": false
+  },
+  "limitations": [
+    "one development query family with four seed and two held-out instances",
+    "both strategies were executed for mechanism validation rather than selected online",
+    "no family-local memory was read or written",
+    "only the zero-relaxation interpretation was executed",
+    "no counterbalanced repetitions or calibrated cost model",
+    "not a latency, throughput, scalability, transfer-benefit, or comparative result"
+  ],
+  "paper_result": false
+}

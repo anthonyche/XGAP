@@ -1,0 +1,300 @@
+{
+  "schema_version": "xgap-global-strong-seed-evidence-v1",
+  "source_commit": "5bb20e2ada1fe550c16bfa48b7219e2387d06ce1",
+  "receipt": {
+    "path": "/Users/anthonyche/xgap-data/global-strong-seed-20260915-v1/receipt.json",
+    "sha256": "521f12184764a3e1fca2baa147e6d36dab5da4f1621782bf157c948715da9020"
+  },
+  "driver": {
+    "path": "/Users/anthonyche/xgap-data/global-strong-seed-20260915-v1/check.py",
+    "sha256": "dcbcf966bba86e74e33834273d467a1729136d4a44b18b21915359f798a44beb"
+  },
+  "counterexample_after": {
+    "clock_kind": "controlled logical clock, not machine timing",
+    "search": {
+      "action_records": [
+        {
+          "acquisition_estimated_cost": 0,
+          "action_id": "resolve",
+          "child_states": {
+            "a": 2,
+            "b": 3,
+            "c": 4
+          },
+          "estimated_cost": 100,
+          "outcomes": [
+            "a",
+            "b",
+            "c"
+          ],
+          "refined_estimated_cost": 100,
+          "state_id": 1,
+          "status": "strong"
+        }
+      ],
+      "cost_objective": "estimated acquisition plus worst-outcome terminal cost",
+      "elapsed_ms": 23.0,
+      "expanded_states": 4,
+      "external_calls_during_search": 0,
+      "feasible_first_scope": "complete_root_policy_before_optional_terminal_refinement",
+      "first_feasible_estimated_cost": 100,
+      "first_feasible_ms": 3.0,
+      "generated_actions": 1,
+      "incumbent_cost_upper_bound": null,
+      "limit_events": [
+        "planning_deadline"
+      ],
+      "optimality_certified": false,
+      "policy": {
+        "action_id": "resolve",
+        "children": {
+          "a": {
+            "action_id": null,
+            "children": {},
+            "estimated_cost": 90,
+            "state_id": 2,
+            "terminal_id": "improved:a"
+          },
+          "b": {
+            "action_id": null,
+            "children": {},
+            "estimated_cost": 90,
+            "state_id": 3,
+            "terminal_id": "improved:b"
+          },
+          "c": {
+            "action_id": null,
+            "children": {},
+            "estimated_cost": 100,
+            "state_id": 4,
+            "terminal_id": "seed:c"
+          }
+        },
+        "estimated_cost": 100,
+        "state_id": 1,
+        "terminal_id": null
+      },
+      "retained_states": 4,
+      "root_lower_bound": null,
+      "schema_version": "xgap-strong-policy-search-v1",
+      "selected_estimated_cost": 100,
+      "status": "feasible",
+      "stop_reason": "planning_deadline",
+      "strong": true,
+      "terminal_refinement_records": [
+        {
+          "accepted": 1,
+          "after_cost": 90,
+          "before_cost": 100,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 2,
+          "status": "finished"
+        },
+        {
+          "accepted": 1,
+          "after_cost": 90,
+          "before_cost": 100,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 3,
+          "status": "planning_deadline"
+        }
+      ]
+    },
+    "trace": [
+      "seed:a",
+      "seed:b",
+      "seed:c",
+      "improved:a",
+      "improved:b"
+    ]
+  },
+  "native_exact_development": [
+    {
+      "expanded_states": 4,
+      "family": "f1_direct_transfer_control",
+      "first_feasible_estimate": 65.58961659735925,
+      "first_feasible_ms": 108.01220778375864,
+      "mode": "exact",
+      "planning_failures": [],
+      "profile": {
+        "bytes": 23521,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/group-000/profile.json",
+        "sha256": "32ba8200dc755ddcbb9b8a6331e23bfc30d0cf92c6db6cf51ebb02bf77c0c905"
+      },
+      "question_id": "FBNS-1-eeb7a157eba85fce",
+      "refinement_records": [
+        {
+          "accepted": 0,
+          "after_cost": 62.91636690563448,
+          "before_cost": 62.91636690563448,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 2,
+          "status": "finished"
+        },
+        {
+          "accepted": 0,
+          "after_cost": 62.91636690563448,
+          "before_cost": 62.91636690563448,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 3,
+          "status": "finished"
+        },
+        {
+          "accepted": 0,
+          "after_cost": 62.91636690563448,
+          "before_cost": 62.91636690563448,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 4,
+          "status": "finished"
+        }
+      ],
+      "request": {
+        "bytes": 972,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/group-000/request.json",
+        "sha256": "dc10f3e7d1473cacaf2b2b1850cbdebafc657081f1705772296cacbd560a3ac1"
+      },
+      "result": {
+        "bytes": 7611,
+        "path": "/Users/anthonyche/xgap-data/global-strong-seed-20260915-v1/f1_direct_transfer_control.json",
+        "sha256": "432fba5fd5649511b2e8e181e86d55c4895e7f149c81edaf682e764dbf01a666"
+      },
+      "selected_estimate": 65.58961659735925,
+      "strong": true,
+      "total_search_ms": 276.2701250612736
+    },
+    {
+      "expanded_states": 4,
+      "family": "f2_temporal_path_control",
+      "first_feasible_estimate": 377.6186547966249,
+      "first_feasible_ms": 99.53358396887779,
+      "mode": "exact",
+      "planning_failures": [],
+      "profile": {
+        "bytes": 23539,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/group-040/profile.json",
+        "sha256": "9d1ada15c42f084d8e7311d2100d8fa8ca3fb04fe0f8f73bc857c4d2695845b3"
+      },
+      "question_id": "FBNS-2-e232ac0c7df2b3a5",
+      "refinement_records": [
+        {
+          "accepted": 0,
+          "after_cost": 374.94540510490015,
+          "before_cost": 374.94540510490015,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 2,
+          "status": "finished"
+        },
+        {
+          "accepted": 0,
+          "after_cost": 374.94540510490015,
+          "before_cost": 374.94540510490015,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 3,
+          "status": "finished"
+        },
+        {
+          "accepted": 0,
+          "after_cost": 374.94540510490015,
+          "before_cost": 374.94540510490015,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 4,
+          "status": "finished"
+        }
+      ],
+      "request": {
+        "bytes": 1170,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/group-040/request.json",
+        "sha256": "7899e0ff7f29280a3e03417b01b31e822f9f91e9cf2739f5bfd18264582163d6"
+      },
+      "result": {
+        "bytes": 7620,
+        "path": "/Users/anthonyche/xgap-data/global-strong-seed-20260915-v1/f2_temporal_path_control.json",
+        "sha256": "0510f6a01db1acaaf482f4128c239f36c01d148288ee583956c2cf4989758638"
+      },
+      "selected_estimate": 377.6186547966249,
+      "strong": true,
+      "total_search_ms": 294.55166682600975
+    },
+    {
+      "expanded_states": 4,
+      "family": "f3_aggregate_risk_ranking",
+      "first_feasible_estimate": 65.58961659735925,
+      "first_feasible_ms": 86.37683279812336,
+      "mode": "exact",
+      "planning_failures": [],
+      "profile": {
+        "bytes": 23513,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/group-080/profile.json",
+        "sha256": "61caa2b65dc95bc048f76c3d40d83c7ce86247d6c53073ac3620fc18f49df45d"
+      },
+      "question_id": "FBNS-3-33bc9c0ac5b05e5f",
+      "refinement_records": [
+        {
+          "accepted": 0,
+          "after_cost": 62.91636690563448,
+          "before_cost": 62.91636690563448,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 2,
+          "status": "finished"
+        },
+        {
+          "accepted": 0,
+          "after_cost": 62.91636690563448,
+          "before_cost": 62.91636690563448,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 3,
+          "status": "finished"
+        },
+        {
+          "accepted": 0,
+          "after_cost": 62.91636690563448,
+          "before_cost": 62.91636690563448,
+          "candidates": 1,
+          "resource_rejections": 0,
+          "state_id": 4,
+          "status": "finished"
+        }
+      ],
+      "request": {
+        "bytes": 1054,
+        "path": "/Users/anthonyche/xgap-data/partial-strong-finbench-cost-20260915-v1/native/group-080/request.json",
+        "sha256": "75357106cc972ed12aad5836b78bccfdcf8204b06ac61fedc78cf59cdf1b2b1d"
+      },
+      "result": {
+        "bytes": 7611,
+        "path": "/Users/anthonyche/xgap-data/global-strong-seed-20260915-v1/f3_aggregate_risk_ranking.json",
+        "sha256": "fe8ad4d178f1ec58e6af62f72245105921591861e58d0ddd465ed4b978f39595"
+      },
+      "selected_estimate": 65.58961659735925,
+      "strong": true,
+      "total_search_ms": 259.7529161721468
+    }
+  ],
+  "tests": {
+    "new_cases": 8,
+    "generic_solver_cases": 8,
+    "affected_deadline_cases": 3,
+    "passed": 19,
+    "command": "PYTHONPATH=src:tests:scripts /tmp/xgap-directed-tests.qU2YfW/venv/bin/python -m pytest -q tests/test_global_strong_seed.py tests/test_strong_planning.py tests/test_cooperative_planning_budget.py::test_completed_better_score_survives_expiry_before_the_next_score tests/test_cooperative_planning_budget.py::test_expired_after_atomic_baseline_skips_estimation_but_executes_one_correct_plan",
+    "full_repository_regression": false
+  },
+  "actual_model_calls": 0,
+  "actual_native_source_calls": 0,
+  "paper_result": false,
+  "limitations": [
+    "Logical clock counterexample is not machine latency",
+    "Atomic optional work can exceed the soft deadline; repaired15ms example ends at23ms with a complete policy",
+    "Three development policies only; no graph query or answer reference was read",
+    "Optional work did not improve estimates in these three inputs; no speed/quality superiority claim"
+  ]
+}

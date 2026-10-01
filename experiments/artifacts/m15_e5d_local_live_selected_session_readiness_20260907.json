@@ -1,0 +1,64 @@
+{
+  "artifact_id": "m15-e5d-local-live-selected-session-readiness-20260907",
+  "artifact_role": "local_native_selected_session_readiness_not_paper_result",
+  "observed_at_utc": "2026-09-07",
+  "git": {
+    "implementation_commit": "8fb1999a1796848e39e6dbfaa58b64299d308410"
+  },
+  "validation": {
+    "command": "./scripts/run_acceptance.sh",
+    "passed": 1054,
+    "skipped": 36,
+    "failed": 0,
+    "focused_selected_session_tests": 7,
+    "independent_auditor_reconstruction_tested": true,
+    "failure_stops_without_retry_tested": true,
+    "native_service_prestart_seal_tested": true
+  },
+  "historical_memory_input": {
+    "source_job_id": "3791600",
+    "source_run": "runs/cwru-m15-native-direct-family-pilot-3791600",
+    "source_relative_path": "native-service-run/direct-family-pilot-run/training/training_memory_view.json",
+    "expected_memory_view_sha256": "7ed39e1097e3138666b87ec9c8ea82ed135d77a8e12e9f2893931892ba0b7e57"
+  },
+  "authority_contract": {
+    "source_kind": "explicit_user_input",
+    "required_structural_candidate": "constraint:single-transfer-at-least-50000",
+    "allowed_predicate_candidates": [
+      "predicate:transferred_to",
+      "predicate:paid_to"
+    ],
+    "candidate_order_is_authority": false,
+    "family_memory_is_semantic_authority": false,
+    "ontology_proximity_is_semantic_authority": false
+  },
+  "execution_contract": {
+    "selection_sealed_before_service_start": true,
+    "one_goal_per_session": true,
+    "allowed_tools": [
+      "runtime.execute_plan"
+    ],
+    "execution_order": "selection_rank",
+    "expected_backend_calls_per_plan": 2,
+    "stop_after_first_failed_plan": true,
+    "answer_oracle_opened_after_all_successful_executions": true,
+    "current_query_profile_calls": 0,
+    "llm_calls": 0,
+    "ontology_service_calls": 0,
+    "automatic_retries": 0
+  },
+  "next_gate": {
+    "required": "one_clean_cwru_native_run_followed_by_one_read_only_audit",
+    "completed": false
+  },
+  "claim_boundary": {
+    "evidence_class": "controlled_local_implementation_readiness",
+    "real_backend_result": false,
+    "performance_claim": false,
+    "semantic_quality_claim": false,
+    "user_utility_claim": false,
+    "ontology_truth_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

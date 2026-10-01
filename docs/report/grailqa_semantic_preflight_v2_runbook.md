@@ -103,3 +103,44 @@ stage-aware failure taxonomy. The query-local CWRU condition also records a
 `jointly_reachable_subset` for the five prompt-reachable questions while
 preserving all-18 metrics. No backend execution is performed. A future
 150-query run remains disallowed until these diagnostics are interpretable.
+
+## 4. Run The Independent Audit
+
+Do not treat the producer directory itself as admitted evidence. After the
+live job completes successfully, first read the producer commit recorded by
+that job, then submit the CPU-only independent auditor from the current audited
+code checkout. This matters when a pending job and later CPU work share one
+checkout: the recorded execution commit, rather than the commit visible when
+`sbatch` was entered, is authoritative.
+
+```bash
+cd "$HOME/XGAP-m15-465e2e2"
+export XGAP_REPO_ROOT="$PWD"
+export XGAP_PYTHON="$HOME/venvs/xgap-core/bin/python"
+export XGAP_GRAILQA_PREFLIGHT_JOB_ID=3795067
+export XGAP_GRAILQA_PREFLIGHT_PRODUCER_COMMIT="$(
+  "$XGAP_PYTHON" -c '
+import json, sys
+print(json.load(open(sys.argv[1]))["git"]["commit"])
+' "$PWD/runs/cwru-grailqa-preflight-v2-3795067/cwru_environment.json"
+)"
+
+AUDIT_JOB=$(sbatch --parsable --export=ALL \
+  scripts/slurm/audit_grailqa_semantic_preflight_v2.sbatch)
+echo "$AUDIT_JOB"
+```
+
+The auditor reads the immutable result tree and writes outside it. A passing
+audit remains development-preflight evidence only: it cannot select paper
+parameters, issue author review, authorize the 150-query run, or set
+`paper_result=true`.
+
+## 5. Author Review And Admission Boundary
+
+Only after inspecting the successful independent audit may the author create a
+review receipt with decision
+`accept_exact_preflight_without_parameter_tuning`. A later preexecution
+admission must also bind the independent pilot150 catalog audit and all five
+explicit author choices. Admission remains non-authorizing; the exact
+150-query execution requires a separate request and a separate author
+authority. The system must not manufacture any of those author-owned records.

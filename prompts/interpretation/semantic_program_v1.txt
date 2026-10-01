@@ -1,0 +1,69 @@
+Translate the question and its explicit structured requirements into one XGAP
+semantic graph program. Return only the JSON envelope required by the response
+schema. This is query interpretation, before entity binding or physical planning.
+Never produce native queries, backend plans, answers, invented entity identifiers,
+or resolved candidate IDs. Never alter or relax a required hard constraint.
+
+The envelope has schema_version "xgap-semantic-interpretation-v1", program and
+operator_sources. The program has program_id, operators, roots, holes, metadata.
+Use metadata {}. Operators form an acyclic typed dataflow graph. Each has
+operator_id, kind, input_ids, input_kinds, output_kind, parameters, constraints
+and required_capabilities. Use required_capabilities [] unless explicitly needed.
+Copy every request.required_constraints item's constraint unchanged onto the
+operator named by its operator_id. Retain its expression, policy and predicate.
+Use those operator IDs. An empty constraints list is valid for other operators.
+
+Represent mentions needing resolution as holes. Each hole has a unique hole_id,
+kind (entity, predicate, type, source or constraint), the exact mention text from
+the question, required true, candidates [] and is_resolved false. A reference
+to its eventual typed value is {"$hole":"hole_id"}. Use the hole names already
+present in caller predicates. Entity names remain unresolved even when the
+question mentions a clarification; the caller's separate clarification tool
+owns that decision. Do not replace an ambiguous original mention yourself.
+Use a predicate hole for a relation mention, a type hole for a node-type mention,
+a source hole for the graph mention, and a constraint hole for a scalar threshold.
+Do not write hole ownership fields inside operator parameters.
+
+Syntax of the operators needed for small graph queries:
+
+match has no inputs and returns binding_set. Its parameters are node (a node
+descriptor with optional label and properties), entity_field (the output column
+for node identity), and properties (output-column to node-property-name map).
+Node labels can be hole references. A named predicate on match uses path-style
+node predicates: kind property_equals/property_gte, ref {kind:"node",position:
+"first"}, property and value. These are added to the node condition by binding.
+
+traverse has no inputs for a standalone path query and returns path_set. Its
+parameters contain path_pattern. A one-edge path pattern is an object with
+path_var null, source {}, expr {kind:"rel",edge:{label:<predicate hole>,
+direction:"OUT",properties:{}}}, target {}, selector {kind:"ALL",k:null},
+restrictor "WALK", condition null, max_depth null. Use direction IN when the
+question asks for incoming edges. A named identity constraint on traverse uses
+the same node predicate syntax as match and can bind the first node. Constrain
+the actual path; do not put entity identity in metadata.
+
+project has one input. For path_set -> binding_set, its parameters.projections
+maps output columns to {kind:"path_node",position:"last"} for the reached node
+and {kind:"path_edge",position:1} for the first traversed edge. For binding_set
+-> binding_set, select columns with {kind:"field",field:"existing_column"}.
+filter has one binding_set input and output. Its parameters.condition or named
+constraint predicate uses {op:"ge",field:"column",value:<threshold hole>} for
+at least, or op eq/ne/lt/le/gt as required. When its named hard constraint already
+contains the predicate, use parameters {} rather than an additional condition.
+join has two binding_set inputs and one binding_set output. Its parameters are
+left_on and right_on, the corresponding shared identity column names. To combine
+path reachability with properties of a typed node, project the reached identity
+and edge, match the node type and its properties, filter those properties, join
+on identity, then project only the requested output columns.
+
+Use output column person for a requested person's identity, age for their age,
+and edge for a requested traversed edge. Each input_kinds entry must equal the
+referenced operator's output_kind. roots names the final answer operator only.
+operator_sources assigns each match/traverse operator to a logical source name
+from context.runtime.sources or to its unresolved source hole. Coordinator
+filter/project/join operators have no separate source assignment. Do not choose
+Neo4j/Fuseki physical placements; the deterministic planner does that later.
+
+Only the provided question, permitted context and hard requirements are inputs.
+No answer, gold semantic program or target query is supplied. If a requirement
+cannot be represented, do not silently discard it or manufacture an empty answer.

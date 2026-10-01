@@ -1,0 +1,87 @@
+{
+  "schema_version": "m15-f2c12b-cwru-native-current-query-profile-artifact-v1",
+  "evidence_class": "ten-semantic-task-native-development-baseline",
+  "slurm": {
+    "job_id": "3791649",
+    "hostname": "compt268",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 305
+  },
+  "git": {
+    "commit": "64f750b2b9729950067589ec76a94d35bf305add",
+    "clean": true
+  },
+  "execution": {
+    "acquisition_plan_runs": 20,
+    "selected_plan_runs": 10,
+    "evaluation_shadow_plan_runs": 80,
+    "total_plan_runs": 110,
+    "acquisition_backend_calls": 40,
+    "selected_plan_backend_calls": 20,
+    "evaluation_shadow_backend_calls": 160,
+    "total_backend_calls": 220,
+    "current_query_profile_operations": 20,
+    "automatic_retries": 0,
+    "runtime_removed": true
+  },
+  "analysis": {
+    "physical_winner_accuracy": {
+      "correct_count": 10,
+      "semantic_task_count": 10,
+      "accuracy": 1.0
+    },
+    "selected_plan_latency_regret_ms": {
+      "minimum": 0.0,
+      "median": 0.0,
+      "mean": 0.0,
+      "maximum": 0.0
+    },
+    "selected_plan_bytes_regret": {
+      "minimum": 4640.0,
+      "median": 5428.0,
+      "mean": 5625.6,
+      "maximum": 6960.0
+    },
+    "acquisition_latency_ms": {
+      "minimum": 40.31788092106581,
+      "median": 61.81585695594549,
+      "mean": 106.33833948522806,
+      "maximum": 332.98787102103233
+    },
+    "acquisition_bytes": {
+      "minimum": 12380.0,
+      "median": 14082.0,
+      "mean": 14056.0,
+      "maximum": 16136.0
+    },
+    "end_to_end_latency_ms": {
+      "minimum": 71.91873528063297,
+      "median": 84.27850296720862,
+      "mean": 131.91049667075276,
+      "maximum": 363.90450969338417
+    },
+    "end_to_end_bytes": {
+      "minimum": 21284.0,
+      "median": 23791.0,
+      "mean": 23896.8,
+      "maximum": 26918.0
+    },
+    "selection_source": "sealed_current_query_profile_costs_only"
+  },
+  "independent_audit": {
+    "success": true,
+    "check_count": 1185,
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "expected_commit": "64f750b2b9729950067589ec76a94d35bf305add"
+  },
+  "claim_boundary": {
+    "same_allocation_family_memory_comparison": false,
+    "cross_allocation_timing_comparison": false,
+    "confirmatory_statistics": false,
+    "development_result_only": true,
+    "paper_result": false
+  },
+  "paper_result": false
+}

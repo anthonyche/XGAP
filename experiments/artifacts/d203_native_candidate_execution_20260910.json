@@ -1,0 +1,4119 @@
+{
+  "controlled_fixture": true,
+  "fresh_model_run": false,
+  "paper_result": false,
+  "source_manifest_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+  "data_reloaded": false,
+  "cases": {
+    "track-one": {
+      "input_pattern_sha256": "659edfbd24c81599a243d473432bb688324a0ffdfe569bf8a57a202add5c211d",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard-string",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {
+          "music.release_track.track_number": "string"
+        },
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "plan": {
+        "plan_id": "candidate-659edfbd24c81599",
+        "nodes": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "candidate-659edfbd24c81599-paths",
+                "language": "cypher",
+                "text": "MATCH (n0:XgapRdfResource)<-[r0:XGAP_RDF_RESOURCE_EDGE]-(n1:XgapRdfResource)\nMATCH (n1:XgapRdfResource)-[r1:XGAP_RDF_RESOURCE_EDGE]->(n2:XgapRdfResource)\nWHERE n0.iri = $p0 AND r0.predicate = $p1 AND r1.predicate = $p2 AND n1 <> n2 AND n0 <> n1 AND n0 <> n2\nRETURN DISTINCT n0.iri AS n0, n1.iri AS n1, n2.iri AS n2, {type: 'uri', value: n2.iri} AS answer LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "p0": "http://rdf.freebase.com/ns/m.0x8z059",
+                  "p1": "http://rdf.freebase.com/ns/music.release_track.recording",
+                  "p2": "http://rdf.freebase.com/ns/music.release_track.release"
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "path-rows",
+            "kind": "exchange",
+            "inputs": [
+              "paths"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "scalar-contract",
+            "kind": "remote_bind_query",
+            "inputs": [
+              "path-rows"
+            ],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "candidate-659edfbd24c81599-scalar-contract",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?n0 ?n1 ?n2 ?invalid WHERE { {{XGAP_IRI_ROWS}} BIND(((EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?a, ?b . FILTER(!sameTerm(?a,?b)) } || EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?x . FILTER(!COALESCE((isLiteral(?x) && DATATYPE(?x) = <http://www.w3.org/2001/XMLSchema#string>), false)) })) AS ?invalid) } LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "sparql_iri_rows": {
+                    "parameter": "path_rows",
+                    "columns": [
+                      "n0",
+                      "n1",
+                      "n2"
+                    ],
+                    "max_bindings": 10000,
+                    "max_bytes": 4194304
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "n0",
+                    "n1",
+                    "n2",
+                    "invalid"
+                  ],
+                  "xgap_scalar_guard_columns": [
+                    "n0",
+                    "n1",
+                    "n2"
+                  ]
+                }
+              },
+              "bind_fields": [
+                "n0",
+                "n1",
+                "n2"
+              ],
+              "parameter": "path_rows",
+              "max_bindings": 10000
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "literal-filter",
+            "kind": "remote_bind_query",
+            "inputs": [
+              "scalar-contract"
+            ],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "candidate-659edfbd24c81599-literal-filter",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?answer WHERE { {{XGAP_IRI_ROWS}}\n?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 . FILTER(?v0 = \"1\")\nBIND(?n2 AS ?answer) } LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "sparql_iri_rows": {
+                    "parameter": "path_rows",
+                    "columns": [
+                      "n0",
+                      "n1",
+                      "n2"
+                    ],
+                    "max_bindings": 10000,
+                    "max_bytes": 4194304
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "answer"
+                  ]
+                }
+              },
+              "bind_fields": [
+                "n0",
+                "n1",
+                "n2"
+              ],
+              "parameter": "path_rows",
+              "max_bindings": 10000
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "rdf-rows",
+            "kind": "exchange",
+            "inputs": [
+              "literal-filter"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "inputs": [
+              "rdf-rows"
+            ],
+            "parameters": {
+              "fields": [
+                "answer"
+              ]
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "answer"
+        ],
+        "max_remote_calls": 3,
+        "max_parallelism": 1,
+        "metadata": {
+          "input_pattern_sha256": "659edfbd24c81599a243d473432bb688324a0ffdfe569bf8a57a202add5c211d",
+          "mapping": {
+            "mapping_id": "d203-retained-first-shard-string",
+            "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+            "scalar_properties": {
+              "music.release_track.track_number": "string"
+            },
+            "resource_encoding": "rdf-resource-edge-mirror-v1"
+          },
+          "execution_requirements": {
+            "require_entity_anchor": true,
+            "answer_position": "last",
+            "required_bindings": [
+              [
+                1,
+                "m.0x8z059"
+              ]
+            ]
+          },
+          "max_result_rows": 10000
+        }
+      },
+      "federated": {
+        "plan_id": "candidate-659edfbd24c81599",
+        "success": true,
+        "root_rows": {
+          "answer": [
+            {
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            }
+          ]
+        },
+        "final_rows": [
+          {
+            "answer": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+            }
+          }
+        ],
+        "node_results": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 466.7689595371485,
+            "input_bytes": 0,
+            "output_bytes": 215,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "neo4j",
+              "tool_metrics": {
+                "elapsed_ms": 466.2234578281641,
+                "row_count": 1.0
+              }
+            }
+          },
+          {
+            "node_id": "path-rows",
+            "kind": "exchange",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.03624986857175827,
+            "input_bytes": 215,
+            "output_bytes": 215,
+            "bytes_moved": 215,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          },
+          {
+            "node_id": "scalar-contract",
+            "kind": "remote_bind_query",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 242.8976660594344,
+            "input_bytes": 215,
+            "output_bytes": 141,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "fuseki",
+              "tool_metrics": {
+                "elapsed_ms": 242.47841723263264,
+                "row_count": 1.0
+              },
+              "binding_count": 1
+            }
+          },
+          {
+            "node_id": "literal-filter",
+            "kind": "remote_bind_query",
+            "status": "success",
+            "rows": [
+              {
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 11.033874936401844,
+            "input_bytes": 141,
+            "output_bytes": 77,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "fuseki",
+              "tool_metrics": {
+                "elapsed_ms": 10.955959558486938,
+                "row_count": 1.0
+              },
+              "binding_count": 1
+            }
+          },
+          {
+            "node_id": "rdf-rows",
+            "kind": "exchange",
+            "status": "success",
+            "rows": [
+              {
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.013208016753196716,
+            "input_bytes": 77,
+            "output_bytes": 77,
+            "bytes_moved": 77,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "status": "success",
+            "rows": [
+              {
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.02562534064054489,
+            "input_bytes": 77,
+            "output_bytes": 77,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          }
+        ],
+        "elapsed_ms": 721.669458784163,
+        "total_remote_calls": 3,
+        "total_bytes_moved": 292
+      },
+      "success": true,
+      "federated_executions": [
+        {
+          "backend_id": "neo4j",
+          "artifact_id": "candidate-659edfbd24c81599-paths",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+              "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+              "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 466.2234578281641,
+          "error": null,
+          "started_at": "2026-09-10T05:53:16.999506+00:00",
+          "ended_at": "2026-09-10T05:53:17.466075+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        {
+          "backend_id": "fuseki",
+          "artifact_id": "candidate-659edfbd24c81599-scalar-contract",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "n0": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/m.0x8z059"
+              },
+              "n1": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+              },
+              "n2": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              },
+              "invalid": {
+                "type": "literal",
+                "value": "false",
+                "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 242.47841723263264,
+          "error": null,
+          "started_at": "2026-09-10T05:53:17.466551+00:00",
+          "ended_at": "2026-09-10T05:53:17.709023+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "xgap",
+            "rdf_result_encoding": "rdf_terms_v1"
+          }
+        },
+        {
+          "backend_id": "fuseki",
+          "artifact_id": "candidate-659edfbd24c81599-literal-filter",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 10.955959558486938,
+          "error": null,
+          "started_at": "2026-09-10T05:53:17.709607+00:00",
+          "ended_at": "2026-09-10T05:53:17.720560+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "xgap",
+            "rdf_result_encoding": "rdf_terms_v1"
+          }
+        }
+      ],
+      "paper_result": false,
+      "baseline_artifact": {
+        "artifact_id": "candidate-659edfbd24c81599-baseline",
+        "language": "sparql",
+        "text": "SELECT DISTINCT ?answer WHERE { {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  BIND(<http://rdf.freebase.com/ns/music.release_track.recording> AS ?e1)\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.recording> ?n0 .\n  BIND(<http://rdf.freebase.com/ns/music.release_track.release> AS ?e2)\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.release> ?n2 .\n  FILTER(sameTerm(?n0, <http://rdf.freebase.com/ns/m.0x8z059>))\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 .\n  FILTER(?v0 = \"1\")\n  FILTER(?n1 != ?n2)\n  FILTER(?n0 != ?n1)\n  FILTER(?n0 != ?n2)\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n} FILTER(isIRI(?n0) && isIRI(?n1) && isIRI(?n2)) BIND(?n2 AS ?answer) } LIMIT 10001",
+        "kind": "compiled",
+        "source_path": null,
+        "parameters": {
+          "rdf_result_encoding": "rdf_terms_v1",
+          "expected_result_columns": [
+            "answer"
+          ]
+        }
+      },
+      "baseline": {
+        "backend_id": "fuseki",
+        "artifact_id": "candidate-659edfbd24c81599-baseline",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "answer": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+            }
+          }
+        ],
+        "row_count": 1,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 23.662375286221504,
+        "error": null,
+        "started_at": "2026-09-10T05:53:17.720913+00:00",
+        "ended_at": "2026-09-10T05:53:17.744572+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "xgap",
+          "rdf_result_encoding": "rdf_terms_v1"
+        }
+      },
+      "answers_equal": true,
+      "answer_count": 1,
+      "answers": [
+        {
+          "type": "uri",
+          "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+        }
+      ]
+    },
+    "track-two": {
+      "input_pattern_sha256": "d44a5fd2b81b685217a97f52e543ebe4510adfa44af6032580e5f06eb84254c5",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard-string",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {
+          "music.release_track.track_number": "string"
+        },
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "plan": {
+        "plan_id": "candidate-d44a5fd2b81b6852",
+        "nodes": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "candidate-d44a5fd2b81b6852-paths",
+                "language": "cypher",
+                "text": "MATCH (n0:XgapRdfResource)<-[r0:XGAP_RDF_RESOURCE_EDGE]-(n1:XgapRdfResource)\nMATCH (n1:XgapRdfResource)-[r1:XGAP_RDF_RESOURCE_EDGE]->(n2:XgapRdfResource)\nWHERE n0.iri = $p0 AND r0.predicate = $p1 AND r1.predicate = $p2 AND n1 <> n2 AND n0 <> n1 AND n0 <> n2\nRETURN DISTINCT n0.iri AS n0, n1.iri AS n1, n2.iri AS n2, {type: 'uri', value: n2.iri} AS answer LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "p0": "http://rdf.freebase.com/ns/m.0x8z059",
+                  "p1": "http://rdf.freebase.com/ns/music.release_track.recording",
+                  "p2": "http://rdf.freebase.com/ns/music.release_track.release"
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "path-rows",
+            "kind": "exchange",
+            "inputs": [
+              "paths"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "scalar-contract",
+            "kind": "remote_bind_query",
+            "inputs": [
+              "path-rows"
+            ],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "candidate-d44a5fd2b81b6852-scalar-contract",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?n0 ?n1 ?n2 ?invalid WHERE { {{XGAP_IRI_ROWS}} BIND(((EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?a, ?b . FILTER(!sameTerm(?a,?b)) } || EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?x . FILTER(!COALESCE((isLiteral(?x) && DATATYPE(?x) = <http://www.w3.org/2001/XMLSchema#string>), false)) })) AS ?invalid) } LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "sparql_iri_rows": {
+                    "parameter": "path_rows",
+                    "columns": [
+                      "n0",
+                      "n1",
+                      "n2"
+                    ],
+                    "max_bindings": 10000,
+                    "max_bytes": 4194304
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "n0",
+                    "n1",
+                    "n2",
+                    "invalid"
+                  ],
+                  "xgap_scalar_guard_columns": [
+                    "n0",
+                    "n1",
+                    "n2"
+                  ]
+                }
+              },
+              "bind_fields": [
+                "n0",
+                "n1",
+                "n2"
+              ],
+              "parameter": "path_rows",
+              "max_bindings": 10000
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "literal-filter",
+            "kind": "remote_bind_query",
+            "inputs": [
+              "scalar-contract"
+            ],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "candidate-d44a5fd2b81b6852-literal-filter",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?answer WHERE { {{XGAP_IRI_ROWS}}\n?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 . FILTER(?v0 = \"2\")\nBIND(?n2 AS ?answer) } LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "sparql_iri_rows": {
+                    "parameter": "path_rows",
+                    "columns": [
+                      "n0",
+                      "n1",
+                      "n2"
+                    ],
+                    "max_bindings": 10000,
+                    "max_bytes": 4194304
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "answer"
+                  ]
+                }
+              },
+              "bind_fields": [
+                "n0",
+                "n1",
+                "n2"
+              ],
+              "parameter": "path_rows",
+              "max_bindings": 10000
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "rdf-rows",
+            "kind": "exchange",
+            "inputs": [
+              "literal-filter"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "inputs": [
+              "rdf-rows"
+            ],
+            "parameters": {
+              "fields": [
+                "answer"
+              ]
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "answer"
+        ],
+        "max_remote_calls": 3,
+        "max_parallelism": 1,
+        "metadata": {
+          "input_pattern_sha256": "d44a5fd2b81b685217a97f52e543ebe4510adfa44af6032580e5f06eb84254c5",
+          "mapping": {
+            "mapping_id": "d203-retained-first-shard-string",
+            "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+            "scalar_properties": {
+              "music.release_track.track_number": "string"
+            },
+            "resource_encoding": "rdf-resource-edge-mirror-v1"
+          },
+          "execution_requirements": {
+            "require_entity_anchor": true,
+            "answer_position": "last",
+            "required_bindings": [
+              [
+                1,
+                "m.0x8z059"
+              ]
+            ]
+          },
+          "max_result_rows": 10000
+        }
+      },
+      "federated": {
+        "plan_id": "candidate-d44a5fd2b81b6852",
+        "success": true,
+        "root_rows": {
+          "answer": []
+        },
+        "final_rows": [],
+        "node_results": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 10.120833292603493,
+            "input_bytes": 0,
+            "output_bytes": 215,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "neo4j",
+              "tool_metrics": {
+                "elapsed_ms": 10.059959255158901,
+                "row_count": 1.0
+              }
+            }
+          },
+          {
+            "node_id": "path-rows",
+            "kind": "exchange",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.021000392735004425,
+            "input_bytes": 215,
+            "output_bytes": 215,
+            "bytes_moved": 215,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          },
+          {
+            "node_id": "scalar-contract",
+            "kind": "remote_bind_query",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 10.292750783264637,
+            "input_bytes": 215,
+            "output_bytes": 141,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "fuseki",
+              "tool_metrics": {
+                "elapsed_ms": 10.09866688400507,
+                "row_count": 1.0
+              },
+              "binding_count": 1
+            }
+          },
+          {
+            "node_id": "literal-filter",
+            "kind": "remote_bind_query",
+            "status": "success",
+            "rows": [],
+            "row_count": 0,
+            "elapsed_ms": 13.630124740302563,
+            "input_bytes": 141,
+            "output_bytes": 2,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "fuseki",
+              "tool_metrics": {
+                "elapsed_ms": 13.555958867073059,
+                "row_count": 0.0
+              },
+              "binding_count": 1
+            }
+          },
+          {
+            "node_id": "rdf-rows",
+            "kind": "exchange",
+            "status": "success",
+            "rows": [],
+            "row_count": 0,
+            "elapsed_ms": 0.017583370208740234,
+            "input_bytes": 2,
+            "output_bytes": 2,
+            "bytes_moved": 2,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "status": "success",
+            "rows": [],
+            "row_count": 0,
+            "elapsed_ms": 0.008542090654373169,
+            "input_bytes": 2,
+            "output_bytes": 2,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          }
+        ],
+        "elapsed_ms": 34.71424989402294,
+        "total_remote_calls": 3,
+        "total_bytes_moved": 217
+      },
+      "success": true,
+      "federated_executions": [
+        {
+          "backend_id": "neo4j",
+          "artifact_id": "candidate-d44a5fd2b81b6852-paths",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+              "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+              "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 10.059959255158901,
+          "error": null,
+          "started_at": "2026-09-10T05:53:17.746091+00:00",
+          "ended_at": "2026-09-10T05:53:17.756147+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        {
+          "backend_id": "fuseki",
+          "artifact_id": "candidate-d44a5fd2b81b6852-scalar-contract",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "n0": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/m.0x8z059"
+              },
+              "n1": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+              },
+              "n2": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              },
+              "invalid": {
+                "type": "literal",
+                "value": "false",
+                "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 10.09866688400507,
+          "error": null,
+          "started_at": "2026-09-10T05:53:17.756533+00:00",
+          "ended_at": "2026-09-10T05:53:17.766631+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "xgap",
+            "rdf_result_encoding": "rdf_terms_v1"
+          }
+        },
+        {
+          "backend_id": "fuseki",
+          "artifact_id": "candidate-d44a5fd2b81b6852-literal-filter",
+          "language": "sparql",
+          "success": true,
+          "rows": [],
+          "row_count": 0,
+          "result_status": "execution_success_empty",
+          "elapsed_ms": 13.555958867073059,
+          "error": null,
+          "started_at": "2026-09-10T05:53:17.766967+00:00",
+          "ended_at": "2026-09-10T05:53:17.780519+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "xgap",
+            "rdf_result_encoding": "rdf_terms_v1"
+          }
+        }
+      ],
+      "paper_result": false,
+      "baseline_artifact": {
+        "artifact_id": "candidate-d44a5fd2b81b6852-baseline",
+        "language": "sparql",
+        "text": "SELECT DISTINCT ?answer WHERE { {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  BIND(<http://rdf.freebase.com/ns/music.release_track.recording> AS ?e1)\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.recording> ?n0 .\n  BIND(<http://rdf.freebase.com/ns/music.release_track.release> AS ?e2)\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.release> ?n2 .\n  FILTER(sameTerm(?n0, <http://rdf.freebase.com/ns/m.0x8z059>))\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 .\n  FILTER(?v0 = \"2\")\n  FILTER(?n1 != ?n2)\n  FILTER(?n0 != ?n1)\n  FILTER(?n0 != ?n2)\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n} FILTER(isIRI(?n0) && isIRI(?n1) && isIRI(?n2)) BIND(?n2 AS ?answer) } LIMIT 10001",
+        "kind": "compiled",
+        "source_path": null,
+        "parameters": {
+          "rdf_result_encoding": "rdf_terms_v1",
+          "expected_result_columns": [
+            "answer"
+          ]
+        }
+      },
+      "baseline": {
+        "backend_id": "fuseki",
+        "artifact_id": "candidate-d44a5fd2b81b6852-baseline",
+        "language": "sparql",
+        "success": true,
+        "rows": [],
+        "row_count": 0,
+        "result_status": "execution_success_empty",
+        "elapsed_ms": 9.64554212987423,
+        "error": null,
+        "started_at": "2026-09-10T05:53:17.780724+00:00",
+        "ended_at": "2026-09-10T05:53:17.790365+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "xgap",
+          "rdf_result_encoding": "rdf_terms_v1"
+        }
+      },
+      "answers_equal": true,
+      "answer_count": 0,
+      "answers": []
+    },
+    "resource-path": {
+      "input_pattern_sha256": "69127b0a654a8f448039f9c8c555b587620bc8b798c22307c7e3bb260c931567",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard-string",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {
+          "music.release_track.track_number": "string"
+        },
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "plan": {
+        "plan_id": "candidate-69127b0a654a8f44",
+        "nodes": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "candidate-69127b0a654a8f44-paths",
+                "language": "cypher",
+                "text": "MATCH (n0:XgapRdfResource)<-[r0:XGAP_RDF_RESOURCE_EDGE]-(n1:XgapRdfResource)\nMATCH (n1:XgapRdfResource)-[r1:XGAP_RDF_RESOURCE_EDGE]->(n2:XgapRdfResource)\nWHERE n0.iri = $p0 AND r0.predicate = $p1 AND r1.predicate = $p2 AND n1 <> n2 AND n0 <> n1 AND n0 <> n2\nRETURN DISTINCT n0.iri AS n0, n1.iri AS n1, n2.iri AS n2, {type: 'uri', value: n2.iri} AS answer LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "p0": "http://rdf.freebase.com/ns/m.0x8z059",
+                  "p1": "http://rdf.freebase.com/ns/music.release_track.recording",
+                  "p2": "http://rdf.freebase.com/ns/music.release_track.release"
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "path-rows",
+            "kind": "exchange",
+            "inputs": [
+              "paths"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "inputs": [
+              "path-rows"
+            ],
+            "parameters": {
+              "fields": [
+                "answer"
+              ]
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "answer"
+        ],
+        "max_remote_calls": 3,
+        "max_parallelism": 1,
+        "metadata": {
+          "input_pattern_sha256": "69127b0a654a8f448039f9c8c555b587620bc8b798c22307c7e3bb260c931567",
+          "mapping": {
+            "mapping_id": "d203-retained-first-shard-string",
+            "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+            "scalar_properties": {
+              "music.release_track.track_number": "string"
+            },
+            "resource_encoding": "rdf-resource-edge-mirror-v1"
+          },
+          "execution_requirements": {
+            "require_entity_anchor": true,
+            "answer_position": "last",
+            "required_bindings": [
+              [
+                1,
+                "m.0x8z059"
+              ]
+            ]
+          },
+          "max_result_rows": 10000
+        }
+      },
+      "federated": {
+        "plan_id": "candidate-69127b0a654a8f44",
+        "success": true,
+        "root_rows": {
+          "answer": [
+            {
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            }
+          ]
+        },
+        "final_rows": [
+          {
+            "answer": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+            }
+          }
+        ],
+        "node_results": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 10.062417015433311,
+            "input_bytes": 0,
+            "output_bytes": 215,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "neo4j",
+              "tool_metrics": {
+                "elapsed_ms": 9.996999986469746,
+                "row_count": 1.0
+              }
+            }
+          },
+          {
+            "node_id": "path-rows",
+            "kind": "exchange",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.023332424461841583,
+            "input_bytes": 215,
+            "output_bytes": 215,
+            "bytes_moved": 215,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "status": "success",
+            "rows": [
+              {
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.02024974673986435,
+            "input_bytes": 215,
+            "output_bytes": 77,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          }
+        ],
+        "elapsed_ms": 10.325416922569275,
+        "total_remote_calls": 1,
+        "total_bytes_moved": 215
+      },
+      "success": true,
+      "federated_executions": [
+        {
+          "backend_id": "neo4j",
+          "artifact_id": "candidate-69127b0a654a8f44-paths",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+              "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+              "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 9.996999986469746,
+          "error": null,
+          "started_at": "2026-09-10T05:53:17.791592+00:00",
+          "ended_at": "2026-09-10T05:53:17.801587+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        }
+      ],
+      "paper_result": false,
+      "baseline_artifact": {
+        "artifact_id": "candidate-69127b0a654a8f44-baseline",
+        "language": "sparql",
+        "text": "SELECT DISTINCT ?answer WHERE { {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?n2 ?e1 ?e2 WHERE {\n  BIND(<http://rdf.freebase.com/ns/music.release_track.recording> AS ?e1)\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.recording> ?n0 .\n  BIND(<http://rdf.freebase.com/ns/music.release_track.release> AS ?e2)\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.release> ?n2 .\n  FILTER(sameTerm(?n0, <http://rdf.freebase.com/ns/m.0x8z059>))\n  FILTER(?n1 != ?n2)\n  FILTER(?n0 != ?n1)\n  FILTER(?n0 != ?n2)\n  BIND(?n0 AS ?source)\n  BIND(?n2 AS ?target)\n}\n} FILTER(isIRI(?n0) && isIRI(?n1) && isIRI(?n2)) BIND(?n2 AS ?answer) } LIMIT 10001",
+        "kind": "compiled",
+        "source_path": null,
+        "parameters": {
+          "rdf_result_encoding": "rdf_terms_v1",
+          "expected_result_columns": [
+            "answer"
+          ]
+        }
+      },
+      "baseline": {
+        "backend_id": "fuseki",
+        "artifact_id": "candidate-69127b0a654a8f44-baseline",
+        "language": "sparql",
+        "success": true,
+        "rows": [
+          {
+            "answer": {
+              "type": "uri",
+              "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+            }
+          }
+        ],
+        "row_count": 1,
+        "result_status": "execution_success_nonempty",
+        "elapsed_ms": 9.253124706447124,
+        "error": null,
+        "started_at": "2026-09-10T05:53:17.801809+00:00",
+        "ended_at": "2026-09-10T05:53:17.811061+00:00",
+        "metadata": {
+          "transport": "sparql-http",
+          "dataset": "xgap",
+          "rdf_result_encoding": "rdf_terms_v1"
+        }
+      },
+      "answers_equal": true,
+      "answer_count": 1,
+      "answers": [
+        {
+          "type": "uri",
+          "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+        }
+      ]
+    },
+    "wrong-numeric-type": {
+      "input_pattern_sha256": "9d0d5ba569f697cf00e5f9a247a431a6b8aaef61734863c1748fe8d1662056cd",
+      "mapping": {
+        "mapping_id": "d203-retained-first-shard-numeric",
+        "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+        "scalar_properties": {
+          "music.release_track.track_number": "numeric"
+        },
+        "resource_encoding": "rdf-resource-edge-mirror-v1"
+      },
+      "plan": {
+        "plan_id": "candidate-9d0d5ba569f697cf",
+        "nodes": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "candidate-9d0d5ba569f697cf-paths",
+                "language": "cypher",
+                "text": "MATCH (n0:XgapRdfResource)<-[r0:XGAP_RDF_RESOURCE_EDGE]-(n1:XgapRdfResource)\nMATCH (n1:XgapRdfResource)-[r1:XGAP_RDF_RESOURCE_EDGE]->(n2:XgapRdfResource)\nWHERE n0.iri = $p0 AND r0.predicate = $p1 AND r1.predicate = $p2 AND n1 <> n2 AND n0 <> n1 AND n0 <> n2\nRETURN DISTINCT n0.iri AS n0, n1.iri AS n1, n2.iri AS n2, {type: 'uri', value: n2.iri} AS answer LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "p0": "http://rdf.freebase.com/ns/m.0x8z059",
+                  "p1": "http://rdf.freebase.com/ns/music.release_track.recording",
+                  "p2": "http://rdf.freebase.com/ns/music.release_track.release"
+                }
+              }
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "path-rows",
+            "kind": "exchange",
+            "inputs": [
+              "paths"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "scalar-contract",
+            "kind": "remote_bind_query",
+            "inputs": [
+              "path-rows"
+            ],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "candidate-9d0d5ba569f697cf-scalar-contract",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?n0 ?n1 ?n2 ?invalid WHERE { {{XGAP_IRI_ROWS}} BIND(((EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?a, ?b . FILTER(!sameTerm(?a,?b)) } || EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?x . FILTER(!COALESCE((isNumeric(?x) && ?x > \"-INF\"^^<http://www.w3.org/2001/XMLSchema#double> && ?x < \"INF\"^^<http://www.w3.org/2001/XMLSchema#double>), false)) })) AS ?invalid) } LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "sparql_iri_rows": {
+                    "parameter": "path_rows",
+                    "columns": [
+                      "n0",
+                      "n1",
+                      "n2"
+                    ],
+                    "max_bindings": 10000,
+                    "max_bytes": 4194304
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "n0",
+                    "n1",
+                    "n2",
+                    "invalid"
+                  ],
+                  "xgap_scalar_guard_columns": [
+                    "n0",
+                    "n1",
+                    "n2"
+                  ]
+                }
+              },
+              "bind_fields": [
+                "n0",
+                "n1",
+                "n2"
+              ],
+              "parameter": "path_rows",
+              "max_bindings": 10000
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "literal-filter",
+            "kind": "remote_bind_query",
+            "inputs": [
+              "scalar-contract"
+            ],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "candidate-9d0d5ba569f697cf-literal-filter",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?answer WHERE { {{XGAP_IRI_ROWS}}\n?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 . FILTER(?v0 = 1)\nBIND(?n2 AS ?answer) } LIMIT 10001",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "sparql_iri_rows": {
+                    "parameter": "path_rows",
+                    "columns": [
+                      "n0",
+                      "n1",
+                      "n2"
+                    ],
+                    "max_bindings": 10000,
+                    "max_bytes": 4194304
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "answer"
+                  ]
+                }
+              },
+              "bind_fields": [
+                "n0",
+                "n1",
+                "n2"
+              ],
+              "parameter": "path_rows",
+              "max_bindings": 10000
+            },
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "rdf-rows",
+            "kind": "exchange",
+            "inputs": [
+              "literal-filter"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": []
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "inputs": [
+              "rdf-rows"
+            ],
+            "parameters": {
+              "fields": [
+                "answer"
+              ]
+            },
+            "semantic_operator_ids": []
+          }
+        ],
+        "roots": [
+          "answer"
+        ],
+        "max_remote_calls": 3,
+        "max_parallelism": 1,
+        "metadata": {
+          "input_pattern_sha256": "9d0d5ba569f697cf00e5f9a247a431a6b8aaef61734863c1748fe8d1662056cd",
+          "mapping": {
+            "mapping_id": "d203-retained-first-shard-numeric",
+            "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+            "scalar_properties": {
+              "music.release_track.track_number": "numeric"
+            },
+            "resource_encoding": "rdf-resource-edge-mirror-v1"
+          },
+          "execution_requirements": {
+            "require_entity_anchor": true,
+            "answer_position": "last",
+            "required_bindings": [
+              [
+                1,
+                "m.0x8z059"
+              ]
+            ]
+          },
+          "max_result_rows": 10000
+        }
+      },
+      "federated": {
+        "plan_id": "candidate-9d0d5ba569f697cf",
+        "success": false,
+        "root_rows": {},
+        "final_rows": [],
+        "node_results": [
+          {
+            "node_id": "paths",
+            "kind": "remote_query",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 7.19891581684351,
+            "input_bytes": 0,
+            "output_bytes": 215,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": null,
+            "metadata": {
+              "backend_id": "neo4j",
+              "tool_metrics": {
+                "elapsed_ms": 7.15199951082468,
+                "row_count": 1.0
+              }
+            }
+          },
+          {
+            "node_id": "path-rows",
+            "kind": "exchange",
+            "status": "success",
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+                }
+              }
+            ],
+            "row_count": 1,
+            "elapsed_ms": 0.01933332532644272,
+            "input_bytes": 215,
+            "output_bytes": 215,
+            "bytes_moved": 215,
+            "remote_calls": 0,
+            "error": null,
+            "metadata": {}
+          },
+          {
+            "node_id": "scalar-contract",
+            "kind": "remote_bind_query",
+            "status": "error",
+            "rows": [],
+            "row_count": 0,
+            "elapsed_ms": 8.4628751501441,
+            "input_bytes": 215,
+            "output_bytes": 0,
+            "bytes_moved": 0,
+            "remote_calls": 1,
+            "error": "Reached data violates the declared functional scalar encoding",
+            "metadata": {}
+          },
+          {
+            "node_id": "literal-filter",
+            "kind": "remote_bind_query",
+            "status": "skipped",
+            "rows": [],
+            "row_count": 0,
+            "elapsed_ms": 0.0,
+            "input_bytes": 0,
+            "output_bytes": 0,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": "dependency did not complete successfully",
+            "metadata": {}
+          },
+          {
+            "node_id": "rdf-rows",
+            "kind": "exchange",
+            "status": "skipped",
+            "rows": [],
+            "row_count": 0,
+            "elapsed_ms": 0.0,
+            "input_bytes": 0,
+            "output_bytes": 0,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": "dependency did not complete successfully",
+            "metadata": {}
+          },
+          {
+            "node_id": "answer",
+            "kind": "project",
+            "status": "skipped",
+            "rows": [],
+            "row_count": 0,
+            "elapsed_ms": 0.0,
+            "input_bytes": 0,
+            "output_bytes": 0,
+            "bytes_moved": 0,
+            "remote_calls": 0,
+            "error": "dependency did not complete successfully",
+            "metadata": {}
+          }
+        ],
+        "elapsed_ms": 16.0049581900239,
+        "total_remote_calls": 2,
+        "total_bytes_moved": 215
+      },
+      "success": false,
+      "federated_executions": [
+        {
+          "backend_id": "neo4j",
+          "artifact_id": "candidate-9d0d5ba569f697cf-paths",
+          "language": "cypher",
+          "success": true,
+          "rows": [
+            {
+              "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+              "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+              "n2": "http://rdf.freebase.com/ns/g.11b6c7l7m9",
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 7.15199951082468,
+          "error": null,
+          "started_at": "2026-09-10T05:53:17.811788+00:00",
+          "ended_at": "2026-09-10T05:53:17.818935+00:00",
+          "metadata": {
+            "transport": "neo4j-http",
+            "database": "neo4j"
+          }
+        },
+        {
+          "backend_id": "fuseki",
+          "artifact_id": "candidate-9d0d5ba569f697cf-scalar-contract",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "n0": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/m.0x8z059"
+              },
+              "n1": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+              },
+              "n2": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+              },
+              "invalid": {
+                "type": "literal",
+                "value": "true",
+                "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 8.378666825592518,
+          "error": null,
+          "started_at": "2026-09-10T05:53:17.819189+00:00",
+          "ended_at": "2026-09-10T05:53:17.827564+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "xgap",
+            "rdf_result_encoding": "rdf_terms_v1"
+          }
+        }
+      ],
+      "paper_result": false
+    }
+  },
+  "health": [
+    {
+      "service_id": "neo4j",
+      "success": true,
+      "attempts": 12,
+      "elapsed_ms": 6374.174249358475,
+      "http_status": 200,
+      "process_exit_code": null,
+      "last_error": null
+    },
+    {
+      "service_id": "fuseki",
+      "success": true,
+      "attempts": 1,
+      "elapsed_ms": 61.600999906659126,
+      "http_status": 200,
+      "process_exit_code": null,
+      "last_error": null
+    }
+  ],
+  "shutdown": [
+    {
+      "service_id": "fuseki",
+      "pid": 18105,
+      "initial_exit_code": null,
+      "final_exit_code": 143,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    },
+    {
+      "service_id": "neo4j",
+      "pid": 18104,
+      "initial_exit_code": null,
+      "final_exit_code": 0,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    }
+  ],
+  "success": true,
+  "elapsed_seconds": 19.04569625016302,
+  "independent_source": {
+    "source_path": "/private/var/folders/78/2hb19nqj0jv_l0vgmp084ht80000gn/T/xgap-d201-source-b2ymubis/parquet/default/data/0000.parquet",
+    "source_sha256": "f1b21a5869da41938818a3f0f2ef2ead92fd5df978c2d5bf6fbaad31d3f650b1",
+    "source_rows": 3247670,
+    "resource_paths": [
+      [
+        "http://rdf.freebase.com/ns/m.0x8z059",
+        "http://rdf.freebase.com/ns/g.11b6brdn9b",
+        "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+      ]
+    ],
+    "expected_answers": {
+      "resource-path": [
+        "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+      ],
+      "track-one": [
+        "http://rdf.freebase.com/ns/g.11b6c7l7m9"
+      ],
+      "track-two": []
+    },
+    "native_matches": {
+      "resource-path": true,
+      "track-one": true,
+      "track-two": true
+    },
+    "elapsed_seconds": 0.6650602919980884
+  },
+  "controlled_inputs": {
+    "track-one": {
+      "controlled_fixture": true,
+      "raw": {
+        "provider_id": "controlled-fixture-no-model",
+        "query_slots": [
+          {
+            "slot_id": "r1",
+            "query_anchor_id": "music.release_track.recording"
+          },
+          {
+            "slot_id": "r2",
+            "query_anchor_id": "music.release_track.release"
+          },
+          {
+            "slot_id": "p1",
+            "query_anchor_id": "music.release_track.track_number"
+          }
+        ],
+        "candidates": [
+          {
+            "candidate_id": "explicit-recording",
+            "pattern_query": {
+              "source": {
+                "label": null,
+                "properties": {
+                  "type.object.id": "m.0x8z059"
+                }
+              },
+              "expr": {
+                "kind": "seq",
+                "left": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.recording",
+                    "direction": "IN",
+                    "properties": {}
+                  }
+                },
+                "right": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.release",
+                    "direction": "OUT",
+                    "properties": {}
+                  }
+                }
+              },
+              "target": {
+                "label": null,
+                "properties": {}
+              },
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "SIMPLE",
+              "max_depth": 2,
+              "condition": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": 2
+                },
+                "property": "music.release_track.track_number",
+                "value": "1"
+              }
+            },
+            "grounding": {
+              "entity_ids": [
+                "m.0x8z059"
+              ],
+              "slot_realizations": [
+                {
+                  "slot_id": "r1",
+                  "ontology_term_id": "music.release_track.recording",
+                  "component_ref": "expr.left.edge"
+                },
+                {
+                  "slot_id": "r2",
+                  "ontology_term_id": "music.release_track.release",
+                  "component_ref": "expr.right.edge"
+                },
+                {
+                  "slot_id": "p1",
+                  "ontology_term_id": "music.release_track.track_number",
+                  "component_ref": "condition"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "question": "Controlled fixture: releases linked to this recording through the selected track number",
+      "view": {
+        "schema_version": "m12-prompt-schema-view-v1",
+        "task_id": "controlled-recording",
+        "ontology": {
+          "id": "freebase-fixture",
+          "version": "v1",
+          "hash": "controlled-fixture"
+        },
+        "schema_snapshot": {
+          "version": "v1",
+          "hash": "controlled-fixture"
+        },
+        "terms": [
+          {
+            "term_id": "music.release_track.recording",
+            "kind": "relation",
+            "label": "music.release_track.recording",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          },
+          {
+            "term_id": "music.release_track.release",
+            "kind": "relation",
+            "label": "music.release_track.release",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          },
+          {
+            "term_id": "music.release_track.track_number",
+            "kind": "property",
+            "label": "music.release_track.track_number",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          }
+        ],
+        "entities": [
+          {
+            "entity_id": "m.0x8z059"
+          }
+        ],
+        "query_slots": [
+          {
+            "slot_id": "r1",
+            "mention": "controlled fixture",
+            "kind": "relation",
+            "candidate_anchor_ids": [
+              "music.release_track.recording"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          },
+          {
+            "slot_id": "r2",
+            "mention": "controlled fixture",
+            "kind": "relation",
+            "candidate_anchor_ids": [
+              "music.release_track.release"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          },
+          {
+            "slot_id": "p1",
+            "mention": "controlled fixture",
+            "kind": "property",
+            "candidate_anchor_ids": [
+              "music.release_track.track_number"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          }
+        ],
+        "backend_hints": {},
+        "source_schema_items": [
+          "music.release_track.recording",
+          "music.release_track.release",
+          "music.release_track.track_number"
+        ],
+        "retrieval": {
+          "method": "deterministic_lexical_alias_v1",
+          "limits": {
+            "max_slots": 20,
+            "max_candidates_per_slot": 4,
+            "max_entities": 4,
+            "max_schema_items": 4
+          }
+        }
+      },
+      "preparation": {
+        "schema_version": "grounded-candidate-execution-v1",
+        "task_id": "controlled-recording",
+        "question": "Controlled fixture: releases linked to this recording through the selected track number",
+        "prompt_view_sha256": "cf2731e21615eddc46c0bd2d3deecefab0586c479637dbc062afe1737fb0cf83",
+        "raw_response_sha256": "cabc2f80ea4da69bf95ac6149f3fcfed56ef84095510202855f4667dc339fa44",
+        "mapping": {
+          "mapping_id": "d203-retained-first-shard-string",
+          "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+          "scalar_properties": {
+            "music.release_track.track_number": "string"
+          },
+          "resource_encoding": "rdf-resource-edge-mirror-v1"
+        },
+        "execution_requirements": {
+          "require_entity_anchor": true,
+          "answer_position": "last",
+          "required_bindings": [
+            [
+              1,
+              "m.0x8z059"
+            ]
+          ]
+        },
+        "candidates": [
+          {
+            "candidate_index": 1,
+            "candidate_id": "explicit-recording",
+            "raw_candidate_sha256": "43f6131fd607668330af61c402239c15be519c2bb6bbe784c2de0d1b75fb1035",
+            "grounded_candidate_sha256": "40c39ac0a6890df05ff5a02e57ddcc525ccd0f67a7d3cc47dcf9c871e9427f9a",
+            "semantic_validation": {
+              "candidate_id": "explicit-recording",
+              "ok": true,
+              "stage": "semantic_validated",
+              "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+              "formatted_plan": null,
+              "metadata": {
+                "profile": "typed_path_semantics_v1"
+              }
+            },
+            "stage": "prepared",
+            "input_pattern_sha256": "659edfbd24c81599a243d473432bb688324a0ffdfe569bf8a57a202add5c211d",
+            "plan_sha256": "749cf69550063558561fbc5dd6dabd174129bca024d76cb8f6170a5ce09094bb"
+          }
+        ],
+        "prepared_count": 1,
+        "paper_result": false
+      }
+    },
+    "track-two": {
+      "controlled_fixture": true,
+      "raw": {
+        "provider_id": "controlled-fixture-no-model",
+        "query_slots": [
+          {
+            "slot_id": "r1",
+            "query_anchor_id": "music.release_track.recording"
+          },
+          {
+            "slot_id": "r2",
+            "query_anchor_id": "music.release_track.release"
+          },
+          {
+            "slot_id": "p1",
+            "query_anchor_id": "music.release_track.track_number"
+          }
+        ],
+        "candidates": [
+          {
+            "candidate_id": "explicit-recording",
+            "pattern_query": {
+              "source": {
+                "label": null,
+                "properties": {
+                  "type.object.id": "m.0x8z059"
+                }
+              },
+              "expr": {
+                "kind": "seq",
+                "left": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.recording",
+                    "direction": "IN",
+                    "properties": {}
+                  }
+                },
+                "right": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.release",
+                    "direction": "OUT",
+                    "properties": {}
+                  }
+                }
+              },
+              "target": {
+                "label": null,
+                "properties": {}
+              },
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "SIMPLE",
+              "max_depth": 2,
+              "condition": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": 2
+                },
+                "property": "music.release_track.track_number",
+                "value": "2"
+              }
+            },
+            "grounding": {
+              "entity_ids": [
+                "m.0x8z059"
+              ],
+              "slot_realizations": [
+                {
+                  "slot_id": "r1",
+                  "ontology_term_id": "music.release_track.recording",
+                  "component_ref": "expr.left.edge"
+                },
+                {
+                  "slot_id": "r2",
+                  "ontology_term_id": "music.release_track.release",
+                  "component_ref": "expr.right.edge"
+                },
+                {
+                  "slot_id": "p1",
+                  "ontology_term_id": "music.release_track.track_number",
+                  "component_ref": "condition"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "question": "Controlled fixture: releases linked to this recording through the selected track number",
+      "view": {
+        "schema_version": "m12-prompt-schema-view-v1",
+        "task_id": "controlled-recording",
+        "ontology": {
+          "id": "freebase-fixture",
+          "version": "v1",
+          "hash": "controlled-fixture"
+        },
+        "schema_snapshot": {
+          "version": "v1",
+          "hash": "controlled-fixture"
+        },
+        "terms": [
+          {
+            "term_id": "music.release_track.recording",
+            "kind": "relation",
+            "label": "music.release_track.recording",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          },
+          {
+            "term_id": "music.release_track.release",
+            "kind": "relation",
+            "label": "music.release_track.release",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          },
+          {
+            "term_id": "music.release_track.track_number",
+            "kind": "property",
+            "label": "music.release_track.track_number",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          }
+        ],
+        "entities": [
+          {
+            "entity_id": "m.0x8z059"
+          }
+        ],
+        "query_slots": [
+          {
+            "slot_id": "r1",
+            "mention": "controlled fixture",
+            "kind": "relation",
+            "candidate_anchor_ids": [
+              "music.release_track.recording"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          },
+          {
+            "slot_id": "r2",
+            "mention": "controlled fixture",
+            "kind": "relation",
+            "candidate_anchor_ids": [
+              "music.release_track.release"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          },
+          {
+            "slot_id": "p1",
+            "mention": "controlled fixture",
+            "kind": "property",
+            "candidate_anchor_ids": [
+              "music.release_track.track_number"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          }
+        ],
+        "backend_hints": {},
+        "source_schema_items": [
+          "music.release_track.recording",
+          "music.release_track.release",
+          "music.release_track.track_number"
+        ],
+        "retrieval": {
+          "method": "deterministic_lexical_alias_v1",
+          "limits": {
+            "max_slots": 20,
+            "max_candidates_per_slot": 4,
+            "max_entities": 4,
+            "max_schema_items": 4
+          }
+        }
+      },
+      "preparation": {
+        "schema_version": "grounded-candidate-execution-v1",
+        "task_id": "controlled-recording",
+        "question": "Controlled fixture: releases linked to this recording through the selected track number",
+        "prompt_view_sha256": "cf2731e21615eddc46c0bd2d3deecefab0586c479637dbc062afe1737fb0cf83",
+        "raw_response_sha256": "89f9458de3b48c686f23aa065bd24da8109c5061a05f2ae7d5558e3534ec96e3",
+        "mapping": {
+          "mapping_id": "d203-retained-first-shard-string",
+          "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+          "scalar_properties": {
+            "music.release_track.track_number": "string"
+          },
+          "resource_encoding": "rdf-resource-edge-mirror-v1"
+        },
+        "execution_requirements": {
+          "require_entity_anchor": true,
+          "answer_position": "last",
+          "required_bindings": [
+            [
+              1,
+              "m.0x8z059"
+            ]
+          ]
+        },
+        "candidates": [
+          {
+            "candidate_index": 1,
+            "candidate_id": "explicit-recording",
+            "raw_candidate_sha256": "f7ced49323c08c8b6afa33faad45730b26af16afdcbcbf5a1e21942a4bb97d10",
+            "grounded_candidate_sha256": "06980bbbe0381b1233a492700cb8a8b54335f0bcc01c01e38a3d3f09c52e4396",
+            "semantic_validation": {
+              "candidate_id": "explicit-recording",
+              "ok": true,
+              "stage": "semantic_validated",
+              "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+              "formatted_plan": null,
+              "metadata": {
+                "profile": "typed_path_semantics_v1"
+              }
+            },
+            "stage": "prepared",
+            "input_pattern_sha256": "d44a5fd2b81b685217a97f52e543ebe4510adfa44af6032580e5f06eb84254c5",
+            "plan_sha256": "7bc1c711d1277d9e9b675b923fb31d768aa0a67dc274590c55f16addb05faf72"
+          }
+        ],
+        "prepared_count": 1,
+        "paper_result": false
+      }
+    },
+    "resource-path": {
+      "controlled_fixture": true,
+      "raw": {
+        "provider_id": "controlled-fixture-no-model",
+        "query_slots": [
+          {
+            "slot_id": "r1",
+            "query_anchor_id": "music.release_track.recording"
+          },
+          {
+            "slot_id": "r2",
+            "query_anchor_id": "music.release_track.release"
+          }
+        ],
+        "candidates": [
+          {
+            "candidate_id": "explicit-recording",
+            "pattern_query": {
+              "source": {
+                "label": null,
+                "properties": {
+                  "type.object.id": "m.0x8z059"
+                }
+              },
+              "expr": {
+                "kind": "seq",
+                "left": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.recording",
+                    "direction": "IN",
+                    "properties": {}
+                  }
+                },
+                "right": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.release",
+                    "direction": "OUT",
+                    "properties": {}
+                  }
+                }
+              },
+              "target": {
+                "label": null,
+                "properties": {}
+              },
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "SIMPLE",
+              "max_depth": 2,
+              "condition": null
+            },
+            "grounding": {
+              "entity_ids": [
+                "m.0x8z059"
+              ],
+              "slot_realizations": [
+                {
+                  "slot_id": "r1",
+                  "ontology_term_id": "music.release_track.recording",
+                  "component_ref": "expr.left.edge"
+                },
+                {
+                  "slot_id": "r2",
+                  "ontology_term_id": "music.release_track.release",
+                  "component_ref": "expr.right.edge"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "question": "Controlled fixture: releases linked to this recording through the selected track number",
+      "view": {
+        "schema_version": "m12-prompt-schema-view-v1",
+        "task_id": "controlled-recording",
+        "ontology": {
+          "id": "freebase-fixture",
+          "version": "v1",
+          "hash": "controlled-fixture"
+        },
+        "schema_snapshot": {
+          "version": "v1",
+          "hash": "controlled-fixture"
+        },
+        "terms": [
+          {
+            "term_id": "music.release_track.recording",
+            "kind": "relation",
+            "label": "music.release_track.recording",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          },
+          {
+            "term_id": "music.release_track.release",
+            "kind": "relation",
+            "label": "music.release_track.release",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          }
+        ],
+        "entities": [
+          {
+            "entity_id": "m.0x8z059"
+          }
+        ],
+        "query_slots": [
+          {
+            "slot_id": "r1",
+            "mention": "controlled fixture",
+            "kind": "relation",
+            "candidate_anchor_ids": [
+              "music.release_track.recording"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          },
+          {
+            "slot_id": "r2",
+            "mention": "controlled fixture",
+            "kind": "relation",
+            "candidate_anchor_ids": [
+              "music.release_track.release"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          }
+        ],
+        "backend_hints": {},
+        "source_schema_items": [
+          "music.release_track.recording",
+          "music.release_track.release"
+        ],
+        "retrieval": {
+          "method": "deterministic_lexical_alias_v1",
+          "limits": {
+            "max_slots": 20,
+            "max_candidates_per_slot": 4,
+            "max_entities": 4,
+            "max_schema_items": 4
+          }
+        }
+      },
+      "preparation": {
+        "schema_version": "grounded-candidate-execution-v1",
+        "task_id": "controlled-recording",
+        "question": "Controlled fixture: releases linked to this recording through the selected track number",
+        "prompt_view_sha256": "4e590253e14e41aecf70b0c44737e4272da2e78c4034e41f8cd175c26b7d3c78",
+        "raw_response_sha256": "20697523042b34235ac8c089643454ac8b17965f1044d3ce83e626ef4bde883b",
+        "mapping": {
+          "mapping_id": "d203-retained-first-shard-string",
+          "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+          "scalar_properties": {
+            "music.release_track.track_number": "string"
+          },
+          "resource_encoding": "rdf-resource-edge-mirror-v1"
+        },
+        "execution_requirements": {
+          "require_entity_anchor": true,
+          "answer_position": "last",
+          "required_bindings": [
+            [
+              1,
+              "m.0x8z059"
+            ]
+          ]
+        },
+        "candidates": [
+          {
+            "candidate_index": 1,
+            "candidate_id": "explicit-recording",
+            "raw_candidate_sha256": "1bf6928a11826784e98523c542e51135e060cc3583c6ef911c563b7f46033f94",
+            "grounded_candidate_sha256": "7dcccf4a628f41000a8a5a19b396af7f5f99782633d598297e34cf850d9cfb28",
+            "semantic_validation": {
+              "candidate_id": "explicit-recording",
+              "ok": true,
+              "stage": "semantic_validated",
+              "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+              "formatted_plan": null,
+              "metadata": {
+                "profile": "typed_path_semantics_v1"
+              }
+            },
+            "stage": "prepared",
+            "input_pattern_sha256": "69127b0a654a8f448039f9c8c555b587620bc8b798c22307c7e3bb260c931567",
+            "plan_sha256": "709f8bf7c0ac9edb612099a0f6d39c7b985436be11ac1200a21d41ca419efc27"
+          }
+        ],
+        "prepared_count": 1,
+        "paper_result": false
+      }
+    },
+    "wrong-numeric-type": {
+      "controlled_fixture": true,
+      "raw": {
+        "provider_id": "controlled-fixture-no-model",
+        "query_slots": [
+          {
+            "slot_id": "r1",
+            "query_anchor_id": "music.release_track.recording"
+          },
+          {
+            "slot_id": "r2",
+            "query_anchor_id": "music.release_track.release"
+          },
+          {
+            "slot_id": "p1",
+            "query_anchor_id": "music.release_track.track_number"
+          }
+        ],
+        "candidates": [
+          {
+            "candidate_id": "explicit-recording",
+            "pattern_query": {
+              "source": {
+                "label": null,
+                "properties": {
+                  "type.object.id": "m.0x8z059"
+                }
+              },
+              "expr": {
+                "kind": "seq",
+                "left": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.recording",
+                    "direction": "IN",
+                    "properties": {}
+                  }
+                },
+                "right": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.release",
+                    "direction": "OUT",
+                    "properties": {}
+                  }
+                }
+              },
+              "target": {
+                "label": null,
+                "properties": {}
+              },
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "SIMPLE",
+              "max_depth": 2,
+              "condition": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": 2
+                },
+                "property": "music.release_track.track_number",
+                "value": 1
+              }
+            },
+            "grounding": {
+              "entity_ids": [
+                "m.0x8z059"
+              ],
+              "slot_realizations": [
+                {
+                  "slot_id": "r1",
+                  "ontology_term_id": "music.release_track.recording",
+                  "component_ref": "expr.left.edge"
+                },
+                {
+                  "slot_id": "r2",
+                  "ontology_term_id": "music.release_track.release",
+                  "component_ref": "expr.right.edge"
+                },
+                {
+                  "slot_id": "p1",
+                  "ontology_term_id": "music.release_track.track_number",
+                  "component_ref": "condition"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "question": "Controlled fixture: releases linked to this recording through the selected track number",
+      "view": {
+        "schema_version": "m12-prompt-schema-view-v1",
+        "task_id": "controlled-recording",
+        "ontology": {
+          "id": "freebase-fixture",
+          "version": "v1",
+          "hash": "controlled-fixture"
+        },
+        "schema_snapshot": {
+          "version": "v1",
+          "hash": "controlled-fixture"
+        },
+        "terms": [
+          {
+            "term_id": "music.release_track.recording",
+            "kind": "relation",
+            "label": "music.release_track.recording",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          },
+          {
+            "term_id": "music.release_track.release",
+            "kind": "relation",
+            "label": "music.release_track.release",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          },
+          {
+            "term_id": "music.release_track.track_number",
+            "kind": "property",
+            "label": "music.release_track.track_number",
+            "aliases": [],
+            "retrieval_score": 1.0,
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ],
+            "domain": null,
+            "range": null
+          }
+        ],
+        "entities": [
+          {
+            "entity_id": "m.0x8z059"
+          }
+        ],
+        "query_slots": [
+          {
+            "slot_id": "r1",
+            "mention": "controlled fixture",
+            "kind": "relation",
+            "candidate_anchor_ids": [
+              "music.release_track.recording"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          },
+          {
+            "slot_id": "r2",
+            "mention": "controlled fixture",
+            "kind": "relation",
+            "candidate_anchor_ids": [
+              "music.release_track.release"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          },
+          {
+            "slot_id": "p1",
+            "mention": "controlled fixture",
+            "kind": "property",
+            "candidate_anchor_ids": [
+              "music.release_track.track_number"
+            ],
+            "retrieval_provenance": [
+              "controlled-fixture"
+            ]
+          }
+        ],
+        "backend_hints": {},
+        "source_schema_items": [
+          "music.release_track.recording",
+          "music.release_track.release",
+          "music.release_track.track_number"
+        ],
+        "retrieval": {
+          "method": "deterministic_lexical_alias_v1",
+          "limits": {
+            "max_slots": 20,
+            "max_candidates_per_slot": 4,
+            "max_entities": 4,
+            "max_schema_items": 4
+          }
+        }
+      },
+      "preparation": {
+        "schema_version": "grounded-candidate-execution-v1",
+        "task_id": "controlled-recording",
+        "question": "Controlled fixture: releases linked to this recording through the selected track number",
+        "prompt_view_sha256": "cf2731e21615eddc46c0bd2d3deecefab0586c479637dbc062afe1737fb0cf83",
+        "raw_response_sha256": "bc810e1a2a4651aae62019b02d7d15738dbf0583b28331b447dd62e2c9894a1d",
+        "mapping": {
+          "mapping_id": "d203-retained-first-shard-numeric",
+          "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+          "scalar_properties": {
+            "music.release_track.track_number": "numeric"
+          },
+          "resource_encoding": "rdf-resource-edge-mirror-v1"
+        },
+        "execution_requirements": {
+          "require_entity_anchor": true,
+          "answer_position": "last",
+          "required_bindings": [
+            [
+              1,
+              "m.0x8z059"
+            ]
+          ]
+        },
+        "candidates": [
+          {
+            "candidate_index": 1,
+            "candidate_id": "explicit-recording",
+            "raw_candidate_sha256": "8a6e9ca91b1d4217d8eed7245affc74b0b5a59241f30519c3322e51dc19c1395",
+            "grounded_candidate_sha256": "697ba948be8dc97589256c044163475f68886780b89a58ed96676a51490633b9",
+            "semantic_validation": {
+              "candidate_id": "explicit-recording",
+              "ok": true,
+              "stage": "semantic_validated",
+              "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+              "formatted_plan": null,
+              "metadata": {
+                "profile": "typed_path_semantics_v1"
+              }
+            },
+            "stage": "prepared",
+            "input_pattern_sha256": "9d0d5ba569f697cf00e5f9a247a431a6b8aaef61734863c1748fe8d1662056cd",
+            "plan_sha256": "6762bab6a51a7e67af68a582bd8572eb0c7fcdc9a7e8f93303b02cdf0e776e6d"
+          }
+        ],
+        "prepared_count": 1,
+        "paper_result": false
+      }
+    }
+  },
+  "fixture_selection": "First sorted track in the unchanged first shard with track_number literal string 1, recording and release resource edges and music.release_track class; the associated recording becomes the explicit controlled input. No benchmark reference was read.",
+  "native_runtime": {
+    "neo4j": "5.26.30",
+    "fuseki": "5.6.0",
+    "java_major": 21,
+    "retained_run_root": "/Users/anthonyche/xgap-data/d202-local-native-20260910-diagnostic2"
+  },
+  "type_constraint_cases": {
+    "cases": {
+      "music.release_track": {
+        "input_pattern_sha256": "b40894737839a47a9cf493fda93931564227af6e5924e8df689f1b7b12a0c4e4",
+        "mapping": {
+          "mapping_id": "d203-retained-first-shard-string",
+          "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+          "scalar_properties": {
+            "music.release_track.track_number": "string"
+          },
+          "resource_encoding": "rdf-resource-edge-mirror-v1"
+        },
+        "plan": {
+          "plan_id": "candidate-b40894737839a47a",
+          "nodes": [
+            {
+              "node_id": "paths",
+              "kind": "remote_query",
+              "inputs": [],
+              "parameters": {
+                "backend_id": "neo4j",
+                "artifact": {
+                  "artifact_id": "candidate-b40894737839a47a-paths",
+                  "language": "cypher",
+                  "text": "MATCH (n0:XgapRdfResource)<-[r0:XGAP_RDF_RESOURCE_EDGE]-(n1:XgapRdfResource)\nWHERE n0.iri = $p0 AND EXISTS { MATCH (n1)-[:XGAP_RDF_RESOURCE_EDGE {predicate: $p1}]->(:XgapRdfResource {iri: $p2}) } AND r0.predicate = $p3 AND n0 <> n1\nRETURN DISTINCT n0.iri AS n0, n1.iri AS n1, {type: 'uri', value: n1.iri} AS answer LIMIT 10001",
+                  "kind": "compiled",
+                  "source_path": null,
+                  "parameters": {
+                    "p0": "http://rdf.freebase.com/ns/m.0x8z059",
+                    "p1": "http://rdf.freebase.com/ns/type.object.type",
+                    "p2": "http://rdf.freebase.com/ns/music.release_track",
+                    "p3": "http://rdf.freebase.com/ns/music.release_track.recording"
+                  }
+                }
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "path-rows",
+              "kind": "exchange",
+              "inputs": [
+                "paths"
+              ],
+              "parameters": {},
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "scalar-contract",
+              "kind": "remote_bind_query",
+              "inputs": [
+                "path-rows"
+              ],
+              "parameters": {
+                "backend_id": "fuseki",
+                "artifact": {
+                  "artifact_id": "candidate-b40894737839a47a-scalar-contract",
+                  "language": "sparql",
+                  "text": "SELECT DISTINCT ?n0 ?n1 ?invalid WHERE { {{XGAP_IRI_ROWS}} BIND(((EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?a, ?b . FILTER(!sameTerm(?a,?b)) } || EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?x . FILTER(!COALESCE((isLiteral(?x) && DATATYPE(?x) = <http://www.w3.org/2001/XMLSchema#string>), false)) })) AS ?invalid) } LIMIT 10001",
+                  "kind": "compiled",
+                  "source_path": null,
+                  "parameters": {
+                    "sparql_iri_rows": {
+                      "parameter": "path_rows",
+                      "columns": [
+                        "n0",
+                        "n1"
+                      ],
+                      "max_bindings": 10000,
+                      "max_bytes": 4194304
+                    },
+                    "rdf_result_encoding": "rdf_terms_v1",
+                    "expected_result_columns": [
+                      "n0",
+                      "n1",
+                      "invalid"
+                    ],
+                    "xgap_scalar_guard_columns": [
+                      "n0",
+                      "n1"
+                    ]
+                  }
+                },
+                "bind_fields": [
+                  "n0",
+                  "n1"
+                ],
+                "parameter": "path_rows",
+                "max_bindings": 10000
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "literal-filter",
+              "kind": "remote_bind_query",
+              "inputs": [
+                "scalar-contract"
+              ],
+              "parameters": {
+                "backend_id": "fuseki",
+                "artifact": {
+                  "artifact_id": "candidate-b40894737839a47a-literal-filter",
+                  "language": "sparql",
+                  "text": "SELECT DISTINCT ?answer WHERE { {{XGAP_IRI_ROWS}}\n?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 . FILTER(?v0 = \"1\")\nBIND(?n1 AS ?answer) } LIMIT 10001",
+                  "kind": "compiled",
+                  "source_path": null,
+                  "parameters": {
+                    "sparql_iri_rows": {
+                      "parameter": "path_rows",
+                      "columns": [
+                        "n0",
+                        "n1"
+                      ],
+                      "max_bindings": 10000,
+                      "max_bytes": 4194304
+                    },
+                    "rdf_result_encoding": "rdf_terms_v1",
+                    "expected_result_columns": [
+                      "answer"
+                    ]
+                  }
+                },
+                "bind_fields": [
+                  "n0",
+                  "n1"
+                ],
+                "parameter": "path_rows",
+                "max_bindings": 10000
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "rdf-rows",
+              "kind": "exchange",
+              "inputs": [
+                "literal-filter"
+              ],
+              "parameters": {},
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "answer",
+              "kind": "project",
+              "inputs": [
+                "rdf-rows"
+              ],
+              "parameters": {
+                "fields": [
+                  "answer"
+                ]
+              },
+              "semantic_operator_ids": []
+            }
+          ],
+          "roots": [
+            "answer"
+          ],
+          "max_remote_calls": 3,
+          "max_parallelism": 1,
+          "metadata": {
+            "input_pattern_sha256": "b40894737839a47a9cf493fda93931564227af6e5924e8df689f1b7b12a0c4e4",
+            "mapping": {
+              "mapping_id": "d203-retained-first-shard-string",
+              "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+              "scalar_properties": {
+                "music.release_track.track_number": "string"
+              },
+              "resource_encoding": "rdf-resource-edge-mirror-v1"
+            },
+            "execution_requirements": {
+              "require_entity_anchor": true,
+              "answer_position": "last",
+              "required_bindings": []
+            },
+            "max_result_rows": 10000
+          }
+        },
+        "federated": {
+          "plan_id": "candidate-b40894737839a47a",
+          "success": true,
+          "root_rows": {
+            "answer": [
+              {
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                }
+              }
+            ]
+          },
+          "final_rows": [
+            {
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+              }
+            }
+          ],
+          "node_results": [
+            {
+              "node_id": "paths",
+              "kind": "remote_query",
+              "status": "success",
+              "rows": [
+                {
+                  "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                  "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                  "answer": {
+                    "type": "uri",
+                    "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                  }
+                }
+              ],
+              "row_count": 1,
+              "elapsed_ms": 406.1158327385783,
+              "input_bytes": 0,
+              "output_bytes": 168,
+              "bytes_moved": 0,
+              "remote_calls": 1,
+              "error": null,
+              "metadata": {
+                "backend_id": "neo4j",
+                "tool_metrics": {
+                  "elapsed_ms": 403.1276246532798,
+                  "row_count": 1.0
+                }
+              }
+            },
+            {
+              "node_id": "path-rows",
+              "kind": "exchange",
+              "status": "success",
+              "rows": [
+                {
+                  "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                  "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                  "answer": {
+                    "type": "uri",
+                    "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                  }
+                }
+              ],
+              "row_count": 1,
+              "elapsed_ms": 0.02899952232837677,
+              "input_bytes": 168,
+              "output_bytes": 168,
+              "bytes_moved": 168,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {}
+            },
+            {
+              "node_id": "scalar-contract",
+              "kind": "remote_bind_query",
+              "status": "success",
+              "rows": [
+                {
+                  "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                  "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                }
+              ],
+              "row_count": 1,
+              "elapsed_ms": 116.40454269945621,
+              "input_bytes": 168,
+              "output_bytes": 94,
+              "bytes_moved": 0,
+              "remote_calls": 1,
+              "error": null,
+              "metadata": {
+                "backend_id": "fuseki",
+                "tool_metrics": {
+                  "elapsed_ms": 116.14845786243677,
+                  "row_count": 1.0
+                },
+                "binding_count": 1
+              }
+            },
+            {
+              "node_id": "literal-filter",
+              "kind": "remote_bind_query",
+              "status": "success",
+              "rows": [
+                {
+                  "answer": {
+                    "type": "uri",
+                    "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                  }
+                }
+              ],
+              "row_count": 1,
+              "elapsed_ms": 14.545542187988758,
+              "input_bytes": 94,
+              "output_bytes": 77,
+              "bytes_moved": 0,
+              "remote_calls": 1,
+              "error": null,
+              "metadata": {
+                "backend_id": "fuseki",
+                "tool_metrics": {
+                  "elapsed_ms": 14.465374872088432,
+                  "row_count": 1.0
+                },
+                "binding_count": 1
+              }
+            },
+            {
+              "node_id": "rdf-rows",
+              "kind": "exchange",
+              "status": "success",
+              "rows": [
+                {
+                  "answer": {
+                    "type": "uri",
+                    "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                  }
+                }
+              ],
+              "row_count": 1,
+              "elapsed_ms": 0.05020853132009506,
+              "input_bytes": 77,
+              "output_bytes": 77,
+              "bytes_moved": 77,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {}
+            },
+            {
+              "node_id": "answer",
+              "kind": "project",
+              "status": "success",
+              "rows": [
+                {
+                  "answer": {
+                    "type": "uri",
+                    "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                  }
+                }
+              ],
+              "row_count": 1,
+              "elapsed_ms": 0.03737490624189377,
+              "input_bytes": 77,
+              "output_bytes": 77,
+              "bytes_moved": 0,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {}
+            }
+          ],
+          "elapsed_ms": 538.1882078945637,
+          "total_remote_calls": 3,
+          "total_bytes_moved": 245
+        },
+        "success": true,
+        "federated_executions": [
+          {
+            "backend_id": "neo4j",
+            "artifact_id": "candidate-b40894737839a47a-paths",
+            "language": "cypher",
+            "success": true,
+            "rows": [
+              {
+                "n0": "http://rdf.freebase.com/ns/m.0x8z059",
+                "n1": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 403.1276246532798,
+            "error": null,
+            "started_at": "2026-09-10T05:56:33.406636+00:00",
+            "ended_at": "2026-09-10T05:56:33.812537+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          },
+          {
+            "backend_id": "fuseki",
+            "artifact_id": "candidate-b40894737839a47a-scalar-contract",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "n0": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/m.0x8z059"
+                },
+                "n1": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                },
+                "invalid": {
+                  "type": "literal",
+                  "value": "false",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 116.14845786243677,
+            "error": null,
+            "started_at": "2026-09-10T05:56:33.812968+00:00",
+            "ended_at": "2026-09-10T05:56:33.929115+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "xgap",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          },
+          {
+            "backend_id": "fuseki",
+            "artifact_id": "candidate-b40894737839a47a-literal-filter",
+            "language": "sparql",
+            "success": true,
+            "rows": [
+              {
+                "answer": {
+                  "type": "uri",
+                  "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+                }
+              }
+            ],
+            "row_count": 1,
+            "result_status": "execution_success_nonempty",
+            "elapsed_ms": 14.465374872088432,
+            "error": null,
+            "started_at": "2026-09-10T05:56:33.929533+00:00",
+            "ended_at": "2026-09-10T05:56:33.943994+00:00",
+            "metadata": {
+              "transport": "sparql-http",
+              "dataset": "xgap",
+              "rdf_result_encoding": "rdf_terms_v1"
+            }
+          }
+        ],
+        "paper_result": false,
+        "baseline_artifact": {
+          "artifact_id": "candidate-b40894737839a47a-baseline",
+          "language": "sparql",
+          "text": "SELECT DISTINCT ?answer WHERE { {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  BIND(<http://rdf.freebase.com/ns/music.release_track.recording> AS ?e1)\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.recording> ?n0 .\n  FILTER(sameTerm(?n0, <http://rdf.freebase.com/ns/m.0x8z059>))\n  ?n1 <http://rdf.freebase.com/ns/type.object.type> <http://rdf.freebase.com/ns/music.release_track> .\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 .\n  FILTER(?v0 = \"1\")\n  FILTER(?n0 != ?n1)\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n} FILTER(isIRI(?n0) && isIRI(?n1)) BIND(?n1 AS ?answer) } LIMIT 10001",
+          "kind": "compiled",
+          "source_path": null,
+          "parameters": {
+            "rdf_result_encoding": "rdf_terms_v1",
+            "expected_result_columns": [
+              "answer"
+            ]
+          }
+        },
+        "baseline": {
+          "backend_id": "fuseki",
+          "artifact_id": "candidate-b40894737839a47a-baseline",
+          "language": "sparql",
+          "success": true,
+          "rows": [
+            {
+              "answer": {
+                "type": "uri",
+                "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+              }
+            }
+          ],
+          "row_count": 1,
+          "result_status": "execution_success_nonempty",
+          "elapsed_ms": 14.040708541870117,
+          "error": null,
+          "started_at": "2026-09-10T05:56:33.944519+00:00",
+          "ended_at": "2026-09-10T05:56:33.958555+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "xgap",
+            "rdf_result_encoding": "rdf_terms_v1"
+          }
+        },
+        "answers_equal": true,
+        "answer_count": 1,
+        "answers": [
+          {
+            "type": "uri",
+            "value": "http://rdf.freebase.com/ns/g.11b6brdn9b"
+          }
+        ]
+      },
+      "book.book": {
+        "input_pattern_sha256": "62e2afec3e0a82e3f6eed34bea781adfbee8d1d00c623f84f62a01c90a514b4b",
+        "mapping": {
+          "mapping_id": "d203-retained-first-shard-string",
+          "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+          "scalar_properties": {
+            "music.release_track.track_number": "string"
+          },
+          "resource_encoding": "rdf-resource-edge-mirror-v1"
+        },
+        "plan": {
+          "plan_id": "candidate-62e2afec3e0a82e3",
+          "nodes": [
+            {
+              "node_id": "paths",
+              "kind": "remote_query",
+              "inputs": [],
+              "parameters": {
+                "backend_id": "neo4j",
+                "artifact": {
+                  "artifact_id": "candidate-62e2afec3e0a82e3-paths",
+                  "language": "cypher",
+                  "text": "MATCH (n0:XgapRdfResource)<-[r0:XGAP_RDF_RESOURCE_EDGE]-(n1:XgapRdfResource)\nWHERE n0.iri = $p0 AND EXISTS { MATCH (n1)-[:XGAP_RDF_RESOURCE_EDGE {predicate: $p1}]->(:XgapRdfResource {iri: $p2}) } AND r0.predicate = $p3 AND n0 <> n1\nRETURN DISTINCT n0.iri AS n0, n1.iri AS n1, {type: 'uri', value: n1.iri} AS answer LIMIT 10001",
+                  "kind": "compiled",
+                  "source_path": null,
+                  "parameters": {
+                    "p0": "http://rdf.freebase.com/ns/m.0x8z059",
+                    "p1": "http://rdf.freebase.com/ns/type.object.type",
+                    "p2": "http://rdf.freebase.com/ns/book.book",
+                    "p3": "http://rdf.freebase.com/ns/music.release_track.recording"
+                  }
+                }
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "path-rows",
+              "kind": "exchange",
+              "inputs": [
+                "paths"
+              ],
+              "parameters": {},
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "scalar-contract",
+              "kind": "remote_bind_query",
+              "inputs": [
+                "path-rows"
+              ],
+              "parameters": {
+                "backend_id": "fuseki",
+                "artifact": {
+                  "artifact_id": "candidate-62e2afec3e0a82e3-scalar-contract",
+                  "language": "sparql",
+                  "text": "SELECT DISTINCT ?n0 ?n1 ?invalid WHERE { {{XGAP_IRI_ROWS}} BIND(((EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?a, ?b . FILTER(!sameTerm(?a,?b)) } || EXISTS { ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?x . FILTER(!COALESCE((isLiteral(?x) && DATATYPE(?x) = <http://www.w3.org/2001/XMLSchema#string>), false)) })) AS ?invalid) } LIMIT 10001",
+                  "kind": "compiled",
+                  "source_path": null,
+                  "parameters": {
+                    "sparql_iri_rows": {
+                      "parameter": "path_rows",
+                      "columns": [
+                        "n0",
+                        "n1"
+                      ],
+                      "max_bindings": 10000,
+                      "max_bytes": 4194304
+                    },
+                    "rdf_result_encoding": "rdf_terms_v1",
+                    "expected_result_columns": [
+                      "n0",
+                      "n1",
+                      "invalid"
+                    ],
+                    "xgap_scalar_guard_columns": [
+                      "n0",
+                      "n1"
+                    ]
+                  }
+                },
+                "bind_fields": [
+                  "n0",
+                  "n1"
+                ],
+                "parameter": "path_rows",
+                "max_bindings": 10000
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "literal-filter",
+              "kind": "remote_bind_query",
+              "inputs": [
+                "scalar-contract"
+              ],
+              "parameters": {
+                "backend_id": "fuseki",
+                "artifact": {
+                  "artifact_id": "candidate-62e2afec3e0a82e3-literal-filter",
+                  "language": "sparql",
+                  "text": "SELECT DISTINCT ?answer WHERE { {{XGAP_IRI_ROWS}}\n?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 . FILTER(?v0 = \"1\")\nBIND(?n1 AS ?answer) } LIMIT 10001",
+                  "kind": "compiled",
+                  "source_path": null,
+                  "parameters": {
+                    "sparql_iri_rows": {
+                      "parameter": "path_rows",
+                      "columns": [
+                        "n0",
+                        "n1"
+                      ],
+                      "max_bindings": 10000,
+                      "max_bytes": 4194304
+                    },
+                    "rdf_result_encoding": "rdf_terms_v1",
+                    "expected_result_columns": [
+                      "answer"
+                    ]
+                  }
+                },
+                "bind_fields": [
+                  "n0",
+                  "n1"
+                ],
+                "parameter": "path_rows",
+                "max_bindings": 10000
+              },
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "rdf-rows",
+              "kind": "exchange",
+              "inputs": [
+                "literal-filter"
+              ],
+              "parameters": {},
+              "semantic_operator_ids": []
+            },
+            {
+              "node_id": "answer",
+              "kind": "project",
+              "inputs": [
+                "rdf-rows"
+              ],
+              "parameters": {
+                "fields": [
+                  "answer"
+                ]
+              },
+              "semantic_operator_ids": []
+            }
+          ],
+          "roots": [
+            "answer"
+          ],
+          "max_remote_calls": 3,
+          "max_parallelism": 1,
+          "metadata": {
+            "input_pattern_sha256": "62e2afec3e0a82e3f6eed34bea781adfbee8d1d00c623f84f62a01c90a514b4b",
+            "mapping": {
+              "mapping_id": "d203-retained-first-shard-string",
+              "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+              "scalar_properties": {
+                "music.release_track.track_number": "string"
+              },
+              "resource_encoding": "rdf-resource-edge-mirror-v1"
+            },
+            "execution_requirements": {
+              "require_entity_anchor": true,
+              "answer_position": "last",
+              "required_bindings": []
+            },
+            "max_result_rows": 10000
+          }
+        },
+        "federated": {
+          "plan_id": "candidate-62e2afec3e0a82e3",
+          "success": true,
+          "root_rows": {
+            "answer": []
+          },
+          "final_rows": [],
+          "node_results": [
+            {
+              "node_id": "paths",
+              "kind": "remote_query",
+              "status": "success",
+              "rows": [],
+              "row_count": 0,
+              "elapsed_ms": 16.111083328723907,
+              "input_bytes": 0,
+              "output_bytes": 2,
+              "bytes_moved": 0,
+              "remote_calls": 1,
+              "error": null,
+              "metadata": {
+                "backend_id": "neo4j",
+                "tool_metrics": {
+                  "elapsed_ms": 16.056332737207413,
+                  "row_count": 0.0
+                }
+              }
+            },
+            {
+              "node_id": "path-rows",
+              "kind": "exchange",
+              "status": "success",
+              "rows": [],
+              "row_count": 0,
+              "elapsed_ms": 0.014415942132472992,
+              "input_bytes": 2,
+              "output_bytes": 2,
+              "bytes_moved": 2,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {}
+            },
+            {
+              "node_id": "scalar-contract",
+              "kind": "remote_bind_query",
+              "status": "success",
+              "rows": [],
+              "row_count": 0,
+              "elapsed_ms": 0.014500692486763,
+              "input_bytes": 2,
+              "output_bytes": 2,
+              "bytes_moved": 0,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {
+                "backend_id": "fuseki",
+                "binding_count": 0,
+                "empty_binding_short_circuit": true
+              }
+            },
+            {
+              "node_id": "literal-filter",
+              "kind": "remote_bind_query",
+              "status": "success",
+              "rows": [],
+              "row_count": 0,
+              "elapsed_ms": 0.008917413651943207,
+              "input_bytes": 2,
+              "output_bytes": 2,
+              "bytes_moved": 0,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {
+                "backend_id": "fuseki",
+                "binding_count": 0,
+                "empty_binding_short_circuit": true
+              }
+            },
+            {
+              "node_id": "rdf-rows",
+              "kind": "exchange",
+              "status": "success",
+              "rows": [],
+              "row_count": 0,
+              "elapsed_ms": 0.008291564881801605,
+              "input_bytes": 2,
+              "output_bytes": 2,
+              "bytes_moved": 2,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {}
+            },
+            {
+              "node_id": "answer",
+              "kind": "project",
+              "status": "success",
+              "rows": [],
+              "row_count": 0,
+              "elapsed_ms": 0.007791444659233093,
+              "input_bytes": 2,
+              "output_bytes": 2,
+              "bytes_moved": 0,
+              "remote_calls": 0,
+              "error": null,
+              "metadata": {}
+            }
+          ],
+          "elapsed_ms": 17.57358480244875,
+          "total_remote_calls": 1,
+          "total_bytes_moved": 4
+        },
+        "success": true,
+        "federated_executions": [
+          {
+            "backend_id": "neo4j",
+            "artifact_id": "candidate-62e2afec3e0a82e3-paths",
+            "language": "cypher",
+            "success": true,
+            "rows": [],
+            "row_count": 0,
+            "result_status": "execution_success_empty",
+            "elapsed_ms": 16.056332737207413,
+            "error": null,
+            "started_at": "2026-09-10T05:56:33.959900+00:00",
+            "ended_at": "2026-09-10T05:56:33.975950+00:00",
+            "metadata": {
+              "transport": "neo4j-http",
+              "database": "neo4j"
+            }
+          }
+        ],
+        "paper_result": false,
+        "baseline_artifact": {
+          "artifact_id": "candidate-62e2afec3e0a82e3-baseline",
+          "language": "sparql",
+          "text": "SELECT DISTINCT ?answer WHERE { {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  BIND(<http://rdf.freebase.com/ns/music.release_track.recording> AS ?e1)\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.recording> ?n0 .\n  FILTER(sameTerm(?n0, <http://rdf.freebase.com/ns/m.0x8z059>))\n  ?n1 <http://rdf.freebase.com/ns/type.object.type> <http://rdf.freebase.com/ns/book.book> .\n  ?n1 <http://rdf.freebase.com/ns/music.release_track.track_number> ?v0 .\n  FILTER(?v0 = \"1\")\n  FILTER(?n0 != ?n1)\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n} FILTER(isIRI(?n0) && isIRI(?n1)) BIND(?n1 AS ?answer) } LIMIT 10001",
+          "kind": "compiled",
+          "source_path": null,
+          "parameters": {
+            "rdf_result_encoding": "rdf_terms_v1",
+            "expected_result_columns": [
+              "answer"
+            ]
+          }
+        },
+        "baseline": {
+          "backend_id": "fuseki",
+          "artifact_id": "candidate-62e2afec3e0a82e3-baseline",
+          "language": "sparql",
+          "success": true,
+          "rows": [],
+          "row_count": 0,
+          "result_status": "execution_success_empty",
+          "elapsed_ms": 14.80849925428629,
+          "error": null,
+          "started_at": "2026-09-10T05:56:33.976421+00:00",
+          "ended_at": "2026-09-10T05:56:33.991226+00:00",
+          "metadata": {
+            "transport": "sparql-http",
+            "dataset": "xgap",
+            "rdf_result_encoding": "rdf_terms_v1"
+          }
+        },
+        "answers_equal": true,
+        "answer_count": 0,
+        "answers": []
+      }
+    },
+    "health": [
+      {
+        "service_id": "neo4j",
+        "success": true,
+        "attempts": 11,
+        "elapsed_ms": 6016.3827911019325,
+        "http_status": 200,
+        "process_exit_code": null,
+        "last_error": null
+      },
+      {
+        "service_id": "fuseki",
+        "success": true,
+        "attempts": 1,
+        "elapsed_ms": 73.40249978005886,
+        "http_status": 200,
+        "process_exit_code": null,
+        "last_error": null
+      }
+    ],
+    "shutdown": [
+      {
+        "service_id": "fuseki",
+        "pid": 19067,
+        "initial_exit_code": null,
+        "final_exit_code": 143,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      },
+      {
+        "service_id": "neo4j",
+        "pid": 19064,
+        "initial_exit_code": null,
+        "final_exit_code": 0,
+        "signal_sent": "SIGTERM",
+        "escalated_to_kill": false,
+        "success": true,
+        "error": null
+      }
+    ],
+    "controlled_fixture": true,
+    "paper_result": false,
+    "data_reloaded": false,
+    "success": true,
+    "elapsed_seconds": 18.136366459541023,
+    "independent_source": {
+      "sha256": "f1b21a5869da41938818a3f0f2ef2ead92fd5df978c2d5bf6fbaad31d3f650b1",
+      "source_rows": 3247670,
+      "reached_track": "http://rdf.freebase.com/ns/g.11b6brdn9b",
+      "actual_types": [
+        "http://rdf.freebase.com/ns/common.topic",
+        "http://rdf.freebase.com/ns/music.release_track"
+      ],
+      "expected": {
+        "music.release_track": [
+          "http://rdf.freebase.com/ns/g.11b6brdn9b"
+        ],
+        "book.book": []
+      },
+      "matches": true
+    },
+    "inputs": {
+      "music.release_track": {
+        "raw": {
+          "provider_id": "controlled-fixture-no-model",
+          "query_slots": [
+            {
+              "slot_id": "r1",
+              "query_anchor_id": "music.release_track.recording"
+            },
+            {
+              "slot_id": "p1",
+              "query_anchor_id": "music.release_track.track_number"
+            },
+            {
+              "slot_id": "type",
+              "query_anchor_id": "music.release_track"
+            }
+          ],
+          "candidates": [
+            {
+              "candidate_id": "explicit-recording",
+              "pattern_query": {
+                "source": {
+                  "label": null,
+                  "properties": {
+                    "type.object.id": "m.0x8z059"
+                  }
+                },
+                "expr": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.recording",
+                    "direction": "IN",
+                    "properties": {}
+                  }
+                },
+                "target": {
+                  "label": "music.release_track",
+                  "properties": {}
+                },
+                "selector": {
+                  "kind": "ALL",
+                  "k": null
+                },
+                "restrictor": "SIMPLE",
+                "max_depth": 1,
+                "condition": {
+                  "kind": "property_equals",
+                  "ref": {
+                    "kind": "node",
+                    "position": 2
+                  },
+                  "property": "music.release_track.track_number",
+                  "value": "1"
+                }
+              },
+              "grounding": {
+                "entity_ids": [
+                  "m.0x8z059"
+                ],
+                "slot_realizations": [
+                  {
+                    "slot_id": "r1",
+                    "ontology_term_id": "music.release_track.recording",
+                    "component_ref": "expr.edge"
+                  },
+                  {
+                    "slot_id": "p1",
+                    "ontology_term_id": "music.release_track.track_number",
+                    "component_ref": "condition"
+                  },
+                  {
+                    "slot_id": "type",
+                    "ontology_term_id": "music.release_track",
+                    "component_ref": "target"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "view": {
+          "schema_version": "m12-prompt-schema-view-v1",
+          "task_id": "controlled-recording",
+          "ontology": {
+            "id": "freebase-fixture",
+            "version": "v1",
+            "hash": "controlled-fixture"
+          },
+          "schema_snapshot": {
+            "version": "v1",
+            "hash": "controlled-fixture"
+          },
+          "terms": [
+            {
+              "term_id": "music.release_track.recording",
+              "kind": "relation",
+              "label": "music.release_track.recording",
+              "aliases": [],
+              "retrieval_score": 1.0,
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ],
+              "domain": null,
+              "range": null
+            },
+            {
+              "term_id": "music.release_track.track_number",
+              "kind": "property",
+              "label": "music.release_track.track_number",
+              "aliases": [],
+              "retrieval_score": 1.0,
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ],
+              "domain": null,
+              "range": null
+            },
+            {
+              "term_id": "music.release_track",
+              "kind": "class",
+              "label": "music.release_track",
+              "aliases": [],
+              "retrieval_score": 1.0,
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ],
+              "domain": null,
+              "range": null
+            }
+          ],
+          "entities": [
+            {
+              "entity_id": "m.0x8z059"
+            }
+          ],
+          "query_slots": [
+            {
+              "slot_id": "r1",
+              "mention": "controlled fixture",
+              "kind": "relation",
+              "candidate_anchor_ids": [
+                "music.release_track.recording"
+              ],
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ]
+            },
+            {
+              "slot_id": "p1",
+              "mention": "controlled fixture",
+              "kind": "property",
+              "candidate_anchor_ids": [
+                "music.release_track.track_number"
+              ],
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ]
+            },
+            {
+              "slot_id": "type",
+              "mention": "controlled fixture",
+              "kind": "class",
+              "candidate_anchor_ids": [
+                "music.release_track"
+              ],
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ]
+            }
+          ],
+          "backend_hints": {},
+          "source_schema_items": [
+            "music.release_track.recording",
+            "music.release_track.track_number",
+            "music.release_track"
+          ],
+          "retrieval": {
+            "method": "deterministic_lexical_alias_v1",
+            "limits": {
+              "max_slots": 20,
+              "max_candidates_per_slot": 4,
+              "max_entities": 4,
+              "max_schema_items": 4
+            }
+          }
+        },
+        "preparation": {
+          "schema_version": "grounded-candidate-execution-v1",
+          "task_id": "controlled-recording",
+          "question": "Controlled fixture: releases linked to this recording through the selected track number",
+          "prompt_view_sha256": "dcf9fcacd9fdef8ca424ead52944f15f25d30598642711923498607600a9a5aa",
+          "raw_response_sha256": "82b821966e8083a7047baf8444e8c6ebd29cbdc6336385e5685491d0d6e9cf7d",
+          "mapping": {
+            "mapping_id": "d203-retained-first-shard-string",
+            "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+            "scalar_properties": {
+              "music.release_track.track_number": "string"
+            },
+            "resource_encoding": "rdf-resource-edge-mirror-v1"
+          },
+          "execution_requirements": {
+            "require_entity_anchor": true,
+            "answer_position": "last",
+            "required_bindings": []
+          },
+          "candidates": [
+            {
+              "candidate_index": 1,
+              "candidate_id": "explicit-recording",
+              "raw_candidate_sha256": "c9cceb3150da2a7749d8cf3cddaf2fecac09ea9abb608c629c9850d61cb2fb96",
+              "grounded_candidate_sha256": "e90b1473fdee1477240704027c8c4996ca2a13ff0dd2368048125459c31a9260",
+              "semantic_validation": {
+                "candidate_id": "explicit-recording",
+                "ok": true,
+                "stage": "semantic_validated",
+                "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+                "formatted_plan": null,
+                "metadata": {
+                  "profile": "typed_path_semantics_v1"
+                }
+              },
+              "stage": "prepared",
+              "input_pattern_sha256": "b40894737839a47a9cf493fda93931564227af6e5924e8df689f1b7b12a0c4e4",
+              "plan_sha256": "301dadb75a8a8c1104713b3fd6ca0d961e3ba57b903f6f54862dccbdfa9676bf"
+            }
+          ],
+          "prepared_count": 1,
+          "paper_result": false
+        }
+      },
+      "book.book": {
+        "raw": {
+          "provider_id": "controlled-fixture-no-model",
+          "query_slots": [
+            {
+              "slot_id": "r1",
+              "query_anchor_id": "music.release_track.recording"
+            },
+            {
+              "slot_id": "p1",
+              "query_anchor_id": "music.release_track.track_number"
+            },
+            {
+              "slot_id": "type",
+              "query_anchor_id": "book.book"
+            }
+          ],
+          "candidates": [
+            {
+              "candidate_id": "explicit-recording",
+              "pattern_query": {
+                "source": {
+                  "label": null,
+                  "properties": {
+                    "type.object.id": "m.0x8z059"
+                  }
+                },
+                "expr": {
+                  "kind": "rel",
+                  "edge": {
+                    "label": "music.release_track.recording",
+                    "direction": "IN",
+                    "properties": {}
+                  }
+                },
+                "target": {
+                  "label": "book.book",
+                  "properties": {}
+                },
+                "selector": {
+                  "kind": "ALL",
+                  "k": null
+                },
+                "restrictor": "SIMPLE",
+                "max_depth": 1,
+                "condition": {
+                  "kind": "property_equals",
+                  "ref": {
+                    "kind": "node",
+                    "position": 2
+                  },
+                  "property": "music.release_track.track_number",
+                  "value": "1"
+                }
+              },
+              "grounding": {
+                "entity_ids": [
+                  "m.0x8z059"
+                ],
+                "slot_realizations": [
+                  {
+                    "slot_id": "r1",
+                    "ontology_term_id": "music.release_track.recording",
+                    "component_ref": "expr.edge"
+                  },
+                  {
+                    "slot_id": "p1",
+                    "ontology_term_id": "music.release_track.track_number",
+                    "component_ref": "condition"
+                  },
+                  {
+                    "slot_id": "type",
+                    "ontology_term_id": "book.book",
+                    "component_ref": "target"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "view": {
+          "schema_version": "m12-prompt-schema-view-v1",
+          "task_id": "controlled-recording",
+          "ontology": {
+            "id": "freebase-fixture",
+            "version": "v1",
+            "hash": "controlled-fixture"
+          },
+          "schema_snapshot": {
+            "version": "v1",
+            "hash": "controlled-fixture"
+          },
+          "terms": [
+            {
+              "term_id": "music.release_track.recording",
+              "kind": "relation",
+              "label": "music.release_track.recording",
+              "aliases": [],
+              "retrieval_score": 1.0,
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ],
+              "domain": null,
+              "range": null
+            },
+            {
+              "term_id": "music.release_track.track_number",
+              "kind": "property",
+              "label": "music.release_track.track_number",
+              "aliases": [],
+              "retrieval_score": 1.0,
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ],
+              "domain": null,
+              "range": null
+            },
+            {
+              "term_id": "book.book",
+              "kind": "class",
+              "label": "book.book",
+              "aliases": [],
+              "retrieval_score": 1.0,
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ],
+              "domain": null,
+              "range": null
+            }
+          ],
+          "entities": [
+            {
+              "entity_id": "m.0x8z059"
+            }
+          ],
+          "query_slots": [
+            {
+              "slot_id": "r1",
+              "mention": "controlled fixture",
+              "kind": "relation",
+              "candidate_anchor_ids": [
+                "music.release_track.recording"
+              ],
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ]
+            },
+            {
+              "slot_id": "p1",
+              "mention": "controlled fixture",
+              "kind": "property",
+              "candidate_anchor_ids": [
+                "music.release_track.track_number"
+              ],
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ]
+            },
+            {
+              "slot_id": "type",
+              "mention": "controlled fixture",
+              "kind": "class",
+              "candidate_anchor_ids": [
+                "book.book"
+              ],
+              "retrieval_provenance": [
+                "controlled-fixture"
+              ]
+            }
+          ],
+          "backend_hints": {},
+          "source_schema_items": [
+            "music.release_track.recording",
+            "music.release_track.track_number",
+            "book.book"
+          ],
+          "retrieval": {
+            "method": "deterministic_lexical_alias_v1",
+            "limits": {
+              "max_slots": 20,
+              "max_candidates_per_slot": 4,
+              "max_entities": 4,
+              "max_schema_items": 4
+            }
+          }
+        },
+        "preparation": {
+          "schema_version": "grounded-candidate-execution-v1",
+          "task_id": "controlled-recording",
+          "question": "Controlled fixture: releases linked to this recording through the selected track number",
+          "prompt_view_sha256": "79d688656ff3ecbb64ddfa06b9e09109d2d6c8f72b1604962f141677a1fa6300",
+          "raw_response_sha256": "49ec92eef6700dbb476eccd61e6ab63a08e4add999935477f2b0bda2f0321cf1",
+          "mapping": {
+            "mapping_id": "d203-retained-first-shard-string",
+            "snapshot_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+            "scalar_properties": {
+              "music.release_track.track_number": "string"
+            },
+            "resource_encoding": "rdf-resource-edge-mirror-v1"
+          },
+          "execution_requirements": {
+            "require_entity_anchor": true,
+            "answer_position": "last",
+            "required_bindings": []
+          },
+          "candidates": [
+            {
+              "candidate_index": 1,
+              "candidate_id": "explicit-recording",
+              "raw_candidate_sha256": "e8f05ce83a58e6da4ba33ede140a88d3dce94f137afbbfb6075739906a096ba4",
+              "grounded_candidate_sha256": "be0df8b2f7e0454dc41b0dc10fdd4b1f696026bedf36af1a14312374e64bb35f",
+              "semantic_validation": {
+                "candidate_id": "explicit-recording",
+                "ok": true,
+                "stage": "semantic_validated",
+                "message": "Typed path-intent checks passed; this is not logical/backend execution admission.",
+                "formatted_plan": null,
+                "metadata": {
+                  "profile": "typed_path_semantics_v1"
+                }
+              },
+              "stage": "prepared",
+              "input_pattern_sha256": "62e2afec3e0a82e3f6eed34bea781adfbee8d1d00c623f84f62a01c90a514b4b",
+              "plan_sha256": "93e83cc6fb9a89d473f0877452be713c4296179e2f7615972bd862d2eeb18886"
+            }
+          ],
+          "prepared_count": 1,
+          "paper_result": false
+        }
+      }
+    }
+  },
+  "producer_files_sha256": {
+    "src/xgap/experiments/freebase_candidate_compiler.py": "cde686c16e5a6d07fd414fceb4129fd7a19019574f5af244059fff5c1fa285ec",
+    "src/xgap/experiments/freebase_candidate_execution.py": "e0821d97ba61a1258dd1c23ee393b63cb4daf1afd4858b84979878c18a7532da",
+    "src/xgap/backends/sparql_bindings.py": "a39bcc620ce02a4e966bc19eadfe3dd405593ed4d7fe5a8bd7c1d8cc2ff126dd",
+    "src/xgap/runtime/scheduler.py": "e4b759f0fabdd8201f36f178943c5e57c1fcd4eac1933562540a668bb932751a",
+    "examples/grounded_candidate_execution_demo.py": "356f48b269c201db1efa52fe39f0cb371166aa114314057ddf8bec1ca59a7e58",
+    "tests/test_freebase_candidate_execution.py": "e959f0a77bb2be8c07fec7b6328efa9a9d86535f33bd77956f62174594184fa9"
+  },
+  "validation": {
+    "focused": {
+      "passed": 268,
+      "skipped": 1,
+      "elapsed_seconds": 2.61
+    },
+    "full": {
+      "passed": 2827,
+      "skipped": 38,
+      "elapsed_seconds": 643.8
+    },
+    "harness_and_examples": [
+      {
+        "entrypoint": "scripts/check_harness.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.023
+      },
+      {
+        "entrypoint": "examples/core_algebra_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.083
+      },
+      {
+        "entrypoint": "examples/plan_print_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.084
+      },
+      {
+        "entrypoint": "examples/recursive_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.08
+      },
+      {
+        "entrypoint": "examples/solution_space_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.087
+      },
+      {
+        "entrypoint": "examples/semantic_audit_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.083
+      },
+      {
+        "entrypoint": "examples/lowering_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.079
+      },
+      {
+        "entrypoint": "examples/pattern_lowering_audit_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.08
+      },
+      {
+        "entrypoint": "examples/quantified_pattern_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.132
+      },
+      {
+        "entrypoint": "examples/compiler_mvp_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.138
+      },
+      {
+        "entrypoint": "examples/llm_boundary_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.199
+      },
+      {
+        "entrypoint": "examples/m11_physical_planner_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.189
+      },
+      {
+        "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.189
+      },
+      {
+        "entrypoint": "examples/m12_experiment_contract_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.255
+      },
+      {
+        "entrypoint": "examples/m12c_calibration_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.249
+      },
+      {
+        "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 6.087
+      },
+      {
+        "entrypoint": "examples/m15_goal_loop_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.138
+      },
+      {
+        "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.141
+      },
+      {
+        "entrypoint": "examples/m15_semantic_intake_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.081
+      },
+      {
+        "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 2.435
+      },
+      {
+        "entrypoint": "examples/freebase_typed_fact_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.77
+      },
+      {
+        "entrypoint": "examples/grounded_candidate_execution_demo.py",
+        "exit_code": 0,
+        "elapsed_seconds": 0.195
+      }
+    ]
+  }
+}

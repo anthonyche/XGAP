@@ -1,0 +1,149 @@
+{
+  "schema": "xgap_local_acceptance_v1",
+  "date": "2026-09-09",
+  "milestone": "D198",
+  "base_commit": "07b480811f7564c954a58a3129d6836001387ef5",
+  "claim_scope": "Independent recomputation of the retained inline provider history, including ordinary failures. Not whole-run admission, semantic metrics, real-model quality, token recounting, server attestation or a paper result.",
+  "focused": {
+    "passed": 215,
+    "seconds": 3.13,
+    "exit_code": 0,
+    "new_tests": 41,
+    "paths": [
+      "tests/test_grailqa_inline_evidence.py",
+      "tests/test_inline_grounding.py",
+      "tests/test_grailqa_candidate_feedback.py",
+      "tests/test_grailqa_preflight_replay.py",
+      "tests/test_grailqa_guarded_preflight.py",
+      "tests/test_grailqa_guarded_provider.py",
+      "tests/test_token_budget_provider.py"
+    ]
+  },
+  "full_suite": {
+    "command": "python -m pytest -q",
+    "passed": 2587,
+    "skipped": 37,
+    "seconds": 596.33,
+    "exit_code": 0
+  },
+  "examples": [
+    {
+      "entrypoint": "scripts/check_harness.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.021
+    },
+    {
+      "entrypoint": "examples/core_algebra_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.046
+    },
+    {
+      "entrypoint": "examples/plan_print_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05
+    },
+    {
+      "entrypoint": "examples/recursive_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.042
+    },
+    {
+      "entrypoint": "examples/solution_space_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.041
+    },
+    {
+      "entrypoint": "examples/semantic_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.041
+    },
+    {
+      "entrypoint": "examples/lowering_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05
+    },
+    {
+      "entrypoint": "examples/pattern_lowering_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.051
+    },
+    {
+      "entrypoint": "examples/quantified_pattern_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.059
+    },
+    {
+      "entrypoint": "examples/compiler_mvp_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.071
+    },
+    {
+      "entrypoint": "examples/llm_boundary_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.123
+    },
+    {
+      "entrypoint": "examples/m11_physical_planner_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.154
+    },
+    {
+      "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.138
+    },
+    {
+      "entrypoint": "examples/m12_experiment_contract_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.248
+    },
+    {
+      "entrypoint": "examples/m12c_calibration_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.206
+    },
+    {
+      "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 6.111
+    },
+    {
+      "entrypoint": "examples/m15_goal_loop_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.064
+    },
+    {
+      "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.104
+    },
+    {
+      "entrypoint": "examples/m15_semantic_intake_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.067
+    },
+    {
+      "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.247
+    }
+  ],
+  "source_sha256": {
+    "src/xgap/experiments/grailqa_inline_evidence.py": "4b5627a18cfa5660601788e25536af7968b9f82363c14d655d574e3d02425246",
+    "tests/test_grailqa_inline_evidence.py": "603edbd85da17a496e560d5d388430becdec9ee99ed33497dd3842e6f893a45e",
+    "src/xgap/llm/inline_grounding.py": "3f8426b53cc9334201d03157fd9c59708ff06b7ac98d86ec7711d380907f31c1",
+    "src/xgap/llm/openai_compatible.py": "b77fa879d278859f1fe844699d37e1524b93f5044869790688bde96c1b0805bf",
+    "src/xgap/experiments/grailqa_candidate_feedback.py": "caa5fdb9bb5afc2cba2a1a9b70f43644699b9d8853f6144569ea08a9dbcac081",
+    "src/xgap/experiments/grailqa_preflight_replay.py": "63056fed83785c2ac05960be4af2b8a9eb575e9a950e55d9d666dc3a1ec1297a",
+    "src/xgap/experiments/grailqa_semantic_pilot.py": "033c4fc8a26777834c7ab6e67a3950dd9f998115c9dee6fc6d3cd912f1f20147"
+  },
+  "log_sha256": {
+    "/tmp/xgap-inline-evidence-20260909/focused.log": "d9dab06f7e2a09a96a7e1329f520825c06fd60d36320b2699472c878f5108913",
+    "/tmp/xgap-inline-evidence-20260909/full-regression.log": "974f50cd20e42e188096e0f2fe7f58be8f7f9eed1fb13ffaacd3f04c8082237d",
+    "/tmp/xgap-inline-evidence-20260909/examples.log": "517aff735a8a9d00399b117c36405b37134656c2d91dc9b3b480d9154ab4b0c0",
+    "/tmp/xgap-inline-evidence-20260909/examples.json": "d5c6257623c19aa5b0f44080679a88738602b6889eaef72dc08fd22a4e7a2e9a"
+  },
+  "live_model_run": false,
+  "remote_jobs_submitted": 0,
+  "paper_result": false
+}

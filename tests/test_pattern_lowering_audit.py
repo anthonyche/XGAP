@@ -173,13 +173,15 @@ def test_meaningless_selector_k_is_rejected(selector: Selector) -> None:
         type_check_path_pattern(query(selector=selector))
 
 
-def test_optional_and_bounded_regex_lowering_remain_unsupported() -> None:
+def test_optional_and_finite_bounded_extend_the_historical_lowering_scope() -> None:
     expr = Rel(EdgePattern(label="Knows"))
 
-    with pytest.raises(LoweringError, match="OptionalExpr"):
-        lower_regex(OptionalExpr(expr), RecursiveMode.TRAIL)
-    with pytest.raises(LoweringError, match="Bounded"):
-        lower_regex(Bounded(expr, 1, 2), RecursiveMode.TRAIL)
+    optional = lower_regex(OptionalExpr(expr), RecursiveMode.TRAIL)
+    bounded = lower_regex(Bounded(expr, 1, 2), RecursiveMode.TRAIL)
+    validate_plan(optional)
+    validate_plan(bounded)
+    assert isinstance(optional, UnionOp)
+    assert isinstance(bounded, RecursiveOp) and bounded.max_depth == 1
 
 
 def test_type_checker_infers_and_rejects_expected_variable_schemas() -> None:
@@ -276,8 +278,7 @@ def test_direction_audit() -> None:
     for direction in (Direction.IN, Direction.UNDIRECTED):
         pattern = query(expr=Rel(EdgePattern(label="Knows", direction=direction)))
         assert type_check_path_pattern(pattern) == {}
-        with pytest.raises(LoweringError, match="supports only OUT"):
-            lower_path_pattern(pattern)
+        validate_plan(lower_path_pattern(pattern))
 
 
 def test_regex_lowering_canonical_shapes() -> None:

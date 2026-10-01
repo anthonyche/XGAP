@@ -1,0 +1,23 @@
+{
+  "schema_version": "m15-finbench-paper-author-selection-v1",
+  "selection_id": "m15-finbench-sigmod2027-option-a-v1",
+  "authority_source_id": "author:anthonyche:explicit-option-a-2026-09-07",
+  "base_protocol_sha256": "d39896e27b5a20e7eface845953c05635867546cfe77cb768135fe777bd9641d",
+  "decisions": {
+    "confirmatory_population": "48_answer_independent_crossfit",
+    "primary_scale": "sf0_1",
+    "robustness_scale": "sf1_if_feasible_by_2026-09-12_else_omit",
+    "training_repetitions_per_plan": "7",
+    "selected_serving_repetitions": "7",
+    "shadow_repetitions_per_plan": "7",
+    "infrastructure_replacement_limit": "1",
+    "semantic_track": "grailqa_primary",
+    "external_validation": "fedshop_if_ready_by_2026-09-24_else_omit"
+  },
+  "selection_basis": "explicit_author_choice_A_before_confirmatory_measurement",
+  "confirmatory_workload_compilation_authorized": true,
+  "confirmatory_execution_authorized": false,
+  "automatic_retries": 0,
+  "paper_result": false,
+  "selection_sha256": "d2bc5980ed61e1e4c8472c6dc12223179267f7083d67df8b98ee0388c0a6aa1e"
+}

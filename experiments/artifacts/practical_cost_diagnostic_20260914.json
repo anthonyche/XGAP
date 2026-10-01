@@ -1,0 +1,36 @@
+{
+  "schema_version": "xgap-practical-cost-diagnostic-evidence-v1",
+  "source_commit": "1467b4be0768cde02a75626ca97a90aa4fd6457f",
+  "success": true,
+  "paper_result": false,
+  "source_calls": 84,
+  "model_calls": 0,
+  "fit_calls": 0,
+  "baseline_calls": 0,
+  "cells": 6,
+  "answer_rows_each": 4,
+  "all_answers_match": true,
+  "observations_per_strategy_in_second_sequence": 1,
+  "frozen_rank_matches_this_sequence": true,
+  "statistical_or_general_rank_claim": false,
+  "evidence": {
+    "receipt.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-cost-diagnostic-20260914-native-v1/receipt.json",
+      "sha256": "205ab4977ec3f7290a2a3a5eb17f78889f9eae285012b3f960db2c376179b6c0"
+    },
+    "intent.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-cost-diagnostic-20260914-native-v1/intent.json",
+      "sha256": "3d2d11f2b82a2b3a04cea8fc576da54a6bf93db57614046ba92959613507dae4"
+    },
+    "analysis.json": {
+      "path": "/Users/anthonyche/xgap-data/practical-cost-diagnostic-20260914-native-v1/analysis.json",
+      "sha256": "2cbc37c163556fcf8de48feac6d3625ae689db5b27dcb070958faeb5f559e9d3"
+    }
+  },
+  "preflight": {
+    "path": "/Users/anthonyche/xgap-data/practical-cost-diagnostic-20260914-preflight-v1/receipt.json",
+    "sha256": "6b2b11de118e198995a384fe9638eb6cfd5ab8eae76b85dff91225250dbc33c8"
+  },
+  "all_owned_resources_terminal": true,
+  "report": "docs/report/practical_cost_diagnostic_20260914.md"
+}

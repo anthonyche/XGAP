@@ -1,0 +1,492 @@
+{
+  "schema_version": "xgap-anchor-saved-plan-replay-v1",
+  "paper_result": false,
+  "model_calls": 0,
+  "backend_calls": 0,
+  "query_execution": false,
+  "fit_calls": 0,
+  "large_question_retried": false,
+  "replays": [
+    {
+      "saved_interpretation": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-0/execution/worker/core/interpretation.json",
+        "sha256": "16965f55ee576ec23481a291d2524f27140dbf715ed63e5e14ba13c46f6592cc"
+      },
+      "program_unchanged": true,
+      "semantic_operators": 36,
+      "domain": {
+        "algorithm": "single_source_neighborhood_and_single_bind_rewrite_v1",
+        "cartesian_expansion": false,
+        "local_option_count": 14,
+        "placement_count": 1,
+        "construction_bound": 17,
+        "candidate_count": 8,
+        "rejected": [
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq13/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq28/left_to_right",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq29/left_to_right",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq29/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq30/left_to_right",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq30/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq31/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq32/left_to_right",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq32/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          }
+        ],
+        "domain": "minimum-call baseline plus one-source deviations; one bind rewrite per plan",
+        "global_physical_optimality": false,
+        "elapsed_ms": 30.164082534611225
+      },
+      "anchor_reduction": {
+        "profile": "mandatory-scalar-anchor-semijoin-v1",
+        "driver": "cq20",
+        "identity_field": "v0",
+        "condition": {
+          "op": "eq",
+          "field": "f0",
+          "value": "239816680157479280"
+        },
+        "enforcing_filter": "cq33",
+        "target_matches": [
+          "cq1",
+          "cq4",
+          "cq9"
+        ],
+        "added_runtime_nodes": 4,
+        "extra_remote_calls": 0,
+        "source_queries_unchanged": true,
+        "selection": "first provably admissible equality in semantic input order",
+        "original_final_constraints_preserved": true
+      }
+    },
+    {
+      "saved_interpretation": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-005-2/execution/worker/core/interpretation.json",
+        "sha256": "b1e5659db81f44b3e40bda32b6fc639d066f0e5f620ade2c8e65d94a5d0ce0d6"
+      },
+      "program_unchanged": true,
+      "semantic_operators": 36,
+      "domain": {
+        "algorithm": "single_source_neighborhood_and_single_bind_rewrite_v1",
+        "cartesian_expansion": false,
+        "local_option_count": 14,
+        "placement_count": 1,
+        "construction_bound": 17,
+        "candidate_count": 8,
+        "rejected": [
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq13/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq28/left_to_right",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq29/left_to_right",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq29/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq30/left_to_right",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq30/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq31/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq32/left_to_right",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          },
+          {
+            "source_bindings": {
+              "cq0": "rdf_graph",
+              "cq1": "rdf_graph",
+              "cq10": "rdf_graph",
+              "cq12": "rdf_graph",
+              "cq18": "rdf_control",
+              "cq19": "rdf_graph",
+              "cq21": "rdf_control",
+              "cq22": "rdf_graph",
+              "cq24": "rdf_control",
+              "cq25": "rdf_control",
+              "cq26": "rdf_graph",
+              "cq4": "rdf_graph",
+              "cq5": "rdf_graph",
+              "cq9": "rdf_graph"
+            },
+            "strategy": {
+              "strategy_id": "entity_bind/cq32/right_to_left",
+              "reason": "Target requires a Match source behind only Project/Filter"
+            }
+          }
+        ],
+        "domain": "minimum-call baseline plus one-source deviations; one bind rewrite per plan",
+        "global_physical_optimality": false,
+        "elapsed_ms": 29.475083574652672
+      },
+      "anchor_reduction": {
+        "profile": "mandatory-scalar-anchor-semijoin-v1",
+        "driver": "cq20",
+        "identity_field": "v0",
+        "condition": {
+          "op": "eq",
+          "field": "f0",
+          "value": "239816680157479280"
+        },
+        "enforcing_filter": "cq33",
+        "target_matches": [
+          "cq1",
+          "cq4",
+          "cq9"
+        ],
+        "added_runtime_nodes": 4,
+        "extra_remote_calls": 0,
+        "source_queries_unchanged": true,
+        "selection": "first provably admissible equality in semantic input order",
+        "original_final_constraints_preserved": true
+      }
+    }
+  ],
+  "claim": "Saved meanings admit exact early anchor; memory/latency improvement not established."
+}

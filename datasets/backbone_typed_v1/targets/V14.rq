@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT (STR(?n) AS ?person) WHERE { ?n a t:Person . OPTIONAL { ?n t:credit ?credit } BIND(IF(BOUND(?credit),0,1) AS ?missing) } ORDER BY ?missing ?credit ?person LIMIT 10

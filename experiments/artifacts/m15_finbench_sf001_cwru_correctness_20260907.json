@@ -1,0 +1,80 @@
+{
+  "artifact_id": "m15-finbench-v010-sf0-01-cwru-native-correctness-3793654",
+  "artifact_role": "public_data_native_correctness_acceptance_not_paper_result",
+  "observed_at_utc": "2026-09-07",
+  "source_artifact": {
+    "artifact_id": "ldbc-finbench-v0.1.0-sf0.01",
+    "archive_sha256": "888c8fbe06b68cc48de9f07fde8c0fd3295618fc41af13ae1aa216aaec1e0430",
+    "snapshot_rows": 36881,
+    "snapshot_table_count": 18
+  },
+  "slurm": {
+    "elapsed": "00:04:05",
+    "exit_code": "0:0",
+    "job_id": "3793654",
+    "node": "compt292",
+    "state": "COMPLETED"
+  },
+  "git": {
+    "producer_commit": "a718e91a6bc54ae5459eb1644362b47ca9c1e4b0",
+    "auditor_commit": "91dfa15b19fce79cc303f5ab881a490443f2126d",
+    "producer_clean": true
+  },
+  "fixture_load": {
+    "fuseki": {
+      "bytes_sent": 3112360,
+      "elapsed_ms": 668.8735112547874,
+      "operations_attempted": 1,
+      "success": true
+    },
+    "neo4j": {
+      "bytes_sent": 9324567,
+      "elapsed_ms": 172515.29679447412,
+      "operations_attempted": 160,
+      "success": true
+    }
+  },
+  "correctness_execution": {
+    "all_physical_pairs_equivalent": true,
+    "all_plans_exact": true,
+    "automatic_retries": 0,
+    "backend_calls": 144,
+    "execution_elapsed_ms": 178193.38862597942,
+    "family_counts": {
+      "f1_direct_transfer_control": 12,
+      "f2_temporal_path_control": 12,
+      "f3_aggregate_risk_ranking": 12
+    },
+    "physical_plan_run_count": 72,
+    "query_count": 36,
+    "success": true
+  },
+  "oracle_boundary": {
+    "answer_bytes_hashed_before_execution": true,
+    "backend_calls_before_open": 144,
+    "content_parsed_after_all_plan_runs": true,
+    "used_for_selection": false
+  },
+  "independent_audit": {
+    "check_count": 363,
+    "failed_check_ids": [],
+    "output": "runs/audits/cwru-m15-finbench-correctness-3793654-audit-v2.json",
+    "run_tree_mutated": false,
+    "success": true
+  },
+  "preserved_audit_incident": {
+    "category": "auditor_output_serialization_bug",
+    "error": "Object of type PosixPath is not JSON serializable",
+    "producer_rerun": false,
+    "repair": "path values are converted explicitly inside evidence-check serialization",
+    "source_run_mutated": false
+  },
+  "remote_run_root": "runs/cwru-m15-native-finbench-correctness-3793654",
+  "claim_boundary": {
+    "benchmark_conformance_claim": false,
+    "comparative": false,
+    "confirmatory": false,
+    "result_class": "finbench_derived_public_data_native_correctness_acceptance"
+  },
+  "paper_result": false
+}

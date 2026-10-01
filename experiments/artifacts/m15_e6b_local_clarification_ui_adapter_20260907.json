@@ -1,0 +1,55 @@
+{
+  "artifact_id": "m15-e6b-local-clarification-ui-adapter-20260907",
+  "artifact_role": "local_ui_adapter_readiness_not_interactive_ui_or_paper_result",
+  "observed_at_utc": "2026-09-07",
+  "git": {
+    "implementation_commit": "9214fe0c367bf611b8049d187395dd4fcf4cb004"
+  },
+  "validation": {
+    "command": "./scripts/run_acceptance.sh",
+    "collected": 1097,
+    "passed": 1061,
+    "skipped": 36,
+    "failed": 0,
+    "focused_e5c_e5d_remote_regression_passed": 43,
+    "candidate_order_independence_tested": true,
+    "out_of_set_rejection_tested": true,
+    "terminal_response_rejection_tested": true,
+    "memory_hash_drift_rejection_tested": true,
+    "unsafe_remote_path_rejection_tested": true,
+    "external_calls_made": 0
+  },
+  "ui_adapter_contract": {
+    "input": "typed_hash_valid_e5c_clarification_session",
+    "authority_input": "explicit_candidate_id_only",
+    "candidate_display_order_is_authority": false,
+    "free_text_is_authority": false,
+    "semantic_ranking_performed": false,
+    "plan_compilation_performed": false,
+    "native_query_text_exposed": false,
+    "interactive_page_implemented": false
+  },
+  "submission_preview_contract": {
+    "required_session_status": "ready_for_execution_handoff",
+    "shared_authority_source_required": true,
+    "historical_memory_hash_bound_to_session": true,
+    "remote_operation": "submit_job",
+    "fixed_script": "scripts/slurm/run_m15_native_selected_interpretation_session.sbatch",
+    "environment_key_count": 6,
+    "generic_environment_editor": false,
+    "shell_command_constructed": false,
+    "credentials_allowed": false,
+    "explicit_confirmation_required": true
+  },
+  "claim_boundary": {
+    "evidence_class": "controlled_local_presentation_adapter_readiness",
+    "interactive_ui_result": false,
+    "ssh_or_slurm_result": false,
+    "real_backend_result": false,
+    "performance_claim": false,
+    "semantic_quality_claim": false,
+    "user_utility_claim": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

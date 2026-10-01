@@ -1,0 +1,92 @@
+{
+  "audit": {
+    "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/audit.json",
+    "sha256": "92a27e8395f4b6bf7784394afdd6a840297a4e2ba30d450df645b95253a18278",
+    "bytes": 3034
+  },
+  "schema_version": "xgap-native-preparation-audit-v1",
+  "full": {
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/receipt.json",
+      "sha256": "32d165a35bcdc4439aaaf9c26dbd2cb1d10626886f6ebfb1579d1167eca5076e",
+      "bytes": 4637
+    },
+    "worker": {
+      "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/neo4j-load/receipt.json",
+      "sha256": "4ec1e45cf5637253dd658f8bd604562fe8cf5c10d30534ee2e16ac78aa7d063f",
+      "bytes": 496
+    },
+    "input_seal": {
+      "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/input-seal.json",
+      "sha256": "e82e723cbd19c082239368a1588cbed2b6a66a5658b214d48076360ff38328e2",
+      "bytes": 56419
+    },
+    "shutdown_log": {
+      "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/neo4j-load/neo4j-console.log",
+      "sha256": "6b2c1b5ee1e5d8149939581b9ace61106eb84f5f03411d193b14368f7da5bc77",
+      "bytes": 2244
+    },
+    "counts": {
+      "nodes": 55604,
+      "relationships": 309577
+    },
+    "load_calls": 194,
+    "offline_ms": 33804.71370834857,
+    "stores": {
+      "control": {
+        "bytes": 236139733,
+        "files": 43,
+        "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/control-tdb2",
+        "seal": {
+          "bytes": 9228,
+          "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/control-store-seal.json",
+          "sha256": "a70c72fa77eb435ea520c7dcffa87d99d1c261150b9e6ebdb5acc072a695909e"
+        }
+      },
+      "neo4j": {
+        "bytes": 441378366,
+        "files": 87,
+        "parts": [
+          "data",
+          "transactions"
+        ],
+        "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/neo4j-load/state/neo4j",
+        "seal": {
+          "bytes": 22076,
+          "path": "/Users/anthonyche/xgap-data/finbench-sf01-native-stores-20260913-v1/neo4j-store-seal.json",
+          "sha256": "31c698ca7c4212c04d54710a7d31495d2ccd07dc271ad7fb8eed297a2534a2a9"
+        }
+      }
+    },
+    "sampled_peak_group_rss_bytes": {
+      "neo4j_guard": 986333184,
+      "control_guard": 982695936
+    },
+    "engine_files_unchanged": true,
+    "sources_unchanged": true,
+    "all_processes_terminal": true
+  },
+  "tiny": {
+    "receipt": {
+      "path": "/Users/anthonyche/xgap-data/native-store-freeze-tiny-20260913-v1/prepared/receipt.json",
+      "sha256": "a4cdd89da4dffa872128244977fa204dd0b6bce79604ab6a89c9b0f213017176",
+      "bytes": 4582
+    },
+    "counts": {
+      "nodes": 8,
+      "relationships": 16
+    },
+    "load_calls": 13,
+    "offline_ms": 19524.15862493217
+  },
+  "new_tests": {
+    "path": "tests/test_native_store_preparation.py",
+    "passed": 3,
+    "elapsed_seconds": 0.28
+  },
+  "benchmark_query_calls": 0,
+  "model_calls": 0,
+  "integrity_queries_per_load": 2,
+  "formal_campaign_ready": false,
+  "remaining": "native serving copies, observation/runner wiring and actual native campaign"
+}

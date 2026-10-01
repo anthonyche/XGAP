@@ -1,0 +1,16 @@
+group,question_id,query_type,method,harness_epoch,status,classification,answer_em,expected_rows,actual_rows,online_ms,planning_ms,execution_ms,source_requests,source_response_bytes,model_calls,top_level_method_queries
+1,FBNS-2-a0baa0e6711f9de3,有界时间路径与控制筛选,xgap-rdf,0,returned,returned_correct_empty,1.0,0,0,53112.221624702215,22.999750450253487,45248.07641655207,6,112485527,0,1
+1,FBNS-2-a0baa0e6711f9de3,有界时间路径与控制筛选,fedx,0,upstream_source_failure,harness_port_exhaustion,0.0,0,,13438.555500470102,,,8198,24780652,0,1
+1,FBNS-2-a0baa0e6711f9de3,有界时间路径与控制筛选,fedup,0,supervisor_failed,harness_dead_session_unexecuted,0.0,0,,725.4807921126485,,,0,0,0,0
+2,FBNS-1-cdc6f66be3016baf,直接转账汇总,fedx,1,returned,returned_correct_empty,1.0,0,0,1078.0461253598332,,,45,6344,0,1
+2,FBNS-1-cdc6f66be3016baf,直接转账汇总,fedup,1,external_failed,native_query_http_failure,0.0,0,,2085.652749054134,,,0,0,0,1
+2,FBNS-1-cdc6f66be3016baf,直接转账汇总,xgap-rdf,1,returned,returned_correct_empty,1.0,0,0,32057.147666811943,20.744708366692066,27054.935375228524,5,62250369,0,1
+3,FBNS-3-ba8a93f050468448,风险分组与排序,fedup,1,external_failed,native_query_http_failure,0.0,0,,1993.1509159505367,,,0,0,0,1
+3,FBNS-3-ba8a93f050468448,风险分组与排序,xgap-rdf,1,returned,returned_correct_empty,1.0,0,0,33113.99995815009,21.06187492609024,28262.69912533462,5,74994136,0,1
+3,FBNS-3-ba8a93f050468448,风险分组与排序,fedx,1,returned,returned_correct_empty,1.0,0,0,1157.4891675263643,,,41,7542,0,1
+4,FBNS-3-8e6cf05a873620a1,风险分组与排序,fedup,1,external_failed,native_query_http_failure,0.0,0,,2096.382292918861,,,0,0,0,1
+4,FBNS-3-8e6cf05a873620a1,风险分组与排序,fedx,1,returned,returned_correct_empty,1.0,0,0,3247.876708395779,,,170,182726,0,1
+4,FBNS-3-8e6cf05a873620a1,风险分组与排序,xgap-rdf,1,returned,returned_correct_empty,1.0,0,0,32444.720375351608,20.77245805412531,27502.006124705076,5,74986024,0,1
+5,FBNS-1-c0641cd0810fbb55,直接转账汇总,xgap-rdf,1,returned,returned_correct_empty,1.0,0,0,30181.294165551662,20.161250606179237,24977.34925057739,5,62250367,0,1
+5,FBNS-1-c0641cd0810fbb55,直接转账汇总,fedup,1,external_failed,native_query_http_failure,0.0,0,,1969.724458642304,,,0,0,0,1
+5,FBNS-1-c0641cd0810fbb55,直接转账汇总,fedx,2,returned,returned_correct_empty,1.0,0,0,1132.9227089881897,,,46,8193,0,1

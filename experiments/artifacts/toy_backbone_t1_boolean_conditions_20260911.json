@@ -1,0 +1,874 @@
+{
+  "milestone": "T1 native total scalar Boolean conditions",
+  "status": "accepted",
+  "date": "2026-09-11",
+  "base_commit": "bafce8e53a5ce5b88d765e82f5515112fa921017",
+  "live_llm": false,
+  "paper_result": false,
+  "scope": "20 path chains, 4 typed Match programs, candidate planning and retained two-engine slice",
+  "native_runs": [
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+      "sha256": "ddec5e6c401aced7a8d14574068fe1129d5bdeeb6cb45ed99d2068e7d9bb0129",
+      "success": true,
+      "phase": "completed",
+      "checks": {
+        "targets": {
+          "attempted": 40,
+          "passed": 40
+        },
+        "boolean_reference_targets": {
+          "attempted": 40,
+          "passed": 40
+        },
+        "boolean_matches": {
+          "attempted": 8,
+          "passed": 8
+        },
+        "boolean_match_references": {
+          "attempted": 8,
+          "passed": 8
+        },
+        "boolean_planned_cases": {
+          "attempted": 3,
+          "passed": 3
+        }
+      },
+      "path_execution_calls": 44,
+      "observation_calls": 8,
+      "serving_calls": 4,
+      "extra_candidate_validation_calls": 4,
+      "candidate_answers_passed": 6,
+      "old_slice_success": true,
+      "old_slice_calls": 2,
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 35023,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 34989,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "source_sha256": {
+        "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+        "src/xgap/compilers/directed.py": "bbcc568fbb253c0ca36ab09435aab0f829cb9516f0421b79a0353600be7b355a",
+        "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+        "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+        "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+        "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+        "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+        "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+        "src/xgap/runtime/scheduler.py": "96d7c9f44c40ef683c25eadc388674a19b5d5104e9af9d4622f4b16da9338358",
+        "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+        "scripts/run_toy_backbone_native.py": "d6d30795a6e7e5aa57c05a604ef75f7a4ba482711f15f4fe34f3333b5331e877",
+        "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+        "src/xgap/compilers/node_match.py": "9eaea76342897cc91ccd6e12d92f9c63ea9baf35b558916b2e587ab931a1b0a5",
+        "src/xgap/runtime/semantic_compiler.py": "b5cb2480f4d237ec07e203a985a55221c090b47e3b43475ca501086994df94db",
+        "src/xgap/runtime/row_operations.py": "99671d516930bd20a6bce4efdb10643b5fe779c185c4247bdb9ad0a2ff544458",
+        "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+        "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+        "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+        "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+        "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+        "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+        "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+        "src/xgap/experiments/toy_planning.py": "a5d89245d7a76148e85dd02fecda7e7cff97d072eb3c814ffeb6cd6a1b24b962",
+        "src/xgap/pattern/lowering.py": "bb17ca1c4af397c23676a2c189fdd3139035520ca12ed661897d836c8aa8f5b9",
+        "src/xgap/pattern/typecheck.py": "0e2031353dc12ef9042bc7f0d1e945fa2a91f83a8bc7cd95e56099e307f8732d",
+        "src/xgap/llm/parser.py": "5501b7eca7464f627f1d453f44304d2d1c4bf4c6db9d349075aef21075e0d9c7",
+        "src/xgap/runtime/scoped_paths.py": "b770cc67b77f8991f3ebafd967e58df41a6e67d6da59e40cbd1fde18fc95ce00",
+        "src/xgap/runtime/path_composition.py": "dbcb75bcc3289f7652f48eca403d050bd180794128735c4d4f8134554b87aa50",
+        "src/xgap/experiments/toy_scoped.py": "da204ef1bcd2e9bbd0080230ec42edf93739155990654154c0de31d974deccd2",
+        "src/xgap/compilers/boolean_conditions.py": "b686f1e97517f2ba3ac88ace5617b32c59c666dae80464e10149b962c917f747",
+        "src/xgap/experiments/toy_boolean.py": "f8b7bc3940b879ed9191ea710c52c1bc2f3ed37244101410f57f3b38a9a3375c"
+      },
+      "fixture_sha256": {
+        "load.cypher": "2892f0d12746501a208cbf1fbd6e9c494892790149ef373659d4653521d3875d",
+        "load.ttl": "9732faf79aa80559b5e2d737177599421061bd787d006226ec7438db69904c24",
+        "queries.json": "535616a42a1e3bfd857b9385d74fbe176f931f59a54d26798c20511000e31f89",
+        "README.md": "b2f55b283799f5d8507374c0db95b9263dd85733bbacd40e30d9b43efabbd171",
+        "mapping.json": "651d44578283f4f2e5a5f016380c5b784a2dcdda2bf5b27491d6a947c168eb2d",
+        "graph.json": "b72a0a97d3dbf8919c3303ffd2b9c6121659f4e19d6059b72cd55a75f4f7f82e",
+        "targets/T05.rq": "e87318bcc0b3d672d65c4aae9e505603c29ba8976e106e9dd8d7af09ae4dd7d5",
+        "targets/T15.rq": "1db62fe203183958305b2a9e0fbba8efca2de8d1e3e9e42a9fe1059b654f52f3",
+        "targets/T01.rq": "a00b5bd4917e76a1c15f8f865c347c195f83d02b072c9576a04bebd33d47a0f0",
+        "targets/T11.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744",
+        "targets/T06.cypher": "afeaa20cc69e0897cfd688f9237f27266cba612bfa63c597bf71b5f821d15875",
+        "targets/T18.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+        "targets/T14.cypher": "0e514c6476c01fb70d28090456cc28521821a29d79e1892f7b1e0809b5eec5a0",
+        "targets/T08.cypher": "6c5253698a126ada92f72732069cd6a5979b7192580a9e33aa4776f30023d75f",
+        "targets/T10.rq": "3f9a4681586298ec4d9297c2d81627999b8af15238979b9ea5bee54a88a6c57b",
+        "targets/T16.cypher": "61960fc15e0d8fb9fb71165f7f6b3c65380d53413289914e8e8a4be948cd5490",
+        "targets/T04.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+        "targets/T04.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+        "targets/T14.rq": "033de848d509b48fd6c1d66f1c751e515a3fd77a1abdbc784a7baacbf43bc757",
+        "targets/T12.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+        "targets/T10.cypher": "e1b26267c63ce1a677a7a851a28df92fba3745cb5c20a24d8744238c01e36d4f",
+        "targets/T02.cypher": "d86bc59390e1fff6bb779265d51ee77a7d583542eb039be09c2dbde1cffb4fc5",
+        "targets/T07.cypher": "07d23b2b6b08ab61e95a2c8ea4094a4324434a17e05516375f91931f535b5f81",
+        "targets/T09.rq": "73e9ac1bd8dfa90e8582a1985df374269282fedddcb4ad8d760f78d9997598c3",
+        "targets/T15.cypher": "7f0703bdb9c1bc1847d4b52e09293b79727bfadc9ba1e492a9831877bad75a0d",
+        "targets/T17.cypher": "bfda0b91e68e9cf8e342b66fad4b92a00f0b4f1c1596fcaee9550a3752576352",
+        "targets/T09.cypher": "245dd0a9f89b1fb5dbf8fe716606d0e0256df10f836317faeba17cbf5edfadb9",
+        "targets/T08.rq": "044340291081f454b6e889b65b434771e9d900f4884a435cb27bea79036ab888",
+        "targets/T05.cypher": "3ec22f5c5ed0908fce931b5c057ad4d8802676f978fe68b368b085ca28564660",
+        "targets/T18.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+        "targets/T03.rq": "67eabd839fda760f33e256957d3ab8329677a13a03c2d19635388dc77e54193b",
+        "targets/T13.rq": "c9ffd69f3126b145f896857bd5a6d01c11bdd1ef14b42f09cd64314686fd6d37",
+        "targets/T07.rq": "7a94f0c71ba0313126c0db8905b54f223bd3c6efa30037152fc536c07c56e15d",
+        "targets/T01.cypher": "e049929f9ec5d2f31f00eb5438c91bcb0655597a0dc8960c3edb323bbdb0207e",
+        "targets/T17.rq": "92f269b29867f27ed67c12495bec6aced2a06e1c9109440c8d9a34d197cb6d64",
+        "targets/T13.cypher": "bc3f51702531287a7e5709402958aebf972c2fca3227cdf53e1174ae0dff52ce",
+        "targets/T06.rq": "a71c2a539116458ede6ed456c61003a92aecd0984e59b80e18da413275653867",
+        "targets/T16.rq": "ac91a127dc7c1e35aadf2f443adbe502c7dc024f563e24b2d8c45068998d7963",
+        "targets/T11.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+        "targets/T03.cypher": "6614e75e6687d07d2daa85b71b80c35d85f5509f6fbaea2bb360eaac878bb048",
+        "targets/T02.rq": "ab050b118a1f6533502a985d7ed74c2eb6e80c610c39e52240d2cc4bbf169181",
+        "targets/T12.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744"
+      },
+      "boolean_fixture_sha256": {
+        "load.cypher": "23db929c961c2dce3483c0282c03f91d0b58c5321d2c4cbabc419342d668f0d9",
+        "load.ttl": "c82957f714f6c1957e470d6acbda360f1938503f147460b1b345fc8f8a54e300",
+        "match.json": "bbb321dd15d37fdca8cdb61a49d3a8a281cc611950e87c26a7391c0436387613",
+        "queries.json": "2f5fcae29f505d58a6e01b091e8987d831cc3d65fbe55c92fc04eb8645eb41ae",
+        "README.md": "def99f8587aeda51b41b36b2146a60e3d9840b4cbb5a689b1a5dd26434e9554e",
+        "mapping.json": "f8873cbf0c5a9a92e9f0fb3c0a518a3f1c1577c6c22d71d869f32241e5d8256e",
+        "graph.json": "b2c55da1e1f308c86742c811d108e9b4e338ffaeaa178354404ad961c59b4506",
+        "rejected.json": "c45605dc874c1a1da4fc8248868fe24076b6de65130fa4970e8e81613f4c3e50",
+        "targets/C03.rq": "aa1d536fd56f904fcb8fc9101001d53d4e16013e8bc4c18c11b6c98f7a3c15db",
+        "targets/M01.rq": "98ae734f3c6bcab874f62eff4e7397b4d72c6a4856cb450dfa5f8a5057ff457d",
+        "targets/C13.rq": "b6de13960e76d2a73638729d19ee7ffbf01f847144ece869832758163de1c73f",
+        "targets/C07.rq": "7f1f3da567a61ebf86c30e40eff58c07217eb7dece1487017e22df02a4619e3c",
+        "targets/C17.rq": "6a9f3f50a82f8e964b95ede2432116bc3b770c58592861569a8bc76de5d1426f",
+        "targets/C15.cypher": "ca0c3f5514397a428ea6f025eff556e132c3f95b1facea749f8a5db17859b1a1",
+        "targets/C07.cypher": "17d1af20c9b0f92e5fd44f18a914b92c5983ad5a0b71bf6583c2d4f54a72ca6a",
+        "targets/C19.cypher": "0d4269802052666399197ba7d60033637c805866ec65c135e172cd4276e1766d",
+        "targets/C06.rq": "849adf30a1ac9fdc55851fb642d38b6825ea03443e0d371e3604b23d7f2d6ffb",
+        "targets/C16.rq": "1bafbb3977e1e413eb9113009bf35b2d0f68a840e69c8bf6bc68ed8dd72c6c2d",
+        "targets/M04.rq": "e4f53d4c1f163421dd177747c2a698cca83b66d9be5c78f79b3c3d68afac5ef3",
+        "targets/C05.cypher": "51f6691f87e16c83bb81319c9d0bee196da9d1ca230b92fdec19f76103e5b106",
+        "targets/C09.cypher": "a56d1a393c89b573a17adda0cca89180102429fc842076dcc9cfef57c36f095d",
+        "targets/M02.cypher": "470e3c19262838e0ad3956151164aa9916b6139f52153d9dc0f48b9c16b39965",
+        "targets/C17.cypher": "dfb15bfc25c16f700f3590adf79be52730c10cdc0c45d90bfbc6f796256e4260",
+        "targets/C02.rq": "f1636b4c4f98dabf07ad5b0bfde60299c4a0e279cbc9c3d3117bc0dc84a34c25",
+        "targets/C12.rq": "a9628e288aa860fa41e9711f43e400d3504dc55cebd3537a106e57ea0c19cdfd",
+        "targets/C09.rq": "6b1adf7530da835fce88d53ec574a2862f431da12fae3f5c34f8e2813d8970a4",
+        "targets/C13.cypher": "66c7eae496c274b3df9cf2b579d71ebacda689d001f7a3e243f405d82dfca8ff",
+        "targets/C01.cypher": "3a587a9d3de075bee8e8ee3569bc2e3bc110b8b4ae3fe044cdd6d3209b27bc79",
+        "targets/C19.rq": "df4ac6e3c6b8d123d03a0541940c87b3883b4c20cb5404d1b54a1f97032cdd7a",
+        "targets/C03.cypher": "669e1ebebc913f2e210d952dc0574c4029d9dd006b01895e13cc7022d64b85b1",
+        "targets/C08.rq": "5eb4e64aacbbe5fd377a808797e4665441d379de592c0a1ac8b39b0c322ea497",
+        "targets/C11.cypher": "d89212ac4bf257d2e84c8918cccb3ae9e5bb53454d1dec79a6e25a8be78aceec",
+        "targets/M04.cypher": "4e1944775919363dd083fc47fb94673a61334053a7db63866f6b6997a22b129a",
+        "targets/C18.rq": "1af61c472b5d00a5be6dbc2fb76106978605e690dff79c2598f062859e4ed8eb",
+        "targets/C14.cypher": "5ff829339459ceb9485f811716c5bd294eccccba5872f92cad7416cfe5b9577a",
+        "targets/M01.cypher": "a9deb09f6a3afa14b461be4532bb84145ad7083251def53a6e80add2b3cd10f1",
+        "targets/C18.cypher": "2aaa2f032ee592c895abb94ebbad90ba00688ebe0bc1c1f48993ee5056991394",
+        "targets/C06.cypher": "f4c1cde860245d0ea8d5bd3a3133bcce5de675ba259f767edaed0a43f646a08a",
+        "targets/C04.cypher": "d92578b5512aeaa2cb1db8521ce654b01a4623ab97747a24b22cc2038c63a514",
+        "targets/M03.cypher": "35581105c5df0fc25698c7bbd0f95b89d7c948fd7ebef40b9e493b53a1e96ac7",
+        "targets/C16.cypher": "d410cb49cc9d69985e73823c2b9d23ee2ef828d79933a76de89c23e8118f0641",
+        "targets/C08.cypher": "968cda3a305c867f6280822e893811803c03a3c1ad66cae373977caa404152d5",
+        "targets/C20.cypher": "ba3cdf5959a1ca32f9cc45e48792ecd21c0208987e2ce7326b907e620d850bc2",
+        "targets/C05.rq": "54387da245d07c96e9456a145800eea42309eeaecfb42374dce82eb09b9f18dd",
+        "targets/C15.rq": "bcfbf1519bc7922a1cb9897314e377b546f5d2ea1294f52f51ee494f3a377962",
+        "targets/C01.rq": "a098e57842c8066d64c8476ee8646bbdc76ab68f83caa0c1bd3abf4a548880e9",
+        "targets/C12.cypher": "13c49ef2288b3734a53d5423b2c41f629738d85ca29e352c1143b885ee7b2e8e",
+        "targets/C11.rq": "070101982450584e2741a893089661e42b5a29ee1311d25bcb0051d6e345f3a8",
+        "targets/M03.rq": "a9b7284b4ebb5db61bd6ccc8fed4f0dcf040f00d269a290d1e7d8949c36e6b1d",
+        "targets/C10.rq": "b5dc4d3819f88483f06c2d6657543fa5cf4463259cae49a2efcf43015ac5ed4d",
+        "targets/M02.rq": "b6f09177c9d860b6c6fff413bdab97b3b87058f008a2dbb8efd6904729abd494",
+        "targets/C02.cypher": "e4466679c32841523ac073dd8295d2b6307215a0f5c1156f7f3b14ede47e9eee",
+        "targets/C10.cypher": "f115253cc2c1ff7d6e7f07fc3630b79c72e33e97514e12a762ed1de786c07037",
+        "targets/C04.rq": "0b98a7c229a3a3b0fbecd07a54a49129040534954f85b9c446789a59dee74caf",
+        "targets/C14.rq": "5761f118c4cac57a618b1f12037e81ab1d1cec9a29a2f667da769c2f210df68c",
+        "targets/C20.rq": "c73fffaa37ef0ae48d3cde7bffb840ba7ca9247631c2b6956e76d8f446a36bab"
+      },
+      "source_differences_from_current": [
+        "src/xgap/compilers/directed.py",
+        "scripts/run_toy_backbone_native.py",
+        "src/xgap/compilers/node_match.py"
+      ]
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+      "sha256": "381bcb4909e3b24d3f43f65116fb4059db0cb4a00a45e266a4f61f5d4928a1ed",
+      "success": true,
+      "phase": "completed",
+      "checks": {
+        "targets": {
+          "attempted": 0,
+          "passed": 0
+        },
+        "boolean_reference_targets": {
+          "attempted": 0,
+          "passed": 0
+        },
+        "boolean_matches": {
+          "attempted": 8,
+          "passed": 8
+        },
+        "boolean_match_references": {
+          "attempted": 8,
+          "passed": 8
+        },
+        "boolean_planned_cases": {
+          "attempted": 3,
+          "passed": 3
+        }
+      },
+      "path_execution_calls": 0,
+      "observation_calls": 8,
+      "serving_calls": 4,
+      "extra_candidate_validation_calls": 4,
+      "candidate_answers_passed": 6,
+      "old_slice_success": true,
+      "old_slice_calls": 2,
+      "shutdown": [
+        {
+          "service_id": "fuseki",
+          "pid": 35784,
+          "initial_exit_code": null,
+          "final_exit_code": 143,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        },
+        {
+          "service_id": "neo4j",
+          "pid": 35684,
+          "initial_exit_code": null,
+          "final_exit_code": 0,
+          "signal_sent": "SIGTERM",
+          "escalated_to_kill": false,
+          "success": true,
+          "error": null
+        }
+      ],
+      "source_sha256": {
+        "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+        "src/xgap/compilers/directed.py": "bbcc568fbb253c0ca36ab09435aab0f829cb9516f0421b79a0353600be7b355a",
+        "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+        "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+        "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+        "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+        "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+        "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+        "src/xgap/runtime/scheduler.py": "96d7c9f44c40ef683c25eadc388674a19b5d5104e9af9d4622f4b16da9338358",
+        "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+        "scripts/run_toy_backbone_native.py": "0cc78dab68269e80659f5f2c3a1d4a576f0d3e04c13d04193b617b5d5c5ba762",
+        "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+        "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+        "src/xgap/runtime/semantic_compiler.py": "b5cb2480f4d237ec07e203a985a55221c090b47e3b43475ca501086994df94db",
+        "src/xgap/runtime/row_operations.py": "99671d516930bd20a6bce4efdb10643b5fe779c185c4247bdb9ad0a2ff544458",
+        "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+        "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+        "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+        "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+        "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+        "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+        "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+        "src/xgap/experiments/toy_planning.py": "a5d89245d7a76148e85dd02fecda7e7cff97d072eb3c814ffeb6cd6a1b24b962",
+        "src/xgap/pattern/lowering.py": "bb17ca1c4af397c23676a2c189fdd3139035520ca12ed661897d836c8aa8f5b9",
+        "src/xgap/pattern/typecheck.py": "0e2031353dc12ef9042bc7f0d1e945fa2a91f83a8bc7cd95e56099e307f8732d",
+        "src/xgap/llm/parser.py": "5501b7eca7464f627f1d453f44304d2d1c4bf4c6db9d349075aef21075e0d9c7",
+        "src/xgap/runtime/scoped_paths.py": "b770cc67b77f8991f3ebafd967e58df41a6e67d6da59e40cbd1fde18fc95ce00",
+        "src/xgap/runtime/path_composition.py": "dbcb75bcc3289f7652f48eca403d050bd180794128735c4d4f8134554b87aa50",
+        "src/xgap/experiments/toy_scoped.py": "da204ef1bcd2e9bbd0080230ec42edf93739155990654154c0de31d974deccd2",
+        "src/xgap/compilers/boolean_conditions.py": "b686f1e97517f2ba3ac88ace5617b32c59c666dae80464e10149b962c917f747",
+        "src/xgap/experiments/toy_boolean.py": "f8b7bc3940b879ed9191ea710c52c1bc2f3ed37244101410f57f3b38a9a3375c"
+      },
+      "fixture_sha256": {
+        "load.cypher": "2892f0d12746501a208cbf1fbd6e9c494892790149ef373659d4653521d3875d",
+        "load.ttl": "9732faf79aa80559b5e2d737177599421061bd787d006226ec7438db69904c24",
+        "queries.json": "535616a42a1e3bfd857b9385d74fbe176f931f59a54d26798c20511000e31f89",
+        "README.md": "b2f55b283799f5d8507374c0db95b9263dd85733bbacd40e30d9b43efabbd171",
+        "mapping.json": "651d44578283f4f2e5a5f016380c5b784a2dcdda2bf5b27491d6a947c168eb2d",
+        "graph.json": "b72a0a97d3dbf8919c3303ffd2b9c6121659f4e19d6059b72cd55a75f4f7f82e",
+        "targets/T05.rq": "e87318bcc0b3d672d65c4aae9e505603c29ba8976e106e9dd8d7af09ae4dd7d5",
+        "targets/T15.rq": "1db62fe203183958305b2a9e0fbba8efca2de8d1e3e9e42a9fe1059b654f52f3",
+        "targets/T01.rq": "a00b5bd4917e76a1c15f8f865c347c195f83d02b072c9576a04bebd33d47a0f0",
+        "targets/T11.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744",
+        "targets/T06.cypher": "afeaa20cc69e0897cfd688f9237f27266cba612bfa63c597bf71b5f821d15875",
+        "targets/T18.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+        "targets/T14.cypher": "0e514c6476c01fb70d28090456cc28521821a29d79e1892f7b1e0809b5eec5a0",
+        "targets/T08.cypher": "6c5253698a126ada92f72732069cd6a5979b7192580a9e33aa4776f30023d75f",
+        "targets/T10.rq": "3f9a4681586298ec4d9297c2d81627999b8af15238979b9ea5bee54a88a6c57b",
+        "targets/T16.cypher": "61960fc15e0d8fb9fb71165f7f6b3c65380d53413289914e8e8a4be948cd5490",
+        "targets/T04.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+        "targets/T04.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+        "targets/T14.rq": "033de848d509b48fd6c1d66f1c751e515a3fd77a1abdbc784a7baacbf43bc757",
+        "targets/T12.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+        "targets/T10.cypher": "e1b26267c63ce1a677a7a851a28df92fba3745cb5c20a24d8744238c01e36d4f",
+        "targets/T02.cypher": "d86bc59390e1fff6bb779265d51ee77a7d583542eb039be09c2dbde1cffb4fc5",
+        "targets/T07.cypher": "07d23b2b6b08ab61e95a2c8ea4094a4324434a17e05516375f91931f535b5f81",
+        "targets/T09.rq": "73e9ac1bd8dfa90e8582a1985df374269282fedddcb4ad8d760f78d9997598c3",
+        "targets/T15.cypher": "7f0703bdb9c1bc1847d4b52e09293b79727bfadc9ba1e492a9831877bad75a0d",
+        "targets/T17.cypher": "bfda0b91e68e9cf8e342b66fad4b92a00f0b4f1c1596fcaee9550a3752576352",
+        "targets/T09.cypher": "245dd0a9f89b1fb5dbf8fe716606d0e0256df10f836317faeba17cbf5edfadb9",
+        "targets/T08.rq": "044340291081f454b6e889b65b434771e9d900f4884a435cb27bea79036ab888",
+        "targets/T05.cypher": "3ec22f5c5ed0908fce931b5c057ad4d8802676f978fe68b368b085ca28564660",
+        "targets/T18.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+        "targets/T03.rq": "67eabd839fda760f33e256957d3ab8329677a13a03c2d19635388dc77e54193b",
+        "targets/T13.rq": "c9ffd69f3126b145f896857bd5a6d01c11bdd1ef14b42f09cd64314686fd6d37",
+        "targets/T07.rq": "7a94f0c71ba0313126c0db8905b54f223bd3c6efa30037152fc536c07c56e15d",
+        "targets/T01.cypher": "e049929f9ec5d2f31f00eb5438c91bcb0655597a0dc8960c3edb323bbdb0207e",
+        "targets/T17.rq": "92f269b29867f27ed67c12495bec6aced2a06e1c9109440c8d9a34d197cb6d64",
+        "targets/T13.cypher": "bc3f51702531287a7e5709402958aebf972c2fca3227cdf53e1174ae0dff52ce",
+        "targets/T06.rq": "a71c2a539116458ede6ed456c61003a92aecd0984e59b80e18da413275653867",
+        "targets/T16.rq": "ac91a127dc7c1e35aadf2f443adbe502c7dc024f563e24b2d8c45068998d7963",
+        "targets/T11.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+        "targets/T03.cypher": "6614e75e6687d07d2daa85b71b80c35d85f5509f6fbaea2bb360eaac878bb048",
+        "targets/T02.rq": "ab050b118a1f6533502a985d7ed74c2eb6e80c610c39e52240d2cc4bbf169181",
+        "targets/T12.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744"
+      },
+      "boolean_fixture_sha256": {
+        "load.cypher": "23db929c961c2dce3483c0282c03f91d0b58c5321d2c4cbabc419342d668f0d9",
+        "load.ttl": "c82957f714f6c1957e470d6acbda360f1938503f147460b1b345fc8f8a54e300",
+        "match.json": "bbb321dd15d37fdca8cdb61a49d3a8a281cc611950e87c26a7391c0436387613",
+        "queries.json": "2f5fcae29f505d58a6e01b091e8987d831cc3d65fbe55c92fc04eb8645eb41ae",
+        "README.md": "def99f8587aeda51b41b36b2146a60e3d9840b4cbb5a689b1a5dd26434e9554e",
+        "mapping.json": "f8873cbf0c5a9a92e9f0fb3c0a518a3f1c1577c6c22d71d869f32241e5d8256e",
+        "graph.json": "b2c55da1e1f308c86742c811d108e9b4e338ffaeaa178354404ad961c59b4506",
+        "rejected.json": "c45605dc874c1a1da4fc8248868fe24076b6de65130fa4970e8e81613f4c3e50",
+        "targets/C03.rq": "aa1d536fd56f904fcb8fc9101001d53d4e16013e8bc4c18c11b6c98f7a3c15db",
+        "targets/M01.rq": "98ae734f3c6bcab874f62eff4e7397b4d72c6a4856cb450dfa5f8a5057ff457d",
+        "targets/C13.rq": "b6de13960e76d2a73638729d19ee7ffbf01f847144ece869832758163de1c73f",
+        "targets/C07.rq": "7f1f3da567a61ebf86c30e40eff58c07217eb7dece1487017e22df02a4619e3c",
+        "targets/C17.rq": "6a9f3f50a82f8e964b95ede2432116bc3b770c58592861569a8bc76de5d1426f",
+        "targets/C15.cypher": "ca0c3f5514397a428ea6f025eff556e132c3f95b1facea749f8a5db17859b1a1",
+        "targets/C07.cypher": "17d1af20c9b0f92e5fd44f18a914b92c5983ad5a0b71bf6583c2d4f54a72ca6a",
+        "targets/C19.cypher": "0d4269802052666399197ba7d60033637c805866ec65c135e172cd4276e1766d",
+        "targets/C06.rq": "849adf30a1ac9fdc55851fb642d38b6825ea03443e0d371e3604b23d7f2d6ffb",
+        "targets/C16.rq": "1bafbb3977e1e413eb9113009bf35b2d0f68a840e69c8bf6bc68ed8dd72c6c2d",
+        "targets/M04.rq": "e4f53d4c1f163421dd177747c2a698cca83b66d9be5c78f79b3c3d68afac5ef3",
+        "targets/C05.cypher": "51f6691f87e16c83bb81319c9d0bee196da9d1ca230b92fdec19f76103e5b106",
+        "targets/C09.cypher": "a56d1a393c89b573a17adda0cca89180102429fc842076dcc9cfef57c36f095d",
+        "targets/M02.cypher": "470e3c19262838e0ad3956151164aa9916b6139f52153d9dc0f48b9c16b39965",
+        "targets/C17.cypher": "dfb15bfc25c16f700f3590adf79be52730c10cdc0c45d90bfbc6f796256e4260",
+        "targets/C02.rq": "f1636b4c4f98dabf07ad5b0bfde60299c4a0e279cbc9c3d3117bc0dc84a34c25",
+        "targets/C12.rq": "a9628e288aa860fa41e9711f43e400d3504dc55cebd3537a106e57ea0c19cdfd",
+        "targets/C09.rq": "6b1adf7530da835fce88d53ec574a2862f431da12fae3f5c34f8e2813d8970a4",
+        "targets/C13.cypher": "66c7eae496c274b3df9cf2b579d71ebacda689d001f7a3e243f405d82dfca8ff",
+        "targets/C01.cypher": "3a587a9d3de075bee8e8ee3569bc2e3bc110b8b4ae3fe044cdd6d3209b27bc79",
+        "targets/C19.rq": "df4ac6e3c6b8d123d03a0541940c87b3883b4c20cb5404d1b54a1f97032cdd7a",
+        "targets/C03.cypher": "669e1ebebc913f2e210d952dc0574c4029d9dd006b01895e13cc7022d64b85b1",
+        "targets/C08.rq": "5eb4e64aacbbe5fd377a808797e4665441d379de592c0a1ac8b39b0c322ea497",
+        "targets/C11.cypher": "d89212ac4bf257d2e84c8918cccb3ae9e5bb53454d1dec79a6e25a8be78aceec",
+        "targets/M04.cypher": "4e1944775919363dd083fc47fb94673a61334053a7db63866f6b6997a22b129a",
+        "targets/C18.rq": "1af61c472b5d00a5be6dbc2fb76106978605e690dff79c2598f062859e4ed8eb",
+        "targets/C14.cypher": "5ff829339459ceb9485f811716c5bd294eccccba5872f92cad7416cfe5b9577a",
+        "targets/M01.cypher": "a9deb09f6a3afa14b461be4532bb84145ad7083251def53a6e80add2b3cd10f1",
+        "targets/C18.cypher": "2aaa2f032ee592c895abb94ebbad90ba00688ebe0bc1c1f48993ee5056991394",
+        "targets/C06.cypher": "f4c1cde860245d0ea8d5bd3a3133bcce5de675ba259f767edaed0a43f646a08a",
+        "targets/C04.cypher": "d92578b5512aeaa2cb1db8521ce654b01a4623ab97747a24b22cc2038c63a514",
+        "targets/M03.cypher": "35581105c5df0fc25698c7bbd0f95b89d7c948fd7ebef40b9e493b53a1e96ac7",
+        "targets/C16.cypher": "d410cb49cc9d69985e73823c2b9d23ee2ef828d79933a76de89c23e8118f0641",
+        "targets/C08.cypher": "968cda3a305c867f6280822e893811803c03a3c1ad66cae373977caa404152d5",
+        "targets/C20.cypher": "ba3cdf5959a1ca32f9cc45e48792ecd21c0208987e2ce7326b907e620d850bc2",
+        "targets/C05.rq": "54387da245d07c96e9456a145800eea42309eeaecfb42374dce82eb09b9f18dd",
+        "targets/C15.rq": "bcfbf1519bc7922a1cb9897314e377b546f5d2ea1294f52f51ee494f3a377962",
+        "targets/C01.rq": "a098e57842c8066d64c8476ee8646bbdc76ab68f83caa0c1bd3abf4a548880e9",
+        "targets/C12.cypher": "13c49ef2288b3734a53d5423b2c41f629738d85ca29e352c1143b885ee7b2e8e",
+        "targets/C11.rq": "070101982450584e2741a893089661e42b5a29ee1311d25bcb0051d6e345f3a8",
+        "targets/M03.rq": "a9b7284b4ebb5db61bd6ccc8fed4f0dcf040f00d269a290d1e7d8949c36e6b1d",
+        "targets/C10.rq": "b5dc4d3819f88483f06c2d6657543fa5cf4463259cae49a2efcf43015ac5ed4d",
+        "targets/M02.rq": "b6f09177c9d860b6c6fff413bdab97b3b87058f008a2dbb8efd6904729abd494",
+        "targets/C02.cypher": "e4466679c32841523ac073dd8295d2b6307215a0f5c1156f7f3b14ede47e9eee",
+        "targets/C10.cypher": "f115253cc2c1ff7d6e7f07fc3630b79c72e33e97514e12a762ed1de786c07037",
+        "targets/C04.rq": "0b98a7c229a3a3b0fbecd07a54a49129040534954f85b9c446789a59dee74caf",
+        "targets/C14.rq": "5761f118c4cac57a618b1f12037e81ab1d1cec9a29a2f667da769c2f210df68c",
+        "targets/C20.rq": "c73fffaa37ef0ae48d3cde7bffb840ba7ca9247631c2b6956e76d8f446a36bab"
+      },
+      "source_differences_from_current": [
+        "src/xgap/compilers/directed.py"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "scope": "compatibility",
+      "session": 65828,
+      "exit_code": 0,
+      "passed": 115,
+      "seconds": 4.14
+    },
+    {
+      "scope": "new first",
+      "session": 48746,
+      "exit_code": 1,
+      "failed": 11,
+      "passed": 21,
+      "seconds": 8.41
+    },
+    {
+      "scope": "new second",
+      "session": 76225,
+      "exit_code": 1,
+      "failed": 4,
+      "passed": 28,
+      "seconds": 8.04
+    },
+    {
+      "scope": "new third",
+      "session": 52109,
+      "exit_code": 1,
+      "failed": 4,
+      "passed": 28,
+      "seconds": 2.07
+    },
+    {
+      "scope": "focused initial",
+      "session": 12574,
+      "exit_code": 1,
+      "failed": 3,
+      "passed": 294,
+      "seconds": 16.01
+    },
+    {
+      "scope": "focused second",
+      "session": 32040,
+      "exit_code": 0,
+      "passed": 296,
+      "seconds": 15.89
+    },
+    {
+      "scope": "focused final",
+      "session": 94086,
+      "exit_code": 0,
+      "passed": 296,
+      "seconds": 15.96
+    },
+    {
+      "scope": "daily initial",
+      "session": 27207,
+      "exit_code": 1,
+      "passed": 398,
+      "failed": 1,
+      "seconds": 26.75
+    },
+    {
+      "scope": "admission import replay",
+      "exit_code": 2,
+      "collection_errors": 2,
+      "seconds": 0.24
+    },
+    {
+      "scope": "admission replay",
+      "session": 16709,
+      "exit_code": 0,
+      "passed": 71,
+      "seconds": 2.88
+    },
+    {
+      "scope": "daily final",
+      "session": 67642,
+      "exit_code": 0,
+      "passed": 401,
+      "seconds": 25.98,
+      "toy_demo": 18
+    },
+    {
+      "scope": "broad initial",
+      "session": 65353,
+      "exit_code": 2,
+      "collection_errors": 2,
+      "seconds": 1.07
+    },
+    {
+      "scope": "dependent replay",
+      "session": 5669,
+      "exit_code": 0,
+      "passed": 140,
+      "seconds": 3.88
+    },
+    {
+      "scope": "broad final",
+      "session": 69433,
+      "status": "completed",
+      "log": "/tmp/xgap-t1-boolean-acceptance-final.log",
+      "exit_code": 0,
+      "passed": 3246,
+      "skipped": 38,
+      "seconds": 670.4,
+      "harness_example_entrypoints": [
+        "scripts/check_harness.py",
+        "examples/toy_backbone_demo.py",
+        "examples/core_algebra_demo.py",
+        "examples/plan_print_demo.py",
+        "examples/recursive_demo.py",
+        "examples/solution_space_demo.py",
+        "examples/semantic_audit_demo.py",
+        "examples/lowering_demo.py",
+        "examples/pattern_lowering_audit_demo.py",
+        "examples/quantified_pattern_demo.py",
+        "examples/compiler_mvp_demo.py",
+        "examples/llm_boundary_demo.py",
+        "examples/m11_physical_planner_demo.py",
+        "examples/m11_exhaustive_oracle_demo.py",
+        "examples/m12_experiment_contract_demo.py",
+        "examples/m12c_calibration_demo.py",
+        "examples/m12d_experiment_matrix_demo.py",
+        "examples/m15_goal_loop_demo.py",
+        "examples/m15_federated_vertical_slice_demo.py",
+        "examples/m15_semantic_intake_demo.py",
+        "examples/m15_resolution_execution_bridge_demo.py",
+        "examples/freebase_typed_fact_demo.py",
+        "examples/grounded_candidate_execution_demo.py",
+        "examples/freebase_question_demo.py"
+      ]
+    }
+  ],
+  "final_source_sha256": {
+    "src/xgap/experiments/toy_backbone.py": "fd3982d13b28ec43a5caf89fd49e02d61659c5d12e2f8f267144055963c84fe1",
+    "src/xgap/compilers/directed.py": "169576328ffc8a33a5e8f2e688c82b24de6b910d67e6bb955dbb6717c92508e7",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/compilers/bounded_paths.py": "b4fca77d14df35013b6f5e291cbb9608e2e43d65255bdf2cba6dfc5ab198caeb",
+    "src/xgap/runtime/bounded_paths.py": "d8ba2439c819a2a867654d0a7fe4670a02ffb8a1a8dc72ac9e54fbddafcd31ed",
+    "src/xgap/runtime/path_selection.py": "cf8606c451d82f6ac90234cda8324762094212ca699ca294b7f63e6985bca95e",
+    "src/xgap/runtime/contracts.py": "04624902fe6d21d3f86c4472833f7232b56389cf62428e33a872ac4c42d56c6f",
+    "src/xgap/runtime/scheduler.py": "96d7c9f44c40ef683c25eadc388674a19b5d5104e9af9d4622f4b16da9338358",
+    "src/xgap/algebra/evaluator.py": "0ab268063582ff6bec329c9bb22c94d9f6263e249ab54e37e53b257657407c3e",
+    "scripts/run_toy_backbone_native.py": "0cc78dab68269e80659f5f2c3a1d4a576f0d3e04c13d04193b617b5d5c5ba762",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/compilers/node_match.py": "36bdd136070f002b8f8c25e06048ac1356e2ed42265d12f08925703684b5dd1b",
+    "src/xgap/runtime/semantic_compiler.py": "b5cb2480f4d237ec07e203a985a55221c090b47e3b43475ca501086994df94db",
+    "src/xgap/runtime/row_operations.py": "99671d516930bd20a6bce4efdb10643b5fe779c185c4247bdb9ad0a2ff544458",
+    "src/xgap/semantic/program.py": "1f4e1ac590995d21ac3a1292792671017603940fdc04a06aaf31eba9b8f4d51f",
+    "src/xgap/runtime/semantic_capabilities.py": "4325de258ce9381a7ba131136834e9052b08bdb129461835630b5528680130f3",
+    "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+    "src/xgap/runtime/planning.py": "0a6bfcd4b0b9902ce40fffbce04e7f2e3af051ee43ba1df06e61b3aa9cfdb62d",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/experiments/toy_planning.py": "a5d89245d7a76148e85dd02fecda7e7cff97d072eb3c814ffeb6cd6a1b24b962",
+    "src/xgap/pattern/lowering.py": "bb17ca1c4af397c23676a2c189fdd3139035520ca12ed661897d836c8aa8f5b9",
+    "src/xgap/pattern/typecheck.py": "0e2031353dc12ef9042bc7f0d1e945fa2a91f83a8bc7cd95e56099e307f8732d",
+    "src/xgap/llm/parser.py": "5501b7eca7464f627f1d453f44304d2d1c4bf4c6db9d349075aef21075e0d9c7",
+    "src/xgap/runtime/scoped_paths.py": "b770cc67b77f8991f3ebafd967e58df41a6e67d6da59e40cbd1fde18fc95ce00",
+    "src/xgap/runtime/path_composition.py": "dbcb75bcc3289f7652f48eca403d050bd180794128735c4d4f8134554b87aa50",
+    "src/xgap/experiments/toy_scoped.py": "da204ef1bcd2e9bbd0080230ec42edf93739155990654154c0de31d974deccd2",
+    "src/xgap/compilers/boolean_conditions.py": "b686f1e97517f2ba3ac88ace5617b32c59c666dae80464e10149b962c917f747",
+    "src/xgap/experiments/toy_boolean.py": "f8b7bc3940b879ed9191ea710c52c1bc2f3ed37244101410f57f3b38a9a3375c",
+    "src/xgap/experiments/freebase_candidate_compiler.py": "77bc6c29d5270cfa30735ee26d48faa1a0360d390bf09620dce64d81a1bd46c0"
+  },
+  "final_plan_identity": {
+    "live_execution": false,
+    "checks": [
+      {
+        "id": "C01",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C01",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C02",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C02",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C03",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C03",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C04",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C04",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C05",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C05",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C06",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C06",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C07",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C07",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C08",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C08",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C09",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C09",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C10",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C10",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C11",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C11",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C12",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C12",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C13",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C13",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C14",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C14",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C15",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C15",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C16",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C16",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C17",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C17",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C18",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C18",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C19",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C19",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C20",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "C20",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "M01",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "M01",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "M02",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "M02",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "M03",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "M03",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "M04",
+        "backend": "neo4j",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+        "equal": true
+      },
+      {
+        "id": "M04",
+        "backend": "fuseki",
+        "record": "/Users/anthonyche/xgap-data/t1-boolean-followup-native-20260911/result.json",
+        "equal": true
+      }
+    ],
+    "success": true
+  },
+  "failures_and_boundaries": [
+    "Local fixture/reference/interface mistakes were corrected without replacing independently authored answer sets.",
+    "The exploratory variable-length numeric-position condition remains explicitly rejected and stored in rejected.json.",
+    "First daily exposed lost Match Nodes capability exclusion; Nodes and Selection checks were restored and real Match/planning gates followed.",
+    "First broad exposed removed _OPERATORS import; restore it and preserve the frozen split adapter conjunctive boundary rather than dropping OR/NOT.",
+    "Final compilation produces exactly the same 40 path and 8 Match plans as successful native executions, despite dependency-symbol restoration.",
+    "No failed external action was retried. No GrailQA build/scan/model/GPU run."
+  ],
+  "next_gate": "Remaining typed binding aggregate/order and path coverage, then T2 catalog freeze/Interpretation/replay and T3 integration/evaluation."
+}

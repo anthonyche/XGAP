@@ -1,0 +1,342 @@
+{
+  "schema": "xgap_local_acceptance_v1",
+  "date": "2026-09-10",
+  "milestone": "D201",
+  "base_commit": "3c5231367b3ee99a9c3eb1ebd714727c6dbc41bf",
+  "claim_scope": "Typed fact export and local synthetic compiled-answer integration, plus independent identity verification of one real frozen Freebase shard. Not full-Freebase completeness, a representative sample, real Neo4j/Fuseki admission, GrailQA answer quality, model effectiveness or a paper result.",
+  "focused": {
+    "passed": 203,
+    "skipped": 1,
+    "seconds": 4.47,
+    "new_tests": 52,
+    "exit_code": 0,
+    "paths": [
+      "tests/test_freebase_facts.py",
+      "tests/test_m13e3a_freebase_parquet.py",
+      "tests/test_rdf_answer_contract.py",
+      "tests/test_directed_compiler.py"
+    ]
+  },
+  "full_suite": {
+    "command": "PYTHONPATH=src /tmp/xgap-directed-tests.qU2YfW/venv/bin/python -m pytest -q",
+    "passed": 2752,
+    "skipped": 37,
+    "seconds": 609.22,
+    "exit_code": 0
+  },
+  "examples": [
+    {
+      "entrypoint": "scripts/check_harness.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.023
+    },
+    {
+      "entrypoint": "examples/core_algebra_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.053
+    },
+    {
+      "entrypoint": "examples/plan_print_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.045
+    },
+    {
+      "entrypoint": "examples/recursive_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.042
+    },
+    {
+      "entrypoint": "examples/solution_space_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.043
+    },
+    {
+      "entrypoint": "examples/semantic_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.043
+    },
+    {
+      "entrypoint": "examples/lowering_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.051
+    },
+    {
+      "entrypoint": "examples/pattern_lowering_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05
+    },
+    {
+      "entrypoint": "examples/quantified_pattern_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.06
+    },
+    {
+      "entrypoint": "examples/compiler_mvp_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.087
+    },
+    {
+      "entrypoint": "examples/llm_boundary_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.139
+    },
+    {
+      "entrypoint": "examples/m11_physical_planner_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.151
+    },
+    {
+      "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.13
+    },
+    {
+      "entrypoint": "examples/m12_experiment_contract_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.243
+    },
+    {
+      "entrypoint": "examples/m12c_calibration_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.203
+    },
+    {
+      "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 6.36
+    },
+    {
+      "entrypoint": "examples/m15_goal_loop_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.063
+    },
+    {
+      "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.098
+    },
+    {
+      "entrypoint": "examples/m15_semantic_intake_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.063
+    },
+    {
+      "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.192
+    }
+  ],
+  "new_example": {
+    "entrypoint": "examples/freebase_typed_fact_demo.py",
+    "exit_code": 0,
+    "output": {
+      "scope": "synthetic offline fact-to-answer demonstration",
+      "question": "Papers by this researcher published after 2022",
+      "fact_occurrences": 4,
+      "snapshot_parts": 2,
+      "answers": [
+        {
+          "type": "uri",
+          "value": "http://rdf.freebase.com/ns/m.paper2024"
+        }
+      ],
+      "verification_engine": "RDFLib 7.1.4",
+      "catalog_rebuilds": 0,
+      "external_model_calls": 0,
+      "external_backend_calls": 0
+    }
+  },
+  "real_source_observation": {
+    "artifact_root": "/private/var/folders/78/2hb19nqj0jv_l0vgmp084ht80000gn/T/xgap-d201-source-b2ymubis",
+    "download": {
+      "status": "downloaded",
+      "task_root": "/private/var/folders/78/2hb19nqj0jv_l0vgmp084ht80000gn/T/xgap-d201-source-b2ymubis",
+      "source_spec_sha256": "b1248f22cffed5157355b204c37356ecf00e04371e3665ea44a232b52636d827",
+      "selected_shard": {
+        "blob_id": "08558a772b05923b6b991e8d162087b2164e0885",
+        "path": "default/data/0000.parquet",
+        "sha256": "f1b21a5869da41938818a3f0f2ef2ead92fd5df978c2d5bf6fbaad31d3f650b1",
+        "size_bytes": 14984726,
+        "url": "https://huggingface.co/datasets/CleverThis/freebase/resolve/dbb1931c2698295653effe9b980a02ab29f004e0/default/data/0000.parquet"
+      },
+      "bytes": 14984726,
+      "sha256": "f1b21a5869da41938818a3f0f2ef2ead92fd5df978c2d5bf6fbaad31d3f650b1",
+      "seconds": 11.086496291682124,
+      "selection": "first shard in frozen inventory, chosen before data inspection; no questions or references",
+      "automatic_retries": 0
+    },
+    "plan": {
+      "selected_shards": [
+        "default/data/0000.parquet"
+      ],
+      "selection_policy": "first frozen shard, before inspection; no question/reference input",
+      "expected_source_rows": 3247670,
+      "max_input_bytes": 14984726,
+      "max_rows": 3247670,
+      "max_output_bytes": 1073741824,
+      "part_bytes": 33554432,
+      "batch_size": 16384,
+      "expected_manifest_sha256": "20704dbe877df83ee1e11d9e85b0578ef7c475df50dc7974ce17c59d91ec1765",
+      "implementation_sha256": {
+        "src/xgap/experiments/freebase_facts.py": "83241287efe14b111304ec0ee83cfc1827099bdcef8983c0da48d4e821a91a8f",
+        "src/xgap/experiments/freebase_fact_snapshot.py": "321bf1a6efaac1b3f52f9969b6e638868506cd22932541a649051ec5cec3cc16",
+        "src/xgap/backends/rdf_terms.py": "e50dc35fa210a51eb65941a61a732337ff08c1dcc674bc5261b8cfdaec4d0de3",
+        "src/xgap/experiments/freebase_sources.py": "d11ac75823d1df6b614889e8a5622c2093e05f22620fc20be34e0ce62e639465"
+      }
+    },
+    "export_result": {
+      "status": "complete",
+      "fact_occurrences": 3247670,
+      "output_bytes": 420940219,
+      "parts": 13,
+      "object_kind_occurrences": {
+        "datatype_literal": 102045,
+        "language_literal": 2603948,
+        "resource": 541677
+      },
+      "elapsed_seconds": 98.56964941695333,
+      "max_rss_bytes_macos": 125272064,
+      "manifest_sha256": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+      "no_backend_or_model_calls": true,
+      "paper_result": false
+    },
+    "independent_verification": {
+      "backend_or_model_calls": 0,
+      "full_offline_test_suite_running_concurrently": true,
+      "independent_parser": "RDFLib 7.1.4",
+      "languages": {
+        "af": 6,
+        "ar": 58288,
+        "ast": 6,
+        "bg": 57409,
+        "br": 6,
+        "bs": 6,
+        "ca": 58334,
+        "cs": 57779,
+        "cy": 6,
+        "da": 58234,
+        "de": 69741,
+        "el": 57225,
+        "en": 85770,
+        "en-gb": 53429,
+        "en-us": 160,
+        "eo": 3932,
+        "es": 69409,
+        "es-419": 55161,
+        "et": 56697,
+        "eu": 18,
+        "fa": 57446,
+        "fi": 58831,
+        "fil": 56570,
+        "fr": 69363,
+        "fr-ca": 340,
+        "ga": 6,
+        "gl": 6,
+        "hi": 57110,
+        "hr": 57752,
+        "ht": 12,
+        "hu": 57812,
+        "id": 57920,
+        "is": 18,
+        "it": 69071,
+        "iw": 58239,
+        "ja": 62539,
+        "ka": 12,
+        "ko": 59058,
+        "la": 12,
+        "lt": 57859,
+        "lv": 57480,
+        "ms": 57593,
+        "nl": 58937,
+        "no": 58407,
+        "pl": 59024,
+        "pt": 69101,
+        "pt-br": 12,
+        "pt-pt": 53746,
+        "ro": 57506,
+        "ru": 58926,
+        "sk": 57603,
+        "sl": 57367,
+        "sr": 58363,
+        "sv": 58701,
+        "sw": 12,
+        "th": 58289,
+        "tr": 58419,
+        "uk": 58209,
+        "vi": 57319,
+        "zh": 58535,
+        "zh-hant": 23366,
+        "zh-tw": 5441
+      },
+      "lexical_normalization_enabled": false,
+      "literal_datatypes": {
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString": 2603948,
+        "http://www.w3.org/2001/XMLSchema#date": 1681,
+        "http://www.w3.org/2001/XMLSchema#gYear": 6089,
+        "http://www.w3.org/2001/XMLSchema#gYearMonth": 2760,
+        "http://www.w3.org/2001/XMLSchema#string": 91515
+      },
+      "max_rss_bytes_macos": 121765888,
+      "ordered_rdf_term_stream_sha256": "96aca67e31c1254387580000abfd21ef5dd163b84553f3eb6e04dfe9c4c66c78",
+      "paper_result": false,
+      "parsed_fact_occurrences": 3247670,
+      "source_reader": "PyArrow",
+      "source_rows": 3247670,
+      "status": "passed",
+      "verification_seconds": 57.79058595839888
+    },
+    "initial_verification_failure": {
+      "status": "failed_final_digest_after_complete_parsing",
+      "diagnosis": {
+        "source": {
+          "subject": "http://rdf.freebase.com/ns/american_football.football_player.footballdb_id",
+          "predicate": "http://rdf.freebase.com/ns/type.object.name",
+          "object": "footballdb ID",
+          "object_type": "literal",
+          "object_datatype": null,
+          "object_language": "en"
+        },
+        "parsed_value": "footballdb ID",
+        "parsed_language": "en",
+        "parsed_datatype_attribute": null,
+        "diagnosis": "The independent checker treated absent RDFLib datatype on a language literal as xsd:string; RDF language literals instead have implicit rdf:langString."
+      },
+      "production_code_changed": false,
+      "data_reexported": false
+    },
+    "evidence_file_sha256": {
+      "download.json": "3005ac8067c1a401f183da142ec23f10bfcc669d4afc4949d28ffb27d8f5a057",
+      "source_experiment_plan.json": "adfc2729728b6661b5cc4b48504618008de5ad649a36978358a9dfeeb2e780a6",
+      "source_experiment_result.json": "c5121a1c149bd002316187596b1420696948fade6f171d113690da1d13df9afc",
+      "manifest.json": "efbd5e914e12f5263ffaf38e42dfecfcb16066c378989692f66b5538851e0b9f",
+      "verify_export.py": "0d34f43a3f32243183cb71e4ca918538001b6368f889644215e90ef28574a8c8",
+      "verify_export_v2.py": "9749de470368b683962cf7f665d67ca282b8b5e101b0c87970c5ac87fe38b48b",
+      "verification_first_failure_diagnosis.json": "22ddf6b7f20959380e23038dd6cea5a8b172b859450f3859b7b53f71dd034926",
+      "independent_verification_v2.json": "d8ecce9200ad9c28c56ecb7f48e0036b374668a9e45afe8c4cec004a668dca5e"
+    },
+    "raw_data_copied_into_repository": false,
+    "whole_source_or_population_completeness_claimed": false
+  },
+  "source_sha256": {
+    "examples/freebase_typed_fact_demo.py": "29c54ff9720e5aaf1416314b84bd526d7ab138621cb6facc30008aa2c6b655d4",
+    "src/xgap/backends/rdf_terms.py": "e50dc35fa210a51eb65941a61a732337ff08c1dcc674bc5261b8cfdaec4d0de3",
+    "src/xgap/experiments/freebase_fact_snapshot.py": "321bf1a6efaac1b3f52f9969b6e638868506cd22932541a649051ec5cec3cc16",
+    "src/xgap/experiments/freebase_facts.py": "83241287efe14b111304ec0ee83cfc1827099bdcef8983c0da48d4e821a91a8f",
+    "src/xgap/experiments/freebase_sources.py": "d11ac75823d1df6b614889e8a5622c2093e05f22620fc20be34e0ce62e639465",
+    "tests/test_freebase_facts.py": "22139a98ac0849dc691d5351e20c2231674dc647b35d566352167c644a6be3a4"
+  },
+  "log_sha256": {
+    "/tmp/xgap-d201-focused.log": "3a03a74de3475579d4ff02eab49d631efdd39d158230a89ee68231b9ed821560",
+    "/tmp/xgap-d201-full.log": "b75d3b19cfca8788a10ca2e3464a34a6b5d2db1dcd6e9fb6c75ba85130e36740",
+    "/tmp/xgap-d201-examples.log": "77ebf851fbc6fa228ca7bb11cadd06f22809063ef778803a4ade70d4bd7a20bb",
+    "/tmp/xgap-d201-examples.json": "556d1e6862bc3bcb90b794365568d7f460cbc9a53eaaa303b2fed9a18221153c",
+    "/tmp/xgap-d201-demo.json": "29e6fc73d3878bda9c3487264be73a84ad9a8bf2bb4f248effe5939414817121",
+    "/tmp/xgap-d201-real-shard.log": "629e5044430841f53e9d0a26a2cfeb5cb6d07addf472936d5567aecdec4afd1b",
+    "/tmp/xgap-d201-independent-source.log": "620b98d1504ccff35a59e17231896fec3cdb702f277e3f74b81ffacfd4e20586",
+    "/tmp/xgap-d201-independent-source-v2.log": "37c361b5b4b5fac6fa7f0c56a475f55769e4591095f05970c9f34716393ee80f"
+  },
+  "live_model_run": false,
+  "real_neo4j_or_fuseki_run": false,
+  "remote_jobs_submitted": 0,
+  "paper_result": false
+}

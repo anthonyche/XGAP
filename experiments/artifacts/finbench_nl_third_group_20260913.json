@@ -1,0 +1,81 @@
+{
+  "audit": {
+    "bytes": 15859,
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-prompt-v2/third-group-audit.json",
+    "sha256": "4f109ec66ea5fab0fbe25ee5504e27d4a4f9a382e32bfcef8cf26899f42d572b"
+  },
+  "rows": [
+    {
+      "actual_rows": null,
+      "all_node_entities_null": true,
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "final_plan_attempts": 0,
+      "group_index": 2,
+      "input_tokens": 2873,
+      "lowering_error": "Post-distinct output values must belong to the retained node/edge variables",
+      "method": "fedx",
+      "model_calls": 1,
+      "online_ms": 8240.852750837803,
+      "output_tokens": 494,
+      "question_id": "FBNS-3-ba8a93f050468448",
+      "response_sha256": "bd1d360100d6ab445f49ba169b6c5d89daec03b5ca79592b0e977c69a2793984",
+      "source_calls": 0,
+      "status": "no_admissible_interpretation"
+    },
+    {
+      "actual_rows": null,
+      "all_node_entities_null": true,
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "final_plan_attempts": 0,
+      "group_index": 2,
+      "input_tokens": 2873,
+      "lowering_error": "Post-distinct output values must belong to the retained node/edge variables",
+      "method": "fedup",
+      "model_calls": 1,
+      "online_ms": 8818.768083117902,
+      "output_tokens": 494,
+      "question_id": "FBNS-3-ba8a93f050468448",
+      "response_sha256": "bd1d360100d6ab445f49ba169b6c5d89daec03b5ca79592b0e977c69a2793984",
+      "source_calls": 0,
+      "status": "no_admissible_interpretation"
+    },
+    {
+      "actual_rows": null,
+      "all_node_entities_null": true,
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "final_plan_attempts": 0,
+      "group_index": 2,
+      "input_tokens": 2869,
+      "lowering_error": "Post-distinct output values must belong to the retained node/edge variables",
+      "method": "xgap-performance",
+      "model_calls": 1,
+      "online_ms": 8561.461333185434,
+      "output_tokens": 492,
+      "question_id": "FBNS-3-ba8a93f050468448",
+      "response_sha256": "8f730924c302ce207ab213a0bdc575e21c31626de1b2b11f9684c0bd7490ea86",
+      "source_calls": 0,
+      "status": "no_admissible_interpretation"
+    },
+    {
+      "actual_rows": null,
+      "all_node_entities_null": true,
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "final_plan_attempts": 0,
+      "group_index": 2,
+      "input_tokens": 2873,
+      "lowering_error": "Post-distinct output values must belong to the retained node/edge variables",
+      "method": "xgap-precision",
+      "model_calls": 1,
+      "online_ms": 8469.917374663055,
+      "output_tokens": 494,
+      "question_id": "FBNS-3-ba8a93f050468448",
+      "response_sha256": "bd1d360100d6ab445f49ba169b6c5d89daec03b5ca79592b0e977c69a2793984",
+      "source_calls": 0,
+      "status": "no_admissible_interpretation"
+    }
+  ]
+}

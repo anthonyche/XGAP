@@ -1,0 +1,260 @@
+{
+  "schema_version": "xgap-compact-role-fixture-v2",
+  "population": "tiny-role-contract-development",
+  "exposure": "Authored tiny diagnostic after two real NL failure groups; not held-out evidence; original tiny facts reused.",
+  "derivation": "Alice/person1 owns account1; blocked accounts2,3,4; direct window sums to accounts2/3 are66/9. Independent fixture arithmetic, no model or method results used.",
+  "cases": [
+    {
+      "id": "ROLE-NAME-01",
+      "mode": "precision",
+      "kind": "named_entity",
+      "question": "Which accounts does Alice own? Return all account business IDs as account_id, sorted ascending.",
+      "gold_compact": {
+        "nodes": [
+          {
+            "var": "person",
+            "type": "XGAPFinBenchPerson",
+            "entity": "Alice"
+          },
+          {
+            "var": "account",
+            "type": "XGAPFinBenchAccount",
+            "entity": null
+          }
+        ],
+        "edges": [
+          {
+            "var": "owns",
+            "type": "OWNS_ACCOUNT",
+            "source": "person",
+            "target": "account"
+          }
+        ],
+        "path": null,
+        "where": [],
+        "select": {
+          "account_id": {
+            "var": "account",
+            "property": "id"
+          }
+        },
+        "deduplicate_by": null,
+        "order_by": [
+          {
+            "field": "account_id",
+            "direction": "asc"
+          }
+        ],
+        "limit": null
+      },
+      "expected_rows": [
+        {
+          "account_id": "1"
+        }
+      ],
+      "expected_mentions": [
+        "Alice"
+      ]
+    },
+    {
+      "id": "ROLE-ID-01",
+      "mode": "performance",
+      "kind": "business_id",
+      "question": "For the person with business ID 1, find direct transfers from their accounts to blocked company-owned accounts between 2020-01-01 00:00:00.000 and 2020-01-04 00:00:00.000, including both bounds. Sum every transfer amount, including parallel transfers, per destination account and company. Return company_id, account_id (both business IDs), and total_amount. Return all rows, ordered by total_amount descending, then company_id and account_id ascending.",
+      "gold_compact": {
+        "nodes": [
+          {
+            "var": "person",
+            "type": "XGAPFinBenchPerson",
+            "entity": null
+          },
+          {
+            "var": "sender",
+            "type": "XGAPFinBenchAccount",
+            "entity": null
+          },
+          {
+            "var": "account",
+            "type": "XGAPFinBenchAccount",
+            "entity": null
+          },
+          {
+            "var": "company",
+            "type": "XGAPFinBenchCompany",
+            "entity": null
+          }
+        ],
+        "edges": [
+          {
+            "var": "person_owns",
+            "type": "OWNS_ACCOUNT",
+            "source": "person",
+            "target": "sender"
+          },
+          {
+            "var": "transfer",
+            "type": "TRANSFERRED_TO",
+            "source": "sender",
+            "target": "account"
+          },
+          {
+            "var": "company_owns",
+            "type": "OWNS_ACCOUNT",
+            "source": "company",
+            "target": "account"
+          }
+        ],
+        "path": null,
+        "where": [
+          {
+            "left": {
+              "var": "account",
+              "property": "isBlocked"
+            },
+            "op": "eq",
+            "right": {
+              "value": true
+            },
+            "value_type": "scalar"
+          },
+          {
+            "left": {
+              "var": "transfer",
+              "property": "createTime"
+            },
+            "op": "ge",
+            "right": {
+              "value": "2020-01-01 00:00:00.000"
+            },
+            "value_type": "timestamp_ms"
+          },
+          {
+            "left": {
+              "var": "transfer",
+              "property": "createTime"
+            },
+            "op": "le",
+            "right": {
+              "value": "2020-01-04 00:00:00.000"
+            },
+            "value_type": "timestamp_ms"
+          },
+          {
+            "left": {
+              "var": "person",
+              "property": "id"
+            },
+            "op": "eq",
+            "right": {
+              "value": "1"
+            },
+            "value_type": "scalar"
+          }
+        ],
+        "select": {
+          "company_id": {
+            "var": "company",
+            "property": "id"
+          },
+          "account_id": {
+            "var": "account",
+            "property": "id"
+          },
+          "total_amount": {
+            "aggregate": "sum",
+            "field": {
+              "var": "transfer",
+              "property": "amount"
+            },
+            "distinct": false
+          }
+        },
+        "deduplicate_by": null,
+        "order_by": [
+          {
+            "field": "total_amount",
+            "direction": "desc"
+          },
+          {
+            "field": "company_id",
+            "direction": "asc"
+          },
+          {
+            "field": "account_id",
+            "direction": "asc"
+          }
+        ],
+        "limit": null
+      },
+      "expected_rows": [
+        {
+          "company_id": "1",
+          "account_id": "2",
+          "total_amount": 66.0
+        },
+        {
+          "company_id": "1",
+          "account_id": "3",
+          "total_amount": 9.0
+        }
+      ],
+      "expected_mentions": []
+    },
+    {
+      "id": "ROLE-VARIABLE-01",
+      "mode": "precision",
+      "kind": "generic_variable",
+      "question": "List all blocked accounts. Return their business IDs as account_id, sorted ascending.",
+      "gold_compact": {
+        "nodes": [
+          {
+            "var": "account",
+            "type": "XGAPFinBenchAccount",
+            "entity": null
+          }
+        ],
+        "edges": [],
+        "path": null,
+        "where": [
+          {
+            "left": {
+              "var": "account",
+              "property": "isBlocked"
+            },
+            "op": "eq",
+            "right": {
+              "value": true
+            },
+            "value_type": "scalar"
+          }
+        ],
+        "select": {
+          "account_id": {
+            "var": "account",
+            "property": "id"
+          }
+        },
+        "deduplicate_by": null,
+        "order_by": [
+          {
+            "field": "account_id",
+            "direction": "asc"
+          }
+        ],
+        "limit": null
+      },
+      "expected_rows": [
+        {
+          "account_id": "2"
+        },
+        {
+          "account_id": "3"
+        },
+        {
+          "account_id": "4"
+        }
+      ],
+      "expected_mentions": []
+    }
+  ]
+}

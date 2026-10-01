@@ -1,0 +1,19 @@
+{
+  "commit": "bc2bb67774910225a2e3842da26cb87fa676bf54",
+  "source_bundle_sha256": "a62e0a5d30d867778f5b9c38d8e66c0a955acec2638c9aa3f47148a01507f4ce",
+  "bundle_verified": true,
+  "clean_checkout_verified": true,
+  "shell_syntax_verified": true,
+  "remote_jobs_submitted": 0,
+  "files": {
+    "source.bundle": "a62e0a5d30d867778f5b9c38d8e66c0a955acec2638c9aa3f47148a01507f4ce",
+    "stage.sh": "e4ff4a20364f2870ab403905558e9cac0040fa722414eed563fcb3d9bf2f1c6c",
+    "submit.sh": "e067a524ffccf713a139eaccff04a9e739019a48b17096686b24a2877890f4b6",
+    "README.md": "10ce3b40f11a7a55855c2cfa10ea1950ee0961be1cfe11a2e065e8750f6a3aca"
+  },
+  "zip_path": "/Users/anthonyche/Developer/XGAP-deliverables/xgap-toy-model-bc2bb67.zip",
+  "zip_bytes": 3927051,
+  "zip_sha256": "ad38ad1118834ca1536ccb7b74f0cb44315b90c038cd33b7bef3d68ceee935e3",
+  "browser_delivery": "Independent Chrome OnDemand page timed out; no upload or remote submission confirmed",
+  "manual_next_action": "Upload/unzip package, run stage.sh then submit.sh h100 once; five tiny questions only"
+}

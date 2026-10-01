@@ -1,0 +1,74 @@
+{
+  "schema_version": "grailqa-preflight-recorded-contract-diagnosis-v1",
+  "source_job_id": "3795067",
+  "source_producer_commit": "49941203612fae841340c2c651bd93d0ecc8b619",
+  "source_audit_job_id": "3795103",
+  "source_audit_sha256": "233cdd368580174a39337c90d7be9ee3c542cb57699f50475d3cdb0dbb38bbe6",
+  "input_sha256": {
+    "llm_requests.jsonl": "6060078b189fa11a0fbf3840960f372b61d4306e004855c52093a3cf278363d0",
+    "llm_responses.jsonl": "557d5b250d299cd7fff3d7ffe4f13537a00f4e3bd3843b41c6731c110a3c12ce"
+  },
+  "evidence_class": "offline_diagnosis_of_hash_matched_recorded_envelopes",
+  "counts": {
+    "questions": 18,
+    "recorded_requests": 19,
+    "schema_valid_provider_responses": 17,
+    "retained_structured_candidates": 47,
+    "first_rejection_unresolved_query_anchor": 16,
+    "first_rejection_invalid_component_ref": 1,
+    "provider_failed": 1
+  },
+  "schema_valid_response_anchor_inventory": {
+    "query_count": 17,
+    "missing_relation_hop_2_and_3_query_count": 13,
+    "missing_only_relation_hop_3_query_count": 3,
+    "complete_query_count": 1,
+    "duplicate_slot_count": 0,
+    "unknown_slot_count": 0,
+    "selected_nonvisible_anchor_count": 0,
+    "missing_required_for_candidate_slot_count": 0,
+    "missing_slots_all_required_for_candidate_false": true,
+    "used_but_top_level_missing_slot_example": {
+      "question_id": "2101661019000",
+      "candidate_id": "c2",
+      "slot_id": "relation-hop-2"
+    }
+  },
+  "retained_candidate_component_inventory": {
+    "candidate_count": 47,
+    "invalid_reference_occurrences": 55,
+    "candidates_with_invalid_references": 26,
+    "queries_with_invalid_references": 10,
+    "method": "Compare unmodified grounding component_ref strings with normalized PathPatternQuery structural component paths; do not bypass or patch the grounding validator.",
+    "overlaps_first_rejection_counts": true,
+    "establishes_candidate_validity_after_repair": false
+  },
+  "provider_failure_replay": {
+    "question_id": "3206065001000",
+    "recorded_generation_calls": 1,
+    "recorded_repair_calls": 1,
+    "generation_and_repair_message_contents_identical": true,
+    "raw_candidates_per_call": 3,
+    "selector_absent_in_all_candidates_on_both_calls": true,
+    "restrictor_absent_in_all_candidates_on_both_calls": true,
+    "legacy_parser_error": "selector must be a mapping.",
+    "existing_normalized_parser_accepts_both_bodies": true,
+    "subsequent_unchanged_grounder_error": "Query anchor 'boats.ship' is not visible for slot 'retrieved-type'.",
+    "recovered_validated_candidates_claimed": false
+  },
+  "claim_boundary": {
+    "original_metrics_unchanged": true,
+    "no_source_files_rewritten": true,
+    "gold_opened_for_diagnosis": false,
+    "catalog_loaded_for_diagnosis": false,
+    "new_live_result": false,
+    "full_150_run_authorized": false,
+    "paper_result": false
+  },
+  "external_call_counts": {
+    "llm_calls": 0,
+    "backend_calls": 0,
+    "ontology_service_calls": 0
+  },
+  "paper_result": false
+}

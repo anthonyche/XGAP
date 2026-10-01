@@ -1,0 +1,808 @@
+{
+  "schema_version": "xgap-contribution-first-two-nl-groups-v2",
+  "release": {
+    "path": "/Users/anthonyche/xgap-data/finbench-compact-contribution-v2-20260913/receipt.json",
+    "sha256": "ca597da91db2ccbf51ebecd46fa8bcb0f6a1677a94d4261d03768f3c3a79d9f2"
+  },
+  "chunk": {
+    "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/receipt.json",
+    "sha256": "8f3db5bc0f3e2cb963fda9c2080ff28724587cff0f6c27c821d8d90143491be5"
+  },
+  "rows": [
+    {
+      "cell_id": "natural_language-00-003-0",
+      "question_id": "FBNS-3-8e6cf05a873620a1",
+      "method": "fedup",
+      "status": "external_failed",
+      "receipt": {
+        "bytes": 6106,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-0/execution/receipt.json",
+        "sha256": "d6d72c229e8806816962606f846528df1b14775bb74044386d8d49dd8a3076d5"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-0/execution/score.json",
+        "sha256": "fe2bb7276ae030f1e1390900e69d52dd0b7de526ab2564b04dfd69219a601d90",
+        "bytes": 1071
+      },
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "online_ms": 8744.03683282435,
+      "source_calls": 0,
+      "source_bytes": 0,
+      "original_reported_model_calls": 1,
+      "original_reported_tokens": [
+        3042,
+        491
+      ],
+      "source_failure": null,
+      "reconciled_model_calls": 1,
+      "reconciled_tokens": [
+        3042,
+        491
+      ],
+      "reconciliation_basis": "Original common receipt",
+      "external_http_status": 500,
+      "external_response": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-0/execution/worker/response.json",
+        "sha256": "b22a257ae3e7c3df04124a48bcb7701eba83d410963682e518b32da345852697",
+        "bytes": 53781
+      }
+    },
+    {
+      "cell_id": "natural_language-00-003-1",
+      "question_id": "FBNS-3-8e6cf05a873620a1",
+      "method": "xgap-precision",
+      "status": "worker_failed",
+      "receipt": {
+        "bytes": 8353,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-1/execution/receipt.json",
+        "sha256": "fa5438873f4ec5e146b8cd5c1f1c39c52eab6ecafb6e83a55c969c1d20c3ab49"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-1/execution/score.json",
+        "sha256": "141e3aac5f30a1900c2eb31214051ee214e40779636388fa11dc605520a6d63e",
+        "bytes": 1077
+      },
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "online_ms": 44229.46487553418,
+      "source_calls": 6,
+      "source_bytes": 76995602,
+      "original_reported_model_calls": 0,
+      "original_reported_tokens": [
+        0,
+        0
+      ],
+      "source_failure": null,
+      "core_receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-1/execution/worker/core/receipt.json",
+        "sha256": "0077523bc4329539c09638c6597c79ca4c151f52e054c233cdff1030a9193974"
+      },
+      "core_status": "answered",
+      "core_success": true,
+      "trace": {
+        "bytes": 344428838,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-1/execution/worker/core/result.json",
+        "sha256": "91adc551aecf0563c98c9453d74059d6e00779390d2728f673f3cf7dca347a1d"
+      },
+      "trace_size_verified": true,
+      "trace_hash_verified": true,
+      "reconciled_model_calls": 1,
+      "reconciled_tokens": [
+        3042,
+        491
+      ],
+      "core_final_plans": 1,
+      "reconciliation_basis": "Separate pinned core receipt; outer receipt/score unchanged"
+    },
+    {
+      "cell_id": "natural_language-00-003-2",
+      "question_id": "FBNS-3-8e6cf05a873620a1",
+      "method": "fedx",
+      "status": "harness_budget_censored",
+      "receipt": {
+        "bytes": 6417,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-2/execution/receipt.json",
+        "sha256": "d953657c7ad220f19614e42eaa3da7d5a4c246d6a633aaaf0b184ec13c76c086"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-2/execution/score.json",
+        "sha256": "65127443e45ff06cdf5920df07f7ce86372bb94570284ca2613908476459c1d9",
+        "bytes": 1078
+      },
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "online_ms": 130289.6829592064,
+      "source_calls": 14578,
+      "source_bytes": 545610349,
+      "original_reported_model_calls": 1,
+      "original_reported_tokens": [
+        3042,
+        491
+      ],
+      "source_failure": {
+        "categories": {
+          "harness_response_budget": 9,
+          "source_transport": 9
+        },
+        "intrinsic_method_incorrectness_established": false,
+        "native_answer_observed": false,
+        "status": "harness_budget_censored"
+      },
+      "reconciled_model_calls": 1,
+      "reconciled_tokens": [
+        3042,
+        491
+      ],
+      "reconciliation_basis": "Original common receipt",
+      "external_http_status": null,
+      "external_response": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-2/execution/worker/response.json",
+        "sha256": "da1a8b25d1097ff77b10ec18f91d007e4370559e97107ab27625d26d6fe9965f",
+        "bytes": 21746
+      }
+    },
+    {
+      "cell_id": "natural_language-00-003-3",
+      "question_id": "FBNS-3-8e6cf05a873620a1",
+      "method": "xgap-performance",
+      "status": "worker_failed",
+      "receipt": {
+        "bytes": 8348,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-3/execution/receipt.json",
+        "sha256": "2d8ad790390ebd5a585d9fc87ea76a4558879b5ef7fe29afb890c074227922fe"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-3/execution/score.json",
+        "sha256": "4aa1349bb60e5f85e9d89b507b9cb4cacbc7ac7ea4543a270085efda08dfc6b4",
+        "bytes": 1080
+      },
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "online_ms": 44382.65787437558,
+      "source_calls": 6,
+      "source_bytes": 76995602,
+      "original_reported_model_calls": 0,
+      "original_reported_tokens": [
+        0,
+        0
+      ],
+      "source_failure": null,
+      "core_receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-3/execution/worker/core/receipt.json",
+        "sha256": "2a494d3e6d11264d044930a051514b186d9795300c35565011576fc103419ed2"
+      },
+      "core_status": "answered",
+      "core_success": true,
+      "trace": {
+        "bytes": 344428821,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-003-3/execution/worker/core/result.json",
+        "sha256": "8d6173e7f87326be7dc422a3a962febddff08ccf63dc6d22b5d53c676636273b"
+      },
+      "trace_size_verified": true,
+      "trace_hash_verified": null,
+      "reconciled_model_calls": 1,
+      "reconciled_tokens": [
+        3038,
+        490
+      ],
+      "core_final_plans": 1,
+      "reconciliation_basis": "Separate pinned core receipt; outer receipt/score unchanged"
+    },
+    {
+      "cell_id": "natural_language-00-004-0",
+      "question_id": "FBNS-1-c0641cd0810fbb55",
+      "method": "xgap-precision",
+      "status": "worker_failed",
+      "receipt": {
+        "bytes": 10329,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-0/execution/receipt.json",
+        "sha256": "ff98e20a35ef3a6edaeb533853ce796a26f2f9555df3be5d82a6e62c4a35131f"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-0/execution/score.json",
+        "sha256": "09c77253ae36a4dcc10603636644c2ce5115a3f5d887645a78468457db6fa05b",
+        "bytes": 1100
+      },
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "online_ms": 49602.805249392986,
+      "source_calls": 10,
+      "source_bytes": 88284870,
+      "original_reported_model_calls": 0,
+      "original_reported_tokens": [
+        0,
+        0
+      ],
+      "source_failure": null,
+      "core_receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-0/execution/worker/core/receipt.json",
+        "sha256": "89184f7348b3491c10b5bce587fffe354ea8452d0ee03851b0313d4ac91b5dd4"
+      },
+      "core_status": "answered",
+      "core_success": true,
+      "trace": {
+        "bytes": 333038984,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-0/execution/worker/core/result.json",
+        "sha256": "396c95d32657c00361fc4e874506f2beb3657a27d166b2dca484064e0f9d9ecf"
+      },
+      "trace_size_verified": true,
+      "trace_hash_verified": null,
+      "reconciled_model_calls": 1,
+      "reconciled_tokens": [
+        3035,
+        548
+      ],
+      "core_final_plans": 1,
+      "reconciliation_basis": "Separate pinned core receipt; outer receipt/score unchanged"
+    },
+    {
+      "cell_id": "natural_language-00-004-1",
+      "question_id": "FBNS-1-c0641cd0810fbb55",
+      "method": "xgap-performance",
+      "status": "worker_failed",
+      "receipt": {
+        "bytes": 10341,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-1/execution/receipt.json",
+        "sha256": "a13fce1bcb490e455a827b3701ba2063448f485a6a060e40f7cdec805939fd83"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-1/execution/score.json",
+        "sha256": "a8bcfcb3cfa546a6ed2059687a0d53fd4e1d5efe9082d3bc8bd415e1845f63e8",
+        "bytes": 1101
+      },
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "online_ms": 50467.14262571186,
+      "source_calls": 10,
+      "source_bytes": 88284870,
+      "original_reported_model_calls": 0,
+      "original_reported_tokens": [
+        0,
+        0
+      ],
+      "source_failure": null,
+      "core_receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-1/execution/worker/core/receipt.json",
+        "sha256": "ff0e81bc03047b581c0ce2049c347215859e44d997ba77ca823a5c073a70e309"
+      },
+      "core_status": "answered",
+      "core_success": true,
+      "trace": {
+        "bytes": 333038973,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-1/execution/worker/core/result.json",
+        "sha256": "927014796d1b26b867d0025befbd7ad5b0c0c9839cbf69720dd84d635947f0c6"
+      },
+      "trace_size_verified": true,
+      "trace_hash_verified": null,
+      "reconciled_model_calls": 1,
+      "reconciled_tokens": [
+        3031,
+        547
+      ],
+      "core_final_plans": 1,
+      "reconciliation_basis": "Separate pinned core receipt; outer receipt/score unchanged"
+    },
+    {
+      "cell_id": "natural_language-00-004-2",
+      "question_id": "FBNS-1-c0641cd0810fbb55",
+      "method": "fedup",
+      "status": "external_failed",
+      "receipt": {
+        "bytes": 6114,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-2/execution/receipt.json",
+        "sha256": "7a8ffc12530e1aa32f281f69031bb852500884087461c200ecadae2a119c526d"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-2/execution/score.json",
+        "sha256": "378349eaad1a85db9c528a2abb607fd611836c5cd4d0ce3a2fd8808b454aa1cb",
+        "bytes": 1092
+      },
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "online_ms": 9736.669457517564,
+      "source_calls": 0,
+      "source_bytes": 0,
+      "original_reported_model_calls": 1,
+      "original_reported_tokens": [
+        3035,
+        548
+      ],
+      "source_failure": null,
+      "reconciled_model_calls": 1,
+      "reconciled_tokens": [
+        3035,
+        548
+      ],
+      "reconciliation_basis": "Original common receipt",
+      "external_http_status": 500,
+      "external_response": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-2/execution/worker/response.json",
+        "sha256": "3fd7196c2140c6a7255e16739fb81932fc8b21f552d2c95a920eea23d8cdb8cd",
+        "bytes": 89252
+      }
+    },
+    {
+      "cell_id": "natural_language-00-004-3",
+      "question_id": "FBNS-1-c0641cd0810fbb55",
+      "method": "fedx",
+      "status": "harness_budget_censored",
+      "receipt": {
+        "bytes": 6357,
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-3/execution/receipt.json",
+        "sha256": "4cfc3f7862aa4e4273ea9909a44a5b343caf16ba2ed103334bf863e7b7542b42"
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-3/execution/score.json",
+        "sha256": "22951a994c26124079ec5de01a1c7c7119d15978eda9e71dba5b6dff3d7aedad",
+        "bytes": 1100
+      },
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "online_ms": 15164.863499812782,
+      "source_calls": 954,
+      "source_bytes": 546941800,
+      "original_reported_model_calls": 1,
+      "original_reported_tokens": [
+        3035,
+        548
+      ],
+      "source_failure": {
+        "categories": {
+          "harness_response_budget": 11
+        },
+        "intrinsic_method_incorrectness_established": false,
+        "native_answer_observed": false,
+        "status": "harness_budget_censored"
+      },
+      "reconciled_model_calls": 1,
+      "reconciled_tokens": [
+        3035,
+        548
+      ],
+      "reconciliation_basis": "Original common receipt",
+      "external_http_status": 500,
+      "external_response": {
+        "path": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/cells/natural_language-00-004-3/execution/worker/response.json",
+        "sha256": "c2585df8c3011cacd910e6474ea924d8e8c74c52ced4da02a686bed93f620172",
+        "bytes": 33689
+      }
+    }
+  ],
+  "model_calls_reconciled": 8,
+  "input_tokens_reconciled": 24300,
+  "output_tokens_reconciled": 4154,
+  "scores_rewritten": false,
+  "questions_retried": 0,
+  "next_group": 5,
+  "closures": [
+    {
+      "cause": "natural_language-00-003-0:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2",
+          "fedup-host/serving-summary"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.0146256536245346,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "fedup",
+            "pid": 72801,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.4312909916043282,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 72795,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.8313758298754692,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 72791,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 83.28916691243649,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/session-001"
+    },
+    {
+      "cause": "natural_language-00-003-1:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.7036253809928894,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 72847,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.3392500802874565,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 72838,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 57.06224963068962,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/session-002"
+    },
+    {
+      "cause": "natural_language-00-003-2:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.6915004923939705,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "fedx",
+            "pid": 73009,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.5807504057884216,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 72997,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.581124797463417,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 72993,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 125.34750066697598,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/session-003"
+    },
+    {
+      "cause": "natural_language-00-003-3:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.5814991891384125,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 73354,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.35512447357177734,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 73353,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 150.1665422692895,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/session-004"
+    },
+    {
+      "cause": "natural_language-00-004-0:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.6281668320298195,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 73458,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.5723331123590469,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 73453,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 227.48708352446556,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/session-005"
+    },
+    {
+      "cause": "natural_language-00-004-1:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.3246247544884682,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 73627,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.6757920384407043,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 73625,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 337.5319577753544,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/session-006"
+    },
+    {
+      "cause": "natural_language-00-004-2:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2",
+          "fedup-host/serving-summary"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.0643340647220612,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "fedup",
+            "pid": 73845,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.123500056564808,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 73835,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 0.8322913199663162,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 73830,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 542.578749358654,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/session-007"
+    },
+    {
+      "cause": "natural_language-00-004-3:failed-outcome",
+      "closure": {
+        "discarded_reconstructable_serving_copies": [
+          "graph-tdb2",
+          "control-tdb2"
+        ],
+        "frozen_inputs_and_all_query_artifacts_retained": true,
+        "observer_stopped": true,
+        "owned_groups_drained": true,
+        "owned_processes_terminal": true,
+        "processes": [
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.6642073169350624,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "fedx",
+            "pid": 73961,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.5837503597140312,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-control",
+            "pid": 73948,
+            "returncode": 143,
+            "terminal": true
+          },
+          {
+            "cleanup": {
+              "complete": true,
+              "elapsed_ms": 1.1467505246400833,
+              "live_pids": [],
+              "resolved_permission_races": 0,
+              "signals": []
+            },
+            "leader_state": "reaped",
+            "name": "source-graph",
+            "pid": 73939,
+            "returncode": 143,
+            "terminal": true
+          }
+        ]
+      },
+      "elapsed_ms": 129.86745778471231,
+      "kind": "serving_session_retired",
+      "session": "/Users/anthonyche/xgap-data/finbench-rdf-nl-campaign-20260913-contribution-v2/runs/run-0000/session-008"
+    }
+  ],
+  "all_services_terminal": true,
+  "scope": "Two real scheduled groups; all original outcomes score0. Core answered is not E2E success. One trace SHA streamed to distinguish size limit from corruption; others retain original pins/stat sizes."
+}

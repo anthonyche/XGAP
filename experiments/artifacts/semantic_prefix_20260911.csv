@@ -1,0 +1,3 @@
+mode,answer_correct,contract_passed,completed_backend,unfinished_backend,current_observation_calls,current_execution_calls,prefix_remote_calls,continuation_new_remote_calls,selection_runs,arm_wall_ms,planning_run_end_to_end_ms,planning_ms,prefix_execution_ms,continuation_execution_ms,residual_initial_ms,residual_executed_ms,residual_certificate_LB_ms,residual_certificate_U_ms,residual_certificate_ratio
+replan,True,True,neo4j,fuseki,0,2,1,1,2,237.05787491053343,249.0088753402233,14.43883404135704,184.0101247653365,50.398374907672405,100.44,4.5,1.4400000000000002,4.5,3.1249999999999996
+no_replan,True,True,neo4j,neo4j,0,2,1,1,1,53.55774983763695,65.50908368080854,13.494542799890041,11.453165672719479,40.428624488413334,100.44,100.44,,,

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "hole_id",
+    "candidate_ids"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "hole_id": {
+      "type": "string"
+    },
+    "candidate_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  }
+}

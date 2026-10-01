@@ -1,0 +1,107 @@
+{
+  "artifact_id": "m15-f2c8b-local-native-predicate-readiness-v1",
+  "artifact_role": "local_native_predicate_relaxation_runner_and_auditor_acceptance_not_live_or_paper_result",
+  "observed_at_utc": "2026-09-06",
+  "evidence_origin": "deterministic_local_native_run_tree_tests_and_acceptance_suite",
+  "inputs": {
+    "base_query_id": "financial-risk-alice-aug-high-v2",
+    "base_workload_bundle_content_sha256": "b06b1c4b4e630e37cbea8d4cf5d81bbc31c4a2280b97a64f5a4a9efed0d434e7",
+    "semantic_catalog_sha256": "e9b411da5fcbc1f49fe8483ae80a0de44e877e619f8e468c405d3362a1aee553",
+    "predicate_mapping_sha256": "0151ae7782842e1ce74ae9d56452cadda77759502bcc4897401ee624940f05c2",
+    "predicate_overlay_sha256": "18b1a729926f6e2c9dce970513e72adce2cfab861a62eedaffb6d562b66a7668"
+  },
+  "execution_contract": {
+    "semantic_class_count": 2,
+    "semantic_class_ids": [
+      "m15-class-b3cf0ee1b03a3bf46874629c",
+      "m15-class-fcee94caee862d244dc5f3f2"
+    ],
+    "changed_slot_sets": [
+      [
+        "transfer-predicate"
+      ],
+      [
+        "risk-level",
+        "transfer-predicate"
+      ]
+    ],
+    "predicate_transition": {
+      "from": "transfer_to_company",
+      "to": "payment_to_company",
+      "transformation": "ontology_sibling",
+      "backend_relationship_type": "PAYMENT_TO_COMPANY",
+      "evidence_kind": "development_mapping_fixture"
+    },
+    "hard_bindings_preserved": true,
+    "path_shape": "direct",
+    "physical_strategy_per_class": "risk_first_bind_join",
+    "physical_plan_run_count": 2,
+    "expected_remote_calls": 4,
+    "expected_backend_order": [
+      "fuseki",
+      "neo4j",
+      "fuseki",
+      "neo4j"
+    ],
+    "expected_final_row_counts": [
+      6,
+      9
+    ],
+    "automatic_retries": 0
+  },
+  "native_boundary": {
+    "workload_mode": "semantic_predicate_relaxation",
+    "service_schema_version": "m15-f2c8b-native-live-semantic-predicate-relaxation-service-run-v1",
+    "live_schema_version": "m15-f2c8b-live-semantic-predicate-relaxation-v1",
+    "slurm_wrapper": "scripts/slurm/run_m15_native_semantic_predicate_relaxation.sbatch",
+    "remote_allowlisted": true,
+    "loopback_only": true,
+    "fixture_query_instance_count": 9,
+    "fixture_backend_query_count": 18,
+    "failure_stops_remaining_classes": true,
+    "runtime_cleanup_owned_by_slurm_wrapper": true
+  },
+  "independent_audit": {
+    "schema_version": "m15-f2c8b-native-predicate-relaxation-evidence-audit-v1",
+    "local_synthetic_run_tree_passed": true,
+    "check_count": 150,
+    "failed_check_ids": [],
+    "run_tree_mutated": false,
+    "detects_changed_answer": true,
+    "detects_plan_identity_drift": true,
+    "reconstructs_expected_plans_and_oracles": true
+  },
+  "local_verification": {
+    "full_pytest": {
+      "passed": 834,
+      "skipped": 36,
+      "failed": 0
+    },
+    "acceptance_script": "passed",
+    "harness_check": "passed",
+    "all_existing_examples": "passed",
+    "shell_syntax_checks": "passed",
+    "patch_whitespace_check": "passed"
+  },
+  "claim_boundary": {
+    "result_class": "local_native_predicate_relaxation_readiness",
+    "development_mapping_fixture": true,
+    "plans_built_before_oracle_access": true,
+    "oracle_used_for_post_execution_validation_only": true,
+    "physical_strategy_comparison_enabled": false,
+    "memory_enabled": false,
+    "llm_calls_made": 0,
+    "ontology_calls_made": 0,
+    "live_backends_executed": false,
+    "semantic_user_utility_supported": false,
+    "latency_ranking_supported": false,
+    "comparative": false,
+    "paper_result": false
+  },
+  "remaining_blockers": [
+    "one clean CWRU native predicate-relaxation run",
+    "one independent read-only audit of that exact CWRU run",
+    "path semantics remain unbound for every multihop class"
+  ],
+  "paper_result": false
+}

@@ -13,10 +13,34 @@ from typing import Any
 
 from xgap.infrastructure.descriptors import BackendDescriptor
 from xgap.infrastructure.runtime import BackendStatus, ExecutionReport, QueryArtifact
+from xgap.backends.rdf_terms import RDF_TERMS_V1, parse_select_results
+
+
+_MAX_HTTP_ERROR_BODY_BYTES = 64 * 1024
 
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _fuseki_http_error_message(error: urllib.error.HTTPError) -> str:
+    """Preserve bounded Fuseki error text so server timeouts stay observable."""
+
+    try:
+        raw = error.read(_MAX_HTTP_ERROR_BODY_BYTES + 1)
+    except (OSError, ValueError):
+        raw = b""
+    truncated = len(raw) > _MAX_HTTP_ERROR_BODY_BYTES
+    text = " ".join(
+        raw[:_MAX_HTTP_ERROR_BODY_BYTES].decode("utf-8", errors="replace").split()
+    )
+    if len(text) > 8192:
+        text = text[:8192] + "..."
+        truncated = True
+    suffix = " [response truncated]" if truncated else ""
+    if text:
+        return f"Fuseki HTTP {error.code}: {text}{suffix}"
+    return f"Fuseki HTTP {error.code}: {error.reason}"
 
 
 class FusekiClient:
@@ -44,7 +68,11 @@ class FusekiClient:
             with urllib.request.urlopen(url, timeout=self.timeout_seconds) as response:
                 ok = 200 <= response.status < 300
                 server_header = response.headers.get("Server")
-            message = "Fuseki ping endpoint is ready" if ok else f"Fuseki ping returned {response.status}"
+            message = (
+                "Fuseki ping endpoint is ready"
+                if ok
+                else f"Fuseki ping returned {response.status}"
+            )
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             ok = False
             message = str(exc)
@@ -61,7 +89,10 @@ class FusekiClient:
         )
 
     def execute(self, artifact: QueryArtifact) -> ExecutionReport:
-        if artifact.kind not in {"native", "compiled"} or artifact.language.lower() != "sparql":
+        if (
+            artifact.kind not in {"native", "compiled"}
+            or artifact.language.lower() != "sparql"
+        ):
             return ExecutionReport(
                 backend_id=self.backend_id,
                 artifact_id=artifact.artifact_id,
@@ -73,8 +104,27 @@ class FusekiClient:
         started_at = _now()
         started = time.perf_counter()
         try:
-            response = self._post_query(artifact.text)
-            rows = self._rows_from_response(response)
+            encoding = artifact.parameters.get("rdf_result_encoding")
+            if encoding not in (None, RDF_TERMS_V1):
+                raise ValueError("Unsupported RDF result encoding")
+            expected = artifact.parameters.get("expected_result_columns")
+            if expected is not None and (
+                not isinstance(expected, list)
+                or not all(isinstance(c, str) and c for c in expected)
+                or len(set(expected)) != len(expected)
+            ):
+                raise ValueError("Invalid expected RDF result columns")
+            from xgap.backends.sparql_bindings import bind_sparql_iris
+
+            response = self._post_query(bind_sparql_iris(artifact.text, artifact.parameters))
+            rows = (
+                parse_select_results(
+                    response,
+                    expected_columns=tuple(expected) if expected is not None else None,
+                )
+                if encoding == RDF_TERMS_V1
+                else self._rows_from_response(response)
+            )
             success = True
             error = None
         except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
@@ -93,7 +143,15 @@ class FusekiClient:
             error=error,
             started_at=started_at,
             ended_at=ended_at,
-            metadata={"transport": "sparql-http", "dataset": self.dataset},
+            metadata={
+                "transport": "sparql-http",
+                "dataset": self.dataset,
+                **(
+                    {"rdf_result_encoding": RDF_TERMS_V1}
+                    if artifact.parameters.get("rdf_result_encoding") == RDF_TERMS_V1
+                    else {}
+                ),
+            },
         )
 
     def _post_query(self, query: str) -> dict[str, Any]:
@@ -108,8 +166,13 @@ class FusekiClient:
             },
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-            body = response.read().decode("utf-8")
+        try:
+            with urllib.request.urlopen(
+                request, timeout=self.timeout_seconds
+            ) as response:
+                body = response.read().decode("utf-8")
+        except urllib.error.HTTPError as exc:
+            raise ValueError(_fuseki_http_error_message(exc)) from exc
         return json.loads(body)
 
     def _rows_from_response(self, response: dict[str, Any]) -> list[dict[str, Any]]:

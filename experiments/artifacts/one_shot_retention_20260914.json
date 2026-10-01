@@ -1,0 +1,53 @@
+{
+  "schema_version": "xgap-retention-gate-v1",
+  "offline_new_cases_passed": 13,
+  "affected_cost_case_passed": 1,
+  "historical_replay_compatibility": "v1 record rejected under v2; not a current successful replay",
+  "tiny_fanout": {
+    "answer_rows": 6,
+    "source_calls_each": 8,
+    "full_trace_bytes": 48788,
+    "compact_trace_bytes": 18412,
+    "full_final_registered_rows": 255,
+    "compact_final_registered_rows": 6,
+    "compact_peak_registered_rows": 48,
+    "compact_peak_registered_output_bytes": 6576,
+    "released_nodes": 48
+  },
+  "native_acceptance": "accepted: exact native result plus corrected offline replay; original overall-failed receipt retained",
+  "full_data_acceptance": "new group8 two exact empty XGAP outcomes; external failures retained",
+  "paper_result": false,
+  "native_receipt": {
+    "path": "/Users/anthonyche/xgap-data/retention-native-20260914-v1/receipt.json",
+    "sha256": "d86f9bf65bea4895002d507a8045088c8ff5a50be064790b2ba7b661e3a7ad3b"
+  },
+  "corrected_replay_receipt": {
+    "path": "/Users/anthonyche/xgap-data/retention-native-20260914-replay-v1/receipt.json",
+    "sha256": "94b2cb7f42f1774add4a32508c7689d450d3f8d6283d21a6bfa0d4213d748855"
+  },
+  "native": {
+    "answer_em": 1,
+    "answer_rows": 4,
+    "source_calls": 14,
+    "response_bytes": 18606,
+    "selected_strategy": "placement-0/coordinator",
+    "retention": {
+      "final_registered_output_bytes": 305,
+      "final_registered_rows": 4,
+      "final_rows_truncated": false,
+      "measurement_scope": "registered result payloads only; aliases may double-count; in-flight/temporary buffers and RSS excluded",
+      "peak_registered_output_bytes": 24332,
+      "peak_registered_rows": 82,
+      "profile": "roots-and-node-metrics-v1",
+      "released_nodes": 76
+    },
+    "core_bytes": 223892,
+    "capture_response_bytes": 47670,
+    "ledger_bytes": 30233,
+    "online_ms": 1503.9742086082697,
+    "planning_ms": 124.45850018411875,
+    "execution_ms": 1356.0073329135776,
+    "all_sources_terminal": true
+  },
+  "real_group_audit": "retention_group8_20260914.json"
+}

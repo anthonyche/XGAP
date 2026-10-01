@@ -1,0 +1,231 @@
+{
+  "schema_version": "xgap-unified-prerelease-evidence-v1",
+  "date": "2026-09-21",
+  "paper_result": false,
+  "full_experiments_started": false,
+  "formal_release_ready": false,
+  "admitted_profile": "unified-lookahead-v1",
+  "receipts": [
+    {
+      "id": "native",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/unified-readiness-native-20260921-v1/receipt.json",
+        "sha256": "2d326887c8d709dbd31d28e11e108711e0451be0932f94c50a96e2ebf3b06892",
+        "bytes": 4814
+      },
+      "source_commit": "e16d8d4a4024ec175eeb55fcdde24c3e247a3d29",
+      "all_owned_closed": true
+    },
+    {
+      "id": "model",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/unified-model-native-20260921-v1/receipt.json",
+        "sha256": "d3a7352103b5cbd6beefbb4d8235da7c76ea895c5c26cc941b1c4b2cf92110b2",
+        "bytes": 2632
+      },
+      "source_commit": "b6c4a60a8661c367840013a09b736777c35b7fa0",
+      "all_owned_closed": true
+    },
+    {
+      "id": "rdf",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/unified-rdf-admission-20260921-v3/batch/invocations/0001/receipt.json",
+        "sha256": "a451bc85fe2c1392032b58adec517a2049527f45d2bd562bfdc5d42f7ecd4ba4",
+        "bytes": 1328
+      },
+      "source_commit": "b7ec336871e092e6894dccc51158cbace1042233",
+      "all_owned_closed": true
+    },
+    {
+      "id": "external",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/unified-external-admission-20260921-v4/receipt.json",
+        "sha256": "50b051e3fe435042a0b8c9e84b778d2821a3dc78fa51ff003d5fec00a20843f6",
+        "bytes": 9563
+      },
+      "source_commit": "39142f8b6d7b6b7f07a75b5b9145006ba9585688",
+      "all_owned_closed": true
+    },
+    {
+      "id": "external-v5",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/unified-external-admission-20260921-v5/receipt.json",
+        "sha256": "a6f64621d334561fc076af3b40e240a658436e1de42e75f8360188cd9244760c",
+        "bytes": 10913
+      },
+      "source_commit": "a38deaf10ed09714bf2abdd72d3ccf15a08f1e0d",
+      "all_owned_closed": true
+    }
+  ],
+  "gates": [
+    {
+      "group": "native",
+      "answer_em": 1.0,
+      "cell_id": "strict",
+      "certificate_violation": false,
+      "external_calls_during_search": 0,
+      "final_plan_executions": 1,
+      "input_tokens": 0,
+      "loss_status": "measured",
+      "model_calls": 0,
+      "output_tokens": 0,
+      "physical_actions": 5,
+      "probe_calls": 0,
+      "selected_facts": {},
+      "source_requests": 9,
+      "status": "answered",
+      "success": true
+    },
+    {
+      "group": "native",
+      "answer_em": 1.0,
+      "cell_id": "information",
+      "certificate_violation": false,
+      "external_calls_during_search": 0,
+      "final_plan_executions": 1,
+      "input_tokens": 0,
+      "loss_status": "measured",
+      "model_calls": 0,
+      "output_tokens": 0,
+      "physical_actions": 9,
+      "probe_calls": 1,
+      "selected_facts": {
+        "graph-count": "small"
+      },
+      "source_requests": 10,
+      "status": "answered",
+      "success": true
+    },
+    {
+      "group": "native",
+      "answer_em": 1.0,
+      "cell_id": "sequential",
+      "certificate_violation": false,
+      "external_calls_during_search": 0,
+      "final_plan_executions": 1,
+      "input_tokens": 0,
+      "loss_status": "measured",
+      "model_calls": 0,
+      "output_tokens": 0,
+      "physical_actions": 5,
+      "probe_calls": 0,
+      "selected_facts": {},
+      "source_requests": 9,
+      "status": "answered",
+      "success": true
+    },
+    {
+      "group": "native",
+      "answer_em": 0.0,
+      "cell_id": "model",
+      "certificate_violation": null,
+      "external_calls_during_search": null,
+      "final_plan_executions": 0,
+      "input_tokens": 2398,
+      "loss_status": "not_executed",
+      "model_calls": 1,
+      "output_tokens": 351,
+      "physical_actions": null,
+      "probe_calls": 0,
+      "selected_facts": null,
+      "source_requests": 0,
+      "status": "intent_outside_proposed_scope",
+      "success": false
+    },
+    {
+      "group": "native",
+      "answer_em": 0.0,
+      "cell_id": "reserve-refusal",
+      "certificate_violation": null,
+      "external_calls_during_search": 0,
+      "final_plan_executions": 0,
+      "input_tokens": 0,
+      "loss_status": "not_executed",
+      "model_calls": 0,
+      "output_tokens": 0,
+      "physical_actions": 0,
+      "probe_calls": 0,
+      "selected_facts": {},
+      "source_requests": 0,
+      "status": "completion_witness_unavailable",
+      "success": false
+    },
+    {
+      "group": "model",
+      "answer_em": 1.0,
+      "cell_id": "model",
+      "certificate_violation": false,
+      "external_calls_during_search": 0,
+      "final_plan_executions": 1,
+      "input_tokens": 2594,
+      "loss_status": "measured",
+      "model_calls": 1,
+      "output_tokens": 486,
+      "physical_actions": 5,
+      "probe_calls": 0,
+      "selected_facts": {},
+      "source_requests": 9,
+      "status": "answered",
+      "success": true
+    },
+    {
+      "group": "rdf",
+      "status": "answered",
+      "success": true,
+      "final_plan_executions": 1,
+      "model_calls": 0,
+      "source_requests": 9,
+      "answer_em": 1.0,
+      "query_loss": 0.0,
+      "paper_result": false,
+      "certificate_violation": false,
+      "score_pins": [
+        {
+          "path": "/Users/anthonyche/xgap-data/unified-rdf-admission-20260921-v3/batch/cells/rdf-tiny/score.json",
+          "sha256": "551a4790b79ec8db0b0eb7c78babf51d1a93ebf13054fe87b8b101203cc7a028"
+        },
+        {
+          "path": "/Users/anthonyche/xgap-data/unified-rdf-admission-20260921-v3/batch/cells/rdf-tiny/query-loss.json",
+          "sha256": "1ebb50555c4d4bdeea53ad9898cbfe78fd77df1800cdf8e235b079f5fce13967"
+        }
+      ]
+    },
+    {
+      "group": "external",
+      "status": "deadline_exceeded",
+      "composition_admitted": false,
+      "model_network_calls": 5,
+      "tokens": null,
+      "source_requests": 0,
+      "failure_categories": {
+        "source_timeout": 5
+      },
+      "external_remote_compute_quiescence": "not established",
+      "baseline_algorithm_changes": 0,
+      "original_prompt_changes": 0
+    },
+    {
+      "group": "external-v5",
+      "status": "method_error",
+      "composition_admitted": false,
+      "model_network_calls": 2,
+      "input_tokens": 2017,
+      "output_tokens": 111,
+      "lookup_requests": 1,
+      "federation_requests": 3,
+      "source_requests": 0,
+      "diagnosis": "pinned FedUP rejects author VALUES via unsupported OpTable",
+      "diagnosis_log": {
+        "path": "/Users/anthonyche/xgap-data/unified-external-admission-20260921-v5/fedup.log",
+        "sha256": "78b487f1b7a66b761afa608dd32f742fb361112a16a914ce94b6f9e05bf3c8d2"
+      },
+      "baseline_algorithm_changes": 0,
+      "original_prompt_changes": 0
+    }
+  ],
+  "release_blockers": [
+    "updated formal matrix, datasets and budgets not frozen",
+    "pinned ARUQULA plus FedUP composition encounters unsupported VALUES/OpTable; no successful source query",
+    "additional dataset mappings and actual source sharding not admitted by this tiny gate"
+  ]
+}

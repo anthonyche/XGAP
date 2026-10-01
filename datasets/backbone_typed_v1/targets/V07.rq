@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?low ?high WHERE { { SELECT (xsd:integer(FLOOR(?s)) AS ?low) WHERE { ?n a t:Person ; t:score ?s . FILTER(isNumeric(?s)) } ORDER BY ?s LIMIT 1 } { SELECT ?high WHERE { ?n a t:Person ; t:score ?high . FILTER(DATATYPE(?high)=xsd:boolean) } ORDER BY DESC(?high) LIMIT 1 } }

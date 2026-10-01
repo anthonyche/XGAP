@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from xgap.backends.capabilities import BackendCapabilityProfile
 from xgap.experiments.artifacts import (
@@ -44,7 +44,7 @@ from xgap.llm.openai_compatible import (
     OpenAICompatibleTransport,
 )
 from xgap.llm.parser import parse_planner_response
-from xgap.llm.schemas import PlannerRequest
+from xgap.llm.schemas import PlannerRequest, PlannerResponse
 from xgap.llm.validation import validate_candidate
 from xgap.planning import (
     DeterministicStateFeatureExtractor,
@@ -135,6 +135,10 @@ def _retrieval_limits(data: Mapping[str, Any]) -> RetrievalLimits:
 def _provider(
     model: ModelBundle,
     transport_override: OpenAICompatibleTransport | None,
+    *,
+    response_parser: Callable[
+        [Mapping[str, Any], PlannerRequest], PlannerResponse
+    ] = parse_planner_response,
 ) -> OpenAICompatibleStructuredCandidateProvider:
     config = model.config
     if model.structured_schema is None:
@@ -170,10 +174,12 @@ def _provider(
         seed_supported=config.seed_supported,
         max_repair_calls=config.max_repair_calls,
         extra_parameters=config.extra_parameters,
+        response_contract=config.metadata.get("response_contract"),
     )
     kwargs: dict[str, Any] = {
         "config": provider_config,
         "system_prompt": model.prompt.system_prompt,
+        "response_parser": response_parser,
     }
     if transport_override is not None:
         kwargs["transport"] = transport_override
@@ -183,10 +189,14 @@ def _provider(
 def build_openai_compatible_provider(
     model: ModelBundle,
     transport_override: OpenAICompatibleTransport | None = None,
+    *,
+    response_parser: Callable[
+        [Mapping[str, Any], PlannerRequest], PlannerResponse
+    ] = parse_planner_response,
 ) -> OpenAICompatibleStructuredCandidateProvider:
     """Build the existing frozen M12-B provider for another experiment runner."""
 
-    return _provider(model, transport_override)
+    return _provider(model, transport_override, response_parser=response_parser)
 
 
 def run_live_experiment(

@@ -1,0 +1,1138 @@
+[
+  {
+    "id": "B01",
+    "nl": "在 toy graph 中查找 Alice knows 的 people，年龄至少 30，返回人员和边。",
+    "program": {
+      "program_id": "B01",
+      "operators": [
+        {
+          "operator_id": "paths",
+          "kind": "traverse",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "path_var": null,
+              "source": {},
+              "expr": {
+                "kind": "rel",
+                "edge": {
+                  "label": {
+                    "$hole": "predicate"
+                  },
+                  "direction": "OUT",
+                  "properties": {}
+                }
+              },
+              "target": {},
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "WALK",
+              "condition": null,
+              "max_depth": null
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "resolved source identity",
+              "expression": "resolved source identity",
+              "policy": "hard",
+              "predicate": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "property": "id",
+                "value": {
+                  "$hole": "person"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator_id": "reached",
+          "kind": "project",
+          "input_ids": [
+            "paths"
+          ],
+          "input_kinds": [
+            "path_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "path_node",
+                "position": "last"
+              },
+              "edge": {
+                "kind": "path_edge",
+                "position": 1
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": {
+                "$hole": "type"
+              },
+              "properties": {}
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {},
+          "constraints": [
+            {
+              "constraint_id": "minimum target age",
+              "expression": "minimum target age",
+              "policy": "hard",
+              "predicate": {
+                "op": "ge",
+                "field": "age",
+                "value": {
+                  "$hole": "age"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "reached",
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "join"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              },
+              "edge": {
+                "kind": "field",
+                "field": "edge"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ],
+      "holes": [
+        {
+          "hole_id": "person",
+          "kind": "entity",
+          "mention": "Alice"
+        },
+        {
+          "hole_id": "predicate",
+          "kind": "predicate",
+          "mention": "knows"
+        },
+        {
+          "hole_id": "type",
+          "kind": "type",
+          "mention": "people"
+        },
+        {
+          "hole_id": "age",
+          "kind": "constraint",
+          "mention": "30"
+        },
+        {
+          "hole_id": "source",
+          "kind": "source",
+          "mention": "toy graph"
+        }
+      ]
+    },
+    "operator_sources": {
+      "paths": {
+        "$hole": "source"
+      },
+      "people": {
+        "$hole": "source"
+      }
+    },
+    "expected_bindings": {
+      "person": "a",
+      "predicate": "KNOWS",
+      "type": "Person",
+      "age": 30,
+      "source": "toy"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/c",
+        "edge": "https://xgap.test/toy/e4"
+      }
+    ],
+    "expected_logical_operators": [
+      "traverse",
+      "project",
+      "match",
+      "filter",
+      "join",
+      "project"
+    ],
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "neo4j": "targets/B01.cypher",
+      "fuseki": "targets/B01.rq"
+    },
+    "ordered": false,
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Join(Project(Traverse(KNOWS OUT, source.id=a)), Filter(age >= 30, Match(Person))) -> Project(person, edge)"
+  },
+  {
+    "id": "B02",
+    "nl": "在 toy graph 中查找 Bob knows 的 people，年龄至少 30，返回人员和边。",
+    "program": {
+      "program_id": "B02",
+      "operators": [
+        {
+          "operator_id": "paths",
+          "kind": "traverse",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "path_var": null,
+              "source": {},
+              "expr": {
+                "kind": "rel",
+                "edge": {
+                  "label": {
+                    "$hole": "predicate"
+                  },
+                  "direction": "OUT",
+                  "properties": {}
+                }
+              },
+              "target": {},
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "WALK",
+              "condition": null,
+              "max_depth": null
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "resolved source identity",
+              "expression": "resolved source identity",
+              "policy": "hard",
+              "predicate": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "property": "id",
+                "value": {
+                  "$hole": "person"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator_id": "reached",
+          "kind": "project",
+          "input_ids": [
+            "paths"
+          ],
+          "input_kinds": [
+            "path_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "path_node",
+                "position": "last"
+              },
+              "edge": {
+                "kind": "path_edge",
+                "position": 1
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": {
+                "$hole": "type"
+              },
+              "properties": {}
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {},
+          "constraints": [
+            {
+              "constraint_id": "minimum target age",
+              "expression": "minimum target age",
+              "policy": "hard",
+              "predicate": {
+                "op": "ge",
+                "field": "age",
+                "value": {
+                  "$hole": "age"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "reached",
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "join"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              },
+              "edge": {
+                "kind": "field",
+                "field": "edge"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ],
+      "holes": [
+        {
+          "hole_id": "person",
+          "kind": "entity",
+          "mention": "Bob"
+        },
+        {
+          "hole_id": "predicate",
+          "kind": "predicate",
+          "mention": "knows"
+        },
+        {
+          "hole_id": "type",
+          "kind": "type",
+          "mention": "people"
+        },
+        {
+          "hole_id": "age",
+          "kind": "constraint",
+          "mention": "30"
+        },
+        {
+          "hole_id": "source",
+          "kind": "source",
+          "mention": "toy graph"
+        }
+      ]
+    },
+    "operator_sources": {
+      "paths": {
+        "$hole": "source"
+      },
+      "people": {
+        "$hole": "source"
+      }
+    },
+    "expected_bindings": {
+      "person": "b",
+      "predicate": "KNOWS",
+      "type": "Person",
+      "age": 30,
+      "source": "toy"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/c",
+        "edge": "https://xgap.test/toy/e2"
+      }
+    ],
+    "expected_logical_operators": [
+      "traverse",
+      "project",
+      "match",
+      "filter",
+      "join",
+      "project"
+    ],
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "neo4j": "targets/B02.cypher",
+      "fuseki": "targets/B02.rq"
+    },
+    "ordered": false,
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Join(Project(Traverse(KNOWS OUT, source.id=b)), Filter(age >= 30, Match(Person))) -> Project(person, edge)"
+  },
+  {
+    "id": "B03",
+    "nl": "在 toy graph 中查找 Alice knows 的 people，年龄至少 45，返回人员和边。",
+    "program": {
+      "program_id": "B03",
+      "operators": [
+        {
+          "operator_id": "paths",
+          "kind": "traverse",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "path_var": null,
+              "source": {},
+              "expr": {
+                "kind": "rel",
+                "edge": {
+                  "label": {
+                    "$hole": "predicate"
+                  },
+                  "direction": "OUT",
+                  "properties": {}
+                }
+              },
+              "target": {},
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "WALK",
+              "condition": null,
+              "max_depth": null
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "resolved source identity",
+              "expression": "resolved source identity",
+              "policy": "hard",
+              "predicate": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "property": "id",
+                "value": {
+                  "$hole": "person"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator_id": "reached",
+          "kind": "project",
+          "input_ids": [
+            "paths"
+          ],
+          "input_kinds": [
+            "path_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "path_node",
+                "position": "last"
+              },
+              "edge": {
+                "kind": "path_edge",
+                "position": 1
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": {
+                "$hole": "type"
+              },
+              "properties": {}
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {},
+          "constraints": [
+            {
+              "constraint_id": "minimum target age",
+              "expression": "minimum target age",
+              "policy": "hard",
+              "predicate": {
+                "op": "ge",
+                "field": "age",
+                "value": {
+                  "$hole": "age"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "reached",
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "join"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              },
+              "edge": {
+                "kind": "field",
+                "field": "edge"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ],
+      "holes": [
+        {
+          "hole_id": "person",
+          "kind": "entity",
+          "mention": "Alice"
+        },
+        {
+          "hole_id": "predicate",
+          "kind": "predicate",
+          "mention": "knows"
+        },
+        {
+          "hole_id": "type",
+          "kind": "type",
+          "mention": "people"
+        },
+        {
+          "hole_id": "age",
+          "kind": "constraint",
+          "mention": "45"
+        },
+        {
+          "hole_id": "source",
+          "kind": "source",
+          "mention": "toy graph"
+        }
+      ]
+    },
+    "operator_sources": {
+      "paths": {
+        "$hole": "source"
+      },
+      "people": {
+        "$hole": "source"
+      }
+    },
+    "expected_bindings": {
+      "person": "a",
+      "predicate": "KNOWS",
+      "type": "Person",
+      "age": 45,
+      "source": "toy"
+    },
+    "expected_rows": [],
+    "expected_logical_operators": [
+      "traverse",
+      "project",
+      "match",
+      "filter",
+      "join",
+      "project"
+    ],
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "neo4j": "targets/B03.cypher",
+      "fuseki": "targets/B03.rq"
+    },
+    "ordered": false,
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "a"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Join(Project(Traverse(KNOWS OUT, source.id=a)), Filter(age >= 45, Match(Person))) -> Project(person, edge)"
+  },
+  {
+    "id": "B04",
+    "nl": "在 toy graph 的 people 中，返回 Alice 的身份和年龄，并要求年龄至少30。",
+    "program": {
+      "program_id": "B04",
+      "operators": [
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": {
+                "$hole": "type"
+              }
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "resolved person identity",
+              "expression": "resolved person identity",
+              "policy": "hard",
+              "predicate": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "property": "id",
+                "value": {
+                  "$hole": "person"
+                }
+              }
+            },
+            {
+              "constraint_id": "minimum person age",
+              "expression": "minimum person age",
+              "policy": "hard",
+              "predicate": {
+                "kind": "property_gte",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "property": "age",
+                "value": {
+                  "$hole": "age"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "roots": [
+        "people"
+      ],
+      "holes": [
+        {
+          "hole_id": "person",
+          "kind": "entity",
+          "mention": "Alice"
+        },
+        {
+          "hole_id": "type",
+          "kind": "type",
+          "mention": "people"
+        },
+        {
+          "hole_id": "age",
+          "kind": "constraint",
+          "mention": "30"
+        },
+        {
+          "hole_id": "source",
+          "kind": "source",
+          "mention": "toy graph"
+        }
+      ]
+    },
+    "operator_sources": {
+      "people": {
+        "$hole": "source"
+      }
+    },
+    "expected_bindings": {
+      "person": "a",
+      "type": "Person",
+      "age": 30,
+      "source": "toy"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/a",
+        "age": 30
+      }
+    ],
+    "expected_logical_operators": [
+      "match"
+    ],
+    "expected_remote_calls": 1,
+    "reference_target_queries": {
+      "neo4j": "targets/B04.cypher",
+      "fuseki": "targets/B04.rq"
+    },
+    "ordered": false,
+    "gold_path_pattern_query": null,
+    "expected_logical_plan": "Project(person, age, Selection(id = a AND age >= 30, Nodes(Person)))"
+  },
+  {
+    "id": "B05",
+    "nl": "在 toy graph 中查找 Alex knows 的 people，年龄至少 30，返回人员和边。 已收集的测试澄清选择为 Bob。",
+    "program": {
+      "program_id": "B05",
+      "operators": [
+        {
+          "operator_id": "paths",
+          "kind": "traverse",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "path_set",
+          "parameters": {
+            "path_pattern": {
+              "path_var": null,
+              "source": {},
+              "expr": {
+                "kind": "rel",
+                "edge": {
+                  "label": {
+                    "$hole": "predicate"
+                  },
+                  "direction": "OUT",
+                  "properties": {}
+                }
+              },
+              "target": {},
+              "selector": {
+                "kind": "ALL",
+                "k": null
+              },
+              "restrictor": "WALK",
+              "condition": null,
+              "max_depth": null
+            }
+          },
+          "constraints": [
+            {
+              "constraint_id": "resolved source identity",
+              "expression": "resolved source identity",
+              "policy": "hard",
+              "predicate": {
+                "kind": "property_equals",
+                "ref": {
+                  "kind": "node",
+                  "position": "first"
+                },
+                "property": "id",
+                "value": {
+                  "$hole": "person"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator_id": "reached",
+          "kind": "project",
+          "input_ids": [
+            "paths"
+          ],
+          "input_kinds": [
+            "path_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "path_node",
+                "position": "last"
+              },
+              "edge": {
+                "kind": "path_edge",
+                "position": 1
+              }
+            }
+          }
+        },
+        {
+          "operator_id": "people",
+          "kind": "match",
+          "input_ids": [],
+          "input_kinds": [],
+          "output_kind": "binding_set",
+          "parameters": {
+            "node": {
+              "label": {
+                "$hole": "type"
+              },
+              "properties": {}
+            },
+            "entity_field": "person",
+            "properties": {
+              "age": "age"
+            }
+          }
+        },
+        {
+          "operator_id": "eligible",
+          "kind": "filter",
+          "input_ids": [
+            "people"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {},
+          "constraints": [
+            {
+              "constraint_id": "minimum target age",
+              "expression": "minimum target age",
+              "policy": "hard",
+              "predicate": {
+                "op": "ge",
+                "field": "age",
+                "value": {
+                  "$hole": "age"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator_id": "join",
+          "kind": "join",
+          "input_ids": [
+            "reached",
+            "eligible"
+          ],
+          "input_kinds": [
+            "binding_set",
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "left_on": "person",
+            "right_on": "person"
+          }
+        },
+        {
+          "operator_id": "answer",
+          "kind": "project",
+          "input_ids": [
+            "join"
+          ],
+          "input_kinds": [
+            "binding_set"
+          ],
+          "output_kind": "binding_set",
+          "parameters": {
+            "projections": {
+              "person": {
+                "kind": "field",
+                "field": "person"
+              },
+              "edge": {
+                "kind": "field",
+                "field": "edge"
+              }
+            }
+          }
+        }
+      ],
+      "roots": [
+        "answer"
+      ],
+      "holes": [
+        {
+          "hole_id": "person",
+          "kind": "entity",
+          "mention": "Alex"
+        },
+        {
+          "hole_id": "predicate",
+          "kind": "predicate",
+          "mention": "knows"
+        },
+        {
+          "hole_id": "type",
+          "kind": "type",
+          "mention": "people"
+        },
+        {
+          "hole_id": "age",
+          "kind": "constraint",
+          "mention": "30"
+        },
+        {
+          "hole_id": "source",
+          "kind": "source",
+          "mention": "toy graph"
+        }
+      ]
+    },
+    "operator_sources": {
+      "paths": {
+        "$hole": "source"
+      },
+      "people": {
+        "$hole": "source"
+      }
+    },
+    "expected_bindings": {
+      "person": "b",
+      "predicate": "KNOWS",
+      "type": "Person",
+      "age": 30,
+      "source": "toy"
+    },
+    "expected_rows": [
+      {
+        "person": "https://xgap.test/toy/c",
+        "edge": "https://xgap.test/toy/e2"
+      }
+    ],
+    "expected_logical_operators": [
+      "traverse",
+      "project",
+      "match",
+      "filter",
+      "join",
+      "project"
+    ],
+    "expected_remote_calls": 2,
+    "reference_target_queries": {
+      "neo4j": "targets/B05.cypher",
+      "fuseki": "targets/B05.rq"
+    },
+    "ordered": false,
+    "explicit_user_selection": {
+      "person": "entity:bob"
+    },
+    "gold_path_pattern_query": {
+      "path_var": null,
+      "source": {
+        "properties": {
+          "id": "b"
+        }
+      },
+      "expr": {
+        "kind": "rel",
+        "edge": {
+          "label": "KNOWS",
+          "direction": "OUT",
+          "properties": {}
+        }
+      },
+      "target": {},
+      "selector": {
+        "kind": "ALL",
+        "k": null
+      },
+      "restrictor": "WALK",
+      "condition": null,
+      "max_depth": null
+    },
+    "expected_logical_plan": "Join(Project(Traverse(KNOWS OUT, source.id=b)), Filter(age >= 30, Match(Person))) -> Project(person, edge)"
+  }
+]

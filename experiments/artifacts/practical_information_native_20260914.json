@@ -1,0 +1,112 @@
+{
+  "schema_version": "xgap-practical-information-evidence-v1",
+  "base_commit": "d544aca",
+  "success": true,
+  "paper_result": false,
+  "new_distinct_checks": 14,
+  "affected_prior_checks": 3,
+  "live_model_calls": 0,
+  "large_dataset_queries": 0,
+  "baseline_calls": 0,
+  "files": [
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_tools.py",
+      "sha256": "28fcd0cb794602098e11536729098a456dee7829ad9404eb193dbdc21e12eeaa"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_execution.py",
+      "sha256": "4d5d9bc9f3210608d77529694dce134528f32688a96034dde7a6877cdbc14ff3"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_question.py",
+      "sha256": "1b3a3ad779ceef0630e4397f25c5c8954778733ac187f4608cd3fdf7604262a3"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/practical_planning.py",
+      "sha256": "bdca2d099bb1cc0f0e821536e8148ba47e99759676962983f1a834b53eb19ecf"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/src/xgap/agent/strong_planning.py",
+      "sha256": "6c672168d4076b68a973822f135479d50c18e7475e309093d9f349289526b3a8"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/tests/test_practical_tools.py",
+      "sha256": "f13a04a452031d0b73d28d18a0fc853f85935e6a498ebd9f24b7d77bc8959fcf"
+    },
+    {
+      "path": "/Users/anthonyche/Developer/XGAP/scripts/check_practical_strong_native.py",
+      "sha256": "8d28c466dcae8d595a3c5a0256dd23dc2ce3ebcfff5ae874b2c634ae62b54096"
+    }
+  ],
+  "test_runs": [
+    {
+      "passed": 3,
+      "failed": 9,
+      "scope": "first provider scope checks; empty question rejected before I/O"
+    },
+    {
+      "passed": 9,
+      "failed": 0,
+      "seconds": 0.89,
+      "scope": "all initial new adapter risks"
+    },
+    {
+      "passed": 1,
+      "failed": 2,
+      "scope": "OpenAI output cap incorrectly reused as input cap"
+    },
+    {
+      "passed": 5,
+      "failed": 0,
+      "seconds": 0.61,
+      "scope": "two repaired OpenAI transport cases and three affected proposal cost cases"
+    },
+    {
+      "passed": 2,
+      "failed": 0,
+      "seconds": 0.28,
+      "scope": "multiple model candidates and incomplete catalog singleton"
+    }
+  ],
+  "native_attempts": [
+    {
+      "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a1/receipt.json",
+      "sha256": "ff5e551208242cc9e34877a9483c1d862b5a10fbdc92a80d21683efd107dbfa5"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a2/receipt.json",
+      "sha256": "cc4e39cfa8a9c7428ec4ac32850b6ccd6a0bdee8afa301e18ee39ae7cda60b46"
+    }
+  ],
+  "native_input_seal": {
+    "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a2/input-seal.json",
+    "sha256": "4d026c687fe269aeb05fbae2f41fc34ac87cd42a40e44ac440518114af35c6fd"
+  },
+  "native_result": {
+    "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a2/result.json",
+    "sha256": "10c97b4cdcac909787ab6b023f500b3336e5ca51ecd86b9a1d57b47da8c3b9ba"
+  },
+  "native_outcome": {
+    "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a2/outcome.json",
+    "sha256": "0f621ce66c62226accebed8d8b1ac557c03cd8e43d975337af79b783c49a23dc"
+  },
+  "native_source_scope": "Native input seal pins the exact source used before subsequent LLM-only wrapper and incomplete-scan rejection additions; no successful native query repeated.",
+  "source_captures": [
+    {
+      "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a2/backend-0000-intent.json",
+      "sha256": "9de2451993321e3a7d8476540d6c6fe2a91fd1c8235c0e675b88779eb9d0bfac"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a2/backend-0000-result.json",
+      "sha256": "f1fc444b3070bdf944f70f3cf8dd40dee8ad500391713ecac0b9e29f0239791f"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a2/backend-0001-intent.json",
+      "sha256": "286b4a59efbefe24b10552f4f7d7b2caa23f6c92532ce5c4abdfdac4165342a9"
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/practical-strong-native-20260914-a2/backend-0001-result.json",
+      "sha256": "8e98ab998563a3ff2549ef10d562925014b9d5a56ce77a83c61ddf6e2a96f904"
+    }
+  ]
+}

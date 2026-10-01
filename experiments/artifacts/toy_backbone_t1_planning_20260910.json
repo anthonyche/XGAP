@@ -1,0 +1,4922 @@
+{
+  "success": true,
+  "scope": "T1 semantic candidate planning",
+  "live_llm": false,
+  "paper_result": false,
+  "nodes": 5,
+  "edges": 8,
+  "source_sha256": {
+    "src/xgap/experiments/toy_backbone.py": "df2d916991cfbe4eb54abe760b3e444bc350a4e50c35260463e3ee83351abe5b",
+    "src/xgap/compilers/directed.py": "c51078ad7cd6c4160716e7171be77267510d146b49b616974745136d74da81ea",
+    "src/xgap/compilers/rdf_encoding.py": "7a87a1d283a3c270e71a30ce247185689cca76569f317133a0afcd9dca3f2947",
+    "src/xgap/runtime/directed_fragments.py": "1310c5f16e5c083e576a58af72be9a4d7316693cec292486cc60734807955380",
+    "src/xgap/compilers/bounded_paths.py": "6790c08b6ebcde4203b588691390bd7933bd236708b4aff290ca96081e1d30e0",
+    "src/xgap/runtime/bounded_paths.py": "0fbb4e803aba5bd13b569c60345f6cc66b983bb35ee21b580bf0b9fa9e12ce37",
+    "src/xgap/runtime/path_selection.py": "bbb646b7d0fd02548cbe2d20a4e284f9ec915bd12b465abba237fea07ac43368",
+    "src/xgap/runtime/contracts.py": "556bd32b8be7fe930c91ae94c0d78560f30616d3029346049f7ef201341e9891",
+    "src/xgap/runtime/scheduler.py": "4cdcafd8e24d86fa466c1460a6dd0d8fa1b551ac270d9cafa1bc7521984f3a90",
+    "src/xgap/algebra/evaluator.py": "2cfdfd84aad69e38e5fa9ba163f5fbcc77f2b99f2002487d22658fa08196fe43",
+    "scripts/run_toy_backbone_native.py": "21d87cef5937d1c046de2dca43ef0cd4beceaf93a1115b5a06d4139715751cc1",
+    "src/xgap/experiments/toy_semantic.py": "091cf64ba3b0fc845ae91b3932b883eef87b61ca1e49896c7dd42ac8db5b2900",
+    "src/xgap/compilers/node_match.py": "f799213b17aa45b97d0c86209673ec0ab670833838c35f3e881960a7192fe480",
+    "src/xgap/runtime/semantic_compiler.py": "95d6d9b928003c2081ee9cb9d751fe72b20ab86272dddfcf921e1309522b4bf7",
+    "src/xgap/runtime/row_operations.py": "99671d516930bd20a6bce4efdb10643b5fe779c185c4247bdb9ad0a2ff544458",
+    "src/xgap/semantic/program.py": "46e9a68f4587a053b678173423f617dcdbc504b4b3b322548e5f360a3f795860",
+    "src/xgap/runtime/semantic_planning.py": "0328709f54764f8767f27203ea1d5e5f0014e89cc875ed5b34b1f352b75aa67f",
+    "src/xgap/runtime/planning.py": "e9fda1770e9dc3caa0781893d171f1201cb94fca4076dc540ffa6615618aa0cb",
+    "src/xgap/runtime/observations.py": "5b03d89ceffe1d0b177b1f629c8ce0813c2e333a68393126c88bf5e220830f8c",
+    "src/xgap/runtime/tool.py": "8d4c9cc2cee30a02b5b1de2ca34c60bea8e4704ce2cf199636b90c070f649a64",
+    "src/xgap/tools/backends.py": "c17041cf18452ffa8d5f6aeca8d57de0a1e03a011b8a7b13c71100efa151d1ba",
+    "src/xgap/experiments/toy_planning.py": "cdf28fc8c9d761647b94cdc15c44685b5c956aaa4004fa91af4d928465c256c8"
+  },
+  "fixture_sha256": {
+    "load.cypher": "2892f0d12746501a208cbf1fbd6e9c494892790149ef373659d4653521d3875d",
+    "load.ttl": "9732faf79aa80559b5e2d737177599421061bd787d006226ec7438db69904c24",
+    "queries.json": "535616a42a1e3bfd857b9385d74fbe176f931f59a54d26798c20511000e31f89",
+    "README.md": "b2f55b283799f5d8507374c0db95b9263dd85733bbacd40e30d9b43efabbd171",
+    "mapping.json": "651d44578283f4f2e5a5f016380c5b784a2dcdda2bf5b27491d6a947c168eb2d",
+    "graph.json": "b72a0a97d3dbf8919c3303ffd2b9c6121659f4e19d6059b72cd55a75f4f7f82e",
+    "targets/T05.rq": "e87318bcc0b3d672d65c4aae9e505603c29ba8976e106e9dd8d7af09ae4dd7d5",
+    "targets/T15.rq": "1db62fe203183958305b2a9e0fbba8efca2de8d1e3e9e42a9fe1059b654f52f3",
+    "targets/T01.rq": "a00b5bd4917e76a1c15f8f865c347c195f83d02b072c9576a04bebd33d47a0f0",
+    "targets/T11.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744",
+    "targets/T06.cypher": "afeaa20cc69e0897cfd688f9237f27266cba612bfa63c597bf71b5f821d15875",
+    "targets/T18.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+    "targets/T14.cypher": "0e514c6476c01fb70d28090456cc28521821a29d79e1892f7b1e0809b5eec5a0",
+    "targets/T08.cypher": "6c5253698a126ada92f72732069cd6a5979b7192580a9e33aa4776f30023d75f",
+    "targets/T10.rq": "3f9a4681586298ec4d9297c2d81627999b8af15238979b9ea5bee54a88a6c57b",
+    "targets/T16.cypher": "61960fc15e0d8fb9fb71165f7f6b3c65380d53413289914e8e8a4be948cd5490",
+    "targets/T04.cypher": "3676afacfd0feaea3587f080aaf9d3da6a410820131a5d0b61ac4a127dea7ff9",
+    "targets/T04.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+    "targets/T14.rq": "033de848d509b48fd6c1d66f1c751e515a3fd77a1abdbc784a7baacbf43bc757",
+    "targets/T12.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+    "targets/T10.cypher": "e1b26267c63ce1a677a7a851a28df92fba3745cb5c20a24d8744238c01e36d4f",
+    "targets/T02.cypher": "d86bc59390e1fff6bb779265d51ee77a7d583542eb039be09c2dbde1cffb4fc5",
+    "targets/T07.cypher": "07d23b2b6b08ab61e95a2c8ea4094a4324434a17e05516375f91931f535b5f81",
+    "targets/T09.rq": "73e9ac1bd8dfa90e8582a1985df374269282fedddcb4ad8d760f78d9997598c3",
+    "targets/T15.cypher": "7f0703bdb9c1bc1847d4b52e09293b79727bfadc9ba1e492a9831877bad75a0d",
+    "targets/T17.cypher": "bfda0b91e68e9cf8e342b66fad4b92a00f0b4f1c1596fcaee9550a3752576352",
+    "targets/T09.cypher": "245dd0a9f89b1fb5dbf8fe716606d0e0256df10f836317faeba17cbf5edfadb9",
+    "targets/T08.rq": "044340291081f454b6e889b65b434771e9d900f4884a435cb27bea79036ab888",
+    "targets/T05.cypher": "3ec22f5c5ed0908fce931b5c057ad4d8802676f978fe68b368b085ca28564660",
+    "targets/T18.rq": "51a0f15df7cd18286a87adb677c2a720b70b35b7dcf59a130ddc6868af4266e9",
+    "targets/T03.rq": "67eabd839fda760f33e256957d3ab8329677a13a03c2d19635388dc77e54193b",
+    "targets/T13.rq": "c9ffd69f3126b145f896857bd5a6d01c11bdd1ef14b42f09cd64314686fd6d37",
+    "targets/T07.rq": "7a94f0c71ba0313126c0db8905b54f223bd3c6efa30037152fc536c07c56e15d",
+    "targets/T01.cypher": "e049929f9ec5d2f31f00eb5438c91bcb0655597a0dc8960c3edb323bbdb0207e",
+    "targets/T17.rq": "92f269b29867f27ed67c12495bec6aced2a06e1c9109440c8d9a34d197cb6d64",
+    "targets/T13.cypher": "bc3f51702531287a7e5709402958aebf972c2fca3227cdf53e1174ae0dff52ce",
+    "targets/T06.rq": "a71c2a539116458ede6ed456c61003a92aecd0984e59b80e18da413275653867",
+    "targets/T16.rq": "ac91a127dc7c1e35aadf2f443adbe502c7dc024f563e24b2d8c45068998d7963",
+    "targets/T11.cypher": "ebbac9c1214e2b468b54e58def0968b81f3a0c263783cbb2b7eb24fe3fd59716",
+    "targets/T03.cypher": "6614e75e6687d07d2daa85b71b80c35d85f5509f6fbaea2bb360eaac878bb048",
+    "targets/T02.rq": "ab050b118a1f6533502a985d7ed74c2eb6e80c610c39e52240d2cc4bbf169181",
+    "targets/T12.rq": "d51cedbfeac1c7b927ab2082cfdbe29666878e7af97812093849ffb6f4e06744"
+  },
+  "semantic_fixture_sha256": {
+    "README.md": "cdc1d423c20e9e04dd4d80ebedda7d821713c919061dc41078a2dcb03a48b56c",
+    "cases.json": "8d6a910e0dd67c57b9ea5ae7c103c69897c07c0bf7fa579e11e24d1f31f2bd8d",
+    "targets/S02.cypher": "ff8c9f5a55139eecae503fdeef00982d5262965a0a3371251e5e1049d6071a94",
+    "targets/S08.cypher": "4200e2e403c99ff221a3e9ef74dd33ca62ce72e35fc917637a078867ab27affb",
+    "targets/S04.cypher": "c12e80a162dd0b1d74b05cc1a3193295d19d843ae56a7824d9240e176468caea",
+    "targets/S04.rq": "6275fcfcc368a00a51a3e6326153fde122bc3ab68d238df82baa4a1c12c5a595",
+    "targets/S05.rq": "cb27b6ce923cae76be8b1b978f3678677d09692a28081d7252382f42320c6c9d",
+    "targets/S01.rq": "335289ca39a3ceaef052cb9e718f45f4f4c1d183491828efa17c92b6263f2ee3",
+    "targets/S06.cypher": "317679fce1d0f8a8e9fb3becb3f1cdbcf16fc876262306c0a96b0cc24e6d06d8",
+    "targets/S06.rq": "dc35c4596829549b39c24e4d7a002eed14d1426f9406122863ffd327fbcdb203",
+    "targets/S03.cypher": "50dc8cc6539492dbe2aec3aef5757e0bc5b70d69eb0dfed783a4bad692834c90",
+    "targets/S02.rq": "9696decbd913133872a8ee562cc6d70b98e30342e9ea9a33050c9bdd559879a1",
+    "targets/S03.rq": "b3dcba2552df1608b088bb4e00a76b1de5450c3059c303c44503d074dbb57e23",
+    "targets/S07.rq": "29b76fd477c4ff4d4c013976d8de37422bbd20c09a4f5d45fd2d478ff3a379bc",
+    "targets/S01.cypher": "4200e2e403c99ff221a3e9ef74dd33ca62ce72e35fc917637a078867ab27affb",
+    "targets/S05.cypher": "c05f7e227b4031ad807a5d70931b8d7c8e54f80971ec56d149310a6823baa847",
+    "targets/S08.rq": "335289ca39a3ceaef052cb9e718f45f4f4c1d183491828efa17c92b6263f2ee3",
+    "targets/S07.cypher": "e1ef06e7ebcf1618ed8ffd1a6fbe3bf5fd601c8df002454c3d24d9e5c4bc6bfb"
+  },
+  "health": [
+    {
+      "service_id": "neo4j",
+      "success": true,
+      "attempts": 12,
+      "elapsed_ms": 6381.598542444408,
+      "http_status": 200,
+      "process_exit_code": null,
+      "last_error": null
+    },
+    {
+      "service_id": "fuseki",
+      "success": true,
+      "attempts": 3,
+      "elapsed_ms": 1089.9241669103503,
+      "http_status": 200,
+      "process_exit_code": null,
+      "last_error": null
+    }
+  ],
+  "shutdown": [
+    {
+      "service_id": "fuseki",
+      "pid": 85795,
+      "initial_exit_code": null,
+      "final_exit_code": 143,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    },
+    {
+      "service_id": "neo4j",
+      "pid": 85688,
+      "initial_exit_code": null,
+      "final_exit_code": 0,
+      "signal_sent": "SIGTERM",
+      "escalated_to_kill": false,
+      "success": true,
+      "error": null
+    }
+  ],
+  "automatic_retries": 0,
+  "raw_path": "/Users/anthonyche/xgap-data/t1-planning-native-20260910/result.json",
+  "raw_sha256": "fc5088824af47b020575845e3d170286fa2b8b26521bd8d8d38e271644c3ce88",
+  "native_session": 55823,
+  "native_exit_code": 0,
+  "programs": [
+    {
+      "query_id": "S01",
+      "success": true,
+      "candidate_checks": [
+        {
+          "plan_id": "S01/0224200ac9952e37738e",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "S01/5d996b6a8ab76607e72f",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S01/79054f8e0e304a96c3ac",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S01/5632a612c3dd7a90568d",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "selected_plan": {
+        "plan_id": "S01/0224200ac9952e37738e",
+        "nodes": [
+          {
+            "node_id": "paths/candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"a\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 1,
+                  "branch_edge_counts": [
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              },
+              "observation_key": "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3"
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/candidates/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "paths/candidates"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "paths/candidates/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "reached/project",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "paths/paths"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "path_node",
+                  "position": "last"
+                },
+                "edge": {
+                  "kind": "path_edge",
+                  "position": 1
+                }
+              },
+              "resource_namespace": "https://xgap.test/toy/"
+            },
+            "semantic_operator_ids": [
+              "reached"
+            ]
+          },
+          {
+            "node_id": "people/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "people-match",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?entity ?age WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 a <https://xgap.test/toy/Person> .\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n}\n?source a ?nodeDomain . VALUES ?nodeDomain { <https://xgap.test/toy/Person> }\nBIND(?source AS ?entity)\nOPTIONAL { ?source <https://xgap.test/toy/age> ?age . }\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "fuseki",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.node_labels",
+                    "graph_model.rdf_graph",
+                    "native.sparql",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                    "RDF type triples represent XGAP node-label predicates.",
+                    "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                  ],
+                  "backend_mapping": {
+                    "mapping_id": "backbone-toy-v1",
+                    "version": "1",
+                    "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                    "relevant_mapped_iris": [
+                      {
+                        "logical_token": "Person",
+                        "canonical_term_id": "Person",
+                        "kind": "class",
+                        "iri": "https://xgap.test/toy/Person"
+                      }
+                    ]
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "entity",
+                    "age"
+                  ],
+                  "output_columns": [
+                    "entity",
+                    "age"
+                  ]
+                }
+              },
+              "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "people/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "people/native/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": [
+                "age"
+              ]
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "eligible/filter",
+            "kind": "coordinator_filter",
+            "inputs": [
+              "people/bindings"
+            ],
+            "parameters": {
+              "condition": {
+                "op": "ge",
+                "field": "age",
+                "value": 30
+              }
+            },
+            "semantic_operator_ids": [
+              "eligible"
+            ]
+          },
+          {
+            "node_id": "join/right_columns",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "eligible/filter"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                },
+                "age": {
+                  "kind": "field",
+                  "field": "age"
+                }
+              }
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "join/join",
+            "kind": "coordinator_join",
+            "inputs": [
+              "reached/project",
+              "join/right_columns"
+            ],
+            "parameters": {
+              "left_on": "person",
+              "right_on": "person",
+              "right_prefix": "right_"
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "answer/project",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "join/join"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                },
+                "edge": {
+                  "kind": "field",
+                  "field": "edge"
+                }
+              },
+              "resource_namespace": null
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "roots": [
+          "answer/project"
+        ],
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "semantic_dag_v1",
+          "semantic_program_sha256": "489d57d17287a401ddfce2a7b7a72369fb35c88c126e158d025d82dd6ebc8115",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "fuseki"
+          },
+          "operator_outputs": {
+            "paths": "paths/paths",
+            "reached": "reached/project",
+            "people": "people/bindings",
+            "eligible": "eligible/filter",
+            "join": "join/join",
+            "answer": "answer/project"
+          },
+          "schemas": {
+            "paths": {
+              "kind": "path_set",
+              "fields": [
+                "path"
+              ],
+              "path_namespace": "https://xgap.test/toy/"
+            },
+            "reached": {
+              "kind": "binding_set",
+              "fields": [
+                "edge",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "people": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "eligible": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "join": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "edge",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "answer": {
+              "kind": "binding_set",
+              "fields": [
+                "edge",
+                "person"
+              ],
+              "path_namespace": null
+            }
+          },
+          "logical_sources": {
+            "paths": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            },
+            "people": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            }
+          },
+          "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"
+        }
+      },
+      "selection": {
+        "semantic_equivalence_key": "6003283459b224680219aeea87ca03ebefe35a0f101ba18b59758c7f1401bd80",
+        "snapshot_id": "semantic-plan-observations",
+        "snapshot_version": "6003283459b224680219aeea87ca03ebefe35a0f101ba18b59758c7f1401bd80",
+        "selected_plan_id": "S01/0224200ac9952e37738e",
+        "estimates": [
+          {
+            "plan_id": "S01/0224200ac9952e37738e",
+            "predicted_latency_ms": 55.715333902418614,
+            "predicted_transfer_bytes": 1539.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+              "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 54.76733390241861,
+              "paths/candidates/exchange": 55.54533390241861,
+              "paths/paths": 55.57533390241861,
+              "reached/project": 55.605333902418614,
+              "people/native": 24.51587561517954,
+              "people/native/exchange": 25.276875615179538,
+              "people/bindings": 25.32687561517954,
+              "eligible/filter": 25.37687561517954,
+              "join/right_columns": 25.42687561517954,
+              "join/join": 55.68533390241861,
+              "answer/project": 55.715333902418614
+            },
+            "node_row_counts": {
+              "paths/candidates": 3.0,
+              "paths/candidates/exchange": 3.0,
+              "paths/paths": 3.0,
+              "reached/project": 3.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 3.0,
+              "answer/project": 3.0
+            }
+          },
+          {
+            "plan_id": "S01/5632a612c3dd7a90568d",
+            "predicted_latency_ms": 247.20949953860045,
+            "predicted_transfer_bytes": 595.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+              "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 246.71349953860044,
+              "paths/candidates/exchange": 247.03949953860044,
+              "paths/paths": 247.06949953860044,
+              "reached/project": 247.09949953860044,
+              "people/native": 67.52174999564886,
+              "people/native/exchange": 67.79074999564887,
+              "people/bindings": 67.84074999564886,
+              "eligible/filter": 67.89074999564886,
+              "join/right_columns": 67.94074999564886,
+              "join/join": 247.17949953860045,
+              "answer/project": 247.20949953860045
+            },
+            "node_row_counts": {
+              "paths/candidates": 3.0,
+              "paths/candidates/exchange": 3.0,
+              "paths/paths": 3.0,
+              "reached/project": 3.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 3.0,
+              "answer/project": 3.0
+            }
+          },
+          {
+            "plan_id": "S01/5d996b6a8ab76607e72f",
+            "predicted_latency_ms": 68.05074999564886,
+            "predicted_transfer_bytes": 1047.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+              "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 54.76733390241861,
+              "paths/candidates/exchange": 55.54533390241861,
+              "paths/paths": 55.57533390241861,
+              "reached/project": 55.605333902418614,
+              "people/native": 67.52174999564886,
+              "people/native/exchange": 67.79074999564887,
+              "people/bindings": 67.84074999564886,
+              "eligible/filter": 67.89074999564886,
+              "join/right_columns": 67.94074999564886,
+              "join/join": 68.02074999564886,
+              "answer/project": 68.05074999564886
+            },
+            "node_row_counts": {
+              "paths/candidates": 3.0,
+              "paths/candidates/exchange": 3.0,
+              "paths/paths": 3.0,
+              "reached/project": 3.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 3.0,
+              "answer/project": 3.0
+            }
+          },
+          {
+            "plan_id": "S01/79054f8e0e304a96c3ac",
+            "predicted_latency_ms": 247.20949953860045,
+            "predicted_transfer_bytes": 1087.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+              "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 246.71349953860044,
+              "paths/candidates/exchange": 247.03949953860044,
+              "paths/paths": 247.06949953860044,
+              "reached/project": 247.09949953860044,
+              "people/native": 24.51587561517954,
+              "people/native/exchange": 25.276875615179538,
+              "people/bindings": 25.32687561517954,
+              "eligible/filter": 25.37687561517954,
+              "join/right_columns": 25.42687561517954,
+              "join/join": 247.17949953860045,
+              "answer/project": 247.20949953860045
+            },
+            "node_row_counts": {
+              "paths/candidates": 3.0,
+              "paths/candidates/exchange": 3.0,
+              "paths/paths": 3.0,
+              "reached/project": 3.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 3.0,
+              "answer/project": 3.0
+            }
+          }
+        ],
+        "selection_rule": "minimum predicted latency, then transfer bytes, remote calls, plan id"
+      },
+      "observation_snapshot": {
+        "snapshot_id": "semantic-plan-observations",
+        "version": "6003283459b224680219aeea87ca03ebefe35a0f101ba18b59758c7f1401bd80",
+        "estimates": [
+          {
+            "observation_key": "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+            "backend_id": "neo4j",
+            "elapsed_ms": 246.71349953860044,
+            "row_count": 3,
+            "row_width_bytes": 108.66666666666667,
+            "output_bytes": 326.0,
+            "source": "semantic-native-observations/bounded-paths/22268382c639e544341802ec16b90be81c56a09f8ec689c8af72fd9d4d303057",
+            "version": "6003283459b224680219aeea87ca03ebefe35a0f101ba18b59758c7f1401bd80"
+          },
+          {
+            "observation_key": "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+            "backend_id": "fuseki",
+            "elapsed_ms": 54.76733390241861,
+            "row_count": 3,
+            "row_width_bytes": 259.3333333333333,
+            "output_bytes": 778.0,
+            "source": "semantic-native-observations/bounded-paths/9e4ab317218bd183fe70f1af71ea53909e632cf9ec8c6b549103135f3f4dff00",
+            "version": "6003283459b224680219aeea87ca03ebefe35a0f101ba18b59758c7f1401bd80"
+          },
+          {
+            "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+            "backend_id": "neo4j",
+            "elapsed_ms": 67.52174999564886,
+            "row_count": 5,
+            "row_width_bytes": 53.8,
+            "output_bytes": 269.0,
+            "source": "semantic-native-observations/people-match/1457694b51533106aadbf91875331874bf1383e632f9817637633499b6f6871a",
+            "version": "6003283459b224680219aeea87ca03ebefe35a0f101ba18b59758c7f1401bd80"
+          },
+          {
+            "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+            "backend_id": "fuseki",
+            "elapsed_ms": 24.51587561517954,
+            "row_count": 5,
+            "row_width_bytes": 152.2,
+            "output_bytes": 761.0,
+            "source": "semantic-native-observations/people-match/5ba81baacc37faa92ab8bad349e3581bcaa230bfb76c0a27fa1915e225e691cb",
+            "version": "6003283459b224680219aeea87ca03ebefe35a0f101ba18b59758c7f1401bd80"
+          }
+        ],
+        "bandwidth_bytes_per_ms": 1000.0,
+        "exchange_fixed_ms": 0.0,
+        "coordinator_row_ms": 0.01
+      },
+      "observation_requests": [
+        {
+          "call_id": "observe-1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+          "observation_key": "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14"
+          }
+        },
+        {
+          "call_id": "observe-6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+          "observation_key": "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3"
+          }
+        },
+        {
+          "call_id": "observe-91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+          "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+          }
+        },
+        {
+          "call_id": "observe-dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+          "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+          }
+        }
+      ],
+      "costs": {
+        "enumeration_ms": 22.13937509804964,
+        "planning_ms": 416.4056247100234,
+        "selection_ms": 0.23537501692771912,
+        "end_to_end_ms": 441.03675056248903,
+        "observation_calls": 4,
+        "execution_calls": 2,
+        "total_remote_calls": 6
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e4"
+        }
+      ],
+      "validation_only_extra_remote_calls": 6,
+      "serving_metrics": {
+        "elapsed_ms": 24.312750436365604,
+        "remote_calls": 2.0,
+        "bytes_moved": 1539.0,
+        "row_count": 1.0
+      }
+    },
+    {
+      "query_id": "S02",
+      "success": true,
+      "candidate_checks": [
+        {
+          "plan_id": "S02/8e618adb8aef04a5b982",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/b",
+              "n": 2
+            },
+            {
+              "person": "https://xgap.test/toy/c",
+              "n": 2
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S02/cb7df6e6b7dbe5f650de",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/b",
+              "n": 2
+            },
+            {
+              "person": "https://xgap.test/toy/c",
+              "n": 2
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "S02/dce6b759a2d2b46f8a38",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/b",
+              "n": 2
+            },
+            {
+              "person": "https://xgap.test/toy/c",
+              "n": 2
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S02/e3f05206f08b8f4c4ead",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/b",
+              "n": 2
+            },
+            {
+              "person": "https://xgap.test/toy/c",
+              "n": 2
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "selected_plan": {
+        "plan_id": "S02/cb7df6e6b7dbe5f650de",
+        "nodes": [
+          {
+            "node_id": "paths/candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 1,
+                  "branch_edge_counts": [
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              },
+              "observation_key": "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a"
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/candidates/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "paths/candidates"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "paths/candidates/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "reached/project",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "paths/paths"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "path_node",
+                  "position": "last"
+                },
+                "edge": {
+                  "kind": "path_edge",
+                  "position": 1
+                }
+              },
+              "resource_namespace": "https://xgap.test/toy/"
+            },
+            "semantic_operator_ids": [
+              "reached"
+            ]
+          },
+          {
+            "node_id": "people/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "people-match",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)\nWHERE n0:Person\nRETURN DISTINCT n0 AS source, n0 AS target, [n0] AS nodes, [] AS edges\n}\nRETURN DISTINCT source AS entity, source.age AS age",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "neo4j",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.node_labels",
+                    "native.cypher",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "Neo4j node labels represent XGAP node-label predicates.",
+                    "Neo4j relationship types represent XGAP edge-label predicates.",
+                    "Missing properties and non-numeric values follow Cypher WHERE null-elimination for this fragment."
+                  ],
+                  "output_columns": [
+                    "entity",
+                    "age"
+                  ]
+                }
+              },
+              "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "people/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "people/native/exchange"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": [
+                "age"
+              ]
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "eligible/filter",
+            "kind": "coordinator_filter",
+            "inputs": [
+              "people/bindings"
+            ],
+            "parameters": {
+              "condition": {
+                "op": "ge",
+                "field": "age",
+                "value": 20
+              }
+            },
+            "semantic_operator_ids": [
+              "eligible"
+            ]
+          },
+          {
+            "node_id": "join/right_columns",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "eligible/filter"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                },
+                "age": {
+                  "kind": "field",
+                  "field": "age"
+                }
+              }
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "join/join",
+            "kind": "coordinator_join",
+            "inputs": [
+              "reached/project",
+              "join/right_columns"
+            ],
+            "parameters": {
+              "left_on": "person",
+              "right_on": "person",
+              "right_prefix": "right_"
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "count/aggregate",
+            "kind": "coordinator_group_aggregate",
+            "inputs": [
+              "join/join"
+            ],
+            "parameters": {
+              "group_by": [
+                "person"
+              ],
+              "aggregations": {
+                "n": {
+                  "op": "count"
+                }
+              },
+              "allow_global": true
+            },
+            "semantic_operator_ids": [
+              "count"
+            ]
+          },
+          {
+            "node_id": "rank/order",
+            "kind": "coordinator_sort_limit",
+            "inputs": [
+              "count/aggregate"
+            ],
+            "parameters": {
+              "order_by": [
+                {
+                  "field": "n",
+                  "direction": "desc"
+                },
+                {
+                  "field": "person",
+                  "direction": "asc"
+                }
+              ],
+              "limit": 2
+            },
+            "semantic_operator_ids": [
+              "rank"
+            ]
+          },
+          {
+            "node_id": "answer/project",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "rank/order"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                },
+                "n": {
+                  "kind": "field",
+                  "field": "n"
+                }
+              },
+              "resource_namespace": null
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "roots": [
+          "answer/project"
+        ],
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "semantic_dag_v1",
+          "semantic_program_sha256": "dda49fcf8b0845e20765b963ddb8a3b7d9fab735a9304f32166a50667d092b12",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "operator_outputs": {
+            "paths": "paths/paths",
+            "reached": "reached/project",
+            "people": "people/bindings",
+            "eligible": "eligible/filter",
+            "join": "join/join",
+            "count": "count/aggregate",
+            "rank": "rank/order",
+            "answer": "answer/project"
+          },
+          "schemas": {
+            "paths": {
+              "kind": "path_set",
+              "fields": [
+                "path"
+              ],
+              "path_namespace": "https://xgap.test/toy/"
+            },
+            "reached": {
+              "kind": "binding_set",
+              "fields": [
+                "edge",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "people": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "eligible": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "join": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "edge",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "count": {
+              "kind": "grouped_bindings",
+              "fields": [
+                "n",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "rank": {
+              "kind": "grouped_bindings",
+              "fields": [
+                "n",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "answer": {
+              "kind": "binding_set",
+              "fields": [
+                "n",
+                "person"
+              ],
+              "path_namespace": null
+            }
+          },
+          "logical_sources": {
+            "paths": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            },
+            "people": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            }
+          },
+          "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"
+        }
+      },
+      "selection": {
+        "semantic_equivalence_key": "cf49e926ccb9e712c05f1dbbb692c31ba91385e32470195542366d5375616862",
+        "snapshot_id": "semantic-plan-observations",
+        "snapshot_version": "cf49e926ccb9e712c05f1dbbb692c31ba91385e32470195542366d5375616862",
+        "selected_plan_id": "S02/cb7df6e6b7dbe5f650de",
+        "estimates": [
+          {
+            "plan_id": "S02/8e618adb8aef04a5b982",
+            "predicted_latency_ms": 16.581291285336015,
+            "predicted_transfer_bytes": 2834.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+              "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 14.098291285336018,
+              "paths/candidates/exchange": 16.171291285336018,
+              "paths/paths": 16.251291285336016,
+              "reached/project": 16.331291285336015,
+              "people/native": 13.214416801929474,
+              "people/native/exchange": 13.975416801929473,
+              "people/bindings": 14.025416801929474,
+              "eligible/filter": 14.075416801929475,
+              "join/right_columns": 14.125416801929475,
+              "join/join": 16.461291285336014,
+              "count/aggregate": 16.511291285336014,
+              "rank/order": 16.561291285336015,
+              "answer/project": 16.581291285336015
+            },
+            "node_row_counts": {
+              "paths/candidates": 8.0,
+              "paths/candidates/exchange": 8.0,
+              "paths/paths": 8.0,
+              "reached/project": 8.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 5.0,
+              "count/aggregate": 5.0,
+              "rank/order": 2.0,
+              "answer/project": 2.0
+            }
+          },
+          {
+            "plan_id": "S02/cb7df6e6b7dbe5f650de",
+            "predicted_latency_ms": 16.581291285336015,
+            "predicted_transfer_bytes": 2342.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+              "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 14.098291285336018,
+              "paths/candidates/exchange": 16.171291285336018,
+              "paths/paths": 16.251291285336016,
+              "reached/project": 16.331291285336015,
+              "people/native": 14.527957886457443,
+              "people/native/exchange": 14.796957886457443,
+              "people/bindings": 14.846957886457444,
+              "eligible/filter": 14.896957886457445,
+              "join/right_columns": 14.946957886457445,
+              "join/join": 16.461291285336014,
+              "count/aggregate": 16.511291285336014,
+              "rank/order": 16.561291285336015,
+              "answer/project": 16.581291285336015
+            },
+            "node_row_counts": {
+              "paths/candidates": 8.0,
+              "paths/candidates/exchange": 8.0,
+              "paths/paths": 8.0,
+              "reached/project": 8.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 5.0,
+              "count/aggregate": 5.0,
+              "rank/order": 2.0,
+              "answer/project": 2.0
+            }
+          },
+          {
+            "plan_id": "S02/dce6b759a2d2b46f8a38",
+            "predicted_latency_ms": 53.47558284020423,
+            "predicted_transfer_bytes": 1622.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+              "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 52.20458284020424,
+              "paths/candidates/exchange": 53.065582840204236,
+              "paths/paths": 53.145582840204234,
+              "reached/project": 53.22558284020423,
+              "people/native": 13.214416801929474,
+              "people/native/exchange": 13.975416801929473,
+              "people/bindings": 14.025416801929474,
+              "eligible/filter": 14.075416801929475,
+              "join/right_columns": 14.125416801929475,
+              "join/join": 53.355582840204235,
+              "count/aggregate": 53.40558284020423,
+              "rank/order": 53.45558284020423,
+              "answer/project": 53.47558284020423
+            },
+            "node_row_counts": {
+              "paths/candidates": 8.0,
+              "paths/candidates/exchange": 8.0,
+              "paths/paths": 8.0,
+              "reached/project": 8.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 5.0,
+              "count/aggregate": 5.0,
+              "rank/order": 2.0,
+              "answer/project": 2.0
+            }
+          },
+          {
+            "plan_id": "S02/e3f05206f08b8f4c4ead",
+            "predicted_latency_ms": 53.47558284020423,
+            "predicted_transfer_bytes": 1130.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+              "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 52.20458284020424,
+              "paths/candidates/exchange": 53.065582840204236,
+              "paths/paths": 53.145582840204234,
+              "reached/project": 53.22558284020423,
+              "people/native": 14.527957886457443,
+              "people/native/exchange": 14.796957886457443,
+              "people/bindings": 14.846957886457444,
+              "eligible/filter": 14.896957886457445,
+              "join/right_columns": 14.946957886457445,
+              "join/join": 53.355582840204235,
+              "count/aggregate": 53.40558284020423,
+              "rank/order": 53.45558284020423,
+              "answer/project": 53.47558284020423
+            },
+            "node_row_counts": {
+              "paths/candidates": 8.0,
+              "paths/candidates/exchange": 8.0,
+              "paths/paths": 8.0,
+              "reached/project": 8.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 5.0,
+              "count/aggregate": 5.0,
+              "rank/order": 2.0,
+              "answer/project": 2.0
+            }
+          }
+        ],
+        "selection_rule": "minimum predicted latency, then transfer bytes, remote calls, plan id"
+      },
+      "observation_snapshot": {
+        "snapshot_id": "semantic-plan-observations",
+        "version": "cf49e926ccb9e712c05f1dbbb692c31ba91385e32470195542366d5375616862",
+        "estimates": [
+          {
+            "observation_key": "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+            "backend_id": "fuseki",
+            "elapsed_ms": 14.098291285336018,
+            "row_count": 8,
+            "row_width_bytes": 259.125,
+            "output_bytes": 2073.0,
+            "source": "semantic-native-observations/bounded-paths/62bdac0f425ebd97223f6d1c97e4992fa4dd17731b2bc636a9f8016217a888c3",
+            "version": "cf49e926ccb9e712c05f1dbbb692c31ba91385e32470195542366d5375616862"
+          },
+          {
+            "observation_key": "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+            "backend_id": "neo4j",
+            "elapsed_ms": 52.20458284020424,
+            "row_count": 8,
+            "row_width_bytes": 107.625,
+            "output_bytes": 861.0,
+            "source": "semantic-native-observations/bounded-paths/75b59e6117de4ba52d6463adc6214b553423897eec691f6381fd1b7e12acdbb1",
+            "version": "cf49e926ccb9e712c05f1dbbb692c31ba91385e32470195542366d5375616862"
+          },
+          {
+            "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+            "backend_id": "neo4j",
+            "elapsed_ms": 14.527957886457443,
+            "row_count": 5,
+            "row_width_bytes": 53.8,
+            "output_bytes": 269.0,
+            "source": "semantic-native-observations/people-match/1457694b51533106aadbf91875331874bf1383e632f9817637633499b6f6871a",
+            "version": "cf49e926ccb9e712c05f1dbbb692c31ba91385e32470195542366d5375616862"
+          },
+          {
+            "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+            "backend_id": "fuseki",
+            "elapsed_ms": 13.214416801929474,
+            "row_count": 5,
+            "row_width_bytes": 152.2,
+            "output_bytes": 761.0,
+            "source": "semantic-native-observations/people-match/5ba81baacc37faa92ab8bad349e3581bcaa230bfb76c0a27fa1915e225e691cb",
+            "version": "cf49e926ccb9e712c05f1dbbb692c31ba91385e32470195542366d5375616862"
+          }
+        ],
+        "bandwidth_bytes_per_ms": 1000.0,
+        "exchange_fixed_ms": 0.0,
+        "coordinator_row_ms": 0.01
+      },
+      "observation_requests": [
+        {
+          "call_id": "observe-29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+          "observation_key": "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a"
+          }
+        },
+        {
+          "call_id": "observe-4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+          "observation_key": "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d"
+          }
+        },
+        {
+          "call_id": "observe-91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+          "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+          }
+        },
+        {
+          "call_id": "observe-dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+          "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+          }
+        }
+      ],
+      "costs": {
+        "enumeration_ms": 21.152958273887634,
+        "planning_ms": 115.91320857405663,
+        "selection_ms": 0.2677086740732193,
+        "end_to_end_ms": 134.63104143738747,
+        "observation_calls": 4,
+        "execution_calls": 2,
+        "total_remote_calls": 6
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/b",
+          "n": 2
+        },
+        {
+          "person": "https://xgap.test/toy/c",
+          "n": 2
+        }
+      ],
+      "validation_only_extra_remote_calls": 6,
+      "serving_metrics": {
+        "elapsed_ms": 18.53749994188547,
+        "remote_calls": 2.0,
+        "bytes_moved": 2342.0,
+        "row_count": 2.0
+      }
+    },
+    {
+      "query_id": "S03",
+      "success": true,
+      "candidate_checks": [
+        {
+          "plan_id": "S03/374a2433835e6c9d8066",
+          "source_bindings": {
+            "anchor": "fuseki",
+            "paths": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "path": [
+                "b",
+                "e2",
+                "c"
+              ]
+            },
+            {
+              "path": [
+                "b",
+                "e8",
+                "d"
+              ]
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S03/78d561c2e54f716c6ae8",
+          "source_bindings": {
+            "anchor": "fuseki",
+            "paths": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "path": [
+                "b",
+                "e2",
+                "c"
+              ]
+            },
+            {
+              "path": [
+                "b",
+                "e8",
+                "d"
+              ]
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "S03/ff6f3bf2fc35ddf8b1e2",
+          "source_bindings": {
+            "anchor": "neo4j",
+            "paths": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "path": [
+                "b",
+                "e2",
+                "c"
+              ]
+            },
+            {
+              "path": [
+                "b",
+                "e8",
+                "d"
+              ]
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S03/a753ff9ff8e55d4a3e7e",
+          "source_bindings": {
+            "anchor": "neo4j",
+            "paths": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "path": [
+                "b",
+                "e2",
+                "c"
+              ]
+            },
+            {
+              "path": [
+                "b",
+                "e8",
+                "d"
+              ]
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "selected_plan": {
+        "plan_id": "S03/78d561c2e54f716c6ae8",
+        "nodes": [
+          {
+            "node_id": "anchor/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "anchor-match",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?entity WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 a <https://xgap.test/toy/Person> .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"b\")\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n}\n?source a ?nodeDomain . VALUES ?nodeDomain { <https://xgap.test/toy/Person> }\nBIND(?source AS ?entity)\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "fuseki",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.node_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                    "RDF type triples represent XGAP node-label predicates.",
+                    "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                  ],
+                  "backend_mapping": {
+                    "mapping_id": "backbone-toy-v1",
+                    "version": "1",
+                    "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                    "relevant_mapped_iris": [
+                      {
+                        "logical_token": "Person",
+                        "canonical_term_id": "Person",
+                        "kind": "class",
+                        "iri": "https://xgap.test/toy/Person"
+                      },
+                      {
+                        "logical_token": "id",
+                        "canonical_term_id": "id",
+                        "kind": "property",
+                        "iri": "https://xgap.test/toy/id"
+                      }
+                    ]
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "entity"
+                  ],
+                  "output_columns": [
+                    "entity"
+                  ]
+                }
+              },
+              "observation_key": "fa28f692d82ed7a6742896ce4e0059ce1148c0fd57e08b7bcf116b7c29c4b159"
+            },
+            "semantic_operator_ids": [
+              "anchor"
+            ]
+          },
+          {
+            "node_id": "anchor/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "anchor/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "anchor"
+            ]
+          },
+          {
+            "node_id": "anchor/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "anchor/native/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": []
+            },
+            "semantic_operator_ids": [
+              "anchor"
+            ]
+          },
+          {
+            "node_id": "paths/candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)-[e1]->(n1)\nWHERE type(e1) = \"KNOWS\"\nRETURN DISTINCT n0 AS source, n1 AS target, n0 AS n0, n1 AS n1, e1 AS e1\n}\nRETURN DISTINCT 1 AS length, n0 AS n0, e1 AS e1, n1 AS n1",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "neo4j",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 1,
+                  "branch_edge_counts": [
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "cypher",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.labeled_property_graph",
+                    "native.cypher",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false
+                }
+              },
+              "observation_key": "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d"
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/candidates/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "paths/candidates"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "paths/candidates/exchange"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/anchor",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "paths/paths"
+            ],
+            "parameters": {
+              "resource_namespace": "https://xgap.test/toy/",
+              "projections": {
+                "path": {
+                  "kind": "field",
+                  "field": "path"
+                },
+                "anchor": {
+                  "kind": "path_node",
+                  "position": "first"
+                }
+              }
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/bound",
+            "kind": "coordinator_semi_join",
+            "inputs": [
+              "paths/anchor",
+              "anchor/bindings"
+            ],
+            "parameters": {
+              "left_on": "anchor",
+              "right_on": "person"
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/result",
+            "kind": "project",
+            "inputs": [
+              "paths/bound"
+            ],
+            "parameters": {
+              "fields": [
+                "path"
+              ]
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          }
+        ],
+        "roots": [
+          "paths/result"
+        ],
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "semantic_dag_v1",
+          "semantic_program_sha256": "165d926236ca59f187b84a42e326153f8d98a59b3034f09e819ec24d93e56f96",
+          "source_bindings": {
+            "anchor": "fuseki",
+            "paths": "neo4j"
+          },
+          "operator_outputs": {
+            "anchor": "anchor/bindings",
+            "paths": "paths/result"
+          },
+          "schemas": {
+            "anchor": {
+              "kind": "binding_set",
+              "fields": [
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "paths": {
+              "kind": "path_set",
+              "fields": [
+                "path"
+              ],
+              "path_namespace": "https://xgap.test/toy/"
+            }
+          },
+          "logical_sources": {
+            "anchor": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            },
+            "paths": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            }
+          },
+          "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"
+        }
+      },
+      "selection": {
+        "semantic_equivalence_key": "df650bd398be70c370241f57c5d682f3b82d1a9dd5f346125adb94caeb84da7a",
+        "snapshot_id": "semantic-plan-observations",
+        "snapshot_version": "df650bd398be70c370241f57c5d682f3b82d1a9dd5f346125adb94caeb84da7a",
+        "selected_plan_id": "S03/78d561c2e54f716c6ae8",
+        "estimates": [
+          {
+            "plan_id": "S03/374a2433835e6c9d8066",
+            "predicted_latency_ms": 16.167791355013847,
+            "predicted_transfer_bytes": 2134.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+              "fa28f692d82ed7a6742896ce4e0059ce1148c0fd57e08b7bcf116b7c29c4b159"
+            ],
+            "node_completion_ms": {
+              "anchor/native": 15.926791355013847,
+              "anchor/native/exchange": 15.987791355013847,
+              "anchor/bindings": 15.997791355013847,
+              "paths/candidates": 9.331208653748035,
+              "paths/candidates/exchange": 11.404208653748036,
+              "paths/paths": 11.484208653748036,
+              "paths/anchor": 11.564208653748036,
+              "paths/bound": 16.08779135501385,
+              "paths/result": 16.167791355013847
+            },
+            "node_row_counts": {
+              "anchor/native": 1.0,
+              "anchor/native/exchange": 1.0,
+              "anchor/bindings": 1.0,
+              "paths/candidates": 8.0,
+              "paths/candidates/exchange": 8.0,
+              "paths/paths": 8.0,
+              "paths/anchor": 8.0,
+              "paths/bound": 8.0,
+              "paths/result": 8.0
+            }
+          },
+          {
+            "plan_id": "S03/78d561c2e54f716c6ae8",
+            "predicted_latency_ms": 16.167791355013847,
+            "predicted_transfer_bytes": 922.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+              "fa28f692d82ed7a6742896ce4e0059ce1148c0fd57e08b7bcf116b7c29c4b159"
+            ],
+            "node_completion_ms": {
+              "anchor/native": 15.926791355013847,
+              "anchor/native/exchange": 15.987791355013847,
+              "anchor/bindings": 15.997791355013847,
+              "paths/candidates": 13.336041942238808,
+              "paths/candidates/exchange": 14.197041942238808,
+              "paths/paths": 14.277041942238808,
+              "paths/anchor": 14.357041942238808,
+              "paths/bound": 16.08779135501385,
+              "paths/result": 16.167791355013847
+            },
+            "node_row_counts": {
+              "anchor/native": 1.0,
+              "anchor/native/exchange": 1.0,
+              "anchor/bindings": 1.0,
+              "paths/candidates": 8.0,
+              "paths/candidates/exchange": 8.0,
+              "paths/paths": 8.0,
+              "paths/anchor": 8.0,
+              "paths/bound": 8.0,
+              "paths/result": 8.0
+            }
+          },
+          {
+            "plan_id": "S03/a753ff9ff8e55d4a3e7e",
+            "predicted_latency_ms": 63.412625259161,
+            "predicted_transfer_bytes": 906.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+              "c2f868f2714804b4174268b6a7b28bb4eb487099ae915c8c550ca9a0268e45cf"
+            ],
+            "node_completion_ms": {
+              "anchor/native": 63.187625259160995,
+              "anchor/native/exchange": 63.232625259161,
+              "anchor/bindings": 63.242625259160995,
+              "paths/candidates": 13.336041942238808,
+              "paths/candidates/exchange": 14.197041942238808,
+              "paths/paths": 14.277041942238808,
+              "paths/anchor": 14.357041942238808,
+              "paths/bound": 63.332625259161,
+              "paths/result": 63.412625259161
+            },
+            "node_row_counts": {
+              "anchor/native": 1.0,
+              "anchor/native/exchange": 1.0,
+              "anchor/bindings": 1.0,
+              "paths/candidates": 8.0,
+              "paths/candidates/exchange": 8.0,
+              "paths/paths": 8.0,
+              "paths/anchor": 8.0,
+              "paths/bound": 8.0,
+              "paths/result": 8.0
+            }
+          },
+          {
+            "plan_id": "S03/ff6f3bf2fc35ddf8b1e2",
+            "predicted_latency_ms": 63.412625259161,
+            "predicted_transfer_bytes": 2118.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+              "c2f868f2714804b4174268b6a7b28bb4eb487099ae915c8c550ca9a0268e45cf"
+            ],
+            "node_completion_ms": {
+              "anchor/native": 63.187625259160995,
+              "anchor/native/exchange": 63.232625259161,
+              "anchor/bindings": 63.242625259160995,
+              "paths/candidates": 9.331208653748035,
+              "paths/candidates/exchange": 11.404208653748036,
+              "paths/paths": 11.484208653748036,
+              "paths/anchor": 11.564208653748036,
+              "paths/bound": 63.332625259161,
+              "paths/result": 63.412625259161
+            },
+            "node_row_counts": {
+              "anchor/native": 1.0,
+              "anchor/native/exchange": 1.0,
+              "anchor/bindings": 1.0,
+              "paths/candidates": 8.0,
+              "paths/candidates/exchange": 8.0,
+              "paths/paths": 8.0,
+              "paths/anchor": 8.0,
+              "paths/bound": 8.0,
+              "paths/result": 8.0
+            }
+          }
+        ],
+        "selection_rule": "minimum predicted latency, then transfer bytes, remote calls, plan id"
+      },
+      "observation_snapshot": {
+        "snapshot_id": "semantic-plan-observations",
+        "version": "df650bd398be70c370241f57c5d682f3b82d1a9dd5f346125adb94caeb84da7a",
+        "estimates": [
+          {
+            "observation_key": "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+            "backend_id": "fuseki",
+            "elapsed_ms": 9.331208653748035,
+            "row_count": 8,
+            "row_width_bytes": 259.125,
+            "output_bytes": 2073.0,
+            "source": "semantic-native-observations/bounded-paths/62bdac0f425ebd97223f6d1c97e4992fa4dd17731b2bc636a9f8016217a888c3",
+            "version": "df650bd398be70c370241f57c5d682f3b82d1a9dd5f346125adb94caeb84da7a"
+          },
+          {
+            "observation_key": "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+            "backend_id": "neo4j",
+            "elapsed_ms": 13.336041942238808,
+            "row_count": 8,
+            "row_width_bytes": 107.625,
+            "output_bytes": 861.0,
+            "source": "semantic-native-observations/bounded-paths/75b59e6117de4ba52d6463adc6214b553423897eec691f6381fd1b7e12acdbb1",
+            "version": "df650bd398be70c370241f57c5d682f3b82d1a9dd5f346125adb94caeb84da7a"
+          },
+          {
+            "observation_key": "c2f868f2714804b4174268b6a7b28bb4eb487099ae915c8c550ca9a0268e45cf",
+            "backend_id": "neo4j",
+            "elapsed_ms": 63.187625259160995,
+            "row_count": 1,
+            "row_width_bytes": 45.0,
+            "output_bytes": 45.0,
+            "source": "semantic-native-observations/anchor-match/702689d27b4202a05848899730356ffd6e9462b965d41dec8cb92fba50079c65",
+            "version": "df650bd398be70c370241f57c5d682f3b82d1a9dd5f346125adb94caeb84da7a"
+          },
+          {
+            "observation_key": "fa28f692d82ed7a6742896ce4e0059ce1148c0fd57e08b7bcf116b7c29c4b159",
+            "backend_id": "fuseki",
+            "elapsed_ms": 15.926791355013847,
+            "row_count": 1,
+            "row_width_bytes": 61.0,
+            "output_bytes": 61.0,
+            "source": "semantic-native-observations/anchor-match/68e08f1d1a130af33e2adb48e6ba6605dc12ff3ba962acb508873ab2499fb45a",
+            "version": "df650bd398be70c370241f57c5d682f3b82d1a9dd5f346125adb94caeb84da7a"
+          }
+        ],
+        "bandwidth_bytes_per_ms": 1000.0,
+        "exchange_fixed_ms": 0.0,
+        "coordinator_row_ms": 0.01
+      },
+      "observation_requests": [
+        {
+          "call_id": "observe-29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+          "observation_key": "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "29a64cfac23d981fb23b7671427df3e8663270d19d6820a31657ff07a227c10a"
+          }
+        },
+        {
+          "call_id": "observe-4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+          "observation_key": "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "4880a36c3f1f8cdd36a44c8b5adbf9fb5fb3ce11a4ce93b90e0412b7f2a30d4d"
+          }
+        },
+        {
+          "call_id": "observe-c2f868f2714804b4174268b6a7b28bb4eb487099ae915c8c550ca9a0268e45cf",
+          "observation_key": "c2f868f2714804b4174268b6a7b28bb4eb487099ae915c8c550ca9a0268e45cf",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "c2f868f2714804b4174268b6a7b28bb4eb487099ae915c8c550ca9a0268e45cf"
+          }
+        },
+        {
+          "call_id": "observe-fa28f692d82ed7a6742896ce4e0059ce1148c0fd57e08b7bcf116b7c29c4b159",
+          "observation_key": "fa28f692d82ed7a6742896ce4e0059ce1148c0fd57e08b7bcf116b7c29c4b159",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "fa28f692d82ed7a6742896ce4e0059ce1148c0fd57e08b7bcf116b7c29c4b159"
+          }
+        }
+      ],
+      "costs": {
+        "enumeration_ms": 21.811792626976967,
+        "planning_ms": 124.20062720775604,
+        "selection_ms": 0.18595904111862183,
+        "end_to_end_ms": 136.3806677982211,
+        "observation_calls": 4,
+        "execution_calls": 2,
+        "total_remote_calls": 6
+      },
+      "actual_rows": [
+        {
+          "path": [
+            "b",
+            "e2",
+            "c"
+          ]
+        },
+        {
+          "path": [
+            "b",
+            "e8",
+            "d"
+          ]
+        }
+      ],
+      "validation_only_extra_remote_calls": 6,
+      "serving_metrics": {
+        "elapsed_ms": 12.04241719096899,
+        "remote_calls": 2.0,
+        "bytes_moved": 922.0,
+        "row_count": 2.0
+      }
+    },
+    {
+      "query_id": "S04",
+      "success": true,
+      "candidate_checks": [
+        {
+          "plan_id": "S04/b16f5d02b2eff0aaeccf",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/z"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        },
+        {
+          "plan_id": "S04/5919fa44e363648c45c6",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/d"
+            },
+            {
+              "person": "https://xgap.test/toy/b"
+            },
+            {
+              "person": "https://xgap.test/toy/c"
+            },
+            {
+              "person": "https://xgap.test/toy/z"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        }
+      ],
+      "selected_plan": {
+        "plan_id": "S04/5919fa44e363648c45c6",
+        "nodes": [
+          {
+            "node_id": "people/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "people-match",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)\nWHERE n0:Person\nRETURN DISTINCT n0 AS source, n0 AS target, [n0] AS nodes, [] AS edges\n}\nRETURN DISTINCT source AS entity, source.age AS age",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "neo4j",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.node_labels",
+                    "native.cypher",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "Neo4j node labels represent XGAP node-label predicates.",
+                    "Neo4j relationship types represent XGAP edge-label predicates.",
+                    "Missing properties and non-numeric values follow Cypher WHERE null-elimination for this fragment."
+                  ],
+                  "output_columns": [
+                    "entity",
+                    "age"
+                  ]
+                }
+              },
+              "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "people/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "people/native/exchange"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": [
+                "age"
+              ]
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "young/filter",
+            "kind": "coordinator_filter",
+            "inputs": [
+              "people/bindings"
+            ],
+            "parameters": {
+              "condition": {
+                "op": "lt",
+                "field": "age",
+                "value": 25
+              }
+            },
+            "semantic_operator_ids": [
+              "young"
+            ]
+          },
+          {
+            "node_id": "old/filter",
+            "kind": "coordinator_filter",
+            "inputs": [
+              "people/bindings"
+            ],
+            "parameters": {
+              "condition": {
+                "op": "ge",
+                "field": "age",
+                "value": 40
+              }
+            },
+            "semantic_operator_ids": [
+              "old"
+            ]
+          },
+          {
+            "node_id": "union/union",
+            "kind": "merge",
+            "inputs": [
+              "young/filter",
+              "old/filter"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "union"
+            ]
+          },
+          {
+            "node_id": "answer/project",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "union/union"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                }
+              },
+              "resource_namespace": null
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "roots": [
+          "answer/project"
+        ],
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "semantic_dag_v1",
+          "semantic_program_sha256": "122fae2e936bb1a2c3fbfc7e296b175c01b9fdceba899a882aadc592aa31879a",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "operator_outputs": {
+            "people": "people/bindings",
+            "young": "young/filter",
+            "old": "old/filter",
+            "union": "union/union",
+            "answer": "answer/project"
+          },
+          "schemas": {
+            "people": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "young": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "old": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "union": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "answer": {
+              "kind": "binding_set",
+              "fields": [
+                "person"
+              ],
+              "path_namespace": null
+            }
+          },
+          "logical_sources": {
+            "people": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            }
+          },
+          "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"
+        }
+      },
+      "selection": {
+        "semantic_equivalence_key": "d8261bec8eaea7d3fa8904ea3e81af1882bd1ce53b5aded86bad4801adb25e8e",
+        "snapshot_id": "semantic-plan-observations",
+        "snapshot_version": "d8261bec8eaea7d3fa8904ea3e81af1882bd1ce53b5aded86bad4801adb25e8e",
+        "selected_plan_id": "S04/5919fa44e363648c45c6",
+        "estimates": [
+          {
+            "plan_id": "S04/5919fa44e363648c45c6",
+            "predicted_latency_ms": 10.595042349636556,
+            "predicted_transfer_bytes": 269.0,
+            "remote_calls": 1,
+            "observation_keys": [
+              "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            ],
+            "node_completion_ms": {
+              "people/native": 10.026042349636555,
+              "people/native/exchange": 10.295042349636555,
+              "people/bindings": 10.345042349636556,
+              "young/filter": 10.395042349636556,
+              "old/filter": 10.395042349636556,
+              "union/union": 10.495042349636556,
+              "answer/project": 10.595042349636556
+            },
+            "node_row_counts": {
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "young/filter": 5.0,
+              "old/filter": 5.0,
+              "union/union": 10.0,
+              "answer/project": 10.0
+            }
+          },
+          {
+            "plan_id": "S04/b16f5d02b2eff0aaeccf",
+            "predicted_latency_ms": 11.081666755735874,
+            "predicted_transfer_bytes": 761.0,
+            "remote_calls": 1,
+            "observation_keys": [
+              "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+            ],
+            "node_completion_ms": {
+              "people/native": 10.020666755735874,
+              "people/native/exchange": 10.781666755735873,
+              "people/bindings": 10.831666755735874,
+              "young/filter": 10.881666755735875,
+              "old/filter": 10.881666755735875,
+              "union/union": 10.981666755735874,
+              "answer/project": 11.081666755735874
+            },
+            "node_row_counts": {
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "young/filter": 5.0,
+              "old/filter": 5.0,
+              "union/union": 10.0,
+              "answer/project": 10.0
+            }
+          }
+        ],
+        "selection_rule": "minimum predicted latency, then transfer bytes, remote calls, plan id"
+      },
+      "observation_snapshot": {
+        "snapshot_id": "semantic-plan-observations",
+        "version": "d8261bec8eaea7d3fa8904ea3e81af1882bd1ce53b5aded86bad4801adb25e8e",
+        "estimates": [
+          {
+            "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+            "backend_id": "neo4j",
+            "elapsed_ms": 10.026042349636555,
+            "row_count": 5,
+            "row_width_bytes": 53.8,
+            "output_bytes": 269.0,
+            "source": "semantic-native-observations/people-match/1457694b51533106aadbf91875331874bf1383e632f9817637633499b6f6871a",
+            "version": "d8261bec8eaea7d3fa8904ea3e81af1882bd1ce53b5aded86bad4801adb25e8e"
+          },
+          {
+            "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+            "backend_id": "fuseki",
+            "elapsed_ms": 10.020666755735874,
+            "row_count": 5,
+            "row_width_bytes": 152.2,
+            "output_bytes": 761.0,
+            "source": "semantic-native-observations/people-match/5ba81baacc37faa92ab8bad349e3581bcaa230bfb76c0a27fa1915e225e691cb",
+            "version": "d8261bec8eaea7d3fa8904ea3e81af1882bd1ce53b5aded86bad4801adb25e8e"
+          }
+        ],
+        "bandwidth_bytes_per_ms": 1000.0,
+        "exchange_fixed_ms": 0.0,
+        "coordinator_row_ms": 0.01
+      },
+      "observation_requests": [
+        {
+          "call_id": "observe-91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+          "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+          }
+        },
+        {
+          "call_id": "observe-dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+          "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+          }
+        }
+      ],
+      "costs": {
+        "enumeration_ms": 6.137083284556866,
+        "planning_ms": 26.467875577509403,
+        "selection_ms": 0.09433459490537643,
+        "end_to_end_ms": 36.29995882511139,
+        "observation_calls": 2,
+        "execution_calls": 1,
+        "total_remote_calls": 3
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/d"
+        },
+        {
+          "person": "https://xgap.test/toy/b"
+        },
+        {
+          "person": "https://xgap.test/toy/c"
+        },
+        {
+          "person": "https://xgap.test/toy/z"
+        }
+      ],
+      "validation_only_extra_remote_calls": 1,
+      "serving_metrics": {
+        "elapsed_ms": 9.71512496471405,
+        "remote_calls": 1.0,
+        "bytes_moved": 269.0,
+        "row_count": 4.0
+      }
+    },
+    {
+      "query_id": "S05",
+      "success": true,
+      "candidate_checks": [
+        {
+          "plan_id": "S05/dae0b049c0af0504f7e8",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "n": 0
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "S05/0912f2ba48ceae9c3ef6",
+          "source_bindings": {
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "n": 0
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 1
+        }
+      ],
+      "selected_plan": {
+        "plan_id": "S05/dae0b049c0af0504f7e8",
+        "nodes": [
+          {
+            "node_id": "people/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "people-match",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?entity WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 a <https://xgap.test/toy/Person> .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"missing\")\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n}\n?source a ?nodeDomain . VALUES ?nodeDomain { <https://xgap.test/toy/Person> }\nBIND(?source AS ?entity)\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "fuseki",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.node_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                    "RDF type triples represent XGAP node-label predicates.",
+                    "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                  ],
+                  "backend_mapping": {
+                    "mapping_id": "backbone-toy-v1",
+                    "version": "1",
+                    "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                    "relevant_mapped_iris": [
+                      {
+                        "logical_token": "Person",
+                        "canonical_term_id": "Person",
+                        "kind": "class",
+                        "iri": "https://xgap.test/toy/Person"
+                      },
+                      {
+                        "logical_token": "id",
+                        "canonical_term_id": "id",
+                        "kind": "property",
+                        "iri": "https://xgap.test/toy/id"
+                      }
+                    ]
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "entity"
+                  ],
+                  "output_columns": [
+                    "entity"
+                  ]
+                }
+              },
+              "observation_key": "845b152ba98fee1d99d3d3b2262ace97d74698f5a7539f8d86b0b301c750ede6"
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "people/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "people/native/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": []
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "count/aggregate",
+            "kind": "coordinator_group_aggregate",
+            "inputs": [
+              "people/bindings"
+            ],
+            "parameters": {
+              "group_by": [],
+              "aggregations": {
+                "n": {
+                  "op": "count"
+                }
+              },
+              "allow_global": true
+            },
+            "semantic_operator_ids": [
+              "count"
+            ]
+          }
+        ],
+        "roots": [
+          "count/aggregate"
+        ],
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "semantic_dag_v1",
+          "semantic_program_sha256": "3a625253fefefe7d86c11f0c329ba6faf3d7a5a3781ab367c896e0963eb66aba",
+          "source_bindings": {
+            "people": "fuseki"
+          },
+          "operator_outputs": {
+            "people": "people/bindings",
+            "count": "count/aggregate"
+          },
+          "schemas": {
+            "people": {
+              "kind": "binding_set",
+              "fields": [
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "count": {
+              "kind": "grouped_bindings",
+              "fields": [
+                "n"
+              ],
+              "path_namespace": null
+            }
+          },
+          "logical_sources": {
+            "people": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            }
+          },
+          "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"
+        }
+      },
+      "selection": {
+        "semantic_equivalence_key": "d68e17a548e2ec509135a67798aa2b90906b2fa43089516b172e9d7222ec06c6",
+        "snapshot_id": "semantic-plan-observations",
+        "snapshot_version": "d68e17a548e2ec509135a67798aa2b90906b2fa43089516b172e9d7222ec06c6",
+        "selected_plan_id": "S05/dae0b049c0af0504f7e8",
+        "estimates": [
+          {
+            "plan_id": "S05/0912f2ba48ceae9c3ef6",
+            "predicted_latency_ms": 34.490250051021576,
+            "predicted_transfer_bytes": 0.0,
+            "remote_calls": 1,
+            "observation_keys": [
+              "9a701e4cd95faf81c8ff847366090bdf7572f1c1922a88f9a6982ca6e6945b0a"
+            ],
+            "node_completion_ms": {
+              "people/native": 34.490250051021576,
+              "people/native/exchange": 34.490250051021576,
+              "people/bindings": 34.490250051021576,
+              "count/aggregate": 34.490250051021576
+            },
+            "node_row_counts": {
+              "people/native": 0.0,
+              "people/native/exchange": 0.0,
+              "people/bindings": 0.0,
+              "count/aggregate": 1.0
+            }
+          },
+          {
+            "plan_id": "S05/dae0b049c0af0504f7e8",
+            "predicted_latency_ms": 8.696415461599827,
+            "predicted_transfer_bytes": 0.0,
+            "remote_calls": 1,
+            "observation_keys": [
+              "845b152ba98fee1d99d3d3b2262ace97d74698f5a7539f8d86b0b301c750ede6"
+            ],
+            "node_completion_ms": {
+              "people/native": 8.696415461599827,
+              "people/native/exchange": 8.696415461599827,
+              "people/bindings": 8.696415461599827,
+              "count/aggregate": 8.696415461599827
+            },
+            "node_row_counts": {
+              "people/native": 0.0,
+              "people/native/exchange": 0.0,
+              "people/bindings": 0.0,
+              "count/aggregate": 1.0
+            }
+          }
+        ],
+        "selection_rule": "minimum predicted latency, then transfer bytes, remote calls, plan id"
+      },
+      "observation_snapshot": {
+        "snapshot_id": "semantic-plan-observations",
+        "version": "d68e17a548e2ec509135a67798aa2b90906b2fa43089516b172e9d7222ec06c6",
+        "estimates": [
+          {
+            "observation_key": "845b152ba98fee1d99d3d3b2262ace97d74698f5a7539f8d86b0b301c750ede6",
+            "backend_id": "fuseki",
+            "elapsed_ms": 8.696415461599827,
+            "row_count": 0,
+            "row_width_bytes": 2.0,
+            "output_bytes": 0.0,
+            "source": "semantic-native-observations/people-match/dfbcd868a5efb304992a228cb1906b8add756bd28dea73536b1918f98f29c7d9",
+            "version": "d68e17a548e2ec509135a67798aa2b90906b2fa43089516b172e9d7222ec06c6"
+          },
+          {
+            "observation_key": "9a701e4cd95faf81c8ff847366090bdf7572f1c1922a88f9a6982ca6e6945b0a",
+            "backend_id": "neo4j",
+            "elapsed_ms": 34.490250051021576,
+            "row_count": 0,
+            "row_width_bytes": 2.0,
+            "output_bytes": 0.0,
+            "source": "semantic-native-observations/people-match/c55b43493c3caf12033937bc9080494253157babeff33600b41f82b1e51d0766",
+            "version": "d68e17a548e2ec509135a67798aa2b90906b2fa43089516b172e9d7222ec06c6"
+          }
+        ],
+        "bandwidth_bytes_per_ms": 1000.0,
+        "exchange_fixed_ms": 0.0,
+        "coordinator_row_ms": 0.01
+      },
+      "observation_requests": [
+        {
+          "call_id": "observe-845b152ba98fee1d99d3d3b2262ace97d74698f5a7539f8d86b0b301c750ede6",
+          "observation_key": "845b152ba98fee1d99d3d3b2262ace97d74698f5a7539f8d86b0b301c750ede6",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "845b152ba98fee1d99d3d3b2262ace97d74698f5a7539f8d86b0b301c750ede6"
+          }
+        },
+        {
+          "call_id": "observe-9a701e4cd95faf81c8ff847366090bdf7572f1c1922a88f9a6982ca6e6945b0a",
+          "observation_key": "9a701e4cd95faf81c8ff847366090bdf7572f1c1922a88f9a6982ca6e6945b0a",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "9a701e4cd95faf81c8ff847366090bdf7572f1c1922a88f9a6982ca6e6945b0a"
+          }
+        }
+      ],
+      "costs": {
+        "enumeration_ms": 5.695333704352379,
+        "planning_ms": 49.19245932251215,
+        "selection_ms": 0.05974993109703064,
+        "end_to_end_ms": 63.02337534725666,
+        "observation_calls": 2,
+        "execution_calls": 1,
+        "total_remote_calls": 3
+      },
+      "actual_rows": [
+        {
+          "n": 0
+        }
+      ],
+      "validation_only_extra_remote_calls": 1,
+      "serving_metrics": {
+        "elapsed_ms": 13.735583052039146,
+        "remote_calls": 1.0,
+        "bytes_moved": 2.0,
+        "row_count": 1.0
+      }
+    },
+    {
+      "query_id": "S06",
+      "success": true,
+      "candidate_checks": [
+        {
+          "plan_id": "S06/bf0fb0bbdc35cbaaaf94",
+          "source_bindings": {
+            "external": "fuseki",
+            "left": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S06/f961b58028bece305eec",
+          "source_bindings": {
+            "external": "fuseki",
+            "left": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S06/53264184e492d2ebeecf",
+          "source_bindings": {
+            "external": "neo4j",
+            "left": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "S06/e86baf9bae62d6dd880e",
+          "source_bindings": {
+            "external": "neo4j",
+            "left": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/a"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "selected_plan": {
+        "plan_id": "S06/53264184e492d2ebeecf",
+        "nodes": [
+          {
+            "node_id": "left/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "left-match",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?entity WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 a <https://xgap.test/toy/Person> .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"a\")\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n}\n?source a ?nodeDomain . VALUES ?nodeDomain { <https://xgap.test/toy/Person> }\nBIND(?source AS ?entity)\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "fuseki",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.node_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                    "RDF type triples represent XGAP node-label predicates.",
+                    "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                  ],
+                  "backend_mapping": {
+                    "mapping_id": "backbone-toy-v1",
+                    "version": "1",
+                    "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                    "relevant_mapped_iris": [
+                      {
+                        "logical_token": "Person",
+                        "canonical_term_id": "Person",
+                        "kind": "class",
+                        "iri": "https://xgap.test/toy/Person"
+                      },
+                      {
+                        "logical_token": "id",
+                        "canonical_term_id": "id",
+                        "kind": "property",
+                        "iri": "https://xgap.test/toy/id"
+                      }
+                    ]
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "entity"
+                  ],
+                  "output_columns": [
+                    "entity"
+                  ]
+                }
+              },
+              "observation_key": "e17e69149201a4d66b9e4d8bffeba36b6ed7255665ff6a8541725ca9364d31fd"
+            },
+            "semantic_operator_ids": [
+              "left"
+            ]
+          },
+          {
+            "node_id": "left/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "left/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "left"
+            ]
+          },
+          {
+            "node_id": "left/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "left/native/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": []
+            },
+            "semantic_operator_ids": [
+              "left"
+            ]
+          },
+          {
+            "node_id": "external/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "external-match",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)\nWHERE n0:Person\n  AND n0.id = \"b\"\nRETURN DISTINCT n0 AS source, n0 AS target, [n0] AS nodes, [] AS edges\n}\nRETURN DISTINCT source AS entity",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "neo4j",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.node_labels",
+                    "graph_model.scalar_property_predicates",
+                    "native.cypher",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "Neo4j node labels represent XGAP node-label predicates.",
+                    "Neo4j relationship types represent XGAP edge-label predicates.",
+                    "Missing properties and non-numeric values follow Cypher WHERE null-elimination for this fragment."
+                  ],
+                  "output_columns": [
+                    "entity"
+                  ]
+                }
+              },
+              "observation_key": "b6725fbd2778910d4f2bc9aa9a9b6f01c31db219c1e077150fcc0b7d4dc846d6"
+            },
+            "semantic_operator_ids": [
+              "external"
+            ]
+          },
+          {
+            "node_id": "external/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "external/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "external"
+            ]
+          },
+          {
+            "node_id": "external/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "external/native/exchange"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": []
+            },
+            "semantic_operator_ids": [
+              "external"
+            ]
+          },
+          {
+            "node_id": "aligned/align",
+            "kind": "align",
+            "inputs": [
+              "external/bindings"
+            ],
+            "parameters": {
+              "field": "person",
+              "mapping": {
+                "https://xgap.test/toy/b": "https://xgap.test/toy/a"
+              },
+              "on_missing": "error"
+            },
+            "semantic_operator_ids": [
+              "aligned"
+            ]
+          },
+          {
+            "node_id": "join/right_columns",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "aligned/align"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                }
+              }
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "join/join",
+            "kind": "coordinator_join",
+            "inputs": [
+              "left/bindings",
+              "join/right_columns"
+            ],
+            "parameters": {
+              "left_on": "person",
+              "right_on": "person",
+              "right_prefix": "right_"
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          }
+        ],
+        "roots": [
+          "join/join"
+        ],
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "semantic_dag_v1",
+          "semantic_program_sha256": "cc1485054dfe6a2e6f5b3d70dfe5dd04a4e6882339315ced6e331cc97decd076",
+          "source_bindings": {
+            "external": "neo4j",
+            "left": "fuseki"
+          },
+          "operator_outputs": {
+            "left": "left/bindings",
+            "external": "external/bindings",
+            "aligned": "aligned/align",
+            "join": "join/join"
+          },
+          "schemas": {
+            "left": {
+              "kind": "binding_set",
+              "fields": [
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "external": {
+              "kind": "binding_set",
+              "fields": [
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "aligned": {
+              "kind": "binding_set",
+              "fields": [
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "join": {
+              "kind": "binding_set",
+              "fields": [
+                "person"
+              ],
+              "path_namespace": null
+            }
+          },
+          "logical_sources": {
+            "external": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            },
+            "left": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            }
+          },
+          "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"
+        }
+      },
+      "selection": {
+        "semantic_equivalence_key": "dd690ca2dcc4b9955f28836eb8a1c70517b3cd337a1811a703aae53b3dbbe439",
+        "snapshot_id": "semantic-plan-observations",
+        "snapshot_version": "dd690ca2dcc4b9955f28836eb8a1c70517b3cd337a1811a703aae53b3dbbe439",
+        "selected_plan_id": "S06/53264184e492d2ebeecf",
+        "estimates": [
+          {
+            "plan_id": "S06/53264184e492d2ebeecf",
+            "predicted_latency_ms": 14.075457589685916,
+            "predicted_transfer_bytes": 106.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "b6725fbd2778910d4f2bc9aa9a9b6f01c31db219c1e077150fcc0b7d4dc846d6",
+              "e17e69149201a4d66b9e4d8bffeba36b6ed7255665ff6a8541725ca9364d31fd"
+            ],
+            "node_completion_ms": {
+              "left/native": 13.984457589685917,
+              "left/native/exchange": 14.045457589685917,
+              "left/bindings": 14.055457589685917,
+              "external/native": 13.207666575908661,
+              "external/native/exchange": 13.25266657590866,
+              "external/bindings": 13.26266657590866,
+              "aligned/align": 13.27266657590866,
+              "join/right_columns": 13.28266657590866,
+              "join/join": 14.075457589685916
+            },
+            "node_row_counts": {
+              "left/native": 1.0,
+              "left/native/exchange": 1.0,
+              "left/bindings": 1.0,
+              "external/native": 1.0,
+              "external/native/exchange": 1.0,
+              "external/bindings": 1.0,
+              "aligned/align": 1.0,
+              "join/right_columns": 1.0,
+              "join/join": 1.0
+            }
+          },
+          {
+            "plan_id": "S06/bf0fb0bbdc35cbaaaf94",
+            "predicted_latency_ms": 14.075457589685916,
+            "predicted_transfer_bytes": 122.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "216a5021e58438807098704be431a6ac8e4dd411c4eff030dfd5abeeddb60428",
+              "e17e69149201a4d66b9e4d8bffeba36b6ed7255665ff6a8541725ca9364d31fd"
+            ],
+            "node_completion_ms": {
+              "left/native": 13.984457589685917,
+              "left/native/exchange": 14.045457589685917,
+              "left/bindings": 14.055457589685917,
+              "external/native": 11.105041950941086,
+              "external/native/exchange": 11.166041950941086,
+              "external/bindings": 11.176041950941086,
+              "aligned/align": 11.186041950941085,
+              "join/right_columns": 11.196041950941085,
+              "join/join": 14.075457589685916
+            },
+            "node_row_counts": {
+              "left/native": 1.0,
+              "left/native/exchange": 1.0,
+              "left/bindings": 1.0,
+              "external/native": 1.0,
+              "external/native/exchange": 1.0,
+              "external/bindings": 1.0,
+              "aligned/align": 1.0,
+              "join/right_columns": 1.0,
+              "join/join": 1.0
+            }
+          },
+          {
+            "plan_id": "S06/e86baf9bae62d6dd880e",
+            "predicted_latency_ms": 17.879291549742224,
+            "predicted_transfer_bytes": 92.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "b6725fbd2778910d4f2bc9aa9a9b6f01c31db219c1e077150fcc0b7d4dc846d6",
+              "c3948f4823bdf01ebd56aee0888b92176e8044f123ec5a4be6bb6d28e8fd9925"
+            ],
+            "node_completion_ms": {
+              "left/native": 17.802291549742222,
+              "left/native/exchange": 17.849291549742222,
+              "left/bindings": 17.859291549742224,
+              "external/native": 13.207666575908661,
+              "external/native/exchange": 13.25266657590866,
+              "external/bindings": 13.26266657590866,
+              "aligned/align": 13.27266657590866,
+              "join/right_columns": 13.28266657590866,
+              "join/join": 17.879291549742224
+            },
+            "node_row_counts": {
+              "left/native": 1.0,
+              "left/native/exchange": 1.0,
+              "left/bindings": 1.0,
+              "external/native": 1.0,
+              "external/native/exchange": 1.0,
+              "external/bindings": 1.0,
+              "aligned/align": 1.0,
+              "join/right_columns": 1.0,
+              "join/join": 1.0
+            }
+          },
+          {
+            "plan_id": "S06/f961b58028bece305eec",
+            "predicted_latency_ms": 17.879291549742224,
+            "predicted_transfer_bytes": 108.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "216a5021e58438807098704be431a6ac8e4dd411c4eff030dfd5abeeddb60428",
+              "c3948f4823bdf01ebd56aee0888b92176e8044f123ec5a4be6bb6d28e8fd9925"
+            ],
+            "node_completion_ms": {
+              "left/native": 17.802291549742222,
+              "left/native/exchange": 17.849291549742222,
+              "left/bindings": 17.859291549742224,
+              "external/native": 11.105041950941086,
+              "external/native/exchange": 11.166041950941086,
+              "external/bindings": 11.176041950941086,
+              "aligned/align": 11.186041950941085,
+              "join/right_columns": 11.196041950941085,
+              "join/join": 17.879291549742224
+            },
+            "node_row_counts": {
+              "left/native": 1.0,
+              "left/native/exchange": 1.0,
+              "left/bindings": 1.0,
+              "external/native": 1.0,
+              "external/native/exchange": 1.0,
+              "external/bindings": 1.0,
+              "aligned/align": 1.0,
+              "join/right_columns": 1.0,
+              "join/join": 1.0
+            }
+          }
+        ],
+        "selection_rule": "minimum predicted latency, then transfer bytes, remote calls, plan id"
+      },
+      "observation_snapshot": {
+        "snapshot_id": "semantic-plan-observations",
+        "version": "dd690ca2dcc4b9955f28836eb8a1c70517b3cd337a1811a703aae53b3dbbe439",
+        "estimates": [
+          {
+            "observation_key": "216a5021e58438807098704be431a6ac8e4dd411c4eff030dfd5abeeddb60428",
+            "backend_id": "fuseki",
+            "elapsed_ms": 11.105041950941086,
+            "row_count": 1,
+            "row_width_bytes": 61.0,
+            "output_bytes": 61.0,
+            "source": "semantic-native-observations/external-match/d62fef8b6b480eb2b50bac095fc07bf18b046dc4af2b9c1b03850fb8ff371a0b",
+            "version": "dd690ca2dcc4b9955f28836eb8a1c70517b3cd337a1811a703aae53b3dbbe439"
+          },
+          {
+            "observation_key": "b6725fbd2778910d4f2bc9aa9a9b6f01c31db219c1e077150fcc0b7d4dc846d6",
+            "backend_id": "neo4j",
+            "elapsed_ms": 13.207666575908661,
+            "row_count": 1,
+            "row_width_bytes": 45.0,
+            "output_bytes": 45.0,
+            "source": "semantic-native-observations/external-match/e6a22af78d2ea22fc2913ca9d18b67ea24cb9fc59a023c96dac6c17e389c5401",
+            "version": "dd690ca2dcc4b9955f28836eb8a1c70517b3cd337a1811a703aae53b3dbbe439"
+          },
+          {
+            "observation_key": "c3948f4823bdf01ebd56aee0888b92176e8044f123ec5a4be6bb6d28e8fd9925",
+            "backend_id": "neo4j",
+            "elapsed_ms": 17.802291549742222,
+            "row_count": 1,
+            "row_width_bytes": 47.0,
+            "output_bytes": 47.0,
+            "source": "semantic-native-observations/left-match/067b8a428b0ff6f1d71678d00c274abfba0dbe964946493fd7c3aba18aa83d96",
+            "version": "dd690ca2dcc4b9955f28836eb8a1c70517b3cd337a1811a703aae53b3dbbe439"
+          },
+          {
+            "observation_key": "e17e69149201a4d66b9e4d8bffeba36b6ed7255665ff6a8541725ca9364d31fd",
+            "backend_id": "fuseki",
+            "elapsed_ms": 13.984457589685917,
+            "row_count": 1,
+            "row_width_bytes": 61.0,
+            "output_bytes": 61.0,
+            "source": "semantic-native-observations/left-match/0c9ad19e8cb3544e0ed5183c9708ea25aeb09fd1f34d020c640dfefd1c2d7e83",
+            "version": "dd690ca2dcc4b9955f28836eb8a1c70517b3cd337a1811a703aae53b3dbbe439"
+          }
+        ],
+        "bandwidth_bytes_per_ms": 1000.0,
+        "exchange_fixed_ms": 0.0,
+        "coordinator_row_ms": 0.01
+      },
+      "observation_requests": [
+        {
+          "call_id": "observe-216a5021e58438807098704be431a6ac8e4dd411c4eff030dfd5abeeddb60428",
+          "observation_key": "216a5021e58438807098704be431a6ac8e4dd411c4eff030dfd5abeeddb60428",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "216a5021e58438807098704be431a6ac8e4dd411c4eff030dfd5abeeddb60428"
+          }
+        },
+        {
+          "call_id": "observe-b6725fbd2778910d4f2bc9aa9a9b6f01c31db219c1e077150fcc0b7d4dc846d6",
+          "observation_key": "b6725fbd2778910d4f2bc9aa9a9b6f01c31db219c1e077150fcc0b7d4dc846d6",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "b6725fbd2778910d4f2bc9aa9a9b6f01c31db219c1e077150fcc0b7d4dc846d6"
+          }
+        },
+        {
+          "call_id": "observe-c3948f4823bdf01ebd56aee0888b92176e8044f123ec5a4be6bb6d28e8fd9925",
+          "observation_key": "c3948f4823bdf01ebd56aee0888b92176e8044f123ec5a4be6bb6d28e8fd9925",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "c3948f4823bdf01ebd56aee0888b92176e8044f123ec5a4be6bb6d28e8fd9925"
+          }
+        },
+        {
+          "call_id": "observe-e17e69149201a4d66b9e4d8bffeba36b6ed7255665ff6a8541725ca9364d31fd",
+          "observation_key": "e17e69149201a4d66b9e4d8bffeba36b6ed7255665ff6a8541725ca9364d31fd",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "e17e69149201a4d66b9e4d8bffeba36b6ed7255665ff6a8541725ca9364d31fd"
+          }
+        }
+      ],
+      "costs": {
+        "enumeration_ms": 20.57754248380661,
+        "planning_ms": 77.25354377180338,
+        "selection_ms": 0.17379224300384521,
+        "end_to_end_ms": 93.3116264641285,
+        "observation_calls": 4,
+        "execution_calls": 2,
+        "total_remote_calls": 6
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/a"
+        }
+      ],
+      "validation_only_extra_remote_calls": 6,
+      "serving_metrics": {
+        "elapsed_ms": 15.631834045052528,
+        "remote_calls": 2.0,
+        "bytes_moved": 106.0,
+        "row_count": 1.0
+      }
+    },
+    {
+      "query_id": "S07",
+      "success": true,
+      "candidate_checks": [
+        {
+          "plan_id": "S07/a241912ad079624c1a47",
+          "source_bindings": {
+            "left": "fuseki",
+            "right": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "left_age": 30,
+              "right_age": 30
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "S07/994cf021442b0b52fdaf",
+          "source_bindings": {
+            "left": "fuseki",
+            "right": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "left_age": 30,
+              "right_age": 30
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S07/5af9810396750212c11c",
+          "source_bindings": {
+            "left": "neo4j",
+            "right": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "left_age": 30,
+              "right_age": 30
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S07/b798425dc4e64456a477",
+          "source_bindings": {
+            "left": "neo4j",
+            "right": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "left_age": 30,
+              "right_age": 30
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "selected_plan": {
+        "plan_id": "S07/a241912ad079624c1a47",
+        "nodes": [
+          {
+            "node_id": "left/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "left-match",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?entity ?age WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 a <https://xgap.test/toy/Person> .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"a\")\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n}\n?source a ?nodeDomain . VALUES ?nodeDomain { <https://xgap.test/toy/Person> }\nBIND(?source AS ?entity)\nOPTIONAL { ?source <https://xgap.test/toy/age> ?age . }\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "fuseki",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.node_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                    "RDF type triples represent XGAP node-label predicates.",
+                    "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                  ],
+                  "backend_mapping": {
+                    "mapping_id": "backbone-toy-v1",
+                    "version": "1",
+                    "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                    "relevant_mapped_iris": [
+                      {
+                        "logical_token": "Person",
+                        "canonical_term_id": "Person",
+                        "kind": "class",
+                        "iri": "https://xgap.test/toy/Person"
+                      },
+                      {
+                        "logical_token": "id",
+                        "canonical_term_id": "id",
+                        "kind": "property",
+                        "iri": "https://xgap.test/toy/id"
+                      }
+                    ]
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "entity",
+                    "age"
+                  ],
+                  "output_columns": [
+                    "entity",
+                    "age"
+                  ]
+                }
+              },
+              "observation_key": "77b14dc65c034bb8f4507f417b2022899ae2f4d3871aa30427a28b02f9e3a973"
+            },
+            "semantic_operator_ids": [
+              "left"
+            ]
+          },
+          {
+            "node_id": "left/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "left/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "left"
+            ]
+          },
+          {
+            "node_id": "left/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "left/native/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": [
+                "age"
+              ]
+            },
+            "semantic_operator_ids": [
+              "left"
+            ]
+          },
+          {
+            "node_id": "right/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "right-match",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?entity ?age WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n  { ?n0 ?_p0 ?_o0 . }\n  UNION\n  { ?_s0 ?_p1 ?n0 . }\n  ?n0 a <https://xgap.test/toy/Person> .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"a\")\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n}\n?source a ?nodeDomain . VALUES ?nodeDomain { <https://xgap.test/toy/Person> }\nBIND(?source AS ?entity)\nOPTIONAL { ?source <https://xgap.test/toy/age> ?age . }\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "fuseki",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.node_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "DatasetBundle backend mappings provide all RDF class, predicate, and property IRIs.",
+                    "RDF type triples represent XGAP node-label predicates.",
+                    "Edge property predicates are unsupported because M9 does not define RDF edge reification."
+                  ],
+                  "backend_mapping": {
+                    "mapping_id": "backbone-toy-v1",
+                    "version": "1",
+                    "mapping_hash": "13c35e0ed0f73faefa6543fc730dee6606f9681220c16d58d1454f3cba1ae0e9",
+                    "relevant_mapped_iris": [
+                      {
+                        "logical_token": "Person",
+                        "canonical_term_id": "Person",
+                        "kind": "class",
+                        "iri": "https://xgap.test/toy/Person"
+                      },
+                      {
+                        "logical_token": "id",
+                        "canonical_term_id": "id",
+                        "kind": "property",
+                        "iri": "https://xgap.test/toy/id"
+                      }
+                    ]
+                  },
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "entity",
+                    "age"
+                  ],
+                  "output_columns": [
+                    "entity",
+                    "age"
+                  ]
+                }
+              },
+              "observation_key": "f26a0d073f90c7465ff5643804b7eb68ac3b3c40b192d979b7ebfbf41d29221e"
+            },
+            "semantic_operator_ids": [
+              "right"
+            ]
+          },
+          {
+            "node_id": "right/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "right/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "right"
+            ]
+          },
+          {
+            "node_id": "right/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "right/native/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": [
+                "age"
+              ]
+            },
+            "semantic_operator_ids": [
+              "right"
+            ]
+          },
+          {
+            "node_id": "join/right_columns",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "right/bindings"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                },
+                "right_age": {
+                  "kind": "field",
+                  "field": "age"
+                }
+              }
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "join/join",
+            "kind": "coordinator_join",
+            "inputs": [
+              "left/bindings",
+              "join/right_columns"
+            ],
+            "parameters": {
+              "left_on": "person",
+              "right_on": "person",
+              "right_prefix": "right_"
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "answer/project",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "join/join"
+            ],
+            "parameters": {
+              "projections": {
+                "left_age": {
+                  "kind": "field",
+                  "field": "age"
+                },
+                "right_age": {
+                  "kind": "field",
+                  "field": "right_age"
+                }
+              },
+              "resource_namespace": null
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "roots": [
+          "answer/project"
+        ],
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "semantic_dag_v1",
+          "semantic_program_sha256": "74a9c43227d4b17362664b914ae137e9e2750d514e59a54be8e5de6b47b9a512",
+          "source_bindings": {
+            "left": "fuseki",
+            "right": "fuseki"
+          },
+          "operator_outputs": {
+            "left": "left/bindings",
+            "right": "right/bindings",
+            "join": "join/join",
+            "answer": "answer/project"
+          },
+          "schemas": {
+            "left": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "right": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "join": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person",
+                "right_age"
+              ],
+              "path_namespace": null
+            },
+            "answer": {
+              "kind": "binding_set",
+              "fields": [
+                "left_age",
+                "right_age"
+              ],
+              "path_namespace": null
+            }
+          },
+          "logical_sources": {
+            "left": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            },
+            "right": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            }
+          },
+          "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"
+        }
+      },
+      "selection": {
+        "semantic_equivalence_key": "d31b5470c160b6d2b37e60ccbe4561af9d45633120d21eff452dcabee61e17b1",
+        "snapshot_id": "semantic-plan-observations",
+        "snapshot_version": "d31b5470c160b6d2b37e60ccbe4561af9d45633120d21eff452dcabee61e17b1",
+        "selected_plan_id": "S07/a241912ad079624c1a47",
+        "estimates": [
+          {
+            "plan_id": "S07/5af9810396750212c11c",
+            "predicted_latency_ms": 35.273541896700856,
+            "predicted_transfer_bytes": 209.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "95337b9d349db98d93f1a16281831fdffc30a7017e8ce88142fb92a9fef9be55",
+              "f26a0d073f90c7465ff5643804b7eb68ac3b3c40b192d979b7ebfbf41d29221e"
+            ],
+            "node_completion_ms": {
+              "left/native": 35.17754189670086,
+              "left/native/exchange": 35.23354189670086,
+              "left/bindings": 35.243541896700854,
+              "right/native": 13.16683366894722,
+              "right/native/exchange": 13.31983366894722,
+              "right/bindings": 13.32983366894722,
+              "join/right_columns": 13.33983366894722,
+              "join/join": 35.26354189670086,
+              "answer/project": 35.273541896700856
+            },
+            "node_row_counts": {
+              "left/native": 1.0,
+              "left/native/exchange": 1.0,
+              "left/bindings": 1.0,
+              "right/native": 1.0,
+              "right/native/exchange": 1.0,
+              "right/bindings": 1.0,
+              "join/right_columns": 1.0,
+              "join/join": 1.0,
+              "answer/project": 1.0
+            }
+          },
+          {
+            "plan_id": "S07/994cf021442b0b52fdaf",
+            "predicted_latency_ms": 14.967833304166792,
+            "predicted_transfer_bytes": 209.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "77b14dc65c034bb8f4507f417b2022899ae2f4d3871aa30427a28b02f9e3a973",
+              "b7254a7c916119b7b5989cd0cca73e1ab39d3e463258b119e1ca43a397f1c3d2"
+            ],
+            "node_completion_ms": {
+              "left/native": 10.479125194251537,
+              "left/native/exchange": 10.632125194251538,
+              "left/bindings": 10.642125194251538,
+              "right/native": 14.861833304166794,
+              "right/native/exchange": 14.917833304166793,
+              "right/bindings": 14.927833304166793,
+              "join/right_columns": 14.937833304166793,
+              "join/join": 14.957833304166792,
+              "answer/project": 14.967833304166792
+            },
+            "node_row_counts": {
+              "left/native": 1.0,
+              "left/native/exchange": 1.0,
+              "left/bindings": 1.0,
+              "right/native": 1.0,
+              "right/native/exchange": 1.0,
+              "right/bindings": 1.0,
+              "join/right_columns": 1.0,
+              "join/join": 1.0,
+              "answer/project": 1.0
+            }
+          },
+          {
+            "plan_id": "S07/a241912ad079624c1a47",
+            "predicted_latency_ms": 13.36983366894722,
+            "predicted_transfer_bytes": 306.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "77b14dc65c034bb8f4507f417b2022899ae2f4d3871aa30427a28b02f9e3a973",
+              "f26a0d073f90c7465ff5643804b7eb68ac3b3c40b192d979b7ebfbf41d29221e"
+            ],
+            "node_completion_ms": {
+              "left/native": 10.479125194251537,
+              "left/native/exchange": 10.632125194251538,
+              "left/bindings": 10.642125194251538,
+              "right/native": 13.16683366894722,
+              "right/native/exchange": 13.31983366894722,
+              "right/bindings": 13.32983366894722,
+              "join/right_columns": 13.33983366894722,
+              "join/join": 13.35983366894722,
+              "answer/project": 13.36983366894722
+            },
+            "node_row_counts": {
+              "left/native": 1.0,
+              "left/native/exchange": 1.0,
+              "left/bindings": 1.0,
+              "right/native": 1.0,
+              "right/native/exchange": 1.0,
+              "right/bindings": 1.0,
+              "join/right_columns": 1.0,
+              "join/join": 1.0,
+              "answer/project": 1.0
+            }
+          },
+          {
+            "plan_id": "S07/b798425dc4e64456a477",
+            "predicted_latency_ms": 35.273541896700856,
+            "predicted_transfer_bytes": 112.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "95337b9d349db98d93f1a16281831fdffc30a7017e8ce88142fb92a9fef9be55",
+              "b7254a7c916119b7b5989cd0cca73e1ab39d3e463258b119e1ca43a397f1c3d2"
+            ],
+            "node_completion_ms": {
+              "left/native": 35.17754189670086,
+              "left/native/exchange": 35.23354189670086,
+              "left/bindings": 35.243541896700854,
+              "right/native": 14.861833304166794,
+              "right/native/exchange": 14.917833304166793,
+              "right/bindings": 14.927833304166793,
+              "join/right_columns": 14.937833304166793,
+              "join/join": 35.26354189670086,
+              "answer/project": 35.273541896700856
+            },
+            "node_row_counts": {
+              "left/native": 1.0,
+              "left/native/exchange": 1.0,
+              "left/bindings": 1.0,
+              "right/native": 1.0,
+              "right/native/exchange": 1.0,
+              "right/bindings": 1.0,
+              "join/right_columns": 1.0,
+              "join/join": 1.0,
+              "answer/project": 1.0
+            }
+          }
+        ],
+        "selection_rule": "minimum predicted latency, then transfer bytes, remote calls, plan id"
+      },
+      "observation_snapshot": {
+        "snapshot_id": "semantic-plan-observations",
+        "version": "d31b5470c160b6d2b37e60ccbe4561af9d45633120d21eff452dcabee61e17b1",
+        "estimates": [
+          {
+            "observation_key": "77b14dc65c034bb8f4507f417b2022899ae2f4d3871aa30427a28b02f9e3a973",
+            "backend_id": "fuseki",
+            "elapsed_ms": 10.479125194251537,
+            "row_count": 1,
+            "row_width_bytes": 153.0,
+            "output_bytes": 153.0,
+            "source": "semantic-native-observations/left-match/06718a1e6854adc27080b2dea7a322c27e54bc1157f9fc238f0184611a7e5238",
+            "version": "d31b5470c160b6d2b37e60ccbe4561af9d45633120d21eff452dcabee61e17b1"
+          },
+          {
+            "observation_key": "95337b9d349db98d93f1a16281831fdffc30a7017e8ce88142fb92a9fef9be55",
+            "backend_id": "neo4j",
+            "elapsed_ms": 35.17754189670086,
+            "row_count": 1,
+            "row_width_bytes": 56.0,
+            "output_bytes": 56.0,
+            "source": "semantic-native-observations/left-match/cd630549c5ba2f05f75cfa3cc4b0b734051d93b0c076779eac78ad1fec01ea90",
+            "version": "d31b5470c160b6d2b37e60ccbe4561af9d45633120d21eff452dcabee61e17b1"
+          },
+          {
+            "observation_key": "b7254a7c916119b7b5989cd0cca73e1ab39d3e463258b119e1ca43a397f1c3d2",
+            "backend_id": "neo4j",
+            "elapsed_ms": 14.861833304166794,
+            "row_count": 1,
+            "row_width_bytes": 56.0,
+            "output_bytes": 56.0,
+            "source": "semantic-native-observations/right-match/2ac328109ff63afc3a8f63108c78b13c319368215fe64fbffa34b2c1f712fc4b",
+            "version": "d31b5470c160b6d2b37e60ccbe4561af9d45633120d21eff452dcabee61e17b1"
+          },
+          {
+            "observation_key": "f26a0d073f90c7465ff5643804b7eb68ac3b3c40b192d979b7ebfbf41d29221e",
+            "backend_id": "fuseki",
+            "elapsed_ms": 13.16683366894722,
+            "row_count": 1,
+            "row_width_bytes": 153.0,
+            "output_bytes": 153.0,
+            "source": "semantic-native-observations/right-match/1592db5cd5f268aff2929736c54aff23700d99f90504a9315d60524df5a66f3a",
+            "version": "d31b5470c160b6d2b37e60ccbe4561af9d45633120d21eff452dcabee61e17b1"
+          }
+        ],
+        "bandwidth_bytes_per_ms": 1000.0,
+        "exchange_fixed_ms": 0.0,
+        "coordinator_row_ms": 0.01
+      },
+      "observation_requests": [
+        {
+          "call_id": "observe-77b14dc65c034bb8f4507f417b2022899ae2f4d3871aa30427a28b02f9e3a973",
+          "observation_key": "77b14dc65c034bb8f4507f417b2022899ae2f4d3871aa30427a28b02f9e3a973",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "77b14dc65c034bb8f4507f417b2022899ae2f4d3871aa30427a28b02f9e3a973"
+          }
+        },
+        {
+          "call_id": "observe-95337b9d349db98d93f1a16281831fdffc30a7017e8ce88142fb92a9fef9be55",
+          "observation_key": "95337b9d349db98d93f1a16281831fdffc30a7017e8ce88142fb92a9fef9be55",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "95337b9d349db98d93f1a16281831fdffc30a7017e8ce88142fb92a9fef9be55"
+          }
+        },
+        {
+          "call_id": "observe-b7254a7c916119b7b5989cd0cca73e1ab39d3e463258b119e1ca43a397f1c3d2",
+          "observation_key": "b7254a7c916119b7b5989cd0cca73e1ab39d3e463258b119e1ca43a397f1c3d2",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "b7254a7c916119b7b5989cd0cca73e1ab39d3e463258b119e1ca43a397f1c3d2"
+          }
+        },
+        {
+          "call_id": "observe-f26a0d073f90c7465ff5643804b7eb68ac3b3c40b192d979b7ebfbf41d29221e",
+          "observation_key": "f26a0d073f90c7465ff5643804b7eb68ac3b3c40b192d979b7ebfbf41d29221e",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "f26a0d073f90c7465ff5643804b7eb68ac3b3c40b192d979b7ebfbf41d29221e"
+          }
+        }
+      ],
+      "costs": {
+        "enumeration_ms": 19.838040694594383,
+        "planning_ms": 94.13058310747147,
+        "selection_ms": 0.19475072622299194,
+        "end_to_end_ms": 109.07462518662214,
+        "observation_calls": 4,
+        "execution_calls": 2,
+        "total_remote_calls": 6
+      },
+      "actual_rows": [
+        {
+          "left_age": 30,
+          "right_age": 30
+        }
+      ],
+      "validation_only_extra_remote_calls": 6,
+      "serving_metrics": {
+        "elapsed_ms": 14.808250591158867,
+        "remote_calls": 2.0,
+        "bytes_moved": 306.0,
+        "row_count": 1.0
+      }
+    },
+    {
+      "query_id": "S08",
+      "success": true,
+      "candidate_checks": [
+        {
+          "plan_id": "S08/d3c20ebeecc3e16c5d02",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S08/30651206e6b740abc820",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 0
+        },
+        {
+          "plan_id": "S08/acaac02e66c17af8e4fe",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "fuseki"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        },
+        {
+          "plan_id": "S08/02f1347020c6f301a4eb",
+          "source_bindings": {
+            "paths": "neo4j",
+            "people": "neo4j"
+          },
+          "actual_rows": [
+            {
+              "person": "https://xgap.test/toy/c",
+              "edge": "https://xgap.test/toy/e4"
+            }
+          ],
+          "success": true,
+          "additional_remote_calls": 2
+        }
+      ],
+      "selected_plan": {
+        "plan_id": "S08/30651206e6b740abc820",
+        "nodes": [
+          {
+            "node_id": "paths/candidates",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "fuseki",
+              "artifact": {
+                "artifact_id": "bounded-paths",
+                "language": "sparql",
+                "text": "SELECT DISTINCT ?length ?n0 ?e1 ?n1 WHERE {\n{ {\nSELECT DISTINCT ?source ?target ?n0 ?n1 ?e1 WHERE {\n  ?e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Edge> .\n  ?e1 <https://xgap.test/toy/source> ?n0 .\n  ?e1 <https://xgap.test/toy/target> ?n1 .\n  ?e1 <https://xgap.test/toy/label> \"KNOWS\" .\n  ?n0 <https://xgap.test/toy/id> ?v0 .\n  FILTER(?v0 = \"a\")\n  BIND(?n0 AS ?source)\n  BIND(?n1 AS ?target)\n}\n}\nBIND(1 AS ?length)\n}\n}",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "bounded_native_paths_v1",
+                  "result_model": "path_candidates",
+                  "target_backend_id": "fuseki",
+                  "output_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "branch_count": 1,
+                  "branch_edge_counts": [
+                    1
+                  ],
+                  "path_selection": {
+                    "language": "sparql",
+                    "identity_property": "id",
+                    "resource_namespace": "https://xgap.test/toy/",
+                    "max_edges": 1,
+                    "selector": "ALL",
+                    "k": null,
+                    "recursive_shortest": false,
+                    "post_shortest_lengths": []
+                  },
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.edge_labels",
+                    "graph_model.rdf_graph",
+                    "graph_model.scalar_property_predicates",
+                    "native.sparql",
+                    "result_model.row_bindings"
+                  ],
+                  "backend_execution_verified": false,
+                  "rdf_result_encoding": "rdf_terms_v1",
+                  "expected_result_columns": [
+                    "length",
+                    "n0",
+                    "e1",
+                    "n1"
+                  ],
+                  "rdf_edge_encoding_sha256": "f7c015bb956fb741329a1a153688864b0bbbbc593ecd7104296b606eefbfc15e",
+                  "rdf_node_classes": [
+                    "https://xgap.test/toy/Person"
+                  ]
+                }
+              },
+              "observation_key": "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3"
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/candidates/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "paths/candidates"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "paths/paths",
+            "kind": "coordinator_path_select",
+            "inputs": [
+              "paths/candidates/exchange"
+            ],
+            "parameters": {
+              "language": "sparql",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "max_edges": 1,
+              "selector": "ALL",
+              "k": null,
+              "recursive_shortest": false,
+              "post_shortest_lengths": []
+            },
+            "semantic_operator_ids": [
+              "paths"
+            ]
+          },
+          {
+            "node_id": "reached/project",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "paths/paths"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "path_node",
+                  "position": "last"
+                },
+                "edge": {
+                  "kind": "path_edge",
+                  "position": 1
+                }
+              },
+              "resource_namespace": "https://xgap.test/toy/"
+            },
+            "semantic_operator_ids": [
+              "reached"
+            ]
+          },
+          {
+            "node_id": "people/native",
+            "kind": "remote_query",
+            "inputs": [],
+            "parameters": {
+              "backend_id": "neo4j",
+              "artifact": {
+                "artifact_id": "people-match",
+                "language": "cypher",
+                "text": "CALL {\nMATCH (n0)\nWHERE n0:Person\nRETURN DISTINCT n0 AS source, n0 AS target, [n0] AS nodes, [] AS edges\n}\nRETURN DISTINCT source AS entity, source.age AS age",
+                "kind": "compiled",
+                "source_path": null,
+                "parameters": {
+                  "compiler": "semantic_node_match_v1",
+                  "target_backend_id": "neo4j",
+                  "result_model": "row_bindings",
+                  "required_features": [
+                    "graph_model.directed_edges",
+                    "graph_model.labeled_property_graph",
+                    "graph_model.node_labels",
+                    "native.cypher",
+                    "path_algebra.Nodes",
+                    "path_algebra.Selection",
+                    "result_model.row_bindings"
+                  ],
+                  "semantic_assumptions": [
+                    "M9 emits row bindings for a fixed OUT path fragment, not native XGAP PathSet objects.",
+                    "Neo4j node labels represent XGAP node-label predicates.",
+                    "Neo4j relationship types represent XGAP edge-label predicates.",
+                    "Missing properties and non-numeric values follow Cypher WHERE null-elimination for this fragment."
+                  ],
+                  "output_columns": [
+                    "entity",
+                    "age"
+                  ]
+                }
+              },
+              "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/native/exchange",
+            "kind": "exchange",
+            "inputs": [
+              "people/native"
+            ],
+            "parameters": {},
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "people/bindings",
+            "kind": "normalize_node_bindings",
+            "inputs": [
+              "people/native/exchange"
+            ],
+            "parameters": {
+              "language": "cypher",
+              "identity_property": "id",
+              "resource_namespace": "https://xgap.test/toy/",
+              "entity_field": "person",
+              "scalar_fields": [
+                "age"
+              ]
+            },
+            "semantic_operator_ids": [
+              "people"
+            ]
+          },
+          {
+            "node_id": "eligible/filter",
+            "kind": "coordinator_filter",
+            "inputs": [
+              "people/bindings"
+            ],
+            "parameters": {
+              "condition": {
+                "op": "ge",
+                "field": "age",
+                "value": 30
+              }
+            },
+            "semantic_operator_ids": [
+              "eligible"
+            ]
+          },
+          {
+            "node_id": "join/right_columns",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "eligible/filter"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                },
+                "age": {
+                  "kind": "field",
+                  "field": "age"
+                }
+              }
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "join/join",
+            "kind": "coordinator_join",
+            "inputs": [
+              "reached/project",
+              "join/right_columns"
+            ],
+            "parameters": {
+              "left_on": "person",
+              "right_on": "person",
+              "right_prefix": "right_"
+            },
+            "semantic_operator_ids": [
+              "join"
+            ]
+          },
+          {
+            "node_id": "answer/project",
+            "kind": "coordinator_row_project",
+            "inputs": [
+              "join/join"
+            ],
+            "parameters": {
+              "projections": {
+                "person": {
+                  "kind": "field",
+                  "field": "person"
+                },
+                "edge": {
+                  "kind": "field",
+                  "field": "edge"
+                }
+              },
+              "resource_namespace": null
+            },
+            "semantic_operator_ids": [
+              "answer"
+            ]
+          }
+        ],
+        "roots": [
+          "answer/project"
+        ],
+        "max_remote_calls": 16,
+        "max_parallelism": 4,
+        "metadata": {
+          "compiler": "semantic_dag_v1",
+          "semantic_program_sha256": "fa8d805c0e18674c8ad7fc64deaaec2180f0febd7de3243bf568258dc0453ee6",
+          "source_bindings": {
+            "paths": "fuseki",
+            "people": "neo4j"
+          },
+          "operator_outputs": {
+            "paths": "paths/paths",
+            "reached": "reached/project",
+            "people": "people/bindings",
+            "eligible": "eligible/filter",
+            "join": "join/join",
+            "answer": "answer/project"
+          },
+          "schemas": {
+            "paths": {
+              "kind": "path_set",
+              "fields": [
+                "path"
+              ],
+              "path_namespace": "https://xgap.test/toy/"
+            },
+            "reached": {
+              "kind": "binding_set",
+              "fields": [
+                "edge",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "people": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "eligible": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "join": {
+              "kind": "binding_set",
+              "fields": [
+                "age",
+                "edge",
+                "person"
+              ],
+              "path_namespace": null
+            },
+            "answer": {
+              "kind": "binding_set",
+              "fields": [
+                "edge",
+                "person"
+              ],
+              "path_namespace": null
+            }
+          },
+          "logical_sources": {
+            "paths": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            },
+            "people": {
+              "source_id": "toy",
+              "snapshot_version": "842fbf1e44cd5d6721fe30c4403102045c1a4c56dd67fce411023c48030f1699"
+            }
+          },
+          "cost_model": "m15-linear-row-proxy; uncalibrated unless independently supplied"
+        }
+      },
+      "selection": {
+        "semantic_equivalence_key": "2921ecc77bbc6adadcec569a4edeedd0a3bae9eeb82c4b91f9bc8e955b6352f1",
+        "snapshot_id": "semantic-plan-observations",
+        "snapshot_version": "2921ecc77bbc6adadcec569a4edeedd0a3bae9eeb82c4b91f9bc8e955b6352f1",
+        "selected_plan_id": "S08/30651206e6b740abc820",
+        "estimates": [
+          {
+            "plan_id": "S08/02f1347020c6f301a4eb",
+            "predicted_latency_ms": 11.361749791264533,
+            "predicted_transfer_bytes": 595.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+              "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 10.865749791264534,
+              "paths/candidates/exchange": 11.191749791264535,
+              "paths/paths": 11.221749791264534,
+              "reached/project": 11.251749791264533,
+              "people/native": 9.344625286757946,
+              "people/native/exchange": 9.613625286757946,
+              "people/bindings": 9.663625286757947,
+              "eligible/filter": 9.713625286757948,
+              "join/right_columns": 9.763625286757948,
+              "join/join": 11.331749791264533,
+              "answer/project": 11.361749791264533
+            },
+            "node_row_counts": {
+              "paths/candidates": 3.0,
+              "paths/candidates/exchange": 3.0,
+              "paths/paths": 3.0,
+              "reached/project": 3.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 3.0,
+              "answer/project": 3.0
+            }
+          },
+          {
+            "plan_id": "S08/30651206e6b740abc820",
+            "predicted_latency_ms": 9.873625286757948,
+            "predicted_transfer_bytes": 1047.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+              "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 8.75062495470047,
+              "paths/candidates/exchange": 9.52862495470047,
+              "paths/paths": 9.55862495470047,
+              "reached/project": 9.58862495470047,
+              "people/native": 9.344625286757946,
+              "people/native/exchange": 9.613625286757946,
+              "people/bindings": 9.663625286757947,
+              "eligible/filter": 9.713625286757948,
+              "join/right_columns": 9.763625286757948,
+              "join/join": 9.843625286757948,
+              "answer/project": 9.873625286757948
+            },
+            "node_row_counts": {
+              "paths/candidates": 3.0,
+              "paths/candidates/exchange": 3.0,
+              "paths/paths": 3.0,
+              "reached/project": 3.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 3.0,
+              "answer/project": 3.0
+            }
+          },
+          {
+            "plan_id": "S08/acaac02e66c17af8e4fe",
+            "predicted_latency_ms": 15.754000658452512,
+            "predicted_transfer_bytes": 1087.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+              "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 10.865749791264534,
+              "paths/candidates/exchange": 11.191749791264535,
+              "paths/paths": 11.221749791264534,
+              "reached/project": 11.251749791264533,
+              "people/native": 14.73300065845251,
+              "people/native/exchange": 15.49400065845251,
+              "people/bindings": 15.54400065845251,
+              "eligible/filter": 15.594000658452511,
+              "join/right_columns": 15.644000658452512,
+              "join/join": 15.724000658452512,
+              "answer/project": 15.754000658452512
+            },
+            "node_row_counts": {
+              "paths/candidates": 3.0,
+              "paths/candidates/exchange": 3.0,
+              "paths/paths": 3.0,
+              "reached/project": 3.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 3.0,
+              "answer/project": 3.0
+            }
+          },
+          {
+            "plan_id": "S08/d3c20ebeecc3e16c5d02",
+            "predicted_latency_ms": 15.754000658452512,
+            "predicted_transfer_bytes": 1539.0,
+            "remote_calls": 2,
+            "observation_keys": [
+              "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+              "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+            ],
+            "node_completion_ms": {
+              "paths/candidates": 8.75062495470047,
+              "paths/candidates/exchange": 9.52862495470047,
+              "paths/paths": 9.55862495470047,
+              "reached/project": 9.58862495470047,
+              "people/native": 14.73300065845251,
+              "people/native/exchange": 15.49400065845251,
+              "people/bindings": 15.54400065845251,
+              "eligible/filter": 15.594000658452511,
+              "join/right_columns": 15.644000658452512,
+              "join/join": 15.724000658452512,
+              "answer/project": 15.754000658452512
+            },
+            "node_row_counts": {
+              "paths/candidates": 3.0,
+              "paths/candidates/exchange": 3.0,
+              "paths/paths": 3.0,
+              "reached/project": 3.0,
+              "people/native": 5.0,
+              "people/native/exchange": 5.0,
+              "people/bindings": 5.0,
+              "eligible/filter": 5.0,
+              "join/right_columns": 5.0,
+              "join/join": 3.0,
+              "answer/project": 3.0
+            }
+          }
+        ],
+        "selection_rule": "minimum predicted latency, then transfer bytes, remote calls, plan id"
+      },
+      "observation_snapshot": {
+        "snapshot_id": "semantic-plan-observations",
+        "version": "2921ecc77bbc6adadcec569a4edeedd0a3bae9eeb82c4b91f9bc8e955b6352f1",
+        "estimates": [
+          {
+            "observation_key": "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+            "backend_id": "neo4j",
+            "elapsed_ms": 10.865749791264534,
+            "row_count": 3,
+            "row_width_bytes": 108.66666666666667,
+            "output_bytes": 326.0,
+            "source": "semantic-native-observations/bounded-paths/22268382c639e544341802ec16b90be81c56a09f8ec689c8af72fd9d4d303057",
+            "version": "2921ecc77bbc6adadcec569a4edeedd0a3bae9eeb82c4b91f9bc8e955b6352f1"
+          },
+          {
+            "observation_key": "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+            "backend_id": "fuseki",
+            "elapsed_ms": 8.75062495470047,
+            "row_count": 3,
+            "row_width_bytes": 259.3333333333333,
+            "output_bytes": 778.0,
+            "source": "semantic-native-observations/bounded-paths/9e4ab317218bd183fe70f1af71ea53909e632cf9ec8c6b549103135f3f4dff00",
+            "version": "2921ecc77bbc6adadcec569a4edeedd0a3bae9eeb82c4b91f9bc8e955b6352f1"
+          },
+          {
+            "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+            "backend_id": "neo4j",
+            "elapsed_ms": 9.344625286757946,
+            "row_count": 5,
+            "row_width_bytes": 53.8,
+            "output_bytes": 269.0,
+            "source": "semantic-native-observations/people-match/1457694b51533106aadbf91875331874bf1383e632f9817637633499b6f6871a",
+            "version": "2921ecc77bbc6adadcec569a4edeedd0a3bae9eeb82c4b91f9bc8e955b6352f1"
+          },
+          {
+            "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+            "backend_id": "fuseki",
+            "elapsed_ms": 14.73300065845251,
+            "row_count": 5,
+            "row_width_bytes": 152.2,
+            "output_bytes": 761.0,
+            "source": "semantic-native-observations/people-match/5ba81baacc37faa92ab8bad349e3581bcaa230bfb76c0a27fa1915e225e691cb",
+            "version": "2921ecc77bbc6adadcec569a4edeedd0a3bae9eeb82c4b91f9bc8e955b6352f1"
+          }
+        ],
+        "bandwidth_bytes_per_ms": 1000.0,
+        "exchange_fixed_ms": 0.0,
+        "coordinator_row_ms": 0.01
+      },
+      "observation_requests": [
+        {
+          "call_id": "observe-1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+          "observation_key": "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "1d86cec7a5d715f2aa8b504255f39fff77e5d8b172564f1e70e8b3ba5da61f14"
+          }
+        },
+        {
+          "call_id": "observe-6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+          "observation_key": "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "6ae69ca2cd2c5c76bec70dbde7620d22f08b8f183fbb24004b19432abda5f0c3"
+          }
+        },
+        {
+          "call_id": "observe-91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+          "observation_key": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78",
+          "backend_id": "neo4j",
+          "operation": "profile",
+          "payload": {
+            "query_id": "91dbe2248073dd13be428e8deca5fef8edcad7b0d1e94e213ad3f78f2d6b8c78"
+          }
+        },
+        {
+          "call_id": "observe-dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+          "observation_key": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d",
+          "backend_id": "fuseki",
+          "operation": "profile",
+          "payload": {
+            "query_id": "dc2fbbb38ae3f202915cecf27a0e4108222b4622ee964c80bac120acdd387c2d"
+          }
+        }
+      ],
+      "costs": {
+        "enumeration_ms": 21.648874506354332,
+        "planning_ms": 65.98041765391827,
+        "selection_ms": 0.23975037038326263,
+        "end_to_end_ms": 79.02508322149515,
+        "observation_calls": 4,
+        "execution_calls": 2,
+        "total_remote_calls": 6
+      },
+      "actual_rows": [
+        {
+          "person": "https://xgap.test/toy/c",
+          "edge": "https://xgap.test/toy/e4"
+        }
+      ],
+      "validation_only_extra_remote_calls": 6,
+      "serving_metrics": {
+        "elapsed_ms": 12.791000306606293,
+        "remote_calls": 2.0,
+        "bytes_moved": 1047.0,
+        "row_count": 1.0
+      }
+    }
+  ],
+  "vertical_slice": {
+    "success": true,
+    "actual_paths": [
+      "a/e4/c"
+    ],
+    "expected_paths": [
+      "a/e4/c"
+    ]
+  },
+  "verification": {
+    "focused": {
+      "passed": 106,
+      "seconds": 2.68,
+      "session": 21349,
+      "exit_code": 0,
+      "log": "/tmp/xgap-t1-planning-focused-final.log"
+    },
+    "broad": {
+      "status": "passed",
+      "session": 6473,
+      "exit_code": 0,
+      "passed": 3069,
+      "skipped": 38,
+      "seconds": 657.3,
+      "harness_and_example_entrypoints": 24,
+      "log": "/tmp/xgap-t1-planning-acceptance.log",
+      "log_sha256": "c471abd7c2171bb22fbcc55c5ee6fbab859a5c82f1eceaebe2a000975857f169"
+    }
+  },
+  "acceptance": "candidate_planning_connection_accepted_overall_goal_incomplete"
+}

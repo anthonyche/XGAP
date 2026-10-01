@@ -1,0 +1,152 @@
+{
+  "schema": "xgap_local_acceptance_v1",
+  "date": "2026-09-09",
+  "milestone": "D196",
+  "base_commit": "a91aed6",
+  "claim_scope": "Opt-in typed RDF SELECT decoding, explicit dataset resource identity and answer projection; independent RDFLib + local HTTP execution. Not a live Fuseki/Neo4j, full GrailQA answer or benchmark accuracy result.",
+  "focused": {
+    "passed": 153,
+    "skipped": 1,
+    "seconds": 2.29,
+    "paths": [
+      "tests/test_rdf_answer_contract.py",
+      "tests/test_directed_compiler.py",
+      "tests/test_fuseki_http_errors.py",
+      "tests/test_backend_infrastructure.py"
+    ]
+  },
+  "full_suite": {
+    "command": "PYTHONPATH=src python -m pytest -q",
+    "passed": 2503,
+    "skipped": 37,
+    "seconds": 604.92,
+    "exit_code": 0
+  },
+  "runtime": {
+    "python": "3.10.19",
+    "pytest": "9.0.2",
+    "rdflib": "7.1.4"
+  },
+  "examples": [
+    {
+      "entrypoint": "scripts/check_harness.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.023
+    },
+    {
+      "entrypoint": "examples/core_algebra_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.086
+    },
+    {
+      "entrypoint": "examples/plan_print_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.085
+    },
+    {
+      "entrypoint": "examples/recursive_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.048
+    },
+    {
+      "entrypoint": "examples/solution_space_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.077
+    },
+    {
+      "entrypoint": "examples/semantic_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.076
+    },
+    {
+      "entrypoint": "examples/lowering_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.089
+    },
+    {
+      "entrypoint": "examples/pattern_lowering_audit_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.084
+    },
+    {
+      "entrypoint": "examples/quantified_pattern_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.09
+    },
+    {
+      "entrypoint": "examples/compiler_mvp_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.088
+    },
+    {
+      "entrypoint": "examples/llm_boundary_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.189
+    },
+    {
+      "entrypoint": "examples/m11_physical_planner_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.195
+    },
+    {
+      "entrypoint": "examples/m11_exhaustive_oracle_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.196
+    },
+    {
+      "entrypoint": "examples/m12_experiment_contract_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.304
+    },
+    {
+      "entrypoint": "examples/m12c_calibration_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.248
+    },
+    {
+      "entrypoint": "examples/m12d_experiment_matrix_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 6.091
+    },
+    {
+      "entrypoint": "examples/m15_goal_loop_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.081
+    },
+    {
+      "entrypoint": "examples/m15_federated_vertical_slice_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.143
+    },
+    {
+      "entrypoint": "examples/m15_semantic_intake_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.082
+    },
+    {
+      "entrypoint": "examples/m15_resolution_execution_bridge_demo.py",
+      "exit_code": 0,
+      "elapsed_seconds": 2.368
+    }
+  ],
+  "source_sha256": {
+    "src/xgap/backends/fuseki_client.py": "835461f634000318b360284a7d562eb06fface9e85ebc05caa790d91400eb1a5",
+    "src/xgap/backends/rdf_terms.py": "e50dc35fa210a51eb65941a61a732337ff08c1dcc674bc5261b8cfdaec4d0de3",
+    "src/xgap/compilers/directed.py": "7e1710e1b6f687e351882eb31bda6bca41828c478da920063a8ab623c826cab6",
+    "src/xgap/compilers/rdf_encoding.py": "9f09175401d843587847a8cb079074d41d9e9a7365ccc18c9a6780ac7db3e737",
+    "src/xgap/runtime/directed_fragments.py": "f84a8c8b21664745b9731476b73e02209d79684f29b0c7d87714951eb0c901c2",
+    "src/xgap/runtime/answers.py": "54f3869155272e008ab333e34ed624f8e13ee27d4735413ad4924ce9a1708c3b",
+    "tests/test_rdf_answer_contract.py": "5686bd40e0a5d504baf039cf3176c4b9a844db84ee7c51a4f8ae457f2aa05cf3"
+  },
+  "live_execution": false,
+  "remote_jobs_submitted": 0,
+  "remote_observation": {
+    "job_id": 3796988,
+    "state": "RUNNING",
+    "elapsed": "01:48:43",
+    "cpus": 8,
+    "memory": "48 GiB",
+    "node": "compt303",
+    "result_log_retrieved": false
+  }
+}

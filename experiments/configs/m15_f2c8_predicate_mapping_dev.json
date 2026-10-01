@@ -1,0 +1,29 @@
+{
+  "schema_version": "m15-f2c8-predicate-mapping-spec-v1",
+  "mapping_id": "financial-relation-siblings-development-v1",
+  "family_compatibility_sha256": "34d432efccebd8d4000d52f910a25746b01e6d884f99eb41de6cbe846c13dfec",
+  "transition_id": "transfer-to-payment-sibling",
+  "source_predicate": "transfer_to_company",
+  "target_predicate": "payment_to_company",
+  "transformation": "ontology_sibling",
+  "evidence": {
+    "kind": "development_mapping_fixture",
+    "reference": "financial-relation-siblings-v1"
+  },
+  "backend_mapping": {
+    "backend_id": "neo4j",
+    "relationship_type": "PAYMENT_TO_COMPANY"
+  },
+  "data_fixture": {
+    "kind": "deterministic_independent_edge_family",
+    "seed_namespace": "payment-to-company-v1",
+    "events_per_person": 180,
+    "date_start": "2026-05-01",
+    "date_span_days": 123,
+    "amount_min": 10000,
+    "amount_max": 200000,
+    "currency": "USD"
+  },
+  "automatic_retries": 0,
+  "paper_result": false
+}

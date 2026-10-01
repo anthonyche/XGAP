@@ -1,0 +1,69 @@
+{
+  "schema_version": "m15-finbench-confirmatory-block-runner-readiness-v1",
+  "artifact_id": "m15-finbench-confirmatory-block-runner-local-readiness-v1",
+  "recorded_date": "2026-09-07",
+  "accepted_freeze": {
+    "slurm_job_id": "3793747",
+    "producer_commit": "c242d45be43783053b61e999f5c95743aa3ee85f",
+    "audit_check_count": 44,
+    "audit_failed_check_ids": [],
+    "run_tree_mutated": false,
+    "schedule_sha256": "27b7c1391fb507ec83bd84fcf559e40f0572100190205052f0f26243cdac2298",
+    "workload_sha256": "63a8ef36bc7576033db93caa2aa486409bc90ecfc699385b61e7d02be4320a5f"
+  },
+  "implementation": {
+    "execution_boundary": {
+      "path": "src/xgap/experiments/m15_finbench_confirmatory_execution.py",
+      "file_sha256": "b3c1e283e4f5beead0e799b1e999407003d4377bd10f925582b6fdf8caf917f6"
+    },
+    "live_block_runner": {
+      "path": "src/xgap/experiments/m15_live_finbench_confirmatory_block.py",
+      "file_sha256": "ba1b4a170c8027822585fb5f300491a44ba38845f86e4a8d717ac1ce475e8afe"
+    },
+    "slurm_entry": {
+      "path": "scripts/slurm/run_m15_native_finbench_confirmatory_block.sbatch",
+      "file_sha256": "e0691e129cad0636780c8bf6e0274c49562c170ce0484bed13772ab7c7e17cb8"
+    }
+  },
+  "acceptance": {
+    "focused_command": "python -m pytest -q tests/test_m15_finbench_confirmatory_population.py tests/test_m15_finbench_confirmatory_analysis.py tests/test_m15_native_services.py tests/test_m15_remote_control.py",
+    "passed": 63,
+    "failed": 0,
+    "full_suite": {
+      "command": "python -m pytest -q",
+      "passed": 1166,
+      "skipped": 36,
+      "failed": 0,
+      "elapsed_seconds": 433.14
+    },
+    "test_file_sha256": "1c01b91b04e57707bce808e99d90256a56a21e3e12778ef2567bfba40424e8c9",
+    "python_compile_passed": true,
+    "shell_syntax_passed": true,
+    "git_diff_check_passed": true
+  },
+  "execution_boundary": {
+    "measurement_block_count": 22,
+    "total_plan_runs": 1888,
+    "maximum_backend_calls": 3776,
+    "one_slurm_allocation_per_block": true,
+    "backend_timeout_seconds": 60,
+    "automatic_retries": 0,
+    "oracle_opened": false,
+    "author_execution_authority_required": true
+  },
+  "remaining_gates": [
+    "independent_per_block_evidence_auditor",
+    "selection_time_exactness_admission_record",
+    "training_and_profile_phase_assembler",
+    "postmeasurement_oracle_opener",
+    "final_campaign_evidence_auditor"
+  ],
+  "claim_boundary": {
+    "local_block_runner_ready": true,
+    "cwru_block_validation_complete": false,
+    "confirmatory_execution_authorized": false,
+    "confirmatory_measurements_started": false,
+    "paper_result": false
+  },
+  "paper_result": false
+}

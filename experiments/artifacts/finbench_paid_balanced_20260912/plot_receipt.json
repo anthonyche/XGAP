@@ -1,0 +1,23 @@
+{
+  "schema_version": "xgap-finbench-paid-balanced-plot-v1",
+  "analysis_path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/analysis/analysis.json",
+  "analysis_sha256": "2d62926917382b1431f05837da45d8b0169a3526a74562e77f82d9d35aec87b4",
+  "script_path": "/Users/anthonyche/Developer/XGAP/scripts/plot_finbench_paid_balanced.py",
+  "script_sha256": "d9c2668a5da7932fa40127f44842dc493a2bf7016c6d39dff20184af676379de",
+  "matplotlib_version": "3.9.4",
+  "statistics_recomputed": false,
+  "primary_denominator": 32,
+  "query_denominator": 48,
+  "files": [
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/figures/paid_cost.png",
+      "sha256": "0322fc022ffbc0da0b4fefc877809b1d55e23271340d64f116708fd713f04811",
+      "size_bytes": 185188
+    },
+    {
+      "path": "/Users/anthonyche/xgap-data/e2-finbench-balanced-20260912/figures/paid_cost.svg",
+      "sha256": "1c9a716eec44aad97a3e143688cb7a6726238587fbf21f113fcd85a4ed80ae49",
+      "size_bytes": 46373
+    }
+  ]
+}

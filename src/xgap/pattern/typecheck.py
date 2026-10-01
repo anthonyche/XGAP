@@ -93,6 +93,14 @@ def _fixed_edge_count(regex: RegexExpr) -> int | None:
         left = _fixed_edge_count(regex.left)
         right = _fixed_edge_count(regex.right)
         return left if left is not None and left == right else None
+    if isinstance(regex, Bounded):
+        child = _fixed_edge_count(regex.child)
+        if child == 0:
+            return 0
+        if type(regex.min_repeats) is int and regex.min_repeats == regex.max_repeats:
+            return regex.min_repeats * child if child is not None else (0 if regex.min_repeats == 0 else None)
+    if isinstance(regex, OptionalExpr) and _fixed_edge_count(regex.child) == 0:
+        return 0
     return None
 
 
@@ -181,13 +189,16 @@ def _contains_plus_or_star(regex: RegexExpr) -> bool:
         return False
     if isinstance(regex, (Seq, Alt)):
         return _contains_plus_or_star(regex.left) or _contains_plus_or_star(regex.right)
+    if isinstance(regex, Bounded) and regex.max_repeats is None:
+        return True
     if isinstance(regex, (OptionalExpr, Bounded)):
         return _contains_plus_or_star(regex.child)
     raise PatternTypeError(f"Unsupported regex expression {type(regex).__name__}.")
 
 
 def _check_bounded(regex: Bounded) -> None:
-    if regex.min_repeats < 0:
+    if type(regex.min_repeats) is not int or regex.min_repeats < 0:
         raise PatternTypeError("Bounded min_repeats must be non-negative.")
-    if regex.max_repeats is not None and regex.max_repeats < regex.min_repeats:
+    if regex.max_repeats is not None and (type(regex.max_repeats) is not int
+                                        or regex.max_repeats < regex.min_repeats):
         raise PatternTypeError("Bounded max_repeats must be at least min_repeats.")

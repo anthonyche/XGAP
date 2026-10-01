@@ -1,0 +1,19 @@
+@prefix m15: <http://xgap.example.org/m15-split/> .
+
+m15:company-c1
+    a m15:Company ;
+    m15:companyId "rdf:C1" ;
+    m15:name "Redstone Analytics" ;
+    m15:riskLevel "HIGH" .
+
+m15:company-c2
+    a m15:Company ;
+    m15:companyId "rdf:C2" ;
+    m15:name "Blue Harbor Logistics" ;
+    m15:riskLevel "LOW" .
+
+m15:company-c3
+    a m15:Company ;
+    m15:companyId "rdf:C3" ;
+    m15:name "Old Peak Holdings" ;
+    m15:riskLevel "HIGH" .

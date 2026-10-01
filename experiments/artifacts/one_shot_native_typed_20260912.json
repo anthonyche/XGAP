@@ -1,0 +1,71 @@
+{
+  "schema_version": "xgap-one-shot-native-checkpoint-v1",
+  "source_commit": "bc4103cd15d5546930c3fd39aa8638b8e7fd2225",
+  "raw_root": "/Users/anthonyche/xgap-data/one-shot-native-20260912-bc4103c",
+  "paper_result": false,
+  "status": "provider_failure",
+  "failure_category": "provider_error",
+  "error": "External endpoint returned HTTP 500: {\"error\":{\"message\":\"\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+  "failure_cause_verified": false,
+  "model_request_attempts": 1,
+  "model_generation_completed": false,
+  "input_tokens": null,
+  "output_tokens": null,
+  "token_usage_complete": false,
+  "final_plan_executions": 0,
+  "online_backend_calls": 0,
+  "offline_current": {
+    "input_preparation_ms": 20.36254107952118,
+    "service_setup_ms": 7421.087333001196,
+    "fixture_load_ms": 261.0729178413749,
+    "estimator_mode": "reuse_frozen",
+    "training_reused": true,
+    "training_collection_ms": 0.0,
+    "training_remote_calls": 0,
+    "fit_ms": 0.0,
+    "fit_calls": 0,
+    "estimator_reload_ms": 0.5990415811538696,
+    "estimator_file": {
+      "path": "/Users/anthonyche/xgap-data/one-shot-native-20260912-b008775/frozen_estimator.json",
+      "bytes": 5622,
+      "sha256": "1fe0550849753eaeadbb9f64f287bcf38d12155c2ab1f38ca24e6f9163b69f14"
+    },
+    "estimator_model_sha256": "4ee5473d8f1987b11415275da2251fb408c786415e178677054d53647f1d3ea7"
+  },
+  "historical_cost_reference": "one-shot-native-20260912-b008775/training_collection.json",
+  "input_unchanged": true,
+  "input_fingerprint_count": 432,
+  "owned_processes_terminal": true,
+  "owned_pids": [
+    3845,
+    3795
+  ],
+  "core_online_ms": 152.45191752910614,
+  "lifecycle_ms": 19527.064041234553,
+  "artifacts": {
+    "receipt.json": {
+      "sha256": "9f84d1ff96ef5a7f50b7708d6ab07f2b3b1b1a92465f99f7732172c362526b03",
+      "bytes": 8202
+    },
+    "offline_receipt.json": {
+      "sha256": "f332952ba2d189b136f1239fc08e2b6d44fe03fe37cc4a1f9106193c58e1189a",
+      "bytes": 656
+    },
+    "reused_estimator_receipt.json": {
+      "sha256": "157080bff6448db46c8dc36130f4457fea2872c890e2cd883cf96914b3901fdb",
+      "bytes": 2199
+    },
+    "one-shot/result.json": {
+      "sha256": "ae3c245ba42bb6fe7cc25461559dcd9802ec5ce712ffc5e3cb6a74c0409ccb19",
+      "bytes": 108348
+    },
+    "one-shot/interpretation.json": {
+      "sha256": "78c428a5dfef71d69cb1215152fc484f238066b825695bb65e88d6ec6f76e3d8",
+      "bytes": 112859
+    },
+    "one-shot/evaluation.json": {
+      "sha256": "f156dbe3ebd1899ff98bbfe857338b1eec56ea9e00c737651d3aca6142bdf01a",
+      "bytes": 255
+    }
+  }
+}

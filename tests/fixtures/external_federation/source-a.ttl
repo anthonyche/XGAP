@@ -1,0 +1,2 @@
+@prefix ex: <http://example.org/fin/> .
+ex:alice ex:transfer ex:bob, ex:carol ; ex:name "Alice" ; ex:watch ex:carol .

@@ -1,0 +1,59 @@
+{
+  "schema_version": "xgap-fedshop-source-fetch-audit-v1",
+  "receipt": {
+    "path": "/Users/anthonyche/xgap-data/fedshop-source-37f2e15346ab-20260913/receipt.json",
+    "sha256": "9bb1e79c225e4c69665506e827f5a6d432d36835becd9fb683d7574f7e4ba3d9"
+  },
+  "fetch": {
+    "schema_version": "xgap-fedshop-pinned-source-fetch-v1",
+    "commit": "37f2e15346ab7fe3e78bfcbea33e9211407cbec3",
+    "repository": "https://github.com/GDD-Nantes/FedShop.git",
+    "success": false,
+    "records": [
+      {
+        "command": [
+          "git",
+          "init",
+          "-q"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 0.033824749999999994
+      },
+      {
+        "command": [
+          "git",
+          "remote",
+          "add",
+          "origin",
+          "https://github.com/GDD-Nantes/FedShop.git"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 0.014470416
+      },
+      {
+        "command": [
+          "git",
+          "-c",
+          "credential.helper=",
+          "fetch",
+          "--depth=1",
+          "--filter=blob:none",
+          "origin",
+          "37f2e15346ab7fe3e78bfcbea33e9211407cbec3"
+        ],
+        "exit_code": 128,
+        "timed_out": false,
+        "seconds": 75.061811542
+      }
+    ],
+    "worktree_checked_out": false,
+    "generator_runs": 0,
+    "method_runs": 0,
+    "dataset_downloads": 0,
+    "source_bytes": 26459
+  },
+  "error": "fatal: unable to access 'https://github.com/GDD-Nantes/FedShop.git/': Failed to connect to github.com port 443 after 75004 ms: Couldn't connect to server",
+  "claim": "Commit discovered earlier; source fetch failed, no checkout, generator, data, or method execution. No automatic retry."
+}

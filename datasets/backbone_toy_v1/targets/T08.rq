@@ -1,0 +1,41 @@
+PREFIX t: <https://xgap.test/toy/>
+SELECT DISTINCT ?path WHERE { { SELECT DISTINCT ?path ?start ?finish ?length WHERE { {
+?n0 a t:Person ; t:id ?id0 .
+FILTER(?id0 = "a")
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?n1 t:id ?id1 .
+BIND(CONCAT(?id0, "/", ?eid1, "/", ?id1) AS ?path)
+BIND(?id0 AS ?start)
+BIND(?id1 AS ?finish)
+BIND(1 AS ?length)
+}
+UNION
+{
+?n0 a t:Person ; t:id ?id0 .
+FILTER(?id0 = "a")
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?n1 t:id ?id1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 ; t:source ?n1 ; t:target ?n2 .
+?n2 t:id ?id2 .
+FILTER(?e1 != ?e2)
+BIND(CONCAT(?id0, "/", ?eid1, "/", ?id1, "/", ?eid2, "/", ?id2) AS ?path)
+BIND(?id0 AS ?start)
+BIND(?id2 AS ?finish)
+BIND(2 AS ?length)
+}
+UNION
+{
+?n0 a t:Person ; t:id ?id0 .
+FILTER(?id0 = "a")
+?e1 a t:Edge ; t:label "KNOWS" ; t:id ?eid1 ; t:source ?n0 ; t:target ?n1 .
+?n1 t:id ?id1 .
+?e2 a t:Edge ; t:label "KNOWS" ; t:id ?eid2 ; t:source ?n1 ; t:target ?n2 .
+?n2 t:id ?id2 .
+?e3 a t:Edge ; t:label "KNOWS" ; t:id ?eid3 ; t:source ?n2 ; t:target ?n3 .
+?n3 t:id ?id3 .
+FILTER(?e1 != ?e2 && ?e1 != ?e3 && ?e2 != ?e3)
+BIND(CONCAT(?id0, "/", ?eid1, "/", ?id1, "/", ?eid2, "/", ?id2, "/", ?eid3, "/", ?id3) AS ?path)
+BIND(?id0 AS ?start)
+BIND(?id3 AS ?finish)
+BIND(3 AS ?length)
+} } } } ORDER BY ?path

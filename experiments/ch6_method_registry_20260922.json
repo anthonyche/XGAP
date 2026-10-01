@@ -1,0 +1,68 @@
+{
+  "schema_version": "xgap-ch6-method-registry-v2",
+  "authority": "docs/decisions/ch6_external_twostage_20260922.md",
+  "primary": [
+    {
+      "name": "XGAP",
+      "method_id": "xgap-unified-lookahead",
+      "kind": "proposed_system"
+    },
+    {
+      "name": "Two-stage",
+      "method_id": "aruqula-fedx",
+      "kind": "external_method_composition",
+      "status": "tiny_single_and_cross_source_execution_admitted",
+      "compatibility": "https-iris-action-schema-fedx-v2",
+      "formal_evaluation_ready": false
+    }
+  ],
+  "external_candidates": [
+    {
+      "composition": "ARUQULA -> FedUP (FedX execution)",
+      "status": "pinned_composition_failed_VALUES_OpTable",
+      "author_algorithm_changes": 0
+    },
+    {
+      "composition": "ARUQULA -> FedX",
+      "status": "tiny_single_and_cross_source_answered_both_EM_F1_zero",
+      "successful_nl_answer_observed": true,
+      "author_algorithm_changes": 0,
+      "evidence": "docs/report/ch6_baseline_admission_20260922.md",
+      "operator_compatibility_failure": "Original empty COALESCE and NULL binding failure retained; adapted fixed tool template passes execution and Jena equivalence; FedX duplicate rows retained",
+      "single_source_failures_also_observed": true,
+      "current_compatibility": "https-iris-action-schema-fedx-v2",
+      "correct_nl_answer_observed": false
+    }
+  ],
+  "diagnostic_only": [
+    "xgap-unified-two-stage",
+    "xgap-unified-sequential"
+  ],
+  "excluded": [
+    "xgap-llm-direct"
+  ],
+  "comparison_rule": "Compare on the same supported deployment; no native versus RDF speedup; external API calls are not assumed one per case",
+  "sota_scope": "Cite component evidence and benchmark scope; composition is not itself claimed to be an author-published SOTA system",
+  "scope_reporting": {
+    "strata": [
+      "W1_single_source_unambiguous",
+      "W2_single_source_entity_ambiguity",
+      "W3_cross_source",
+      "W4_cross_source_multifield"
+    ],
+    "rule": "Record capability, transport, model-format, timeout and answer quality separately. The adapted composition returned answers on both a single-source and a two-source tiny case; neither was correct. This does not establish arbitrary cross-source support or only-single-source capability.",
+    "native_heterogeneous_unsupported": "N/A; no zero-latency bar",
+    "supported_runtime_failures": "Keep in the corresponding stratum denominator"
+  },
+  "component_diagnostics": [
+    {
+      "method_id": "aruqula-single-fuseki",
+      "kind": "native_single_endpoint_frontend_diagnostic_not_Two_stage",
+      "status": "answered_tiny_single_source_wrong_answer",
+      "current_compatibility": "https-iris-action-schema-v1",
+      "no_added_federation_capability": true,
+      "answer_em": 0,
+      "answer_row_multiset_f1": 0
+    }
+  ]
+}

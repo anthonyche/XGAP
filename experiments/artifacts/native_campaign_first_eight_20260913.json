@@ -1,0 +1,403 @@
+{
+  "audit": {
+    "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/first-eight-audit.json",
+    "sha256": "9a2ca01ea2b557a491a40ce4647cecf1e1d9c05ed2e7d78b8e2aa0f503256086",
+    "bytes": 29827
+  },
+  "rows": [
+    {
+      "group_index": 0,
+      "question_id": "FBNS-2-a0baa0e6711f9de3",
+      "family": "f2_temporal_path_control",
+      "method": "xgap-native",
+      "status": "guard_method_rss_limit_observed",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 40829.29666619748,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_calls": 6,
+      "source_bytes": 242609291,
+      "method_peak_rss_bytes": 2210496512,
+      "source_peak_rss_bytes": 1071497216,
+      "selected_strategy": "placement-0/coordinator",
+      "estimated_candidates": 6,
+      "model_calls": 0,
+      "quiescence_complete": true
+    },
+    {
+      "group_index": 1,
+      "question_id": "FBNS-1-cdc6f66be3016baf",
+      "family": "f1_direct_transfer_control",
+      "method": "xgap-native",
+      "status": "returned",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 22887.922917492688,
+      "planning_ms": 54.21916767954826,
+      "execution_ms": 16909.315917640924,
+      "source_calls": 5,
+      "source_bytes": 117077814,
+      "method_peak_rss_bytes": 1631600640,
+      "source_peak_rss_bytes": 1194885120,
+      "selected_strategy": "placement-0/coordinator",
+      "estimated_candidates": 6,
+      "model_calls": 0,
+      "quiescence_complete": true
+    },
+    {
+      "group_index": 2,
+      "question_id": "FBNS-3-ba8a93f050468448",
+      "family": "f3_aggregate_risk_ranking",
+      "method": "xgap-native",
+      "status": "returned",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 22457.951540127397,
+      "planning_ms": 50.70662498474121,
+      "execution_ms": 16340.424042195082,
+      "source_calls": 5,
+      "source_bytes": 140878893,
+      "method_peak_rss_bytes": 1886306304,
+      "source_peak_rss_bytes": 1036877824,
+      "selected_strategy": "placement-0/coordinator",
+      "estimated_candidates": 6,
+      "model_calls": 0,
+      "quiescence_complete": true
+    },
+    {
+      "group_index": 3,
+      "question_id": "FBNS-3-8e6cf05a873620a1",
+      "family": "f3_aggregate_risk_ranking",
+      "method": "xgap-native",
+      "status": "returned",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 22330.246375873685,
+      "planning_ms": 51.58404167741537,
+      "execution_ms": 16287.284083664417,
+      "source_calls": 5,
+      "source_bytes": 140870781,
+      "method_peak_rss_bytes": 1753448448,
+      "source_peak_rss_bytes": 895647744,
+      "selected_strategy": "placement-0/coordinator",
+      "estimated_candidates": 6,
+      "model_calls": 0,
+      "quiescence_complete": true
+    },
+    {
+      "group_index": 4,
+      "question_id": "FBNS-1-c0641cd0810fbb55",
+      "family": "f1_direct_transfer_control",
+      "method": "xgap-native",
+      "status": "returned",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 22618.80441568792,
+      "planning_ms": 49.28212519735098,
+      "execution_ms": 16713.649875484407,
+      "source_calls": 5,
+      "source_bytes": 117077809,
+      "method_peak_rss_bytes": 1715044352,
+      "source_peak_rss_bytes": 964067328,
+      "selected_strategy": "placement-0/coordinator",
+      "estimated_candidates": 6,
+      "model_calls": 0,
+      "quiescence_complete": true
+    },
+    {
+      "group_index": 5,
+      "question_id": "FBNS-2-d9d0e066eb62a7b9",
+      "family": "f2_temporal_path_control",
+      "method": "xgap-native",
+      "status": "guard_method_rss_limit_observed",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 38011.95362582803,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_calls": 6,
+      "source_bytes": 242609239,
+      "method_peak_rss_bytes": 2198913024,
+      "source_peak_rss_bytes": 1008189440,
+      "selected_strategy": "placement-0/coordinator",
+      "estimated_candidates": 6,
+      "model_calls": 0,
+      "quiescence_complete": true
+    },
+    {
+      "group_index": 6,
+      "question_id": "FBNS-2-5083518349e5ce3f",
+      "family": "f2_temporal_path_control",
+      "method": "xgap-native",
+      "status": "returned",
+      "answer_em": 1.0,
+      "expected_rows": 0,
+      "actual_rows": 0,
+      "online_ms": 42698.58558289707,
+      "planning_ms": 56.14120792597532,
+      "execution_ms": 31407.418000511825,
+      "source_calls": 6,
+      "source_bytes": 242613238,
+      "method_peak_rss_bytes": 2096005120,
+      "source_peak_rss_bytes": 1203290112,
+      "selected_strategy": "placement-0/coordinator",
+      "estimated_candidates": 6,
+      "model_calls": 0,
+      "quiescence_complete": true
+    },
+    {
+      "group_index": 7,
+      "question_id": "FBNS-2-2ac31a7a1ca31f82",
+      "family": "f2_temporal_path_control",
+      "method": "xgap-native",
+      "status": "guard_method_rss_limit_observed",
+      "answer_em": 0.0,
+      "expected_rows": 0,
+      "actual_rows": null,
+      "online_ms": 38630.31712453812,
+      "planning_ms": null,
+      "execution_ms": null,
+      "source_calls": 6,
+      "source_bytes": 242609238,
+      "method_peak_rss_bytes": 2207973376,
+      "source_peak_rss_bytes": 1006518272,
+      "selected_strategy": "placement-0/coordinator",
+      "estimated_candidates": 6,
+      "model_calls": 0,
+      "quiescence_complete": true
+    }
+  ],
+  "evidence": [
+    {
+      "cell": "fixed_semantics-00-000-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/receipt.json",
+        "sha256": "33f0b188af531830782ff9baafb409ec58ecfaf46d4dc55f91539ebfd272753a",
+        "bytes": 6882
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/score.json",
+        "sha256": "84efb59042a3253894e2e1626e774be0d1ee2683004ad18f88b2e2bdefb28e15",
+        "bytes": 1129
+      },
+      "timing": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/controller-timing.json",
+        "sha256": "4302e6b1897ab724ea0a630f43f45b7114921433ddf076879c31edf00d558529",
+        "bytes": 501
+      },
+      "selection": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/worker/selection.json",
+        "sha256": "126869795c562ca21eb77cf04f270c4906d2c666fad525cf96cd41901d588037",
+        "bytes": 68415
+      },
+      "final_execution_intent": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-000-0/execution/worker/execution_intent.json",
+        "sha256": "21612c903f9f8352ff8bb1cee3e739ecd8058ba950a3241f83273f85332b95d9",
+        "bytes": 75
+      }
+    },
+    {
+      "cell": "fixed_semantics-00-001-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-0/execution/receipt.json",
+        "sha256": "6ca562b28a9aacee6d4ca0f40f2c8d7add9646978696f7bdabb8d8d2123c9175",
+        "bytes": 6950
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-0/execution/score.json",
+        "sha256": "9dc39fa480e888f6ce0ed087ef7d03f4dd06bbe534aaec4b03d852baa7d1e6cd",
+        "bytes": 1087
+      },
+      "timing": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-0/execution/controller-timing.json",
+        "sha256": "b0a6015e2050a002034e84766dbecd222a6a7488a024a28e09a76dd7f782863d",
+        "bytes": 488
+      },
+      "selection": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-0/execution/worker/selection.json",
+        "sha256": "89540ff87fcd3e340d5319bcf80f248de0a196eab450287760905bc9a988f3d9",
+        "bytes": 60350
+      },
+      "final_execution_intent": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-001-0/execution/worker/execution_intent.json",
+        "sha256": "4de0dc5cc54fd857063184701dc6c0c85bd845f7afd5f05cedb468f27e1c9e50",
+        "bytes": 75
+      }
+    },
+    {
+      "cell": "fixed_semantics-00-002-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-0/execution/receipt.json",
+        "sha256": "023e8076ceb811abf7d20edf30cedc7c048967e749924ace6ffa3049a55d90f8",
+        "bytes": 6950
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-0/execution/score.json",
+        "sha256": "1e0c1567f1a8728cbae42aec8772a69ebf4c7f1a65cef1e74f37f3e02876acd5",
+        "bytes": 1065
+      },
+      "timing": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-0/execution/controller-timing.json",
+        "sha256": "9ac227c29a3990e246644a261eed7d4562eac184e61b120098dc9c6a9ca190c5",
+        "bytes": 488
+      },
+      "selection": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-0/execution/worker/selection.json",
+        "sha256": "af4f09d4b32ad83a5d1bb2cb4a6359501d89d4ca4c07e29da3a614e9e54350f8",
+        "bytes": 59584
+      },
+      "final_execution_intent": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-002-0/execution/worker/execution_intent.json",
+        "sha256": "3c712fd4563e1ca45a9a675956369c1a0adc456bbc135fe3a8e40ede4eab697a",
+        "bytes": 75
+      }
+    },
+    {
+      "cell": "fixed_semantics-00-003-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-0/execution/receipt.json",
+        "sha256": "f718ed027420d5cd9ffe2ee0756eafa6e6110ab6c0f7d172f0eef33cc551cedf",
+        "bytes": 6954
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-0/execution/score.json",
+        "sha256": "d66322a94db4b03e70433218d2b8db4fa026a0b0aa249a25c4a4d9631338c623",
+        "bytes": 1065
+      },
+      "timing": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-0/execution/controller-timing.json",
+        "sha256": "9739a202c781fb171f204e847b5141018c0dd4963ac4561318810538ed28fdb7",
+        "bytes": 488
+      },
+      "selection": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-0/execution/worker/selection.json",
+        "sha256": "dbc6282b7c7c79a4ca2033ebe0e74e6bc3af95b195ae4f5799a562eefb901491",
+        "bytes": 59583
+      },
+      "final_execution_intent": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-003-0/execution/worker/execution_intent.json",
+        "sha256": "ff37792127b4df800a87c0c161939bd9bbaa5f205001d668e927ea93354e3967",
+        "bytes": 75
+      }
+    },
+    {
+      "cell": "fixed_semantics-00-004-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-0/execution/receipt.json",
+        "sha256": "26fbd8c497429f9bf4fbf6d30ba50f0593f157e929ea81d0658a4903e3a415be",
+        "bytes": 6950
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-0/execution/score.json",
+        "sha256": "17a6d96af2c082c7239c8d39d4da7faed1530a0602e14c68d3103c0c0e811e7c",
+        "bytes": 1087
+      },
+      "timing": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-0/execution/controller-timing.json",
+        "sha256": "8308dd3d89a7bc3756c5d85762f52e05fd41ad6296f89bf2e15a2531f554b638",
+        "bytes": 486
+      },
+      "selection": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-0/execution/worker/selection.json",
+        "sha256": "5e3890bf00e2222fccb95d52103e0e23c5362ec4b8de56293a291f4a5abd384f",
+        "bytes": 60350
+      },
+      "final_execution_intent": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-004-0/execution/worker/execution_intent.json",
+        "sha256": "89c1b1f1080a0d03820c112c797203aee4c4e516a14e04d8529bbce430f92333",
+        "bytes": 75
+      }
+    },
+    {
+      "cell": "fixed_semantics-00-005-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-005-0/execution/receipt.json",
+        "sha256": "7b523e31648c3d8ce216a66184a7089e58a2596122488ff91a5c23a7f39965ef",
+        "bytes": 6892
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-005-0/execution/score.json",
+        "sha256": "ebd7402201978e4b58c482e45e2b6992ed5f2713407a85530297c5a20e479958",
+        "bytes": 1129
+      },
+      "timing": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-005-0/execution/controller-timing.json",
+        "sha256": "ed2f7028e0dbf2a34753d66c2b2b28d3098de5fb69bd39ff4b5dde4ca4614345",
+        "bytes": 500
+      },
+      "selection": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-005-0/execution/worker/selection.json",
+        "sha256": "3e9ad6b97ad2793491fd993b8d6bd588366cad950de49df4f6d01e33e3ea62c5",
+        "bytes": 68415
+      },
+      "final_execution_intent": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-005-0/execution/worker/execution_intent.json",
+        "sha256": "e1316866414b662b2dc420c69871476877cd33bbdbc1037fdb08f6c8abb963f8",
+        "bytes": 75
+      }
+    },
+    {
+      "cell": "fixed_semantics-00-006-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-006-0/execution/receipt.json",
+        "sha256": "12588e8e3764c45f948bec5d05d3f6cfecafe61e8a02ea0f1c3452111ae7b7a4",
+        "bytes": 7419
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-006-0/execution/score.json",
+        "sha256": "337b3b88803ec4898de975a1c809927c50bc42c54a9b564363b489f1dcb978a2",
+        "bytes": 1102
+      },
+      "timing": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-006-0/execution/controller-timing.json",
+        "sha256": "41415241f4b51e33bc75074b3c2f891f75bb406af34560b218ef227ade1ba918",
+        "bytes": 486
+      },
+      "selection": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-006-0/execution/worker/selection.json",
+        "sha256": "2b90203a8dd2ccb74d19cadbe3e5586cc81886481e740f1fbd671b3778b8eb19",
+        "bytes": 68415
+      },
+      "final_execution_intent": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-006-0/execution/worker/execution_intent.json",
+        "sha256": "0cf7eb6f0a8b82941247944ce1aac12a2ec3c9ebb5e4b630d810155208949484",
+        "bytes": 75
+      }
+    },
+    {
+      "cell": "fixed_semantics-00-007-0",
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-007-0/execution/receipt.json",
+        "sha256": "f27b2ccec7c6e67deb8e8e7c84a64648cfdfaf114c0279c005d1d6e8608b4bba",
+        "bytes": 6883
+      },
+      "score": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-007-0/execution/score.json",
+        "sha256": "001881a440edae0b475494e21d3c34b7708bc91e48ecd9368d393e459333dec2",
+        "bytes": 1129
+      },
+      "timing": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-007-0/execution/controller-timing.json",
+        "sha256": "b5a3d382fad0046fb5be3de9d95dc6c23bef8473764426fbdfbb4238910890e5",
+        "bytes": 502
+      },
+      "selection": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-007-0/execution/worker/selection.json",
+        "sha256": "4094b21687e3b6a0128123c3abf981b4edcf72e8c35e2e77d050e17282b35bf8",
+        "bytes": 68415
+      },
+      "final_execution_intent": {
+        "path": "/Users/anthonyche/xgap-data/finbench-native-fixed-campaign-20260913-v1/cells/fixed_semantics-00-007-0/execution/worker/execution_intent.json",
+        "sha256": "cdacd74cfdc1dffd805797b042fd22edcfe067f9690fba71b5fc154376c83604",
+        "bytes": 75
+      }
+    }
+  ]
+}

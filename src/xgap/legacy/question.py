@@ -1,0 +1,62 @@
+"""Common question entry; Interpretation and deterministic execution stay separate."""
+
+from dataclasses import replace
+import time
+
+from xgap.agent.semantic_execution import run_frozen_semantic_query
+from xgap.catalog.bundle import FrozenResolutionBundle
+from xgap.semantic.interpretation import interpret_question
+from xgap.semantic.program import SemanticGraphProgram
+
+
+def run_question(request, provider, *, catalog_root, catalog_hash, sources,
+                 backends, backend_clients, mode=None, one_shot_policy=None,
+                 estimator=None, practical_options=None, **execution_options):
+    if practical_options is not None:
+        from xgap.agent.practical_question import run_practical_question
+        if mode is not None or one_shot_policy is not None or execution_options:
+            raise ValueError("Practical strong-plan options cannot be mixed with legacy mode options")
+        return run_practical_question(request, provider, options=practical_options,
+            catalog_root=catalog_root, catalog_hash=catalog_hash, sources=sources,
+            backends=backends, backend_clients=backend_clients, estimator=estimator)
+    # Explicit v2 profiles share this ordinary entry; frozen v1 recordings keep
+    # their original strict single-interpretation contract when no profile is set.
+    if mode is not None or one_shot_policy is not None or estimator is not None:
+        from xgap.agent.one_shot_policy import OneShotPolicy
+        from xgap.agent.one_shot_question import run_one_shot_question
+        if execution_options:
+            raise ValueError("One-shot uses its typed policy; legacy probing/clarification options are incompatible")
+        policy = one_shot_policy or OneShotPolicy.for_mode(mode or "precision")
+        if mode is not None and policy.mode != mode:
+            raise ValueError("Mode and one-shot policy disagree")
+        return run_one_shot_question(request, provider, policy=policy, estimator=estimator,
+            catalog_root=catalog_root, catalog_hash=catalog_hash, sources=sources,
+            backends=backends, backend_clients=backend_clients)
+    started = time.perf_counter()
+    try:
+        bundle = FrozenResolutionBundle.load(catalog_root, expected_bundle_hash=catalog_hash)
+    except (OSError, ValueError) as error:
+        return {"success": False, "status": "catalog_unavailable", "error": str(error),
+                "interpretation": None, "backend_remote_calls": 0, "resolution_external_calls": 0,
+                "interpretation_external_calls": 0, "input_tokens": 0, "output_tokens": 0,
+                "end_to_end_ms": (time.perf_counter() - started) * 1000}
+    request = replace(request, context={**request.context, "runtime": {
+        "resolution_bundle": bundle.identity,
+        "sources": {name: {"version": source.snapshot_version, "replicas": list(source.replica_backend_ids)}
+                    for name, source in sources.items()}}})
+    interpreted = interpret_question(request, provider)
+    if interpreted["success"]:
+        result = run_frozen_semantic_query(program=SemanticGraphProgram.from_dict(interpreted["program"]),
+            question=request.question, operator_sources=interpreted["operator_sources"],
+            catalog_root=catalog_root, catalog_hash=catalog_hash, sources=sources,
+            backends=backends, backend_clients=backend_clients, **execution_options)
+    else:
+        result = {"success": False, "status": interpreted["status"], "error": interpreted["error"],
+                  "backend_remote_calls": 0, "resolution_external_calls": 0,
+                  "input_tokens": 0, "output_tokens": 0}
+    return {**result, "interpretation": interpreted,
+            "interpretation_token_usage_complete": not interpreted.get("usage_unavailable", False),
+            "interpretation_external_calls": interpreted["external_calls"],
+            "input_tokens": result["input_tokens"] + interpreted["input_tokens"],
+            "output_tokens": result["output_tokens"] + interpreted["output_tokens"],
+            "end_to_end_ms": (time.perf_counter() - started) * 1000}

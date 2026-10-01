@@ -1,0 +1,45 @@
+{
+  "artifacts": [
+    {
+      "archive_format": "tar.gz",
+      "artifact_id": "neo4j-community",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "f22934e3f7c1ddae743d91243f38aa492f007471c6a2bdbdc882fe2b3e1e4bdd"
+      },
+      "edition": "community",
+      "extract_root": "neo4j-community-5.26.30",
+      "filename": "neo4j-community-5.26.30-unix.tar.gz",
+      "product": "neo4j",
+      "size_bytes": 162360826,
+      "source_page": "https://neo4j.com/deployment-center/",
+      "url": "https://dist.neo4j.org/neo4j-community-5.26.30-unix.tar.gz",
+      "version": "5.26.30"
+    },
+    {
+      "archive_format": "tar.gz",
+      "artifact_id": "apache-jena-fuseki",
+      "digest": {
+        "algorithm": "sha512",
+        "value": "53dfe13cdd5f6387a0c62917e275fde2cd2e2f2052bfe7515384934f24915228b8512a2dd2b50b7060cc300c976254349d991fcea239484cae48e0a59d67cd54"
+      },
+      "edition": "binary-distribution",
+      "extract_root": "apache-jena-fuseki-5.6.0",
+      "filename": "apache-jena-fuseki-5.6.0.tar.gz",
+      "product": "fuseki",
+      "size_bytes": 50290245,
+      "source_page": "https://archive.apache.org/dist/jena/binaries/",
+      "url": "https://archive.apache.org/dist/jena/binaries/apache-jena-fuseki-5.6.0.tar.gz",
+      "version": "5.6.0"
+    }
+  ],
+  "frozen_at_utc": "2026-09-05T08:11:51Z",
+  "java": {
+    "minimum_major": 17,
+    "preferred_module": "Java/17.0.6",
+    "selection_reason": "Common CWRU-provided runtime for Neo4j 5.26 LTS and the final Java-17 Apache Jena line"
+  },
+  "network_policy": "download_once_to_verified_shared_cache_outside_query_execution",
+  "runtime_storage_policy": "extract_and_run_on_allocation_local_storage",
+  "schema_version": "m15-native-runtime-lock-v1"
+}

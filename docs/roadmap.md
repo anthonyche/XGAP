@@ -1,749 +1,109 @@
-# XGAP Roadmap
+# XGAP 下一步
 
-## M0 Project Skeleton
+2026-09-26 当前短路径：封存修复代码和 48 题/216 请求小批次 → 一次服务器提交
+（D1→D3→D2）→ 自动汇总真实均值、覆盖和完整成本 → 独立运行既有因子与合成规模/
+并行度。源图不缩小、旧结果不覆盖；不再把全部题成功或全 21 图准备齐作为首批前提。
+已收到 3885860 原始归档，主要身份表示错误、probe 绑定与批次继续问题已完成本地修正。
+见[详细范围与预算](decisions/ch6_small_real_execution_20260926.md)。
 
-Goal: Create the Python package, documentation, examples, and tests.
+2026-09-26 当前顺序更新：[小规模评价与 probe 接线](decisions/ch6_probe_small_workload_20260926.md)。
+先封存 16 题/域的明确输入、真实 probe 目标与先验，分别保留 NL 与 controlled 口径；
+再做有上限的一轮五方法对照。3885860 的源调用预算截断已定位，本地安全继续修复
+65 项测试通过；旧批次不可换版本原地重启。停止反复后端准入和强求每题成功，
+未授权启动三域全量；条件模拟 v2 与实测分开。
 
-Files involved: `src/xgap/**`, `docs/**`, `examples/**`, `tests/**`, `pyproject.toml`.
+2026-09-25 用户批准的新顺序：[D1 一轮 pilot + 正式 workload 补建](decisions/ch6_pilot_workload_rebuild_20260925.md)。先交接具有精确版本、原始输入、4 小时总预算和逐请求停止检查的 D1 CPU 启动包；同时将 20 个新源结构候选映射到共同 IR，检查开发族重叠、完整语义及独立参考，再冻结正式采样。现有 176 题和历史 artifact 保留，完整实验仍不启动。
 
-Acceptance criteria: Package imports work, placeholder modules exist, future behavior raises `NotImplementedError`, and pytest can discover tests.
+2026-09-25 **原始发布验收已完成**：下一执行项是 D1 首轮的全局预算和启动审计；双部署 r0 须排在 native 重复轮次之前。输入 token 预留仍未获得精确 tokenizer 证据，须明确计量及停止方式，不填虚假已验证上限。现有 176 题与原研究目标的范围差距继续单列，不再重跑已通过的准入。见[最新验收](report/ch6_publication_completion_39abb95.md)。
 
-Current status: DONE
+2026-09-25 **发布恢复结束，分别处理执行就绪与研究范围**：服务器 `39abb95` 报告成功，下一项是约 1 MB 归档核验及现有 D1 首轮的全局预算/启动审计，不重跑 census。当前 176 道自建基础题尚未达到原定每域每 W 层 200 题；benchmark 模板来源接线与独立最终测试集也须补齐或由用户明确调整研究范围。不得把 2,400 次总体方法请求当作 2,400 道基础题，不把 108 单元生成视作全量 ready。见[完整范围差距](report/ch6_publication_completion_39abb95.md)。
 
-## M1 Data Model
+2026-09-25 **3875866 原始验收通过，进入零查询发布恢复**：6,323 文件、3,200 个可用引用、11 份资格证书重算通过；D1 56/56、D3 64/64、因子 40/40，25 段资源关闭通过。69 空/91 非空答案均保留；这不是五方法 NL 结果。已实现仅恢复发布的入口，本地 108 单元/390 图位置/52,432 项绑定检查通过，10 项定向测试通过；9 个服务器运行时检查尚待执行。优先独立 D1 首轮 256 个方法请求、再 D3 288 个；不重跑 census，不以全 21 图为首轮前提。仍需服务器正式发布及 API/token/墙钟/存储预算封存，全量未启动。见[原始验收及恢复路径](report/ch6_releasegate_acceptance_3875866.md)。
 
-Goal: Implement the path-based data model and directed labeled property graph.
+2026-09-25 **3875866 查询准入已全部完成，发布阶段命名错误已本地修复**：用户最终日志为 FAILED/2:0、87:49、compt341；11 个 cohort 合计 **160 correct**、全部 complete。失败发生在后续清单生成：规模题 ID 含 0.25/1.0/4.0，而 cell ID 校验拒绝句点。已支持安全单路径名称，保持原题/清单 ID；39 项定向测试与全部 14,915 个图引用通过。本轮未查询、未重提；约 421 MB 原始归档尚待下载核验，随后只补发布元数据，不重跑 census。正式全量仍未启动。见[本次结果及恢复边界](report/ch6_releasegate_publication_failure_3875866.md)。
 
-Files involved: `src/xgap/algebra/types.py`, `src/xgap/algebra/graph.py`, `tests/test_path_types.py`, `tests/test_graph.py`.
+2026-09-25 本地发布准备：21 图、390 个方法/水平位置的测量配方已生成；176 道总体题、40 个因子输入，三轮去重后 4,356 个待运行方法请求。TS 源数/规模的原始 NL 参考接线与实际快照检查已补齐，35 项相关测试及六组真实问题来源检查通过；未运行方法实验。图引用仍需解析到真实 manifest，全局预算尚未冻结，E7 probe 轴明确未激活。见[测量配方及剩余发布工作](report/ch6_figure_recipes_20260925.md)。
 
-Acceptance criteria: `Path`, `PathSet`, `SolutionSpace`, and `PropertyGraph` satisfy the M1 behavior; graph nodes and edges convert to `PathSet`.
+2026-09-25 **D2 发布归档已验收**：2,607 文件、4,950 个可用引用通过；六份清单共 768 个待运行项、56 题支持合同及两个资格证书核对一致，三个 RDF 超时保留。本轮没有模型/后端调用。收回材料明确 D1/D3 仍缺最终 test 资格；已完成其 120 题及 40 个因子输入的零调用计划检查，已封存约 40 KB 的 `xgapreleasegate92ee25d.zip`，用户已校验并提交 CPU 作业 **3875866**；最新服务器回执为 **RUNNING/compt341**，D1 native 已完整覆盖 **24 correct**，其余 cohort 继续；原始归档待核验，不重复提交、不重跑 D2。源调用预算接线已参数化以匹配 F6，默认不变；37 项定向测试通过。之后仍需 21 图绑定及全局预算，未启动正式全量。见[原始验收与剩余准入](report/ch6_releaseprep_acceptance_20260925.md)。
 
-Current status: DONE
+2026-09-25 **D2 最终版本后端资格已完成原始验收**：3875163 的 1,075 文件、845 个可用 pin 核验通过；两份证书从原始答案/回执重算一致。native 24 correct；RDF 29 correct + 3 source_timeout，原 56 题完整覆盖、无重试，资源关闭通过。两个部署均 eligible_for_evaluation=true；这不是五方法 NL 正式结果。用户服务器回执确认 cfb9f6d 零查询发布准备成功：native 24 / RDF 32 题，三轮共 768 个待运行项，XGAP/NP/SH/GR 各支持 56 题，TS 支持 32 道 RDF、24 道 native 明示不支持；没有模型调用、后端调用或新作业。约 2.44 MB 发布归档待本地收取及原始核验。随后完成全局预算、D1/D3/因子/F6 和 21 图绑定审计；全量尚未启动。见[验收结果和下一步](report/ch6_final_version_acceptance_20260925.md)。
 
-## M2 Core Algebra
+2026-09-25 **3874144 原始归档已验收**：1,035 文件及 473 个可用 pin 校验通过；27 题全部覆盖，24 答案正确（16 空、8 非空），3 个源请求超时，27 个实际计划匹配冻结选择，六段关闭/副本回收通过。uniform 10/11、active-anchor 14/16 正确；三个超时保留，不逐题重跑或调参。作业 43:09 中离线会话准备合计 34:37，worker 合计 7:33，不能混作查询延迟。继续版本与正式发布审计，全量未启动。见[验收报告](report/ch6_census_terminal_3874144.md)。
 
-Goal: Implement executable semantics for `Nodes(G)`, `Edges(G)`, `Selection`, `Union`, and `Join`.
+2026-09-25 最新：**3874144 已 RUNNING 于 compt304**，开始时间 `2026-09-25T01:31:38`（服务器显示）。同一作业解除 compt311 绑定后已启动；8 核/24 GiB/8:15、精确 4b80d3d、原 RDF 27 题及输入均不变。冻结节点而非资源数量是本次排队的主要限制；记录新环境，不与旧节点混算性能。当前等待整批结果，不重提、不启动正式全量。
 
-Files involved: `src/xgap/algebra/conditions.py`, `src/xgap/algebra/ops.py`, `src/xgap/algebra/evaluator.py`, `tests/test_conditions.py`, `tests/test_core_ops.py`.
+2026-09-25 调度瓶颈已定位并处理：相同 8 核/24 GiB/8:15，固定 compt311 的预计开始为 10 月 2 日，取消节点限定的 test-only 预估为 9 月 25 日 compt304。用户已原地更新 **3874144**，回执确认 `ReqNodeList=(null)`；未取消、未重提、未改代码/题目/预算。修改后仍 PENDING，旧预计时间尚未确认刷新，实际运行节点待回收。3874173 只是预估编号。实际节点及环境单独封存，诊断耗时不与旧节点混算提速；全量尚未启动。
 
-Acceptance criteria: Implemented operators evaluate over `PathSet`; conditions cover labels, properties, length, and boolean composition; unimplemented operators raise `NotImplementedError`.
+2026-09-25 最新运行句柄：用户已通过 sacct 取消核验及三个文件 SHA 核验，替代作业 **3874144 已成功提交**；3874119 为未运行的取消记录，保留不覆盖。新作业仍使用精确 `4b80d3d`、原 RDF 27 题与原节点/预算；当前仅提交确认，运行/终态待回收，不重复提交。日志为 `rdf-census27-4b80d3d-v2/rdf-census27-3874144.out`，归档预计 `xgap-rdf-census27-3874144.tar.gz`。本地可评价合同和 F6 发布核对已完成并推送；真实部署/版本/全发布审计仍未完成，全量未启动。
 
-Current status: DONE
+2026-09-25 调度更新：用户主动取消排队中的 **3874119**；已贴回 `CANCELLED`、`RunTime=00:00:00`、`AllocTRES=(null)`，无执行证据。旧 stage 正常阻止重复提交。首次恢复因 Slurm 实时记录不可查而在提交前退出；已改用 sacct 历史核验的单次恢复命令，13 组本地调度模拟通过，保留旧记录；替代作业号待回传，不把原作业继续记作在途。原代码、27 题、CPU 节点及预算不变。F6 图绑定增加原始行状态/null 与完整源预算核对，3 项定点检查通过；未重测 F6。
 
-## M2.5 Logical Plan Infrastructure
+2026-09-25 本地收尾：已实现[后端可评价合同](decisions/backend_evaluation_eligibility_20260925.md)，完整覆盖允许显式资源截断，答案错误/未知异常/版本混用/关闭不全仍阻断；已接入执行单元、混合支持与共享源运行，28 项定点检查通过。未生成真实完整部署证书，未启动全量；3874119 仅提交已确认，等待运行证据。
 
-Goal: Add validation, optimizer passes, and plan formatting infrastructure.
+2026-09-25：用户已校验并部署 `4b80d3d`，27 题 census 已提交为 **3874119**；当前只有提交证据，运行/终态待确认。不重提、不修改在途 checkout。原 RDF 索引 5–31 按冻结顺序覆盖，零 LLM/EXPLAIN；闭合可验证的资源超限可继续，正确性或未知异常阻断。继续本地发布合同、版本与 F6 审计，未启动正式全量。见[批量交接](report/readiness_census_handoff_20260925.md)。
 
-Files involved: `src/xgap/algebra/validation.py`, `src/xgap/algebra/optimizer.py`, `src/xgap/algebra/pretty.py`.
+2026-09-25 新指令：按[24 小时收尾计划](decisions/one_day_readiness_20260925.md)推进至全量 ready，目标截止北京时间 9 月 26 日 02:16。停止逐题性能优化；D 保留正式超参数扫描，不为过题调深度。先完成预算配置/失败分类/安全批量覆盖，再封存真实发布矩阵；尚未 ready，未启动全量。
 
-Acceptance criteria: Plans can be validated and optimized without changing semantics; unsupported rewrites fail clearly.
+交接：**3869818 原始证据已验收**：原 RDF cycle/W2 空答案正确，执行 25.124 s、worker 30.557 s、规划 430.91 ms；三次源请求/一次最终执行/零模型，原超时请求已消除，资源关闭通过。RDF 原索引 0–4 累计通过，5–31 未执行；native 24/24 为跨版本结果。用户要求重新审视逐题 debug 与固定超时门槛，下一批未提交；不把所有题在 60 s 内通过当作 planner 正确性要求，具体批量准入策略待明确。
 
-Current status: DONE
+2026-09-25 **3869407 原始取证完成，通用取键修复已验证**：RDF 前两题答案正确；cycle/W2 的 29 条源记录经过原有时间过滤后为空，旧提前取键却跳过该过滤，导致无必要的反向扩展超时。已保留必要 FILTER/PROJECT 链；4 项定向测试、原冻结估计器零调用选择和真实响应离线 replay 通过，调用从 6 次尝试变为 3 次缓存响应，不能当作服务器提速结果。下一项仅完整源复验原 RDF 索引 4；预算/样本/估计器不变。RDF 5–31 未执行；native 累计 24/24 保留，但版本比较有 7 个计划变化需后续处理。全量仍未准入。见[证据、证明与边界](decisions/filtered_binding_driver_20260925.md)。
 
-## M3 Recursive Algebra
+2026-09-25 **D2 native 累计 24/24 原始证据已验收**：最后五题作业 3869038 全部答案及顺序正确，计划与执行前封存一致，零 LLM，资源关闭通过；4 个空答案，ranked_count/W4 返回 20 行、执行 1.412 s。24 题中 14 题使用 `c3437fc`，10 题来自较早版本，不冒充最终版本整批准入。用户终端确认 **3869407 FAILED/2:0，444 s，compt311**：RDF 原索引 2–9 的批次 attempted=audited=3，在第三题 `D2-test-uniform-cycle-000-W2`（原索引 4）首错停止，余五题未执行。前两题按流程报告通过，原始归档与 native 版本比较待下载核验；失败类型尚未确定，不归因于超时/内存，不重提或整批重跑。完整正式发布准入仍未完成。见[验收与实际剩余门槛](report/ch6_native_completion_3869038.md)。
 
-Goal: Implement `Recursive` semantics for `WALK`, `TRAIL`, `ACYCLIC`, `SIMPLE`, and `SHORTEST`.
+2026-09-25 W4 原始验收完成：**3868918** 归档、16 个可用 pin 和五次原始响应已核验。20 行答案逐行有序等于冻结参考；执行 **47.742 s**（最终 Neo4j 请求 41.716 s），规划 254.79 ms，worker 51.290 s。一最终计划/五次后端调用/零模型；方法与源采样峰值 39.36 MiB / 1.155 GiB，关闭和副本回收通过。旧超时不能构成完整延迟基线，不宣称提速倍数。native 原 24 题累计分版本通过 0–10，尚有 13 题未执行；下一项为原索引 11–18 八题，原序、首错停止，不重跑成功题。用户已校验并提交复用 `c3437fc` 的八题包，作业 **3868951**；运行/终态尚未收到，不重复提交。见[完整证据及下一批准入](report/ch6_closed_endpoints_admission_3868918.md)。
 
-Files involved: `src/xgap/algebra/ops.py`, `src/xgap/algebra/evaluator.py`, `src/xgap/algebra/types.py`, recursive tests.
+以下旧状态以顶部更新为准。
 
-Acceptance criteria: Recursive path expansion is deterministic, mode-specific, and tested.
+2026-09-25 闭环边访问修复：3868871 原始 EXPLAIN 已核验，约 4.83 s；闭环边三处均为 Expand(All) 后过滤。已实现通用“两端逻辑身份分别绑定后匹配边”，不合并物理节点；37 项定向检查及四组相关真实小图答案/Expand(Into) 验证通过。完整 W4 零调用规划选中修复路径，旧 v3 估计器未改；下一步只复验原 W4，完整源收益尚未确认。见[证明及边界](decisions/native_closed_endpoints_20260925.md)。
 
-Current status: DONE
+2026-09-24 绑定与内存优化：已实现独立 v3 绑定键 NDV 估计、从更早的受限输入取得必要键，以及保持精确答案的 coordinator SPJ→top-K 流式执行。74 项定向测试、10 组真实 Neo4j＋Fuseki 小图有序答案对照通过；剩余原六题的零调用规划检查通过。星形中间结果不再必须全部落内存，实际扫描量/CPU 仍须完整源验证。旧估计器、数据/题目/预算保留；新模型单独冻结，不宣称全量 ready。下一步仅验原索引 7–12，首错停止；自动 SSH/浏览器本轮仍超时。见[证明、证据与发布边界](decisions/binding_ndv_streaming_20260924.md)。
 
-## M4 SolutionSpace Algebra
+2026-09-24 当前顺序覆盖下面历史顺序：按用户要求先解决 D2，再进入正式结果。共享系统优化已通过小图，下一项按[执行形态表](decisions/native_membership_composition_20260924.md)处理星形中间结果风险和未执行的原始病例；聚合题保留已选择的贡献见证策略。分开记录策略准入、规划选择和完整源资源验收。保留 3868378 等既有成功，不反复整批测试。随后补齐 native/RDF 全队列及正式输入/支持/预算准入，再先一个数据集；不启动全量。
 
-Goal:
-Implement GroupBy, OrderBy, and Projection over SolutionSpace.
+2026-09-23：按[五方法正式执行合同](ch6_formal_execution_20260923.md)准备到全量启动边界。
+当前顺序：可追溯矩阵 → 真实 TS batch + 小 gate → 因子输入/存储/held-out → 预算冻结 → 全量准入。
+不增加图数，不再省略方法，不优化基线答案质量；尚不启动全量。
 
-Files involved:
-src/xgap/algebra/types.py, src/xgap/algebra/ops.py, src/xgap/algebra/evaluator.py, src/xgap/algebra/validation.py, src/xgap/algebra/pretty.py, tests/test_solution_space.py, examples/solution_space_demo.py.
+**baseline 已完成 tiny 单源/跨源接通，停止为其答案质量做优化。**
+当前优先级改为：外部 worker 接正式批量入口 → 共同 RDF 上冻结同题输入、metadata、
+评分/顺序/缓存及预算 → D3 SF0.1 小批配对发布检查 → 正式评价。
+D1/D2 实际装载与 workload 准入继续按原计划补齐；不阻塞 D3 首组比较。
+见[最新验收和剩余条件](report/ch6_baseline_admission_20260922.md)。
 
-Acceptance criteria:
-GroupBy transforms PathSet into SolutionSpace; OrderBy updates ranks without changing membership; Projection transforms SolutionSpace back into PathSet; selector-style plans such as ANY SHORTEST TRAIL can be represented and evaluated.
+以下为本轮早期推进记录，其“外部方法未接通”状态已更新：
 
-Current status:
-DONE
+2026-09-22 以新的[实验计划](ch6_experiment_plan_20260922.md)为准。当前完成的是
+[首批真实 XGAP 实测](report/ch6_first_real_20260922.md)，尚未发布可执行的全量 manifest。
+不启动旧 Exact/Performance campaign 或自动任务。
 
-## M4.5 Semantic Audit
+当前优先项：外部 Two-stage 的忠实接口验收和同 RDF 部署；分析首轮搜索超时后的
+完成回退、完成估计复用，以及约 34.7–56.3 MB/题的数据移动。先以小图和失败 replay
+验证修复，再发布必要的小批真数据边界，避免反复全量/消融。
 
-Goal:
-Audit the full logical algebra semantics after M4.
+更新：缓存和超时根选择已修复，FedX 接口已通过，真实原版前端因模型 JSON 格式
+错误失败，见[后续报告](report/ch6_planner_external_followup_20260922.md)。停止无改动的
+重跑；保留方法失败，同时继续必要的接口兼容工作和单源/跨源分层准入。
+当前模型动作格式失败不能证明仅支持单源；不替外部组件新增联邦算法。
+下一重点是共同 RDF 数据/metadata、独立模板族和非空层覆盖，
+以及 XGAP 过滤/绑定计划的估计排序，不把降低 F1 的新选择宣传成等答案加速。
 
-Files involved:
-docs/operator_semantics.md, tests/**, examples/**, semantic-audit notes.
-
-Acceptance criteria:
-The implementation is checked against the path algebra paper's core, recursive, and extended semantics; selector examples are verified; empty input and tie-breaking behavior are documented; all acceptance tests pass.
-
-Current status:
-DONE
-
-## M5 Pattern AST And Lowering
-
-Goal:
-Define structured path-pattern query objects and lower them deterministically to path-algebra logical plans.
-
-Files involved:
-`src/xgap/pattern/ast.py`, `src/xgap/pattern/types.py`, `src/xgap/pattern/typecheck.py`, `src/xgap/pattern/lowering.py`, `tests/test_pattern_typecheck.py`, `tests/test_lowering.py`, `examples/lowering_demo.py`.
-
-Acceptance criteria:
-- Regex AST supports at least `Rel`, `Seq`, `Alt`, `Plus`, and `Star`.
-- Selector AST supports `ALL`, `ANY`, `ANY k`, `ANY SHORTEST`, `ALL SHORTEST`, `SHORTEST k`, and `SHORTEST k GROUP`.
-- Restrictors reuse existing `PathMode` values.
-- `PathPatternQuery` lowers to a valid logical operator tree.
-- Lowering has no LLM dependency.
-- Lowering emits only existing logical operators.
-- Lowered plans pass `validate_plan`.
-- Lowered plans can be evaluated by the reference evaluator.
-- No compiler, backend, optimizer, or LLM logic is added.
-
-Current status:
-DONE
-
-## M5.5 Pattern-Lowering Audit
-
-Goal:
-Audit the full M5 GPC-Lite pattern layer and deterministic lowering pipeline.
-
-Files involved:
-`tests/test_pattern_lowering_audit.py`, `examples/pattern_lowering_audit_demo.py`, `docs/pattern_lowering_audit.md`, `docs/architecture.md`, `docs/roadmap.md`, `docs/status.md`, `docs/decisions.md`, `scripts/run_acceptance.sh`.
-
-Acceptance criteria:
-- GPC-Lite AST validity, type checking, regex lowering, descriptor lowering, selector mapping, determinism, validation, and reference evaluation are audited.
-- Unsupported full-GPC and future milestone features fail clearly.
-- No M6 or later functionality is implemented.
-- `python -m pytest` passes.
-- `./scripts/run_acceptance.sh` passes.
-
-Current status:
-DONE
-
-## M6 Bounded Focused Quantified Pattern Semantics
-
-Goal:
-Add a bounded QGP-inspired fragment for focus-oriented, rooted tree
-patterns.
-
-Files involved:
-`src/xgap/pattern/quantified_ast.py`,
-`src/xgap/pattern/quantified_typecheck.py`,
-`src/xgap/pattern/quantified_lowering.py`,
-`src/xgap/algebra/bindings.py`, focused binding operators in
-`src/xgap/algebra/ops.py`, evaluator, validation, pretty printing,
-tests, and `examples/quantified_pattern_demo.py`.
-
-M6 extends the structured pattern layer with a bounded, QGP-inspired
-fragment for focus-oriented rooted tree patterns.
-
-The deterministic flow is:
-
-FocusedQuantifiedPatternQuery
--> type_check_focused_quantified_pattern
--> validate_quantifier_bounds
--> lower_focused_quantified_pattern
--> LogicalPlan
--> validate_plan
--> reference evaluation
-
-M6 supports quantifiers attached to atomic directed pattern edges:
-
-existential: at least one distinct child match
-numeric count: = k and >= k
-ratio: = r and >= r
-universal: ratio = 100%
-negation: no child satisfies the complete branch pattern
-
-Counting uses distinct child-node bindings. It does not count paths,
-parallel edge instances, or complete binding multiplicities.
-
-Ratio denominators contain distinct child nodes reachable through the
-edge descriptor before applying the child-node descriptor and the child
-subtree. Positive ratio conditions use non-vacuous semantics: an empty
-denominator does not satisfy a ratio or universal condition.
-
-Pattern-level negation is lowered through anti-semi-join semantics. It is
-different from scalar boolean negation inside a local property condition.
-
-M6 applies static structural bounds. On every root-to-leaf pattern path:
-
-at most two quantifiers may be non-existential;
-at most one edge may be negated.
-
-Sibling quantified or negated branches are allowed because sibling
-branches represent conjunction rather than nested quantification.
-
-M6 introduces a minimal set-valued BindingRelation and a focused
-binding-operator layer. This is an implementation substrate for bounded
-focused patterns; it is not a full GPC assignment implementation.
-
-M6 does not support:
-
-full QGP
-arbitrary conjunctive or cyclic graph patterns
-quantifiers over Plus, Star, or other regular-path expressions
-path counting
-edge-instance counting
-bag or null semantics
-multiple query-focus outputs
-unbounded quantifier nesting
-backend compilation or execution
-optimizer, LLM, disambiguation, or KGQA functionality
-
-Current status:
-DONE
-
-## M6.5 Quantified-Pattern Semantic Audit
-
-Goal:
-Audit the M6 quantified-pattern semantics and lowering pipeline.
-
-Files involved:
-semantic audit document, audit tests, audit demo, current-state docs, and
-acceptance wiring.
-
-Acceptance criteria:
-Confirms counting, ratio, negation, bounds, determinism, validation,
-reference evaluation, and execution boundaries.
-
-Current status:
-TODO
-
-## M7 Backend Infrastructure
-
-Goal:
-Move beyond local database bootstrapping by giving XGAP a backend
-infrastructure layer for descriptors, runtime records, native smoke
-clients, and experiment logs.
-
-Files involved:
-`services/docker-compose.yml`, `services/.env.example`,
-`scripts/server/**`, `examples/financial_risk/**`,
-`examples/datasets/financial_risk_toy.yaml`,
-`descriptors/backends/**`, `src/xgap/infrastructure/**`,
-`src/xgap/backends/**`, `src/xgap/experiments/**`,
-`tests/test_backend_infrastructure.py`,
-`tests/test_backend_live.py`, and backend documentation.
-
-Acceptance criteria:
-Neo4j and Fuseki can be started on a server; the financial-risk toy data
-can be loaded into both backends; native Cypher/SPARQL smoke queries
-return non-empty high-risk company rows; descriptor YAML files load;
-runtime records serialize to JSON; the registry can list and filter
-backends; default pytest does not require live services; optional live
-smoke tests run when `XGAP_RUN_BACKENDS=1`; each harness run writes
-`query_logs.jsonl` and normalized result JSON.
-
-Current status:
-DONE
-
-## M8 Backend Capability Profile + Compiler Boundary Preflight
-
-Goal:
-Upgrade backend capabilities from descriptive metadata into
-program-checkable capability profiles, and define the exact boundary
-between XGAP logical plans, backend support checks, compiler inputs,
-compiler outputs, and unsupported-feature reports.
-
-M8 answers five questions:
-
-1. Which XGAP path/GPC fragments does Neo4j support?
-2. Which XGAP path/GPC fragments does Fuseki support?
-3. Which M0-M6 logical constructs can be safely compiled?
-4. Which constructs must explicitly return unsupported?
-5. What is the format of compiler input, output, and failure reports?
-
-Expected result:
-Descriptor `capabilities` stop being purely descriptive metadata and
-become capability profiles that can be checked by program logic.
-
-Files expected:
-`docs/m8_backend_capability_preflight.md`, backend descriptor schemas or
-capability-profile modules, compatibility-check tests, and current-state
-documentation. Existing M0-M7 APIs remain stable.
-
-Acceptance criteria:
-Neo4j and Fuseki profiles state support and unsupported reasons using
-XGAP path/GPC vocabulary; M0-M6 constructs are mapped to supported,
-conditionally supported, or unsupported categories; compiler artifact
-boundaries are documented; unsupported constructs fail explicitly in
-profile checks; no optimizer, semantic-deviation scoring, planner, LLM,
-ontology reasoning, dominance pruning, top-K selection, KGQA evaluation,
-or logical-plan-to-native-query compiler implementation is added.
-
-Current status:
-DONE
-
-## M9 Minimal Compilers For Backend MVP
-
-Goal:
-Implement the first deterministic native-query compiler slice after M8:
-validated ALL-selector path patterns or bounded path-algebra fragments
-are checked against backend capability profiles and emitted as native
-row-oriented `QueryArtifact` values.
-
-Files involved:
-`src/xgap/compilers/base.py`, `src/xgap/compilers/gql.py`,
-`src/xgap/compilers/cypher.py`, `src/xgap/compilers/sparql.py`,
-`src/xgap/compilers/artifacts.py`, `src/xgap/compilers/errors.py`,
-`src/xgap/compilers/features.py`, compiler tests,
-`examples/compiler_mvp_demo.py`, and `docs/m9_minimal_compilers.md`.
-
-Acceptance criteria:
-Cypher and SPARQL compilers support the agreed minimal path/GPC
-fragment; GQL fails explicitly; M8 capability checks happen before
-native artifact emission; unsupported features raise structured
-failures; native output is deterministic; default pytest requires no
-live backend services; acceptance passes.
-
-Current status: DONE
-
-## M10 LLM Planner Boundary + Structured Candidate Interface
-
-Goal:
-Define the boundary between future LLM-based natural-language planning
-and XGAP's deterministic path/GPC stack.
-
-Files involved:
-`src/xgap/llm/schemas.py`, `src/xgap/llm/parser.py`,
-`src/xgap/llm/protocol.py`, `src/xgap/llm/mock.py`,
-`src/xgap/llm/validation.py`, `src/xgap/llm/planner.py`,
-LLM-boundary tests, `examples/llm_boundary_demo.py`, and
-`docs/m10_llm_planner_boundary.md`.
-
-Acceptance criteria:
-Structured candidate JSON parses deterministically into
-`PathPatternQuery`; invalid JSON fails explicitly; native query fields
-are rejected; `plan_from_question()` requires an explicit provider;
-mock provider tests run without a live model; candidate validation can
-run type checking, lowering, and plan validation; default pytest does
-not require live LLM services.
-
-Current status:
-DONE
-
-## M11 Ontology-Bounded Physical Planning
-
-Goal:
-Keep logical compilation deterministic for each interpretation and search
-only physical realizations: backend placement and explicit cross-backend
-exchange decisions. Ontology, schema, source mappings, and semantic
-alignment are external, versioned planning inputs rather than search
-dimensions.
-
-M11 is decomposed into:
-
-- M11-A Planning Objective and Physical-State Contract
-- M11-B Bounded Branch-and-Bound Physical Search
-- M11-C Bayesian Cost Model and Search Trace
-- M11-D XGAP Main Planner and Exhaustive Oracle Evaluation
-
-Files involved:
-`src/xgap/planning/**`, `src/xgap/experiments/**`, M11 tests and controlled
-artifacts, M11 demos, `docs/m11_ontology_bounded_physical_planning.md`,
-and current-state documentation. Existing logical operators, deterministic
-lowering, backend capability profiles, compiler contracts, and M10
-candidate objects are reused rather than duplicated.
-
-Acceptance criteria:
-
-- physical states have deterministic identities and contain a fixed logical
-  plan, backend placements, and exchange decisions;
-- mapping sufficiency and semantic deviation are resolved through pluggable,
-  versioned ontology/alignment providers before physical search;
-- bounded best-first branch-and-bound search charges one budget unit per
-  processed `ExtractMin`, preserves anytime prefixes, and retains the
-  discovered complete plan with minimum conservative upper estimate;
-- cost observations contain positive raw costs for complete plans and a
-  frozen Gaussian-process snapshot predicts log-cost confidence bounds;
-- returnable plans satisfy the strict hard bound `C_bar < T_max` and the
-  strictly positive Nash-output domain;
-- at most one representative is retained per interpretation and deterministic
-  top-K ranking uses the planning-time Nash score;
-- a tiny exhaustive oracle measures planning regret and search reduction in
-  tests and experiments without being used by the production planner;
-- compiler and runtime gaps are represented explicitly rather than expanded
-  or approximated;
-- unit tests, controlled demos, full pytest, and acceptance pass.
-
-M11 does not implement live LLM providers, KGQA loading/evaluation, LoRA or
-model training, automatic ontology induction, a built-in general-purpose
-OWL/DL reasoner, full GQL, new compiler coverage for recursive/selectors/M6,
-logical rewrite enumeration, new execution engines, or distributed
-cross-backend runtime orchestration.
-
-Current status:
-DONE
-
-## M12 Experimentalization
-
-Goal:
-Turn the M10/M11 controlled pipeline into a reproducible experiment surface
-without changing the deterministic planner core.
-
-M12 is decomposed into:
-
-- M12-A Experiment Artifact Contract + Dataset Bundle
-- M12-B Live LLM + Ontology/Alignment Artifacts
-- M12-C Cost Calibration + Online GP Protocol
-- M12-D Baselines/Ablations + Server Experiment Runner
-
-M12-A freezes experimental semantics and introduces versioned contracts for
-dataset bundles, model bundles, experiment specifications, semantic
-deviation, GP protocols, metrics, execution protocols, manifests, hashing,
-and run artifacts. It also adds a controlled financial-risk development
-bundle and offline development runner over existing M10/M11 interfaces.
-
-M12-B adds a generic OpenAI-compatible structured provider, a fixed DashScope
-Qwen ModelBundle, a portable vLLM configuration boundary, bounded runtime
-ontology/schema retrieval, query anchors, candidate slot realizations, and a
-gold-free file-backed runtime alignment provider. It supplies real runtime
-semantic/model inputs to the unchanged M11 planner while reusing M12-A's
-frozen semantic deviation exactly.
-
-Files involved:
-`src/xgap/experiments/**`, `datasets/**`, `models/**`, `experiments/**`, M12-A
-tests and demo, `docs/m12_experimentalization.md`, the M12-A sprint prompt,
-and current-state documentation. M11 planner contracts are reused unchanged.
-
-M12-A acceptance criteria:
-
-- the frozen directional ontology-hop semantics and uniform slot aggregation
-  are typed, serializable, and tested;
-- DatasetBundle, ModelBundle, and ExperimentSpec load deterministically with
-  stable versions and content hashes;
-- fragment-support, baseline, ablation, metric, execution, GP, and run-layout
-  contracts reject invalid combinations explicitly;
-- missing optional benchmark gold data remains explicitly unavailable;
-- a controlled financial-risk development bundle exercises the contract;
-- one offline runner materializes the complete M12 artifact tree through the
-  existing M10 mock boundary and M11 planner;
-- targeted tests, full pytest, the development run, and acceptance pass.
-
-M12-B acceptance criteria:
-
-- changing only ExperimentSpec/ModelBundle selects the mock or live structured
-  candidate provider;
-- one generation call and at most one repair call produce no more than M
-  grounded `PathPatternQuery` candidates;
-- prompt context is bounded, deterministic, content-hashed, and contains no
-  gold answers, gold logical forms, gold alignments, or evaluation labels;
-- query-side anchors and candidate slot realizations remain separate and feed
-  the frozen M12-A `c_sem` implementation;
-- ontology/entity IDs, slot coverage, and backend mappings are validated
-  explicitly before the unchanged M11 planner runs;
-- DashScope uses the fixed `qwen3-max-2026-01-23` snapshot and the same generic
-  provider remains configurable for a future/local vLLM endpoint;
-- default pytest remains offline, fake-HTTP tests exercise the full provider
-  path, and the real Qwen smoke test is explicitly gated.
-
-M12-B does not implement LoRA, model deployment, full ontology reasoning,
-real D0 collection, GP calibration, executable baselines/ablations, final
-KGQA evaluation, or server experiment orchestration.
-
-M12-C implements real-cost calibration and the online GP lifecycle while
-preserving M11 planning semantics. It provides deterministic complete-plan
-calibration workloads, repeated Neo4j/Fuseki execution through the existing
-M7 clients and M9 compiler boundary, backend-specific D0 artifacts, fitting
-of the existing RBF GP family, immutable calibrated-model registration, and
-atomic between-task posterior updates.
-
-M12-C acceptance criteria:
-
-- Neo4j and Fuseki use independent backend-local `D0` datasets and RBF GPs;
-- raw execution cost is persisted in milliseconds and the GP target is its
-  natural logarithm;
-- only complete, backend-local, actually executed plans become observations;
-- calibration and evaluation splits are distinct and evaluation gold is not
-  admitted to calibration cases or features;
-- repeated measurements, failures, feature schema, protocol, D0, model, and
-  hyperparameter identities are persisted and hashed;
-- hyperparameters remain frozen during evaluation, and all plans in task q
-  use the same posterior derived from `D_(q-1)`;
-- a task batch is appended only after execution and updates only the model for
-  the observed backend;
-- unsupported distributed movement remains explicitly unavailable;
-- offline tests and demos do not require live services, while live calibration
-  is explicitly gated;
-- M11 search, M12-B inference semantics, and all previous acceptance tests
-  remain unchanged.
-
-M12-C does not implement a joint backend-aware GP, transfer-cost learning,
-new compiler coverage, distributed runtime orchestration, executable
-baselines/ablations, experiment-matrix scheduling, new benchmarks, or new
-LLM/ontology behavior.
-
-M12-D composes the frozen M10-M12-C boundaries into a configuration-driven,
-resumable experiment system. It implements explicit policies for
-`full_xgap`, `random_feasible`, `mean_only`, `no_pruning`,
-`no_online_update`, `single_backend`, controlled `exhaustive_oracle`, and the
-separate `direct_text2graphquery` system baseline. Frozen candidate artifacts
-support fair planner comparisons, while matrix expansion varies dataset,
-model, method, epsilon, budget, and seed without planner-code changes.
-
-M12-D acceptance criteria:
-
-- task q plans against one immutable `D_(q-1)` snapshot and commits its
-  successful execution observations atomically only after task execution;
-- all frozen method and ablation identifiers have explicit behavior or an
-  explicit controlled-only boundary;
-- candidate generation can be frozen and replayed across comparable physical
-  planning methods;
-- deterministic matrix run IDs, collision checks, checkpoints, resume, and
-  completed-run skipping make sequential server runs reproducible;
-- execution records distinguish nonempty success, empty success, and error,
-  and retain normalized `row_count`;
-- planning, prediction, confidence, latency, failure, and aggregate-ready
-  metrics remain separate and unavailable gold/oracle values remain null;
-- readiness distinguishes development, pilot, and paper modes, with Python
-  3.10+, immutable hashes, pinned backend versions/images, and a consistent
-  DatasetBundle mapping/data/M9 native-IRI contract required for paper mode;
-- aggregation emits analysis-ready JSON and CSV without claiming publication
-  results;
-- default pytest remains offline and live backend/model tests are explicitly
-  gated.
-
-M12 completion means the experiment infrastructure is ready for paper-grade
-dataset/model artifact preparation and large-scale runs. It does not mean
-that final datasets or numbers exist, MetaQA/QALD are integrated,
-cross-backend distributed execution or movement-cost learning exists, or new
-compiler fragments are supported.
-
-Current status:
-M12-A DONE; M12-B DONE; M12-C DONE; M12-D DONE
-
-## M13 Automated Semantic Disambiguation
-
-Goal:
-Replace controlled semantic-deviation inputs with a separately specified,
-evidence-backed disambiguation stage. Reuse M11 one-representative Nash top-K
-rather than introducing a second physical ranking algorithm.
-
-Files involved:
-Disambiguation modules, ranking modules, tests.
-
-Acceptance criteria:
-XGAP can derive reproducible semantic-deviation evidence for candidate
-interpretations and supply it through the M11 scorer boundary while keeping
-semantic quality separate from conservative execution cost.
-
-Current status:
-TODO
-
-## M13-C GrailQA Paper Vertical Slice
-
-Goal:
-Extend the current fixed-path fragment only where justified by the GrailQA
-audit, normalize the public ontology reproducibly, construct evaluation-only
-ambiguity evidence and a versioned pilot DatasetBundle, and run an actual
-semantic-to-native-compilation vertical slice.
-
-Acceptance criteria:
-The historical M13-A output remains unchanged; the v2 audit reports measured
-coverage and structural diversity; ontology SCC normalization and backend
-mapping are frozen; gold artifacts remain isolated from inference; the pilot
-traverses deterministic lowering, M11 planning, and M9 compilation; unavailable
-Freebase execution is reported rather than fabricated; all tests and
-acceptance checks pass.
-
-Current status:
-DONE. GrailQA is currently recommended for semantic-only paper evaluation.
-Real Freebase execution and a rich physical-plan space remain unavailable.
-
-## M13-D Server-Executed GrailQA Semantic Pilot Preparation
-
-Goal:
-Freeze and package the first real GrailQA RQ1 semantic pilot so a human can run
-it on the experiment server without Codex, source edits, or parameter choices.
-The path is NL question to query-independent public metadata retrieval, bounded
-M12-B Qwen candidates, existing deterministic validation/grounding, unchanged
-`c_sem`, epsilon filtering, deterministic semantic ranking, conservative
-reference support, and automatic metrics.
-
-Acceptance criteria:
-The repository contains a versioned public inference catalog, file-level
-gold-isolation boundary, deterministic retrieval and post-inference Recall@k,
-immutable 150-ID spec, safe resumable runner, exact readiness/smoke/full
-commands, first-failure accounting, all required raw/summary outputs, and a
-150-query fake-provider orchestration run. Existing M12-B prompt/model bounds
-remain frozen, candidate generation is reused across epsilon, and normal tests
-never call live Qwen.
-
-Current status:
-DONE. Local fake-provider orchestration and the real frozen 150-query server
-run completed. The result is retained as a diagnostic baseline: zero joint
-prompt reachability makes its zero Candidate Recall unsuitable as an isolated
-model-capability result. M13-D does not add backend execution, RQ2/RQ3, KQA
-Pro, prompt tuning, new algebra, or changed M11/GP/Nash behavior.
-
-## M13-E1 GrailQA Reachability And Interpretation Contract Repair
-
-Goal:
-Repair the scientific inference/evaluation boundary before another paid run:
-replace the incomplete entity-source path with a reproducible query-independent
-Freebase catalog build, measure catalog/retrieval/prompt reachability, separate
-semantic choices from canonical representation, and guard a small live
-preflight with an offline gate.
-
-Acceptance criteria:
-M13-D reachability is reproducible; catalog v2 construction accepts no gold
-input and records public provenance/hashes; deterministic retrieval persists
-alias, relation-slot, reverse, and domain/range evidence; typed conditions and
-canonical normalized equivalence agree; failures and `c_sem` are observable;
-the 18-query live runner cannot call the provider when reachability fails; no
-full live run, tuning, algebra extension, `c_sem` change, M11/GP change, or
-backend execution is added.
-
-Current status:
-LOCAL OFFLINE IMPLEMENTATION DONE; SERVER DATA GATE BLOCKED. The v1 audit
-reproduces joint prompt reachability 0/150. The comprehensive official Freebase
-dump is not local, so catalog-v2 counts, all-35,439 catalog coverage, repaired
-retrieval metrics, and the credentialed v2 preflight remain unclaimed until
-the server builder and offline gate pass.
-
-## M13-E2 CWRU H100 + vLLM Experiment Backend
-
-Goal:
-Make the existing OpenAI-compatible structured-candidate interface runnable
-as a self-contained Slurm job on CWRU Pioneer using one scheduler-selected
-H100 NVL and the frozen dense `Qwen/Qwen3-32B` vLLM condition.
-
-Acceptance criteria:
-Configuration externalizes endpoint, credential environment, and served model;
-non-thinking JSON Schema requests are preserved in exact request artifacts;
-the shared environment/cache and resolved revision are verified and logged;
-readiness and a tiny structured smoke precede inference; generic and 18-query
-preflight Slurm wrappers capture reproducibility artifacts and always clean up;
-normal tests require no GPU; M13-E1's gate remains authoritative; no semantic,
-planning, GP, backend, training, or 150-query behavior changes.
-
-Current status:
-LOCAL IMPLEMENTATION DONE; CWRU SUBMISSION PENDING THE M13-E1 CATALOG GATE.
-The manually validated CWRU runtime is frozen in a machine-readable contract.
-No live H100 inference was run by local acceptance.
-
-## M13-E3 Freebase Catalog-v2 Construction And Reachability Audit
-
-Goal:
-Instantiate the existing M13-E1 query-independent catalog design over a frozen
-representation of the final public Freebase data and determine, entirely offline, whether all
-reference-required GrailQA entities, relations, and types are jointly visible
-to the bounded inference prompt.
-
-Acceptance criteria:
-Raw download, checksum verification, streaming build, integrity validation,
-and reachability audit are independent and restart-safe; external persistent
-storage is configurable; the catalog records MID/name/English-alias/type
-metadata while retaining the frozen GrailQA ontology as schema authority; all
-35,439 supported questions receive catalog coverage; the frozen 150 receive
-Recall@1/5/10/20, relation-slot/all-required metrics, prompt truncation, Q/path
-strata, and first-loss attribution; compact hashed outputs expose an explicit
-`live_preflight_allowed` decision; normal tests use only fixtures and no LLM,
-GPU, backend, or download.
-
-Current status:
-**IMPLEMENTATION READY; REAL CWRU BUILD AND AUDIT PENDING.** The CPU Slurm job,
-runbook, manifests, fixture tests, and report templates are ready. M13-E3A
-freezes the reachable `CleverThis/freebase` archival Parquet tree at immutable
-revision `dbb1931c2698295653effe9b980a02ab29f004e0` after direct Google object
-retrieval returned HTTP 403 from CWRU. Source selection is explicit and has no
-fallback; both source modes feed unchanged Catalog-v2 extraction semantics.
-No catalog statistics or improved retrieval claims are made before all 964
-shards are processed and the compact audit results are returned.
-
-## M13-E3B Gold-Blind Query-Conditioned Local Freebase Catalog
-
-Goal:
-Determine whether bounded inference-time grounding can replace a global
-Freebase entity index for the frozen 18-query preflight and 150-query pilot.
-For each question, derive a local candidate universe solely from its text,
-public Freebase English names/aliases/type metadata, and the frozen GrailQA
-ontology, while allowing one physical scan to batch independent questions.
-
-Acceptance criteria:
-Construction accepts only inference question IDs/text; rejects gold,
-reference, answer, and logical-form fields; uses the immutable E3A Parquet
-source without redownload; performs bounded name/alias selection and retained
-MID type enrichment; produces two isolated Catalog-v2-compatible artifacts;
-enforces per-question candidates by ID and text hash; publishes from node-local
-staging atomically; preserves persisted query-local entity ranking at
-downstream retrieval while leaving global Catalog-v2 FTS unchanged; runs
-M13-E1 reachability metrics only after construction; distinguishes
-local-catalog misses; preserves the 0.20 gate; and leaves the independent
-global E3/E3A job unchanged.
-
-Current status:
-**M13-E3B.4 COMPLETE; M13-E3B.5 LOCALLY IMPLEMENTED, CWRU LIVE PREFLIGHT
-PENDING.** The real preflight18 build completed with 865 unique entities and
-900 assignments. Its
-first audit exposed a generic local/global ranking-contract mismatch: local
-entity coverage was 10/18 but entity Recall@20 and joint prompt reachability
-were both 0/18. E3B.2 makes persisted per-question rank authoritative only for
-explicit query-local catalogs, adds before/after and relation/type diagnostics,
-and leaves global FTS, candidate construction, prompt bounds, and the 0.20 gate
-unchanged. The real E3B.2 rerun validated Entity Recall@1/5/10/20 of 3/7/8/8
-over 18 and exposed relation/type ranking as the remaining bottleneck.
-
-E3B.3 freezes deterministic phrase-aware relation/type ranking, ontology-only
-IDF tie-breaking, bounded relation-slot domain/range coherence, and
-pre-truncation type provenance. Its audit preserves prior artifact hashes and
-writes relation/type ranking decompositions, v2 failure stages, and exact
-before/after metrics. The real rerun improved Relation Recall@1/5/10/20 to
-5/11/12/13 of 18 and relation prompt coverage to 10/18. Type Recall@1/5/10/20
-became 1/4/8/13, explicit Type prompt coverage remained 4/18, and joint prompt
-reachability remained 1/18.
-
-E3B.4 freezes a shared role-aware relation-endpoint visibility contract. Exact
-domain/range types may ground only the source/target endpoint adjacent to the
-candidate's selected prompt-visible relation, respecting OUT, IN, and
-UNDIRECTED direction. Fixed linear paths use the first and last relation hop;
-ambiguous regular expressions receive no derived evidence. Offline audit keeps
-explicit Type metrics unchanged, reports `effective_type` separately, and uses
-that same runtime contract for joint reachability and the existing gate. Its
-real acceptance was an audit-only rerun over the existing preflight18 SQLite
-artifact. Effective Type prompt coverage rose from 4/18 to 12/18 and joint
-prompt reachability from 1/18 to 5/18, so the unchanged 0.20 gate passed at
-0.2778 while explicit Type Top-4 remained 4/18.
-
-E3B.5 connects that passing query-local artifact to the frozen 18-query CWRU
-Qwen3-32B preflight. An explicit artifact profile validates the exact question
-set, catalog hash, audit hash, reachability-row hash, prompt bound, and
-endpoint contract before model startup. The structured request exposes the
-same endpoint rule used by deterministic runtime validation, and evaluation
-reports both overall metrics and metrics conditioned on the jointly reachable
-five-question subset. It does not rescan Freebase, alter Top-50 or Top-4,
-change the gate, run pilot150, or modify ranking, Qwen parameters, planner,
-compiler, or backend behavior.
-
-The first real CWRU E3B.5 submission passed the 5/18 gate but stopped before
-model loading because readiness compared JSONL row order with spec order.
-E3B.5.1 treats physical row order as irrelevant while still requiring one
-unique record for every frozen preflight ID and no extras. The second
-submission passed readiness, loaded Qwen3-32B on H100, and passed strict
-structured-output serving. It then exposed one additive diagnostic-contract
-gap: the shared classifier rejected the already documented local-catalog stage
-`reference_not_in_local_catalog`. E3B.5.2 admits that stage without weakening
-unknown-stage rejection. The next submission completed cleanly but every live
-request received HTTP 400 before generation: the 8192-token serving context
-could not hold the observed 4146-4590 input tokens plus the frozen 4096 output
-budget. E3B.5.3 preserves both bundle budgets and expands only the deployment
-context to their exact sum, 12288. It also checks that arithmetic before model
-startup. The next run reached 17/18 provider success and 5/5 provider success
-on the jointly reachable subset, with zero malformed responses, but strict
-guided decoding returned `candidates=[]` for every successful call because the
-schema permitted an empty array. E3B.5.4 requires one to three generated
-candidates in the CWRU schema and prompt while preserving all downstream
-validation and rejection boundaries. The next run proved that vLLM 0.11.1 did
-not enforce those array cardinality keywords and again returned only empty
-arrays. E3B.5.5 deterministically checks the active bundle's candidate
-`minItems/maxItems` at the provider boundary and routes violations through the
-existing single repair call. The rerun remains the next experiment action.
-
-## M14 KGQA Evaluation
-
-Goal: Add KGQA dataset loading, execution harnesses, and evaluation reporting.
-
-Files involved: `src/xgap/datasets/kgqa.py`, evaluation scripts, dataset tests.
-
-Acceptance criteria: Evaluation can compare generated queries or answers against KGQA benchmarks.
-
-Current status: TODO
+1. Workload 继续准入：LC-QuAD 已有 typed AST、参数实例化与拒收证据；将明确支持的
+   实例化结构接到 compact lowering。当前三域 29 个开发实例来自 authored 领域模板，
+   不冒称自动转换了 LC-QuAD。核对 FinBench v0.1.0 TSR1/TCR1/TCR4/TCR12 原 card，
+   明确保留/修改的时间、边贡献、截断与输出合同。
+2. 扩充真实模板覆盖：当前每域仅 6–9 个规范化开发族，距离每 W 层 10 族目标仍有缺口。
+   不把实体换值计为新模板；开发族全部保留在开发 split。N/u 的每个扫描水平独立检查
+   真实合法域，拒收不可匹配的 cohort。修订 NL 固定条件与独立意图权威确认后才能称 NL pilot。
+3. D1/D2 的原生 mapping/materialization，以及每模板真实 metadata/probe 目标和两个语义等价
+   物理备选。D2 当前 MovieLens-derived；稳定 20M 是正式候选，Wikidata 为待核验扩展，
+   不是已经存在的数据。实际后端 gate 须单独确认执行预算；保留小图优先。
+4. Two-stage 改为实际外部方法串接；LD 退出，内部两阶段仅保留已封存诊断。
+   核验 ARUQULA+FedUP 的 VALUES 兼容瓶颈及独立替代组合准入；同 RDF 部署公平比较。
+   私有 gold 只进模拟用户/evaluator。统一实测成本、缓存、方法顺序、时限与资源计量。
+5. 基于首批真实 XGAP 结果和外部原版准入重新冻结正式预算；旧 864-call 提案失效。
+   原版外部前端可能多次模型/源调用，不能沿用每题一次模型的乘数。
+6. 新 manifest 一次发布，复用图所需记录；后做规模与离线固定 Q 的 F6。N>64 尚未准入。
+   原版外部方法仅按支持表纳入同 RDF 部署，不能把内部对照改名填补 SOTA。
+
+首批真实执行已由用户“请继续推进得到实验结果”授权。方法更正立即作用于未开始的
+cell，不修改既有证据。见[方法更正与停止记录](decisions/ch6_external_twostage_20260922.md)。

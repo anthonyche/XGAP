@@ -1,0 +1,3 @@
+PREFIX t: <https://xgap.test/toy/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT (STR(?n) AS ?person) WHERE { ?n a t:Person . OPTIONAL { ?n t:score ?score } BIND(IF(!BOUND(?score),3,IF(isNumeric(?score),0,IF(DATATYPE(?score)=xsd:string,1,2))) AS ?category) BIND(IF(isNumeric(?score),xsd:integer(FLOOR(xsd:decimal(?score))),?score) AS ?sortvalue) } ORDER BY ASC(?category) ASC(?sortvalue) ASC(?person) LIMIT 10

@@ -23,6 +23,14 @@ from xgap.llm.schemas import (
     PlannerResponse,
 )
 from xgap.llm.validation import validate_candidate
+from xgap.llm.resolution import (
+    M15_RESOLUTION_BASE_SCHEMA,
+    M15_RESOLUTION_INVOCATION_SCHEMA_VERSION,
+    M15_RESOLUTION_PROVIDER_SCHEMA_VERSION,
+    M15ResolutionInvocationArtifact,
+    OpenAICompatibleResolutionCandidateProvider,
+    build_openai_compatible_resolution_provider,
+)
 
 __all__ = [
     "CandidateValidationReport",
@@ -43,4 +51,10 @@ __all__ = [
     "plan_from_question",
     "plan_response_from_question",
     "validate_candidate",
+    "M15_RESOLUTION_BASE_SCHEMA",
+    "M15_RESOLUTION_INVOCATION_SCHEMA_VERSION",
+    "M15_RESOLUTION_PROVIDER_SCHEMA_VERSION",
+    "M15ResolutionInvocationArtifact",
+    "OpenAICompatibleResolutionCandidateProvider",
+    "build_openai_compatible_resolution_provider",
 ]

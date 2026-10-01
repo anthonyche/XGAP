@@ -1,0 +1,141 @@
+{
+  "schema_version": "xgap-finbench-serving-audit-v1",
+  "success": true,
+  "audited_at": "2026-09-13T04:23:47.940894+00:00",
+  "materialization_code_commit": "35d9449",
+  "publication_code_commit": "161ef2e",
+  "root": "/Users/anthonyche/xgap-data/finbench-sf01-serving-20260913-v1",
+  "profile": {
+    "bytes": 26661,
+    "path": "/Users/anthonyche/xgap-data/finbench-sf01-serving-20260913-v1/native-profile-v2/profile.json",
+    "sha256": "0d77ce65976c4e7520ffdc7926b1c40398ec8f5bf73ee709343dcd27767f152c"
+  },
+  "publication_sha256": "8f752d87b0b3dff9ad779b1051737439a88481a2f33048a31af9df18a5ba46c7",
+  "rdf_manifest_sha256": "efc39b8f4aca3f6bcdb8f64c355b004167535d62adecf14bc48bc3fc78f5d75a",
+  "source_partition_sha256": "0ee8b18d3289ddb11fd78308f14584d20f073deaa50f72cfad74b1a379cdab2b",
+  "source_archive_sha256": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60",
+  "load_files": {
+    "control.ttl": {
+      "path": "control.ttl",
+      "sha256": "d74043b5095b839ec7529d05c38f5e8d52e225c4447b10b1554600f23ca68163",
+      "size_bytes": 49717340
+    },
+    "graph.ttl": {
+      "path": "graph.ttl",
+      "sha256": "bbad8f66368657608517847d043c52bbfd2b3c2a5c7c2d7faf4a1d451f61a06d",
+      "size_bytes": 618038554
+    },
+    "load_neo4j_batches.jsonl": {
+      "path": "load_neo4j_batches.jsonl",
+      "sha256": "c8601176d04dc5f923fd83e6fc7b4b9a29517cb4b71f195eea35deb5cd84a9db",
+      "size_bytes": 130648495
+    },
+    "mapping.json": {
+      "path": "mapping.json",
+      "sha256": "318bfc03aa0879a02e11101c9cd29006618ef28e48ef7881bfea8d3d62099708",
+      "size_bytes": 18402
+    }
+  },
+  "dataset": {
+    "dataset_id": "financial-sf0.1-one-shot",
+    "version": "f0359b5c4515cd5d86349b4a11a7470f6f153e42c5ac21c59e70f5c0d0b37a60"
+  },
+  "population_manifest_sha256": "181c1426752fbed9a287ba76b50a05834bfe910c07789eeac145a3c3fd520fba",
+  "source_summary": {
+    "catalog_entry_count": 59587,
+    "catalog_kind_counts": {
+      "constraint": 3967,
+      "entity": 55604,
+      "predicate": 9,
+      "source": 2,
+      "type": 5
+    },
+    "control_entity_count": 55604,
+    "control_serialized_bytes": 49661603,
+    "control_triple_count": 338030,
+    "entity_count": 55604,
+    "graph_logical_row_bytes": 124830316,
+    "relationship_count": 309577,
+    "row_width_scope": "graph compact load-row JSON bytes; control serialized triple bytes per entity; work proxies, not result/wire cardinality",
+    "table_rows": {
+      "account": 20409,
+      "account_repay_loan": 26556,
+      "account_transfer_account": 79909,
+      "account_withdraw_account": 90241,
+      "company": 3892,
+      "company_apply_loan": 4560,
+      "company_guarantee_company": 1820,
+      "company_invest_company": 6798,
+      "company_own_account": 6840,
+      "loan": 13833,
+      "loan_deposit_account": 27184,
+      "medium": 9699,
+      "medium_sign_in_account": 25471,
+      "person": 7771,
+      "person_apply_loan": 9273,
+      "person_guarantee_person": 3740,
+      "person_invest_company": 13616,
+      "person_own_account": 13569
+    }
+  },
+  "source_summary_sha256": "afef50434cbc3528f9c586e088322f08c6ff17b868dc2a053748d2197fd709a1",
+  "catalog_bundle_hash": "005972d0eddbab8a4cce9edf70f0a901fe271e4c7e93681f1dbc48bdd9382297",
+  "catalog_bytes": 13540371,
+  "bindings_bytes": 8770526,
+  "estimator_file_sha256": "2ee3a129bbe971f7d837c3c416f8e5d6efc19e8778bd97ac1beacb7ed0f278b1",
+  "parent_model_sha256": "ccc9f468d37d6d4a1e404dc8170f5081c45bae25263416a895ae93acacd2ca94",
+  "model_weights_unchanged": true,
+  "transfer_calibrated": false,
+  "statistics": {
+    "entries": [
+      {
+        "backend_id": "fuseki",
+        "mean_row_bytes": 893.1300446011078,
+        "provenance_ref": "afef50434cbc3528f9c586e088322f08c6ff17b868dc2a053748d2197fd709a1",
+        "snapshot_version": "d74043b5095b839ec7529d05c38f5e8d52e225c4447b10b1554600f23ca68163",
+        "source_id": "control",
+        "total_rows": 55604
+      },
+      {
+        "backend_id": "neo4j",
+        "mean_row_bytes": 341.8313548623833,
+        "provenance_ref": "afef50434cbc3528f9c586e088322f08c6ff17b868dc2a053748d2197fd709a1",
+        "snapshot_version": "c8601176d04dc5f923fd83e6fc7b4b9a29517cb4b71f195eea35deb5cd84a9db",
+        "source_id": "graph",
+        "total_rows": 365181
+      }
+    ],
+    "statistics_id": "finbench-serving-source-statistics-v1",
+    "version": "efc39b8f4aca3f6bcdb8f64c355b004167535d62adecf14bc48bc3fc78f5d75a"
+  },
+  "materialization_ms": 7146.47283218801,
+  "offline_publication_ms": 7916.304082609713,
+  "profile_load_validation_ms": 1565.5374992638826,
+  "new_risk_checks_accepted": 5,
+  "test_attempts": [
+    "collection failed before execution: extra brace corrected",
+    "3 passed; catalog test request constructor missing required fields",
+    "catalog test only corrected: 1 passed in 0.24s",
+    "full-schema missing-Loan failure replay only: 1 passed in 0.22s"
+  ],
+  "first_publication_failure": "experiments/artifacts/finbench_serving_first_attempt_20260913.json",
+  "model_calls": 0,
+  "backend_calls": 0,
+  "fit_calls": 0,
+  "method_runs": 0,
+  "formal_campaign_ready": false,
+  "checks": [
+    "Full materialization preserves 18 source-table counts and injective identities",
+    "All entity types represented in catalog, names/IDs remain nonauthoritative",
+    "Catalog/bindings/profile/model/prompt and source-summary hashes match",
+    "Source snapshot identities match deployed statistics",
+    "Original trained model embedded unchanged",
+    "Dataset equals frozen 120-question population metadata; no questions/gold/answers loaded",
+    "Both mode contracts accepted by frozen profile; services not started"
+  ],
+  "remaining": [
+    "Full serving load and resource/watchdog boundary",
+    "Shared external input and scoring interface",
+    "Method budgets and main evaluation before ablations"
+  ]
+}

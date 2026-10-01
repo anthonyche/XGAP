@@ -1,0 +1,101 @@
+{
+  "artifact_sha256": "cc8569901dac2d77a9cc066fb5aad280385b31bcbc0a33d3703d5bf738dbe63c",
+  "audit": {
+    "audit_sha256": "1b92f31bcd215895502dd1936217f25b1f6df3de45cea5c4ee29e6aafb9fd673",
+    "check_count": 13,
+    "failed_check_ids": [],
+    "schema_version": "m15-e5c-clarification-transport-evidence-audit-v1",
+    "source_session_mutated": false,
+    "success": true
+  },
+  "claim_boundary": {
+    "automatic_retries": 0,
+    "backend_calls_made": 0,
+    "conversation_text_used_as_authority": false,
+    "current_query_profile_calls": 0,
+    "development_artifacts_only": true,
+    "hard_constraints_preserved": true,
+    "llm_calls_made": 0,
+    "native_query_text_emitted": false,
+    "ontology_service_calls_made": 0,
+    "paper_result": false
+  },
+  "evidence_class": "controlled_local_nonmeasurement_mechanism",
+  "git_commit": "5f87bccf46c7c98eb254cad4a16549cd2b89edb9",
+  "paper_result": false,
+  "schema_version": "m15-e5c-local-clarification-transport-evidence-v1",
+  "source_contract": {
+    "bridge_plan_sha256": "cc064558812afe2ea5c02401baab39e7fd8918f0bf494848c9a7b54dbe19491b",
+    "interpretation_policy_sha256": "18b5311d22fb3819fc1675eea38a8b479afbec761465e5a7919c5ed7d7a800a7",
+    "ontology_sha256": "6e8e74235923cf6a5c186849156a26d6e5ec577bab60069f3a49a51b97ad6961",
+    "predictor_policy_sha256": "ee4c4ab09aaf86d06784a928e0a52ffa99d6de53f233440a3573976e96baf89b",
+    "relaxation_policy_sha256": "232af0fde6d7c6627143f706d22c144b8f68cb1ad549aae1701daa8ae39f618c",
+    "training_memory_view_sha256": "de301a27581faea6a3f72b6c7d5f1204104ed2e1cf360e41d69feac1dbd42755",
+    "transport_policy_sha256": "4dcd410796202d443754c0f4c78cba8afa04d6318d51ca870a356b118f5b16a7",
+    "workload_manifest_sha256": "a93b1c5a9c8b850b575331e3d8c725a1a55fa57f1e850783ea68fa60e6d95c8d"
+  },
+  "transitions": {
+    "initial": {
+      "bounded_candidate_ids": [
+        "constraint:single-transfer-at-least-50000",
+        "constraint:amount-at-least-50000",
+        "constraint:frequency-at-least-3"
+      ],
+      "execution_eligible": false,
+      "pending_question_sha256": "39557fb62d5d24c6a1b3c4bf44d5af29404f8cb9b2a69b864c22b921cf7cfd89",
+      "session_sha256": "5fb88a1dedbc7734a149fb03893e06ea86823cfaf5a90fbea86b30c1fdaf7bdc",
+      "status": "awaiting_structural_clarification"
+    },
+    "predicate_base_authority": {
+      "anchored_frontier_sha256": "af9e9b5277f161532d1085e1235471d565cbcf4d8e505d814da14e3db3fe5994",
+      "authority_event_chain_sha256": "819d2059eb1605bd5408b992c7dedce088c450a8dce47e28677962326d4ac15c",
+      "authority_event_sha256": "e14255e06229b6db950c45dd1adc26f3de364576572b0205ef070d734632cb12",
+      "execution_eligible": true,
+      "execution_handoff_sha256": "0ba2814c9a38591c160657296e923adce6755beb2fc46f3e758e01e4aa7bba15",
+      "returned_plan_ids": [
+        "m15-f2c-financial-risk-alice-aug-high-v2-risk-first-bind-window-e4",
+        "m15-f2c-financial-risk-alice-aug-high-v2-relaxed-b3cf0ee1b03a3bf46874629c-risk-first-bind-window-e4"
+      ],
+      "selected_runtime_plan_sha256": {
+        "m15-f2c-financial-risk-alice-aug-high-v2-relaxed-b3cf0ee1b03a3bf46874629c-risk-first-bind-window-e4": "92db500a6b863d2cfcc4c8beff0d97cdc5cd6fb1ff00bbf59020f3072a11936f",
+        "m15-f2c-financial-risk-alice-aug-high-v2-risk-first-bind-window-e4": "209fe027f293a10124286a2598d816ae12827dbe098d9f858ac4995e349d82a0"
+      },
+      "session_sha256": "8fe7d2e07c7dd76517a2c315021ac2ff282199ef46cc3f95095e0b11d34d3c9f",
+      "session_state_sha256": "4ded7657296e1536685ec645dd52c52556f016c01b3205fd484411c2dced0b8b",
+      "status": "ready_for_execution_handoff"
+    },
+    "structural_authority": {
+      "authority_event_sha256": "30d14034c563d6a6808901773626882f1bf2026aa42116f1c7e59493fc9625a0",
+      "bounded_candidate_ids": [
+        "predicate:transferred_to",
+        "predicate:paid_to"
+      ],
+      "execution_eligible": false,
+      "pending_question_sha256": "31fab5dba95b4a18ad09c3e6da199bf29b3c5e0da244863264570c6c859c32c6",
+      "session_sha256": "e00ab68ea2c2619d0e5791994777d5b49b9f8acb314ac5ce5d7468304ad001c6",
+      "status": "awaiting_predicate_base_authority"
+    },
+    "unavailable_structures": {
+      "constraint:amount-at-least-50000": {
+        "active_interpretation_class_ids": [
+          "m15-e4-class-46604a15d0d506d224bc42ec",
+          "m15-e4-class-dc5fb1e58a82a08a979fd72f"
+        ],
+        "execution_eligible": false,
+        "execution_handoff": null,
+        "session_sha256": "b50e8b93919ac591b110ffa16f8f41ecced54d26beb0480d8fb666ed0be36f71",
+        "status": "selected_structure_unavailable"
+      },
+      "constraint:frequency-at-least-3": {
+        "active_interpretation_class_ids": [
+          "m15-e4-class-e027b6572aae0eb61914c370",
+          "m15-e4-class-f217bd1cd371349ca1f7a5a2"
+        ],
+        "execution_eligible": false,
+        "execution_handoff": null,
+        "session_sha256": "9553d6d7af7f7604fc220043757015f42397364443eb2a05a0806bbb7db93467",
+        "status": "selected_structure_unavailable"
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "xgap-finbench-serving-first-attempt-v1",
+  "code_commit": "516fbb4",
+  "failure_path": "/Users/anthonyche/xgap-data/finbench-sf01-serving-20260913-v1/native-profile/failure.json",
+  "failure_sha256": "11cd502e7f175f3b7192a3a31425d64e1f9da2941acf9729f0698fa6430dc49a",
+  "failure": {
+    "backend_calls": 0,
+    "error": "'loan'",
+    "error_type": "KeyError",
+    "model_calls": 0,
+    "success": false
+  },
+  "source_materialization_preserved": true,
+  "fix": "Add missing plural schema alias for Loan; smallest all-5-type/13-relation descriptor replay passed in 0.22s; prior four accepted checks not rerun.",
+  "next_action": "New publication at native-profile-v2; no source materialization repeat or method call"
+}

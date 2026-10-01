@@ -1,0 +1,107 @@
+{
+  "schema_version": "xgap-ch6-baseline-admission-summary-v1",
+  "paper_result": false,
+  "scope": "Tiny development admission; no repetition averages and no cross-configuration speedup",
+  "cells": [
+    {
+      "name": "native_single",
+      "method": "aruqula-single-fuseki",
+      "case": "single-source",
+      "compatibility": "https-iris-action-schema-v1",
+      "source_commit": "4992f8a26bdb890927c828e6141b9506773904de",
+      "method_wall_seconds": 116.41703962534666,
+      "worker_seconds": 115.7025396246463,
+      "execution_success": true,
+      "final_query_submissions": 1,
+      "answer_rows": 4,
+      "reference_rows": 4,
+      "answer_em": 0.0,
+      "answer_row_multiset_f1": 0.0,
+      "model_calls": 46,
+      "input_tokens": 77493,
+      "output_tokens": 6855,
+      "requests": {
+        "federation": 14,
+        "lookup": 8,
+        "model": 46,
+        "source": 14
+      },
+      "source_routing": {
+        "/graph/sparql": 14
+      },
+      "all_owned_closed": true,
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/ch6-aruqula-native-single-20260922-v5/receipt.json",
+        "sha256": "905b2a4a7b82bd2f1bcc3e6402d085b7eb4254ce39384c757fe4aa3668f21fc6",
+        "bytes": 14000
+      }
+    },
+    {
+      "name": "fedx_single",
+      "method": "aruqula-fedx",
+      "case": "single-source",
+      "compatibility": "https-iris-action-schema-fedx-v2",
+      "source_commit": "269a5b370612c71ec00eb26d55449d72d91e9861",
+      "method_wall_seconds": 44.10525079257786,
+      "worker_seconds": 43.373176500201225,
+      "execution_success": true,
+      "final_query_submissions": 1,
+      "answer_rows": 4,
+      "reference_rows": 4,
+      "answer_em": 0.0,
+      "answer_row_multiset_f1": 0.0,
+      "model_calls": 26,
+      "input_tokens": 34888,
+      "output_tokens": 3021,
+      "requests": {
+        "federation": 10,
+        "lookup": 5,
+        "model": 26,
+        "source": 10
+      },
+      "source_routing": {
+        "/graph/sparql": 10
+      },
+      "all_owned_closed": true,
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/ch6-aruqula-single-source-20260922-v5/receipt.json",
+        "sha256": "2a4cf5a823ff8edf4cd91612ab561537d52d0c6387f858696ba56dfb78709237",
+        "bytes": 12433
+      }
+    },
+    {
+      "name": "fedx_cross",
+      "method": "aruqula-fedx",
+      "case": "cross-source",
+      "compatibility": "https-iris-action-schema-fedx-v2",
+      "source_commit": "269a5b370612c71ec00eb26d55449d72d91e9861",
+      "method_wall_seconds": 63.61689154244959,
+      "worker_seconds": 62.89359058346599,
+      "execution_success": true,
+      "final_query_submissions": 1,
+      "answer_rows": 0,
+      "reference_rows": 2,
+      "answer_em": 0.0,
+      "answer_row_multiset_f1": 0.0,
+      "model_calls": 56,
+      "input_tokens": 71451,
+      "output_tokens": 4852,
+      "requests": {
+        "federation": 13,
+        "lookup": 15,
+        "model": 56,
+        "source": 100
+      },
+      "source_routing": {
+        "/control/sparql": 37,
+        "/graph/sparql": 63
+      },
+      "all_owned_closed": true,
+      "receipt": {
+        "path": "/Users/anthonyche/xgap-data/ch6-aruqula-fedx-20260922-v3/receipt.json",
+        "sha256": "712250cba9869e0300d0c9362eb3cf2cab5b4ca4a0bd569342a36fb4760d05f9",
+        "bytes": 14637
+      }
+    }
+  ]
+}
