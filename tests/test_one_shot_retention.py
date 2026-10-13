@@ -72,17 +72,19 @@ def test_multiple_roots_survive_consumers_and_errors_keep_counts(failure):
 
 def test_slow_parallel_consumer_can_read_after_fast_consumer_finishes():
     barrier = threading.Barrier(2)
+    fast_registered = threading.Event()
     class Parallel(FederatedScheduler):
+        def _execute_local(self, node, results):
+            fast_registered.set()
+            return super()._execute_local(node, results)
+
         def _execute_remote(self, node, goal_id, results):
             if node.node_id == "seed":
                 rows = ({"id":1}, {"id":2})
             else:
                 barrier.wait(timeout=3)
                 if node.node_id == "slow":
-                    until = time.monotonic() + 3
-                    while "fast" not in results and time.monotonic() < until:
-                        threading.Event().wait(.001)
-                    assert "fast" in results
+                    assert fast_registered.wait(3)
                 # In particular, slow reads AFTER fast has been registered.
                 assert results["seed"].rows is not None
                 rows = results["seed"].rows
@@ -92,7 +94,8 @@ def test_slow_parallel_consumer_can_read_after_fast_consumer_finishes():
         RuntimeNode("seed",K.REMOTE_QUERY),
         RuntimeNode("fast",K.REMOTE_BIND_QUERY,inputs=("seed",)),
         RuntimeNode("slow",K.REMOTE_BIND_QUERY,inputs=("seed",)),
-    ),roots=("fast","slow"),max_remote_calls=3,max_parallelism=2)
+        RuntimeNode("registered",K.EXCHANGE,inputs=("fast",)),
+    ),roots=("registered","slow"),max_remote_calls=3,max_parallelism=2)
     result = Parallel(None,retention="roots").execute(plan)
     assert result.success and len(result.final_rows) == 4
     assert result.node_results[0].rows is None and result.node_results[0].row_count == 2

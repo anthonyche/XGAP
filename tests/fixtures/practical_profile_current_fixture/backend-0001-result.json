@@ -1,0 +1,132 @@
+{
+  "artifact": {
+    "artifact_id": "people-match",
+    "kind": "compiled",
+    "language": "sparql",
+    "parameters": {
+      "backend_mapping": {
+        "mapping_hash": "660622eb18f67996bd79f6c1d82afdd7853f1ad45bea86714df75250ddacd6ee",
+        "mapping_id": "practical-model-toy-v1",
+        "relevant_mapped_iris": [
+          {
+            "canonical_term_id": "Person",
+            "iri": "https://xgap.test/toy/Person",
+            "kind": "class",
+            "logical_token": "Person"
+          }
+        ],
+        "version": "1"
+      },
+      "compiler": "semantic_node_match_v1",
+      "condition_profile": "total_scalar_boolean_v1",
+      "expected_result_columns": [
+        "entity",
+        "age"
+      ],
+      "output_columns": [
+        "entity",
+        "age"
+      ],
+      "rdf_binding_checkpoint": {
+        "offset": 82,
+        "profile": "typed-match-inner-values-v1",
+        "text_sha256": "1edcccd7976a7d0298578bd8c4a759f022913fac7eeb719b2ddcfedd0509fd38",
+        "variables": {
+          "entity": "n0"
+        }
+      },
+      "rdf_result_encoding": "rdf_terms_v1",
+      "required_features": [
+        "graph_model.directed_edges",
+        "graph_model.node_labels",
+        "graph_model.rdf_graph",
+        "native.sparql",
+        "path_algebra.Nodes",
+        "path_algebra.Selection",
+        "result_model.row_bindings"
+      ],
+      "scalar_properties": {
+        "age": "age"
+      },
+      "target_backend_id": "fuseki"
+    },
+    "source_path": null,
+    "text": "SELECT DISTINCT ?entity ?age WHERE { {\nSELECT DISTINCT ?source ?target ?n0 WHERE {\n?n0 a <https://xgap.test/toy/Person> .\n  FILTER(EXISTS { ?n0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://xgap.test/toy/Person> . })\n  BIND(?n0 AS ?source)\n  BIND(?n0 AS ?target)\n}\n}\nBIND(?source AS ?entity)\nOPTIONAL { ?source <https://xgap.test/toy/age> ?age . }\n}"
+  },
+  "backend_id": "fuseki",
+  "execution": {
+    "artifact_id": "people-match",
+    "backend_id": "fuseki",
+    "elapsed_ms": 0,
+    "ended_at": null,
+    "error": null,
+    "language": "sparql",
+    "metadata": {
+      "measured_backend_latency": false,
+      "rdf_result_encoding": "rdf_terms_v1",
+      "transport": "local-rdflib-regression"
+    },
+    "result_status": "execution_success_nonempty",
+    "row_count": 5,
+    "rows": [
+      {
+        "age": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "30"
+        },
+        "entity": {
+          "type": "uri",
+          "value": "https://xgap.test/toy/a"
+        }
+      },
+      {
+        "age": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "22"
+        },
+        "entity": {
+          "type": "uri",
+          "value": "https://xgap.test/toy/b"
+        }
+      },
+      {
+        "age": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "40"
+        },
+        "entity": {
+          "type": "uri",
+          "value": "https://xgap.test/toy/c"
+        }
+      },
+      {
+        "age": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "19"
+        },
+        "entity": {
+          "type": "uri",
+          "value": "https://xgap.test/toy/d"
+        }
+      },
+      {
+        "age": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "literal",
+          "value": "50"
+        },
+        "entity": {
+          "type": "uri",
+          "value": "https://xgap.test/toy/z"
+        }
+      }
+    ],
+    "started_at": null,
+    "success": true
+  },
+  "status": "returned"
+}

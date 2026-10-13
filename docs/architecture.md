@@ -32,6 +32,12 @@ outcome, including unknown and zero-probability outcomes. Unknown resource bound
 cannot certify a finite budget. On an optional search deadline, incomplete action
 scoring cannot replace the completed fallback.
 
+Pure symbolic lookahead may reuse completed subtrees within one decision. Cache
+keys include the full state, resource consumption, action count, retry ledger,
+remaining search depth, and the physical registry epoch. Partial searches are
+never cached, and observations start a new decision. The bounded registry and
+mandatory completion checks remain in force.
+
 `agent.unified_family` manages bounded candidate and plan pools.
 `runtime.unified_physical` generates individual checked transformations.
 `agent.unified_information` handles registered information actions. Only selected
@@ -42,6 +48,13 @@ The runtime preserves directed edge semantics, scalar identity, row lineage, and
 join/filter/aggregation behavior. Binding restrictions and native pushdowns must
 carry sufficient equivalence evidence. Approximate truncation is not a valid
 replacement for exact query semantics.
+
+The scheduler advances ready descendants as individual remote tasks complete,
+without a barrier across unrelated sources. Submitted remote tasks are bounded
+by the plan's parallelism; coordinator operations remain serial. Each remote
+task receives a snapshot of its declared inputs, and intermediate payloads are
+released only after all consumers finish. Result records retain plan order even
+when task completion order differs.
 
 ## Implementations and evaluation support
 

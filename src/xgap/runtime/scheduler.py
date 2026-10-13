@@ -7,7 +7,7 @@ import math
 import time
 from collections import Counter
 from dataclasses import replace
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from decimal import Decimal, InvalidOperation
 from functools import cmp_to_key
 from typing import Any, Iterable, Mapping
@@ -99,96 +99,95 @@ class FederatedScheduler:
                 release(input_id)
             release(node_id)
 
-        while pending:
-            while True:
-                skipped = [
-                    node_id
+        running = {}
+        with ThreadPoolExecutor(max_workers=plan.max_parallelism) as executor:
+            while pending:
+                for future in sorted((f for f in running if f.done()), key=lambda f: running[f]):
+                    completed(running.pop(future), future.result())
+                active = set(running.values())
+                while True:
+                    skipped = [
+                        node_id
+                        for node_id in sorted(pending)
+                        if any(
+                            input_id in results
+                            and results[input_id].status is not RuntimeNodeStatus.SUCCESS
+                            for input_id in nodes[node_id].inputs
+                        )
+                    ]
+                    if not skipped:
+                        break
+                    for node_id in skipped:
+                        node = nodes[node_id]
+                        completed(node_id, RuntimeNodeResult(
+                            node_id=node_id,
+                            kind=node.kind,
+                            status=RuntimeNodeStatus.SKIPPED,
+                            error="dependency did not complete successfully",
+                        ))
+
+                if not pending:
+                    break
+
+                held=set()
+                for pipeline in pipelines:
+                    root=pipeline['root']
+                    if root not in pending or root in disabled:continue
+                    if any(i in results and results[i].status is not RuntimeNodeStatus.SUCCESS for i in pipeline['boundaries']):
+                        disabled.add(root);continue
+                    if pipeline['boundaries']<=results.keys():
+                        began=time.perf_counter()
+                        streamed=run_streaming_topk(pipeline,nodes,results)
+                        if streamed is None:
+                            disabled.add(root);continue
+                        output,receipt=streamed;elapsed=(time.perf_counter()-began)*1000
+                        pipeline_receipts.append(receipt)
+                        for identifier in receipt['nodes']:
+                            terminal=identifier==root
+                            completed(identifier,RuntimeNodeResult(node_id=identifier,kind=nodes[identifier].kind,
+                                status=RuntimeNodeStatus.SUCCESS,rows=output if terminal else None,
+                                released_row_count=None if terminal else receipt['streamed_rows'].get(identifier,0),
+                                output_bytes=_encoded_size(output) if terminal else 0,
+                                elapsed_ms=elapsed if terminal else 0,
+                                metadata=dict(streaming_pipeline=root,intermediate_payload_materialized=False,
+                                    timing_scope='whole fused tail at root; per-node timing unavailable',
+                                    row_count_scope='distinct ordered answers' if terminal else 'streamed occurrences before terminal distinct')))
+                    else:held.update(pipeline['nodes'])
+                if not pending:break
+
+                ready = [
+                    nodes[node_id]
                     for node_id in sorted(pending)
-                    if any(
+                    if node_id not in held and node_id not in active and all(
                         input_id in results
-                        and results[input_id].status is not RuntimeNodeStatus.SUCCESS
+                        and results[input_id].status is RuntimeNodeStatus.SUCCESS
                         for input_id in nodes[node_id].inputs
                     )
                 ]
-                if not skipped:
-                    break
-                for node_id in skipped:
-                    node = nodes[node_id]
-                    completed(node_id, RuntimeNodeResult(
-                        node_id=node_id,
-                        kind=node.kind,
-                        status=RuntimeNodeStatus.SKIPPED,
-                        error="dependency did not complete successfully",
-                    ))
 
-            if not pending:
-                break
+                remote_kinds = {
+                    RuntimeNodeKind.REMOTE_QUERY,
+                    RuntimeNodeKind.REMOTE_BIND_QUERY,
+                }
+                remote = [node for node in ready if node.kind in remote_kinds]
+                local = [node for node in ready if node.kind not in remote_kinds]
+                # Bound submitted tasks as well as worker threads. A completed
+                # branch can immediately unlock successors without waiting for the
+                # slowest source in the previous ready set.
+                launched = remote[:max(0, plan.max_parallelism-len(running))]
+                for node in launched:
+                    inputs = {key: results[key] for key in node.inputs}
+                    future = executor.submit(self._execute_remote, node, goal_id, inputs)
+                    running[future] = node.node_id
+                for node in local:
+                    completed(node.node_id, self._execute_local(node, results))
 
-            held=set()
-            for pipeline in pipelines:
-                root=pipeline['root']
-                if root not in pending or root in disabled:continue
-                if any(i in results and results[i].status is not RuntimeNodeStatus.SUCCESS for i in pipeline['boundaries']):
-                    disabled.add(root);continue
-                if pipeline['boundaries']<=results.keys():
-                    began=time.perf_counter()
-                    streamed=run_streaming_topk(pipeline,nodes,results)
-                    if streamed is None:
-                        disabled.add(root);continue
-                    output,receipt=streamed;elapsed=(time.perf_counter()-began)*1000
-                    pipeline_receipts.append(receipt)
-                    for identifier in receipt['nodes']:
-                        terminal=identifier==root
-                        completed(identifier,RuntimeNodeResult(node_id=identifier,kind=nodes[identifier].kind,
-                            status=RuntimeNodeStatus.SUCCESS,rows=output if terminal else None,
-                            released_row_count=None if terminal else receipt['streamed_rows'].get(identifier,0),
-                            output_bytes=_encoded_size(output) if terminal else 0,
-                            elapsed_ms=elapsed if terminal else 0,
-                            metadata=dict(streaming_pipeline=root,intermediate_payload_materialized=False,
-                                timing_scope='whole fused tail at root; per-node timing unavailable',
-                                row_count_scope='distinct ordered answers' if terminal else 'streamed occurrences before terminal distinct')))
-                else:held.update(pipeline['nodes'])
-            if not pending:break
-
-            ready = [
-                nodes[node_id]
-                for node_id in sorted(pending)
-                if node_id not in held and all(
-                    input_id in results
-                    and results[input_id].status is RuntimeNodeStatus.SUCCESS
-                    for input_id in nodes[node_id].inputs
-                )
-            ]
-            if not ready:
-                if pending:
+                if launched or local:
+                    continue
+                if running:
+                    wait(running, return_when=FIRST_COMPLETED)
+                elif pending:
                     raise RuntimeError("validated runtime DAG made no scheduling progress")
-                break
-
-            remote_kinds = {
-                RuntimeNodeKind.REMOTE_QUERY,
-                RuntimeNodeKind.REMOTE_BIND_QUERY,
-            }
-            remote = [node for node in ready if node.kind in remote_kinds]
-            local = [node for node in ready if node.kind not in remote_kinds]
-            if remote:
-                workers = min(plan.max_parallelism, len(remote))
-                with ThreadPoolExecutor(max_workers=workers) as executor:
-                    future_by_id = {
-                        node.node_id: executor.submit(
-                            self._execute_remote,
-                            node,
-                            goal_id,
-                            results,
-                        )
-                        for node in remote
-                    }
-                    for node_id in sorted(future_by_id):
-                        completed(node_id, future_by_id[node_id].result())
-                # Completed futures also hold payload references; do not retain
-                # the entire previous remote batch through later local work.
-                future_by_id.clear()
-            for node in local:
-                completed(node.node_id, self._execute_local(node, results))
 
         root_rows = {
             root: results[root].rows

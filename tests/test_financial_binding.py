@@ -147,7 +147,8 @@ def test_endpoint_bind_targets_the_endpoint_and_keeps_final_join(data):
     assert edge_binds
     for node in edge_binds:
         p=node.parameters['artifact']['parameters']
-        assert p['sparql_iri_binding']['variable']==p['bound_identity_column']
+        assert p['sparql_iri_binding']['variable'] == {'source': 'n0', 'target': 'n1'}[p['bound_identity_column']]
+        assert p['rdf_binding_checkpoint']['variables'][p['bound_identity_column']] == p['sparql_iri_binding']['variable']
     assert all(sum(n.kind.value=='coordinator_join' for n in c.plan.nodes)==space.join_count for c in space.candidates)
 
 
@@ -198,7 +199,7 @@ def test_one_endpoint_bind_microquery_filters_real_rdf_rows(data):
     result=FederatedScheduler(BackendInvokeTool(registry)).execute(candidate.plan)
     assert result.success,result.to_dict()
     assert len(result.final_rows)==3 and sum(r['amount'] for r in result.final_rows)==66
-    assert len(calls)==2 and 'VALUES ?target' in calls[1]
+    assert len(calls)==2 and 'VALUES ?n1' in calls[1]
 
 
 def test_financial_provider_uses_generic_new_contract_without_gold_program_access(monkeypatch):

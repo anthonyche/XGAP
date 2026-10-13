@@ -185,6 +185,11 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
     completion, verify_completion. All must be polynomial local functions with
     the declared input bounds. verify_completion must certify the ENTIRE compact
     routine using domain rules, not recursively call this search.
+
+    Optional search_cache_key must identify a hashable, immutable payload with
+    pure validity, terminal and completion results for this decision. Domains
+    whose action registry changes must also expose search_cache_epoch; a changed
+    epoch invalidates scored subtrees, not immutable completion certificates.
     """
     started = clock()
     if action_objective not in ('continuation','myopic'):raise ValueError('Unknown action objective')
@@ -196,6 +201,23 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
     records = []
     expanded = 0
     stop = 'completed'
+    # Domains opt in to memoization of pure symbolic transitions. Caches live
+    # only for this decision; actual observations always start a fresh search.
+    # Resource use, horizon position and no-progress attempts are part of every
+    # key. Never reuse a partly scored subtree after a deadline.
+    cache_key = getattr(domain, 'search_cache_key', None)
+    cache_epoch = getattr(domain, 'search_cache_epoch', lambda: None)
+    witnesses, bases, evaluations = {}, {}, {}
+    cache_hits = dict(witness=0, base=0, evaluation=0)
+    cache_limit = min(limits.max_states, 4096)
+
+    def state_key(s):
+        return (cache_key(s.payload), s.steps, s.used, s.attempts) if cache_key else None
+
+    def remember(cache, key, value):
+        if key is not None and len(cache) < cache_limit:
+            cache[key] = value
+        return value
 
     def bounded(items, cap):
         found = []
@@ -206,6 +228,10 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
         return found
 
     def witness(s):
+        key = state_key(s)
+        if key is not None and key in witnesses:
+            cache_hits['witness'] += 1
+            return witnesses[key]
         if not domain.valid(s.payload) or s.steps > limits.horizon or not s.used.fits(limits.resources):
             return None
         w = domain.completion(s.payload)
@@ -214,7 +240,7 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
                 or s.steps+w.remaining_steps > limits.horizon
                 or not s.used.then(w.resources).fits(limits.resources)):
             return None
-        return w
+        return remember(witnesses, key, w)
 
     def successors(s, action):
         if not action.exhaustive or len(action.outcomes) > limits.max_outcomes:
@@ -241,6 +267,10 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
         return children, None
 
     def base(s):
+        key = state_key(s)
+        if key is not None and key in bases:
+            cache_hits['base'] += 1
+            return bases[key]
         w = witness(s)
         if w is None:
             return None
@@ -253,7 +283,7 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
                 admitted = w.first in tuple(islice(domain.terminals(s.payload), limits.max_terminals))
             if not admitted or not s.used.then(w.first.resources).fits(limits.resources):
                 return None
-            return w.first, completion_price(w), (), w
+            return remember(bases, key, (w.first, completion_price(w), (), w))
         children, reason = successors(s, w.first)
         if children is None or any(t.remaining_steps >= w.remaining_steps for _, _, t in children):
             return None
@@ -261,7 +291,7 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
         # whole-recipe certificate, not just by the request's loose budget.
         if any(not o.resources.then(t.resources).fits(w.resources) for o, _, t in children):
             return None
-        return w.first, completion_price(w), tuple(children), w
+        return remember(bases, key, (w.first, completion_price(w), tuple(children), w))
 
     initial = base(state)
     if initial is None:
@@ -280,6 +310,19 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
             incumbent = (picked,value,checked)
 
     def evaluate(s, j, fallback=None):
+        if clock() >= deadline:
+            raise SearchLimit('optional_deadline_or_state_limit')
+        epoch = cache_epoch()
+        key = (state_key(s), j, epoch) if cache_key and s is not state else None
+        if key is not None and key in evaluations:
+            cache_hits['evaluation'] += 1
+            return evaluations[key]
+        value = evaluate_uncached(s, j, fallback)
+        # A bounded plan registry may have grown while scoring descendants.
+        # Do not memoize a result against an obsolete action-generation epoch.
+        return remember(evaluations, key, value) if epoch == cache_epoch() else value
+
+    def evaluate_uncached(s, j, fallback=None):
         nonlocal expanded, completed_root_actions
         if clock() >= deadline or expanded >= limits.max_states:
             raise SearchLimit('optional_deadline_or_state_limit')
@@ -346,6 +389,7 @@ def choose(state, domain, *, limits=Limits(), clock=time.perf_counter, action_ob
             if record['status']=='pending':record['status']='interrupted'
     return dict(choice=choice, status=stop, estimated_cost=score, tails=tails, witness=saved,
                 records=records, expanded_states=expanded, elapsed_ms=(clock()-started)*1000,
+                search_cache_hits=cache_hits,
                 completed_root_actions=completed_root_actions,
                 selection_basis=('full_lookahead' if stop=='completed' else
                     'completed_root_incumbent' if choice is not initial[0] else 'completion_fallback'),
@@ -377,6 +421,7 @@ def run_online(initial, domain, *, perform, execute, limits=Limits(), action_obj
                 reserved_resources=asdict(w.resources) if w else None,
                 completion_costs=dict(w.costs) if w else None, records=decision['records'],
                 expanded_states=decision['expanded_states']))
+            report['rounds'][-1]['search_cache_hits'] = decision.get('search_cache_hits', {})
             if choice is None:
                 report['status'] = decision['status']
                 return report

@@ -1,0 +1,180 @@
+{
+  "acquisitions": [
+    {
+      "arguments": {
+        "action_id": "llm:predicate",
+        "candidates": [
+          "predicate:knows",
+          "predicate:follows"
+        ],
+        "program_sha256": "89fed24a105219cd752b39b066cdf9b4a752909a2960f58a8be738071ca83e4a",
+        "slot": "predicate",
+        "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+        "version": "06fdaec06f6e0fb7d0641ac402e203e2b2e0c6dbc05f99502ed4ec0d994390e4"
+      },
+      "result": {
+        "error": null,
+        "metadata": {
+          "authoritative": false,
+          "candidate_count": 1,
+          "provider_kind": "llm",
+          "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+          "version": "06fdaec06f6e0fb7d0641ac402e203e2b2e0c6dbc05f99502ed4ec0d994390e4"
+        },
+        "metrics": {
+          "elapsed_ms": 497.61650059372187,
+          "model_calls": 1,
+          "remote_calls": 1,
+          "tokens": 372
+        },
+        "status": "success",
+        "tool_name": "practical.llm:predicate",
+        "value": {
+          "candidate_id": "predicate:knows",
+          "program_sha256": "89fed24a105219cd752b39b066cdf9b4a752909a2960f58a8be738071ca83e4a",
+          "slot": "predicate",
+          "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+          "version": "06fdaec06f6e0fb7d0641ac402e203e2b2e0c6dbc05f99502ed4ec0d994390e4"
+        }
+      },
+      "status": "returned",
+      "tool_name": "practical.llm:predicate"
+    }
+  ],
+  "backends": [
+    {
+      "path": "backend-0000-result.json",
+      "sha256": "5ee8b6ff63876b71fb2b326482835ea00aa5064fbd3ed6ed9baed8ef8fba82db"
+    },
+    {
+      "path": "backend-0001-result.json",
+      "sha256": "7081a71534537b39b9d43f37b9d263ef5e522deb0559d4bb6a29f3269639cf98"
+    }
+  ],
+  "captures_complete": true,
+  "expected_outcome": {
+    "answer_rows": [
+      {
+        "edge": "https://xgap.test/toy/e4",
+        "person": "https://xgap.test/toy/c"
+      }
+    ],
+    "final_plan_executions": 1,
+    "observations": [
+      {
+        "error": null,
+        "status": "success",
+        "tool_name": "practical.llm:predicate",
+        "value": {
+          "candidate_id": "predicate:knows",
+          "program_sha256": "89fed24a105219cd752b39b066cdf9b4a752909a2960f58a8be738071ca83e4a",
+          "slot": "predicate",
+          "source_id": "llm:practical-live-slot-v1:qwen3.8-27b",
+          "version": "06fdaec06f6e0fb7d0641ac402e203e2b2e0c6dbc05f99502ed4ec0d994390e4"
+        }
+      },
+      {
+        "error": null,
+        "execution_error": null,
+        "execution_status": "success",
+        "final_rows": [
+          {
+            "edge": "https://xgap.test/toy/e4",
+            "person": "https://xgap.test/toy/c"
+          }
+        ],
+        "nodes": [
+          {
+            "error": null,
+            "kind": "remote_query",
+            "node_id": "paths/candidates",
+            "row_count": 3,
+            "status": "success"
+          },
+          {
+            "error": null,
+            "kind": "coordinator_path_select",
+            "node_id": "paths/paths",
+            "row_count": 3,
+            "status": "success"
+          },
+          {
+            "error": null,
+            "kind": "coordinator_row_project",
+            "node_id": "reached/project",
+            "row_count": 3,
+            "status": "success"
+          },
+          {
+            "error": null,
+            "kind": "remote_query",
+            "node_id": "people/native",
+            "row_count": 5,
+            "status": "success"
+          },
+          {
+            "error": null,
+            "kind": "normalize_node_bindings",
+            "node_id": "people/bindings",
+            "row_count": 5,
+            "status": "success"
+          },
+          {
+            "error": null,
+            "kind": "coordinator_filter",
+            "node_id": "eligible/filter",
+            "row_count": 3,
+            "status": "success"
+          },
+          {
+            "error": null,
+            "kind": "coordinator_row_project",
+            "node_id": "join/right_columns",
+            "row_count": 3,
+            "status": "success"
+          },
+          {
+            "error": null,
+            "kind": "coordinator_join",
+            "node_id": "join/join",
+            "row_count": 1,
+            "status": "success"
+          },
+          {
+            "error": null,
+            "kind": "coordinator_row_project",
+            "node_id": "answer/project",
+            "row_count": 1,
+            "status": "success"
+          }
+        ],
+        "roots": {
+          "answer/project": [
+            {
+              "edge": "https://xgap.test/toy/e4",
+              "person": "https://xgap.test/toy/c"
+            }
+          ]
+        },
+        "status": "success",
+        "tool_name": "practical.execute_final"
+      }
+    ],
+    "status": "succeeded",
+    "success": true
+  },
+  "expected_rows": [
+    {
+      "edge": "https://xgap.test/toy/e4",
+      "person": "https://xgap.test/toy/c"
+    }
+  ],
+  "expected_success": true,
+  "provenance": {
+    "original_fixture": "../practical_profile_replay/replay-v2.json",
+    "original_sha256": "0eece09f32a0bbf265b30d79936feacb4372fb96dba85aeecd9a09f84267afd9",
+    "scope": "offline regression fixture: unchanged historical Cypher capture plus locally re-evaluated RDF; not a new model or database measurement"
+  },
+  "question": "在 toy graph 中查找 Alice 的熟人，返回年龄至少 30 的 people 和关系编号。",
+  "schema_version": "xgap-practical-call-replay-v2"
+}

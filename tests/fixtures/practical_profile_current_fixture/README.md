@@ -1,0 +1,1 @@
+Current compiler regression fixture. The original capture remains in `../practical_profile_replay`. RDF answers were re-evaluated with RDFLib on the repository toy graph and checked against the original row multiset; elapsed time is zero and is not a backend measurement. Cypher and acquisition records remain historical. This fixture tests replay contracts, not performance.

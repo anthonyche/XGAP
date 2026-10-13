@@ -16,7 +16,8 @@ from xgap.semantic.interpretation_candidates import interpret_candidate_question
 from xgap.semantic.parameter_contract import PARAMETER_CONTRACT
 
 
-TYPED_HASH = "b8647be9dffe1aa6bbf06318a209b19c0e0b6aa539d5e9e1cc00bec87fd0d2ee"
+# Current v2 schema includes both node and edge Match parameter alternatives.
+TYPED_HASH = "21e8d3125bba2a9376c3f8c9d3afe5f6458828835e818f57141f13635c5587e0"
 ENVELOPE_HASH = "31415283e165b204a1b3cec38f069e9ea4773585a3ebb6a30f553bd282d1099f"
 
 
@@ -36,7 +37,7 @@ def test_explicit_envelope_schema_restores_original_wire_without_changing_prior_
     previous_json_object = load_one_shot_toy_provider(wire_profile="json-object-v1")
     assert content_hash(default.config.structured_schema) == TYPED_HASH
     assert default.config.prompt_hash == config.prompt_hash
-    assert previous_json_object.config.prompt_hash == "33045f3fa519c04397fe879c92dd0775c6e52fd756c79871823ac9dd6e6f973d"
+    assert previous_json_object.config.prompt_hash == "882f976bf3b1180e0bacd816a75856a71b1919a711a854107c2328871a74f6bb"
     assert provider.provider_id == default.provider_id + ":envelope-schema-v1"
     with pytest.raises(ValueError, match="schema profile differs"):
         replace(config, schema_profile="typed-v1")

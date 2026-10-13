@@ -208,6 +208,17 @@ class FamilyDomain:
                 [asdict(b) for b in state.bindings],state.pools,state.facts,state.disclosed,state.fixed_candidate]))
         return self.key_cache[state]
 
+    def search_cache_key(self, state):
+        # Opt in only for this request-local, immutable state and frozen domain.
+        # Include validation receipts, facts, plan pools and phase/disclosure;
+        # a knowledge-only key would incorrectly alias distinct plan choices.
+        return state
+
+    def search_cache_epoch(self):
+        # Optional physical expansion grows a bounded registry. Its remaining
+        # capacity can change the available actions even for the same state.
+        return len(self.plans), self.plan_bytes
+
     @staticmethod
     def remember(cache,key,value):
         if len(cache)>=128:cache.pop(next(iter(cache)))

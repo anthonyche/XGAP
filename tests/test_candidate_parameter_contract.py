@@ -107,7 +107,18 @@ def test_nine_existing_operator_parameter_shapes_and_internal_schema_fail_closed
     schema = candidate_interpretation_schema(3)
     alternatives = schema["properties"]["candidates"]["items"]["properties"]["program"]["properties"]["operators"]["items"]["anyOf"]
     assert {item["properties"]["kind"]["const"] for item in alternatives} == set(examples)
-    assert all(item["properties"]["parameters"]["additionalProperties"] is False for item in alternatives)
+    for item in alternatives:
+        parameters = item["properties"]["parameters"]
+        # Match admits either a node or an edge shape. Each alternative must
+        # still reject undeclared fields; the union itself has no properties.
+        shapes = parameters.get("anyOf", [parameters])
+        assert all(shape["additionalProperties"] is False for shape in shapes)
+        kind = item["properties"]["kind"]["const"]
+        malformed = deepcopy(examples[kind])
+        malformed["undeclared_parameter"] = True
+        with pytest.raises(SemanticProgramError, match="unknown fields"):
+            validate_program_parameters({"operators": [{"operator_id": kind,
+                "kind": kind, "parameters": malformed, "constraints": []}]})
     with pytest.raises(RuntimeError, match="Unsupported keyword"):
         _issues({"type": "object", "unimplemented_keyword": True}, {}, "internal-contract")
 

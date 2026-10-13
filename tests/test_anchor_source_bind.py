@@ -36,7 +36,7 @@ def test_fanout_restricts_all_first_hops_without_losing_parallel_or_path_answers
     rows_a={n.node_id:n.row_count for n in a.node_results};rows_z={n.node_id:n.row_count for n in z.node_results}
     assert all(rows_a[t+'/native']==8 and rows_z[t+'/native']==4 for t in targets)
     assert z.total_bytes_moved<a.total_bytes_moved
-    assert len(calls)==2*len(s) and sum('VALUES ?source' in text for _,text in calls)==3
+    assert len(calls)==2*len(s) and sum('VALUES ?n0' in text for _,text in calls)==3
     print(json.dumps({'gate':'tiny-anchor-source-bind','answer_rows':len(EXPECTED),
         'coordinator_logical_exchange_bytes':a.total_bytes_moved,'bound_logical_exchange_bytes':z.total_bytes_moved,
         'source_calls_each':len(s),'three_first_hop_rows_before':24,'three_first_hop_rows_after':12,
@@ -55,7 +55,7 @@ def test_empty_or_excessive_key_relations_never_retry_truncate_or_fallback(bound
                  max_binding_bytes=1 if boundary=='bytes' else 1048576)
     result=scheduler.execute(fanout(domain).plan)
     assert len(calls)==len(s)-3  # Only nonbound source reads reached the transport.
-    assert not any('VALUES ?source' in text for _,text in calls)
+    assert not any('VALUES ?n0' in text for _,text in calls)
     if boundary=='empty':
         assert result.success and result.final_rows==()
     else:

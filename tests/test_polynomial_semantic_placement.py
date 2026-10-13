@@ -73,7 +73,7 @@ def test_terminal_plateau_is_solved_by_independent_minima():
 
 def test_preserved_633_regret_input_now_matches_the_frozen_oracle():
     replay = json.loads((Path(__file__).resolve().parents[1] /
-        "tests/fixtures/terminal_placement.json").read_text())
+        "tests/fixtures/terminal_placement_current.json").read_text())
     program, opts = inputs(m=4, k=8)
     assert program.to_dict() == replay["program"]
     opts["sources"] = {"toy": LogicalSource(**{**replay["source"],
@@ -243,3 +243,21 @@ def test_topology_change_has_no_invented_global_certificate(monkeypatch):
     assert cert["kind"] == "baseline_only" and cert["ratio_bound"] is None
     assert cert["lower_bound_ms"] is None and not cert["full_local_domain_covered"]
     assert cert["upper_bound_ms"] <= cert["baseline_ms"]
+
+
+def test_old_artifact_observations_require_explicit_fixture_key_migration():
+    root = Path(__file__).parent/'fixtures'
+    old = json.loads((root/'terminal_placement.json').read_text())
+    current = json.loads((root/'terminal_placement_current.json').read_text())
+    program, opts = inputs(m=4, k=8)
+    opts['sources'] = {'toy': LogicalSource(**{**old['source'],
+        'replica_backend_ids': tuple(old['source']['replica_backend_ids'])})}
+    opts.update(old['limits'])
+    space = prepare_semantic_placements(program, **opts)
+    with pytest.raises(ValueError, match='every admitted local observation'):
+        space.select(PlanObservationSnapshot.from_dict(old['snapshot']))
+    # These are controlled model costs; only compiler identities were migrated.
+    from collections import Counter
+    costs = lambda d: Counter(json.dumps({k:v for k,v in e.items() if k!='observation_key'},
+                                         sort_keys=True) for e in d['snapshot']['estimates'])
+    assert costs(old) == costs(current)

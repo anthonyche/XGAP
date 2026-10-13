@@ -85,7 +85,10 @@ def sparql_condition(bound, *, backend_id, mapping, used, rdf_encoding=None, rdf
         if isinstance(item, Not):
             return "(!" + render(item.condition) + ")"
         if isinstance(item, LengthEquals):
-            return "true" if item.value == bound.edge_count else "false"
+            # RDFLib 7.1.x drops a bare false literal while translating FILTER.
+            # A numeric comparison has the same SPARQL truth value and survives
+            # that translation, including inside Boolean/UNION expressions.
+            return f"({bound.edge_count} = {item.value})"
         if isinstance(item, NodeNotEquals):
             return f"(!sameTerm({sparql._node_var(bound,item.left)}, {sparql._node_var(bound,item.right)}))"
         subject = (sparql._node_var(bound,item.ref) if isinstance(item.ref,NodeRef)

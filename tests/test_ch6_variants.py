@@ -54,6 +54,10 @@ def test_two_stage_semantic_decision_has_no_execution_price_feedback():
                              limits=Limits(depth=2,optional_ms=5000))
     domain,_=domain_for(settings,JointCostProfile(clarification_call=.1,disclosed_field=1))
     first=choose(State(FamilyState()),domain,limits=settings.limits)
+    # Estimators are frozen for one request. Changing score on an already
+    # searched domain leaves its terminal/completion caches inconsistent.
+    # Compare independently initialized requests, as the adapter actually runs.
+    domain,_=domain_for(settings,JointCostProfile(clarification_call=.1,disclosed_field=1))
     domain.score=lambda state,key:float((domain.plans[key][0]+1)*100000)
     second=choose(State(FamilyState()),domain,limits=settings.limits)
     assert first['status']==second['status']=='completed'

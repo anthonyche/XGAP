@@ -6,7 +6,7 @@ import json
 import pytest
 
 from xgap.algebra import evaluate
-from xgap.algebra.conditions import LengthEquals
+from xgap.algebra.conditions import And, Or, Not, LengthEquals
 from xgap.backends.fuseki_client import FusekiClient
 from xgap.compilers.bounded_paths import compile_bounded_paths
 from xgap.compilers.errors import UnsupportedCompilationError
@@ -51,6 +51,17 @@ def execute_pattern(pattern, client):
     assert report.success, report.error
     rows = select_native_paths(report.rows, artifact.parameters["path_selection"])
     return sorted("/".join(row["path"]) for row in rows)
+
+
+@pytest.mark.parametrize("condition", [LengthEquals(0), LengthEquals(1), LengthEquals(2),
+    And(LengthEquals(0), Not(LengthEquals(1))),
+    Or(LengthEquals(0), LengthEquals(2)), Not(LengthEquals(0))])
+def test_boolean_length_filters_match_reference_across_union_branches(condition, client):
+    pattern = replace(parse_path_pattern_query(CASES[0]["gold_path_pattern_query"]),
+                      max_depth=2, condition=condition)
+    expected = sorted("/".join(p.sequence) for p in evaluate(
+        lower_path_pattern(pattern), property_graph(DATA)))
+    assert execute_pattern(pattern, client) == expected
 
 
 @pytest.mark.parametrize("kind,k", [(SelectorKind.ANY_SHORTEST, None),

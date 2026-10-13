@@ -1,0 +1,429 @@
+{
+  "limits": {
+    "max_local_options": 64,
+    "max_observation_calls": 32,
+    "max_parallelism": 4,
+    "max_remote_calls": 4
+  },
+  "program": {
+    "holes": [],
+    "metadata": {},
+    "operators": [
+      {
+        "constraints": [],
+        "input_ids": [],
+        "input_kinds": [],
+        "kind": "match",
+        "operator_id": "s0",
+        "output_kind": "binding_set",
+        "parameters": {
+          "entity_field": "person",
+          "node": {
+            "label": "Person"
+          }
+        },
+        "required_capabilities": []
+      },
+      {
+        "constraints": [],
+        "input_ids": [],
+        "input_kinds": [],
+        "kind": "match",
+        "operator_id": "s1",
+        "output_kind": "binding_set",
+        "parameters": {
+          "entity_field": "person",
+          "node": {
+            "label": "Person"
+          }
+        },
+        "required_capabilities": []
+      },
+      {
+        "constraints": [],
+        "input_ids": [],
+        "input_kinds": [],
+        "kind": "match",
+        "operator_id": "s2",
+        "output_kind": "binding_set",
+        "parameters": {
+          "entity_field": "person",
+          "node": {
+            "label": "Person"
+          }
+        },
+        "required_capabilities": []
+      },
+      {
+        "constraints": [],
+        "input_ids": [],
+        "input_kinds": [],
+        "kind": "match",
+        "operator_id": "s3",
+        "output_kind": "binding_set",
+        "parameters": {
+          "entity_field": "person",
+          "node": {
+            "label": "Person"
+          }
+        },
+        "required_capabilities": []
+      }
+    ],
+    "program_id": "placement-scale",
+    "roots": [
+      "s0",
+      "s1",
+      "s2",
+      "s3"
+    ]
+  },
+  "provenance": {
+    "original_fixture": "terminal_placement.json",
+    "scope": "controlled cost table, rekeyed for current equivalent typed Match compiler; not runtime measurements",
+    "transform": "Restore old nodeDomain spelling and remove new binding checkpoint/scalar metadata to verify each original observation key before mapping to current key"
+  },
+  "snapshot": {
+    "bandwidth_bytes_per_ms": 1000,
+    "coordinator_row_ms": 0.1,
+    "estimates": [
+      {
+        "backend_id": "rdf_7",
+        "elapsed_ms": 31,
+        "observation_key": "07c26703e03e8c058badd26dd8bbfa3c572cca06d3cb8c6ff6167ce7295b867f",
+        "output_bytes": 420,
+        "row_count": 28,
+        "row_width_bytes": 15,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_2",
+        "elapsed_ms": 74,
+        "observation_key": "08e6937e20c0f1d4690fa78bea21ebddcf4cef05cab9f559d4ce570a6dc3c066",
+        "output_bytes": 2208,
+        "row_count": 32,
+        "row_width_bytes": 69,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_5",
+        "elapsed_ms": 98,
+        "observation_key": "10b2275f6e6185ccaab18aae2f068960f9021e5d3e92fa0666b88cfb6fb08820",
+        "output_bytes": 988,
+        "row_count": 38,
+        "row_width_bytes": 26,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_0",
+        "elapsed_ms": 90,
+        "observation_key": "1fd492d467eae9fced7eb497eb37acdc209f1e6291e8ec68004208fddf7f2759",
+        "output_bytes": 722,
+        "row_count": 38,
+        "row_width_bytes": 19,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_3",
+        "elapsed_ms": 51,
+        "observation_key": "23ba4715121bcab0ec8ce40bdf31783cf2eca905440b0ff64fffb1c8b0453fd7",
+        "output_bytes": 156,
+        "row_count": 13,
+        "row_width_bytes": 12,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_4",
+        "elapsed_ms": 35,
+        "observation_key": "26eb58bcd7ecbfa6e5ce2d0e0dcdd22cdb47924c87a84ac61ad0f9fe5a3e0911",
+        "output_bytes": 216,
+        "row_count": 9,
+        "row_width_bytes": 24,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_5",
+        "elapsed_ms": 99,
+        "observation_key": "2718ebbdbfab0b01cee893bdd1780a05fa69373b89ec8b574c13391d982af6c0",
+        "output_bytes": 486,
+        "row_count": 18,
+        "row_width_bytes": 27,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_3",
+        "elapsed_ms": 53,
+        "observation_key": "2d5a819414660a815907c1cfa2fbc73f2c2b10ad4e17392a0a3a01fac203ce00",
+        "output_bytes": 196,
+        "row_count": 4,
+        "row_width_bytes": 49,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_1",
+        "elapsed_ms": 11,
+        "observation_key": "31d26d94a72f3b8860f4017f6564aae1d6d7d553a82a5f1f11eaeadfd5075e47",
+        "output_bytes": 630,
+        "row_count": 9,
+        "row_width_bytes": 70,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_1",
+        "elapsed_ms": 26,
+        "observation_key": "39d11f0b6586fc1d756cb02ec836a9019a4d18ad4d49a9d376b4eab1b9e34348",
+        "output_bytes": 243,
+        "row_count": 27,
+        "row_width_bytes": 9,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_2",
+        "elapsed_ms": 51,
+        "observation_key": "45be2bf2373dbe24d23f7957389a60989a0ebc9d9455f100977cb292e331976d",
+        "output_bytes": 792,
+        "row_count": 18,
+        "row_width_bytes": 44,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_0",
+        "elapsed_ms": 63,
+        "observation_key": "4f9c2a242d02e88a69851a5f681e5450a9e26a1cb8040d817202a054ab59bf36",
+        "output_bytes": 36,
+        "row_count": 9,
+        "row_width_bytes": 4,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_5",
+        "elapsed_ms": 79,
+        "observation_key": "541ece5a41ce8dde43231a6d9a9c5ff2d2436b4ff049725f5711b4acf68f46bd",
+        "output_bytes": 147,
+        "row_count": 3,
+        "row_width_bytes": 49,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_0",
+        "elapsed_ms": 88,
+        "observation_key": "637c49258568d84fdfe08baec61dcbe748b5d600b37d4179890c4bb228ae5f55",
+        "output_bytes": 780,
+        "row_count": 39,
+        "row_width_bytes": 20,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_7",
+        "elapsed_ms": 65,
+        "observation_key": "6d16cf7edf397114d81ff211210d1a481665a69ecad9938ce4987259d0a7915c",
+        "output_bytes": 342,
+        "row_count": 38,
+        "row_width_bytes": 9,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_7",
+        "elapsed_ms": 60,
+        "observation_key": "7c07d2c3144de8b36449343cea00effbf68119e2b7eb3949b823c30055eee377",
+        "output_bytes": 1920,
+        "row_count": 40,
+        "row_width_bytes": 48,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_0",
+        "elapsed_ms": 87,
+        "observation_key": "847b02eb6ac09cc7e2b2d00972f46a65d2c53156526b7f47abc13eb74ca35b67",
+        "output_bytes": 44,
+        "row_count": 1,
+        "row_width_bytes": 44,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_1",
+        "elapsed_ms": 38,
+        "observation_key": "932d9a198d39666cb82387cba2d44d6cc7f985e1114bc5ff8edf6180c24e8d81",
+        "output_bytes": 406,
+        "row_count": 14,
+        "row_width_bytes": 29,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_5",
+        "elapsed_ms": 21,
+        "observation_key": "9c78ffec1487cb8ff959dc97cfd948d33a79b06cd40c27b37f84ed4f9f34883d",
+        "output_bytes": 341,
+        "row_count": 11,
+        "row_width_bytes": 31,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_7",
+        "elapsed_ms": 22,
+        "observation_key": "a1eb9b2473fa8f32bf82324fcd925e7ee6932d77d6eedd6b82bd0a1d1e2b1e8e",
+        "output_bytes": 1595,
+        "row_count": 29,
+        "row_width_bytes": 55,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_2",
+        "elapsed_ms": 100,
+        "observation_key": "a21a9911452d99bbb059505d7461bcecd367a300cadbf62469555197150292b5",
+        "output_bytes": 350,
+        "row_count": 25,
+        "row_width_bytes": 14,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_6",
+        "elapsed_ms": 77,
+        "observation_key": "a2945a37b06a58a58976764b3951761084e0ff825ae689775fa40285248e8a3e",
+        "output_bytes": 16,
+        "row_count": 1,
+        "row_width_bytes": 16,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_4",
+        "elapsed_ms": 93,
+        "observation_key": "af6eb1c5396b084acfc6ca416d3a17f3f6f2c1948b3c39a87306188dbfd5f919",
+        "output_bytes": 324,
+        "row_count": 27,
+        "row_width_bytes": 12,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_1",
+        "elapsed_ms": 65,
+        "observation_key": "b33972d8c46c030b53f085154e7ed07b36454608294f74aaf78602d8aa85698f",
+        "output_bytes": 2340,
+        "row_count": 30,
+        "row_width_bytes": 78,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_6",
+        "elapsed_ms": 7,
+        "observation_key": "b4c45fcf7344d5104389a9fbefd1eee179c43be71ba8e8909e5f0c9016b61309",
+        "output_bytes": 1296,
+        "row_count": 18,
+        "row_width_bytes": 72,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_3",
+        "elapsed_ms": 23,
+        "observation_key": "ca2e2bbfabda4e962d87710e396158ac7fed1de5844739dea3ca9329df9777fd",
+        "output_bytes": 234,
+        "row_count": 39,
+        "row_width_bytes": 6,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_6",
+        "elapsed_ms": 6,
+        "observation_key": "cf2e87ebebf20fc25b95dec4950a9362923779d82cfac3494f5ce260f740b56a",
+        "output_bytes": 13,
+        "row_count": 13,
+        "row_width_bytes": 1,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_6",
+        "elapsed_ms": 7,
+        "observation_key": "d3be108172096aae1a34f71712eeec1d37edd5a2a595ec929196341431714a94",
+        "output_bytes": 136,
+        "row_count": 8,
+        "row_width_bytes": 17,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_3",
+        "elapsed_ms": 3,
+        "observation_key": "e32d76de8137dc9751dc6710c71da26ae31263173d66043eadf561da09cc138c",
+        "output_bytes": 363,
+        "row_count": 33,
+        "row_width_bytes": 11,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_2",
+        "elapsed_ms": 26,
+        "observation_key": "e61c015d3a6150c0858a062f671daf7572628dcdebb4d1f1c3d61cc7e4ef948e",
+        "output_bytes": 44,
+        "row_count": 22,
+        "row_width_bytes": 2,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_4",
+        "elapsed_ms": 96,
+        "observation_key": "eb7f052f1498676ba1f63c8c7928c5a7685c316634b4623886cf4cfe5391867c",
+        "output_bytes": 1332,
+        "row_count": 18,
+        "row_width_bytes": 74,
+        "source": "controlled model table",
+        "version": "9"
+      },
+      {
+        "backend_id": "rdf_4",
+        "elapsed_ms": 11,
+        "observation_key": "ec05a2d658c1b7d0ccccb47a5102100fdb73db81a3c3ee7f23037e1d3200405b",
+        "output_bytes": 1562,
+        "row_count": 22,
+        "row_width_bytes": 71,
+        "source": "controlled model table",
+        "version": "9"
+      }
+    ],
+    "exchange_fixed_ms": 0,
+    "snapshot_id": "grid",
+    "version": "9"
+  },
+  "source": {
+    "replica_backend_ids": [
+      "rdf_0",
+      "rdf_1",
+      "rdf_2",
+      "rdf_3",
+      "rdf_4",
+      "rdf_5",
+      "rdf_6",
+      "rdf_7"
+    ],
+    "snapshot_version": "frozen-toy",
+    "source_id": "toy"
+  }
+}

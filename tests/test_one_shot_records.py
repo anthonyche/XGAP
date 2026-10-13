@@ -16,7 +16,8 @@ from xgap.experiments.one_shot_records import run_record, evaluate_record, write
 from xgap.infrastructure.runtime import QueryArtifact
 
 
-REPLAY = Path(__file__).parent / "fixtures/one_shot_record_replay"
+HISTORICAL_REPLAY = Path(__file__).parent / "fixtures/one_shot_record_replay"
+REPLAY = Path(__file__).parent / "fixtures/one_shot_current_fixture"
 
 
 def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -170,3 +171,12 @@ def test_failed_result_seal_preserves_known_live_call_costs(prepared,tmp_path,mo
     assert receipt["model_network_calls"]==1 and receipt["backend_network_calls"]==2
     assert receipt["input_tokens"]==12 and receipt["output_tokens"]==9
     assert receipt["final_plan_executions"]==1 and receipt["result"] is None
+
+
+def test_historical_v1_provider_capture_is_not_relabelled_as_current_v2(prepared, tmp_path):
+    old = HISTORICAL_REPLAY/'success.json'
+    receipt = run(prepared, tmp_path/'historical-rejected', replay_path=old, replay_sha256=sha(old))
+    assert receipt['status'] == 'record_failed' and receipt['failure_phase'] == 'preflight'
+    assert 'model/prompt/config differs' in receipt['error']
+    assert receipt['model_network_calls'] == receipt['backend_network_calls'] == 0
+    assert receipt['final_plan_executions'] == 0

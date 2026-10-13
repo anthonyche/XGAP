@@ -84,6 +84,8 @@ def test_native_retirement_discards_only_its_serving_data(tmp_path,monkeypatch):
     from native_store_session import NativeStoreSession
     process=subprocess.Popen([sys.executable,'-c','pass'],start_new_session=True);process.wait(timeout=3)
     s=NativeStoreSession.__new__(NativeStoreSession);s.root=tmp_path/'session';s.root.mkdir()
+    # __new__ bypasses the parent constructor's validated store manifest.
+    s.prepared={'stores': {'neo4j': {}, 'control': {}}}
     s.processes=SimpleNamespace(owned=[('owned',process)],logs=[]);s.ports=None;s.observer=None;s.discard_serving_copies=True
     for name in s.serving_copy_paths:
         p=s.root/name;p.mkdir(parents=True);(p/'data').write_bytes(b'copy')

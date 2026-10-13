@@ -13,7 +13,8 @@ from xgap.experiments.practical_records import publish_profile, run_record
 
 ROOT=Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/'datasets/practical_model_profile_v1'
-REPLAY=Path(__file__).parent/'fixtures/practical_profile_replay'
+HISTORICAL_REPLAY=Path(__file__).parent/'fixtures/practical_profile_replay'
+REPLAY=Path(__file__).parent/'fixtures/practical_profile_current_fixture'
 
 
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -169,3 +170,14 @@ def test_recorded_failure_replays_its_actual_reason_not_merely_any_failure(tmp_p
         replay_path=changed_manifest,replay_sha256=sha(changed_manifest))
     assert not mismatch['success'] and mismatch['original_execution_success'] is False
     assert mismatch['model_network_calls']==mismatch['source_network_calls']==0
+
+
+def test_historical_compiler_capture_still_rejects_changed_native_artifact(tmp_path):
+    _, pin = published(tmp_path)
+    old = HISTORICAL_REPLAY/'replay-v2.json'
+    result = run_record(**arguments(pin, tmp_path/'historical-rejected'), operation='replay',
+                        replay_path=old, replay_sha256=sha(old))
+    assert not result['success'] and not result['replay_match']
+    assert result['model_network_calls'] == result['source_network_calls'] == 0
+    core = json.loads(Path(result['result']['path']).read_text())
+    assert 'Backend replay artifact differs' in json.dumps(core)

@@ -136,7 +136,7 @@ def test_budget_is_applied_after_real_bind_compilation_and_preserves_node_reads(
     result=scheduler.execute(limited)
     assert result.success,result.to_dict()
     assert {json.dumps(r,sort_keys=True) for r in result.final_rows}<={json.dumps(r,sort_keys=True) for r in EXPECTED}
-    assert any('VALUES ?source' in text and text.endswith('\nLIMIT 2') for _,text in calls)
+    assert any('VALUES ?n0' in text and text.endswith('\nLIMIT 2') for _,text in calls)
 
 
 def test_ordinary_modes_execute_once_with_explicit_coverage_and_hard_completeness(model):
