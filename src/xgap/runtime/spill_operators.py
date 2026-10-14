@@ -1,5 +1,6 @@
 """Exact pull operators; blocking state is owned by a bounded spill workspace."""
 from itertools import chain
+from contextlib import contextmanager
 from decimal import Decimal,localcontext
 from fractions import Fraction
 import json
@@ -11,9 +12,68 @@ from xgap.runtime.spill_rows import managed,distinct,key_text,key_value
 from xgap.runtime.binding_operations import aggregate_rows,sort_rows
 
 
+def fold_aggregate(workspace,parameters,rows):
+    """Non-DISTINCT aggregates retain one compact state per group, not members."""
+    from xgap.runtime.adaptive_state import AdaptiveState
+    groups=parameters['group_by'];specs=parameters['aggregations']
+    def initial(values):
+        return [values,{name:[0,Fraction(0),set(),None] for name in specs}]
+    with AdaptiveState(workspace) as states:
+        seen=False
+        for row in rows:
+            workspace.control.check();seen=True
+            if any(f not in row for f in groups):raise ValueError('aggregate group fields are missing')
+            values=tuple(row[f] for f in groups);key=tuple(map(value_key,values))
+            state=states.get(key)
+            if state is None:state=initial(values)
+            elif tuple(map(representative_key,values))<tuple(map(representative_key,state[0])):state[0]=values
+            for name,spec in specs.items():
+                op=spec['op'];field=spec.get('field');acc=state[1][name]
+                if field is not None and field not in row:raise ValueError('aggregate field is missing')
+                value=row if field is None else row[field]
+                if field is not None and value is None:continue
+                row_key(value) if field is None else value_key(value)
+                acc[0]+=1
+                if op=='sum':
+                    n=numeric(value)
+                    if n is None:raise ValueError('aggregate field must be numeric')
+                    acc[1]+=Fraction(n.value);acc[2].add(n.kind)
+                elif op in ('min','max'):
+                    scalar_order_key(value)
+                    best=acc[3]
+                    if best is None:acc[3]=value
+                    else:
+                        a,b=scalar_order_key(value),scalar_order_key(best)
+                        if (a<b if op=='min' else a>b) or a==b and representative_key(value)<representative_key(best):acc[3]=value
+            states.put(key,state)
+        if not groups and not seen:states.put((),initial(()))
+        for values,accs in states.items():
+            output=dict(zip(groups,values))
+            for name,spec in specs.items():
+                count,total,domain,best=accs[name];op=spec['op']
+                output[name]=count if op=='count' else finish_sum(count,total,domain) if op=='sum' else best
+            yield output
+
+
+def finish_sum(count,total,domain):
+    if not count:return 0
+    if domain=={'integer'}:return int(total)
+    with localcontext() as context:
+        # Finite decimal denominators contain only powers of 2 and 5. Their
+        # bit length bounds the decimal expansion; decimal digit count does not
+        # (1 / 2**1000 is the counterexample). Preserve the complete exact sum.
+        context.prec=max(1,Decimal(abs(total.numerator)).adjusted()+1)+total.denominator.bit_length()+4
+        exact=Decimal(total.numerator)/Decimal(total.denominator)
+    answer=float(exact) if 'float' in domain else decimal_binding(exact)
+    if isinstance(answer,float) and not math.isfinite(answer):raise ValueError('Aggregate floating result must be finite')
+    return answer
+
+
 def aggregate(workspace,parameters,rows):
     aggregate_rows(parameters,()) # Original option validation, including empty input.
     groups=parameters['group_by'];specs=parameters['aggregations']
+    if not any(spec.get('distinct',False) for spec in specs.values()):
+        yield from fold_aggregate(workspace,parameters,rows);return
     with managed(workspace) as store:
         for row in rows:
             if any(f not in row for f in groups):raise ValueError('aggregate group fields are missing')
@@ -58,21 +118,13 @@ def aggregate(workspace,parameters,rows):
                         count+=1
                         if op=='sum':total+=Fraction(numeric(v).value)
                         elif op in ('min','max'):
+                            scalar_order_key(v)
                             if best is None:best=v
                             else:
                                 a,b=scalar_order_key(v),scalar_order_key(best)
                                 if (a<b if op=='min' else a>b) or a==b and representative_key(v)<representative_key(best):best=v
                     if op=='count':output[name]=count
-                    elif op=='sum':
-                        if not count:output[name]=0
-                        elif domain=={'integer'}:output[name]=int(total)
-                        else:
-                            with localcontext() as context:
-                                context.prec=max(1,Decimal(abs(total.numerator)).adjusted()+1)+Decimal(total.denominator).adjusted()+4
-                                exact=Decimal(total.numerator)/Decimal(total.denominator)
-                            answer=float(exact) if 'float' in domain else decimal_binding(exact)
-                            if isinstance(answer,float) and not math.isfinite(answer):raise ValueError('Aggregate floating result must be finite')
-                            output[name]=answer
+                    elif op=='sum':output[name]=finish_sum(count,total,domain)
                     else:output[name]=best
             yield output
 
@@ -92,7 +144,7 @@ def ordered(workspace,parameters,rows):
             if c:return c
         return (a>b)-(a<b)
     with managed(workspace) as store:
-        store.db.create_collation('ANSWER_ORDER',compare)
+        store.collation('ANSWER_ORDER',compare)
         for row in rows:
             sort_rows(parameters,(row,));store.append(row)
         limit=parameters['limit']
@@ -100,37 +152,74 @@ def ordered(workspace,parameters,rows):
             () if limit is None else (limit,))
 
 
-def join(workspace,node,left,right):
+@contextmanager
+def right_index(workspace,rows,field):
+    buckets={};reserved=0;store=None
+    try:
+        for row in distinct(workspace,rows):
+            if field not in row:raise ValueError('right join field is missing')
+            if row[field] is None:continue
+            key=value_key(row[field]);size=4*len(stable_text(row).encode())+512
+            if store is None and workspace.claim_memory(size):
+                reserved+=size;buckets.setdefault(key,[]).append(row);continue
+            if store is None:
+                store=workspace.store(buffered=False)
+                for k,values in buckets.items():
+                    for value in values:store.append(value,lookup=key_text(k))
+                buckets.clear();workspace.release_memory(reserved);reserved=0
+            store.append(row,lookup=key_text(key))
+        if store is None:yield lambda key:iter(buckets.get(key,()))
+        else:yield lambda key:store.select('SELECT payload FROM rows WHERE lookup=? ORDER BY seq',(key_text(key),))
+    finally:
+        buckets.clear();workspace.release_memory(reserved)
+        if store is not None:store.close()
+
+
+def join(workspace,node,left,right,*,unordered=False):
     p=node.parameters;lk,rk=p.get('left_on'),p.get('right_on');prefix=p.get('right_prefix','right.')
     if not isinstance(lk,str) or not isinstance(rk,str) or not isinstance(prefix,str):raise ValueError('Invalid join fields')
     semi=node.kind is R.COORDINATOR_SEMI_JOIN;mode=p.get('left_value_mode','scalar')
     if semi and mode not in ('scalar','collection'):raise ValueError('Invalid semi-join mode')
-    with managed(workspace) as index:
-        for row in distinct(workspace,right):
-            if rk not in row:raise ValueError('right join field is missing')
-            if row[rk] is not None:index.append(row,lookup=key_text(value_key(row[rk])))
+    schemas={}
+    def track(rows,side):
+        uniform=True;fields=None
+        for row in rows:
+            current=frozenset(row)
+            if fields is None:fields=current
+            elif fields!=current:uniform=False
+            yield row
+        schemas[side]=fields if uniform else None
+    with right_index(workspace,track(right,'right'),rk) as lookup:
         def pairs():
-            for a in distinct(workspace,left):
+            for a in distinct(workspace,track(left,'left')):
                 if lk not in a:raise ValueError('left join field is missing')
                 raw=a[lk]
                 if semi:
                     if mode=='collection' and not isinstance(raw,(tuple,list)):raise ValueError('semi-join field must be a collection')
                     values=raw if mode=='collection' else [raw]
-                    if any(index.db.execute('SELECT 1 FROM rows WHERE lookup=? LIMIT 1',(key_text(value_key(v)),)).fetchone() for v in values if v is not None):yield a
+                    if any(next(lookup(value_key(v)),None) is not None for v in values if v is not None):yield a
                 elif raw is not None:
-                    for b in index.select('SELECT payload FROM rows WHERE lookup=? ORDER BY seq',(key_text(value_key(raw)),)):
+                    for b in lookup(value_key(raw)):
                         merged=dict(a)
                         for name,value in b.items():
                             merged[name if name not in merged or value_key(merged[name])==value_key(value) else prefix+name]=value
                         yield merged
-        yield from distinct(workspace,pairs())
+        values=iter(pairs());sentinel=object();first=next(values,sentinel)
+        if first is sentinel:return
+        # DISTINCT inputs plus disjoint non-key schemas make a merged row an
+        # injective encoding of its input pair. Aggregation/sort consumers do
+        # not observe pair order, so no redundant output DISTINCT/sort is needed.
+        injective=(not semi and lk==rk and schemas.get('left') is not None and
+            schemas.get('right') is not None and schemas['left']&schemas['right']=={lk})
+        if unordered and injective:yield from chain((first,),values)
+        else:yield from distinct(workspace,chain((first,),values))
 
 
-def operate(workspace,node,inputs):
+def operate(workspace,node,inputs,*,unordered=False):
     from xgap.runtime.scheduler import FederatedScheduler
     from xgap.runtime.row_operations import filter_rows,project_rows,normalize_node_bindings
     k=node.kind;p=node.parameters
-    if k in (R.COORDINATOR_JOIN,R.COORDINATOR_SEMI_JOIN):yield from join(workspace,node,*inputs)
+    if k in (R.COORDINATOR_JOIN,R.COORDINATOR_SEMI_JOIN):yield from join(workspace,node,*inputs,unordered=unordered)
     elif k is R.COORDINATOR_GROUP_AGGREGATE:yield from aggregate(workspace,p,inputs[0])
     elif k is R.COORDINATOR_SORT_LIMIT:yield from ordered(workspace,p,inputs[0])
     elif k in (R.COORDINATOR_PATH_SELECT,R.COORDINATOR_PATH_COMPOSE):

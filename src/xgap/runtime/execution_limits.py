@@ -16,8 +16,11 @@ class ExecutionLimits:
     max_response_bytes: int | None = None
 
     max_spill_bytes: int = 1024**3
+    intermediate_memory_bytes: int = 8 * 1024**2
 
     def __post_init__(self):
+        if type(self.intermediate_memory_bytes) is not int or self.intermediate_memory_bytes < 0:
+            raise ValueError("Intermediate memory budget must be a nonnegative integer")
         if type(self.max_spill_bytes) is not int or self.max_spill_bytes<1:
             raise ValueError("Spill byte limit must be a positive integer")
         if self.dispatch_timeout_s is not None and (

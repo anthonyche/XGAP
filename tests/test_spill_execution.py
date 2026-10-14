@@ -91,7 +91,7 @@ def test_stream_scheduler_fanout_spill_budget_and_actual_calls():
     assert result.success and client.calls==result.total_remote_calls==1
     assert result.root_rows['b']==({'n':50},) and len(result.root_rows['a'])==50
     assert result.node_results[0].rows is None and result.node_results[0].row_count==50
-    failed=StreamingScheduler(None,clients={'fake':client},limits=ExecutionLimits(max_spill_bytes=16384)).execute(plan)
+    failed=StreamingScheduler(None,clients={'fake':client},limits=ExecutionLimits(max_spill_bytes=16384,intermediate_memory_bytes=0)).execute(plan)
     assert not failed.success and failed.total_remote_calls==1
     assert 'spill' in failed.node_results[0].error and not failed.root_rows
 

@@ -1,8 +1,8 @@
-"""One-shot scheduler using replayable on-disk streams for every operator.
+"""One-shot scheduler using adaptive row stores and fused local pipelines.
 
 Only successful root answers are materialized for the public API. Native clients
 stream HTTP row arrays; third-party list-only adapters retain explicit fallback
-telemetry. Blocking operators spool before emitting complete, exact results.
+telemetry. Blocking states adapt between bounded memory and exact disk storage.
 """
 from dataclasses import replace
 import time
@@ -28,17 +28,17 @@ def stream_executor(client):
 
 
 class StreamingScheduler(FederatedScheduler):
-    def __init__(self,backend_tool,*,clients,limits=None):
+    def __init__(self,backend_tool,*,clients,limits=None,pipeline=True):
         super().__init__(backend_tool,retention='roots',stream_topk=False,limits=limits)
-        self.clients=clients
+        self.clients=clients;self.pipeline=pipeline
 
     def execute(self,plan,*,goal_id='federated-query',initial_results=None):
         if initial_results:raise ValueError('Streaming execution does not accept resumable rows')
         started=time.perf_counter();limit=self._limits
         control=RequestControl(None if limit.dispatch_timeout_s is None else started+limit.dispatch_timeout_s,limit.max_response_bytes)
         control.database_cancellation=True
-        with SpillWorkspace(control,limit.max_spill_bytes) as workspace:
-            runner=_StreamRun(self._backend_tool,clients=self.clients,limits=limit)
+        with SpillWorkspace(control,limit.max_spill_bytes,limit.intermediate_memory_bytes) as workspace:
+            runner=_StreamRun(self._backend_tool,clients=self.clients,limits=limit,pipeline=self.pipeline)
             runner.workspace=workspace;runner.control=control
             result=FederatedScheduler.execute(runner,plan,goal_id=goal_id)
             try:roots={k:tuple(v) for k,v in result.root_rows.items()}
@@ -50,15 +50,26 @@ class StreamingScheduler(FederatedScheduler):
                     retention={**result.retention,'execution_stop_reason':'dispatch_timeout'})
             nodes=tuple(replace(n,rows=roots[n.node_id]) if n.node_id in roots else n for n in result.node_results)
             return replace(result,root_rows=roots,node_results=nodes,elapsed_ms=(time.perf_counter()-started)*1000,
-                retention={**result.retention,'streaming_profile':'disk-backed-all-operators-v1',
+                retention={**result.retention,'streaming_profile':'adaptive-row-pipelines-v2',
+                    'peak_intermediate_accounted_bytes':workspace.peak_memory_bytes,
+                    'intermediate_memory_bytes':limit.intermediate_memory_bytes,'spilled_stores':workspace.spilled_stores,
                     'peak_spill_bytes':workspace.peak_bytes,'max_spill_bytes':limit.max_spill_bytes,
                     'backend_cancellation':control.receipts,'database_control_http_calls':control.lifecycle_calls,
                     'native_http_response_bytes_including_discarded':control.response_bytes,
-                    'stream_scope':'bounded SQLite page caches and replayable intermediate rows; root answers materialized; not a process RSS cap'})
+                    'stream_scope':'adaptive SQLite pages and fused local row pipelines; native envelopes validated before use; root answers materialized; not a process RSS cap'})
 
 
 class _StreamRun(StreamingScheduler):
     def _make_control(self,deadline,limits):return self.control
+
+    def _execution_pipelines(self,plan):
+        from xgap.runtime.row_pipeline import islands
+        return islands(plan) if self.pipeline else []
+
+    def _execute_pipeline(self,pipeline,nodes,results):
+        from xgap.runtime.row_pipeline import run
+        return run(self.workspace,pipeline,nodes,results)
+
 
     def _execute_remote(self,node,goal_id,results):
         started=time.perf_counter();backend=node.parameters['backend_id'];client=self.clients[backend]

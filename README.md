@@ -30,7 +30,7 @@ python examples/unified_demo.py
 The primary API is `xgap.api.answer_unified`. The controlled API
 `answer_unified_controlled` accepts an already specified initial semantic state.
 Both use the same controller, support snapshot-bound source statistics, and
-execute through disk-backed row streams with request resource controls. See [architecture](docs/architecture.md),
+execute through adaptive memory/disk row pipelines with request resource controls. See [architecture](docs/architecture.md),
 [operator semantics](docs/operator_semantics.md), and [development](docs/development.md).
 
 ## Validation

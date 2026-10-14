@@ -142,24 +142,50 @@ own socket where supported; closing a socket does **not** prove database-side
 termination. Legacy adapters without a cancellation capability drain before return.
 These are final-execution controls, not a certified end-to-end wall-time bound.
 
-Unified final execution now uses `StreamingScheduler`: native HTTP row arrays
-are incrementally decoded into request-owned replayable stores, then converted
-row by row after the complete response envelope passes validation. Every local
-operator consumes rows incrementally. Exact distinct, joins, aggregation, sort,
-path selection and finite recursion keep blocking state on disk. Stores allow
-DAG fan-out without another backend invocation and are released after the last
-consumer. Root answers are materialized for API compatibility; operators currently
-seal their output before dependent operators run, rather than overlapping all
-stages of a pipeline. Third-party list-only clients retain an explicitly recorded
-materialized fallback. The historical scheduler remains available separately.
+Unified final execution uses `StreamingScheduler`. Native HTTP row arrays enter
+small replayable memory buffers; the complete response envelope is validated
+before downstream use. Non-branching local operator islands execute as pull
+pipelines: a consumer processes each available row without sealing every
+intermediate result. Fan-out, native-response, binding-query and public-answer
+boundaries remain replayable. Islands are capped at 64 operators to keep deep
+plans independent of Python generator recursion limits. The original physical DAG, actual calls, per-node
+row/byte counts and failure provenance remain visible; fused timing is reported
+at each island boundary rather than inventing individual node CPU times.
 
-SQLite page caches are bounded per store. `max_spill_bytes` (default 1 GiB)
-bounds the accounted SQLite database pages across request-owned stores and fails
-instead of truncating results. It excludes SQLite temporary sorter files,
-individual JSON values, database process memory and final answer lists; it is
-not a process RSS or total filesystem quota. `max_registered_bytes` and
-`max_response_bytes` remain separate admission controls. Disk-backed execution
-reduces intermediate heap retention but can increase latency and scratch I/O.
+`ExecutionLimits.intermediate_memory_bytes` defaults to 8 MiB per request.
+Small result buffers, exact distinct keys, join indexes and compact aggregate
+states share this budget with in-memory SQLite pages. A growing store promotes
+its exact state and indexes to disk when its next accounted allocation does not
+fit; it does not restart a source or truncate rows. Blocking sorts, DISTINCT
+aggregates and finite path operations retain their blocking semantics. Non-DISTINCT
+aggregates keep compact per-group states rather than all input members. Hashes
+only index DISTINCT collision buckets: full typed equality still decides identity.
+A join feeding an order-insensitive aggregate, sort or merge can omit redundant
+output DISTINCT only after observing uniform, non-overlapping non-key schemas
+and exact distinct inputs. That proves pair-to-output injectivity; schema overlap
+or variation retains the general exact algorithm. Root join ordering is preserved.
+
+The memory budget accounts serialized buffers with overhead allowances and
+SQLite pages. It excludes individual transient values, sorting-key arrays,
+SQLite driver/cache overhead and final root answers; it is not an RSS ceiling.
+`peak_intermediate_accounted_bytes`, `spilled_stores` and `peak_spill_bytes`
+report accounted storage and memory-to-disk migrations. SQLite page caches are bounded per disk
+store. `max_spill_bytes` (default 1 GiB) bounds accounted database pages, excluding
+SQLite temporary sorter files; it is not a total filesystem quota. Registered
+payload and native response budgets remain separate controls. Setting
+`intermediate_memory_bytes=0` forces disk state for memory-constrained callers.
+
+Third-party clients that only return lists retain an explicit materialized
+adapter fallback; overriding `execute` is never bypassed by an inherited stream
+method. Root answers remain materialized for API compatibility. Local operator
+pipelining does not overlap unvalidated network responses or reorder user requests.
+The historical materializing scheduler remains available for comparison.
+
+`scripts/benchmark_execution_pipeline.py` compares a deterministic local
+read/filter/join/group/sort chain without servers or model calls. Run latency
+measurements without `--trace-memory`; measure Python allocations separately,
+since tracing changes execution time. The script also reports process peak RSS
+(including SQLite and imports), exact answers and actual backend-call counts.
 
 The streaming Neo4j adapter opens an owned explicit transaction, executes the
 artifact once, and commits or rolls it back. Cancellation acknowledges only a

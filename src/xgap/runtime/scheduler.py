@@ -63,6 +63,10 @@ class FederatedScheduler:
         from xgap.backends.request_control import RequestControl
         return RequestControl(deadline,limits.max_response_bytes)
 
+    def _execution_pipelines(self,plan):
+        from xgap.runtime.streaming_topk import islands
+        return islands(plan) if self._retention=='roots' and self._stream_topk else []
+
     def execute(
         self,
         plan: FederatedExecutionPlan,
@@ -99,7 +103,7 @@ class FederatedScheduler:
             if retained_bytes > limits.max_registered_bytes:
                 raise RuntimePlanError('Initial results exceed registered payload budget')
         from xgap.runtime.streaming_topk import islands,run as run_streaming_topk
-        pipelines=islands(plan) if self._retention=='roots' and self._stream_topk else []
+        pipelines=self._execution_pipelines(plan)
         disabled=set();pipeline_receipts=[]
 
         def release(node_id):
@@ -181,7 +185,7 @@ class FederatedScheduler:
                 if not pending:
                     break
 
-                held=set()
+                held=set();pipeline_progress=False
                 for pipeline in pipelines:
                     if stop_reason:break
                     root=pipeline['root']
@@ -189,10 +193,17 @@ class FederatedScheduler:
                     if any(i in results and results[i].status is not RuntimeNodeStatus.SUCCESS for i in pipeline['boundaries']):
                         disabled.add(root);continue
                     if pipeline['boundaries']<=results.keys():
+                        if pipeline.get('row_pipeline'):
+                            pipeline_progress=True
+                            streamed,receipt=self._execute_pipeline(pipeline,nodes,results)
+                            pipeline_receipts.append(receipt)
+                            for result in streamed:completed(result.node_id,result)
+                            continue
                         began=time.perf_counter()
                         streamed=run_streaming_topk(pipeline,nodes,results)
                         if streamed is None:
                             disabled.add(root);continue
+                        pipeline_progress=True
                         output,receipt=streamed;elapsed=(time.perf_counter()-began)*1000
                         pipeline_receipts.append(receipt)
                         for identifier in receipt['nodes']:
@@ -251,7 +262,7 @@ class FederatedScheduler:
                     if stop_reason:break
                     completed(node.node_id, self._execute_local(node, results))
 
-                if launched or local:
+                if launched or local or pipeline_progress:
                     continue
                 if running:
                     wait(running, timeout=None if deadline is None else max(0, deadline-time.perf_counter()),

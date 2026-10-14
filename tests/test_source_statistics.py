@@ -66,7 +66,7 @@ def test_statistics_reach_public_nl_entry_without_hidden_collection(tmp_path):
     assert report['final_plan_executions']==1 and report['model_calls']==0
     assert report['joint_policy']['external_calls_during_search']==0
     assert report['backend_remote_calls']==len(calls)
-    assert report['joint_policy']['execution']['result']['value']['retention']['streaming_profile']=='disk-backed-all-operators-v1'
+    assert report['joint_policy']['execution']['result']['value']['retention']['streaming_profile']=='adaptive-row-pipelines-v2'
 
 
 def test_source_export_derives_exact_endpoint_skew_and_checks_uniqueness():
