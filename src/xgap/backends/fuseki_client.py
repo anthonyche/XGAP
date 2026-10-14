@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+from xgap.backends.json_stream import read_json
+from xgap.backends.request_control import current_control
 import os
+import math
 import time
 import urllib.error
 import urllib.parse
@@ -156,7 +159,12 @@ class FusekiClient:
 
     def _post_query(self, query: str) -> dict[str, Any]:
         url = f"{self.base_url}/{self.dataset}/sparql"
-        payload = urllib.parse.urlencode({"query": query}).encode("utf-8")
+        parameters={"query":query}
+        control=current_control.get()
+        if control is not None and control.deadline is not None:
+            # Fuseki protocol timeout is in seconds (ARQ config uses ms).
+            parameters['timeout']=str(max(1,math.ceil(control.timeout(self.timeout_seconds))))
+        payload = urllib.parse.urlencode(parameters).encode("utf-8")
         request = urllib.request.Request(
             url,
             data=payload,
@@ -168,12 +176,12 @@ class FusekiClient:
         )
         try:
             with urllib.request.urlopen(
-                request, timeout=self.timeout_seconds
+                request, timeout=(current_control.get().timeout(self.timeout_seconds) if current_control.get() else self.timeout_seconds)
             ) as response:
-                body = response.read().decode("utf-8")
+                parsed = read_json(response)
         except urllib.error.HTTPError as exc:
             raise ValueError(_fuseki_http_error_message(exc)) from exc
-        return json.loads(body)
+        return parsed
 
     def _rows_from_response(self, response: dict[str, Any]) -> list[dict[str, Any]]:
         variables = [str(item) for item in response.get("head", {}).get("vars", [])]

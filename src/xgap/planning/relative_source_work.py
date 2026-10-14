@@ -16,6 +16,7 @@ SCHEMA='xgap-relative-source-work-v1'
 DEGREE_SCHEMA='xgap-relative-source-work-v2'
 KEY_SCHEMA='xgap-relative-source-work-v3'
 BYTE_SCHEMA='xgap-relative-source-work-v4'
+CARDINALITY_SCHEMA='xgap-relative-source-work-v5'
 REMOTE={R.REMOTE_QUERY,R.REMOTE_BIND_QUERY}
 
 
@@ -47,6 +48,9 @@ class FrozenSourceWorkRanker:
     # Explicit source-average payload proxy. None preserves v1-v3 scores.
     transfer_byte_quantum: int | None=None
 
+    cardinality_aware: bool=False
+    column_synopses: tuple=()
+
     def __post_init__(self):
         if type(self.distinct_binding_keys) is not bool:raise ValueError('Distinct binding-key profile must be boolean')
         if any(not isinstance(p,(tuple,list)) or len(p)!=3 or not isinstance(p[0],str)
@@ -56,6 +60,14 @@ class FrozenSourceWorkRanker:
         object.__setattr__(self,'unique_node_properties',tuple(sorted(self.unique_node_properties)))
         object.__setattr__(self,'endpoint_degrees',tuple(sorted(tuple(r) for r in self.endpoint_degrees)))
         known={s.backend_id:s for s in self.statistics.entries}
+        from xgap.planning.cardinality_synopsis import ColumnSynopsis
+        if type(self.cardinality_aware) is not bool or self.column_synopses and not self.cardinality_aware:
+            raise ValueError('Column synopses require the cardinality-aware profile')
+        profiles=tuple(c if isinstance(c,ColumnSynopsis) else ColumnSynopsis(**c) for c in self.column_synopses)
+        if (len(profiles)>4096 or len({(c.backend,c.column) for c in profiles})!=len(profiles)
+                or any(c.backend not in known or c.rows>known[c.backend].total_rows for c in profiles)):
+            raise ValueError('Column synopses must match frozen source populations')
+        object.__setattr__(self,'column_synopses',tuple(sorted(profiles,key=lambda c:(c.backend,c.column))))
         if self.transfer_byte_quantum is not None:
             if (type(self.transfer_byte_quantum) is not int or self.transfer_byte_quantum <= 0
                     or any(s.mean_row_bytes is None or not math.isfinite(s.mean_row_bytes)
@@ -80,33 +92,55 @@ class FrozenSourceWorkRanker:
     def model_sha256(self):return self.to_dict()['model_sha256']
 
     def to_dict(self):
-        body=dict(schema_version=BYTE_SCHEMA if self.transfer_byte_quantum is not None else KEY_SCHEMA if self.distinct_binding_keys else DEGREE_SCHEMA if self.endpoint_degrees else SCHEMA,statistics=self.statistics.to_dict(),populations=self.populations,
+        body=dict(schema_version=CARDINALITY_SCHEMA if self.cardinality_aware else BYTE_SCHEMA if self.transfer_byte_quantum is not None else KEY_SCHEMA if self.distinct_binding_keys else DEGREE_SCHEMA if self.endpoint_degrees else SCHEMA,statistics=self.statistics.to_dict(),populations=self.populations,
             unique_node_properties=self.unique_node_properties,preparation_ref=self.preparation_ref,
             record_quantum=self.record_quantum)
         if self.endpoint_degrees:body['endpoint_degrees']=self.endpoint_degrees
         if self.distinct_binding_keys:body['distinct_binding_keys']=True
         if self.transfer_byte_quantum is not None:body['transfer_byte_quantum']=self.transfer_byte_quantum
+        if self.cardinality_aware:body.update(cardinality_aware=True,column_synopses=[c.to_dict() for c in self.column_synopses])
         return {**body,'model_sha256':_hash(body)}
 
     @classmethod
     def from_dict(cls,raw):
         doc=dict(raw);digest=doc.pop('model_sha256',None)
-        if doc.get('schema_version') not in (SCHEMA,DEGREE_SCHEMA,KEY_SCHEMA,BYTE_SCHEMA) or _hash(doc)!=digest:raise ValueError('Relative work model hash/schema differs')
-        if (doc['schema_version']==BYTE_SCHEMA)!=('transfer_byte_quantum' in doc):raise ValueError('Byte cost model schema differs')
+        if doc.get('schema_version') not in (SCHEMA,DEGREE_SCHEMA,KEY_SCHEMA,BYTE_SCHEMA,CARDINALITY_SCHEMA) or _hash(doc)!=digest:raise ValueError('Relative work model hash/schema differs')
+        if (doc['schema_version']==CARDINALITY_SCHEMA)!=bool(doc.get('cardinality_aware')):raise ValueError('Cardinality profile schema differs')
+        if doc['schema_version']!=CARDINALITY_SCHEMA and 'column_synopses' in doc:raise ValueError('Unexpected column synopses')
+        if doc['schema_version']!=CARDINALITY_SCHEMA and (doc['schema_version']==BYTE_SCHEMA)!=('transfer_byte_quantum' in doc):raise ValueError('Byte cost model schema differs')
         if doc['schema_version']==BYTE_SCHEMA and doc['transfer_byte_quantum'] is None:raise ValueError('Byte cost model quantum missing')
-        if doc['schema_version']!=BYTE_SCHEMA:
+        if doc['schema_version'] not in (BYTE_SCHEMA,CARDINALITY_SCHEMA):
             if (doc['schema_version']==KEY_SCHEMA)!=bool(doc.get('distinct_binding_keys')):raise ValueError('Binding-key model schema differs')
             if doc['schema_version']!=KEY_SCHEMA and (doc['schema_version']==DEGREE_SCHEMA)!=bool(doc.get('endpoint_degrees')):raise ValueError('Degree model schema differs')
         doc.pop('schema_version');doc['statistics']=FrozenSourceStatistics.from_dict(doc['statistics'])
-        return cls(**doc)
+        result=cls(**doc)
+        if result.model_sha256!=digest:raise ValueError('Relative model reconstructed hash differs')
+        return result
+
+    def for_request(self):
+        if not self.cardinality_aware:return self
+        from xgap.planning.estimate_session import EstimateSession
+        return EstimateSession(self)
 
     def predict(self,plan):
+        return self.predict_conditioned(plan,{})
+
+    def predict_conditioned(self,plan,observed_rows,*,observed_filters=None,_memo=None):
+        """Propagate scoped probe categories as output estimates, never scan bounds."""
+        observed_filters=observed_filters or {}
+        if set(observed_filters)-set(observed_rows):raise ValueError('Probe filters without scoped observations')
+        if observed_rows and not self.cardinality_aware:raise ValueError('Conditional cardinality requires v5')
+        eligible={n.node_id for n in plan.nodes if n.kind in REMOTE
+                  and n.parameters['artifact']['parameters'].get('compiler') in ('semantic_node_match_v1','semantic_edge_match_v1')}
+        if set(observed_rows)-eligible or any(type(v) not in (int,float) or not math.isfinite(v) or v<0 for v in observed_rows.values()):
+            raise ValueError('Invalid scoped row observations')
         started=time.perf_counter();sources={s.backend_id:s for s in self.statistics.entries}
         counts={b:(n,e) for b,n,e in self.populations};nodes={n.node_id:n for n in plan.nodes}
         children={k:[] for k in nodes};degree={k:len(n.inputs) for k,n in nodes.items()}
         for node in plan.nodes:
             for parent in node.inputs:children[parent].append(node.node_id)
-        queue=deque(sorted(k for k,v in degree.items() if v==0));rows={};unique={};columns={}
+        queue=deque(sorted(k for k,v in degree.items() if v==0));rows={};unique={};columns={};distributions={}
+        synopses={(c.backend,c.column):c for c in self.column_synopses}
         scan=transfer=local=keys=calls=risk=0.;details=[];source_join_work=0.;transfer_bytes=0.
         total_population=sum(n+e for n,e in counts.values())
         degrees={r[:3]:r[3:] for r in self.endpoint_degrees}
@@ -116,14 +150,36 @@ class FrozenSourceWorkRanker:
             return (condition.get('op')=='eq' and condition.get('field') in fields
                 and 'right_field' not in condition and condition.get('value') is not None)
 
+        signatures={}
         while queue:
             node=nodes[queue.popleft()];p=node.parameters
+            signature=_hash(dict(kind=node.kind.value,parameters=p,
+                parents=[signatures[i] for i in node.inputs],conditioned=observed_rows.get(node.node_id),
+                observed_filters=observed_filters.get(node.node_id,()),
+                sources=plan.metadata.get('source_identities'))) if _memo is not None else None
+            signatures[node.node_id]=signature
+            saved=_memo.get(signature) if _memo is not None else None
+            if saved is not None:
+                out,fields,cols,dist,delta,detail=saved
+                rows[node.node_id]=out;unique[node.node_id]=fields;columns[node.node_id]=cols;distributions[node.node_id]=dist
+                ds,dt,dl,dk,dc,dr,dj,db=delta
+                scan+=ds;transfer+=dt;local+=dl;keys+=dk;calls+=dc;risk+=dr;source_join_work+=dj;transfer_bytes+=db
+                details.append({**detail,'node':node.node_id})
+                for child in children[node.node_id]:
+                    degree[child]-=1
+                    if degree[child]==0:queue.append(child)
+                continue
+            before=(scan,transfer,local,keys,calls,risk,source_join_work,transfer_bytes)
+            if _memo is not None:
+                # Calculate each contribution directly; subtracting large prefix
+                # totals loses small work and poisons reuse under a smaller prefix.
+                scan=transfer=local=keys=calls=risk=source_join_work=transfer_bytes=0.
             incoming=sum(rows[i] for i in node.inputs);out=incoming
             sent=None;key_input=incoming
-            if self.distinct_binding_keys and node.kind is R.REMOTE_BIND_QUERY:
+            if (self.distinct_binding_keys or self.cardinality_aware) and node.kind is R.REMOTE_BIND_QUERY:
                 from xgap.planning.binding_cardinality import bind_keys
                 key_input=bind_keys(node,rows,columns)
-            fields=set(unique[node.inputs[0]]) if len(node.inputs)==1 else set();degree_evidence=None
+            fields=set(unique[node.inputs[0]]) if len(node.inputs)==1 else set();degree_evidence=None;distribution={};join_basis=None
             if node.kind in REMOTE:
                 backend=p['backend_id'];s=sources.get(backend)
                 if s is None or plan.metadata['source_identities'].get(backend)!={
@@ -148,14 +204,18 @@ class FrozenSourceWorkRanker:
                     scan+=work['scan_records'];source_join_work+=work['join_records']
                     out=work['output_records'];transfer+=out;calls+=1
                     if self.transfer_byte_quantum is not None:transfer_bytes+=out*s.mean_row_bytes
-                    rows[node.node_id]=out;unique[node.node_id]=set()
+                    rows[node.node_id]=out;unique[node.node_id]=set();distributions[node.node_id]={}
                     details.append(dict(node=node.node_id,estimated_rows=out,unique_fields=[],source_work=work))
-                    if self.distinct_binding_keys:
+                    if self.distinct_binding_keys or self.cardinality_aware:
                         from xgap.planning.binding_cardinality import propagate
                         columns[node.node_id]=propagate(node,out,rows,columns,populations=counts,degrees=degrees,
                             unique_properties=self.unique_node_properties,sent=sent)
                         details[-1].update(column_ndv_proxy=columns[node.node_id],binding_input_rows=incoming,
                             binding_distinct_key_proxy=key_input if node.kind is R.REMOTE_BIND_QUERY else None)
+                    if _memo is not None:
+                        delta=(scan,transfer,local,keys,calls,risk,source_join_work,transfer_bytes)
+                        _memo.put(signature,(out,set(),columns.get(node.node_id,{}),{},delta,details[-1]))
+                        scan,transfer,local,keys,calls,risk,source_join_work,transfer_bytes=tuple(a+b for a,b in zip(before,delta))
                     for child in children[node.node_id]:
                         degree[child]-=1
                         if degree[child]==0:queue.append(child)
@@ -199,6 +259,23 @@ class FrozenSourceWorkRanker:
                         # retain the unreduced scan-work proxy above.
                     if key_input>cap:
                         risk+=(key_input/cap)*total_population
+                if self.cardinality_aware:
+                    from xgap.planning.cardinality_synopsis import remote_columns,filter_columns
+                    distribution=remote_columns(node,out,synopses)
+                    probe_filters=observed_filters.get(node.node_id,())
+                    conditions=a.get('necessary_row_filters',{}).get('conditions',[])
+                    if not {_hash(c) for c in probe_filters}<={_hash(c) for c in conditions}:
+                        raise ValueError('Probe predicate scope differs from the physical read')
+                    for c in probe_filters:
+                        distribution,out=filter_columns(distribution,c,out)
+                    if node.node_id in observed_rows:
+                        # The probe already counted its own pushed predicates.
+                        # Retain their frequency shape but do not discount twice.
+                        out=min(work,min(population,observed_rows[node.node_id])*work/max(1,population))
+                        distribution={k:v.scaled(out) for k,v in distribution.items()}
+                    known={_hash(c) for c in probe_filters}
+                    for c in conditions:
+                        if _hash(c) not in known:distribution,out=filter_columns(distribution,c,out)
                 for c in a.get('necessary_row_filters',{}).get('conditions',[]):
                     if singleton(c,fields):out=min(out,1.)
                 scan+=work;transfer+=out;calls+=1
@@ -209,6 +286,9 @@ class FrozenSourceWorkRanker:
                     aliases=p.get('identity_fields',{'entity':p.get('entity_field','entity')})
                     fields={aliases.get(f,f) for f in fields}
                 elif node.kind is R.COORDINATOR_FILTER:
+                    if self.cardinality_aware:
+                        from xgap.planning.cardinality_synopsis import filter_columns
+                        distribution,out=filter_columns(distributions[node.inputs[0]],p['condition'],out)
                     if singleton(p['condition'],fields):out=min(out,1.)
                 elif node.kind is R.COORDINATOR_ROW_PROJECT:
                     fields={name for name,value in p['projections'].items()
@@ -218,6 +298,14 @@ class FrozenSourceWorkRanker:
                     lu=p['left_on'] in unique[left];ru=p['right_on'] in unique[right]
                     unknown_join=(min(1e100,l*r) if self.endpoint_degrees else max(l,r))
                     out=min(l,r) if lu and ru else l if ru else r if lu else unknown_join
+                    if self.cardinality_aware and not lu and not ru:
+                        from xgap.planning.cardinality_synopsis import join_rows
+                        ld=distributions[left].get(p['left_on']);rd=distributions[right].get(p['right_on'])
+                        joined=join_rows(ld,rd) if ld is not None and rd is not None else None
+                        if joined is not None:out=joined;join_basis='heavy-hitter overlap plus uniform residual'
+                        else:
+                            ndv=max(columns[left].get(p['left_on'],1),columns[right].get(p['right_on'],1),1)
+                            out=min(1e100,l*r/ndv);join_basis='uniform NDV fallback; unknown overlap'
                     if not l or not r:out=0.
                     fields=set(unique[left]) if ru else set()
                     # Right fields can be renamed. Only the same-name equality
@@ -231,14 +319,27 @@ class FrozenSourceWorkRanker:
                 elif node.kind is R.MERGE:fields=set()
                 elif node.kind not in (R.EXCHANGE,R.ALIGN):raise ValueError('Unadmitted relative-work operator')
             if not math.isfinite(out) or out<0:raise ValueError('Invalid relative row proxy')
+            if self.cardinality_aware:
+                from xgap.planning.cardinality_synopsis import local_columns
+                if node.kind not in REMOTE and node.kind is not R.COORDINATOR_FILTER:
+                    distribution=local_columns(node,out,distributions)
+                distributions[node.node_id]={k:v.scaled(out) for k,v in distribution.items()}
             rows[node.node_id]=out;unique[node.node_id]=fields
             details.append(dict(node=node.node_id,estimated_rows=out,unique_fields=sorted(fields),endpoint_degree=degree_evidence))
-            if self.distinct_binding_keys:
+            if self.distinct_binding_keys or self.cardinality_aware:
                 from xgap.planning.binding_cardinality import propagate
                 columns[node.node_id]=propagate(node,out,rows,columns,populations=counts,degrees=degrees,
                     unique_properties=self.unique_node_properties,sent=sent)
                 details[-1].update(column_ndv_proxy=columns[node.node_id],binding_input_rows=incoming if node.kind is R.REMOTE_BIND_QUERY else None,
                     binding_distinct_key_proxy=key_input if node.kind is R.REMOTE_BIND_QUERY else None)
+            if self.cardinality_aware:
+                columns[node.node_id].update({k:v.ndv for k,v in distributions[node.node_id].items()})
+                details[-1].update(join_basis=join_basis,conditioned_rows=observed_rows.get(node.node_id))
+            if _memo is not None:
+                after=(scan,transfer,local,keys,calls,risk,source_join_work,transfer_bytes)
+                _memo.put(signature,(out,fields,columns.get(node.node_id,{}),distributions.get(node.node_id,{}),
+                    after,details[-1]))
+                scan,transfer,local,keys,calls,risk,source_join_work,transfer_bytes=tuple(a+b for a,b in zip(before,after))
             for child in children[node.node_id]:
                 degree[child]-=1
                 if degree[child]==0:queue.append(child)
@@ -258,6 +359,9 @@ class FrozenSourceWorkRanker:
                 **(dict(returned_byte_proxy=transfer_bytes,transfer_cost_units=transfer_cost,
                     byte_proxy_basis='estimated output rows times frozen per-source mean row bytes; not wire bytes or a bound')
                     if self.transfer_byte_quantum is not None else {}),
-                assumptions=('Column NDV propagated through typed lineage for deduplicated bind requests; unknown NDV falls back to rows; ' if self.distinct_binding_keys else '')+('Endpoint-specific mean / size-biased degree; unknown many-many join uses capped Cartesian proxy (1e100); proxies, not bounds'
-                             if self.endpoint_degrees else 'Uniform average degree, key-preserving joins, conservative identity equality; proxies, not bounds'),
+                assumptions=('MCV overlap, NDV fallback, uniform residual tails and independent filters; proxies, not bounds'
+                    if self.cardinality_aware else ('Column NDV propagated through typed lineage for deduplicated bind requests; unknown NDV falls back to rows; ' if self.distinct_binding_keys else '')+('Endpoint-specific mean / size-biased degree; unknown many-many join uses capped Cartesian proxy (1e100); proxies, not bounds'
+                             if self.endpoint_degrees else 'Uniform average degree, key-preserving joins, conservative identity equality; proxies, not bounds')),
+                cardinality_profile=('frozen MCV + uniform residual, independent filters; source scan work not reduced' if self.cardinality_aware else None),
+                conditioned_nodes=sorted(observed_rows),
                 measured_latency=False,quality_bound=None,fit_calls=0,current_query_observation_calls=0))

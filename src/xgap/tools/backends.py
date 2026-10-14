@@ -318,7 +318,11 @@ class NativeBackendPlugin:
                     BACKEND_INVOKE_TOOL,
                     f"invalid query artifact: {exc}",
                 )
-            report = self.client.execute(artifact)
+            from xgap.backends.request_control import current_control
+            control=current_control.get()
+            controlled=getattr(self.client,'execute_controlled',None)
+            report=(controlled(artifact,control) if control is not None and callable(controlled)
+                    else self.client.execute(artifact))
             if not report.success:
                 return ToolResult.error_result(
                     BACKEND_INVOKE_TOOL,

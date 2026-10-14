@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import base64
 import json
+from xgap.backends.json_stream import read_json
+from xgap.backends.request_control import current_control
 import os
 import time
 import urllib.error
@@ -284,12 +286,11 @@ class Neo4jClient:
         )
         try:
             with urllib.request.urlopen(
-                request, timeout=self.timeout_seconds
+                request, timeout=(current_control.get().timeout(self.timeout_seconds) if current_control.get() else self.timeout_seconds)
             ) as response:
-                body = response.read().decode("utf-8")
+                parsed = read_json(response)
         except urllib.error.HTTPError as exc:
             raise ValueError(_neo4j_http_error_message(exc)) from exc
-        parsed = json.loads(body)
         errors = parsed.get("errors", [])
         if errors:
             message = "; ".join(str(error.get("message", error)) for error in errors)

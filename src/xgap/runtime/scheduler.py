@@ -68,6 +68,8 @@ class FederatedScheduler:
         limits = self._limits
         deadline = None if limits.dispatch_timeout_s is None else started + limits.dispatch_timeout_s
         stop_reason = None
+        from xgap.backends.request_control import RequestControl,controlled_call,cancel_on_error
+        control=RequestControl(deadline,limits.max_response_bytes)
         nodes = {node.node_id: node for node in plan.nodes}
         if initial_results is None:
             initial_results = {}
@@ -129,7 +131,7 @@ class FederatedScheduler:
             release(node_id)
 
         running = {}
-        with ThreadPoolExecutor(max_workers=plan.max_parallelism) as executor:
+        with ThreadPoolExecutor(max_workers=plan.max_parallelism) as executor, cancel_on_error(control):
             while pending:
                 if deadline is not None and time.perf_counter() >= deadline:
                     stop_reason = stop_reason or 'dispatch_timeout'
@@ -137,6 +139,7 @@ class FederatedScheduler:
                     completed(running.pop(future), future.result())
                 active = set(running.values())
                 if stop_reason:
+                    control.cancel()
                     for node_id in sorted(pending - active):
                         node = nodes[node_id]
                         completed(node_id, RuntimeNodeResult(node_id, node.kind, RuntimeNodeStatus.SKIPPED,
@@ -232,7 +235,7 @@ class FederatedScheduler:
                         stop_reason = 'dispatch_timeout'
                         break
                     inputs = {key: results[key] for key in node.inputs}
-                    future = executor.submit(self._execute_remote, node, goal_id, inputs)
+                    future = executor.submit(controlled_call, control, self._execute_remote, node, goal_id, inputs)
                     running[future] = node.node_id
                 for node in local:
                     if deadline is not None and time.perf_counter() >= deadline:
@@ -267,8 +270,10 @@ class FederatedScheduler:
                 "measurement_scope": "registered result payloads only; aliases may double-count; in-flight/temporary buffers and RSS excluded",
                 "final_rows_truncated": False,"streaming_topk":pipeline_receipts} if self._retention == "roots" else {}),
                 **({'execution_limits': dict(dispatch_timeout_s=limits.dispatch_timeout_s,
-                    max_registered_bytes=limits.max_registered_bytes,per_backend_parallelism=limits.per_backend_parallelism),
-                    'execution_stop_reason':stop_reason,
+                    max_registered_bytes=limits.max_registered_bytes,per_backend_parallelism=limits.per_backend_parallelism,
+                    max_response_bytes=limits.max_response_bytes),
+                    'execution_stop_reason':stop_reason,'backend_cancellation':control.receipts,
+                    'native_http_response_bytes_including_discarded':control.response_bytes,
                     'limit_scope':'cooperative dispatch and registered payload admission; running calls drained; not RSS or a hard wall bound'}
                     if limits != ExecutionLimits() else {})},
         )
@@ -601,6 +606,9 @@ class FederatedScheduler:
             raise ValueError("coordinator_join requires string left_on and right_on")
         if not isinstance(right_prefix, str):
             raise ValueError("coordinator_join right_prefix must be a string")
+        # Runtime joins have distinct-row semantics. Duplicate input tuples
+        # cannot contribute a new output, but skew can multiply them quadratically.
+        left_rows=_deduplicate(left_rows);right_rows=_deduplicate(right_rows)
         index: dict[tuple, list[JsonRow]] = {}
         for row in right_rows:
             if right_on not in row:

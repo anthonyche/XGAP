@@ -44,6 +44,10 @@ public schema and language version, keys by the complete compact query, and
 returns isolated copies. Neither authority replies nor query answers are cached.
 The controller separately caches frozen base-plan predictions and fact-dependent
 adjustments; a new probe observation still changes the adjusted score.
+The v5 relative-work model also shares a bounded request-local subplan-estimate memo
+(2,048 entries / 16 MiB serialized representation). Its dependencies include
+parent estimates, typed parameters, source snapshots and scoped probe categories;
+changing a fact invalidates dependent subplans. It never reuses query answers.
 
 `FrozenSourceWorkRanker` v4 optionally prices estimated returned bytes using
 frozen per-source mean row sizes and an explicit `transfer_byte_quantum`.
@@ -52,6 +56,31 @@ average proxy, not wire-byte measurement, calibrated latency or a resource bound
 Complete row-size statistics are required. Omitting the byte quantum preserves
 the original v1-v3 schema, arithmetic and rankings; existing artifacts do not
 silently adopt the new cost model.
+
+`FrozenSourceWorkRanker` v5 is selected with `cardinality_aware=True` and
+optional `ColumnSynopsis` entries in `column_synopses`. These are source-owned
+snapshot statistics: rows, nulls, NDV and at most 256 heavy-value frequencies per
+column. Column names are `node:property:<name>`, `node:entity`, or
+`edge:<label>:source`, `edge:<label>:target`, `edge:<label>:property:<name>`.
+`domain` declares compatible key encodings across sources. Statistics cover the
+source population, not gold answers or measurements of a selected evaluation query.
+Filters propagate frequencies through normalization and projections. Joins use
+heavy-value overlap and uniform residuals, falling back to NDV when frequencies
+are unavailable. Residual range selectivity and inter-column independence remain
+heuristics; source scan work is not silently reduced by returned-row selectivity.
+Native contracted SPJ plans retain their separate cost model.
+
+For v5, scoped probe categories update Match output cardinalities and downstream
+work instead of adding a second row-cost penalty. Before observing a category,
+the controller averages **costs of outcomes**, not the cost of average rows;
+otherwise nonlinear costs can create fictitious information value. Unknown
+observations retain the prior. Independent declared target priors are factorized
+with at most 256 conditional scenarios; larger models fail explicitly. Probe cost
+is still paid by the controller, and hypothetical scenarios do not execute tools.
+Probe predicates and source snapshots must match the physical read. Predicates
+already included in the observed count are not discounted twice; an incompatible
+rewrite cannot reuse that count through the historical additive penalty.
+Historical v1-v4 artifacts retain their original numerical model.
 
 `agent.unified_family` manages bounded candidate and plan pools.
 `runtime.unified_physical` generates individual checked transformations.
@@ -78,9 +107,23 @@ tasks for each backend ID independently of global plan parallelism.
 budget and stops downstream dispatch, rather than returning a truncated answer.
 It measures serialized payloads, not process RSS or in-flight buffers.
 `dispatch_timeout_s` is measured from final execution start and stops new work;
-already running calls drain under their own transport timeouts before return.
-It is not an end-to-end deadline or server-side cancellation. These controls
-do not turn unknown symbolic resource bounds into certified finite bounds.
+already running calls receive the same request cancellation control, and native
+HTTP clients reduce transport timeouts to remaining execution time. Fuseki also
+receives its protocol `timeout` in seconds. Capability-aware clients implement
+`execute_controlled(artifact, control)` and register a prompt, invocation-specific
+callback with `control.cancellation(callback)`. Cancellation receipts preserve
+adapter acknowledgement or failure. Native HTTP response reads interrupt their
+own socket where supported; closing a socket does **not** prove database-side
+termination. Legacy adapters without a cancellation capability drain before return.
+These are final-execution controls, not a certified end-to-end wall-time bound.
+
+Native HTTP JSON is decoded incrementally using bounded chunks, removing the
+whole-response bytes/string copies. Optional `max_response_bytes` stops each
+response at limit + one byte and fails the request without returning partial rows.
+The decoded result and final API rows are still materialized; this is not yet
+an all-operator streaming pipeline or a process RSS bound. Coordinator joins
+eliminate duplicate input tuples before pairing because their output already has
+distinct-row semantics, avoiding redundant Cartesian work on duplicate-heavy keys.
 
 ## Implementations and evaluation support
 

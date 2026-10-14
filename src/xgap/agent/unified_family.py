@@ -83,7 +83,8 @@ class FamilyDomain:
         self.information=information or FamilyInformationPolicy()
         if any(not scope or len(set(scope))!=len(scope) or any(type(i) is not int or not 0<=i<len(self.names)
                for i in scope) for scope in self.information.additional_scopes):raise ValueError('Invalid additional information scope')
-        self.settings,self.moves,self.estimator = settings,moves,estimator
+        self.settings,self.moves = settings,moves
+        self.estimator = estimator.for_request() if callable(getattr(estimator,'for_request',None)) else estimator
         self.plans = {}
         self.plan_bytes = 0
         self.optional_plan_rejections = 0
@@ -143,8 +144,13 @@ class FamilyDomain:
             base,_=self.costs.execution(plan,self.estimator)
             self.base_estimate_evaluations += 1
             self.remember(self.base_estimate_cache,key,base)
+        conditioned_targets=set()
+        if getattr(self.estimator,'cardinality_aware',False):
+            from xgap.planning.conditioned_work import conditioned_cost
+            adjusted,conditioned_targets=conditioned_cost(self.estimator,plan,candidate_id,self.targets.values(),facts)
+            if adjusted is not None:base=adjusted
         for target in self.targets.values():
-            if target.kind!='probe':continue
+            if target.kind!='probe' or target.name in conditioned_targets:continue
             label=facts.get(target.name,'unknown')
             rows=(target.prior_rows if label=='unknown' and target.prior_rows is not None
                 else target.row_estimates[target.labels.index(label)])
@@ -518,6 +524,7 @@ def run_unified_family(question, family, user, *, prepare_seed, execute, costs, 
                   estimate_evaluations=domain.estimate_evaluations,estimate_cache_hits=domain.estimate_cache_hits,
                   base_estimate_evaluations=domain.base_estimate_evaluations,
                   base_estimate_cache_hits=domain.base_estimate_cache_hits,
+                  subplan_estimates=(domain.estimator.diagnostics() if callable(getattr(domain.estimator,'diagnostics',None)) else None),
                   selected_facts=dict(actual.facts),
                   decision_order=settings.decision_order, fixed_candidate=actual.fixed_candidate,
                   information_mode=settings.information_mode, action_objective=settings.action_objective,
