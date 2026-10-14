@@ -31,6 +31,8 @@ from xgap.runtime.execution_limits import ExecutionLimits
 
 
 def _encoded_size(rows: Iterable[Mapping[str, Any]]) -> int:
+    from xgap.runtime.spill_rows import DiskRows
+    if isinstance(rows,DiskRows):return rows.encoded_bytes
     # Same JSON-array byte count without a second full-result string/bytes copy.
     size = 2
     for index, row in enumerate(rows):
@@ -57,6 +59,10 @@ class FederatedScheduler:
             raise TypeError('Typed execution limits required')
         self._limits = limits or ExecutionLimits()
 
+    def _make_control(self,deadline,limits):
+        from xgap.backends.request_control import RequestControl
+        return RequestControl(deadline,limits.max_response_bytes)
+
     def execute(
         self,
         plan: FederatedExecutionPlan,
@@ -69,7 +75,7 @@ class FederatedScheduler:
         deadline = None if limits.dispatch_timeout_s is None else started + limits.dispatch_timeout_s
         stop_reason = None
         from xgap.backends.request_control import RequestControl,controlled_call,cancel_on_error
-        control=RequestControl(deadline,limits.max_response_bytes)
+        control=self._make_control(deadline,limits)
         nodes = {node.node_id: node for node in plan.nodes}
         if initial_results is None:
             initial_results = {}
@@ -103,6 +109,8 @@ class FederatedScheduler:
                     and result is not None and result.rows is not None):
                 retained_rows -= result.row_count; retained_bytes -= result.output_bytes
                 results[node_id] = replace(result, rows=None, released_row_count=result.row_count)
+                from xgap.runtime.spill_rows import DiskRows
+                if isinstance(result.rows,DiskRows):result.rows.close()
                 released += 1
 
         def completed(node_id, result):
@@ -473,6 +481,7 @@ class FederatedScheduler:
                     raise ValueError("Correlated bind values must be finite non-null JSON scalars")
                 key = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
                 values[key] = value
+                if len(values)>max_bindings:raise ValueError(f"remote_bind_query has at least {len(values)} bindings but limit is {max_bindings}")
                 continue
             if bind_field not in row:
                 raise ValueError(f"bind field '{bind_field}' is missing")
@@ -481,6 +490,7 @@ class FederatedScheduler:
                 raise ValueError("bind values must be non-null JSON scalars")
             key = json.dumps(value, sort_keys=True, separators=(",", ":"))
             values[key] = value
+            if len(values)>max_bindings:raise ValueError(f"remote_bind_query has at least {len(values)} bindings but limit is {max_bindings}")
         ordered = [values[key] for key in sorted(values)]
         if len(ordered) > max_bindings:
             raise ValueError(

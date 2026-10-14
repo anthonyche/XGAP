@@ -99,6 +99,10 @@ class Neo4jClient:
         )
         self.timeout_seconds = float(runtime.get("timeout_seconds", 30))
 
+    def execute_stream(self, artifact, emit, control, workspace):
+        from xgap.backends.row_stream import execute_native_stream
+        return execute_native_stream(self, artifact, emit, control, workspace)
+
     def healthcheck(self) -> BackendStatus:
         artifact = QueryArtifact(
             artifact_id="neo4j-healthcheck",
@@ -284,13 +288,20 @@ class Neo4jClient:
             },
             method="POST",
         )
-        try:
-            with urllib.request.urlopen(
-                request, timeout=(current_control.get().timeout(self.timeout_seconds) if current_control.get() else self.timeout_seconds)
-            ) as response:
-                parsed = read_json(response)
-        except urllib.error.HTTPError as exc:
-            raise ValueError(_neo4j_http_error_message(exc)) from exc
+        control=current_control.get()
+        def send(target):
+            request.full_url=target
+            try:
+                with urllib.request.urlopen(request,timeout=control.timeout(self.timeout_seconds) if control else self.timeout_seconds) as response:
+                    result=read_json(response)
+                if result.get('errors'):raise ValueError('; '.join(str(e.get('message',e)) for e in result['errors']))
+                return result
+            except urllib.error.HTTPError as exc:
+                raise ValueError(_neo4j_http_error_message(exc)) from exc
+        if control is not None and control.database_cancellation:
+            from xgap.backends.confirmed_cancel import neo4j_transaction
+            with neo4j_transaction(self,control) as target:parsed=send(target)
+        else:parsed=send(url)
         errors = parsed.get("errors", [])
         if errors:
             message = "; ".join(str(error.get("message", error)) for error in errors)

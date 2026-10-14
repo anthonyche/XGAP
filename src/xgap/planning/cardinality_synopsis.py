@@ -130,8 +130,27 @@ def filter_columns(columns,condition,out):
         for c in condition['args']:columns,out=filter_columns(columns,c,out)
         return columns,out
     field=condition.get('field');op=condition.get('op');value=condition.get('value')
+    if op in ('or','not','is_null','is_not_null') or 'right_field' in condition or value is None:
+        from xgap.runtime.row_operations import condition_fields
+        used=condition_fields(condition)
+        groups=[(k,v) for k,v in columns.items() if isinstance(k,tuple) and used<=set(k)]
+        if groups:
+            key,joint=max(groups,key=lambda kv:(len(kv[0]),kv[0]))
+            # Tuple frequencies are exact; unobserved tuple predicates retain a
+            # declared half-range proxy (null comparisons are always false).
+            fraction=0. if 'value' in condition and value is None else .5
+            selected=joint.filtered(condition,fraction);new=min(out,selected.rows)
+            return {k:(selected if k==key else selected.marginal(k,v) if isinstance(k,str) and k in key else v.scaled(new))
+                    for k,v in columns.items()},new
     if field not in columns or op not in ('eq','ne','lt','le','gt','ge') or 'right_field' in condition or value is None:
         return columns,out
+    groups=[(k,v) for k,v in columns.items() if isinstance(k,tuple) and field in k]
+    if groups:
+        key,joint=max(groups,key=lambda kv:(len(kv[0]),kv[0]))
+        marginal=columns[field].filtered(op,value,condition.get('value_type'))
+        selected=joint.filtered(condition,min(1,marginal.rows/max(out,1e-100)))
+        new=min(out,selected.rows)
+        return {k:(selected if k==key else selected.marginal(k,v) if isinstance(k,str) and k in key else v.scaled(new)) for k,v in columns.items()},new
     selected=columns[field].filtered(op,value,condition.get('value_type'));new=min(out,selected.rows)
     return {k:(selected if k==field else v.scaled(new)) for k,v in columns.items()},new
 
@@ -140,10 +159,15 @@ def local_columns(node,out,distributions):
     p=node.parameters;incoming=dict(distributions[node.inputs[0]]) if node.inputs else {}
     if node.kind is R.NORMALIZE_NODE_BINDINGS:
         aliases=p.get('identity_fields',{'entity':p.get('entity_field','entity')})
-        incoming={aliases.get(f,f):v for f,v in incoming.items()}
+        incoming={aliases.get(f,f) if isinstance(f,str) else tuple(aliases.get(c,c) for c in f):
+                  v if isinstance(f,str) else replace(v,fields=tuple(aliases.get(c,c) for c in f)) for f,v in incoming.items()}
     elif node.kind is R.COORDINATOR_ROW_PROJECT:
+        aliases={s['field']:name for name,s in p['projections'].items() if s.get('kind')=='field'}
+        groups={tuple(aliases[c] for c in k):replace(v,fields=tuple(aliases[c] for c in k)) for k,v in incoming.items()
+                if isinstance(k,tuple) and all(c in aliases for c in k)}
         incoming={name:incoming[s['field']] for name,s in p['projections'].items()
                   if s.get('kind')=='field' and s['field'] in incoming}
+        incoming.update(groups)
     elif node.kind not in (R.COORDINATOR_FILTER,R.EXCHANGE):
         # Joins/aggregations change key frequency shape; do not reuse input MCVs.
         return {}

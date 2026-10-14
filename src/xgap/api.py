@@ -34,7 +34,7 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
            sources, backends, backend_clients, epsilon='0', estimator=None,
            information=FamilyInformationPolicy(), limits=StrongSearchLimits(),
            costs=JointCostProfile(), on_user_observation=None,execution_cost_feedback=True,
-           unified=None, execution_limits=None):
+           unified=None, execution_limits=None, source_statistics=None):
     """One attempt, bounded declared semantics, no hidden repair or plan trials."""
     started = time.perf_counter()
     report = dict(schema_version='xgap-bounded-joint-answer-v1', profile_id='bounded-joint-v1',
@@ -46,6 +46,9 @@ def answer(request, provider, *, mode=None, scope_policy, authority, physical_pr
     try:
         if execution_limits is not None and not isinstance(execution_limits, ExecutionLimits):
             raise TypeError('Typed execution limits required')
+        from xgap.planning.source_statistics import resolve_estimator
+        estimator=resolve_estimator(estimator,source_statistics,backend_clients,sources)
+        report['source_statistics_sha256']=getattr(estimator,'model_sha256',None)
         if unified is not None:
             from xgap.agent.unified_family import UnifiedSettings, run_unified_family
             if (not isinstance(unified, UnifiedSettings) or mode is not None or epsilon != '0'
@@ -202,12 +205,14 @@ def answer_controlled(question, family, user, *, initial_observations=(), mode, 
 
 def answer_unified_controlled(question,family,user,*,initial_clues=None,settings=None,physical_profile,
         sources,backends,backend_clients,source_schema,estimator=None,information=FamilyInformationPolicy(),
-        costs=JointCostProfile(),on_user_observation=None,execution_limits=None):
+        costs=JointCostProfile(),on_user_observation=None,execution_limits=None,source_statistics=None):
     """Publisher-attested initial state; no model call or online hidden-gold access."""
     from xgap.agent.unified_family import UnifiedSettings,run_unified_family
     from xgap.runtime.unified_physical import PhysicalMoves
     started=time.perf_counter()
     settings=settings or UnifiedSettings()
+    from xgap.planning.source_statistics import resolve_estimator
+    estimator=resolve_estimator(estimator,source_statistics,backend_clients,sources)
     if execution_limits is not None and not isinstance(execution_limits, ExecutionLimits):
         raise TypeError('Typed execution limits required')
     if not family.coverage_basis or getattr(user,'family',None)!=family:
@@ -234,6 +239,7 @@ def answer_unified_controlled(question,family,user,*,initial_clues=None,settings
     terminal=core.get('selected_execution_cost_estimate',0 if core['final_plan_executions']==0 else None)
     return {**core,'schema_version':'xgap-unified-controlled-v1','profile_id':'unified-lookahead-v1',
         'track':'controlled_unified_lookahead','intent_family':family.to_dict(),
+        'source_statistics_sha256':getattr(estimator,'model_sha256',None),
         'lowering_cache':lowering_cache.metrics(),
         'scope_confirmation_calls':0,'total_user_calls':core['clarification_calls'],
         'scope_confirmed':True,'candidate_count':len(family.candidates),'input_tokens':0,'output_tokens':0,

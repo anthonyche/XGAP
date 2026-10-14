@@ -36,6 +36,8 @@ _DELIMITER=re.compile(r'[\s,\]}]')
 
 class JsonStream:
     def __init__(self,stream,control=None):
+        from xgap.backends.row_stream import array_factory
+        self.array_factory=array_factory.get()
         self.stream=stream;self.control=control;self.decoder=codecs.getincrementaldecoder('utf-8')()
         self.buffer='';self.position=0;self.eof=False;self.bytes=0;self.peak_buffer=0
 
@@ -86,7 +88,7 @@ class JsonStream:
     def value(self,path=(),depth=0):
         if depth>128:raise ValueError('Backend JSON nesting limit exceeded')
         self.whitespace();ch=self.peek()
-        if ch in ('{','[') and path and path[-1]=='*':
+        if ch in ('{','[') and path and path[-1]=='*' and not (self.array_factory and path==('results','*')):
             # C decoder for complete array items already in the bounded chunk.
             # An item crossing a chunk boundary uses the incremental path below.
             try:
@@ -112,11 +114,14 @@ class JsonStream:
                 if ch=='}':return result
                 if ch!=',':raise ValueError('Malformed backend JSON object')
         if ch=='[':
-            self.position+=1;result=[];self.whitespace()
-            if self.peek()==']':self.position+=1;return result
+            self.position+=1;result=self.array_factory(path) if self.array_factory else None
+            result=[] if result is None else result
+            finish=lambda:result.finish() if hasattr(result,'finish') else result
+            self.whitespace()
+            if self.peek()==']':self.position+=1;return finish()
             while True:
                 result.append(self.value(path+('*',),depth+1));self.whitespace();ch=self.peek();self.position+=1
-                if ch==']':return result
+                if ch==']':return finish()
                 if ch!=',':raise ValueError('Malformed backend JSON array')
         parts=[]
         while True:

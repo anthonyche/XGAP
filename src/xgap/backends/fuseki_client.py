@@ -63,6 +63,10 @@ class FusekiClient:
         )
         self.timeout_seconds = float(runtime.get("timeout_seconds", 30))
 
+    def execute_stream(self, artifact, emit, control, workspace):
+        from xgap.backends.row_stream import execute_native_stream
+        return execute_native_stream(self, artifact, emit, control, workspace)
+
     def healthcheck(self) -> BackendStatus:
         checked_at = _now()
         url = f"{self.base_url}/$/ping"
@@ -174,13 +178,18 @@ class FusekiClient:
             },
             method="POST",
         )
-        try:
-            with urllib.request.urlopen(
-                request, timeout=(current_control.get().timeout(self.timeout_seconds) if current_control.get() else self.timeout_seconds)
-            ) as response:
-                parsed = read_json(response)
-        except urllib.error.HTTPError as exc:
-            raise ValueError(_fuseki_http_error_message(exc)) from exc
+        def send(target,headers=None):
+            request.full_url=target
+            for key,value in (headers or {}).items():request.add_header(key,value)
+            try:
+                with urllib.request.urlopen(request,timeout=control.timeout(self.timeout_seconds) if control else self.timeout_seconds) as response:
+                    return read_json(response)
+            except urllib.error.HTTPError as exc:
+                raise ValueError(_fuseki_http_error_message(exc)) from exc
+        if control is not None and control.database_cancellation and self.descriptor.runtime.get('confirmed_cancel_protocol')=='xgap-fuseki-v1':
+            from xgap.backends.confirmed_cancel import fuseki_query
+            with fuseki_query(self,control) as (target,headers):parsed=send(target,headers)
+        else:parsed=send(url)
         return parsed
 
     def _rows_from_response(self, response: dict[str, Any]) -> list[dict[str, Any]]:

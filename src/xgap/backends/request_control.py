@@ -14,7 +14,7 @@ current_control=ContextVar('xgap_backend_request_control',default=None)
 class RequestControl:
     def __init__(self,deadline=None,max_response_bytes=None):
         self.deadline=deadline;self.max_response_bytes=max_response_bytes
-        self.cancelled=Event();self.lock=Lock();self.callbacks={};self.receipts=[];self.response_bytes=0
+        self.cancelled=Event();self.lock=Lock();self.callbacks={};self.receipts=[];self.response_bytes=0;self.lifecycle_calls=0;self.database_cancellation=False
 
     def record_read(self,count):
         with self.lock:self.response_bytes+=count

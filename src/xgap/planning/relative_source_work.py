@@ -17,6 +17,7 @@ DEGREE_SCHEMA='xgap-relative-source-work-v2'
 KEY_SCHEMA='xgap-relative-source-work-v3'
 BYTE_SCHEMA='xgap-relative-source-work-v4'
 CARDINALITY_SCHEMA='xgap-relative-source-work-v5'
+JOINT_SCHEMA='xgap-relative-source-work-v6'
 REMOTE={R.REMOTE_QUERY,R.REMOTE_BIND_QUERY}
 
 
@@ -50,6 +51,7 @@ class FrozenSourceWorkRanker:
 
     cardinality_aware: bool=False
     column_synopses: tuple=()
+    joint_synopses: tuple=()
 
     def __post_init__(self):
         if type(self.distinct_binding_keys) is not bool:raise ValueError('Distinct binding-key profile must be boolean')
@@ -68,6 +70,13 @@ class FrozenSourceWorkRanker:
                 or any(c.backend not in known or c.rows>known[c.backend].total_rows for c in profiles)):
             raise ValueError('Column synopses must match frozen source populations')
         object.__setattr__(self,'column_synopses',tuple(sorted(profiles,key=lambda c:(c.backend,c.column))))
+        from xgap.planning.joint_synopsis import JointSynopsis
+        joints=tuple(c if isinstance(c,JointSynopsis) else JointSynopsis(**c) for c in self.joint_synopses)
+        if (joints and not self.cardinality_aware or len(joints)>1024
+            or len({(c.backend,c.columns) for c in joints})!=len(joints)
+            or any(c.backend not in known or c.rows>known[c.backend].total_rows for c in joints)):
+            raise ValueError("Joint synopses differ from frozen sources")
+        object.__setattr__(self,"joint_synopses",tuple(sorted(joints,key=lambda c:(c.backend,c.columns))))
         if self.transfer_byte_quantum is not None:
             if (type(self.transfer_byte_quantum) is not int or self.transfer_byte_quantum <= 0
                     or any(s.mean_row_bytes is None or not math.isfinite(s.mean_row_bytes)
@@ -92,24 +101,25 @@ class FrozenSourceWorkRanker:
     def model_sha256(self):return self.to_dict()['model_sha256']
 
     def to_dict(self):
-        body=dict(schema_version=CARDINALITY_SCHEMA if self.cardinality_aware else BYTE_SCHEMA if self.transfer_byte_quantum is not None else KEY_SCHEMA if self.distinct_binding_keys else DEGREE_SCHEMA if self.endpoint_degrees else SCHEMA,statistics=self.statistics.to_dict(),populations=self.populations,
+        body=dict(schema_version=JOINT_SCHEMA if self.joint_synopses else CARDINALITY_SCHEMA if self.cardinality_aware else BYTE_SCHEMA if self.transfer_byte_quantum is not None else KEY_SCHEMA if self.distinct_binding_keys else DEGREE_SCHEMA if self.endpoint_degrees else SCHEMA,statistics=self.statistics.to_dict(),populations=self.populations,
             unique_node_properties=self.unique_node_properties,preparation_ref=self.preparation_ref,
             record_quantum=self.record_quantum)
         if self.endpoint_degrees:body['endpoint_degrees']=self.endpoint_degrees
         if self.distinct_binding_keys:body['distinct_binding_keys']=True
         if self.transfer_byte_quantum is not None:body['transfer_byte_quantum']=self.transfer_byte_quantum
         if self.cardinality_aware:body.update(cardinality_aware=True,column_synopses=[c.to_dict() for c in self.column_synopses])
+        if self.joint_synopses:body['joint_synopses']=[c.to_dict() for c in self.joint_synopses]
         return {**body,'model_sha256':_hash(body)}
 
     @classmethod
     def from_dict(cls,raw):
         doc=dict(raw);digest=doc.pop('model_sha256',None)
-        if doc.get('schema_version') not in (SCHEMA,DEGREE_SCHEMA,KEY_SCHEMA,BYTE_SCHEMA,CARDINALITY_SCHEMA) or _hash(doc)!=digest:raise ValueError('Relative work model hash/schema differs')
-        if (doc['schema_version']==CARDINALITY_SCHEMA)!=bool(doc.get('cardinality_aware')):raise ValueError('Cardinality profile schema differs')
-        if doc['schema_version']!=CARDINALITY_SCHEMA and 'column_synopses' in doc:raise ValueError('Unexpected column synopses')
-        if doc['schema_version']!=CARDINALITY_SCHEMA and (doc['schema_version']==BYTE_SCHEMA)!=('transfer_byte_quantum' in doc):raise ValueError('Byte cost model schema differs')
+        if doc.get('schema_version') not in (SCHEMA,DEGREE_SCHEMA,KEY_SCHEMA,BYTE_SCHEMA,CARDINALITY_SCHEMA,JOINT_SCHEMA) or _hash(doc)!=digest:raise ValueError('Relative work model hash/schema differs')
+        if (doc['schema_version'] in (CARDINALITY_SCHEMA,JOINT_SCHEMA))!=bool(doc.get('cardinality_aware')):raise ValueError('Cardinality profile schema differs')
+        if doc['schema_version'] not in (CARDINALITY_SCHEMA,JOINT_SCHEMA) and 'column_synopses' in doc:raise ValueError('Unexpected column synopses')
+        if doc['schema_version'] not in (CARDINALITY_SCHEMA,JOINT_SCHEMA) and (doc['schema_version']==BYTE_SCHEMA)!=('transfer_byte_quantum' in doc):raise ValueError('Byte cost model schema differs')
         if doc['schema_version']==BYTE_SCHEMA and doc['transfer_byte_quantum'] is None:raise ValueError('Byte cost model quantum missing')
-        if doc['schema_version'] not in (BYTE_SCHEMA,CARDINALITY_SCHEMA):
+        if doc['schema_version'] not in (BYTE_SCHEMA,CARDINALITY_SCHEMA,JOINT_SCHEMA):
             if (doc['schema_version']==KEY_SCHEMA)!=bool(doc.get('distinct_binding_keys')):raise ValueError('Binding-key model schema differs')
             if doc['schema_version']!=KEY_SCHEMA and (doc['schema_version']==DEGREE_SCHEMA)!=bool(doc.get('endpoint_degrees')):raise ValueError('Degree model schema differs')
         doc.pop('schema_version');doc['statistics']=FrozenSourceStatistics.from_dict(doc['statistics'])
@@ -262,6 +272,8 @@ class FrozenSourceWorkRanker:
                 if self.cardinality_aware:
                     from xgap.planning.cardinality_synopsis import remote_columns,filter_columns
                     distribution=remote_columns(node,out,synopses)
+                    from xgap.planning.joint_synopsis import remote_joint
+                    distribution.update(remote_joint(node,out,self.joint_synopses))
                     probe_filters=observed_filters.get(node.node_id,())
                     conditions=a.get('necessary_row_filters',{}).get('conditions',[])
                     if not {_hash(c) for c in probe_filters}<={_hash(c) for c in conditions}:
@@ -333,7 +345,7 @@ class FrozenSourceWorkRanker:
                 details[-1].update(column_ndv_proxy=columns[node.node_id],binding_input_rows=incoming if node.kind is R.REMOTE_BIND_QUERY else None,
                     binding_distinct_key_proxy=key_input if node.kind is R.REMOTE_BIND_QUERY else None)
             if self.cardinality_aware:
-                columns[node.node_id].update({k:v.ndv for k,v in distributions[node.node_id].items()})
+                columns[node.node_id].update({k:v.ndv for k,v in distributions[node.node_id].items() if isinstance(k,str)})
                 details[-1].update(join_basis=join_basis,conditioned_rows=observed_rows.get(node.node_id))
             if _memo is not None:
                 after=(scan,transfer,local,keys,calls,risk,source_join_work,transfer_bytes)

@@ -87,7 +87,8 @@ def family_runtime(family, *, source_schema, sources, backends, backend_clients,
         registry = BackendPluginRegistry()
         for backend in {n.parameters['backend_id'] for n in plan.nodes if 'backend_id' in n.parameters}:
             registry.register(NativeBackendPlugin(backend, backend_clients[backend]))
-        result = FederatedExecutionTool(FederatedScheduler(BackendInvokeTool(registry), retention='roots',
+        from xgap.runtime.stream_scheduler import StreamingScheduler
+        result = FederatedExecutionTool(StreamingScheduler(BackendInvokeTool(registry), clients=backend_clients,
             limits=execution_limits)).invoke(
             {'plan': plan.to_dict()}, ToolContext('finite-intent', 0, 'final'))
         return dict(success=result.status is ToolStatus.SUCCESS, result=result.to_dict(),

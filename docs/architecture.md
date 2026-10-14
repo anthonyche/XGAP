@@ -66,9 +66,34 @@ column. Column names are `node:property:<name>`, `node:entity`, or
 source population, not gold answers or measurements of a selected evaluation query.
 Filters propagate frequencies through normalization and projections. Joins use
 heavy-value overlap and uniform residuals, falling back to NDV when frequencies
-are unavailable. Residual range selectivity and inter-column independence remain
+are unavailable. Residual range selectivity and unmodeled inter-column dependence remain
 heuristics; source scan work is not silently reduced by returned-row selectivity.
 Native contracted SPJ plans retain their separate cost model.
+
+Version 6 adds up to 1,024 `JointSynopsis` groups of 2–4 columns, each with
+up to 256 frequent tuples and a residual population. Successive predicates use
+joint tuple mass instead of multiplying independent marginal selectivities.
+Conditioning also updates marginals used in downstream join estimates. Missing
+joint groups, residual mass and dependencies between overlapping groups remain
+heuristic; observed frequencies are not a certificate or a worst-case bound.
+
+Source plugins prepare these models through
+`planning.source_statistics.collect_source_statistics`: a complete, query-independent
+`SourceRecordStream` contains node/edge records with canonical column keys and
+comparable domains. Frequency counting uses temporary SQLite state; bounded MCVs,
+NDVs, null counts, endpoint degree moments and average record sizes enter the
+frozen model. Declared unique properties are checked against complete populations.
+No gold answers or evaluation-query outcomes are read. Export snapshot consistency
+and complete enumeration are the dataset plugin's responsibility.
+
+Both unified entries accept `source_statistics=model_or_local_json_path`. Native
+backend descriptors may instead declare one common `statistics_catalog_path`.
+The entry verifies the model hash and exact active source/snapshot identities
+before interpretation, then uses it in the existing planning and probe-cost
+chain. An explicit estimator remains supported; supplying both is rejected.
+Statistics acquisition never happens implicitly while answering. Without a
+configured model the existing fallback estimator remains in effect. Catalogs are
+pluggable local metadata and are not published with private dataset contents.
 
 For v5, scoped probe categories update Match output cardinalities and downstream
 work instead of adding a second row-cost penalty. Before observing a category,
@@ -117,13 +142,35 @@ own socket where supported; closing a socket does **not** prove database-side
 termination. Legacy adapters without a cancellation capability drain before return.
 These are final-execution controls, not a certified end-to-end wall-time bound.
 
-Native HTTP JSON is decoded incrementally using bounded chunks, removing the
-whole-response bytes/string copies. Optional `max_response_bytes` stops each
-response at limit + one byte and fails the request without returning partial rows.
-The decoded result and final API rows are still materialized; this is not yet
-an all-operator streaming pipeline or a process RSS bound. Coordinator joins
-eliminate duplicate input tuples before pairing because their output already has
-distinct-row semantics, avoiding redundant Cartesian work on duplicate-heavy keys.
+Unified final execution now uses `StreamingScheduler`: native HTTP row arrays
+are incrementally decoded into request-owned replayable stores, then converted
+row by row after the complete response envelope passes validation. Every local
+operator consumes rows incrementally. Exact distinct, joins, aggregation, sort,
+path selection and finite recursion keep blocking state on disk. Stores allow
+DAG fan-out without another backend invocation and are released after the last
+consumer. Root answers are materialized for API compatibility; operators currently
+seal their output before dependent operators run, rather than overlapping all
+stages of a pipeline. Third-party list-only clients retain an explicitly recorded
+materialized fallback. The historical scheduler remains available separately.
+
+SQLite page caches are bounded per store. `max_spill_bytes` (default 1 GiB)
+bounds the accounted SQLite database pages across request-owned stores and fails
+instead of truncating results. It excludes SQLite temporary sorter files,
+individual JSON values, database process memory and final answer lists; it is
+not a process RSS or total filesystem quota. `max_registered_bytes` and
+`max_response_bytes` remain separate admission controls. Disk-backed execution
+reduces intermediate heap retention but can increase latency and scratch I/O.
+
+The streaming Neo4j adapter opens an owned explicit transaction, executes the
+artifact once, and commits or rolls it back. Cancellation acknowledges only a
+successful database rollback response; handles must remain on the configured
+origin/database. Transaction begin/commit/rollback HTTP calls are separately
+metered as `database_control_http_calls`, not hidden in query-call counts.
+Fuseki confirmation uses the optional [owned-query extension](../services/fuseki-cancel/README.md).
+It aborts the registered `QueryExec` and waits for the query lifecycle to close
+and end its read transaction. Ordinary Fuseki continues with protocol timeouts
+and socket interruption, explicitly lacking confirmed-cancellation capability.
+Neither client invents confirmation on missing, failed or mismatched receipts.
 
 ## Implementations and evaluation support
 
