@@ -29,16 +29,21 @@ def finish(plan, nodes, rule, proof, metadata=None):
 
 
 class PhysicalMoves:
-    def __init__(self, family, schema, backends, policy, sources=None):
+    def __init__(self, family, schema, backends, policy, sources=None, *, lowering_cache=None):
         self.programs = {}
         self.native_spj = {}
         self.family, self.schema, self.backends, self.policy = family, schema, backends, policy
         self.sources = sources or {}
+        if lowering_cache is not None and (lowering_cache.version != family.language_version
+                or lowering_cache.schema != schema):
+            raise ValueError('Lowering cache belongs to a different language/schema snapshot')
+        self.lowering_cache = lowering_cache
 
     def program(self, index):
         if index not in self.programs:
-            self.programs[index] = lower_compact_query(json.loads(self.family.candidates[index].query_json),
-                self.schema, version=self.family.language_version, optimize=True)[0]
+            query = json.loads(self.family.candidates[index].query_json)
+            self.programs[index] = (self.lowering_cache.lower(query) if self.lowering_cache is not None else
+                lower_compact_query(query, self.schema, version=self.family.language_version, optimize=True))[0]
         return self.programs[index]
 
     def neighbors(self, index, plan):

@@ -38,6 +38,21 @@ remaining search depth, and the physical registry epoch. Partial searches are
 never cached, and observations start a new decision. The bounded registry and
 mandatory completion checks remain in force.
 
+The NL and controlled unified entries share a bounded, request-local lowering
+cache between seed preparation and physical transformations. It freezes the
+public schema and language version, keys by the complete compact query, and
+returns isolated copies. Neither authority replies nor query answers are cached.
+The controller separately caches frozen base-plan predictions and fact-dependent
+adjustments; a new probe observation still changes the adjusted score.
+
+`FrozenSourceWorkRanker` v4 optionally prices estimated returned bytes using
+frozen per-source mean row sizes and an explicit `transfer_byte_quantum`.
+Scan work, binding work and coordinator work remain separate. This is a source
+average proxy, not wire-byte measurement, calibrated latency or a resource bound.
+Complete row-size statistics are required. Omitting the byte quantum preserves
+the original v1-v3 schema, arithmetic and rankings; existing artifacts do not
+silently adopt the new cost model.
+
 `agent.unified_family` manages bounded candidate and plan pools.
 `runtime.unified_physical` generates individual checked transformations.
 `agent.unified_information` handles registered information actions. Only selected
@@ -55,6 +70,17 @@ by the plan's parallelism; coordinator operations remain serial. Each remote
 task receives a snapshot of its declared inputs, and intermediate payloads are
 released only after all consumers finish. Result records retain plan order even
 when task completion order differs.
+
+Both unified entry points accept `execution_limits=ExecutionLimits(...)` from
+`xgap.runtime.execution_limits`. Optional `per_backend_parallelism` limits active
+tasks for each backend ID independently of global plan parallelism.
+`max_registered_bytes` rejects a result that would exceed the registered payload
+budget and stops downstream dispatch, rather than returning a truncated answer.
+It measures serialized payloads, not process RSS or in-flight buffers.
+`dispatch_timeout_s` is measured from final execution start and stops new work;
+already running calls drain under their own transport timeouts before return.
+It is not an end-to-end deadline or server-side cancellation. These controls
+do not turn unknown symbolic resource bounds into certified finite bounds.
 
 ## Implementations and evaluation support
 

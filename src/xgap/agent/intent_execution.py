@@ -26,10 +26,14 @@ def snapshot_identity(sources, backends, schema):
 
 
 def family_runtime(family, *, source_schema, sources, backends, backend_clients, physical_profile,
-                   joint_cost=None, estimator=None, planning_deadline=None, seed_only=False, stepwise=False):
+                   joint_cost=None, estimator=None, planning_deadline=None, seed_only=False, stepwise=False,
+                   lowering_cache=None, execution_limits=None):
     """Shared lazy preparation and one-final-execution callbacks for both controllers."""
     if family.source_snapshot != snapshot_identity(sources, backends, source_schema):
         raise ValueError('Intent certificate belongs to a different source/mapping snapshot')
+    if lowering_cache is not None and (lowering_cache.version != family.language_version
+            or lowering_cache.schema != source_schema):
+        raise ValueError('Lowering cache belongs to a different language/schema snapshot')
     if physical_profile.retrieval_rows_per_relation is not None:
         raise ValueError('Intent distance does not authorize truncating query results')
     at = time.perf_counter()
@@ -41,8 +45,9 @@ def family_runtime(family, *, source_schema, sources, backends, backend_clients,
             raise TimeoutError('Optional physical improvement reached planning deadline')
 
     def prepare(candidate, certificate):
-        program, assignment = lower_compact_query(json.loads(candidate.query_json), source_schema,
-            version=family.language_version, optimize=True)
+        query = json.loads(candidate.query_json)
+        program, assignment = (lowering_cache.lower(query) if lowering_cache is not None else
+            lower_compact_query(query, source_schema, version=family.language_version, optimize=True))
         if len(program.operators) > physical_profile.max_operators:
             raise ValueError('Candidate exceeds the admitted operator bound')
         if program.holes:
@@ -82,7 +87,8 @@ def family_runtime(family, *, source_schema, sources, backends, backend_clients,
         registry = BackendPluginRegistry()
         for backend in {n.parameters['backend_id'] for n in plan.nodes if 'backend_id' in n.parameters}:
             registry.register(NativeBackendPlugin(backend, backend_clients[backend]))
-        result = FederatedExecutionTool(FederatedScheduler(BackendInvokeTool(registry), retention='roots')).invoke(
+        result = FederatedExecutionTool(FederatedScheduler(BackendInvokeTool(registry), retention='roots',
+            limits=execution_limits)).invoke(
             {'plan': plan.to_dict()}, ToolContext('finite-intent', 0, 'final'))
         return dict(success=result.status is ToolStatus.SUCCESS, result=result.to_dict(),
             physical_plan=plan.to_dict(), answer_rows=(result.value or {}).get('final_rows'))

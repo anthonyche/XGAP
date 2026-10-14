@@ -89,6 +89,8 @@ class FamilyDomain:
         self.optional_plan_rejections = 0
         self.targets = {t.name:t for t in settings.information_targets}
         self.estimate_cache = {}
+        self.base_estimate_cache = {}
+        self.base_estimate_evaluations = self.base_estimate_cache_hits = 0
         self.move_cache = {}
         # Request-local, bounded caches. Keys include bindings/receipts, facts,
         # retained pools and disclosure state; no reuse across source snapshots.
@@ -132,7 +134,15 @@ class FamilyDomain:
         if cache_key in self.estimate_cache:
             self.estimate_cache_hits+=1
             return self.estimate_cache[cache_key]
-        base,_=self.costs.execution(plan,self.estimator)
+        # Observations change the category adjustment, not the frozen base
+        # predictor. Keep the two caches separate so new facts remain visible.
+        if key in self.base_estimate_cache:
+            self.base_estimate_cache_hits += 1
+            base = self.base_estimate_cache[key]
+        else:
+            base,_=self.costs.execution(plan,self.estimator)
+            self.base_estimate_evaluations += 1
+            self.remember(self.base_estimate_cache,key,base)
         for target in self.targets.values():
             if target.kind!='probe':continue
             label=facts.get(target.name,'unknown')
@@ -506,6 +516,8 @@ def run_unified_family(question, family, user, *, prepare_seed, execute, costs, 
                   completion_cache_entries=len(domain.completion_cache),
                   retained_plans={str(i):list(domain.pool(actual,i)) for i in seeds},
                   estimate_evaluations=domain.estimate_evaluations,estimate_cache_hits=domain.estimate_cache_hits,
+                  base_estimate_evaluations=domain.base_estimate_evaluations,
+                  base_estimate_cache_hits=domain.base_estimate_cache_hits,
                   selected_facts=dict(actual.facts),
                   decision_order=settings.decision_order, fixed_candidate=actual.fixed_candidate,
                   information_mode=settings.information_mode, action_objective=settings.action_objective,

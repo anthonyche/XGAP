@@ -49,6 +49,14 @@ def test_optional_search_deadline_uses_completion_without_losing_correctness(tmp
     assert r['joint_policy']['rounds'][0]['status'] == 'optional_deadline_or_state_limit'
 
 
+def test_public_entry_propagates_execution_dispatch_limit(tmp_path):
+    from xgap.runtime.execution_limits import ExecutionLimits
+    r, calls = invocation(tmp_path, execution_limits=ExecutionLimits(dispatch_timeout_s=0))
+    assert not r['success'] and not calls
+    assert r['final_plan_executions'] == 1  # One attempted final plan, no source calls.
+    assert r['lowering_cache']['misses'] == r['candidate_count']
+
+
 def test_lambda_and_loss_change_eligibility_without_a_second_controller(tmp_path):
     settings = UnifiedSettings(epsilon='1', relaxable=('hops', 'lower', 'upper'))
     r, calls = invocation(tmp_path, settings)

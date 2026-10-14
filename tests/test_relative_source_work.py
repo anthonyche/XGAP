@@ -58,6 +58,23 @@ def test_declared_identity_filter_reduces_output_proxy_but_keeps_scan_work():
     assert next(d for d in after.provenance['nodes'] if d['node']==native['node_id'])['estimated_rows']==1
 
 
+def test_byte_cost_distinguishes_payloads_preserving_legacy_scores_and_unknowns():
+    model, plan = fixture()
+    wide = replace(model, statistics=replace(model.statistics, entries=tuple(
+        replace(s, mean_row_bytes=s.mean_row_bytes*100) for s in model.statistics.entries)))
+    assert wide.predict(plan).relative_cost == model.predict(plan).relative_cost
+    small_bytes = replace(model, transfer_byte_quantum=65536)
+    large_bytes = replace(wide, transfer_byte_quantum=65536)
+    a, b = small_bytes.predict(plan), large_bytes.predict(plan)
+    assert b.relative_cost > a.relative_cost
+    assert b.provenance['returned_byte_proxy'] == pytest.approx(100*a.provenance['returned_byte_proxy'])
+    assert b.provenance['source_scan_record_units'] == a.provenance['source_scan_record_units']
+    assert frozen_estimator_from_dict(small_bytes.to_dict()).predict(plan).relative_cost == a.relative_cost
+    missing = replace(model.statistics, entries=tuple(replace(s, mean_row_bytes=None) for s in model.statistics.entries))
+    with pytest.raises(ValueError, match='row-byte statistics'):
+        replace(small_bytes, statistics=missing)
+
+
 def test_source_only_publisher_preserves_sources_and_reloads_new_model(tmp_path):
     from test_ch6_fact_materialization import CoreMaterializationTest
     from test_compact_roles_v2 import PARENT,PIN

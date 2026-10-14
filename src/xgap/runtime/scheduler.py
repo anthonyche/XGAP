@@ -27,6 +27,7 @@ from xgap.runtime.binding_operations import aggregate_rows, sort_rows
 from xgap.runtime.retrieval_budget import budget_from_artifact, observe_budget
 from xgap.tools.backends import BACKEND_INVOKE_TOOL, BackendInvokeTool
 from xgap.tools.contracts import ToolContext, ToolStatus
+from xgap.runtime.execution_limits import ExecutionLimits
 
 
 def _encoded_size(rows: Iterable[Mapping[str, Any]]) -> int:
@@ -45,12 +46,16 @@ def _deduplicate(rows: Iterable[Mapping[str, Any]]) -> tuple[JsonRow, ...]:
 class FederatedScheduler:
     """Execute independent remote nodes in parallel and local nodes deterministically."""
 
-    def __init__(self, backend_tool: BackendInvokeTool, *, retention: str = "all", stream_topk: bool = True):
+    def __init__(self, backend_tool: BackendInvokeTool, *, retention: str = "all", stream_topk: bool = True,
+                 limits: ExecutionLimits | None = None):
         if retention not in ("all", "roots"):
             raise RuntimePlanError("Unknown runtime retention mode")
         self._backend_tool = backend_tool
         self._retention = retention
         self._stream_topk = stream_topk
+        if limits is not None and not isinstance(limits, ExecutionLimits):
+            raise TypeError('Typed execution limits required')
+        self._limits = limits or ExecutionLimits()
 
     def execute(
         self,
@@ -60,6 +65,9 @@ class FederatedScheduler:
         initial_results: Mapping[str, RuntimeNodeResult] | None = None,
     ) -> FederatedRunResult:
         started = time.perf_counter()
+        limits = self._limits
+        deadline = None if limits.dispatch_timeout_s is None else started + limits.dispatch_timeout_s
+        stop_reason = None
         nodes = {node.node_id: node for node in plan.nodes}
         if initial_results is None:
             initial_results = {}
@@ -74,6 +82,14 @@ class FederatedScheduler:
         retained_rows = sum(r.row_count for r in results.values())
         retained_bytes = sum(r.output_bytes for r in results.values())
         peak_rows, peak_bytes, released = retained_rows, retained_bytes, 0
+        if limits.max_registered_bytes is not None:
+            # Independently account supplied prefix rows; do not trust claimed sizes.
+            retained_bytes = sum(_encoded_size(r.rows) for r in results.values() if r.rows is not None)
+            results = {k: replace(r, output_bytes=_encoded_size(r.rows)) if r.rows is not None else r
+                       for k,r in results.items()}
+            peak_bytes = retained_bytes
+            if retained_bytes > limits.max_registered_bytes:
+                raise RuntimePlanError('Initial results exceed registered payload budget')
         from xgap.runtime.streaming_topk import islands,run as run_streaming_topk
         pipelines=islands(plan) if self._retention=='roots' and self._stream_topk else []
         disabled=set();pipeline_receipts=[]
@@ -88,7 +104,20 @@ class FederatedScheduler:
                 released += 1
 
         def completed(node_id, result):
-            nonlocal retained_rows, retained_bytes, peak_rows, peak_bytes
+            nonlocal retained_rows, retained_bytes, peak_rows, peak_bytes, stop_reason
+            if deadline is not None and time.perf_counter() >= deadline:
+                stop_reason = stop_reason or 'dispatch_timeout'
+            if result.status is RuntimeNodeStatus.SUCCESS and result.rows is not None:
+                size = _encoded_size(result.rows) if limits.max_registered_bytes is not None else result.output_bytes
+                if limits.max_registered_bytes is not None and retained_bytes + size > limits.max_registered_bytes:
+                    stop_reason = stop_reason or 'registered_payload_budget'
+                if stop_reason:
+                    result = replace(result, status=RuntimeNodeStatus.ERROR, rows=(), output_bytes=0,
+                        error='Execution stopped: '+stop_reason,
+                        metadata={**result.metadata, 'execution_stop_reason': stop_reason,
+                            'discarded_row_count': result.row_count, 'observed_output_bytes': size})
+                elif size != result.output_bytes:
+                    result = replace(result, output_bytes=size)
             results[node_id] = result
             pending.remove(node_id)
             if result.rows is not None:
@@ -102,9 +131,21 @@ class FederatedScheduler:
         running = {}
         with ThreadPoolExecutor(max_workers=plan.max_parallelism) as executor:
             while pending:
+                if deadline is not None and time.perf_counter() >= deadline:
+                    stop_reason = stop_reason or 'dispatch_timeout'
                 for future in sorted((f for f in running if f.done()), key=lambda f: running[f]):
                     completed(running.pop(future), future.result())
                 active = set(running.values())
+                if stop_reason:
+                    for node_id in sorted(pending - active):
+                        node = nodes[node_id]
+                        completed(node_id, RuntimeNodeResult(node_id, node.kind, RuntimeNodeStatus.SKIPPED,
+                            error='Execution stopped: '+stop_reason,
+                            metadata={'execution_stop_reason': stop_reason}))
+                    if running:
+                        # Do not return while owned work is still in flight.
+                        wait(running, return_when=FIRST_COMPLETED)
+                    continue
                 while True:
                     skipped = [
                         node_id
@@ -131,6 +172,7 @@ class FederatedScheduler:
 
                 held=set()
                 for pipeline in pipelines:
+                    if stop_reason:break
                     root=pipeline['root']
                     if root not in pending or root in disabled:continue
                     if any(i in results and results[i].status is not RuntimeNodeStatus.SUCCESS for i in pipeline['boundaries']):
@@ -154,6 +196,7 @@ class FederatedScheduler:
                                     row_count_scope='distinct ordered answers' if terminal else 'streamed occurrences before terminal distinct')))
                     else:held.update(pipeline['nodes'])
                 if not pending:break
+                if stop_reason:continue
 
                 ready = [
                     nodes[node_id]
@@ -174,18 +217,34 @@ class FederatedScheduler:
                 # Bound submitted tasks as well as worker threads. A completed
                 # branch can immediately unlock successors without waiting for the
                 # slowest source in the previous ready set.
-                launched = remote[:max(0, plan.max_parallelism-len(running))]
+                launched = []
+                occupied = Counter(nodes[n].parameters.get('backend_id') for n in running.values())
+                slots = max(0, plan.max_parallelism-len(running))
+                for node in remote:
+                    backend = node.parameters.get('backend_id')
+                    if len(launched) >= slots:break
+                    if limits.per_backend_parallelism is not None and occupied[backend] >= limits.per_backend_parallelism:
+                        continue
+                    launched.append(node)
+                    occupied[backend] += 1
                 for node in launched:
+                    if deadline is not None and time.perf_counter() >= deadline:
+                        stop_reason = 'dispatch_timeout'
+                        break
                     inputs = {key: results[key] for key in node.inputs}
                     future = executor.submit(self._execute_remote, node, goal_id, inputs)
                     running[future] = node.node_id
                 for node in local:
+                    if deadline is not None and time.perf_counter() >= deadline:
+                        stop_reason = 'dispatch_timeout'
+                    if stop_reason:break
                     completed(node.node_id, self._execute_local(node, results))
 
                 if launched or local:
                     continue
                 if running:
-                    wait(running, return_when=FIRST_COMPLETED)
+                    wait(running, timeout=None if deadline is None else max(0, deadline-time.perf_counter()),
+                         return_when=FIRST_COMPLETED)
                 elif pending:
                     raise RuntimeError("validated runtime DAG made no scheduling progress")
 
@@ -194,7 +253,7 @@ class FederatedScheduler:
             for root in plan.roots
             if results[root].status is RuntimeNodeStatus.SUCCESS
         }
-        success = len(root_rows) == len(plan.roots)
+        success = not stop_reason and len(root_rows) == len(plan.roots)
         ordered_results = tuple(results[node.node_id] for node in plan.nodes)
         return FederatedRunResult(
             plan_id=plan.plan_id,
@@ -202,11 +261,16 @@ class FederatedScheduler:
             root_rows=root_rows,
             node_results=ordered_results,
             elapsed_ms=(time.perf_counter() - started) * 1000,
-            retention=({"profile": "roots-and-node-metrics-v1", "released_nodes": released,
+            retention={**({"profile": "roots-and-node-metrics-v1", "released_nodes": released,
                 "peak_registered_rows": peak_rows, "final_registered_rows": retained_rows,
                 "peak_registered_output_bytes": peak_bytes, "final_registered_output_bytes": retained_bytes,
                 "measurement_scope": "registered result payloads only; aliases may double-count; in-flight/temporary buffers and RSS excluded",
                 "final_rows_truncated": False,"streaming_topk":pipeline_receipts} if self._retention == "roots" else {}),
+                **({'execution_limits': dict(dispatch_timeout_s=limits.dispatch_timeout_s,
+                    max_registered_bytes=limits.max_registered_bytes,per_backend_parallelism=limits.per_backend_parallelism),
+                    'execution_stop_reason':stop_reason,
+                    'limit_scope':'cooperative dispatch and registered payload admission; running calls drained; not RSS or a hard wall bound'}
+                    if limits != ExecutionLimits() else {})},
         )
 
     @staticmethod
