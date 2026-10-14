@@ -88,3 +88,6 @@ node_modules/
 
 # Manuscript exports stay outside the implementation repository.
 /*.pdf
+
+# Keep the author-maintained publication in version control.
+!/XGAP_FULL.pdf

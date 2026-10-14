@@ -11,6 +11,8 @@ BANNED_PREFIXES = (
     'datasets/grailqa_audit/', 'datasets/grailqa_audit_v2/', 'datasets/kqapro_audit/',
     'datasets/grailqa_reachability_v2/', 'datasets/grailqa_m13d_reachability_baseline/',
 )
+# The author explicitly requires the publication PDF in the repository.
+REQUIRED_PUBLICATION_FILES = {'XGAP_FULL.pdf'}
 BANNED_SUFFIXES = ('.zip', '.tar', '.tar.gz', '.log', '.out', '.pyc', '.pem', '.pdf')
 
 
@@ -18,10 +20,13 @@ def main():
     tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
     paths = [p for p in tracked if p and (ROOT / p).is_file()]
     errors = []
+    for p in REQUIRED_PUBLICATION_FILES:
+        if p not in paths:
+            errors.append('Missing tracked publication file: ' + p)
     for p in paths:
         name = Path(p).name
         if (p.startswith(BANNED_PREFIXES) or '_history_' in name or '/.openai/' in p
-                or p.endswith(BANNED_SUFFIXES) or (name.startswith('.env') and not name.endswith('.example'))
+                or (p.endswith(BANNED_SUFFIXES) and p not in REQUIRED_PUBLICATION_FILES) or (name.startswith('.env') and not name.endswith('.example'))
                 or name in {'goal.md', 'status.md', 'roadmap.md', 'id_rsa', 'id_ed25519'}):
             errors.append('Non-distributable file: ' + p)
     for p in [ROOT/'README.md', *sorted((ROOT/'docs').glob('*.md'))]:

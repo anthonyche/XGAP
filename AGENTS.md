@@ -18,6 +18,8 @@ before changing system behavior.
 
 ## Repository hygiene
 
+- Preserve the author-maintained `XGAP_FULL.pdf` in the repository. It is an explicitly required publication artifact, not a cleanup target.
+
 - Do not commit development reports, work logs, agent histories, run receipts,
   result tables, generated datasets, debugging dumps, handoff archives, or credentials.
 - Store local evidence and operational notes outside this checkout.
