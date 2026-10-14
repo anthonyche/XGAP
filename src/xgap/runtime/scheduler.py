@@ -63,6 +63,9 @@ class FederatedScheduler:
         from xgap.backends.request_control import RequestControl
         return RequestControl(deadline,limits.max_response_bytes)
 
+    def _remote_results(self,node_id,result):
+        return (result,)
+
     def _execution_pipelines(self,plan):
         from xgap.runtime.streaming_topk import islands
         return islands(plan) if self._retention=='roots' and self._stream_topk else []
@@ -148,7 +151,9 @@ class FederatedScheduler:
                 if deadline is not None and time.perf_counter() >= deadline:
                     stop_reason = stop_reason or 'dispatch_timeout'
                 for future in sorted((f for f in running if f.done()), key=lambda f: running[f]):
-                    completed(running.pop(future), future.result())
+                    identifier=running.pop(future)
+                    for result in self._remote_results(identifier,future.result()):
+                        completed(result.node_id,result)
                 active = set(running.values())
                 if stop_reason:
                     control.cancel()

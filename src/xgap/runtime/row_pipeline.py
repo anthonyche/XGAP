@@ -12,10 +12,10 @@ from xgap.runtime.row_size import encoded_row_size
 REMOTE={K.REMOTE_QUERY,K.REMOTE_BIND_QUERY}
 
 
-def islands(plan):
+def islands(plan,preexecuted=frozenset()):
     nodes={n.node_id:n for n in plan.nodes};uses=Counter(i for n in plan.nodes for i in n.inputs)
     roots=set(plan.roots);remote_inputs={i for n in plan.nodes if n.kind in REMOTE for i in n.inputs}
-    sinks=[n.node_id for n in plan.nodes if n.kind not in REMOTE and
+    sinks=[n.node_id for n in plan.nodes if n.node_id not in preexecuted and n.kind not in REMOTE and
         (uses[n.node_id]!=1 or n.node_id in roots or n.node_id in remote_inputs)]
     out=[];queued=set(sinks)
     for sink in sinks:
@@ -25,7 +25,7 @@ def islands(plan):
             if expanded:members.append(identifier);continue
             stack.append((identifier,True))
             for parent in reversed(nodes[identifier].inputs):
-                local=nodes[parent].kind not in REMOTE
+                local=nodes[parent].kind not in REMOTE and parent not in preexecuted
                 if local and uses[parent]==1 and parent not in roots and len(claimed)<64:
                     claimed.add(parent);stack.append((parent,False))
                 else:

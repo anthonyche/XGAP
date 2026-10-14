@@ -82,7 +82,8 @@ def test_pipeline_consumes_before_upstream_finishes_and_fanout_runs_once(monkeyp
         for row in original(work,node,inputs,**kwargs):events.append((node.node_id,row['v']));yield row
     monkeypatch.setattr(module,'operate',observed)
     client=Client([{'v':i} for i in range(5)])
-    nodes=(remote(),N('filter',K.COORDINATOR_FILTER,('read',),dict(condition={'op':'ge','field':'v','value':0})),
+    nodes=(remote(),N('input',K.EXCHANGE,('read',)),
+        N('filter',K.COORDINATOR_FILTER,('input',),dict(condition={'op':'ge','field':'v','value':0})),
         N('exchange',K.EXCHANGE,('filter',)),N('a',K.EXCHANGE,('exchange',)),N('b',K.EXCHANGE,('exchange',)))
     plan=FederatedExecutionPlan('pipeline',nodes,roots=('a','b'),max_remote_calls=1)
     result=StreamingScheduler(None,clients={'local':client}).execute(plan)
@@ -91,7 +92,7 @@ def test_pipeline_consumes_before_upstream_finishes_and_fanout_runs_once(monkeyp
     assert result.root_rows['a']==result.root_rows['b']==tuple(client.rows)
     assert all(n.row_count==5 for n in result.node_results)
     assert result.retention['peak_spill_bytes']==0
-    assert result.node_results[1].metadata['intermediate_payload_materialized'] is False
+    assert next(n for n in result.node_results if n.node_id=='filter').metadata['intermediate_payload_materialized'] is False
 
 
 def test_late_pipeline_failure_returns_no_partial_answer_and_metering_survives():

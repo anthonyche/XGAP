@@ -39,7 +39,7 @@ class JsonStream:
         from xgap.backends.row_stream import array_factory
         self.array_factory=array_factory.get()
         self.stream=stream;self.control=control;self.decoder=codecs.getincrementaldecoder('utf-8')()
-        self.buffer='';self.position=0;self.eof=False;self.bytes=0;self.peak_buffer=0
+        self.buffer='';self.position=0;self.eof=False;self.bytes=0;self.peak_buffer=0;self.parents={}
 
     def more(self):
         if self.eof:return False
@@ -104,17 +104,11 @@ class JsonStream:
                     elif isinstance(value,list):stack.extend((v,level+1) for v in value if isinstance(v,(dict,list)))
                 self.position=end;return result
         if ch=='"':return self.string()
-        if ch=='{':
-            self.position+=1;result={};self.whitespace()
-            if self.peek()=='}':self.position+=1;return result
-            while True:
-                key=self.string();self.expect(':')
-                if key in result:raise ValueError('Duplicate backend JSON member')
-                result[key]=self.value(path+(key,),depth+1);self.whitespace();ch=self.peek();self.position+=1
-                if ch=='}':return result
-                if ch!=',':raise ValueError('Malformed backend JSON object')
+        if ch=='{':return self.object(path,depth)
         if ch=='[':
-            self.position+=1;result=self.array_factory(path) if self.array_factory else None
+            self.position+=1
+            contextual=getattr(self.array_factory,'with_context',None)
+            result=contextual(path,self.parents) if contextual else self.array_factory(path) if self.array_factory else None
             result=[] if result is None else result
             finish=lambda:result.finish() if hasattr(result,'finish') else result
             self.whitespace()
@@ -133,6 +127,19 @@ class JsonStream:
         raw=''.join(parts)
         if raw in ('NaN','Infinity','-Infinity'):raise ValueError('Nonfinite backend JSON number')
         return json.loads(raw,parse_float=_float,parse_constant=_constant)
+
+    def object(self,path,depth):
+        self.position+=1;result={};self.parents[path]=result
+        try:
+            self.whitespace()
+            if self.peek()=='}':self.position+=1;return result
+            while True:
+                key=self.string();self.expect(':')
+                if key in result:raise ValueError('Duplicate backend JSON member')
+                result[key]=self.value(path+(key,),depth+1);self.whitespace();ch=self.peek();self.position+=1
+                if ch=='}':return result
+                if ch!=',':raise ValueError('Malformed backend JSON object')
+        finally:self.parents.pop(path,None)
 
     def read(self):
         result=self.value();self.whitespace()

@@ -144,7 +144,17 @@ These are final-execution controls, not a certified end-to-end wall-time bound.
 
 Unified final execution uses `StreamingScheduler`. Native HTTP row arrays enter
 small replayable memory buffers; the complete response envelope is validated
-before downstream use. Non-branching local operator islands execute as pull
+before downstream use. A remote result with exactly one immediate filter consumer
+can apply that same typed predicate during reception, privately retaining only
+matching rows. Every source row is still converted, validated and metered; filter
+errors are deferred while the remaining response is checked. No retained prefix
+is published if transport, envelope, typed conversion or cancellation fails.
+Native arrays can bypass the raw spool when their column metadata precedes the
+rows; other JSON member orders retain the validated spool fallback. The original
+source and filter node identities, raw source counts/bytes and retrieval bounds
+remain intact. Shared sources, raw root outputs, explicit registered-byte gates
+and list-only adapters retain the original path. Reception filtering shares the
+same intermediate memory/spill budget, and its timing belongs to source reception. Non-branching local operator islands execute as pull
 pipelines: a consumer processes each available row without sealing every
 intermediate result. Fan-out, native-response, binding-query and public-answer
 boundaries remain replayable. Islands are capped at 64 operators to keep deep
@@ -192,7 +202,9 @@ The historical materializing scheduler remains available for comparison.
 `scripts/benchmark_execution_pipeline.py` compares a deterministic local
 read/filter/join/group/sort chain without servers or model calls. Run latency
 measurements without `--trace-memory`; measure Python allocations separately,
-since tracing changes execution time. The script also reports process peak RSS
+since tracing changes execution time. Use `--transport neo4j-json` to include the real native JSON parser and owned
+transaction adapter over local file-backed transport doubles (no network or
+database service). The script also reports process peak RSS
 (including SQLite and imports), exact answers and actual backend-call counts.
 
 The streaming Neo4j adapter opens an owned explicit transaction, executes the

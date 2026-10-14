@@ -5,6 +5,7 @@ stream HTTP row arrays; third-party list-only adapters retain explicit fallback
 telemetry. Blocking states adapt between bounded memory and exact disk storage.
 """
 from dataclasses import replace
+from collections import Counter
 import time
 from xgap.backends.request_control import RequestControl
 from xgap.infrastructure.runtime import QueryArtifact
@@ -64,7 +65,21 @@ class _StreamRun(StreamingScheduler):
 
     def _execution_pipelines(self,plan):
         from xgap.runtime.row_pipeline import islands
-        return islands(plan) if self.pipeline else []
+        self.receive_nodes={};self.receive_results={}
+        uses=Counter(i for n in plan.nodes for i in n.inputs);nodes={n.node_id:n for n in plan.nodes}
+        # Preserve raw root/fan-out payloads and explicit registered-byte gates.
+        if self.pipeline and self._limits.max_registered_bytes is None:
+            for node in plan.nodes:
+                if node.kind is not K.COORDINATOR_FILTER or len(node.inputs)!=1:continue
+                source=nodes[node.inputs[0]]
+                if source.kind not in (K.REMOTE_QUERY,K.REMOTE_BIND_QUERY) or uses[source.node_id]!=1 or source.node_id in plan.roots:continue
+                if stream_executor(self.clients[source.parameters['backend_id']]) is not None:
+                    self.receive_nodes[source.node_id]=node
+        return islands(plan,{n.node_id for n in self.receive_nodes.values()}) if self.pipeline else []
+
+    def _remote_results(self,node_id,result):
+        filtered=self.receive_results.pop(node_id,None)
+        return (result,) if filtered is None else (result,filtered)
 
     def _execute_pipeline(self,pipeline,nodes,results):
         from xgap.runtime.row_pipeline import run
@@ -86,13 +101,18 @@ class _StreamRun(StreamingScheduler):
                 if store is not None:store.close()
                 return self._error(node,f'{type(error).__name__}: {error}',started,
                     input_bytes=result.input_bytes,remote_calls=result.remote_calls)
-        store=None;calls=0;input_bytes=0;count=None
+        store=None;receiver=None;calls=0;input_bytes=0;count=None
         try:
             artifact=dict(node.parameters['artifact']);budget=budget_from_artifact(artifact)
             if node.kind is K.REMOTE_BIND_QUERY:
                 rows=results[node.inputs[0]].rows;input_bytes=_encoded_size(rows)
                 artifact,count=self._bind_artifact(node,artifact,rows)
-            store=self.workspace.store();received=0
+            from xgap.runtime.receive_filter import ReceiveFilter
+            filter_node=self.receive_nodes.get(node.node_id)
+            if filter_node is not None:
+                receiver=ReceiveFilter(self.workspace,filter_node,budget);store=receiver.store
+            else:store=self.workspace.store()
+            received=0
             def emit(row):
                 nonlocal received
                 if not isinstance(row,dict):raise ValueError('Backend returned a non-row value')
@@ -101,8 +121,29 @@ class _StreamRun(StreamingScheduler):
                 if not budget or received<=budget['rows']:store.append(row)
             if count!=0:
                 calls=1
-                execute_stream(QueryArtifact.from_dict(artifact),emit,self.control,self.workspace)
-            store.finish()
+                execute_stream(QueryArtifact.from_dict(artifact),receiver if receiver is not None else emit,self.control,self.workspace)
+            self.control.check();store.finish()
+            if receiver is not None:
+                received=receiver.received
+                elapsed=(time.perf_counter()-started)*1000
+                if receiver.error is not None:store.close()
+                self.receive_results[node.node_id]=RuntimeNodeResult(filter_node.node_id,filter_node.kind,
+                    S.ERROR if receiver.error is not None else S.SUCCESS,
+                    rows=() if receiver.error is not None else store,
+                    input_bytes=receiver.encoded_bytes,output_bytes=0 if receiver.error is not None else store.encoded_bytes,
+                    error=receiver.error,metadata={'reception_filter':True,'source_node':node.node_id,
+                        'timing_scope':'included in source reception; published only after full envelope validation'})
+                return RuntimeNodeResult(node.node_id,node.kind,S.SUCCESS,rows=None,released_row_count=receiver.count,
+                    elapsed_ms=elapsed,input_bytes=input_bytes,output_bytes=receiver.encoded_bytes,remote_calls=calls,
+                    metadata={'backend_id':backend,'stream_transport':'validated-reception-filter',
+                        'reception_filter':filter_node.node_id,'native_arrays_filtered':receiver.native_arrays,
+                        'native_arrays_spooled':receiver.native_arrays_spooled,
+                        'normalized_raw_rows_staged':0,
+                        'database_cancel_capability':('owned-transaction' if hasattr(client,'_post_statement') else
+                            'owned-query-extension' if getattr(getattr(client,'descriptor',None),'runtime',{}).get('confirmed_cancel_protocol')=='xgap-fuseki-v1' else 'adapter-or-timeout-only'),
+                        'retained_rows':0 if receiver.error is not None else len(store),
+                        **({'binding_count':count,'empty_binding_short_circuit':count==0} if count is not None else {}),
+                        **({'retrieval_budget':observe_budget(budget,received)} if budget else {})})
             return RuntimeNodeResult(node_id=node.node_id,kind=node.kind,status=S.SUCCESS,rows=store,
                 elapsed_ms=(time.perf_counter()-started)*1000,input_bytes=input_bytes,output_bytes=store.encoded_bytes,remote_calls=calls,
                 metadata={'backend_id':backend,'stream_transport':'native-row-spool',
