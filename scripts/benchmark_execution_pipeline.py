@@ -23,15 +23,17 @@ def main():
     parser.add_argument('--scheduler',choices=('materialized','stream'),default='stream')
     parser.add_argument('--rows',type=int,default=16000)
     parser.add_argument('--keep',type=int)
+    parser.add_argument('--copies',type=int,default=1,help='Exact repetitions of each left row, exercising DISTINCT')
     parser.add_argument('--payload-bytes',type=int,default=1024)
     parser.add_argument('--trace-memory',action='store_true')
     args=parser.parse_args();keep=args.rows if args.keep is None else args.keep
-    if args.rows<1 or not 0<=keep<=args.rows or args.payload_bytes<0:parser.error('Invalid row/payload bounds')
+    if args.rows<1 or args.copies<1 or not 0<=keep<=args.rows or args.payload_bytes<0:parser.error('Invalid row/payload bounds')
     class Client:
         calls=0
         def rows(self,a):
             if a.artifact_id=='left':
-                for i in range(args.rows):yield {'key':i%32,'value':i,'payload':str(i)+'x'*args.payload_bytes}
+                for i in range(args.rows):
+                    for _ in range(args.copies):yield {'key':i%32,'value':i,'payload':str(i)+'x'*args.payload_bytes}
             else:
                 for i in range(32):yield {'key':i,'group':i%4}
         def execute(self,a):
@@ -59,10 +61,12 @@ def main():
     assert result.success and list(result.final_rows)==expected,result
     assert client.calls==result.total_remote_calls==2
     rss=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*(1 if sys.platform=='darwin' else 1024)
-    print(json.dumps(dict(scheduler=args.scheduler,rows=args.rows,kept_rows=keep,payload_bytes=args.payload_bytes,
+    print(json.dumps(dict(scheduler=args.scheduler,rows=args.rows,copies=args.copies,kept_rows=keep,payload_bytes=args.payload_bytes,
         trace_memory=args.trace_memory,elapsed_s=elapsed,python_peak_bytes=peak,process_peak_rss_bytes=rss,
         backend_calls=client.calls,answers=list(result.final_rows),peak_spill_bytes=result.retention.get('peak_spill_bytes'),
         peak_intermediate_accounted_bytes=result.retention.get('peak_intermediate_accounted_bytes'),
+        output_bytes={n.node_id:n.output_bytes for n in result.node_results},
+        intermediate_memory_bytes=result.retention.get('intermediate_memory_bytes'),
         row_counts={n.node_id:n.row_count for n in result.node_results})))
 
 

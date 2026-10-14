@@ -160,6 +160,14 @@ fit; it does not restart a source or truncate rows. Blocking sorts, DISTINCT
 aggregates and finite path operations retain their blocking semantics. Non-DISTINCT
 aggregates keep compact per-group states rather than all input members. Hashes
 only index DISTINCT collision buckets: full typed equality still decides identity.
+Request-local typed hashes avoid serializing complete canonical keys for each
+lookup; unseen buckets use one indexed insert. These hashes are not persisted
+identities. Join inputs can omit ordering while retaining exact DISTINCT and
+canonical representatives; user-visible output ordering remains unchanged.
+Replay stores create lookup indexes only when they receive keyed rows. Telemetry
+counts exact canonical JSON bytes without constructing an additional whole-row
+serialization. Compact aggregation keeps typed group keys in memory and promotes
+integer sums to exact rational state only when a non-integer numeric value arrives.
 A join feeding an order-insensitive aggregate, sort or merge can omit redundant
 output DISTINCT only after observing uniform, non-overlapping non-key schemas
 and exact distinct inputs. That proves pair-to-output injectivity; schema overlap

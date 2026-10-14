@@ -68,9 +68,7 @@ def test_compact_group_state_spills_without_replaying_input():
 
 
 def test_hash_collisions_do_not_merge_distinct_rows(monkeypatch):
-    class Hash:
-        def hexdigest(self):return 'collision'
-    monkeypatch.setattr('xgap.runtime.spill_rows.hashlib.sha256',lambda value:Hash())
+    monkeypatch.setattr('xgap.runtime.spill_rows.distinct_bucket',lambda value:'collision')
     rows=[{'v':1.0},{'v':2},{'v':1},{'v':True},{'v':'1'}]
     from xgap.runtime.scalars import distinct_rows
     with SpillWorkspace(RequestControl()) as work:
@@ -170,3 +168,61 @@ def test_decimal_sum_preserves_full_power_of_two_denominator(unique):
     expected=FederatedScheduler(None)._execute_local(node,{'in':R('in',K.REMOTE_QUERY,S.SUCCESS,rows=rows)})
     with SpillWorkspace(RequestControl(),memory_bytes=32768) as work:
         assert tuple(operate(work,node,[rows]))==expected.rows
+
+
+@pytest.mark.parametrize('budget',[0,32768,8*1024**2])
+@pytest.mark.parametrize('ordered',[False,True])
+def test_distinct_spill_buckets_preserve_typed_representatives(budget,ordered,monkeypatch):
+    from decimal import Decimal
+    from xgap.runtime.scalars import distinct_rows,stable_text
+    monkeypatch.setattr('xgap.runtime.spill_rows.distinct_bucket',lambda value:'collision')
+    rows=[{'v':v,'payload':'x'*2000} for v in [1.0,2,True,'1',Decimal('1.00'),1,2.0,None]]*4
+    expected=distinct_rows(rows)
+    # Serialization normalizes Decimal to RDF decimal bindings, as before.
+    expected=json.loads(stable_text(expected))
+    with SpillWorkspace(RequestControl(),memory_bytes=budget) as work:
+        actual=list(distinct(work,rows,ordered_output=ordered))
+        assert sorted(actual,key=stable_text)==sorted(expected,key=stable_text)
+        if ordered:assert actual==expected
+        assert work.bytes==work.memory_bytes==0
+
+
+def test_row_size_matches_canonical_encoding_and_rejects_invalid_values():
+    from decimal import Decimal
+    from xgap.runtime.row_size import encoded_row_size
+    from xgap.runtime.scalars import stable_text
+    rows=[{}, {'a':None,'b':True,'c':False,'d':-12345678901234567890},
+        {'escape\\\"\n':'你好\u0000\ud800😀','float':-0.0,'d':Decimal('1.25')},
+        {'nested':[{'a':'é'},None,False,Decimal('2.5')],'tuple':(1,2)},
+        {1:'fallback'}]
+    for row in rows:assert encoded_row_size(row)==len(stable_text(row).encode())
+    row={'v':'original'};encoded_row_size(row);row['v']='mutated\n'
+    assert encoded_row_size(row)==len(stable_text(row).encode())
+    for value in (float('nan'),float('inf'),object()):
+        with pytest.raises((ValueError,TypeError)):encoded_row_size({'v':value})
+
+
+@pytest.mark.parametrize('budget',[0,32768,8*1024**2])
+def test_integer_accumulator_promotes_exactly_and_group_keys_remain_typed(budget):
+    from decimal import Decimal
+    rows=[{'k':i,'v':2**80+i} for i in range(120)]
+    rows += [{'k':float(i),'v':Decimal('0.125')} for i in range(120)]
+    rows += [{'k':i,'v':-2**80} for i in range(120)]
+    rows += [{'k':True,'v':2},{'k':'1','v':3},{'k':None,'v':4}]
+    node=N('sum',K.COORDINATOR_GROUP_AGGREGATE,('in',),dict(group_by=['k'],aggregations={'n':dict(op='sum',field='v')}))
+    expected=FederatedScheduler(None)._execute_local(node,{'in':R('in',K.REMOTE_QUERY,S.SUCCESS,rows=rows)})
+    with SpillWorkspace(RequestControl(),memory_bytes=budget) as work:
+        assert tuple(operate(work,node,[rows]))==expected.rows
+        assert work.peak_memory_bytes<=budget and work.bytes==work.memory_bytes==0
+
+
+def test_replay_store_omits_unused_index_and_adds_it_when_needed():
+    with SpillWorkspace(RequestControl(),memory_bytes=32768) as work:
+        store=work.store(buffered=False);store.append({'v':1})
+        assert not list(store.db.execute("SELECT name FROM sqlite_master WHERE type='index'"))
+        store.append({'v':2},lookup='two')
+        assert list(store.select('SELECT payload FROM rows WHERE lookup=?',('two',)))==[{'v':2}]
+        for i in range(80):store.append({'v':i,'wide':'x'*2000},lookup=str(i))
+        assert store.in_memory is False
+        assert list(store.select('SELECT payload FROM rows WHERE lookup=?',('two',)))==[{'v':2}]
+        store.close();assert work.bytes==work.memory_bytes==0

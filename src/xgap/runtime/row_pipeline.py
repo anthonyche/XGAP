@@ -7,7 +7,7 @@ from collections import Counter
 import time
 from xgap.runtime.contracts import RuntimeNodeKind as K,RuntimeNodeStatus as S,RuntimeNodeResult
 from xgap.runtime.spill_operators import operate
-from xgap.runtime.scalars import stable_text
+from xgap.runtime.row_size import encoded_row_size
 
 REMOTE={K.REMOTE_QUERY,K.REMOTE_BIND_QUERY}
 
@@ -44,7 +44,7 @@ def run(workspace,pipeline,nodes,results):
         try:
             for row in operate(workspace,node,inputs,unordered=consumers.get(identifier) in (K.COORDINATOR_GROUP_AGGREGATE,K.COORDINATOR_SORT_LIMIT,K.MERGE)):
                 workspace.control.check()
-                m['bytes']+=len(stable_text(row).encode())+int(m['rows']>0);m['rows']+=1
+                m['bytes']+=encoded_row_size(row)+int(m['rows']>0);m['rows']+=1
                 yield row
             m['complete']=True
         except Exception as error:

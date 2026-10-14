@@ -4,7 +4,6 @@ from decimal import Decimal
 from pathlib import Path
 from threading import Lock
 import json
-import hashlib
 import sqlite3
 import tempfile
 import uuid
@@ -75,13 +74,14 @@ class DiskRows:
             self.db.set_progress_handler(lambda:int(workspace.control.cancelled.is_set() or
                 workspace.control.deadline is not None and time.perf_counter()>=workspace.control.deadline),1000)
             self.db.execute('CREATE TABLE rows (seq INTEGER PRIMARY KEY, payload TEXT NOT NULL, key TEXT, lookup TEXT)')
-            self.db.execute('CREATE INDEX lookup_index ON rows(lookup)')
+            self.page_size=self.db.execute('PRAGMA page_size').fetchone()[0]
+            self.has_lookup_index=False
             self._account()
         except BaseException:
             self.db.close();self.path.unlink(missing_ok=True);raise
     def _account(self):
         self.workspace.control.check()
-        size=self.db.execute('PRAGMA page_count').fetchone()[0]*self.db.execute('PRAGMA page_size').fetchone()[0]
+        size=self.db.execute('PRAGMA page_count').fetchone()[0]*self.page_size
         if self.in_memory:
             with self.workspace.lock:
                 if self.workspace.memory_bytes+size-self.accounted<=self.workspace.memory_limit:
@@ -120,6 +120,8 @@ class DiskRows:
         self.append_encoded(stable_text(row),key=key,lookup=lookup)
     def append_encoded(self,text,*,key=None,lookup=None):
         self.workspace.control.check()
+        if lookup is not None and not self.has_lookup_index:
+            self.db.execute('CREATE INDEX lookup_index ON rows(lookup)');self.has_lookup_index=True
         self.db.execute('INSERT INTO rows(payload,key,lookup) VALUES(?,?,?)',(text,key,lookup))
         self.count+=1;self.encoded_bytes+=len(text.encode())+(self.count>1)
         self._account()
@@ -182,15 +184,26 @@ class BufferedRows(DiskRows):
             self.closed=True
 
 
-def distinct(workspace,rows,*,preserve_order=False):
+def distinct_bucket(canonical):
+    # Request-local bucket only: Python hashes honor typed tuple/Decimal equality.
+    # Never persisted as an identity; full row equality resolves every collision.
+    return str(hash(canonical))
+
+
+def distinct(workspace,rows,*,preserve_order=False,ordered_output=True):
     memory={};reserved=0;store=None
     def insert(text,canonical):
-        digest=hashlib.sha256(key_text(canonical).encode()).hexdigest()
+        digest=distinct_bucket(canonical)
         # Hashes locate buckets only. Full typed equality resolves collisions.
-        match=None
+        inserted=store.db.execute("INSERT OR IGNORE INTO rows(payload,key,lookup) VALUES(?,?,'0')",(text,digest))
+        if inserted.rowcount:
+            store._account();return
+        match=None;bucket_size=0
         for seq,previous in store.db.execute('SELECT seq,payload FROM rows WHERE key=?',(digest,)):
+            bucket_size+=1
             if row_key(json.loads(previous))==canonical:match=(seq,previous);break
-        if match is None:store.db.execute('INSERT INTO rows(payload,key) VALUES(?,?)',(text,digest))
+        if match is None:
+            store.db.execute('INSERT INTO rows(payload,key,lookup) VALUES(?,?,?)',(text,digest,str(bucket_size)))
         elif not preserve_order and text<match[1]:store.db.execute('UPDATE rows SET payload=? WHERE seq=?',(text,match[0]))
         store._account()
     try:
@@ -203,14 +216,14 @@ def distinct(workspace,rows,*,preserve_order=False):
                 delta=charge-(previous[1] if previous is not None else 0)
                 if workspace.claim_memory(delta):
                     memory[canonical]=(text,charge);reserved+=delta;continue
-                store=workspace.store(buffered=False);store.db.execute('CREATE INDEX distinct_key ON rows(key)')
+                store=workspace.store(buffered=False);store.db.execute('CREATE UNIQUE INDEX distinct_key ON rows(key,lookup)')
                 for key,(value,size) in memory.items():insert(value,key)
                 memory.clear();workspace.release_memory(reserved);reserved=0
             insert(text,canonical)
         if store is None:
-            values=memory.values() if preserve_order else sorted(memory.values(),key=lambda v:v[0])
+            values=memory.values() if preserve_order or not ordered_output else sorted(memory.values(),key=lambda v:v[0])
             for text,_ in values:workspace.control.check();yield json.loads(text)
-        else:yield from store.select('SELECT payload FROM rows ORDER BY '+('seq' if preserve_order else 'payload'))
+        else:yield from store.select('SELECT payload FROM rows ORDER BY '+('seq' if preserve_order or not ordered_output else 'payload'))
     finally:
         memory.clear();workspace.release_memory(reserved)
         if store is not None:store.close()

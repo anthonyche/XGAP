@@ -17,7 +17,7 @@ def fold_aggregate(workspace,parameters,rows):
     from xgap.runtime.adaptive_state import AdaptiveState
     groups=parameters['group_by'];specs=parameters['aggregations']
     def initial(values):
-        return [values,{name:[0,Fraction(0),set(),None] for name in specs}]
+        return [values,{name:[0,0,set(),None] for name in specs}]
     with AdaptiveState(workspace) as states:
         seen=False
         for row in rows:
@@ -26,18 +26,21 @@ def fold_aggregate(workspace,parameters,rows):
             values=tuple(row[f] for f in groups);key=tuple(map(value_key,values))
             state=states.get(key)
             if state is None:state=initial(values)
-            elif tuple(map(representative_key,values))<tuple(map(representative_key,state[0])):state[0]=values
+            elif not all(a is b for a,b in zip(values,state[0])) and tuple(map(representative_key,values))<tuple(map(representative_key,state[0])):state[0]=values
             for name,spec in specs.items():
                 op=spec['op'];field=spec.get('field');acc=state[1][name]
                 if field is not None and field not in row:raise ValueError('aggregate field is missing')
                 value=row if field is None else row[field]
                 if field is not None and value is None:continue
-                row_key(value) if field is None else value_key(value)
+                if op!='sum':row_key(value) if field is None else value_key(value)
                 acc[0]+=1
                 if op=='sum':
-                    n=numeric(value)
-                    if n is None:raise ValueError('aggregate field must be numeric')
-                    acc[1]+=Fraction(n.value);acc[2].add(n.kind)
+                    if type(value) is int:
+                        acc[1]+=value;acc[2].add('integer')
+                    else:
+                        n=numeric(value)
+                        if n is None:raise ValueError('aggregate field must be numeric')
+                        acc[1]+=Fraction(n.value);acc[2].add(n.kind)
                 elif op in ('min','max'):
                     scalar_order_key(value)
                     best=acc[3]
@@ -156,7 +159,7 @@ def ordered(workspace,parameters,rows):
 def right_index(workspace,rows,field):
     buckets={};reserved=0;store=None
     try:
-        for row in distinct(workspace,rows):
+        for row in distinct(workspace,rows,ordered_output=False):
             if field not in row:raise ValueError('right join field is missing')
             if row[field] is None:continue
             key=value_key(row[field]);size=4*len(stable_text(row).encode())+512
@@ -191,7 +194,7 @@ def join(workspace,node,left,right,*,unordered=False):
         schemas[side]=fields if uniform else None
     with right_index(workspace,track(right,'right'),rk) as lookup:
         def pairs():
-            for a in distinct(workspace,track(left,'left')):
+            for a in distinct(workspace,track(left,'left'),ordered_output=False):
                 if lk not in a:raise ValueError('left join field is missing')
                 raw=a[lk]
                 if semi:
